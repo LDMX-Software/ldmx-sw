@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
+    <define>
+        <variable name="box1_id" value="1" />
+    </define>
+    <materials>
+        <element Z="7" formula="N" name="N">
+            <atom type="A" unit="g/mol" value="14.0068"/>
+        </element>
+        <element Z="8" formula="O" name="O">
+            <atom type="A" unit="g/mol" value="15.9994"/>
+        </element>
+        <element Z="18" formula="Ar" name="Ar">
+            <atom type="A" unit="g/mol" value="39.9477"/>
+        </element>
+        <material name="Air">
+            <D type="density" unit="g/cm3" value="0.0012"/>
+            <fraction n="0.754" ref="N"/>
+            <fraction n="0.234" ref="O"/>
+            <fraction n="0.012" ref="Ar"/>
+        </material>
+        <element name="Si" formula="Si" Z="14">
+            <atom type="A" unit="g/mol" value="28.0854"/>
+        </element>
+        <material name="Silicon">
+            <D type="density" unit="g/cm3" value="2.33"/>
+            <composite n="1" ref="Si"/>
+        </material>
+    </materials>
+    <solids>
+        <box name="box1" x="50.0" y="50.0" z="50.0"/>
+        <box name="world_box" x="1000.0" y="1000.0" z="1000.0"/>
+    </solids>
+    <structure>
+        <volume name="box_vol">
+            <materialref ref="Silicon"/>
+            <solidref ref="box1"/>
+            <auxiliary auxtype="VolID" auxvalue="1"/>
+            <auxiliary auxtype="SensDet" auxvalue="TrackerSD"/>
+            <auxiliary auxtype="Region" auxvalue="TrackerRegion"/>
+        </volume>    
+        <volume name="world_vol">
+            <materialref ref="Air"/>
+            <solidref ref="world_box"/>
+            <physvol copynumber="1">
+                <volumeref ref="box_vol"/>
+                <position name="box_pos" x="0.0" y="0.0" z="0.0"/>
+                <rotation name="box_rot" x="0.0" y="0.0" z="0.0"/>
+            </physvol>
+            <physvol copynumber="1">
+                <volumeref ref="box_vol"/>
+                <position name="box_pos2" x="0.0" y="0.0" z="100.0"/>
+                <rotation name="box_rot2" x="0.0" y="0.0" z="0.0"/>
+            </physvol>
+        </volume>
+    </structure>
+    <setup name="Default" version="1.0">
+        <world ref="world_vol"/>
+    </setup>
+</gdml>

@@ -1,0 +1,7 @@
+set(${PACKAGE_FIND_NAME}_VERSION_MAJOR @EventModel_VERSION_MAJOR@)
+set(${PACKAGE_FIND_NAME}_VERSION_MINOR @EventModel_VERSION_MINOR@)
+set(${PACKAGE_FIND_NAME}_VERSION_PATCH @EventModel_VERSION_PATCH@)
+
+include("@LDMX_CMAKE_MODULES_ROOT@/MacroCheckPackageLibs.cmake")
+
+check_package_version( ${PACKAGE_FIND_NAME} @EventModel_VERSION@ )
