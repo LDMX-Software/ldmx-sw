@@ -21,13 +21,12 @@ Event::Event() :
 
 Event::~Event() {
     Clear();
-/*
+
     delete _simParticles;
     delete _taggerSimHits;
     delete _recoilSimHits;
     delete _ecalSimHits;
     delete _hcalSimHits;
-*/
 }
 
 void Event::setEventHeader(EventHeader* eventHeader) {
@@ -59,11 +58,11 @@ int Event::nextCollectionIndex(const std::string& collectionName) {
         return _nSimParticles++;
     } else if (collectionName.compare("TaggerSimHits") == 0) {
         return _nTaggerSimHits++;
-    } else if (collectionName.compare("RecoilSimHits")) {
+    } else if (collectionName.compare("RecoilSimHits") == 0) {
         return _nRecoilSimHits++;
-    } else if (collectionName.compare("EcalSimHits")) {
+    } else if (collectionName.compare("EcalSimHits") == 0) {
         return _nEcalSimHits++;
-    } else if (collectionName.compare("HcalSimHits")) {
+    } else if (collectionName.compare("HcalSimHits") == 0) {
         return _nHcalSimHits;
     } else {
         return -1;
@@ -75,11 +74,11 @@ TClonesArray* Event::collection(const std::string& collectionName) {
         return _simParticles;
     } else if (collectionName.compare("TaggerSimHits") == 0) {
         return _taggerSimHits;
-    } else if (collectionName.compare("RecoilSimHits")) {
+    } else if (collectionName.compare("RecoilSimHits") == 0) {
         return _recoilSimHits;
-    } else if (collectionName.compare("EcalSimHits")) {
+    } else if (collectionName.compare("EcalSimHits") == 0) {
         return _ecalSimHits;
-    } else if (collectionName.compare("HcalSimHits")) {
+    } else if (collectionName.compare("HcalSimHits") == 0) {
         return _hcalSimHits;
     } else {
         return 0;

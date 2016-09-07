@@ -18,11 +18,17 @@ int main(int, const char* argv[])  {
 
     std::cout << "Hello LDMX Event Model Test!" << std::endl;
 
+    /*
+     * Open ROOT file for writing.
+     */
     TFile* rootFile = new TFile("ldmx_event_model_test.root", "RECREATE");
     TTree *tree = new TTree("LDMX_Event", "LDMX event tree");
     Event* event = new Event();
     tree->Branch("Event", "Event", &event, 32000, 3);
 
+    /*
+     * Create a dummy event.
+     */
     EventHeader* eventHeader = new EventHeader();
     eventHeader->setTimestamp(1473280918);
     eventHeader->setRun(1);
@@ -58,22 +64,29 @@ int main(int, const char* argv[])  {
     std::cout << "Created event has " << event->collectionSize("RecoilSimHits") << " RecoilSimHits" << std::endl;
     std::cout << "Created event has " << event->collectionSize("SimParticles") << " SimParticles" << std::endl;
 
+    /**
+     * Fill the ROOT tree with event data.
+     */
     std::cout << "Filling ROOT tree ..." << std::endl;
     tree->Fill();
 
+    /**
+     * Write out the ROOT file.
+     */
     std::cout << "Writing ROOT file ..." << std::endl;
     rootFile->Write();
 
+    /**
+     * Read the ROOT file back in.
+     */
     TFile *readFile = new TFile("ldmx_event_model_test.root");
     TTree *readTree = (TTree*) readFile->Get("LDMX_Event");
-
     Event* readEvent = new Event();
-
     TBranch *branch = readTree->GetBranch("Event");
     branch->SetAddress(&readEvent);
 
     std::cout << "Reading ROOT file ..." << std::endl;
-    for(int entry = 0; entry < tree->GetEntries(); ++entry){
+    for(int entry = 0; entry < tree->GetEntries(); ++entry) {
         tree->GetEntry(entry);
         std::cout << "Read entry " << entry << " from file." << std::endl;
         std::cout << "Read event has " << event->collectionSize("EcalSimHits") << " EcalSimHits" << std::endl;
@@ -81,6 +94,9 @@ int main(int, const char* argv[])  {
         std::cout << "Read event has " << event->collectionSize("SimParticles") << " SimParticles" << std::endl;
     }
 
+    /**
+     * Delete the event.
+     */
     delete event;
 
     std::cout << "Bye LDMX Event Model Test!" << std::endl;

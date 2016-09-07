@@ -12,7 +12,6 @@
 
 // STL
 #include <string>
-#include <map>
 
 class EventHeader {
 
