@@ -24,8 +24,6 @@ public:
 
     void setPosition(double x, double y, double z);
 
-    ClassDef(SimCalorimeterHit, 1)
-
     // TODO: sim particle contribution
 
 private:
@@ -34,6 +32,7 @@ private:
     double _edep;
     double _position[3];
 
+    ClassDef(SimCalorimeterHit, 1)
 };
 
 #endif

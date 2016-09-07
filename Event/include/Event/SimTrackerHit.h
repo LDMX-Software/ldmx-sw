@@ -42,8 +42,6 @@ public:
 
     void setMomentum(float px, float py, float pz);
 
-    ClassDef(SimTrackerHit, 1)
-
 private:
 
     long _id;
@@ -52,6 +50,8 @@ private:
     float _edep;
     float _time;
     float _momentum[3];
+
+    ClassDef(SimTrackerHit, 1)
 };
 
 #endif

@@ -55,8 +55,6 @@ public:
 
     void addDaughter(SimParticle* daughter);
 
-    ClassDef(SimParticle, 1)
-
 private:
 
     double _energy;
@@ -69,6 +67,8 @@ private:
     double _momentum[3];
     double _mass;
     std::vector<SimParticle*> _daughters;
+
+    ClassDef(SimParticle, 1)
 };
 
 #endif
