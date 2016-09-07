@@ -15,6 +15,8 @@ public:
 
     virtual ~SimParticle();
 
+    void Print(Option_t *option) const;
+
     double energy();
 
     int pdg();

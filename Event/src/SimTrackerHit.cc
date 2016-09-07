@@ -1,5 +1,7 @@
 #include "Event/SimTrackerHit.h"
 
+#include <iostream>
+
 ClassImp(SimTrackerHit)
 
 SimTrackerHit::SimTrackerHit() :
@@ -22,6 +24,17 @@ SimTrackerHit::SimTrackerHit() :
 
 SimTrackerHit::~SimTrackerHit() {
 
+}
+
+void SimTrackerHit::Print(Option_t *option) const {
+    std::cout << "SimTrackerHit { " <<
+            "id: " << _id << ", " <<
+            "startPosition: ( " << _startPosition[0] << ", " << _startPosition[1] << ", " << _startPosition[2] << " ), " <<
+            "endPosition: ( " << _endPosition[0] << ", " << _endPosition[1] << ", " << _endPosition[2] << " ), " <<
+            "edep: " << _edep << ", " <<
+            "time: " << _time << ", " <<
+            "momentum: ( " << _momentum[0] << ", " << _momentum[1] << ", " << _momentum[2] << " )" <<
+            " }" << std::endl;
 }
 
 long SimTrackerHit::id() {

@@ -1,17 +1,23 @@
 #include "Event/SimCalorimeterHit.h"
 
+// STL
+#include <iostream>
+
 ClassImp(SimCalorimeterHit)
 
 SimCalorimeterHit::SimCalorimeterHit() :
-    _id(0),
-    _edep(0.) {
-
+        _id(0), _edep(0.) {
     _position[0] = 0.;
     _position[1] = 0.;
     _position[2] = 0.;
 }
 
 SimCalorimeterHit::~SimCalorimeterHit() {
+}
+
+void SimCalorimeterHit::Print(Option_t *option) const {
+    std::cout << "SimCalorimeterHit { " << "id: " << _id << ", " << "edep: " << _edep << ", "
+            "position: ( " << _position[0] << ", " << _position[1] << ", " << _position[2] << " ) }" << std::endl;
 }
 
 long SimCalorimeterHit::id() {

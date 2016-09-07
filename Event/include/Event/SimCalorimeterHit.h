@@ -12,6 +12,8 @@ public:
 
     virtual ~SimCalorimeterHit();
 
+    void Print(Option_t *option="") const;
+
     long id();
 
     double edep();

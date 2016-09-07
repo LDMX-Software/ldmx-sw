@@ -18,6 +18,8 @@ public:
 
     virtual ~SimTrackerHit();
 
+    void Print(Option_t *option="") const;
+
     long id();
 
     double* startPosition();

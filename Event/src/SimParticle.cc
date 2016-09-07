@@ -1,5 +1,8 @@
 #include "Event/SimParticle.h"
 
+// STL
+#include <iostream>
+
 ClassImp(SimParticle)
 
 SimParticle::SimParticle() :
@@ -16,6 +19,22 @@ SimParticle::SimParticle() :
 }
 
 SimParticle::~SimParticle() {
+}
+
+void SimParticle::Print(Option_t *option) const {
+    std::cout << "SimParticle { " <<
+            "energy: " << _energy << ", " <<
+            "pdg: " << _pdg << ", " <<
+            "simStatus: " << _simStatus << ", " <<
+            "genStatus: " << _genStatus << ", " <<
+            "time: " << _time << ", " <<
+            "vertex: ( " << _vertex[0] << ", " << _vertex[1] << ", " << _vertex[2] << " ), " <<
+            "endPoint: ( " << _endPoint[0] << ", " << _endPoint[1] << ", " << _endPoint[2] << " ), " <<
+            "momentum: ( " << _momentum[0] << ", " << _momentum[1] << ", " << _momentum[2] << " ), " <<
+            "mass: " << _mass << ", " <<
+            "nDaughters: " << _daughters.size() <<
+            " }" <<
+            std::endl;
 }
 
 double SimParticle::energy() {

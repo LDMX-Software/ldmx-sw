@@ -6,6 +6,7 @@
 #include "Event/SimTrackerHit.h"
 
 // ROOT
+#include "TClonesArray.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TBranch.h"
@@ -89,9 +90,23 @@ int main(int, const char* argv[])  {
     for(int entry = 0; entry < tree->GetEntries(); ++entry) {
         tree->GetEntry(entry);
         std::cout << "Read entry " << entry << " from file." << std::endl;
+        std::cout << "Read EventHeader: run = " << event->eventHeader()->run() << "; eventNum = " << eventHeader->eventNumber() << "; timestamp = " << eventHeader->timestamp() << std::endl;
         std::cout << "Read event has " << event->collectionSize("EcalSimHits") << " EcalSimHits" << std::endl;
+        TClonesArray* coll = event->collection("EcalSimHits");
+        for (int i = 0; i < event->collectionSize("EcalSimHits"); i++) {
+            coll[i].Print();
+        }
         std::cout << "Read event has " << event->collectionSize("RecoilSimHits") << " RecoilSimHits" << std::endl;
+        coll = event->collection("RecoilSimHits");
+        for (int i = 0; i < event->collectionSize("RecoilSimHits"); i++) {
+            coll[i].Print();
+        }
         std::cout << "Read event has " << event->collectionSize("SimParticles") << " SimParticles" << std::endl;
+        coll = event->collection("SimParticles");
+        for (int i = 0; i < event->collectionSize("SimParticles"); i++) {
+            coll[i].Print();
+        }
+        std::cout << std::endl;
     }
 
     /**
