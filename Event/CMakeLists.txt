@@ -9,18 +9,6 @@ set(Event_VERSION_MAJOR 1)
 set(Event_VERSION_MINOR 0)
 set(Event_VERSION_PATCH 0)
 
-# allows calling export_library_dependencies used in package config file generation
-cmake_policy(SET CMP0033 OLD)
-
-# define path to extra CMake modules
-set(LDMX_CMAKE_MODULES_ROOT ${PROJECT_SOURCE_DIR}/../cmake/Modules/)
-
-# add dir with extra CMake modules 
-list(APPEND CMAKE_MODULE_PATH ${LDMX_CMAKE_MODULES_ROOT})
-
-# macro for generating package config files
-include(MacroGeneratePackageConfigFiles)
-
 # find ROOT
 find_package(ROOT REQUIRED COMPONENTS Core RIO)
 
@@ -54,7 +42,8 @@ add_executable(ldmx-event-model-test test/ldmx_event_model_test.cc)
 target_link_libraries(ldmx-event-model-test ${ROOT_LIBRARIES} ${PROJECT_NAME})
 
 # generate package configuration
-generate_package_configuration_files(EventConfig.cmake EventConfigVersion.cmake EventLibDeps.cmake)
+generate_package_configuration_files(EventConfig.cmake EventConfigVersion.cmake)
+# EventLibDeps.cmake
 
 # install library
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

@@ -1,16 +1,5 @@
-# minimum cmake version
-cmake_minimum_required(VERSION 3.6)
-
 # project name
 project(SimApplication)
-
-# define path to extra CMake modules
-set(LDMX_CMAKE_MODULES_ROOT ${PROJECT_SOURCE_DIR}/../cmake/Modules/)
-
-# add dir with extra CMake modules
-list(APPEND CMAKE_MODULE_PATH ${LDMX_CMAKE_MODULES_ROOT})
-
-include(MacroCheckPackageVersion)
 
 # find Geant4
 find_package(Geant4 REQUIRED)
@@ -20,9 +9,6 @@ include(${Geant4_USE_FILE})
 
 # find ROOT
 find_package(ROOT REQUIRED)
-
-# find LDMX Event package for Event API and ROOT IO
-find_package(Event REQUIRED)
 
 # add project include dir
 include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -35,7 +21,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.h)
 add_executable(ldmx-sim src/ldmx_sim.cc ${sources} ${headers})
 
 # add the Geant4 link libraries
-target_link_libraries(ldmx-sim ${Geant4_LIBRARIES})
+target_link_libraries(ldmx-sim ${Geant4_LIBRARIES} Event)
 
 # set executable installation target
 install(TARGETS ldmx-sim DESTINATION bin)
