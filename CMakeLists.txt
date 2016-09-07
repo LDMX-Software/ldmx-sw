@@ -18,8 +18,11 @@ find_package(Geant4 REQUIRED)
 # include Geant4 CMake config file (compiler settings, etc.)
 include(${Geant4_USE_FILE})
 
-# find LDMX EventModel package for ROOT IO
-find_package(EventModel REQUIRED)
+# find ROOT
+find_package(ROOT REQUIRED)
+
+# find LDMX Event package for Event API and ROOT IO
+find_package(Event REQUIRED)
 
 # add project include dir
 include_directories(${PROJECT_SOURCE_DIR}/include)
