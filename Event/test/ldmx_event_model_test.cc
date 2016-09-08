@@ -30,11 +30,10 @@ int main(int, const char* argv[])  {
     /*
      * Create a dummy event.
      */
-    EventHeader* eventHeader = new EventHeader();
+    EventHeader* eventHeader = event->header();
     eventHeader->setTimestamp(1473280918);
     eventHeader->setRun(1);
     eventHeader->setEventNumber(1000);
-    event->setEventHeader(eventHeader);
 
     SimCalorimeterHit* calHit = (SimCalorimeterHit*) event->addObject("EcalSimHits");
     calHit->setEdep(1.234);
@@ -60,7 +59,7 @@ int main(int, const char* argv[])  {
     particle->setTime(69.);
     particle->setVertex(90., 100., 2004.);
 
-    std::cout << "EventHeader: run = " << event->eventHeader()->run() << "; eventNum = " << eventHeader->eventNumber() << "; timestamp = " << eventHeader->timestamp() << std::endl;
+    std::cout << "EventHeader: run = " << event->header()->run() << "; eventNum = " << eventHeader->eventNumber() << "; timestamp = " << eventHeader->timestamp() << std::endl;
     std::cout << "Created event has " << event->collectionSize("EcalSimHits") << " EcalSimHits" << std::endl;
     std::cout << "Created event has " << event->collectionSize("RecoilSimHits") << " RecoilSimHits" << std::endl;
     std::cout << "Created event has " << event->collectionSize("SimParticles") << " SimParticles" << std::endl;
@@ -90,7 +89,7 @@ int main(int, const char* argv[])  {
     for(int entry = 0; entry < tree->GetEntries(); ++entry) {
         tree->GetEntry(entry);
         std::cout << "Read entry " << entry << " from file." << std::endl;
-        std::cout << "Read EventHeader: run = " << event->eventHeader()->run() << "; eventNum = " << eventHeader->eventNumber() << "; timestamp = " << eventHeader->timestamp() << std::endl;
+        std::cout << "Read EventHeader: run = " << event->header()->run() << "; eventNum = " << eventHeader->eventNumber() << "; timestamp = " << eventHeader->timestamp() << std::endl;
         std::cout << "Read event has " << event->collectionSize("EcalSimHits") << " EcalSimHits" << std::endl;
         TClonesArray* coll = event->collection("EcalSimHits");
         for (int i = 0; i < event->collectionSize("EcalSimHits"); i++) {

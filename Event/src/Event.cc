@@ -6,7 +6,6 @@ int Event::DEFAULT_COLLECTION_SIZE = 1000;
 
 Event::Event() :
         TObject(),
-        _eventHeader(0),
         _simParticles(new TClonesArray("SimParticle", Event::DEFAULT_COLLECTION_SIZE)),
         _taggerSimHits(new TClonesArray("SimTrackerHit", Event::DEFAULT_COLLECTION_SIZE)),
         _recoilSimHits(new TClonesArray("SimTrackerHit", Event::DEFAULT_COLLECTION_SIZE)),
@@ -29,12 +28,8 @@ Event::~Event() {
     delete _hcalSimHits;
 }
 
-void Event::setEventHeader(EventHeader* eventHeader) {
-    _eventHeader = eventHeader;
-}
-
-EventHeader* Event::eventHeader() {
-    return _eventHeader;
+EventHeader* Event::header() {
+    return &_eventHeader;
 }
 
 int Event::collectionSize(const std::string& collectionName) {

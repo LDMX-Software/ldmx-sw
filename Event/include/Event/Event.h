@@ -66,9 +66,7 @@ public:
 
     virtual ~Event();
 
-    EventHeader* eventHeader();
-
-    void setEventHeader(EventHeader*);
+    EventHeader* header();
 
     TClonesArray* collection(const std::string& collectionName);
 
@@ -80,7 +78,7 @@ private:
 
     int nextCollectionIndex(const std::string& collectionName);
 
-    EventHeader* _eventHeader;
+    EventHeader _eventHeader;
 
     TClonesArray* _simParticles;
     TClonesArray* _taggerSimHits;
