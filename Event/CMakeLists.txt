@@ -1,11 +1,6 @@
 # project name
 project(Event CXX)
 
-# project version
-set(Event_VERSION_MAJOR 1)
-set(Event_VERSION_MINOR 0)
-set(Event_VERSION_PATCH 0)
-
 # find ROOT
 find_package(ROOT REQUIRED COMPONENTS Core RIO)
 
