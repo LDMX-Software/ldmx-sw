@@ -1,31 +1,76 @@
 // LDMX
 #include "SimApplication/SimApplication.h"
-#include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/PrimaryGeneratorAction.h"
 
 // STL
-#include <stdio.h>
 #include <vector>
+#include <iostream>
 
 // Geant4
 #include "G4RunManager.hh"
 #include "G4GDMLParser.hh"
 #include "FTFP_BERT.hh"
 #include "G4LogicalVolumeStore.hh"
+#include "G4UIExecutive.hh"
+#include "G4UImanager.hh"
+#include "G4VisManager.hh"
+#include "G4VisExecutive.hh"
 
+#ifdef G4MULTITHREADED
+#include "G4MTRunManager.hh"
+#else
+#include "G4RunManager.hh"
+#endif
 
-void SimApplication::run(const char* argv[]) {
+SimApplication::SimApplication() :
+    _messenger(0) {
+}
 
-    // load GDML file (hard-coded path for now)
-    G4GDMLParser parser;
-    parser.Read("geom.gdml");
+SimApplication::~SimApplication() {
+    delete _messenger;
+}
 
-    // run manager init
-    G4RunManager* run_manager = new G4RunManager;
-    run_manager->SetUserInitialization(new DetectorConstruction(parser.GetWorldVolume()));
-    run_manager->SetUserInitialization(new FTFP_BERT);
-    run_manager->SetUserAction(new PrimaryGeneratorAction());
-    run_manager->Initialize();
+void SimApplication::run(int argc, char** argv) {
+
+    // If no arguments then start an interactive session.
+    G4UIExecutive* ui = 0;
+    if (argc == 1) {
+        ui = new G4UIExecutive(argc, argv);
+    }
+
+    // Create run manager.
+#ifdef G4MULTITHREADED
+    G4MTRunManager* runManager = new G4MTRunManager;
+#else
+    G4RunManager* runManager = new G4RunManager;
+#endif
+
+    // Create application messenger which defines macro commands.
+    _messenger = new SimApplicationMessenger();
+
+    // Default user actions.
+    runManager->SetUserInitialization(new FTFP_BERT);
+    runManager->SetUserAction(new PrimaryGeneratorAction());
+
+    // Initialize G4 visualization framework.
+    G4VisManager* visManager = new G4VisExecutive;
+    visManager->Initialize();
+
+    // Get the pointer to the User Interface manager
+    G4UImanager* UImanager = G4UImanager::GetUIpointer();
+
+    if (ui == 0) {
+        // execute macro provided on command line
+        G4String command = "/control/execute ";
+        G4String fileName = argv[1];
+        std::cout << "executing macro " << fileName << " ..." << std::endl;
+        UImanager->ApplyCommand(command + fileName);
+    } else {
+        // start an interactive session
+        std::cout << "starting interactive session ..." << std::endl;
+        ui->SessionStart();
+        delete ui;
+    }
 
     // print out aux vol info
     /*
@@ -44,5 +89,5 @@ void SimApplication::run(const char* argv[]) {
     }
     */
 
-    delete run_manager;
-}    
+    delete runManager;
+}
