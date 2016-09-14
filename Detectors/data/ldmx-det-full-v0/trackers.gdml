@@ -1,0 +1,391 @@
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+  <define />
+
+  <materials>  
+    <element Z="7" formula="N" name="N" >
+      <atom type="A" unit="g/mol" value="14.0068" />
+    </element>
+    <element Z="8" formula="O" name="O" >
+      <atom type="A" unit="g/mol" value="15.9994" />
+    </element>    
+    <element Z="18" formula="Ar" name="Ar" >
+      <atom type="A" unit="g/mol" value="39.9477" />
+    </element>
+    <element Z="14" formula="Si" name="Si" >
+      <atom type="A" unit="g/mol" value="28.0854" />
+    </element>
+      <element Z="1" formula="H" name="H" >
+      <atom type="A" unit="g/mol" value="1.00794" />
+    </element>
+    <element Z="6" formula="C" name="C" >
+      <atom type="A" unit="g/mol" value="12.0107" />
+    </element>
+      <element Z="74" formula="W" name="W" >
+      <atom type="A" unit="g/mol" value="183.842" />
+    </element>       
+    <material name="Air" state="gas">
+      <MEE unit="eV" value="85.643664635028" />
+      <D unit="g/cm3" value="0.00119999936860922" />
+      <fraction n="0.754" ref="N" />
+      <fraction n="0.234" ref="O" />
+      <fraction n="0.012" ref="Ar" />
+    </material>    
+    <material name="Silicon" state="solid">
+      <MEE unit="eV" value="173" />
+      <D unit="g/cm3" value="2.32999877404956" />
+      <fraction n="1" ref="Si" />
+    </material>    
+    <material name="Carbon" state="solid">
+      <MEE unit="eV" value="81" />
+      <D unit="g/cm3" value="1.99999894768203" />
+      <fraction n="1" ref="C" />
+    </material>    
+    <material name="Vacuum" state="gas">
+      <MEE unit="eV" value="19.2" />
+      <D unit="g/cm3" value="9.99999473841014e-09" />
+      <fraction n="1" ref="H" />
+    </material>
+    <material name="TrackingMaterial" state="gas">
+      <MEE unit="eV" value="85.643664635028" />
+      <D unit="g/cm3" value="9.99999473841014e-17" />
+      <fraction n="0.754" ref="N" />
+      <fraction n="0.234" ref="O" />
+      <fraction n="0.012" ref="Ar" />
+    </material>    
+    <material name="Tungsten" state="solid">
+      <MEE unit="eV" value="727"/>
+      <D unit="g/cm3" value="19.2999898451316"/>
+      <fraction n="1" ref="W"/>
+    </material>    
+    <material name="Polyvinyltoluene" state="solid">
+      <MEE unit="eV" value="64.6844741120544"/>
+      <D unit="g/cm3" value="1.02299946173936"/>
+      <fraction n="0.914708353747852" ref="C"/>
+      <fraction n="0.0852916462521483" ref="H"/>
+    </material>
+  </materials>
+
+  <solids>
+    <box lunit="mm" name="Target_layerType0_slice0_box" x="35" y="95" z="0.35" />
+    <box lunit="mm" name="Target_layerType0_box" x="35" y="95" z="0.35" />
+    <box lunit="mm" name="Target_box" x="35" y="95" z="0.35" />
+    <box lunit="mm" name="LDMXTaggerModuleVolume_component0Sensor0Box" x="38.3399" y="98.33" z="0.32" />
+    <box lunit="mm" name="LDMXTaggerModuleVolume_component0Box" x="40.34" y="100" z="0.32" />
+    <box lunit="mm" name="LDMXTaggerModuleVolume_component1Box" x="40.34" y="100" z="0.2" />
+    <box lunit="mm" name="LDMXTaggerModuleBox" x="40.34" y="100" z="0.52" />
+    <box lunit="mm" name="LDMXRecoilL14ModuleVolume_component0Sensor0Box" x="38.3399" y="98.33" z="0.32" />
+    <box lunit="mm" name="LDMXRecoilL14ModuleVolume_component0Box" x="40.34" y="100" z="0.32" />
+    <box lunit="mm" name="LDMXRecoilL14ModuleVolume_component1Box" x="40.34" y="100" z="0.2" />
+    <box lunit="mm" name="LDMXRecoilL14ModuleBox" x="40.34" y="100" z="0.52" />
+    <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component0Sensor0Box" x="48" y="78" z="0.32" />
+    <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component0Box" x="50" y="80" z="0.32" />
+    <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component1Box" x="50" y="80" z="0.2" />
+    <box lunit="mm" name="LDMXRecoilL56ModuleBox" x="50" y="80" z="0.52" />
+    <box lunit="mm" name="TriggerPad_layerType0_slice0_box" x="35" y="95" z="1" />
+    <box lunit="mm" name="TriggerPad_layerType0_box" x="35" y="95" z="1" />
+    <box lunit="mm" name="TriggerPad_box" x="35" y="95" z="1" />
+    <box lunit="mm" name="tracking_box" x="200" y="200" z="980" />
+    <box lunit="mm" name="world_box" x="5000" y="5000" z="5000" />
+  </solids>
+
+  <structure>
+    <volume name="Target_layerType0_slice0">
+      <materialref ref="Tungsten" />
+      <solidref ref="Target_layerType0_slice0_box" />
+    </volume>
+    <volume name="Target_layerType0">
+      <materialref ref="Air" />
+      <solidref ref="Target_layerType0_box" />
+      <physvol name="Target_layerType0_slice0_physvol">
+        <volumeref ref="Target_layerType0_slice0" />
+      </physvol>
+    </volume>
+    <volume name="Target_envelope">
+      <materialref ref="Air" />
+      <solidref ref="Target_box" />
+      <physvol name="Target_layerType0_physvol">
+        <volumeref ref="Target_layerType0" />
+      </physvol>
+    </volume>
+    <volume name="LDMXTaggerModuleVolume_component0Sensor0">
+      <materialref ref="Silicon" />
+      <solidref ref="LDMXTaggerModuleVolume_component0Sensor0Box" />
+    </volume>
+    <volume name="LDMXTaggerModuleVolume_component0">
+      <materialref ref="Silicon" />
+      <solidref ref="LDMXTaggerModuleVolume_component0Box" />
+      <physvol name="LDMXTaggerModuleVolume_component0Sensor0_physvol">
+        <volumeref ref="LDMXTaggerModuleVolume_component0Sensor0" />
+      </physvol>
+    </volume>
+    <volume name="LDMXTaggerModuleVolume_component1">
+      <materialref ref="Carbon" />
+      <solidref ref="LDMXTaggerModuleVolume_component1Box" />
+    </volume>
+    <volume name="LDMXTaggerModuleVolume">
+      <materialref ref="Vacuum" />
+      <solidref ref="LDMXTaggerModuleBox" />
+      <physvol name="LDMXTaggerModuleVolume_component0_physvol">
+        <volumeref ref="LDMXTaggerModuleVolume_component0" />
+        <position name="LDMXTaggerModuleVolume_component0_physvol_pos" unit="mm" x="0" y="0" z="-0.1" />
+      </physvol>
+      <physvol copynumber="1" name="LDMXTaggerModuleVolume_component1_physvol1">
+        <volumeref ref="LDMXTaggerModuleVolume_component1" />
+        <position name="LDMXTaggerModuleVolume_component1_physvol1_pos" unit="mm" x="0" y="0" z="0.16" />
+      </physvol>
+    </volume>
+    <volume name="LDMXRecoilL14ModuleVolume_component0Sensor0">
+      <materialref ref="Silicon" />
+      <solidref ref="LDMXRecoilL14ModuleVolume_component0Sensor0Box" />
+    </volume>
+    <volume name="LDMXRecoilL14ModuleVolume_component0">
+      <materialref ref="Silicon" />
+      <solidref ref="LDMXRecoilL14ModuleVolume_component0Box" />
+      <physvol name="LDMXRecoilL14ModuleVolume_component0Sensor0_physvol">
+        <volumeref ref="LDMXRecoilL14ModuleVolume_component0Sensor0" />
+      </physvol>
+    </volume>
+    <volume name="LDMXRecoilL14ModuleVolume_component1">
+      <materialref ref="Carbon" />
+      <solidref ref="LDMXRecoilL14ModuleVolume_component1Box" />
+    </volume>
+    <volume name="LDMXRecoilL14ModuleVolume">
+      <materialref ref="Vacuum" />
+      <solidref ref="LDMXRecoilL14ModuleBox" />
+      <physvol name="LDMXRecoilL14ModuleVolume_component0_physvol">
+        <volumeref ref="LDMXRecoilL14ModuleVolume_component0" />
+        <position name="LDMXRecoilL14ModuleVolume_component0_physvol_pos" unit="mm" x="0" y="0" z="-0.1" />
+      </physvol>
+      <physvol copynumber="1" name="LDMXRecoilL14ModuleVolume_component1_physvol1">
+        <volumeref ref="LDMXRecoilL14ModuleVolume_component1" />
+        <position name="LDMXRecoilL14ModuleVolume_component1_physvol1_pos" unit="mm" x="0" y="0" z="0.16" />
+      </physvol>
+    </volume>
+    <volume name="LDMXRecoilL56ModuleVolume_component0Sensor0">
+      <materialref ref="Silicon" />
+      <solidref ref="LDMXRecoilL56ModuleVolume_component0Sensor0Box" />
+    </volume>
+    <volume name="LDMXRecoilL56ModuleVolume_component0">
+      <materialref ref="Silicon" />
+      <solidref ref="LDMXRecoilL56ModuleVolume_component0Box" />
+      <physvol name="LDMXRecoilL56ModuleVolume_component0Sensor0_physvol">
+        <volumeref ref="LDMXRecoilL56ModuleVolume_component0Sensor0" />
+      </physvol>
+    </volume>
+    <volume name="LDMXRecoilL56ModuleVolume_component1">
+      <materialref ref="Carbon" />
+      <solidref ref="LDMXRecoilL56ModuleVolume_component1Box" />
+    </volume>
+    <volume name="LDMXRecoilL56ModuleVolume">
+      <materialref ref="Vacuum" />
+      <solidref ref="LDMXRecoilL56ModuleBox" />
+      <physvol name="LDMXRecoilL56ModuleVolume_component0_physvol">
+        <volumeref ref="LDMXRecoilL56ModuleVolume_component0" />
+        <position name="LDMXRecoilL56ModuleVolume_component0_physvol_pos" unit="mm" x="0" y="0" z="-0.1" />
+      </physvol>
+      <physvol copynumber="1" name="LDMXRecoilL56ModuleVolume_component1_physvol1">
+        <volumeref ref="LDMXRecoilL56ModuleVolume_component1" />
+        <position name="LDMXRecoilL56ModuleVolume_component1_physvol1_pos" unit="mm" x="0" y="0" z="0.16" />
+      </physvol>
+    </volume>
+    <volume name="TriggerPad_layerType0_slice0">
+      <materialref ref="Polyvinyltoluene" />
+      <solidref ref="TriggerPad_layerType0_slice0_box" />
+    </volume>
+    <volume name="TriggerPad_layerType0">
+      <materialref ref="Air" />
+      <solidref ref="TriggerPad_layerType0_box" />
+      <physvol name="TriggerPad_layerType0_slice0_physvol">
+        <volumeref ref="TriggerPad_layerType0_slice0" />
+      </physvol>
+    </volume>
+    <volume name="TriggerPad_envelope">
+      <materialref ref="Air" />
+      <solidref ref="TriggerPad_box" />
+      <physvol name="TriggerPad_layerType0_physvol">
+        <volumeref ref="TriggerPad_layerType0" />
+      </physvol>
+    </volume>
+    <volume name="trackers">
+      <materialref ref="TrackingMaterial" />
+      <solidref ref="tracking_box"/>
+      <physvol name="Target_envelope_physvol">
+        <volumeref ref="Target_envelope" />
+        <position name="Target_envelope_physvol_pos" unit="mm" x="0" y="0" z="300" />
+      </physvol>
+      <physvol copynumber="1" name="LDMXTaggerModuleVolume_physvol1">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol1_pos" unit="mm" x="-20.874" y="0" z="-310.5" />
+      </physvol>
+      <physvol copynumber="2" name="LDMXTaggerModuleVolume_physvol2">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol2_pos" unit="mm" x="-20.874" y="0" z="-304.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol2_rot" unit="deg" x="0" y="0" z="5.72957795130823" />
+      </physvol>
+      <physvol copynumber="3" name="LDMXTaggerModuleVolume_physvol3">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol3_pos" unit="mm" x="-14.758" y="0" z="-210.5" />
+      </physvol>
+      <physvol copynumber="4" name="LDMXTaggerModuleVolume_physvol4">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol4_pos" unit="mm" x="-14.758" y="0" z="-204.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol4_rot" unit="deg" x="0" y="0" z="-5.72957795130823" />
+      </physvol>
+      <physvol copynumber="5" name="LDMXTaggerModuleVolume_physvol5">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol5_pos" unit="mm" x="-9.657" y="0" z="-110.5" />
+      </physvol>
+      <physvol copynumber="6" name="LDMXTaggerModuleVolume_physvol6">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol6_pos" unit="mm" x="-9.657" y="0" z="-104.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol6_rot" unit="deg" x="0" y="0" z="5.72957795130823" />
+      </physvol>
+      <physvol copynumber="7" name="LDMXTaggerModuleVolume_physvol7">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol7_pos" unit="mm" x="-5.342" y="0" z="-10.5" />
+      </physvol>
+      <physvol copynumber="8" name="LDMXTaggerModuleVolume_physvol8">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol8_pos" unit="mm" x="-5.342" y="0" z="-4.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol8_rot" unit="deg" x="0" y="0" z="-5.72957795130823" />
+      </physvol>
+      <physvol copynumber="9" name="LDMXTaggerModuleVolume_physvol9">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol9_pos" unit="mm" x="-2.723" y="0" z="89.5" />
+      </physvol>
+      <physvol copynumber="10" name="LDMXTaggerModuleVolume_physvol10">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol10_pos" unit="mm" x="-2.723" y="0" z="95.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol10_rot" unit="deg" x="0" y="0" z="5.72957795130823" />
+      </physvol>
+      <physvol copynumber="11" name="LDMXTaggerModuleVolume_physvol11">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol11_pos" unit="mm" x="-0.938" y="0" z="189.5" />
+      </physvol>
+      <physvol copynumber="12" name="LDMXTaggerModuleVolume_physvol12">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol12_pos" unit="mm" x="-0.938" y="0" z="195.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol12_rot" unit="deg" x="0" y="0" z="-5.72957795130823" />
+      </physvol>
+      <physvol copynumber="13" name="LDMXTaggerModuleVolume_physvol13">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol13_pos" unit="mm" x="-0.065" y="0" z="289.5" />
+      </physvol>
+      <physvol copynumber="14" name="LDMXTaggerModuleVolume_physvol14">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol14_pos" unit="mm" x="-0.065" y="0" z="295.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol14_rot" unit="deg" x="0" y="0" z="-5.72957795130823" />
+      </physvol>
+      <physvol copynumber="15" name="LDMXRecoilL14ModuleVolume_physvol15">
+        <volumeref ref="LDMXRecoilL14ModuleVolume" />
+        <position name="LDMXRecoilL14ModuleVolume_physvol15_pos" unit="mm" x="0" y="0" z="304.5" />
+      </physvol>
+      <physvol copynumber="16" name="LDMXRecoilL14ModuleVolume_physvol16">
+        <volumeref ref="LDMXRecoilL14ModuleVolume" />
+        <position name="LDMXRecoilL14ModuleVolume_physvol16_pos" unit="mm" x="0" y="0" z="310.5" />
+        <rotation name="LDMXRecoilL14ModuleVolume_physvol16_rot" unit="deg" x="0" y="0" z="5.72957795130823" />
+      </physvol>
+      <physvol copynumber="17" name="LDMXRecoilL14ModuleVolume_physvol17">
+        <volumeref ref="LDMXRecoilL14ModuleVolume" />
+        <position name="LDMXRecoilL14ModuleVolume_physvol17_pos" unit="mm" x="0" y="0" z="319.5" />
+      </physvol>
+      <physvol copynumber="18" name="LDMXRecoilL14ModuleVolume_physvol18">
+        <volumeref ref="LDMXRecoilL14ModuleVolume" />
+        <position name="LDMXRecoilL14ModuleVolume_physvol18_pos" unit="mm" x="0" y="0" z="325.5" />
+        <rotation name="LDMXRecoilL14ModuleVolume_physvol18_rot" unit="deg" x="0" y="0" z="-5.72957795130823" />
+      </physvol>
+      <physvol copynumber="19" name="LDMXRecoilL14ModuleVolume_physvol19">
+        <volumeref ref="LDMXRecoilL14ModuleVolume" />
+        <position name="LDMXRecoilL14ModuleVolume_physvol19_pos" unit="mm" x="0" y="0" z="334.5" />
+      </physvol>
+      <physvol copynumber="20" name="LDMXRecoilL14ModuleVolume_physvol20">
+        <volumeref ref="LDMXRecoilL14ModuleVolume" />
+        <position name="LDMXRecoilL14ModuleVolume_physvol20_pos" unit="mm" x="0" y="0" z="340.5" />
+        <rotation name="LDMXRecoilL14ModuleVolume_physvol20_rot" unit="deg" x="0" y="0" z="5.72957795130823" />
+      </physvol>
+      <physvol copynumber="21" name="LDMXRecoilL14ModuleVolume_physvol21">
+        <volumeref ref="LDMXRecoilL14ModuleVolume" />
+        <position name="LDMXRecoilL14ModuleVolume_physvol21_pos" unit="mm" x="0" y="0" z="349.5" />
+      </physvol>
+      <physvol copynumber="22" name="LDMXRecoilL14ModuleVolume_physvol22">
+        <volumeref ref="LDMXRecoilL14ModuleVolume" />
+        <position name="LDMXRecoilL14ModuleVolume_physvol22_pos" unit="mm" x="0" y="0" z="355.5" />
+        <rotation name="LDMXRecoilL14ModuleVolume_physvol22_rot" unit="deg" x="0" y="0" z="-5.72957795130823" />
+      </physvol>
+      <physvol copynumber="23" name="LDMXRecoilL56ModuleVolume_physvol23">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol23_pos" unit="mm" x="48" y="40" z="389" />
+      </physvol>
+      <physvol copynumber="24" name="LDMXRecoilL56ModuleVolume_physvol24">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol24_pos" unit="mm" x="0" y="40" z="391" />
+      </physvol>
+      <physvol copynumber="25" name="LDMXRecoilL56ModuleVolume_physvol25">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol25_pos" unit="mm" x="-48" y="40" z="389" />
+      </physvol>
+      <physvol copynumber="26" name="LDMXRecoilL56ModuleVolume_physvol26">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol26_pos" unit="mm" x="48" y="-40" z="389" />
+      </physvol>
+      <physvol copynumber="27" name="LDMXRecoilL56ModuleVolume_physvol27">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol27_pos" unit="mm" x="0" y="-40" z="391" />
+      </physvol>
+      <physvol copynumber="28" name="LDMXRecoilL56ModuleVolume_physvol28">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol28_pos" unit="mm" x="-48" y="-40" z="389" />
+      </physvol>
+      <physvol copynumber="29" name="LDMXRecoilL56ModuleVolume_physvol29">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol29_pos" unit="mm" x="96" y="40" z="481" />
+      </physvol>
+      <physvol copynumber="30" name="LDMXRecoilL56ModuleVolume_physvol30">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol30_pos" unit="mm" x="48" y="40" z="479" />
+      </physvol>
+      <physvol copynumber="31" name="LDMXRecoilL56ModuleVolume_physvol31">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol31_pos" unit="mm" x="0" y="40" z="481" />
+      </physvol>
+      <physvol copynumber="32" name="LDMXRecoilL56ModuleVolume_physvol32">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol32_pos" unit="mm" x="-48" y="40" z="479" />
+      </physvol>
+      <physvol copynumber="33" name="LDMXRecoilL56ModuleVolume_physvol33">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol33_pos" unit="mm" x="-96" y="40" z="481" />
+      </physvol>
+      <physvol copynumber="34" name="LDMXRecoilL56ModuleVolume_physvol34">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol34_pos" unit="mm" x="96" y="-40" z="481" />
+      </physvol>
+      <physvol copynumber="35" name="LDMXRecoilL56ModuleVolume_physvol35">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol35_pos" unit="mm" x="48" y="-40" z="479" />
+      </physvol>
+      <physvol copynumber="36" name="LDMXRecoilL56ModuleVolume_physvol36">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol36_pos" unit="mm" x="0" y="-40" z="481" />
+      </physvol>
+      <physvol copynumber="37" name="LDMXRecoilL56ModuleVolume_physvol37">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol37_pos" unit="mm" x="-48" y="-40" z="479" />
+      </physvol>
+      <physvol copynumber="38" name="LDMXRecoilL56ModuleVolume_physvol38">
+        <volumeref ref="LDMXRecoilL56ModuleVolume" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol38_pos" unit="mm" x="-96" y="-40" z="481" />
+      </physvol>
+      <physvol copynumber="39" name="TriggerPad_envelope_physvol39">
+        <volumeref ref="TriggerPad_envelope" />
+        <position name="TriggerPad_envelope_physvol39_pos" unit="mm" x="0" y="0" z="300.676" />
+      </physvol>
+    </volume>
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="trackers"/>
+  </setup>
+
+</gdml>
