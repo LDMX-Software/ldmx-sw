@@ -2,11 +2,9 @@
 
 #include <stdio.h>
 
-int main(int, const char* argv[])  {
-    printf("Hello LDMX Sim Application!\n");
+int main(int argc, char** argv)  {
     SimApplication* app = new SimApplication();
-    app->run(argv);
+    app->run(argc, argv);
     delete app;
-    printf("Bye LDMX Sim Application!\n");
     return 0;
 }

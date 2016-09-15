@@ -1,22 +1,26 @@
 #ifndef SIMAPPLICATION_DETECTORCONSTRUCTION_H_
 #define SIMAPPLICATION_DETECTORCONSTRUCTION_H_
 
+// LDMX
+#include "AuxInfoReader.h"
+
+// Geant4
 #include "G4VUserDetectorConstruction.hh"
+#include "G4GDMLParser.hh"
 
 class DetectorConstruction : public G4VUserDetectorConstruction {
 
-    public:
+public:
 
-        DetectorConstruction(G4VPhysicalVolume* world = 0) {
-            _world = world;
-        }
+    DetectorConstruction(G4GDMLParser* theParser);
 
-        virtual G4VPhysicalVolume *Construct() {
-            return _world;
-        }
+    virtual ~DetectorConstruction();
 
-    private:
-        G4VPhysicalVolume* _world;
+    G4VPhysicalVolume *Construct();
+
+private:
+    G4GDMLParser* parser;
+    AuxInfoReader* auxInfoReader;
 };
 
 #endif
