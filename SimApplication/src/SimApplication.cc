@@ -4,6 +4,7 @@
 #include "SimApplication/PrimaryGeneratorAction.h"
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/UserEventAction.h"
+#include "SimApplication/UserRunAction.h"
 
 // STL
 #include <vector>

@@ -1,5 +1,8 @@
 #include "../include/Event/RootEventWriter.h"
 
+// STL
+#include <iostream>
+
 RootEventWriter* RootEventWriter::instance = 0;
 
 RootEventWriter::RootEventWriter(std::string theFileName) :
@@ -36,6 +39,9 @@ void RootEventWriter::setFileName(std::string fileName) {
 }
 
 void RootEventWriter::open() {
+
+    std::cout << "opening ROOT file " << fileName << " for writing" << std::endl;
+
     rootFile = new TFile(fileName.c_str(), "RECREATE");
     tree = new TTree("LDMX_Event", "LDMX event tree");
     event = new Event();
@@ -43,6 +49,9 @@ void RootEventWriter::open() {
 }
 
 void RootEventWriter::write() {
+
+    std::cout << "writing ROOT file " << fileName << std::endl;
+
     // Fill the tree from the event object.
     tree->Fill();
 
@@ -54,5 +63,8 @@ void RootEventWriter::write() {
 }
 
 void RootEventWriter::close() {
+
+    std::cout << "closing ROOT file " << fileName << std::endl;
+
     rootFile->Close();
 }
