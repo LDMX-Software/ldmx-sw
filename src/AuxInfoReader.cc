@@ -38,6 +38,7 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
 
     G4String sdType("");
     G4String hcName("");
+    int verbose = 0;
     for(std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin();
                 iaux != auxInfoList->end(); iaux++ ) {
 
@@ -48,11 +49,14 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
         std::cout << "auxType: " << auxType << ", auxVal: " << auxVal << ", auxUnit: " << auxUnit << std::endl;
 
         if (auxType == "SensDetType") {
-            std::cout << "setting sdName = " << auxVal << std::endl;
+            std::cout << "setting SensDetType = " << auxVal << std::endl;
             sdType = auxVal;
         } else if (auxType == "HitsCollection") {
-            std::cout << "setting hcName = " << auxVal << std::endl;
+            std::cout << "setting HitsCollection = " << auxVal << std::endl;
             hcName = auxVal;
+        } else if (auxType == "Verbose") {
+            std::cout << "setting Verbose = " << auxVal << std::endl;
+            verbose = atoi(auxVal.c_str());
         }
     }
 
@@ -64,13 +68,17 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
         G4Exception("", "", FatalException, "The SensDet is missing the HitsCollection.");
     }
 
+    G4VSensitiveDetector* sd = 0;
     if (sdType == "TrackerSD") {
-        std::cout << "Creating new TrackerSD " << theSensDetName << " with hits collection " << hcName << std::endl;
-        new TrackerSD(theSensDetName, hcName);
+        std::cout << "Creating new TrackerSD " << theSensDetName << " with hits collection " << hcName
+                << " and verbose set to " << verbose << std::endl;
+        sd = new TrackerSD(theSensDetName, hcName);
     } else {
         std::cerr << "Bad SensitiveDetector type: " << sdType << std::endl;
         G4Exception("", "", FatalException, "Unknown SensitiveDetector type in aux info.");
     }
+
+    sd->SetVerboseLevel(verbose);
 }
 
 void AuxInfoReader::assignSensDetsToVols() {

@@ -8,19 +8,19 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "G4GDMLParser.hh"
 
-class DetectorConstruction : public G4VUserDetectorConstruction {
+class DetectorConstruction: public G4VUserDetectorConstruction {
 
-public:
+    public:
 
-    DetectorConstruction(G4GDMLParser* theParser);
+        DetectorConstruction(G4GDMLParser* theParser);
 
-    virtual ~DetectorConstruction();
+        virtual ~DetectorConstruction();
 
-    G4VPhysicalVolume *Construct();
+        G4VPhysicalVolume *Construct();
 
-private:
-    G4GDMLParser* parser;
-    AuxInfoReader* auxInfoReader;
+    private:
+        G4GDMLParser* parser;
+        AuxInfoReader* auxInfoReader;
 };
 
 #endif

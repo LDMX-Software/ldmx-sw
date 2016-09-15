@@ -15,7 +15,6 @@ G4TrackerHit::G4TrackerHit(SimTrackerHit* simTrackerHit) : simTrackerHit(simTrac
 }
 
 G4TrackerHit::~G4TrackerHit() {
-    delete simTrackerHit;
 }
 
 SimTrackerHit* G4TrackerHit::getSimTrackerHit() {
@@ -47,14 +46,14 @@ void G4TrackerHit::Print() {
 G4ThreeVector G4TrackerHit::getPosition() {
 
     G4ThreeVector startPos = G4ThreeVector(
-            simTrackerHit->startPosition()[0],
-            simTrackerHit->startPosition()[1],
-            simTrackerHit->startPosition()[2]);
+            simTrackerHit->getStartPosition()[0],
+            simTrackerHit->getStartPosition()[1],
+            simTrackerHit->getStartPosition()[2]);
 
     G4ThreeVector endPos = G4ThreeVector(
-            simTrackerHit->endPosition()[0],
-            simTrackerHit->endPosition()[1],
-            simTrackerHit->endPosition()[2]);
+            simTrackerHit->getEndPosition()[0],
+            simTrackerHit->getEndPosition()[1],
+            simTrackerHit->getEndPosition()[2]);
 
     return (0.5 * (startPos + endPos));
 }
@@ -70,4 +69,3 @@ void G4TrackerHit::setEndPosition(const G4ThreeVector& endPosition) {
 void G4TrackerHit::setMomentum(const G4ThreeVector& p) {
     simTrackerHit->setMomentum(p[0], p[1], p[2]);
 }
-

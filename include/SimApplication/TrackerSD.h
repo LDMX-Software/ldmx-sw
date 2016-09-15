@@ -8,24 +8,24 @@
 #include "SimApplication/G4TrackerHit.h"
 #include "Event/Event.h"
 
-class TrackerSD : public G4VSensitiveDetector {
+class TrackerSD: public G4VSensitiveDetector {
 
-public:
+    public:
 
-    TrackerSD(G4String name, G4String theCollectionName);
+        TrackerSD(G4String name, G4String theCollectionName);
 
-    virtual ~TrackerSD();
+        virtual ~TrackerSD();
 
-    G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
+        G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
 
-    void Initialize(G4HCofThisEvent* hcEvent);
+        void Initialize(G4HCofThisEvent* hcEvent);
 
-    void EndOfEvent(G4HCofThisEvent* hcEvent);
+        void EndOfEvent(G4HCofThisEvent* hcEvent);
 
-private:
+    private:
 
-    G4TrackerHitsCollection* hitsCollection;
-    Event* currentEvent;
+        G4TrackerHitsCollection* hitsCollection;
+        Event* currentEvent;
 
 };
 

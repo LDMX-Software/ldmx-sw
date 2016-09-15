@@ -5,14 +5,14 @@
 #include "G4UserRunAction.hh"
 #include "G4Run.hh"
 
-class UserRunAction : public G4UserRunAction {
+class UserRunAction: public G4UserRunAction {
 
-public:
-    UserRunAction();
-    virtual ~UserRunAction();
+    public:
+        UserRunAction();
+        virtual ~UserRunAction();
 
-    void BeginOfRunAction(const G4Run*);
-    void EndOfRunAction(const G4Run*);
+        void BeginOfRunAction(const G4Run*);
+        void EndOfRunAction(const G4Run*);
 };
 
 #endif
