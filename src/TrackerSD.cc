@@ -9,10 +9,10 @@
 #include "G4SDManager.hh"
 
 // LDMX
-#include "../include/SimApplication/G4TrackerHit.h"
+#include "Event/RootEventWriter.h"
 
 TrackerSD::TrackerSD(G4String theName, G4String theCollectionName) :
-    G4VSensitiveDetector(theName) {
+    G4VSensitiveDetector(theName), hitsCollection(0), currentEvent(0) {
 
     // Add the collection name to vector of names.
     this->collectionName.push_back(theCollectionName);
@@ -30,6 +30,10 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
 
     // Create a new sim tracker hit.
     G4TrackerHit* hit = new G4TrackerHit();
+
+    // Create a new hit object using the ROOT event.
+    SimTrackerHit* simTrackerHit =
+            (SimTrackerHit*) currentEvent->addObject(collectionName[0]);
 
     // Set the edep.
     G4double edep = aStep->GetTotalEnergyDeposit();
@@ -56,7 +60,7 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
     }
     hit->setMomentum(p);
 
-    // TODO: set the ID from actual geometry info
+    // TODO: set the ID from actual geometry info for system ID, layer, and sensor number
     hit->getSimTrackerHit()->setId(0);
 
     std::cout << "Created new SimTrackerHit in detector " << this->GetName() << " ...";
@@ -64,4 +68,23 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
     std::cout << std::endl;
 
     return true;
+}
+
+void TrackerSD::Initialize(G4HCofThisEvent* hce) {
+    // Setup hits collection and the HC ID.
+    hitsCollection = new G4TrackerHitsCollection(SensitiveDetectorName, collectionName[0]);
+    G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
+    hce->AddHitsCollection(hcID, hitsCollection);
+
+    // Set ref to current ROOT output event.
+    currentEvent = RootEventWriter::getInstance()->getEvent();
+}
+
+void TrackerSD::EndOfEvent(G4HCofThisEvent* hce) {
+    G4int nHits = hitsCollection->entries();
+    std::cout << "TrackerSD::EndOfEvent - " << GetName() << std::endl;
+    std::cout << "There were " << nHits << " in the event." << std::endl;
+    for (int i = 0; i < nHits; i++ ) {
+        (*hitsCollection)[i]->Print();
+    }
 }

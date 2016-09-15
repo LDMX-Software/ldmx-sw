@@ -12,6 +12,8 @@ public:
 
     void readGlobalAuxInfo();
 
+    void assignSensDetsToVols();
+
 private:
     void createSensitiveDetector(G4String sdType, const G4GDMLAuxListType* auxInfoList);
 

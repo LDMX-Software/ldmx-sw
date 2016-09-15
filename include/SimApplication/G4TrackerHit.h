@@ -10,9 +10,11 @@
 // LDMX
 #include "Event/SimTrackerHit.h"
 
-class G4TrackerHit : G4VHit {
+class G4TrackerHit : public G4VHit {
 
 public:
+
+    G4TrackerHit(SimTrackerHit*);
 
     G4TrackerHit();
 
@@ -44,7 +46,7 @@ private:
 /**
  * Template instantiation of G4 hits collection class.
  */
-typedef G4THitsCollection<G4TrackerHit> (TrackerHitsCollection);
+typedef G4THitsCollection<G4TrackerHit> G4TrackerHitsCollection;
 
 /**
  * Memory allocator for objects of this class.

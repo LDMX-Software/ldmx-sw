@@ -17,7 +17,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
        virtual void GeneratePrimaries(G4Event* anEvent);
 
     private:
-        G4ParticleGun* _particle_gun;
+        G4ParticleGun* particleGun;
 };
 
 #endif
