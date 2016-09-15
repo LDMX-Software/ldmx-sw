@@ -66,6 +66,8 @@ public:
 
     virtual ~Event();
 
+    void Clear(Option_t* = "");
+
     EventHeader* header();
 
     TClonesArray* collection(const std::string& collectionName);

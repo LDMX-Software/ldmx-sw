@@ -11,14 +11,14 @@ SimParticle::SimParticle() :
     _simStatus(0),
     _genStatus(0),
     _time(0),
-    _mass(0) {
-
-    double _vertex[3];
-    double _endPoint[3];
-    double _momentum[3];
+    _mass(0) /*,
+    _daughters(new TRefArray()),
+    _parents(new TRefArray())*/ {
 }
 
 SimParticle::~SimParticle() {
+    //delete _daughters;
+    //delete _parents;
 }
 
 void SimParticle::Print(Option_t *option) const {
@@ -32,7 +32,8 @@ void SimParticle::Print(Option_t *option) const {
             "endPoint: ( " << _endPoint[0] << ", " << _endPoint[1] << ", " << _endPoint[2] << " ), " <<
             "momentum: ( " << _momentum[0] << ", " << _momentum[1] << ", " << _momentum[2] << " ), " <<
             "mass: " << _mass << ", " <<
-            "nDaughters: " << _daughters.size() <<
+            //"nDaughters: " << _daughters->GetEntries() <<
+            //"nParents: " << _parents->GetEntries() <<
             " }" <<
             std::endl;
 }
@@ -73,15 +74,29 @@ double SimParticle::mass() {
     return _mass;
 }
 
-std::vector<SimParticle*>& SimParticle::daughters() {
-    return _daughters;
+/*
+std::vector<SimParticle*> SimParticle::daughters() {
+    std::vector<SimParticle*> daughters;
+    for (int iDau = 0; iDau < _daughters->GetEntries(); iDau++) {
+        daughters.push_back((SimParticle*) _daughters->At(iDau));
+    }
+    return daughters;
 }
 
-double SimParticle::setEnergy(double energy) {
+std::vector<SimParticle*> SimParticle::parents() {
+    std::vector<SimParticle*> parents;
+    for (int iParent = 0; iParent < _parents->GetEntries(); iParent++) {
+        parents.push_back((SimParticle*) _parents->At(iParent));
+    }
+    return parents;
+}
+*/
+
+void SimParticle::setEnergy(double energy) {
     _energy = energy;
 }
 
-double SimParticle::setPdg(int pdg) {
+void SimParticle::setPdg(int pdg) {
     _pdg = pdg;
 }
 
@@ -120,5 +135,10 @@ void SimParticle::setMass(double mass) {
 }
 
 void SimParticle::addDaughter(SimParticle* daughter) {
-    _daughters.push_back(daughter);
+    //_daughters->Add(daughter);
 }
+
+void SimParticle::addParent(SimParticle* parent) {
+    //_parents->Add(parent);
+}
+

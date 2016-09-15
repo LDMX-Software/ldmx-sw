@@ -3,6 +3,7 @@
 
 // ROOT
 #include "TObject.h"
+#include "TRef.h"
 
 // LDMX
 #include "Event/SimParticle.h"
@@ -44,6 +45,8 @@ public:
 
     void setMomentum(float px, float py, float pz);
 
+    void setSimParticle(SimParticle* simParticle);
+
 private:
 
     long _id;
@@ -52,6 +55,7 @@ private:
     float _edep;
     float _time;
     float _momentum[3];
+    //TRef _simParticleRef;
 
     ClassDef(SimTrackerHit, 1)
 };

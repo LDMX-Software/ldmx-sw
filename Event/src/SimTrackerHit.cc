@@ -90,3 +90,9 @@ void SimTrackerHit::setMomentum(float px, float py, float pz) {
     _momentum[1] = py;
     _momentum[2] = pz;
 }
+
+/*
+void SimTrackerHit::setSimParticle(SimParticle* simParticle) {
+    _simParticleRef = simParticle;
+}
+*/

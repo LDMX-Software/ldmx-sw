@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
-  
+      
   <define>
     <position name="center" x="0" y="0" z="0" />
     <rotation name="identity" x="0" y="0" z="0" />
@@ -49,6 +49,13 @@
       </physvol>
     </volume>
   </structure>
+  
+  <userinfo>
+    <auxiliary auxtype="SensitiveDetector" auxvalue="TrackerSD">
+      <auxiliary auxtype="Name" auxvalue="TaggerTracker"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="TaggerSimHits"/>
+    </auxiliary>
+  </userinfo>  
 
   <setup name="Default" version="1.0" >
     <world ref="World" />

@@ -6,6 +6,7 @@
 
 // ROOT
 #include "TObject.h"
+#include "TRefArray.h"
 
 class SimParticle : public TObject {
 
@@ -35,11 +36,19 @@ public:
 
     double mass();
 
-    std::vector<SimParticle*>& daughters();
+    /**
+     * Returns a vector with pointers copied from the TRefArray.
+     */
+    //std::vector<SimParticle*> daughters();
 
-    double setEnergy(double energy);
+    /**
+     * Returns a vector with pointers copied from the TRefArray.
+     */
+    //std::vector<SimParticle*> parents();
 
-    double setPdg(int pdg);
+    void setEnergy(double energy);
+
+    void setPdg(int pdg);
 
     void setSimStatus(int simStatus);
 
@@ -57,6 +66,8 @@ public:
 
     void addDaughter(SimParticle* daughter);
 
+    void addParent(SimParticle* parent);
+
 private:
 
     double _energy;
@@ -68,7 +79,9 @@ private:
     double _endPoint[3];
     double _momentum[3];
     double _mass;
-    std::vector<SimParticle*> _daughters;
+
+    //TRefArray* _daughters;
+    //TRefArray* _parents;
 
     ClassDef(SimParticle, 1)
 };

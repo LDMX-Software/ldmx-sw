@@ -13,6 +13,12 @@ find_package(ROOT REQUIRED)
 # add project include dir
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
+# add Event module include dir
+include_directories(${Event_INCLUDE_DIR})
+
+# add ROOT include dirs
+include_directories(${ROOT_INCLUDE_DIRS})
+
 # list sources for building the application
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.h)

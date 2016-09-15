@@ -19,6 +19,7 @@ Event::Event() :
 }
 
 Event::~Event() {
+
     Clear();
 
     delete _simParticles;
@@ -26,6 +27,25 @@ Event::~Event() {
     delete _recoilSimHits;
     delete _ecalSimHits;
     delete _hcalSimHits;
+}
+
+void Event::Clear(Option_t*) {
+
+    TObject::Clear();
+
+    _simParticles->Clear("C");
+    _taggerSimHits->Clear("C");
+    _recoilSimHits->Clear("C");
+    _ecalSimHits->Clear("C");
+    _hcalSimHits->Clear("C");
+
+    _nSimParticles = 0;
+    _nTaggerSimHits = 0;
+    _nRecoilSimHits = 0;
+    _nEcalSimHits = 0;
+    _nHcalSimHits = 0;
+
+    _eventHeader = EventHeader();
 }
 
 EventHeader* Event::header() {
