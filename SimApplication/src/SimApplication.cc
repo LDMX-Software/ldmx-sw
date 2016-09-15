@@ -1,7 +1,9 @@
-// LDMX
 #include "SimApplication/SimApplication.h"
+
+// LDMX
 #include "SimApplication/PrimaryGeneratorAction.h"
 #include "SimApplication/DetectorConstruction.h"
+#include "SimApplication/UserEventAction.h"
 
 // STL
 #include <vector>
@@ -48,10 +50,12 @@ void SimApplication::run(int argc, char** argv) {
     G4GDMLParser* parser = new G4GDMLParser();
     G4UImessenger* gdmlMessenger = new G4GDMLMessenger(parser);
 
-    // Supply default user actions.
+    // Supply default user initializations and actions.
     runManager->SetUserInitialization(new FTFP_BERT);
-    runManager->SetUserAction(new PrimaryGeneratorAction());
     runManager->SetUserInitialization(new DetectorConstruction(parser));
+    runManager->SetUserAction(new PrimaryGeneratorAction);
+    runManager->SetUserAction(new UserEventAction);
+    runManager->SetUserAction(new UserRunAction);
 
     // Initialize G4 visualization framework.
     G4VisManager* visManager = new G4VisExecutive;

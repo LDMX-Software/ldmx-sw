@@ -51,8 +51,8 @@
   </structure>
   
   <userinfo>
-    <auxiliary auxtype="SensitiveDetector" auxvalue="TrackerSD">
-      <auxiliary auxtype="Name" auxvalue="TaggerTracker"/>
+    <auxiliary auxtype="SensDet" auxvalue="TaggerSD1">
+      <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="TaggerSimHits"/>
     </auxiliary>
   </userinfo>  

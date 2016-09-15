@@ -8,8 +8,10 @@
 
 G4Allocator<G4TrackerHit> G4TrackerHitAllocator;
 
-G4TrackerHit::G4TrackerHit() :
-    simTrackerHit(new SimTrackerHit()) {
+G4TrackerHit::G4TrackerHit() : simTrackerHit(new SimTrackerHit()) {
+}
+
+G4TrackerHit::G4TrackerHit(SimTrackerHit* simTrackerHit) : simTrackerHit(simTrackerHit) {
 }
 
 G4TrackerHit::~G4TrackerHit() {

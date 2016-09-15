@@ -111,6 +111,7 @@
     <volume name="LDMXTaggerModuleVolume_component0Sensor0">
       <materialref ref="Silicon" />
       <solidref ref="LDMXTaggerModuleVolume_component0Sensor0Box" />
+      <auxiliary auxtype="SensDet" auxvalue="TaggerSD1"/>
     </volume>
     <volume name="LDMXTaggerModuleVolume_component0">
       <materialref ref="Silicon" />
