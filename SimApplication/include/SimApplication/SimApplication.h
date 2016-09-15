@@ -6,14 +6,13 @@
 
 class SimApplication {
 
-public:
+    public:
 
-    SimApplication();
+        SimApplication();
 
-    virtual ~SimApplication();
+        virtual ~SimApplication();
 
-    void run(int argc, char** argv);
-
+        void run(int argc, char** argv);
 };
 
 #endif

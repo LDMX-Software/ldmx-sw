@@ -3,7 +3,7 @@
 // STL
 #include <iostream>
 
-RootEventWriter* RootEventWriter::instance = 0;
+RootEventWriter* RootEventWriter::INSTANCE = 0;
 
 RootEventWriter::RootEventWriter(std::string theFileName) :
     fileName(theFileName),
@@ -20,14 +20,14 @@ RootEventWriter::RootEventWriter() :
 }
 
 RootEventWriter::~RootEventWriter() {
-    // TODO: delete everything
+    delete rootFile;
 }
 
 RootEventWriter* RootEventWriter::getInstance() {
-    if (instance == 0) {
-        instance = new RootEventWriter();
+    if (INSTANCE == 0) {
+        INSTANCE = new RootEventWriter();
     }
-    return instance;
+    return INSTANCE;
 }
 
 Event* RootEventWriter::getEvent() {
@@ -48,15 +48,12 @@ void RootEventWriter::open() {
     tree->Branch("Event", "Event", &event, 32000, 3);
 }
 
-void RootEventWriter::write() {
+void RootEventWriter::writeEvent() {
 
-    std::cout << "writing ROOT file " << fileName << std::endl;
+    std::cout << "writing event " << event->getHeader()->getEventNumber() << " to ROOT file " << fileName << std::endl;
 
     // Fill the tree from the event object.
     tree->Fill();
-
-    // Write out data to the file.
-    rootFile->Write();
 
     // Clear the current event object.
     event->Clear();
@@ -64,7 +61,15 @@ void RootEventWriter::write() {
 
 void RootEventWriter::close() {
 
-    std::cout << "closing ROOT file " << fileName << std::endl;
+    std::cout << "Writing all events to file " << fileName << std::endl;
 
+    // Write out data to the file to flush it if necessary.
+    rootFile->Write();
+
+    std::cout << "Closing file " << fileName << std::endl;
+
+    // Close the file.
     rootFile->Close();
+
+    std::cout << "File " << fileName << " is closed!" << std::endl;
 }

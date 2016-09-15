@@ -6,19 +6,19 @@
 
 class AuxInfoReader {
 
-public:
+    public:
 
-    AuxInfoReader(G4GDMLParser* theParser);
+        AuxInfoReader(G4GDMLParser* theParser);
 
-    void readGlobalAuxInfo();
+        void readGlobalAuxInfo();
 
-    void assignSensDetsToVols();
+        void assignSensDetsToVols();
 
-private:
-    void createSensitiveDetector(G4String sdType, const G4GDMLAuxListType* auxInfoList);
+    private:
+        void createSensitiveDetector(G4String sdType, const G4GDMLAuxListType* auxInfoList);
 
-private:
-    G4GDMLParser* parser;
+    private:
+        G4GDMLParser* parser;
 
 };
 

@@ -15,88 +15,86 @@
 
 class EventHeader {
 
-public:
+    public:
 
-    EventHeader() :
-        _eventNumber(0),
-        _run(0),
-        _timestamp(0) {
-    }
+        EventHeader() :
+                eventNumber(0), run(0), timestamp(0) {
+        }
 
-    virtual ~EventHeader() {
-    }
+        virtual ~EventHeader() {
+        }
 
-    int eventNumber() {
-        return _eventNumber;
-    }
+        int getEventNumber() {
+            return eventNumber;
+        }
 
-    int run() {
-        return _run;
-    }
+        int getRun() {
+            return run;
+        }
 
-    int timestamp() {
-        return _timestamp;
-    }
+        int getTimestamp() {
+            return timestamp;
+        }
 
-    void setEventNumber(int eventNumber) {
-        _eventNumber = eventNumber;
-    }
+        void setEventNumber(int eventNumber) {
+            this->eventNumber = eventNumber;
+        }
 
-    void setRun(int run) {
-        _run = run;
-    }
+        void setRun(int run) {
+            this->run = run;
+        }
 
-    void setTimestamp(int timestamp) {
-        _timestamp = timestamp;
-    }
+        void setTimestamp(int timestamp) {
+            this->timestamp = timestamp;
+        }
 
-private:
-    long _eventNumber;
-    long _run;
-    long _timestamp;
+    private:
+        int eventNumber;
+        int run;
+        int timestamp;
 
     ClassDef(EventHeader, 1);
 };
 
-class Event : public TObject {
+class Event: public TObject {
 
-public:
+    public:
 
-    Event();
+        Event();
 
-    virtual ~Event();
+        virtual ~Event();
 
-    void Clear(Option_t* = "");
+        void Clear(Option_t* = "");
 
-    EventHeader* header();
+        EventHeader* getHeader();
 
-    TClonesArray* collection(const std::string& collectionName);
+        TClonesArray* getCollection(const std::string& collectionName);
 
-    int collectionSize(const std::string& collectionName);
+        int getCollectionSize(const std::string& collectionName);
 
-    TObject* addObject(const std::string& collectionName);
+        TObject* addObject(const std::string& collectionName);
 
-private:
+    private:
 
-    int nextCollectionIndex(const std::string& collectionName);
+        int nextCollectionIndex(const std::string& collectionName);
 
-    EventHeader _eventHeader;
+        EventHeader header;
 
-    TClonesArray* _simParticles;
-    TClonesArray* _taggerSimHits;
-    TClonesArray* _recoilSimHits;
-    TClonesArray* _ecalSimHits;
-    TClonesArray* _hcalSimHits;
+        TClonesArray* simParticles;
+        TClonesArray* taggerSimHits;
+        TClonesArray* recoilSimHits;
+        TClonesArray* ecalSimHits;
+        TClonesArray* hcalSimHits;
 
-    int _nSimParticles;
-    int _nTaggerSimHits;
-    int _nRecoilSimHits;
-    int _nEcalSimHits;
-    int _nHcalSimHits;
+        int nSimParticles;
+        int nTaggerSimHits;
+        int nRecoilSimHits;
+        int nEcalSimHits;
+        int nHcalSimHits;
 
-    static int DEFAULT_COLLECTION_SIZE;
+        static int DEFAULT_COLLECTION_SIZE;
 
-    ClassDef(Event, 1)
+        ClassDef(Event, 1);
 };
 
 #endif

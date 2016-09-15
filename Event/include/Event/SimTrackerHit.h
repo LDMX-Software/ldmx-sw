@@ -13,51 +13,51 @@
  */
 class SimTrackerHit: public TObject {
 
-public:
+    public:
 
-    SimTrackerHit();
+        SimTrackerHit();
 
-    virtual ~SimTrackerHit();
+        virtual ~SimTrackerHit();
 
-    void Print(Option_t *option="") const;
+        void Print(Option_t *option = "") const;
 
-    long id();
+        int getId();
 
-    double* startPosition();
+        double* getStartPosition();
 
-    double* endPosition();
+        double* getEndPosition();
 
-    float edep();
+        float getEdep();
 
-    float time();
+        float getTime();
 
-    float* momentum();
+        float* getMomentum();
 
-    void setId(long id);
+        void setId(long id);
 
-    void setStartPosition(double x, double y, double z);
+        void setStartPosition(double x, double y, double z);
 
-    void setEndPosition(double x, double y, double z);
+        void setEndPosition(double x, double y, double z);
 
-    void setEdep(float edep);
+        void setEdep(float edep);
 
-    void setTime(float time);
+        void setTime(float time);
 
-    void setMomentum(float px, float py, float pz);
+        void setMomentum(float px, float py, float pz);
 
-    void setSimParticle(SimParticle* simParticle);
+        void setSimParticle(SimParticle* simParticle);
 
-private:
+    private:
 
-    long _id;
-    double _startPosition[3];
-    double _endPosition[3];
-    float _edep;
-    float _time;
-    float _momentum[3];
-    //TRef _simParticleRef;
+        long id;
+        double startPosition[3];
+        double endPosition[3];
+        float edep;
+        float time;
+        float momentum[3];
+        //TRef _simParticleRef;
 
-    ClassDef(SimTrackerHit, 1)
+        ClassDef(SimTrackerHit, 1);
 };
 
 #endif

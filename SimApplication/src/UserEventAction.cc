@@ -21,7 +21,8 @@ UserEventAction::~UserEventAction() {
 void UserEventAction::BeginOfEventAction(const G4Event* event) {
     std::cout << "UserEventAction::BeginOfEventAction - " << event->GetEventID() << std::endl;
 
-    EventHeader* header = RootEventWriter::getInstance()->getEvent()->header();
+    // Set information on the current event header.
+    EventHeader* header = RootEventWriter::getInstance()->getEvent()->getHeader();
     header->setEventNumber(event->GetEventID());
     header->setTimestamp((int)time(NULL));
     header->setRun(G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID());
@@ -30,6 +31,6 @@ void UserEventAction::BeginOfEventAction(const G4Event* event) {
 void UserEventAction::EndOfEventAction(const G4Event* event) {
     std::cout << "UserEventAction::EndOfEventAction - " << event->GetEventID() << std::endl;
 
-    // Write out the ROOT event.
-    RootEventWriter::getInstance()->write();
+    // Fill the current root event into the tree and then clear it.
+    RootEventWriter::getInstance()->writeEvent();
 }

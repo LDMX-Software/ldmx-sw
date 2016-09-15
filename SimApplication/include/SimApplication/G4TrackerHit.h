@@ -10,37 +10,37 @@
 // LDMX
 #include "Event/SimTrackerHit.h"
 
-class G4TrackerHit : public G4VHit {
+class G4TrackerHit: public G4VHit {
 
-public:
+    public:
 
-    G4TrackerHit(SimTrackerHit*);
+        G4TrackerHit(SimTrackerHit*);
 
-    G4TrackerHit();
+        G4TrackerHit();
 
-    virtual ~G4TrackerHit();
+        virtual ~G4TrackerHit();
 
-    void Draw();
+        void Draw();
 
-    void Print();
+        void Print();
 
-    inline void *operator new(size_t);
+        inline void *operator new(size_t);
 
-    inline void operator delete(void *aHit);
+        inline void operator delete(void *aHit);
 
-    SimTrackerHit* getSimTrackerHit();
+        SimTrackerHit* getSimTrackerHit();
 
-    G4ThreeVector getPosition();
+        G4ThreeVector getPosition();
 
-    void setStartPosition(const G4ThreeVector& startPosition);
+        void setStartPosition(const G4ThreeVector& startPosition);
 
-    void setEndPosition(const G4ThreeVector& endPosition);
+        void setEndPosition(const G4ThreeVector& endPosition);
 
-    void setMomentum(const G4ThreeVector& endPosition);
+        void setMomentum(const G4ThreeVector& endPosition);
 
-private:
+    private:
 
-    SimTrackerHit* simTrackerHit;
+        SimTrackerHit* simTrackerHit;
 };
 
 /**

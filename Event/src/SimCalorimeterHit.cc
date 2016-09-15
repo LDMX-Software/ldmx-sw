@@ -6,42 +6,42 @@
 ClassImp(SimCalorimeterHit)
 
 SimCalorimeterHit::SimCalorimeterHit() :
-        _id(0), _edep(0.) {
-    _position[0] = 0.;
-    _position[1] = 0.;
-    _position[2] = 0.;
+        id(0), edep(0.) {
+    position[0] = 0.;
+    position[1] = 0.;
+    position[2] = 0.;
 }
 
 SimCalorimeterHit::~SimCalorimeterHit() {
 }
 
 void SimCalorimeterHit::Print(Option_t *option) const {
-    std::cout << "SimCalorimeterHit { " << "id: " << _id << ", " << "edep: " << _edep << ", "
-            "position: ( " << _position[0] << ", " << _position[1] << ", " << _position[2] << " ) }" << std::endl;
+    std::cout << "SimCalorimeterHit { " << "id: " << id << ", " << "edep: " << edep << ", "
+            "position: ( " << position[0] << ", " << position[1] << ", " << position[2] << " ) }" << std::endl;
 }
 
-long SimCalorimeterHit::id() {
-    return _id;
+int SimCalorimeterHit::getId() {
+    return id;
 }
 
-double SimCalorimeterHit::edep() {
-    return _edep;
+double SimCalorimeterHit::getEdep() {
+    return edep;
 }
 
-double* SimCalorimeterHit::position() {
-    return _position;
+double* SimCalorimeterHit::getPosition() {
+    return position;
 }
 
 void SimCalorimeterHit::setId(long id) {
-    _id = id;
+    this->id = id;
 }
 
 void SimCalorimeterHit::setEdep(double edep) {
-    _edep = edep;
+    this->edep = edep;
 }
 
 void SimCalorimeterHit::setPosition(double x, double y, double z) {
-    _position[0] = x;
-    _position[1] = y;
-    _position[2] = z;
+    position[0] = x;
+    position[1] = y;
+    position[2] = z;
 }

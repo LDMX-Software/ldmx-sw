@@ -4,35 +4,35 @@
 // ROOT
 #include "TObject.h"
 
-class SimCalorimeterHit : public TObject {
+class SimCalorimeterHit: public TObject {
 
-public:
+    public:
 
-    SimCalorimeterHit();
+        SimCalorimeterHit();
 
-    virtual ~SimCalorimeterHit();
+        virtual ~SimCalorimeterHit();
 
-    void Print(Option_t *option="") const;
+        void Print(Option_t *option = "") const;
 
-    long id();
+        int getId();
 
-    double edep();
+        double getEdep();
 
-    double* position();
+        double* getPosition();
 
-    void setId(long id);
+        void setId(long id);
 
-    void setEdep(double edep);
+        void setEdep(double edep);
 
-    void setPosition(double x, double y, double z);
+        void setPosition(double x, double y, double z);
 
-    // TODO: sim particle contribution
+        // TODO: sim particle contributions
 
-private:
+    private:
 
-    long _id;
-    double _edep;
-    double _position[3];
+        int id;
+        double edep;
+        double position[3];
 
     ClassDef(SimCalorimeterHit, 1)
 };

@@ -2,67 +2,67 @@
 
 ClassImp(Event)
 
-int Event::DEFAULT_COLLECTION_SIZE = 1000;
+int Event::DEFAULT_COLLECTION_SIZE = 100;
 
 Event::Event() :
         TObject(),
-        _simParticles(new TClonesArray("SimParticle", Event::DEFAULT_COLLECTION_SIZE)),
-        _taggerSimHits(new TClonesArray("SimTrackerHit", Event::DEFAULT_COLLECTION_SIZE)),
-        _recoilSimHits(new TClonesArray("SimTrackerHit", Event::DEFAULT_COLLECTION_SIZE)),
-        _ecalSimHits(new TClonesArray("SimCalorimeterHit", Event::DEFAULT_COLLECTION_SIZE)),
-        _hcalSimHits(new TClonesArray("SimCalorimeterHit", Event::DEFAULT_COLLECTION_SIZE)),
-        _nSimParticles(0),
-        _nTaggerSimHits(0),
-        _nRecoilSimHits(0),
-        _nEcalSimHits(0),
-        _nHcalSimHits(0) {
+        simParticles(new TClonesArray("SimParticle", Event::DEFAULT_COLLECTION_SIZE)),
+        taggerSimHits(new TClonesArray("SimTrackerHit", Event::DEFAULT_COLLECTION_SIZE)),
+        recoilSimHits(new TClonesArray("SimTrackerHit", Event::DEFAULT_COLLECTION_SIZE)),
+        ecalSimHits(new TClonesArray("SimCalorimeterHit", Event::DEFAULT_COLLECTION_SIZE)),
+        hcalSimHits(new TClonesArray("SimCalorimeterHit", Event::DEFAULT_COLLECTION_SIZE)),
+        nSimParticles(0),
+        nTaggerSimHits(0),
+        nRecoilSimHits(0),
+        nEcalSimHits(0),
+        nHcalSimHits(0) {
 }
 
 Event::~Event() {
 
     Clear();
 
-    delete _simParticles;
-    delete _taggerSimHits;
-    delete _recoilSimHits;
-    delete _ecalSimHits;
-    delete _hcalSimHits;
+    delete simParticles;
+    delete taggerSimHits;
+    delete recoilSimHits;
+    delete ecalSimHits;
+    delete hcalSimHits;
 }
 
 void Event::Clear(Option_t*) {
 
     TObject::Clear();
 
-    _simParticles->Clear("C");
-    _taggerSimHits->Clear("C");
-    _recoilSimHits->Clear("C");
-    _ecalSimHits->Clear("C");
-    _hcalSimHits->Clear("C");
+    simParticles->Clear("C");
+    taggerSimHits->Clear("C");
+    recoilSimHits->Clear("C");
+    ecalSimHits->Clear("C");
+    hcalSimHits->Clear("C");
 
-    _nSimParticles = 0;
-    _nTaggerSimHits = 0;
-    _nRecoilSimHits = 0;
-    _nEcalSimHits = 0;
-    _nHcalSimHits = 0;
+    nSimParticles = 0;
+    nTaggerSimHits = 0;
+    nRecoilSimHits = 0;
+    nEcalSimHits = 0;
+    nHcalSimHits = 0;
 
-    _eventHeader = EventHeader();
+    header = EventHeader();
 }
 
-EventHeader* Event::header() {
-    return &_eventHeader;
+EventHeader* Event::getHeader() {
+    return &header;
 }
 
-int Event::collectionSize(const std::string& collectionName) {
+int Event::getCollectionSize(const std::string& collectionName) {
     if (collectionName.compare("SimParticles") == 0) {
-        return _nSimParticles;
+        return nSimParticles;
     } else if (collectionName.compare("TaggerSimHits") == 0) {
-        return _nTaggerSimHits;
+        return nTaggerSimHits;
     } else if (collectionName.compare("RecoilSimHits")) {
-        return _nRecoilSimHits;
+        return nRecoilSimHits;
     } else if (collectionName.compare("EcalSimHits")) {
-        return _nEcalSimHits;
+        return nEcalSimHits;
     } else if (collectionName.compare("HcalSimHits")) {
-        return _nHcalSimHits;
+        return nHcalSimHits;
     } else {
         return -1;
     }
@@ -70,38 +70,38 @@ int Event::collectionSize(const std::string& collectionName) {
 
 int Event::nextCollectionIndex(const std::string& collectionName) {
     if (collectionName.compare("SimParticles") == 0) {
-        return _nSimParticles++;
+        return nSimParticles++;
     } else if (collectionName.compare("TaggerSimHits") == 0) {
-        return _nTaggerSimHits++;
+        return nTaggerSimHits++;
     } else if (collectionName.compare("RecoilSimHits") == 0) {
-        return _nRecoilSimHits++;
+        return nRecoilSimHits++;
     } else if (collectionName.compare("EcalSimHits") == 0) {
-        return _nEcalSimHits++;
+        return nEcalSimHits++;
     } else if (collectionName.compare("HcalSimHits") == 0) {
-        return _nHcalSimHits;
+        return nHcalSimHits;
     } else {
         return -1;
     }
 }
 
-TClonesArray* Event::collection(const std::string& collectionName) {
+TClonesArray* Event::getCollection(const std::string& collectionName) {
     if (collectionName.compare("SimParticles") == 0) {
-        return _simParticles;
+        return simParticles;
     } else if (collectionName.compare("TaggerSimHits") == 0) {
-        return _taggerSimHits;
+        return taggerSimHits;
     } else if (collectionName.compare("RecoilSimHits") == 0) {
-        return _recoilSimHits;
+        return recoilSimHits;
     } else if (collectionName.compare("EcalSimHits") == 0) {
-        return _ecalSimHits;
+        return ecalSimHits;
     } else if (collectionName.compare("HcalSimHits") == 0) {
-        return _hcalSimHits;
+        return hcalSimHits;
     } else {
         return 0;
     }
 }
 
 TObject* Event::addObject(const std::string& collectionName) {
-    TClonesArray* coll = collection(collectionName);
+    TClonesArray* coll = getCollection(collectionName);
     if (coll != 0) {
         return coll->ConstructedAt(nextCollectionIndex(collectionName));
     } else {

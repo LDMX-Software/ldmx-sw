@@ -39,7 +39,7 @@ int main(int, const char* argv[])  {
      * Create a dummy event.
      */
     std::cout << "Creating EventHeader" << std::endl;
-    EventHeader* eventHeader = event->header();
+    EventHeader* eventHeader = event->getHeader();
     eventHeader->setTimestamp(1473280918);
     eventHeader->setRun(1);
     eventHeader->setEventNumber(1000);
@@ -91,10 +91,10 @@ int main(int, const char* argv[])  {
     particle2->addParent(particle1);
     */
 
-    std::cout << "EventHeader: run = " << event->header()->run() << "; eventNum = " << eventHeader->eventNumber() << "; timestamp = " << eventHeader->timestamp() << std::endl;
-    std::cout << "Created event has " << event->collectionSize("EcalSimHits") << " EcalSimHits" << std::endl;
-    std::cout << "Created event has " << event->collectionSize("RecoilSimHits") << " RecoilSimHits" << std::endl;
-    std::cout << "Created event has " << event->collectionSize("SimParticles") << " SimParticles" << std::endl;
+    std::cout << "EventHeader: run = " << event->getHeader()->getRun() << "; eventNum = " << eventHeader->getEventNumber() << "; timestamp = " << eventHeader->getTimestamp() << std::endl;
+    std::cout << "Created event has " << event->getCollectionSize("EcalSimHits") << " EcalSimHits" << std::endl;
+    std::cout << "Created event has " << event->getCollectionSize("RecoilSimHits") << " RecoilSimHits" << std::endl;
+    std::cout << "Created event has " << event->getCollectionSize("SimParticles") << " SimParticles" << std::endl;
 
     /**
      * Fill the ROOT tree with event data.
@@ -134,24 +134,24 @@ int main(int, const char* argv[])  {
         std::cout << "Reading entry " << entry << " from file" << std::endl;
         tree->GetEntry(entry);
 
-        std::cout << "Read EventHeader: run = " << event->header()->run() << "; eventNum = " << eventHeader->eventNumber() << "; timestamp = " << eventHeader->timestamp() << std::endl;
+        std::cout << "Read EventHeader: run = " << event->getHeader()->getRun() << "; eventNum = " << eventHeader->getEventNumber() << "; timestamp = " << eventHeader->getTimestamp() << std::endl;
 
-        std::cout << "Read event has " << event->collectionSize("EcalSimHits") << " EcalSimHits" << std::endl;
+        std::cout << "Read event has " << event->getCollectionSize("EcalSimHits") << " EcalSimHits" << std::endl;
 
-        TClonesArray* coll = event->collection("EcalSimHits");
-        for (int i = 0; i < event->collectionSize("EcalSimHits"); i++) {
+        TClonesArray* coll = event->getCollection("EcalSimHits");
+        for (int i = 0; i < event->getCollectionSize("EcalSimHits"); i++) {
             coll[i].Print();
         }
 
-        std::cout << "Read event has " << event->collectionSize("RecoilSimHits") << " RecoilSimHits" << std::endl;
-        coll = event->collection("RecoilSimHits");
-        for (int i = 0; i < event->collectionSize("RecoilSimHits"); i++) {
+        std::cout << "Read event has " << event->getCollectionSize("RecoilSimHits") << " RecoilSimHits" << std::endl;
+        coll = event->getCollection("RecoilSimHits");
+        for (int i = 0; i < event->getCollectionSize("RecoilSimHits"); i++) {
             coll[i].Print();
         }
 
-        std::cout << "Read event has " << event->collectionSize("SimParticles") << " SimParticles" << std::endl;
-        coll = event->collection("SimParticles");
-        for (int i = 0; i < event->collectionSize("SimParticles"); i++) {
+        std::cout << "Read event has " << event->getCollectionSize("SimParticles") << " SimParticles" << std::endl;
+        coll = event->getCollection("SimParticles");
+        for (int i = 0; i < event->getCollectionSize("SimParticles"); i++) {
             coll[i].Print();
         }
 

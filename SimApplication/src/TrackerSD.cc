@@ -26,14 +26,10 @@ TrackerSD::~TrackerSD() {
 
 G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
 
-    std::cout << "TrackerSD::ProcessHits - hello there" << std::endl;
-
-    // Create a new sim tracker hit.
-    G4TrackerHit* hit = new G4TrackerHit();
-
     // Create a new hit object using the ROOT event.
     SimTrackerHit* simTrackerHit =
             (SimTrackerHit*) currentEvent->addObject(collectionName[0]);
+    G4TrackerHit* hit = new G4TrackerHit(simTrackerHit);
 
     // Set the edep.
     G4double edep = aStep->GetTotalEnergyDeposit();
@@ -63,9 +59,13 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
     // TODO: set the ID from actual geometry info for system ID, layer, and sensor number
     hit->getSimTrackerHit()->setId(0);
 
-    std::cout << "Created new SimTrackerHit in detector " << this->GetName() << " ...";
-    hit->Print();
-    std::cout << std::endl;
+    if (this->verboseLevel > 1) {
+        std::cout << "Created new SimTrackerHit in detector " << this->GetName() << " ..." << std::endl;
+        hit->Print();
+        std::cout << std::endl;
+    }
+
+    hitsCollection->insert(hit);
 
     return true;
 }
@@ -81,10 +81,12 @@ void TrackerSD::Initialize(G4HCofThisEvent* hce) {
 }
 
 void TrackerSD::EndOfEvent(G4HCofThisEvent* hce) {
+    /*
     G4int nHits = hitsCollection->entries();
     std::cout << "TrackerSD::EndOfEvent - " << GetName() << std::endl;
     std::cout << "There were " << nHits << " in the event." << std::endl;
     for (int i = 0; i < nHits; i++ ) {
         (*hitsCollection)[i]->Print();
     }
+    */
 }

@@ -6,12 +6,12 @@
 ClassImp(SimParticle)
 
 SimParticle::SimParticle() :
-    _energy(0.),
-    _pdg(0),
-    _simStatus(0),
-    _genStatus(0),
-    _time(0),
-    _mass(0) /*,
+    energy(0.),
+    pdg(0),
+    simStatus(0),
+    genStatus(0),
+    time(0),
+    mass(0) /*,
     _daughters(new TRefArray()),
     _parents(new TRefArray())*/ {
 }
@@ -23,55 +23,55 @@ SimParticle::~SimParticle() {
 
 void SimParticle::Print(Option_t *option) const {
     std::cout << "SimParticle { " <<
-            "energy: " << _energy << ", " <<
-            "pdg: " << _pdg << ", " <<
-            "simStatus: " << _simStatus << ", " <<
-            "genStatus: " << _genStatus << ", " <<
-            "time: " << _time << ", " <<
-            "vertex: ( " << _vertex[0] << ", " << _vertex[1] << ", " << _vertex[2] << " ), " <<
-            "endPoint: ( " << _endPoint[0] << ", " << _endPoint[1] << ", " << _endPoint[2] << " ), " <<
-            "momentum: ( " << _momentum[0] << ", " << _momentum[1] << ", " << _momentum[2] << " ), " <<
-            "mass: " << _mass << ", " <<
+            "energy: " << energy << ", " <<
+            "pdg: " << pdg << ", " <<
+            "simStatus: " << simStatus << ", " <<
+            "genStatus: " << genStatus << ", " <<
+            "time: " << time << ", " <<
+            "vertex: ( " << vertex[0] << ", " << vertex[1] << ", " << vertex[2] << " ), " <<
+            "endPoint: ( " << endPoint[0] << ", " << endPoint[1] << ", " << endPoint[2] << " ), " <<
+            "momentum: ( " << momentum[0] << ", " << momentum[1] << ", " << momentum[2] << " ), " <<
+            "mass: " << mass << ", " <<
             //"nDaughters: " << _daughters->GetEntries() <<
             //"nParents: " << _parents->GetEntries() <<
             " }" <<
             std::endl;
 }
 
-double SimParticle::energy() {
-    return _energy;
+double SimParticle::getEnergy() {
+    return energy;
 }
 
-int SimParticle::pdg() {
-    return _pdg;
+int SimParticle::getPdg() {
+    return pdg;
 }
 
-int SimParticle::simStatus() {
-    return _simStatus;
+int SimParticle::getSimStatus() {
+    return simStatus;
 }
 
-int SimParticle::genStatus() {
-    return _genStatus;
+int SimParticle::getGenStatus() {
+    return genStatus;
 }
 
-float SimParticle::time() {
-    return _time;
+float SimParticle::getTime() {
+    return time;
 }
 
-double* SimParticle::vertex() {
-    return _vertex;
+double* SimParticle::getVertex() {
+    return vertex;
 }
 
-double* SimParticle::endPoint() {
-    return _endPoint;
+double* SimParticle::getEndPoint() {
+    return endPoint;
 }
 
-double* SimParticle::momentum() {
-    return _momentum;
+double* SimParticle::getMomentum() {
+    return momentum;
 }
 
-double SimParticle::mass() {
-    return _mass;
+double SimParticle::getMass() {
+    return mass;
 }
 
 /*
@@ -93,45 +93,45 @@ std::vector<SimParticle*> SimParticle::parents() {
 */
 
 void SimParticle::setEnergy(double energy) {
-    _energy = energy;
+    this->energy = energy;
 }
 
 void SimParticle::setPdg(int pdg) {
-    _pdg = pdg;
+    this->pdg = pdg;
 }
 
 void SimParticle::setSimStatus(int simStatus) {
-    _simStatus = simStatus;
+    this->simStatus = simStatus;
 }
 
 void SimParticle::setGenStatus(int genStatus) {
-    _genStatus = genStatus;
+    this->genStatus = genStatus;
 }
 
 void SimParticle::setTime(float time) {
-    _time = time;
+    this->time = time;
 }
 
 void SimParticle::setVertex(double x, double y, double z) {
-    _vertex[0] = x;
-    _vertex[1] = y;
-    _vertex[2] = z;
+    vertex[0] = x;
+    vertex[1] = y;
+    vertex[2] = z;
 }
 
 void SimParticle::setEndPoint(double x, double y, double z) {
-    _endPoint[0] = x;
-    _endPoint[1] = y;
-    _endPoint[2] = y;
+    endPoint[0] = x;
+    endPoint[1] = y;
+    endPoint[2] = y;
 }
 
 void SimParticle::setMomentum(double px, double py, double pz) {
-    _momentum[0] = px;
-    _momentum[1] = py;
-    _momentum[2] = pz;
+    momentum[0] = px;
+    momentum[1] = py;
+    momentum[2] = pz;
 }
 
 void SimParticle::setMass(double mass) {
-    _mass = mass;
+    this->mass = mass;
 }
 
 void SimParticle::addDaughter(SimParticle* daughter) {

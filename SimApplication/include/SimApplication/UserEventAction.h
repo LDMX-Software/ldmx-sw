@@ -5,14 +5,14 @@
 #include "G4UserEventAction.hh"
 #include "G4Event.hh"
 
-class UserEventAction : public G4UserEventAction {
+class UserEventAction: public G4UserEventAction {
 
-public:
+    public:
 
-    UserEventAction();
-    virtual ~UserEventAction();
-    void BeginOfEventAction(const G4Event*);
-    void EndOfEventAction(const G4Event*);
+        UserEventAction();
+        virtual ~UserEventAction();
+        void BeginOfEventAction(const G4Event*);
+        void EndOfEventAction(const G4Event*);
 };
 
 #endif

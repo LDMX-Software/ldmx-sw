@@ -10,34 +10,34 @@
 
 class RootEventWriter {
 
-public:
+    public:
 
-    RootEventWriter(std::string fileName);
+        RootEventWriter(std::string fileName);
 
-    RootEventWriter();
+        RootEventWriter();
 
-    virtual ~RootEventWriter();
+        virtual ~RootEventWriter();
 
-    static RootEventWriter* getInstance();
+        static RootEventWriter* getInstance();
 
-    void setFileName(std::string fileName);
+        void setFileName(std::string fileName);
 
-    void open();
+        void open();
 
-    void close();
+        void close();
 
-    void write();
+        void writeEvent();
 
-    Event* getEvent();
+        Event* getEvent();
 
-private:
+    private:
 
-    std::string fileName;
-    TFile* rootFile;
-    TTree *tree;
-    Event* event;
+        std::string fileName;
+        TFile* rootFile;
+        TTree *tree;
+        Event* event;
 
-    static RootEventWriter* instance;
+        static RootEventWriter* INSTANCE;
 };
 
 #endif
