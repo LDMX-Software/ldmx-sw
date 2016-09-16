@@ -1,4 +1,4 @@
-#include "../include/Event/RootEventWriter.h"
+#include "Event/RootEventWriter.h"
 
 // STL
 #include <iostream>
@@ -9,14 +9,18 @@ RootEventWriter::RootEventWriter(std::string theFileName) :
     fileName(theFileName),
     rootFile(0),
     tree(0),
-    event(0) {
+    event(0),
+    buffer(50),
+    nWritten(0) {
 }
 
 RootEventWriter::RootEventWriter() :
     fileName("sim_events.root"),
     rootFile(0),
     tree(0),
-    event(0) {
+    event(0),
+    buffer(50),
+    nWritten(0) {
 }
 
 RootEventWriter::~RootEventWriter() {
@@ -57,11 +61,19 @@ void RootEventWriter::writeEvent() {
 
     // Clear the current event object.
     event->Clear();
+
+    // Increment event counter.
+    ++nWritten;
+
+    if (nWritten % buffer == 0) {
+        // Periodically flush events to disk based on buffer setting.
+        event->Write();
+    }
 }
 
 void RootEventWriter::close() {
 
-    std::cout << "Writing all events to file " << fileName << std::endl;
+    std::cout << "Flushing events to file " << fileName << std::endl;
 
     // Write out data to the file to flush it if necessary.
     rootFile->Write();
@@ -72,4 +84,5 @@ void RootEventWriter::close() {
     rootFile->Close();
 
     std::cout << "File " << fileName << " is closed!" << std::endl;
+    std::cout << "Wrote " << nWritten << " events into " << fileName << std::endl;
 }
