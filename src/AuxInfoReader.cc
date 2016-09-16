@@ -49,13 +49,13 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
         std::cout << "auxType: " << auxType << ", auxVal: " << auxVal << ", auxUnit: " << auxUnit << std::endl;
 
         if (auxType == "SensDetType") {
-            std::cout << "setting SensDetType = " << auxVal << std::endl;
+            //std::cout << "setting SensDetType = " << auxVal << std::endl;
             sdType = auxVal;
         } else if (auxType == "HitsCollection") {
-            std::cout << "setting HitsCollection = " << auxVal << std::endl;
+            //std::cout << "setting HitsCollection = " << auxVal << std::endl;
             hcName = auxVal;
         } else if (auxType == "Verbose") {
-            std::cout << "setting Verbose = " << auxVal << std::endl;
+            //std::cout << "setting Verbose = " << auxVal << std::endl;
             verbose = atoi(auxVal.c_str());
         }
     }
