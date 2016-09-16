@@ -54,6 +54,7 @@
     <auxiliary auxtype="SensDet" auxvalue="TaggerSD1">
       <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="TaggerSimHits"/>
+      <auxiliary auxtype="Verbose" auxvalue="1"/>
     </auxiliary>
   </userinfo>  
 
