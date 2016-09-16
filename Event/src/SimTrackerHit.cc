@@ -62,7 +62,7 @@ float* SimTrackerHit::getMomentum() {
 }
 
 void SimTrackerHit::setId(long id) {
-    id = id;
+    this->id = id;
 }
 
 void SimTrackerHit::setStartPosition(double x, double y, double z) {
@@ -78,11 +78,11 @@ void SimTrackerHit::setEndPosition(double x, double y, double z) {
 }
 
 void SimTrackerHit::setEdep(float edep) {
-    edep = edep;
+    this->edep = edep;
 }
 
 void SimTrackerHit::setTime(float time) {
-    time = time;
+    this->time = time;
 }
 
 void SimTrackerHit::setMomentum(float px, float py, float pz) {
