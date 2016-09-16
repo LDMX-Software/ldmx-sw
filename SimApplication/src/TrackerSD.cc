@@ -7,6 +7,8 @@
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 #include "G4SDManager.hh"
+#include "G4Geantino.hh"
+#include "G4ChargedGeantino.hh"
 
 // LDMX
 #include "Event/RootEventWriter.h"
@@ -26,13 +28,30 @@ TrackerSD::~TrackerSD() {
 
 G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
 
+    // Determine if current particle of this step is a Geantino.
+    G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();
+    bool isGeantino = false;
+    if (pdef == G4Geantino::Definition() || pdef == G4ChargedGeantino::Definition()) {
+        isGeantino = true;
+    }
+
+    // Get the edep from the step.
+    G4double edep = aStep->GetTotalEnergyDeposit();
+
+    // Skip steps with no energy dep which come from non-Geantino particles.
+    if (edep == 0.0 && !isGeantino) {
+        if (verboseLevel > 0) {
+            std::cout << "TrackerSD skipping step with zero edep" << std::endl << std::endl;
+            return false;
+        }    
+    }        
+
     // Create a new hit object using the ROOT event.
     SimTrackerHit* simTrackerHit =
             (SimTrackerHit*) currentEvent->addObject(collectionName[0]);
     G4TrackerHit* hit = new G4TrackerHit(simTrackerHit);
 
     // Set the edep.
-    G4double edep = aStep->GetTotalEnergyDeposit();
     hit->getSimTrackerHit()->setEdep(edep);
 
     // Set the start position.
@@ -59,7 +78,7 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
     // TODO: set the ID from actual geometry info for system ID, layer, and sensor number
     hit->getSimTrackerHit()->setId(0);
 
-    if (this->verboseLevel > 1) {
+    if (this->verboseLevel > 0) {
         std::cout << "Created new SimTrackerHit in detector " << this->GetName() << " ..." << std::endl;
         hit->Print();
         std::cout << std::endl;
