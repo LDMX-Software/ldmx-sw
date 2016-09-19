@@ -12,7 +12,7 @@ class TrackerSD: public G4VSensitiveDetector {
 
     public:
 
-        TrackerSD(G4String name, G4String theCollectionName);
+        TrackerSD(G4String name, G4String theCollectionName, int subdetId);
 
         virtual ~TrackerSD();
 
@@ -26,6 +26,7 @@ class TrackerSD: public G4VSensitiveDetector {
 
         G4TrackerHitsCollection* hitsCollection;
         Event* currentEvent;
+        int subdetId;
 
 };
 

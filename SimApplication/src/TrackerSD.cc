@@ -13,8 +13,8 @@
 // LDMX
 #include "Event/RootEventWriter.h"
 
-TrackerSD::TrackerSD(G4String theName, G4String theCollectionName) :
-    G4VSensitiveDetector(theName), hitsCollection(0), currentEvent(0) {
+TrackerSD::TrackerSD(G4String theName, G4String theCollectionName, int subdetId) :
+    G4VSensitiveDetector(theName), hitsCollection(0), currentEvent(0), subdetId(subdetId) {
 
     // Add the collection name to vector of names.
     this->collectionName.push_back(theCollectionName);
@@ -40,7 +40,7 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
 
     // Skip steps with no energy dep which come from non-Geantino particles.
     if (edep == 0.0 && !isGeantino) {
-        if (verboseLevel > 0) {
+        if (verboseLevel > 1) {
             std::cout << "TrackerSD skipping step with zero edep" << std::endl << std::endl;
             return false;
         }    
@@ -75,14 +75,31 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
     }
     hit->setMomentum(p);
 
-    // TODO: set the ID from actual geometry info for system ID, layer, and sensor number
-    hit->getSimTrackerHit()->setId(0);
+    // TODO: set subdetID from this->subdetId
+    // TODO: set layer from physvol copynumber
+    //hit->getSimTrackerHit()->setId(0);
+
+    // DEBUG: print layer number
+    int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
+    std::cout << "Hit in layer " << layerNumber << " of " << GetName() << std::endl;
 
     if (this->verboseLevel > 0) {
-        std::cout << "Created new SimTrackerHit in detector " << this->GetName() << " ..." << std::endl;
+        std::cout << "Created new SimTrackerHit in detector " << this->GetName()
+                << " with subdet ID " << subdetId << " ..." << std::endl;
         hit->Print();
         std::cout << std::endl;
     }
+
+    /*
+    G4TouchableHandle touchable = prePoint->GetTouchableHandle();
+    const G4NavigationHistory* touchableHistory = touchable->GetHistory();
+    G4int hdepth = touchable->GetHistoryDepth();
+    std::cout << "Dumping volume hierarchy ..." << std::endl;
+    for (int i = hdepth; i > 0; i--) {
+        G4VPhysicalVolume* pv = touchableHistory->GetVolume(i);
+        std::cout << "  depth: " << i << ", physvol name: " << pv->GetName() << ", copynum: " << pv->GetCopyNo() << std::endl;
+    }
+    */
 
     hitsCollection->insert(hit);
 
@@ -100,10 +117,11 @@ void TrackerSD::Initialize(G4HCofThisEvent* hce) {
 }
 
 void TrackerSD::EndOfEvent(G4HCofThisEvent* hce) {
+    if (this->verboseLevel > 0) {
+        std::cout << GetName() << " had " << hitsCollection->entries()
+                << " hits in event" << std::endl;
+    }
     /*
-    G4int nHits = hitsCollection->entries();
-    std::cout << "TrackerSD::EndOfEvent - " << GetName() << std::endl;
-    std::cout << "There were " << nHits << " in the event." << std::endl;
     for (int i = 0; i < nHits; i++ ) {
         (*hitsCollection)[i]->Print();
     }
