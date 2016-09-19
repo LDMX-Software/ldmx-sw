@@ -20,11 +20,15 @@ class SimCalorimeterHit: public TObject {
 
         double* getPosition();
 
+        float getTime();
+
         void setId(long id);
 
         void setEdep(double edep);
 
         void setPosition(double x, double y, double z);
+
+        void setTime(float time);
 
         // TODO: sim particle contributions
 
@@ -33,6 +37,7 @@ class SimCalorimeterHit: public TObject {
         int id;
         double edep;
         double position[3];
+        float time;
 
     ClassDef(SimCalorimeterHit, 1)
 };
