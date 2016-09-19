@@ -2,6 +2,7 @@
 
 // LDMX
 #include "SimApplication/TrackerSD.h"
+#include "SimApplication/CalorimeterSD.h"
 
 // Geant4
 #include "G4LogicalVolumeStore.hh"
@@ -13,8 +14,6 @@ AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser) :
 
 void AuxInfoReader::readGlobalAuxInfo() {
 
-    std::cout << "Reading global aux info from GDML parser" << std::endl;
-
     const G4GDMLAuxListType* auxInfoList = parser->GetAuxList();
     for(std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin();
             iaux != auxInfoList->end(); iaux++ ) {
@@ -22,8 +21,6 @@ void AuxInfoReader::readGlobalAuxInfo() {
         G4String auxType = iaux->type;
         G4String auxVal = iaux->value;
         G4String auxUnit = iaux->unit;
-
-        //std::cout << "auxType: " << auxType << ", auxVal: " << auxVal << ", auxUnit: " << auxUnit << std::endl;
 
         if (auxType == "SensDet") {
             createSensitiveDetector(auxVal, iaux->auxList);
@@ -38,6 +35,7 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
 
     G4String sdType("");
     G4String hcName("");
+    int subdetId = -1;
     int verbose = 0;
     for(std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin();
                 iaux != auxInfoList->end(); iaux++ ) {
@@ -49,14 +47,13 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
         std::cout << "auxType: " << auxType << ", auxVal: " << auxVal << ", auxUnit: " << auxUnit << std::endl;
 
         if (auxType == "SensDetType") {
-            //std::cout << "setting SensDetType = " << auxVal << std::endl;
             sdType = auxVal;
         } else if (auxType == "HitsCollection") {
-            //std::cout << "setting HitsCollection = " << auxVal << std::endl;
             hcName = auxVal;
         } else if (auxType == "Verbose") {
-            //std::cout << "setting Verbose = " << auxVal << std::endl;
             verbose = atoi(auxVal.c_str());
+        } else if (auxType == "SubdetID") {
+            subdetId = atoi(auxVal.c_str());
         }
     }
 
@@ -68,17 +65,26 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
         G4Exception("", "", FatalException, "The SensDet is missing the HitsCollection.");
     }
 
+    if (subdetId <= 0 ) {
+        std::cerr << "Bad SubdetID: " << subdetId << std::endl;
+        G4Exception("", "", FatalException, "The SubdetID is missing or has an invalid value.");
+    }
+
     G4VSensitiveDetector* sd = 0;
     if (sdType == "TrackerSD") {
-        std::cout << "Creating new TrackerSD " << theSensDetName << " with hits collection " << hcName
-                << " and verbose set to " << verbose << std::endl;
-        sd = new TrackerSD(theSensDetName, hcName);
+        sd = new TrackerSD(theSensDetName, hcName, subdetId);
+    } else if (sdType == "CalorimeterSD") {
+        sd = new CalorimeterSD(theSensDetName, hcName, subdetId);
     } else {
-        std::cerr << "Bad SensitiveDetector type: " << sdType << std::endl;
+        std::cerr << "Unknown SensitiveDetector type: " << sdType << std::endl;
         G4Exception("", "", FatalException, "Unknown SensitiveDetector type in aux info.");
     }
 
     sd->SetVerboseLevel(verbose);
+
+    std::cout << "Created " << sdType << " " << theSensDetName
+            << " with hits collection " << hcName
+            << " and verbose level " << verbose << std::endl << std::endl;
 }
 
 void AuxInfoReader::assignSensDetsToVols() {
@@ -97,16 +103,14 @@ void AuxInfoReader::assignSensDetsToVols() {
                 G4String auxVal = iaux->value;
                 G4String auxUnit = iaux->unit;
 
-                std::cout << "  auxType: " << auxType << ", auxVal: " << auxVal << ", auxUnit: " << auxUnit << std::endl;
-
                 if (auxType == "SensDet") {
                     G4String sdName = auxVal;
                     G4VSensitiveDetector* sd = G4SDManager::GetSDMpointer()->FindSensitiveDetector(sdName);
                     if (sd != 0) {
-                        std::cout << "assigning SD " << sd->GetName() << " to LV " << (*lvciter)->GetName() << std::endl;
+                        std::cout << "assigning SD " << sd->GetName() << " to " << (*lvciter)->GetName() << std::endl;
                         (*lvciter)->SetSensitiveDetector(sd);
                     } else {
-                        std::cout << "Unknown SensDet: " << sdName << std::endl;
+                        std::cout << "Unknown SensDet ref in volume's auxiliary info: " << sdName << std::endl;
                         G4Exception("", "", FatalException, "The SensDet was not found.  Is it defined in userinfo?");
                     }
                 }
