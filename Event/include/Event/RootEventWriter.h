@@ -37,9 +37,6 @@ class RootEventWriter {
         TTree *tree;
         Event* event;
 
-        int nWritten;
-        int buffer;
-
         static RootEventWriter* INSTANCE;
 };
 
