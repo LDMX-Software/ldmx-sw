@@ -16,6 +16,9 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 # add Event module include dir
 include_directories(${Event_INCLUDE_DIR})
 
+# add DetDescr module include dir
+include_directories(${DetDescr_INCLUDE_DIR})
+
 # add ROOT include dirs
 include_directories(${ROOT_INCLUDE_DIRS})
 
@@ -26,8 +29,8 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.h)
 # set the output executable
 add_executable(ldmx-sim src/ldmx_sim.cc ${sources} ${headers})
 
-# add the Geant4 link libraries
-target_link_libraries(ldmx-sim ${Geant4_LIBRARIES} Event)
+# add the Geant4 link libraries and module dep libs
+target_link_libraries(ldmx-sim ${Geant4_LIBRARIES} Event DetDescr)
 
 # set executable installation target
 install(TARGETS ldmx-sim DESTINATION bin)

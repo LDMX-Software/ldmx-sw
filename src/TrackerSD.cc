@@ -12,15 +12,23 @@
 
 // LDMX
 #include "Event/RootEventWriter.h"
+#include "DetDescr/IdField.h"
 
 TrackerSD::TrackerSD(G4String theName, G4String theCollectionName, int subdetId) :
-    G4VSensitiveDetector(theName), hitsCollection(0), currentEvent(0), subdetId(subdetId) {
+    G4VSensitiveDetector(theName),
+    hitsCollection(0),
+    currentEvent(0),
+    subdetId(subdetId),
+    detId(new TrackerGeomId) {
 
     // Add the collection name to vector of names.
     this->collectionName.push_back(theCollectionName);
 
     // Register this SD with the manager.
     G4SDManager::GetSDMpointer()->AddNewDetector(this);
+
+    // Set the subdet ID as it will always be the same for every hit.
+    detId->setFieldValue("subdet", subdetId);
 }
 
 TrackerSD::~TrackerSD() {
@@ -43,8 +51,8 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
         if (verboseLevel > 1) {
             std::cout << "TrackerSD skipping step with zero edep" << std::endl << std::endl;
             return false;
-        }    
-    }        
+        }
+    }
 
     // Create a new hit object using the ROOT event.
     SimTrackerHit* simTrackerHit =
@@ -75,38 +83,31 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
     }
     hit->setMomentum(p);
 
-    // TODO: set subdetID from this->subdetId
-    // TODO: set layer from physvol copynumber
-    //hit->getSimTrackerHit()->setId(0);
-
-    // DEBUG: print layer number
+    /*
+     * Set the 32-bit ID on the hit.
+     */
     int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
-    std::cout << "Hit in layer " << layerNumber << " of " << GetName() << std::endl;
+    detId->setFieldValue(1, layerNumber);
+    hit->getSimTrackerHit()->setId(detId->pack());
 
+    /*
+     * Debug print.
+     */
     if (this->verboseLevel > 0) {
         std::cout << "Created new SimTrackerHit in detector " << this->GetName()
-                << " with subdet ID " << subdetId << " ..." << std::endl;
+                << " with subdet ID " << subdetId << " and layer " << layerNumber << " ..." << std::endl;
         hit->Print();
         std::cout << std::endl;
     }
 
-    /*
-    G4TouchableHandle touchable = prePoint->GetTouchableHandle();
-    const G4NavigationHistory* touchableHistory = touchable->GetHistory();
-    G4int hdepth = touchable->GetHistoryDepth();
-    std::cout << "Dumping volume hierarchy ..." << std::endl;
-    for (int i = hdepth; i > 0; i--) {
-        G4VPhysicalVolume* pv = touchableHistory->GetVolume(i);
-        std::cout << "  depth: " << i << ", physvol name: " << pv->GetName() << ", copynum: " << pv->GetCopyNo() << std::endl;
-    }
-    */
-
+    // Insert hit into current hits collection.
     hitsCollection->insert(hit);
 
     return true;
 }
 
 void TrackerSD::Initialize(G4HCofThisEvent* hce) {
+
     // Setup hits collection and the HC ID.
     hitsCollection = new G4TrackerHitsCollection(SensitiveDetectorName, collectionName[0]);
     G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
@@ -117,6 +118,9 @@ void TrackerSD::Initialize(G4HCofThisEvent* hce) {
 }
 
 void TrackerSD::EndOfEvent(G4HCofThisEvent* hce) {
+    /*
+     * Debug print number of hits in this detector for the event.
+     */
     if (this->verboseLevel > 0) {
         std::cout << GetName() << " had " << hitsCollection->entries()
                 << " hits in event" << std::endl;

@@ -7,6 +7,7 @@
 // LDMX
 #include "SimApplication/G4CalorimeterHit.h"
 #include "Event/Event.h"
+#include "DetDescr/CalorimeterGeomId.h"
 
 class CalorimeterSD: public G4VSensitiveDetector {
 
@@ -27,6 +28,7 @@ class CalorimeterSD: public G4VSensitiveDetector {
         G4CalorimeterHitsCollection* hitsCollection;
         Event* currentEvent;
         int subdetId;
+        CalorimeterGeomId* detId;
 };
 
 #endif
