@@ -1,6 +1,7 @@
 #include "Event/SimTrackerHit.h"
 
 #include <iostream>
+#include <bitset>
 
 ClassImp(SimTrackerHit)
 
@@ -28,7 +29,7 @@ SimTrackerHit::~SimTrackerHit() {
 
 void SimTrackerHit::Print(Option_t *option) const {
     std::cout << "SimTrackerHit { " <<
-            "id: " << id << ", " <<
+            "id: " << std::bitset<32>(id) << ", " <<
             "startPosition: ( " << startPosition[0] << ", " << startPosition[1] << ", " << startPosition[2] << " ), " <<
             "endPosition: ( " << endPosition[0] << ", " << endPosition[1] << ", " << endPosition[2] << " ), " <<
             "edep: " << edep << ", " <<

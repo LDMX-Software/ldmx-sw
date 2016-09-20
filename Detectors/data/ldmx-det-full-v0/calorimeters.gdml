@@ -10805,7 +10805,7 @@
         <volumeref ref="CFMix1log0x29dbbc0"/>
         <position name="CFMix1phys0x29dbd10_pos" unit="mm" x="0" y="0" z="-615.725"/>
       </physvol>
-      <physvol name="Si1_0phys0x29dc030">
+      <physvol name="Si1_0phys0x29dc030" copynumber="1">
         <volumeref ref="Si1_0log0x29dbee0"/>
         <position name="Si1_0phys0x29dc030_pos" unit="mm" x="0" y="0" z="-615.45"/>
       </physvol>
@@ -10833,7 +10833,7 @@
         <position name="CFMix2phys0x29ea780_pos" unit="mm" x="0" y="0" z="-613"/>
         <rotation name="CFMix2phys0x29ea780_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si2_0phys0x29ed0d0">
+      <physvol name="Si2_0phys0x29ed0d0" copynumber="2">
         <volumeref ref="Si2_0log0x29ed010"/>
         <position name="Si2_0phys0x29ed0d0_pos" unit="mm" x="0" y="0" z="-612.8"/>
         <rotation name="Si2_0phys0x29ed0d0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -10873,7 +10873,7 @@
         <position name="CFMix3phys0x29ff3c0_pos" unit="mm" x="0" y="0" z="-606.5"/>
         <rotation name="CFMix3phys0x29ff3c0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si3_0phys0x2a01d30">
+      <physvol name="Si3_0phys0x2a01d30" copynumber="3">
         <volumeref ref="Si3_0log0x2a01bb0"/>
         <position name="Si3_0phys0x2a01d30_pos" unit="mm" x="0" y="0" z="-606.45"/>
         <rotation name="Si3_0phys0x2a01d30_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -10913,7 +10913,7 @@
         <position name="CFMix4phys0x2a142f0_pos" unit="mm" x="0" y="0" z="-602.25"/>
         <rotation name="CFMix4phys0x2a142f0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si4_0phys0x2a16bd0">
+      <physvol name="Si4_0phys0x2a16bd0" copynumber="4">
         <volumeref ref="Si4_0log0x2a16ac0"/>
         <position name="Si4_0phys0x2a16bd0_pos" unit="mm" x="0" y="0" z="-602.05"/>
         <rotation name="Si4_0phys0x2a16bd0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -10953,7 +10953,7 @@
         <position name="CFMix5phys0x2a28aa0_pos" unit="mm" x="0" y="0" z="-594.25"/>
         <rotation name="CFMix5phys0x2a28aa0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si5_0phys0x2a2b4e0">
+      <physvol name="Si5_0phys0x2a2b4e0" copynumber="5">
         <volumeref ref="Si5_0log0x2a2b400"/>
         <position name="Si5_0phys0x2a2b4e0_pos" unit="mm" x="0" y="0" z="-594.2"/>
         <rotation name="Si5_0phys0x2a2b4e0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -10993,7 +10993,7 @@
         <position name="CFMix6phys0x2a3e100_pos" unit="mm" x="0" y="0" z="-588.5"/>
         <rotation name="CFMix6phys0x2a3e100_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si6_0phys0x2a409e0">
+      <physvol name="Si6_0phys0x2a409e0" copynumber="6">
         <volumeref ref="Si6_0log0x2a408d0"/>
         <position name="Si6_0phys0x2a409e0_pos" unit="mm" x="0" y="0" z="-588.3"/>
         <rotation name="Si6_0phys0x2a409e0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11033,7 +11033,7 @@
         <position name="CFMix7phys0x2a528c0_pos" unit="mm" x="0" y="0" z="-579.25"/>
         <rotation name="CFMix7phys0x2a528c0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si7_0phys0x2a55220">
+      <physvol name="Si7_0phys0x2a55220" copynumber="7">
         <volumeref ref="Si7_0log0x2a55110"/>
         <position name="Si7_0phys0x2a55220_pos" unit="mm" x="0" y="0" z="-579.2"/>
         <rotation name="Si7_0phys0x2a55220_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11073,7 +11073,7 @@
         <position name="CFMix8phys0x2a67100_pos" unit="mm" x="0" y="0" z="-573"/>
         <rotation name="CFMix8phys0x2a67100_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si8_0phys0x2a699e0">
+      <physvol name="Si8_0phys0x2a699e0" copynumber="8">
         <volumeref ref="Si8_0log0x2a69950"/>
         <position name="Si8_0phys0x2a699e0_pos" unit="mm" x="0" y="0" z="-572.8"/>
         <rotation name="Si8_0phys0x2a699e0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11113,7 +11113,7 @@
         <position name="CFMix9phys0x2a7b9a0_pos" unit="mm" x="0" y="0" z="-563.75"/>
         <rotation name="CFMix9phys0x2a7b9a0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si9_0phys0x2a7e4c0">
+      <physvol name="Si9_0phys0x2a7e4c0" copynumber="9">
         <volumeref ref="Si9_0log0x2a7e330"/>
         <position name="Si9_0phys0x2a7e4c0_pos" unit="mm" x="0" y="0" z="-563.7"/>
         <rotation name="Si9_0phys0x2a7e4c0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11153,7 +11153,7 @@
         <position name="CFMix10phys0x2a91c90_pos" unit="mm" x="0" y="0" z="-557.5"/>
         <rotation name="CFMix10phys0x2a91c90_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si10_0phys0x2a94570">
+      <physvol name="Si10_0phys0x2a94570" copynumber="10">
         <volumeref ref="Si10_0log0x2a944e0"/>
         <position name="Si10_0phys0x2a94570_pos" unit="mm" x="0" y="0" z="-557.3"/>
         <rotation name="Si10_0phys0x2a94570_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11193,7 +11193,7 @@
         <position name="CFMix11phys0x2aa64e0_pos" unit="mm" x="0" y="0" z="-548.25"/>
         <rotation name="CFMix11phys0x2aa64e0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si11_0phys0x2aa8da0">
+      <physvol name="Si11_0phys0x2aa8da0" copynumber="11">
         <volumeref ref="Si11_0log0x2aa8d10"/>
         <position name="Si11_0phys0x2aa8da0_pos" unit="mm" x="0" y="0" z="-548.2"/>
         <rotation name="Si11_0phys0x2aa8da0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11233,7 +11233,7 @@
         <position name="CFMix12phys0x2abad60_pos" unit="mm" x="0" y="0" z="-542"/>
         <rotation name="CFMix12phys0x2abad60_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si12_0phys0x2abd640">
+      <physvol name="Si12_0phys0x2abd640" copynumber="12">
         <volumeref ref="Si12_0log0x2abd530"/>
         <position name="Si12_0phys0x2abd640_pos" unit="mm" x="0" y="0" z="-541.8"/>
         <rotation name="Si12_0phys0x2abd640_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11273,7 +11273,7 @@
         <position name="CFMix13phys0x2acf520_pos" unit="mm" x="0" y="0" z="-532.75"/>
         <rotation name="CFMix13phys0x2acf520_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si13_0phys0x2ad1e00">
+      <physvol name="Si13_0phys0x2ad1e00" copynumber="13">
         <volumeref ref="Si13_0log0x2ad1d70"/>
         <position name="Si13_0phys0x2ad1e00_pos" unit="mm" x="0" y="0" z="-532.7"/>
         <rotation name="Si13_0phys0x2ad1e00_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11313,7 +11313,7 @@
         <position name="CFMix14phys0x2ae4410_pos" unit="mm" x="0" y="0" z="-526.5"/>
         <rotation name="CFMix14phys0x2ae4410_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si14_0phys0x2ae6cf0">
+      <physvol name="Si14_0phys0x2ae6cf0" copynumber="14">
         <volumeref ref="Si14_0log0x2ae6be0"/>
         <position name="Si14_0phys0x2ae6cf0_pos" unit="mm" x="0" y="0" z="-526.3"/>
         <rotation name="Si14_0phys0x2ae6cf0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11353,7 +11353,7 @@
         <position name="CFMix15phys0x2af8bb0_pos" unit="mm" x="0" y="0" z="-517.25"/>
         <rotation name="CFMix15phys0x2af8bb0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si15_0phys0x2afb510">
+      <physvol name="Si15_0phys0x2afb510" copynumber="15">
         <volumeref ref="Si15_0log0x2afb400"/>
         <position name="Si15_0phys0x2afb510_pos" unit="mm" x="0" y="0" z="-517.2"/>
         <rotation name="Si15_0phys0x2afb510_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11393,7 +11393,7 @@
         <position name="CFMix16phys0x2b0d3e0_pos" unit="mm" x="0" y="0" z="-511"/>
         <rotation name="CFMix16phys0x2b0d3e0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si16_0phys0x2b0fcc0">
+      <physvol name="Si16_0phys0x2b0fcc0" copynumber="16">
         <volumeref ref="Si16_0log0x2b0fc30"/>
         <position name="Si16_0phys0x2b0fcc0_pos" unit="mm" x="0" y="0" z="-510.8"/>
         <rotation name="Si16_0phys0x2b0fcc0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11433,7 +11433,7 @@
         <position name="CFMix17phys0x2a81760_pos" unit="mm" x="0" y="0" z="-501.75"/>
         <rotation name="CFMix17phys0x2a81760_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si17_0phys0x2b27c30">
+      <physvol name="Si17_0phys0x2b27c30" copynumber="17">
         <volumeref ref="Si17_0log0x2b27a90"/>
         <position name="Si17_0phys0x2b27c30_pos" unit="mm" x="0" y="0" z="-501.7"/>
         <rotation name="Si17_0phys0x2b27c30_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11473,7 +11473,7 @@
         <position name="CFMix18phys0x2b39b10_pos" unit="mm" x="0" y="0" z="-495.5"/>
         <rotation name="CFMix18phys0x2b39b10_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si18_0phys0x2b3c470">
+      <physvol name="Si18_0phys0x2b3c470" copynumber="18">
         <volumeref ref="Si18_0log0x2b3c360"/>
         <position name="Si18_0phys0x2b3c470_pos" unit="mm" x="0" y="0" z="-495.3"/>
         <rotation name="Si18_0phys0x2b3c470_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11513,7 +11513,7 @@
         <position name="CFMix19phys0x2b4e350_pos" unit="mm" x="0" y="0" z="-486.25"/>
         <rotation name="CFMix19phys0x2b4e350_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si19_0phys0x2b50c30">
+      <physvol name="Si19_0phys0x2b50c30" copynumber="19">
         <volumeref ref="Si19_0log0x2b50ba0"/>
         <position name="Si19_0phys0x2b50c30_pos" unit="mm" x="0" y="0" z="-486.2"/>
         <rotation name="Si19_0phys0x2b50c30_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11553,7 +11553,7 @@
         <position name="CFMix20phys0x2b62c90_pos" unit="mm" x="0" y="0" z="-480"/>
         <rotation name="CFMix20phys0x2b62c90_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si20_0phys0x2b65570">
+      <physvol name="Si20_0phys0x2b65570" copynumber="20">
         <volumeref ref="Si20_0log0x2b65460"/>
         <position name="Si20_0phys0x2b65570_pos" unit="mm" x="0" y="0" z="-479.8"/>
         <rotation name="Si20_0phys0x2b65570_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11593,7 +11593,7 @@
         <position name="CFMix21phys0x2b77440_pos" unit="mm" x="0" y="0" z="-470.75"/>
         <rotation name="CFMix21phys0x2b77440_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si21_0phys0x2b79d20">
+      <physvol name="Si21_0phys0x2b79d20" copynumber="21">
         <volumeref ref="Si21_0log0x2b79c90"/>
         <position name="Si21_0phys0x2b79d20_pos" unit="mm" x="0" y="0" z="-470.7"/>
         <rotation name="Si21_0phys0x2b79d20_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11633,7 +11633,7 @@
         <position name="CFMix22phys0x2b8bce0_pos" unit="mm" x="0" y="0" z="-464.5"/>
         <rotation name="CFMix22phys0x2b8bce0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si22_0phys0x2b8e570">
+      <physvol name="Si22_0phys0x2b8e570" copynumber="22">
         <volumeref ref="Si22_0log0x2b8e4b0"/>
         <position name="Si22_0phys0x2b8e570_pos" unit="mm" x="0" y="0" z="-464.3"/>
         <rotation name="Si22_0phys0x2b8e570_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11673,7 +11673,7 @@
         <position name="CFMix23phys0x29e06d0_pos" unit="mm" x="0" y="0" z="-455.25"/>
         <rotation name="CFMix23phys0x29e06d0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si23_0phys0x2ba6df0">
+      <physvol name="Si23_0phys0x2ba6df0" copynumber="23">
         <volumeref ref="Si23_0log0x2ba6ca0"/>
         <position name="Si23_0phys0x2ba6df0_pos" unit="mm" x="0" y="0" z="-455.2"/>
         <rotation name="Si23_0phys0x2ba6df0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11713,7 +11713,7 @@
         <position name="CFMix24phys0x2bb8cc0_pos" unit="mm" x="0" y="0" z="-449"/>
         <rotation name="CFMix24phys0x2bb8cc0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si24_0phys0x2bbb5a0">
+      <physvol name="Si24_0phys0x2bbb5a0" copynumber="24">
         <volumeref ref="Si24_0log0x2bbb510"/>
         <position name="Si24_0phys0x2bbb5a0_pos" unit="mm" x="0" y="0" z="-448.8"/>
         <rotation name="Si24_0phys0x2bbb5a0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11753,7 +11753,7 @@
         <position name="CFMix25phys0x2bcd560_pos" unit="mm" x="0" y="0" z="-436.25"/>
         <rotation name="CFMix25phys0x2bcd560_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si25_0phys0x2bcfdf0">
+      <physvol name="Si25_0phys0x2bcfdf0" copynumber="25">
         <volumeref ref="Si25_0log0x2bcfd30"/>
         <position name="Si25_0phys0x2bcfdf0_pos" unit="mm" x="0" y="0" z="-436.2"/>
         <rotation name="Si25_0phys0x2bcfdf0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11793,7 +11793,7 @@
         <position name="CFMix26phys0x2be2a10_pos" unit="mm" x="0" y="0" z="-426.5"/>
         <rotation name="CFMix26phys0x2be2a10_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si26_0phys0x2be52f0">
+      <physvol name="Si26_0phys0x2be52f0" copynumber="26">
         <volumeref ref="Si26_0log0x2be51e0"/>
         <position name="Si26_0phys0x2be52f0_pos" unit="mm" x="0" y="0" z="-426.3"/>
         <rotation name="Si26_0phys0x2be52f0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11833,7 +11833,7 @@
         <position name="CFMix27phys0x2bf71c0_pos" unit="mm" x="0" y="0" z="-413.75"/>
         <rotation name="CFMix27phys0x2bf71c0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si27_0phys0x2bf9aa0">
+      <physvol name="Si27_0phys0x2bf9aa0" copynumber="27">
         <volumeref ref="Si27_0log0x2bf9a10"/>
         <position name="Si27_0phys0x2bf9aa0_pos" unit="mm" x="0" y="0" z="-413.7"/>
         <rotation name="Si27_0phys0x2bf9aa0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11873,7 +11873,7 @@
         <position name="CFMix28phys0x2c0ba60_pos" unit="mm" x="0" y="0" z="-404"/>
         <rotation name="CFMix28phys0x2c0ba60_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si28_0phys0x2c0e340">
+      <physvol name="Si28_0phys0x2c0e340" copynumber="28">
         <volumeref ref="Si28_0log0x2c0e230"/>
         <position name="Si28_0phys0x2c0e340_pos" unit="mm" x="0" y="0" z="-403.8"/>
         <rotation name="Si28_0phys0x2c0e340_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11913,7 +11913,7 @@
         <position name="CFMix29phys0x2c20210_pos" unit="mm" x="0" y="0" z="-391.25"/>
         <rotation name="CFMix29phys0x2c20210_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si29_0phys0x2c22b70">
+      <physvol name="Si29_0phys0x2c22b70" copynumber="29">
         <volumeref ref="Si29_0log0x2c22a60"/>
         <position name="Si29_0phys0x2c22b70_pos" unit="mm" x="0" y="0" z="-391.2"/>
         <rotation name="Si29_0phys0x2c22b70_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11953,7 +11953,7 @@
         <position name="CFMix30phys0x2c34a40_pos" unit="mm" x="0" y="0" z="-381.5"/>
         <rotation name="CFMix30phys0x2c34a40_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si30_0phys0x2c37320">
+      <physvol name="Si30_0phys0x2c37320" copynumber="30">
         <volumeref ref="Si30_0log0x2c37290"/>
         <position name="Si30_0phys0x2c37320_pos" unit="mm" x="0" y="0" z="-381.3"/>
         <rotation name="Si30_0phys0x2c37320_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -11993,7 +11993,7 @@
         <position name="CFMix31phys0x2c492e0_pos" unit="mm" x="0" y="0" z="-368.75"/>
         <rotation name="CFMix31phys0x2c492e0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si31_0phys0x2c4bbc0">
+      <physvol name="Si31_0phys0x2c4bbc0" copynumber="31">
         <volumeref ref="Si31_0log0x2c4bab0"/>
         <position name="Si31_0phys0x2c4bbc0_pos" unit="mm" x="0" y="0" z="-368.7"/>
         <rotation name="Si31_0phys0x2c4bbc0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -12033,7 +12033,7 @@
         <position name="CFMix32phys0x2c5da90_pos" unit="mm" x="0" y="0" z="-359"/>
         <rotation name="CFMix32phys0x2c5da90_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si32_0phys0x2c60370">
+      <physvol name="Si32_0phys0x2c60370" copynumber="32">
         <volumeref ref="Si32_0log0x2c602e0"/>
         <position name="Si32_0phys0x2c60370_pos" unit="mm" x="0" y="0" z="-358.8"/>
         <rotation name="Si32_0phys0x2c60370_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -12073,7 +12073,7 @@
         <position name="CFMix33phys0x2c786e0_pos" unit="mm" x="0" y="0" z="-346.25"/>
         <rotation name="CFMix33phys0x2c786e0_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si33_0phys0x2b27b20">
+      <physvol name="Si33_0phys0x2b27b20" copynumber="33">
         <volumeref ref="Si33_0log0x2c7b730"/>
         <position name="Si33_0phys0x2b27b20_pos" unit="mm" x="0" y="0" z="-346.2"/>
         <rotation name="Si33_0phys0x2b27b20_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -12113,7 +12113,7 @@
         <position name="CFMix34phys0x2c8d880_pos" unit="mm" x="0" y="0" z="-336.5"/>
         <rotation name="CFMix34phys0x2c8d880_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
       </physvol>
-      <physvol name="Si34_0phys0x2c90160">
+      <physvol name="Si34_0phys0x2c90160" copynumber="34">
         <volumeref ref="Si34_0log0x2c90050"/>
         <position name="Si34_0phys0x2c90160_pos" unit="mm" x="0" y="0" z="-336.3"/>
         <rotation name="Si34_0phys0x2c90160_rot" unit="deg" x="0" y="0" z="57.2957795130823"/>
@@ -12149,7 +12149,7 @@
         <volumeref ref="Cu35log0x2c987b0"/>
         <position name="Cu35phys0x2c98900_pos" unit="mm" x="0" y="0" z="-279"/>
       </physvol>
-      <physvol name="Scintillator35phys0x2c98c20">
+      <physvol name="Scintillator35phys0x2c98c20" copynumber="1">
         <volumeref ref="Scintillator35log0x2c98ac0"/>
         <position name="Scintillator35phys0x2c98c20_pos" unit="mm" x="0" y="0" z="-274.25"/>
       </physvol>
@@ -12169,7 +12169,7 @@
         <volumeref ref="Cu36log0x2c996c0"/>
         <position name="Cu36phys0x2c99810_pos" unit="mm" x="0" y="0" z="-215.5"/>
       </physvol>
-      <physvol name="Scintillator36phys0x2c99b30">
+      <physvol name="Scintillator36phys0x2c99b30" copynumber="2">
         <volumeref ref="Scintillator36log0x2c999d0"/>
         <position name="Scintillator36phys0x2c99b30_pos" unit="mm" x="0" y="0" z="-210.75"/>
       </physvol>
@@ -12189,7 +12189,7 @@
         <volumeref ref="Cu37log0x2c9a5d0"/>
         <position name="Cu37phys0x2c9a720_pos" unit="mm" x="0" y="0" z="-152"/>
       </physvol>
-      <physvol name="Scintillator37phys0x2c9aa40">
+      <physvol name="Scintillator37phys0x2c9aa40" copynumber="3">
         <volumeref ref="Scintillator37log0x2c9a8e0"/>
         <position name="Scintillator37phys0x2c9aa40_pos" unit="mm" x="0" y="0" z="-147.25"/>
       </physvol>
@@ -12209,7 +12209,7 @@
         <volumeref ref="Cu38log0x2c9b4e0"/>
         <position name="Cu38phys0x2c9b630_pos" unit="mm" x="0" y="0" z="-88.5"/>
       </physvol>
-      <physvol name="Scintillator38phys0x2c9b950">
+      <physvol name="Scintillator38phys0x2c9b950" copynumber="4">
         <volumeref ref="Scintillator38log0x2c9b7f0"/>
         <position name="Scintillator38phys0x2c9b950_pos" unit="mm" x="0" y="0" z="-83.75"/>
       </physvol>
@@ -12229,7 +12229,7 @@
         <volumeref ref="Cu39log0x2c9c3f0"/>
         <position name="Cu39phys0x2c9c540_pos" unit="mm" x="0" y="0" z="-25"/>
       </physvol>
-      <physvol name="Scintillator39phys0x2c9c860">
+      <physvol name="Scintillator39phys0x2c9c860" copynumber="5">     
         <volumeref ref="Scintillator39log0x2c9c700"/>
         <position name="Scintillator39phys0x2c9c860_pos" unit="mm" x="0" y="0" z="-20.25"/>
       </physvol>
@@ -12249,7 +12249,7 @@
         <volumeref ref="Cu40log0x2c9d300"/>
         <position name="Cu40phys0x2c9d450_pos" unit="mm" x="0" y="0" z="38.5"/>
       </physvol>
-      <physvol name="Scintillator40phys0x2c9d770">
+      <physvol name="Scintillator40phys0x2c9d770" copynumber="6">
         <volumeref ref="Scintillator40log0x2c9d610"/>
         <position name="Scintillator40phys0x2c9d770_pos" unit="mm" x="0" y="0" z="43.25"/>
       </physvol>
@@ -12269,7 +12269,7 @@
         <volumeref ref="Cu41log0x2c9e210"/>
         <position name="Cu41phys0x2c9e360_pos" unit="mm" x="0" y="0" z="102"/>
       </physvol>
-      <physvol name="Scintillator41phys0x2c9e680">
+      <physvol name="Scintillator41phys0x2c9e680" copynumber="7">
         <volumeref ref="Scintillator41log0x2c9e520"/>
         <position name="Scintillator41phys0x2c9e680_pos" unit="mm" x="0" y="0" z="106.75"/>
       </physvol>
@@ -12289,7 +12289,7 @@
         <volumeref ref="Cu42log0x2c9f120"/>
         <position name="Cu42phys0x2c9f270_pos" unit="mm" x="0" y="0" z="165.5"/>
       </physvol>
-      <physvol name="Scintillator42phys0x2c9f590">
+      <physvol name="Scintillator42phys0x2c9f590" copynumber="8">
         <volumeref ref="Scintillator42log0x2c9f430"/>
         <position name="Scintillator42phys0x2c9f590_pos" unit="mm" x="0" y="0" z="170.25"/>
       </physvol>
@@ -12309,7 +12309,7 @@
         <volumeref ref="Cu43log0x2ca0030"/>
         <position name="Cu43phys0x2ca0180_pos" unit="mm" x="0" y="0" z="229"/>
       </physvol>
-      <physvol name="Scintillator43phys0x2ca04a0">
+      <physvol name="Scintillator43phys0x2ca04a0" copynumber="9">
         <volumeref ref="Scintillator43log0x2ca0340"/>
         <position name="Scintillator43phys0x2ca04a0_pos" unit="mm" x="0" y="0" z="233.75"/>
       </physvol>
@@ -12329,7 +12329,7 @@
         <volumeref ref="Cu44log0x2ca0f40"/>
         <position name="Cu44phys0x2ca1090_pos" unit="mm" x="0" y="0" z="292.5"/>
       </physvol>
-      <physvol name="Scintillator44phys0x2ca13b0">
+      <physvol name="Scintillator44phys0x2ca13b0" copynumber="10">
         <volumeref ref="Scintillator44log0x2ca1250"/>
         <position name="Scintillator44phys0x2ca13b0_pos" unit="mm" x="0" y="0" z="297.25"/>
       </physvol>
@@ -12349,7 +12349,7 @@
         <volumeref ref="Cu45log0x2ca1e50"/>
         <position name="Cu45phys0x2ca1fa0_pos" unit="mm" x="0" y="0" z="356"/>
       </physvol>
-      <physvol name="Scintillator45phys0x2ca22c0">
+      <physvol name="Scintillator45phys0x2ca22c0" copynumber="11">
         <volumeref ref="Scintillator45log0x2ca2160"/>
         <position name="Scintillator45phys0x2ca22c0_pos" unit="mm" x="0" y="0" z="360.75"/>
       </physvol>
@@ -12369,7 +12369,7 @@
         <volumeref ref="Cu46log0x2ca2d60"/>
         <position name="Cu46phys0x2ca2eb0_pos" unit="mm" x="0" y="0" z="419.5"/>
       </physvol>
-      <physvol name="Scintillator46phys0x2ca31d0">
+      <physvol name="Scintillator46phys0x2ca31d0" copynumber="12">
         <volumeref ref="Scintillator46log0x2ca3070"/>
         <position name="Scintillator46phys0x2ca31d0_pos" unit="mm" x="0" y="0" z="424.25"/>
       </physvol>
@@ -12389,7 +12389,7 @@
         <volumeref ref="Cu47log0x2ca3c70"/>
         <position name="Cu47phys0x2ca3dc0_pos" unit="mm" x="0" y="0" z="483"/>
       </physvol>
-      <physvol name="Scintillator47phys0x2ca40e0">
+      <physvol name="Scintillator47phys0x2ca40e0" copynumber="13">
         <volumeref ref="Scintillator47log0x2ca3f80"/>
         <position name="Scintillator47phys0x2ca40e0_pos" unit="mm" x="0" y="0" z="487.75"/>
       </physvol>
@@ -12409,7 +12409,7 @@
         <volumeref ref="Cu48log0x2ca4b80"/>
         <position name="Cu48phys0x2ca4cd0_pos" unit="mm" x="0" y="0" z="546.5"/>
       </physvol>
-      <physvol name="Scintillator48phys0x2ca4ff0">
+      <physvol name="Scintillator48phys0x2ca4ff0" copynumber="14">
         <volumeref ref="Scintillator48log0x2ca4e90"/>
         <position name="Scintillator48phys0x2ca4ff0_pos" unit="mm" x="0" y="0" z="551.25"/>
       </physvol>
@@ -12429,7 +12429,7 @@
         <volumeref ref="Cu49log0x2ca5a90"/>
         <position name="Cu49phys0x2ca5be0_pos" unit="mm" x="0" y="0" z="610"/>
       </physvol>
-      <physvol name="Scintillator49phys0x2ca5f00">
+      <physvol name="Scintillator49phys0x2ca5f00" copynumber="15">
         <volumeref ref="Scintillator49log0x2ca5da0"/>
         <position name="Scintillator49phys0x2ca5f00_pos" unit="mm" x="0" y="0" z="614.75"/>
       </physvol>

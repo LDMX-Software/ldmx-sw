@@ -17,4 +17,5 @@ include(MacroCheckPackageVersion)
 
 # build sub-modules
 add_subdirectory(Event)
+add_subdirectory(DetDescr)
 add_subdirectory(SimApplication)

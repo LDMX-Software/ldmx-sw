@@ -14,13 +14,20 @@
 #include "Event/RootEventWriter.h"
 
 CalorimeterSD::CalorimeterSD(G4String theName, G4String theCollectionName, int subdetId) :
-    G4VSensitiveDetector(theName), hitsCollection(0), currentEvent(0), subdetId(subdetId) {
+    G4VSensitiveDetector(theName),
+    hitsCollection(0),
+    currentEvent(0),
+    subdetId(subdetId),
+    detId(new CalorimeterGeomId) {
 
     // Add the collection name to vector of names.
     this->collectionName.push_back(theCollectionName);
 
     // Register this SD with the manager.
     G4SDManager::GetSDMpointer()->AddNewDetector(this);
+
+    // Set the subdet ID as it will always be the same for every hit.
+    detId->setFieldValue("subdet", subdetId);
 }
 
 CalorimeterSD::~CalorimeterSD() {
@@ -63,12 +70,16 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
     // Set the global time.
     simCalorimeterHit->setTime(aStep->GetTrack()->GetGlobalTime());
 
-    // TODO: set the ID from actual geometry info for system ID, layer, and sensor number
-    hit->getSimCalorimeterHit()->setId(0);
+    /*
+     * Set the 32-bit ID on the hit.
+     */
+    int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
+    detId->setFieldValue(1, layerNumber);
+    hit->getSimCalorimeterHit()->setId(detId->pack());
 
     if (this->verboseLevel > 0) {
         std::cout << "Created new SimCalorimeterHit in detector " << this->GetName()
-                << " with subdet ID " << subdetId << " ..." << std::endl;
+                << " with subdet ID " << subdetId << " and layer " << layerNumber << " ..." << std::endl;
         hit->Print();
         std::cout << std::endl;
     }
