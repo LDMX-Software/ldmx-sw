@@ -13,12 +13,12 @@
 // LDMX
 #include "Event/RootEventWriter.h"
 
-CalorimeterSD::CalorimeterSD(G4String theName, G4String theCollectionName, int subdetId) :
+CalorimeterSD::CalorimeterSD(G4String theName, G4String theCollectionName, int subdetId, DetectorId* detId) :
     G4VSensitiveDetector(theName),
     hitsCollection(0),
     currentEvent(0),
     subdetId(subdetId),
-    detId(new CalorimeterGeomId) {
+    detId(detId) {
 
     // Add the collection name to vector of names.
     this->collectionName.push_back(theCollectionName);
