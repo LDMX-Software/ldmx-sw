@@ -5,6 +5,7 @@
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
+#include "SimApplication/SimApplicationMessenger.h"
 
 // STL
 #include <vector>
@@ -51,6 +52,9 @@ void SimApplication::run(int argc, char** argv) {
     G4GDMLParser* parser = new G4GDMLParser();
     G4UImessenger* gdmlMessenger = new G4GDMLMessenger(parser);
 
+    // Create application messenger.
+    new SimApplicationMessenger();
+
     // Supply default user initializations and actions.
     runManager->SetUserInitialization(new FTFP_BERT);
     runManager->SetUserInitialization(new DetectorConstruction(parser));
@@ -69,11 +73,11 @@ void SimApplication::run(int argc, char** argv) {
         // execute macro provided on command line
         G4String command = "/control/execute ";
         G4String fileName = argv[1];
-        std::cout << "executing macro " << fileName << " ..." << std::endl;
+        std::cout << "Executing macro " << fileName << " ..." << std::endl;
         UImanager->ApplyCommand(command + fileName);
     } else {
         // start an interactive session
-        std::cout << "starting interactive session ..." << std::endl;
+        std::cout << "Starting interactive session ..." << std::endl;
         ui->SessionStart();
         delete ui;
     }
