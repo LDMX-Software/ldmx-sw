@@ -13,7 +13,7 @@ class IdField {
         typedef std::map<std::string, IdField*> IdFieldMap;
         typedef std::vector<IdField*> IdFieldList;
 
-        IdField(std::string, unsigned, unsigned, unsigned);
+        IdField(std::string, unsigned index, unsigned startBit, unsigned endBit);
 
         const std::string& getFieldName();
 
