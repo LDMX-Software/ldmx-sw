@@ -15,11 +15,13 @@ class AuxInfoReader {
         void assignSensDetsToVols();
 
     private:
+
         void createSensitiveDetector(G4String sdType, const G4GDMLAuxListType* auxInfoList);
+
+        void createDetectorId(G4String name, const G4GDMLAuxListType* auxInfoList);
 
     private:
         G4GDMLParser* parser;
-
 };
 
 #endif

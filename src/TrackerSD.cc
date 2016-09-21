@@ -14,12 +14,12 @@
 #include "Event/RootEventWriter.h"
 #include "DetDescr/IdField.h"
 
-TrackerSD::TrackerSD(G4String theName, G4String theCollectionName, int subdetId) :
-    G4VSensitiveDetector(theName),
+TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subdetId, DetectorId* detId) :
+    G4VSensitiveDetector(name),
     hitsCollection(0),
     currentEvent(0),
     subdetId(subdetId),
-    detId(new TrackerGeomId) {
+    detId(detId) {
 
     // Add the collection name to vector of names.
     this->collectionName.push_back(theCollectionName);
