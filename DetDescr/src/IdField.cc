@@ -1,7 +1,7 @@
 #include "DetDescr/IdField.h"
         
-IdField::IdField(std::string theFieldName, unsigned theIndex, unsigned theStartBit, unsigned theEndBit)
-    : fieldName(theFieldName), index(theIndex), startBit(theStartBit), endBit(theEndBit) {
+IdField::IdField(std::string fieldName, unsigned index, unsigned startBit, unsigned endBit)
+    : fieldName(fieldName), index(index), startBit(startBit), endBit(endBit) {
 
     // Create bit mask for the field.
     bitMask = IdField::createBitMask(startBit, endBit);
