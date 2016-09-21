@@ -13,7 +13,7 @@ class CalorimeterSD: public G4VSensitiveDetector {
 
     public:
 
-        CalorimeterSD(G4String name, G4String theCollectionName, int subdetId);
+        CalorimeterSD(G4String name, G4String theCollectionName, int subdetId, DetectorId* detId);
 
         virtual ~CalorimeterSD();
 
@@ -28,7 +28,7 @@ class CalorimeterSD: public G4VSensitiveDetector {
         G4CalorimeterHitsCollection* hitsCollection;
         Event* currentEvent;
         int subdetId;
-        CalorimeterGeomId* detId;
+        DetectorId* detId;
 };
 
 #endif

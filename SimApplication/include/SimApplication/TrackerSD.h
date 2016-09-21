@@ -7,13 +7,13 @@
 // LDMX
 #include "SimApplication/G4TrackerHit.h"
 #include "Event/Event.h"
-#include "DetDescr/TrackerGeomId.h"
+#include "DetDescr/DetectorId.h"
 
 class TrackerSD: public G4VSensitiveDetector {
 
     public:
 
-        TrackerSD(G4String name, G4String theCollectionName, int subdetId);
+        TrackerSD(G4String name, G4String theCollectionName, int subdetId, DetectorId* detId);
 
         virtual ~TrackerSD();
 
@@ -28,7 +28,7 @@ class TrackerSD: public G4VSensitiveDetector {
         G4TrackerHitsCollection* hitsCollection;
         Event* currentEvent;
         int subdetId;
-        TrackerGeomId* detId;
+        DetectorId* detId;
 };
 
 #endif
