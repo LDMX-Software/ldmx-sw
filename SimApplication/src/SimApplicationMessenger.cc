@@ -17,7 +17,7 @@ SimApplicationMessenger::SimApplicationMessenger() {
     rootDir = new G4UIdirectory("/ldmx/persistency/root/");
     rootDir->SetGuidance("ROOT persistency commands");
 
-    rootFileCmd = new G4UIcommand("/ldmx/persistency/root/filename", this);
+    rootFileCmd = new G4UIcommand("/ldmx/persistency/root/file", this);
     G4UIparameter* filename = new G4UIparameter("filename", 's', true);
     rootFileCmd->SetParameter(filename);
     rootFileCmd->AvailableForStates(

@@ -384,6 +384,8 @@
         <volumeref ref="TriggerPad_envelope" />
         <position name="TriggerPad_envelope_physvol39_pos" unit="mm" x="0" y="0" z="300.676" />
       </physvol>
+      <!-- FIXME: need separate mag field definitions for recoil and analyzing regions -->
+      <auxiliary auxtype="MagneticField" auxvalue="AnalyzingDipole"/>
     </volume>
   </structure>
 
