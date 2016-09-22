@@ -12,7 +12,7 @@ class AuxInfoReader {
 
         void readGlobalAuxInfo();
 
-        void assignSensDetsToVols();
+        void assignAuxInfoToVolumes();
 
     private:
 
@@ -20,8 +20,11 @@ class AuxInfoReader {
 
         void createDetectorId(G4String name, const G4GDMLAuxListType* auxInfoList);
 
+        void createMagneticField(G4String name, const G4GDMLAuxListType* auxInfoList);
+
     private:
         G4GDMLParser* parser;
+        G4GDMLEvaluator* eval;
 };
 
 #endif

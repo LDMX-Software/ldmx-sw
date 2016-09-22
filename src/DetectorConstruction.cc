@@ -11,6 +11,6 @@ DetectorConstruction::~DetectorConstruction() {
 
 G4VPhysicalVolume* DetectorConstruction::Construct() {
     auxInfoReader->readGlobalAuxInfo();
-    auxInfoReader->assignSensDetsToVols();
+    auxInfoReader->assignAuxInfoToVolumes();
     return parser->GetWorldVolume();
 }

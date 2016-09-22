@@ -3,14 +3,22 @@
 // LDMX
 #include "SimApplication/TrackerSD.h"
 #include "SimApplication/CalorimeterSD.h"
+#include "SimApplication/MagneticFieldStore.h"
 #include "DetDescr/DetectorIdStore.h"
 
 // Geant4
 #include "G4LogicalVolumeStore.hh"
 #include "G4SDManager.hh"
+#include "G4FieldManager.hh"
+#include "G4UniformMagField.hh"
+#include "G4GDMLEvaluator.hh"
+#include "G4SystemOfUnits.hh"
 
-AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser) :
-    parser(theParser) {
+// STL
+#include <string>
+
+AuxInfoReader::AuxInfoReader(G4GDMLParser* parser) :
+    parser(parser), eval(new G4GDMLEvaluator) {
 }
 
 void AuxInfoReader::readGlobalAuxInfo() {
@@ -27,6 +35,8 @@ void AuxInfoReader::readGlobalAuxInfo() {
             createSensitiveDetector(auxVal, iaux->auxList);
         } else if (auxType == "DetectorId") {
             createDetectorId(auxVal, iaux->auxList);
+        } else if (auxType == "MagneticField") {
+            createMagneticField(auxVal, iaux->auxList);
         }
     }
     return;
@@ -56,7 +66,7 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
             hcName = auxVal;
         } else if (auxType == "Verbose") {
             verbose = atoi(auxVal.c_str());
-        } else if (auxType == "SubdetID") {
+        } else if (auxType == "SubdetId") {
             subdetId = atoi(auxVal.c_str());
         } else if (auxType == "DetectorId") {
             idName = auxVal;
@@ -72,7 +82,7 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
     }
 
     if (subdetId <= 0 ) {
-        std::cerr << "Bad SubdetID: " << subdetId << std::endl;
+        std::cerr << "Bad SubdetId: " << subdetId << std::endl;
         G4Exception("", "", FatalException, "The SubdetID is missing or has an invalid value.");
     }
 
@@ -103,14 +113,12 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
             << " and verbose level " << verbose << std::endl << std::endl;
 }
 
-void AuxInfoReader::assignSensDetsToVols() {
+void AuxInfoReader::assignAuxInfoToVolumes() {
     const G4LogicalVolumeStore* lvs = G4LogicalVolumeStore::GetInstance();
     std::vector<G4LogicalVolume*>::const_iterator lvciter;
     for(lvciter = lvs->begin(); lvciter != lvs->end(); lvciter++) {
         G4GDMLAuxListType auxInfo = parser->GetVolumeAuxiliaryInformation(*lvciter);
         if (auxInfo.size() > 0) {
-            G4cout << "Auxiliary Information is found for Logical Volume :  "
-                    << (*lvciter)->GetName() << G4endl;
 
             for(std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfo.begin();
                     iaux != auxInfo.end(); iaux++ ) {
@@ -119,15 +127,28 @@ void AuxInfoReader::assignSensDetsToVols() {
                 G4String auxVal = iaux->value;
                 G4String auxUnit = iaux->unit;
 
+                G4LogicalVolume* logVol = (*lvciter);
+
                 if (auxType == "SensDet") {
                     G4String sdName = auxVal;
                     G4VSensitiveDetector* sd = G4SDManager::GetSDMpointer()->FindSensitiveDetector(sdName);
-                    if (sd != 0) {
-                        std::cout << "Assigning SD " << sd->GetName() << " to " << (*lvciter)->GetName() << std::endl;
-                        (*lvciter)->SetSensitiveDetector(sd);
+                    if (sd != NULL) {
+                        logVol->SetSensitiveDetector(sd);
+                        std::cout << "Assiged SD " << sd->GetName() << " to " << logVol->GetName() << std::endl;
                     } else {
-                        std::cout << "Unknown SensDet ref in volume's auxiliary info: " << sdName << std::endl;
+                        std::cout << "Unknown SensDet in volume's auxiliary info: " << sdName << std::endl;
                         G4Exception("", "", FatalException, "The SensDet was not found.  Is it defined in userinfo?");
+                    }
+                } else if (auxType == "MagneticField") {
+                    G4String magFieldName = auxVal;
+                    G4MagneticField* magField = MagneticFieldStore::getInstance()->getMagneticField(magFieldName);
+                    if (magField != NULL) {
+                        G4FieldManager* mgr = new G4FieldManager(magField);
+                        logVol->SetFieldManager(mgr, true /* FIXME: hard-coded to force field manager to daughters */);
+                        std::cout << "Assigned magnetic field " << magFieldName << " to volume " << logVol->GetName() << std::endl;
+                    } else {
+                        std::cout << "Unknown MagneticField ref in volume's auxiliary info: " << magFieldName << std::endl;
+                        G4Exception("", "", FatalException, "The MagneticField was not found.  Is it defined in userinfo?");
                     }
                 }
             }
@@ -137,7 +158,7 @@ void AuxInfoReader::assignSensDetsToVols() {
 
 void AuxInfoReader::createDetectorId(G4String idName, const G4GDMLAuxListType* auxInfoList) {
 
-    std::cout << "creating DetectorId " << idName << std::endl;
+    std::cout << "Creating DetectorId " << idName << std::endl;
     IdField::IdFieldList* fieldList = new IdField::IdFieldList();
 
     // iterate fields
@@ -193,4 +214,59 @@ void AuxInfoReader::createDetectorId(G4String idName, const G4GDMLAuxListType* a
     DetectorId* id = new DetectorId(fieldList);
     DetectorIdStore::getInstance()->addId(idName, id);
     std::cout << "Created detector ID " << idName << std::endl << std::endl;
+}
+
+void AuxInfoReader::createMagneticField(G4String magFieldName, const G4GDMLAuxListType* auxInfoList) {
+
+    // Find type of the mag field.
+    G4String magFieldType("");
+    for(std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin();
+                    iaux != auxInfoList->end(); iaux++ ) {
+
+        G4String auxType = iaux->type;
+        G4String auxVal = iaux->value;
+
+        if (auxType == "MagneticFieldType") {
+            magFieldType = auxVal;
+            break;
+        }
+    }
+
+    if (magFieldType == "") {
+        G4Exception("", "", FatalException, "Missing MagFieldType for magnetic field definition.");
+    }
+
+    G4MagneticField* magField = NULL;
+
+    // Create a uniform mag field using the built-in Geant4 type.
+    if (magFieldType == "G4UniformMagField") {
+        std::string::size_type sz;
+        double bx, by, bz;
+        bx = by = bz = 0.;
+        for (std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin(); iaux != auxInfoList->end(); iaux++) {
+
+            G4String auxType = iaux->type;
+            G4String auxVal = iaux->value;
+            G4String auxUnit = iaux->unit;
+
+            G4String expr = auxVal + "*" + auxUnit;
+            if (auxType == "bx") {
+                bx = eval->Evaluate(expr);
+            } else if (auxType == "by") {
+                by = eval->Evaluate(expr);
+            } else if (auxType == "bz") {
+                bz = eval->Evaluate(expr);
+            }
+        }
+        G4ThreeVector fieldComponents(bx, by, bz);
+        magField = new G4UniformMagField(fieldComponents);
+
+        std::cout << "Created G4UniformMagField " << magFieldName << " with field components " << fieldComponents << std::endl << std::endl;
+
+    } else {
+        std::cerr << "Unknown MagFieldType in auxiliary info: " << magFieldType << std::endl;
+        G4Exception("", "", FatalException, "Unknown MagFieldType in auxiliary info.");
+    }
+
+    MagneticFieldStore::getInstance()->addMagneticField(magFieldName, magField);
 }
