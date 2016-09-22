@@ -1,0 +1,3 @@
+/control/execute det.mac
+/control/execute vis.mac
+/control/execute muon.mac
