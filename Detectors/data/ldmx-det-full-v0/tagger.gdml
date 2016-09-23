@@ -1,0 +1,123 @@
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+  <define />
+
+  <materials />
+
+  <solids>
+    <box lunit="mm" name="LDMXTaggerModuleVolume_component0Sensor0Box" x="38.3399" y="98.33" z="0.32" />
+    <box lunit="mm" name="LDMXTaggerModuleVolume_component0Box" x="40.34" y="100" z="0.32" />
+    <box lunit="mm" name="LDMXTaggerModuleVolume_component1Box" x="40.34" y="100" z="0.2" />
+    <box lunit="mm" name="LDMXTaggerModuleBox" x="40.34" y="100" z="0.52" />
+    <box lunit="mm" name="tagger_box" x="200" y="200" z="640" />
+  </solids>
+
+  <structure>
+ 
+    <!-- define tagger volumes --> 
+    <volume name="LDMXTaggerModuleVolume_component0Sensor0">
+      <materialref ref="Silicon" />
+      <solidref ref="LDMXTaggerModuleVolume_component0Sensor0Box" />
+      <auxiliary auxtype="SensDet" auxvalue="TaggerSD1"/>
+    </volume>
+    <volume name="LDMXTaggerModuleVolume_component0">
+      <materialref ref="Silicon" />
+      <solidref ref="LDMXTaggerModuleVolume_component0Box" />
+      <physvol name="LDMXTaggerModuleVolume_component0Sensor0_physvol">
+        <volumeref ref="LDMXTaggerModuleVolume_component0Sensor0" />
+      </physvol>
+    </volume>
+    <volume name="LDMXTaggerModuleVolume_component1">
+      <materialref ref="Carbon" />
+      <solidref ref="LDMXTaggerModuleVolume_component1Box" />
+    </volume>
+    <volume name="LDMXTaggerModuleVolume">
+      <materialref ref="Vacuum" />
+      <solidref ref="LDMXTaggerModuleBox" />
+      <physvol name="LDMXTaggerModuleVolume_component0_physvol">
+        <volumeref ref="LDMXTaggerModuleVolume_component0" />
+        <position name="LDMXTaggerModuleVolume_component0_physvol_pos" unit="mm" x="0" y="0" z="-0.1" />
+      </physvol>
+      <physvol copynumber="1" name="LDMXTaggerModuleVolume_component1_physvol1">
+        <volumeref ref="LDMXTaggerModuleVolume_component1" />
+        <position name="LDMXTaggerModuleVolume_component1_physvol1_pos" unit="mm" x="0" y="0" z="0.16" />
+      </physvol>
+    </volume>
+    
+    <!-- define tagger physical volumes inside envelope volume -->
+    <volume name="tagger">
+      <materialref ref="Vacuum"/>
+      <solidref ref="tagger_box"/>
+      <physvol copynumber="1" name="LDMXTaggerModuleVolume_physvol1">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol1_pos" unit="mm" x="-20.874" y="0" z="-310.5" />
+      </physvol>
+      <physvol copynumber="1" name="LDMXTaggerModuleVolume_physvol2">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol2_pos" unit="mm" x="-20.874" y="0" z="-304.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol2_rot" unit="deg" x="0" y="0" z="5.72957795130823" />
+      </physvol>
+      <physvol copynumber="2" name="LDMXTaggerModuleVolume_physvol3">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol3_pos" unit="mm" x="-14.758" y="0" z="-210.5" />
+      </physvol>
+      <physvol copynumber="2" name="LDMXTaggerModuleVolume_physvol4">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol4_pos" unit="mm" x="-14.758" y="0" z="-204.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol4_rot" unit="deg" x="0" y="0" z="-5.72957795130823" />
+      </physvol>
+      <physvol copynumber="3" name="LDMXTaggerModuleVolume_physvol5">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol5_pos" unit="mm" x="-9.657" y="0" z="-110.5" />
+      </physvol>
+      <physvol copynumber="3" name="LDMXTaggerModuleVolume_physvol6">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol6_pos" unit="mm" x="-9.657" y="0" z="-104.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol6_rot" unit="deg" x="0" y="0" z="5.72957795130823" />
+      </physvol>
+      <physvol copynumber="4" name="LDMXTaggerModuleVolume_physvol7">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol7_pos" unit="mm" x="-5.342" y="0" z="-10.5" />
+      </physvol>
+      <physvol copynumber="4" name="LDMXTaggerModuleVolume_physvol8">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol8_pos" unit="mm" x="-5.342" y="0" z="-4.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol8_rot" unit="deg" x="0" y="0" z="-5.72957795130823" />
+      </physvol>
+      <physvol copynumber="5" name="LDMXTaggerModuleVolume_physvol9">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol9_pos" unit="mm" x="-2.723" y="0" z="89.5" />
+      </physvol>
+      <physvol copynumber="5" name="LDMXTaggerModuleVolume_physvol10">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol10_pos" unit="mm" x="-2.723" y="0" z="95.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol10_rot" unit="deg" x="0" y="0" z="5.72957795130823" />
+      </physvol>
+      <physvol copynumber="6" name="LDMXTaggerModuleVolume_physvol11">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol11_pos" unit="mm" x="-0.938" y="0" z="189.5" />
+      </physvol>
+      <physvol copynumber="6" name="LDMXTaggerModuleVolume_physvol12">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol12_pos" unit="mm" x="-0.938" y="0" z="195.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol12_rot" unit="deg" x="0" y="0" z="-5.72957795130823" />
+      </physvol>
+      <physvol copynumber="7" name="LDMXTaggerModuleVolume_physvol13">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol13_pos" unit="mm" x="-0.065" y="0" z="289.5" />
+      </physvol>
+      <physvol copynumber="7" name="LDMXTaggerModuleVolume_physvol14">
+        <volumeref ref="LDMXTaggerModuleVolume" />
+        <position name="LDMXTaggerModuleVolume_physvol14_pos" unit="mm" x="-0.065" y="0" z="295.5" />
+        <rotation name="LDMXTaggerModuleVolume_physvol14_rot" unit="deg" x="0" y="0" z="-5.72957795130823" />
+      </physvol>           
+      <auxiliary auxtype="MagneticField" auxvalue="AnalyzingDipole"/>
+    </volume>       
+      
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="tagger"/>
+  </setup>
+
+</gdml>

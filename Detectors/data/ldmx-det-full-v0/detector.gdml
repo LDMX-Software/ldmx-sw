@@ -6,8 +6,8 @@
     <rotation name="identity" x="0" y="0" z="0" />
     <position name="calorimeter_pos" x="0" y="0" z="900" />
     <rotation name="calorimeter_rot" x="0" y="0" z="0" />
-    <position name="tracker_pos" x="0" y="0" z="-300" />
-    <rotation name="tracker_rot" x="0" y="0" z="0" />
+    <position name="tagger_pos" x="0.0" y="0.0" z="-321.0"/>
+    <position name="recoil_pos" x="0.0" y="0.0" z="(177.54 / 2) + 0.35"/>
   </define>
 
   <materials>
@@ -27,20 +27,67 @@
       <fraction n="0.234" ref="O" />
       <fraction n="0.012" ref="Ar" />
     </material>
+    <element Z="74" formula="W" name="W" >
+      <atom type="A" unit="g/mol" value="183.842" />
+    </element>           
+    <material name="Tungsten" state="solid">
+      <MEE unit="eV" value="727"/>
+      <D unit="g/cm3" value="19.2999898451316"/>
+      <fraction n="1" ref="W"/>
+    </material>
+    <element Z="14" formula="Si" name="Si" >
+      <atom type="A" unit="g/mol" value="28.0854" />
+    </element>
+    <material name="Silicon" state="solid">
+      <MEE unit="eV" value="173" />
+      <D unit="g/cm3" value="2.32999877404956" />
+      <fraction n="1" ref="Si" />
+    </material>
+    <element Z="6" formula="C" name="C" >
+      <atom type="A" unit="g/mol" value="12.0107" />
+    </element>
+    <material name="Carbon" state="solid">
+      <MEE unit="eV" value="81" />
+      <D unit="g/cm3" value="1.99999894768203" />
+      <fraction n="1" ref="C" />
+    </material>
+    <element Z="1" formula="H" name="H" >
+      <atom type="A" unit="g/mol" value="1.00794" />
+    </element>
+    <material name="Vacuum" state="gas">
+      <MEE unit="eV" value="19.2" />
+      <D unit="g/cm3" value="9.99999473841014e-09" />
+      <fraction n="1" ref="H" />
+    </material>
   </materials>
 
   <solids>
     <box lunit="mm" name="world_box" x="5000" y="5000" z="5000" />
+    <box lunit="mm" name="target_box" x="35" y="95" z="0.35" />
   </solids>
 
   <structure>
+    <volume name="target">
+      <materialref ref="Tungsten" />
+      <solidref ref="target_box" />
+    </volume>
     <volume name="World" >
-      <materialref ref="Air" />
+      <materialref ref="Vacuum" />
       <solidref ref="world_box" />
       <physvol>
-        <file name="trackers.gdml"/>
-        <positionref ref="tracker_pos"/>
-        <rotationref ref="tracker_rot"/>
+        <volumeref ref="target"/>
+        <positionref ref="center"/>
+        <rotationref ref="identity"/>
+      </physvol>              
+      <physvol>
+        <file name="tagger.gdml"/>
+        <positionref ref="tagger_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>      
+      <physvol>
+        <file name="recoil.gdml"/>
+        <positionref ref="recoil_pos"/>
+        <rotationref ref="identity"/>
       </physvol>
       <physvol>
         <file name="calorimeters.gdml"/>
