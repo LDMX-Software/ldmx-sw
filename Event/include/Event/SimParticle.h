@@ -36,6 +36,8 @@ class SimParticle: public TObject {
 
         double getMass();
 
+        double getCharge();
+
         /**
          * Returns a vector with pointers copied from the TRefArray.
          */
@@ -63,6 +65,8 @@ class SimParticle: public TObject {
 
         void setMass(double mass);
 
+        void setCharge(double charge);
+
         void addDaughter(SimParticle* daughter);
 
         void addParent(SimParticle* parent);
@@ -78,6 +82,7 @@ class SimParticle: public TObject {
         double endPoint[3];
         double momentum[3];
         double mass;
+        double charge;
 
         //TRefArray* _daughters;
         //TRefArray* _parents;

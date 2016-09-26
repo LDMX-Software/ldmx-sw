@@ -89,11 +89,13 @@
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
       </physvol>
+      <!--      
       <physvol>
         <file name="calorimeters.gdml"/>
         <positionref ref="calorimeter_pos"/>
         <rotationref ref="calorimeter_rot"/>
       </physvol>
+      -->
     </volume>
   </structure>
   

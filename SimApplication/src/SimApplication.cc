@@ -1,11 +1,13 @@
 #include "SimApplication/SimApplication.h"
 
 // LDMX
-#include "SimApplication/PrimaryGeneratorAction.h"
 #include "SimApplication/DetectorConstruction.h"
+#include "SimApplication/PrimaryGeneratorAction.h"
+#include "SimApplication/SimApplicationMessenger.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
-#include "SimApplication/SimApplicationMessenger.h"
+#include "SimApplication/UserTrackingAction.h"
+
 
 // STL
 #include <vector>
@@ -61,6 +63,7 @@ void SimApplication::run(int argc, char** argv) {
     runManager->SetUserAction(new PrimaryGeneratorAction);
     runManager->SetUserAction(new UserEventAction);
     runManager->SetUserAction(new UserRunAction);
+    runManager->SetUserAction(new UserTrackingAction);
 
     // Initialize G4 visualization framework.
     G4VisManager* visManager = new G4VisExecutive;

@@ -36,16 +36,16 @@ class EventHeader {
             return timestamp;
         }
 
-        void setEventNumber(int eventNumber) {
-            this->eventNumber = eventNumber;
+        void setEventNumber(int anEventNumber) {
+            eventNumber = anEventNumber;
         }
 
-        void setRun(int run) {
-            this->run = run;
+        void setRun(int aRun) {
+            run = aRun;
         }
 
-        void setTimestamp(int timestamp) {
-            this->timestamp = timestamp;
+        void setTimestamp(int aTimestamp) {
+            timestamp = aTimestamp;
         }
 
     private:
@@ -73,6 +73,10 @@ class Event: public TObject {
         int getCollectionSize(const std::string& collectionName);
 
         TObject* addObject(const std::string& collectionName);
+
+    public:
+
+        static std::string SIM_PARTICLES;
 
     private:
 

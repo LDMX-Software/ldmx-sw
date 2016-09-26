@@ -11,7 +11,8 @@ SimParticle::SimParticle() :
     simStatus(0),
     genStatus(0),
     time(0),
-    mass(0) /*,
+    mass(0),
+    charge(0) /*,
     _daughters(new TRefArray()),
     _parents(new TRefArray())*/ {
 }
@@ -74,6 +75,10 @@ double SimParticle::getMass() {
     return mass;
 }
 
+double SimParticle::getCharge() {
+    return charge;
+}
+
 /*
 std::vector<SimParticle*> SimParticle::daughters() {
     std::vector<SimParticle*> daughters;
@@ -132,6 +137,10 @@ void SimParticle::setMomentum(double px, double py, double pz) {
 
 void SimParticle::setMass(double mass) {
     this->mass = mass;
+}
+
+void SimParticle::setCharge(double charge) {
+    this->charge = charge;
 }
 
 void SimParticle::addDaughter(SimParticle* daughter) {

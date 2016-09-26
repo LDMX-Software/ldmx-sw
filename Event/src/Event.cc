@@ -4,6 +4,8 @@ ClassImp(Event)
 
 int Event::DEFAULT_COLLECTION_SIZE = 100;
 
+std::string Event::SIM_PARTICLES = std::string("SimParticles");
+
 Event::Event() :
         TObject(),
         simParticles(new TClonesArray("SimParticle", Event::DEFAULT_COLLECTION_SIZE)),
