@@ -2,6 +2,7 @@
 
 // LDMX
 #include "Event/RootEventWriter.h"
+#include "SimApplication/UserTrackInformation.h"
 
 // Geant4
 #include "G4RunManager.hh"
@@ -12,13 +13,16 @@
 #include <stdio.h>
 #include <time.h>
 
-UserEventAction::UserEventAction() {
+UserEventAction::UserEventAction()
+    : simParticleBuilder(new SimParticleBuilder) {
 }
 
 UserEventAction::~UserEventAction() {
+    delete simParticleBuilder;
 }
 
 void UserEventAction::BeginOfEventAction(const G4Event* event) {
+
     std::cout << "UserEventAction::BeginOfEventAction - " << event->GetEventID() << std::endl;
 
     // Set information on the current event header.
@@ -29,8 +33,15 @@ void UserEventAction::BeginOfEventAction(const G4Event* event) {
 }
 
 void UserEventAction::EndOfEventAction(const G4Event* event) {
+
     std::cout << "UserEventAction::EndOfEventAction - " << event->GetEventID() << std::endl;
 
-    // Fill the current root event into the tree and then clear it.
+    // Build the SimParticle list for the output ROOT event.
+    simParticleBuilder->buildSimParticles();
+
+    // Fill the current ROOT event into the tree and then clear it.
     RootEventWriter::getInstance()->writeEvent();
+
+    // Clear the registry of track information for processing the next event.
+    TrackSummary::clearRegistry();
 }
