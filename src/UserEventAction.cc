@@ -38,9 +38,14 @@ void UserEventAction::EndOfEventAction(const G4Event* event) {
     // Assign SimParticle objects to SimTrackerHits.
     simParticleBuilder->assignTrackerHitSimParticles();
 
+    // Assign SimParticle objects to SimCalorimeterHits.
+    simParticleBuilder->assignCalorimeterHitSimParticles();
+
     // Fill the current ROOT event into the tree and then clear it.
     RootEventWriter::getInstance()->writeEvent();
 
     // Clear the registry of track information for processing the next event.
     TrackSummary::clearRegistry();
+
+    std::cout << ">>> End Event " << event->GetEventID() << " <<<" << std::endl;
 }
