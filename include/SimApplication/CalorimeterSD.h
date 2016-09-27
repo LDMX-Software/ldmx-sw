@@ -5,15 +5,16 @@
 #include "G4VSensitiveDetector.hh"
 
 // LDMX
-#include "SimApplication/G4CalorimeterHit.h"
+#include "DetDescr/DetectorID.h"
 #include "Event/Event.h"
-#include "DetDescr/CalorimeterGeomId.h"
+#include "SimApplication/G4CalorimeterHit.h"
+
 
 class CalorimeterSD: public G4VSensitiveDetector {
 
     public:
 
-        CalorimeterSD(G4String name, G4String theCollectionName, int subdetId, DetectorId* detId);
+        CalorimeterSD(G4String theName, G4String theCollectionName, int theSubdetId, DetectorID* theDetId);
 
         virtual ~CalorimeterSD();
 
@@ -28,7 +29,7 @@ class CalorimeterSD: public G4VSensitiveDetector {
         G4CalorimeterHitsCollection* hitsCollection;
         Event* currentEvent;
         int subdetId;
-        DetectorId* detId;
+        DetectorID* detId;
 };
 
 #endif

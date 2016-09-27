@@ -13,12 +13,12 @@
 // LDMX
 #include "Event/RootEventWriter.h"
 
-CalorimeterSD::CalorimeterSD(G4String theName, G4String theCollectionName, int subdetId, DetectorId* detId) :
+CalorimeterSD::CalorimeterSD(G4String theName, G4String theCollectionName, int theSubdetId, DetectorID* theDetId) :
     G4VSensitiveDetector(theName),
     hitsCollection(0),
     currentEvent(0),
-    subdetId(subdetId),
-    detId(detId) {
+    subdetId(theSubdetId),
+    detId(theDetId) {
 
     // Add the collection name to vector of names.
     this->collectionName.push_back(theCollectionName);
@@ -65,17 +65,20 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
     G4StepPoint* prePoint = aStep->GetPreStepPoint();
     G4StepPoint* postPoint = aStep->GetPostStepPoint();
     G4ThreeVector position = 0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
-    simCalorimeterHit->setPosition(position[0], position[1], position[2]);
+    G4ThreeVector volumePosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()
+            ->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
+    simCalorimeterHit->setPosition(position[0], position[1], volumePosition.z());
 
     // Set the global time.
     simCalorimeterHit->setTime(aStep->GetTrack()->GetGlobalTime());
 
-    /*
-     * Set the 32-bit ID on the hit.
-     */
+    // Set the ID on the hit.
     int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
     detId->setFieldValue(1, layerNumber);
-    hit->getSimCalorimeterHit()->setId(detId->pack());
+    hit->getSimCalorimeterHit()->setID(detId->pack());
+
+    // Set the track ID on the hit.
+    hit->setTrackID(aStep->GetTrack()->GetTrackID());
 
     if (this->verboseLevel > 0) {
         std::cout << "Created new SimCalorimeterHit in detector " << this->GetName()
