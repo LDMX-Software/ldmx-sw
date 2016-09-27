@@ -45,7 +45,7 @@ void RootEventWriter::open() {
     rootFile = new TFile(fileName.c_str(), "RECREATE");
     tree = new TTree("LDMX_Event", "LDMX event tree");
     event = new Event();
-    tree->Branch("LdmxEvent", "Event", &event, 32000, 3);
+    tree->Branch("LdmxEvent" /* branch name */, "Event" /* class name */, &event, 32000, 3);
 }
 
 void RootEventWriter::writeEvent() {
