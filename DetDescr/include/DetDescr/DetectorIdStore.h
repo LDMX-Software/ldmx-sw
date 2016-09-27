@@ -2,24 +2,24 @@
 #define DETDESCR_DETECTORIDSTORE_H_ 1
 
 // LDMX
-#include "DetDescr/DetectorId.h"
+#include "DetectorID.h"
 
-class DetectorIdStore {
+class DetectorIDStore {
 
     public:
 
-        typedef std::map<std::string, DetectorId*> DetectorIdMap;
+        typedef std::map<std::string, DetectorID*> DetectorIdMap;
 
-        static DetectorIdStore* getInstance() {
-            static DetectorIdStore INSTANCE;
+        static DetectorIDStore* getInstance() {
+            static DetectorIDStore INSTANCE;
             return &INSTANCE;
         }
 
-        DetectorId* getId(const std::string& name) {
+        DetectorID* getID(const std::string& name) {
             return ids[name];
         }
 
-        void addId(const std::string& name, DetectorId* id) {
+        void addID(const std::string& name, DetectorID* id) {
             ids[name] = id;
         }
 

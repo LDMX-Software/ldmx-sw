@@ -5,21 +5,21 @@
 #include <vector>
 
 // LDMX
-#include "DetDescr/IdField.h"
+#include "DetDescr/IDField.h"
 
 /**
  * Represents an ID in the detector with a raw, 32-bit value which can
  * be unpacked into a list of field values or packed from a list of field
  * values.
  */
-class DetectorId {
+class DetectorID {
 
     protected:
 
         /**
          * Protected constructor for sub-classes.
          */
-        DetectorId();
+        DetectorID();
 
     public:
 
@@ -41,9 +41,9 @@ class DetectorId {
         /**
          * Define a new detector ID from a list of field information.
          */
-        DetectorId(IdField::IdFieldList*);
+        DetectorID(IDField::IdFieldList*);
 
-        virtual ~DetectorId();
+        virtual ~DetectorID();
 
         /**
          * Get the raw value of the detector ID.
@@ -83,12 +83,12 @@ class DetectorId {
         /**
          * Get the list of field information.
          */
-        IdField::IdFieldList* getFieldList();
+        IDField::IdFieldList* getFieldList();
 
         /**
          * Get the information for a field by name.
          */
-        IdField* getField(const std::string&);
+        IDField* getField(const std::string&);
 
         /**
          * Get a field's value by name.
@@ -99,8 +99,8 @@ class DetectorId {
 
         RawValue rawValue;
         FieldValueList values;
-        IdField::IdFieldMap idFieldMap;
-        IdField::IdFieldList* idFieldList;
+        IDField::IdFieldMap idFieldMap;
+        IDField::IdFieldList* idFieldList;
 };
 
 #endif

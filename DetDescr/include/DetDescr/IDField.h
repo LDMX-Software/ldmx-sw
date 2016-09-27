@@ -6,14 +6,14 @@
 #include <map>
 #include <vector>
 
-class IdField {
+class IDField {
 
     public:
 
-        typedef std::map<std::string, IdField*> IdFieldMap;
-        typedef std::vector<IdField*> IdFieldList;
+        typedef std::map<std::string, IDField*> IdFieldMap;
+        typedef std::vector<IDField*> IdFieldList;
 
-        IdField(std::string, unsigned index, unsigned startBit, unsigned endBit);
+        IDField(std::string, unsigned index, unsigned startBit, unsigned endBit);
 
         const std::string& getFieldName();
 
