@@ -89,13 +89,11 @@
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <!--      
       <physvol>
         <file name="calorimeters.gdml"/>
         <positionref ref="calorimeter_pos"/>
         <rotationref ref="calorimeter_rot"/>
       </physvol>
-      -->
     </volume>
   </structure>
   
@@ -149,28 +147,28 @@
       <auxiliary auxtype="HitsCollection" auxvalue="TaggerSimHits"/>
       <auxiliary auxtype="SubdetId" auxvalue="1"/>
       <auxiliary auxtype="DetectorId" auxvalue="TaggerId"/>
-      <auxiliary auxtype="Verbose" auxvalue="1"/>
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="RecoilSD1">
       <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="RecoilSimHits"/>
       <auxiliary auxtype="SubdetId" auxvalue="2"/>
       <auxiliary auxtype="DetectorId" auxvalue="RecoilId"/>
-      <auxiliary auxtype="Verbose" auxvalue="1"/>
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="EcalSD1">
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="EcalSimHits"/>
       <auxiliary auxtype="SubdetId" auxvalue="3"/>
       <auxiliary auxtype="DetectorId" auxvalue="EcalId"/>
-      <auxiliary auxtype="Verbose" auxvalue="1"/>
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="HcalSD1">
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="HcalSimHits"/>
       <auxiliary auxtype="SubdetId" auxvalue="4"/>
       <auxiliary auxtype="DetectorId" auxvalue="HcalId"/>
-      <auxiliary auxtype="Verbose" auxvalue="1"/>
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     
     <!-- define magnetic fields -->
@@ -178,13 +176,18 @@
       <auxiliary auxtype="MagneticFieldType" auxvalue="G4UniformMagField"/>
       <auxiliary auxtype="bx" auxvalue="0.0" auxunit="tesla"/>
       <auxiliary auxtype="by" auxvalue="-1.5" auxunit="tesla"/>
-      <auxiliary auxtype="bz" auxvalue="0.0" auxunit="tesla"/>      
+      <auxiliary auxtype="bz" auxvalue="0.0" auxunit="tesla"/>
     </auxiliary>
     <auxiliary auxtype="MagneticField" auxvalue="RecoilDipole">
       <auxiliary auxtype="MagneticFieldType" auxvalue="G4UniformMagField"/>
       <auxiliary auxtype="bx" auxvalue="0.0" auxunit="tesla"/>
       <auxiliary auxtype="by" auxvalue="-0.75" auxunit="tesla"/>
       <auxiliary auxtype="bz" auxvalue="0.0" auxunit="tesla"/>
+    </auxiliary>
+    
+    <!-- define regions -->
+    <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
     </auxiliary>
     
   </userinfo>  

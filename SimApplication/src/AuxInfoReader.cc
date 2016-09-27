@@ -4,6 +4,7 @@
 #include "SimApplication/TrackerSD.h"
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/MagneticFieldStore.h"
+#include "SimApplication/UserRegionInformation.h"
 #include "DetDescr/DetectorIdStore.h"
 
 // Geant4
@@ -13,12 +14,18 @@
 #include "G4UniformMagField.hh"
 #include "G4GDMLEvaluator.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4RegionStore.hh"
+#include "G4Region.hh"
 
 // STL
 #include <string>
 
-AuxInfoReader::AuxInfoReader(G4GDMLParser* parser) :
-    parser(parser), eval(new G4GDMLEvaluator) {
+AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser) :
+    parser(theParser), eval(new G4GDMLEvaluator) {
+}
+
+AuxInfoReader::~AuxInfoReader() {
+    delete eval;
 }
 
 void AuxInfoReader::readGlobalAuxInfo() {
@@ -37,6 +44,8 @@ void AuxInfoReader::readGlobalAuxInfo() {
             createDetectorId(auxVal, iaux->auxList);
         } else if (auxType == "MagneticField") {
             createMagneticField(auxVal, iaux->auxList);
+        } else if (auxType == "Region") {
+            createRegion(auxVal, iaux->auxList);
         }
     }
     return;
@@ -90,7 +99,7 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
         G4Exception("", "", FatalException, "The SensDet is missing the DetectorId.");
     }
 
-    DetectorId* detId = DetectorIdStore::getInstance()->getId(idName);
+    DetectorID* detId = DetectorIDStore::getInstance()->getID(idName);
     if (detId == NULL) {
         std::cout << "The Detector ID" << idName << " does not exist.  Is it defined before the SensDet in userinfo?" << std::endl;
         G4Exception("", "", FatalException, "The referenced Detector ID was not found.");
@@ -127,14 +136,14 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
                 G4String auxVal = iaux->value;
                 G4String auxUnit = iaux->unit;
 
-                G4LogicalVolume* logVol = (*lvciter);
+                G4LogicalVolume* lv = (*lvciter);
 
                 if (auxType == "SensDet") {
                     G4String sdName = auxVal;
                     G4VSensitiveDetector* sd = G4SDManager::GetSDMpointer()->FindSensitiveDetector(sdName);
                     if (sd != NULL) {
-                        logVol->SetSensitiveDetector(sd);
-                        std::cout << "Assiged SD " << sd->GetName() << " to " << logVol->GetName() << std::endl;
+                        lv->SetSensitiveDetector(sd);
+                        std::cout << "Assiged SD " << sd->GetName() << " to " << lv->GetName() << std::endl;
                     } else {
                         std::cout << "Unknown SensDet in volume's auxiliary info: " << sdName << std::endl;
                         G4Exception("", "", FatalException, "The SensDet was not found.  Is it defined in userinfo?");
@@ -144,11 +153,20 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
                     G4MagneticField* magField = MagneticFieldStore::getInstance()->getMagneticField(magFieldName);
                     if (magField != NULL) {
                         G4FieldManager* mgr = new G4FieldManager(magField);
-                        logVol->SetFieldManager(mgr, true /* FIXME: hard-coded to force field manager to daughters */);
-                        std::cout << "Assigned magnetic field " << magFieldName << " to volume " << logVol->GetName() << std::endl;
+                        lv->SetFieldManager(mgr, true /* FIXME: hard-coded to force field manager to daughters */);
+                        std::cout << "Assigned magnetic field " << magFieldName << " to volume " << lv->GetName() << std::endl;
                     } else {
                         std::cout << "Unknown MagneticField ref in volume's auxiliary info: " << magFieldName << std::endl;
                         G4Exception("", "", FatalException, "The MagneticField was not found.  Is it defined in userinfo?");
+                    }
+                } else if (auxType == "Region") {
+                    G4String regionName = auxVal;
+                    G4Region* region = G4RegionStore::GetInstance()->GetRegion(regionName);
+                    if (region != NULL) {
+                        region->AddRootLogicalVolume(lv);
+                        std::cout << "Added volume " << lv->GetName() << " to region " << regionName << std::endl;
+                    } else {
+                        std::cerr << "Referenced region " << regionName << " was not found!" << std::endl;
                     }
                 }
             }
@@ -159,7 +177,7 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
 void AuxInfoReader::createDetectorId(G4String idName, const G4GDMLAuxListType* auxInfoList) {
 
     std::cout << "Creating DetectorId " << idName << std::endl;
-    IdField::IdFieldList* fieldList = new IdField::IdFieldList();
+    IDField::IdFieldList* fieldList = new IDField::IdFieldList();
 
     // iterate fields
     for(std::vector<G4GDMLAuxStructType>::const_iterator fieldIt = auxInfoList->begin();
@@ -204,15 +222,15 @@ void AuxInfoReader::createDetectorId(G4String idName, const G4GDMLAuxListType* a
                 G4Exception("", "", FatalException, "The DetectorId is missing the EndBit.");
             }
 
-            fieldList->push_back(new IdField(fieldName, index, startBit, endBit));
+            fieldList->push_back(new IDField(fieldName, index, startBit, endBit));
 
             std::cout << "Added IdField " << fieldName << " with StartBit = " << startBit << ", EndBit = "
                     << endBit << ", Index = " << index << std::endl;
         }
     }
 
-    DetectorId* id = new DetectorId(fieldList);
-    DetectorIdStore::getInstance()->addId(idName, id);
+    DetectorID* id = new DetectorID(fieldList);
+    DetectorIDStore::getInstance()->addID(idName, id);
     std::cout << "Created detector ID " << idName << std::endl << std::endl;
 }
 
@@ -269,4 +287,30 @@ void AuxInfoReader::createMagneticField(G4String magFieldName, const G4GDMLAuxLi
     }
 
     MagneticFieldStore::getInstance()->addMagneticField(magFieldName, magField);
+}
+
+void AuxInfoReader::createRegion(G4String name, const G4GDMLAuxListType* auxInfoList) {
+
+    bool storeTrajectories = true;
+    for(std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin();
+                iaux != auxInfoList->end(); iaux++ ) {
+
+        G4String auxType = iaux->type;
+        G4String auxVal = iaux->value;
+        G4String auxUnit = iaux->unit;
+
+        if (auxType == "StoreTrajectories") {
+            if (auxVal == "false") {
+                storeTrajectories = false;
+            } else if (auxVal == "true") {
+                storeTrajectories = true;
+            }
+        }
+    }
+
+    G4VUserRegionInformation* regionInfo = new UserRegionInformation(storeTrajectories);
+    G4Region* region = new G4Region(name);
+    region->SetUserInformation(regionInfo);
+
+    std::cout << "Created new detector region " << region->GetName() << std::endl << std::endl;
 }

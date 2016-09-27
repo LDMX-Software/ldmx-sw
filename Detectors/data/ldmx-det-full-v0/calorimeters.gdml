@@ -12433,6 +12433,7 @@
         <volumeref ref="Scintillator49log0x2ca5da0"/>
         <position name="Scintillator49phys0x2ca5f00_pos" unit="mm" x="0" y="0" z="614.75"/>
       </physvol>
+      <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
     </volume>
   </structure>
 
