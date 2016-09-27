@@ -12,8 +12,8 @@ G4TrackerHit::G4TrackerHit()
     : simTrackerHit(new SimTrackerHit()), trackID(-1) {
 }
 
-G4TrackerHit::G4TrackerHit(SimTrackerHit* simTrackerHit)
-    : simTrackerHit(simTrackerHit), trackID(-1) {
+G4TrackerHit::G4TrackerHit(SimTrackerHit* theSimTrackerHit)
+    : simTrackerHit(theSimTrackerHit), trackID(-1) {
 }
 
 G4TrackerHit::~G4TrackerHit() {
