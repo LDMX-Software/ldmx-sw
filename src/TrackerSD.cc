@@ -12,9 +12,9 @@
 
 // LDMX
 #include "Event/RootEventWriter.h"
-#include "DetDescr/IdField.h"
+#include "DetDescr/IDField.h"
 
-TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subdetId, DetectorId* detId) :
+TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subdetId, DetectorID* detId) :
     G4VSensitiveDetector(name),
     hitsCollection(0),
     currentEvent(0),
@@ -91,7 +91,7 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
      */
     int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
     detId->setFieldValue(1, layerNumber);
-    hit->getSimTrackerHit()->setId(detId->pack());
+    hit->getSimTrackerHit()->setID(detId->pack());
 
     /*
      * Debug print.

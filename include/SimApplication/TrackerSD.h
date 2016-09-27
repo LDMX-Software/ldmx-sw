@@ -2,18 +2,18 @@
 #define TRACKERSD_SIMAPPLICATION_H_ 1
 
 // Geant4
+#include <DetDescr/DetectorID.h>
 #include "G4VSensitiveDetector.hh"
 
 // LDMX
 #include "SimApplication/G4TrackerHit.h"
 #include "Event/Event.h"
-#include "DetDescr/DetectorId.h"
 
 class TrackerSD: public G4VSensitiveDetector {
 
     public:
 
-        TrackerSD(G4String name, G4String theCollectionName, int subdetId, DetectorId* detId);
+        TrackerSD(G4String name, G4String theCollectionName, int subdetId, DetectorID* detId);
 
         virtual ~TrackerSD();
 
@@ -28,7 +28,7 @@ class TrackerSD: public G4VSensitiveDetector {
         G4TrackerHitsCollection* hitsCollection;
         Event* currentEvent;
         int subdetId;
-        DetectorId* detId;
+        DetectorID* detId;
 };
 
 #endif
