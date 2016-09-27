@@ -21,18 +21,8 @@ TrackSummary::TrackSummary(const G4Track* aTrack)
     energy = aTrack->GetTotalEnergy();
     globalTime = aTrack->GetGlobalTime();
 
-    std::cout << "Registering new TrackSummary with track ID " << trackID << std::endl;
     trackMap[trackID] = this;
     trackList.push_back(this);
-
-    std::cout << "Added track summary pointer " << (void*) this << std::endl;
-    std::cout << "Added track ID " << trackList[trackList.size() - 1]->trackID << " to list" << std::endl;
-
-    std::cout << "Track summary list ..." << std::endl;
-    for (TrackSummary::TrackSummaryList::iterator it = trackList.begin();
-                it != trackList.end(); it++) {
-        std::cout << "  " << (*it)->trackID << std::endl;
-    }
 }
 
 TrackSummary::~TrackSummary() {
