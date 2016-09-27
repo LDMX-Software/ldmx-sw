@@ -24,6 +24,8 @@ class SimParticleBuilder {
 
         void assignTrackerHitSimParticles();
 
+        void assignCalorimeterHitSimParticles();
+
     private:
 
         void buildSimParticle(SimParticle* p, TrackSummary* info);

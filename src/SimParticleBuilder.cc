@@ -1,6 +1,7 @@
 #include "SimApplication/SimParticleBuilder.h"
 
 // LDMX
+#include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
 #include "SimApplication/UserTrackInformation.h"
 #include "Event/RootEventWriter.h"
@@ -29,10 +30,20 @@ void SimParticleBuilder::buildSimParticles() {
 
     for (TrackSummary::TrackSummaryList::iterator it = trackList->begin();
             it != trackList->end(); it++) {
-        SimParticle* p = (SimParticle*) event->addObject(Event::SIM_PARTICLES);
         TrackSummary* trackSummary = *it;
-        buildSimParticle(p, trackSummary);
-        particleMap[trackSummary->getTrackID()] = p;
+        if (trackSummary->getSaveFlag()) {
+            SimParticle* simParticle = (SimParticle*) event->addObject(Event::SIM_PARTICLES);
+            buildSimParticle(simParticle, trackSummary);
+            particleMap[trackSummary->getTrackID()] = simParticle;
+        } else {
+            TrackSummary* parent = trackSummary->findFirstSavedParent();
+            if (parent != NULL) {
+                SimParticle* parentParticle = particleMap[parent->getTrackID()];
+                if (parentParticle != NULL) {
+                    particleMap[trackSummary->getTrackID()] = parentParticle;
+                }
+            }
+        }
     }
 }
 
@@ -82,8 +93,34 @@ void SimParticleBuilder::assignTrackerHitSimParticles() {
                 if (trackID >= 0) {
                     SimParticle* simParticle = findSimParticle(trackID);
                     if (simParticle != NULL) {
-                        //std::cout << "Assigning SimParticle with track ID " << trackID << " to SimTrackerHit" << std::endl;
                         hit->getSimTrackerHit()->setSimParticle(simParticle);
+                    } else {
+                        std::cerr << "Failed to find SimParticle for SimTrackerHit with track ID " << trackID << std::endl;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void SimParticleBuilder::assignCalorimeterHitSimParticles() {
+    G4HCofThisEvent* hce =
+            G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetHCofThisEvent();
+    int nColl = hce->GetNumberOfCollections();
+    for (int iColl = 0; iColl < nColl; iColl++) {
+        G4VHitsCollection* hitsColl = hce->GetHC(iColl);
+        G4CalorimeterHitsCollection* calHits = dynamic_cast<G4CalorimeterHitsCollection*>(hitsColl);
+        if (calHits != NULL) {
+            int nHits = calHits->GetSize();
+            for (int iHit = 0; iHit < nHits; iHit++) {
+                G4CalorimeterHit* hit = (G4CalorimeterHit*) calHits->GetHit(iHit);
+                int trackID = hit->getTrackID();
+                if (trackID >= 0) {
+                    SimParticle* simParticle = findSimParticle(trackID);
+                    if (simParticle != NULL) {
+                        hit->getSimCalorimeterHit()->setSimParticle(simParticle);
+                    } else {
+                        std::cerr << "Failed to find SimParticle for SimCalorimeterHit with track ID " << trackID << std::endl;
                     }
                 }
             }
