@@ -12,6 +12,8 @@
 #include "TTree.h"
 #include "TBranch.h"
 #include "TSystem.h"
+#include "TH1F.h"
+#include "TH2F.h"
 
 // STL
 #include <stdio.h>
@@ -25,27 +27,31 @@ int main(int argc, const char* argv[])  {
         exit(1);
     }
 
-    std::cout << "Reading in ROOT file " << argv[1] << " ... " << std::endl;
-    TFile *file = new TFile(argv[1]);
+    TFile histFile("ldmx_sim_histos.root", "new");
+    //TH1F *h1 = new TH1F("h1_nRecoilHits", "Number of Recoil Hits", 100, -0.5, 99.5);
+    TH1F* nTaggerHitsHist = new TH1F("h1_nTaggerHits", "Number of Recoil Hits", 100, -0.5, 99.5);
+    TH2F* taggerXYHist = new TH2F("h2_taggerXY", "Tagger Hits XY", 200, -100, 100, 200, -100, 100);
 
-    TTree *tree = (TTree*) file->Get("LDMX_Event");
-    tree->Print();
-    Event* event = new Event();
-    TBranch *branch = tree->GetBranch("LdmxEvent");
-    if (branch == NULL) {
+    std::cout << "Reading in ROOT file " << argv[1] << " ... " << std::endl;
+    TFile* eventFile = new TFile(argv[1]);
+    TTree* eventTree = (TTree*) eventFile->Get("LDMX_Event");
+    eventTree->Print();
+    Event* currentEvent = new Event();
+    TBranch *eventBranch = eventTree->GetBranch("LdmxEvent");
+    if (eventBranch == NULL) {
         std::cerr << "The LdmxEvent branch is null!" << std::endl;
         exit(1);
     }
-    branch->SetAddress(&event);
+    eventBranch->SetAddress(&currentEvent);
 
-    for(int entry = 0; entry < tree->GetEntries(); ++entry) {
+    for(int entry = 0; entry < eventTree->GetEntries(); ++entry) {
 
         std::cout << "Getting TTree entry " << entry << std::endl;
 
-        tree->GetEntry(entry);
+        eventTree->GetEntry(entry);
 
-        std::cout << "EventHeader: run = " << event->getHeader()->getRun() << "; eventNumber = "
-                << event->getHeader()->getEventNumber() << "; timestamp = " << event->getHeader()->getTimestamp() << std::endl;
+        std::cout << "EventHeader: run = " << currentEvent->getHeader()->getRun() << "; eventNumber = "
+                << currentEvent->getHeader()->getEventNumber() << "; timestamp = " << currentEvent->getHeader()->getTimestamp() << std::endl;
 
         TClonesArray* coll = NULL;
 
@@ -55,17 +61,20 @@ int main(int argc, const char* argv[])  {
         //    coll[i].Print();
         //}
 
-        int nSimParticles = event->getCollectionSize(Event::SIM_PARTICLES);
+        int nSimParticles = currentEvent->getCollectionSize(Event::SIM_PARTICLES);
         std::cout << "Event has " << nSimParticles << " " << Event::SIM_PARTICLES << std::endl;
-        coll = event->getCollection(Event::SIM_PARTICLES);
+        coll = currentEvent->getCollection(Event::SIM_PARTICLES);
         for (int i = 0; i < nSimParticles; i++) {
             std::cout << "Printing SimParticle " << i << std::endl;
             coll->At(i)->Print();
         }
 
-        int nTaggerHits = event->getCollectionSize(Event::TAGGER_SIM_HITS);
+        int nTaggerHits = currentEvent->getCollectionSize(Event::TAGGER_SIM_HITS);
         std::cout << "Event has " << nTaggerHits << " " << Event::TAGGER_SIM_HITS << std::endl;
-        coll = event->getCollection(Event::TAGGER_SIM_HITS);
+
+        nTaggerHitsHist->Fill(nTaggerHits);
+
+        coll = currentEvent->getCollection(Event::TAGGER_SIM_HITS);
         for (int i = 0; i < nTaggerHits; i++) {
             std::cout << "Printing " << Event::TAGGER_SIM_HITS << "[" << i << "]" << std::endl;
             coll->At(i)->Print();
@@ -79,18 +88,23 @@ int main(int argc, const char* argv[])  {
             } else {
                 std::cerr << "SimParticle is null!" << std::endl;
             }
+
+            taggerXYHist->Fill(simTrackerHit->getStartPosition()[0], simTrackerHit->getStartPosition()[1]);
         }
 
-        int nRecoilHits = event->getCollectionSize(Event::RECOIL_SIM_HITS);
+        int nRecoilHits = currentEvent->getCollectionSize(Event::RECOIL_SIM_HITS);
         std::cout << "Event has " << nRecoilHits << " " << Event::RECOIL_SIM_HITS << std::endl;
-        coll = event->getCollection(Event::RECOIL_SIM_HITS);
+        coll = currentEvent->getCollection(Event::RECOIL_SIM_HITS);
         for (int i = 0; i < nRecoilHits; i++) {
             std::cout << "Printing " << Event::RECOIL_SIM_HITS << "[" << i << "]" << std::endl;
             coll->At(i)->Print();
         }
 
-        std::cout << "Done reading event " << event->getHeader()->getEventNumber() << std::endl << std::endl;
+        std::cout << "Done reading event " << currentEvent->getHeader()->getEventNumber() << std::endl << std::endl;
     }
+
+    histFile.Write();
+    histFile.Close();
 
     return 0;
 }
