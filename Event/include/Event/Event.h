@@ -77,6 +77,10 @@ class Event: public TObject {
     public:
 
         static std::string SIM_PARTICLES;
+        static std::string RECOIL_SIM_HITS;
+        static std::string TAGGER_SIM_HITS;
+        static std::string ECAL_SIM_HITS;
+        static std::string HCAL_SIM_HITS;
 
     private:
 
