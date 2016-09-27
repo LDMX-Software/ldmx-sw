@@ -59,6 +59,9 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
             (SimTrackerHit*) currentEvent->addObject(collectionName[0]);
     G4TrackerHit* hit = new G4TrackerHit(simTrackerHit);
 
+    // Assign track ID for finding the SimParticle in post event processing.
+    hit->setTrackID(aStep->GetTrack()->GetTrackID());
+
     // Set the edep.
     hit->getSimTrackerHit()->setEdep(edep);
 
