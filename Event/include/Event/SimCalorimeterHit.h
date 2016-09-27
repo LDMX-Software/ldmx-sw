@@ -3,6 +3,10 @@
 
 // ROOT
 #include "TObject.h"
+#include "TRef.h"
+
+// LDMX
+#include "Event/SimParticle.h"
 
 class SimCalorimeterHit: public TObject {
 
@@ -14,7 +18,7 @@ class SimCalorimeterHit: public TObject {
 
         void Print(Option_t *option = "") const;
 
-        int getId();
+        int getID();
 
         double getEdep();
 
@@ -22,7 +26,9 @@ class SimCalorimeterHit: public TObject {
 
         float getTime();
 
-        void setId(long id);
+        SimParticle* getSimParticle();
+
+        void setID(long id);
 
         void setEdep(double edep);
 
@@ -30,7 +36,7 @@ class SimCalorimeterHit: public TObject {
 
         void setTime(float time);
 
-        // TODO: sim particle contributions
+        void setSimParticle(SimParticle*);
 
     private:
 
@@ -38,6 +44,8 @@ class SimCalorimeterHit: public TObject {
         double edep;
         double position[3];
         float time;
+
+        TRef simParticle;
 
     ClassDef(SimCalorimeterHit, 1)
 };

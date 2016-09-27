@@ -6,7 +6,9 @@
 ClassImp(SimCalorimeterHit)
 
 SimCalorimeterHit::SimCalorimeterHit() :
-        id(0), edep(0.), time(0.) {
+        id(0),
+        edep(0.),
+        time(0.) {
     position[0] = 0.;
     position[1] = 0.;
     position[2] = 0.;
@@ -20,7 +22,7 @@ void SimCalorimeterHit::Print(Option_t *option) const {
             "position: ( " << position[0] << ", " << position[1] << ", " << position[2] << " ) }" << std::endl;
 }
 
-int SimCalorimeterHit::getId() {
+int SimCalorimeterHit::getID() {
     return id;
 }
 
@@ -36,7 +38,11 @@ float SimCalorimeterHit::getTime() {
     return time;
 }
 
-void SimCalorimeterHit::setId(long id) {
+SimParticle* SimCalorimeterHit::getSimParticle() {
+    return (SimParticle*) simParticle.GetObject();
+}
+
+void SimCalorimeterHit::setID(long id) {
     this->id = id;
 }
 
@@ -52,4 +58,8 @@ void SimCalorimeterHit::setPosition(double x, double y, double z) {
 
 void SimCalorimeterHit::setTime(float time) {
     this->time = time;
+}
+
+void SimCalorimeterHit::setSimParticle(SimParticle* aSimParticle) {
+    simParticle = aSimParticle;
 }
