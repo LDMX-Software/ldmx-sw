@@ -8,10 +8,12 @@
 
 G4Allocator<G4CalorimeterHit> G4CalorimeterHitAllocator;
 
-G4CalorimeterHit::G4CalorimeterHit() : simCalorimeterHit(new SimCalorimeterHit()) {
+G4CalorimeterHit::G4CalorimeterHit() :
+        simCalorimeterHit(new SimCalorimeterHit()), trackID(-1) {
 }
 
-G4CalorimeterHit::G4CalorimeterHit(SimCalorimeterHit* simCalorimeterHit) : simCalorimeterHit(simCalorimeterHit) {
+G4CalorimeterHit::G4CalorimeterHit(SimCalorimeterHit* simCalorimeterHit) :
+        simCalorimeterHit(simCalorimeterHit), trackID(-1) {
 }
 
 G4CalorimeterHit::~G4CalorimeterHit() {
@@ -44,4 +46,12 @@ void G4CalorimeterHit::Draw() {
 
 void G4CalorimeterHit::Print() {
     simCalorimeterHit->Print();
+}
+
+void G4CalorimeterHit::setTrackID(G4int aTrackID) {
+    trackID = aTrackID;
+}
+
+G4int G4CalorimeterHit::getTrackID() {
+    return trackID;
 }
