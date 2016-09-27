@@ -32,15 +32,20 @@ class G4TrackerHit: public G4VHit {
 
         G4ThreeVector getPosition();
 
+        G4int getTrackID();
+
         void setStartPosition(const G4ThreeVector& startPosition);
 
         void setEndPosition(const G4ThreeVector& endPosition);
 
         void setMomentum(const G4ThreeVector& endPosition);
 
+        void setTrackID(G4int);
+
     private:
 
         SimTrackerHit* simTrackerHit;
+        G4int trackID;
 };
 
 /**

@@ -8,10 +8,12 @@
 
 G4Allocator<G4TrackerHit> G4TrackerHitAllocator;
 
-G4TrackerHit::G4TrackerHit() : simTrackerHit(new SimTrackerHit()) {
+G4TrackerHit::G4TrackerHit()
+    : simTrackerHit(new SimTrackerHit()), trackID(-1) {
 }
 
-G4TrackerHit::G4TrackerHit(SimTrackerHit* simTrackerHit) : simTrackerHit(simTrackerHit) {
+G4TrackerHit::G4TrackerHit(SimTrackerHit* simTrackerHit)
+    : simTrackerHit(simTrackerHit), trackID(-1) {
 }
 
 G4TrackerHit::~G4TrackerHit() {
@@ -58,6 +60,10 @@ G4ThreeVector G4TrackerHit::getPosition() {
     return (0.5 * (startPos + endPos));
 }
 
+G4int G4TrackerHit::getTrackID() {
+    return trackID;
+}
+
 void G4TrackerHit::setStartPosition(const G4ThreeVector& startPosition) {
     simTrackerHit->setStartPosition(startPosition[0], startPosition[1], startPosition[2]);
 }
@@ -68,4 +74,8 @@ void G4TrackerHit::setEndPosition(const G4ThreeVector& endPosition) {
 
 void G4TrackerHit::setMomentum(const G4ThreeVector& p) {
     simTrackerHit->setMomentum(p[0], p[1], p[2]);
+}
+
+void G4TrackerHit::setTrackID(G4int aTrackID) {
+    this->trackID = aTrackID;
 }
