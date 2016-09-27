@@ -15,5 +15,6 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction() {
 }
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
+    std::cout << ">>> Begin Event " << event->GetEventID() << " <<<" << std::endl;
     particleGun->GeneratePrimaryVertex(event);
 }
