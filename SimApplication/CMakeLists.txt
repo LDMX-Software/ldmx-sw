@@ -34,3 +34,8 @@ target_link_libraries(ldmx-sim ${Geant4_LIBRARIES} Event DetDescr)
 
 # set executable installation target
 install(TARGETS ldmx-sim DESTINATION bin)
+
+# test program
+add_executable(ldmx-sim-analysis-test test/ldmx_sim_analysis_test.cc)
+target_link_libraries(ldmx-sim-analysis-test ${ROOT_LIBRARIES} Event)
+install(TARGETS ldmx-sim-analysis-test DESTINATION bin)
