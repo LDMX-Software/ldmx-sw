@@ -20,9 +20,13 @@ class SimParticleBuilder {
 
         void buildSimParticles();
 
+        SimParticle* findSimParticle(G4int);
+
+        void assignTrackerHitSimParticles();
+
     private:
 
-        static SimParticle* buildSimParticle(SimParticle* p, TrackSummary* info);
+        void buildSimParticle(SimParticle* p, TrackSummary* info);
 
     private:
 
