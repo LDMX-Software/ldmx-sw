@@ -30,9 +30,14 @@ class G4CalorimeterHit: public G4VHit {
 
         SimCalorimeterHit* getSimCalorimeterHit();
 
+        void setTrackID(G4int trackID);
+
+        G4int getTrackID();
+
     private:
 
         SimCalorimeterHit* simCalorimeterHit;
+        G4int trackID;
 };
 
 /**
