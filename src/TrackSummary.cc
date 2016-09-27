@@ -10,7 +10,7 @@ TrackSummary::TrackSummary(const G4Track* aTrack)
     : genStatus(0),
       simStatus(0),
       saveFlag(true),
-      parentInfo(NULL) {
+      parent(NULL) {
 
     charge = aTrack->GetDefinition()->GetPDGCharge();
     mass = aTrack->GetDynamicParticle()->GetMass();
@@ -20,6 +20,7 @@ TrackSummary::TrackSummary(const G4Track* aTrack)
     momentum = aTrack->GetMomentum();
     energy = aTrack->GetTotalEnergy();
     globalTime = aTrack->GetGlobalTime();
+    vertex = aTrack->GetVertexPosition();
 
     trackMap[trackID] = this;
     trackList.push_back(this);
@@ -30,7 +31,6 @@ TrackSummary::~TrackSummary() {
 
 void TrackSummary::update(const G4Track* aTrack) {
 
-    this->vertex = aTrack->GetVertexPosition();
     this->endPoint = aTrack->GetPosition();
 
     /*
@@ -102,10 +102,22 @@ void TrackSummary::setSaveFlag(bool aSaveFlag) {
 }
 
 TrackSummary* TrackSummary::findParent() {
-    if (this->parentInfo == NULL) {
-        this->parentInfo = trackMap[this->parentID];
+    if (this->parent == NULL) {
+        this->parent = trackMap[this->parentID];
     }
-    return this->parentInfo;
+    return this->parent;
+}
+
+TrackSummary* TrackSummary::findFirstSavedParent() {
+    TrackSummary* aParent = findParent();
+    while (aParent != NULL) {
+        if (aParent->getSaveFlag()) {
+            return aParent;
+        } else {
+            aParent = aParent->findParent();
+        }
+    }
+    return NULL;
 }
 
 TrackSummary::TrackSummaryMap* TrackSummary::getTrackSummaryMap() {

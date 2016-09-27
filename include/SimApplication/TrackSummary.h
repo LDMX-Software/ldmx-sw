@@ -7,6 +7,7 @@
 #include "G4Track.hh"
 #include "G4ThreeVector.hh"
 
+// TODO: This class could extend G4VTrajectory.
 class TrackSummary {
 
     public:
@@ -20,6 +21,7 @@ class TrackSummary {
 
         void update(const G4Track* track);
 
+        // G4VTrajectory::GetCharge()
         G4double getCharge() const;
 
         const G4ThreeVector& getEndPoint() const;
@@ -34,14 +36,18 @@ class TrackSummary {
 
         G4int getSimStatus() const;
 
+        // G4VTrajectory::GetInitialMomentum()
         const G4ThreeVector& getMomentum() const;
 
+        // G4VTrajectory::GetPDGEncoding()
         G4int getPDG() const;
 
         const G4ThreeVector& getVertex() const;
 
+        // G4VTrajectory::GetTrackID()
         G4int getTrackID() const;
 
+        // G4VTrajectory::GetParentID()
         G4int getParentID() const;
 
         G4double getTrackLength() const;
@@ -51,6 +57,8 @@ class TrackSummary {
         void setSaveFlag(bool aSaveFlag);
 
         TrackSummary* findParent();
+
+        TrackSummary* findFirstSavedParent();
 
         static TrackSummaryMap* getTrackSummaryMap();
 
@@ -73,7 +81,7 @@ class TrackSummary {
         G4int trackID;
         G4int parentID;
         G4bool saveFlag;
-        TrackSummary* parentInfo;
+        TrackSummary* parent;
 
         static TrackSummaryMap trackMap;
         static TrackSummaryList trackList;
