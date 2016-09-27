@@ -33,6 +33,8 @@ class SimTrackerHit: public TObject {
 
         float* getMomentum();
 
+        SimParticle* getSimParticle();
+
         void setId(long id);
 
         void setStartPosition(double x, double y, double z);
@@ -55,7 +57,7 @@ class SimTrackerHit: public TObject {
         float edep;
         float time;
         float momentum[3];
-        //TRef _simParticleRef;
+        TRef simParticle;
 
         ClassDef(SimTrackerHit, 1);
 };

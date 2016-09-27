@@ -62,6 +62,10 @@ float* SimTrackerHit::getMomentum() {
     return momentum;
 }
 
+SimParticle* SimTrackerHit::getSimParticle() {
+    return (SimParticle*) simParticle.GetObject();
+}
+
 void SimTrackerHit::setId(long id) {
     this->id = id;
 }
@@ -92,8 +96,6 @@ void SimTrackerHit::setMomentum(float px, float py, float pz) {
     momentum[2] = pz;
 }
 
-/*
-void SimTrackerHit::setSimParticle(SimParticle* simParticle) {
-    _simParticleRef = simParticle;
+void SimTrackerHit::setSimParticle(SimParticle* aSimParticle) {
+    this->simParticle = aSimParticle;
 }
-*/
