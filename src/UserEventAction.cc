@@ -23,8 +23,6 @@ UserEventAction::~UserEventAction() {
 
 void UserEventAction::BeginOfEventAction(const G4Event* event) {
 
-    std::cout << "UserEventAction::BeginOfEventAction - " << event->GetEventID() << std::endl;
-
     // Set information on the current event header.
     EventHeader* header = RootEventWriter::getInstance()->getEvent()->getHeader();
     header->setEventNumber(event->GetEventID());
@@ -34,10 +32,11 @@ void UserEventAction::BeginOfEventAction(const G4Event* event) {
 
 void UserEventAction::EndOfEventAction(const G4Event* event) {
 
-    std::cout << "UserEventAction::EndOfEventAction - " << event->GetEventID() << std::endl;
-
     // Build the SimParticle list for the output ROOT event.
     simParticleBuilder->buildSimParticles();
+
+    // Assign SimParticle objects to SimTrackerHits.
+    simParticleBuilder->assignTrackerHitSimParticles();
 
     // Fill the current ROOT event into the tree and then clear it.
     RootEventWriter::getInstance()->writeEvent();
