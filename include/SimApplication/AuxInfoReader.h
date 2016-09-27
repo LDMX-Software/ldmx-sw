@@ -8,7 +8,9 @@ class AuxInfoReader {
 
     public:
 
-        AuxInfoReader(G4GDMLParser* theParser);
+        AuxInfoReader(G4GDMLParser*);
+
+        virtual ~AuxInfoReader();
 
         void readGlobalAuxInfo();
 
@@ -21,6 +23,8 @@ class AuxInfoReader {
         void createDetectorId(G4String name, const G4GDMLAuxListType* auxInfoList);
 
         void createMagneticField(G4String name, const G4GDMLAuxListType* auxInfoList);
+
+        void createRegion(G4String name, const G4GDMLAuxListType* auxInfoList);
 
     private:
         G4GDMLParser* parser;
