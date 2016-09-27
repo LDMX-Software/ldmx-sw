@@ -38,7 +38,7 @@ void SimTrackerHit::Print(Option_t *option) const {
             " }" << std::endl;
 }
 
-int SimTrackerHit::getId() {
+int SimTrackerHit::getID() {
     return id;
 }
 
@@ -66,7 +66,7 @@ SimParticle* SimTrackerHit::getSimParticle() {
     return (SimParticle*) simParticle.GetObject();
 }
 
-void SimTrackerHit::setId(long id) {
+void SimTrackerHit::setID(long id) {
     this->id = id;
 }
 

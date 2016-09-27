@@ -21,7 +21,7 @@ class SimTrackerHit: public TObject {
 
         void Print(Option_t *option = "") const;
 
-        int getId();
+        int getID();
 
         double* getStartPosition();
 
@@ -35,7 +35,7 @@ class SimTrackerHit: public TObject {
 
         SimParticle* getSimParticle();
 
-        void setId(long id);
+        void setID(long id);
 
         void setStartPosition(double x, double y, double z);
 
