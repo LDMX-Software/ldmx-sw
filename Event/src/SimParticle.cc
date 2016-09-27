@@ -12,14 +12,14 @@ SimParticle::SimParticle() :
     genStatus(0),
     time(0),
     mass(0),
-    charge(0) /*,
-    _daughters(new TRefArray()),
-    _parents(new TRefArray())*/ {
+    charge(0),
+    daughters(new TRefArray()),
+    parents(new TRefArray()) {
 }
 
 SimParticle::~SimParticle() {
-    //delete _daughters;
-    //delete _parents;
+    daughters->Delete();
+    parents->Delete();
 }
 
 void SimParticle::Print(Option_t *option) const {
@@ -33,8 +33,8 @@ void SimParticle::Print(Option_t *option) const {
             "endPoint: ( " << endPoint[0] << ", " << endPoint[1] << ", " << endPoint[2] << " ), " <<
             "momentum: ( " << momentum[0] << ", " << momentum[1] << ", " << momentum[2] << " ), " <<
             "mass: " << mass << ", " <<
-            //"nDaughters: " << _daughters->GetEntries() <<
-            //"nParents: " << _parents->GetEntries() <<
+            "nDaughters: " << daughters->GetEntries() << ", "
+            "nParents: " << parents->GetEntries() <<
             " }" <<
             std::endl;
 }
@@ -79,23 +79,22 @@ double SimParticle::getCharge() {
     return charge;
 }
 
-/*
-std::vector<SimParticle*> SimParticle::daughters() {
-    std::vector<SimParticle*> daughters;
-    for (int iDau = 0; iDau < _daughters->GetEntries(); iDau++) {
-        daughters.push_back((SimParticle*) _daughters->At(iDau));
+std::vector<SimParticle*> SimParticle::getDaughters() {
+    std::vector<SimParticle*> dauVec;
+    for (int iDau = 0; iDau < daughters->GetEntries(); iDau++) {
+        dauVec.push_back((SimParticle*) daughters->At(iDau));
     }
-    return daughters;
+    return dauVec;
 }
 
-std::vector<SimParticle*> SimParticle::parents() {
-    std::vector<SimParticle*> parents;
-    for (int iParent = 0; iParent < _parents->GetEntries(); iParent++) {
-        parents.push_back((SimParticle*) _parents->At(iParent));
+std::vector<SimParticle*> SimParticle::getParents() {
+    std::vector<SimParticle*> parVec;
+    for (int iParent = 0; iParent < parents->GetEntries(); iParent++) {
+        parVec.push_back((SimParticle*) parents->At(iParent));
     }
-    return parents;
+    return parVec;
 }
-*/
+
 
 void SimParticle::setEnergy(double energy) {
     this->energy = energy;
@@ -144,10 +143,10 @@ void SimParticle::setCharge(double charge) {
 }
 
 void SimParticle::addDaughter(SimParticle* daughter) {
-    //_daughters->Add(daughter);
+    daughters->Add(daughter);
 }
 
 void SimParticle::addParent(SimParticle* parent) {
-    //_parents->Add(parent);
+    parents->Add(parent);
 }
 

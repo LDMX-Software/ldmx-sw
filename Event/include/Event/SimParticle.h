@@ -16,7 +16,7 @@ class SimParticle: public TObject {
 
         virtual ~SimParticle();
 
-        void Print(Option_t *option) const;
+        void Print(Option_t *option = "") const;
 
         double getEnergy();
 
@@ -38,14 +38,9 @@ class SimParticle: public TObject {
 
         double getCharge();
 
-        /**
-         * Returns a vector with pointers copied from the TRefArray.
-         */
-        //std::vector<SimParticle*> daughters();
-        /**
-         * Returns a vector with pointers copied from the TRefArray.
-         */
-        //std::vector<SimParticle*> parents();
+        std::vector<SimParticle*> getDaughters();
+
+        std::vector<SimParticle*> getParents();
 
         void setEnergy(double energy);
 
@@ -84,8 +79,8 @@ class SimParticle: public TObject {
         double mass;
         double charge;
 
-        //TRefArray* _daughters;
-        //TRefArray* _parents;
+        TRefArray* daughters;
+        TRefArray* parents;
 
         ClassDef(SimParticle, 1);
 };
