@@ -42,13 +42,26 @@ void RootEventWriter::open() {
 
     std::cout << "opening ROOT file " << fileName << " for writing" << std::endl;
 
-    rootFile = new TFile(fileName.c_str(), "RECREATE");
+    rootFile = new TFile();
+    rootFile->SetName(fileName.c_str());
+    rootFile->SetOption("RECREATE");
+
     tree = new TTree("LDMX_Event", "LDMX event tree");
     event = new Event();
     tree->Branch("LdmxEvent" /* branch name */, "Event" /* class name */, &event, 32000, 3);
 }
 
 void RootEventWriter::writeEvent() {
+
+    std::cout << std::endl;
+    std::cout << "Writing event " << event->getHeader()->getEventNumber() << std::endl;
+    std::cout << Event::SIM_PARTICLES << ": " << event->getCollectionSize(Event::SIM_PARTICLES) << std::endl;
+    std::cout << Event::RECOIL_SIM_HITS << ": " << event->getCollectionSize(Event::RECOIL_SIM_HITS) << std::endl;
+    std::cout << Event::TAGGER_SIM_HITS << ": " << event->getCollectionSize(Event::TAGGER_SIM_HITS) << std::endl;
+    std::cout << Event::ECAL_SIM_HITS << ": " << event->getCollectionSize(Event::ECAL_SIM_HITS) << std::endl;
+    std::cout << Event::HCAL_SIM_HITS << ": " << event->getCollectionSize(Event::HCAL_SIM_HITS) << std::endl;
+    std::cout << std::endl;
+
     // Fill the tree from the event object.
     tree->Fill();
 }
