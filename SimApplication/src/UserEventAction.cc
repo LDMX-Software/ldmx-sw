@@ -26,6 +26,9 @@ void UserEventAction::BeginOfEventAction(const G4Event*) {
 
     // Install custom trajectory container for the event.
     G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
+
+    // Clear the current event object.
+    RootEventWriter::getInstance()->getEvent()->Clear("");
 }
 
 void UserEventAction::EndOfEventAction(const G4Event* event) {
