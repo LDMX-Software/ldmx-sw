@@ -63,14 +63,14 @@ int Event::getCollectionSize(const std::string& collectionName) {
         return nSimParticles;
     } else if (collectionName.compare(TAGGER_SIM_HITS) == 0) {
         return nTaggerSimHits;
-    } else if (collectionName.compare(RECOIL_SIM_HITS)) {
+    } else if (collectionName.compare(RECOIL_SIM_HITS) == 0) {
         return nRecoilSimHits;
-    } else if (collectionName.compare(ECAL_SIM_HITS)) {
+    } else if (collectionName.compare(ECAL_SIM_HITS) == 0) {
         return nEcalSimHits;
-    } else if (collectionName.compare(HCAL_SIM_HITS)) {
+    } else if (collectionName.compare(HCAL_SIM_HITS) == 0) {
         return nHcalSimHits;
     } else {
-        return -1;
+        throw std::runtime_error("Unknown collection name: " + collectionName);
     }
 }
 
@@ -84,9 +84,9 @@ int Event::nextCollectionIndex(const std::string& collectionName) {
     } else if (collectionName.compare(ECAL_SIM_HITS) == 0) {
         return nEcalSimHits++;
     } else if (collectionName.compare(HCAL_SIM_HITS) == 0) {
-        return nHcalSimHits;
+        return nHcalSimHits++;
     } else {
-        return -1;
+        throw std::runtime_error("Unknown collection name: " + collectionName);
     }
 }
 
@@ -102,15 +102,11 @@ TClonesArray* Event::getCollection(const std::string& collectionName) {
     } else if (collectionName.compare(HCAL_SIM_HITS) == 0) {
         return hcalSimHits;
     } else {
-        return 0;
+        throw std::runtime_error("Unknown collection name: " + collectionName);
     }
 }
 
 TObject* Event::addObject(const std::string& collectionName) {
     TClonesArray* coll = getCollection(collectionName);
-    if (coll != 0) {
-        return coll->ConstructedAt(nextCollectionIndex(collectionName));
-    } else {
-        return 0;
-    }
+    return coll->ConstructedAt(nextCollectionIndex(collectionName));
 }
