@@ -9,7 +9,7 @@ int main(int, const char* argv[])  {
 
     std::cout << "Hello Detector ID test!" << std::endl;
 
-    IDField::IdFieldList fieldList;
+    IDField::IDFieldList fieldList;
     fieldList.push_back(new IDField("subdet", 0 /* index */, 0 /* start bit */, 3 /* end bit */));
     fieldList.push_back(new IDField("layer", 1, 4, 11));
 

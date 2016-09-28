@@ -2,7 +2,7 @@
 
 DetectorID::~DetectorID() {
     // Delete the field list and its objects as we assume this class owns it.
-    for (IDField::IdFieldList::iterator it = idFieldList->begin(); it != idFieldList->end(); it++) {
+    for (IDField::IDFieldList::iterator it = idFieldList->begin(); it != idFieldList->end(); it++) {
         delete (*it);
     }
     delete idFieldList;
@@ -11,13 +11,13 @@ DetectorID::~DetectorID() {
 DetectorID::DetectorID() : rawValue(0), idFieldList(0) {
 }
 
-DetectorID::DetectorID(IDField::IdFieldList* idFieldList) : rawValue(0) {
+DetectorID::DetectorID(IDField::IDFieldList* idFieldList) : rawValue(0) {
 
     // Set the list of fields.
     this->idFieldList = idFieldList;
 
     // Fill map of name to field info.
-    for (IDField::IdFieldList::iterator it = idFieldList->begin(); it != idFieldList->end(); it++) {
+    for (IDField::IDFieldList::iterator it = idFieldList->begin(); it != idFieldList->end(); it++) {
         idFieldMap[(*it)->getFieldName()] = *it;
     }
 
@@ -35,7 +35,7 @@ void DetectorID::setRawValue(RawValue rawValue) {
 
 const DetectorID::FieldValueList& DetectorID::unpack() {
     std::fill(values.begin(), values.end(), 0);
-    for (IDField::IdFieldList::iterator it = idFieldList->begin();
+    for (IDField::IDFieldList::iterator it = idFieldList->begin();
             it != idFieldList->end(); it++) {
         IDField* field = (*it);
         unsigned result = (field->getBitMask() & rawValue) >> field->getStartBit();
@@ -46,7 +46,7 @@ const DetectorID::FieldValueList& DetectorID::unpack() {
 
 DetectorID::RawValue DetectorID::pack() {
     rawValue = 0;
-    for (IDField::IdFieldList::iterator it = idFieldList->begin();
+    for (IDField::IDFieldList::iterator it = idFieldList->begin();
                 it != idFieldList->end(); it++) {
         IDField* field = (*it);
         unsigned fieldValue = values[field->getIndex()];
@@ -67,7 +67,7 @@ void DetectorID::setFieldValue(const std::string& fieldName, FieldValue fieldVal
     values[idFieldMap[fieldName]->getIndex()] = fieldValue;
 }
 
-IDField::IdFieldList* DetectorID::getFieldList() {
+IDField::IDFieldList* DetectorID::getFieldList() {
     return idFieldList;
 }
 

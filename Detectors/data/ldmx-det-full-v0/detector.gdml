@@ -100,42 +100,42 @@
   <userinfo>
   
     <!-- define detector IDs which must come before SD definitions-->
-    <auxiliary auxtype="DetectorId" auxvalue="TaggerId">
-        <auxiliary auxtype="IdField" auxvalue="subdet">
+    <auxiliary auxtype="DetectorID" auxvalue="TaggerID">
+        <auxiliary auxtype="IDField" auxvalue="subdet">
             <auxiliary auxtype="StartBit" auxvalue="0"/>
             <auxiliary auxtype="EndBit" auxvalue="3"/>
         </auxiliary>
-        <auxiliary auxtype="IdField" auxvalue="layer">
+        <auxiliary auxtype="IDField" auxvalue="layer">
             <auxiliary auxtype="StartBit" auxvalue="4"/>
             <auxiliary auxtype="EndBit" auxvalue="11"/>
         </auxiliary>
     </auxiliary>
-    <auxiliary auxtype="DetectorId" auxvalue="RecoilId">
-        <auxiliary auxtype="IdField" auxvalue="subdet">
+    <auxiliary auxtype="DetectorID" auxvalue="RecoilID">
+        <auxiliary auxtype="IDField" auxvalue="subdet">
             <auxiliary auxtype="StartBit" auxvalue="0"/>
             <auxiliary auxtype="EndBit" auxvalue="3"/>
         </auxiliary>
-        <auxiliary auxtype="IdField" auxvalue="layer">
+        <auxiliary auxtype="IDField" auxvalue="layer">
             <auxiliary auxtype="StartBit" auxvalue="4"/>
             <auxiliary auxtype="EndBit" auxvalue="11"/>
         </auxiliary>
     </auxiliary>    
-    <auxiliary auxtype="DetectorId" auxvalue="EcalId">
-        <auxiliary auxtype="IdField" auxvalue="subdet">
+    <auxiliary auxtype="DetectorID" auxvalue="EcalID">
+        <auxiliary auxtype="IDField" auxvalue="subdet">
             <auxiliary auxtype="StartBit" auxvalue="0"/>
             <auxiliary auxtype="EndBit" auxvalue="3"/>
         </auxiliary>
-        <auxiliary auxtype="IdField" auxvalue="layer">
+        <auxiliary auxtype="IDField" auxvalue="layer">
             <auxiliary auxtype="StartBit" auxvalue="4"/>
             <auxiliary auxtype="EndBit" auxvalue="11"/>
         </auxiliary>
     </auxiliary>    
-    <auxiliary auxtype="DetectorId" auxvalue="HcalId">
-        <auxiliary auxtype="IdField" auxvalue="subdet">
+    <auxiliary auxtype="DetectorID" auxvalue="HcalID">
+        <auxiliary auxtype="IDField" auxvalue="subdet">
             <auxiliary auxtype="StartBit" auxvalue="0"/>
             <auxiliary auxtype="EndBit" auxvalue="3"/>
         </auxiliary>
-        <auxiliary auxtype="IdField" auxvalue="layer">
+        <auxiliary auxtype="IDField" auxvalue="layer">
             <auxiliary auxtype="StartBit" auxvalue="4"/>
             <auxiliary auxtype="EndBit" auxvalue="11"/>
         </auxiliary>
@@ -145,29 +145,29 @@
     <auxiliary auxtype="SensDet" auxvalue="TaggerSD1">
       <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="TaggerSimHits"/>
-      <auxiliary auxtype="SubdetId" auxvalue="1"/>
-      <auxiliary auxtype="DetectorId" auxvalue="TaggerId"/>
+      <auxiliary auxtype="SubdetID" auxvalue="1"/>
+      <auxiliary auxtype="DetectorID" auxvalue="TaggerID"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="RecoilSD1">
       <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="RecoilSimHits"/>
-      <auxiliary auxtype="SubdetId" auxvalue="2"/>
-      <auxiliary auxtype="DetectorId" auxvalue="RecoilId"/>
+      <auxiliary auxtype="SubdetID" auxvalue="2"/>
+      <auxiliary auxtype="DetectorID" auxvalue="RecoilID"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="EcalSD1">
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="EcalSimHits"/>
-      <auxiliary auxtype="SubdetId" auxvalue="3"/>
-      <auxiliary auxtype="DetectorId" auxvalue="EcalId"/>
+      <auxiliary auxtype="SubdetID" auxvalue="3"/>
+      <auxiliary auxtype="DetectorID" auxvalue="EcalID"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="HcalSD1">
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="HcalSimHits"/>
-      <auxiliary auxtype="SubdetId" auxvalue="4"/>
-      <auxiliary auxtype="DetectorId" auxvalue="HcalId"/>
+      <auxiliary auxtype="SubdetID" auxvalue="4"/>
+      <auxiliary auxtype="DetectorID" auxvalue="HcalID"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     

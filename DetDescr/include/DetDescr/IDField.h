@@ -10,8 +10,8 @@ class IDField {
 
     public:
 
-        typedef std::map<std::string, IDField*> IdFieldMap;
-        typedef std::vector<IDField*> IdFieldList;
+        typedef std::map<std::string, IDField*> IDFieldMap;
+        typedef std::vector<IDField*> IDFieldList;
 
         IDField(std::string, unsigned index, unsigned startBit, unsigned endBit);
 

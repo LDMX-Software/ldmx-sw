@@ -41,7 +41,7 @@ class DetectorID {
         /**
          * Define a new detector ID from a list of field information.
          */
-        DetectorID(IDField::IdFieldList*);
+        DetectorID(IDField::IDFieldList*);
 
         virtual ~DetectorID();
 
@@ -83,7 +83,7 @@ class DetectorID {
         /**
          * Get the list of field information.
          */
-        IDField::IdFieldList* getFieldList();
+        IDField::IDFieldList* getFieldList();
 
         /**
          * Get the information for a field by name.
@@ -99,8 +99,8 @@ class DetectorID {
 
         RawValue rawValue;
         FieldValueList values;
-        IDField::IdFieldMap idFieldMap;
-        IDField::IdFieldList* idFieldList;
+        IDField::IDFieldMap idFieldMap;
+        IDField::IDFieldList* idFieldList;
 };
 
 #endif

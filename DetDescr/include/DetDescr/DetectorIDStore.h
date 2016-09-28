@@ -8,7 +8,7 @@ class DetectorIDStore {
 
     public:
 
-        typedef std::map<std::string, DetectorID*> DetectorIdMap;
+        typedef std::map<std::string, DetectorID*> DetectorIDMap;
 
         static DetectorIDStore* getInstance() {
             static DetectorIDStore INSTANCE;
@@ -25,7 +25,7 @@ class DetectorIDStore {
 
     private:
 
-        DetectorIdMap ids;
+        DetectorIDMap ids;
 };
 
 #endif
