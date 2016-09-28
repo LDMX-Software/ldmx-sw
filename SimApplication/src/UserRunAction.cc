@@ -9,10 +9,10 @@ UserRunAction::UserRunAction() {
 UserRunAction::~UserRunAction() {
 }
 
-void UserRunAction::BeginOfRunAction(const G4Run* run) {
+void UserRunAction::BeginOfRunAction(const G4Run*) {
     RootEventWriter::getInstance()->open();
 }
 
-void UserRunAction::EndOfRunAction(const G4Run* run) {
+void UserRunAction::EndOfRunAction(const G4Run*) {
     RootEventWriter::getInstance()->close();
 }

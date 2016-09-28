@@ -1,18 +1,20 @@
 #include "SimApplication/SimParticleBuilder.h"
 
 // LDMX
+#include "Event/RootEventWriter.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
-#include "SimApplication/UserTrackInformation.h"
-#include "Event/RootEventWriter.h"
+#include "SimApplication/TrajectoryContainer.h"
 
 // Geant4
 #include "G4SystemOfUnits.hh"
 #include "G4EventManager.hh"
 #include "G4Event.hh"
 #include "G4HCofThisEvent.hh"
+#include "G4VTrajectoryPoint.hh"
 
 SimParticleBuilder::SimParticleBuilder() {
+    trackMap = TrackMap::getInstance();
 }
 
 SimParticleBuilder::~SimParticleBuilder() {
@@ -22,60 +24,56 @@ void SimParticleBuilder::buildSimParticles() {
 
     particleMap.clear();
 
-    TrackSummary::TrackSummaryList* trackList =
-            TrackSummary::getTrackSummaryList();
-
     RootEventWriter* writer = RootEventWriter::getInstance();
     Event* event = writer->getEvent();
 
-    for (TrackSummary::TrackSummaryList::iterator it = trackList->begin();
-            it != trackList->end(); it++) {
-        TrackSummary* trackSummary = *it;
-        if (trackSummary->getSaveFlag()) {
-            SimParticle* simParticle = (SimParticle*) event->addObject(Event::SIM_PARTICLES);
-            buildSimParticle(simParticle, trackSummary);
-            particleMap[trackSummary->getTrackID()] = simParticle;
-        } else {
-            TrackSummary* parent = trackSummary->findFirstSavedParent();
-            if (parent != NULL) {
-                SimParticle* parentParticle = particleMap[parent->getTrackID()];
-                if (parentParticle != NULL) {
-                    particleMap[trackSummary->getTrackID()] = parentParticle;
-                }
-            }
-        }
+    G4Event* anEvent = G4EventManager::GetEventManager()->GetNonconstCurrentEvent();
+    TrajectoryContainer* trajectories = (TrajectoryContainer*)anEvent->GetTrajectoryContainer();
+    for (int iTraj = 0; iTraj < trajectories->entries(); iTraj++) {
+        SimParticle* simParticle = (SimParticle*) event->addObject(Event::SIM_PARTICLES);
+        Trajectory* traj = (Trajectory*)(*trajectories)[iTraj];
+        buildSimParticle(simParticle, traj);
+        particleMap[traj->GetTrackID()] = simParticle;
     }
 }
 
-void SimParticleBuilder::buildSimParticle(SimParticle* simParticle, TrackSummary* trackSummary) {
+void SimParticleBuilder::buildSimParticle(SimParticle* simParticle, Trajectory* traj) {
 
-    simParticle->setGenStatus(trackSummary->getGenStatus());
-    simParticle->setSimStatus(trackSummary->getSimStatus());
-    simParticle->setPdg(trackSummary->getPDG());
-    simParticle->setCharge(trackSummary->getCharge());
-    simParticle->setMass(trackSummary->getMass() / GeV);
-    simParticle->setEnergy(trackSummary->getEnergy());
+    simParticle->setGenStatus(traj->getGenStatus());
+    simParticle->setSimStatus(traj->getSimStatus());
+    simParticle->setPdg(traj->GetPDGEncoding());
+    simParticle->setCharge(traj->GetCharge());
+    simParticle->setMass(traj->getMass() / GeV);
+    simParticle->setEnergy(traj->getEnergy());
 
-    const G4ThreeVector& endPoint = trackSummary->getEndPoint();
-    simParticle->setEndPoint(endPoint[0], endPoint[1], endPoint[2]);
+    G4ThreeVector lastTrajPoint = traj->GetPoint(traj->GetPointEntries() - 1)->GetPosition();
+    simParticle->setEndPoint(lastTrajPoint[0], lastTrajPoint[1], lastTrajPoint[2]);
 
-    const G4ThreeVector& momentum = trackSummary->getMomentum();
+    const G4ThreeVector& momentum = traj->GetInitialMomentum();
     simParticle->setMomentum(momentum[0], momentum[1], momentum[2]);
 
-    const G4ThreeVector& vertex = trackSummary->getVertex();
+    const G4ThreeVector& vertex = traj->getVertexPosition();
     simParticle->setVertex(vertex[0], vertex[1], vertex[2]);
 
-    simParticle->setTime(trackSummary->getGlobalTime());
+    simParticle->setTime(traj->getGlobalTime());
 
-    SimParticle* parent = particleMap[trackSummary->getParentID()];
-    if (parent != NULL) {
+    SimParticle* parent = particleMap[traj->GetParentID()];
+    if (parent != NULL && traj->GetParentID() > 0) {
         simParticle->addParent(parent);
         parent->addDaughter(simParticle);
+    } else {
+        std::cerr << "WARNING: SimParticle with parent ID " << traj->GetParentID()
+                << " not found for track ID " << traj->GetTrackID() << std::endl;
     }
 }
 
 SimParticle* SimParticleBuilder::findSimParticle(G4int trackID) {
-    return particleMap[trackID];
+    G4VTrajectory* traj = trackMap->findTrajectory(trackID);
+    if (traj != NULL) {
+        return particleMap[traj->GetTrackID()];
+    } else {
+        return NULL;
+    }
 }
 
 void SimParticleBuilder::assignTrackerHitSimParticles() {
@@ -90,12 +88,12 @@ void SimParticleBuilder::assignTrackerHitSimParticles() {
             for (int iHit = 0; iHit < nHits; iHit++) {
                 G4TrackerHit* hit = (G4TrackerHit*) trackerHits->GetHit(iHit);
                 int trackID = hit->getTrackID();
-                if (trackID >= 0) {
+                if (trackID > 0) {
                     SimParticle* simParticle = findSimParticle(trackID);
                     if (simParticle != NULL) {
                         hit->getSimTrackerHit()->setSimParticle(simParticle);
                     } else {
-                        std::cerr << "Failed to find SimParticle for SimTrackerHit with track ID " << trackID << std::endl;
+                        std::cerr << "WARNING: Failed to find SimParticle for SimTrackerHit with track ID " << trackID << std::endl;
                     }
                 }
             }
@@ -115,12 +113,12 @@ void SimParticleBuilder::assignCalorimeterHitSimParticles() {
             for (int iHit = 0; iHit < nHits; iHit++) {
                 G4CalorimeterHit* hit = (G4CalorimeterHit*) calHits->GetHit(iHit);
                 int trackID = hit->getTrackID();
-                if (trackID >= 0) {
+                if (trackID > 0) {
                     SimParticle* simParticle = findSimParticle(trackID);
                     if (simParticle != NULL) {
                         hit->getSimCalorimeterHit()->setSimParticle(simParticle);
                     } else {
-                        std::cerr << "Failed to find SimParticle for SimCalorimeterHit with track ID " << trackID << std::endl;
+                        std::cerr << "WARNING: Failed to find SimParticle for SimCalorimeterHit with track ID " << trackID << std::endl;
                     }
                 }
             }
