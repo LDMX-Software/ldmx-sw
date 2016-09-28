@@ -12,8 +12,8 @@ G4CalorimeterHit::G4CalorimeterHit() :
         simCalorimeterHit(new SimCalorimeterHit()), trackID(-1) {
 }
 
-G4CalorimeterHit::G4CalorimeterHit(SimCalorimeterHit* simCalorimeterHit) :
-        simCalorimeterHit(simCalorimeterHit), trackID(-1) {
+G4CalorimeterHit::G4CalorimeterHit(SimCalorimeterHit* theSimCalorimeterHit) :
+        simCalorimeterHit(theSimCalorimeterHit), trackID(-1) {
 }
 
 G4CalorimeterHit::~G4CalorimeterHit() {

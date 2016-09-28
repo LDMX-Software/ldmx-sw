@@ -2,7 +2,8 @@
 #define SIMAPPLICATION_SIMPARTICLEBUILDER_H_ 1
 
 // LDMX
-#include "SimApplication/UserTrackInformation.h"
+#include "SimApplication/TrackMap.h"
+#include "SimApplication/Trajectory.h"
 #include "Event/SimParticle.h"
 
 // STL
@@ -28,11 +29,12 @@ class SimParticleBuilder {
 
     private:
 
-        void buildSimParticle(SimParticle* p, TrackSummary* info);
+        void buildSimParticle(SimParticle* p, Trajectory* info);
 
     private:
 
         SimParticleMap particleMap;
+        TrackMap* trackMap;
 };
 
 #endif

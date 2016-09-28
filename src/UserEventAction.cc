@@ -2,7 +2,8 @@
 
 // LDMX
 #include "Event/RootEventWriter.h"
-#include "SimApplication/UserTrackInformation.h"
+#include "SimApplication/TrackMap.h"
+#include "SimApplication/TrajectoryContainer.h"
 
 // Geant4
 #include "G4RunManager.hh"
@@ -21,16 +22,19 @@ UserEventAction::~UserEventAction() {
     delete simParticleBuilder;
 }
 
-void UserEventAction::BeginOfEventAction(const G4Event* event) {
+void UserEventAction::BeginOfEventAction(const G4Event*) {
 
-    // Set information on the current event header.
+    // Install custom trajectory container for the event.
+    G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
+}
+
+void UserEventAction::EndOfEventAction(const G4Event* event) {
+
+    // Build ROOT event header.
     EventHeader* header = RootEventWriter::getInstance()->getEvent()->getHeader();
     header->setEventNumber(event->GetEventID());
     header->setTimestamp((int)time(NULL));
     header->setRun(G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID());
-}
-
-void UserEventAction::EndOfEventAction(const G4Event* event) {
 
     // Build the SimParticle list for the output ROOT event.
     simParticleBuilder->buildSimParticles();
@@ -44,8 +48,8 @@ void UserEventAction::EndOfEventAction(const G4Event* event) {
     // Fill the current ROOT event into the tree and then clear it.
     RootEventWriter::getInstance()->writeEvent();
 
-    // Clear the registry of track information for processing the next event.
-    TrackSummary::clearRegistry();
+    // Clear the global track map.
+    TrackMap::getInstance()->clear();
 
     std::cout << ">>> End Event " << event->GetEventID() << " <<<" << std::endl;
 }

@@ -1,8 +1,13 @@
 #include "SimApplication/UserTrackingAction.h"
 
 // LDMX
+#include "SimApplication/TrackMap.h"
+#include "SimApplication/Trajectory.h"
 #include "SimApplication/UserRegionInformation.h"
-#include "SimApplication/UserTrackInformation.h"
+//#include "SimApplication/UserTrackInformation.h"
+
+// Geant4
+#include "G4TrackingManager.hh"
 
 // STL
 #include <iostream>
@@ -15,23 +20,19 @@ UserTrackingAction::~UserTrackingAction() {
 
 void UserTrackingAction::PreUserTrackingAction(const G4Track* aTrack) {
 
-    // Setup the user track info.
-    if (aTrack->GetUserInformation() == NULL) {
-        UserTrackInformation* trackInfo = new UserTrackInformation(aTrack);
-        const_cast<G4Track*>(aTrack)->SetUserInformation(trackInfo);
-    }
-
-    // Turn off save flag for tracks originating in a region where trajectories are not being saved.
+    // Check if trajectory storage should be turned on or off.
     UserRegionInformation* regionInfo =
             (UserRegionInformation*) aTrack->GetLogicalVolumeAtVertex()->GetRegion()->GetUserInformation();
-    if (regionInfo != NULL) {
-        if (!regionInfo->getStoreSecondaries()) {
-            UserTrackInformation* trackInfo = (UserTrackInformation*) const_cast<G4Track*>(aTrack)->GetUserInformation();
-            trackInfo->getTrackSummary()->setSaveFlag(false);
-        }
+    if (regionInfo != NULL && !regionInfo->getStoreSecondaries()) {
+        fpTrackingManager->SetStoreTrajectory(false);
+    } else {
+        fpTrackingManager->SetStoreTrajectory(true);
+        fpTrackingManager->SetTrajectory(new Trajectory(aTrack));
     }
+
+    // Save association between track ID and its parent ID.
+    TrackMap::getInstance()->addSecondary(aTrack->GetTrackID(), aTrack->GetParentID());
 }
 
-void UserTrackingAction::PostUserTrackingAction(const G4Track* aTrack) {
-    ((UserTrackInformation*)aTrack->GetUserInformation())->getTrackSummary()->update(aTrack);
+void UserTrackingAction::PostUserTrackingAction(const G4Track*) {
 }

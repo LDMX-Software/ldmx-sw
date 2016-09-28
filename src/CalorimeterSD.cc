@@ -33,7 +33,7 @@ CalorimeterSD::CalorimeterSD(G4String theName, G4String theCollectionName, int t
 CalorimeterSD::~CalorimeterSD() {
 }
 
-G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
+G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
     // Determine if current particle of this step is a Geantino.
     G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();
@@ -103,5 +103,5 @@ void CalorimeterSD::Initialize(G4HCofThisEvent* hce) {
     currentEvent = RootEventWriter::getInstance()->getEvent();
 }
 
-void CalorimeterSD::EndOfEvent(G4HCofThisEvent* hce) {
+void CalorimeterSD::EndOfEvent(G4HCofThisEvent*) {
 }

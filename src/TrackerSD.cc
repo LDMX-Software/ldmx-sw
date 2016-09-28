@@ -14,12 +14,12 @@
 #include "Event/RootEventWriter.h"
 #include "DetDescr/IDField.h"
 
-TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subdetId, DetectorID* detId) :
+TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int theSubdetId, DetectorID* theDetId) :
     G4VSensitiveDetector(name),
     hitsCollection(0),
     currentEvent(0),
-    subdetId(subdetId),
-    detId(detId) {
+    subdetId(theSubdetId),
+    detId(theDetId) {
 
     // Add the collection name to vector of names.
     this->collectionName.push_back(theCollectionName);
@@ -34,7 +34,7 @@ TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subdetId, De
 TrackerSD::~TrackerSD() {
 }
 
-G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
+G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
     // Determine if current particle of this step is a Geantino.
     G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();
@@ -120,7 +120,7 @@ void TrackerSD::Initialize(G4HCofThisEvent* hce) {
     currentEvent = RootEventWriter::getInstance()->getEvent();
 }
 
-void TrackerSD::EndOfEvent(G4HCofThisEvent* hce) {
+void TrackerSD::EndOfEvent(G4HCofThisEvent*) {
     /*
      * Debug print number of hits in this detector for the event.
      */
