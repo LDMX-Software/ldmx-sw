@@ -90,14 +90,14 @@ int main(int argc, const char* argv[])  {
         std::cout << "Making " << nCalHits << " rand SimCalorimeterHits" << std::endl;
         for (int iCalHit = 0; iCalHit < nCalHits; iCalHit++) {
             SimCalorimeterHit* calHit = (SimCalorimeterHit*) event->addObject("EcalSimHits");
-            calHit->setId((long) (iCalHit + 1));
+            calHit->setID((long) (iCalHit + 1));
             fillRand(calHit);
         }
 
         std::cout << "Making " << nTrackerHits << " rand SimCalorimeterHits" << std::endl;
         for (int iTrackerHit = 0; iTrackerHit < nTrackerHits; iTrackerHit++) {
             SimTrackerHit* trackerHit = (SimTrackerHit*) event->addObject("RecoilSimHits");
-            trackerHit->setId((long) (iTrackerHit + 1));
+            trackerHit->setID((long) (iTrackerHit + 1));
             fillRand(trackerHit);
         }
 

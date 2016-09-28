@@ -47,7 +47,7 @@ int main(int, const char* argv[])  {
     std::cout << "Creating SimCalorimeterHit" << std::endl;
     SimCalorimeterHit* calHit = (SimCalorimeterHit*) event->addObject("EcalSimHits");
     calHit->setEdep(1.234);
-    calHit->setId(11111111L);
+    calHit->setID(11111111L);
     calHit->setPosition(10., 20., 5000.);
 
     std::cout << "Creating SimTrackerHit" << std::endl;
@@ -55,7 +55,7 @@ int main(int, const char* argv[])  {
     trackerHit->setEdep(2.345);
     trackerHit->setEndPosition(50., 40., 2000.);
     trackerHit->setStartPosition(60., 50., 2001.);
-    trackerHit->setId(22222222L);
+    trackerHit->setID(22222222L);
     trackerHit->setMomentum(1.0, 2.0, 3.0);
     trackerHit->setTime(42.);
 
