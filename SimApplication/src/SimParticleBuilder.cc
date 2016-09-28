@@ -57,13 +57,15 @@ void SimParticleBuilder::buildSimParticle(SimParticle* simParticle, Trajectory* 
 
     simParticle->setTime(traj->getGlobalTime());
 
-    SimParticle* parent = particleMap[traj->GetParentID()];
-    if (parent != NULL && traj->GetParentID() > 0) {
-        simParticle->addParent(parent);
-        parent->addDaughter(simParticle);
-    } else {
-        std::cerr << "WARNING: SimParticle with parent ID " << traj->GetParentID()
+    if (traj->GetParentID() > 0) {
+        SimParticle* parent = findSimParticle(traj->GetParentID());
+        if (parent != NULL) {
+            simParticle->addParent(parent);
+            parent->addDaughter(simParticle);
+        } else {
+            std::cerr << "WARNING: SimParticle with parent ID " << traj->GetParentID()
                 << " not found for track ID " << traj->GetTrackID() << std::endl;
+        }
     }
 }
 
