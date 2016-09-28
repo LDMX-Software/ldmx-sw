@@ -5,7 +5,7 @@
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/MagneticFieldStore.h"
 #include "SimApplication/UserRegionInformation.h"
-#include "DetDescr/DetectorIdStore.h"
+#include "DetDescr/DetectorIDStore.h"
 
 // Geant4
 #include "G4LogicalVolumeStore.hh"
@@ -40,8 +40,8 @@ void AuxInfoReader::readGlobalAuxInfo() {
 
         if (auxType == "SensDet") {
             createSensitiveDetector(auxVal, iaux->auxList);
-        } else if (auxType == "DetectorId") {
-            createDetectorId(auxVal, iaux->auxList);
+        } else if (auxType == "DetectorID") {
+            createDetectorID(auxVal, iaux->auxList);
         } else if (auxType == "MagneticField") {
             createMagneticField(auxVal, iaux->auxList);
         } else if (auxType == "Region") {
@@ -58,7 +58,7 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
     G4String sdType("");
     G4String hcName("");
     G4String idName("");
-    int subdetId = -1;
+    int subdetID = -1;
     int verbose = 0;
     for(std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin();
                 iaux != auxInfoList->end(); iaux++ ) {
@@ -75,9 +75,9 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
             hcName = auxVal;
         } else if (auxType == "Verbose") {
             verbose = atoi(auxVal.c_str());
-        } else if (auxType == "SubdetId") {
-            subdetId = atoi(auxVal.c_str());
-        } else if (auxType == "DetectorId") {
+        } else if (auxType == "SubdetID") {
+            subdetID = atoi(auxVal.c_str());
+        } else if (auxType == "DetectorID") {
             idName = auxVal;
         }
     }
@@ -90,26 +90,26 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
         G4Exception("", "", FatalException, "The SensDet is missing the HitsCollection.");
     }
 
-    if (subdetId <= 0 ) {
-        std::cerr << "Bad SubdetId: " << subdetId << std::endl;
+    if (subdetID <= 0 ) {
+        std::cerr << "Bad SubdetID: " << subdetID << std::endl;
         G4Exception("", "", FatalException, "The SubdetID is missing or has an invalid value.");
     }
 
     if (idName == "") {
-        G4Exception("", "", FatalException, "The SensDet is missing the DetectorId.");
+        G4Exception("", "", FatalException, "The SensDet is missing the DetectorID.");
     }
 
-    DetectorID* detId = DetectorIDStore::getInstance()->getID(idName);
-    if (detId == NULL) {
+    DetectorID* detID = DetectorIDStore::getInstance()->getID(idName);
+    if (detID == NULL) {
         std::cout << "The Detector ID" << idName << " does not exist.  Is it defined before the SensDet in userinfo?" << std::endl;
         G4Exception("", "", FatalException, "The referenced Detector ID was not found.");
     }
 
     G4VSensitiveDetector* sd = 0;
     if (sdType == "TrackerSD") {
-        sd = new TrackerSD(theSensDetName, hcName, subdetId, detId);
+        sd = new TrackerSD(theSensDetName, hcName, subdetID, detID);
     } else if (sdType == "CalorimeterSD") {
-        sd = new CalorimeterSD(theSensDetName, hcName, subdetId, detId);
+        sd = new CalorimeterSD(theSensDetName, hcName, subdetID, detID);
     } else {
         std::cerr << "Unknown SensitiveDetector type: " << sdType << std::endl;
         G4Exception("", "", FatalException, "Unknown SensitiveDetector type in aux info.");
@@ -174,10 +174,10 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
     }
 }
 
-void AuxInfoReader::createDetectorId(G4String idName, const G4GDMLAuxListType* auxInfoList) {
+void AuxInfoReader::createDetectorID(G4String idName, const G4GDMLAuxListType* auxInfoList) {
 
-    std::cout << "Creating DetectorId " << idName << std::endl;
-    IDField::IdFieldList* fieldList = new IDField::IdFieldList();
+    std::cout << "Creating DetectorID " << idName << std::endl;
+    IDField::IDFieldList* fieldList = new IDField::IDFieldList();
 
     // iterate fields
     for(std::vector<G4GDMLAuxStructType>::const_iterator fieldIt = auxInfoList->begin();
@@ -188,11 +188,11 @@ void AuxInfoReader::createDetectorId(G4String idName, const G4GDMLAuxListType* a
         G4String auxType = fieldIt->type;
         G4String auxVal = fieldIt->value;
 
-        if (auxType == "IdField") {
+        if (auxType == "IDField") {
 
             std::string fieldName = auxVal;
 
-            std::cout << "Creating IdField " << fieldName << std::endl;
+            std::cout << "Creating IDField " << fieldName << std::endl;
 
             int startBit, endBit = -1;
             int index = 0;
@@ -215,16 +215,16 @@ void AuxInfoReader::createDetectorId(G4String idName, const G4GDMLAuxListType* a
             }
 
             if (startBit == -1) {
-                G4Exception("", "", FatalException, "The DetectorId is missing the StartBit.");
+                G4Exception("", "", FatalException, "The DetectorID is missing the StartBit.");
             }
 
             if (endBit == -1) {
-                G4Exception("", "", FatalException, "The DetectorId is missing the EndBit.");
+                G4Exception("", "", FatalException, "The DetectorID is missing the EndBit.");
             }
 
             fieldList->push_back(new IDField(fieldName, index, startBit, endBit));
 
-            std::cout << "Added IdField " << fieldName << " with StartBit = " << startBit << ", EndBit = "
+            std::cout << "Added IDField " << fieldName << " with StartBit = " << startBit << ", EndBit = "
                     << endBit << ", Index = " << index << std::endl;
         }
     }

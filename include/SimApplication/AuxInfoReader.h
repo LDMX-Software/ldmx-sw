@@ -20,7 +20,7 @@ class AuxInfoReader {
 
         void createSensitiveDetector(G4String sdType, const G4GDMLAuxListType* auxInfoList);
 
-        void createDetectorId(G4String name, const G4GDMLAuxListType* auxInfoList);
+        void createDetectorID(G4String name, const G4GDMLAuxListType* auxInfoList);
 
         void createMagneticField(G4String name, const G4GDMLAuxListType* auxInfoList);
 
