@@ -8,7 +8,7 @@ find_package(Geant4 REQUIRED ui_all vis_all)
 include(${Geant4_USE_FILE})
 
 # find ROOT
-find_package(ROOT REQUIRED)
+find_package(ROOT REQUIRED COMPONENTS Core RIO)
 
 # add project include dir
 include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -37,5 +37,5 @@ install(TARGETS ldmx-sim DESTINATION bin)
 
 # test program
 add_executable(ldmx-sim-analysis-test test/ldmx_sim_analysis_test.cc)
-target_link_libraries(ldmx-sim-analysis-test ${ROOT_LIBRARIES} Event)
+target_link_libraries(ldmx-sim-analysis-test ${ROOT_LIBRARIES} Event DetDescr)
 install(TARGETS ldmx-sim-analysis-test DESTINATION bin)
