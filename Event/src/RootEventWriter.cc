@@ -40,12 +40,9 @@ void RootEventWriter::setFileName(std::string fileName) {
 
 void RootEventWriter::open() {
 
-    std::cout << "opening ROOT file " << fileName << " for writing" << std::endl;
+    std::cout << "Opening ROOT file " << fileName << " for writing" << std::endl;
 
-    rootFile = new TFile();
-    rootFile->SetName(fileName.c_str());
-    rootFile->SetOption("RECREATE");
-
+    rootFile = new TFile(fileName.c_str(), "recreate");
     tree = new TTree("LDMX_Event", "LDMX event tree");
     event = new Event();
     tree->Branch("LdmxEvent" /* branch name */, "Event" /* class name */, &event, 32000, 3);
