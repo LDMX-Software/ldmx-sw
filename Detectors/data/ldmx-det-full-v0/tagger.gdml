@@ -19,6 +19,7 @@
       <materialref ref="Silicon" />
       <solidref ref="LDMXTaggerModuleVolume_component0Sensor0Box" />
       <auxiliary auxtype="SensDet" auxvalue="TaggerSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
     </volume>
     <volume name="LDMXTaggerModuleVolume_component0">
       <materialref ref="Silicon" />
@@ -26,10 +27,12 @@
       <physvol name="LDMXTaggerModuleVolume_component0Sensor0_physvol">
         <volumeref ref="LDMXTaggerModuleVolume_component0Sensor0" />
       </physvol>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
     </volume>
     <volume name="LDMXTaggerModuleVolume_component1">
       <materialref ref="Carbon" />
       <solidref ref="LDMXTaggerModuleVolume_component1Box" />
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
     </volume>
     <volume name="LDMXTaggerModuleVolume">
       <materialref ref="Vacuum" />
@@ -42,6 +45,7 @@
         <volumeref ref="LDMXTaggerModuleVolume_component1" />
         <position name="LDMXTaggerModuleVolume_component1_physvol1_pos" unit="mm" x="0" y="0" z="0.16" />
       </physvol>
+      <auxiliary auxtype="VisAttributes" auxvalue="TaggerVis"/>
     </volume>
     
     <!-- define tagger physical volumes inside envelope volume -->
@@ -112,6 +116,7 @@
         <rotation name="LDMXTaggerModuleVolume_physvol14_rot" unit="deg" x="0" y="0" z="-5.72957795130823" />
       </physvol>           
       <auxiliary auxtype="MagneticField" auxvalue="AnalyzingDipole"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
     </volume>       
       
   </structure>

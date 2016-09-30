@@ -9368,1427 +9368,1773 @@
     <volume name="Al1log0x29db610">
       <materialref ref="G4_Al0x29aae00"/>
       <solidref ref="Al1box0x29db580"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB1log0x29db8b0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB1box0x29db820"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix1log0x29dbbc0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix1box0x29dbb30"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si1_0log0x29dbee0">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si1_0box0x29dbe50"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix1log0x29dc2d0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix1box0x29dc240"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C2log0x29e2c50">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C2box0x29e2a40"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air2log0x29e5530">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air2box0x29e5320"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C2log0x29e7e10">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C2box0x29e7c00"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix2log0x29ea6f0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix2box0x29ea4e0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si2_0log0x29ed010">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si2_0box0x29ece00"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix2log0x29efa20">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix2box0x29ef810"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB2log0x29f2300">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB2box0x29f20f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air2log0x29f4e90">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air2box0x29f4c80"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W3log0x29f7810">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W3box0x29f7600"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air3log0x29fa0f0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air3box0x29f9ee0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB3log0x29fc9d0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB3box0x29fc7c0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix3log0x29ff2b0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix3box0x29ff0a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si3_0log0x2a01bb0">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si3_0box0x2a019a0"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix3log0x2a04640">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix3box0x2a04430"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W4log0x29f4160">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W4box0x2a06d10"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C4log0x2a09e60">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C4box0x2a09c50"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air4log0x2a0c740">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air4box0x2a0c530"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C4log0x2a0f020">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C4box0x2a0ee10"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W4log0x2a11900">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W4box0x2a116f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix4log0x2a141e0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix4box0x2a13fd0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si4_0log0x2a16ac0">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si4_0box0x2a168b0"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix4log0x2a194c0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix4box0x2a192b0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB4log0x2a1bda0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB4box0x2a1bb90"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air4log0x2a1e680">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air4box0x2a1e470"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W5log0x2a20f60">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W5box0x2a20d50"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air5log0x2a23840">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air5box0x2a23630"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB5log0x2a26130">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB5box0x2a25f20"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix5log0x2a28a10">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix5box0x2a28800"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si5_0log0x2a2b400">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si5_0box0x2a2b1f0"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix5log0x2a2de20">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix5box0x2a2dc10"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W6log0x2a076b0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W6box0x2a074a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C6log0x2a33c70">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C6box0x2a33a60"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air6log0x2a36550">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air6box0x2a36340"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C6log0x2a38e30">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C6box0x2a38c20"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W6log0x2a3b710">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W6box0x2a3b500"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix6log0x2a3dff0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix6box0x2a3dde0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si6_0log0x2a408d0">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si6_0box0x2a406c0"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix6log0x2a43230">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix6box0x2a43020"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB6log0x2a45bd0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB6box0x2a459c0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air6log0x2a484b0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air6box0x2a482a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W7log0x2a4ad90">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W7box0x2a4ab80"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air7log0x2a4d670">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air7box0x2a4d460"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB7log0x2a4ff50">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB7box0x2a4fd40"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix7log0x2a52830">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix7box0x2a52620"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si7_0log0x2a55110">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si7_0box0x2a54f00"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix7log0x2a57b10">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix7box0x2a57900"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W8log0x2a5a3f0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W8box0x2a5a1e0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C8log0x2a5ccd0">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C8box0x2a5cac0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air8log0x2a5f5b0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air8box0x2a5f3a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C8log0x2a61e90">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C8box0x2a61c80"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W8log0x2a646f0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W8box0x2a644e0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix8log0x2a67070">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix8box0x2a66e60"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si8_0log0x2a69950">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si8_0box0x2a69740"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix8log0x2a6c350">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix8box0x2a6c140"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB8log0x2a6ec30">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB8box0x2a6ea20"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air8log0x2a71510">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air8box0x2a71300"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W9log0x2a73df0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W9box0x2a73be0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air9log0x2a766d0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air9box0x2a764c0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB9log0x2a78fb0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB9box0x2a78da0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix9log0x2a7b890">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix9box0x2a7b680"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si9_0log0x2a7e330">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si9_0box0x2a7e120"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix9log0x2a826b0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix9box0x2a824a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W10log0x2a84f90">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W10box0x2a84d80"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C10log0x2a87880">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C10box0x2a87670"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air10log0x2a8a160">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air10box0x2a89f50"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C10log0x2a8ca40">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C10box0x2a8c830"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W10log0x2a8f320">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W10box0x2a8f110"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix10log0x2a91c00">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix10box0x2a919f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si10_0log0x2a944e0">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si10_0box0x2a942d0"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix10log0x2a96ee0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix10box0x2a96cd0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB10log0x2a997c0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB10box0x2a995b0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air10log0x2a9c0a0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air10box0x2a9be90"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W11log0x2a9e980">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W11box0x2a9e770"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air11log0x2aa1260">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air11box0x2aa1050"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB11log0x2aa3b40">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB11box0x2aa3930"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix11log0x2aa6390">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix11box0x2aa6180"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si11_0log0x2aa8d10">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si11_0box0x2aa8b00"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix11log0x2aab710">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix11box0x2aab500"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W12log0x2aadff0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W12box0x2aadde0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C12log0x2ab08d0">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C12box0x2ab06c0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air12log0x2ab31b0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air12box0x2ab2fa0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C12log0x2ab5a90">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C12box0x2ab5880"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W12log0x2ab8370">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W12box0x2ab8160"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix12log0x2abac50">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix12box0x2abaa40"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si12_0log0x2abd530">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si12_0box0x2abd320"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix12log0x2abff30">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix12box0x2abfd20"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB12log0x2ac2810">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB12box0x2ac2600"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air12log0x2ac50f0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air12box0x2ac4ee0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W13log0x2ac7950">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W13box0x2ac7740"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air13log0x2aca2d0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air13box0x2aca0c0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB13log0x2accbb0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB13box0x2acc9a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix13log0x2acf490">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix13box0x2acf280"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si13_0log0x2ad1d70">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si13_0box0x2ad1b60"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix13log0x2ad4770">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix13box0x2ad4560"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W14log0x2ad7690">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W14box0x2ad7480"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C14log0x2ad9f80">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C14box0x2ad9d70"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air14log0x2adc860">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air14box0x2adc650"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C14log0x2adf140">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C14box0x2adef30"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W14log0x2ae1a20">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W14box0x2ae1810"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix14log0x2ae4300">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix14box0x2ae40f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si14_0log0x2ae6be0">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si14_0box0x2ae69d0"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix14log0x2ae95e0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix14box0x2ae93d0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB14log0x2aebec0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB14box0x2aebcb0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air14log0x2aee7a0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air14box0x2aee590"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W15log0x2af1080">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W15box0x2af0e70"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air15log0x2af3960">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air15box0x2af3750"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB15log0x2af6240">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB15box0x2af6030"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix15log0x2af8b20">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix15box0x2af8910"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si15_0log0x2afb400">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si15_0box0x2afb1f0"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix15log0x2afde00">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix15box0x2afdbf0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W16log0x2b006e0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W16box0x2b004d0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C16log0x2b02fc0">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C16box0x2b02db0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air16log0x2b058a0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air16box0x2b05690"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C16log0x2b08180">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C16box0x2b07f70"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W16log0x2b0aa60">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W16box0x2b0a850"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix16log0x2b0d350">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix16box0x2b0d140"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si16_0log0x2b0fc30">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si16_0box0x2b0fa20"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix16log0x2b12630">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix16box0x2b12420"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB16log0x2b14f10">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB16box0x2b14d00"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air16log0x2b177f0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air16box0x2b175e0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W17log0x2b1a0d0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W17box0x2b19ec0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air17log0x2b1c9b0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air17box0x2b1c7a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB17log0x2a7ecd0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB17box0x2a7eac0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix17log0x2a81650">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix17box0x2a81440"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si17_0log0x2b27a90">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si17_0box0x2b27880"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix17log0x2b2a480">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix17box0x2b2a270"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W18log0x2b2ce20">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W18box0x2b2cc10"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C18log0x2b2f700">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C18box0x2b2f4f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air18log0x2b31fe0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air18box0x2b31dd0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C18log0x2b348c0">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C18box0x2b346b0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W18log0x2b371a0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W18box0x2b36f90"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix18log0x2b39a80">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix18box0x2b39870"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si18_0log0x2b3c360">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si18_0box0x2b3c150"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix18log0x2b3ed60">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix18box0x2b3eb50"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB18log0x2b41640">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB18box0x2b41430"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air18log0x2b43f20">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air18box0x2b43d10"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W19log0x2b46800">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W19box0x2b465f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air19log0x2b490e0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air19box0x2b48ed0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB19log0x2b4b940">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB19box0x2b4b730"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix19log0x2b4e2c0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix19box0x2b4e0b0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si19_0log0x2b50ba0">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si19_0box0x2b50990"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix19log0x2b53640">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix19box0x2b53430"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W20log0x2b55f20">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W20box0x2b55d10"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C20log0x2b58800">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C20box0x2b585f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air20log0x2b5b0e0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air20box0x2b5aed0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C20log0x2b5d9c0">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C20box0x2b5d7b0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W20log0x2b602a0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W20box0x2b60090"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix20log0x2b62b80">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix20box0x2b62970"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si20_0log0x2b65460">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si20_0box0x2b65250"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix20log0x2b67e60">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix20box0x2b67c50"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB20log0x2b6a740">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB20box0x2b6a530"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air20log0x2b6d020">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air20box0x2b6ce10"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W21log0x2b6f910">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W21box0x2b6f700"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air21log0x2b721f0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air21box0x2b71fe0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB21log0x2b74ad0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB21box0x2b748c0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix21log0x2b773b0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix21box0x2b771a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si21_0log0x2b79c90">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si21_0box0x2b79a80"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix21log0x2b7c690">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix21box0x2b7c480"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W22log0x2b7ef70">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W22box0x2b7ed60"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C22log0x2b81850">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C22box0x2b81640"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air22log0x2b84130">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air22box0x2b83f20"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C22log0x2b86a10">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C22box0x2b86800"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W22log0x2b892f0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W22box0x2b890e0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix22log0x2b8bbd0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix22box0x2b8b9c0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si22_0log0x2b8e4b0">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si22_0box0x2b8e2a0"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix22log0x2b90ec0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix22box0x2b90cb0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB22log0x2b937a0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB22box0x2b93590"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air22log0x2b96080">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air22box0x2b95e70"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W23log0x2b98960">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W23box0x2b98750"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air23log0x2b9b240">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air23box0x2b9b030"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB23log0x29ddce0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB23box0x29ddad0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix23log0x29e05c0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix23box0x29e03b0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si23_0log0x2ba6ca0">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si23_0box0x2ba6a90"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix23log0x2ba96e0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix23box0x2ba94d0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W24log0x2babfc0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W24box0x2babdb0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C24log0x2bae810">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C24box0x2bae600"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air24log0x2bb1190">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air24box0x2bb0f80"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C24log0x2bb3a70">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C24box0x2bb3860"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W24log0x2bb6350">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W24box0x2bb6140"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix24log0x2bb8c30">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix24box0x2bb8a20"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si24_0log0x2bbb510">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si24_0box0x2bbb300"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix24log0x2bbdf10">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix24box0x2bbdd00"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB24log0x2bc07f0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB24box0x2bc05e0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air24log0x2bc30d0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air24box0x2bc2ec0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W25log0x2bc59b0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W25box0x2bc57a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air25log0x2bc8290">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air25box0x2bc8080"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB25log0x2bcab70">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB25box0x2bca960"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix25log0x2bcd450">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix25box0x2bcd240"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si25_0log0x2bcfd30">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si25_0box0x2bcfb20"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix25log0x2bd2740">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix25box0x2bd2530"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W26log0x2bd5020">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W26box0x2bd4e10"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C26log0x2bd7900">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C26box0x2bd76f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air26log0x2bda1e0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air26box0x2bd9fd0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C26log0x2bdcac0">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C26box0x2bdc8b0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W26log0x2be0020">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W26box0x2bdfe10"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix26log0x2be2900">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix26box0x2be26f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si26_0log0x2be51e0">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si26_0box0x2be4fd0"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix26log0x2be7be0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix26box0x2be79d0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB26log0x2bea4c0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB26box0x2bea2b0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air26log0x2becda0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air26box0x2becb90"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W27log0x2bef680">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W27box0x2bef470"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air27log0x2bf1f60">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air27box0x2bf1d50"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB27log0x2bf4850">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB27box0x2bf4640"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix27log0x2bf7130">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix27box0x2bf6f20"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si27_0log0x2bf9a10">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si27_0box0x2bf9800"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix27log0x2bfc410">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix27box0x2bfc200"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W28log0x2bfecf0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W28box0x2bfeae0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C28log0x2c015d0">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C28box0x2c013c0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air28log0x2c03eb0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air28box0x2c03ca0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C28log0x2c06790">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C28box0x2c06580"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W28log0x2c09070">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W28box0x2c08e60"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix28log0x2c0b950">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix28box0x2c0b740"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si28_0log0x2c0e230">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si28_0box0x2c0e020"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix28log0x2c10c30">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix28box0x2c10a20"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB28log0x2c13510">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB28box0x2c13300"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air28log0x2c15e00">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air28box0x2c15bf0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W29log0x2c186e0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W29box0x2c184d0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air29log0x2c1afc0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air29box0x2c1adb0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB29log0x2c1d8a0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB29box0x2c1d690"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix29log0x2c20180">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix29box0x2c1ff70"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si29_0log0x2c22a60">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si29_0box0x2c22850"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix29log0x2c25460">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix29box0x2c25250"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W30log0x2c27d40">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W30box0x2c27b30"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C30log0x2c2a620">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C30box0x2c2a410"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air30log0x2c2cf00">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air30box0x2c2ccf0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C30log0x2c2f7e0">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C30box0x2c2f5d0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W30log0x2c32090">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W30box0x2c31eb0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix30log0x2c349b0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix30box0x2c347a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si30_0log0x2c37290">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si30_0box0x2c37080"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix30log0x2c39c90">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix30box0x2c39a80"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB30log0x2c3c570">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB30box0x2c3c360"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air30log0x2c3ee50">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air30box0x2c3ec40"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W31log0x2c41730">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W31box0x2c41520"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air31log0x2c44010">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air31box0x2c43e00"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB31log0x2c468f0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB31box0x2c466e0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix31log0x2c491d0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix31box0x2c48fc0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si31_0log0x2c4bab0">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si31_0box0x2c4b8a0"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix31log0x2c4e4b0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix31box0x2c4e2a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W32log0x2c50d90">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W32box0x2c50b80"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C32log0x2c535e0">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C32box0x2c533d0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air32log0x2c55f60">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air32box0x2c55d50"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C32log0x2c58840">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C32box0x2c58630"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W32log0x2c5b120">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W32box0x2c5af10"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix32log0x2c5da00">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix32box0x2c5d7f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si32_0log0x2c602e0">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si32_0box0x2c600d0"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix32log0x2b1f1a0">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix32box0x2b1ef90"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB32log0x2b21b00">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB32box0x2b218f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air32log0x2b243e0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air32box0x2b241d0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W33log0x2c70ba0">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W33box0x2c70990"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air33log0x2c73480">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air33box0x2c73270"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB33log0x2c75d60">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB33box0x2c75b50"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix33log0x2c78650">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix33box0x2c78440"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si33_0log0x2c7b730">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si33_0box0x2c7b520"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix33log0x2c7e230">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix33box0x2c7e020"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W34log0x2c80b10">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W34box0x2c80900"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C34log0x2c833f0">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C34box0x2c831e0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air34log0x2c85cd0">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air34box0x2c85ac0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="C34log0x2c885b0">
       <materialref ref="G4_C0x29c2130"/>
       <solidref ref="C34box0x2c883a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="W34log0x2c8ae90">
       <materialref ref="G4_W0x29ab150"/>
       <solidref ref="W34box0x2c8ac80"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix34log0x2c8d770">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix34box0x2c8d560"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Si34_0log0x2c90050">
       <materialref ref="G4_Si0x29bcf50"/>
       <solidref ref="Si34_0box0x2c8fe40"/>
       <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="CFMix34log0x2c92a50">
       <materialref ref="CFMix0x29cc490"/>
       <solidref ref="CFMix34box0x2c92840"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="PCB34log0x2c952b0">
       <materialref ref="FR40x29c7190"/>
       <solidref ref="PCB34box0x2c950a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
     <volume name="Air34log0x2c97c30">
       <materialref ref="G4_AIR0x29be7d0"/>
       <solidref ref="Air34box0x2c97a20"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
+    <!-- HCal starts here -->
     <volume name="Cu35log0x2c97eb0">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu35box0x2c97e20"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb35log0x2c981a0">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb35box0x2c98110"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel35log0x2c984b0">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel35box0x2c98410"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu35log0x2c987b0">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu35box0x2c98720"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator35log0x2c98ac0">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator35box0x2c98a20"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu36log0x2c98dc0">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu36box0x2c98d30"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb36log0x2c990b0">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb36box0x2c99020"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel36log0x2c993c0">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel36box0x2c99320"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu36log0x2c996c0">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu36box0x2c99630"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator36log0x2c999d0">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator36box0x2c99930"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu37log0x2c99cd0">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu37box0x2c99c40"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb37log0x2c99fc0">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb37box0x2c99f30"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel37log0x2c9a2d0">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel37box0x2c9a230"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu37log0x2c9a5d0">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu37box0x2c9a540"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator37log0x2c9a8e0">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator37box0x2c9a840"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu38log0x2c9abe0">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu38box0x2c9ab50"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb38log0x2c9aed0">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb38box0x2c9ae40"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel38log0x2c9b1e0">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel38box0x2c9b140"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu38log0x2c9b4e0">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu38box0x2c9b450"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator38log0x2c9b7f0">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator38box0x2c9b750"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu39log0x2c9baf0">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu39box0x2c9ba60"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb39log0x2c9bde0">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb39box0x2c9bd50"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel39log0x2c9c0f0">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel39box0x2c9c050"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu39log0x2c9c3f0">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu39box0x2c9c360"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator39log0x2c9c700">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator39box0x2c9c660"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu40log0x2c9ca00">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu40box0x2c9c970"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb40log0x2c9ccf0">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb40box0x2c9cc60"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel40log0x2c9d000">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel40box0x2c9cf60"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu40log0x2c9d300">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu40box0x2c9d270"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator40log0x2c9d610">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator40box0x2c9d570"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu41log0x2c9d910">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu41box0x2c9d880"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb41log0x2c9dc00">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb41box0x2c9db70"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel41log0x2c9df10">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel41box0x2c9de70"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu41log0x2c9e210">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu41box0x2c9e180"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator41log0x2c9e520">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator41box0x2c9e480"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu42log0x2c9e820">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu42box0x2c9e790"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb42log0x2c9eb10">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb42box0x2c9ea80"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel42log0x2c9ee20">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel42box0x2c9ed80"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu42log0x2c9f120">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu42box0x2c9f090"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator42log0x2c9f430">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator42box0x2c9f390"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu43log0x2c9f730">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu43box0x2c9f6a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb43log0x2c9fa20">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb43box0x2c9f990"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel43log0x2c9fd30">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel43box0x2c9fc90"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu43log0x2ca0030">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu43box0x2c9ffa0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator43log0x2ca0340">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator43box0x2ca02a0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu44log0x2ca0640">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu44box0x2ca05b0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb44log0x2ca0930">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb44box0x2ca08a0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel44log0x2ca0c40">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel44box0x2ca0ba0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu44log0x2ca0f40">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu44box0x2ca0eb0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator44log0x2ca1250">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator44box0x2ca11b0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu45log0x2ca1550">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu45box0x2ca14c0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb45log0x2ca1840">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb45box0x2ca17b0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel45log0x2ca1b50">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel45box0x2ca1ab0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu45log0x2ca1e50">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu45box0x2ca1dc0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator45log0x2ca2160">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator45box0x2ca20c0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu46log0x2ca2460">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu46box0x2ca23d0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb46log0x2ca2750">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb46box0x2ca26c0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel46log0x2ca2a60">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel46box0x2ca29c0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu46log0x2ca2d60">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu46box0x2ca2cd0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator46log0x2ca3070">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator46box0x2ca2fd0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu47log0x2ca3370">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu47box0x2ca32e0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb47log0x2ca3660">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb47box0x2ca35d0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel47log0x2ca3970">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel47box0x2ca38d0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu47log0x2ca3c70">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu47box0x2ca3be0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator47log0x2ca3f80">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator47box0x2ca3ee0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu48log0x2ca4280">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu48box0x2ca41f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb48log0x2ca4570">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb48box0x2ca44e0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel48log0x2ca4880">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel48box0x2ca47e0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu48log0x2ca4b80">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu48box0x2ca4af0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator48log0x2ca4e90">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator48box0x2ca4df0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu49log0x2ca5190">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu49box0x2ca5100"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Pb49log0x2ca5480">
       <materialref ref="G4_Pb0x29abf50"/>
       <solidref ref="Pb49box0x2ca53f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="SSteel49log0x2ca5790">
       <materialref ref="SSteel0x29c9690"/>
       <solidref ref="SSteel49box0x2ca56f0"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Cu49log0x2ca5a90">
       <materialref ref="G4_Cu0x29bc630"/>
       <solidref ref="Cu49box0x2ca5a00"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="Scintillator49log0x2ca5da0">
       <materialref ref="Scintillator0x29ca3f0"/>
       <solidref ref="Scintillator49box0x2ca5d00"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
     </volume>
     <volume name="calorimeters">
       <materialref ref="G4_AIR0x29be7d0"/>
@@ -12434,6 +12780,7 @@
         <position name="Scintillator49phys0x2ca5f00_pos" unit="mm" x="0" y="0" z="614.75"/>
       </physvol>
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
     </volume>
   </structure>
 

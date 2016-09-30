@@ -5,6 +5,8 @@
 #include "Event/SimCalorimeterHit.h"
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
+#include "DetDescr/DetectorID.h"
+#include "DetDescr/IDField.h"
 
 // ROOT
 #include "TClonesArray.h"
@@ -27,80 +29,83 @@ int main(int argc, const char* argv[])  {
         exit(1);
     }
 
-    TFile histFile("ldmx_sim_histos.root", "new");
-    //TH1F *h1 = new TH1F("h1_nRecoilHits", "Number of Recoil Hits", 100, -0.5, 99.5);
-    TH1F* nTaggerHitsHist = new TH1F("h1_nTaggerHits", "Number of Recoil Hits", 100, -0.5, 99.5);
-    TH2F* taggerXYHist = new TH2F("h2_taggerXY", "Tagger Hits XY", 200, -100, 100, 200, -100, 100);
+    // Define DetectorID for decoding the hit IDs.
+    IDField::IDFieldList* fieldList = new IDField::IDFieldList;
+    IDField* f1 = new IDField("subdet", 0, 0, 3);
+    IDField* f2 = new IDField("layer", 1, 4, 11);
+    fieldList->push_back(f1);
+    fieldList->push_back(f2);
+    DetectorID* detID = new DetectorID(fieldList);
 
-    std::cout << "Reading in ROOT file " << argv[1] << " ... " << std::endl;
-    TFile* eventFile = new TFile(argv[1]);
-    TTree* eventTree = (TTree*) eventFile->Get("LDMX_Event");
-    eventTree->Print();
-    Event* currentEvent = new Event();
-    TBranch *eventBranch = eventTree->GetBranch("LdmxEvent");
-    if (eventBranch == NULL) {
+    TFile histFile("ldmx_sim_histos.root", "recreate");
+
+    TH1F* nTaggerHitsH1 = new TH1F("h1_nTaggerHits", "Number of Tagger Hits", 100, 0, 100);
+    TH2F* taggerXYH2 = new TH2F("h2_taggerXY", "Tagger Hits XY", 200, -100, 100, 200, -100, 100);
+
+    TH1F* nRecoilHitsH1 = new TH1F("h1_nRecoilHits", "Number of Recoil Hits", 100, 0, 100);
+    TH2F* recoilXYH2 = new TH2F("h2_recoilXY", "Recoil Hits XY", 200, -100, 100, 200, -100, 100);
+    TH1F* recoilLayer = new TH1F("h1_recoilLayer", "Recoil Layer Number", 8, -0.5, 7.5);
+
+    TH1F* nEcalHitsH1 = new TH1F("h1_nEcalHits", "Number of ECal Hits", 1500, 500, 5000);
+
+    TH1F* nHcalHitsH1 = new TH1F("h1_nHcalHits", "Number of HCal Hits", 100, 0, 100);
+
+    TH1F* nSimParticlesH1 = new TH1F("h1_nSimParticles", "Number of Sim Particles", 100, 0, 100);
+
+    //std::cout << "Reading in ROOT file " << argv[1] << " ... " << std::endl;
+    TFile* file = new TFile(argv[1]);
+    TTree* tree = (TTree*) file->Get("LDMX_Event");
+    //eventTree->Print();
+    Event* event = new Event();
+    TBranch *branch = tree->GetBranch("LdmxEvent");
+    if (branch == NULL) {
         std::cerr << "The LdmxEvent branch is null!" << std::endl;
         exit(1);
     }
-    eventBranch->SetAddress(&currentEvent);
+    branch->SetAddress(&event);
 
-    for(int entry = 0; entry < eventTree->GetEntries(); ++entry) {
+    for(int entry = 0; entry < tree->GetEntries(); ++entry) {
 
-        std::cout << "Getting TTree entry " << entry << std::endl;
+        tree->GetEntry(entry);
 
-        eventTree->GetEntry(entry);
+        TClonesArray* coll = event->getCollection("EcalSimHits");
 
-        std::cout << "EventHeader: run = " << currentEvent->getHeader()->getRun() << "; eventNumber = "
-                << currentEvent->getHeader()->getEventNumber() << "; timestamp = " << currentEvent->getHeader()->getTimestamp() << std::endl;
-
-        TClonesArray* coll = NULL;
-
-        //std::cout << "Event has " << event->getCollectionSize("EcalSimHits") << " EcalSimHits" << std::endl;
-        //TClonesArray* coll = event->getCollection("EcalSimHits");
-        //for (int i = 0; i < event->getCollectionSize("EcalSimHits"); i++) {
-        //    coll[i].Print();
-        //}
-
-        int nSimParticles = currentEvent->getCollectionSize(Event::SIM_PARTICLES);
-        std::cout << "Event has " << nSimParticles << " " << Event::SIM_PARTICLES << std::endl;
-        coll = currentEvent->getCollection(Event::SIM_PARTICLES);
-        for (int i = 0; i < nSimParticles; i++) {
-            std::cout << "Printing SimParticle " << i << std::endl;
-            coll->At(i)->Print();
+        for (int i = 0; i < event->getCollectionSize("EcalSimHits"); i++) {
+            // TODO: ecal plots
         }
 
-        int nTaggerHits = currentEvent->getCollectionSize(Event::TAGGER_SIM_HITS);
-        std::cout << "Event has " << nTaggerHits << " " << Event::TAGGER_SIM_HITS << std::endl;
+        int nSimParticles = event->getCollectionSize(Event::SIM_PARTICLES);
+        coll = event->getCollection(Event::SIM_PARTICLES);
+        for (int i = 0; i < nSimParticles; i++) {
+            // TODO: SimParticle plots
+        }
 
-        nTaggerHitsHist->Fill(nTaggerHits);
+        int nTaggerHits = event->getCollectionSize(Event::TAGGER_SIM_HITS);
+        nTaggerHitsH1->Fill(nTaggerHits);
 
-        coll = currentEvent->getCollection(Event::TAGGER_SIM_HITS);
+        coll = event->getCollection(Event::TAGGER_SIM_HITS);
         for (int i = 0; i < nTaggerHits; i++) {
-            std::cout << "Printing " << Event::TAGGER_SIM_HITS << "[" << i << "]" << std::endl;
-            coll->At(i)->Print();
 
             SimTrackerHit* simTrackerHit = (SimTrackerHit*) coll->At(i);
 
-            std::cout << "Getting SimParticle from SimTrackerHit ..." << std::endl;
-            SimParticle* simParticle = simTrackerHit->getSimParticle();
-            if (simParticle != NULL) {
-                simParticle->Print();
-            } else {
-                std::cerr << "SimParticle is null!" << std::endl;
-            }
-
-            taggerXYHist->Fill(simTrackerHit->getStartPosition()[0], simTrackerHit->getStartPosition()[1]);
+            taggerXYH2->Fill(simTrackerHit->getStartPosition()[0], simTrackerHit->getStartPosition()[1]);
         }
 
-        int nRecoilHits = currentEvent->getCollectionSize(Event::RECOIL_SIM_HITS);
-        std::cout << "Event has " << nRecoilHits << " " << Event::RECOIL_SIM_HITS << std::endl;
-        coll = currentEvent->getCollection(Event::RECOIL_SIM_HITS);
+        int nRecoilHits = event->getCollectionSize(Event::RECOIL_SIM_HITS);
+        nRecoilHitsH1->Fill(nRecoilHits);
+        coll = event->getCollection(Event::RECOIL_SIM_HITS);
         for (int i = 0; i < nRecoilHits; i++) {
-            std::cout << "Printing " << Event::RECOIL_SIM_HITS << "[" << i << "]" << std::endl;
-            coll->At(i)->Print();
-        }
 
-        std::cout << "Done reading event " << currentEvent->getHeader()->getEventNumber() << std::endl << std::endl;
+            SimTrackerHit* simTrackerHit = (SimTrackerHit*) coll->At(i);
+
+            detID->setRawValue(simTrackerHit->getID());
+            detID->unpack();
+            int layer = detID->getFieldValue("layer");
+
+            recoilLayer->Fill(layer);
+
+            recoilXYH2->Fill(simTrackerHit->getStartPosition()[0], simTrackerHit->getStartPosition()[1]);
+        }
     }
 
     histFile.Write();

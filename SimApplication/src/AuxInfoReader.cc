@@ -5,6 +5,7 @@
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/MagneticFieldStore.h"
 #include "SimApplication/UserRegionInformation.h"
+#include "SimApplication/VisAttributesStore.h"
 #include "DetDescr/DetectorIDStore.h"
 
 // Geant4
@@ -19,6 +20,7 @@
 
 // STL
 #include <string>
+#include <stdlib.h>
 
 AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser) :
     parser(theParser), eval(new G4GDMLEvaluator) {
@@ -46,6 +48,8 @@ void AuxInfoReader::readGlobalAuxInfo() {
             createMagneticField(auxVal, iaux->auxList);
         } else if (auxType == "Region") {
             createRegion(auxVal, iaux->auxList);
+        } else if (auxType == "VisAttributes") {
+            createVisAttributes(auxVal, iaux->auxList);
         }
     }
     return;
@@ -143,7 +147,7 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
                     G4VSensitiveDetector* sd = G4SDManager::GetSDMpointer()->FindSensitiveDetector(sdName);
                     if (sd != NULL) {
                         lv->SetSensitiveDetector(sd);
-                        std::cout << "Assiged SD " << sd->GetName() << " to " << lv->GetName() << std::endl;
+                        std::cout << "Assigned SD " << sd->GetName() << " to " << lv->GetName() << std::endl;
                     } else {
                         std::cout << "Unknown SensDet in volume's auxiliary info: " << sdName << std::endl;
                         G4Exception("", "", FatalException, "The SensDet was not found.  Is it defined in userinfo?");
@@ -167,6 +171,17 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
                         std::cout << "Added volume " << lv->GetName() << " to region " << regionName << std::endl;
                     } else {
                         std::cerr << "Referenced region " << regionName << " was not found!" << std::endl;
+                        G4Exception("", "", FatalException, "The region was not found.  Is it defined in userinfo?");
+                    }
+                } else if (auxType == "VisAttributes") {
+                    G4String visName = auxVal;
+                    G4VisAttributes* visAttributes = VisAttributesStore::getInstance()->getVisAttributes(visName);
+                    if (visAttributes != NULL) {
+                        lv->SetVisAttributes(visAttributes);
+                        std::cout << "Assigned VisAttributes " << visName << " to volume " << lv->GetName() << std::endl;
+                    } else {
+                        std::cerr << "Referenced VisAttributes " << visName << " was not found!" << std::endl;
+                        G4Exception("", "", FatalException, "The VisAttributes was not found.  Is it defined in userinfo?");
                     }
                 }
             }
@@ -313,4 +328,76 @@ void AuxInfoReader::createRegion(G4String name, const G4GDMLAuxListType* auxInfo
     region->SetUserInformation(regionInfo);
 
     std::cout << "Created new detector region " << region->GetName() << std::endl << std::endl;
+}
+
+void AuxInfoReader::createVisAttributes(G4String name, const G4GDMLAuxListType* auxInfoList) {
+
+    G4double rgba[4];
+    rgba[0] = rgba[1] = rgba[2] = 0;
+    rgba[3] = 10.;
+    G4bool visible = true;
+    G4bool dauInvisible = true;
+    G4bool forceWireframe = false;
+    G4bool forceSolid = false;
+    G4double lineWidth = 1.0;
+    G4VisAttributes::LineStyle lineStyle = G4VisAttributes::unbroken;
+
+    for (std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin();
+            iaux != auxInfoList->end(); iaux++) {
+
+        G4String auxType = iaux->type;
+        G4String auxVal = iaux->value;
+        G4String auxUnit = iaux->unit;
+
+        if (auxType == "R") {
+            rgba[0] = atof(auxVal.c_str());
+        } else if (auxType == "G") {
+            rgba[1] = atof(auxVal.c_str());
+        } else if (auxType == "B") {
+            rgba[2] = atof(auxVal.c_str());
+        } else if (auxType == "A") {
+            rgba[3] = atof(auxVal.c_str());
+        } else if (auxType == "Style") {
+            if (auxVal == "wireframe") {
+                forceWireframe = true;
+            } else if (auxVal == "solid") {
+                forceSolid = true;
+            }
+        } else if (auxType == "DaughtersInvisible") {
+            if (auxVal == "true") {
+                dauInvisible = true;
+            } else if (auxVal == "false") {
+                dauInvisible = false;
+            }
+        } else if (auxType == "Visible") {
+            if (auxVal == "true") {
+                visible = true;
+            } else if (auxVal == "false") {
+                visible = false;
+            }
+        } else if (auxType == "LineStyle") {
+            if (auxVal == "unbroken") {
+                lineStyle = G4VisAttributes::unbroken;
+            } else if (auxVal == "dashed") {
+                lineStyle = G4VisAttributes::dashed;
+            } else if (auxVal == "dotted") {
+                lineStyle = G4VisAttributes::dotted;
+            }
+        } else if (auxType == "LineWidth") {
+            lineWidth = atof(auxVal.c_str());
+        }
+    }
+
+    G4VisAttributes* visAttributes = new G4VisAttributes();
+    visAttributes->SetColor(rgba[0], rgba[1], rgba[2], rgba[3]);
+    visAttributes->SetVisibility(visible);
+    visAttributes->SetDaughtersInvisible(dauInvisible);
+    visAttributes->SetForceWireframe(forceWireframe);
+    visAttributes->SetForceSolid(forceSolid);
+    visAttributes->SetLineWidth(lineWidth);
+    visAttributes->SetLineStyle(lineStyle);
+    VisAttributesStore::getInstance()->addVisAttributes(name, visAttributes);
+
+    std::cout << "Created VisAttributes " << name << std::endl << (*visAttributes)
+            << std::endl << std::endl;
 }
