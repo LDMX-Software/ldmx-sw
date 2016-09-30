@@ -26,6 +26,8 @@ class AuxInfoReader {
 
         void createRegion(G4String name, const G4GDMLAuxListType* auxInfoList);
 
+        void createVisAttributes(G4String name, const G4GDMLAuxListType* auxInfoList);
+
     private:
         G4GDMLParser* parser;
         G4GDMLEvaluator* eval;
