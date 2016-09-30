@@ -1,4 +1,4 @@
-#include "../include/DetDescr/DetectorID.h"
+#include "DetDescr/DetectorID.h"
 
 DetectorID::~DetectorID() {
     // Delete the field list and its objects as we assume this class owns it.
