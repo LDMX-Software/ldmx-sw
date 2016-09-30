@@ -195,6 +195,7 @@ void AuxInfoReader::createDetectorID(G4String idName, const G4GDMLAuxListType* a
     IDField::IDFieldList* fieldList = new IDField::IDFieldList();
 
     // iterate fields
+    int fieldIndex = 0;
     for(std::vector<G4GDMLAuxStructType>::const_iterator fieldIt = auxInfoList->begin();
             fieldIt != auxInfoList->end(); fieldIt++ ) {
 
@@ -210,7 +211,6 @@ void AuxInfoReader::createDetectorID(G4String idName, const G4GDMLAuxListType* a
             std::cout << "Creating IDField " << fieldName << std::endl;
 
             int startBit, endBit = -1;
-            int index = 0;
 
             // iterate field aux values
             for(std::vector<G4GDMLAuxStructType>::const_iterator fieldValsIt = fieldsAux->begin();
@@ -224,9 +224,6 @@ void AuxInfoReader::createDetectorID(G4String idName, const G4GDMLAuxListType* a
                 } else if (fieldValAuxType == "EndBit") {
                     endBit = atoi(fieldValAuxValue.c_str());
                 }
-
-                // Increment field index which is assigned automatically based on element ordering.
-                index++;
             }
 
             if (startBit == -1) {
@@ -237,10 +234,13 @@ void AuxInfoReader::createDetectorID(G4String idName, const G4GDMLAuxListType* a
                 G4Exception("", "", FatalException, "The DetectorID is missing the EndBit.");
             }
 
-            fieldList->push_back(new IDField(fieldName, index, startBit, endBit));
+            fieldList->push_back(new IDField(fieldName, fieldIndex, startBit, endBit));
 
             std::cout << "Added IDField " << fieldName << " with StartBit = " << startBit << ", EndBit = "
-                    << endBit << ", Index = " << index << std::endl;
+                    << endBit << ", Index = " << fieldIndex << std::endl;
+
+            // Increment field index which is assigned automatically based on element ordering.
+            fieldIndex++;
         }
     }
 
