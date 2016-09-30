@@ -1,46 +1,46 @@
-#include <iostream>
-
 // LDMX
+#include "DetDescr/DetectorID.h"
+
+// STL
 #include <bitset>
 #include <iostream>
-#include "../include/DetDescr/DetectorID.h"
+#include <stdexcept>
 
 int main(int, const char* argv[])  {
 
     std::cout << "Hello Detector ID test!" << std::endl;
 
     IDField::IDFieldList fieldList;
-    fieldList.push_back(new IDField("subdet", 0 /* index */, 0 /* start bit */, 3 /* end bit */));
+    fieldList.push_back(new IDField("subdet", 0, 0, 3));
     fieldList.push_back(new IDField("layer", 1, 4, 11));
+    DetectorID* detID = new DetectorID(&fieldList);
 
-    DetectorID* detId = new DetectorID(&fieldList);
+    int layer = 10;
+    int subdet = 2;
 
-    IDField* field1 = fieldList[0];
-    std::bitset<32> bitMask1 = field1->getBitMask();
-    std::cout << field1->getFieldName() << " bit mask = " << bitMask1 << std::endl;
+    detID->setFieldValue("layer", layer);
+    detID->setFieldValue("subdet", subdet);
+    detID->pack();
 
-    IDField* field2 = fieldList[1];
-    std::bitset<32> bitMask2 = field2->getBitMask();
-    std::cout << field2->getFieldName() << " bit mask = " << bitMask2 << std::endl;
+    DetectorID::RawValue rawVal = detID->getRawValue();
+    std::bitset<32> rawValBits = rawVal;
+    std::cout << "rawValBits: " << rawValBits << std::endl;
 
-    unsigned subdet = 1;
-    unsigned layer = 10;
+    detID->setRawValue(rawVal);
+    const DetectorID::FieldValueList& fieldValues = detID->unpack();
 
-    DetectorID::RawValue val = subdet | (layer << 4);
-    detId->setRawValue(val);
+    std::cout << "subdet: " << fieldValues[0] << std::endl;
+    std::cout << "layer: " << fieldValues[1] << std::endl;
 
-    std::bitset<32> valBits = val;
-    std::cout << "raw val bits = " << valBits << std::endl;
+    if (fieldValues[0] != subdet) {
+        throw std::runtime_error("Wrong value for subdet: " + subdet);
+    }
 
-    DetectorID::FieldValueList unpacked = detId->unpack();
-    std::cout << "val[0] = " << unpacked[0] << std::endl;
-    std::cout << "val[1] = " << unpacked[1] << std::endl;
+    if (fieldValues[1] != layer) {
+        throw std::runtime_error("Wrong value for layer: " + layer);
+    }
 
-    DetectorID::RawValue packed = detId->pack();
-    std::bitset<32> packedBits = packed;
-    std::cout << "packed val bits = " << packedBits << std::endl;
-
-    delete detId;
+    delete detID;
 
     std::cout << "Bye Detector ID test!" << std::endl;
 }
