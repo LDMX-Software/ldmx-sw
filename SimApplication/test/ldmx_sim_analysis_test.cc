@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <bitset>
 
 int main(int argc, const char* argv[])  {
 
@@ -30,12 +31,10 @@ int main(int argc, const char* argv[])  {
     }
 
     // Define DetectorID for decoding the hit IDs.
-    IDField::IDFieldList* fieldList = new IDField::IDFieldList;
-    IDField* f1 = new IDField("subdet", 0, 0, 3);
-    IDField* f2 = new IDField("layer", 1, 4, 11);
-    fieldList->push_back(f1);
-    fieldList->push_back(f2);
-    DetectorID* detID = new DetectorID(fieldList);
+    IDField::IDFieldList fieldList;
+    fieldList.push_back(new IDField("subdet", 0, 0, 3));
+    fieldList.push_back(new IDField("layer", 1, 4, 11));
+    DetectorID* detID = new DetectorID(&fieldList);
 
     TFile histFile("ldmx_sim_histos.root", "recreate");
 
@@ -99,6 +98,8 @@ int main(int argc, const char* argv[])  {
             SimTrackerHit* simTrackerHit = (SimTrackerHit*) coll->At(i);
 
             detID->setRawValue(simTrackerHit->getID());
+            int rawID = simTrackerHit->getID();
+
             detID->unpack();
             int layer = detID->getFieldValue("layer");
 
