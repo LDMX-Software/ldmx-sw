@@ -134,7 +134,7 @@ There is currently one main binary program created by the framework which is the
 
 It can be run from the command line in interactive mode using the `ldmx-sim` command or by supplying a macro like `ldmx-sim run.mac`.
 
-A sample macro might include the following text:
+A sample macro might include the following to generate events using the particle gun:
 
 ```
 /persistency/gdml/read detector.gdml
@@ -146,7 +146,16 @@ A sample macro might include the following text:
 /run/beamOn 1000
 ```
 
-The detector file is located in the *Detectors* module data directory and the easiest way to access this currently is probably by setting some sym links in your current directory e.g. `ln -s ldmx-sw/Detectors/data/ldmx-det-full-v0/*.gdml .`, and then the program should be able to find all the detector files.
+LHE input events in XML format can also be used for event generation:
+
+```
+/persistency/gdml/read detector.gdml
+/run/initialize
+/ldmx/generators/lhe/open ./events.lhe
+/run/beamOn 1000
+```
+
+The detector file is located in the *Detectors* module data directory and the easiest way to access this is by setting some sym links in your current directory using `ln -s ldmx-sw/Detectors/data/ldmx-det-full-v0/*.gdml .`, and then the program should be able to find all the detector files.
 
 ## Contributing
 
