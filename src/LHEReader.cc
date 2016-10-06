@@ -39,30 +39,15 @@ LHEEvent* LHEReader::readNextEvent() {
             << std::endl;
 
     while (getline(ifs, line)) {
+
         if (line == "</event>") {
-            std::cout << "Found end event element." << std::endl;
             break;
         }
-        std::cout << "Read LHE record: " << line << std::endl;
+
         LHEParticle* particle = new LHEParticle(line);
-
-        std::cout << " "
-                << "IDUP: " << particle->getIDUP()
-                << ", ISTUP: " << particle->getISTUP()
-                << ", MOTHUP[0]: " << particle->getMOTHUP(0)
-                << ", MOTHUP[1]: " << particle->getMOTHUP(1)
-                << ", ICOLUP[0]: " << particle->getICOLUP(0)
-                << ", ICOLUP[1]: " << particle->getICOLUP(1)
-                << ", PUP[0]: " << particle->getPUP(0)
-                << ", PUP[1]: " << particle->getPUP(1)
-                << ", PUP[2]: " << particle->getPUP(2)
-                << ", PUP[3]: " << particle->getPUP(3)
-                << ", PUP[4]: " << particle->getPUP(4)
-                << ", VTIMUP: " << particle->getVTIMUP()
-                << ", SPINUP: " << particle->getSPINUP()
-                << std::endl;
-
         nextEvent->addParticle(particle);
+
+        particle->print(std::cout);
     }
 
     const std::vector<LHEParticle*>& particles = nextEvent->getParticles();

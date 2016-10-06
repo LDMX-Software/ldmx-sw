@@ -2,8 +2,7 @@
 
 // LDMX
 #include "SimApplication/DetectorConstruction.h"
-#include "SimApplication/PrimaryGeneratorAction.h"
-#include "SimApplication/PrimaryGeneratorMessenger.h"
+#include "SimApplication/RunManager.h"
 #include "SimApplication/SimApplicationMessenger.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
@@ -43,7 +42,7 @@ void SimApplication::run(int argc, char** argv) {
 #ifdef G4MULTITHREADED
     G4MTRunManager* runManager = new G4MTRunManager;
 #else
-    G4RunManager* runManager = new G4RunManager;
+    G4RunManager* runManager = new RunManager;
 #endif
 
     // Setup GDML parser and messenger.
@@ -54,16 +53,7 @@ void SimApplication::run(int argc, char** argv) {
     new SimApplicationMessenger();
 
     // Supply default user initializations and actions.
-    runManager->SetUserInitialization(new FTFP_BERT);
     runManager->SetUserInitialization(new DetectorConstruction(parser));
-    PrimaryGeneratorAction* pga = new PrimaryGeneratorAction;
-    runManager->SetUserAction(pga);
-    runManager->SetUserAction(new UserEventAction);
-    runManager->SetUserAction(new UserRunAction);
-    runManager->SetUserAction(new UserTrackingAction);
-
-    // Create primary generator messenger.
-    new PrimaryGeneratorMessenger(pga);
 
     // Initialize G4 visualization framework.
     G4VisManager* visManager = new G4VisExecutive;

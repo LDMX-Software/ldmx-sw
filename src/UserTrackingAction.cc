@@ -3,11 +3,13 @@
 // LDMX
 #include "SimApplication/TrackMap.h"
 #include "SimApplication/Trajectory.h"
+#include "SimApplication/UserPrimaryParticleInformation.h"
 #include "SimApplication/UserRegionInformation.h"
-//#include "SimApplication/UserTrackInformation.h"
 
 // Geant4
+#include "G4PrimaryParticle.hh"
 #include "G4TrackingManager.hh"
+#include "G4VUserPrimaryParticleInformation.hh"
 
 // STL
 #include <iostream>
@@ -27,7 +29,15 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* aTrack) {
         fpTrackingManager->SetStoreTrajectory(false);
     } else {
         fpTrackingManager->SetStoreTrajectory(true);
-        fpTrackingManager->SetTrajectory(new Trajectory(aTrack));
+        Trajectory* traj = new Trajectory(aTrack);
+        fpTrackingManager->SetTrajectory(traj);
+
+        if (aTrack->GetDynamicParticle()->GetPrimaryParticle() != NULL) {
+            G4VUserPrimaryParticleInformation* primaryInfo = aTrack->GetDynamicParticle()->GetPrimaryParticle()->GetUserInformation();
+            if (primaryInfo != NULL) {
+                traj->setGenStatus(((UserPrimaryParticleInformation*) primaryInfo)->getHepEvtStatus());
+            }
+        }
     }
 
     // Save association between track ID and its parent ID.
