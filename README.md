@@ -1,6 +1,6 @@
 # ldmx-sw
 
-The *ldmx-sw* github repository contains a C++ software framework for the proposed [Light Dark Matter Experiment (LDMX)](https://confluence.slac.stanford.edu/display/MME/Light+Dark+Matter+Experiment) based at [SLAC](https://slac.stanford.edu)).
+The *ldmx-sw* github repository contains a C++ software framework for the proposed [Light Dark Matter Experiment (LDMX)](https://confluence.slac.stanford.edu/display/MME/Light+Dark+Matter+Experiment) based at [SLAC](https://slac.stanford.edu).
 
 Currently it includes the following modules:
 
@@ -9,7 +9,7 @@ Currently it includes the following modules:
 - [Detectors](https://github.com/LDMXAnalysis/ldmx-sw/tree/master/Detectors) - GDML detector data files
 - [DetDescr](https://github.com/LDMXAnalysis/ldmx-sw/tree/master/DetDescr) - Detector description utilities including detector ID encoding and decoding
 
-The main program created from building this framework is a simulation application which reads a [GDML](http://gdml.web.cern.ch/GDML/) detector description and writes out a [ROOT](https://root.cern.ch) file containing the simulated hits and particles.  The output file can be loaded into the ROOT environment for analysis.
+The primary program created from building this framework is a simulation application which reads a [GDML](http://gdml.web.cern.ch/GDML/) detector description and writes out a [ROOT](https://root.cern.ch) file containing the simulated hits and particles.  The output file can be loaded into the ROOT environment for analysis.
 
 ## Prerequisites
 
@@ -46,7 +46,7 @@ make install
 export XERCESDIR=$PWD
 ```
 
-The environment variable is optional and for convenience.  Where you see these types of variables in these instructions, you may also substitute in explicitly the path to your local installation.
+The *XERCESDIR* environment variable is optional and for convenience.  Where you see these types of variables in these instructions, you may also substitute the actual full path to your local installation of that dependency.
 
 ## Geant4
 
