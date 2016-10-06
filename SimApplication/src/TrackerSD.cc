@@ -50,8 +50,8 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     if (edep == 0.0 && !isGeantino) {
         if (verboseLevel > 1) {
             std::cout << "TrackerSD skipping step with zero edep" << std::endl << std::endl;
-            return false;
         }
+        return false;
     }
 
     // Create a new hit object using the ROOT event.
