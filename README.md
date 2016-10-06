@@ -58,14 +58,14 @@ Assuming you have [downloaded a Geant4 tarball](http://geant4.web.cern.ch/geant4
 tar -zxvf geant4.10.02.p02.tar.gz
 cd geant4.10.02.p02
 mkdir build; cd build
-cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DXERCESC_ROOT_DIR=$XERCESDIR -DGEANT4_USE_OPENGL_X11=ON -DCMAKE_INSTALL_PREFIX=../../geant4.10.02.p02-install ..
+cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DXERCESC_ROOT_DIR=$XERCESDIR \
+    -DGEANT4_USE_OPENGL_X11=ON -DCMAKE_INSTALL_PREFIX=../../geant4.10.02.p02-install ..
 make install
+cd ../../geant4.10.02.p02-install
 export G4DIR=$PWD
 ```
 
 If you get errors about Xerces not being found, then check that the path you provided is correct and that the directory contains a lib dir with the Xerces so (shared library) files.
-
-Due to a quirk in the Geant4 build system, you should use the "build" rather than "install" directory when specifying this directory later (it will actually use the files from your installation directory which are pointed to from the build area).
 
 ## ROOT
 
@@ -128,11 +128,11 @@ export MALLOC_CHECK_=0
 
 The details of how this is setup will depend on your local environment but the above should give some idea of how to do it.  (Eventually there will be a CMake generated script for setting this environment up automatically so this will not be necessary.)
 
-## Running LDMX Programs
+## Running the LDMX Simulation Application
 
 There is currently one main binary program created by the framework which is the LDMX Simulation Application.
 
-It can be run from the command line in interactive mode using the `ldmx-sim` command or by supplying a macro like `ldmx-sim run.mac`.
+It can be run from the command line in interactive mode using the `ldmx-sim` command or in batch mode by supplying a macro like `ldmx-sim run.mac`.
 
 A sample macro might include the following to generate events using the particle gun:
 
