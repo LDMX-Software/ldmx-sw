@@ -64,11 +64,6 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
                 primary->SetMomentum(particle->getPUP(0) * GeV,
                         particle->getPUP(1) * GeV,
                         particle->getPUP(2) * GeV);
-                /*
-                primary->SetMomentum(particle->getPUP(0) * (GeV/c_light),
-                        particle->getPUP(1) * (GeV/c_light),
-                        particle->getPUP(2) * (GeV/c_light));
-                 */
                 primary->SetMass(particle->getPUP(4) * GeV);
                 primary->SetProperTime(particle->getVTIMUP() * nanosecond);
 
