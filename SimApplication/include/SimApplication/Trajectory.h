@@ -62,6 +62,8 @@ class Trajectory : public G4VTrajectory {
 
         const G4ThreeVector& getVertexPosition() const;
 
+        void setGenStatus(int);
+
     private:
 
         TrajectoryPointContainer* trajPoints;

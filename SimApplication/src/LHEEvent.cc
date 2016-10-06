@@ -35,6 +35,11 @@ LHEEvent::LHEEvent(std::string& line) {
 }
 
 LHEEvent::~LHEEvent() {
+    for (std::vector<LHEParticle*>::iterator it = particles.begin();
+            it != particles.end(); it++) {
+        delete (*it);
+    }
+    particles.clear();
 }
 
 int LHEEvent::getNUP() {

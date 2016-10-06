@@ -22,4 +22,8 @@ void PrimaryGeneratorAction::setPrimaryGenerator(G4VPrimaryGenerator* aGenerator
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
     std::cout << ">>> Begin Event " << event->GetEventID() << " <<<" << std::endl;
     generator->GeneratePrimaryVertex(event);
+
+    //std::cout << "Dumping primary particles" << std::endl;
+    //event->GetPrimaryVertex(0)->GetNumberOfParticle()
+    //event->GetPrimaryVertex(0)->GetPrimary(0)->Print();
 }

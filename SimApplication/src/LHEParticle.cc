@@ -46,34 +46,62 @@ LHEParticle::LHEParticle(std::string& line) {
     mothers[1] = NULL;
 }
 
-int LHEParticle::getIDUP() {
+int LHEParticle::getIDUP() const {
     return idup;
 }
 
-int LHEParticle::getISTUP() {
+int LHEParticle::getISTUP() const {
     return istup;
 }
 
-int LHEParticle::getMOTHUP(int i) {
+int LHEParticle::getMOTHUP(int i) const {
     return mothup[i];
 }
 
-int LHEParticle::getICOLUP(int i) {
+int LHEParticle::getICOLUP(int i) const {
     return icolup[i];
 }
 
-double LHEParticle::getPUP(int i) {
+double LHEParticle::getPUP(int i) const {
     return pup[i];
 }
 
-double LHEParticle::getVTIMUP() {
+double LHEParticle::getVTIMUP() const {
     return vtimup;
 }
 
-double LHEParticle::getSPINUP() {
+double LHEParticle::getSPINUP() const {
     return spinup;
 }
 
 void LHEParticle::setMother(int i, LHEParticle* mother) {
     mothers[i] = mother;
+}
+
+LHEParticle* LHEParticle::getMother(int i) const {
+    return mothers[i];
+}
+
+void LHEParticle::print(std::ostream& stream) const {
+    stream << "LHEParticle { "
+            << "IDUP: " << getIDUP()
+            << ", ISTUP: " << getISTUP()
+            << ", MOTHUP[0]: " << getMOTHUP(0)
+            << ", MOTHUP[1]: " << getMOTHUP(1)
+            << ", ICOLUP[0]: " << getICOLUP(0)
+            << ", ICOLUP[1]: " << getICOLUP(1)
+            << ", PUP[0]: " << getPUP(0)
+            << ", PUP[1]: " << getPUP(1)
+            << ", PUP[2]: " << getPUP(2)
+            << ", PUP[3]: " << getPUP(3)
+            << ", PUP[4]: " << getPUP(4)
+            << ", VTIMUP: " << getVTIMUP()
+            << ", SPINUP: " << getSPINUP()
+            << " }"
+            << std::endl;
+}
+
+std::ostream& operator <<(std::ostream& stream, const LHEParticle& particle) {
+    particle.print(stream);
+    return stream;
 }
