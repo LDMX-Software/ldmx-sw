@@ -51,7 +51,7 @@ void RootEventWriter::open() {
 void RootEventWriter::writeEvent() {
 
     std::cout << std::endl;
-    std::cout << "Writing event " << event->getHeader()->getEventNumber() << std::endl;
+    std::cout << "Writing event " << event->getEventNumber() << std::endl;
     std::cout << Event::SIM_PARTICLES << ": " << event->getCollectionSize(Event::SIM_PARTICLES) << std::endl;
     std::cout << Event::RECOIL_SIM_HITS << ": " << event->getCollectionSize(Event::RECOIL_SIM_HITS) << std::endl;
     std::cout << Event::TAGGER_SIM_HITS << ": " << event->getCollectionSize(Event::TAGGER_SIM_HITS) << std::endl;

@@ -31,13 +31,17 @@ void UserEventAction::BeginOfEventAction(const G4Event*) {
     RootEventWriter::getInstance()->getEvent()->Clear("");
 }
 
-void UserEventAction::EndOfEventAction(const G4Event* event) {
+void UserEventAction::EndOfEventAction(const G4Event* anEvent) {
 
-    // Build ROOT event header.
-    EventHeader* header = RootEventWriter::getInstance()->getEvent()->getHeader();
-    header->setEventNumber(event->GetEventID());
-    header->setTimestamp((int)time(NULL));
-    header->setRun(G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID());
+    // Set ROOT event information.
+    Event* rootEvent = RootEventWriter::getInstance()->getEvent();
+    rootEvent->setEventNumber(anEvent->GetEventID());
+    rootEvent->setTimestamp((int)time(NULL));
+    rootEvent->setRun(G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID());
+    if (anEvent->GetPrimaryVertex(0)) {
+        rootEvent->setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
+        //std::cout << "set event weight: " << rootEvent->getWeight() << std::endl;
+    }
 
     // Build the SimParticle list for the output ROOT event.
     simParticleBuilder->buildSimParticles();
@@ -54,5 +58,5 @@ void UserEventAction::EndOfEventAction(const G4Event* event) {
     // Clear the global track map.
     TrackMap::getInstance()->clear();
 
-    std::cout << ">>> End Event " << event->GetEventID() << " <<<" << std::endl;
+    std::cout << ">>> End Event " << anEvent->GetEventID() << " <<<" << std::endl;
 }

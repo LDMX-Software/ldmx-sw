@@ -12,6 +12,10 @@ std::string Event::HCAL_SIM_HITS = std::string("HcalSimHits");
 
 Event::Event() :
         TObject(),
+        eventNumber(-1),
+        run(-1),
+        timestamp(-1),
+        weight(1.0),
         simParticles(new TClonesArray("SimParticle", Event::DEFAULT_COLLECTION_SIZE)),
         taggerSimHits(new TClonesArray("SimTrackerHit", Event::DEFAULT_COLLECTION_SIZE)),
         recoilSimHits(new TClonesArray("SimTrackerHit", Event::DEFAULT_COLLECTION_SIZE)),
@@ -38,6 +42,11 @@ Event::~Event() {
 void Event::Clear(Option_t*) {
 
     TObject::Clear();
+    
+    eventNumber = -1;
+    run = -1;
+    timestamp = -1;
+    weight = 1.0;
 
     simParticles->Clear("C");
     taggerSimHits->Clear("C");
@@ -50,12 +59,39 @@ void Event::Clear(Option_t*) {
     nRecoilSimHits = 0;
     nEcalSimHits = 0;
     nHcalSimHits = 0;
-
-    header = EventHeader();
 }
 
-EventHeader* Event::getHeader() {
-    return &header;
+
+int Event::getEventNumber() {
+    return eventNumber;
+}
+
+int Event::getRun() {
+    return run;
+}
+
+int Event::getTimestamp() {
+    return timestamp;
+}
+
+double Event::getWeight() {
+    return weight;
+}
+
+void Event::setEventNumber(int anEventNumber) {
+    eventNumber = anEventNumber;
+}
+
+void Event::setRun(int aRun) {
+    run = aRun;
+}
+
+void Event::setTimestamp(int aTimestamp) {
+    timestamp = aTimestamp;
+}
+
+void Event::setWeight(double aWeight) {
+    weight = aWeight;
 }
 
 int Event::getCollectionSize(const std::string& collectionName) {

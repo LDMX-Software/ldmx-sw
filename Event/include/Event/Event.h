@@ -13,49 +13,6 @@
 // STL
 #include <string>
 
-class EventHeader {
-
-    public:
-
-        EventHeader() :
-                eventNumber(0), run(0), timestamp(0) {
-        }
-
-        virtual ~EventHeader() {
-        }
-
-        int getEventNumber() {
-            return eventNumber;
-        }
-
-        int getRun() {
-            return run;
-        }
-
-        int getTimestamp() {
-            return timestamp;
-        }
-
-        void setEventNumber(int anEventNumber) {
-            eventNumber = anEventNumber;
-        }
-
-        void setRun(int aRun) {
-            run = aRun;
-        }
-
-        void setTimestamp(int aTimestamp) {
-            timestamp = aTimestamp;
-        }
-
-    private:
-        int eventNumber;
-        int run;
-        int timestamp;
-
-    ClassDef(EventHeader, 1);
-};
-
 class Event: public TObject {
 
     public:
@@ -66,13 +23,27 @@ class Event: public TObject {
 
         void Clear(Option_t* = "");
 
-        EventHeader* getHeader();
+        int getEventNumber();
 
-        TClonesArray* getCollection(const std::string& collectionName);
+        int getRun();
 
-        int getCollectionSize(const std::string& collectionName);
+        int getTimestamp();
+        
+        double getWeight();
 
-        TObject* addObject(const std::string& collectionName);
+        void setEventNumber(int);
+
+        void setRun(int);
+
+        void setTimestamp(int);
+        
+        void setWeight(double);
+
+        TClonesArray* getCollection(const std::string&);
+
+        int getCollectionSize(const std::string&);
+
+        TObject* addObject(const std::string&);
 
     public:
 
@@ -86,7 +57,12 @@ class Event: public TObject {
 
         int nextCollectionIndex(const std::string& collectionName);
 
-        EventHeader header;
+    private:
+
+        int eventNumber;
+        int run;
+        int timestamp;
+        double weight;
 
         TClonesArray* simParticles;
         TClonesArray* taggerSimHits;

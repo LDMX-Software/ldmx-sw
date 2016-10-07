@@ -82,10 +82,9 @@ int main(int argc, const char* argv[])  {
         int nTrackerHits = randInt(10, 100);
         int nParticles = randInt(1, 10);
 
-        EventHeader* header = event->getHeader();
-        header->setRun(1);
-        header->setTimestamp(std::time(0));
-        header->setEventNumber(iEvent);
+        event->setRun(1);
+        event->setTimestamp(std::time(0));
+        event->setEventNumber(iEvent);
 
         std::cout << "Making " << nCalHits << " rand SimCalorimeterHits" << std::endl;
         for (int iCalHit = 0; iCalHit < nCalHits; iCalHit++) {

@@ -23,7 +23,7 @@ int main(int, const char* argv[])  {
     //std::cout << "Loading libEvent.so" << std::endl;
     //gSystem->Load("libEvent.so");
 
-    std::cout << "Opeing ROOT file for writing" << std::endl;
+    std::cout << "Opening ROOT file for writing" << std::endl;
 
     /*
      * Open ROOT file for writing.
@@ -38,11 +38,10 @@ int main(int, const char* argv[])  {
     /*
      * Create a dummy event.
      */
-    std::cout << "Creating EventHeader" << std::endl;
-    EventHeader* eventHeader = event->getHeader();
-    eventHeader->setTimestamp(1473280918);
-    eventHeader->setRun(1);
-    eventHeader->setEventNumber(1000);
+    event->setTimestamp(1473280918);
+    event->setRun(1);
+    event->setEventNumber(1000);
+    event->setWeight(1.23);
 
     std::cout << "Creating SimCalorimeterHit" << std::endl;
     SimCalorimeterHit* calHit = (SimCalorimeterHit*) event->addObject("EcalSimHits");
@@ -91,7 +90,7 @@ int main(int, const char* argv[])  {
     particle2->addParent(particle1);
     */
 
-    std::cout << "EventHeader: run = " << event->getHeader()->getRun() << "; eventNum = " << eventHeader->getEventNumber() << "; timestamp = " << eventHeader->getTimestamp() << std::endl;
+    std::cout << "Event: run = " << event->getRun() << "; eventNum = " << event->getEventNumber() << "; timestamp = " << event->getTimestamp() << std::endl;
     std::cout << "Created event has " << event->getCollectionSize("EcalSimHits") << " EcalSimHits" << std::endl;
     std::cout << "Created event has " << event->getCollectionSize("RecoilSimHits") << " RecoilSimHits" << std::endl;
     std::cout << "Created event has " << event->getCollectionSize("SimParticles") << " SimParticles" << std::endl;
@@ -134,7 +133,7 @@ int main(int, const char* argv[])  {
         std::cout << "Reading entry " << entry << " from file" << std::endl;
         tree->GetEntry(entry);
 
-        std::cout << "Read EventHeader: run = " << event->getHeader()->getRun() << "; eventNum = " << eventHeader->getEventNumber() << "; timestamp = " << eventHeader->getTimestamp() << std::endl;
+        std::cout << "Read Event: run = " << event->getRun() << "; eventNum = " << event->getEventNumber() << "; timestamp = " << event->getTimestamp() << std::endl;
 
         std::cout << "Read event has " << event->getCollectionSize("EcalSimHits") << " EcalSimHits" << std::endl;
 
