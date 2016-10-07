@@ -5,10 +5,8 @@
 
 ClassImp(SimTrackerHit)
 
-SimTrackerHit::SimTrackerHit() :
-    id(0),
-    edep(0.),
-    time(0.) {
+SimTrackerHit::SimTrackerHit() 
+    : TObject() {
 
     startPosition[0] = 0.;
     startPosition[1] = 0.;
@@ -38,10 +36,7 @@ void SimTrackerHit::Print(Option_t *option) const {
             " }" << std::endl;
 }
 
-int SimTrackerHit::getID() {
-    return id;
-}
-
+/*
 double* SimTrackerHit::getStartPosition() {
     return startPosition;
 }
@@ -49,28 +44,17 @@ double* SimTrackerHit::getStartPosition() {
 double* SimTrackerHit::getEndPosition() {
     return endPosition;
 }
+*/
 
-float  SimTrackerHit::getEdep() {
-    return edep;
-}
-
-float SimTrackerHit::getTime() {
-    return time;
-}
-
-float* SimTrackerHit::getMomentum() {
-    return momentum;
+std::vector<double> SimTrackerHit::getMomentum() {
+    return std::vector<double> momentum{px, py, pz};
 }
 
 SimParticle* SimTrackerHit::getSimParticle() {
     return (SimParticle*) simParticle.GetObject();
 }
 
-void SimTrackerHit::setID(long id) {
-    this->id = id;
-}
-
-void SimTrackerHit::setStartPosition(double x, double y, double z) {
+/*void SimTrackerHit::setStartPosition(double x, double y, double z) {
     startPosition[0] = x;
     startPosition[1] = y;
     startPosition[2] = z;
@@ -80,20 +64,12 @@ void SimTrackerHit::setEndPosition(double x, double y, double z) {
     endPosition[0] = x;
     endPosition[1] = y;
     endPosition[2] = z;
-}
+}*/
 
-void SimTrackerHit::setEdep(float edep) {
-    this->edep = edep;
-}
-
-void SimTrackerHit::setTime(float time) {
-    this->time = time;
-}
-
-void SimTrackerHit::setMomentum(float px, float py, float pz) {
-    momentum[0] = px;
-    momentum[1] = py;
-    momentum[2] = pz;
+void SimTrackerHit::setMomentum(const float px, const float py, const float pz) {
+    this->px = px;
+    this->py = py; 
+    this->pz = pz; 
 }
 
 void SimTrackerHit::setSimParticle(SimParticle* aSimParticle) {

@@ -1,5 +1,14 @@
+/**
+ *
+ * @file SimTrackerHit.h
+ * @brief Class used to encapsulate information from a hit in a tracking 
+ *        detector.
+ * @author
+ *
+ */
+
 #ifndef EVENT_SIMTRACKERHIT_H_
-#define EVENT_SIMTRACKERHIT_H_ 1
+#define EVENT_SIMTRACKERHIT_H_ 
 
 // ROOT
 #include "TObject.h"
@@ -8,56 +17,117 @@
 // LDMX
 #include "Event/SimParticle.h"
 
-/**
- * Hit information from a simulated tracking detector.
- */
 class SimTrackerHit: public TObject {
 
     public:
 
+        /** Constructor */
         SimTrackerHit();
-
+        
+        /** Destructor */
         virtual ~SimTrackerHit();
 
         void Print(Option_t *option = "") const;
 
-        int getID();
+        /**
+         *
+         */
+        int getID() const { return id; };
 
-        double* getStartPosition();
+        /**
+         * Get the global position of the tracker hit.
+         *
+         * @return A vector containing the coordinates of the hit.
+         */
+        std::vector<double> getPosition() const;
 
-        double* getEndPosition();
+        //double* getStartPosition();
 
-        float getEdep();
+        //double* getEndPosition();
 
-        float getTime();
+        /**
+         *
+         */
+        float getEdep() const { return edep; };
 
-        float* getMomentum();
+        /**
+         *
+         */
+        float getTime() const { return time; };
 
+        /** 
+         * Get the momentum.
+         *
+         * @return A vector containing the momentum components.
+         */
+        std::vector<double> getMomentum() const;
+        
+        //float* getMomentum();
+
+        /**
+         *
+         */
         SimParticle* getSimParticle();
 
-        void setID(long id);
+        /**
+         *
+         */
+        void setID(const long id) { this->id = id; };
 
-        void setStartPosition(double x, double y, double z);
+        //void setStartPosition(double x, double y, double z);
 
-        void setEndPosition(double x, double y, double z);
+        //void setEndPosition(double x, double y, double z);
+        
+        /**
+         *
+         */
+        void setEdep(const float edep) { this->edep = edep; };
 
-        void setEdep(float edep);
-
-        void setTime(float time);
-
-        void setMomentum(float px, float py, float pz);
+        /**
+         *
+         */
+        void setTime(const float time) { this->time; };
+        
+        /**
+         *
+         */
+        void setMomentum(const float px, const float py, const float pz);
 
         void setSimParticle(SimParticle* simParticle);
 
     private:
 
-        long id;
-        double startPosition[3];
-        double endPosition[3];
-        float edep;
-        float time;
-        float momentum[3];
-        TRef simParticle;
+        /** */
+        long id{0};
+        //double startPosition[3];
+        //double endPosition[3];
+        
+        /** */
+        float edep{0};
+
+        /** */
+        float time{0};
+        
+        /** */
+        float px{0};
+
+        /** */
+        float py{0};
+
+        /** */
+        float pz{0};
+
+        /** */
+        float x{0};
+        
+        /** */
+        float y{0};
+        
+        /** */
+        float z{0};
+
+        /** */
+        TRef simParticle{nullptr};
 
         ClassDef(SimTrackerHit, 1);
 };
