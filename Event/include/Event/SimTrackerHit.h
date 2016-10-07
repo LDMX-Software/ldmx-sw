@@ -3,12 +3,17 @@
  * @file SimTrackerHit.h
  * @brief Class used to encapsulate information from a hit in a tracking 
  *        detector.
- * @author
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  *
  */
 
-#ifndef EVENT_SIMTRACKERHIT_H_
-#define EVENT_SIMTRACKERHIT_H_ 
+#ifndef __EVENT_SIMTRACKERHIT_H__
+#define __EVENT_SIMTRACKERHIT_H__ 
+
+// C++ StdLib
+#include <iostream>
+#include <bitset>
 
 // ROOT
 #include "TObject.h"
@@ -27,81 +32,89 @@ class SimTrackerHit: public TObject {
         /** Destructor */
         virtual ~SimTrackerHit();
 
+        /** Print a description of this object. */
         void Print(Option_t *option = "") const;
 
-        /**
-         *
-         */
+        /** Reset the SimTrackerHit object. */
+        void Clear(Option_t *option = ""); 
+
+        /** Returns the ID of the hit. */
         int getID() const { return id; };
 
-        /**
-         * Get the global position of the tracker hit.
-         *
-         * @return A vector containing the coordinates of the hit.
-         */
-        std::vector<double> getPosition() const;
-
-        //double* getStartPosition();
-
-        //double* getEndPosition();
+        /** Returns the layer ID where the hit occurred. */
+        int getLayerID() const { return layer_id; }; 
 
         /**
-         *
+         * Returns the position in mm at which a particle begins to deposit 
+         * energy in an active volume.
          */
+        std::vector<float> getStartPosition() const; 
+
+        /**
+         * Returns the position in mm at which a particle stops depositing 
+         * energy in an active volume.
+         */
+        std::vector<float> getEndPosition() const;
+
+        /** Returns the energy deposited on the hit in GeV. */
         float getEdep() const { return edep; };
 
-        /**
-         *
-         */
+        /** Returns the time of the hit in ns. */
         float getTime() const { return time; };
 
         /** 
-         * Get the momentum.
-         *
-         * @return A vector containing the momentum components.
+         * Returns the momentum in GeV of the particle at the position at which
+         * the hit took place.
          */
         std::vector<double> getMomentum() const;
         
-        //float* getMomentum();
+        /** Returns the Monte Carlo particle that created the hit. */
+        SimParticle* getSimParticle() const;
 
-        /**
-         *
-         */
-        SimParticle* getSimParticle();
-
-        /**
-         *
-         */
+        /** Sets the ID of the hit. */
         void setID(const long id) { this->id = id; };
 
-        //void setStartPosition(double x, double y, double z);
+        /** Sets the layer ID where the hit occurred. */
+        void setLayerID(const int layer_id) { this->layer_id = layer_id; };
 
-        //void setEndPosition(double x, double y, double z);
-        
         /**
-         *
+         * Sets the position in mm at which a particle begins to deposit 
+         * energy in an active volume.
          */
+        void setStartPosition(const float x, const float y, const float z);
+
+        /**
+         * Sets the position in mm at which a particle stops depositing 
+         * energy in an active volume.
+         */
+        void setEndPosition(const float x, const float y, const float z);
+        
+        /** Sets the energy deposited on the hit in GeV. */
         void setEdep(const float edep) { this->edep = edep; };
 
-        /**
-         *
-         */
-        void setTime(const float time) { this->time; };
+        /** Sets the time of the hit in ns. */
+        void setTime(const float time) { this->time = time; };
         
-        /**
-         *
+        /** 
+         * Sets the momentum in GeV of the particle at the position at which
+         * the hit took place.
          */
         void setMomentum(const float px, const float py, const float pz);
 
+        /** Sets the Monte Carlo particle that created the hit. */
         void setSimParticle(SimParticle* simParticle);
 
     private:
 
         /** */
+        TRef simParticle{nullptr};
+
+        /** */
         long id{0};
-        //double startPosition[3];
-        //double endPosition[3];
         
+        /** */
+        int layer_id{0};
+
         /** */
         float edep{0};
 
@@ -118,18 +131,25 @@ class SimTrackerHit: public TObject {
         float pz{0};
 
         /** */
-        float x{0};
+        float start_x{0};
         
         /** */
-        float y{0};
+        float start_y{0};
         
         /** */
-        float z{0};
+        float start_z{0};
 
         /** */
-        TRef simParticle{nullptr};
-
+        float end_x{0};
+        
+        /** */
+        float end_y{0};
+        
+        /** */
+        float end_z{0};
+        
         ClassDef(SimTrackerHit, 1);
-};
 
-#endif
+}; // SimTrackerHit
+
+#endif // __EVENT_SIMTRACKERHIT_H__ 
