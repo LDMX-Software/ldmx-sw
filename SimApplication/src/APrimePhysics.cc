@@ -32,16 +32,15 @@ void APrimePhysics::ConstructParticle() {
             0, /* baryon number */
             622, /* PDG encoding */
             true, /* stable */
-            DBL_MIN, /* lifetime (may be overridden by predefined decay time) */
+            0, /*DBL_MIN,*/ /* lifetime (may be overridden by predefined decay time) */
             0, /* decay table */
             false /* short lived */
     );
 
-    aprimeDef->SetProcessManager(new G4ProcessManager(aprimeDef));
+    //aprimeDef->SetProcessManager(new G4ProcessManager(aprimeDef));
 }
 
 void APrimePhysics::ConstructProcess() {
-
     /*
     G4ProcessManager* pm = aprimeDef->GetProcessManager();
     if (pm != NULL) {
