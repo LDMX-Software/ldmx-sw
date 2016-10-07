@@ -66,31 +66,40 @@ int main(int argc, const char* argv[])  {
     for(int entry = 0; entry < tree->GetEntries(); ++entry) {
 
         tree->GetEntry(entry);
+ 
+        int eventNumber = event->getEventNumber();
+        int nSimParticles = event->getCollectionSize(Event::SIM_PARTICLES);
+        int nTaggerHits = event->getCollectionSize(Event::TAGGER_SIM_HITS);
+        int nRecoilHits = event->getCollectionSize(Event::RECOIL_SIM_HITS);
+        int nEcalHits = event->getCollectionSize(Event::ECAL_SIM_HITS);
+        int nHcalHits = event->getCollectionSize(Event::HCAL_SIM_HITS);
+        
+        std::cout << ">>> Event " << eventNumber << std::endl;
+        std::cout << "  "  << Event::SIM_PARTICLES << ": " << nSimParticles << std::endl;
+        std::cout << "  "  << Event::TAGGER_SIM_HITS << ": " << nTaggerHits << std::endl;
+        std::cout << "  "  << Event::RECOIL_SIM_HITS << ": " << nRecoilHits << std::endl;
+        std::cout << "  "  << Event::ECAL_SIM_HITS << ": " << nEcalHits << std::endl;
+        std::cout << "  "  << Event::HCAL_SIM_HITS << ": " << nHcalHits << std::endl;
+        std::cout << std::endl;
 
-        TClonesArray* coll = event->getCollection("EcalSimHits");
-
+        /*
         for (int i = 0; i < event->getCollectionSize("EcalSimHits"); i++) {
             // TODO: ecal plots
         }
 
-        int nSimParticles = event->getCollectionSize(Event::SIM_PARTICLES);
         coll = event->getCollection(Event::SIM_PARTICLES);
         for (int i = 0; i < nSimParticles; i++) {
             // TODO: SimParticle plots
         }
 
-        int nTaggerHits = event->getCollectionSize(Event::TAGGER_SIM_HITS);
         nTaggerHitsH1->Fill(nTaggerHits);
 
         coll = event->getCollection(Event::TAGGER_SIM_HITS);
         for (int i = 0; i < nTaggerHits; i++) {
-
             SimTrackerHit* simTrackerHit = (SimTrackerHit*) coll->At(i);
-
             taggerXYH2->Fill(simTrackerHit->getStartPosition()[0], simTrackerHit->getStartPosition()[1]);
         }
 
-        int nRecoilHits = event->getCollectionSize(Event::RECOIL_SIM_HITS);
         nRecoilHitsH1->Fill(nRecoilHits);
         coll = event->getCollection(Event::RECOIL_SIM_HITS);
         for (int i = 0; i < nRecoilHits; i++) {
@@ -107,6 +116,7 @@ int main(int argc, const char* argv[])  {
 
             recoilXYH2->Fill(simTrackerHit->getStartPosition()[0], simTrackerHit->getStartPosition()[1]);
         }
+        */
     }
 
     histFile.Write();
