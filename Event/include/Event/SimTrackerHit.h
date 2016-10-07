@@ -44,6 +44,9 @@ class SimTrackerHit: public TObject {
         /** Returns the layer ID where the hit occurred. */
         int getLayerID() const { return layer_id; }; 
 
+        /** Returns the position of the hit in mm. */
+        std::vector<float> getPosition() const; 
+
         /**
          * Returns the position in mm at which a particle begins to deposit 
          * energy in an active volume.
@@ -77,17 +80,20 @@ class SimTrackerHit: public TObject {
         /** Sets the layer ID where the hit occurred. */
         void setLayerID(const int layer_id) { this->layer_id = layer_id; };
 
+        /** Set the position of the hit in mm. */
+        std::vector<float> setPosition(const float x, const float y, const float z); 
+        
         /**
          * Sets the position in mm at which a particle begins to deposit 
          * energy in an active volume.
          */
-        void setStartPosition(const float x, const float y, const float z);
+        void setStartPosition(const float start_x, const float start_y, const float start_z);
 
         /**
          * Sets the position in mm at which a particle stops depositing 
          * energy in an active volume.
          */
-        void setEndPosition(const float x, const float y, const float z);
+        void setEndPosition(const float end_x, const float end_y, const float end_z);
         
         /** Sets the energy deposited on the hit in GeV. */
         void setEdep(const float edep) { this->edep = edep; };
@@ -129,6 +135,15 @@ class SimTrackerHit: public TObject {
 
         /** */
         float pz{0};
+
+        /** */
+        float x{0};
+
+        /** */
+        float y{0};
+
+        /** */
+        float z{0};
 
         /** */
         float start_x{0};
