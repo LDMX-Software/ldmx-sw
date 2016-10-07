@@ -4,10 +4,6 @@
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RunManager.h"
 #include "SimApplication/SimApplicationMessenger.h"
-#include "SimApplication/UserEventAction.h"
-#include "SimApplication/UserRunAction.h"
-#include "SimApplication/UserTrackingAction.h"
-
 
 // STL
 #include <vector>
@@ -16,8 +12,6 @@
 // Geant4
 #include "G4RunManager.hh"
 #include "G4GDMLParser.hh"
-#include "FTFP_BERT.hh"
-#include "G4LogicalVolumeStore.hh"
 #include "G4UIExecutive.hh"
 #include "G4UImanager.hh"
 #include "G4VisManager.hh"
