@@ -53,6 +53,12 @@ SimParticle* SimTrackerHit::getSimParticle() const {
     return static_cast<SimParticle*>(simParticle.GetObject());
 }
 
+void SimTrackerHit::setPosition(const float x, const float y, const float z) { 
+    this->x = x; 
+    this->y = y; 
+    this->z = z; 
+}
+
 void SimTrackerHit::setStartPosition(const float start_x, const float start_y, const float start_z) { 
     this->start_x = start_x; 
     this->start_y = start_y; 
