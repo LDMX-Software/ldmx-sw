@@ -81,7 +81,7 @@ class SimTrackerHit: public TObject {
         void setLayerID(const int layer_id) { this->layer_id = layer_id; };
 
         /** Set the position of the hit in mm. */
-        std::vector<float> setPosition(const float x, const float y, const float z); 
+        void setPosition(const float x, const float y, const float z); 
         
         /**
          * Sets the position in mm at which a particle begins to deposit 

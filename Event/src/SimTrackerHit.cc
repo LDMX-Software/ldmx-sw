@@ -37,6 +37,10 @@ void SimTrackerHit::Clear(Option_t* /* option */) {
 
 }
 
+std::vector<float> SimTrackerHit::getPosition() const {
+    return {x, y, z};  
+}
+
 std::vector<float> SimTrackerHit::getEndPosition() const {
     return {end_x, end_y, end_z};  
 }
