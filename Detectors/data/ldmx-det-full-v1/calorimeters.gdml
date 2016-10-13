@@ -607,7 +607,7 @@
     <volume name="ECal_Si_volume">
       <materialref ref="G4_Si"/>
       <solidref ref="ECal_Si_multiHex_solid"/>
-      <auxiliary auxType="SensDet" auxValue="EcalSD1"/>
+      <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
       <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
 
@@ -668,19 +668,19 @@
 	  <position name="ECal_CAl_physvol_pos" unit="mm" x="0" y="0" z="ECal_start+W_dz/2.+1.+PCB_dz+Si_dz+W_dz/2.+CAl_dz/2.+x_ecal*(W_dz+1.+PCB_dz+Si_dz+W_dz+CAl_dz+Si_dz+PCB_dz+1.)"/>
 	</physvol>
 
-	<physvol name="ECal_W_half_physvol">
+	<physvol name="ECal_W_half_physvol2">
 	  <volumeref ref="ECal_W_half_volume"/>
-	  <position name="ECal_W_half_physvol_pos" unit="mm" x="0" y="0" z="ECal_start+W_dz/2.+1.+PCB_dz+Si_dz+W_dz/2.+CAl_dz+W_dz/4.+x_ecal*(W_dz+1.+PCB_dz+Si_dz+W_dz+CAl_dz+Si_dz+PCB_dz+1.)"/>
+	  <position name="ECal_W_half_physvol2_pos" unit="mm" x="0" y="0" z="ECal_start+W_dz/2.+1.+PCB_dz+Si_dz+W_dz/2.+CAl_dz+W_dz/4.+x_ecal*(W_dz+1.+PCB_dz+Si_dz+W_dz+CAl_dz+Si_dz+PCB_dz+1.)"/>
 	</physvol>
 
-	<physvol name="ECal_Si_physvol">
+	<physvol name="ECal_Si_physvol2">
 	  <volumeref ref="ECal_Si_volume"/>
-	  <position name="ECal_Si_physvol_pos" unit="mm" x="0" y="0" z="ECal_start+W_dz/2.+1.+PCB_dz+Si_dz+W_dz/2.+CAl_dz+W_dz/2.+Si_dz/2.+x_ecal*(W_dz+1.+PCB_dz+Si_dz+W_dz+CAl_dz+Si_dz+PCB_dz+1.)"/>
+	  <position name="ECal_Si_physvol2_pos" unit="mm" x="0" y="0" z="ECal_start+W_dz/2.+1.+PCB_dz+Si_dz+W_dz/2.+CAl_dz+W_dz/2.+Si_dz/2.+x_ecal*(W_dz+1.+PCB_dz+Si_dz+W_dz+CAl_dz+Si_dz+PCB_dz+1.)"/>
 	</physvol>
 
-	<physvol name="ECal_PCB_physvol">
+	<physvol name="ECal_PCB_physvol2">
 	  <volumeref ref="ECal_PCB_volume"/>
-	  <position name="ECal_PCB_physvol_pos" unit="mm" x="0" y="0" z="ECal_start+W_dz/2.+1.+PCB_dz+Si_dz+W_dz/2.+CAl_dz+W_dz/2.+Si_dz+PCB_dz/2.+x_ecal*(W_dz+1.+PCB_dz+Si_dz+W_dz+CAl_dz+Si_dz+PCB_dz+1.)"/>
+	  <position name="ECal_PCB_physvol2_pos" unit="mm" x="0" y="0" z="ECal_start+W_dz/2.+1.+PCB_dz+Si_dz+W_dz/2.+CAl_dz+W_dz/2.+Si_dz+PCB_dz/2.+x_ecal*(W_dz+1.+PCB_dz+Si_dz+W_dz+CAl_dz+Si_dz+PCB_dz+1.)"/>
 	</physvol>
 
       </loop>
