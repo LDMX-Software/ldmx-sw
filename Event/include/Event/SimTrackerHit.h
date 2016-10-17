@@ -5,11 +5,10 @@
  *        detector.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- *
  */
 
-#ifndef __EVENT_SIMTRACKERHIT_H__
-#define __EVENT_SIMTRACKERHIT_H__ 
+#ifndef EVENT_SIMTRACKERHIT_H_
+#define EVENT_SIMTRACKERHIT_H_
 
 // C++ StdLib
 #include <iostream>
@@ -39,31 +38,18 @@ class SimTrackerHit: public TObject {
         void Clear(Option_t *option = ""); 
 
         /** Returns the ID of the hit. */
-        int getID() const { return id; };
-
-        /** Returns the layer ID where the hit occurred. */
-        int getLayerID() const { return layer_id; }; 
+        int getID() const;
 
         /** Returns the position of the hit in mm. */
         std::vector<float> getPosition() const; 
 
-        /**
-         * Returns the position in mm at which a particle begins to deposit 
-         * energy in an active volume.
-         */
-        std::vector<float> getStartPosition() const; 
-
-        /**
-         * Returns the position in mm at which a particle stops depositing 
-         * energy in an active volume.
-         */
-        std::vector<float> getEndPosition() const;
-
         /** Returns the energy deposited on the hit in GeV. */
-        float getEdep() const { return edep; };
+        float getEdep() const;
 
         /** Returns the time of the hit in ns. */
-        float getTime() const { return time; };
+        float getTime() const;
+
+        float getPathLength() const;
 
         /** 
          * Returns the momentum in GeV of the particle at the position at which
@@ -75,32 +61,22 @@ class SimTrackerHit: public TObject {
         SimParticle* getSimParticle() const;
 
         /** Sets the ID of the hit. */
-        void setID(const long id) { this->id = id; };
+        void setID(const long id);
 
         /** Sets the layer ID where the hit occurred. */
-        void setLayerID(const int layer_id) { this->layer_id = layer_id; };
+        //void setLayerID(const int layer_id) { this->layer_id = layer_id; };
 
         /** Set the position of the hit in mm. */
         void setPosition(const float x, const float y, const float z); 
         
-        /**
-         * Sets the position in mm at which a particle begins to deposit 
-         * energy in an active volume.
-         */
-        void setStartPosition(const float start_x, const float start_y, const float start_z);
-
-        /**
-         * Sets the position in mm at which a particle stops depositing 
-         * energy in an active volume.
-         */
-        void setEndPosition(const float end_x, const float end_y, const float end_z);
-        
         /** Sets the energy deposited on the hit in GeV. */
-        void setEdep(const float edep) { this->edep = edep; };
+        void setEdep(const float edep);
 
         /** Sets the time of the hit in ns. */
-        void setTime(const float time) { this->time = time; };
-        
+        void setTime(const float time);
+       
+        void setPathLength(const float pathLength);
+
         /** 
          * Sets the momentum in GeV of the particle at the position at which
          * the hit took place.
@@ -118,9 +94,6 @@ class SimTrackerHit: public TObject {
         /** */
         long id{0};
         
-        /** */
-        int layer_id{0};
-
         /** */
         float edep{0};
 
@@ -146,25 +119,10 @@ class SimTrackerHit: public TObject {
         float z{0};
 
         /** */
-        float start_x{0};
-        
-        /** */
-        float start_y{0};
-        
-        /** */
-        float start_z{0};
+        float pathLength{0};
 
-        /** */
-        float end_x{0};
-        
-        /** */
-        float end_y{0};
-        
-        /** */
-        float end_z{0};
-        
         ClassDef(SimTrackerHit, 1);
 
 }; // SimTrackerHit
 
-#endif // __EVENT_SIMTRACKERHIT_H__ 
+#endif

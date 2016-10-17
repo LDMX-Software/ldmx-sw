@@ -46,30 +46,15 @@ void G4TrackerHit::Print() {
 }
 
 G4ThreeVector G4TrackerHit::getPosition() {
-
-    G4ThreeVector startPos = G4ThreeVector(
-            simTrackerHit->getStartPosition()[0],
-            simTrackerHit->getStartPosition()[1],
-            simTrackerHit->getStartPosition()[2]);
-
-    G4ThreeVector endPos = G4ThreeVector(
-            simTrackerHit->getEndPosition()[0],
-            simTrackerHit->getEndPosition()[1],
-            simTrackerHit->getEndPosition()[2]);
-
-    return (0.5 * (startPos + endPos));
+    G4ThreeVector pos = G4ThreeVector(
+            simTrackerHit->getPosition()[0],
+            simTrackerHit->getPosition()[1],
+            simTrackerHit->getPosition()[2]);
+    return pos;
 }
 
 G4int G4TrackerHit::getTrackID() {
     return trackID;
-}
-
-void G4TrackerHit::setStartPosition(const G4ThreeVector& startPosition) {
-    simTrackerHit->setStartPosition(startPosition[0], startPosition[1], startPosition[2]);
-}
-
-void G4TrackerHit::setEndPosition(const G4ThreeVector& endPosition) {
-    simTrackerHit->setEndPosition(endPosition[0], endPosition[1], endPosition[2]);
 }
 
 void G4TrackerHit::setMomentum(const G4ThreeVector& p) {

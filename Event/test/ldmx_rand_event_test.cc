@@ -30,8 +30,7 @@ double randDouble(double min, double max) {
 
 void fillRand(SimTrackerHit* trackerHit) {
     trackerHit->setEdep(randDouble(0.1, 1.0));
-    trackerHit->setEndPosition(randFloat(0., 10), randFloat(0., 20), randFloat(2000., 5000.));
-    trackerHit->setStartPosition(randFloat(0., 10), randFloat(0., 20), randFloat(2000., 5000.));
+    trackerHit->setPosition(randFloat(-100., 100), randFloat(-50., 50), randFloat(-1000., 1000.));
     trackerHit->setMomentum(randFloat(0., 5.0), randFloat(0., 5.0), randFloat(0., 5.0));
     trackerHit->setTime(randFloat(1.0, 100.0));
 }

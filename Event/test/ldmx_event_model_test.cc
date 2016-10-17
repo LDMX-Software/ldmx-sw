@@ -52,8 +52,7 @@ int main(int, const char* argv[])  {
     std::cout << "Creating SimTrackerHit" << std::endl;
     SimTrackerHit* trackerHit = (SimTrackerHit*) event->addObject("RecoilSimHits");
     trackerHit->setEdep(2.345);
-    trackerHit->setEndPosition(50., 40., 2000.);
-    trackerHit->setStartPosition(60., 50., 2001.);
+    trackerHit->setPosition(50., 40., 2000.);
     trackerHit->setID(22222222L);
     trackerHit->setMomentum(1.0, 2.0, 3.0);
     trackerHit->setTime(42.);
