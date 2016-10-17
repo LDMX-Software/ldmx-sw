@@ -27,7 +27,7 @@ include_directories(${ROOT_INCLUDE_DIRS})
 set(Event_LIB_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib)
 
 # list sources for building the application
-file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cxx)
 file(GLOB headers ${Event_INCLUDE_DIR}/Event/include/*.h)
 
 # generate ROOT dict
@@ -38,11 +38,11 @@ add_library(${PROJECT_NAME} SHARED ${sources} EventDict.cxx)
 target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES})
 
 # test program 
-add_executable(ldmx-event-model-test test/ldmx_event_model_test.cc)
+add_executable(ldmx-event-model-test test/ldmx_event_model_test.cxx)
 target_link_libraries(ldmx-event-model-test ${ROOT_LIBRARIES} ${PROJECT_NAME})
 
 # another test program 
-add_executable(ldmx-rand-event-test test/ldmx_rand_event_test.cc)
+add_executable(ldmx-rand-event-test test/ldmx_rand_event_test.cxx)
 target_link_libraries(ldmx-rand-event-test ${ROOT_LIBRARIES} ${PROJECT_NAME})
 
 # generate package configuration

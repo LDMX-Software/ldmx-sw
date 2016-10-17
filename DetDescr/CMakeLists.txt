@@ -14,7 +14,7 @@ include_directories(${DetDescr_INCLUDE_DIR})
 set(DetDescr_LIB_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib)
 
 # list sources for building the application
-file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cxx)
 file(GLOB headers ${DetDescr_INCLUDE_DIR}/DetDescr/include/*.h)
 
 # create library including ROOT dict
@@ -27,6 +27,6 @@ generate_package_configuration_files(DetDescrConfig.cmake DetDescrConfigVersion.
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 # test program 
-add_executable(ldmx-detector-id-test test/detector_id_test.cc)
+add_executable(ldmx-detector-id-test test/detector_id_test.cxx)
 target_link_libraries(ldmx-detector-id-test ${PROJECT_NAME})
 install(TARGETS ldmx-detector-id-test DESTINATION bin)
