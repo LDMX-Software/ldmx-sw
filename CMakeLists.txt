@@ -23,11 +23,11 @@ include_directories(${DetDescr_INCLUDE_DIR})
 include_directories(${ROOT_INCLUDE_DIRS})
 
 # list sources for building the application
-file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cxx)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.h)
 
 # set the output executable
-add_executable(ldmx-sim src/ldmx_sim.cc ${sources} ${headers})
+add_executable(ldmx-sim src/ldmx_sim.cxx ${sources} ${headers})
 
 # add the Geant4 link libraries and module dep libs
 target_link_libraries(ldmx-sim ${Geant4_LIBRARIES} Event DetDescr)
@@ -36,6 +36,6 @@ target_link_libraries(ldmx-sim ${Geant4_LIBRARIES} Event DetDescr)
 install(TARGETS ldmx-sim DESTINATION bin)
 
 # test program
-add_executable(ldmx-sim-analysis-test test/ldmx_sim_analysis_test.cc)
+add_executable(ldmx-sim-analysis-test test/ldmx_sim_analysis_test.cxx)
 target_link_libraries(ldmx-sim-analysis-test ${ROOT_LIBRARIES} Event DetDescr)
 install(TARGETS ldmx-sim-analysis-test DESTINATION bin)
