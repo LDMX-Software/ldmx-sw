@@ -63,28 +63,41 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     hit->setTrackID(aStep->GetTrack()->GetTrackID());
 
     // Set the edep.
-    hit->getSimTrackerHit()->setEdep(edep);
+    simTrackerHit->setEdep(edep);
 
     // Set the start position.
     G4StepPoint* prePoint = aStep->GetPreStepPoint();
-    hit->setStartPosition(prePoint->GetPosition());
+    //hit->setStartPosition(prePoint->GetPosition());
 
     // Set the end position.
     G4StepPoint* postPoint = aStep->GetPostStepPoint();
-    hit->setEndPosition(postPoint->GetPosition());
+    //hit->setEndPosition(postPoint->GetPosition());
 
+    G4ThreeVector start = prePoint->GetPosition();
+    G4ThreeVector end = postPoint->GetPosition();
+
+    // Set the mid position.
+    G4ThreeVector mid = 0.5 * (start + end);
+    simTrackerHit->setPosition(mid.x(), mid.y(), mid.z());
+
+    // Compute path length.
+    G4double pathLength = sqrt(pow(start.x() - end.x(), 2) + pow(start.y() - end.y(), 2) + pow(start.z() - end.z(), 2));
+    simTrackerHit->setPathLength(pathLength);
+ 
     // Set the global time.
     hit->getSimTrackerHit()->setTime(aStep->GetTrack()->GetGlobalTime());
 
     /*
      * Compute and set the momentum.
      */
+    /*
     double mag = (prePoint->GetMomentum().mag() + postPoint->GetMomentum().mag()) / 2;
     G4ThreeVector p = (postPoint->GetPosition() - prePoint->GetPosition());
     if (mag > 0) {
         p.setMag(mag);
     }
-    hit->setMomentum(p);
+    */
+    hit->setMomentum(postPoint->GetMomentum());
 
     /*
      * Set the 32-bit ID on the hit.
@@ -92,6 +105,7 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
     detId->setFieldValue(1, layerNumber);
     hit->getSimTrackerHit()->setID(detId->pack());
+    //hit->getSimTrackerHit()->setLayerID(layerNumber);
 
     /*
      * Debug print.
