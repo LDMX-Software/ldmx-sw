@@ -63,9 +63,6 @@ class SimTrackerHit: public TObject {
         /** Sets the ID of the hit. */
         void setID(const long id);
 
-        /** Sets the layer ID where the hit occurred. */
-        //void setLayerID(const int layer_id) { this->layer_id = layer_id; };
-
         /** Set the position of the hit in mm. */
         void setPosition(const float x, const float y, const float z); 
         
@@ -83,6 +80,16 @@ class SimTrackerHit: public TObject {
          */
         void setMomentum(const float px, const float py, const float pz);
 
+        /**
+         * Get the geometric layer ID of the hit.
+         */
+        int getLayerID();
+
+        /**
+         * Set the geometric layer ID of the hit.
+         */
+        void setLayerID(int layerID);
+
         /** Sets the Monte Carlo particle that created the hit. */
         void setSimParticle(SimParticle* simParticle);
 
@@ -92,8 +99,11 @@ class SimTrackerHit: public TObject {
         TRef simParticle{nullptr};
 
         /** */
-        long id{0};
+        int id{0};
         
+        /** */
+        int layerID{0};
+
         /** */
         float edep{0};
 
@@ -125,4 +135,4 @@ class SimTrackerHit: public TObject {
 
 }; // SimTrackerHit
 
-#endif
+#endif // Event_SimTrackerHit_h
