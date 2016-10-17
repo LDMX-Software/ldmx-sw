@@ -22,6 +22,7 @@ SimTrackerHit::~SimTrackerHit() {
 
 void SimTrackerHit::Print(Option_t *option) const {
     std::cout << "SimTrackerHit { " << "id: " << std::bitset<32>(id) << ", " <<
+            "layerID: " << layerID << ", " <<
             "position: ( " << x << ", " << y << ", " << z << " ), " <<
             "edep: " << edep << ", " <<
             "time: " << time << ", " <<
@@ -91,4 +92,12 @@ void SimTrackerHit::setTime(const float time) {
 
 void SimTrackerHit::setPathLength(const float pathLength) {
     this->pathLength = pathLength;
+}
+
+int SimTrackerHit::getLayerID() {
+    return layerID;
+}
+
+void SimTrackerHit::setLayerID(int layerID) {
+    this->layerID = layerID;
 }

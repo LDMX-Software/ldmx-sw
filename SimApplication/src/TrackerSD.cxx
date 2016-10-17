@@ -105,7 +105,7 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
     detId->setFieldValue(1, layerNumber);
     hit->getSimTrackerHit()->setID(detId->pack());
-    //hit->getSimTrackerHit()->setLayerID(layerNumber);
+    hit->getSimTrackerHit()->setLayerID(layerNumber);
 
     /*
      * Debug print.
