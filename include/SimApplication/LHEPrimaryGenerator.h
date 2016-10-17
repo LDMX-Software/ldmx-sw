@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_LHEPRIMARYGENERATOR_H_
-#define SIMAPPLICATION_LHEPRIMARYGENERATOR_H_ 1
+#ifndef SimApplication_LHEPrimaryGenerator_h
+#define SimApplication_LHEPrimaryGenerator_h
 
 // Geant4
 #include "G4VPrimaryGenerator.hh"

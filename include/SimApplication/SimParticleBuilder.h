@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_SIMPARTICLEBUILDER_H_
-#define SIMAPPLICATION_SIMPARTICLEBUILDER_H_ 1
+#ifndef SimApplication_SimParticleBuilder_h
+#define SimApplication_SimParticleBuilder_h
 
 // LDMX
 #include "SimApplication/TrackMap.h"

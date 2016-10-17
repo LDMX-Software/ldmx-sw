@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_LHEPARTICLE_H_
-#define SIMAPPLICATION_LHEPARTICLE_H_ 1
+#ifndef SimApplication_LHEParticle_h
+#define SimApplication_LHEParticle_h
 
 // STL
 #include <string>
