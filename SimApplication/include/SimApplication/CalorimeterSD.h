@@ -1,5 +1,5 @@
-#ifndef CALORIMETERSD_SIMAPPLICATION_H_
-#define CALORIMETERSD_SIMAPPLICATION_H_ 1
+#ifndef SimApplication_CalorimeterSD_h
+#define SimApplication_CalorimeterSD_h
 
 // Geant4
 #include "G4VSensitiveDetector.hh"

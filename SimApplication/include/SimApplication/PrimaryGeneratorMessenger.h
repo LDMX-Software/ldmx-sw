@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_PRIMARYGENERATORMESSENGER_H_
-#define SIMAPPLICATION_PRIMARYGENERATORMESSENGER_H_ 1
+#ifndef SimApplication_PrimaryGeneratorMessenger_h
+#define SimApplication_PrimaryGeneratorMessenger_h
 
 // Geant4
 #include "G4UImessenger.hh"

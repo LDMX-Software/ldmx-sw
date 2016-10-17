@@ -1,5 +1,5 @@
-#ifndef TRACKERSD_SIMAPPLICATION_H_
-#define TRACKERSD_SIMAPPLICATION_H_ 1
+#ifndef SimApplication_TrackerSD_h
+#define SimApplication_TrackerSD_h
 
 // Geant4
 #include <DetDescr/DetectorID.h>

@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_PRIMARYPARTICLEINFORMATION_H_
-#define SIMAPPLICATION_PRIMARYPARTICLEINFORMATION_H_ 1
+#ifndef SimApplication_UserPrimaryParticleInformation_h
+#define SimApplication_UserPrimaryParticleInformation_h
 
 // Geant4
 #include "G4VUserPrimaryParticleInformation.hh"

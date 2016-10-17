@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_SIMAPPLICATION_H_
-#define SIMAPPLICATION_SIMAPPLICATION_H_ 1
+#ifndef SimApplication_SimApplication_h
+#define SimApplication_SimApplication_h
 
 // STL
 #include <string>

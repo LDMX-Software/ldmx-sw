@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_VISATTRIBUTES_H_
-#define SIMAPPLICATION_VISATTRIBUTES_H_ 1
+#ifndef SimApplication_VisAttributesStore_h
+#define SimApplication_VisAttributesStore_h
 
 // Geant4
 #include "G4VisAttributes.hh"
