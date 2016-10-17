@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_USERTRACKINGACTION_HH_
-#define SIMAPPLICATION_USERTRACKINGACTION_HH_ 1
+#ifndef SimApplication_UserTrackingAction_h
+#define SimApplication_UserTrackingAction_h
 
 // Geant4
 #include "G4UserTrackingAction.hh"

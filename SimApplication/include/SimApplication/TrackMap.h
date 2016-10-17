@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_TRACKMAP_H_
-#define SIMAPPLICATION_TRACKMAP_H_ 1
+#ifndef SimApplication_TrackerMap_h
+#define SimApplication_TrackerMap_h
 
 // Geant4
 #include "G4VTrajectory.hh"

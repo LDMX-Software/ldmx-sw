@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_TRAJECTORYCONTAINER_H_
-#define SIMAPPLICATION_TRAJECTORYCONTAINER_H_ 1
+#ifndef SimApplication_TrajectoryContainer_h
+#define SimApplication_TrajectoryContainer_h
 
 // Geant4
 #include "G4TrajectoryContainer.hh"

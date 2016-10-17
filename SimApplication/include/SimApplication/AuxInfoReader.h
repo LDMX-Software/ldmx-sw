@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_AUXINFOREADER_H_
-#define SIMAPPLICATION_AUXINFOREADER_H_ 1
+#ifndef SimApplication_AuxInfoReader_h
+#define SimApplication_AuxInfoReader_h
 
 // Geant4
 #include "G4GDMLParser.hh"

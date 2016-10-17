@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_MAGFIELDSTORE_H_
-#define SIMAPPLICATION_MAGFIELDSTORE_H_ 1
+#ifndef SimApplication_MagneticFieldStore_h
+#define SimApplication_MagneticFieldStore_h
 
 // Geant4
 #include "G4MagneticField.hh"

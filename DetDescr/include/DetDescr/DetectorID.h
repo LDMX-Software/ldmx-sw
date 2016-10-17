@@ -1,5 +1,5 @@
-#ifndef DETDESCR_DETECTORID_H_
-#define DETDESCR_DETECTORID_H_ 1
+#ifndef DetDescr_DetectorID_h
+#define DetDescr_DetectorID_h
 
 // STL
 #include <vector>

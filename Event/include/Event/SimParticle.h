@@ -1,5 +1,5 @@
-#ifndef EVENT_SIMPARTICLE_H_
-#define EVENT_SIMPARTICLE_H_ 1
+#ifndef Event_SimParticle_h
+#define Event_SimParticle_h
 
 // STL
 #include <vector>

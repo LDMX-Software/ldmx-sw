@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_APRIMEPHYSICS_H_
-#define SIMAPPLICATION_APRIMEPHYSICS_H_ 1
+#ifndef SimApplication_APrimePhysics_h
+#define SimApplication_APrimePhysics_h 1
 
 // Geant4
 #include "G4VPhysicsConstructor.hh"

@@ -7,8 +7,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENT_SIMTRACKERHIT_H_
-#define EVENT_SIMTRACKERHIT_H_
+#ifndef Event_SimTrackerHit_h
+#define Event_SimTrackerHit_h
 
 // C++ StdLib
 #include <iostream>

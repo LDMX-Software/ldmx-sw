@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_LHEREADER_H_
-#define SIMAPPLICATION_LHEREADER_H_ 1
+#ifndef SimApplication_LHEReader_h
+#define SimApplication_LHEReader_h
 
 // LDMX
 #include "SimApplication/LHEEvent.h"
