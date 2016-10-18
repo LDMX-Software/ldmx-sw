@@ -9,6 +9,11 @@
 #include "SimApplication/G4TrackerHit.h"
 #include "Event/Event.h"
 
+using event::Event;
+using detdescr::DetectorID;
+
+namespace sim {
+
 class TrackerSD: public G4VSensitiveDetector {
 
     public:
@@ -30,5 +35,7 @@ class TrackerSD: public G4VSensitiveDetector {
         int subdetId;
         DetectorID* detId;
 };
+
+}
 
 #endif

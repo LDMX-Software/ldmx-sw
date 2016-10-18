@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+namespace sim {
+
 class LHEParticle {
 
     public:
@@ -45,5 +47,7 @@ class LHEParticle {
         double vtimup;
         int spinup;
 };
+
+}
 
 #endif

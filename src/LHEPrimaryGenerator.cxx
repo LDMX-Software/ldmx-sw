@@ -11,6 +11,8 @@
 #include "G4SystemOfUnits.hh"
 #include "G4PhysicalConstants.hh"
 
+namespace sim {
+
 LHEPrimaryGenerator::LHEPrimaryGenerator(LHEReader* theReader)
     : reader(theReader) {
 }
@@ -108,4 +110,6 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
     }
 
     delete lheEvent;
+}
+
 }

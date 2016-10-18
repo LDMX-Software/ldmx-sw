@@ -23,6 +23,10 @@
 #include <iostream>
 #include <bitset>
 
+using event::Event;
+using detdescr::DetectorID;
+using detdescr::IDField;
+
 int main(int argc, const char* argv[])  {
 
     if (argc < 2) {

@@ -10,6 +10,10 @@
 // LDMX
 #include "Event/SimTrackerHit.h"
 
+using event::SimTrackerHit;
+
+namespace sim {
+
 class G4TrackerHit: public G4VHit {
 
     public:
@@ -72,6 +76,8 @@ inline void* G4TrackerHit::operator new(size_t) {
  */
 inline void G4TrackerHit::operator delete(void *aHit) {
     G4TrackerHitAllocator.FreeSingle((G4TrackerHit*) aHit);
+}
+
 }
 
 #endif

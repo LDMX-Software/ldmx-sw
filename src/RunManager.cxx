@@ -12,6 +12,8 @@
 #include "FTFP_BERT.hh"
 #include "G4VModularPhysicsList.hh"
 
+namespace sim {
+
 RunManager::RunManager() {
 }
 
@@ -41,4 +43,6 @@ void RunManager::Initialize() {
     SetUserAction(new UserEventAction);
     SetUserAction(new UserRunAction);
     SetUserAction(new UserTrackingAction);
+}
+
 }

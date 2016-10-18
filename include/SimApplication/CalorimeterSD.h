@@ -9,6 +9,10 @@
 #include "Event/Event.h"
 #include "SimApplication/G4CalorimeterHit.h"
 
+using detdescr::DetectorID;
+using event::Event;
+
+namespace sim {
 
 class CalorimeterSD: public G4VSensitiveDetector {
 
@@ -31,5 +35,7 @@ class CalorimeterSD: public G4VSensitiveDetector {
         int subdetId;
         DetectorID* detId;
 };
+
+}
 
 #endif

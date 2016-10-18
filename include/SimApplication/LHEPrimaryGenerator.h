@@ -7,6 +7,8 @@
 // LDMX
 #include "SimApplication/LHEReader.h"
 
+namespace sim {
+
 class LHEPrimaryGenerator : public G4VPrimaryGenerator {
 
     public:
@@ -21,5 +23,7 @@ class LHEPrimaryGenerator : public G4VPrimaryGenerator {
 
         LHEReader* reader;
 };
+
+}
 
 #endif

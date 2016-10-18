@@ -1,5 +1,7 @@
 #include "SimApplication/UserRegionInformation.h"
 
+namespace sim {
+
 UserRegionInformation::UserRegionInformation(bool aStoreSecondaries)
     : storeSecondaries(aStoreSecondaries) {
 }
@@ -12,5 +14,7 @@ bool UserRegionInformation::getStoreSecondaries() const {
 }
 
 void UserRegionInformation::Print() const {
+}
+
 }
 

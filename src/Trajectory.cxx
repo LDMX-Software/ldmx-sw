@@ -3,6 +3,8 @@
 // Geant4
 #include "G4TrajectoryPoint.hh"
 
+namespace sim {
+
 G4Allocator<Trajectory> TrajectoryAllocator;
 
 Trajectory::Trajectory(const G4Track* aTrack)
@@ -112,4 +114,6 @@ const G4ThreeVector& Trajectory::getVertexPosition() const {
 
 void Trajectory::setGenStatus(int theGenStatus) {
     genStatus = theGenStatus;
+}
+
 }

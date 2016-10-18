@@ -8,6 +8,8 @@
 #include <sstream>
 #include <stdexcept>
 
+namespace sim {
+
 LHEEvent::LHEEvent(std::string& line) {
 
     std::istringstream iss(line);
@@ -72,4 +74,6 @@ void LHEEvent::addParticle(LHEParticle* particle) {
 
 const std::vector<LHEParticle*>& LHEEvent::getParticles() {
     return particles;
+}
+
 }

@@ -6,6 +6,8 @@
 #include "G4Point3D.hh"
 #include "G4Circle.hh"
 
+namespace sim {
+
 G4Allocator<G4TrackerHit> G4TrackerHitAllocator;
 
 G4TrackerHit::G4TrackerHit()
@@ -63,4 +65,6 @@ void G4TrackerHit::setMomentum(const G4ThreeVector& p) {
 
 void G4TrackerHit::setTrackID(G4int aTrackID) {
     this->trackID = aTrackID;
+}
+
 }

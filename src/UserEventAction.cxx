@@ -14,6 +14,11 @@
 #include <stdio.h>
 #include <time.h>
 
+using event::Event;
+using event::RootEventWriter;
+
+namespace sim {
+
 UserEventAction::UserEventAction()
     : simParticleBuilder(new SimParticleBuilder) {
 }
@@ -59,4 +64,6 @@ void UserEventAction::EndOfEventAction(const G4Event* anEvent) {
     TrackMap::getInstance()->clear();
 
     std::cout << ">>> End Event " << anEvent->GetEventID() << " <<<" << std::endl;
+}
+
 }
