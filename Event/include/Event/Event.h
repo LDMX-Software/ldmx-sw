@@ -13,6 +13,8 @@
 // STL
 #include <string>
 
+namespace event {
+
 class Event: public TObject {
 
     public:
@@ -80,5 +82,7 @@ class Event: public TObject {
 
         ClassDef(Event, 1);
 };
+
+}
 
 #endif

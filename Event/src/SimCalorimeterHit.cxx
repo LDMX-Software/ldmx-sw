@@ -3,7 +3,9 @@
 // STL
 #include <iostream>
 
-ClassImp(SimCalorimeterHit)
+ClassImp(event::SimCalorimeterHit)
+
+namespace event {
 
 SimCalorimeterHit::SimCalorimeterHit() :
         id(0),
@@ -62,4 +64,6 @@ void SimCalorimeterHit::setTime(float time) {
 
 void SimCalorimeterHit::setSimParticle(SimParticle* aSimParticle) {
     simParticle = aSimParticle;
+}
+
 }

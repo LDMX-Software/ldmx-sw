@@ -7,6 +7,8 @@
 // LDMX
 #include "DetDescr/IDField.h"
 
+namespace detdescr {
+
 /**
  * Represents an ID in the detector with a raw, 32-bit value which can
  * be unpacked into a list of field values or packed from a list of field
@@ -102,5 +104,7 @@ class DetectorID {
         IDField::IDFieldMap idFieldMap;
         IDField::IDFieldList* idFieldList;
 };
+
+}
 
 #endif

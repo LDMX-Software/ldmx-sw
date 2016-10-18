@@ -9,6 +9,10 @@
 // STL
 #include <map>
 
+using event::SimParticle;
+
+namespace sim {
+
 class SimParticleBuilder {
 
     public:
@@ -36,5 +40,7 @@ class SimParticleBuilder {
         SimParticleMap particleMap;
         TrackMap* trackMap;
 };
+
+}
 
 #endif

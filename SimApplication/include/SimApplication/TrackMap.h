@@ -4,6 +4,8 @@
 // Geant4
 #include "G4VTrajectory.hh"
 
+namespace sim {
+
 class TrackMap {
 
     public:
@@ -23,5 +25,7 @@ class TrackMap {
 
         TrackIDMap trackIDMap;
 };
+
+}
 
 #endif

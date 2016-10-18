@@ -3,6 +3,8 @@
 // STL
 #include <iostream>
 
+namespace event {
+
 RootEventWriter* RootEventWriter::INSTANCE = 0;
 
 RootEventWriter::RootEventWriter(std::string fileName) :
@@ -74,4 +76,6 @@ void RootEventWriter::close() {
     rootFile->Close();
 
     std::cout << "File " << fileName << " is closed!" << std::endl;
+}
+
 }

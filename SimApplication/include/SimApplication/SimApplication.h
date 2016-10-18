@@ -4,6 +4,8 @@
 // STL
 #include <string>
 
+namespace sim {
+
 class SimApplication {
 
     public:
@@ -14,5 +16,7 @@ class SimApplication {
 
         void run(int argc, char** argv);
 };
+
+}
 
 #endif

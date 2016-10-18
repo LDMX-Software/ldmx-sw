@@ -8,6 +8,8 @@
 // LDMX
 #include "Event/Event.h"
 
+namespace event {
+
 class RootEventWriter {
 
     public:
@@ -39,5 +41,7 @@ class RootEventWriter {
 
         static RootEventWriter* INSTANCE;
 };
+
+}
 
 #endif

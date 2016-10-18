@@ -4,6 +4,8 @@
 // Geant4
 #include "G4VUserPrimaryParticleInformation.hh"
 
+namespace sim {
+
 class UserPrimaryParticleInformation : public G4VUserPrimaryParticleInformation {
 
     public:
@@ -29,5 +31,7 @@ class UserPrimaryParticleInformation : public G4VUserPrimaryParticleInformation 
 
         int hepEvtStatus;
 };
+
+}
 
 #endif

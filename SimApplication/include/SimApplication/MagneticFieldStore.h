@@ -4,6 +4,8 @@
 // Geant4
 #include "G4MagneticField.hh"
 
+namespace sim {
+
 class MagneticFieldStore {
 
     public:
@@ -27,5 +29,7 @@ class MagneticFieldStore {
 
         MagFieldMap magFields;
 };
+
+}
 
 #endif

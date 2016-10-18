@@ -6,6 +6,10 @@
 // Geant4
 #include "G4ApplicationState.hh"
 
+using event::RootEventWriter;
+
+namespace sim {
+
 SimApplicationMessenger::SimApplicationMessenger() {
 
     ldmxDir = new G4UIdirectory("/ldmx/");
@@ -32,4 +36,6 @@ void SimApplicationMessenger::SetNewValue(G4UIcommand* command, G4String newValu
     if (command == rootFileCmd) {
         RootEventWriter::getInstance()->setFileName(newValues);
     }
+}
+
 }

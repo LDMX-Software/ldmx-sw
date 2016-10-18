@@ -5,6 +5,8 @@
 #include "G4UserRunAction.hh"
 #include "G4Run.hh"
 
+namespace sim {
+
 class UserRunAction: public G4UserRunAction {
 
     public:
@@ -14,5 +16,7 @@ class UserRunAction: public G4UserRunAction {
         void BeginOfRunAction(const G4Run*);
         void EndOfRunAction(const G4Run*);
 };
+
+}
 
 #endif

@@ -10,11 +10,15 @@
 // STL
 #include <map>
 
+namespace sim {
+
 class TrajectoryContainer : public G4TrajectoryContainer {
 
     public:
 
         Trajectory* findByTrackID(G4int);
 };
+
+}
 
 #endif

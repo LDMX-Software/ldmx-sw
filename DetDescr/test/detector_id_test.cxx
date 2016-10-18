@@ -6,6 +6,9 @@
 #include <iostream>
 #include <stdexcept>
 
+using detdescr::IDField;
+using detdescr::DetectorID;
+
 int main(int, const char* argv[])  {
 
     std::cout << "Hello Detector ID test!" << std::endl;

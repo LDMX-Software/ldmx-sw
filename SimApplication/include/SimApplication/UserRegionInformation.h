@@ -4,6 +4,8 @@
 // Geant4
 #include "G4VUserRegionInformation.hh"
 
+namespace sim {
+
 class UserRegionInformation: public G4VUserRegionInformation {
 
 public:
@@ -20,5 +22,7 @@ private:
 
     bool storeSecondaries;
 };
+
+}
 
 #endif

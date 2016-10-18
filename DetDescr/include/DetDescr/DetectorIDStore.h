@@ -4,6 +4,8 @@
 // LDMX
 #include "DetectorID.h"
 
+namespace detdescr {
+
 class DetectorIDStore {
 
     public:
@@ -27,5 +29,7 @@ class DetectorIDStore {
 
         DetectorIDMap ids;
 };
+
+}
 
 #endif

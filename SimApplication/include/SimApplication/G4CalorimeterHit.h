@@ -10,6 +10,10 @@
 // LDMX
 #include "Event/SimCalorimeterHit.h"
 
+using event::SimCalorimeterHit;
+
+namespace sim {
+
 class G4CalorimeterHit: public G4VHit {
 
     public:
@@ -64,6 +68,8 @@ inline void* G4CalorimeterHit::operator new(size_t) {
  */
 inline void G4CalorimeterHit::operator delete(void *aHit) {
     G4CalorimeterHitAllocator.FreeSingle((G4CalorimeterHit*) aHit);
+}
+
 }
 
 #endif

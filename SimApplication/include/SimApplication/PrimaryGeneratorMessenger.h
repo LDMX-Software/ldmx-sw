@@ -7,6 +7,8 @@
 // LDMX
 #include "SimApplication/PrimaryGeneratorAction.h"
 
+namespace sim {
+
 class PrimaryGeneratorMessenger : public G4UImessenger {
 
     public:
@@ -24,5 +26,7 @@ class PrimaryGeneratorMessenger : public G4UImessenger {
         G4UIdirectory* lheDir;
         G4UIcommand* lheOpenCmd;
 };
+
+}
 
 #endif

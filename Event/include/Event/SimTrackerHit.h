@@ -21,6 +21,8 @@
 // LDMX
 #include "Event/SimParticle.h"
 
+namespace event {
+
 class SimTrackerHit: public TObject {
 
     public:
@@ -134,5 +136,7 @@ class SimTrackerHit: public TObject {
         ClassDef(SimTrackerHit, 1);
 
 }; // SimTrackerHit
+
+}
 
 #endif // Event_SimTrackerHit_h
