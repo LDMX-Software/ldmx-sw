@@ -7,6 +7,8 @@
 // STL
 #include <vector>
 
+namespace sim {
+
 class LHEEvent {
 
     public:
@@ -42,5 +44,7 @@ class LHEEvent {
 
         std::vector<LHEParticle*> particles;
 };
+
+}
 
 #endif

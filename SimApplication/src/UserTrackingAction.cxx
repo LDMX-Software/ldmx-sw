@@ -14,6 +14,8 @@
 // STL
 #include <iostream>
 
+namespace sim {
+
 UserTrackingAction::UserTrackingAction() {
 }
 
@@ -45,4 +47,6 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* aTrack) {
 }
 
 void UserTrackingAction::PostUserTrackingAction(const G4Track*) {
+}
+
 }

@@ -8,6 +8,8 @@
 // LDMX
 #include "Event/SimParticle.h"
 
+namespace event {
+
 class SimCalorimeterHit: public TObject {
 
     public:
@@ -49,5 +51,7 @@ class SimCalorimeterHit: public TObject {
 
     ClassDef(SimCalorimeterHit, 1)
 };
+
+}
 
 #endif

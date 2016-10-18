@@ -13,6 +13,10 @@
 // LDMX
 #include "Event/RootEventWriter.h"
 
+using event::RootEventWriter;
+
+namespace sim {
+
 CalorimeterSD::CalorimeterSD(G4String theName, G4String theCollectionName, int theSubdetId, DetectorID* theDetId) :
     G4VSensitiveDetector(theName),
     hitsCollection(0),
@@ -104,4 +108,6 @@ void CalorimeterSD::Initialize(G4HCofThisEvent* hce) {
 }
 
 void CalorimeterSD::EndOfEvent(G4HCofThisEvent*) {
+}
+
 }

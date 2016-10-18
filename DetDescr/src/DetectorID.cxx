@@ -1,5 +1,7 @@
 #include "DetDescr/DetectorID.h"
 
+namespace detdescr {
+
 DetectorID::~DetectorID() {
     // Delete the field list and its objects as we assume this class owns it.
     for (IDField::IDFieldList::iterator it = idFieldList->begin(); it != idFieldList->end(); it++) {
@@ -77,4 +79,6 @@ IDField* DetectorID::getField(const std::string& fieldName) {
 
 DetectorID::FieldValue DetectorID::getFieldValue(const std::string& fieldName) {
     return values[idFieldMap[fieldName]->getIndex()];
+}
+
 }

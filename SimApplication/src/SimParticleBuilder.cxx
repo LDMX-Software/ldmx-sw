@@ -13,6 +13,11 @@
 #include "G4HCofThisEvent.hh"
 #include "G4VTrajectoryPoint.hh"
 
+using event::Event;
+using event::RootEventWriter;
+
+namespace sim {
+
 SimParticleBuilder::SimParticleBuilder() {
     trackMap = TrackMap::getInstance();
 }
@@ -126,4 +131,6 @@ void SimParticleBuilder::assignCalorimeterHitSimParticles() {
             }
         }
     }
+}
+
 }

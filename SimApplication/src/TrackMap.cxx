@@ -7,6 +7,8 @@
 // LDMX
 #include "SimApplication/TrajectoryContainer.h"
 
+namespace sim {
+
 TrackMap* TrackMap::getInstance() {
     static TrackMap INSTANCE;
     return &INSTANCE;
@@ -38,5 +40,7 @@ G4VTrajectory* TrackMap::findTrajectory(G4int trackID) {
 
 void TrackMap::clear() {
     trackIDMap.clear();
+}
+
 }
 

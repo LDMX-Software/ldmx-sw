@@ -1,5 +1,7 @@
 #include "DetDescr/IDField.h"
-        
+
+namespace detdescr {
+
 IDField::IDField(std::string fieldName, unsigned index, unsigned startBit, unsigned endBit)
     : fieldName(fieldName), index(index), startBit(startBit), endBit(endBit) {
 
@@ -33,4 +35,6 @@ unsigned IDField::createBitMask(unsigned startBit, unsigned endBit) {
        mask |= 1 << i;
    }
    return mask;
+}
+
 }

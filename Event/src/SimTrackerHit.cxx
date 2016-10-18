@@ -10,7 +10,9 @@
 
 #include "Event/SimTrackerHit.h"
 
-ClassImp(SimTrackerHit)
+ClassImp(event::SimTrackerHit)
+
+namespace event {
 
 SimTrackerHit::SimTrackerHit() 
     : TObject() {
@@ -100,4 +102,6 @@ int SimTrackerHit::getLayerID() {
 
 void SimTrackerHit::setLayerID(int layerID) {
     this->layerID = layerID;
+}
+
 }

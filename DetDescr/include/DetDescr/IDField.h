@@ -6,6 +6,8 @@
 #include <map>
 #include <vector>
 
+namespace detdescr {
+
 class IDField {
 
     public:
@@ -37,5 +39,7 @@ class IDField {
         unsigned endBit;
         unsigned bitMask;
 };
+
+}
 
 #endif

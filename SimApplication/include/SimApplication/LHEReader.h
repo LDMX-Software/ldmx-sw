@@ -7,6 +7,8 @@
 // STL
 #include <fstream>
 
+namespace sim {
+
 class LHEReader {
 
     public:
@@ -21,5 +23,7 @@ class LHEReader {
 
         std::ifstream ifs;
 };
+
+}
 
 #endif

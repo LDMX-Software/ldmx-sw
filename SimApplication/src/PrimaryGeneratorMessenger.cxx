@@ -3,6 +3,8 @@
 // LDMX
 #include "SimApplication/LHEPrimaryGenerator.h"
 
+namespace sim {
+
 PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* thePrimaryGeneratorAction) :
     primaryGeneratorAction(thePrimaryGeneratorAction) {
 
@@ -24,4 +26,6 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newVa
         primaryGeneratorAction->setPrimaryGenerator(
                 new LHEPrimaryGenerator(new LHEReader(newValues)));
     }
+}
+
 }

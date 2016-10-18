@@ -8,6 +8,8 @@
 #include "TObject.h"
 #include "TRefArray.h"
 
+namespace event {
+
 class SimParticle: public TObject {
 
     public:
@@ -84,5 +86,7 @@ class SimParticle: public TObject {
 
         ClassDef(SimParticle, 1);
 };
+
+}
 
 #endif

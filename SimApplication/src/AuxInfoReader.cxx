@@ -22,6 +22,12 @@
 #include <string>
 #include <stdlib.h>
 
+using detdescr::DetectorID;
+using detdescr::IDField;
+using detdescr::DetectorIDStore;
+
+namespace sim {
+
 AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser) :
     parser(theParser), eval(new G4GDMLEvaluator) {
 }
@@ -400,4 +406,6 @@ void AuxInfoReader::createVisAttributes(G4String name, const G4GDMLAuxListType* 
 
     std::cout << "Created VisAttributes " << name << std::endl << (*visAttributes)
             << std::endl << std::endl;
+}
+
 }

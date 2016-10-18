@@ -4,6 +4,8 @@
 // Geant4
 #include "G4UserTrackingAction.hh"
 
+namespace sim {
+
 class UserTrackingAction : public G4UserTrackingAction {
 
     public:
@@ -18,5 +20,7 @@ class UserTrackingAction : public G4UserTrackingAction {
 
         void PostUserTrackingAction(const G4Track*);
 };
+
+}
 
 #endif

@@ -7,6 +7,8 @@
 #include "G4hMultipleScattering.hh"
 #include "G4ProcessManager.hh"
 
+namespace sim {
+
 class APrimePhysics : public G4VPhysicsConstructor {
 
     public:
@@ -25,5 +27,7 @@ class APrimePhysics : public G4VPhysicsConstructor {
         //G4Decay decayProcess;
         //G4hMultipleScattering scatterProcess;
 };
+
+}
 
 #endif

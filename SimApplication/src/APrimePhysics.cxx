@@ -3,6 +3,8 @@
 // Geant4
 #include "G4SystemOfUnits.hh"
 
+namespace sim {
+
 APrimePhysics::APrimePhysics(const G4String& name)
     : G4VPhysicsConstructor(name), aprimeDef(NULL) {
 }
@@ -53,4 +55,6 @@ void APrimePhysics::ConstructProcess() {
                 "The process manager for APrime is NULL.");
     }
     */
+}
+
 }

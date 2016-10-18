@@ -6,6 +6,8 @@
 #include "G4Point3D.hh"
 #include "G4Circle.hh"
 
+namespace sim {
+
 G4Allocator<G4CalorimeterHit> G4CalorimeterHitAllocator;
 
 G4CalorimeterHit::G4CalorimeterHit() :
@@ -54,4 +56,6 @@ void G4CalorimeterHit::setTrackID(G4int aTrackID) {
 
 G4int G4CalorimeterHit::getTrackID() {
     return trackID;
+}
+
 }

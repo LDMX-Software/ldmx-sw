@@ -8,6 +8,8 @@
 // LDMX
 #include "SimApplication/SimParticleBuilder.h"
 
+namespace sim {
+
 class UserEventAction: public G4UserEventAction {
 
     public:
@@ -21,5 +23,7 @@ class UserEventAction: public G4UserEventAction {
 
         SimParticleBuilder* simParticleBuilder;
 };
+
+}
 
 #endif

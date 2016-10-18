@@ -14,6 +14,10 @@
 #include "Event/RootEventWriter.h"
 #include "DetDescr/IDField.h"
 
+using event::RootEventWriter;
+
+namespace sim {
+
 TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int theSubdetId, DetectorID* theDetId) :
     G4VSensitiveDetector(name),
     hitsCollection(0),
@@ -147,4 +151,6 @@ void TrackerSD::EndOfEvent(G4HCofThisEvent*) {
         (*hitsCollection)[i]->Print();
     }
     */
+}
+
 }

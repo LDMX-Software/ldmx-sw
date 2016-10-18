@@ -4,6 +4,8 @@
 #include <iostream>
 #include <stdexcept>
 
+namespace sim {
+
 LHEReader::LHEReader(std::string& filename) {
     std::cout << "Opening LHE file " << filename << std::endl;
     ifs.open(filename.c_str(), std::ifstream::in);
@@ -71,4 +73,6 @@ LHEEvent* LHEReader::readNextEvent() {
     }
 
     return nextEvent;
+}
+
 }

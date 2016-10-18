@@ -1,6 +1,8 @@
 #include "Event/Event.h"
 
-ClassImp(Event)
+ClassImp(event::Event)
+
+namespace event {
 
 int Event::DEFAULT_COLLECTION_SIZE = 100;
 
@@ -145,4 +147,6 @@ TClonesArray* Event::getCollection(const std::string& collectionName) {
 TObject* Event::addObject(const std::string& collectionName) {
     TClonesArray* coll = getCollection(collectionName);
     return coll->ConstructedAt(nextCollectionIndex(collectionName));
+}
+
 }

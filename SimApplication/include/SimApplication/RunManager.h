@@ -6,6 +6,8 @@
 #include "G4hMultipleScattering.hh"
 #include "G4Decay.hh"
 
+namespace sim {
+
 class RunManager : public G4RunManager {
 
     public:
@@ -18,5 +20,7 @@ class RunManager : public G4RunManager {
 
         void Initialize();
 };
+
+}
 
 #endif

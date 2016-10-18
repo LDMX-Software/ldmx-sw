@@ -16,6 +16,11 @@
 #include <iostream>
 #include <stdlib.h>
 
+using event::Event;
+using event::SimTrackerHit;
+using event::SimCalorimeterHit;
+using event::SimParticle;
+
 float randFloat(float min, float max) {
     return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
 }

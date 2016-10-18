@@ -4,6 +4,8 @@
 // Geant4
 #include "G4GDMLParser.hh"
 
+namespace sim {
+
 class AuxInfoReader {
 
     public:
@@ -32,5 +34,7 @@ class AuxInfoReader {
         G4GDMLParser* parser;
         G4GDMLEvaluator* eval;
 };
+
+}
 
 #endif

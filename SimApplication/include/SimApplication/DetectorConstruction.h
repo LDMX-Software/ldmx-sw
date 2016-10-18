@@ -8,6 +8,8 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "G4GDMLParser.hh"
 
+namespace sim {
+
 class DetectorConstruction: public G4VUserDetectorConstruction {
 
     public:
@@ -22,5 +24,7 @@ class DetectorConstruction: public G4VUserDetectorConstruction {
         G4GDMLParser* parser;
         AuxInfoReader* auxInfoReader;
 };
+
+}
 
 #endif

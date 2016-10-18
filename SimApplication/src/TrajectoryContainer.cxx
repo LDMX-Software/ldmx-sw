@@ -1,5 +1,7 @@
 #include "SimApplication/TrajectoryContainer.h"
 
+namespace sim {
+
 Trajectory* TrajectoryContainer::findByTrackID(G4int trackID) {
     Trajectory* traj = NULL;
     for (int iTraj = 0; iTraj < this->entries(); iTraj++) {
@@ -9,4 +11,6 @@ Trajectory* TrajectoryContainer::findByTrackID(G4int trackID) {
         }
     }
     return traj;
+}
+
 }

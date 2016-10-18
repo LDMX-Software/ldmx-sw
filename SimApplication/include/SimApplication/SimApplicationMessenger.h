@@ -4,6 +4,8 @@
 // Geant4
 #include "G4UImessenger.hh"
 
+namespace sim {
+
 class SimApplicationMessenger : public G4UImessenger {
 
     public:
@@ -35,5 +37,7 @@ class SimApplicationMessenger : public G4UImessenger {
 
         G4UIcommand* rootFileCmd;
 };
+
+}
 
 #endif

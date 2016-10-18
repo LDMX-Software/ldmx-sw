@@ -18,6 +18,8 @@
 #include "G4VisExecutive.hh"
 #include "G4RunManager.hh"
 
+namespace sim {
+
 SimApplication::SimApplication() {
 }
 
@@ -72,4 +74,6 @@ void SimApplication::run(int argc, char** argv) {
     delete gdmlMessenger;
     delete parser;
     delete runManager;
+}
+
 }

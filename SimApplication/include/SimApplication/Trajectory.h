@@ -11,6 +11,8 @@
 
 typedef std::vector<G4VTrajectoryPoint*> TrajectoryPointContainer;
 
+namespace sim {
+
 /**
  * REFERENCE
  *
@@ -90,6 +92,8 @@ inline void* Trajectory::operator new(size_t) {
 
 inline void Trajectory::operator delete(void* aTrajectory) {
     TrajectoryAllocator.FreeSingle((Trajectory*) aTrajectory);
+}
+
 }
 
 #endif

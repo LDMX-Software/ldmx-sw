@@ -16,6 +16,11 @@
 #include <stdio.h>
 #include <iostream>
 
+using event::Event;
+using event::SimTrackerHit;
+using event::SimCalorimeterHit;
+using event::SimParticle;
+
 int main(int, const char* argv[])  {
 
     std::cout << "Hello LDMX Event Model Test!" << std::endl;

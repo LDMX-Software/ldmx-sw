@@ -3,7 +3,9 @@
 // STL
 #include <iostream>
 
-ClassImp(SimParticle)
+ClassImp(event::SimParticle)
+
+namespace event {
 
 SimParticle::SimParticle() :
     energy(0.),
@@ -148,5 +150,7 @@ void SimParticle::addDaughter(SimParticle* daughter) {
 
 void SimParticle::addParent(SimParticle* parent) {
     parents->Add(parent);
+}
+
 }
 

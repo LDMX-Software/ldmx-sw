@@ -10,6 +10,8 @@
 // Geant4
 #include "globals.hh"
 
+namespace sim {
+
 LHEParticle::LHEParticle(std::string& line) {
 
     std::istringstream iss(line);
@@ -104,4 +106,6 @@ void LHEParticle::print(std::ostream& stream) const {
 std::ostream& operator <<(std::ostream& stream, const LHEParticle& particle) {
     particle.print(stream);
     return stream;
+}
+
 }
