@@ -16,3 +16,7 @@ foreach(module ${MODULES})
   add_subdirectory(${module})
   message(STATUS "")
 endforeach()
+
+# create env setup script
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/ldmx-setup-env.sh.in ${CMAKE_CURRENT_BINARY_DIR}/ldmx-setup-env.sh)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ldmx-setup-env.sh DESTINATION bin)

@@ -1,0 +1,24 @@
+###############################################################################
+# Setup script for LDMX Software environment
+#
+# This file is configured by CMake and installed into the 'bin' directory.
+#
+# For now, the Xerces lib dir must be added to the 'LD_LIBRARY_PATH' manually.
+# 
+# @author Jeremy McCormick, SLAC
+###############################################################################
+
+# setup Geant4 env
+. @Geant4_DIR@/../../bin/geant4.sh
+
+# setup ROOT env
+. @ROOT_DIR@/bin/thisroot.sh
+
+# set the load library path
+export LD_LIBRARY_PATH=@Geant4_DIR@/../../lib64/:@ROOT_DIR@/lib
+
+# set load library path for module libs
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:@CMAKE_INSTALL_PREFIX@/lib
+
+# ignore "double free or corruption" errors on application exit
+export MALLOC_CHECK_=0
