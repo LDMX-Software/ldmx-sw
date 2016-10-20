@@ -11,11 +11,15 @@ class DummySimPlugin : public UserActionPlugin {
     public:
 
         DummySimPlugin() {
-            std::cout << "DummySimPlugin::DummySimPlugin" << std::endl;
+            std::cout << "DummySimPlugin::DummySimPlugin - Hello!" << std::endl;
         }
 
         virtual ~DummySimPlugin() {
-            std::cout << "DummySimPlugin::~DummySimPlugin" << std::endl;
+            std::cout << "DummySimPlugin::~DummySimPlugin - Goodbye!" << std::endl;
+        }
+
+        virtual std::string getName() {
+            return "DummySimPlugin";
         }
 
         bool hasRunAction() {
@@ -34,32 +38,32 @@ class DummySimPlugin : public UserActionPlugin {
             return true;
         }
 
-        void beginOfRunAction(G4Run* run) {
-            std::cout << "DummySimPlugin::beginOfRunAction - " << run->GetRunID() << std::endl;
+        void beginRun(const G4Run* run) {
+            std::cout << "DummySimPlugin::beginRun - " << run->GetRunID() << std::endl;
         }
 
-        void endOfRunAction(G4Run* run) {
-            std::cout << "DummySimPlugin::endOfRunAction - " << run->GetRunID() << std::endl;
+        void endRun(const G4Run* run) {
+            std::cout << "DummySimPlugin::endRun - " << run->GetRunID() << std::endl;
         }
 
-        void steppingAction(G4Step* step) {
-            std::cout << "DummySimPlugin::steppingAction" << std::endl;
+        void stepping(const G4Step* step) {
+            std::cout << "DummySimPlugin::stepping" << std::endl;
         }
 
-        void preTrackingAction(G4Track* track) {
-            std::cout << "DummySimPlugin::preTrackingAction - " << track->GetTrackID() << std::endl;
+        void preTracking(const G4Track* track) {
+            std::cout << "DummySimPlugin::preTracking - " << track->GetTrackID() << std::endl;
         }
 
-        void postTrackingAction(G4Track* track) {
-            std::cout << "DummySimPlugin::postTrackingAction - " << track->GetTrackID() << std::endl;
+        void postTracking(const G4Track* track) {
+            std::cout << "DummySimPlugin::postTracking - " << track->GetTrackID() << std::endl;
         }
 
-        void beginOfEventAction(G4Event* event) {
-            std::cout << "DummySimPlugin::beginOfEventAction - " << event->GetEventID() << std::endl;
+        void beginEvent(const G4Event* event) {
+            std::cout << "DummySimPlugin::beginEvent - " << event->GetEventID() << std::endl;
         }
 
-        void endOfEventAction(G4Event* event) {
-            std::cout << "DummySimPlugin::endOfEventAction - " << event->GetEventID() << std::endl;
+        void endEvent(const G4Event* event) {
+            std::cout << "DummySimPlugin::endEvent - " << event->GetEventID() << std::endl;
         }
 };
 
