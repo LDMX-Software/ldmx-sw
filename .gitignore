@@ -1,5 +1,6 @@
 .cproject
 .project
 .settings
+.pydevproject
 build/
 rebuild.sh
