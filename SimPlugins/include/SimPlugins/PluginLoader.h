@@ -12,6 +12,14 @@ class PluginLoader {
         UserActionPlugin* create(std::string pluginName, std::string libName);
 
         void destroy(UserActionPlugin* plugin);
+
+    private:
+
+        void* getHandle(std::string pluginName);
+
+    private:
+
+        std::map<UserActionPlugin*, void*> pluginHandles;
 };
 
 }

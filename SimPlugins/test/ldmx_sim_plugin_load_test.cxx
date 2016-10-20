@@ -7,4 +7,8 @@ int main(int argc, const char* argv[])  {
     PluginLoader* pluginLoader = new PluginLoader();
     sim::UserActionPlugin* plugin = pluginLoader->create("DummySimPlugin", "libSimPlugins.so");
     std::cout << "created plugin: " << plugin << std::endl;
+
+    pluginLoader->destroy(plugin);
+
+    std::cout << "destroyed plugin" << std::endl;
 }
