@@ -4,6 +4,7 @@
 #include "Event/RootEventWriter.h"
 #include "SimApplication/TrackMap.h"
 #include "SimApplication/TrajectoryContainer.h"
+#include "SimPlugins/PluginManager.h"
 
 // Geant4
 #include "G4RunManager.hh"
@@ -27,13 +28,15 @@ UserEventAction::~UserEventAction() {
     delete simParticleBuilder;
 }
 
-void UserEventAction::BeginOfEventAction(const G4Event*) {
+void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
 
     // Install custom trajectory container for the event.
     G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
 
     // Clear the current event object.
     RootEventWriter::getInstance()->getEvent()->Clear("");
+
+    PluginManager::getInstance().beginEvent(anEvent);
 }
 
 void UserEventAction::EndOfEventAction(const G4Event* anEvent) {
@@ -62,6 +65,8 @@ void UserEventAction::EndOfEventAction(const G4Event* anEvent) {
 
     // Clear the global track map.
     TrackMap::getInstance()->clear();
+
+    PluginManager::getInstance().endEvent(anEvent);
 
     std::cout << ">>> End Event " << anEvent->GetEventID() << " <<<" << std::endl;
 }
