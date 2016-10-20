@@ -8,6 +8,7 @@ Currently it includes the following modules:
 - [SimApplication](https://github.com/LDMXAnalysis/ldmx-sw/tree/master/SimApplication) - Geant4 simulation application with GDML input and ROOT output
 - [Detectors](https://github.com/LDMXAnalysis/ldmx-sw/tree/master/Detectors) - GDML detector data files
 - [DetDescr](https://github.com/LDMXAnalysis/ldmx-sw/tree/master/DetDescr) - Detector description utilities including detector ID encoding and decoding
+- [SimPlugins](https://github.com/LDMXAnalysis/ldmx-sw/tree/master/SimPlugins) - Sim plugin framework providing dynamically loaded user action hooks in Geant4
 
 The primary program created from building this framework is a simulation application which reads a [GDML](http://gdml.web.cern.ch/GDML/) detector description and writes out a [ROOT](https://root.cern.ch) file containing the simulated hits and particles.  The output file can be loaded into the ROOT environment for analysis.
 
