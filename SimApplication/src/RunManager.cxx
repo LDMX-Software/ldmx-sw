@@ -4,6 +4,7 @@
 #include "SimApplication/APrimePhysics.h"
 #include "SimApplication/PrimaryGeneratorAction.h"
 #include "SimApplication/PrimaryGeneratorMessenger.h"
+#include "SimApplication/SteppingAction.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
 #include "SimApplication/UserTrackingAction.h"
@@ -15,9 +16,13 @@
 namespace sim {
 
 RunManager::RunManager() {
+    pluginManager = &PluginManager::getInstance();
+    pluginMessenger = new PluginMessenger(pluginManager);
 }
 
 RunManager::~RunManager() {
+    delete pluginManager;
+    delete pluginMessenger;
 }
 
 void RunManager::InitializePhysics() {
@@ -40,9 +45,10 @@ void RunManager::Initialize() {
     PrimaryGeneratorAction* pga = new PrimaryGeneratorAction;
     SetUserAction(pga);
     new PrimaryGeneratorMessenger(pga);
-    SetUserAction(new UserEventAction);
     SetUserAction(new UserRunAction);
+    SetUserAction(new UserEventAction);
     SetUserAction(new UserTrackingAction);
+    SetUserAction(new SteppingAction);
 }
 
 }

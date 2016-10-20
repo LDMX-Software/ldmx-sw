@@ -6,6 +6,11 @@
 #include "G4hMultipleScattering.hh"
 #include "G4Decay.hh"
 
+// LDMX
+#include "SimPlugins/PluginMessenger.h"
+
+using sim::PluginMessenger;
+
 namespace sim {
 
 class RunManager : public G4RunManager {
@@ -19,6 +24,11 @@ class RunManager : public G4RunManager {
         void InitializePhysics();
 
         void Initialize();
+
+    private:
+
+        PluginMessenger* pluginMessenger;
+        PluginManager* pluginManager;
 };
 
 }
