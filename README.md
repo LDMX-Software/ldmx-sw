@@ -106,28 +106,29 @@ Now you should have an installation of *ldmx-sw* in the *ldmx-sw-install* direct
 
 ## Setting Up the Environment 
 
-There is not yet an automatically generated script which will setup the environment for running the binaries.
+The build will generate a script for setting up the shell environment that is necessary to run the binaries.  The script is automatically copied to the `bin` directory of your installation directory when running `make install`.
 
-I have a local setup script to do this for the software environment at SLAC on NFS:
+Assuming your source and installation directories are the same, you can source the generated setup script as follows:
 
 ``` bash
-# set some dir variables
-basedir=$PWD
-swdir=/nfs/slac/g/ldmx/software
+. ./ldmx-sw/bin/ldmx-setup-env.sh
+```
 
-# setup Geant4 environment using its supplied shell script
-. $swdir/geant4/geant4.10.02.p02-install/bin/geant4.sh
+The only additional step is adding the Xerces library directory to the load library path:
 
-# set the load library path to find external libraries
-export LD_LIBRARY_PATH=$swdir/geant4/geant4.10.02.p02-install/lib64:$swdir/xerces/xerces-c-3.1.4/lib:$swdir/root/root-6.06.08-build/lib
+``` bash
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/xerces/install/dir/lib
+```
 
-# set the load library path for finding the installed LDMX software libraries
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$basedir/ldmx-sw-install/lib
+Replace the above path with the actual full path to your Xerces library directory.
 
+Finally, you may want to set the following environment variable to avoid certain memory errors when running the programs:
+
+``` bash
 export MALLOC_CHECK_=0
 ```
 
-The details of how this is setup will depend on your local environment but the above should give some idea of how to do it.  (Eventually there will be a CMake generated script for setting this environment up automatically so this will not be necessary.)
+Once you have executed the above commands in your shell, you should be able to execute programs like `ldmx-sim` without any additional setup.
 
 ## Running the LDMX Simulation Application
 
