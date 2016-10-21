@@ -35,14 +35,14 @@ void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event*
         if (dynamic_cast<G4TrackerHitsCollection*>(hc) != nullptr) {
             for (int iHit = 0; iHit < nHits; iHit++) {
                 G4TrackerHit* g4hit = (G4TrackerHit*) hc->GetHit(iHit);
-                std::cout << "creating new SimTrackerHit at " << outputColl->GetEntries() << std::endl;
+                //std::cout << "creating new SimTrackerHit at " << outputColl->GetEntries() << std::endl;
                 SimTrackerHit* simHit = (SimTrackerHit*) outputColl->ConstructedAt(outputColl->GetEntries());
                 g4hit->setSimTrackerHit(simHit);
             }
         } else if (dynamic_cast<G4CalorimeterHitsCollection*>(hc) != nullptr) {
             for (int iHit = 0; iHit < nHits; iHit++) {
                 G4CalorimeterHit* g4hit = (G4CalorimeterHit*) hc->GetHit(iHit);
-                std::cout << "creating new SimCalorimeterHit at " << outputColl->GetEntries() << std::endl;
+                //std::cout << "creating new SimCalorimeterHit at " << outputColl->GetEntries() << std::endl;
                 SimCalorimeterHit* simHit = (SimCalorimeterHit*) outputColl->ConstructedAt(outputColl->GetEntries());
                 g4hit->setSimCalorimeterHit(simHit);
             }
