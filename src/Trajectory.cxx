@@ -104,10 +104,6 @@ G4int Trajectory::getGenStatus() const {
     return genStatus;
 }
 
-G4int Trajectory::getSimStatus() const {
-    return simStatus;
-}
-
 const G4ThreeVector& Trajectory::getVertexPosition() const {
     return vertexPosition;
 }

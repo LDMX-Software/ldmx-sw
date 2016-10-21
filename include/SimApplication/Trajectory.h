@@ -60,8 +60,6 @@ class Trajectory : public G4VTrajectory {
 
         G4int getGenStatus() const;
 
-        G4int getSimStatus() const;
-
         const G4ThreeVector& getVertexPosition() const;
 
         void setGenStatus(int);
