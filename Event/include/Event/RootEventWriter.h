@@ -20,8 +20,6 @@ class RootEventWriter {
 
         virtual ~RootEventWriter();
 
-        static RootEventWriter* getInstance();
-
         void setFileName(std::string fileName);
 
         void open();
@@ -38,8 +36,6 @@ class RootEventWriter {
         TFile* rootFile;
         TTree *tree;
         Event* event;
-
-        static RootEventWriter* INSTANCE;
 };
 
 }

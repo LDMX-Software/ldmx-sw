@@ -5,8 +5,6 @@
 
 namespace event {
 
-RootEventWriter* RootEventWriter::INSTANCE = 0;
-
 RootEventWriter::RootEventWriter(std::string fileName) :
     fileName(fileName),
     rootFile(0),
@@ -23,13 +21,6 @@ RootEventWriter::RootEventWriter() :
 
 RootEventWriter::~RootEventWriter() {
     delete rootFile;
-}
-
-RootEventWriter* RootEventWriter::getInstance() {
-    if (INSTANCE == 0) {
-        INSTANCE = new RootEventWriter();
-    }
-    return INSTANCE;
 }
 
 Event* RootEventWriter::getEvent() {
