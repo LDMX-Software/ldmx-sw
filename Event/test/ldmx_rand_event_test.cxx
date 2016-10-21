@@ -49,7 +49,6 @@ void fillRand(SimParticle* particle) {
     particle->setEndPoint(randFloat(0., 10), randFloat(0., 20), randFloat(2000., 5000.));
     particle->setEnergy(randDouble(1.0, 10.0));
     particle->setGenStatus(randInt(1, 5));
-    particle->setSimStatus(randInt(1, 5));
     particle->setMass(randDouble(0.5, 2.0));
     particle->setMomentum(randFloat(0., 5.0), randFloat(0., 5.0), randFloat(0., 5.0));
     particle->setPdg(randInt(0, 15));
@@ -92,22 +91,25 @@ int main(int argc, const char* argv[])  {
 
         std::cout << "Making " << nCalHits << " rand SimCalorimeterHits" << std::endl;
         for (int iCalHit = 0; iCalHit < nCalHits; iCalHit++) {
-            SimCalorimeterHit* calHit = (SimCalorimeterHit*) event->addObject("EcalSimHits");
-            calHit->setID((long) (iCalHit + 1));
+            SimCalorimeterHit* calHit = new SimCalorimeterHit();
             fillRand(calHit);
+            calHit->setID((long) (iCalHit + 1));
+            event->getCollection("EcalSimHits")->Add(calHit);
         }
 
         std::cout << "Making " << nTrackerHits << " rand SimCalorimeterHits" << std::endl;
         for (int iTrackerHit = 0; iTrackerHit < nTrackerHits; iTrackerHit++) {
-            SimTrackerHit* trackerHit = (SimTrackerHit*) event->addObject("RecoilSimHits");
-            trackerHit->setID((long) (iTrackerHit + 1));
+            SimTrackerHit* trackerHit = new SimTrackerHit();
             fillRand(trackerHit);
+            trackerHit->setID((long) (iTrackerHit + 1));
+            event->getCollection("RecoilSimHits")->Add(trackerHit);
         }
 
         std::cout << "Making " << nTrackerHits << " rand SimParticles" << std::endl;
         for (int iParticle = 0; iParticle < nParticles; iParticle++) {
-            SimParticle* simParticle = (SimParticle*) event->addObject("SimParticles");
+            SimParticle* simParticle = new SimParticle();
             fillRand(simParticle);
+            event->getCollection("SimParticles")->Add(simParticle);
         }
 
         /*
