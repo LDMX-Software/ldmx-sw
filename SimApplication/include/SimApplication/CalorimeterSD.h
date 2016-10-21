@@ -31,7 +31,6 @@ class CalorimeterSD: public G4VSensitiveDetector {
     private:
 
         G4CalorimeterHitsCollection* hitsCollection;
-        Event* currentEvent;
         int subdetId;
         DetectorID* detId;
 };

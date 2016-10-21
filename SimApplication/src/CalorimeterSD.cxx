@@ -20,7 +20,6 @@ namespace sim {
 CalorimeterSD::CalorimeterSD(G4String theName, G4String theCollectionName, int theSubdetId, DetectorID* theDetId) :
     G4VSensitiveDetector(theName),
     hitsCollection(0),
-    currentEvent(0),
     subdetId(theSubdetId),
     detId(theDetId) {
 
@@ -102,9 +101,6 @@ void CalorimeterSD::Initialize(G4HCofThisEvent* hce) {
     hitsCollection = new G4CalorimeterHitsCollection(SensitiveDetectorName, collectionName[0]);
     G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
     hce->AddHitsCollection(hcID, hitsCollection);
-
-    // Set ref to current ROOT output event.
-    currentEvent = RootEventWriter::getInstance()->getEvent();
 }
 
 void CalorimeterSD::EndOfEvent(G4HCofThisEvent*) {

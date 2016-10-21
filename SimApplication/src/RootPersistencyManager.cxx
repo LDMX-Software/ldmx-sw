@@ -55,7 +55,7 @@ G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
     std::cout << "RootPersistencyManager::Store - " << anEvent->GetEventID() << std::endl;
 
     // Get the current output event from the writer.
-    Event* outputEvent = writer->getEvent();
+    Event* outputEvent = writer.getEvent();
 
     // Set basic event information.
     writeHeader(anEvent, outputEvent);
@@ -76,7 +76,7 @@ G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
     simParticleBuilder.assignCalorimeterHitSimParticles();
 
     // Fill the current ROOT event into the tree.
-    writer->writeEvent();
+    writer.writeEvent();
 
     return true;
 }
