@@ -22,12 +22,14 @@ Event::Event() :
         taggerSimHits(new TClonesArray("event::SimTrackerHit", Event::DEFAULT_COLLECTION_SIZE)),
         recoilSimHits(new TClonesArray("event::SimTrackerHit", Event::DEFAULT_COLLECTION_SIZE)),
         ecalSimHits(new TClonesArray("event::SimCalorimeterHit", Event::DEFAULT_COLLECTION_SIZE)),
-        hcalSimHits(new TClonesArray("event::SimCalorimeterHit", Event::DEFAULT_COLLECTION_SIZE)),
-        nSimParticles(0),
-        nTaggerSimHits(0),
-        nRecoilSimHits(0),
-        nEcalSimHits(0),
-        nHcalSimHits(0) {
+        hcalSimHits(new TClonesArray("event::SimCalorimeterHit", Event::DEFAULT_COLLECTION_SIZE)) {
+
+    // Map names to collections.
+    collectionMap[RECOIL_SIM_HITS] = recoilSimHits;
+    collectionMap[TAGGER_SIM_HITS] = taggerSimHits;
+    collectionMap[SIM_PARTICLES] = simParticles;
+    collectionMap[ECAL_SIM_HITS] = ecalSimHits;
+    collectionMap[HCAL_SIM_HITS] = hcalSimHits;
 }
 
 Event::~Event() {
@@ -55,12 +57,6 @@ void Event::Clear(Option_t*) {
     recoilSimHits->Clear("C");
     ecalSimHits->Clear("C");
     hcalSimHits->Clear("C");
-
-    nSimParticles = 0;
-    nTaggerSimHits = 0;
-    nRecoilSimHits = 0;
-    nEcalSimHits = 0;
-    nHcalSimHits = 0;
 }
 
 
@@ -96,57 +92,8 @@ void Event::setWeight(double aWeight) {
     weight = aWeight;
 }
 
-int Event::getCollectionSize(const std::string& collectionName) {
-    if (collectionName.compare(SIM_PARTICLES) == 0) {
-        return nSimParticles;
-    } else if (collectionName.compare(TAGGER_SIM_HITS) == 0) {
-        return nTaggerSimHits;
-    } else if (collectionName.compare(RECOIL_SIM_HITS) == 0) {
-        return nRecoilSimHits;
-    } else if (collectionName.compare(ECAL_SIM_HITS) == 0) {
-        return nEcalSimHits;
-    } else if (collectionName.compare(HCAL_SIM_HITS) == 0) {
-        return nHcalSimHits;
-    } else {
-        throw std::runtime_error("Unknown collection name: " + collectionName);
-    }
-}
-
-int Event::nextCollectionIndex(const std::string& collectionName) {
-    if (collectionName.compare(SIM_PARTICLES) == 0) {
-        return nSimParticles++;
-    } else if (collectionName.compare(TAGGER_SIM_HITS) == 0) {
-        return nTaggerSimHits++;
-    } else if (collectionName.compare(RECOIL_SIM_HITS) == 0) {
-        return nRecoilSimHits++;
-    } else if (collectionName.compare(ECAL_SIM_HITS) == 0) {
-        return nEcalSimHits++;
-    } else if (collectionName.compare(HCAL_SIM_HITS) == 0) {
-        return nHcalSimHits++;
-    } else {
-        throw std::runtime_error("Unknown collection name: " + collectionName);
-    }
-}
-
 TClonesArray* Event::getCollection(const std::string& collectionName) {
-    if (collectionName.compare(SIM_PARTICLES) == 0) {
-        return simParticles;
-    } else if (collectionName.compare(TAGGER_SIM_HITS) == 0) {
-        return taggerSimHits;
-    } else if (collectionName.compare(RECOIL_SIM_HITS) == 0) {
-        return recoilSimHits;
-    } else if (collectionName.compare(ECAL_SIM_HITS) == 0) {
-        return ecalSimHits;
-    } else if (collectionName.compare(HCAL_SIM_HITS) == 0) {
-        return hcalSimHits;
-    } else {
-        throw std::runtime_error("Unknown collection name: " + collectionName);
-    }
-}
-
-TObject* Event::addObject(const std::string& collectionName) {
-    TClonesArray* coll = getCollection(collectionName);
-    return coll->ConstructedAt(nextCollectionIndex(collectionName));
+    return collectionMap[collectionName];
 }
 
 }
