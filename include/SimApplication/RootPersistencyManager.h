@@ -23,8 +23,6 @@ class RootPersistencyManager : public G4PersistencyManager {
             : G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager") {
             G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
             G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
-
-            //G4PersistencyCenter::GetPersistencyCenter()->CurrentWriteFile()
         }
 
         G4bool Store(const G4Event* anEvent);
