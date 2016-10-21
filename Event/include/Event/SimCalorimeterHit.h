@@ -14,40 +14,64 @@ class SimCalorimeterHit: public TObject {
 
     public:
 
-        SimCalorimeterHit();
+        SimCalorimeterHit() {;}
 
-        virtual ~SimCalorimeterHit();
+        virtual ~SimCalorimeterHit() {;}
 
         void Print(Option_t *option = "") const;
 
-        int getID();
+        int getID() {
+            return id;
+        }
 
-        double getEdep();
+        float getEdep() {
+            return edep;
+        }
 
-        double* getPosition();
+        std::vector<float> getPosition() const {
+            return {x, y, z};
+        }
 
-        float getTime();
+        float getTime() {
+            return time;
+        }
 
-        SimParticle* getSimParticle();
+        SimParticle* getSimParticle() {
+            return (SimParticle*) simParticle.GetObject();
+        }
 
-        void setID(long id);
+        void setID(const int id) {
+            this->id = id;
+        }
 
-        void setEdep(double edep);
+        void setEdep(const float edep) {
+            this->edep = edep;
+        }
 
-        void setPosition(double x, double y, double z);
+        void setPosition(const float x, const float y, const float z) {
+            this->x = x;
+            this->y = y;
+            this->z = z;
+        }
 
-        void setTime(float time);
+        void setTime(const float time) {
+            this->time = time;
+        }
 
-        void setSimParticle(SimParticle*);
+        void setSimParticle(SimParticle* simParticle) {
+            this->simParticle = simParticle;
+        }
 
     private:
 
-        int id;
-        double edep;
-        double position[3];
-        float time;
+        int id{0};
+        float edep{0};
+        float x{0};
+        float y{0};
+        float z{0};
+        float time{0};
 
-        TRef simParticle;
+        TRef simParticle{nullptr};
 
     ClassDef(SimCalorimeterHit, 1)
 };
