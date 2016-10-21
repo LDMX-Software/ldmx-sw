@@ -58,16 +58,14 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
         return false;
     }
 
-    // Create a new hit object using the ROOT event.
-    SimTrackerHit* simTrackerHit =
-            (SimTrackerHit*) currentEvent->addObject(collectionName[0]);
-    G4TrackerHit* hit = new G4TrackerHit(simTrackerHit);
+    // Create a new hit object.
+    G4TrackerHit* hit = new G4TrackerHit();
 
     // Assign track ID for finding the SimParticle in post event processing.
     hit->setTrackID(aStep->GetTrack()->GetTrackID());
 
     // Set the edep.
-    simTrackerHit->setEdep(edep);
+    hit->setEdep(edep);
 
     // Set the start position.
     G4StepPoint* prePoint = aStep->GetPreStepPoint();
@@ -82,14 +80,14 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
     // Set the mid position.
     G4ThreeVector mid = 0.5 * (start + end);
-    simTrackerHit->setPosition(mid.x(), mid.y(), mid.z());
+    hit->setPosition(mid.x(), mid.y(), mid.z());
 
     // Compute path length.
     G4double pathLength = sqrt(pow(start.x() - end.x(), 2) + pow(start.y() - end.y(), 2) + pow(start.z() - end.z(), 2));
-    simTrackerHit->setPathLength(pathLength);
+    hit->setPathLength(pathLength);
  
     // Set the global time.
-    hit->getSimTrackerHit()->setTime(aStep->GetTrack()->GetGlobalTime());
+    hit->setTime(aStep->GetTrack()->GetGlobalTime());
 
     /*
      * Compute and set the momentum.
@@ -101,15 +99,16 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
         p.setMag(mag);
     }
     */
-    hit->setMomentum(postPoint->GetMomentum());
+    G4ThreeVector p = postPoint->GetMomentum();
+    hit->setMomentum(p.x(), p.y(), p.z());
 
     /*
      * Set the 32-bit ID on the hit.
      */
     int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
     detId->setFieldValue(1, layerNumber);
-    hit->getSimTrackerHit()->setID(detId->pack());
-    hit->getSimTrackerHit()->setLayerID(layerNumber);
+    hit->setID(detId->pack());
+    hit->setLayerID(layerNumber);
 
     /*
      * Debug print.
@@ -133,12 +132,10 @@ void TrackerSD::Initialize(G4HCofThisEvent* hce) {
     hitsCollection = new G4TrackerHitsCollection(SensitiveDetectorName, collectionName[0]);
     G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
     hce->AddHitsCollection(hcID, hitsCollection);
-
-    // Set ref to current ROOT output event.
-    currentEvent = RootEventWriter::getInstance()->getEvent();
 }
 
 void TrackerSD::EndOfEvent(G4HCofThisEvent*) {
+
     /*
      * Debug print number of hits in this detector for the event.
      */

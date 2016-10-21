@@ -18,30 +18,67 @@ class G4CalorimeterHit: public G4VHit {
 
     public:
 
-        G4CalorimeterHit(SimCalorimeterHit*);
+        G4CalorimeterHit() {;}
 
-        G4CalorimeterHit();
-
-        virtual ~G4CalorimeterHit();
+        virtual ~G4CalorimeterHit() {;}
 
         void Draw();
 
-        void Print();
+        void Print() {;}
 
         inline void *operator new(size_t);
 
         inline void operator delete(void *aHit);
 
-        SimCalorimeterHit* getSimCalorimeterHit();
+        G4int getTrackID() {
+            return trackID;
+        }
 
-        void setTrackID(G4int trackID);
+        void setTrackID(int trackID) {
+            this->trackID = trackID;
+        }
 
-        G4int getTrackID();
+        void setID(int id) {
+            this->id = id;
+        }
+
+        void setEdep(float edep) {
+            this->edep = edep;
+        }
+
+        void setPosition(const float x, const float y, const float z) {
+            this->x = x;
+            this->y = y;
+            this->z = z;
+        }
+
+        void setTime(float time) {
+            this->time = time;
+        }
+
+        void setSimCalorimeterHit(SimCalorimeterHit* simCalHit) {
+            simCalHit->setID(id);
+            simCalHit->setEdep(edep);
+            simCalHit->setPosition(x, y, z);
+            simCalHit->setTime(time);
+            this->simCalHit = simCalHit;
+        }
+
+        SimCalorimeterHit* getSimCalorimeterHit() {
+            return simCalHit;
+        }
 
     private:
 
-        SimCalorimeterHit* simCalorimeterHit;
-        G4int trackID;
+        int trackID{-1};
+        int id{0};
+        double edep{0};
+        double x{0};
+        double y{0};
+        double z{0};
+        float time{0};
+
+        SimCalorimeterHit* simCalHit{nullptr};
 };
 
 /**

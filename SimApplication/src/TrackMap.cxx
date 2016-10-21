@@ -18,8 +18,7 @@ void TrackMap::addSecondary(G4int trackID, G4int parentID) {
     trackIDMap[trackID] = parentID;
 }
 
-G4VTrajectory* TrackMap::findTrajectory(G4int trackID) {
-    const G4Event* anEvent = G4EventManager::GetEventManager()->GetConstCurrentEvent();
+G4VTrajectory* TrackMap::findTrajectory(const G4Event* anEvent, G4int trackID) {
     TrajectoryContainer* trajectories = (TrajectoryContainer*)anEvent->GetTrajectoryContainer();
     G4int currTrackID = trackID;
     G4VTrajectory* traj = NULL;
