@@ -32,10 +32,6 @@ class SimApplicationMessenger : public G4UImessenger {
     private:
 
         G4UIdirectory* ldmxDir;
-        G4UIdirectory* persistencyDir;
-        G4UIdirectory* rootDir;
-
-        G4UIcommand* rootFileCmd;
 };
 
 }
