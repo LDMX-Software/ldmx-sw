@@ -58,12 +58,12 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     }        
 
     // Create a new hit object using the ROOT event.
-    SimCalorimeterHit* simCalorimeterHit =
-            (SimCalorimeterHit*) currentEvent->addObject(collectionName[0]);
-    G4CalorimeterHit* hit = new G4CalorimeterHit(simCalorimeterHit);
+    //SimCalorimeterHit* simCalorimeterHit =
+    //        (SimCalorimeterHit*) currentEvent->addObject(collectionName[0]);
+    G4CalorimeterHit* hit = new G4CalorimeterHit(/*simCalorimeterHit*/);
 
     // Set the edep.
-    simCalorimeterHit->setEdep(edep);
+    hit->setEdep(edep);
 
     // Set the position.
     G4StepPoint* prePoint = aStep->GetPreStepPoint();
@@ -71,15 +71,15 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     G4ThreeVector position = 0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
     G4ThreeVector volumePosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()
             ->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
-    simCalorimeterHit->setPosition(position[0], position[1], volumePosition.z());
+    hit->setPosition(position[0], position[1], volumePosition.z());
 
     // Set the global time.
-    simCalorimeterHit->setTime(aStep->GetTrack()->GetGlobalTime());
+    hit->setTime(aStep->GetTrack()->GetGlobalTime());
 
     // Set the ID on the hit.
     int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
     detId->setFieldValue(1, layerNumber);
-    hit->getSimCalorimeterHit()->setID(detId->pack());
+    hit->setID(detId->pack());
 
     // Set the track ID on the hit.
     hit->setTrackID(aStep->GetTrack()->GetTrackID());

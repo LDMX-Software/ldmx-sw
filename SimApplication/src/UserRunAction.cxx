@@ -3,6 +3,7 @@
 // LDMX
 #include "Event/RootEventWriter.h"
 #include "SimPlugins/PluginManager.h"
+#include "SimApplication/RootPersistencyManager.h"
 
 using event::RootEventWriter;
 
@@ -18,13 +19,17 @@ void UserRunAction::BeginOfRunAction(const G4Run* aRun) {
 
     std::cout << ">>> Begin Run " << aRun->GetRunID() << " <<<" << std::endl;
 
-    RootEventWriter::getInstance()->open();
+    RootPersistencyManager* rootIO = RootPersistencyManager::getInstance();
+    if (rootIO != nullptr) {
+        rootIO->openWriter();
+    } else {
+        throw std::runtime_error("The ROOT persistency manager was not setup!");
+    }
 
     PluginManager::getInstance().beginRun(aRun);
 }
 
 void UserRunAction::EndOfRunAction(const G4Run* aRun) {
-    RootEventWriter::getInstance()->close();
 
     PluginManager::getInstance().endRun(aRun);
 

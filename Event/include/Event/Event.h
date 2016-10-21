@@ -12,12 +12,15 @@
 
 // STL
 #include <string>
+#include <map>
 
 namespace event {
 
 class Event: public TObject {
 
     public:
+
+        typedef std::map<std::string, TClonesArray*> CollectionMap;
 
         Event();
 
@@ -43,10 +46,6 @@ class Event: public TObject {
 
         TClonesArray* getCollection(const std::string&);
 
-        int getCollectionSize(const std::string&);
-
-        TObject* addObject(const std::string&);
-
     public:
 
         static std::string SIM_PARTICLES;
@@ -54,10 +53,6 @@ class Event: public TObject {
         static std::string TAGGER_SIM_HITS;
         static std::string ECAL_SIM_HITS;
         static std::string HCAL_SIM_HITS;
-
-    private:
-
-        int nextCollectionIndex(const std::string& collectionName);
 
     private:
 
@@ -72,11 +67,7 @@ class Event: public TObject {
         TClonesArray* ecalSimHits;
         TClonesArray* hcalSimHits;
 
-        int nSimParticles;
-        int nTaggerSimHits;
-        int nRecoilSimHits;
-        int nEcalSimHits;
-        int nHcalSimHits;
+        CollectionMap collectionMap; //!
 
         static int DEFAULT_COLLECTION_SIZE;
 

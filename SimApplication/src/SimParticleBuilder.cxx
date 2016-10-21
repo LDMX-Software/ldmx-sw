@@ -1,6 +1,7 @@
 #include "SimApplication/SimParticleBuilder.h"
 
 // LDMX
+#include "Event/Event.h"
 #include "Event/RootEventWriter.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
@@ -18,24 +19,28 @@ using event::RootEventWriter;
 
 namespace sim {
 
-SimParticleBuilder::SimParticleBuilder() {
+SimParticleBuilder::SimParticleBuilder() : currentEvent(nullptr) {
     trackMap = TrackMap::getInstance();
 }
 
 SimParticleBuilder::~SimParticleBuilder() {
 }
 
-void SimParticleBuilder::buildSimParticles() {
+void SimParticleBuilder::buildSimParticles(Event* outputEvent) {
 
     particleMap.clear();
 
-    RootEventWriter* writer = RootEventWriter::getInstance();
-    Event* event = writer->getEvent();
+    TrajectoryContainer* trajectories;
+    if (currentEvent->GetTrajectoryContainer() != nullptr) {
+        trajectories = (TrajectoryContainer*)(const_cast<G4Event*>(currentEvent))->GetTrajectoryContainer();
+    } else {
+        throw std::runtime_error("Trajectory container for the event is null!");
+    }
 
-    G4Event* anEvent = G4EventManager::GetEventManager()->GetNonconstCurrentEvent();
-    TrajectoryContainer* trajectories = (TrajectoryContainer*)anEvent->GetTrajectoryContainer();
+    TClonesArray* coll = outputEvent->getCollection(Event::SIM_PARTICLES);
     for (int iTraj = 0; iTraj < trajectories->entries(); iTraj++) {
-        SimParticle* simParticle = (SimParticle*) event->addObject(Event::SIM_PARTICLES);
+        std::cout << "creating new SimParticle at " << coll->GetEntries() << std::endl;
+        SimParticle* simParticle = (SimParticle*) coll->ConstructedAt(coll->GetEntries());
         Trajectory* traj = (Trajectory*)(*trajectories)[iTraj];
         buildSimParticle(simParticle, traj);
         particleMap[traj->GetTrackID()] = simParticle;
@@ -45,7 +50,6 @@ void SimParticleBuilder::buildSimParticles() {
 void SimParticleBuilder::buildSimParticle(SimParticle* simParticle, Trajectory* traj) {
 
     simParticle->setGenStatus(traj->getGenStatus());
-    simParticle->setSimStatus(traj->getSimStatus());
     simParticle->setPdg(traj->GetPDGEncoding());
     simParticle->setCharge(traj->GetCharge());
     simParticle->setMass(traj->getMass() / GeV);
@@ -75,7 +79,7 @@ void SimParticleBuilder::buildSimParticle(SimParticle* simParticle, Trajectory* 
 }
 
 SimParticle* SimParticleBuilder::findSimParticle(G4int trackID) {
-    G4VTrajectory* traj = trackMap->findTrajectory(trackID);
+    G4VTrajectory* traj = trackMap->findTrajectory(currentEvent, trackID);
     if (traj != NULL) {
         return particleMap[traj->GetTrackID()];
     } else {
@@ -84,8 +88,7 @@ SimParticle* SimParticleBuilder::findSimParticle(G4int trackID) {
 }
 
 void SimParticleBuilder::assignTrackerHitSimParticles() {
-    G4HCofThisEvent* hce =
-            G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetHCofThisEvent();
+    G4HCofThisEvent* hce = currentEvent->GetHCofThisEvent();
     int nColl = hce->GetNumberOfCollections();
     for (int iColl = 0; iColl < nColl; iColl++) {
         G4VHitsCollection* hitsColl = hce->GetHC(iColl);
@@ -109,8 +112,7 @@ void SimParticleBuilder::assignTrackerHitSimParticles() {
 }
 
 void SimParticleBuilder::assignCalorimeterHitSimParticles() {
-    G4HCofThisEvent* hce =
-            G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetHCofThisEvent();
+    G4HCofThisEvent* hce = currentEvent->GetHCofThisEvent();
     int nColl = hce->GetNumberOfCollections();
     for (int iColl = 0; iColl < nColl; iColl++) {
         G4VHitsCollection* hitsColl = hce->GetHC(iColl);
