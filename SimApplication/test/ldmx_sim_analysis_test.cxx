@@ -70,7 +70,8 @@ int main(int argc, const char* argv[])  {
     for(int entry = 0; entry < tree->GetEntries(); ++entry) {
 
         tree->GetEntry(entry);
- 
+
+        /*
         int eventNumber = event->getEventNumber();
         int nSimParticles = event->getCollectionSize(Event::SIM_PARTICLES);
         int nTaggerHits = event->getCollectionSize(Event::TAGGER_SIM_HITS);
@@ -86,7 +87,6 @@ int main(int argc, const char* argv[])  {
         std::cout << "  "  << Event::HCAL_SIM_HITS << ": " << nHcalHits << std::endl;
         std::cout << std::endl;
 
-        /*
         for (int i = 0; i < event->getCollectionSize("EcalSimHits"); i++) {
             // TODO: ecal plots
         }

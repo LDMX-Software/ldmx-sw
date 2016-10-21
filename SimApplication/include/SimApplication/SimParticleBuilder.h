@@ -2,14 +2,19 @@
 #define SimApplication_SimParticleBuilder_h
 
 // LDMX
+#include "Event/Event.h"
+#include "Event/SimParticle.h"
 #include "SimApplication/TrackMap.h"
 #include "SimApplication/Trajectory.h"
-#include "Event/SimParticle.h"
+
+// Geant4
+#include "G4Event.hh"
 
 // STL
 #include <map>
 
 using event::SimParticle;
+using event::Event;
 
 namespace sim {
 
@@ -23,9 +28,13 @@ class SimParticleBuilder {
 
         virtual ~SimParticleBuilder();
 
-        void buildSimParticles();
+        void setCurrentEvent(const G4Event* anEvent) {
+            this->currentEvent = const_cast<G4Event*>(anEvent);
+        }
 
-        SimParticle* findSimParticle(G4int);
+        void buildSimParticles(Event* outputEvent);
+
+        SimParticle* findSimParticle(G4int trackID);
 
         void assignTrackerHitSimParticles();
 
@@ -39,6 +48,7 @@ class SimParticleBuilder {
 
         SimParticleMap particleMap;
         TrackMap* trackMap;
+        G4Event* currentEvent;
 };
 
 }

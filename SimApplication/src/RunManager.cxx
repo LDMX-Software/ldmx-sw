@@ -4,6 +4,7 @@
 #include "SimApplication/APrimePhysics.h"
 #include "SimApplication/PrimaryGeneratorAction.h"
 #include "SimApplication/PrimaryGeneratorMessenger.h"
+#include "SimApplication/RootPersistencyManager.h"
 #include "SimApplication/SteppingAction.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
@@ -49,6 +50,8 @@ void RunManager::Initialize() {
     SetUserAction(new UserEventAction);
     SetUserAction(new UserTrackingAction);
     SetUserAction(new SteppingAction);
+
+    RootPersistencyManager* rootIO = new RootPersistencyManager();
 }
 
 }

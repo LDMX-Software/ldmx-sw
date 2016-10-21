@@ -1,13 +1,3 @@
-/**
- *
- * @file SimTrackerHit.cc
- * @brief Class used to encapsulate information from a hit in a tracking 
- *        detector.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- *
- */
-
 #include "Event/SimTrackerHit.h"
 
 ClassImp(event::SimTrackerHit)
