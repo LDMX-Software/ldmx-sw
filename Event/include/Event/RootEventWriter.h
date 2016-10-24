@@ -20,9 +20,7 @@ class RootEventWriter {
 
         RootEventWriter(Event* outputEvent);
 
-        virtual ~RootEventWriter() {
-            delete rootFile;
-        }
+        virtual ~RootEventWriter() {;}
 
         Event* getEvent() {
             return outputEvent;
