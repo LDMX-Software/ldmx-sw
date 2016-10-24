@@ -4,94 +4,42 @@ ClassImp(event::SimTrackerHit)
 
 namespace event {
 
-SimTrackerHit::SimTrackerHit() 
-    : TObject() {
-}
+    SimTrackerHit::SimTrackerHit() 
+        : TObject() {
+    }
 
-SimTrackerHit::~SimTrackerHit() {
-    Clear();
-}
+    SimTrackerHit::~SimTrackerHit() {
+        Clear();
+    }
 
-void SimTrackerHit::Print(Option_t *option) const {
-    std::cout << "SimTrackerHit { " << "id: " << std::bitset<32>(id) << ", " <<
-            "layerID: " << layerID << ", " <<
-            "position: ( " << x << ", " << y << ", " << z << " ), " <<
-            "edep: " << edep << ", " <<
-            "time: " << time << ", " <<
-            "momentum: ( " << px << ", " << py << ", " << pz << " )" <<
+    void SimTrackerHit::Print(Option_t *option) const {
+        std::cout << "SimTrackerHit { " << "ID: " << std::bitset<32>(id) << ", " <<
+            "Layer ID: " << layer_id << ", " <<
+            "Position: ( " << x << ", " << y << ", " << z << " ), " <<
+            "dEdx: " << edep << ", " <<
+            "Time: " << time << ", " <<
+            "Momentum: ( " << px << ", " << py << ", " << pz << " )" <<
             " }" << std::endl;
-}
+    }
 
-void SimTrackerHit::Clear(Option_t*) {
-    TObject::Clear(); 
-}
+    void SimTrackerHit::Clear(Option_t*) {
+        TObject::Clear(); 
+    }
 
-std::vector<float> SimTrackerHit::getPosition() const {
-    return {x, y, z};  
-}
+    SimParticle* SimTrackerHit::getSimParticle() const {
+        return static_cast<SimParticle*>(simParticle.GetObject());
+    }
 
-std::vector<double> SimTrackerHit::getMomentum() const {
-    return {px, py, pz};
-}
+    void SimTrackerHit::setPosition(const float x, const float y, const float z) { 
+        this->x = x; 
+        this->y = y; 
+        this->z = z; 
+    }
 
-int SimTrackerHit::getID() const {
-    return id;
-}
-
-float SimTrackerHit::getEdep() const {
-    return edep;
-};
-
-SimParticle* SimTrackerHit::getSimParticle() const {
-    return static_cast<SimParticle*>(simParticle.GetObject());
-}
-
-void SimTrackerHit::setPosition(const float x, const float y, const float z) { 
-    this->x = x; 
-    this->y = y; 
-    this->z = z; 
-}
-
-void SimTrackerHit::setMomentum(const float px, const float py, const float pz) {
-    this->px = px;
-    this->py = py; 
-    this->pz = pz; 
-}
-
-void SimTrackerHit::setSimParticle(SimParticle* aSimParticle) {
-    this->simParticle.SetObject(aSimParticle);
-}
-
-float SimTrackerHit::getTime() const {
-    return time;
-}
-
-float SimTrackerHit::getPathLength() const {
-    return pathLength;
-}
-
-void SimTrackerHit::setID(const long id) {
-    this->id = id;
-}
-
-void SimTrackerHit::setEdep(const float edep) {
-    this->edep = edep;
-}
-
-void SimTrackerHit::setTime(const float time) {
-    this->time = time;
-}
-
-void SimTrackerHit::setPathLength(const float pathLength) {
-    this->pathLength = pathLength;
-}
-
-int SimTrackerHit::getLayerID() {
-    return layerID;
-}
-
-void SimTrackerHit::setLayerID(int layerID) {
-    this->layerID = layerID;
-}
+    void SimTrackerHit::setMomentum(const float px, const float py, const float pz) {
+        this->px = px;
+        this->py = py; 
+        this->pz = pz; 
+    }
 
 }
