@@ -2,6 +2,7 @@
 
 // LDMX
 #include "Event/Event.h"
+#include "Event/EventConstants.h"
 #include "Event/RootEventWriter.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
@@ -37,9 +38,8 @@ void SimParticleBuilder::buildSimParticles(Event* outputEvent) {
         throw std::runtime_error("Trajectory container for the event is null!");
     }
 
-    TClonesArray* coll = outputEvent->getCollection(Event::SIM_PARTICLES);
+    TClonesArray* coll = outputEvent->getCollection(event::SIM_PARTICLES);
     for (int iTraj = 0; iTraj < trajectories->entries(); iTraj++) {
-        std::cout << "creating new SimParticle at " << coll->GetEntries() << std::endl;
         SimParticle* simParticle = (SimParticle*) coll->ConstructedAt(coll->GetEntries());
         Trajectory* traj = (Trajectory*)(*trajectories)[iTraj];
         buildSimParticle(simParticle, traj);
