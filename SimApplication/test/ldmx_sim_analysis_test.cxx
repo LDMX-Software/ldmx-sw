@@ -1,8 +1,7 @@
 #include "Event/Event.h"
 
 // LDMX
-#include "Event/Event.h"
-#include "Event/EventConstants.h"
+#include "Event/SimEvent.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
@@ -24,6 +23,7 @@
 #include <iostream>
 #include <bitset>
 
+using event::SimEvent;
 using event::Event;
 using detdescr::DetectorID;
 using detdescr::IDField;
@@ -60,7 +60,7 @@ int main(int argc, const char* argv[])  {
     TFile* file = new TFile(argv[1]);
     TTree* tree = (TTree*) file->Get("LDMX_Event");
     //eventTree->Print();
-    Event* event = new Event();
+    SimEvent* event = new SimEvent();
     TBranch *branch = tree->GetBranch("LdmxEvent");
     if (branch == NULL) {
         std::cerr << "The LdmxEvent branch is null!" << std::endl;

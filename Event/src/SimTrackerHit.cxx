@@ -59,7 +59,7 @@ void SimTrackerHit::setMomentum(const float px, const float py, const float pz) 
 }
 
 void SimTrackerHit::setSimParticle(SimParticle* aSimParticle) {
-    this->simParticle = aSimParticle;
+    this->simParticle.SetObject(aSimParticle);
 }
 
 float SimTrackerHit::getTime() const {

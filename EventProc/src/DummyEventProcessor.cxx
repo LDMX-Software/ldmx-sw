@@ -1,8 +1,5 @@
 #include "EventProc/DummyEventProcessor.h"
 
-// LDMX
-#include "Event/EventConstants.h"
-
 namespace eventproc {
 
 void DummyEventProcessor::initialize() {
