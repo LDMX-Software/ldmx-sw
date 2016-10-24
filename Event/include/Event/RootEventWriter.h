@@ -14,13 +14,25 @@ class RootEventWriter {
 
     public:
 
-        RootEventWriter(std::string fileName);
-
         RootEventWriter();
 
-        virtual ~RootEventWriter();
+        RootEventWriter(std::string fileName, Event* outputEvent);
 
-        void setFileName(std::string fileName);
+        RootEventWriter(Event* outputEvent);
+
+        virtual ~RootEventWriter() {;}
+
+        Event* getEvent() {
+            return outputEvent;
+        }
+
+        void setEvent(Event* outputEvent) {
+            this->outputEvent = outputEvent;
+        }
+
+        void setFileName(std::string fileName) {
+            this->fileName = fileName;
+        }
 
         void open();
 
@@ -28,14 +40,12 @@ class RootEventWriter {
 
         void writeEvent();
 
-        Event* getEvent();
-
     private:
 
         std::string fileName;
         TFile* rootFile;
         TTree *tree;
-        Event* event;
+        Event* outputEvent;
 };
 
 }
