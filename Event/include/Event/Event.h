@@ -46,14 +46,6 @@ class Event: public TObject {
 
         TClonesArray* getCollection(const std::string&);
 
-    public:
-
-        static std::string SIM_PARTICLES;
-        static std::string RECOIL_SIM_HITS;
-        static std::string TAGGER_SIM_HITS;
-        static std::string ECAL_SIM_HITS;
-        static std::string HCAL_SIM_HITS;
-
     private:
 
         int eventNumber;
@@ -68,8 +60,6 @@ class Event: public TObject {
         TClonesArray* hcalSimHits;
 
         CollectionMap collectionMap; //!
-
-        static int DEFAULT_COLLECTION_SIZE;
 
         ClassDef(Event, 1);
 };

@@ -1,16 +1,10 @@
 #include "Event/Event.h"
 
+#include "Event/EventConstants.h"
+
 ClassImp(event::Event)
 
 namespace event {
-
-int Event::DEFAULT_COLLECTION_SIZE = 100;
-
-std::string Event::SIM_PARTICLES = std::string("SimParticles");
-std::string Event::RECOIL_SIM_HITS = std::string("RecoilSimHits");
-std::string Event::TAGGER_SIM_HITS = std::string("TaggerSimHits");
-std::string Event::ECAL_SIM_HITS = std::string("EcalSimHits");
-std::string Event::HCAL_SIM_HITS = std::string("HcalSimHits");
 
 Event::Event() :
         TObject(),
@@ -18,11 +12,11 @@ Event::Event() :
         run(-1),
         timestamp(-1),
         weight(1.0),
-        simParticles(new TClonesArray("event::SimParticle", Event::DEFAULT_COLLECTION_SIZE)),
-        taggerSimHits(new TClonesArray("event::SimTrackerHit", Event::DEFAULT_COLLECTION_SIZE)),
-        recoilSimHits(new TClonesArray("event::SimTrackerHit", Event::DEFAULT_COLLECTION_SIZE)),
-        ecalSimHits(new TClonesArray("event::SimCalorimeterHit", Event::DEFAULT_COLLECTION_SIZE)),
-        hcalSimHits(new TClonesArray("event::SimCalorimeterHit", Event::DEFAULT_COLLECTION_SIZE)) {
+        simParticles(new TClonesArray("event::SimParticle", event::DEFAULT_COLLECTION_SIZE)),
+        taggerSimHits(new TClonesArray("event::SimTrackerHit", event::DEFAULT_COLLECTION_SIZE)),
+        recoilSimHits(new TClonesArray("event::SimTrackerHit", event::DEFAULT_COLLECTION_SIZE)),
+        ecalSimHits(new TClonesArray("event::SimCalorimeterHit", event::DEFAULT_COLLECTION_SIZE)),
+        hcalSimHits(new TClonesArray("event::SimCalorimeterHit", event::DEFAULT_COLLECTION_SIZE)) {
 
     // Map names to collections.
     collectionMap[RECOIL_SIM_HITS] = recoilSimHits;
