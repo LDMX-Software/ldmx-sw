@@ -1,5 +1,8 @@
 #include "Event/RootEventWriter.h"
 
+// LDMX
+#include "Event/EventConstants.h"
+
 // STL
 #include <iostream>
 
@@ -9,14 +12,14 @@ RootEventWriter::RootEventWriter(std::string fileName) :
     fileName(fileName),
     rootFile(0),
     tree(0),
-    event(0) {
+    event(new Event()) {
 }
 
 RootEventWriter::RootEventWriter() :
     fileName("ldmx_events.root"),
     rootFile(0),
     tree(0),
-    event(0) {
+    event(new Event()) {
 }
 
 RootEventWriter::~RootEventWriter() {
@@ -37,7 +40,6 @@ void RootEventWriter::open() {
 
     rootFile = new TFile(fileName.c_str(), "recreate");
     tree = new TTree("LDMX_Event", "LDMX event tree");
-    event = new Event();
     tree->Branch("LdmxEvent" /* branch name */, "event::Event" /* class name */, &event, 32000, 3);
 }
 
@@ -45,11 +47,11 @@ void RootEventWriter::writeEvent() {
 
     std::cout << std::endl;
     std::cout << "Writing event " << event->getEventNumber() << std::endl;
-    std::cout << Event::SIM_PARTICLES << ": " << event->getCollection(Event::SIM_PARTICLES)->GetEntries() << std::endl;
-    std::cout << Event::RECOIL_SIM_HITS << ": " << event->getCollection(Event::RECOIL_SIM_HITS)->GetEntries() << std::endl;
-    std::cout << Event::TAGGER_SIM_HITS << ": " << event->getCollection(Event::TAGGER_SIM_HITS)->GetEntries() << std::endl;
-    std::cout << Event::ECAL_SIM_HITS << ": " << event->getCollection(Event::ECAL_SIM_HITS)->GetEntries() << std::endl;
-    std::cout << Event::HCAL_SIM_HITS << ": " << event->getCollection(Event::HCAL_SIM_HITS)->GetEntries() << std::endl;
+    std::cout << SIM_PARTICLES << ": " << event->getCollection(SIM_PARTICLES)->GetEntries() << std::endl;
+    std::cout << RECOIL_SIM_HITS << ": " << event->getCollection(RECOIL_SIM_HITS)->GetEntries() << std::endl;
+    std::cout << TAGGER_SIM_HITS << ": " << event->getCollection(TAGGER_SIM_HITS)->GetEntries() << std::endl;
+    std::cout << ECAL_SIM_HITS << ": " << event->getCollection(ECAL_SIM_HITS)->GetEntries() << std::endl;
+    std::cout << HCAL_SIM_HITS << ": " << event->getCollection(HCAL_SIM_HITS)->GetEntries() << std::endl;
     std::cout << std::endl;
 
     // Fill the tree from the event object.
