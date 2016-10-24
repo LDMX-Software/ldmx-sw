@@ -40,7 +40,6 @@ void SimParticleBuilder::buildSimParticles(Event* outputEvent) {
 
     TClonesArray* coll = outputEvent->getCollection(event::SIM_PARTICLES);
     for (int iTraj = 0; iTraj < trajectories->entries(); iTraj++) {
-        std::cout << "creating new SimParticle at " << coll->GetEntries() << std::endl;
         SimParticle* simParticle = (SimParticle*) coll->ConstructedAt(coll->GetEntries());
         Trajectory* traj = (Trajectory*)(*trajectories)[iTraj];
         buildSimParticle(simParticle, traj);
