@@ -2,6 +2,7 @@
 
 // LDMX
 #include "Event/Event.h"
+#include "Event/EventConstants.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
@@ -72,18 +73,18 @@ int main(int argc, const char* argv[])  {
         tree->GetEntry(entry);
 
         int eventNumber = event->getEventNumber();
-        int nSimParticles = event->getCollection(Event::SIM_PARTICLES)->GetEntries();
-        int nTaggerHits = event->getCollection(Event::TAGGER_SIM_HITS)->GetEntries();
-        int nRecoilHits = event->getCollection(Event::RECOIL_SIM_HITS)->GetEntries();
-        int nEcalHits = event->getCollection(Event::ECAL_SIM_HITS)->GetEntries();
-        int nHcalHits = event->getCollection(Event::HCAL_SIM_HITS)->GetEntries();
+        int nSimParticles = event->getCollection(event::SIM_PARTICLES)->GetEntries();
+        int nTaggerHits = event->getCollection(event::TAGGER_SIM_HITS)->GetEntries();
+        int nRecoilHits = event->getCollection(event::RECOIL_SIM_HITS)->GetEntries();
+        int nEcalHits = event->getCollection(event::ECAL_SIM_HITS)->GetEntries();
+        int nHcalHits = event->getCollection(event::HCAL_SIM_HITS)->GetEntries();
         
         std::cout << ">>> Event " << eventNumber << std::endl;
-        std::cout << "  "  << Event::SIM_PARTICLES << ": " << nSimParticles << std::endl;
-        std::cout << "  "  << Event::TAGGER_SIM_HITS << ": " << nTaggerHits << std::endl;
-        std::cout << "  "  << Event::RECOIL_SIM_HITS << ": " << nRecoilHits << std::endl;
-        std::cout << "  "  << Event::ECAL_SIM_HITS << ": " << nEcalHits << std::endl;
-        std::cout << "  "  << Event::HCAL_SIM_HITS << ": " << nHcalHits << std::endl;
+        std::cout << "  "  << event::SIM_PARTICLES << ": " << nSimParticles << std::endl;
+        std::cout << "  "  << event::TAGGER_SIM_HITS << ": " << nTaggerHits << std::endl;
+        std::cout << "  "  << event::RECOIL_SIM_HITS << ": " << nRecoilHits << std::endl;
+        std::cout << "  "  << event::ECAL_SIM_HITS << ": " << nEcalHits << std::endl;
+        std::cout << "  "  << event::HCAL_SIM_HITS << ": " << nHcalHits << std::endl;
         std::cout << std::endl;
 
         /*
