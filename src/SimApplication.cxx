@@ -35,11 +35,7 @@ void SimApplication::run(int argc, char** argv) {
     }
 
     // Create run manager.
-#ifdef G4MULTITHREADED
-    G4MTRunManager* runManager = new G4MTRunManager;
-#else
     G4RunManager* runManager = new RunManager;
-#endif
 
     // Setup GDML parser and messenger.
     G4GDMLParser* parser = new G4GDMLParser();
