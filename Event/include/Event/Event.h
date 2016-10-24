@@ -6,6 +6,7 @@
 #include "TClonesArray.h"
 
 // LDMX
+#include "Event/EventConstants.h"
 #include "Event/SimTrackerHit.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Event/SimParticle.h"
@@ -46,6 +47,12 @@ class Event: public TObject {
 
         TClonesArray* getCollection(const std::string&);
 
+        const CollectionMap& getCollectionMap() {
+            return collMap;
+        }
+
+        virtual const char* getEventType() = 0;
+
     private:
 
         int eventNumber;
@@ -53,13 +60,9 @@ class Event: public TObject {
         int timestamp;
         double weight;
 
-        TClonesArray* simParticles;
-        TClonesArray* taggerSimHits;
-        TClonesArray* recoilSimHits;
-        TClonesArray* ecalSimHits;
-        TClonesArray* hcalSimHits;
+    protected:
 
-        CollectionMap collectionMap; //!
+        CollectionMap collMap; //!
 
         ClassDef(Event, 1);
 };
