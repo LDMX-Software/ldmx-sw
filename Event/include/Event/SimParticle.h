@@ -82,10 +82,10 @@ class SimParticle: public TObject {
             this->z = z;
         }
 
-        void setEndPoint(const float endX,const float ndY, const float endZ) {
-            this->endX = x;
-            this->endY = y;
-            this->endZ = z;
+        void setEndPoint(const float endX, const float endY, const float endZ) {
+            this->endX = endX;
+            this->endY = endY;
+            this->endZ = endZ;
         }
 
         void setMomentum(const float px, const float py, const float pz) {
