@@ -1,14 +1,14 @@
 /**
  *
  * @file SimTrackerHit.h
- * @brief Class used to encapsulate information from a hit in a tracking 
- *        detector.
+ * @brief Class used to encapsulate information from a hit in a
+ *        simulated tracking detector.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENT_SIM_TRACKER_HIT_h
-#define EVENT_SIM_TRACKER_HIT_h
+#ifndef Event_SimTrackerHit_h
+#define Event_SimTrackerHit_h
 
 // C++ StdLib
 #include <iostream>
@@ -23,119 +23,126 @@
 
 namespace event {
 
-    class SimTrackerHit: public TObject {
+class SimTrackerHit: public TObject {
 
-        public:
+    public:
 
-            /** Constructor */
-            SimTrackerHit();
+        /** Constructor */
+        SimTrackerHit();
 
-            /** Destructor */
-            virtual ~SimTrackerHit();
+        /** Destructor */
+        virtual ~SimTrackerHit();
 
-            /** Print a description of this object. */
-            void Print(Option_t *option = "") const;
+        /** Print a description of this object. */
+        void Print(Option_t *option = "") const;
 
-            /** Reset the SimTrackerHit object. */
-            void Clear(Option_t *option = ""); 
+        /** Reset the SimTrackerHit object. */
+        void Clear(Option_t *option = "");
 
-            /** Returns the ID of the hit. */
-            int getID() const { return id; };
+        /** Return the ID of the hit. */
+        int getID() const { return id; };
 
-            /**
-             * Get the geometric layer ID of the hit.
-             */
-            int getLayerID() const { return layer_id; };
+        /**
+         * Get the geometric layer ID of the hit.
+         */
+        int getLayerID() const { return layer_id; };
 
-            /** Returns the position of the hit in mm. */
-            std::vector<float> getPosition() const { return {x, y, z}; }; 
+        /** Return the position of the hit in mm. */
+        std::vector<float> getPosition() const { return {x, y, z}; };
 
-            /** Returns the energy deposited on the hit in GeV. */
-            float getEdep() const { return edep; };
+        /** Return the energy deposited on the hit in GeV. */
+        float getEdep() const { return edep; };
 
-            /** Returns the time of the hit in ns. */
-            float getTime() const { return time; };
+        /** Return the time of the hit in ns. */
+        float getTime() const { return time; };
 
-            float getPathLength() const { return path_length; };
+        /**
+         * Return the path length between the start and end points of the
+         * hit in mm.
+         */
+        float getPathLength() const { return path_length; };
 
-            /** 
-             * Returns the momentum in GeV of the particle at the position at which
-             * the hit took place.
-             */
-            std::vector<double> getMomentum() const { return {px, py, pz}; };
+        /**
+         * Return the momentum in GeV of the particle at the position at which
+         * the hit took place.
+         */
+        std::vector<double> getMomentum() const { return {px, py, pz}; };
 
-            /** Returns the Monte Carlo particle that created the hit. */
-            SimParticle* getSimParticle() const;
+        /** Return the Monte Carlo particle that created the hit. */
+        SimParticle* getSimParticle() const;
 
-            /** Sets the ID of the hit. */
-            void setID(const long id) { this->id = id; };
+        /** Set the ID of the hit. */
+        void setID(const long id) { this->id = id; };
 
-            /** Set the position of the hit in mm. */
-            void setPosition(const float x, const float y, const float z); 
+        /** Set the position of the hit in mm. */
+        void setPosition(const float x, const float y, const float z);
 
-            /** Sets the energy deposited on the hit in GeV. */
-            void setEdep(const float edep) { this->edep = edep; };
+        /** Set the energy deposited on the hit in GeV. */
+        void setEdep(const float edep) { this->edep = edep; };
 
-            /** Sets the time of the hit in ns. */
-            void setTime(const float time) { this->time = time; };
+        /** Set the time of the hit in ns. */
+        void setTime(const float time) { this->time = time; };
 
-            void setPathLength(const float path_length) { this->path_length = path_length; };
+        /**
+         * Set the path length of the hit in mm.
+         */
+        void setPathLength(const float path_length) { this->path_length = path_length; };
 
-            /** 
-             * Sets the momentum in GeV of the particle at the position at which
-             * the hit took place.
-             */
-            void setMomentum(const float px, const float py, const float pz);
+        /**
+         * Set the momentum in GeV of the particle at the position at which
+         * the hit took place.
+         */
+        void setMomentum(const float px, const float py, const float pz);
 
-            /**
-             * Set the geometric layer ID of the hit.
-             */
-            void setLayerID(const int layer_id) { this->layer_id = layer_id; };
+        /**
+         * Set the geometric layer ID of the hit.
+         */
+        void setLayerID(const int layer_id) { this->layer_id = layer_id; };
 
-            /** Sets the Monte Carlo particle that created the hit. */
-            void setSimParticle(SimParticle* simParticle) { this->simParticle = simParticle; };
+        /** Set the Monte Carlo particle that created the hit. */
+        void setSimParticle(SimParticle* simParticle) { this->simParticle.SetObject(simParticle); };
 
-        private:
+    private:
 
-            /** */
-            TRef simParticle{nullptr};
+        /** */
+        TRef simParticle{nullptr};
 
-            /** */
-            int id{0};
+        /** */
+        int id{0};
 
-            /** */
-            int layer_id{0};
+        /** */
+        int layer_id{0};
 
-            /** */
-            float edep{0};
+        /** */
+        float edep{0};
 
-            /** */
-            float time{0};
+        /** */
+        float time{0};
 
-            /** */
-            float px{0};
+        /** */
+        float px{0};
 
-            /** */
-            float py{0};
+        /** */
+        float py{0};
 
-            /** */
-            float pz{0};
+        /** */
+        float pz{0};
 
-            /** */
-            float x{0};
+        /** */
+        float x{0};
 
-            /** */
-            float y{0};
+        /** */
+        float y{0};
 
-            /** */
-            float z{0};
+        /** */
+        float z{0};
 
-            /** */
-            float path_length{0};
+        /** */
+        float path_length{0};
 
-            ClassDef(SimTrackerHit, 1);
+        ClassDef(SimTrackerHit, 1);
 
-    }; // SimTrackerHit
+}; // SimTrackerHit
 }
 
-#endif // EVENT_SIM_TRACKER_HIT_H
+#endif // Event_SimTrackerHit_h
