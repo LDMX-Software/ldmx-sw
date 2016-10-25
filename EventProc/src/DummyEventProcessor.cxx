@@ -11,11 +11,11 @@ void DummyEventProcessor::execute() {
     std::cout << std::endl;
     std::cout << "DummyEventProcessor: read event " << event->getEventNumber() << std::endl;
     std::cout << std::endl;
-    std::cout << "  " << Event::SIM_PARTICLES << ": " << event->getCollection(Event::SIM_PARTICLES)->GetEntries() << std::endl;
-    std::cout << "  " << Event::RECOIL_SIM_HITS << ": " << event->getCollection(Event::RECOIL_SIM_HITS)->GetEntries() << std::endl;
-    std::cout << "  " << Event::TAGGER_SIM_HITS << ": " << event->getCollection(Event::TAGGER_SIM_HITS)->GetEntries() << std::endl;
-    std::cout << "  " << Event::ECAL_SIM_HITS << ": " << event->getCollection(Event::ECAL_SIM_HITS)->GetEntries() << std::endl;
-    std::cout << "  " << Event::HCAL_SIM_HITS << ": " << event->getCollection(Event::HCAL_SIM_HITS)->GetEntries() << std::endl;
+    std::cout << "  " << event::SIM_PARTICLES << ": " << event->getCollection(event::SIM_PARTICLES)->GetEntries() << std::endl;
+    std::cout << "  " << event::RECOIL_SIM_HITS << ": " << event->getCollection(event::RECOIL_SIM_HITS)->GetEntries() << std::endl;
+    std::cout << "  " << event::TAGGER_SIM_HITS << ": " << event->getCollection(event::TAGGER_SIM_HITS)->GetEntries() << std::endl;
+    std::cout << "  " << event::ECAL_SIM_HITS << ": " << event->getCollection(event::ECAL_SIM_HITS)->GetEntries() << std::endl;
+    std::cout << "  " << event::HCAL_SIM_HITS << ": " << event->getCollection(event::HCAL_SIM_HITS)->GetEntries() << std::endl;
     ++nProcessed;
 }
 

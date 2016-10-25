@@ -2,6 +2,7 @@
 
 // LDMX
 #include "Event/SimCalorimeterHit.h"
+#include "Event/SimEvent.h"
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
 
@@ -17,6 +18,7 @@
 #include <iostream>
 
 using event::Event;
+using event::SimEvent;
 using event::SimTrackerHit;
 using event::SimCalorimeterHit;
 using event::SimParticle;
@@ -35,8 +37,8 @@ int main(int, const char* argv[])  {
      */
     TFile* rootFile = new TFile("ldmx_event_model_test.root", "RECREATE");
     TTree *tree = new TTree("LDMX_Event", "LDMX event tree");
-    Event* event = new Event();
-    tree->Branch("Event", "Event", &event, 32000, 3);
+    SimEvent* event = new SimEvent();
+    tree->Branch("Event", "event::SimEvent", &event, 32000, 3);
 
     std::cout << "Creating a dummy event" << std::endl;
 
@@ -128,7 +130,7 @@ int main(int, const char* argv[])  {
     TTree *readTree = (TTree*) readFile->Get("LDMX_Event");
 
     std::cout << "Loading Event from TBranch" << std::endl;
-    Event* readEvent = new Event();
+    SimEvent* readEvent = new SimEvent();
     std::cout << "Calling GetBranch" << std::endl;
     TBranch *branch = readTree->GetBranch("Event");
     std::cout << "Calling SetAddress with Event ref" << std::endl;
