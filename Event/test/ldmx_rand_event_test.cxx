@@ -1,5 +1,6 @@
 // LDMX
 #include "Event/Event.h"
+#include "Event/SimEvent.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
@@ -17,6 +18,7 @@
 #include <stdlib.h>
 
 using event::Event;
+using event::SimEvent;
 using event::SimTrackerHit;
 using event::SimCalorimeterHit;
 using event::SimParticle;
@@ -72,7 +74,7 @@ int main(int argc, const char* argv[])  {
      */
     TFile* rootFile = new TFile("ldmx_rand_event_test.root", "RECREATE");
     TTree *tree = new TTree("LDMX_Event", "LDMX event tree");
-    Event* event = new Event();
+    SimEvent* event = new SimEvent();
     tree->Branch("Event", "Event", &event, 32000, 3);
 
     std::cout << "Test will generate " << nEvents << " random events ..." << std::endl;

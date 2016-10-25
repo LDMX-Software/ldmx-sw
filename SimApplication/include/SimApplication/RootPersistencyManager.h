@@ -7,11 +7,13 @@
 #include "G4Run.hh"
 
 // LDMX
+#include "Event/SimEvent.h"
 #include "Event/RootEventWriter.h"
 #include "SimApplication/SimParticleBuilder.h"
 
 using event::RootEventWriter;
 using event::Event;
+using event::SimEvent;
 
 namespace sim {
 
@@ -23,6 +25,7 @@ class RootPersistencyManager : public G4PersistencyManager {
             : G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager") {
             G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
             G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
+            writer.setEvent(new SimEvent);
         }
 
         G4bool Store(const G4Event* anEvent);

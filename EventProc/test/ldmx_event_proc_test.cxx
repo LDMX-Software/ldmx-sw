@@ -1,7 +1,9 @@
+#include "Event/SimEvent.h"
 #include "EventProc/EventLoop.h"
 #include "EventProc/RootEventSource.h"
 #include "EventProc/DummyEventProcessor.h"
 
+using event::SimEvent;
 using eventproc::EventLoop;
 using eventproc::RootEventSource;
 using eventproc::DummyEventProcessor;
@@ -20,7 +22,7 @@ int main(int argc, const char* argv[])  {
         fileList.push_back(argv[iFile]);
     }
 
-    RootEventSource* src = new RootEventSource(fileList);
+    RootEventSource* src = new RootEventSource(fileList, new SimEvent());
     EventLoop* loop = new EventLoop();
     loop->setEventSource(src);
     loop->addEventProcessor(new DummyEventProcessor);

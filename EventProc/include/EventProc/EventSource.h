@@ -11,7 +11,7 @@ class EventSource {
 
     public:
 
-        EventSource() : event(new Event) {;}
+        EventSource(Event* event) : event(event) {;}
 
         virtual ~EventSource() {;}
 

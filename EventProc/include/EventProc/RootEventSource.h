@@ -16,8 +16,8 @@ class RootEventSource : public EventSource {
 
     public:
 
-        RootEventSource(std::list<std::string> fileList)
-            : EventSource(),
+        RootEventSource(std::list<std::string> fileList, Event* event)
+            : EventSource(event),
               fileList(fileList),
               entry(0),
               tree(nullptr),
@@ -25,8 +25,8 @@ class RootEventSource : public EventSource {
               branch(nullptr) {
         }
 
-        RootEventSource(std::string fileName)
-            : EventSource(),
+        RootEventSource(std::string fileName, Event* event)
+            : EventSource(event),
               entry(0),
               tree(nullptr),
               file(nullptr),
