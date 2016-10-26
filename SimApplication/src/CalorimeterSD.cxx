@@ -51,7 +51,7 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     // Skip steps with no energy dep which come from non-Geantino particles.
     if (edep == 0.0 && !isGeantino) {
         if (verboseLevel > 1) {
-            std::cout << "CalorimeterSD skipping step with zero edep" << std::endl << std::endl;
+            std::cout << "CalorimeterSD skipping step with zero edep." << std::endl << std::endl;
         }
         return false;
     }        
@@ -76,7 +76,7 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     hit->setTime(aStep->GetTrack()->GetGlobalTime());
 
     // Set the ID on the hit.
-    int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
+    int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth)->GetCopyNo();
     detId->setFieldValue(1, layerNumber);
     hit->setID(detId->pack());
 
