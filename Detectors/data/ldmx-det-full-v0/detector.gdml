@@ -2,98 +2,148 @@
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
       
   <define>
-    <position name="center" x="0" y="0" z="0" />
-    <rotation name="identity" x="0" y="0" z="0" />
-    <position name="calorimeter_pos" x="0" y="0" z="900" />
-    <rotation name="calorimeter_rot" x="0" y="0" z="0" />
-    <position name="tagger_pos" x="0.0" y="0.0" z="-321.0"/>
-    <position name="recoil_pos" x="0.0" y="0.0" z="(177.54 / 2) + 0.35"/>
+    
+    <!-- dimension of world box side -->
+    <constant name="world_dim" value="5.0*m"/>
+    
+    <!-- target parameters -->
+    <constant name="target_dim_x" value="3.5*cm"/>
+    <constant name="target_dim_y" value="9.5*cm"/>
+    <constant name="target_thickness" value="0.35*mm"/>
+    <constant name="target_z" value="0.0*mm"/>
+         
+    <!-- trigger pad parameters -->
+    <variable name="trigger_pad_dim_x" value="target_dim_x"/>
+    <variable name="trigger_pad_dim_y" value="target_dim_y"/>
+    <variable name="trigger_pad_thickness" value="1.0*mm"/>
+    <variable name="trigger_pad_zclear" value="0.001*mm"/>
+    <variable name="trigger_pad_z" value="target_z+(target_thickness/2)+(trigger_pad_thickness/2)+trigger_pad_zclear"/>
+    
+    <!-- detector envelope position variables -->
+    <variable name="tagger_pos_z" value="-322.0"/>
+    <variable name="recoil_pos_z" value="(177.54/2)+trigger_pad_z+trigger_pad_thickness/2"/>
+    <variable name="cal_pos_z" value="850"/>
+    
+    <!-- positions and rotations -->
+    <position name="center" x="0" y="0" z="0"/>
+    <rotation name="identity" x="0" y="0" z="0"/>
+    <position name="calorimeter_pos" x="0" y="0" z="cal_pos_z"/>
+    <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
+    <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
+    <position name="target_pos" x="0.0" y="0.0" z="target_z"/>
+    <position name="trigger_pad_back_pos" x="0.0" y="0.0" z="trigger_pad_z"/>
+    <position name="trigger_pad_front_pos" x="0.0" y="0.0" z="-trigger_pad_z"/>
+    
   </define>
 
   <materials>
-    <element Z="7" formula="N" name="N" >
-      <atom type="A" unit="g/mol" value="14.0068" />
+    <element Z="7" formula="N" name="N">
+      <atom type="A" unit="g/mol" value="14.0068"/>
     </element>
-    <element Z="8" formula="O" name="O" >
-      <atom type="A" unit="g/mol" value="15.9994" />
+    <element Z="8" formula="O" name="O">
+      <atom type="A" unit="g/mol" value="15.9994"/>
     </element>
-    <element Z="18" formula="Ar" name="Ar" >
-      <atom type="A" unit="g/mol" value="39.9477" />
+    <element Z="18" formula="Ar" name="Ar">
+      <atom type="A" unit="g/mol" value="39.9477"/>
     </element>
     <material name="Air" state="gas">
-      <MEE unit="eV" value="85.643664635028" />
-      <D unit="g/cm3" value="0.00119999936860922" />
-      <fraction n="0.754" ref="N" />
-      <fraction n="0.234" ref="O" />
-      <fraction n="0.012" ref="Ar" />
+      <MEE unit="eV" value="85.643664635028"/>
+      <D unit="g/cm3" value="0.00119999936860922"/>
+      <fraction n="0.754" ref="N"/>
+      <fraction n="0.234" ref="O"/>
+      <fraction n="0.012" ref="Ar"/>
     </material>
-    <element Z="74" formula="W" name="W" >
-      <atom type="A" unit="g/mol" value="183.842" />
+    <element Z="74" formula="W" name="W">
+      <atom type="A" unit="g/mol" value="183.842"/>
     </element>           
     <material name="Tungsten" state="solid">
       <MEE unit="eV" value="727"/>
       <D unit="g/cm3" value="19.2999898451316"/>
       <fraction n="1" ref="W"/>
     </material>
-    <element Z="14" formula="Si" name="Si" >
-      <atom type="A" unit="g/mol" value="28.0854" />
+    <element Z="14" formula="Si" name="Si">
+      <atom type="A" unit="g/mol" value="28.0854"/>
     </element>
     <material name="Silicon" state="solid">
-      <MEE unit="eV" value="173" />
-      <D unit="g/cm3" value="2.32999877404956" />
-      <fraction n="1" ref="Si" />
+      <MEE unit="eV" value="173"/>
+      <D unit="g/cm3" value="2.32999877404956"/>
+      <fraction n="1" ref="Si"/>
     </material>
-    <element Z="6" formula="C" name="C" >
-      <atom type="A" unit="g/mol" value="12.0107" />
+    <element Z="6" formula="C" name="C">
+      <atom type="A" unit="g/mol" value="12.0107"/>
     </element>
     <material name="Carbon" state="solid">
-      <MEE unit="eV" value="81" />
-      <D unit="g/cm3" value="1.99999894768203" />
-      <fraction n="1" ref="C" />
+      <MEE unit="eV" value="81"/>
+      <D unit="g/cm3" value="1.99999894768203"/>
+      <fraction n="1" ref="C"/>
     </material>
-    <element Z="1" formula="H" name="H" >
-      <atom type="A" unit="g/mol" value="1.00794" />
+    <element Z="1" formula="H" name="H">
+      <atom type="A" unit="g/mol" value="1.00794"/>
     </element>
     <material name="Vacuum" state="gas">
-      <MEE unit="eV" value="19.2" />
-      <D unit="g/cm3" value="9.99999473841014e-09" />
-      <fraction n="1" ref="H" />
+      <MEE unit="eV" value="19.2"/>
+      <D unit="g/cm3" value="9.99999473841014e-09"/>
+      <fraction n="1" ref="H"/>
+    </material>
+    <!-- trigger pad scintillator -->
+    <material name="Polyvinyltoluene">
+      <D type="density" value="1.023" unit="g/cm3"/>
+      <composite n="27" ref="C"/>
+      <composite n="30" ref="H"/>
     </material>
   </materials>
 
   <solids>
-    <box lunit="mm" name="world_box" x="5000" y="5000" z="5000" />
-    <box lunit="mm" name="target_box" x="35" y="95" z="0.35" />
+    <box lunit="mm" name="world_box" x="world_dim" y="world_dim" z="world_dim"/>
+    <box lunit="mm" name="target_box" x="target_dim_x" y="target_dim_y" z="target_thickness"/>
+    <box lunit="mm" name="trigger_pad_box" x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>
   </solids>
 
   <structure>
     <volume name="target">
-      <materialref ref="Tungsten" />
-      <solidref ref="target_box" />
+      <materialref ref="Tungsten"/>
+      <solidref ref="target_box"/>
+      <auxiliary auxtype="SensDet" auxvalue="TargetSD1"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
     </volume>
-    <volume name="World" >
-      <materialref ref="Vacuum" />
-      <solidref ref="world_box" />
-      <physvol>
-        <volumeref ref="target"/>
-        <positionref ref="center"/>
-        <rotationref ref="identity"/>
-      </physvol>              
-      <physvol>
+    <volume name="trigger_pad">
+      <materialref ref="Polyvinyltoluene"/>
+      <solidref ref="trigger_pad_box"/>
+      <auxiliary auxtype="SensDet" auxvalue="TriggerPadSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>             
+    </volume>
+    <volume name="World">
+      <materialref ref="Vacuum"/>
+      <solidref ref="world_box"/>
+      <physvol copynumber="1">
         <file name="tagger.gdml"/>
         <positionref ref="tagger_pos"/>
         <rotationref ref="identity"/>
-      </physvol>      
-      <physvol>
+      </physvol>
+      <physvol copynumber="2">
+        <volumeref ref="trigger_pad"/>
+        <positionref ref="trigger_pad_front_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol copynumber="3">
+        <volumeref ref="target"/>
+        <positionref ref="target_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol copynumber="4">
+        <volumeref ref="trigger_pad"/>
+        <positionref ref="trigger_pad_back_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol copynumber="5">
         <file name="recoil.gdml"/>
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
-      </physvol>
-      <physvol>
+      </physvol>      
+      <physvol copynumber="6">
         <file name="calorimeters.gdml"/>
         <positionref ref="calorimeter_pos"/>
-        <rotationref ref="calorimeter_rot"/>
+        <rotationref ref="identity"/>
       </physvol>
     </volume>
   </structure>
@@ -108,6 +158,16 @@
     </auxiliary>
   
     <!-- define detector IDs which must come before SD definitions-->
+    <auxiliary auxtype="DetectorID" auxvalue="DefaultID">
+      <auxiliary auxtype="IDField" auxvalue="subdet">
+        <auxiliary auxtype="StartBit" auxvalue="0"/>
+        <auxiliary auxtype="EndBit" auxvalue="3"/>
+      </auxiliary>
+      <auxiliary auxtype="IDField" auxvalue="layer">
+        <auxiliary auxtype="StartBit" auxvalue="4"/>
+        <auxiliary auxtype="EndBit" auxvalue="11"/>
+      </auxiliary>
+    </auxiliary>
     <auxiliary auxtype="DetectorID" auxvalue="TaggerID">
       <auxiliary auxtype="IDField" auxvalue="subdet">
         <auxiliary auxtype="StartBit" auxvalue="0"/>
@@ -157,27 +217,44 @@
       <auxiliary auxtype="DetectorID" auxvalue="TaggerID"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
+    <auxiliary auxtype="SensDet" auxvalue="TriggerPadSD1">
+      <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadSimHits"/>
+      <auxiliary auxtype="SubdetID" auxvalue="2"/>
+      <auxiliary auxtype="DetectorID" auxvalue="HcalID"/>
+      <auxiliary auxtype="LayerDepth" auxvalue="1"/>
+      <auxiliary auxtype="Verbose" auxvalue="2"/>      
+    </auxiliary>    
+    <auxiliary auxtype="SensDet" auxvalue="TargetSD1">
+      <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="TargetSimHits"/>
+      <auxiliary auxtype="SubdetID" auxvalue="3"/>
+      <auxiliary auxtype="DetectorID" auxvalue="HcalID"/>
+      <auxiliary auxtype="LayerDepth" auxvalue="1"/>
+      <auxiliary auxtype="Verbose" auxvalue="2"/>
+    </auxiliary>    
     <auxiliary auxtype="SensDet" auxvalue="RecoilSD1">
       <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="RecoilSimHits"/>
-      <auxiliary auxtype="SubdetID" auxvalue="2"/>
+      <auxiliary auxtype="SubdetID" auxvalue="4"/>
       <auxiliary auxtype="DetectorID" auxvalue="RecoilID"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="EcalSD1">
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="EcalSimHits"/>
-      <auxiliary auxtype="SubdetID" auxvalue="3"/>
+      <auxiliary auxtype="SubdetID" auxvalue="5"/>
       <auxiliary auxtype="DetectorID" auxvalue="EcalID"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="HcalSD1">
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="HcalSimHits"/>
-      <auxiliary auxtype="SubdetID" auxvalue="4"/>
+      <auxiliary auxtype="SubdetID" auxvalue="6"/>
       <auxiliary auxtype="DetectorID" auxvalue="HcalID"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
+    
     
     <!-- define magnetic fields -->
     <auxiliary auxtype="MagneticField" auxvalue="AnalyzingDipole">
@@ -261,10 +338,20 @@
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis">
+      <auxiliary auxtype="R" auxvalue="0.9"/>
+      <auxiliary auxtype="G" auxvalue="0.8"/>
+      <auxiliary auxtype="B" auxvalue="1.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
     
   </userinfo>  
 
-  <setup name="Default" version="1.0" >
-    <world ref="World" />
+  <setup name="Default" version="1.0">
+    <world ref="World"/>
   </setup>
 </gdml>
