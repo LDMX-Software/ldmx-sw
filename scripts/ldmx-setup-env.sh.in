@@ -14,11 +14,11 @@
 # setup ROOT env
 . @ROOT_DIR@/bin/thisroot.sh
 
-# set the load library path
-export LD_LIBRARY_PATH=@Geant4_DIR@/../../lib64/:@ROOT_DIR@/lib
-
 # set load library path for module libs
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:@CMAKE_INSTALL_PREFIX@/lib
+export LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:$LD_LIBRARY_PATH
+
+# add bin dir to PATH
+export PATH=@CMAKE_INSTALL_PREFIX@/bin:$PATH
 
 # ignore "double free or corruption" errors on application exit
 export MALLOC_CHECK_=0
