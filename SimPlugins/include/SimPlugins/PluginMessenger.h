@@ -1,5 +1,5 @@
-#ifndef SimPlugins_PluginMessenger_h
-#define SimPlugins_PluginMessenger_h
+#ifndef SIMPLUGINS_PLUGINMESSENGER_H_
+#define SIMPLUGINS_PLUGINMESSENGER_H_
 
 // Geant4
 #include "G4UImessenger.hh"

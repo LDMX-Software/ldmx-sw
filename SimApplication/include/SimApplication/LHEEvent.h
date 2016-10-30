@@ -1,5 +1,5 @@
-#ifndef SimApplication_LHEEvent_h
-#define SimApplication_LHEEvent_h
+#ifndef SIMAPPLICATION_LHEEVENT_H_
+#define SIMAPPLICATION_LHEEVENT_H_
 
 // LDMX
 #include "SimApplication/LHEParticle.h"

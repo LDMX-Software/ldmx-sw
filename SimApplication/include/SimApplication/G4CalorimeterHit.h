@@ -1,5 +1,5 @@
-#ifndef SimApplication_G4CalorimeterHit_h
-#define SimApplication_G4CalorimeterHit_h
+#ifndef SIMAPPLICATION_G4CALORIMETERHIT_H_
+#define SIMAPPLICATION_G4CALORIMETERHIT_H_
 
 // Geant4
 #include "G4VHit.hh"

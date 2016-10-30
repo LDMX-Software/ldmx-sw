@@ -1,5 +1,5 @@
-#ifndef DetDescr_DetectorIDStore_h
-#define DetDescr_DetectorIDStore_h
+#ifndef DETDESCR_DETECTORIDSTORE_H_
+#define DETDESCR_DETECTORIDSTORE_H_
 
 // LDMX
 #include "DetectorID.h"

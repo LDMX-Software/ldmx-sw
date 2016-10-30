@@ -1,5 +1,5 @@
-#ifndef Event_SimEvent_h
-#define Event_SimEvent_h
+#ifndef EVENT_SIMEVENT_H_
+#define EVENT_SIMEVENT_H_
 
 #include "Event/Event.h"
 
