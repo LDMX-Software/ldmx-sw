@@ -1,5 +1,5 @@
-#ifndef SimApplication_SimApplicationMessenger_h
-#define SimApplication_SimApplicationMessenger_h
+#ifndef SIMAPPLICATION_SIMAPPLICATIONMESSENGER_H_
+#define SIMAPPLICATION_SIMAPPLICATIONMESSENGER_H_
 
 // Geant4
 #include "G4UImessenger.hh"
