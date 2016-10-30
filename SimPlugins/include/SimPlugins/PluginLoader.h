@@ -1,5 +1,5 @@
-#ifndef SimPlugins_PluginLoader_h
-#define SimPlugins_PluginLoader_h
+#ifndef SIMPLUGINS_PLUGINLOADER_H_
+#define SIMPLUGINS_PLUGINLOADER_H_
 
 #include "SimPlugins/UserActionPlugin.h"
 

@@ -1,5 +1,5 @@
-#ifndef DetDescr_IDField_h
-#define DetDescr_IDField_h
+#ifndef DETDESCR_IDFIELD_H_
+#define DETDESCR_IDFIELD_H_
 
 // STL
 #include <string>

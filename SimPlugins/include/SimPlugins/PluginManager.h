@@ -1,5 +1,5 @@
-#ifndef SimPlugins_PluginManager_h
-#define SimPlugins_PluginManager_h
+#ifndef SIMPLUGINS_PLUGINMANAGER_H_
+#define SIMPLUGINS_PLUGINMANAGER_H_
 
 // LDMX
 #include "SimPlugins/PluginLoader.h"

@@ -1,5 +1,5 @@
-#ifndef SimApplication_Trajectory_h
-#define SimApplication_Trajectory_h
+#ifndef SIMAPPLICATION_TRAJECTORY_H_
+#define SIMAPPLICATION_TRAJECTORY_H_
 
 // Geant4
 #include "G4VTrajectory.hh"
