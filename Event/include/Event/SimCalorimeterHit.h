@@ -1,5 +1,5 @@
-#ifndef Event_SimCalorimeterHit_h
-#define Event_SimCalorimeterHit_h
+#ifndef EVENT_SIMCALORIMETERHIT_H_
+#define EVENT_SIMCALORIMETERHIT_H_
 
 // ROOT
 #include "TObject.h"

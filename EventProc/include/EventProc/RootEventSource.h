@@ -1,5 +1,5 @@
-#ifndef EventProc_RootEventSource_h
-#define EventProc_RootEventSource_h
+#ifndef EVENTPROC_ROOTEVENTSOURCE_H_
+#define EVENTPROC_ROOTEVENTSOURCE_H_
 
 // ROOT
 #include "TTree.h"

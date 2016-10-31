@@ -1,5 +1,5 @@
-#ifndef SimApplication_RunManager_h
-#define SimApplication_RunManager_h
+#ifndef SIMAPPLICATION_RUNMANAGER_H_
+#define SIMAPPLICATION_RUNMANAGER_H_
 
 // Geant4
 #include "G4RunManager.hh"

@@ -1,5 +1,5 @@
-#ifndef SimApplication_SimParticleBuilder_h
-#define SimApplication_SimParticleBuilder_h
+#ifndef SIMAPPLICATION_SIMPARTICLEBUILDER_H_
+#define SIMAPPLICATION_SIMPARTICLEBUILDER_H_
 
 // LDMX
 #include "Event/Event.h"
