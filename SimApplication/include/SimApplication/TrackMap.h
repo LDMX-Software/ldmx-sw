@@ -1,5 +1,5 @@
-#ifndef SimApplication_TrackerMap_h
-#define SimApplication_TrackerMap_h
+#ifndef SIMAPPLICATION_TRACKERMAP_H_
+#define SIMAPPLICATION_TRACKERMAP_H_
 
 // Geant4
 #include "G4Event.hh"

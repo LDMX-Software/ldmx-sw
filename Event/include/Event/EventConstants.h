@@ -1,5 +1,5 @@
-#ifndef Event_EventConstants_h
-#define Event_EventConstants_h
+#ifndef EVENT_EVENTCONSTANTS_H_
+#define EVENT_EVENTCONSTANTS_H_
 
 namespace event {
 

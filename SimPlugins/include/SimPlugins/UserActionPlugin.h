@@ -1,5 +1,5 @@
-#ifndef SimPlugins_UserActionPlugin_h
-#define SimPlugins_UserActionPlugin_h
+#ifndef SIMPLUGINS_USERACTIONPLUGIN_H_
+#define SIMPLUGINS_USERACTIONPLUGIN_H_
 
 #include "G4Run.hh"
 #include "G4Event.hh"

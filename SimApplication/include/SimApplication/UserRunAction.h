@@ -1,5 +1,5 @@
-#ifndef SimApplication_UserRunAction_h
-#define SimApplication_UserRunAction_h
+#ifndef SIMAPPLICATION_USERRUNACTION_H_
+#define SIMAPPLICATION_USERRUNACTION_H_
 
 // Geant4
 #include "G4UserRunAction.hh"

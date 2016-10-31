@@ -1,5 +1,5 @@
-#ifndef SimPlugins_DummySimPlugin_h
-#define SimPlugins_DummySimPlugin_h
+#ifndef SIMPLUGINS_DUMMYSIMPLUGIN_H_
+#define SIMPLUGINS_DUMMYSIMPLUGIN_H_
 
 // LDMX
 #include "SimPlugins/UserActionPlugin.h"
