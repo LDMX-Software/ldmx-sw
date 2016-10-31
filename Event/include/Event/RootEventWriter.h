@@ -1,5 +1,5 @@
-#ifndef Event_RootWriter_h
-#define Event_RootWriter_h
+#ifndef EVENT_ROOTWRITER_H_
+#define EVENT_ROOTWRITER_H_
 
 // ROOT
 #include "TFile.h"

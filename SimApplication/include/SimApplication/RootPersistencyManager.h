@@ -1,5 +1,5 @@
-#ifndef SimApplication_RootPersistencyManager_h
-#define SimApplication_RootPersistencyManager_h
+#ifndef SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
+#define SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 
 // Geant4
 #include "G4PersistencyManager.hh"

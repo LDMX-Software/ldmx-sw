@@ -1,5 +1,5 @@
-#ifndef SimApplication_G4SimTrackerHit_h
-#define SimApplication_G4SimTrackerHit_h
+#ifndef SIMAPPLICATION_G4SIMTRACKERHIT_H_
+#define SIMAPPLICATION_G4SIMTRACKERHIT_H_
 
 // Geant4
 #include "G4VHit.hh"

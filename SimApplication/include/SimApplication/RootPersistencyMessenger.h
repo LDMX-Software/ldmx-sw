@@ -1,5 +1,5 @@
-#ifndef SimApplication_RootPersistencyMessenger_h
-#define SimApplication_RootPersistencyMessenger_h
+#ifndef SIMAPPLICATION_ROOTPERSISTENCYMESSENGER_H_
+#define SIMAPPLICATION_ROOTPERSISTENCYMESSENGER_H_
 
 // Geant4
 #include "G4UImessenger.hh"

@@ -1,5 +1,5 @@
-#ifndef SimApplication_DetectorConstruction_h
-#define SimApplication_DetectorConstruction_h
+#ifndef SIMAPPLICATION_DETECTORCONSTRUCTION_H_
+#define SIMAPPLICATION_DETECTORCONSTRUCTION_H_
 
 // LDMX
 #include "AuxInfoReader.h"
