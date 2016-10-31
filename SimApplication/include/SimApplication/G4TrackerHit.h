@@ -61,9 +61,9 @@ class G4TrackerHit: public G4VHit {
         }
 
         void setPosition(float x, float y, float z) {
-            momentum.setX(x);
-            momentum.setY(y);
-            momentum.setZ(z);
+            position.setX(x);
+            position.setY(y);
+            position.setZ(z);
         }
 
         void setPathLength(float pathLength) {
