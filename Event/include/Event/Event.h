@@ -1,5 +1,5 @@
-#ifndef Event_Event_h
-#define Event_Event_h
+#ifndef EVENT_EVENT_H_
+#define EVENT_EVENT_H_
 
 // ROOT
 #include "TObject.h"

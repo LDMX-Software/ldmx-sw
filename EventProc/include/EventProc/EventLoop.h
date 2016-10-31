@@ -1,5 +1,5 @@
-#ifndef EventProc_EventLoop_h
-#define EventProc_EventLoop_h
+#ifndef EVENTPROC_EVENTLOOP_H_
+#define EVENTPROC_EVENTLOOP_H_
 
 #include "EventProc/EventProcessor.h"
 #include "EventProc/EventSource.h"
