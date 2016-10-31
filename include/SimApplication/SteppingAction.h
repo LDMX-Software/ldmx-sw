@@ -1,5 +1,5 @@
-#ifndef SimApplication_UserSteppingAction_h
-#define SimApplication_UserSteppingAction_h
+#ifndef SIMAPPLICATION_USERSTEPPINGACTION_H_
+#define SIMAPPLICATION_USERSTEPPINGACTION_H_
 
 // Geant4
 #include "G4UserSteppingAction.hh"

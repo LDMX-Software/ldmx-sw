@@ -1,5 +1,5 @@
-#ifndef SimApplication_UserRegionInformation_h
-#define SimApplication_UserRegionInformation_h
+#ifndef SIMAPPLICATION_USERREGIONINFORMATION_H_
+#define SIMAPPLICATION_USERREGIONINFORMATION_H_
 
 // Geant4
 #include "G4VUserRegionInformation.hh"

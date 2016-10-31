@@ -52,7 +52,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event*
 
 G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
 
-    std::cout << "RootPersistencyManager::Store - " << anEvent->GetEventID() << std::endl;
+    std::cout << "RootPersistencyManager::Store - saving event " << anEvent->GetEventID() << std::endl;
 
     // Get the current output event from the writer.
     Event* outputEvent = writer.getEvent();
