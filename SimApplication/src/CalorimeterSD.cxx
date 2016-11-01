@@ -50,8 +50,8 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
     // Skip steps with no energy dep which come from non-Geantino particles.
     if (edep == 0.0 && !isGeantino) {
-        if (verboseLevel > 1) {
-            std::cout << "CalorimeterSD skipping step with zero edep" << std::endl << std::endl;
+        if (verboseLevel > 2) {
+            std::cout << "CalorimeterSD skipping step with zero edep." << std::endl << std::endl;
         }
         return false;
     }        
@@ -76,14 +76,14 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     hit->setTime(aStep->GetTrack()->GetGlobalTime());
 
     // Set the ID on the hit.
-    int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
+    int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth)->GetCopyNo();
     detId->setFieldValue(1, layerNumber);
     hit->setID(detId->pack());
 
     // Set the track ID on the hit.
     hit->setTrackID(aStep->GetTrack()->GetTrackID());
 
-    if (this->verboseLevel > 0) {
+    if (this->verboseLevel > 2) {
         std::cout << "Created new SimCalorimeterHit in detector " << this->GetName()
                 << " with subdet ID " << subdetId << " and layer " << layerNumber << " ..." << std::endl;
         hit->Print();
@@ -104,6 +104,18 @@ void CalorimeterSD::Initialize(G4HCofThisEvent* hce) {
 }
 
 void CalorimeterSD::EndOfEvent(G4HCofThisEvent*) {
+    // Print number of hits.
+    if (this->verboseLevel > 0) {
+        std::cout << GetName() << " had " << hitsCollection->entries()
+                << " hits in event" << std::endl;
+    }
+
+    // Print each hit in hits collection.
+    if (this->verboseLevel > 1) {
+        for (int iHit = 0; iHit < hitsCollection->GetSize(); iHit++ ) {
+            (*hitsCollection)[iHit]->Print();
+        }
+    }
 }
 
 }
