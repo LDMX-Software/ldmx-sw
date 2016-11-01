@@ -28,4 +28,26 @@ void G4TrackerHit::Draw() {
     }
 }
 
+void G4TrackerHit::Print() {
+    print(std::cout);
 }
+
+std::ostream& G4TrackerHit::print(std::ostream& os) {
+    os << "G4TrackerHit { "
+            "edep: " << this->edep << ", "
+            "position: (" << this->position[0] << ", "
+            << this->position[1] << ", "
+            << this->position[2] << "), "
+            << "layerID: " << this->layerID << ", "
+            << "momentum: (" << this->momentum[0] << ", "
+            << this->momentum[1] << ", "
+            << this->momentum[2] << "), "
+            << "pathLength: " << this->pathLength << ", "
+            << "time: " << this->time
+            << " }"
+            << std::endl;
+    return os;
+}
+
+}
+

@@ -24,7 +24,9 @@ class G4CalorimeterHit: public G4VHit {
 
         void Draw();
 
-        void Print() {;}
+        void Print();
+
+        std::ostream& print(std::ostream& os);
 
         inline void *operator new(size_t);
 
@@ -47,9 +49,7 @@ class G4CalorimeterHit: public G4VHit {
         }
 
         void setPosition(const float x, const float y, const float z) {
-            this->x = x;
-            this->y = y;
-            this->z = z;
+            position.set(x, y, z);
         }
 
         void setTime(float time) {
@@ -59,7 +59,7 @@ class G4CalorimeterHit: public G4VHit {
         void setSimCalorimeterHit(SimCalorimeterHit* simCalHit) {
             simCalHit->setID(id);
             simCalHit->setEdep(edep);
-            simCalHit->setPosition(x, y, z);
+            simCalHit->setPosition(position.x(), position.y(), position.z());
             simCalHit->setTime(time);
             this->simCalHit = simCalHit;
         }
@@ -73,9 +73,7 @@ class G4CalorimeterHit: public G4VHit {
         int trackID{-1};
         int id{0};
         double edep{0};
-        double x{0};
-        double y{0};
-        double z{0};
+        G4ThreeVector position;
         float time{0};
 
         SimCalorimeterHit* simCalHit{nullptr};
