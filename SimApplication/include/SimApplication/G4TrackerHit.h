@@ -10,6 +10,9 @@
 // LDMX
 #include "Event/SimTrackerHit.h"
 
+// STL
+#include <ostream>
+
 using event::SimTrackerHit;
 
 namespace sim {
@@ -24,7 +27,9 @@ class G4TrackerHit: public G4VHit {
 
         void Draw();
 
-        void Print() {;}
+        void Print();
+
+        std::ostream& print(std::ostream& os);
 
         inline void *operator new(size_t);
 
