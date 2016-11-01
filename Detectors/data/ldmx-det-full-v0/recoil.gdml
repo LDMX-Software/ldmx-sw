@@ -1,47 +1,63 @@
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
   <define>      
-       
+           
+      <!-- offset in Z from target and trigger pad -->
+      <variable name="recoil_z_offset" value="1.176*mm"/>
+     
+      <!-- recoil envelope dimensions -->
+      <variable name="recoil_envelope_x" value="45.72*cm"/>
+      <variable name="recoil_envelope_y" value="45.72*cm"/>
+      <variable name="recoil_envelope_z" value="20.0*cm - recoil_z_offset"/>
+
+      <!-- separation between sensors in a layer -->
       <variable name="recoil_sensor_L1_4_sep" value="3.0*mm"/>
       <variable name="recoil_sensor_L5_6_sep" value="1.0*mm"/>
       
+      <!-- module and sensor dimensions -->
       <variable name="recoil_si_thickness" value="0.32*mm"/>
       <variable name="recoil_carbon_thickness" value="0.2*mm"/>
       <variable name="recoil_sensor_thickness" value="recoil_si_thickness + recoil_carbon_thickness"/>
       
+      <!-- stereo angle -->
       <variable name="recoil_stereo_angle" value="0.1*radian"/>
       
-      <variable name="recoil_box_z" value="177.54"/>
-      <variable name="recoil_layer_offset" value="(recoil_box_z / 2) - recoil_sensor_thickness - recoil_sensor_L1_4_sep"/>
+      <!-- layering start position in envelope volume -->
+      <variable name="recoil_z_start" value="-(recoil_envelope_z/2) - recoil_z_offset"/>
+
+      <!-- layer Z positions relative to target -->
+      <variable name="recoil_L1_target_z" value="7.5*mm"/>
+      <variable name="recoil_L2_target_z" value="22.5*mm"/>
+      <variable name="recoil_L3_target_z" value="37.5*mm"/>
+      <variable name="recoil_L4_target_z" value="52.5*mm"/>
+      <variable name="recoil_L5_target_z" value="90.0*mm"/>
+      <variable name="recoil_L6_target_z" value="180.0*mm"/>
+
+      <!-- position of each layer in local coordinates of envelope volume -->
       
-      <!-- 
-          Layer Z positions are defined in the local coordinates of the Recoil Tracker envelope volume.
-          Adding 7.5 mm to the base layer value (e.g. recoil_L1_z, etc.) will give position relative to the target.
-       -->
+      <variable name="recoil_L1_z" value="recoil_z_start + recoil_L1_target_z"/>
+      <variable name="recoil_L1_z1" value="recoil_L1_z - recoil_sensor_L1_4_sep"/>
+      <variable name="recoil_L1_z2" value="recoil_L1_z + recoil_sensor_L1_4_sep"/>
       
-      <variable name="recoil_L1_z" value="0.0*mm"/>
-      <variable name="recoil_L1_z1" value="recoil_L1_z - recoil_sensor_L1_4_sep - recoil_layer_offset"/>
-      <variable name="recoil_L1_z2" value="recoil_L1_z + recoil_sensor_L1_4_sep - recoil_layer_offset"/>
+      <variable name="recoil_L2_z" value="recoil_z_start + recoil_L2_target_z"/>
+      <variable name="recoil_L2_z1" value="recoil_L2_z - recoil_sensor_L1_4_sep"/>
+      <variable name="recoil_L2_z2" value="recoil_L2_z + recoil_sensor_L1_4_sep"/>
       
-      <variable name="recoil_L2_z" value="15.0*mm"/>
-      <variable name="recoil_L2_z1" value="recoil_L2_z - recoil_sensor_L1_4_sep - recoil_layer_offset"/>
-      <variable name="recoil_L2_z2" value="recoil_L2_z + recoil_sensor_L1_4_sep - recoil_layer_offset"/>
+      <variable name="recoil_L3_z" value="recoil_z_start + recoil_L3_target_z"/>
+      <variable name="recoil_L3_z1" value="recoil_L3_z - recoil_sensor_L1_4_sep"/>
+      <variable name="recoil_L3_z2" value="recoil_L3_z + recoil_sensor_L1_4_sep"/>
       
-      <variable name="recoil_L3_z" value="30.0*mm"/>
-      <variable name="recoil_L3_z1" value="recoil_L3_z - recoil_sensor_L1_4_sep - recoil_layer_offset"/>
-      <variable name="recoil_L3_z2" value="recoil_L3_z + recoil_sensor_L1_4_sep - recoil_layer_offset"/>
+      <variable name="recoil_L4_z" value="recoil_z_start + recoil_L4_target_z"/>
+      <variable name="recoil_L4_z1" value="recoil_L4_z - recoil_sensor_L1_4_sep"/>
+      <variable name="recoil_L4_z2" value="recoil_L4_z + recoil_sensor_L1_4_sep"/>
       
-      <variable name="recoil_L4_z" value="45.0*mm"/>
-      <variable name="recoil_L4_z1" value="recoil_L4_z - recoil_sensor_L1_4_sep - recoil_layer_offset"/>
-      <variable name="recoil_L4_z2" value="recoil_L4_z + recoil_sensor_L1_4_sep - recoil_layer_offset"/>
+      <variable name="recoil_L5_z" value="recoil_z_start + recoil_L5_target_z"/>
+      <variable name="recoil_L5_z1" value="recoil_L5_z - recoil_sensor_L5_6_sep"/>
+      <variable name="recoil_L5_z2" value="recoil_L5_z + recoil_sensor_L5_6_sep"/>
       
-      <variable name="recoil_L5_z" value="82.5*mm"/>
-      <variable name="recoil_L5_z1" value="recoil_L5_z - recoil_sensor_L5_6_sep - recoil_layer_offset"/>
-      <variable name="recoil_L5_z2" value="recoil_L5_z + recoil_sensor_L5_6_sep - recoil_layer_offset"/>
-      
-      <variable name="recoil_L6_z" value="172.5*mm"/>
-      <variable name="recoil_L6_z1" value="recoil_L6_z - recoil_sensor_L5_6_sep - recoil_layer_offset"/>
-      <variable name="recoil_L6_z2" value="recoil_L6_z + recoil_sensor_L5_6_sep - recoil_layer_offset"/>
+      <variable name="recoil_L6_z" value="recoil_z_start + recoil_L6_target_z"/>
+      <variable name="recoil_L6_z1" value="recoil_L6_z - recoil_sensor_L5_6_sep"/>
+      <variable name="recoil_L6_z2" value="recoil_L6_z + recoil_sensor_L5_6_sep"/>
       
   </define>
     
@@ -56,7 +72,7 @@
     <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component0Box" x="50" y="80" z="0.32"/>
     <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component1Box" x="50" y="80" z="0.2"/>
     <box lunit="mm" name="LDMXRecoilL56ModuleBox" x="50" y="80" z="0.52"/>
-    <box lunit="mm" name="recoil_box" x="250" y="200" z="recoil_box_z"/>
+    <box lunit="mm" name="recoil_box" x="recoil_envelope_x" y="recoil_envelope_y" z="recoil_envelope_z"/>
   </solids>
 
   <structure>
@@ -127,7 +143,7 @@
     <volume name="recoil">
       <materialref ref="Vacuum"/>
       <solidref ref="recoil_box"/>
-                  
+
       <physvol copynumber="1" name="recoil_L1_axial">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="LDMXRecoilL14ModuleVolume_physvol15_pos" unit="mm" x="0" y="0" z="recoil_L1_z1"/>
@@ -137,7 +153,7 @@
         <position name="LDMXRecoilL14ModuleVolume_physvol16_pos" unit="mm" x="0" y="0" z="recoil_L1_z2"/>
         <rotation name="LDMXRecoilL14ModuleVolume_physvol16_rot" unit="deg" x="0" y="0" z="recoil_stereo_angle"/>
       </physvol>
-            
+
       <physvol copynumber="3" name="recoil_L2_axial">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="LDMXRecoilL14ModuleVolume_physvol17_pos" unit="mm" x="0" y="0" z="recoil_L2_z1"/>
@@ -233,8 +249,9 @@
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="LDMXRecoilL56ModuleVolume_physvol38_pos" unit="mm" x="-96" y="-40" z="recoil_L6_z2"/>
       </physvol>
+ 
       <auxiliary auxtype="MagneticField" auxvalue="RecoilDipole"/>
-      <!-- <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/> -->
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
     </volume>    
   </structure>
 
