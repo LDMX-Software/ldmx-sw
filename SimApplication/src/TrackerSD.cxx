@@ -52,7 +52,7 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
     // Skip steps with no energy dep which come from non-Geantino particles.
     if (edep == 0.0 && !isGeantino) {
-        if (verboseLevel > 1) {
+        if (verboseLevel > 2) {
             std::cout << "TrackerSD skipping step with zero edep" << std::endl << std::endl;
         }
         return false;
@@ -113,7 +113,7 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     /*
      * Debug print.
      */
-    if (this->verboseLevel > 0) {
+    if (this->verboseLevel > 2) {
         std::cout << "Created new SimTrackerHit in detector " << this->GetName()
                 << " with subdet ID " << subdetId << " and layer " << layerNumber << " ..." << std::endl;
         hit->Print();
@@ -130,24 +130,24 @@ void TrackerSD::Initialize(G4HCofThisEvent* hce) {
 
     // Setup hits collection and the HC ID.
     hitsCollection = new G4TrackerHitsCollection(SensitiveDetectorName, collectionName[0]);
-    G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
+    int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
     hce->AddHitsCollection(hcID, hitsCollection);
 }
 
-void TrackerSD::EndOfEvent(G4HCofThisEvent*) {
+void TrackerSD::EndOfEvent(G4HCofThisEvent* hce) {
 
-    /*
-     * Debug print number of hits in this detector for the event.
-     */
+    // Print number of hits.
     if (this->verboseLevel > 0) {
         std::cout << GetName() << " had " << hitsCollection->entries()
                 << " hits in event" << std::endl;
     }
-    /*
-    for (int i = 0; i < nHits; i++ ) {
-        (*hitsCollection)[i]->Print();
+
+    // Print each hit in hits collection.
+    if (this->verboseLevel > 1) {
+        for (int iHit = 0; iHit < hitsCollection->GetSize(); iHit++ ) {
+            (*hitsCollection)[iHit]->Print();
+        }
     }
-    */
 }
 
 }
