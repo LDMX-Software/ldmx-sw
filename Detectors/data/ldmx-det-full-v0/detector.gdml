@@ -8,7 +8,7 @@
     <rotation name="identity" x="0" y="0" z="0"/>
     
     <!-- dimension of world box side -->
-    <constant name="world_dim" value="2.0*m"/>
+    <constant name="world_dim" value="2.5*m"/>
             
     <!-- target parameters -->
     <constant name="target_dim_x" value="3.5*cm"/>
@@ -20,17 +20,27 @@
     <variable name="trigger_pad_dim_x" value="target_dim_x"/>
     <variable name="trigger_pad_dim_y" value="target_dim_y"/>
     <variable name="trigger_pad_thickness" value="1.0*mm"/>
-    <variable name="trigger_pad_z" value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + 0.001"/>
+    <variable name="trigger_pad_zclear" value="0.001*mm"/>
+    <variable name="trigger_pad_z" value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + trigger_pad_zclear"/>
        
-    <!-- subdetector envelope positioning variables -->
-    <variable name="tagger_pos_z" value="-428.5125 - target_thickness/2"/>
-    <variable name="recoil_pos_z" value="99.412 + trigger_pad_thickness + target_thickness/2 + 0.001"/>
-    <constant name="ecal_thickness" value="286.0"/>
-    <constant name="hcal_thickness" value="1047.75"/>
-    <variable name="ecal_pos_z" value="200.0 + (ecal_thickness/2)"/>
-    <variable name="hcal_pos_z" value="ecal_pos_z + (ecal_thickness/2) + hcal_thickness/2"/>    
+    <!-- tagger position -->    
+    <constant name="tagger_thickness" value="857.025*mm"/>
+    <variable name="tagger_pos_z" value="-(tagger_thickness/2) - target_thickness/2"/>
     
-    <!-- subdetector positions -->
+    <!-- recoil position -->
+    <variable name="recoil_thickness" value="198.824*mm"/>
+    <variable name="recoil_pos_z" value="recoil_thickness/2 + trigger_pad_thickness + target_thickness/2 + trigger_pad_zclear"/>
+    
+    <!-- ecal position -->
+    <constant name="ecal_thickness" value="286.0*mm"/>
+    <constant name="ecal_front_z" value="20.0*cm"/>
+    <variable name="ecal_pos_z" value="ecal_front_z + (ecal_thickness/2)"/>
+    
+    <!-- hcal position -->
+    <constant name="hcal_thickness" value="957.0"/>
+    <variable name="hcal_pos_z" value="ecal_pos_z + (ecal_thickness/2) + hcal_thickness/2"/>
+    
+    <!-- define all subdetector positions using above Z values -->
     <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
     <position name="target_pos" x="0.0" y="0.0" z="target_z"/>
     <position name="trigger_pad_pos" x="0.0" y="0.0" z="trigger_pad_z"/>
