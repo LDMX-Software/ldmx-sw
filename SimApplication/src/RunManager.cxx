@@ -8,6 +8,7 @@
 #include "SimApplication/SteppingAction.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
+#include "SimApplication/UserStackingAction.h"
 #include "SimApplication/UserTrackingAction.h"
 
 // Geant4
@@ -50,6 +51,7 @@ void RunManager::Initialize() {
     SetUserAction(new UserEventAction);
     SetUserAction(new UserTrackingAction);
     SetUserAction(new SteppingAction);
+    SetUserAction(new UserStackingAction);
 
     RootPersistencyManager* rootIO = new RootPersistencyManager();
     new RootPersistencyMessenger(rootIO);

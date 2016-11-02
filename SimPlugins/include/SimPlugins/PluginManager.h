@@ -9,6 +9,9 @@
 #include <algorithm>
 #include <ostream>
 
+// Geant4
+#include "G4ClassificationOfNewTrack.hh"
+
 namespace sim {
 
 class PluginManager {
@@ -74,6 +77,36 @@ class PluginManager {
             for (PluginVec::iterator it = plugins.begin(); it != plugins.end(); it++) {
                 if ((*it)->hasEventAction()) {
                     (*it)->endEvent(event);
+                }
+            }
+        }
+
+        /**
+         * Return a track classification from the user plugins.
+         * The last plugin which sets the classification will override all the others.
+         */
+        G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* track) {
+            G4ClassificationOfNewTrack trackClass = G4ClassificationOfNewTrack::fUrgent;
+            for (PluginVec::iterator it = plugins.begin(); it != plugins.end(); it++) {
+                if ((*it)->hasStackingAction()) {
+                    trackClass = (*it)->stackingClassifyNewTrack(track);
+                }
+            }
+            return trackClass;
+        }
+
+        void stackingNewStage() {
+            for (PluginVec::iterator it = plugins.begin(); it != plugins.end(); it++) {
+                if ((*it)->hasEventAction()) {
+                    (*it)->stackingNewStage();
+                }
+            }
+        }
+
+        void stackingPrepareNewEvent() {
+            for (PluginVec::iterator it = plugins.begin(); it != plugins.end(); it++) {
+                if ((*it)->hasStackingAction()) {
+                    (*it)->stackingPrepareNewEvent();
                 }
             }
         }
