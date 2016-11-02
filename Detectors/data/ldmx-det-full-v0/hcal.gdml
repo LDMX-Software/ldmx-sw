@@ -269,7 +269,9 @@
     <box lunit="mm" name="SSteel15box0x1212220" x="1000" y="1000" z="50"/>
     <box lunit="mm" name="Cu15box0x1212530" x="1000" y="1000" z="0.5"/>
     <box lunit="mm" name="Scintillator15box0x1212830" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Wbox0x1204410" x="1000.0" y="1000.0" z="1047.75"/>
+    
+    <!-- hcal envelope volume; added stay clear to XY; Z decreased from 1046.0 -->
+    <box lunit="mm" name="Wbox0x1204410" x="1000.001" y="1000.001" z="957.0"/>
   </solids>
 
   <structure>
@@ -590,7 +592,7 @@
     </volume>
     <volume name="hcal">
       <materialref ref="G4_AIR0x11e78b0"/>
-      <solidref ref="Wbox0x1204410"/>
+      <solidref ref="Wbox0x1204410"/> 
       <physvol name="Cu1phys0x1204800">
         <volumeref ref="Cu1log0x1204700"/>
         <position name="Cu1phys0x1204800_pos" unit="mm" x="0" y="0" z="-474.75"/>
