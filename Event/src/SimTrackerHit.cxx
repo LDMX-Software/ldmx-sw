@@ -14,7 +14,7 @@ SimTrackerHit::~SimTrackerHit() {
 
 void SimTrackerHit::Print(Option_t *option) const {
     std::cout << "SimTrackerHit { " << "ID: " << std::bitset<32>(id) << ", " <<
-        "Layer ID: " << layer_id << ", " <<
+        "Layer ID: " << layerID << ", " <<
         "Position: ( " << x << ", " << y << ", " << z << " ), " <<
         "dEdx: " << edep << ", " <<
         "Time: " << time << ", " <<

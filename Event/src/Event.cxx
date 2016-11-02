@@ -6,12 +6,8 @@ ClassImp(event::Event)
 
 namespace event {
 
-Event::Event() :
-        TObject(),
-        eventNumber(-1),
-        run(-1),
-        timestamp(-1),
-        weight(1.0) {
+Event::Event()
+    : TObject() {
 }
 
 Event::~Event() {
@@ -41,41 +37,5 @@ void Event::Clear(Option_t*) {
     }
 }
 
-
-int Event::getEventNumber() {
-    return eventNumber;
-}
-
-int Event::getRun() {
-    return run;
-}
-
-int Event::getTimestamp() {
-    return timestamp;
-}
-
-double Event::getWeight() {
-    return weight;
-}
-
-void Event::setEventNumber(int anEventNumber) {
-    eventNumber = anEventNumber;
-}
-
-void Event::setRun(int aRun) {
-    run = aRun;
-}
-
-void Event::setTimestamp(int aTimestamp) {
-    timestamp = aTimestamp;
-}
-
-void Event::setWeight(double aWeight) {
-    weight = aWeight;
-}
-
-TClonesArray* Event::getCollection(const std::string& collectionName) {
-    return collMap[collectionName];
-}
 
 }

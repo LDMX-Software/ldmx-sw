@@ -29,36 +29,42 @@ class Event: public TObject {
 
         void Clear(Option_t* = "");
 
-        int getEventNumber();
+        int getEventNumber() { return eventNumber; }
 
-        int getRun();
+        int getRun() { return run; }
 
-        int getTimestamp();
+        int getTimestamp() { return timestamp; }
         
-        double getWeight();
+        double getWeight() { return weight; }
 
-        void setEventNumber(int);
+        void setEventNumber(int eventNumber) { this->eventNumber = eventNumber; }
 
-        void setRun(int);
+        void setRun(int run) { this->run = run; }
 
-        void setTimestamp(int);
+        void setTimestamp(int timestamp) { this->timestamp = timestamp; }
         
-        void setWeight(double);
+        void setWeight(double weight) { this->weight = weight; }
 
-        TClonesArray* getCollection(const std::string&);
+        TClonesArray* getCollection(const std::string& collectionName) {
+            return collMap[collectionName];
+        }
 
         const CollectionMap& getCollectionMap() {
             return collMap;
         }
 
+        /**
+         * Concrete sub-classes must implement this method to return a string
+         * with the class name of the event type e.g. "event::SimEvent".
+         */
         virtual const char* getEventType() = 0;
 
     private:
 
-        int eventNumber;
-        int run;
-        int timestamp;
-        double weight;
+        int eventNumber{-1};
+        int run{-1};
+        int timestamp{-1};
+        double weight{1.0};
 
     protected:
 
