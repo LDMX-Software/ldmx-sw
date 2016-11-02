@@ -24,6 +24,8 @@ class SimEvent : public Event {
         TClonesArray* recoilSimHits;
         TClonesArray* ecalSimHits;
         TClonesArray* hcalSimHits;
+        TClonesArray* triggerPadSimHits;
+        TClonesArray* targetSimHits;
 
         ClassDef(SimEvent, 1);
 };

@@ -22,6 +22,10 @@ class CalorimeterSD: public G4VSensitiveDetector {
 
         virtual ~CalorimeterSD();
 
+        void setLayerDepth(int layerDepth) {
+            this->layerDepth = layerDepth;
+        }
+
         G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
 
         void Initialize(G4HCofThisEvent* hcEvent);
@@ -33,6 +37,7 @@ class CalorimeterSD: public G4VSensitiveDetector {
         G4CalorimeterHitsCollection* hitsCollection;
         int subdetId;
         DetectorID* detId;
+        int layerDepth{2};
 };
 
 }
