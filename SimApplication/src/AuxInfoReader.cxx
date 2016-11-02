@@ -69,6 +69,7 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
     G4String hcName("");
     G4String idName("");
     int subdetID = -1;
+    int layerDepth = -1;
     int verbose = 0;
     for(std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin();
                 iaux != auxInfoList->end(); iaux++ ) {
@@ -89,6 +90,8 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
             subdetID = atoi(auxVal.c_str());
         } else if (auxType == "DetectorID") {
             idName = auxVal;
+        } else if (auxType == "LayerDepth") {
+            layerDepth = atoi(auxVal.c_str());
         }
     }
 
@@ -120,6 +123,10 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
         sd = new TrackerSD(theSensDetName, hcName, subdetID, detID);
     } else if (sdType == "CalorimeterSD") {
         sd = new CalorimeterSD(theSensDetName, hcName, subdetID, detID);
+        if (layerDepth != -1) {
+            ((CalorimeterSD*)sd)->setLayerDepth(layerDepth);
+            std::cout << "Layer depth set to " << layerDepth << std::endl;
+        }
     } else {
         std::cerr << "Unknown SensitiveDetector type: " << sdType << std::endl;
         G4Exception("", "", FatalException, "Unknown SensitiveDetector type in aux info.");
