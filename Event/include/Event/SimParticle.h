@@ -21,39 +21,39 @@ class SimParticle: public TObject {
         void Print(Option_t *option = "") const;
 
         float getEnergy() {
-            return energy;
+            return energy_;
         }
 
         int getPdg() {
-            return pdg;
+            return pdg_;
         }
 
         int getGenStatus() {
-            return genStatus;
+            return genStatus_;
         }
 
         float getTime() {
-            return time;
+            return time_;
         }
 
         std::vector<float> getVertex() {
-            return {x, y, z};
+            return {x_, y_, z_};
         }
 
         std::vector<float> getEndPoint() {
-            return {endX, endY, endZ};
+            return {endX_, endY_, endZ_};
         }
 
         std::vector<float> getMomentum() {
-            return {px, py, pz};
+            return {px_, py_, pz_};
         }
 
         float getMass() {
-            return mass;
+            return mass_;
         }
 
         float getCharge() {
-            return charge;
+            return charge_;
         }
 
         std::vector<SimParticle*> getDaughters();
@@ -61,75 +61,75 @@ class SimParticle: public TObject {
         std::vector<SimParticle*> getParents();
 
         void setEnergy(const float energy) {
-            this->energy = energy;
+            this->energy_ = energy;
         }
 
         void setPdg(const int pdg) {
-            this->pdg = pdg;
+            this->pdg_ = pdg;
         }
 
         void setGenStatus(const int genStatus) {
-            this->genStatus = genStatus;
+            this->genStatus_ = genStatus;
         }
 
         void setTime(const float time) {
-            this->time = time;
+            this->time_ = time;
         }
 
         void setVertex(const float x, const float y, const float z) {
-            this->x = x;
-            this->y = y;
-            this->z = z;
+            this->x_ = x;
+            this->y_ = y;
+            this->z_ = z;
         }
 
         void setEndPoint(const float endX, const float endY, const float endZ) {
-            this->endX = endX;
-            this->endY = endY;
-            this->endZ = endZ;
+            this->endX_ = endX;
+            this->endY_ = endY;
+            this->endZ_ = endZ;
         }
 
         void setMomentum(const float px, const float py, const float pz) {
-            this->px = px;
-            this->py = py;
-            this->pz = pz;
+            this->px_ = px;
+            this->py_ = py;
+            this->pz_ = pz;
         }
 
         void setMass(const float mass) {
-            this->mass = mass;
+            this->mass_ = mass;
         }
 
         void setCharge(const float charge) {
-            this->charge = charge;
+            this->charge_ = charge;
         }
 
         void addDaughter(SimParticle* daughter) {
-            daughters->Add(daughter);
+            daughters_->Add(daughter);
         }
 
         void addParent(SimParticle* parent) {
-            parents->Add(parent);
+            parents_->Add(parent);
         }
 
     private:
 
-        double energy{0};
-        int pdg{0};
-        int genStatus{-1};
-        float time{0};
-        float x{0};
-        float y{0};
-        float z{0};
-        float endX{0};
-        float endY{0};
-        float endZ{0};
-        float px{0};
-        float py{0};
-        float pz{0};
-        float mass{0};
-        float charge{0};
+        double energy_{0};
+        int pdg_{0};
+        int genStatus_{-1};
+        float time_{0};
+        float x_{0};
+        float y_{0};
+        float z_{0};
+        float endX_{0};
+        float endY_{0};
+        float endZ_{0};
+        float px_{0};
+        float py_{0};
+        float pz_{0};
+        float mass_{0};
+        float charge_{0};
 
-        TRefArray* daughters;
-        TRefArray* parents;
+        TRefArray* daughters_;
+        TRefArray* parents_;
 
         ClassDef(SimParticle, 1);
 };

@@ -19,13 +19,13 @@ class SimEvent : public Event {
 
     private:
 
-        TClonesArray* simParticles;
-        TClonesArray* taggerSimHits;
-        TClonesArray* recoilSimHits;
-        TClonesArray* ecalSimHits;
-        TClonesArray* hcalSimHits;
-        TClonesArray* triggerPadSimHits;
-        TClonesArray* targetSimHits;
+        TClonesArray* simParticles_;
+        TClonesArray* taggerSimHits_;
+        TClonesArray* recoilSimHits_;
+        TClonesArray* ecalSimHits_;
+        TClonesArray* hcalSimHits_;
+        TClonesArray* triggerPadSimHits_;
+        TClonesArray* targetSimHits_;
 
         ClassDef(SimEvent, 1);
 };

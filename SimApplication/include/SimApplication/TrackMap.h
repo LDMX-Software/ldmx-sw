@@ -24,7 +24,7 @@ class TrackMap {
 
     private:
 
-        TrackIDMap trackIDMap;
+        TrackIDMap trackIDMap_;
 };
 
 }

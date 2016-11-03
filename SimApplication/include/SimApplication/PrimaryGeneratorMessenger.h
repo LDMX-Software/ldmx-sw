@@ -21,10 +21,10 @@ class PrimaryGeneratorMessenger : public G4UImessenger {
 
     private:
 
-        PrimaryGeneratorAction* primaryGeneratorAction;
+        PrimaryGeneratorAction* primaryGeneratorAction_;
 
-        G4UIdirectory* lheDir;
-        G4UIcommand* lheOpenCmd;
+        G4UIdirectory* lheDir_;
+        G4UIcommand* lheOpenCmd_;
 };
 
 }

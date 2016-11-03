@@ -6,7 +6,7 @@
 namespace sim {
 
 APrimePhysics::APrimePhysics(const G4String& name)
-    : G4VPhysicsConstructor(name), aprimeDef(NULL) {
+    : G4VPhysicsConstructor(name), aprimeDef_(NULL) {
 }
 
 APrimePhysics::~APrimePhysics() {
@@ -18,7 +18,7 @@ void APrimePhysics::ConstructParticle() {
      * Insert A-prime into the Geant4 particle table.
      * For now we flag it as stable.
      */
-    aprimeDef = new G4ParticleDefinition(
+    aprimeDef_ = new G4ParticleDefinition(
             "A^1", /* name */
             0.003 * GeV, /* mass */
             0, /* width */

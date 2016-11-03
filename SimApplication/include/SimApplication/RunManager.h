@@ -27,8 +27,8 @@ class RunManager : public G4RunManager {
 
     private:
 
-        PluginMessenger* pluginMessenger;
-        PluginManager* pluginManager;
+        PluginMessenger* pluginMessenger_;
+        PluginManager* pluginManager_;
 };
 
 }

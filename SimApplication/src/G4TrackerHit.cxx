@@ -16,7 +16,7 @@ void G4TrackerHit::Draw() {
 
     if(visManager) {
 
-        G4Point3D p3D = G4Point3D(this->position);
+        G4Point3D p3D = G4Point3D(this->position_);
         G4Circle chit(p3D);
         chit.SetScreenDiameter(3.0);
         chit.SetFillStyle(G4Circle::filled);
@@ -34,16 +34,16 @@ void G4TrackerHit::Print() {
 
 std::ostream& G4TrackerHit::print(std::ostream& os) {
     os << "G4TrackerHit { "
-            "edep: " << this->edep << ", "
-            "position: (" << this->position[0] << ", "
-            << this->position[1] << ", "
-            << this->position[2] << "), "
-            << "layerID: " << this->layerID << ", "
-            << "momentum: (" << this->momentum[0] << ", "
-            << this->momentum[1] << ", "
-            << this->momentum[2] << "), "
-            << "pathLength: " << this->pathLength << ", "
-            << "time: " << this->time
+            "edep: " << this->edep_ << ", "
+            "position: (" << this->position_[0] << ", "
+            << this->position_[1] << ", "
+            << this->position_[2] << "), "
+            << "layerID: " << this->layerID_ << ", "
+            << "momentum: (" << this->momentum_[0] << ", "
+            << this->momentum_[1] << ", "
+            << this->momentum_[2] << "), "
+            << "pathLength: " << this->pathLength_ << ", "
+            << "time: " << this->time_
             << " }"
             << std::endl;
     return os;
