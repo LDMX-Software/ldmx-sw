@@ -30,7 +30,7 @@ class RootPersistencyManager : public G4PersistencyManager {
 
         G4bool Store(const G4Event* anEvent);
 
-        G4bool Store(const G4Run* aRun) {
+        G4bool Store(const G4Run*) {
             writer_.close();
             return true;
         }

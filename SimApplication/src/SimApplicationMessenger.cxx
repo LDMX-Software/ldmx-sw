@@ -19,7 +19,7 @@ SimApplicationMessenger::SimApplicationMessenger() {
 SimApplicationMessenger::~SimApplicationMessenger() {
 }
 
-void SimApplicationMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
+void SimApplicationMessenger::SetNewValue(G4UIcommand*, G4String) {
 }
 
 }
