@@ -10,18 +10,18 @@ class UserPrimaryParticleInformation : public G4VUserPrimaryParticleInformation 
 
     public:
 
-        UserPrimaryParticleInformation() : hepEvtStatus(-1) {
+        UserPrimaryParticleInformation() : hepEvtStatus_(-1) {
         }
 
         virtual ~UserPrimaryParticleInformation() {
         }
 
         void setHepEvtStatus(int theHepEvtStatus) {
-            hepEvtStatus = theHepEvtStatus;
+            hepEvtStatus_ = theHepEvtStatus;
         }
 
         int getHepEvtStatus() {
-            return hepEvtStatus;
+            return hepEvtStatus_;
         }
 
         void Print() const {
@@ -29,7 +29,7 @@ class UserPrimaryParticleInformation : public G4VUserPrimaryParticleInformation 
 
     private:
 
-        int hepEvtStatus;
+        int hepEvtStatus_;
 };
 
 }

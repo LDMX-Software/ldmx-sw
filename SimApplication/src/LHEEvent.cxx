@@ -28,52 +28,52 @@ LHEEvent::LHEEvent(std::string& line) {
         G4Exception("LHEEvent::LHEEvent", "LHEEventError", FatalException, "Wrong number of tokens in LHE event information record.");
     }
 
-    nup = atoi(tokens[0].c_str());
-    idprup = atoi(tokens[1].c_str());
-    xwgtup = atof(tokens[2].c_str());
-    scalup = atof(tokens[3].c_str());
-    aqedup = atof(tokens[4].c_str());
-    aqcdup = atof(tokens[5].c_str());
+    nup_ = atoi(tokens[0].c_str());
+    idprup_ = atoi(tokens[1].c_str());
+    xwgtup_ = atof(tokens[2].c_str());
+    scalup_ = atof(tokens[3].c_str());
+    aqedup_ = atof(tokens[4].c_str());
+    aqcdup_ = atof(tokens[5].c_str());
 }
 
 LHEEvent::~LHEEvent() {
-    for (std::vector<LHEParticle*>::iterator it = particles.begin();
-            it != particles.end(); it++) {
+    for (std::vector<LHEParticle*>::iterator it = particles_.begin();
+            it != particles_.end(); it++) {
         delete (*it);
     }
-    particles.clear();
+    particles_.clear();
 }
 
 int LHEEvent::getNUP() {
-    return nup;
+    return nup_;
 }
 
 int LHEEvent::getIDPRUP() {
-    return idprup;
+    return idprup_;
 }
 
 double LHEEvent::getXWGTUP() {
-    return xwgtup;
+    return xwgtup_;
 }
 
 double LHEEvent::getSCALUP() {
-    return scalup;
+    return scalup_;
 }
 
 double LHEEvent::getAQEDUP() {
-    return aqedup;
+    return aqedup_;
 }
 
 double LHEEvent::getAQCDUP() {
-    return aqcdup;
+    return aqcdup_;
 }
 
 void LHEEvent::addParticle(LHEParticle* particle) {
-    particles.push_back(particle);
+    particles_.push_back(particle);
 }
 
 const std::vector<LHEParticle*>& LHEEvent::getParticles() {
-    return particles;
+    return particles_;
 }
 
 }

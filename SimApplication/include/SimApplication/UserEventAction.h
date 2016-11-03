@@ -14,14 +14,10 @@ class UserEventAction: public G4UserEventAction {
 
     public:
 
-        UserEventAction();
-        virtual ~UserEventAction();
+        UserEventAction() {;}
+        virtual ~UserEventAction() {;}
         void BeginOfEventAction(const G4Event*);
         void EndOfEventAction(const G4Event*);
-
-    private:
-
-        SimParticleBuilder* simParticleBuilder;
 };
 
 }

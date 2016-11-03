@@ -16,12 +16,12 @@ void DummyEventProcessor::execute() {
     std::cout << "  " << event::TAGGER_SIM_HITS << ": " << event->getCollection(event::TAGGER_SIM_HITS)->GetEntries() << std::endl;
     std::cout << "  " << event::ECAL_SIM_HITS << ": " << event->getCollection(event::ECAL_SIM_HITS)->GetEntries() << std::endl;
     std::cout << "  " << event::HCAL_SIM_HITS << ": " << event->getCollection(event::HCAL_SIM_HITS)->GetEntries() << std::endl;
-    ++nProcessed;
+    ++nProcessed_;
 }
 
 void DummyEventProcessor::finish() {
     std::cout << "DummyEventProcessor: finished processing "
-            << nProcessed << " events " << std::endl;
+            << nProcessed_ << " events " << std::endl;
 }
 
 }

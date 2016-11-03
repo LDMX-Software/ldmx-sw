@@ -29,16 +29,16 @@ using detdescr::DetectorIDStore;
 namespace sim {
 
 AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser) :
-    parser(theParser), eval(new G4GDMLEvaluator) {
+    parser_(theParser), eval_(new G4GDMLEvaluator) {
 }
 
 AuxInfoReader::~AuxInfoReader() {
-    delete eval;
+    delete eval_;
 }
 
 void AuxInfoReader::readGlobalAuxInfo() {
 
-    const G4GDMLAuxListType* auxInfoList = parser->GetAuxList();
+    const G4GDMLAuxListType* auxInfoList = parser_->GetAuxList();
     for(std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin();
             iaux != auxInfoList->end(); iaux++ ) {
 
@@ -143,7 +143,7 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
     const G4LogicalVolumeStore* lvs = G4LogicalVolumeStore::GetInstance();
     std::vector<G4LogicalVolume*>::const_iterator lvciter;
     for(lvciter = lvs->begin(); lvciter != lvs->end(); lvciter++) {
-        G4GDMLAuxListType auxInfo = parser->GetVolumeAuxiliaryInformation(*lvciter);
+        G4GDMLAuxListType auxInfo = parser_->GetVolumeAuxiliaryInformation(*lvciter);
         if (auxInfo.size() > 0) {
 
             for(std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfo.begin();
@@ -297,11 +297,11 @@ void AuxInfoReader::createMagneticField(G4String magFieldName, const G4GDMLAuxLi
 
             G4String expr = auxVal + "*" + auxUnit;
             if (auxType == "bx") {
-                bx = eval->Evaluate(expr);
+                bx = eval_->Evaluate(expr);
             } else if (auxType == "by") {
-                by = eval->Evaluate(expr);
+                by = eval_->Evaluate(expr);
             } else if (auxType == "bz") {
-                bz = eval->Evaluate(expr);
+                bz = eval_->Evaluate(expr);
             }
         }
         G4ThreeVector fieldComponents(bx, by, bz);

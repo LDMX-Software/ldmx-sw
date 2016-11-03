@@ -13,7 +13,7 @@ class EventLoop {
 
     public:
 
-        EventLoop() : eventSource(nullptr) {;}
+        EventLoop() : eventSource_(nullptr) {;}
 
         virtual ~EventLoop() {;}
 
@@ -24,17 +24,17 @@ class EventLoop {
         void finish();
 
         void addEventProcessor(EventProcessor* eventProcessor) {
-            processors.push_back(eventProcessor);
+            processors_.push_back(eventProcessor);
         }
 
         void setEventSource(EventSource* eventSource) {
-            this->eventSource = eventSource;
+            this->eventSource_ = eventSource;
         }
 
     private:
 
-        std::vector<EventProcessor*> processors;
-        EventSource* eventSource;
+        std::vector<EventProcessor*> processors_;
+        EventSource* eventSource_;
 };
 
 }

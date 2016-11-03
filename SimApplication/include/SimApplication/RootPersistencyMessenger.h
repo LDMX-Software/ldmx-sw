@@ -20,11 +20,11 @@ namespace sim {
             void SetNewValue(G4UIcommand* command, G4String newValues);
 
         private:
-            G4UIdirectory* persistencyDir;
-            G4UIdirectory* rootDir;
-            G4UIcommand* rootFileCmd;
+            G4UIdirectory* persistencyDir_;
+            G4UIdirectory* rootDir_;
+            G4UIcommand* rootFileCmd_;
 
-            RootPersistencyManager* rootIO;
+            RootPersistencyManager* rootIO_;
     };
 
 }
