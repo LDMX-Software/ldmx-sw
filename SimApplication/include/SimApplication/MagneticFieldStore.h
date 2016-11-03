@@ -1,8 +1,10 @@
-#ifndef SIMAPPLICATION_MAGFIELDSTORE_H_
-#define SIMAPPLICATION_MAGFIELDSTORE_H_ 1
+#ifndef SIMAPPLICATION_MAGNETICFIELDSTORE_H_
+#define SIMAPPLICATION_MAGNETICFIELDSTORE_H_
 
 // Geant4
 #include "G4MagneticField.hh"
+
+namespace sim {
 
 class MagneticFieldStore {
 
@@ -27,5 +29,7 @@ class MagneticFieldStore {
 
         MagFieldMap magFields;
 };
+
+}
 
 #endif

@@ -1,9 +1,11 @@
 #ifndef SIMAPPLICATION_LHEPARTICLE_H_
-#define SIMAPPLICATION_LHEPARTICLE_H_ 1
+#define SIMAPPLICATION_LHEPARTICLE_H_
 
 // STL
 #include <string>
 #include <vector>
+
+namespace sim {
 
 class LHEParticle {
 
@@ -11,21 +13,27 @@ class LHEParticle {
 
         LHEParticle(std::string&);
 
-        int getIDUP();
+        int getIDUP() const;
 
-        int getISTUP();
+        int getISTUP() const;
 
-        int getMOTHUP(int);
+        int getMOTHUP(int) const;
 
-        int getICOLUP(int);
+        int getICOLUP(int) const;
 
-        double getPUP(int);
+        double getPUP(int) const;
 
-        double getVTIMUP();
+        double getVTIMUP() const;
 
-        double getSPINUP();
+        double getSPINUP() const;
 
         void setMother(int, LHEParticle*);
+
+        LHEParticle* getMother(int) const;
+
+        void print(std::ostream& stream) const;
+
+        friend std::ostream& operator<< (std::ostream& stream, const LHEParticle& particle);
 
     private:
 
@@ -39,5 +47,7 @@ class LHEParticle {
         double vtimup;
         int spinup;
 };
+
+}
 
 #endif

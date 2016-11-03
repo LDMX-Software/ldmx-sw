@@ -5,6 +5,8 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4VPrimaryGenerator.hh"
 
+namespace sim {
+
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
     public:
@@ -20,5 +22,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     private:
         G4VPrimaryGenerator* generator;
 };
+
+}
 
 #endif

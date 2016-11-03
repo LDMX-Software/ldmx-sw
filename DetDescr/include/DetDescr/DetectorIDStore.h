@@ -1,8 +1,10 @@
 #ifndef DETDESCR_DETECTORIDSTORE_H_
-#define DETDESCR_DETECTORIDSTORE_H_ 1
+#define DETDESCR_DETECTORIDSTORE_H_
 
 // LDMX
 #include "DetectorID.h"
+
+namespace detdescr {
 
 class DetectorIDStore {
 
@@ -27,5 +29,7 @@ class DetectorIDStore {
 
         DetectorIDMap ids;
 };
+
+}
 
 #endif

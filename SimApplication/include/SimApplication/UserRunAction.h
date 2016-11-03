@@ -1,9 +1,11 @@
 #ifndef SIMAPPLICATION_USERRUNACTION_H_
-#define SIMAPPLICATION_USERRUNACTION_H_ 1
+#define SIMAPPLICATION_USERRUNACTION_H_
 
 // Geant4
 #include "G4UserRunAction.hh"
 #include "G4Run.hh"
+
+namespace sim {
 
 class UserRunAction: public G4UserRunAction {
 
@@ -14,5 +16,7 @@ class UserRunAction: public G4UserRunAction {
         void BeginOfRunAction(const G4Run*);
         void EndOfRunAction(const G4Run*);
 };
+
+}
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef CALORIMETERSD_SIMAPPLICATION_H_
-#define CALORIMETERSD_SIMAPPLICATION_H_ 1
+#ifndef SIMAPPLICATION_CALORIMETERSD_H_
+#define SIMAPPLICATION_CALORIMETERSD_H_
 
 // Geant4
 #include "G4VSensitiveDetector.hh"
@@ -9,6 +9,10 @@
 #include "Event/Event.h"
 #include "SimApplication/G4CalorimeterHit.h"
 
+using detdescr::DetectorID;
+using event::Event;
+
+namespace sim {
 
 class CalorimeterSD: public G4VSensitiveDetector {
 
@@ -17,6 +21,10 @@ class CalorimeterSD: public G4VSensitiveDetector {
         CalorimeterSD(G4String theName, G4String theCollectionName, int theSubdetId, DetectorID* theDetId);
 
         virtual ~CalorimeterSD();
+
+        void setLayerDepth(int layerDepth) {
+            this->layerDepth = layerDepth;
+        }
 
         G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
 
@@ -27,9 +35,11 @@ class CalorimeterSD: public G4VSensitiveDetector {
     private:
 
         G4CalorimeterHitsCollection* hitsCollection;
-        Event* currentEvent;
         int subdetId;
         DetectorID* detId;
+        int layerDepth{2};
 };
+
+}
 
 #endif

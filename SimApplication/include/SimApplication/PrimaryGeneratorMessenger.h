@@ -1,11 +1,13 @@
 #ifndef SIMAPPLICATION_PRIMARYGENERATORMESSENGER_H_
-#define SIMAPPLICATION_PRIMARYGENERATORMESSENGER_H_ 1
+#define SIMAPPLICATION_PRIMARYGENERATORMESSENGER_H_
 
 // Geant4
 #include "G4UImessenger.hh"
 
 // LDMX
 #include "SimApplication/PrimaryGeneratorAction.h"
+
+namespace sim {
 
 class PrimaryGeneratorMessenger : public G4UImessenger {
 
@@ -24,5 +26,7 @@ class PrimaryGeneratorMessenger : public G4UImessenger {
         G4UIdirectory* lheDir;
         G4UIcommand* lheOpenCmd;
 };
+
+}
 
 #endif

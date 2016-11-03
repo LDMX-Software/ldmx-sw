@@ -1,64 +1,27 @@
 #ifndef EVENT_EVENT_H_
-#define EVENT_EVENT_H_ 1
+#define EVENT_EVENT_H_
 
 // ROOT
 #include "TObject.h"
 #include "TClonesArray.h"
 
 // LDMX
+#include "Event/EventConstants.h"
 #include "Event/SimTrackerHit.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Event/SimParticle.h"
 
 // STL
 #include <string>
+#include <map>
 
-class EventHeader {
-
-    public:
-
-        EventHeader() :
-                eventNumber(0), run(0), timestamp(0) {
-        }
-
-        virtual ~EventHeader() {
-        }
-
-        int getEventNumber() {
-            return eventNumber;
-        }
-
-        int getRun() {
-            return run;
-        }
-
-        int getTimestamp() {
-            return timestamp;
-        }
-
-        void setEventNumber(int anEventNumber) {
-            eventNumber = anEventNumber;
-        }
-
-        void setRun(int aRun) {
-            run = aRun;
-        }
-
-        void setTimestamp(int aTimestamp) {
-            timestamp = aTimestamp;
-        }
-
-    private:
-        int eventNumber;
-        int run;
-        int timestamp;
-
-    ClassDef(EventHeader, 1);
-};
+namespace event {
 
 class Event: public TObject {
 
     public:
+
+        typedef std::map<std::string, TClonesArray*> CollectionMap;
 
         Event();
 
@@ -66,43 +29,50 @@ class Event: public TObject {
 
         void Clear(Option_t* = "");
 
-        EventHeader* getHeader();
+        int getEventNumber() { return eventNumber; }
 
-        TClonesArray* getCollection(const std::string& collectionName);
+        int getRun() { return run; }
 
-        int getCollectionSize(const std::string& collectionName);
+        int getTimestamp() { return timestamp; }
+        
+        double getWeight() { return weight; }
 
-        TObject* addObject(const std::string& collectionName);
+        void setEventNumber(int eventNumber) { this->eventNumber = eventNumber; }
 
-    public:
+        void setRun(int run) { this->run = run; }
 
-        static std::string SIM_PARTICLES;
-        static std::string RECOIL_SIM_HITS;
-        static std::string TAGGER_SIM_HITS;
-        static std::string ECAL_SIM_HITS;
-        static std::string HCAL_SIM_HITS;
+        void setTimestamp(int timestamp) { this->timestamp = timestamp; }
+        
+        void setWeight(double weight) { this->weight = weight; }
+
+        TClonesArray* getCollection(const std::string& collectionName) {
+            return collMap[collectionName];
+        }
+
+        const CollectionMap& getCollectionMap() {
+            return collMap;
+        }
+
+        /**
+         * Concrete sub-classes must implement this method to return a string
+         * with the class name of the event type e.g. "event::SimEvent".
+         */
+        virtual const char* getEventType() = 0;
 
     private:
 
-        int nextCollectionIndex(const std::string& collectionName);
+        int eventNumber{-1};
+        int run{-1};
+        int timestamp{-1};
+        double weight{1.0};
 
-        EventHeader header;
+    protected:
 
-        TClonesArray* simParticles;
-        TClonesArray* taggerSimHits;
-        TClonesArray* recoilSimHits;
-        TClonesArray* ecalSimHits;
-        TClonesArray* hcalSimHits;
-
-        int nSimParticles;
-        int nTaggerSimHits;
-        int nRecoilSimHits;
-        int nEcalSimHits;
-        int nHcalSimHits;
-
-        static int DEFAULT_COLLECTION_SIZE;
+        CollectionMap collMap; //!
 
         ClassDef(Event, 1);
 };
+
+}
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_G4SIMCALORIMETER_HIT_H
-#define SIMAPPLICATION_G4SIMCALORIMETER_HIT_H 1
+#ifndef SIMAPPLICATION_G4CALORIMETERHIT_H_
+#define SIMAPPLICATION_G4CALORIMETERHIT_H_
 
 // Geant4
 #include "G4VHit.hh"
@@ -10,34 +10,73 @@
 // LDMX
 #include "Event/SimCalorimeterHit.h"
 
+using event::SimCalorimeterHit;
+
+namespace sim {
+
 class G4CalorimeterHit: public G4VHit {
 
     public:
 
-        G4CalorimeterHit(SimCalorimeterHit*);
+        G4CalorimeterHit() {;}
 
-        G4CalorimeterHit();
-
-        virtual ~G4CalorimeterHit();
+        virtual ~G4CalorimeterHit() {;}
 
         void Draw();
 
         void Print();
 
+        std::ostream& print(std::ostream& os);
+
         inline void *operator new(size_t);
 
         inline void operator delete(void *aHit);
 
-        SimCalorimeterHit* getSimCalorimeterHit();
+        G4int getTrackID() {
+            return trackID;
+        }
 
-        void setTrackID(G4int trackID);
+        void setTrackID(int trackID) {
+            this->trackID = trackID;
+        }
 
-        G4int getTrackID();
+        void setID(int id) {
+            this->id = id;
+        }
+
+        void setEdep(float edep) {
+            this->edep = edep;
+        }
+
+        void setPosition(const float x, const float y, const float z) {
+            position.set(x, y, z);
+        }
+
+        void setTime(float time) {
+            this->time = time;
+        }
+
+        void setSimCalorimeterHit(SimCalorimeterHit* simCalHit) {
+            simCalHit->setID(id);
+            simCalHit->setEdep(edep);
+            simCalHit->setPosition(position.x(), position.y(), position.z());
+            simCalHit->setTime(time);
+            this->simCalHit = simCalHit;
+        }
+
+        SimCalorimeterHit* getSimCalorimeterHit() {
+            return simCalHit;
+        }
 
     private:
 
-        SimCalorimeterHit* simCalorimeterHit;
-        G4int trackID;
+        int trackID{-1};
+        int id{0};
+        double edep{0};
+        G4ThreeVector position;
+        float time{0};
+
+        SimCalorimeterHit* simCalHit{nullptr};
 };
 
 /**
@@ -64,6 +103,8 @@ inline void* G4CalorimeterHit::operator new(size_t) {
  */
 inline void G4CalorimeterHit::operator delete(void *aHit) {
     G4CalorimeterHitAllocator.FreeSingle((G4CalorimeterHit*) aHit);
+}
+
 }
 
 #endif
