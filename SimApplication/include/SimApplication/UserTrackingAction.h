@@ -1,8 +1,10 @@
-#ifndef SIMAPPLICATION_USERTRACKINGACTION_HH_
-#define SIMAPPLICATION_USERTRACKINGACTION_HH_ 1
+#ifndef SIMAPPLICATION_USERTRACKINGACTION_H_
+#define SIMAPPLICATION_USERTRACKINGACTION_H_
 
 // Geant4
 #include "G4UserTrackingAction.hh"
+
+namespace sim {
 
 class UserTrackingAction : public G4UserTrackingAction {
 
@@ -18,5 +20,7 @@ class UserTrackingAction : public G4UserTrackingAction {
 
         void PostUserTrackingAction(const G4Track*);
 };
+
+}
 
 #endif

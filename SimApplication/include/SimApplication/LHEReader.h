@@ -1,11 +1,13 @@
 #ifndef SIMAPPLICATION_LHEREADER_H_
-#define SIMAPPLICATION_LHEREADER_H_ 1
+#define SIMAPPLICATION_LHEREADER_H_
 
 // LDMX
 #include "SimApplication/LHEEvent.h"
 
 // STL
 #include <fstream>
+
+namespace sim {
 
 class LHEReader {
 
@@ -21,5 +23,7 @@ class LHEReader {
 
         std::ifstream ifs;
 };
+
+}
 
 #endif

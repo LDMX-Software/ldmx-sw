@@ -1,8 +1,10 @@
 #ifndef SIMAPPLICATION_AUXINFOREADER_H_
-#define SIMAPPLICATION_AUXINFOREADER_H_ 1
+#define SIMAPPLICATION_AUXINFOREADER_H_
 
 // Geant4
 #include "G4GDMLParser.hh"
+
+namespace sim {
 
 class AuxInfoReader {
 
@@ -32,5 +34,7 @@ class AuxInfoReader {
         G4GDMLParser* parser;
         G4GDMLEvaluator* eval;
 };
+
+}
 
 #endif

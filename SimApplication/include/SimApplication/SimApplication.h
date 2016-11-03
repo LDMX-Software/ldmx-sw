@@ -1,8 +1,10 @@
 #ifndef SIMAPPLICATION_SIMAPPLICATION_H_
-#define SIMAPPLICATION_SIMAPPLICATION_H_ 1
+#define SIMAPPLICATION_SIMAPPLICATION_H_
 
 // STL
 #include <string>
+
+namespace sim {
 
 class SimApplication {
 
@@ -14,5 +16,7 @@ class SimApplication {
 
         void run(int argc, char** argv);
 };
+
+}
 
 #endif

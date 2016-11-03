@@ -1,8 +1,10 @@
 #ifndef SIMAPPLICATION_SIMAPPLICATIONMESSENGER_H_
-#define SIMAPPLICATION_SIMAPPLICATIONMESSENGER_H_ 1
+#define SIMAPPLICATION_SIMAPPLICATIONMESSENGER_H_
 
 // Geant4
 #include "G4UImessenger.hh"
+
+namespace sim {
 
 class SimApplicationMessenger : public G4UImessenger {
 
@@ -30,10 +32,8 @@ class SimApplicationMessenger : public G4UImessenger {
     private:
 
         G4UIdirectory* ldmxDir;
-        G4UIdirectory* persistencyDir;
-        G4UIdirectory* rootDir;
-
-        G4UIcommand* rootFileCmd;
 };
+
+}
 
 #endif

@@ -1,11 +1,13 @@
 #ifndef DETDESCR_DETECTORID_H_
-#define DETDESCR_DETECTORID_H_ 1
+#define DETDESCR_DETECTORID_H_
 
 // STL
 #include <vector>
 
 // LDMX
 #include "DetDescr/IDField.h"
+
+namespace detdescr {
 
 /**
  * Represents an ID in the detector with a raw, 32-bit value which can
@@ -102,5 +104,7 @@ class DetectorID {
         IDField::IDFieldMap idFieldMap;
         IDField::IDFieldList* idFieldList;
 };
+
+}
 
 #endif

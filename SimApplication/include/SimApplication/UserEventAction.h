@@ -1,5 +1,5 @@
 #ifndef SIMAPPLICATION_USEREVENTACTION_H_
-#define SIMAPPLICATION_USEREVENTACTION_H_ 1
+#define SIMAPPLICATION_USEREVENTACTION_H_
 
 // Geant4
 #include "G4UserEventAction.hh"
@@ -7,6 +7,8 @@
 
 // LDMX
 #include "SimApplication/SimParticleBuilder.h"
+
+namespace sim {
 
 class UserEventAction: public G4UserEventAction {
 
@@ -21,5 +23,7 @@ class UserEventAction: public G4UserEventAction {
 
         SimParticleBuilder* simParticleBuilder;
 };
+
+}
 
 #endif

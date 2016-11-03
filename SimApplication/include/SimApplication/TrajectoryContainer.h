@@ -1,5 +1,5 @@
 #ifndef SIMAPPLICATION_TRAJECTORYCONTAINER_H_
-#define SIMAPPLICATION_TRAJECTORYCONTAINER_H_ 1
+#define SIMAPPLICATION_TRAJECTORYCONTAINER_H_
 
 // Geant4
 #include "G4TrajectoryContainer.hh"
@@ -10,11 +10,15 @@
 // STL
 #include <map>
 
+namespace sim {
+
 class TrajectoryContainer : public G4TrajectoryContainer {
 
     public:
 
         Trajectory* findByTrackID(G4int);
 };
+
+}
 
 #endif

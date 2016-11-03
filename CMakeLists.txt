@@ -1,21 +1,22 @@
 # minimum cmake version
-cmake_minimum_required(VERSION 3.0)
-
-# allows calling export_library_dependencies used in package config file generation
-cmake_policy(SET CMP0033 OLD)
-
-# define path to extra CMake modules
-set(LDMX_CMAKE_MODULES_ROOT ${PROJECT_SOURCE_DIR}/cmake/Modules/)
+cmake_minimum_required(VERSION 3.6)
 
 # add dir with extra CMake modules 
-list(APPEND CMAKE_MODULE_PATH ${LDMX_CMAKE_MODULES_ROOT})
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 
-# import utility macros
-include(MacroGeneratePackageConfigFiles)
-include(MacroCheckPackageLibs)
-include(MacroCheckPackageVersion)
+# import macro for declaring modules
+include(MacroModule)
 
-# build sub-modules
-add_subdirectory(Event)
-add_subdirectory(DetDescr)
-add_subdirectory(SimApplication)
+# declare list of modules with correct dependency order
+set(MODULES Event DetDescr EventProc SimPlugins SimApplication)
+
+# build each module in the list
+foreach(module ${MODULES})
+  message(STATUS "Adding module '${module}'")
+  add_subdirectory(${module})
+  message(STATUS "")
+endforeach()
+
+# create env setup script
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/ldmx-setup-env.sh.in ${CMAKE_CURRENT_BINARY_DIR}/ldmx-setup-env.sh)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ldmx-setup-env.sh DESTINATION bin)

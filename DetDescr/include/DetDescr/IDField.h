@@ -1,10 +1,12 @@
-#ifndef DETDESCR_IDFIELDDESCR_H_
-#define DETDESCR_IDFIELDDESCR_H_ 1
+#ifndef DETDESCR_IDFIELD_H_
+#define DETDESCR_IDFIELD_H_
 
 // STL
 #include <string>
 #include <map>
 #include <vector>
+
+namespace detdescr {
 
 class IDField {
 
@@ -37,5 +39,7 @@ class IDField {
         unsigned endBit;
         unsigned bitMask;
 };
+
+}
 
 #endif

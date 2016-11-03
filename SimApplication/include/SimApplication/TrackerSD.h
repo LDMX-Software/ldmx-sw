@@ -1,5 +1,5 @@
-#ifndef TRACKERSD_SIMAPPLICATION_H_
-#define TRACKERSD_SIMAPPLICATION_H_ 1
+#ifndef SIMAPPLICATION_TRACKERSD_H_
+#define SIMAPPLICATION_TRACKERSD_H_
 
 // Geant4
 #include <DetDescr/DetectorID.h>
@@ -8,6 +8,11 @@
 // LDMX
 #include "SimApplication/G4TrackerHit.h"
 #include "Event/Event.h"
+
+using event::Event;
+using detdescr::DetectorID;
+
+namespace sim {
 
 class TrackerSD: public G4VSensitiveDetector {
 
@@ -30,5 +35,7 @@ class TrackerSD: public G4VSensitiveDetector {
         int subdetId;
         DetectorID* detId;
 };
+
+}
 
 #endif

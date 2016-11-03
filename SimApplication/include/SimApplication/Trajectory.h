@@ -1,5 +1,5 @@
 #ifndef SIMAPPLICATION_TRAJECTORY_H_
-#define SIMAPPLICATION_TRAJECTORY_H_ 1
+#define SIMAPPLICATION_TRAJECTORY_H_
 
 // Geant4
 #include "G4VTrajectory.hh"
@@ -10,6 +10,8 @@
 #include <vector>
 
 typedef std::vector<G4VTrajectoryPoint*> TrajectoryPointContainer;
+
+namespace sim {
 
 /**
  * REFERENCE
@@ -58,9 +60,9 @@ class Trajectory : public G4VTrajectory {
 
         G4int getGenStatus() const;
 
-        G4int getSimStatus() const;
-
         const G4ThreeVector& getVertexPosition() const;
+
+        void setGenStatus(int);
 
     private:
 
@@ -88,6 +90,8 @@ inline void* Trajectory::operator new(size_t) {
 
 inline void Trajectory::operator delete(void* aTrajectory) {
     TrajectoryAllocator.FreeSingle((Trajectory*) aTrajectory);
+}
+
 }
 
 #endif

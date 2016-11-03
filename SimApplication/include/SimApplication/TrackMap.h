@@ -1,8 +1,11 @@
-#ifndef SIMAPPLICATION_TRACKMAP_H_
-#define SIMAPPLICATION_TRACKMAP_H_ 1
+#ifndef SIMAPPLICATION_TRACKERMAP_H_
+#define SIMAPPLICATION_TRACKERMAP_H_
 
 // Geant4
+#include "G4Event.hh"
 #include "G4VTrajectory.hh"
+
+namespace sim {
 
 class TrackMap {
 
@@ -15,7 +18,7 @@ class TrackMap {
 
         void addSecondary(G4int trackID, G4int parentID);
 
-        G4VTrajectory* findTrajectory(G4int);
+        G4VTrajectory* findTrajectory(const G4Event* anEvent, G4int trackID);
 
         void clear();
 
@@ -23,5 +26,7 @@ class TrackMap {
 
         TrackIDMap trackIDMap;
 };
+
+}
 
 #endif

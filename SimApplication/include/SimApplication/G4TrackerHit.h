@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_G4SIMTRACKER_HIT_H
-#define SIMAPPLICATION_G4SIMTRACKER_HIT_H 1
+#ifndef SIMAPPLICATION_G4SIMTRACKERHIT_H_
+#define SIMAPPLICATION_G4SIMTRACKERHIT_H_
 
 // Geant4
 #include "G4VHit.hh"
@@ -10,42 +10,109 @@
 // LDMX
 #include "Event/SimTrackerHit.h"
 
+// STL
+#include <ostream>
+
+using event::SimTrackerHit;
+
+namespace sim {
+
 class G4TrackerHit: public G4VHit {
 
     public:
 
-        G4TrackerHit(SimTrackerHit*);
+        G4TrackerHit() {;}
 
-        G4TrackerHit();
-
-        virtual ~G4TrackerHit();
+        virtual ~G4TrackerHit() {;}
 
         void Draw();
 
         void Print();
 
+        std::ostream& print(std::ostream& os);
+
         inline void *operator new(size_t);
 
         inline void operator delete(void *aHit);
 
-        SimTrackerHit* getSimTrackerHit();
+        void setTrackID(int trackID) {
+            this->trackID = trackID;
+        }
 
-        G4ThreeVector getPosition();
+        int getTrackID() {
+            return this->trackID;
+        }
 
-        G4int getTrackID();
+        void setID(int id) {
+            this->id = id;
+        }
 
-        void setStartPosition(const G4ThreeVector& startPosition);
+        void setLayerID(int layerID) {
+            this->layerID = layerID;
+        }
 
-        void setEndPosition(const G4ThreeVector& endPosition);
+        void setEdep(float edep) {
+            this->edep = edep;
+        }
 
-        void setMomentum(const G4ThreeVector& endPosition);
+        void setTime(float time) {
+            this->time = time;
+        }
 
-        void setTrackID(G4int);
+        void setMomentum(float px, float py, float pz) {
+            momentum.setX(px);
+            momentum.setY(py);
+            momentum.setZ(pz);
+        }
+
+        void setPosition(float x, float y, float z) {
+            position.setX(x);
+            position.setY(y);
+            position.setZ(z);
+        }
+
+        void setPathLength(float pathLength) {
+            this->pathLength = pathLength;
+        }
+
+        /**
+         * Copy the contents of this hit into an output SimTrackerHit.
+         */
+        void setSimTrackerHit(SimTrackerHit* simTrackerHit) {
+
+            simTrackerHit->setID(id);
+            simTrackerHit->setLayerID(layerID);
+            simTrackerHit->setEdep(edep);
+            simTrackerHit->setTime(time);
+            simTrackerHit->setMomentum(
+                    momentum.x(),
+                    momentum.y(),
+                    momentum.z());
+            simTrackerHit->setPosition(
+                    position.x(),
+                    position.y(),
+                    position.z());
+            simTrackerHit->setPathLength(pathLength);
+
+            this->simTrackerHit = simTrackerHit;
+        }
+
+        SimTrackerHit* getSimTrackerHit() {
+            return simTrackerHit;
+        }
 
     private:
 
-        SimTrackerHit* simTrackerHit;
-        G4int trackID;
+        G4int trackID{0};
+        int id{0};
+        int layerID{0};
+        float edep{0};
+        float time{0};
+        G4ThreeVector momentum;
+        G4ThreeVector position;
+        float pathLength{0};
+
+        SimTrackerHit* simTrackerHit{nullptr};
 };
 
 /**
@@ -72,6 +139,8 @@ inline void* G4TrackerHit::operator new(size_t) {
  */
 inline void G4TrackerHit::operator delete(void *aHit) {
     G4TrackerHitAllocator.FreeSingle((G4TrackerHit*) aHit);
+}
+
 }
 
 #endif

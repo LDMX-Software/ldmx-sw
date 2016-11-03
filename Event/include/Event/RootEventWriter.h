@@ -1,5 +1,5 @@
 #ifndef EVENT_ROOTWRITER_H_
-#define EVENT_ROOTWRITER_H_ 1
+#define EVENT_ROOTWRITER_H_
 
 // ROOT
 #include "TFile.h"
@@ -8,19 +8,31 @@
 // LDMX
 #include "Event/Event.h"
 
+namespace event {
+
 class RootEventWriter {
 
     public:
 
-        RootEventWriter(std::string fileName);
-
         RootEventWriter();
 
-        virtual ~RootEventWriter();
+        RootEventWriter(std::string fileName, Event* outputEvent);
 
-        static RootEventWriter* getInstance();
+        RootEventWriter(Event* outputEvent);
 
-        void setFileName(std::string fileName);
+        virtual ~RootEventWriter() {;}
+
+        Event* getEvent() {
+            return outputEvent;
+        }
+
+        void setEvent(Event* outputEvent) {
+            this->outputEvent = outputEvent;
+        }
+
+        void setFileName(std::string fileName) {
+            this->fileName = fileName;
+        }
 
         void open();
 
@@ -28,16 +40,14 @@ class RootEventWriter {
 
         void writeEvent();
 
-        Event* getEvent();
-
     private:
 
         std::string fileName;
         TFile* rootFile;
         TTree *tree;
-        Event* event;
-
-        static RootEventWriter* INSTANCE;
+        Event* outputEvent;
 };
+
+}
 
 #endif
