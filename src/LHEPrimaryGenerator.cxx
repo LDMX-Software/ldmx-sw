@@ -14,18 +14,18 @@
 namespace sim {
 
 LHEPrimaryGenerator::LHEPrimaryGenerator(LHEReader* theReader)
-    : reader(theReader) {
+    : reader_(theReader) {
 }
 
 LHEPrimaryGenerator::~LHEPrimaryGenerator() {
-    delete reader;
+    delete reader_;
 }
 
 void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
     std::cout << "Reading next LHE event ..." << std::endl;
 
-    LHEEvent* lheEvent = reader->readNextEvent();
+    LHEEvent* lheEvent = reader_->readNextEvent();
 
     if (lheEvent != NULL) {
 

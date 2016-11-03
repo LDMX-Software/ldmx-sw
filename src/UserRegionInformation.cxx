@@ -3,14 +3,14 @@
 namespace sim {
 
 UserRegionInformation::UserRegionInformation(bool aStoreSecondaries)
-    : storeSecondaries(aStoreSecondaries) {
+    : storeSecondaries_(aStoreSecondaries) {
 }
 
 UserRegionInformation::~UserRegionInformation() {
 }
 
 bool UserRegionInformation::getStoreSecondaries() const {
-    return storeSecondaries;
+    return storeSecondaries_;
 }
 
 void UserRegionInformation::Print() const {

@@ -12,8 +12,8 @@ namespace sim {
 
 SimApplicationMessenger::SimApplicationMessenger() {
 
-    ldmxDir = new G4UIdirectory("/ldmx/");
-    ldmxDir->SetGuidance("LDMX Simulation Application commands");
+    ldmxDir_ = new G4UIdirectory("/ldmx/");
+    ldmxDir_->SetGuidance("LDMX Simulation Application commands");
 }
 
 SimApplicationMessenger::~SimApplicationMessenger() {

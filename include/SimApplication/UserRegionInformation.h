@@ -20,7 +20,7 @@ public:
 
 private:
 
-    bool storeSecondaries;
+    bool storeSecondaries_;
 };
 
 }

@@ -31,8 +31,8 @@ class AuxInfoReader {
         void createVisAttributes(G4String name, const G4GDMLAuxListType* auxInfoList);
 
     private:
-        G4GDMLParser* parser;
-        G4GDMLEvaluator* eval;
+        G4GDMLParser* parser_;
+        G4GDMLEvaluator* eval_;
 };
 
 }
