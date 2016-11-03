@@ -37,15 +37,15 @@ class LHEParticle {
 
     private:
 
-        LHEParticle* mothers[2];
+        LHEParticle* mothers_[2];
 
-        int idup;
-        int istup;
-        int mothup[2];
-        int icolup[2];
-        double pup[5];
-        double vtimup;
-        int spinup;
+        int idup_;
+        int istup_;
+        int mothup_[2];
+        int icolup_[2];
+        double pup_[5];
+        double vtimup_;
+        int spinup_;
 };
 
 }

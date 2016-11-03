@@ -8,66 +8,66 @@ namespace sim {
 G4Allocator<Trajectory> TrajectoryAllocator;
 
 Trajectory::Trajectory(const G4Track* aTrack)
-    : genStatus(0),
-      simStatus(0) {
+    : genStatus_(0),
+      simStatus_(0) {
 
-    particleDef = aTrack->GetDefinition();
-    mass = aTrack->GetDynamicParticle()->GetMass();
-    trackID = aTrack->GetTrackID();
-    parentID = aTrack->GetParentID();
-    initialMomentum = aTrack->GetMomentum();
-    energy = aTrack->GetTotalEnergy();
-    globalTime = aTrack->GetGlobalTime();
-    vertexPosition = aTrack->GetVertexPosition();
+    particleDef_ = aTrack->GetDefinition();
+    mass_ = aTrack->GetDynamicParticle()->GetMass();
+    trackID_ = aTrack->GetTrackID();
+    parentID_ = aTrack->GetParentID();
+    initialMomentum_ = aTrack->GetMomentum();
+    energy_ = aTrack->GetTotalEnergy();
+    globalTime_ = aTrack->GetGlobalTime();
+    vertexPosition_ = aTrack->GetVertexPosition();
 
-    trajPoints = new TrajectoryPointContainer();
-    trajPoints->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
+    trajPoints_ = new TrajectoryPointContainer();
+    trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
 }
 
 Trajectory::~Trajectory() {
     // Delete trajectory points and their container.
     size_t i;
-    for(i = 0; i < trajPoints->size(); i++) {
-        delete (*trajPoints)[i];
+    for(i = 0; i < trajPoints_->size(); i++) {
+        delete (*trajPoints_)[i];
     }
-    trajPoints->clear();
-    delete trajPoints;
+    trajPoints_->clear();
+    delete trajPoints_;
 }
 
 void Trajectory::AppendStep(const G4Step* aStep) {
-   trajPoints->push_back(new G4TrajectoryPoint(aStep->GetPostStepPoint()->GetPosition()));
+   trajPoints_->push_back(new G4TrajectoryPoint(aStep->GetPostStepPoint()->GetPosition()));
 }
 
 G4int Trajectory::GetTrackID() const {
-    return trackID;
+    return trackID_;
 }
 
 G4int Trajectory::GetParentID() const {
-    return parentID;
+    return parentID_;
 }
 
 G4String Trajectory::GetParticleName() const {
-    return particleDef->GetParticleName();
+    return particleDef_->GetParticleName();
 }
 
 G4double Trajectory::GetCharge() const {
-    return particleDef->GetPDGCharge();
+    return particleDef_->GetPDGCharge();
 }
 
 G4int Trajectory::GetPDGEncoding() const {
-    return particleDef->GetPDGEncoding();
+    return particleDef_->GetPDGEncoding();
 }
 
 G4ThreeVector Trajectory::GetInitialMomentum () const {
-    return initialMomentum;
+    return initialMomentum_;
 }
 
 int Trajectory::GetPointEntries() const {
-    return trajPoints->size();
+    return trajPoints_->size();
 }
 
 G4VTrajectoryPoint* Trajectory::GetPoint(G4int i) const {
-    return (*trajPoints)[i];
+    return (*trajPoints_)[i];
 }
 
 void Trajectory::MergeTrajectory(G4VTrajectory* secondTrajectory) {
@@ -78,38 +78,38 @@ void Trajectory::MergeTrajectory(G4VTrajectory* secondTrajectory) {
     Trajectory* seco = (Trajectory*)secondTrajectory;
     G4int ent = seco->GetPointEntries();
     for(int i=1; i<ent; i++) {
-        trajPoints->push_back((*(seco->trajPoints))[i]);
+        trajPoints_->push_back((*(seco->trajPoints_))[i]);
     }
-    delete (*seco->trajPoints)[0];
-    seco->trajPoints->clear();
+    delete (*seco->trajPoints_)[0];
+    seco->trajPoints_->clear();
 }
 
 const G4ThreeVector& Trajectory::getEndPoint() const {
-    return endPoint;
+    return endPoint_;
 }
 
 G4double Trajectory::getEnergy() const {
-    return energy;
+    return energy_;
 }
 
 G4double Trajectory::getMass() const {
-    return mass;
+    return mass_;
 }
 
 G4float Trajectory::getGlobalTime() const {
-    return globalTime;
+    return globalTime_;
 }
 
 G4int Trajectory::getGenStatus() const {
-    return genStatus;
+    return genStatus_;
 }
 
 const G4ThreeVector& Trajectory::getVertexPosition() const {
-    return vertexPosition;
+    return vertexPosition_;
 }
 
 void Trajectory::setGenStatus(int theGenStatus) {
-    genStatus = theGenStatus;
+    genStatus_ = theGenStatus;
 }
 
 }

@@ -12,22 +12,22 @@ UserActionPlugin* PluginLoader::create(std::string pluginName, std::string libNa
     createIt = (UserActionPlugin* (*)())dlsym(handle, std::string("create" + pluginName).c_str());
     UserActionPlugin* plugin = (UserActionPlugin*)createIt();
 
-    this->pluginHandles[plugin] = handle;
+    this->pluginHandles_[plugin] = handle;
 
     return plugin;
 }
 
 void PluginLoader::destroy(UserActionPlugin* plugin) {
 
-    void* handle = this->pluginHandles[plugin];
+    void* handle = this->pluginHandles_[plugin];
 
     void (*destroyIt)(UserActionPlugin*);
     destroyIt = (void (*)(UserActionPlugin*))dlsym(handle, std::string("destroy" + plugin->getName()).c_str());
     destroyIt(plugin);
 
     std::map<UserActionPlugin*, void*>::iterator it;
-    it = this->pluginHandles.find(plugin);
-    this->pluginHandles.erase(it);
+    it = this->pluginHandles_.find(plugin);
+    this->pluginHandles_.erase(it);
 }
 
 }

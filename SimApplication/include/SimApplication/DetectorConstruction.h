@@ -21,8 +21,8 @@ class DetectorConstruction: public G4VUserDetectorConstruction {
         G4VPhysicalVolume *Construct();
 
     private:
-        G4GDMLParser* parser;
-        AuxInfoReader* auxInfoReader;
+        G4GDMLParser* parser_;
+        AuxInfoReader* auxInfoReader_;
 };
 
 }

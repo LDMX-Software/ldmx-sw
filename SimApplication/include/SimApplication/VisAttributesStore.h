@@ -18,16 +18,16 @@ class VisAttributesStore {
         }
 
         G4VisAttributes* getVisAttributes(const std::string& name) {
-            return visAttributesMap[name];
+            return visAttributesMap_[name];
         }
 
         void addVisAttributes(const std::string& name, G4VisAttributes* visAttributes) {
-            visAttributesMap[name] = visAttributes;
+            visAttributesMap_[name] = visAttributes;
         }
 
     private:
 
-        VisAttributesMap visAttributesMap;
+        VisAttributesMap visAttributesMap_;
 };
 
 }
