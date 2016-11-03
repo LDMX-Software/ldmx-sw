@@ -20,7 +20,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
         void setPrimaryGenerator(G4VPrimaryGenerator*);
 
     private:
-        G4VPrimaryGenerator* generator;
+        G4VPrimaryGenerator* generator_;
 };
 
 }

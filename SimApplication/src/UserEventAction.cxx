@@ -21,14 +21,6 @@ using event::RootEventWriter;
 
 namespace sim {
 
-UserEventAction::UserEventAction()
-    : simParticleBuilder(new SimParticleBuilder) {
-}
-
-UserEventAction::~UserEventAction() {
-    delete simParticleBuilder;
-}
-
 void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
 
     // Clear the global track map.

@@ -21,7 +21,7 @@ class LHEReader {
 
     private:
 
-        std::ifstream ifs;
+        std::ifstream ifs_;
 };
 
 }

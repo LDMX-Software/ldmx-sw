@@ -19,7 +19,7 @@ class PluginLoader {
 
     private:
 
-        std::map<UserActionPlugin*, void*> pluginHandles;
+        std::map<UserActionPlugin*, void*> pluginHandles_;
 };
 
 }

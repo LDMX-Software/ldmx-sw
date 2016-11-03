@@ -3,32 +3,32 @@
 namespace sim {
 
 RootPersistencyMessenger::RootPersistencyMessenger(RootPersistencyManager* rootIO)
-    : rootIO(rootIO) {
+    : rootIO_(rootIO) {
 
-    persistencyDir = new G4UIdirectory("/ldmx/persistency/");
-    persistencyDir->SetGuidance("Persistency commands");
+    persistencyDir_ = new G4UIdirectory("/ldmx/persistency/");
+    persistencyDir_->SetGuidance("Persistency commands");
 
-    rootDir = new G4UIdirectory("/ldmx/persistency/root/");
-    rootDir->SetGuidance("ROOT persistency commands");
+    rootDir_ = new G4UIdirectory("/ldmx/persistency/root/");
+    rootDir_->SetGuidance("ROOT persistency commands");
 
-    rootFileCmd = new G4UIcommand("/ldmx/persistency/root/file", this);
+    rootFileCmd_ = new G4UIcommand("/ldmx/persistency/root/file", this);
     G4UIparameter* filename = new G4UIparameter("filename", 's', true);
-    rootFileCmd->SetParameter(filename);
-    rootFileCmd->AvailableForStates(
+    rootFileCmd_->SetParameter(filename);
+    rootFileCmd_->AvailableForStates(
             G4ApplicationState::G4State_PreInit,
             G4ApplicationState::G4State_Idle);
 
 }
 
 RootPersistencyMessenger::~RootPersistencyMessenger() {
-    delete rootFileCmd;
-    delete rootDir;
-    delete rootFileCmd;
+    delete rootFileCmd_;
+    delete rootDir_;
+    delete rootFileCmd_;
 }
 
 void RootPersistencyMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
-    if (command == rootFileCmd) {
-        rootIO->setFileName(newValues);
+    if (command == rootFileCmd_) {
+        rootIO_->setFileName(newValues);
     }
 }
 

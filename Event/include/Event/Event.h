@@ -29,28 +29,28 @@ class Event: public TObject {
 
         void Clear(Option_t* = "");
 
-        int getEventNumber() { return eventNumber; }
+        int getEventNumber() { return eventNumber_; }
 
-        int getRun() { return run; }
+        int getRun() { return run_; }
 
-        int getTimestamp() { return timestamp; }
+        int getTimestamp() { return timestamp_; }
         
-        double getWeight() { return weight; }
+        double getWeight() { return weight_; }
 
-        void setEventNumber(int eventNumber) { this->eventNumber = eventNumber; }
+        void setEventNumber(int eventNumber) { this->eventNumber_ = eventNumber; }
 
-        void setRun(int run) { this->run = run; }
+        void setRun(int run) { this->run_ = run; }
 
-        void setTimestamp(int timestamp) { this->timestamp = timestamp; }
+        void setTimestamp(int timestamp) { this->timestamp_ = timestamp; }
         
-        void setWeight(double weight) { this->weight = weight; }
+        void setWeight(double weight) { this->weight_ = weight; }
 
         TClonesArray* getCollection(const std::string& collectionName) {
-            return collMap[collectionName];
+            return collMap_[collectionName];
         }
 
         const CollectionMap& getCollectionMap() {
-            return collMap;
+            return collMap_;
         }
 
         /**
@@ -61,14 +61,14 @@ class Event: public TObject {
 
     private:
 
-        int eventNumber{-1};
-        int run{-1};
-        int timestamp{-1};
-        double weight{1.0};
+        int eventNumber_{-1};
+        int run_{-1};
+        int timestamp_{-1};
+        double weight_{1.0};
 
     protected:
 
-        CollectionMap collMap; //!
+        CollectionMap collMap_; //!
 
         ClassDef(Event, 1);
 };

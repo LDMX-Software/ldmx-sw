@@ -18,13 +18,13 @@
 namespace sim {
 
 RunManager::RunManager() {
-    pluginManager = &PluginManager::getInstance();
-    pluginMessenger = new PluginMessenger(pluginManager);
+    pluginManager_ = &PluginManager::getInstance();
+    pluginMessenger_ = new PluginMessenger(pluginManager_);
 }
 
 RunManager::~RunManager() {
-    delete pluginManager;
-    delete pluginMessenger;
+    delete pluginManager_;
+    delete pluginMessenger_;
 }
 
 void RunManager::InitializePhysics() {
