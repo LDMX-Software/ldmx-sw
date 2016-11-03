@@ -133,7 +133,7 @@ void TrackerSD::Initialize(G4HCofThisEvent* hce) {
     hce->AddHitsCollection(hcID, hitsCollection_);
 }
 
-void TrackerSD::EndOfEvent(G4HCofThisEvent* hce) {
+void TrackerSD::EndOfEvent(G4HCofThisEvent*) {
 
     // Print number of hits.
     if (this->verboseLevel > 0) {
