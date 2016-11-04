@@ -25,13 +25,13 @@ class RootPersistencyManager : public G4PersistencyManager {
             : G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager") {
             G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
             G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
-            writer.setEvent(new SimEvent);
+            writer_.setEvent(new SimEvent);
         }
 
         G4bool Store(const G4Event* anEvent);
 
-        G4bool Store(const G4Run* aRun) {
-            writer.close();
+        G4bool Store(const G4Run*) {
+            writer_.close();
             return true;
         }
 
@@ -41,19 +41,19 @@ class RootPersistencyManager : public G4PersistencyManager {
         }
 
         void openWriter() {
-            writer.open();
+            writer_.open();
         }
 
         Event* getCurrentEvent() {
-            return writer.getEvent();
+            return writer_.getEvent();
         }
 
         void clearCurrentEvent() {
-            writer.getEvent()->Clear("");
+            writer_.getEvent()->Clear("");
         }
 
         void setFileName(std::string fileName) {
-            this->writer.setFileName(fileName);
+            this->writer_.setFileName(fileName);
         }
 
         static RootPersistencyManager* getInstance() {
@@ -69,8 +69,8 @@ class RootPersistencyManager : public G4PersistencyManager {
 
     private:
 
-        SimParticleBuilder simParticleBuilder;
-        RootEventWriter writer;
+        SimParticleBuilder simParticleBuilder_;
+        RootEventWriter writer_;
 };
 
 }

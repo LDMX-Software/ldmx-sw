@@ -30,58 +30,58 @@ LHEParticle::LHEParticle(std::string& line) {
         G4Exception("LHEParticle::LHEParticle", "LHEParticleError", FatalException, "Wrong number of tokens in LHE particle record.");
     }
 
-    idup = atof(tokens[0].c_str());
-    istup = atoi(tokens[1].c_str());
-    mothup[0] = atoi(tokens[2].c_str());
-    mothup[1] = atoi(tokens[3].c_str());
-    icolup[0] = atoi(tokens[4].c_str());
-    icolup[1] = atoi(tokens[5].c_str());
-    pup[0] = atof(tokens[6].c_str());
-    pup[1] = atof(tokens[7].c_str());
-    pup[2] = atof(tokens[8].c_str());
-    pup[3] = atof(tokens[9].c_str());
-    pup[4] = atof(tokens[10].c_str());
-    vtimup = atof(tokens[11].c_str());
-    spinup = atof(tokens[12].c_str());
+    idup_ = atof(tokens[0].c_str());
+    istup_ = atoi(tokens[1].c_str());
+    mothup_[0] = atoi(tokens[2].c_str());
+    mothup_[1] = atoi(tokens[3].c_str());
+    icolup_[0] = atoi(tokens[4].c_str());
+    icolup_[1] = atoi(tokens[5].c_str());
+    pup_[0] = atof(tokens[6].c_str());
+    pup_[1] = atof(tokens[7].c_str());
+    pup_[2] = atof(tokens[8].c_str());
+    pup_[3] = atof(tokens[9].c_str());
+    pup_[4] = atof(tokens[10].c_str());
+    vtimup_ = atof(tokens[11].c_str());
+    spinup_ = atof(tokens[12].c_str());
 
-    mothers[0] = NULL;
-    mothers[1] = NULL;
+    mothers_[0] = NULL;
+    mothers_[1] = NULL;
 }
 
 int LHEParticle::getIDUP() const {
-    return idup;
+    return idup_;
 }
 
 int LHEParticle::getISTUP() const {
-    return istup;
+    return istup_;
 }
 
 int LHEParticle::getMOTHUP(int i) const {
-    return mothup[i];
+    return mothup_[i];
 }
 
 int LHEParticle::getICOLUP(int i) const {
-    return icolup[i];
+    return icolup_[i];
 }
 
 double LHEParticle::getPUP(int i) const {
-    return pup[i];
+    return pup_[i];
 }
 
 double LHEParticle::getVTIMUP() const {
-    return vtimup;
+    return vtimup_;
 }
 
 double LHEParticle::getSPINUP() const {
-    return spinup;
+    return spinup_;
 }
 
 void LHEParticle::setMother(int i, LHEParticle* mother) {
-    mothers[i] = mother;
+    mothers_[i] = mother;
 }
 
 LHEParticle* LHEParticle::getMother(int i) const {
-    return mothers[i];
+    return mothers_[i];
 }
 
 void LHEParticle::print(std::ostream& stream) const {

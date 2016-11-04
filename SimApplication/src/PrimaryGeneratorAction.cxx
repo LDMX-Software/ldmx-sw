@@ -10,20 +10,20 @@
 namespace sim {
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
- : G4VUserPrimaryGeneratorAction(), generator(new G4ParticleGun) {
+ : G4VUserPrimaryGeneratorAction(), generator_(new G4ParticleGun) {
 }
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction() {
-    delete generator;
+    delete generator_;
 }
 
 void PrimaryGeneratorAction::setPrimaryGenerator(G4VPrimaryGenerator* aGenerator) {
-    PrimaryGeneratorAction::generator = aGenerator;
+    PrimaryGeneratorAction::generator_ = aGenerator;
 }
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
     std::cout << ">>> Begin Event " << event->GetEventID() << " <<<" << std::endl;
-    generator->GeneratePrimaryVertex(event);
+    generator_->GeneratePrimaryVertex(event);
 
     //std::cout << "Dumping primary particles" << std::endl;
     //event->GetPrimaryVertex(0)->GetNumberOfParticle()

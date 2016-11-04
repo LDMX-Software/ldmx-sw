@@ -33,50 +33,50 @@ class G4CalorimeterHit: public G4VHit {
         inline void operator delete(void *aHit);
 
         G4int getTrackID() {
-            return trackID;
+            return trackID_;
         }
 
         void setTrackID(int trackID) {
-            this->trackID = trackID;
+            this->trackID_ = trackID;
         }
 
         void setID(int id) {
-            this->id = id;
+            this->id_ = id;
         }
 
         void setEdep(float edep) {
-            this->edep = edep;
+            this->edep_ = edep;
         }
 
         void setPosition(const float x, const float y, const float z) {
-            position.set(x, y, z);
+            position_.set(x, y, z);
         }
 
         void setTime(float time) {
-            this->time = time;
+            this->time_ = time;
         }
 
         void setSimCalorimeterHit(SimCalorimeterHit* simCalHit) {
-            simCalHit->setID(id);
-            simCalHit->setEdep(edep);
-            simCalHit->setPosition(position.x(), position.y(), position.z());
-            simCalHit->setTime(time);
-            this->simCalHit = simCalHit;
+            simCalHit->setID(id_);
+            simCalHit->setEdep(edep_);
+            simCalHit->setPosition(position_.x(), position_.y(), position_.z());
+            simCalHit->setTime(time_);
+            this->simCalHit_ = simCalHit;
         }
 
         SimCalorimeterHit* getSimCalorimeterHit() {
-            return simCalHit;
+            return simCalHit_;
         }
 
     private:
 
-        int trackID{-1};
-        int id{0};
-        double edep{0};
-        G4ThreeVector position;
-        float time{0};
+        int trackID_{-1};
+        int id_{0};
+        double edep_{0};
+        G4ThreeVector position_;
+        float time_{0};
 
-        SimCalorimeterHit* simCalHit{nullptr};
+        SimCalorimeterHit* simCalHit_{nullptr};
 };
 
 /**

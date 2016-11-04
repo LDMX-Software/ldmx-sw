@@ -15,7 +15,7 @@ TrackMap* TrackMap::getInstance() {
 }
 
 void TrackMap::addSecondary(G4int trackID, G4int parentID) {
-    trackIDMap[trackID] = parentID;
+    trackIDMap_[trackID] = parentID;
 }
 
 G4VTrajectory* TrackMap::findTrajectory(const G4Event* anEvent, G4int trackID) {
@@ -27,8 +27,8 @@ G4VTrajectory* TrackMap::findTrajectory(const G4Event* anEvent, G4int trackID) {
         if (traj != NULL) {
             break;
         } else {
-            if (trackIDMap.find(currTrackID) != trackIDMap.end()) {
-                currTrackID = trackIDMap[currTrackID];
+            if (trackIDMap_.find(currTrackID) != trackIDMap_.end()) {
+                currTrackID = trackIDMap_[currTrackID];
             } else {
                 break;
             }
@@ -38,7 +38,7 @@ G4VTrajectory* TrackMap::findTrajectory(const G4Event* anEvent, G4int trackID) {
 }
 
 void TrackMap::clear() {
-    trackIDMap.clear();
+    trackIDMap_.clear();
 }
 
 }

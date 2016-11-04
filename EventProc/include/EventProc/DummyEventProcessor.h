@@ -17,7 +17,7 @@ class DummyEventProcessor : public EventProcessor {
 
     private:
 
-        int nProcessed{0};
+        int nProcessed_{0};
 };
 
 }

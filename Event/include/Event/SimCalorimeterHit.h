@@ -21,57 +21,57 @@ class SimCalorimeterHit: public TObject {
         void Print(Option_t *option = "") const;
 
         int getID() {
-            return id;
+            return id_;
         }
 
         float getEdep() {
-            return edep;
+            return edep_;
         }
 
         std::vector<float> getPosition() const {
-            return {x, y, z};
+            return {x_, y_, z_};
         }
 
         float getTime() {
-            return time;
+            return time_;
         }
 
         SimParticle* getSimParticle() {
-            return (SimParticle*) simParticle.GetObject();
+            return (SimParticle*) simParticle_.GetObject();
         }
 
         void setID(const int id) {
-            this->id = id;
+            this->id_ = id;
         }
 
         void setEdep(const float edep) {
-            this->edep = edep;
+            this->edep_ = edep;
         }
 
         void setPosition(const float x, const float y, const float z) {
-            this->x = x;
-            this->y = y;
-            this->z = z;
+            this->x_ = x;
+            this->y_ = y;
+            this->z_ = z;
         }
 
         void setTime(const float time) {
-            this->time = time;
+            this->time_ = time;
         }
 
         void setSimParticle(SimParticle* simParticle) {
-            this->simParticle = simParticle;
+            this->simParticle_ = simParticle;
         }
 
     private:
 
-        int id{0};
-        float edep{0};
-        float x{0};
-        float y{0};
-        float z{0};
-        float time{0};
+        int id_{0};
+        float edep_{0};
+        float x_{0};
+        float y_{0};
+        float z_{0};
+        float time_{0};
 
-        TRef simParticle{nullptr};
+        TRef simParticle_{nullptr};
 
     ClassDef(SimCalorimeterHit, 1)
 };

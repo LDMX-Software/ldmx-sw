@@ -11,19 +11,19 @@ class EventSource {
 
     public:
 
-        EventSource(Event* event) : event(event) {;}
+        EventSource(Event* anEvent) : _event(anEvent) {;}
 
         virtual ~EventSource() {;}
 
         virtual bool readNextEvent() = 0;
 
         Event* getEvent() {
-            return event;
+            return _event;
         }
 
     protected:
 
-        Event* event;
+        Event* _event;
 };
 
 }
