@@ -6,18 +6,18 @@
 namespace eventproc {
 
 void EventLoop::initialize() {
-    for (std::vector<EventProcessor*>::iterator procIt = processors.begin();
-            procIt != processors.end(); procIt++) {
-        (*procIt)->setEvent(eventSource->getEvent());
+    for (std::vector<EventProcessor*>::iterator procIt = processors_.begin();
+            procIt != processors_.end(); procIt++) {
+        (*procIt)->setEvent(eventSource_->getEvent());
         (*procIt)->initialize();
     }
 }
 
 void EventLoop::run(int nEvents) {
     int nProcessed = 0;
-    while (eventSource->readNextEvent()) {
-        for (std::vector<EventProcessor*>::iterator procIt = processors.begin();
-                procIt != processors.end(); procIt++) {
+    while (eventSource_->readNextEvent()) {
+        for (std::vector<EventProcessor*>::iterator procIt = processors_.begin();
+                procIt != processors_.end(); procIt++) {
             (*procIt)->execute();
         }
         ++nProcessed;
@@ -30,8 +30,8 @@ void EventLoop::run(int nEvents) {
 }
 
 void EventLoop::finish() {
-    for (std::vector<EventProcessor*>::iterator procIt = processors.begin();
-                    procIt != processors.end(); procIt++) {
+    for (std::vector<EventProcessor*>::iterator procIt = processors_.begin();
+                    procIt != processors_.end(); procIt++) {
         (*procIt)->finish();
     }
 }

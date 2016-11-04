@@ -14,25 +14,25 @@ Event::~Event() {
 
     Clear();
 
-    for (CollectionMap::iterator iColl = collMap.begin();
-            iColl != collMap.end(); iColl++) {
+    for (CollectionMap::iterator iColl = collMap_.begin();
+            iColl != collMap_.end(); iColl++) {
         delete (*iColl).second;
     }
 
-    collMap.clear();
+    collMap_.clear();
 }
 
 void Event::Clear(Option_t*) {
 
     TObject::Clear();
     
-    eventNumber = -1;
-    run = -1;
-    timestamp = -1;
-    weight = 1.0;
+    eventNumber_ = -1;
+    run_ = -1;
+    timestamp_ = -1;
+    weight_ = 1.0;
 
-    for (CollectionMap::iterator iColl = collMap.begin();
-                iColl != collMap.end(); iColl++) {
+    for (CollectionMap::iterator iColl = collMap_.begin();
+                iColl != collMap_.end(); iColl++) {
         (*iColl).second->Clear("C");
     }
 }

@@ -19,9 +19,9 @@ namespace sim {
 
 CalorimeterSD::CalorimeterSD(G4String theName, G4String theCollectionName, int theSubdetId, DetectorID* theDetId) :
     G4VSensitiveDetector(theName),
-    hitsCollection(0),
-    subdetId(theSubdetId),
-    detId(theDetId) {
+    hitsCollection_(0),
+    subdetId_(theSubdetId),
+    detId_(theDetId) {
 
     // Add the collection name to vector of names.
     this->collectionName.push_back(theCollectionName);
@@ -30,7 +30,7 @@ CalorimeterSD::CalorimeterSD(G4String theName, G4String theCollectionName, int t
     G4SDManager::GetSDMpointer()->AddNewDetector(this);
 
     // Set the subdet ID as it will always be the same for every hit.
-    detId->setFieldValue("subdet", subdetId);
+    detId_->setFieldValue("subdet", subdetId_);
 }
 
 CalorimeterSD::~CalorimeterSD() {
@@ -76,21 +76,21 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     hit->setTime(aStep->GetTrack()->GetGlobalTime());
 
     // Set the ID on the hit.
-    int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth)->GetCopyNo();
-    detId->setFieldValue(1, layerNumber);
-    hit->setID(detId->pack());
+    int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth_)->GetCopyNo();
+    detId_->setFieldValue(1, layerNumber);
+    hit->setID(detId_->pack());
 
     // Set the track ID on the hit.
     hit->setTrackID(aStep->GetTrack()->GetTrackID());
 
     if (this->verboseLevel > 2) {
         std::cout << "Created new SimCalorimeterHit in detector " << this->GetName()
-                << " with subdet ID " << subdetId << " and layer " << layerNumber << " ..." << std::endl;
+                << " with subdet ID " << subdetId_ << " and layer " << layerNumber << " ..." << std::endl;
         hit->Print();
         std::cout << std::endl;
     }
 
-    hitsCollection->insert(hit);
+    hitsCollection_->insert(hit);
 
     return true;
 }
@@ -98,22 +98,22 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 void CalorimeterSD::Initialize(G4HCofThisEvent* hce) {
 
     // Setup hits collection and the HC ID.
-    hitsCollection = new G4CalorimeterHitsCollection(SensitiveDetectorName, collectionName[0]);
+    hitsCollection_ = new G4CalorimeterHitsCollection(SensitiveDetectorName, collectionName[0]);
     G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
-    hce->AddHitsCollection(hcID, hitsCollection);
+    hce->AddHitsCollection(hcID, hitsCollection_);
 }
 
 void CalorimeterSD::EndOfEvent(G4HCofThisEvent*) {
     // Print number of hits.
     if (this->verboseLevel > 0) {
-        std::cout << GetName() << " had " << hitsCollection->entries()
+        std::cout << GetName() << " had " << hitsCollection_->entries()
                 << " hits in event" << std::endl;
     }
 
     // Print each hit in hits collection.
     if (this->verboseLevel > 1) {
-        for (int iHit = 0; iHit < hitsCollection->GetSize(); iHit++ ) {
-            (*hitsCollection)[iHit]->Print();
+        for (int iHit = 0; iHit < hitsCollection_->GetSize(); iHit++ ) {
+            (*hitsCollection_)[iHit]->Print();
         }
     }
 }

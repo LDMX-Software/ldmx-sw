@@ -21,7 +21,7 @@ class LHEPrimaryGenerator : public G4VPrimaryGenerator {
 
     private:
 
-        LHEReader* reader;
+        LHEReader* reader_;
 };
 
 }

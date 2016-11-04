@@ -23,7 +23,7 @@ class APrimePhysics : public G4VPhysicsConstructor {
 
     private:
 
-        G4ParticleDefinition* aprimeDef;
+        G4ParticleDefinition* aprimeDef_;
         //G4Decay decayProcess;
         //G4hMultipleScattering scatterProcess;
 };
