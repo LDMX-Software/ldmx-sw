@@ -170,72 +170,18 @@
       <auxiliary auxtype="Author" auxvalue="Jeremy McCormick"/>
       <auxiliary auxtype="Note" auxvalue="Full LDMX detector model based on 2016 LOI design"/>
     </auxiliary>
-  
-    <!-- define detector IDs which must come before SD definitions-->
-    <auxiliary auxtype="DetectorID" auxvalue="DefaultID">
-      <auxiliary auxtype="IDField" auxvalue="subdet">
-        <auxiliary auxtype="StartBit" auxvalue="0"/>
-        <auxiliary auxtype="EndBit" auxvalue="3"/>
-      </auxiliary>
-      <auxiliary auxtype="IDField" auxvalue="layer">
-        <auxiliary auxtype="StartBit" auxvalue="4"/>
-        <auxiliary auxtype="EndBit" auxvalue="11"/>
-      </auxiliary>
-    </auxiliary>
-    <auxiliary auxtype="DetectorID" auxvalue="TaggerID">
-      <auxiliary auxtype="IDField" auxvalue="subdet">
-        <auxiliary auxtype="StartBit" auxvalue="0"/>
-        <auxiliary auxtype="EndBit" auxvalue="3"/>
-      </auxiliary>
-      <auxiliary auxtype="IDField" auxvalue="layer">
-        <auxiliary auxtype="StartBit" auxvalue="4"/>
-        <auxiliary auxtype="EndBit" auxvalue="11"/>
-      </auxiliary>
-    </auxiliary>
-    <auxiliary auxtype="DetectorID" auxvalue="RecoilID">
-      <auxiliary auxtype="IDField" auxvalue="subdet">
-        <auxiliary auxtype="StartBit" auxvalue="0"/>
-        <auxiliary auxtype="EndBit" auxvalue="3"/>
-      </auxiliary>
-      <auxiliary auxtype="IDField" auxvalue="layer">
-        <auxiliary auxtype="StartBit" auxvalue="4"/>
-        <auxiliary auxtype="EndBit" auxvalue="11"/>
-      </auxiliary>
-    </auxiliary>    
-    <auxiliary auxtype="DetectorID" auxvalue="EcalID">
-      <auxiliary auxtype="IDField" auxvalue="subdet">
-        <auxiliary auxtype="StartBit" auxvalue="0"/>
-        <auxiliary auxtype="EndBit" auxvalue="3"/>
-      </auxiliary>
-      <auxiliary auxtype="IDField" auxvalue="layer">
-        <auxiliary auxtype="StartBit" auxvalue="4"/>
-        <auxiliary auxtype="EndBit" auxvalue="11"/>
-      </auxiliary>
-    </auxiliary>    
-    <auxiliary auxtype="DetectorID" auxvalue="HcalID">
-      <auxiliary auxtype="IDField" auxvalue="subdet">
-        <auxiliary auxtype="StartBit" auxvalue="0"/>
-        <auxiliary auxtype="EndBit" auxvalue="3"/>
-      </auxiliary>
-      <auxiliary auxtype="IDField" auxvalue="layer">
-        <auxiliary auxtype="StartBit" auxvalue="4"/>
-        <auxiliary auxtype="EndBit" auxvalue="11"/>
-      </auxiliary>
-    </auxiliary>    
     
     <!-- define sensitive detectors -->
     <auxiliary auxtype="SensDet" auxvalue="TaggerSD1">
       <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="TaggerSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="1"/>
-      <auxiliary auxtype="DetectorID" auxvalue="TaggerID"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="TriggerPadSD1">
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="2"/>
-      <auxiliary auxtype="DetectorID" auxvalue="HcalID"/>
       <auxiliary auxtype="LayerDepth" auxvalue="1"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/> 
     </auxiliary>    
@@ -243,7 +189,6 @@
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="TargetSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="3"/>
-      <auxiliary auxtype="DetectorID" auxvalue="HcalID"/>
       <auxiliary auxtype="LayerDepth" auxvalue="1"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>    
@@ -251,24 +196,20 @@
       <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="RecoilSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="4"/>
-      <auxiliary auxtype="DetectorID" auxvalue="RecoilID"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="EcalSD1">
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="EcalSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="5"/>
-      <auxiliary auxtype="DetectorID" auxvalue="EcalID"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="HcalSD1">
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="HcalSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="6"/>
-      <auxiliary auxtype="DetectorID" auxvalue="HcalID"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
-    </auxiliary>
-    
+    </auxiliary>    
     
     <!-- define magnetic fields -->
     <auxiliary auxtype="MagneticField" auxvalue="AnalyzingDipole">
