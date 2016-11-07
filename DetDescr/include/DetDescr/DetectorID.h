@@ -45,6 +45,9 @@ class DetectorID {
          */
         DetectorID(IDField::IDFieldList*);
 
+        /**
+         * Class destructor, which will delete the field list and its objects.
+         */
         virtual ~DetectorID();
 
         /**
@@ -99,10 +102,18 @@ class DetectorID {
 
     protected:
 
-        RawValue rawValue;
-        FieldValueList values;
-        IDField::IDFieldMap idFieldMap;
-        IDField::IDFieldList* idFieldList;
+        /**
+         * Set the list of fields that defines this ID.
+         * @param fieldList The list of fields defining the ID.
+         */
+        void setFieldList(IDField::IDFieldList* fieldList);
+
+    protected:
+
+        RawValue rawValue_;
+        FieldValueList fieldValues_;
+        IDField::IDFieldMap fieldMap_;
+        IDField::IDFieldList* fieldList_;
 };
 
 }
