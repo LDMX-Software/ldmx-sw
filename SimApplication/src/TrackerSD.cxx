@@ -35,6 +35,7 @@ TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subdetID, De
 }
 
 TrackerSD::~TrackerSD() {
+    delete detID_;
 }
 
 G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
