@@ -4,46 +4,6 @@
   <define/>
 
   <materials>
-    <isotope N="63" Z="29" name="Cu630x11e5a60">
-      <atom unit="g/mole" value="62.9296"/>
-    </isotope>
-    <isotope N="65" Z="29" name="Cu650x11e5ad0">
-      <atom unit="g/mole" value="64.9278"/>
-    </isotope>
-    <element name="Cu0x11e5800">
-      <fraction n="0.6917" ref="Cu630x11e5a60"/>
-      <fraction n="0.3083" ref="Cu650x11e5ad0"/>
-    </element>
-    <material name="G4_Cu0x11e5710" state="solid">
-      <T unit="K" value="293.15"/>
-      <MEE unit="eV" value="322"/>
-      <D unit="g/cm3" value="8.96"/>
-      <fraction n="1" ref="Cu0x11e5800"/>
-    </material>
-    <isotope N="204" Z="82" name="Pb2040x11e4c40">
-      <atom unit="g/mole" value="203.973"/>
-    </isotope>
-    <isotope N="206" Z="82" name="Pb2060x11e4cb0">
-      <atom unit="g/mole" value="205.974"/>
-    </isotope>
-    <isotope N="207" Z="82" name="Pb2070x11e4d20">
-      <atom unit="g/mole" value="206.976"/>
-    </isotope>
-    <isotope N="208" Z="82" name="Pb2080x11e4e50">
-      <atom unit="g/mole" value="207.977"/>
-    </isotope>
-    <element name="Pb0x11e49e0">
-      <fraction n="0.014" ref="Pb2040x11e4c40"/>
-      <fraction n="0.241" ref="Pb2060x11e4cb0"/>
-      <fraction n="0.221" ref="Pb2070x11e4d20"/>
-      <fraction n="0.524" ref="Pb2080x11e4e50"/>
-    </element>
-    <material name="G4_Pb0x11e48c0" state="solid">
-      <T unit="K" value="293.15"/>
-      <MEE unit="eV" value="823"/>
-      <D unit="g/cm3" value="11.35"/>
-      <fraction n="1" ref="Pb0x11e49e0"/>
-    </material>
     <isotope N="54" Z="26" name="Fe540x11ea210">
       <atom unit="g/mole" value="53.9396"/>
     </isotope>
@@ -194,396 +154,171 @@
   </materials>
 
   <solids>
-    <box lunit="mm" name="Cu1box0x1204670" x="1000.0" y="1000.0" z="3"/>
-    <box lunit="mm" name="Pb1box0x1204910" x="1000.0" y="1000.0" z="1"/>
     <box lunit="mm" name="SSteel1box0x1204c00" x="1000.0" y="1000.0" z="50"/>
-    <box lunit="mm" name="Cu1box0x1204f20" x="1000.0" y="1000.0" z="0.5"/>
-    <box lunit="mm" name="Scintillator1box0x1205220" x="1000.0" y="1000.0" z="9"/>
-    <box lunit="mm" name="Cu2box0x1205550" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb2box0x1205840" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator1box0x1205220" x="1000.0" y="1000.0" z="6"/>
     <box lunit="mm" name="SSteel2box0x1205b30" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu2box0x1205e20" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator2box0x12061b0" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu3box0x1206470" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb3box0x1206760" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator2box0x12061b0" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel3box0x1206a50" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu3box0x1206d40" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator3box0x1207040" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu4box0x1207380" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb4box0x1207670" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator3box0x1207040" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel4box0x1207a00" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu4box0x1207cf0" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator4box0x1207ff0" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu5box0x1208300" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb5box0x12085f0" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator4box0x1207ff0" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel5box0x12088e0" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu5box0x1208bd0" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator5box0x1208ed0" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu6box0x1209200" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb6box0x12094f0" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator5box0x1208ed0" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel6box0x12097e0" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu6box0x1209ad0" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator6box0x1209dd0" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu7box0x120a0e0" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb7box0x120a3d0" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator6box0x1209dd0" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel7box0x120a6c0" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu7box0x1207960" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator7box0x120adc0" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu8box0x120b0d0" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb8box0x120b3c0" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator7box0x120adc0" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel8box0x120b6b0" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu8box0x120b9a0" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator8box0x120bca0" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu9box0x120bfb0" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb9box0x120c2a0" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator8box0x120bca0" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel9box0x120c590" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu9box0x120c880" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator9box0x120cb80" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu10box0x120ced0" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb10box0x120d1c0" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator9box0x120cb80" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel10box0x120d4c0" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu10box0x120d7d0" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator10box0x120dad0" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu11box0x120dde0" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb11box0x120e0d0" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator10box0x120dad0" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel11box0x120e3d0" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu11box0x120e6e0" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator11box0x120e9e0" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu12box0x120ecf0" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb12box0x120efe0" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator11box0x120e9e0" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel12box0x120f2e0" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu12box0x120f5f0" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator12box0x120f8f0" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu13box0x120fc00" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb13box0x120fef0" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator12box0x120f8f0" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel13box0x12101f0" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu13box0x1210500" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator13box0x1210800" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu14box0x120a9b0" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb14box0x1211010" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator13box0x1210800" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel14box0x1211310" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu14box0x1211620" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator14box0x1211920" x="1000" y="1000" z="9"/>
-    <box lunit="mm" name="Cu15box0x1211c30" x="1000" y="1000" z="3"/>
-    <box lunit="mm" name="Pb15box0x1211f20" x="1000" y="1000" z="1"/>
+    <box lunit="mm" name="Scintillator14box0x1211920" x="1000" y="1000" z="6"/>
     <box lunit="mm" name="SSteel15box0x1212220" x="1000" y="1000" z="50"/>
-    <box lunit="mm" name="Cu15box0x1212530" x="1000" y="1000" z="0.5"/>
-    <box lunit="mm" name="Scintillator15box0x1212830" x="1000" y="1000" z="9"/>
+    <box lunit="mm" name="Scintillator15box0x1212830" x="1000" y="1000" z="6"/>
     
     <!-- hcal envelope volume; added stay clear to XY; Z decreased from 1046.0 -->
-    <box lunit="mm" name="Wbox0x1204410" x="1000.001" y="1000.001" z="957.0"/>
+    <box lunit="mm" name="Wbox0x1204410" x="1000.001" y="1000.001" z="900.001"/>
   </solids>
 
   <structure>
-    <volume name="Cu1log0x1204700">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu1box0x1204670"/>
-    </volume>
-    <volume name="Pb1log0x12049a0">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb1box0x1204910"/>
-    </volume>
     <volume name="SSteel1log0x1204c90">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel1box0x1204c00"/>
-    </volume>
-    <volume name="Cu1log0x1204fb0">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu1box0x1204f20"/>
     </volume>
     <volume name="Scintillator1log0x12052c0">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator1box0x1205220"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu2log0x12055e0">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu2box0x1205550"/>
-    </volume>
-    <volume name="Pb2log0x12058d0">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb2box0x1205840"/>
-    </volume>
     <volume name="SSteel2log0x1205bc0">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel2box0x1205b30"/>
-    </volume>
-    <volume name="Cu2log0x1205eb0">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu2box0x1205e20"/>
     </volume>
     <volume name="Scintillator2log0x1206250">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator2box0x12061b0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu3log0x1206500">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu3box0x1206470"/>
-    </volume>
-    <volume name="Pb3log0x12067f0">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb3box0x1206760"/>
-    </volume>
     <volume name="SSteel3log0x1206ae0">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel3box0x1206a50"/>
-    </volume>
-    <volume name="Cu3log0x1206dd0">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu3box0x1206d40"/>
     </volume>
     <volume name="Scintillator3log0x12070e0">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator3box0x1207040"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu4log0x1207410">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu4box0x1207380"/>
-    </volume>
-    <volume name="Pb4log0x1207700">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb4box0x1207670"/>
-    </volume>
     <volume name="SSteel4log0x1207a90">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel4box0x1207a00"/>
-    </volume>
-    <volume name="Cu4log0x1207d80">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu4box0x1207cf0"/>
     </volume>
     <volume name="Scintillator4log0x1208090">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator4box0x1207ff0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu5log0x1208390">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu5box0x1208300"/>
-    </volume>
-    <volume name="Pb5log0x1208680">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb5box0x12085f0"/>
-    </volume>
     <volume name="SSteel5log0x1208970">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel5box0x12088e0"/>
-    </volume>
-    <volume name="Cu5log0x1208c60">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu5box0x1208bd0"/>
     </volume>
     <volume name="Scintillator5log0x1208f70">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator5box0x1208ed0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu6log0x1209290">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu6box0x1209200"/>
-    </volume>
-    <volume name="Pb6log0x1209580">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb6box0x12094f0"/>
-    </volume>
     <volume name="SSteel6log0x1209870">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel6box0x12097e0"/>
-    </volume>
-    <volume name="Cu6log0x1209b60">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu6box0x1209ad0"/>
     </volume>
     <volume name="Scintillator6log0x1209e70">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator6box0x1209dd0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu7log0x120a170">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu7box0x120a0e0"/>
-    </volume>
-    <volume name="Pb7log0x120a460">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb7box0x120a3d0"/>
-    </volume>
     <volume name="SSteel7log0x120a750">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel7box0x120a6c0"/>
-    </volume>
-    <volume name="Cu7log0x120ab50">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu7box0x1207960"/>
     </volume>
     <volume name="Scintillator7log0x120ae60">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator7box0x120adc0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu8log0x120b160">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu8box0x120b0d0"/>
-    </volume>
-    <volume name="Pb8log0x120b450">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb8box0x120b3c0"/>
-    </volume>
     <volume name="SSteel8log0x120b740">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel8box0x120b6b0"/>
-    </volume>
-    <volume name="Cu8log0x120ba30">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu8box0x120b9a0"/>
     </volume>
     <volume name="Scintillator8log0x120bd40">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator8box0x120bca0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu9log0x120c040">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu9box0x120bfb0"/>
-    </volume>
-    <volume name="Pb9log0x120c330">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb9box0x120c2a0"/>
-    </volume>
     <volume name="SSteel9log0x120c620">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel9box0x120c590"/>
-    </volume>
-    <volume name="Cu9log0x120c910">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu9box0x120c880"/>
     </volume>
     <volume name="Scintillator9log0x120cc20">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator9box0x120cb80"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu10log0x120cf60">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu10box0x120ced0"/>
-    </volume>
-    <volume name="Pb10log0x120d250">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb10box0x120d1c0"/>
-    </volume>
     <volume name="SSteel10log0x120d560">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel10box0x120d4c0"/>
-    </volume>
-    <volume name="Cu10log0x120d860">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu10box0x120d7d0"/>
     </volume>
     <volume name="Scintillator10log0x120db70">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator10box0x120dad0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu11log0x120de70">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu11box0x120dde0"/>
-    </volume>
-    <volume name="Pb11log0x120e160">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb11box0x120e0d0"/>
-    </volume>
     <volume name="SSteel11log0x120e470">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel11box0x120e3d0"/>
-    </volume>
-    <volume name="Cu11log0x120e770">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu11box0x120e6e0"/>
     </volume>
     <volume name="Scintillator11log0x120ea80">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator11box0x120e9e0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu12log0x120ed80">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu12box0x120ecf0"/>
-    </volume>
-    <volume name="Pb12log0x120f070">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb12box0x120efe0"/>
-    </volume>
     <volume name="SSteel12log0x120f380">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel12box0x120f2e0"/>
-    </volume>
-    <volume name="Cu12log0x120f680">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu12box0x120f5f0"/>
     </volume>
     <volume name="Scintillator12log0x120f990">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator12box0x120f8f0"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu13log0x120fc90">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu13box0x120fc00"/>
-    </volume>
-    <volume name="Pb13log0x120ff80">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb13box0x120fef0"/>
-    </volume>
     <volume name="SSteel13log0x1210290">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel13box0x12101f0"/>
-    </volume>
-    <volume name="Cu13log0x1210590">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu13box0x1210500"/>
     </volume>
     <volume name="Scintillator13log0x12108a0">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator13box0x1210800"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu14log0x120aa40">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu14box0x120a9b0"/>
-    </volume>
-    <volume name="Pb14log0x12110a0">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb14box0x1211010"/>
-    </volume>
     <volume name="SSteel14log0x12113b0">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel14box0x1211310"/>
-    </volume>
-    <volume name="Cu14log0x12116b0">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu14box0x1211620"/>
     </volume>
     <volume name="Scintillator14log0x12119c0">
       <materialref ref="Scintillator0x11f34d0"/>
       <solidref ref="Scintillator14box0x1211920"/>
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
-    <volume name="Cu15log0x1211cc0">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu15box0x1211c30"/>
-    </volume>
-    <volume name="Pb15log0x1211fb0">
-      <materialref ref="G4_Pb0x11e48c0"/>
-      <solidref ref="Pb15box0x1211f20"/>
-    </volume>
     <volume name="SSteel15log0x12122c0">
       <materialref ref="SSteel0x11f2770"/>
       <solidref ref="SSteel15box0x1212220"/>
-    </volume>
-    <volume name="Cu15log0x12125c0">
-      <materialref ref="G4_Cu0x11e5710"/>
-      <solidref ref="Cu15box0x1212530"/>
     </volume>
     <volume name="Scintillator15log0x12128d0">
       <materialref ref="Scintillator0x11f34d0"/>
@@ -593,305 +328,125 @@
     <volume name="hcal">
       <materialref ref="G4_AIR0x11e78b0"/>
       <solidref ref="Wbox0x1204410"/> 
-      <physvol name="Cu1phys0x1204800">
-        <volumeref ref="Cu1log0x1204700"/>
-        <position name="Cu1phys0x1204800_pos" unit="mm" x="0" y="0" z="-474.75"/>
-      </physvol>
-      <physvol name="Pb1phys0x1204af0">
-        <volumeref ref="Pb1log0x12049a0"/>
-        <position name="Pb1phys0x1204af0_pos" unit="mm" x="0" y="0" z="-472.75"/>
-      </physvol>
       <physvol name="SSteel1phys0x1204de0">
         <volumeref ref="SSteel1log0x1204c90"/>
-        <position name="SSteel1phys0x1204de0_pos" unit="mm" x="0" y="0" z="-447.25"/>
-      </physvol>
-      <physvol name="Cu1phys0x1205100">
-        <volumeref ref="Cu1log0x1204fb0"/>
-        <position name="Cu1phys0x1205100_pos" unit="mm" x="0" y="0" z="-422"/>
+        <position name="SSteel1phys0x1204de0_pos" unit="mm" x="0" y="0" z="-425"/>
       </physvol>
       <physvol name="Scintillator1phys0x1205420" copynumber="1">
         <volumeref ref="Scintillator1log0x12052c0"/>
-        <position name="Scintillator1phys0x1205420_pos" unit="mm" x="0" y="0" z="-417.25"/>
-      </physvol>
-      <physvol name="Cu2phys0x1205730">
-        <volumeref ref="Cu2log0x12055e0"/>
-        <position name="Cu2phys0x1205730_pos" unit="mm" x="0" y="0" z="-411.25"/>
-      </physvol>
-      <physvol name="Pb2phys0x1205a20">
-        <volumeref ref="Pb2log0x12058d0"/>
-        <position name="Pb2phys0x1205a20_pos" unit="mm" x="0" y="0" z="-409.25"/>
+        <position name="Scintillator1phys0x1205420_pos" unit="mm" x="0" y="0" z="-395"/>
       </physvol>
       <physvol name="SSteel2phys0x1205d10">
         <volumeref ref="SSteel2log0x1205bc0"/>
-        <position name="SSteel2phys0x1205d10_pos" unit="mm" x="0" y="0" z="-383.75"/>
-      </physvol>
-      <physvol name="Cu2phys0x1206000">
-        <volumeref ref="Cu2log0x1205eb0"/>
-        <position name="Cu2phys0x1206000_pos" unit="mm" x="0" y="0" z="-358.5"/>
+        <position name="SSteel2phys0x1205d10_pos" unit="mm" x="0" y="0" z="-365"/>
       </physvol>
       <physvol name="Scintillator2phys0x1206360" copynumber="2">
         <volumeref ref="Scintillator2log0x1206250"/>
-        <position name="Scintillator2phys0x1206360_pos" unit="mm" x="0" y="0" z="-353.75"/>
-      </physvol>
-      <physvol name="Cu3phys0x1206650">
-        <volumeref ref="Cu3log0x1206500"/>
-        <position name="Cu3phys0x1206650_pos" unit="mm" x="0" y="0" z="-347.75"/>
-      </physvol>
-      <physvol name="Pb3phys0x1206940">
-        <volumeref ref="Pb3log0x12067f0"/>
-        <position name="Pb3phys0x1206940_pos" unit="mm" x="0" y="0" z="-345.75"/>
+        <position name="Scintillator2phys0x1206360_pos" unit="mm" x="0" y="0" z="-335"/>
       </physvol>
       <physvol name="SSteel3phys0x1206c30">
         <volumeref ref="SSteel3log0x1206ae0"/>
-        <position name="SSteel3phys0x1206c30_pos" unit="mm" x="0" y="0" z="-320.25"/>
-      </physvol>
-      <physvol name="Cu3phys0x1206f20">
-        <volumeref ref="Cu3log0x1206dd0"/>
-        <position name="Cu3phys0x1206f20_pos" unit="mm" x="0" y="0" z="-295"/>
+        <position name="SSteel3phys0x1206c30_pos" unit="mm" x="0" y="0" z="-305"/>
       </physvol>
       <physvol name="Scintillator3phys0x1207270" copynumber="3">
         <volumeref ref="Scintillator3log0x12070e0"/>
-        <position name="Scintillator3phys0x1207270_pos" unit="mm" x="0" y="0" z="-290.25"/>
-      </physvol>
-      <physvol name="Cu4phys0x1207560">
-        <volumeref ref="Cu4log0x1207410"/>
-        <position name="Cu4phys0x1207560_pos" unit="mm" x="0" y="0" z="-284.25"/>
-      </physvol>
-      <physvol name="Pb4phys0x1207850">
-        <volumeref ref="Pb4log0x1207700"/>
-        <position name="Pb4phys0x1207850_pos" unit="mm" x="0" y="0" z="-282.25"/>
+        <position name="Scintillator3phys0x1207270_pos" unit="mm" x="0" y="0" z="-275"/>
       </physvol>
       <physvol name="SSteel4phys0x1207be0">
         <volumeref ref="SSteel4log0x1207a90"/>
-        <position name="SSteel4phys0x1207be0_pos" unit="mm" x="0" y="0" z="-256.75"/>
-      </physvol>
-      <physvol name="Cu4phys0x1207ed0">
-        <volumeref ref="Cu4log0x1207d80"/>
-        <position name="Cu4phys0x1207ed0_pos" unit="mm" x="0" y="0" z="-231.5"/>
+        <position name="SSteel4phys0x1207be0_pos" unit="mm" x="0" y="0" z="-245"/>
       </physvol>
       <physvol name="Scintillator4phys0x12081f0" copynumber="4">
         <volumeref ref="Scintillator4log0x1208090"/>
-        <position name="Scintillator4phys0x12081f0_pos" unit="mm" x="0" y="0" z="-226.75"/>
-      </physvol>
-      <physvol name="Cu5phys0x12084e0">
-        <volumeref ref="Cu5log0x1208390"/>
-        <position name="Cu5phys0x12084e0_pos" unit="mm" x="0" y="0" z="-220.75"/>
-      </physvol>
-      <physvol name="Pb5phys0x12087d0">
-        <volumeref ref="Pb5log0x1208680"/>
-        <position name="Pb5phys0x12087d0_pos" unit="mm" x="0" y="0" z="-218.75"/>
+        <position name="Scintillator4phys0x12081f0_pos" unit="mm" x="0" y="0" z="-215"/>
       </physvol>
       <physvol name="SSteel5phys0x1208ac0">
         <volumeref ref="SSteel5log0x1208970"/>
-        <position name="SSteel5phys0x1208ac0_pos" unit="mm" x="0" y="0" z="-193.25"/>
-      </physvol>
-      <physvol name="Cu5phys0x1208db0">
-        <volumeref ref="Cu5log0x1208c60"/>
-        <position name="Cu5phys0x1208db0_pos" unit="mm" x="0" y="0" z="-168"/>
+        <position name="SSteel5phys0x1208ac0_pos" unit="mm" x="0" y="0" z="-185"/>
       </physvol>
       <physvol name="Scintillator5phys0x1209120" copynumber="5">
         <volumeref ref="Scintillator5log0x1208f70"/>
-        <position name="Scintillator5phys0x1209120_pos" unit="mm" x="0" y="0" z="-163.25"/>
-      </physvol>
-      <physvol name="Cu6phys0x12093e0">
-        <volumeref ref="Cu6log0x1209290"/>
-        <position name="Cu6phys0x12093e0_pos" unit="mm" x="0" y="0" z="-157.25"/>
-      </physvol>
-      <physvol name="Pb6phys0x12096d0">
-        <volumeref ref="Pb6log0x1209580"/>
-        <position name="Pb6phys0x12096d0_pos" unit="mm" x="0" y="0" z="-155.25"/>
+        <position name="Scintillator5phys0x1209120_pos" unit="mm" x="0" y="0" z="-155"/>
       </physvol>
       <physvol name="SSteel6phys0x12099c0">
         <volumeref ref="SSteel6log0x1209870"/>
-        <position name="SSteel6phys0x12099c0_pos" unit="mm" x="0" y="0" z="-129.75"/>
-      </physvol>
-      <physvol name="Cu6phys0x1209cb0">
-        <volumeref ref="Cu6log0x1209b60"/>
-        <position name="Cu6phys0x1209cb0_pos" unit="mm" x="0" y="0" z="-104.5"/>
+        <position name="SSteel6phys0x12099c0_pos" unit="mm" x="0" y="0" z="-125"/>
       </physvol>
       <physvol name="Scintillator6phys0x1209fd0" copynumber="6">
         <volumeref ref="Scintillator6log0x1209e70"/>
-        <position name="Scintillator6phys0x1209fd0_pos" unit="mm" x="0" y="0" z="-99.75"/>
-      </physvol>
-      <physvol name="Cu7phys0x120a2c0">
-        <volumeref ref="Cu7log0x120a170"/>
-        <position name="Cu7phys0x120a2c0_pos" unit="mm" x="0" y="0" z="-93.75"/>
-      </physvol>
-      <physvol name="Pb7phys0x120a5b0">
-        <volumeref ref="Pb7log0x120a460"/>
-        <position name="Pb7phys0x120a5b0_pos" unit="mm" x="0" y="0" z="-91.75"/>
+        <position name="Scintillator6phys0x1209fd0_pos" unit="mm" x="0" y="0" z="-95"/>
       </physvol>
       <physvol name="SSteel7phys0x120a8a0">
         <volumeref ref="SSteel7log0x120a750"/>
-        <position name="SSteel7phys0x120a8a0_pos" unit="mm" x="0" y="0" z="-66.25"/>
-      </physvol>
-      <physvol name="Cu7phys0x120aca0">
-        <volumeref ref="Cu7log0x120ab50"/>
-        <position name="Cu7phys0x120aca0_pos" unit="mm" x="0" y="0" z="-41"/>
+        <position name="SSteel7phys0x120a8a0_pos" unit="mm" x="0" y="0" z="-65"/>
       </physvol>
       <physvol name="Scintillator7phys0x120afc0" copynumber="7">
         <volumeref ref="Scintillator7log0x120ae60"/>
-        <position name="Scintillator7phys0x120afc0_pos" unit="mm" x="0" y="0" z="-36.25"/>
-      </physvol>
-      <physvol name="Cu8phys0x120b2b0">
-        <volumeref ref="Cu8log0x120b160"/>
-        <position name="Cu8phys0x120b2b0_pos" unit="mm" x="0" y="0" z="-30.25"/>
-      </physvol>
-      <physvol name="Pb8phys0x120b5a0">
-        <volumeref ref="Pb8log0x120b450"/>
-        <position name="Pb8phys0x120b5a0_pos" unit="mm" x="0" y="0" z="-28.25"/>
+        <position name="Scintillator7phys0x120afc0_pos" unit="mm" x="0" y="0" z="-35"/>
       </physvol>
       <physvol name="SSteel8phys0x120b890">
         <volumeref ref="SSteel8log0x120b740"/>
-        <position name="SSteel8phys0x120b890_pos" unit="mm" x="0" y="0" z="-2.75"/>
-      </physvol>
-      <physvol name="Cu8phys0x120bb80">
-        <volumeref ref="Cu8log0x120ba30"/>
-        <position name="Cu8phys0x120bb80_pos" unit="mm" x="0" y="0" z="22.5"/>
+        <position name="SSteel8phys0x120b890_pos" unit="mm" x="0" y="0" z="-5"/>
       </physvol>
       <physvol name="Scintillator8phys0x120bea0" copynumber="8">
         <volumeref ref="Scintillator8log0x120bd40"/>
-        <position name="Scintillator8phys0x120bea0_pos" unit="mm" x="0" y="0" z="27.25"/>
-      </physvol>
-      <physvol name="Cu9phys0x120c190">
-        <volumeref ref="Cu9log0x120c040"/>
-        <position name="Cu9phys0x120c190_pos" unit="mm" x="0" y="0" z="33.25"/>
-      </physvol>
-      <physvol name="Pb9phys0x120c480">
-        <volumeref ref="Pb9log0x120c330"/>
-        <position name="Pb9phys0x120c480_pos" unit="mm" x="0" y="0" z="35.25"/>
+        <position name="Scintillator8phys0x120bea0_pos" unit="mm" x="0" y="0" z="25"/>
       </physvol>
       <physvol name="SSteel9phys0x120c770">
         <volumeref ref="SSteel9log0x120c620"/>
-        <position name="SSteel9phys0x120c770_pos" unit="mm" x="0" y="0" z="60.75"/>
-      </physvol>
-      <physvol name="Cu9phys0x120ca60">
-        <volumeref ref="Cu9log0x120c910"/>
-        <position name="Cu9phys0x120ca60_pos" unit="mm" x="0" y="0" z="86"/>
+        <position name="SSteel9phys0x120c770_pos" unit="mm" x="0" y="0" z="55"/>
       </physvol>
       <physvol name="Scintillator9phys0x120cdc0" copynumber="9">
         <volumeref ref="Scintillator9log0x120cc20"/>
-        <position name="Scintillator9phys0x120cdc0_pos" unit="mm" x="0" y="0" z="90.75"/>
-      </physvol>
-      <physvol name="Cu10phys0x120d0b0">
-        <volumeref ref="Cu10log0x120cf60"/>
-        <position name="Cu10phys0x120d0b0_pos" unit="mm" x="0" y="0" z="96.75"/>
-      </physvol>
-      <physvol name="Pb10phys0x120d3a0">
-        <volumeref ref="Pb10log0x120d250"/>
-        <position name="Pb10phys0x120d3a0_pos" unit="mm" x="0" y="0" z="98.75"/>
+        <position name="Scintillator9phys0x120cdc0_pos" unit="mm" x="0" y="0" z="85"/>
       </physvol>
       <physvol name="SSteel10phys0x120d6c0">
         <volumeref ref="SSteel10log0x120d560"/>
-        <position name="SSteel10phys0x120d6c0_pos" unit="mm" x="0" y="0" z="124.25"/>
-      </physvol>
-      <physvol name="Cu10phys0x120d9b0">
-        <volumeref ref="Cu10log0x120d860"/>
-        <position name="Cu10phys0x120d9b0_pos" unit="mm" x="0" y="0" z="149.5"/>
+        <position name="SSteel10phys0x120d6c0_pos" unit="mm" x="0" y="0" z="115"/>
       </physvol>
       <physvol name="Scintillator10phys0x120dcd0" copynumber="10">
         <volumeref ref="Scintillator10log0x120db70"/>
-        <position name="Scintillator10phys0x120dcd0_pos" unit="mm" x="0" y="0" z="154.25"/>
-      </physvol>
-      <physvol name="Cu11phys0x120dfc0">
-        <volumeref ref="Cu11log0x120de70"/>
-        <position name="Cu11phys0x120dfc0_pos" unit="mm" x="0" y="0" z="160.25"/>
-      </physvol>
-      <physvol name="Pb11phys0x120e2b0">
-        <volumeref ref="Pb11log0x120e160"/>
-        <position name="Pb11phys0x120e2b0_pos" unit="mm" x="0" y="0" z="162.25"/>
+        <position name="Scintillator10phys0x120dcd0_pos" unit="mm" x="0" y="0" z="145"/>
       </physvol>
       <physvol name="SSteel11phys0x120e5d0">
         <volumeref ref="SSteel11log0x120e470"/>
-        <position name="SSteel11phys0x120e5d0_pos" unit="mm" x="0" y="0" z="187.75"/>
-      </physvol>
-      <physvol name="Cu11phys0x120e8c0">
-        <volumeref ref="Cu11log0x120e770"/>
-        <position name="Cu11phys0x120e8c0_pos" unit="mm" x="0" y="0" z="213"/>
+        <position name="SSteel11phys0x120e5d0_pos" unit="mm" x="0" y="0" z="175"/>
       </physvol>
       <physvol name="Scintillator11phys0x120ebe0" copynumber="11">
         <volumeref ref="Scintillator11log0x120ea80"/>
-        <position name="Scintillator11phys0x120ebe0_pos" unit="mm" x="0" y="0" z="217.75"/>
-      </physvol>
-      <physvol name="Cu12phys0x120eed0">
-        <volumeref ref="Cu12log0x120ed80"/>
-        <position name="Cu12phys0x120eed0_pos" unit="mm" x="0" y="0" z="223.75"/>
-      </physvol>
-      <physvol name="Pb12phys0x120f1c0">
-        <volumeref ref="Pb12log0x120f070"/>
-        <position name="Pb12phys0x120f1c0_pos" unit="mm" x="0" y="0" z="225.75"/>
+        <position name="Scintillator11phys0x120ebe0_pos" unit="mm" x="0" y="0" z="205"/>
       </physvol>
       <physvol name="SSteel12phys0x120f4e0">
         <volumeref ref="SSteel12log0x120f380"/>
-        <position name="SSteel12phys0x120f4e0_pos" unit="mm" x="0" y="0" z="251.25"/>
-      </physvol>
-      <physvol name="Cu12phys0x120f7d0">
-        <volumeref ref="Cu12log0x120f680"/>
-        <position name="Cu12phys0x120f7d0_pos" unit="mm" x="0" y="0" z="276.5"/>
+        <position name="SSteel12phys0x120f4e0_pos" unit="mm" x="0" y="0" z="235"/>
       </physvol>
       <physvol name="Scintillator12phys0x120faf0" copynumber="12">
         <volumeref ref="Scintillator12log0x120f990"/>
-        <position name="Scintillator12phys0x120faf0_pos" unit="mm" x="0" y="0" z="281.25"/>
-      </physvol>
-      <physvol name="Cu13phys0x120fde0">
-        <volumeref ref="Cu13log0x120fc90"/>
-        <position name="Cu13phys0x120fde0_pos" unit="mm" x="0" y="0" z="287.25"/>
-      </physvol>
-      <physvol name="Pb13phys0x12100d0">
-        <volumeref ref="Pb13log0x120ff80"/>
-        <position name="Pb13phys0x12100d0_pos" unit="mm" x="0" y="0" z="289.25"/>
+        <position name="Scintillator12phys0x120faf0_pos" unit="mm" x="0" y="0" z="265"/>
       </physvol>
       <physvol name="SSteel13phys0x12103f0">
         <volumeref ref="SSteel13log0x1210290"/>
-        <position name="SSteel13phys0x12103f0_pos" unit="mm" x="0" y="0" z="314.75"/>
-      </physvol>
-      <physvol name="Cu13phys0x12106e0">
-        <volumeref ref="Cu13log0x1210590"/>
-        <position name="Cu13phys0x12106e0_pos" unit="mm" x="0" y="0" z="340"/>
+        <position name="SSteel13phys0x12103f0_pos" unit="mm" x="0" y="0" z="295"/>
       </physvol>
       <physvol name="Scintillator13phys0x1210a00" copynumber="13">
         <volumeref ref="Scintillator13log0x12108a0"/>
-        <position name="Scintillator13phys0x1210a00_pos" unit="mm" x="0" y="0" z="344.75"/>
-      </physvol>
-      <physvol name="Cu14phys0x1210f00">
-        <volumeref ref="Cu14log0x120aa40"/>
-        <position name="Cu14phys0x1210f00_pos" unit="mm" x="0" y="0" z="350.75"/>
-      </physvol>
-      <physvol name="Pb14phys0x12111f0">
-        <volumeref ref="Pb14log0x12110a0"/>
-        <position name="Pb14phys0x12111f0_pos" unit="mm" x="0" y="0" z="352.75"/>
+        <position name="Scintillator13phys0x1210a00_pos" unit="mm" x="0" y="0" z="325"/>
       </physvol>
       <physvol name="SSteel14phys0x1211510">
         <volumeref ref="SSteel14log0x12113b0"/>
-        <position name="SSteel14phys0x1211510_pos" unit="mm" x="0" y="0" z="378.25"/>
-      </physvol>
-      <physvol name="Cu14phys0x1211800">
-        <volumeref ref="Cu14log0x12116b0"/>
-        <position name="Cu14phys0x1211800_pos" unit="mm" x="0" y="0" z="403.5"/>
+        <position name="SSteel14phys0x1211510_pos" unit="mm" x="0" y="0" z="355"/>
       </physvol>
       <physvol name="Scintillator14phys0x1211b20" copynumber="14">
         <volumeref ref="Scintillator14log0x12119c0"/>
-        <position name="Scintillator14phys0x1211b20_pos" unit="mm" x="0" y="0" z="408.25"/>
-      </physvol>
-      <physvol name="Cu15phys0x1211e10">
-        <volumeref ref="Cu15log0x1211cc0"/>
-        <position name="Cu15phys0x1211e10_pos" unit="mm" x="0" y="0" z="414.25"/>
-      </physvol>
-      <physvol name="Pb15phys0x1212100">
-        <volumeref ref="Pb15log0x1211fb0"/>
-        <position name="Pb15phys0x1212100_pos" unit="mm" x="0" y="0" z="416.25"/>
+        <position name="Scintillator14phys0x1211b20_pos" unit="mm" x="0" y="0" z="385"/>
       </physvol>
       <physvol name="SSteel15phys0x1212420">
         <volumeref ref="SSteel15log0x12122c0"/>
-        <position name="SSteel15phys0x1212420_pos" unit="mm" x="0" y="0" z="441.75"/>
-      </physvol>
-      <physvol name="Cu15phys0x1212710">
-        <volumeref ref="Cu15log0x12125c0"/>
-        <position name="Cu15phys0x1212710_pos" unit="mm" x="0" y="0" z="467"/>
+        <position name="SSteel15phys0x1212420_pos" unit="mm" x="0" y="0" z="415"/>
       </physvol>
       <physvol name="Scintillator15phys0x1212a30" copynumber="15">
         <volumeref ref="Scintillator15log0x12128d0"/>
-        <position name="Scintillator15phys0x1212a30_pos" unit="mm" x="0" y="0" z="471.75"/>
+        <position name="Scintillator15phys0x1212a30_pos" unit="mm" x="0" y="0" z="445"/>
       </physvol>
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
