@@ -8,7 +8,7 @@
     <rotation name="identity" x="0" y="0" z="0"/>
     
     <!-- dimension of world box side -->
-    <constant name="world_dim" value="2.5*m"/>
+    <constant name="world_dim" value="3.0*m"/>
             
     <!-- target parameters -->
     <constant name="target_dim_x" value="3.5*cm"/>
@@ -37,7 +37,7 @@
     <variable name="ecal_pos_z" value="ecal_front_z + (ecal_thickness/2)"/>
     
     <!-- hcal position -->
-    <constant name="hcal_thickness" value="957.0"/>
+    <constant name="hcal_thickness" value="900.001"/>
     <variable name="hcal_pos_z" value="ecal_pos_z + (ecal_thickness/2) + hcal_thickness/2"/>
     
     <!-- define all subdetector positions using above Z values -->
