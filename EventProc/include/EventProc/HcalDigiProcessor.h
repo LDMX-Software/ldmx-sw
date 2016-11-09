@@ -4,9 +4,13 @@
 #include "TTree.h"
 
 #include "Event/SimEvent.h"
+#include "DetDescr/DetectorID.h"
+#include "DetDescr/DefaultDetectorID.h"
 
 using event::SimEvent;
-using event::SimCalorimeterHit;;
+using event::SimCalorimeterHit;
+using detdescr::DetectorID;
+using detdescr::DefaultDetectorID;
 
 #include "EventProc/EventProcessor.h"
 #include "Event/SimCalorimeterHit.h"
@@ -20,23 +24,21 @@ class HcalDigiProcessor : public EventProcessor {
   
 public:
   
-    HcalDigiProcessor(TString outputFileName_,bool verbose_=false):outputFileName(outputFileName_),verbose(verbose_){};
+    HcalDigiProcessor(TTree* outputTree_,bool verbose_=false):outputTree(outputTree_),verbose(verbose_){};
   
-    int getLayer( SimCalorimeterHit* hcalHit ); 
     void initialize();
     void execute();      
     void finish();
    
  private:
   
-    TFile* outputFile;
     TTree* outputTree;
-    TString outputFileName;
+
     std::vector<int> *hcalDetId_,*hcalLayerNum_,*hcalLayerPEs_;
     std::vector<float> *hcalLayerEdep_,*hcalLayerTime_,*hcalLayerZpos_;
     std::map<layer,zboundaries> hcalLayers;
     bool verbose;  
-
+    DetectorID* detID;
     static const float firstLayerZpos;
     static const float layerZwidth;
     static const int numHcalLayers;

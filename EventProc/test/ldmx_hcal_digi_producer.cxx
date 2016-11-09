@@ -14,6 +14,13 @@ int main(int argc, const char* argv[])  {
         exit(1);
     }
 
+    //////////////////////////////////////////////////////////////////////////
+    // - - - - - - - - - - - - output tree setup - - - - - - - - - - - - -  //
+    //////////////////////////////////////////////////////////////////////////
+    TString outputFileName = argv[2];
+    TFile* outputFile = new TFile(outputFileName,"RECREATE");
+    TTree* outputTree = new TTree("hcalDigi","hcalDigi");
+  
     std::list<std::string> fileList;
 
     std::cout << "Adding file " << argv[1] << std::endl;
@@ -22,8 +29,12 @@ int main(int argc, const char* argv[])  {
     RootEventSource* src = new RootEventSource(fileList, new SimEvent());
     EventLoop* loop = new EventLoop();
     loop->setEventSource(src);
-    loop->addEventProcessor(new eventproc::HcalDigiProcessor(argv[2]));
+    loop->addEventProcessor(new eventproc::HcalDigiProcessor(outputTree));
     loop->initialize();
     loop->run(-1);
     loop->finish();
+
+    outputFile->cd();
+    outputTree->Write();
+    outputFile->Close();
 }
