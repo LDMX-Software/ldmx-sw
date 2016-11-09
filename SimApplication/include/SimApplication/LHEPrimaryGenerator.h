@@ -1,5 +1,5 @@
-#ifndef SimApplication_LHEPrimaryGenerator_h
-#define SimApplication_LHEPrimaryGenerator_h
+#ifndef SIMAPPLICATION_LHEPRIMARYGENERATOR_H_
+#define SIMAPPLICATION_LHEPRIMARYGENERATOR_H_
 
 // Geant4
 #include "G4VPrimaryGenerator.hh"
@@ -21,7 +21,7 @@ class LHEPrimaryGenerator : public G4VPrimaryGenerator {
 
     private:
 
-        LHEReader* reader;
+        LHEReader* reader_;
 };
 
 }

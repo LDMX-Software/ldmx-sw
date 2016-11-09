@@ -1,5 +1,5 @@
-#ifndef EventProc_RootEventSource_h
-#define EventProc_RootEventSource_h
+#ifndef EVENTPROC_ROOTEVENTSOURCE_H_
+#define EVENTPROC_ROOTEVENTSOURCE_H_
 
 // ROOT
 #include "TTree.h"
@@ -18,20 +18,20 @@ class RootEventSource : public EventSource {
 
         RootEventSource(std::list<std::string> fileList, Event* event)
             : EventSource(event),
-              fileList(fileList),
-              entry(0),
-              tree(nullptr),
-              file(nullptr),
-              branch(nullptr) {
+              fileList_(fileList),
+              entry_(0),
+              tree_(nullptr),
+              file_(nullptr),
+              branch_(nullptr) {
         }
 
         RootEventSource(std::string fileName, Event* event)
             : EventSource(event),
-              entry(0),
-              tree(nullptr),
-              file(nullptr),
-              branch(nullptr) {
-            fileList.push_back(fileName);
+              entry_(0),
+              tree_(nullptr),
+              file_(nullptr),
+              branch_(nullptr) {
+            fileList_.push_back(fileName);
         }
 
         virtual ~RootEventSource() {
@@ -44,11 +44,11 @@ class RootEventSource : public EventSource {
         bool openNextFile();
 
     private:
-        std::list<std::string> fileList;
-        int entry;
-        TTree* tree;
-        TFile* file;
-        TBranch *branch;
+        std::list<std::string> fileList_;
+        int entry_;
+        TTree* tree_;
+        TFile* file_;
+        TBranch *branch_;
 };
 
 }

@@ -1,5 +1,5 @@
-#ifndef SimApplication_AuxInfoReader_h
-#define SimApplication_AuxInfoReader_h
+#ifndef SIMAPPLICATION_AUXINFOREADER_H_
+#define SIMAPPLICATION_AUXINFOREADER_H_
 
 // Geant4
 #include "G4GDMLParser.hh"
@@ -31,8 +31,8 @@ class AuxInfoReader {
         void createVisAttributes(G4String name, const G4GDMLAuxListType* auxInfoList);
 
     private:
-        G4GDMLParser* parser;
-        G4GDMLEvaluator* eval;
+        G4GDMLParser* parser_;
+        G4GDMLEvaluator* eval_;
 };
 
 }

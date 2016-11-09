@@ -1,5 +1,5 @@
-#ifndef SimApplication_LHEEvent_h
-#define SimApplication_LHEEvent_h
+#ifndef SIMAPPLICATION_LHEEVENT_H_
+#define SIMAPPLICATION_LHEEVENT_H_
 
 // LDMX
 #include "SimApplication/LHEParticle.h"
@@ -35,14 +35,14 @@ class LHEEvent {
 
     private:
 
-        int nup;
-        int idprup;
-        double xwgtup;
-        double scalup;
-        double aqedup;
-        double aqcdup;
+        int nup_;
+        int idprup_;
+        double xwgtup_;
+        double scalup_;
+        double aqedup_;
+        double aqcdup_;
 
-        std::vector<LHEParticle*> particles;
+        std::vector<LHEParticle*> particles_;
 };
 
 }

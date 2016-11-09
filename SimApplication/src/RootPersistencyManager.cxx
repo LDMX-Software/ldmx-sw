@@ -52,10 +52,10 @@ void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event*
 
 G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
 
-    std::cout << "RootPersistencyManager::Store - " << anEvent->GetEventID() << std::endl;
+    std::cout << "RootPersistencyManager::Store - saving event " << anEvent->GetEventID() << std::endl;
 
     // Get the current output event from the writer.
-    Event* outputEvent = writer.getEvent();
+    Event* outputEvent = writer_.getEvent();
 
     // Set basic event information.
     writeHeader(anEvent, outputEvent);
@@ -64,19 +64,19 @@ G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
     writeHitsCollections(anEvent, outputEvent);
 
     // Set pointer to current G4Event.
-    simParticleBuilder.setCurrentEvent(anEvent);
+    simParticleBuilder_.setCurrentEvent(anEvent);
 
     // Build the SimParticle list for the output ROOT event.
-    simParticleBuilder.buildSimParticles(outputEvent);
+    simParticleBuilder_.buildSimParticles(outputEvent);
 
     // Assign SimParticle objects to SimTrackerHits.
-    simParticleBuilder.assignTrackerHitSimParticles();
+    simParticleBuilder_.assignTrackerHitSimParticles();
 
     // Assign SimParticle objects to SimCalorimeterHits.
-    simParticleBuilder.assignCalorimeterHitSimParticles();
+    simParticleBuilder_.assignCalorimeterHitSimParticles();
 
     // Fill the current ROOT event into the tree.
-    writer.writeEvent();
+    writer_.writeEvent();
 
     return true;
 }

@@ -1,5 +1,5 @@
-#ifndef SimPlugins_PluginMessenger_h
-#define SimPlugins_PluginMessenger_h
+#ifndef SIMPLUGINS_PLUGINMESSENGER_H_
+#define SIMPLUGINS_PLUGINMESSENGER_H_
 
 // Geant4
 #include "G4UImessenger.hh"
@@ -21,12 +21,12 @@ class PluginMessenger : public G4UImessenger {
 
     private:
 
-        PluginManager* pluginManager;
+        PluginManager* pluginManager_;
 
-        G4UIdirectory* pluginDir;
-        G4UIcommand* loadCmd;
-        G4UIcommand* destroyCmd;
-        G4UIcommand* listCmd;
+        G4UIdirectory* pluginDir_;
+        G4UIcommand* loadCmd_;
+        G4UIcommand* destroyCmd_;
+        G4UIcommand* listCmd_;
 };
 
 }

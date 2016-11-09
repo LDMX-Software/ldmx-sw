@@ -6,33 +6,33 @@
 namespace event {
 
 RootEventWriter::RootEventWriter() :
-        fileName("ldmx_events.root"),
-        rootFile(nullptr),
-        tree(nullptr),
-        outputEvent(nullptr) {
+        fileName_("ldmx_events.root"),
+        rootFile_(nullptr),
+        tree_(nullptr),
+        outputEvent_(nullptr) {
 }
 
 RootEventWriter::RootEventWriter(std::string fileName, Event* outputEvent) :
-    fileName(fileName),
-    rootFile(nullptr),
-    tree(nullptr),
-    outputEvent(outputEvent) {
+    fileName_(fileName),
+    rootFile_(nullptr),
+    tree_(nullptr),
+    outputEvent_(outputEvent) {
 }
 
 RootEventWriter::RootEventWriter(Event* outputEvent) :
-    fileName("ldmx_events.root"),
-    rootFile(nullptr),
-    tree(nullptr),
-    outputEvent(outputEvent) {
+    fileName_("ldmx_events.root"),
+    rootFile_(nullptr),
+    tree_(nullptr),
+    outputEvent_(outputEvent) {
 }
 
 void RootEventWriter::open() {
 
-    std::cout << "Opening ROOT file " << fileName << " for writing" << std::endl;
+    std::cout << "Opening ROOT file " << fileName_ << " for writing" << std::endl;
 
-    rootFile = new TFile(fileName.c_str(), "recreate");
-    tree = new TTree("LDMX_Event", "LDMX event tree");
-    tree->Branch("LdmxEvent" /* branch name */, outputEvent->getEventType() /* class name */, &outputEvent, 32000, 3);
+    rootFile_ = new TFile(fileName_.c_str(), "recreate");
+    tree_ = new TTree("LDMX_Event", "LDMX event tree");
+    tree_->Branch("LdmxEvent" /* branch name */, outputEvent_->getEventType() /* class name */, &outputEvent_, 32000, 3);
 }
 
 void RootEventWriter::writeEvent() {
@@ -49,20 +49,20 @@ void RootEventWriter::writeEvent() {
     */
 
     // Fill the tree from the event object.
-    tree->Fill();
+    tree_->Fill();
 }
 
 void RootEventWriter::close() {
 
-    std::cout << "Closing file " << fileName << std::endl;
+    std::cout << "Closing file " << fileName_ << std::endl;
 
     // Write ROOT tree to disk.
-    rootFile->Write();
+    rootFile_->Write();
 
     // Close the file.
-    rootFile->Close();
+    rootFile_->Close();
 
-    std::cout << "File " << fileName << " is closed!" << std::endl;
+    std::cout << "File " << fileName_ << " is closed!" << std::endl;
 }
 
 }

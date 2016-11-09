@@ -1,5 +1,5 @@
-#ifndef SimApplication_G4CalorimeterHit_h
-#define SimApplication_G4CalorimeterHit_h
+#ifndef SIMAPPLICATION_G4CALORIMETERHIT_H_
+#define SIMAPPLICATION_G4CALORIMETERHIT_H_
 
 // Geant4
 #include "G4VHit.hh"
@@ -24,61 +24,59 @@ class G4CalorimeterHit: public G4VHit {
 
         void Draw();
 
-        void Print() {;}
+        void Print();
+
+        std::ostream& print(std::ostream& os);
 
         inline void *operator new(size_t);
 
         inline void operator delete(void *aHit);
 
         G4int getTrackID() {
-            return trackID;
+            return trackID_;
         }
 
         void setTrackID(int trackID) {
-            this->trackID = trackID;
+            this->trackID_ = trackID;
         }
 
         void setID(int id) {
-            this->id = id;
+            this->id_ = id;
         }
 
         void setEdep(float edep) {
-            this->edep = edep;
+            this->edep_ = edep;
         }
 
         void setPosition(const float x, const float y, const float z) {
-            this->x = x;
-            this->y = y;
-            this->z = z;
+            position_.set(x, y, z);
         }
 
         void setTime(float time) {
-            this->time = time;
+            this->time_ = time;
         }
 
         void setSimCalorimeterHit(SimCalorimeterHit* simCalHit) {
-            simCalHit->setID(id);
-            simCalHit->setEdep(edep);
-            simCalHit->setPosition(x, y, z);
-            simCalHit->setTime(time);
-            this->simCalHit = simCalHit;
+            simCalHit->setID(id_);
+            simCalHit->setEdep(edep_);
+            simCalHit->setPosition(position_.x(), position_.y(), position_.z());
+            simCalHit->setTime(time_);
+            this->simCalHit_ = simCalHit;
         }
 
         SimCalorimeterHit* getSimCalorimeterHit() {
-            return simCalHit;
+            return simCalHit_;
         }
 
     private:
 
-        int trackID{-1};
-        int id{0};
-        double edep{0};
-        double x{0};
-        double y{0};
-        double z{0};
-        float time{0};
+        int trackID_{-1};
+        int id_{0};
+        double edep_{0};
+        G4ThreeVector position_;
+        float time_{0};
 
-        SimCalorimeterHit* simCalHit{nullptr};
+        SimCalorimeterHit* simCalHit_{nullptr};
 };
 
 /**

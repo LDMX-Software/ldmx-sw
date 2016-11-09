@@ -1,5 +1,5 @@
-#ifndef SimApplication_RunManager_h
-#define SimApplication_RunManager_h
+#ifndef SIMAPPLICATION_RUNMANAGER_H_
+#define SIMAPPLICATION_RUNMANAGER_H_
 
 // Geant4
 #include "G4RunManager.hh"
@@ -27,8 +27,8 @@ class RunManager : public G4RunManager {
 
     private:
 
-        PluginMessenger* pluginMessenger;
-        PluginManager* pluginManager;
+        PluginMessenger* pluginMessenger_;
+        PluginManager* pluginManager_;
 };
 
 }

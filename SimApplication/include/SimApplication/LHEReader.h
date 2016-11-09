@@ -1,5 +1,5 @@
-#ifndef SimApplication_LHEReader_h
-#define SimApplication_LHEReader_h
+#ifndef SIMAPPLICATION_LHEREADER_H_
+#define SIMAPPLICATION_LHEREADER_H_
 
 // LDMX
 #include "SimApplication/LHEEvent.h"
@@ -21,7 +21,7 @@ class LHEReader {
 
     private:
 
-        std::ifstream ifs;
+        std::ifstream ifs_;
 };
 
 }

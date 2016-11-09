@@ -1,5 +1,5 @@
-#ifndef SimApplication_VisAttributesStore_h
-#define SimApplication_VisAttributesStore_h
+#ifndef SIMAPPLICATION_VISATTRIBUTESSTORE_H_
+#define SIMAPPLICATION_VISATTRIBUTESSTORE_H_
 
 // Geant4
 #include "G4VisAttributes.hh"
@@ -18,16 +18,16 @@ class VisAttributesStore {
         }
 
         G4VisAttributes* getVisAttributes(const std::string& name) {
-            return visAttributesMap[name];
+            return visAttributesMap_[name];
         }
 
         void addVisAttributes(const std::string& name, G4VisAttributes* visAttributes) {
-            visAttributesMap[name] = visAttributes;
+            visAttributesMap_[name] = visAttributes;
         }
 
     private:
 
-        VisAttributesMap visAttributesMap;
+        VisAttributesMap visAttributesMap_;
 };
 
 }

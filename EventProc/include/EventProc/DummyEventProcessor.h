@@ -1,5 +1,5 @@
-#ifndef EventProc_DummyEventProcessor_h
-#define EventProc_DummyEventProcessor_h
+#ifndef EVENTPROC_DUMMYEVENTPROCESSOR_H_
+#define EVENTPROC_DUMMYEVENTPROCESSOR_H_
 
 #include "EventProc/EventProcessor.h"
 
@@ -17,7 +17,7 @@ class DummyEventProcessor : public EventProcessor {
 
     private:
 
-        int nProcessed{0};
+        int nProcessed_{0};
 };
 
 }

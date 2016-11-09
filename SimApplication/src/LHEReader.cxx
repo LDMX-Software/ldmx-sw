@@ -8,18 +8,18 @@ namespace sim {
 
 LHEReader::LHEReader(std::string& filename) {
     std::cout << "Opening LHE file " << filename << std::endl;
-    ifs.open(filename.c_str(), std::ifstream::in);
+    ifs_.open(filename.c_str(), std::ifstream::in);
 }
 
 LHEReader::~LHEReader() {
-    ifs.close();
+    ifs_.close();
 }
 
 LHEEvent* LHEReader::readNextEvent() {
 
     std::string line;
     bool foundEventElement = false;
-    while (getline(ifs, line)) {
+    while (getline(ifs_, line)) {
         if (line == "<event>") {
             foundEventElement = true;
             break;
@@ -31,7 +31,7 @@ LHEEvent* LHEReader::readNextEvent() {
         return NULL;
     }
 
-    getline(ifs, line);
+    getline(ifs_, line);
 
     LHEEvent* nextEvent = new LHEEvent(line);
 
@@ -40,7 +40,7 @@ LHEEvent* LHEReader::readNextEvent() {
             << ", AQEDUP: " << nextEvent->getAQEDUP() << ", AQCDUP: " << nextEvent->getAQCDUP()
             << std::endl;
 
-    while (getline(ifs, line)) {
+    while (getline(ifs_, line)) {
 
         if (line == "</event>") {
             break;

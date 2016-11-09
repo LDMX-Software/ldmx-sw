@@ -1,5 +1,5 @@
-#ifndef Event_Event_h
-#define Event_Event_h
+#ifndef EVENT_EVENT_H_
+#define EVENT_EVENT_H_
 
 // ROOT
 #include "TObject.h"
@@ -29,40 +29,51 @@ class Event: public TObject {
 
         void Clear(Option_t* = "");
 
-        int getEventNumber();
+        int getEventNumber() { return eventNumber_; }
 
-        int getRun();
+        int getRun() { return run_; }
 
-        int getTimestamp();
+        int getTimestamp() { return timestamp_; }
         
-        double getWeight();
+        double getWeight() { return weight_; }
 
-        void setEventNumber(int);
+        void setEventNumber(int eventNumber) { this->eventNumber_ = eventNumber; }
 
-        void setRun(int);
+        void setRun(int run) { this->run_ = run; }
 
-        void setTimestamp(int);
+        void setTimestamp(int timestamp) { this->timestamp_ = timestamp; }
         
-        void setWeight(double);
+        void setWeight(double weight) { this->weight_ = weight; }
 
-        TClonesArray* getCollection(const std::string&);
-
-        const CollectionMap& getCollectionMap() {
-            return collMap;
+        TClonesArray* getCollection(const std::string& collectionName) {
+            return collMap_[collectionName];
         }
 
+        const CollectionMap& getCollectionMap() {
+            return collMap_;
+        }
+
+        TObject* addObject(const std::string& collectionName) {
+            auto coll = getCollection(collectionName);
+            return coll->ConstructedAt(coll->GetEntries());
+        }
+
+        /**
+         * Concrete sub-classes must implement this method to return a string
+         * with the class name of the event type e.g. "event::SimEvent".
+         */
         virtual const char* getEventType() = 0;
 
     private:
 
-        int eventNumber;
-        int run;
-        int timestamp;
-        double weight;
+        int eventNumber_{-1};
+        int run_{-1};
+        int timestamp_{-1};
+        double weight_{1.0};
 
     protected:
 
-        CollectionMap collMap; //!
+        CollectionMap collMap_; //!
 
         ClassDef(Event, 1);
 };

@@ -1,5 +1,5 @@
-#ifndef SimApplication_SimParticleBuilder_h
-#define SimApplication_SimParticleBuilder_h
+#ifndef SIMAPPLICATION_SIMPARTICLEBUILDER_H_
+#define SIMAPPLICATION_SIMPARTICLEBUILDER_H_
 
 // LDMX
 #include "Event/Event.h"
@@ -29,7 +29,7 @@ class SimParticleBuilder {
         virtual ~SimParticleBuilder();
 
         void setCurrentEvent(const G4Event* anEvent) {
-            this->currentEvent = const_cast<G4Event*>(anEvent);
+            this->currentEvent_ = const_cast<G4Event*>(anEvent);
         }
 
         void buildSimParticles(Event* outputEvent);
@@ -46,9 +46,9 @@ class SimParticleBuilder {
 
     private:
 
-        SimParticleMap particleMap;
-        TrackMap* trackMap;
-        G4Event* currentEvent;
+        SimParticleMap particleMap_;
+        TrackMap* trackMap_;
+        G4Event* currentEvent_;
 };
 
 }
