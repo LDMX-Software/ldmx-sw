@@ -2,6 +2,7 @@
 #define EVENT_SIMEVENT_H_
 
 #include "Event/Event.h"
+#include "Event/EventConstants.h"
 
 namespace event {
 
@@ -19,13 +20,13 @@ class SimEvent : public Event {
 
     private:
 
-        TClonesArray* simParticles_;
-        TClonesArray* taggerSimHits_;
-        TClonesArray* recoilSimHits_;
-        TClonesArray* ecalSimHits_;
-        TClonesArray* hcalSimHits_;
-        TClonesArray* triggerPadSimHits_;
-        TClonesArray* targetSimHits_;
+        TClonesArray* simParticles_; //->
+        TClonesArray* taggerSimHits_; //->
+        TClonesArray* recoilSimHits_; //->
+        TClonesArray* ecalSimHits_; //->
+        TClonesArray* hcalSimHits_; //->
+        TClonesArray* triggerPadSimHits_; //->
+        TClonesArray* targetSimHits_; //->
 
         ClassDef(SimEvent, 1);
 };
