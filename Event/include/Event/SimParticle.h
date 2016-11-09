@@ -18,6 +18,8 @@ class SimParticle: public TObject {
 
         virtual ~SimParticle();
 
+        void Clear(Option_t *option = "");
+
         void Print(Option_t *option = "") const;
 
         float getEnergy() {

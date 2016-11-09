@@ -7,6 +7,7 @@
 #include "SimApplication/UserRegionInformation.h"
 #include "SimApplication/VisAttributesStore.h"
 #include "DetDescr/DetectorIDStore.h"
+#include "DetDescr/DefaultDetectorID.h"
 
 // Geant4
 #include "G4LogicalVolumeStore.hh"
@@ -23,6 +24,7 @@
 #include <stdlib.h>
 
 using detdescr::DetectorID;
+using detdescr::DefaultDetectorID;
 using detdescr::IDField;
 using detdescr::DetectorIDStore;
 
@@ -108,14 +110,16 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
         G4Exception("", "", FatalException, "The SubdetID is missing or has an invalid value.");
     }
 
-    if (idName == "") {
-        G4Exception("", "", FatalException, "The SensDet is missing the DetectorID.");
-    }
-
-    DetectorID* detID = DetectorIDStore::getInstance()->getID(idName);
-    if (detID == NULL) {
-        std::cout << "The Detector ID" << idName << " does not exist.  Is it defined before the SensDet in userinfo?" << std::endl;
-        G4Exception("", "", FatalException, "The referenced Detector ID was not found.");
+    /*
+     * Use the default detector ID or create one from information supplied in the userinfo block, if present.
+     */
+    DetectorID* detID = new DefaultDetectorID();
+    if (idName != "") {
+        detID = DetectorIDStore::getInstance()->getID(idName);
+        if (!detID) {
+            std::cerr << "The Detector ID" << idName << " does not exist.  Is it defined before the SensDet in userinfo?" << std::endl;
+            G4Exception("", "", FatalException, "The referenced Detector ID was not found.");
+        }
     }
 
     G4VSensitiveDetector* sd = 0;
