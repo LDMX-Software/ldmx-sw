@@ -8,12 +8,17 @@ ClassImp(event::SimParticle)
 namespace event {
 
 SimParticle::SimParticle()
-    : daughters_(new TRefArray()), parents_(new TRefArray())
+    : TObject(), daughters_(new TRefArray()), parents_(new TRefArray())
 {;}
 
 SimParticle::~SimParticle() {
+    TObject::Clear();
     daughters_->Delete();
     parents_->Delete();
+}
+
+void SimParticle::Clear(Option_t *option) {
+    TObject::Clear();
 }
 
 void SimParticle::Print(Option_t *option) const {
