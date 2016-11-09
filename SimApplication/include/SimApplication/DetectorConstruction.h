@@ -1,5 +1,5 @@
-#ifndef SimApplication_DetectorConstruction_h
-#define SimApplication_DetectorConstruction_h
+#ifndef SIMAPPLICATION_DETECTORCONSTRUCTION_H_
+#define SIMAPPLICATION_DETECTORCONSTRUCTION_H_
 
 // LDMX
 #include "AuxInfoReader.h"
@@ -21,8 +21,8 @@ class DetectorConstruction: public G4VUserDetectorConstruction {
         G4VPhysicalVolume *Construct();
 
     private:
-        G4GDMLParser* parser;
-        AuxInfoReader* auxInfoReader;
+        G4GDMLParser* parser_;
+        AuxInfoReader* auxInfoReader_;
 };
 
 }

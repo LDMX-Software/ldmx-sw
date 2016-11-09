@@ -1,5 +1,5 @@
 # find ROOT
-find_package(ROOT REQUIRED COMPONENTS Core RIO)
+find_package(ROOT REQUIRED COMPONENTS Core RIO TreePlayer)
 
 # declare SimApplication module
 module(

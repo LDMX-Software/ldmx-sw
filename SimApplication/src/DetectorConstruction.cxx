@@ -3,18 +3,18 @@
 namespace sim {
 
 DetectorConstruction::DetectorConstruction(G4GDMLParser* theParser) :
-    parser(theParser),
-    auxInfoReader(new AuxInfoReader(theParser)) {
+    parser_(theParser),
+    auxInfoReader_(new AuxInfoReader(theParser)) {
 }
 
 DetectorConstruction::~DetectorConstruction() {
-    delete auxInfoReader;
+    delete auxInfoReader_;
 }
 
 G4VPhysicalVolume* DetectorConstruction::Construct() {
-    auxInfoReader->readGlobalAuxInfo();
-    auxInfoReader->assignAuxInfoToVolumes();
-    return parser->GetWorldVolume();
+    auxInfoReader_->readGlobalAuxInfo();
+    auxInfoReader_->assignAuxInfoToVolumes();
+    return parser_->GetWorldVolume();
 }
 
 }

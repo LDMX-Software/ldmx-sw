@@ -18,12 +18,11 @@ using event::RootEventWriter;
 
 namespace sim {
 
-TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int theSubdetId, DetectorID* theDetId) :
+TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
     G4VSensitiveDetector(name),
-    hitsCollection(0),
-    currentEvent(0),
-    subdetId(theSubdetId),
-    detId(theDetId) {
+    hitsCollection_(0),
+    subdetID_(subdetID),
+    detID_(detID) {
 
     // Add the collection name to vector of names.
     this->collectionName.push_back(theCollectionName);
@@ -32,10 +31,11 @@ TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int theSubdetId,
     G4SDManager::GetSDMpointer()->AddNewDetector(this);
 
     // Set the subdet ID as it will always be the same for every hit.
-    detId->setFieldValue("subdet", subdetId);
+    detID_->setFieldValue("subdet", subdetID_);
 }
 
 TrackerSD::~TrackerSD() {
+    delete detID_;
 }
 
 G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
@@ -52,7 +52,7 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
     // Skip steps with no energy dep which come from non-Geantino particles.
     if (edep == 0.0 && !isGeantino) {
-        if (verboseLevel > 1) {
+        if (verboseLevel > 2) {
             std::cout << "TrackerSD skipping step with zero edep" << std::endl << std::endl;
         }
         return false;
@@ -106,22 +106,22 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
      * Set the 32-bit ID on the hit.
      */
     int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
-    detId->setFieldValue(1, layerNumber);
-    hit->setID(detId->pack());
+    detID_->setFieldValue(1, layerNumber);
+    hit->setID(detID_->pack());
     hit->setLayerID(layerNumber);
 
     /*
      * Debug print.
      */
-    if (this->verboseLevel > 0) {
+    if (this->verboseLevel > 2) {
         std::cout << "Created new SimTrackerHit in detector " << this->GetName()
-                << " with subdet ID " << subdetId << " and layer " << layerNumber << " ..." << std::endl;
+                << " with subdet ID " << subdetID_ << " and layer " << layerNumber << " ..." << std::endl;
         hit->Print();
         std::cout << std::endl;
     }
 
     // Insert hit into current hits collection.
-    hitsCollection->insert(hit);
+    hitsCollection_->insert(hit);
 
     return true;
 }
@@ -129,25 +129,25 @@ G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 void TrackerSD::Initialize(G4HCofThisEvent* hce) {
 
     // Setup hits collection and the HC ID.
-    hitsCollection = new G4TrackerHitsCollection(SensitiveDetectorName, collectionName[0]);
-    G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
-    hce->AddHitsCollection(hcID, hitsCollection);
+    hitsCollection_ = new G4TrackerHitsCollection(SensitiveDetectorName, collectionName[0]);
+    int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
+    hce->AddHitsCollection(hcID, hitsCollection_);
 }
 
 void TrackerSD::EndOfEvent(G4HCofThisEvent*) {
 
-    /*
-     * Debug print number of hits in this detector for the event.
-     */
+    // Print number of hits.
     if (this->verboseLevel > 0) {
-        std::cout << GetName() << " had " << hitsCollection->entries()
+        std::cout << GetName() << " had " << hitsCollection_->entries()
                 << " hits in event" << std::endl;
     }
-    /*
-    for (int i = 0; i < nHits; i++ ) {
-        (*hitsCollection)[i]->Print();
+
+    // Print each hit in hits collection.
+    if (this->verboseLevel > 1) {
+        for (int iHit = 0; iHit < hitsCollection_->GetSize(); iHit++ ) {
+            (*hitsCollection_)[iHit]->Print();
+        }
     }
-    */
 }
 
 }

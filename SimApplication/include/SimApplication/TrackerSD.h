@@ -1,12 +1,12 @@
-#ifndef SimApplication_TrackerSD_h
-#define SimApplication_TrackerSD_h
+#ifndef SIMAPPLICATION_TRACKERSD_H_
+#define SIMAPPLICATION_TRACKERSD_H_
 
 // Geant4
-#include <DetDescr/DetectorID.h>
 #include "G4VSensitiveDetector.hh"
 
 // LDMX
 #include "SimApplication/G4TrackerHit.h"
+#include "DetDescr/DetectorID.h"
 #include "Event/Event.h"
 
 using event::Event;
@@ -18,9 +18,16 @@ class TrackerSD: public G4VSensitiveDetector {
 
     public:
 
-        TrackerSD(G4String name, G4String theCollectionName, int subdetId, DetectorID* detId);
+        TrackerSD(G4String name,
+                G4String theCollectionName,
+                int subdetID,
+                DetectorID* detID);
 
         virtual ~TrackerSD();
+
+        void setDetectorID(DetectorID* detID) {
+            this->detID_= detID;
+        }
 
         G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
 
@@ -30,10 +37,9 @@ class TrackerSD: public G4VSensitiveDetector {
 
     private:
 
-        G4TrackerHitsCollection* hitsCollection;
-        Event* currentEvent;
-        int subdetId;
-        DetectorID* detId;
+        G4TrackerHitsCollection* hitsCollection_;
+        int subdetID_;
+        DetectorID* detID_;
 };
 
 }

@@ -1,5 +1,5 @@
-#ifndef SimApplication_UserEventAction_h
-#define SimApplication_UserEventAction_h
+#ifndef SIMAPPLICATION_USEREVENTACTION_H_
+#define SIMAPPLICATION_USEREVENTACTION_H_
 
 // Geant4
 #include "G4UserEventAction.hh"
@@ -14,14 +14,10 @@ class UserEventAction: public G4UserEventAction {
 
     public:
 
-        UserEventAction();
-        virtual ~UserEventAction();
+        UserEventAction() {;}
+        virtual ~UserEventAction() {;}
         void BeginOfEventAction(const G4Event*);
         void EndOfEventAction(const G4Event*);
-
-    private:
-
-        SimParticleBuilder* simParticleBuilder;
 };
 
 }

@@ -1,5 +1,5 @@
-#ifndef SimApplication_APrimePhysics_h
-#define SimApplication_APrimePhysics_h 1
+#ifndef SIMAPPLICATION_APRIMEPHYSICS_H_
+#define SIMAPPLICATION_APRIMEPHYSICS_H 1_
 
 // Geant4
 #include "G4VPhysicsConstructor.hh"
@@ -23,7 +23,7 @@ class APrimePhysics : public G4VPhysicsConstructor {
 
     private:
 
-        G4ParticleDefinition* aprimeDef;
+        G4ParticleDefinition* aprimeDef_;
         //G4Decay decayProcess;
         //G4hMultipleScattering scatterProcess;
 };

@@ -1,5 +1,5 @@
-#ifndef SimApplication_Trajectory_h
-#define SimApplication_Trajectory_h
+#ifndef SIMAPPLICATION_TRAJECTORY_H_
+#define SIMAPPLICATION_TRAJECTORY_H_
 
 // Geant4
 #include "G4VTrajectory.hh"
@@ -66,18 +66,18 @@ class Trajectory : public G4VTrajectory {
 
     private:
 
-        TrajectoryPointContainer* trajPoints;
-        G4ParticleDefinition* particleDef;
-        G4int trackID;
-        G4int parentID;
-        G4double energy;
-        G4double mass;
-        G4float globalTime;
-        G4int genStatus;
-        G4int simStatus;
-        G4ThreeVector initialMomentum;
-        G4ThreeVector vertexPosition;
-        G4ThreeVector endPoint;
+        TrajectoryPointContainer* trajPoints_;
+        G4ParticleDefinition* particleDef_;
+        G4int trackID_;
+        G4int parentID_;
+        G4double energy_;
+        G4double mass_;
+        G4float globalTime_;
+        G4int genStatus_;
+        G4int simStatus_;
+        G4ThreeVector initialMomentum_;
+        G4ThreeVector vertexPosition_;
+        G4ThreeVector endPoint_;
 };
 
 extern G4Allocator<Trajectory> TrajectoryAllocator;

@@ -1,5 +1,5 @@
-#ifndef SimApplication_MagneticFieldStore_h
-#define SimApplication_MagneticFieldStore_h
+#ifndef SIMAPPLICATION_MAGNETICFIELDSTORE_H_
+#define SIMAPPLICATION_MAGNETICFIELDSTORE_H_
 
 // Geant4
 #include "G4MagneticField.hh"
@@ -18,16 +18,16 @@ class MagneticFieldStore {
         }
 
         G4MagneticField* getMagneticField(const std::string& name) {
-            return magFields[name];
+            return magFields_[name];
         }
 
         void addMagneticField(const std::string& name, G4MagneticField* magField) {
-            magFields[name] = magField;
+            magFields_[name] = magField;
         }
 
     private:
 
-        MagFieldMap magFields;
+        MagFieldMap magFields_;
 };
 
 }

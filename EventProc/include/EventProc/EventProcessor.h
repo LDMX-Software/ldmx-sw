@@ -1,5 +1,5 @@
-#ifndef EventProc_EventProcessor_h
-#define EventProc_EventProcessor_h
+#ifndef EVENTPROC_EVENTPROCESSOR_H_
+#define EVENTPROC_EVENTPROCESSOR_H_
 
 #include "Event/Event.h"
 
@@ -11,7 +11,7 @@ class EventProcessor {
 
     public:
 
-        EventProcessor() : event(nullptr) {;}
+        EventProcessor() : event_(nullptr) {;}
 
         virtual ~EventProcessor() {;}
 
@@ -21,17 +21,17 @@ class EventProcessor {
 
         virtual void finish() = 0;
 
-        void setEvent(Event* event) {
-            this->event = event;
+        void setEvent(Event* anEvent) {
+            this->event_ = anEvent;
         }
 
         Event* getEvent() {
-            return event;
+            return event_;
         }
 
     private:
 
-        Event* event;
+        Event* event_;
 };
 
 }

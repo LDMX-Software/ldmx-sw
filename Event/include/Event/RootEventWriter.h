@@ -1,5 +1,5 @@
-#ifndef Event_RootWriter_h
-#define Event_RootWriter_h
+#ifndef EVENT_ROOTWRITER_H_
+#define EVENT_ROOTWRITER_H_
 
 // ROOT
 #include "TFile.h"
@@ -23,15 +23,15 @@ class RootEventWriter {
         virtual ~RootEventWriter() {;}
 
         Event* getEvent() {
-            return outputEvent;
+            return outputEvent_;
         }
 
         void setEvent(Event* outputEvent) {
-            this->outputEvent = outputEvent;
+            this->outputEvent_ = outputEvent;
         }
 
         void setFileName(std::string fileName) {
-            this->fileName = fileName;
+            this->fileName_ = fileName;
         }
 
         void open();
@@ -42,10 +42,10 @@ class RootEventWriter {
 
     private:
 
-        std::string fileName;
-        TFile* rootFile;
-        TTree *tree;
-        Event* outputEvent;
+        std::string fileName_;
+        TFile* rootFile_;
+        TTree *tree_;
+        Event* outputEvent_;
 };
 
 }

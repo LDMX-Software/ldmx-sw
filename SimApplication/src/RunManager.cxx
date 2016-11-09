@@ -8,6 +8,7 @@
 #include "SimApplication/SteppingAction.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
+#include "SimApplication/UserStackingAction.h"
 #include "SimApplication/UserTrackingAction.h"
 
 // Geant4
@@ -17,13 +18,13 @@
 namespace sim {
 
 RunManager::RunManager() {
-    pluginManager = &PluginManager::getInstance();
-    pluginMessenger = new PluginMessenger(pluginManager);
+    pluginManager_ = &PluginManager::getInstance();
+    pluginMessenger_ = new PluginMessenger(pluginManager_);
 }
 
 RunManager::~RunManager() {
-    delete pluginManager;
-    delete pluginMessenger;
+    delete pluginManager_;
+    delete pluginMessenger_;
 }
 
 void RunManager::InitializePhysics() {
@@ -50,6 +51,7 @@ void RunManager::Initialize() {
     SetUserAction(new UserEventAction);
     SetUserAction(new UserTrackingAction);
     SetUserAction(new SteppingAction);
+    SetUserAction(new UserStackingAction);
 
     RootPersistencyManager* rootIO = new RootPersistencyManager();
     new RootPersistencyMessenger(rootIO);

@@ -1,5 +1,5 @@
-#ifndef SimApplication_PrimaryGeneratorAction_h
-#define SimApplication_PrimaryGeneratorAction_h
+#ifndef SIMAPPLICATION_PRIMARYGENERATORACTION_H_
+#define SIMAPPLICATION_PRIMARYGENERATORACTION_H_
 
 // Geant4
 #include "G4VUserPrimaryGeneratorAction.hh"
@@ -20,7 +20,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
         void setPrimaryGenerator(G4VPrimaryGenerator*);
 
     private:
-        G4VPrimaryGenerator* generator;
+        G4VPrimaryGenerator* generator_;
 };
 
 }

@@ -15,8 +15,7 @@ void G4CalorimeterHit::Draw() {
     G4VVisManager* visManager = G4VVisManager::GetConcreteInstance();
 
     if(visManager) {
-        G4ThreeVector position(x, y, z);
-        G4Point3D p3D = G4Point3D(position);
+        G4Point3D p3D = G4Point3D(position_);
         G4Circle chit(p3D);
         chit.SetScreenDiameter(3.0);
         chit.SetFillStyle(G4Circle::filled);
@@ -26,6 +25,20 @@ void G4CalorimeterHit::Draw() {
         chit.SetVisAttributes(G4VisAttributes(col));
         visManager->Draw(chit);
     }
+}
+
+void G4CalorimeterHit::Print() {
+    print(std::cout);
+}
+
+std::ostream& G4CalorimeterHit::print(std::ostream& os) {
+    os << "G4CalorimeterHit { "
+            << "edep: " << this->edep_ << ", "
+            << "position: " << position_ << ", "
+            << "time: " << this->time_
+            << " }"
+            << std::endl;
+    return os;
 }
 
 }

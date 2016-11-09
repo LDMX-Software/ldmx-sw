@@ -1,5 +1,5 @@
-#ifndef Event_SimEvent_h
-#define Event_SimEvent_h
+#ifndef EVENT_SIMEVENT_H_
+#define EVENT_SIMEVENT_H_
 
 #include "Event/Event.h"
 
@@ -19,11 +19,13 @@ class SimEvent : public Event {
 
     private:
 
-        TClonesArray* simParticles;
-        TClonesArray* taggerSimHits;
-        TClonesArray* recoilSimHits;
-        TClonesArray* ecalSimHits;
-        TClonesArray* hcalSimHits;
+        TClonesArray* simParticles_;
+        TClonesArray* taggerSimHits_;
+        TClonesArray* recoilSimHits_;
+        TClonesArray* ecalSimHits_;
+        TClonesArray* hcalSimHits_;
+        TClonesArray* triggerPadSimHits_;
+        TClonesArray* targetSimHits_;
 
         ClassDef(SimEvent, 1);
 };

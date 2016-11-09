@@ -20,8 +20,8 @@ using event::RootEventWriter;
 
 namespace sim {
 
-SimParticleBuilder::SimParticleBuilder() : currentEvent(nullptr) {
-    trackMap = TrackMap::getInstance();
+SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {
+    trackMap_ = TrackMap::getInstance();
 }
 
 SimParticleBuilder::~SimParticleBuilder() {
@@ -29,11 +29,11 @@ SimParticleBuilder::~SimParticleBuilder() {
 
 void SimParticleBuilder::buildSimParticles(Event* outputEvent) {
 
-    particleMap.clear();
+    particleMap_.clear();
 
     TrajectoryContainer* trajectories;
-    if (currentEvent->GetTrajectoryContainer() != nullptr) {
-        trajectories = (TrajectoryContainer*)(const_cast<G4Event*>(currentEvent))->GetTrajectoryContainer();
+    if (currentEvent_->GetTrajectoryContainer() != nullptr) {
+        trajectories = (TrajectoryContainer*)(const_cast<G4Event*>(currentEvent_))->GetTrajectoryContainer();
     } else {
         throw std::runtime_error("Trajectory container for the event is null!");
     }
@@ -43,7 +43,7 @@ void SimParticleBuilder::buildSimParticles(Event* outputEvent) {
         SimParticle* simParticle = (SimParticle*) coll->ConstructedAt(coll->GetEntries());
         Trajectory* traj = (Trajectory*)(*trajectories)[iTraj];
         buildSimParticle(simParticle, traj);
-        particleMap[traj->GetTrackID()] = simParticle;
+        particleMap_[traj->GetTrackID()] = simParticle;
     }
 }
 
@@ -79,16 +79,16 @@ void SimParticleBuilder::buildSimParticle(SimParticle* simParticle, Trajectory* 
 }
 
 SimParticle* SimParticleBuilder::findSimParticle(G4int trackID) {
-    G4VTrajectory* traj = trackMap->findTrajectory(currentEvent, trackID);
+    G4VTrajectory* traj = trackMap_->findTrajectory(currentEvent_, trackID);
     if (traj != NULL) {
-        return particleMap[traj->GetTrackID()];
+        return particleMap_[traj->GetTrackID()];
     } else {
         return NULL;
     }
 }
 
 void SimParticleBuilder::assignTrackerHitSimParticles() {
-    G4HCofThisEvent* hce = currentEvent->GetHCofThisEvent();
+    G4HCofThisEvent* hce = currentEvent_->GetHCofThisEvent();
     int nColl = hce->GetNumberOfCollections();
     for (int iColl = 0; iColl < nColl; iColl++) {
         G4VHitsCollection* hitsColl = hce->GetHC(iColl);
@@ -112,7 +112,7 @@ void SimParticleBuilder::assignTrackerHitSimParticles() {
 }
 
 void SimParticleBuilder::assignCalorimeterHitSimParticles() {
-    G4HCofThisEvent* hce = currentEvent->GetHCofThisEvent();
+    G4HCofThisEvent* hce = currentEvent_->GetHCofThisEvent();
     int nColl = hce->GetNumberOfCollections();
     for (int iColl = 0; iColl < nColl; iColl++) {
         G4VHitsCollection* hitsColl = hce->GetHC(iColl);
