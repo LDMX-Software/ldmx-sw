@@ -53,6 +53,11 @@ class Event: public TObject {
             return collMap_;
         }
 
+        TObject* addObject(const std::string& collectionName) {
+            auto coll = getCollection(collectionName);
+            return coll->ConstructedAt(coll->GetEntries());
+        }
+
         /**
          * Concrete sub-classes must implement this method to return a string
          * with the class name of the event type e.g. "event::SimEvent".

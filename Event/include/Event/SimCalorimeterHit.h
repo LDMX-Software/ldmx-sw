@@ -14,9 +14,11 @@ class SimCalorimeterHit: public TObject {
 
     public:
 
-        SimCalorimeterHit() {;}
+        SimCalorimeterHit();
 
-        virtual ~SimCalorimeterHit() {;}
+        virtual ~SimCalorimeterHit();
+
+        void Clear(Option_t *option = "");
 
         void Print(Option_t *option = "") const;
 
