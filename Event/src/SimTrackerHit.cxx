@@ -13,12 +13,12 @@ SimTrackerHit::~SimTrackerHit() {
 }
 
 void SimTrackerHit::Print(Option_t *option) const {
-    std::cout << "SimTrackerHit { " << "ID: " << std::bitset<32>(id_) << ", " <<
-        "Layer ID: " << layerID_ << ", " <<
-        "Position: ( " << x_ << ", " << y_ << ", " << z_ << " ), " <<
-        "dEdx: " << edep_ << ", " <<
-        "Time: " << time_ << ", " <<
-        "Momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " )" <<
+    std::cout << "SimTrackerHit { " << "id: " << id_ << ", " <<
+        "layerID: " << layerID_ << ", " <<
+        "position: ( " << x_ << ", " << y_ << ", " << z_ << " ), " <<
+        "edep: " << edep_ << ", " <<
+        "time: " << time_ << ", " <<
+        "momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " )" <<
         " }" << std::endl;
 }
 
