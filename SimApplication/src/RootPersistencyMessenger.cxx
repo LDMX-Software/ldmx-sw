@@ -12,7 +12,7 @@ RootPersistencyMessenger::RootPersistencyMessenger(RootPersistencyManager* rootI
     rootDir_->SetGuidance("ROOT persistency commands for writing events");
 
     rootFileCmd_ = new G4UIcommand("/ldmx/persistency/root/file", this);
-    G4UIparameter* filename = new G4UIparameter("filename", 's', true);
+    G4UIparameter* filename = new G4UIparameter("filename", 's', false);
     rootFileCmd_->SetParameter(filename);
     rootFileCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
     rootFileCmd_->SetGuidance("Set the ROOT output file name.");
@@ -32,13 +32,13 @@ RootPersistencyMessenger::RootPersistencyMessenger(RootPersistencyManager* rootI
     enableCmd_->SetGuidance("Re-enable ROOT IO after it has been disabled.");
     
     comprCmd_ = new G4UIcommand("/ldmx/persistency/root/compression", this);
-    G4UIparameter* compLevel = new G4UIparameter("compressionLevel", 'i', true);
+    G4UIparameter* compLevel = new G4UIparameter("compressionLevel", 'i', false);
     comprCmd_->SetParameter(compLevel);
     comprCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
     comprCmd_->SetGuidance("Set the output file compression level (1-9).");
     
     modeCmd_ = new G4UIcommand("/ldmx/persistency/root/mode", this);
-    G4UIparameter* mode = new G4UIparameter("mode", 's', true);
+    G4UIparameter* mode = new G4UIparameter("mode", 's', false);
     modeCmd_->SetParameter(mode);
     modeCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
     modeCmd_->SetGuidance("Set the file mode: new update recreate");
