@@ -25,6 +25,7 @@
 
 using event::SimEvent;
 using event::Event;
+using event::EventConstants;
 using detdescr::DetectorID;
 using detdescr::IDField;
 
@@ -73,18 +74,18 @@ int main(int argc, const char* argv[])  {
         tree->GetEntry(entry);
 
         int eventNumber = event->getEventNumber();
-        int nSimParticles = event->getCollection(event::SIM_PARTICLES)->GetEntries();
-        int nTaggerHits = event->getCollection(event::TAGGER_SIM_HITS)->GetEntries();
-        int nRecoilHits = event->getCollection(event::RECOIL_SIM_HITS)->GetEntries();
-        int nEcalHits = event->getCollection(event::ECAL_SIM_HITS)->GetEntries();
-        int nHcalHits = event->getCollection(event::HCAL_SIM_HITS)->GetEntries();
+        int nSimParticles = event->getCollection(EventConstants::SIM_PARTICLES)->GetEntries();
+        int nTaggerHits = event->getCollection(EventConstants::TAGGER_SIM_HITS)->GetEntries();
+        int nRecoilHits = event->getCollection(EventConstants::RECOIL_SIM_HITS)->GetEntries();
+        int nEcalHits = event->getCollection(EventConstants::ECAL_SIM_HITS)->GetEntries();
+        int nHcalHits = event->getCollection(EventConstants::HCAL_SIM_HITS)->GetEntries();
         
         std::cout << ">>> Event " << eventNumber << std::endl;
-        std::cout << "  "  << event::SIM_PARTICLES << ": " << nSimParticles << std::endl;
-        std::cout << "  "  << event::TAGGER_SIM_HITS << ": " << nTaggerHits << std::endl;
-        std::cout << "  "  << event::RECOIL_SIM_HITS << ": " << nRecoilHits << std::endl;
-        std::cout << "  "  << event::ECAL_SIM_HITS << ": " << nEcalHits << std::endl;
-        std::cout << "  "  << event::HCAL_SIM_HITS << ": " << nHcalHits << std::endl;
+        std::cout << "  "  << EventConstants::SIM_PARTICLES << ": " << nSimParticles << std::endl;
+        std::cout << "  "  << EventConstants::TAGGER_SIM_HITS << ": " << nTaggerHits << std::endl;
+        std::cout << "  "  << EventConstants::RECOIL_SIM_HITS << ": " << nRecoilHits << std::endl;
+        std::cout << "  "  << EventConstants::ECAL_SIM_HITS << ": " << nEcalHits << std::endl;
+        std::cout << "  "  << EventConstants::HCAL_SIM_HITS << ": " << nHcalHits << std::endl;
         std::cout << std::endl;
 
         /*
