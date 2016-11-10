@@ -3,30 +3,36 @@
 
 namespace event {
 
-/*
- * Type names.
- */
-static const char* SIM_EVENT = "event::SimEvent";
-static const char* SIM_PARTICLE = "event::SimParticle";
-static const char* SIM_CALORIMETER_HIT = "event::SimCalorimeterHit";
-static const char* SIM_TRACKER_HIT = "event::SimTrackerHit";
+class EventConstants {
 
-/*
- * Collection names.
- */
-static const char* SIM_PARTICLES = "SimParticles";
-static const char* RECOIL_SIM_HITS = "RecoilSimHits";
-static const char* TAGGER_SIM_HITS = "TaggerSimHits";
-static const char* ECAL_SIM_HITS = "EcalSimHits";
-static const char* HCAL_SIM_HITS = "HcalSimHits";
-static const char* TRIGGER_PAD_SIM_HITS = "TriggerPadSimHits";
-static const char* TARGET_SIM_HITS = "TargetSimHits";
+    public:
 
-/*
- * Default collection size for TClonesArray in event objects.
- */
-const static int DEFAULT_COLLECTION_SIZE = 1000;
+        /*
+         * Type names.
+         */
+        static constexpr char* SIM_EVENT = (char*) "event::SimEvent";
+        static constexpr char* SIM_PARTICLE = (char*) "event::SimParticle";
+        static constexpr char* SIM_CALORIMETER_HIT = (char*) "event::SimCalorimeterHit";
+        static constexpr char* SIM_TRACKER_HIT = (char*) "event::SimTrackerHit";
 
-}
+        /*
+         * Collection names.
+         */
+        static constexpr char* SIM_PARTICLES = (char*) "SimParticles";
+        static constexpr char* RECOIL_SIM_HITS = (char*) "RecoilSimHits";
+        static constexpr char* TAGGER_SIM_HITS = (char*) "TaggerSimHits";
+        static constexpr char* ECAL_SIM_HITS = (char*) "EcalSimHits";
+        static constexpr char* HCAL_SIM_HITS = (char*) "HcalSimHits";
+        static constexpr char* TRIGGER_PAD_SIM_HITS = (char*) "TriggerPadSimHits";
+        static constexpr char* TARGET_SIM_HITS = (char*) "TargetSimHits";
+
+        /*
+         * Default collection size for TClonesArray in event objects.
+         */
+        const static int DEFAULT_COLLECTION_SIZE = 1000;
+
+}; // class EventConstants
+
+} // namespace event
 
 #endif
