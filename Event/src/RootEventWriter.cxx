@@ -18,8 +18,12 @@ void RootEventWriter::open() {
 }
 
 void RootEventWriter::writeEvent() {
+
     // Fill the tree from the event object.
     tree_->Fill();
+
+    // Clear the output event.
+    outputEvent_->Clear("");
 }
 
 void RootEventWriter::close() {
