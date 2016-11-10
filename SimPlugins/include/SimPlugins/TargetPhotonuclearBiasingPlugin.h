@@ -1,3 +1,11 @@
+/**
+ * @file TargetPhotonuclearBiasing.cxx
+ * @brief Stepping action plugin that biases Geant4 to only process events which
+ *        involve a photonuclear reaction in the target.
+ * @author Omar Moreno
+ *         SLAC National Accelerator Laboratory
+ */
+
 #ifndef SIMPLUGINS_TARGETPHOTONUCLEARBIASINGPLUGIN_H_
 #define SIMPLUGINS_TARGETPHOTONUCLEARBIASINGPLUGIN_H_
 
