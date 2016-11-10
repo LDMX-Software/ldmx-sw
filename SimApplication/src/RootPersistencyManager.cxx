@@ -10,6 +10,7 @@
 #include "G4RunManager.hh"
 
 using event::Event;
+using event::EventConstants;
 
 namespace sim {
 
@@ -75,13 +76,13 @@ void RootPersistencyManager::printEvent(Event* outputEvent) {
         // Print event number and collection sizes.
         std::cout << std::endl;
         std::cout << "Wrote event " << outputEvent->getEventNumber() << std::endl;
-        std::cout << event::SIM_PARTICLES        << ": " << outputEvent->getCollection(event::SIM_PARTICLES)->GetEntries() << std::endl;
-        std::cout << event::RECOIL_SIM_HITS      << ": " << outputEvent->getCollection(event::RECOIL_SIM_HITS)->GetEntries() << std::endl;
-        std::cout << event::TAGGER_SIM_HITS      << ": " << outputEvent->getCollection(event::TAGGER_SIM_HITS)->GetEntries() << std::endl;
-        std::cout << event::ECAL_SIM_HITS        << ": " << outputEvent->getCollection(event::ECAL_SIM_HITS)->GetEntries() << std::endl;
-        std::cout << event::HCAL_SIM_HITS        << ": " << outputEvent->getCollection(event::HCAL_SIM_HITS)->GetEntries() << std::endl;
-        std::cout << event::TRIGGER_PAD_SIM_HITS << ": " << outputEvent->getCollection(event::TRIGGER_PAD_SIM_HITS)->GetEntries() << std::endl;
-        std::cout << event::TARGET_SIM_HITS      << ": " << outputEvent->getCollection(event::TARGET_SIM_HITS)->GetEntries() << std::endl;
+        std::cout << EventConstants::SIM_PARTICLES        << ": " << outputEvent->getCollection(EventConstants::SIM_PARTICLES)->GetEntries() << std::endl;
+        std::cout << EventConstants::RECOIL_SIM_HITS      << ": " << outputEvent->getCollection(EventConstants::RECOIL_SIM_HITS)->GetEntries() << std::endl;
+        std::cout << EventConstants::TAGGER_SIM_HITS      << ": " << outputEvent->getCollection(EventConstants::TAGGER_SIM_HITS)->GetEntries() << std::endl;
+        std::cout << EventConstants::ECAL_SIM_HITS        << ": " << outputEvent->getCollection(EventConstants::ECAL_SIM_HITS)->GetEntries() << std::endl;
+        std::cout << EventConstants::HCAL_SIM_HITS        << ": " << outputEvent->getCollection(EventConstants::HCAL_SIM_HITS)->GetEntries() << std::endl;
+        std::cout << EventConstants::TRIGGER_PAD_SIM_HITS << ": " << outputEvent->getCollection(EventConstants::TRIGGER_PAD_SIM_HITS)->GetEntries() << std::endl;
+        std::cout << EventConstants::TARGET_SIM_HITS      << ": " << outputEvent->getCollection(EventConstants::TARGET_SIM_HITS)->GetEntries() << std::endl;
         std::cout << std::endl;    
     }
     
