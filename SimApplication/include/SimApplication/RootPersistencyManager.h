@@ -1,3 +1,9 @@
+/**
+ * @file RootPersistencyManager.h
+ * @brief Persistency manager implementation providing sim event output from the Geant4 session.
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #ifndef SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 #define SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 
@@ -21,56 +27,79 @@ class RootPersistencyManager : public G4PersistencyManager {
 
     public:
 
-        RootPersistencyManager()
-            : G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager") {
-            G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
-            G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
-            writer_.setEvent(new SimEvent);
-        }
+        /** Constructor, which will install the object as the global persistency manager. */
+        RootPersistencyManager();
 
+        /** This is the primary method for building the output ROOT event. */
         G4bool Store(const G4Event* anEvent);
 
-        G4bool Store(const G4Run*) {
-            writer_.close();
+        /** This gets called automatically at the end of the run and is used to close the writer. */
+        G4bool Store(const G4Run* aRun) {
+            if (m_verbose > 1) {
+                std::cout << "RootPersistencyManager::Store - closing writer for run " << aRun->GetRunID() << std::endl;
+            }
+            writer_->close();
             return true;
         }
 
-        // Is this ever called???
+        /** 
+          * This is called "manually" in UserRunAction to open the ROOT writer for the run.
+          * Is Geant4 supposed to activate this someplace?
+          */
         void Initialize() {
-            std::cout << "RootPersistencyManager::Initialize" << std::endl;
-        }
-
-        void openWriter() {
-            writer_.open();
+            if (m_verbose > 1) {
+                std::cout << "RootPersistencyManager: Opening " << writer_->getFileName() << " with mode " 
+                    << writer_->getMode() << " and compression " << writer_->getCompression() << std::endl;
+            }            
+     
+            writer_->open();
+                               
+            // If we can't write to the output file then the run must be aborted immediately.
+            if (!writer_->getFile()->IsWritable()) {
+                G4Exception("RootPersistencyManager::Initialize", "", RunMustBeAborted, "Output ROOT file is not writable.");
+            }
         }
 
         Event* getCurrentEvent() {
-            return writer_.getEvent();
+            return writer_->getEvent();
         }
 
         void clearCurrentEvent() {
-            writer_.getEvent()->Clear("");
+            writer_->getEvent()->Clear("");
         }
 
         void setFileName(std::string fileName) {
-            this->writer_.setFileName(fileName);
+            this->writer_->setFileName(fileName);
+        }
+        
+        RootEventWriter* getWriter() {
+            return writer_;
         }
 
+        /** Return the current ROOT persistency manager or null if it is disabled. */
         static RootPersistencyManager* getInstance() {
-            return (RootPersistencyManager*) G4PersistencyCenter::GetPersistencyCenter()
-                ->GetPersistencyManager("RootPersistencyManager");
+            return (RootPersistencyManager*) G4PersistencyCenter::GetPersistencyCenter()->CurrentPersistencyManager();
         }
 
     private:
+        
+        /** Build an output event from the current Geant4 event. */
+        void buildEvent(const G4Event*, Event*);
 
+        /** Write header info into the output event from Geant4. */
         void writeHeader(const G4Event* anEvent, Event* outputEvent);
 
+        /** Write hits collections from Geant4 into a ROOT event. */
         void writeHitsCollections(const G4Event* anEvent, Event* outputEvent);
+        
+        /** Print out event info and data depending on the verbose level. */
+        void printEvent(Event*);
+        
 
     private:
 
         SimParticleBuilder simParticleBuilder_;
-        RootEventWriter writer_;
+        RootEventWriter* writer_;
 };
 
 }
