@@ -8,6 +8,8 @@
 
 using namespace event;
 
+using event::EventConstants;
+
 int main(int, const char* argv[])  {
 
     /*
@@ -23,9 +25,9 @@ int main(int, const char* argv[])  {
     outputEvent->setWeight(0.1);
     outputEvent->setTimestamp(12345678);
 
-    SimTrackerHit* simTrackerHit = (SimTrackerHit*) outputEvent->getCollection(event::RECOIL_SIM_HITS)->ConstructedAt(0);
-    SimCalorimeterHit* simCalorimeterHit = (SimCalorimeterHit*) outputEvent->getCollection(ECAL_SIM_HITS)->ConstructedAt(0);
-    SimParticle* simParticle = (SimParticle*) outputEvent->getCollection(SIM_PARTICLES)->ConstructedAt(0);
+    SimTrackerHit* simTrackerHit = (SimTrackerHit*) outputEvent->getCollection(EventConstants::RECOIL_SIM_HITS)->ConstructedAt(0);
+    SimCalorimeterHit* simCalorimeterHit = (SimCalorimeterHit*) outputEvent->getCollection(EventConstants::ECAL_SIM_HITS)->ConstructedAt(0);
+    SimParticle* simParticle = (SimParticle*) outputEvent->getCollection(EventConstants::SIM_PARTICLES)->ConstructedAt(0);
 
     std::cout << "simTrackerHit: " << simTrackerHit << std::endl;
     std::cout << "simCalorimeterHit: " << simCalorimeterHit << std::endl;
@@ -59,18 +61,18 @@ int main(int, const char* argv[])  {
         tree->GetEntry(entry);
 
         int eventNumber = inputEvent->getEventNumber();
-        int nSimParticles = inputEvent->getCollection(event::SIM_PARTICLES)->GetEntries();
-        int nTaggerHits = inputEvent->getCollection(event::TAGGER_SIM_HITS)->GetEntries();
-        int nRecoilHits = inputEvent->getCollection(event::RECOIL_SIM_HITS)->GetEntries();
-        int nEcalHits = inputEvent->getCollection(event::ECAL_SIM_HITS)->GetEntries();
-        int nHcalHits = inputEvent->getCollection(event::HCAL_SIM_HITS)->GetEntries();
+        int nSimParticles = inputEvent->getCollection(EventConstants::SIM_PARTICLES)->GetEntries();
+        int nTaggerHits = inputEvent->getCollection(EventConstants::TAGGER_SIM_HITS)->GetEntries();
+        int nRecoilHits = inputEvent->getCollection(EventConstants::RECOIL_SIM_HITS)->GetEntries();
+        int nEcalHits = inputEvent->getCollection(EventConstants::ECAL_SIM_HITS)->GetEntries();
+        int nHcalHits = inputEvent->getCollection(EventConstants::HCAL_SIM_HITS)->GetEntries();
 
         std::cout << ">>> Event " << eventNumber << std::endl;
-        std::cout << "  "  << event::SIM_PARTICLES << ": " << nSimParticles << std::endl;
-        std::cout << "  "  << event::TAGGER_SIM_HITS << ": " << nTaggerHits << std::endl;
-        std::cout << "  "  << event::RECOIL_SIM_HITS << ": " << nRecoilHits << std::endl;
-        std::cout << "  "  << event::ECAL_SIM_HITS << ": " << nEcalHits << std::endl;
-        std::cout << "  "  << event::HCAL_SIM_HITS << ": " << nHcalHits << std::endl;
+        std::cout << "  "  << EventConstants::SIM_PARTICLES << ": " << nSimParticles << std::endl;
+        std::cout << "  "  << EventConstants::TAGGER_SIM_HITS << ": " << nTaggerHits << std::endl;
+        std::cout << "  "  << EventConstants::RECOIL_SIM_HITS << ": " << nRecoilHits << std::endl;
+        std::cout << "  "  << EventConstants::ECAL_SIM_HITS << ": " << nEcalHits << std::endl;
+        std::cout << "  "  << EventConstants::HCAL_SIM_HITS << ": " << nHcalHits << std::endl;
         std::cout << std::endl;
     }
 

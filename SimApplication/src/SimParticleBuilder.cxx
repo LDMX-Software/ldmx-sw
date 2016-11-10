@@ -16,6 +16,7 @@
 #include "G4VTrajectoryPoint.hh"
 
 using event::Event;
+using event::EventConstants;
 using event::RootEventWriter;
 
 namespace sim {
@@ -38,7 +39,7 @@ void SimParticleBuilder::buildSimParticles(Event* outputEvent) {
         throw std::runtime_error("Trajectory container for the event is null!");
     }
 
-    TClonesArray* coll = outputEvent->getCollection(event::SIM_PARTICLES);
+    TClonesArray* coll = outputEvent->getCollection(EventConstants::SIM_PARTICLES);
     for (int iTraj = 0; iTraj < trajectories->entries(); iTraj++) {
         SimParticle* simParticle = (SimParticle*) coll->ConstructedAt(coll->GetEntries());
         Trajectory* traj = (Trajectory*)(*trajectories)[iTraj];
