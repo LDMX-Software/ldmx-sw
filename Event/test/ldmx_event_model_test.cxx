@@ -73,7 +73,7 @@ int main(int, const char* argv[])  {
     particle1->setGenStatus(1);
     particle1->setMass(85.);
     particle1->setMomentum(80., 90., 2003.);
-    particle1->setPdg(11);
+    particle1->setPdgID(11);
     particle1->setTime(69.);
     particle1->setVertex(90., 100., 2004.);
     event->getCollection("SimParticles")->Add(particle1);
@@ -87,7 +87,7 @@ int main(int, const char* argv[])  {
     particle2->setSimStatus(3);
     particle2->setMass(2.);
     particle2->setMomentum(100., 101., 1001.);
-    particle2->setPdg(10);
+    particle2->setPdgID(10);
     particle2->setTime(100.);
     particle2->setVertex(0., 0., 90.);
 

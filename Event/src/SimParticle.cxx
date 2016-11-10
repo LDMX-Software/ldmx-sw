@@ -24,7 +24,7 @@ void SimParticle::Clear(Option_t *option) {
 void SimParticle::Print(Option_t *option) const {
     std::cout << "SimParticle { " <<
             "energy: " << energy_ << ", " <<
-            "pdg: " << pdg_ << ", " <<
+            "PDG ID: " << pdgID_ << ", " <<
             "genStatus: " << genStatus_ << ", " <<
             "time: " << time_ << ", " <<
             "vertex: ( " << x_ << ", " << y_ << ", " << z_ << " ), " <<
