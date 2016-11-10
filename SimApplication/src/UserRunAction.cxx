@@ -19,12 +19,10 @@ void UserRunAction::BeginOfRunAction(const G4Run* aRun) {
 
     std::cout << ">>> Begin Run " << aRun->GetRunID() << " <<<" << std::endl;
 
-    RootPersistencyManager* rootIO = RootPersistencyManager::getInstance();
-    if (rootIO != nullptr) {
-        rootIO->openWriter();
-    } else {
-        throw std::runtime_error("The ROOT persistency manager was not setup!");
-    }
+    // Open the ROOT writer.
+    if (RootPersistencyManager::getInstance()) {
+        RootPersistencyManager::getInstance()->Initialize();
+    } 
 
     PluginManager::getInstance().beginRun(aRun);
 }
