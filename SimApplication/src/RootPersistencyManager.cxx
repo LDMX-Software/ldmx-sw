@@ -30,7 +30,12 @@ G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
 
     // Get the current output event from the writer.
     Event* outputEvent = writer_->getEvent();
-    
+
+    if (G4RunManager::GetRunManager()->GetCurrentEvent()->IsAborted()) { 
+        outputEvent->Clear("");
+        return false;    
+    }
+
     // Build the output collections.
     buildEvent(anEvent, outputEvent);
             
