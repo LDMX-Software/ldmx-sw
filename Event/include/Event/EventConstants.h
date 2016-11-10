@@ -25,7 +25,7 @@ static const char* TARGET_SIM_HITS = "TargetSimHits";
 /*
  * Default collection size for TClonesArray in event objects.
  */
-const static int DEFAULT_COLLECTION_SIZE = 100;
+const static int DEFAULT_COLLECTION_SIZE = 1000;
 
 }
 
