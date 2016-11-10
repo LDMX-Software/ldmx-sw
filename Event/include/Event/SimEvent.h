@@ -15,7 +15,7 @@ class SimEvent : public Event {
         virtual ~SimEvent() {;}
 
         virtual const char* getEventType() {
-            return event::SIM_EVENT;
+            return event::EventConstants::SIM_EVENT;
         }
 
     private:
