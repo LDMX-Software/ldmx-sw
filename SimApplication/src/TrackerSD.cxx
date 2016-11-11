@@ -144,7 +144,7 @@ void TrackerSD::EndOfEvent(G4HCofThisEvent*) {
 
     // Print each hit in hits collection.
     if (this->verboseLevel > 1) {
-        for (int iHit = 0; iHit < hitsCollection_->GetSize(); iHit++ ) {
+        for (unsigned iHit = 0; iHit < hitsCollection_->GetSize(); iHit++ ) {
             (*hitsCollection_)[iHit]->Print();
         }
     }
