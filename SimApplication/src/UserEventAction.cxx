@@ -29,20 +29,12 @@ void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
     // Install custom trajectory container for the event.
     G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
 
-    // Clear the current ROOT event object.
-    RootPersistencyManager* rootIO = RootPersistencyManager::getInstance();
-    if (rootIO != nullptr) {
-        rootIO->clearCurrentEvent();
-    }
-
     PluginManager::getInstance().beginEvent(anEvent);
 }
 
 void UserEventAction::EndOfEventAction(const G4Event* anEvent) {
 
     PluginManager::getInstance().endEvent(anEvent);
-
-    std::cout << ">>> End Event " << anEvent->GetEventID() << " <<<" << std::endl;
 }
 
 }
