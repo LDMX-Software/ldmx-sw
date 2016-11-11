@@ -22,6 +22,7 @@
 //   LDMX   //
 //----------//
 #include "SimPlugins/UserActionPlugin.h"
+#include "SimPlugins/PhotonuclearXsecBiasingMessenger.h"
 
 namespace sim {
 
@@ -45,12 +46,17 @@ class PhotonuclearXsecBiasingPlugin : public UserActionPlugin {
         }
 
         void beginRun(const G4Run*);
+
+        void setXsecBiasingFactor(double xsecBiasingFactor) {
+            xsecBiasingFactor_ = xsecBiasingFactor;
+        }
             
     private:
 
         /** Photonuclear cross-section multiplicative factor. */
         double xsecBiasingFactor_{100};
 
+        PhotonuclearXsecBiasingMessenger* _messenger;
 };
 
 }

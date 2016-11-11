@@ -17,10 +17,12 @@ extern "C" void destroyPhotonuclearXsecBiasingPlugin(sim::PhotonuclearXsecBiasin
 }
 
 
-sim::PhotonuclearXsecBiasingPlugin::PhotonuclearXsecBiasingPlugin() { 
+sim::PhotonuclearXsecBiasingPlugin::PhotonuclearXsecBiasingPlugin() {
+    _messenger = new PhotonuclearXsecBiasingMessenger(this);
 }
 
 sim::PhotonuclearXsecBiasingPlugin::~PhotonuclearXsecBiasingPlugin() { 
+    delete _messenger;
 }
 
 void sim::PhotonuclearXsecBiasingPlugin::beginRun(const G4Run*) { 
