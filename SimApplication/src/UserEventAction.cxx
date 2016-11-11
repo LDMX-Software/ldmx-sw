@@ -35,8 +35,6 @@ void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
 void UserEventAction::EndOfEventAction(const G4Event* anEvent) {
 
     PluginManager::getInstance().endEvent(anEvent);
-
-    std::cout << ">>> End Event " << anEvent->GetEventID() << " <<<" << std::endl;
 }
 
 }
