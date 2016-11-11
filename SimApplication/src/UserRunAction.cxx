@@ -17,8 +17,6 @@ UserRunAction::~UserRunAction() {
 
 void UserRunAction::BeginOfRunAction(const G4Run* aRun) {
 
-    std::cout << ">>> Begin Run " << aRun->GetRunID() << " <<<" << std::endl;
-
     // Open the ROOT writer.
     if (RootPersistencyManager::getInstance()) {
         RootPersistencyManager::getInstance()->Initialize();
@@ -30,8 +28,6 @@ void UserRunAction::BeginOfRunAction(const G4Run* aRun) {
 void UserRunAction::EndOfRunAction(const G4Run* aRun) {
 
     PluginManager::getInstance().endRun(aRun);
-
-    std::cout << ">>> End Run " << aRun->GetRunID() << " <<<" << std::endl;
 }
 
 }
