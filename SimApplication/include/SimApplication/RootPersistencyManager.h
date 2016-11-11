@@ -42,6 +42,9 @@ class RootPersistencyManager : public G4PersistencyManager {
             return true;
         }
 
+        /** Implementing this makes an "overloaded-virtual" compiler warning go away. */
+        G4bool Store(const G4VPhysicalVolume*) { return false; }
+
         /** 
           * This is called "manually" in UserRunAction to open the ROOT writer for the run.
           * Is Geant4 supposed to activate this someplace?
