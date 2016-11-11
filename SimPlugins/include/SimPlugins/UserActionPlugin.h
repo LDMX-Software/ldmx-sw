@@ -32,6 +32,19 @@ class UserActionPlugin {
 
         virtual std::string getName() = 0;
 
+        void setVerboseLevel(int verbose) {
+            verbose_ = verbose;
+            if (verbose_ < 1) {
+                verbose = 1;
+            } else if (verbose_ > 4) {
+                verbose = 4;
+            }
+        }
+
+        int getVerboseLevel() {
+            return verbose_;
+        }
+
         virtual bool hasRunAction() { return false; }
 
         virtual bool hasSteppingAction() { return false; }
@@ -63,6 +76,11 @@ class UserActionPlugin {
         virtual void stackingNewStage() {;}
 
         virtual void stackingPrepareNewEvent() {;}
+
+    protected:
+
+        // Sub-classes can access the verbose level directly for convenience.
+        int verbose_{1};
 };
 
 }
