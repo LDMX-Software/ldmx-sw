@@ -44,6 +44,8 @@ int main(int argc, const char* argv[])  {
 
     TFile histFile("ldmx_sim_histos.root", "recreate");
 
+    /*
+
     TH1F* nTaggerHitsH1 = new TH1F("h1_nTaggerHits", "Number of Tagger Hits", 100, 0, 100);
     TH2F* taggerXYH2 = new TH2F("h2_taggerXY", "Tagger Hits XY", 200, -100, 100, 200, -100, 100);
 
@@ -56,6 +58,7 @@ int main(int argc, const char* argv[])  {
     TH1F* nHcalHitsH1 = new TH1F("h1_nHcalHits", "Number of HCal Hits", 100, 0, 100);
 
     TH1F* nSimParticlesH1 = new TH1F("h1_nSimParticles", "Number of Sim Particles", 100, 0, 100);
+    */
 
     //std::cout << "Reading in ROOT file " << argv[1] << " ... " << std::endl;
     TFile* file = new TFile(argv[1]);
