@@ -51,7 +51,7 @@ void SimParticleBuilder::buildSimParticles(Event* outputEvent) {
 void SimParticleBuilder::buildSimParticle(SimParticle* simParticle, Trajectory* traj) {
 
     simParticle->setGenStatus(traj->getGenStatus());
-    simParticle->setPdg(traj->GetPDGEncoding());
+    simParticle->setPdgID(traj->GetPDGEncoding());
     simParticle->setCharge(traj->GetCharge());
     simParticle->setMass(traj->getMass() / GeV);
     simParticle->setEnergy(traj->getEnergy());
