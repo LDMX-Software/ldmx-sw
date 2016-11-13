@@ -133,7 +133,7 @@ class SimParticle: public TObject {
         TRefArray* daughters_;
         TRefArray* parents_;
 
-        ClassDef(SimParticle, 1);
+        ClassDef(SimParticle, 2);
 };
 
 }
