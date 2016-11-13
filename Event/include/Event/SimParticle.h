@@ -26,8 +26,8 @@ class SimParticle: public TObject {
             return energy_;
         }
 
-        int getPdg() {
-            return pdg_;
+        int getPdgID() {
+            return pdgID_;
         }
 
         int getGenStatus() {
@@ -66,8 +66,8 @@ class SimParticle: public TObject {
             this->energy_ = energy;
         }
 
-        void setPdg(const int pdg) {
-            this->pdg_ = pdg;
+        void setPdgID(const int pdgID) {
+            this->pdgID_ = pdgID;
         }
 
         void setGenStatus(const int genStatus) {
@@ -115,7 +115,7 @@ class SimParticle: public TObject {
     private:
 
         double energy_{0};
-        int pdg_{0};
+        int pdgID_{0};
         int genStatus_{-1};
         float time_{0};
         float x_{0};
@@ -133,7 +133,7 @@ class SimParticle: public TObject {
         TRefArray* daughters_;
         TRefArray* parents_;
 
-        ClassDef(SimParticle, 1);
+        ClassDef(SimParticle, 2);
 };
 
 }

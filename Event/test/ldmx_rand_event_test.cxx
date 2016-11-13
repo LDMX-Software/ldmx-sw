@@ -53,7 +53,7 @@ void fillRand(SimParticle* particle) {
     particle->setGenStatus(randInt(1, 5));
     particle->setMass(randDouble(0.5, 2.0));
     particle->setMomentum(randFloat(0., 5.0), randFloat(0., 5.0), randFloat(0., 5.0));
-    particle->setPdg(randInt(0, 15));
+    particle->setPdgID(randInt(0, 15));
     particle->setTime(randFloat(1., 69.));
     particle->setVertex(randFloat(0., 10), randFloat(0., 20), randFloat(2000., 5000.));
 }
