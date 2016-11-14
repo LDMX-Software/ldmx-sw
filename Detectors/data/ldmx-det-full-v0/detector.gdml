@@ -32,7 +32,7 @@
     <variable name="recoil_pos_z" value="recoil_thickness/2 + trigger_pad_thickness + target_thickness/2 + trigger_pad_zclear"/>
     
     <!-- ecal position -->
-    <constant name="ecal_thickness" value="286.0*mm"/>
+    <constant name="ecal_thickness" value="510.0*mm"/>
     <constant name="ecal_front_z" value="20.0*cm"/>
     <variable name="ecal_pos_z" value="ecal_front_z + (ecal_thickness/2)"/>
     
