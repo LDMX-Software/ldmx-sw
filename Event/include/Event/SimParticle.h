@@ -58,9 +58,21 @@ class SimParticle: public TObject {
             return charge_;
         }
 
-        std::vector<SimParticle*> getDaughters();
+        int getDaughterCount() {
+            return daughters_->GetEntriesFast();
+        }
 
-        std::vector<SimParticle*> getParents();
+        SimParticle* getDaughter(int iDau) {
+            return (SimParticle*) daughters_->At(iDau);
+        }
+
+        int getParentCount() {
+            return parents_->GetEntriesFast();
+        }
+
+        SimParticle* getParent(int iPar) {
+            return (SimParticle*) parents_->At(iPar);
+        }
 
         void setEnergy(const float energy) {
             this->energy_ = energy;
