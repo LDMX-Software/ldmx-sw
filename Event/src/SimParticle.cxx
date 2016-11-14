@@ -36,22 +36,5 @@ void SimParticle::Print(Option_t *option) const {
             " }" << std::endl;
 }
 
-
-std::vector<SimParticle*> SimParticle::getDaughters() {
-    std::vector<SimParticle*> dauVec;
-    for (int iDau = 0; iDau < daughters_->GetEntries(); iDau++) {
-        dauVec.push_back((SimParticle*) daughters_->At(iDau));
-    }
-    return dauVec;
-}
-
-std::vector<SimParticle*> SimParticle::getParents() {
-    std::vector<SimParticle*> parVec;
-    for (int iParent = 0; iParent < parents_->GetEntries(); iParent++) {
-        parVec.push_back((SimParticle*) parents_->At(iParent));
-    }
-    return parVec;
-}
-
 }
 
