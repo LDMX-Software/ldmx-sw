@@ -53,7 +53,7 @@ class DummySimPlugin : public UserActionPlugin {
         void stepping(const G4Step* step) {
             std::cout << "DummySimPlugin::stepping - pre-point: "
                     << step->GetPreStepPoint()->GetPosition()
-                    << ", post-point: " << std::endl;
+                    << ", post-point: ";
             if (step->GetPostStepPoint()) {
                 std::cout << step->GetPostStepPoint()->GetPosition();
             } else {
