@@ -38,13 +38,13 @@ G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
 
     // Build the output collections.
     buildEvent(anEvent, outputEvent);
-            
-    // Fill the current ROOT event into the tree branch.
-    writer_->writeEvent();
     
     // Print out event info and data depending on verbose level.
     printEvent(outputEvent);
-    
+
+    // Fill the current ROOT event into the tree branch.
+    writer_->writeEvent();
+
     return true;
 }
 
