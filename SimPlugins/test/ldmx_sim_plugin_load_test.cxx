@@ -2,7 +2,7 @@
 
 using sim::PluginLoader;
 
-int main(int, const char*)  {
+int main(int, const char**)  {
 
     PluginLoader* pluginLoader = new PluginLoader();
     sim::UserActionPlugin* plugin = pluginLoader->create("DummySimPlugin", "libSimPlugins.so");
