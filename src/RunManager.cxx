@@ -23,7 +23,7 @@ RunManager::RunManager() {
 }
 
 RunManager::~RunManager() {
-    delete pluginManager_;
+    //delete pluginManager_;
     delete pluginMessenger_;
 }
 
