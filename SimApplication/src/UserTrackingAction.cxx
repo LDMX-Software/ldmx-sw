@@ -46,11 +46,11 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* aTrack) {
     // Save association between track ID and its parent ID.
     TrackMap::getInstance()->addSecondary(aTrack->GetTrackID(), aTrack->GetParentID());
 
-    PluginManager::getInstance().preTracking(aTrack);
+    pluginManager_->preTracking(aTrack);
 }
 
 void UserTrackingAction::PostUserTrackingAction(const G4Track* aTrack) {
-    PluginManager::getInstance().postTracking(aTrack);
+    pluginManager_->postTracking(aTrack);
 }
 
 }

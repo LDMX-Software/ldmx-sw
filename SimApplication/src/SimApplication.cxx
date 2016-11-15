@@ -28,6 +28,8 @@ SimApplication::~SimApplication() {
 
 void SimApplication::run(int argc, char** argv) {
 
+    std::cout << "[ SimApplication ] : starting" << std::endl;
+
     // If no arguments then start an interactive session.
     G4UIExecutive* ui = 0;
     if (argc == 1) {
@@ -70,6 +72,8 @@ void SimApplication::run(int argc, char** argv) {
     delete gdmlMessenger;
     delete parser;
     delete runManager;
+
+    std::cout << "[ SimApplication ] : exiting" << std::endl;
 }
 
 }
