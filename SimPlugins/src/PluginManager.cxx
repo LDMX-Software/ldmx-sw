@@ -6,7 +6,7 @@ PluginManager::~PluginManager() {
     for (PluginVec::iterator iPlugin = plugins_.begin();
             iPlugin != plugins_.end();
             iPlugin++) {
-        destroy((*iPlugin)->getName());
+        destroy(*iPlugin);
     }
 }
 
@@ -77,7 +77,7 @@ G4ClassificationOfNewTrack PluginManager::stackingClassifyNewTrack(const G4Track
     G4ClassificationOfNewTrack trackClass = G4ClassificationOfNewTrack::fUrgent;
     for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
         if ((*it)->hasStackingAction()) {
-            G4ClassificationOfNewTrack trackClass = (*it)->stackingClassifyNewTrack(track);
+            trackClass = (*it)->stackingClassifyNewTrack(track);
         }
     }
     return trackClass;
