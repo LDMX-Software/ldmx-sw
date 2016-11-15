@@ -23,6 +23,8 @@ RunManager::RunManager() {
 }
 
 RunManager::~RunManager() {
+    delete pluginManager_;
+    delete pluginMessenger_;
 }
 
 void RunManager::InitializePhysics() {
