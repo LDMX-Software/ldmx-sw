@@ -20,10 +20,9 @@ class PluginManager {
 
         typedef std::vector<UserActionPlugin*> PluginVec;
 
-        static PluginManager& getInstance() {
-            static PluginManager instance;
-            return instance;
-        }
+        PluginManager() {;}
+
+        virtual ~PluginManager() {;}
 
         void beginRun(const G4Run* run) {
             for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {

@@ -29,12 +29,11 @@ void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
     // Install custom trajectory container for the event.
     G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
 
-    PluginManager::getInstance().beginEvent(anEvent);
+    pluginManager_->beginEvent(anEvent);
 }
 
 void UserEventAction::EndOfEventAction(const G4Event* anEvent) {
-
-    PluginManager::getInstance().endEvent(anEvent);
+    pluginManager_->endEvent(anEvent);
 }
 
 }

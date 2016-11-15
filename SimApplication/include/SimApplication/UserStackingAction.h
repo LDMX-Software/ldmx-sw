@@ -2,14 +2,16 @@
 #define SIMAPPLICATION_USERSTACKINGACTION_H
 
 // LDMX
-#include "SimPlugins/PluginManager.h"
+#include "SimPlugins/PluginManagerAccessor.h"
 
 // Geant4
 #include "G4UserStackingAction.hh"
 
 namespace sim {
 
-class UserStackingAction : public G4UserStackingAction {
+class UserStackingAction :
+        public G4UserStackingAction,
+        public PluginManagerAccessor {
 
     public:
 
