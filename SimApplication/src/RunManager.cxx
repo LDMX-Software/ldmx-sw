@@ -18,12 +18,12 @@
 namespace sim {
 
 RunManager::RunManager() {
-    pluginManager_ = &PluginManager::getInstance();
+    pluginManager_ = new PluginManager();
     pluginMessenger_ = new PluginMessenger(pluginManager_);
 }
 
 RunManager::~RunManager() {
-    //delete pluginManager_;
+    delete pluginManager_;
     delete pluginMessenger_;
 }
 
@@ -47,11 +47,24 @@ void RunManager::Initialize() {
     PrimaryGeneratorAction* pga = new PrimaryGeneratorAction;
     SetUserAction(pga);
     new PrimaryGeneratorMessenger(pga);
-    SetUserAction(new UserRunAction);
-    SetUserAction(new UserEventAction);
-    SetUserAction(new UserTrackingAction);
-    SetUserAction(new SteppingAction);
-    SetUserAction(new UserStackingAction);
+
+    UserRunAction* runAction = new UserRunAction;
+    UserEventAction* eventAction = new UserEventAction;
+    UserTrackingAction* trackingAction = new UserTrackingAction;
+    SteppingAction* steppingAction = new SteppingAction;
+    UserStackingAction* stackingAction = new UserStackingAction;
+
+    runAction->setPluginManager(pluginManager_);
+    eventAction->setPluginManager(pluginManager_);
+    trackingAction->setPluginManager(pluginManager_);
+    steppingAction->setPluginManager(pluginManager_);
+    stackingAction->setPluginManager(pluginManager_);
+
+    SetUserAction(runAction);
+    SetUserAction(eventAction);
+    SetUserAction(trackingAction);
+    SetUserAction(steppingAction);
+    SetUserAction(stackingAction);
 
     RootPersistencyManager* rootIO = new RootPersistencyManager();
     new RootPersistencyMessenger(rootIO);

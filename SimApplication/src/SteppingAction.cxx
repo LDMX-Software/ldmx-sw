@@ -4,7 +4,7 @@
 namespace sim {
 
 void SteppingAction::UserSteppingAction(const G4Step* aStep) {
-    PluginManager::getInstance().stepping(aStep);
+    pluginManager_->stepping(aStep);
 }
 
 }

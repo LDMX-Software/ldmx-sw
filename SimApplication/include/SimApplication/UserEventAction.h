@@ -1,16 +1,19 @@
 #ifndef SIMAPPLICATION_USEREVENTACTION_H_
 #define SIMAPPLICATION_USEREVENTACTION_H_
 
+// LDMX
+#include "SimApplication/SimParticleBuilder.h"
+#include "SimPlugins/PluginManagerAccessor.h"
+
 // Geant4
 #include "G4UserEventAction.hh"
 #include "G4Event.hh"
 
-// LDMX
-#include "SimApplication/SimParticleBuilder.h"
-
 namespace sim {
 
-class UserEventAction: public G4UserEventAction {
+class UserEventAction:
+        public G4UserEventAction,
+        public PluginManagerAccessor {
 
     public:
 
