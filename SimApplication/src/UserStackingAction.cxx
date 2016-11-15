@@ -5,16 +5,15 @@
 namespace sim {
 
 G4ClassificationOfNewTrack UserStackingAction::ClassifyNewTrack (const G4Track *aTrack) {
-    // The last plugin activated will override all the others!
-    return PluginManager::getInstance().stackingClassifyNewTrack(aTrack);
+    return pluginManager_->stackingClassifyNewTrack(aTrack);
 }
 
 void UserStackingAction::NewStage() {
-    PluginManager::getInstance().stackingNewStage();
+    pluginManager_->stackingNewStage();
 }
 
 void UserStackingAction::PrepareNewEvent() {
-    PluginManager::getInstance().stackingPrepareNewEvent();
+    pluginManager_->stackingPrepareNewEvent();
 }
 
 }

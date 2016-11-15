@@ -17,17 +17,18 @@ UserRunAction::~UserRunAction() {
 
 void UserRunAction::BeginOfRunAction(const G4Run* aRun) {
 
-    // Open the ROOT writer.
-    if (RootPersistencyManager::getInstance()) {
-        RootPersistencyManager::getInstance()->Initialize();
-    } 
+// Open the ROOT writer.
+if (RootPersistencyManager::getInstance()) {
+    RootPersistencyManager::getInstance()->Initialize();
+}
 
-    PluginManager::getInstance().beginRun(aRun);
+pluginManager_->beginRun(aRun);
+
 }
 
 void UserRunAction::EndOfRunAction(const G4Run* aRun) {
 
-    PluginManager::getInstance().endRun(aRun);
+pluginManager_->endRun(aRun);
 }
 
 }
