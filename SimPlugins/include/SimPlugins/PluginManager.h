@@ -22,148 +22,47 @@ class PluginManager {
 
         PluginManager() {;}
 
-        virtual ~PluginManager() {;}
+        virtual ~PluginManager();
 
-        void beginRun(const G4Run* run) {
-            for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
-                if ((*it)->hasRunAction()) {
-                    (*it)->beginRun(run);
-                }
-            }
-        }
+        void beginRun(const G4Run* run);
 
-        void endRun(const G4Run* run) {
-            for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
-                if ((*it)->hasRunAction()) {
-                    (*it)->endRun(run);
-                }
-            }
-        }
+        void endRun(const G4Run* run);
 
-        void stepping(const G4Step* step) {
-            for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
-                if ((*it)->hasSteppingAction()) {
-                    (*it)->stepping(step);
-                }
-            }
-        }
+        void stepping(const G4Step* step);
 
-        void preTracking(const G4Track* track) {
-            for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
-                if ((*it)->hasTrackingAction()) {
-                    (*it)->preTracking(track);
-                }
-            }
-        }
+        void preTracking(const G4Track* track);
 
-        void postTracking(const G4Track* track) {
-            for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
-                if ((*it)->hasTrackingAction()) {
-                    (*it)->postTracking(track);
-                }
-            }
-        }
+        void postTracking(const G4Track* track);
 
-        void beginEvent(const G4Event* event) {
-            for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
-                if ((*it)->hasEventAction()) {
-                    (*it)->beginEvent(event);
-                }
-            }
-        }
+        void beginEvent(const G4Event* event);
 
-        void endEvent(const G4Event* event) {
-            for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
-                if ((*it)->hasEventAction()) {
-                    (*it)->endEvent(event);
-                }
-            }
-        }
+        void endEvent(const G4Event* event);
 
         /**
          * Return a track classification from the user plugins.
          * The last plugin which sets the classification will override all the others.
          */
-        G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* track) {
-            G4ClassificationOfNewTrack trackClass = G4ClassificationOfNewTrack::fUrgent;
-            for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
-                if ((*it)->hasStackingAction()) {
-                    trackClass = (*it)->stackingClassifyNewTrack(track);
-                }
-            }
-            return trackClass;
-        }
+        G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* track);
 
-        void stackingNewStage() {
-            for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
-                if ((*it)->hasEventAction()) {
-                    (*it)->stackingNewStage();
-                }
-            }
-        }
+        void stackingNewStage();
 
-        void stackingPrepareNewEvent() {
-            for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
-                if ((*it)->hasStackingAction()) {
-                    (*it)->stackingPrepareNewEvent();
-                }
-            }
-        }
+        void stackingPrepareNewEvent();
 
-        UserActionPlugin* findPlugin(const std::string& pluginName) {
-            UserActionPlugin* foundPlugin = nullptr;
-            for (PluginVec::iterator iPlugin = plugins_.begin();
-                    iPlugin != plugins_.end(); iPlugin++) {
-                if ((*iPlugin)->getName() == pluginName) {
-                    foundPlugin = *iPlugin;
-                    break;
-                }
-            }
-            return foundPlugin;
-        }
+        UserActionPlugin* findPlugin(const std::string& pluginName);
 
-        void create(const std::string& pluginName, const std::string& libName) {
-            if (findPlugin(pluginName) == nullptr) {
-                UserActionPlugin* plugin = pluginLoader_.create(pluginName, libName);
-                registerPlugin(plugin);
-            } else {
-                std::cerr << "PluginManager::create - Plugin " << pluginName
-                        << " already exists." << std::endl;
-            }
-        }
+        void create(const std::string& pluginName, const std::string& libName);
 
-        void destroy(const std::string& pluginName) {
-            UserActionPlugin* plugin = findPlugin(pluginName);
-            if (plugin != nullptr) {
-                deregisterPlugin(plugin);
-                pluginLoader_.destroy(plugin);
-            } else {
-                std::cerr << "PluginManager::destroy - Plugin "
-                        << pluginName << " does not exist." << std::endl;
-            }
-        }
+        void destroy(const std::string& pluginName);
 
-        std::ostream& print(std::ostream& os) {
-            for (PluginVec::iterator iPlugin = plugins_.begin();
-                    iPlugin != plugins_.end(); iPlugin++) {
-                os << (*iPlugin)->getName() << std::endl;
-            }
-            return os;
-        }
+        std::ostream& print(std::ostream& os);
 
     private:
 
-        void registerPlugin(UserActionPlugin* plugin) {
-            plugins_.push_back(plugin);
-        }
+        void destroy(UserActionPlugin* plugin);
 
-        void deregisterPlugin(UserActionPlugin* plugin) {
-            std::vector<UserActionPlugin*>::iterator pos =
-                    std::find(plugins_.begin(), plugins_.end(), plugin);
-            if (pos != plugins_.end()) {
-                plugins_.erase(pos);
-            }
-        }
+        void registerPlugin(UserActionPlugin* plugin);
+
+        void deregisterPlugin(UserActionPlugin* plugin);
 
     private:
 
