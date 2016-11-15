@@ -1,13 +1,18 @@
 #ifndef SIMAPPLICATION_USERRUNACTION_H_
 #define SIMAPPLICATION_USERRUNACTION_H_
 
+// LDMX
+#include "SimPlugins/PluginManagerAccessor.h"
+
 // Geant4
 #include "G4UserRunAction.hh"
 #include "G4Run.hh"
 
 namespace sim {
 
-class UserRunAction: public G4UserRunAction {
+class UserRunAction:
+        public G4UserRunAction,
+        public PluginManagerAccessor {
 
     public:
         UserRunAction();
