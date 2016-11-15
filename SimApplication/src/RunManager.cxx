@@ -62,7 +62,7 @@ void RunManager::Initialize() {
     SetUserAction(eventAction);
     SetUserAction(trackingAction);
     SetUserAction(steppingAction);
-    SetUserAction(userStackingAction);
+    SetUserAction(stackingAction);
 
     RootPersistencyManager* rootIO = new RootPersistencyManager();
     new RootPersistencyMessenger(rootIO);
