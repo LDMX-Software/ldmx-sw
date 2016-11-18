@@ -54,7 +54,8 @@ class Event: public TObject {
         }
 
         TObject* addObject(const std::string& collectionName) {
-            return getCollection(collectionName)->ConstructedAt(coll->GetEntriesFast());
+            auto coll = getCollection(collectionName);
+            return coll->ConstructedAt(coll->GetEntriesFast());
         }
 
         /**
