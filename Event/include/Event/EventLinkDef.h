@@ -11,6 +11,7 @@
 #pragma link C++ defined_in namespace event;
 
 #pragma link C++ class event::Event+;
+#pragma link C++ class event::EventConstants+;
 #pragma link C++ class event::SimEvent+;
 #pragma link C++ class event::SimCalorimeterHit+;
 #pragma link C++ class event::SimTrackerHit+;
