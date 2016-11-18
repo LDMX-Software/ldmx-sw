@@ -349,11 +349,9 @@ void AuxInfoReader::createRegion(G4String name, const G4GDMLAuxListType* auxInfo
 
 void AuxInfoReader::createVisAttributes(G4String name, const G4GDMLAuxListType* auxInfoList) {
 
-    G4double rgba[4];
-    rgba[0] = rgba[1] = rgba[2] = 0;
-    rgba[3] = 10.;
+    G4double rgba[4] = {1., 1., 1., 1.};
     G4bool visible = true;
-    G4bool dauInvisible = true;
+    G4bool dauInvisible = false;
     G4bool forceWireframe = false;
     G4bool forceSolid = false;
     G4double lineWidth = 1.0;
