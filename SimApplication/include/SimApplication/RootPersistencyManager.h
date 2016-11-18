@@ -67,10 +67,6 @@ class RootPersistencyManager : public G4PersistencyManager {
             return writer_->getEvent();
         }
 
-        void clearCurrentEvent() {
-            writer_->getEvent()->Clear("");
-        }
-
         void setFileName(std::string fileName) {
             this->writer_->setFileName(fileName);
         }
