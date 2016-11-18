@@ -50,7 +50,7 @@ class SimTrackerHit: public TObject {
         /** Return the position of the hit in mm. */
         std::vector<float> getPosition() const { return {x_, y_, z_}; };
 
-        /** Return the energy deposited on the hit in GeV. */
+        /** Return the energy deposited on the hit in MeV. */
         float getEdep() const { return edep_; };
 
         /** Return the time of the hit in ns. */
@@ -63,7 +63,7 @@ class SimTrackerHit: public TObject {
         float getPathLength() const { return pathLength_; };
 
         /**
-         * Return the momentum in GeV of the particle at the position at which
+         * Return the momentum in MeV of the particle at the position at which
          * the hit took place.
          */
         std::vector<double> getMomentum() const { return {px_, py_, pz_}; };
@@ -77,7 +77,7 @@ class SimTrackerHit: public TObject {
         /** Set the position of the hit in mm. */
         void setPosition(const float x, const float y, const float z);
 
-        /** Set the energy deposited on the hit in GeV. */
+        /** Set the energy deposited on the hit in MeV. */
         void setEdep(const float edep) { this->edep_ = edep; };
 
         /** Set the time of the hit in ns. */
