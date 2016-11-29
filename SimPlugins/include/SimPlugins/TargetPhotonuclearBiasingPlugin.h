@@ -1,6 +1,6 @@
 /**
  * @file TargetPhotonuclearBiasing.cxx
- * @brief Stepping action plugin that biases Geant4 to only process events which
+ * @brief User action plugin that biases Geant4 to only process events which
  *        involve a photonuclear reaction in the target.
  * @author Omar Moreno
  *         SLAC National Accelerator Laboratory
@@ -40,7 +40,13 @@ class TargetPhotonuclearBiasingPlugin : public UserActionPlugin {
             return true;
         }
 
+        bool hasStackingAction() { 
+            return true;
+        }
+
         void stepping(const G4Step* step);
+
+        G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track*);
 
     private:
 
@@ -49,7 +55,6 @@ class TargetPhotonuclearBiasingPlugin : public UserActionPlugin {
 
         /** Brem photon energy threshold */
         double photonEnergyThreshold_{2500}; // MeV
-
 };
 
 }
