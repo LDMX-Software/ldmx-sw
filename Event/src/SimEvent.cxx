@@ -7,13 +7,13 @@ using event::EventConstants;
 namespace event {
 
 SimEvent::SimEvent() :
-        simParticles_     (new TClonesArray(EventConstants::SIM_PARTICLE,        EventConstants::DEFAULT_COLLECTION_SIZE)),
-        taggerSimHits_    (new TClonesArray(EventConstants::SIM_TRACKER_HIT,     EventConstants::DEFAULT_COLLECTION_SIZE)),
-        recoilSimHits_    (new TClonesArray(EventConstants::SIM_TRACKER_HIT,     EventConstants::DEFAULT_COLLECTION_SIZE)),
-        ecalSimHits_      (new TClonesArray(EventConstants::SIM_CALORIMETER_HIT, EventConstants::DEFAULT_COLLECTION_SIZE)),
-        hcalSimHits_      (new TClonesArray(EventConstants::SIM_CALORIMETER_HIT, EventConstants::DEFAULT_COLLECTION_SIZE)),
-        targetSimHits_    (new TClonesArray(EventConstants::SIM_CALORIMETER_HIT, EventConstants::DEFAULT_COLLECTION_SIZE)),
-        triggerPadSimHits_(new TClonesArray(EventConstants::SIM_CALORIMETER_HIT, EventConstants::DEFAULT_COLLECTION_SIZE)) {
+        simParticles_     (new TClonesArray(EventConstants::SIM_PARTICLE.c_str(),        EventConstants::DEFAULT_COLLECTION_SIZE)),
+        taggerSimHits_    (new TClonesArray(EventConstants::SIM_TRACKER_HIT.c_str(),     EventConstants::DEFAULT_COLLECTION_SIZE)),
+        recoilSimHits_    (new TClonesArray(EventConstants::SIM_TRACKER_HIT.c_str(),     EventConstants::DEFAULT_COLLECTION_SIZE)),
+        ecalSimHits_      (new TClonesArray(EventConstants::SIM_CALORIMETER_HIT.c_str(), EventConstants::DEFAULT_COLLECTION_SIZE)),
+        hcalSimHits_      (new TClonesArray(EventConstants::SIM_CALORIMETER_HIT.c_str(), EventConstants::DEFAULT_COLLECTION_SIZE)),
+        targetSimHits_    (new TClonesArray(EventConstants::SIM_CALORIMETER_HIT.c_str(), EventConstants::DEFAULT_COLLECTION_SIZE)),
+        triggerPadSimHits_(new TClonesArray(EventConstants::SIM_CALORIMETER_HIT.c_str(), EventConstants::DEFAULT_COLLECTION_SIZE)) {
 
     collMap_[EventConstants::RECOIL_SIM_HITS] = recoilSimHits_;
     collMap_[EventConstants::TAGGER_SIM_HITS] = taggerSimHits_;
