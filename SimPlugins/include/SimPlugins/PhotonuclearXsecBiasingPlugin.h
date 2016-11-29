@@ -54,9 +54,10 @@ class PhotonuclearXsecBiasingPlugin : public UserActionPlugin {
     private:
 
         /** Photonuclear cross-section multiplicative factor. */
-        double xsecBiasingFactor_{100};
+        double xsecBiasingFactor_{1000};
 
-        PhotonuclearXsecBiasingMessenger* _messenger;
+        /** Messenger used to parse arguments specified in a macro. */
+        PhotonuclearXsecBiasingMessenger* messenger_{new PhotonuclearXsecBiasingMessenger{this}};
 };
 
 }
