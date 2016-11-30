@@ -197,7 +197,7 @@ Then you should make a local branch from the master using a command like `git ch
 
 Once you have committed your local changes to this branch using the `git add` and `git commit` commands, then push your branch to github using a command like `git push -u origin iss1234`.
 
-Finally, [https://github.com/LDMXAnalysis/ldmx-sw/compare](submit a pull request) to integrate your changes by selecting your branch in the _compare_ dropdown box and clicking the green buttons to make the PR.  This should be reviewed shortly and merged or changes may be requested before the code can be integrated into the master.
+Finally, [submit a pull request](https://github.com/LDMXAnalysis/ldmx-sw/compare) to integrate your changes by selecting your branch in the _compare_ dropdown box and clicking the green buttons to make the PR.  This should be reviewed shortly and merged or changes may be requested before the code can be integrated into the master.
 
 ## Help
 
