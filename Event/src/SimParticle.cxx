@@ -13,12 +13,14 @@ SimParticle::SimParticle()
 
 SimParticle::~SimParticle() {
     TObject::Clear();
-    daughters_->Delete();
-    parents_->Delete();
+    delete daughters_;
+    delete parents_; 
 }
 
 void SimParticle::Clear(Option_t *option) {
     TObject::Clear();
+    daughters_->Delete();
+    parents_->Delete();
 }
 
 void SimParticle::Print(Option_t *option) const {
