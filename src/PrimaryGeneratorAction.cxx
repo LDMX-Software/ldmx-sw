@@ -22,7 +22,12 @@ void PrimaryGeneratorAction::setPrimaryGenerator(G4VPrimaryGenerator* aGenerator
 }
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
+
+    // Generate primary vertex from registered generator.
     generator_->GeneratePrimaryVertex(event);
+
+    // Activate the plugin manager hook.
+    pluginManager_->generatePrimary(event);
 }
 
 }
