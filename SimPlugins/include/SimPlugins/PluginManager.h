@@ -38,6 +38,8 @@ class PluginManager {
 
         void endEvent(const G4Event* event);
 
+        void generatePrimary(G4Event*);
+
         /**
          * Return a track classification from the user plugins.
          * The last plugin which sets the classification will override all the others.
@@ -63,6 +65,11 @@ class PluginManager {
         void registerPlugin(UserActionPlugin* plugin);
 
         void deregisterPlugin(UserActionPlugin* plugin);
+
+        /**
+         * Destroy all registered plugins.
+         */
+        void destroyPlugins();
 
     private:
 

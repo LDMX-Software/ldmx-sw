@@ -55,6 +55,8 @@ class UserActionPlugin {
 
         virtual bool hasStackingAction() { return false; }
 
+        virtual bool hasPrimaryGeneratorAction() { return false; }
+
         virtual void beginRun(const G4Run*) {;}
 
         virtual void endRun(const G4Run*) {;}
@@ -68,6 +70,8 @@ class UserActionPlugin {
         virtual void beginEvent(const G4Event*) {;}
 
         virtual void endEvent(const G4Event*) {;}
+
+        virtual void generatePrimary(G4Event*) {;}
 
         /**
          * @brief
