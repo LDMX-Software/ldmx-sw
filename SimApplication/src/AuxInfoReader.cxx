@@ -4,6 +4,7 @@
 #include "SimApplication/TrackerSD.h"
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/MagneticFieldStore.h"
+#include "SimApplication/MagneticFieldMap3D.h"
 #include "SimApplication/UserRegionInformation.h"
 #include "SimApplication/VisAttributesStore.h"
 #include "DetDescr/DetectorIDStore.h"
@@ -27,6 +28,8 @@ using detdescr::DetectorID;
 using detdescr::DefaultDetectorID;
 using detdescr::IDField;
 using detdescr::DetectorIDStore;
+
+using std::string;
 
 namespace sim {
 
@@ -223,7 +226,7 @@ void AuxInfoReader::createDetectorID(G4String idName, const G4GDMLAuxListType* a
 
         if (auxType == "IDField") {
 
-            std::string fieldName = auxVal;
+            string fieldName = auxVal;
 
             std::cout << "Creating IDField " << fieldName << std::endl;
 
@@ -290,7 +293,7 @@ void AuxInfoReader::createMagneticField(G4String magFieldName, const G4GDMLAuxLi
 
     // Create a uniform mag field using the built-in Geant4 type.
     if (magFieldType == "G4UniformMagField") {
-        std::string::size_type sz;
+        string::size_type sz;
         double bx, by, bz;
         bx = by = bz = 0.;
         for (std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin(); iaux != auxInfoList->end(); iaux++) {
@@ -312,6 +315,46 @@ void AuxInfoReader::createMagneticField(G4String magFieldName, const G4GDMLAuxLi
         magField = new G4UniformMagField(fieldComponents);
 
         std::cout << "Created G4UniformMagField " << magFieldName << " with field components " << fieldComponents << std::endl << std::endl;
+
+    // Create a global 3D field map by reading from a data file.
+    } else if (magFieldType == "MagneticFieldMap3D") {
+
+        string fileName;
+        double offsetX, offsetY, offsetZ;
+
+        for (std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin(); iaux != auxInfoList->end(); iaux++) {
+
+            G4String auxType = iaux->type;
+            G4String auxVal = iaux->value;
+            G4String auxUnit = iaux->unit;
+
+            G4String expr = auxVal + "*" + auxUnit;
+
+            if (auxType == "File") {
+                fileName = auxVal;
+            } else if (auxType == "OffsetX") {
+                offsetX = eval_->Evaluate(expr);
+            } else if (auxType == "OffsetY") {
+                offsetY = eval_->Evaluate(expr);
+            } else if (auxType == "OffsetZ") {
+                offsetZ = eval_->Evaluate(expr);
+            }
+        }
+
+        if (fileName.size() == 0) {
+            G4Exception("", "", FatalException, "File info with field data was not provided.");
+        }
+
+        // Create new 3D field map.
+        G4MagneticField* fieldMap = new MagneticFieldMap3D(fileName.c_str(), offsetX, offsetY, offsetZ);
+
+        // Assign field map as global field.
+        G4FieldManager* fieldMgr = G4TransportationManager::GetTransportationManager()->GetFieldManager();
+        if (fieldMgr->GetDetectorField() != nullptr) {
+            G4Exception("", "", FatalException, "Global mag field was already assigned.");
+        }
+        fieldMgr->SetDetectorField(fieldMap);
+        fieldMgr->CreateChordFinder(fieldMap);
 
     } else {
         std::cerr << "Unknown MagFieldType in auxiliary info: " << magFieldType << std::endl;
