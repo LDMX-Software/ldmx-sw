@@ -42,7 +42,7 @@ G4ClassificationOfNewTrack sim::TargetPhotonuclearBiasingPlugin::stackingClassif
               << std::endl;*/
 
 
-    // Use current classification by default.
+    // Use current classification by default so values from other plugins are not overridden.
     G4ClassificationOfNewTrack classification = currentTrackClass;
 
     if (track->GetTrackID() == 1 && pdgID == 11) {
