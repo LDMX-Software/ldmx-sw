@@ -3,11 +3,7 @@
 namespace sim {
 
 PluginManager::~PluginManager() {
-    for (PluginVec::iterator iPlugin = plugins_.begin();
-            iPlugin != plugins_.end();
-            iPlugin++) {
-        destroy(*iPlugin);
-    }
+    destroyPlugins();
 }
 
 void PluginManager::beginRun(const G4Run* run) {
@@ -62,6 +58,14 @@ void PluginManager::endEvent(const G4Event* event) {
     for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
         if ((*it)->hasEventAction()) {
             (*it)->endEvent(event);
+        }
+    }
+}
+
+void PluginManager::generatePrimary(G4Event* event) {
+    for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
+        if ((*it)->hasPrimaryGeneratorAction()) {
+            (*it)->generatePrimary(event);
         }
     }
 }
@@ -129,7 +133,8 @@ void PluginManager::create(const std::string& pluginName, const std::string& lib
         UserActionPlugin* plugin = pluginLoader_.create(pluginName, libName);
         registerPlugin(plugin);
     } else {
-        std::cerr << "PluginManager::create - Plugin " << pluginName << " already exists." << std::endl;
+        std::cerr << "[ PluginManager ] - Plugin " << pluginName << " already exists." << std::endl;
+        throw new std::runtime_error("Plugin already loaded.");
     }
 }
 
@@ -164,6 +169,13 @@ void PluginManager::deregisterPlugin(UserActionPlugin* plugin) {
     if (pos != plugins_.end()) {
         plugins_.erase(pos);
     }
+}
+
+void PluginManager::destroyPlugins() {
+    for (int iPlugin = 0; iPlugin < plugins_.size(); iPlugin++) {
+        destroy(plugins_[iPlugin]);
+    }
+    plugins_.clear();
 }
 
 } // namespace sim
