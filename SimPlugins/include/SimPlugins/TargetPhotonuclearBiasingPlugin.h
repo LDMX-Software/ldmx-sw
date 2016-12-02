@@ -46,7 +46,7 @@ class TargetPhotonuclearBiasingPlugin : public UserActionPlugin {
 
         void stepping(const G4Step* step);
 
-        G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track*);
+        G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track*, const G4ClassificationOfNewTrack&);
 
     private:
 
