@@ -106,12 +106,12 @@
       <composite n="27" ref="C"/>
       <composite n="30" ref="H"/>
     </material>
-    <material formula="L1.8Y0.2Si05" name="SaintGobainLYSO" >
+    <material formula="L1.86Y0.14Si05" name="LYSO" >
         <D value="7.4" unit="g/cm3"   />
-        <fraction n="0.7145" ref="Lu" />
-        <fraction n="0.0403" ref="Y"  />
-        <fraction n="0.0637" ref="Si" />
-        <fraction n="0.1815" ref="O"  />
+        <fraction n="0.7297" ref="Lu" />
+        <fraction n="0.0279" ref="Y"  />
+        <fraction n="0.0630" ref="Si" />
+        <fraction n="0.1794" ref="O"  />
     </material>
   </materials>
 
@@ -123,7 +123,7 @@
 
   <structure>
     <volume name="target">
-      <materialref ref="SaintGobainLYSO"/>
+      <materialref ref="LYSO"/>
       <solidref ref="target_box"/>
       <auxiliary auxtype="SensDet" auxvalue="TargetSD1"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
