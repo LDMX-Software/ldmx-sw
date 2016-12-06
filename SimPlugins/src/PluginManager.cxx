@@ -3,11 +3,7 @@
 namespace sim {
 
 PluginManager::~PluginManager() {
-    for (PluginVec::iterator iPlugin = plugins_.begin();
-            iPlugin != plugins_.end();
-            iPlugin++) {
-        destroy(*iPlugin);
-    }
+    destroyPlugins();
 }
 
 void PluginManager::beginRun(const G4Run* run) {
@@ -66,21 +62,43 @@ void PluginManager::endEvent(const G4Event* event) {
     }
 }
 
+void PluginManager::generatePrimary(G4Event* event) {
+    for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
+        if ((*it)->hasPrimaryGeneratorAction()) {
+            (*it)->generatePrimary(event);
+        }
+    }
+}
+
 /**
  * @brief Return a track classification from the user plugins that have stacking actions.
  *
- * @note The setting from the last plugin in the list will override all the others.
- * For this reason, the user should likely only activate one plugin at a time that
- * implements the stacking action hooks.
+ * @note The current classification will only be updated if a plugin actually provides a different classification
+ *       than the current one.  By default, plugins that do not wish to change a track classification will return
+ *       the value of <i>currentTrackClass</i> in order to not override values from previously activated plugins.
  */
 G4ClassificationOfNewTrack PluginManager::stackingClassifyNewTrack(const G4Track* track) {
-    G4ClassificationOfNewTrack trackClass = G4ClassificationOfNewTrack::fUrgent;
+
+    // Default value of a track is fUrgent.
+    G4ClassificationOfNewTrack currentTrackClass = G4ClassificationOfNewTrack::fUrgent;
+
     for (PluginVec::iterator it = plugins_.begin(); it != plugins_.end(); it++) {
         if ((*it)->hasStackingAction()) {
-            trackClass = (*it)->stackingClassifyNewTrack(track);
+
+            // Get proposed new track classification from this plugin.
+            G4ClassificationOfNewTrack newTrackClass = (*it)->stackingClassifyNewTrack(track, currentTrackClass);
+
+            // Only set the current classification if the plugin changed it.
+            if (newTrackClass != currentTrackClass) {
+
+                // Set the track classification from this plugin.
+                currentTrackClass = newTrackClass;
+            }
         }
     }
-    return trackClass;
+
+    // Return the current track classification.
+    return currentTrackClass;
 }
 
 void PluginManager::stackingNewStage() {
@@ -115,7 +133,8 @@ void PluginManager::create(const std::string& pluginName, const std::string& lib
         UserActionPlugin* plugin = pluginLoader_.create(pluginName, libName);
         registerPlugin(plugin);
     } else {
-        std::cerr << "PluginManager::create - Plugin " << pluginName << " already exists." << std::endl;
+        std::cerr << "[ PluginManager ] - Plugin " << pluginName << " already exists." << std::endl;
+        throw new std::runtime_error("Plugin already loaded.");
     }
 }
 
@@ -150,6 +169,13 @@ void PluginManager::deregisterPlugin(UserActionPlugin* plugin) {
     if (pos != plugins_.end()) {
         plugins_.erase(pos);
     }
+}
+
+void PluginManager::destroyPlugins() {
+    for (int iPlugin = 0; iPlugin < plugins_.size(); iPlugin++) {
+        destroy(plugins_[iPlugin]);
+    }
+    plugins_.clear();
 }
 
 } // namespace sim

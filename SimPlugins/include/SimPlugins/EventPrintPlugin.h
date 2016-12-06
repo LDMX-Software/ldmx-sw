@@ -43,6 +43,10 @@ class EventPrintPlugin : public UserActionPlugin {
             return true;
         }
 
+        bool hasPrimaryGeneratorAction() {
+            return true;
+        }
+
         void beginRun(const G4Run* run) {
             if (enableStartRun_) {
                 std::cout << prepend_ << " Start Run " << run->GetRunID() << " " << append_ << std::endl;
@@ -55,7 +59,10 @@ class EventPrintPlugin : public UserActionPlugin {
             }
         }
 
-        void beginEvent(const G4Event* event) {
+        /**
+         * Use the primary generator hook for the start event message so it appears as early as possible in output.
+         */
+        void generatePrimary(G4Event* event) {
             if (enableStartEvent_) {
                 if (event->GetEventID() % modulus_ == 0) {
                     std::cout << prepend_ << " Start Event " << event->GetEventID() << " " << append_ << std::endl;

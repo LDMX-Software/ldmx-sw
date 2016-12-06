@@ -55,6 +55,8 @@ class UserActionPlugin {
 
         virtual bool hasStackingAction() { return false; }
 
+        virtual bool hasPrimaryGeneratorAction() { return false; }
+
         virtual void beginRun(const G4Run*) {;}
 
         virtual void endRun(const G4Run*) {;}
@@ -69,8 +71,17 @@ class UserActionPlugin {
 
         virtual void endEvent(const G4Event*) {;}
 
-        virtual G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track*) {
-            return G4ClassificationOfNewTrack::fUrgent;
+        virtual void generatePrimary(G4Event*) {;}
+
+        /**
+         * @brief
+         * Classify a new track.
+         *
+         * @note
+         * The default behavior is to return the current classification which will be <i>fUrgent</i> if no other plugin changed it.
+         */
+        virtual G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track*, const G4ClassificationOfNewTrack& currentTrackClass) {
+            return currentTrackClass;
         }
 
         virtual void stackingNewStage() {;}

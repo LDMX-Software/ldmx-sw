@@ -24,7 +24,7 @@ sim::TargetPhotonuclearBiasingPlugin::~TargetPhotonuclearBiasingPlugin() {
 }
 
 
-G4ClassificationOfNewTrack sim::TargetPhotonuclearBiasingPlugin::stackingClassifyNewTrack(const G4Track* track) {
+G4ClassificationOfNewTrack sim::TargetPhotonuclearBiasingPlugin::stackingClassifyNewTrack(const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
 
     /*std::cout << "********************************" << std::endl;*/ 
     /*std::cout << "*   Track pushed to the stack  *" << std::endl;*/
@@ -42,7 +42,9 @@ G4ClassificationOfNewTrack sim::TargetPhotonuclearBiasingPlugin::stackingClassif
               << std::endl;*/
 
 
-    G4ClassificationOfNewTrack classification = fUrgent;
+    // Use current classification by default so values from other plugins are not overridden.
+    G4ClassificationOfNewTrack classification = currentTrackClass;
+
     if (track->GetTrackID() == 1 && pdgID == 11) {
         return fWaiting; 
     }
