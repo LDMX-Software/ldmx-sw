@@ -44,9 +44,9 @@ void RunManager::Initialize() {
 
     G4RunManager::Initialize();
 
-    PrimaryGeneratorAction* pga = new PrimaryGeneratorAction;
-    SetUserAction(pga);
-    new PrimaryGeneratorMessenger(pga);
+    PrimaryGeneratorAction* primaryGeneratorAction = new PrimaryGeneratorAction;
+    SetUserAction(primaryGeneratorAction);
+    new PrimaryGeneratorMessenger(primaryGeneratorAction);
 
     UserRunAction* runAction = new UserRunAction;
     UserEventAction* eventAction = new UserEventAction;
@@ -59,6 +59,7 @@ void RunManager::Initialize() {
     trackingAction->setPluginManager(pluginManager_);
     steppingAction->setPluginManager(pluginManager_);
     stackingAction->setPluginManager(pluginManager_);
+    primaryGeneratorAction->setPluginManager(pluginManager_);
 
     SetUserAction(runAction);
     SetUserAction(eventAction);

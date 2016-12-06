@@ -5,9 +5,14 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4VPrimaryGenerator.hh"
 
+// LDMX
+#include "SimPlugins/PluginManagerAccessor.h"
+
 namespace sim {
 
-class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
+class PrimaryGeneratorAction :
+        public G4VUserPrimaryGeneratorAction,
+        public PluginManagerAccessor {
 
     public:
 

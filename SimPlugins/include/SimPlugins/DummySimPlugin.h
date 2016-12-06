@@ -42,6 +42,10 @@ class DummySimPlugin : public UserActionPlugin {
             return true;
         }
 
+        bool hasPrimaryGeneratorAction() {
+            return true;
+        }
+
         void beginRun(const G4Run* run) {
             std::cout << "DummySimPlugin::beginRun - run " << run->GetRunID() << std::endl;
         }
@@ -78,9 +82,10 @@ class DummySimPlugin : public UserActionPlugin {
             std::cout << "DummySimPlugin::endEvent - event " << event->GetEventID() << std::endl;
         }
 
-        G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack) {
-            std::cout << "DummySimPlugin::stackingClassifyNewTrack - track ID " << aTrack->GetTrackID() << std::endl;
-            return G4ClassificationOfNewTrack::fUrgent;
+        G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& currentTrackClass) {
+            std::cout << "DummySimPlugin::stackingClassifyNewTrack - track ID " << aTrack->GetTrackID()
+                    << " classified as " << currentTrackClass << std::endl;
+            return currentTrackClass;
         }
 
         void stackingNewStage() {
@@ -89,6 +94,10 @@ class DummySimPlugin : public UserActionPlugin {
 
         void stackingPrepareNewEvent() {
             std::cout << "DummySimPlugin::stackingPrepareNewEvent" << std::endl;
+        }
+
+        void generatePrimary(G4Event* event) {
+            std::cout << "DummySimPlugin::generatorPrimary - event " << event->GetEventID() << std::endl;
         }
 };
 
