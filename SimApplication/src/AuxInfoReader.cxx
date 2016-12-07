@@ -2,7 +2,8 @@
 
 // LDMX
 #include "SimApplication/TrackerSD.h"
-#include "SimApplication/CalorimeterSD.h"
+#include "SimApplication/EcalSD.h"
+#include "SimApplication/HcalSD.h"
 #include "SimApplication/MagneticFieldStore.h"
 #include "SimApplication/MagneticFieldMap3D.h"
 #include "SimApplication/UserRegionInformation.h"
@@ -128,8 +129,13 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDM
     G4VSensitiveDetector* sd = 0;
     if (sdType == "TrackerSD") {
         sd = new TrackerSD(theSensDetName, hcName, subdetID, detID);
-    } else if (sdType == "CalorimeterSD") {
-        sd = new CalorimeterSD(theSensDetName, hcName, subdetID, detID);
+    } else if (sdType == "EcalSD" || sdType == "HcalSD") {
+    	if (sdType == "EcalSD"){
+    		sd = new EcalSD(theSensDetName, hcName, subdetID, detID);
+    	}
+    	else{
+    		sd = new HcalSD(theSensDetName, hcName, subdetID, detID);
+    	}
         if (layerDepth != -1) {
             ((CalorimeterSD*)sd)->setLayerDepth(layerDepth);
             std::cout << "Layer depth set to " << layerDepth << std::endl;

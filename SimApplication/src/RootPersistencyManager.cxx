@@ -9,6 +9,9 @@
 // Geant4
 #include "G4RunManager.hh"
 
+// TEmp
+
+//
 using event::Event;
 using event::EventConstants;
 
@@ -19,6 +22,7 @@ RootPersistencyManager::RootPersistencyManager()
             writer_(new RootEventWriter("ldmx_sim_events.root", new SimEvent)) {
     G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
     G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
+    detID = new DefaultDetectorID();
 }
 
 G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
@@ -128,6 +132,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event*
         G4VHitsCollection* hc = hce->GetHC(iColl);
         std::string collName = hc->GetName();
         int nHits = hc->GetSize();
+
         TClonesArray* outputColl = outputEvent->getCollection(hc->GetName());
         if (dynamic_cast<G4TrackerHitsCollection*>(hc) != nullptr) {
             for (int iHit = 0; iHit < nHits; iHit++) {
@@ -136,13 +141,45 @@ void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event*
                 g4hit->setSimTrackerHit(simHit); /* copy data from G4 hit to sim hit */
             }
         } else if (dynamic_cast<G4CalorimeterHitsCollection*>(hc) != nullptr) {
-            for (int iHit = 0; iHit < nHits; iHit++) {
-                G4CalorimeterHit* g4hit = (G4CalorimeterHit*) hc->GetHit(iHit);
-                SimCalorimeterHit* simHit = (SimCalorimeterHit*) outputColl->ConstructedAt(outputColl->GetEntries());
-                g4hit->setSimCalorimeterHit(simHit); /* copy data from G4 hit to sim hit */
-            }
-        }
-    }
-}
+        	std::pair<std::map<layer_cell_pair, int>::iterator, bool> isInserted;
+
+			if (collName == EventConstants::ECAL_SIM_HITS){
+
+				for (int iHit = 0; iHit < nHits; iHit++) {
+					G4CalorimeterHit* g4hit = (G4CalorimeterHit*) hc->GetHit(iHit);
+					int detIDraw= g4hit->getID();
+					detID->setRawValue(detIDraw);
+					detID->unpack();
+					int layer =detID->getFieldValue("layer");
+					int cellid=detID->getFieldValue("cellid");
+					std::pair<layer_cell_pair,int> layer_cell_index =
+							std::make_pair(std::make_pair(layer,cellid),outputColl->GetEntries());
+					isInserted = ecalReadoutMap.insert(layer_cell_index);
+
+					ReadoutCalorimeterHit* readHit;
+					if (isInserted.second == false){
+						readHit = (ReadoutCalorimeterHit*) outputColl->At(isInserted.first->second );
+					}
+					else{
+						readHit = (ReadoutCalorimeterHit*) outputColl->ConstructedAt(outputColl->GetEntries());
+					}
+
+					g4hit->ReadCalorimeterHit(readHit,!isInserted.second); /* copy data from G4 hit to readout hit */
+				}
+
+				ecalReadoutMap.clear();
+			}
+
+			else{
+
+				for (int iHit = 0; iHit < nHits; iHit++) {
+					G4CalorimeterHit* g4hit = (G4CalorimeterHit*) hc->GetHit(iHit);
+					SimCalorimeterHit* simHit = (SimCalorimeterHit*) outputColl->ConstructedAt(outputColl->GetEntries());
+					g4hit->setSimCalorimeterHit(simHit); /* copy data from G4 hit to sim hit */
+				}
+			}
+		}
+	}
+ }
 
 } // namespace sim

@@ -8,6 +8,7 @@
 // LDMX
 #include "Event/EventConstants.h"
 #include "Event/SimTrackerHit.h"
+#include "Event/ReadoutCalorimeterHit.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Event/SimParticle.h"
 

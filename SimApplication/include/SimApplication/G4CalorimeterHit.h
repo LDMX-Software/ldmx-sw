@@ -9,8 +9,10 @@
 
 // LDMX
 #include "Event/SimCalorimeterHit.h"
+#include "Event/ReadoutCalorimeterHit.h"
 
 using event::SimCalorimeterHit;
+using event::ReadoutCalorimeterHit;
 
 namespace sim {
 
@@ -44,8 +46,16 @@ class G4CalorimeterHit: public G4VHit {
             this->id_ = id;
         }
 
+        int getID(){
+        	return id_;
+        }
+
         void setEdep(float edep) {
             this->edep_ = edep;
+        }
+
+        float getEdep() {
+            return edep_;
         }
 
         void setPosition(const float x, const float y, const float z) {
@@ -64,10 +74,28 @@ class G4CalorimeterHit: public G4VHit {
             this->simCalHit_ = simCalHit;
         }
 
+        void ReadCalorimeterHit(ReadoutCalorimeterHit* readoutHit, bool existingHit) {
+
+			if(existingHit){
+				readoutHit->setEdep(edep_ + readoutHit->getEdep());
+			}
+			else{
+				readoutHit->setID(id_);
+				readoutHit->setEdep(edep_);
+				readoutHit->setPosition(position_.x(), position_.y(), position_.z());
+				readoutHit->setTime(time_);
+				this->readCalHit_ = readoutHit;
+			}
+
+
+        }
+
         SimCalorimeterHit* getSimCalorimeterHit() {
             return simCalHit_;
         }
-
+        ReadoutCalorimeterHit* getReadCalorimeterHit() {
+            return readCalHit_;
+        }
     private:
 
         int trackID_{-1};
@@ -77,6 +105,8 @@ class G4CalorimeterHit: public G4VHit {
         float time_{0};
 
         SimCalorimeterHit* simCalHit_{nullptr};
+        ReadoutCalorimeterHit* readCalHit_{nullptr};
+
 };
 
 /**

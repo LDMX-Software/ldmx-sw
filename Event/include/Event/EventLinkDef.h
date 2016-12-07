@@ -14,6 +14,7 @@
 #pragma link C++ class event::EventConstants+;
 #pragma link C++ class event::SimEvent+;
 #pragma link C++ class event::SimCalorimeterHit+;
+#pragma link C++ class event::ReadoutCalorimeterHit+;
 #pragma link C++ class event::SimTrackerHit+;
 #pragma link C++ class event::SimParticle+;
 

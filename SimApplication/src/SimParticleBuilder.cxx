@@ -117,17 +117,21 @@ void SimParticleBuilder::assignCalorimeterHitSimParticles() {
     int nColl = hce->GetNumberOfCollections();
     for (int iColl = 0; iColl < nColl; iColl++) {
         G4VHitsCollection* hitsColl = hce->GetHC(iColl);
+        std::string collName = hitsColl->GetName();
         G4CalorimeterHitsCollection* calHits = dynamic_cast<G4CalorimeterHitsCollection*>(hitsColl);
         if (calHits != NULL) {
             int nHits = calHits->GetSize();
             for (int iHit = 0; iHit < nHits; iHit++) {
                 G4CalorimeterHit* hit = (G4CalorimeterHit*) calHits->GetHit(iHit);
                 int trackID = hit->getTrackID();
-                if (trackID > 0) {
+                if (trackID > 0 ) {
                     SimParticle* simParticle = findSimParticle(trackID);
-                    if (simParticle != NULL) {
+                    if (simParticle != NULL and  hit->getSimCalorimeterHit() != nullptr) {
                         hit->getSimCalorimeterHit()->setSimParticle(simParticle);
-                    } else {
+                    }
+                    else if (simParticle != NULL and  hit->getReadCalorimeterHit() != nullptr) {
+                        hit->getReadCalorimeterHit()->setSimParticle(simParticle);
+                    }else {
                         std::cerr << "WARNING: Failed to find SimParticle for SimCalorimeterHit with track ID " << trackID << std::endl;
                     }
                 }

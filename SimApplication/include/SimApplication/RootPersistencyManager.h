@@ -13,10 +13,14 @@
 #include "G4Run.hh"
 
 // LDMX
+#include "DetDescr/DefaultDetectorID.h"
+#include "DetDescr/DetectorID.h"
 #include "Event/SimEvent.h"
 #include "Event/RootEventWriter.h"
 #include "SimApplication/SimParticleBuilder.h"
 
+using detdescr::DetectorID;
+using detdescr::DefaultDetectorID;
 using event::RootEventWriter;
 using event::Event;
 using event::SimEvent;
@@ -26,6 +30,7 @@ namespace sim {
 class RootPersistencyManager : public G4PersistencyManager {
 
     public:
+		typedef std::pair<int, int> layer_cell_pair;
 
         /** Constructor, which will install the object as the global persistency manager. */
         RootPersistencyManager();
@@ -99,6 +104,9 @@ class RootPersistencyManager : public G4PersistencyManager {
 
         SimParticleBuilder simParticleBuilder_;
         RootEventWriter* writer_;
+        DetectorID* detID;
+        std::map<layer_cell_pair, int> ecalReadoutMap;
+
 };
 
 }
