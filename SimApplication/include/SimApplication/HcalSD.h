@@ -13,13 +13,10 @@ class HcalSD : public CalorimeterSD {
 
     public:
 
-		HcalSD(G4String name,
-				G4String theCollectionName,
-				int subdet,
-				DetectorID* detID);
+        HcalSD(G4String name, G4String theCollectionName, int subdet,
+                DetectorID* detID);
 
-		virtual ~HcalSD();
-
+        virtual ~HcalSD();
 
 };
 

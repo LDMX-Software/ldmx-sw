@@ -14,13 +14,17 @@ using event::SimCalorimeterHit;
 
 namespace sim {
 
-class G4CalorimeterHit: public G4VHit {
+class G4CalorimeterHit : public G4VHit {
 
     public:
 
-        G4CalorimeterHit() {;}
+        G4CalorimeterHit() {
+            ;
+        }
 
-        virtual ~G4CalorimeterHit() {;}
+        virtual ~G4CalorimeterHit() {
+            ;
+        }
 
         void Draw();
 
@@ -44,8 +48,8 @@ class G4CalorimeterHit: public G4VHit {
             this->id_ = id;
         }
 
-        int getID(){
-        	return id_;
+        int getID() {
+            return id_;
         }
 
         void setEdep(float edep) {
@@ -64,16 +68,18 @@ class G4CalorimeterHit: public G4VHit {
             this->time_ = time;
         }
 
-        void setSimCalorimeterHit(SimCalorimeterHit* simCalHit, bool existingHit = false) {
-			if(existingHit){
-				simCalHit->setEdep(edep_ + simCalHit->getEdep());
-			} else{
-				simCalHit->setID(id_);
-				simCalHit->setEdep(edep_);
-				simCalHit->setPosition(position_.x(), position_.y(), position_.z());
-				simCalHit->setTime(time_);
-				this->simCalHit_ = simCalHit;
-			}
+        void setSimCalorimeterHit(SimCalorimeterHit* simCalHit,
+                bool existingHit = false) {
+            if (existingHit) {
+                simCalHit->setEdep(edep_ + simCalHit->getEdep());
+            } else {
+                simCalHit->setID(id_);
+                simCalHit->setEdep(edep_);
+                simCalHit->setPosition(position_.x(), position_.y(),
+                        position_.z());
+                simCalHit->setTime(time_);
+                this->simCalHit_ = simCalHit;
+            }
 
         }
 
@@ -83,13 +89,13 @@ class G4CalorimeterHit: public G4VHit {
 
     private:
 
-        int trackID_{-1};
-        int id_{0};
-        double edep_{0};
+        int trackID_ {-1};
+        int id_ {0};
+        double edep_ {0};
         G4ThreeVector position_;
-        float time_{0};
+        float time_ {0};
 
-        SimCalorimeterHit* simCalHit_{nullptr};
+        SimCalorimeterHit* simCalHit_ { nullptr };
 
 };
 

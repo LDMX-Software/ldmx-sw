@@ -17,17 +17,15 @@ class EcalSD : public CalorimeterSD {
 
     public:
 
-		EcalSD(G4String name,
-				G4String theCollectionName,
-				int subdet,
-				DetectorID* detID);
+        EcalSD(G4String name, G4String theCollectionName, int subdet,
+                DetectorID* detID);
 
-		virtual ~EcalSD();
+        virtual ~EcalSD();
 
-		G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
+        G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
 
     private:
-		TH2Poly *map;
+        TH2Poly *map;
 };
 
 }
