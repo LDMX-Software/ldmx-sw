@@ -13,14 +13,14 @@
 #include "G4Run.hh"
 
 // LDMX
-#include "DetDescr/DefaultDetectorID.h"
+#include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/DetectorID.h"
 #include "Event/SimEvent.h"
 #include "Event/RootEventWriter.h"
 #include "SimApplication/SimParticleBuilder.h"
 
 using detdescr::DetectorID;
-using detdescr::DefaultDetectorID;
+using detdescr::EcalDetectorID;
 using event::RootEventWriter;
 using event::Event;
 using event::SimEvent;

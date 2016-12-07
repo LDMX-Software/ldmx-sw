@@ -26,16 +26,6 @@ class EcalSD : public CalorimeterSD {
 
 		G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
 
-		void initialiseMap(const double width, const double side);
-
-		void buildMap(Double_t xstart,
-				Double_t ystart, //Map starting points
-				Double_t a,  // side length
-				Int_t k,     // # hexagons in a column
-				Int_t s);
-		inline TH2Poly * getMap(){
-			return map;
-		};
     private:
 		TH2Poly *map;
 };
