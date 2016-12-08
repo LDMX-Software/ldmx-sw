@@ -16,8 +16,8 @@ namespace sim {
 class EcalSD : public CalorimeterSD {
 
     public:
-
-        EcalSD(G4String name, G4String theCollectionName, int subdet,
+        enum {EcalDetectorID = 5} ;
+        EcalSD(G4String name, G4String theCollectionName, int subdet = EcalDetectorID,
                 DetectorID* detID);
 
         virtual ~EcalSD();

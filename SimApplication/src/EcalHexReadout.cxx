@@ -1,4 +1,4 @@
-#include "SimApplication/EcalHitMap.h"
+#include "../include/SimApplication/EcalHexReadout.h"
 
 namespace sim {
 
