@@ -15,6 +15,4 @@ namespace event {
     const std::string EventConstants::TRIGGER_PAD_SIM_HITS = "TriggerPadSimHits";
     const std::string EventConstants::TARGET_SIM_HITS = "TargetSimHits";
 
-    const double EventConstants::ECAL_MAP_XY = 1000;
-    const double EventConstants::CELL_SIZE = 4.59360;
 } // namespace event

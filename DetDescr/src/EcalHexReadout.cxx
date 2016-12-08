@@ -1,8 +1,8 @@
-#include "../include/SimApplication/EcalHexReadout.h"
+#include "DetDescr/EcalHexReadout.h"
 
-namespace sim {
+namespace detdescr {
 
-EcalHitMap::EcalHitMap(double width, double side){
+EcalHexReadout::EcalHexReadout(double width, double side){
 	ecalMap = new TH2Poly();
 	// Center a cell at (x,y)=(0,0) and ensure coverage up to/past width/2 in all 4 directions,
 	// assuming each cell is lying on a side.
@@ -20,9 +20,23 @@ EcalHitMap::EcalHitMap(double width, double side){
 			<< std::endl;
 
 	buildMap( xstart, ystart, side, ny, nx);
+
+    TIter next(ecalMap->GetBins());
+    TObject *obj = 0;
+    TH2PolyBin *polyBin = 0;
+
+    while ((obj = next())) {
+        polyBin = (TH2PolyBin*) obj;
+        int id = polyBin->GetBinNumber();
+        double x = (polyBin->GetXMax() + polyBin->GetXMin()) / 2.;
+        double y = (polyBin->GetYMax() + polyBin->GetYMin()) / 2.;
+        cellIdtoCoords.insert(std::pair<int,std::pair<float,float>>(id,std::make_pair<float,float>(x,y)));
+    }
 }
 
-void EcalHitMap::buildMap(Double_t xstart,Double_t ystart, Double_t a, Int_t k, Int_t s){
+
+
+void EcalHexReadout::buildMap(Double_t xstart,Double_t ystart, Double_t a, Int_t k, Int_t s){
 	// Add the bins
 	Double_t numberOfHexagonsInAColumn;
 	Double_t x[6], y[6];

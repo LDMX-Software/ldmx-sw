@@ -33,11 +33,6 @@ class EventConstants {
          */
         const static int DEFAULT_COLLECTION_SIZE = 1000;
 
-        /*
-         * Detector Specs
-         */
-        static const double ECAL_MAP_XY;
-        static const double CELL_SIZE;
 }; // class EventConstants
 
 } // namespace event

@@ -18,6 +18,7 @@
 #include "Event/SimEvent.h"
 #include "Event/RootEventWriter.h"
 #include "SimApplication/SimParticleBuilder.h"
+#include "SimApplication/G4CalorimeterHit.h"
 
 using detdescr::DetectorID;
 using detdescr::EcalDetectorID;
@@ -101,7 +102,14 @@ class RootPersistencyManager : public G4PersistencyManager {
         
 
     private:
-
+        layer_cell_pair hitToPair(G4CalorimeterHit* g4hit){
+            int detIDraw = g4hit->getID();
+            detID->setRawValue(detIDraw);
+            detID->unpack();
+            int layer = detID->getFieldValue("layer");
+            int cellid = detID->getFieldValue("cellid");
+            return (std::make_pair(layer, cellid));
+        }
         SimParticleBuilder simParticleBuilder_;
         RootEventWriter* writer_;
         DetectorID* detID;

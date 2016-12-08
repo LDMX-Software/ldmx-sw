@@ -12,18 +12,16 @@
 // LDMX
 #include "Event/RootEventWriter.h"
 #include "Event/EventConstants.h"
-#include "SimApplication/EcalHexReadout.h"
 
-using sim::EcalHitMap;
 using event::EventConstants;
 using event::RootEventWriter;
+using detdescr::EcalHexReadout;
 
 namespace sim {
 
-EcalSD::EcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
+EcalSD::EcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID ) :
 		CalorimeterSD(name,theCollectionName,subdetID,detID){
-	EcalHitMap * hitMap = new EcalHitMap();
-	map = hitMap->getMap();
+    hitMap = new EcalHexReadout();
 };
 
 EcalSD::~EcalSD() {}
@@ -69,7 +67,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
     // Set the ID on the hit.
     int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth_)->GetCopyNo();
-    int cellID = map->FindBin(position[0],position[1]);
+    int cellID = hitMap->getCellId(position[0],position[1]);
     detID_->setFieldValue(1, layerNumber);
     detID_->setFieldValue(2, cellID);
     hit->setID(detID_->pack());
