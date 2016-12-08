@@ -144,7 +144,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent,
 
             for (int iHit = 0; iHit < nHits; iHit++) {
                 G4TrackerHit* g4hit = (G4TrackerHit*) hc->GetHit(iHit);
-                SimTrackerHit* simHit = (SimTrackerHit*) outputColl->ConstructedAt(utputColl->GetEntries());
+                SimTrackerHit* simHit = (SimTrackerHit*) outputColl->ConstructedAt(outputColl->GetEntries());
                 g4hit->setSimTrackerHit(simHit); /* copy data from G4 hit to sim hit */
 
             }
