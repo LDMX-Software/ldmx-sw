@@ -8,7 +8,7 @@
     <rotation name="identity" x="0" y="0" z="0"/>
     
     <!-- dimension of world box side -->
-    <constant name="world_dim" value="5.0*m"/>
+    <constant name="world_dim" value="10.0*m"/>
             
     <!-- target parameters -->
     <constant name="target_dim_x" value="3.5*cm"/>
@@ -31,23 +31,20 @@
     <!-- recoil position -->
     <variable name="recoil_thickness" value="198.824*mm"/>
     <variable name="recoil_pos_z" value="recoil_thickness/2 + trigger_pad_thickness + target_thickness/2 + trigger_pad_zclear"/>
-    
-    <!-- ecal position -->
-    <constant name="ecal_thickness" value="510.0*mm"/>
+        
+    <!-- distance from target to ecal face -->
     <constant name="ecal_front_z" value="20.0*cm"/>
-    <variable name="ecal_pos_z" value="ecal_front_z + (ecal_thickness/2)"/>
     
-    <!-- hcal position -->
-    <constant name="hcal_thickness" value="900.001"/>
-    <variable name="hcal_pos_z" value="ecal_pos_z + (ecal_thickness/2) + hcal_thickness/2"/>
-    
+    <!-- position of calorimeter mother -->
+    <constant name="calorimeter_thickness" value="3294.0*mm"/>
+    <constant name="calorimeter_pos_z" value="ecal_front_z + calorimeter_thickness/2"/>
+        
     <!-- define all subdetector positions using above Z values -->
     <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
     <position name="target_pos" x="0.0" y="0.0" z="target_z"/>
     <position name="trigger_pad_pos" x="0.0" y="0.0" z="trigger_pad_z"/>
     <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
-    <position name="ecal_pos" x="0" y="0" z="ecal_pos_z"/>
-    <position name="hcal_pos" x="0" y="0" z="hcal_pos_z"/>
+    <position name="calorimeter_pos" x="0.0" y="0.0" z="calorimeter_pos_z"/>
     
   </define>
 
@@ -158,13 +155,8 @@
         <rotationref ref="identity"/>
       </physvol>
       <physvol copynumber="5">
-        <file name="ecal.gdml"/>
-        <positionref ref="ecal_pos"/>
-        <rotationref ref="identity"/>
-      </physvol> 
-      <physvol copynumber="6">
-        <file name="hcal.gdml"/>
-        <positionref ref="hcal_pos"/>
+        <file name="calorimeters.gdml"/>
+        <positionref ref="calorimeter_pos"/>
         <rotationref ref="identity"/>
       </physvol>
     </volume>
@@ -282,7 +274,7 @@
       <auxiliary auxtype="B" auxvalue="0.0"/>
       <auxiliary auxtype="A" auxvalue="1.0"/>
       <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
@@ -292,7 +284,7 @@
       <auxiliary auxtype="B" auxvalue="0.0"/>
       <auxiliary auxtype="A" auxvalue="1.0"/>
       <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
