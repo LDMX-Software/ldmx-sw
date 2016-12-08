@@ -54,7 +54,6 @@ void RootPersistencyManager::buildEvent(const G4Event* anEvent,Event* outputEven
 
     // Set basic event information.
     writeHeader(anEvent, outputEvent);
-    std::cout << "writing hit collection" << std::endl;
     // Copy hit objects from SD hit collections into the output event.
     writeHitsCollections(anEvent, outputEvent);
 
