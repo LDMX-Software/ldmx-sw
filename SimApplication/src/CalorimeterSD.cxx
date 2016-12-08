@@ -38,10 +38,8 @@ CalorimeterSD::~CalorimeterSD() {
 void CalorimeterSD::Initialize(G4HCofThisEvent* hce) {
 
     // Setup hits collection and the HC ID.
-    hitsCollection_ = new G4CalorimeterHitsCollection(SensitiveDetectorName,
-            collectionName[0]);
-    G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(
-            collectionName[0]);
+    hitsCollection_ = new G4CalorimeterHitsCollection(SensitiveDetectorName,collectionName[0]);
+    G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
     hce->AddHitsCollection(hcID, hitsCollection_);
 }
 
@@ -50,8 +48,7 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     // Determine if current particle of this step is a Geantino.
     G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();
     bool isGeantino = false;
-    if (pdef == G4Geantino::Definition()
-            || pdef == G4ChargedGeantino::Definition()) {
+    if (pdef == G4Geantino::Definition() || pdef == G4ChargedGeantino::Definition()) {
         isGeantino = true;
     }
 
@@ -78,19 +75,16 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     // Set the position.
     G4StepPoint* prePoint = aStep->GetPreStepPoint();
     G4StepPoint* postPoint = aStep->GetPostStepPoint();
-    G4ThreeVector position = 0.5
-            * (prePoint->GetPosition() + postPoint->GetPosition());
-    G4ThreeVector volumePosition =
-            aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(
-                    G4ThreeVector());
+    G4ThreeVector position = 0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
+    G4ThreeVector volumePosition =  aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()
+            ->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
     hit->setPosition(position[0], position[1], volumePosition.z());
 
     // Set the global time.
     hit->setTime(aStep->GetTrack()->GetGlobalTime());
 
     // Set the ID on the hit.
-    int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(
-            layerDepth_)->GetCopyNo();
+    int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth_)->GetCopyNo();
     detID_->setFieldValue(1, layerNumber);
     hit->setID(detID_->pack());
 
