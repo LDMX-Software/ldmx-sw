@@ -123,7 +123,7 @@ void eventproc::EcalVetoProcessor::execute(){
         std::cout << "Shower Median : " << showerMedianCellId << std::endl;
     }// end verbose
 
-    doesPassVeto = (summedDep < totalDepCut && summedIso < totalIsoCut && backSummedDep < backEcalCut && ratioCut < totalIsoCut/totalDepCut);
+    doesPassVeto = (summedDep < totalDepCut && summedIso < totalIsoCut && backSummedDep < backEcalCut && totalDepCut/totalIsoCut < ratioCut);
     outputTree->Fill();
 
     EcalLayerEdepRaw_->clear();
