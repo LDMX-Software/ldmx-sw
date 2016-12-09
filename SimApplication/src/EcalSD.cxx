@@ -22,9 +22,9 @@ namespace sim {
 EcalSD::EcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID ) :
 		CalorimeterSD(name,theCollectionName,subdetID,detID){
     hitMap = new EcalHexReadout();
-};
+}
 
-EcalSD::~EcalSD() {}
+EcalSD::~EcalSD() {;}
 
 G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
@@ -46,10 +46,8 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
         return false;
     }
 
-    // Create a new hit object using the ROOT event.
-    //SimCalorimeterHit* simCalorimeterHit =
-    //        (SimCalorimeterHit*) currentEvent->addObject(collectionName[0]);
-    G4CalorimeterHit* hit = new G4CalorimeterHit(/*simCalorimeterHit*/);
+    // Create a new cal hit.
+    G4CalorimeterHit* hit = new G4CalorimeterHit();
 
     // Set the edep.
     hit->setEdep(edep);

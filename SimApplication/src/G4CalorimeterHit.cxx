@@ -41,4 +41,25 @@ std::ostream& G4CalorimeterHit::print(std::ostream& os) {
     return os;
 }
 
+void G4CalorimeterHit::updateSimCalorimeterHit(SimCalorimeterHit* simCalHit, bool existingHit) {
+    // Update an existing hit.
+    if (existingHit) {
+
+        // Increment the edep.
+        simCalHit->setEdep(edep_ + simCalHit->getEdep());
+
+        // Set time if additional hit's time is earlier.
+        if (simCalHit->getTime() < time_) {
+            time_ = simCalHit->getTime();
+        }
+    // Create a new hit.
+    } else {
+        simCalHit->setID(id_);
+        simCalHit->setEdep(edep_);
+        simCalHit->setPosition(position_.x(), position_.y(), position_.z());
+        simCalHit->setTime(time_);
+        this->simCalHit_ = simCalHit;
+    }
+}
+
 }
