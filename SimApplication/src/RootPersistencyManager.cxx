@@ -3,6 +3,7 @@
 // LDMX
 #include "Event/Event.h"
 #include "Event/EventConstants.h"
+#include "SimApplication/EcalHitIO.h"
 #include "SimApplication/G4TrackerHit.h"
 
 // Geant4
@@ -10,17 +11,16 @@
 
 using event::Event;
 using event::EventConstants;
+using sim::EcalHitIO;
 
 namespace sim {
 
 RootPersistencyManager::RootPersistencyManager() :
-        G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(),
-        "RootPersistencyManager"),
-        writer_(new RootEventWriter("ldmx_sim_events.root",
-        new SimEvent)) {
+        G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"),
+        writer_(new RootEventWriter("ldmx_sim_events.root", new SimEvent)),
+        ecalHitIO_(new EcalHitIO) {
     G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
     G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this,"RootPersistencyManager");
-    detID = new EcalDetectorID();
 }
 
 G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
@@ -54,6 +54,7 @@ void RootPersistencyManager::buildEvent(const G4Event* anEvent,Event* outputEven
 
     // Set basic event information.
     writeHeader(anEvent, outputEvent);
+
     // Copy hit objects from SD hit collections into the output event.
     writeHitsCollections(anEvent, outputEvent);
 
@@ -111,8 +112,7 @@ void RootPersistencyManager::printEvent(Event* outputEvent) {
     }
 }
 
-void RootPersistencyManager::writeHeader(const G4Event* anEvent,
-        Event* outputEvent) {
+void RootPersistencyManager::writeHeader(const G4Event* anEvent, Event* outputEvent) {
     outputEvent->setEventNumber(anEvent->GetEventID());
     outputEvent->setTimestamp((int) time(NULL));
     outputEvent->setRun(G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID());
@@ -121,54 +121,57 @@ void RootPersistencyManager::writeHeader(const G4Event* anEvent,
     }
 }
 
-void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent,
-        Event* outputEvent) {
+void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event* outputEvent) {
 
     G4HCofThisEvent* hce = anEvent->GetHCofThisEvent();
     if (hce == nullptr) {
         throw std::runtime_error("The HCE of this event is null!");
     }
+
     int nColl = hce->GetNumberOfCollections();
+
+    // Loop over all hits collections.
     for (int iColl = 0; iColl < nColl; iColl++) {
+
+        // Get basic info about the current collection.
         G4VHitsCollection* hc = hce->GetHC(iColl);
         std::string collName = hc->GetName();
         int nHits = hc->GetSize();
 
+        // Get the target output collection.
         TClonesArray* outputColl = outputEvent->getCollection(hc->GetName());
+
+        // If output collection is not found, a fatal error occurs!
+        if (!outputColl) {
+            std::cerr << "ERROR: The output collection " << collName << " was not found!" << std::endl;
+            G4Exception("RootPersistencyManager::writeHitsCollections",
+                    "",
+                    FatalException,
+                    "The output collection was not found.");
+        }
+
+        // Handle tracker hit collections.
         if (dynamic_cast<G4TrackerHitsCollection*>(hc) != nullptr) {
 
+            // Handle generically the tracker hits by copying data from the G4 hits.
             for (int iHit = 0; iHit < nHits; iHit++) {
                 G4TrackerHit* g4hit = (G4TrackerHit*) hc->GetHit(iHit);
                 SimTrackerHit* simHit = (SimTrackerHit*) outputColl->ConstructedAt(outputColl->GetEntries());
                 g4hit->setSimTrackerHit(simHit); /* copy data from G4 hit to sim hit */
 
             }
+        // Handle calorimeter hit collections.
         } else if (dynamic_cast<G4CalorimeterHitsCollection*>(hc) != nullptr) {
-            //Select ECAL hit collection and perform simulated hit readout
+            // Perform readout to write out ECal hits collection.
             if (collName == EventConstants::ECAL_SIM_HITS) {
-                std::pair<std::map<layer_cell_pair, int>::iterator, bool> isInserted;
-                for (int iHit = 0; iHit < nHits; iHit++) {
-                    G4CalorimeterHit* g4hit = (G4CalorimeterHit*) hc->GetHit(iHit);
-
-                    std::pair<layer_cell_pair, int> layer_cell_index =
-                            (std::make_pair(hitToPair(g4hit),outputColl->GetEntries()));
-
-                    isInserted = ecalReadoutMap.insert(layer_cell_index);
-                    SimCalorimeterHit* simHit;
-                    if (isInserted.second == false) {
-                        simHit = (SimCalorimeterHit*) outputColl->At(isInserted.first->second);
-                    } else {
-                        simHit = (SimCalorimeterHit*) outputColl->ConstructedAt(outputColl->GetEntries());
-                    }
-                    g4hit->setSimCalorimeterHit(simHit, !isInserted.second); /* copy data from G4 hit to readout hit */
-                }
-                ecalReadoutMap.clear();
-            } else {         //For now all other cases are considered at once.
-                             //Future code should read out HCAL_SIM_HITS separately from other Calor derived hits
+                G4CalorimeterHitsCollection* ecalHitsColl = dynamic_cast<G4CalorimeterHitsCollection*>(hc);
+                ecalHitIO_->writeHitsCollection(ecalHitsColl, outputColl);
+            // Handle generically other calorimeter hit collections.
+            } else {
                 for (int iHit = 0; iHit < nHits; iHit++) {
                     G4CalorimeterHit* g4hit = (G4CalorimeterHit*) hc->GetHit(iHit);
                     SimCalorimeterHit* simHit = (SimCalorimeterHit*) outputColl->ConstructedAt(outputColl->GetEntries());
-                    g4hit->setSimCalorimeterHit(simHit); /* copy data from G4 hit to sim hit */
+                    g4hit->updateSimCalorimeterHit(simHit); /* copy data from G4 hit to sim hit */
                 }
             }
         }
