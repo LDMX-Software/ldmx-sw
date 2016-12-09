@@ -126,11 +126,11 @@ void eventproc::EcalVetoProcessor::execute(){
     doesPassVeto = (summedDep < totalDepCut && summedIso < totalIsoCut && backSummedDep < backEcalCut && totalDepCut/totalIsoCut < ratioCut);
     outputTree->Fill();
 
-    EcalLayerEdepRaw_->clear();
-    EcalLayerEdepReadout_->clear();
-    EcalLayerIsoRaw_->clear();
-    EcalLayerIsoReadout_->clear();
-    EcalLayerTime_->clear();
+    EcalLayerEdepRaw_   = new std::vector<float>(numEcalLayers,0);
+    EcalLayerEdepReadout_ = new std::vector<float>(numEcalLayers,0);
+    EcalLayerIsoRaw_    = new std::vector<float>(numEcalLayers,0);
+    EcalLayerIsoReadout_  = new std::vector<float>(numEcalLayers,0);
+    EcalLayerTime_      = new std::vector<float>(numEcalLayers,0);
 
 }
 
