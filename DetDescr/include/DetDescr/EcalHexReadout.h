@@ -27,10 +27,10 @@ class EcalHexReadout {
         }
 
         inline std::pair<float, float> getCellCentroidXYPair(int cellId) {
-            std::pair<std::map<int, std::pair<float, float>>::iterator, bool> isInserted;
-            if (!isInserted.second) {
-                std::cout << "This cellId does not exist, returning (-1e6,-1e6)" << std::endl;
-                return std::make_pair<float, float>(-1e6, -1e6);
+            std::pair<std::map<int, XYCoords>::iterator, bool> isInserted;
+            isInserted = cellIdtoCoords.insert( std::pair<int,XYCoords> (cellId,std::pair<float,float>(0 , 0)) );	
+            if (isInserted.second == true) {
+		throw std::runtime_error("Error: cell " + std::to_string(cellId) + " is not valid");
             }
             return isInserted.first->second;
         }
@@ -75,7 +75,8 @@ class EcalHexReadout {
 
     private:
         TH2Poly* ecalMap;
-        std::map<int, std::pair<float, float>> cellIdtoCoords;
+        typedef std::pair<float,float> XYCoords;
+	std::map<int, XYCoords> cellIdtoCoords;
 };
 
 }
