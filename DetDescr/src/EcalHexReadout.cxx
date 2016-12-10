@@ -26,7 +26,7 @@ EcalHexReadout::EcalHexReadout(double width, double side) {
         int id = polyBin->GetBinNumber();
         double x = (polyBin->GetXMax() + polyBin->GetXMin()) / 2.;
         double y = (polyBin->GetYMax() + polyBin->GetYMin()) / 2.;
-        cellIdtoCoords.insert(std::pair<int, std::pair<float, float>>(id, std::make_pair<float, float>(x, y)));
+        cellIdtoCoords.insert(std::pair<int,XYCoords>(id, std::make_pair(x, y)));
     }
 }
 
