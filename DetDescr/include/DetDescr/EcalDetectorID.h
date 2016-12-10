@@ -2,37 +2,28 @@
 #define DETDESCR_ECALDETECTORID_H_
 
 // LDMX
-#include "DetDescr/DetectorID.h"
+#include "DetDescr/DefaultDetectorID.h"
 
 namespace detdescr {
 
-/**
- * @class DefaultDetectorID
- * @brief Defines a default detector ID with encoded layer and subdetector values.
- */
-class EcalDetectorID : public DetectorID {
+class EcalDetectorID : public DefaultDetectorID {
 
     public:
 
         /**
-         * Class constructor which adds layer and subdetector fields to the ID definition.
+         * Adds a cell field and re-initializes the ID.
          */
-        EcalDetectorID();
-
-        /**
-         * Get the subdetector value.
-         * @return the subdetector value
-         */
-        int getSubdetID() {
-            return this->getFieldValue(0);
+        EcalDetectorID() {
+            this->getFieldList()->push_back(new IDField("cell", 2, 12, 31));
+            init();
         }
 
         /**
-         * Get the layer value.
-         * @return the layer value
+         * Get the value of the cell field from the ID.
+         * @return The value of the cell field.
          */
-        int getLayerID() {
-            return this->getFieldValue(1);
+        int getCellID() {
+            return this->getFieldValue(2);
         }
 };
 

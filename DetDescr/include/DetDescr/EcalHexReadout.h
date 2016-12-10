@@ -1,3 +1,9 @@
+/**
+ * @file EcalHexReadout.h
+ * @brief Translates raw positions of ECal hits into cells in a hexagonal readout.
+ * @author Owen Colegro, UCSB
+ */
+
 #ifndef DETDESCR_ECALHEXREADOUT_H_
 #define DETDESCR_ECALHEXREADOUT_H_
 
@@ -16,54 +22,61 @@ class EcalHexReadout {
 
         EcalHexReadout(const double width = 1000, const double side = 4.59360);
 
+        inline int getCellId(float x, float y) {
+            return ecalMap->FindBin(x, y);
+        }
 
-		inline TH2Poly * getMap(){
-			return ecalMap;
-		};
-        inline int getCellId(float x, float y){
-            return ecalMap->FindBin(x,y);
-        };
-        inline std::pair<float,float> getCellCentroidXYPair(int cellId){
-            std::pair<std::map<int,std::pair<float,float>>::iterator, bool> isInserted;
-            if (!isInserted.second) {
-                std::cout << "This cellId does not exist, returning (-1e6,-1e6)" << std::endl;
-                return std::make_pair<float,float>(-1e6,-1e6);
+        inline std::pair<float, float> getCellCentroidXYPair(int cellId) {
+            std::pair<std::map<int, XYCoords>::iterator, bool> isInserted;
+            isInserted = cellIdtoCoords.insert( std::pair<int,XYCoords> (cellId,std::pair<float,float>(0 , 0)) );	
+            if (isInserted.second == true) {
+		throw std::runtime_error("Error: cell " + std::to_string(cellId) + " is not valid");
             }
             return isInserted.first->second;
-        };
-        inline std::vector<int> getInnerRingCellIds(int cellId){
-            return {cellId - 1,cellId - 1 - 76,cellId - 1 + 77,
-                    cellId + 1,cellId + 1 - 77,cellId + 1 + 76};
-        };
-        inline std::vector<int> getOuterRingCellIds(int cellId){
-            return {cellId - 2 * 76,cellId - 2 * 76- 1, cellId - 2 * 76 - 2,
-                    cellId + 2 * 78,cellId + 2 * 78 - 1,cellId + 2 * 78 - 2,
-                    cellId + 2,cellId + 2 - 77,cellId + 2 + 76,
-                    cellId - 2,cellId - 2 - 76,cellId - 2 + 77};
-        };
-        inline bool isInShowerInnerRing(int centroidId, int cellId){
+        }
+
+        inline bool isInShowerInnerRing(int centroidId, int cellId) {
             bool matched = false;
-            for (auto ringId : getInnerRingCellIds(centroidId) ){
-                if (cellId == ringId) matched = true;
+            for (auto ringId : getInnerRingCellIds(centroidId)) {
+                if (cellId == ringId)
+                    matched = true;
             }
             return matched;
-        };
-        inline bool isInShowerOuterRing(int centroidId, int cellId){
+        }
+
+        inline bool isInShowerOuterRing(int centroidId, int cellId) {
             bool matched = false;
-            for (auto ringId : getOuterRingCellIds(centroidId) ){
-                if (cellId == ringId) matched = true;
+            for (auto ringId : getOuterRingCellIds(centroidId)) {
+                if (cellId == ringId)
+                    matched = true;
             }
             return matched;
-        };
+        }
+
     private:
 
+        inline std::vector<int> getInnerRingCellIds(int cellId) {
+            return {cellId - 1, cellId - 1 - 76, cellId - 1 + 77,
+                cellId + 1, cellId + 1 - 77, cellId + 1 + 76};
+        }
+
+        inline std::vector<int> getOuterRingCellIds(int cellId) {
+            return {cellId - 2 * 76, cellId - 2 * 76- 1, cellId - 2 * 76 - 2,
+                cellId + 2 * 78, cellId + 2 * 78 - 1, cellId + 2 * 78 - 2,
+                cellId + 2, cellId + 2 - 77, cellId + 2 + 76,
+                cellId - 2, cellId - 2 - 76, cellId - 2 + 77};
+        }
+
         void buildMap(Double_t xstart,
-                Double_t ystart, //Map starting points
-                Double_t a,  // side length
-                Int_t k,     // # hexagons in a column
+                Double_t ystart, /* Map starting points */
+                Double_t a,  /* side length */
+                Int_t k,     /* # hexagons in a column */
                 Int_t s);
-        TH2Poly *ecalMap;
-        std::map<int,std::pair<float,float>> cellIdtoCoords;
+
+    private:
+        TH2Poly* ecalMap;
+        typedef std::pair<float,float> XYCoords;
+	std::map<int, XYCoords> cellIdtoCoords;
 };
 
 }

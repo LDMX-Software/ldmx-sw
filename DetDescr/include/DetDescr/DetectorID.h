@@ -108,6 +108,15 @@ class DetectorID {
          */
         void setFieldList(IDField::IDFieldList* fieldList);
 
+        /**
+         * Reinitialize the ID in case the field list changed.
+         * This is called automatically by <i>setFieldList</i>.
+         * Function should be called by a subclass if a new list
+         * is set outside that method or if new fields are added
+         * to the existing list.
+         */
+        void init();
+
     protected:
 
         RawValue rawValue_;
