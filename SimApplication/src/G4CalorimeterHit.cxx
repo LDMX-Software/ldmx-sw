@@ -48,9 +48,9 @@ void G4CalorimeterHit::updateSimCalorimeterHit(SimCalorimeterHit* simCalHit, boo
         // Increment the edep.
         simCalHit->setEdep(edep_ + simCalHit->getEdep());
 
-        // Set time if additional hit's time is earlier.
-        if (simCalHit->getTime() < time_) {
-            time_ = simCalHit->getTime();
+        // Set time if this hit's time is earlier.
+        if (time_ < simCalHit->getTime()) {
+            simCalHit->setTime(time_);
         }
     // Create a new hit.
     } else {
