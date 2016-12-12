@@ -154,7 +154,7 @@ void eventproc::EcalVetoProcessor::execute(){
     EcalHitId_       = new std::vector<float>();
     EcalHitLayer_    = new std::vector<float>();
     EcalHitDep_      = new std::vector<float>();
-
+    EcalHitNoise_    = new std::vector<float>();
 }
 
 void eventproc::EcalVetoProcessor::finish(){
