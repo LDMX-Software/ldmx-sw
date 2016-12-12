@@ -44,7 +44,8 @@ public:
     TTree* outputTree;
     TRandom2 *noiseInjector;
     std::vector<float> *EcalLayerEdepRaw_,*EcalLayerEdepReadout_,
-    *EcalLayerTime_,*EcalLayerIsoRaw_,*EcalLayerIsoReadout_;
+    *EcalLayerTime_,*EcalLayerIsoRaw_,*EcalLayerIsoReadout_,
+    *EcalHitId_,*EcalHitLayer_,*EcalHitDep_,*EcalHitNoise_;
     bool verbose,doesPassVeto;
     EcalDetectorID* detID;
     EcalHexReadout* hexReadout;

@@ -37,17 +37,31 @@ void eventproc::EcalVetoProcessor::initialize(){
     // - - - - - - - - - - - - output tree setup - - - - - - - - - - - - -  //
     //////////////////////////////////////////////////////////////////////////
 
-    EcalLayerEdepRaw_   = new std::vector<float>(numEcalLayers,0);
+    EcalLayerEdepRaw_     = new std::vector<float>(numEcalLayers,0);
     EcalLayerEdepReadout_ = new std::vector<float>(numEcalLayers,0);
-    EcalLayerIsoRaw_    = new std::vector<float>(numEcalLayers,0);
+    EcalLayerIsoRaw_      = new std::vector<float>(numEcalLayers,0);
     EcalLayerIsoReadout_  = new std::vector<float>(numEcalLayers,0);
-    EcalLayerTime_      = new std::vector<float>(numEcalLayers,0);
+    EcalLayerTime_        = new std::vector<float>(numEcalLayers,0);
+
+    EcalHitId_       = new std::vector<float>();
+    EcalHitLayer_    = new std::vector<float>();
+    EcalHitDep_      = new std::vector<float>();
 
     outputTree->Branch("EcalLayerEdepRaw",&(EcalLayerEdepRaw_));
     outputTree->Branch("EcalLayerEdepNoise",&(EcalLayerEdepReadout_));
     outputTree->Branch("EcalLayerIsoRaw",&(EcalLayerIsoRaw_));
     outputTree->Branch("EcalLayerIsoReadout",&(EcalLayerIsoReadout_));
     outputTree->Branch("EcalLayerTime",&(EcalLayerTime_));
+
+    /*
+     * For now we make four flat arrays containing the ECAL hit information
+     *          (to be replaced at a later date w/ custom object)
+     */
+    outputTree->Branch("EcalHitId",&(EcalHitId_));
+    outputTree->Branch("EcalHitLayer",&(EcalHitLayer_));
+    outputTree->Branch("EcalHitDep",&(EcalHitDep_));
+    outputTree->Branch("EcalHitNoise",&(EcalHitNoise_));
+
     outputTree->Branch("DoesPassVeto",&(doesPassVeto));
 
 }
@@ -67,6 +81,11 @@ void eventproc::EcalVetoProcessor::execute(){
         SimCalorimeterHit* EcalHit = (SimCalorimeterHit*) EcalHits->At(iHit);
         hitNoise[iHit] = noiseInjector->Gaus(0,.15);
         layer_cell_pair hit_pair = hitToPair(EcalHit);
+
+        EcalHitId_->push_back(hit_pair.second);
+        EcalHitLayer_->push_back(hit_pair.first);
+        EcalHitDep_->push_back(EcalHit->getEdep());
+        EcalHitNoise_->push_back(hitNoise[iHit]);
         if (hit_pair.first < numLayersForMedCal){
             if (layerMaxCellId[hit_pair.first].second < EcalHit->getEdep() + hitNoise[iHit]){
                 layerMaxCellId[hit_pair.first] = std::make_pair(hit_pair.second,EcalHit->getEdep());
@@ -126,11 +145,15 @@ void eventproc::EcalVetoProcessor::execute(){
     doesPassVeto = (summedDep < totalDepCut && summedIso < totalIsoCut && backSummedDep < backEcalCut && totalDepCut/totalIsoCut < ratioCut);
     outputTree->Fill();
 
-    EcalLayerEdepRaw_   = new std::vector<float>(numEcalLayers,0);
+    EcalLayerEdepRaw_     = new std::vector<float>(numEcalLayers,0);
     EcalLayerEdepReadout_ = new std::vector<float>(numEcalLayers,0);
-    EcalLayerIsoRaw_    = new std::vector<float>(numEcalLayers,0);
+    EcalLayerIsoRaw_      = new std::vector<float>(numEcalLayers,0);
     EcalLayerIsoReadout_  = new std::vector<float>(numEcalLayers,0);
-    EcalLayerTime_      = new std::vector<float>(numEcalLayers,0);
+    EcalLayerTime_        = new std::vector<float>(numEcalLayers,0);
+
+    EcalHitId_       = new std::vector<float>();
+    EcalHitLayer_    = new std::vector<float>();
+    EcalHitDep_      = new std::vector<float>();
 
 }
 
