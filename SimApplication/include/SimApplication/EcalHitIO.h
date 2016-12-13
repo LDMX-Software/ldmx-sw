@@ -48,7 +48,7 @@ class EcalHitIO {
 
     private:
 
-        static const EcalHexReadout* hexReadout = new EcalHexReadout();;
+        EcalHexReadout* hexReadout = new EcalHexReadout();
         EcalDetectorID detID;
         std::map<LayerCellPair, int> ecalReadoutMap;
 

@@ -8,9 +8,9 @@ void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArra
     for (int iHit = 0; iHit < nHits; iHit++) {
         G4CalorimeterHit* g4hit = (G4CalorimeterHit*) hc->GetHit(iHit);
 
-        LayerCellPair layerCell = hitToPair(g4hit);
+        LayerCellPair layer_cell = hitToPair(g4hit);
         std::pair<LayerCellPair, int> layer_cell_index =
-                std::make_pair(layerCell, outputColl->GetEntries());
+                std::make_pair(layer_cell, outputColl->GetEntries());
 
         isInserted = ecalReadoutMap.insert(layer_cell_index);
         SimCalorimeterHit* simHit;
@@ -21,8 +21,8 @@ void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArra
         }
         g4hit->updateSimCalorimeterHit(simHit, !isInserted.second); /* copy data from G4 hit to readout hit */
         if(!isInserted.second){
-            std::pair<float,float> XYPair = hexReadout->getCellCentroidXYPair(layer_cell->second);
-            simHit->SetPosition(XYPair.first,XYPair.second,simHit->getPosition[2]);
+            std::pair<float,float> XYPair = hexReadout->getCellCentroidXYPair(layer_cell.second);
+            simHit->setPosition(XYPair.first,XYPair.second,simHit->getPosition()[2]);
         }
 
     }
