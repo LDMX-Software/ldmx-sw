@@ -12,6 +12,7 @@
 #include "DetDescr/EcalDetectorID.h"
 #include "Event/SimCalorimeterHit.h"
 #include "SimApplication/G4CalorimeterHit.h"
+#include "DetDescr/EcalHexReadout.h"
 
 // ROOT
 #include "TClonesArray.h"
@@ -22,6 +23,7 @@
 using detdescr::EcalDetectorID;
 using event::SimCalorimeterHit;
 using sim::G4CalorimeterHitsCollection;
+using detdescr::EcalHexReadout;
 
 namespace sim {
 
@@ -46,6 +48,7 @@ class EcalHitIO {
 
     private:
 
+        static const EcalHexReadout* hexReadout = new EcalHexReadout();;
         EcalDetectorID detID;
         std::map<LayerCellPair, int> ecalReadoutMap;
 
