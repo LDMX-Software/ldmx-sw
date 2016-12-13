@@ -3,7 +3,7 @@
   <define>      
            
       <!-- offset in Z from target and trigger pad -->
-      <variable name="recoil_z_offset" value="1.176*mm"/>
+      <variable name="recoil_z_offset" value="3.0*mm"/>
      
       <!-- recoil envelope dimensions -->
       <variable name="recoil_envelope_x" value="45.72*cm"/>

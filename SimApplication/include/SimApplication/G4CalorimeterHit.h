@@ -14,7 +14,7 @@ using event::SimCalorimeterHit;
 
 namespace sim {
 
-class G4CalorimeterHit: public G4VHit {
+class G4CalorimeterHit : public G4VHit {
 
     public:
 
@@ -44,8 +44,16 @@ class G4CalorimeterHit: public G4VHit {
             this->id_ = id;
         }
 
+        int getID() {
+            return id_;
+        }
+
         void setEdep(float edep) {
             this->edep_ = edep;
+        }
+
+        float getEdep() {
+            return edep_;
         }
 
         void setPosition(const float x, const float y, const float z) {
@@ -56,13 +64,14 @@ class G4CalorimeterHit: public G4VHit {
             this->time_ = time;
         }
 
-        void setSimCalorimeterHit(SimCalorimeterHit* simCalHit) {
-            simCalHit->setID(id_);
-            simCalHit->setEdep(edep_);
-            simCalHit->setPosition(position_.x(), position_.y(), position_.z());
-            simCalHit->setTime(time_);
-            this->simCalHit_ = simCalHit;
-        }
+        /**
+         * Copy data to an output <i>SimCalorimeterHit<i> or if <i>existingHit</i> is set
+         * then increment the output hit's edep.  If updating an existing sim hit, the time
+         * will also be updated if it is less than the existing time.
+         * @param simCalHit The SimCalorimeterHit to associate with this hit.
+         * @param existingHit True to update the output hit's edep and time only.
+         */
+        void updateSimCalorimeterHit(SimCalorimeterHit* simCalHit, bool existingHit = false);
 
         SimCalorimeterHit* getSimCalorimeterHit() {
             return simCalHit_;
@@ -77,6 +86,7 @@ class G4CalorimeterHit: public G4VHit {
         float time_{0};
 
         SimCalorimeterHit* simCalHit_{nullptr};
+
 };
 
 /**

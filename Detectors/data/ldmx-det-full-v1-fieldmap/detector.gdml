@@ -22,19 +22,22 @@
     <variable name="trigger_pad_dim_y" value="target_dim_y"/>
     <variable name="trigger_pad_thickness" value="1.0*mm"/>
     <variable name="trigger_pad_zclear" value="0.001*mm"/>
-    <variable name="trigger_pad_z" value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + trigger_pad_zclear"/>
+    <variable name="trigger_pad_down_z" value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + trigger_pad_zclear"/>
+    <variable name="trigger_pad_up_z"   value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - trigger_pad_zclear"/>
        
     <!-- tagger position -->    
-    <constant name="tagger_thickness" value="857.025*mm"/>
-    <variable name="tagger_pos_z" value="-(tagger_thickness/2) - target_thickness/2"/>
+    <constant name="tagger_z_offset" value="3.0*mm"/>
+    <constant name="tagger_thickness" value="85.725*cm - tagger_z_offset"/>
+    <variable name="tagger_pos_z" value="-(tagger_thickness/2) - tagger_z_offset"/>
     
     <!-- recoil position -->
-    <variable name="recoil_thickness" value="198.824*mm"/>
-    <variable name="recoil_pos_z" value="recoil_thickness/2 + trigger_pad_thickness + target_thickness/2 + trigger_pad_zclear"/>
-        
+    <variable name="recoil_z_offset" value="3.0*mm"/>
+    <variable name="recoil_thickness" value="20.0*cm - recoil_z_offset"/>
+    <variable name="recoil_pos_z" value="recoil_thickness/2 + recoil_z_offset"/>
+
     <!-- distance from target to ecal face -->
     <constant name="ecal_front_z" value="20.0*cm"/>
-    
+            
     <!-- position of calorimeter mother -->
     <constant name="calorimeter_thickness" value="3294.0*mm"/>
     <constant name="calorimeter_pos_z" value="ecal_front_z + calorimeter_thickness/2"/>
@@ -42,7 +45,8 @@
     <!-- define all subdetector positions using above Z values -->
     <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
     <position name="target_pos" x="0.0" y="0.0" z="target_z"/>
-    <position name="trigger_pad_pos" x="0.0" y="0.0" z="trigger_pad_z"/>
+    <position name="trigger_pad_down_pos" x="0.0" y="0.0" z="trigger_pad_down_z"/>
+    <position name="trigger_pad_up_pos"   x="0.0" y="0.0" z="trigger_pad_up_z"/>
     <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
     <position name="calorimeter_pos" x="0.0" y="0.0" z="calorimeter_pos_z"/>
     
@@ -115,7 +119,8 @@
   <solids>
     <box lunit="mm" name="world_box" x="world_dim" y="world_dim" z="world_dim"/>
     <box lunit="mm" name="target_box" x="target_dim_x" y="target_dim_y" z="target_thickness"/>
-    <box lunit="mm" name="trigger_pad_box" x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>
+    <box lunit="mm" name="trigger_pad_down_box" x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>
+    <box lunit="mm" name="trigger_pad_up_box"   x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>
   </solids>
 
   <structure>
@@ -125,36 +130,47 @@
       <auxiliary auxtype="SensDet" auxvalue="TargetSD1"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
     </volume>
-    <volume name="trigger_pad">
+    <volume name="trigger_pad_down">
       <materialref ref="Polyvinyltoluene"/>
-      <solidref ref="trigger_pad_box"/>
+      <solidref ref="trigger_pad_down_box"/>
+      <auxiliary auxtype="SensDet" auxvalue="TriggerPadSD1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>             
+    </volume> 
+    <volume name="trigger_pad_up">
+      <materialref ref="Polyvinyltoluene"/>
+      <solidref ref="trigger_pad_up_box"/>
       <auxiliary auxtype="SensDet" auxvalue="TriggerPadSD1"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>             
     </volume> 
     <volume name="World">
       <materialref ref="Vacuum"/>
       <solidref ref="world_box"/>                      
-      <physvol copynumber="1">
+      <physvol>
         <file name="tagger.gdml"/>
         <positionref ref="tagger_pos"/>
         <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <volumeref ref="trigger_pad_up"/>
+        <positionref ref="trigger_pad_up_pos"/>
+        <rotationref ref="identity"/>
       </physvol>    
-      <physvol copynumber="2">
+      <physvol>
         <volumeref ref="target"/>
         <positionref ref="target_pos"/>
         <rotationref ref="identity"/>
-      </physvol>             
-      <physvol copynumber="3">
-        <volumeref ref="trigger_pad"/>
-        <positionref ref="trigger_pad_pos"/>
+      </physvol>            
+      <physvol>
+        <volumeref ref="trigger_pad_down"/>
+        <positionref ref="trigger_pad_down_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <physvol copynumber="4">
+      <physvol>
         <file name="recoil.gdml"/>
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <physvol copynumber="5">
+      <physvol>
         <file name="calorimeters.gdml"/>
         <positionref ref="calorimeter_pos"/>
         <rotationref ref="identity"/>
@@ -183,7 +199,7 @@
       <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="2"/>
       <auxiliary auxtype="LayerDepth" auxvalue="1"/>
-      <auxiliary auxtype="Verbose" auxvalue="0"/> 
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>    
     <auxiliary auxtype="SensDet" auxvalue="TargetSD1">
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
@@ -199,26 +215,26 @@
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="EcalSD1">
-      <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
+      <auxiliary auxtype="SensDetType" auxvalue="EcalSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="EcalSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="5"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="HcalSD1">
-      <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
+      <auxiliary auxtype="SensDetType" auxvalue="HcalSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="HcalSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="6"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>    
     
-    <!-- magnetic field with global field map definition -->
+    <!-- magnetic field with global field map definition -->     
     <auxiliary auxtype="MagneticField" auxvalue="AnalyzingDipole">
       <auxiliary auxtype="MagneticFieldType" auxvalue="MagneticFieldMap3D"/>
       <auxiliary auxtype="File" auxvalue="BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"/>
       <auxiliary auxtype="OffsetX" auxvalue="0.0" auxunit="mm"/>
       <auxiliary auxtype="OffsetY" auxvalue="0.0" auxunit="mm"/>
       <auxiliary auxtype="OffsetZ" auxvalue="-100.0" auxunit="mm"/>
-    </auxiliary>
+    </auxiliary>    
     
     <!-- define regions -->
     <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">

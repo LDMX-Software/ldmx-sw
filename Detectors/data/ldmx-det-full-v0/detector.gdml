@@ -199,13 +199,13 @@
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="EcalSD1">
-      <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
+      <auxiliary auxtype="SensDetType" auxvalue="EcalSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="EcalSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="5"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
     <auxiliary auxtype="SensDet" auxvalue="HcalSD1">
-      <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
+      <auxiliary auxtype="SensDetType" auxvalue="HcalSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="HcalSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="6"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>

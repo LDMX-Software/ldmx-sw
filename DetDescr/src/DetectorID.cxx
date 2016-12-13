@@ -15,6 +15,7 @@ DetectorID::DetectorID() : rawValue_(0), fieldList_(0) {
 
 DetectorID::DetectorID(IDField::IDFieldList* fieldList) : rawValue_(0) {
     setFieldList(fieldList);
+    init();
 }
 
 DetectorID::RawValue DetectorID::getRawValue() {
@@ -72,16 +73,22 @@ DetectorID::FieldValue DetectorID::getFieldValue(const std::string& fieldName) {
 }
 
 void DetectorID::setFieldList(IDField::IDFieldList* fieldList) {
-
     // Set the list of fields.
     this->fieldList_ = fieldList;
 
+    // Reinitialize data structures.
+    init();
+}
+
+void DetectorID::init() {
+
     // Fill map of name to field info.
+    fieldMap_.clear();
     for (IDField::IDFieldList::iterator it = fieldList_->begin(); it != fieldList_->end(); it++) {
         fieldMap_[(*it)->getFieldName()] = *it;
     }
 
-    // Resize value array for correct number of fields.
+    // Resize array to hold the correct number of field values.
     this->fieldValues_.resize(fieldList_->size());
 }
 
