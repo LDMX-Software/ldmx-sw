@@ -4,6 +4,8 @@
 #include <iostream>
 
 // Geant4
+#include "G4Polyhedron.hh"
+#include "G4VSolid.hh"
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 #include "G4Geantino.hh"
@@ -20,7 +22,7 @@ using detdescr::EcalHexReadout;
 namespace sim {
 
 EcalSD::EcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID ) :
-		CalorimeterSD(name,theCollectionName,subdetID,detID){
+		CalorimeterSD(name, theCollectionName, subdetID, detID) {
     hitMap = new EcalHexReadout();
 }
 
@@ -52,20 +54,16 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     // Set the edep.
     hit->setEdep(edep);
 
-    // Set the position.
-    G4StepPoint* prePoint = aStep->GetPreStepPoint();
-    G4StepPoint* postPoint = aStep->GetPostStepPoint();
-    G4ThreeVector position = 0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
-    G4ThreeVector volumePosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()
-            ->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
-    hit->setPosition(position[0], position[1], volumePosition.z());
+    // Compute the hit position using the utility function.
+    G4ThreeVector hitPosition = getHitPosition(aStep);
+    hit->setPosition(hitPosition.x(), hitPosition.y(), hitPosition.z());
 
     // Set the global time.
     hit->setTime(aStep->GetTrack()->GetGlobalTime());
 
-    // Set the ID on the hit.
-    int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth_)->GetCopyNo();
-    int cellID = hitMap->getCellId(position[0],position[1]);
+    // Create the ID for the hit.
+    int layerNumber = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth_)->GetCopyNo();
+    int cellID = hitMap->getCellId(hitPosition[0], hitPosition[1]);
     detID_->setFieldValue(1, layerNumber);
     detID_->setFieldValue(2, cellID);
     hit->setID(detID_->pack());
@@ -80,9 +78,44 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
         std::cout << std::endl;
     }
 
+    // Insert the hit into the hits collection.
     hitsCollection_->insert(hit);
 
     return true;
+}
+
+G4ThreeVector EcalSD::getHitPosition(G4Step* aStep) {
+
+    /**
+     * Set initial hit position from midpoint of the step.
+     */
+    G4StepPoint* prePoint = aStep->GetPreStepPoint();
+    G4StepPoint* postPoint = aStep->GetPostStepPoint();
+    G4ThreeVector position = 0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
+
+    /*
+     * Get the volume position in global coordinates, which for the ECal is the center of
+     * the front face of the sensor.
+     */
+    G4ThreeVector volumePosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()
+        ->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
+
+    // Get the solid from this step.
+    G4VSolid* solid = prePoint->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetSolid();
+    G4Polyhedron* poly = solid->CreatePolyhedron();
+
+    /**
+     * Use facet info of the solid for setting Z to the sensor midpoint.
+     */
+    G4Point3D iNodes[4];
+    G4int n;
+    poly->GetFacet(1, n, iNodes);
+    G4double zstart = iNodes[1][2];
+    G4double zend = iNodes[0][2];
+    G4double zmid = (zstart - zend) / 2;
+    position.setZ(volumePosition.z() + zmid);
+
+    return position;
 }
 
 }

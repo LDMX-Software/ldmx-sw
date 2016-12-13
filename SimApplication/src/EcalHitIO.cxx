@@ -20,11 +20,15 @@ void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArra
             simHit = (SimCalorimeterHit*) outputColl->ConstructedAt(outputColl->GetEntries());
         }
         g4hit->updateSimCalorimeterHit(simHit, !isInserted.second); /* copy data from G4 hit to readout hit */
-        if(!isInserted.second){
-            std::pair<float,float> XYPair = hexReadout->getCellCentroidXYPair(layer_cell.second);
-            simHit->setPosition(XYPair.first,XYPair.second,simHit->getPosition()[2]);
-        }
 
+        /**
+         * Set the XY position using the hex readout and Z from the G4 hit (volume center).
+         */
+        // FIXME: This check if the hit is new does not always seem to work.
+        //if (!isInserted.second) {
+        std::pair<float,float> XYPair = hexReadout->getCellCentroidXYPair(layer_cell.second);
+        simHit->setPosition(XYPair.first, XYPair.second, simHit->getPosition()[2]);
+        //}
     }
     ecalReadoutMap.clear();
 }
