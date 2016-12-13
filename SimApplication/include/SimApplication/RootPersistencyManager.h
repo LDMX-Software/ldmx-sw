@@ -1,9 +1,8 @@
 /**
  * @file RootPersistencyManager.h
- * @brief Persistency manager implementation providing sim event output from the Geant4 session.
+ * @brief Persistency manager implementation providing <i>SimEvent</i> output from the Geant4 events.
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
-
 #ifndef SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 #define SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 
@@ -15,8 +14,11 @@
 // LDMX
 #include "Event/SimEvent.h"
 #include "Event/RootEventWriter.h"
+#include "SimApplication/EcalHitIO.h"
 #include "SimApplication/SimParticleBuilder.h"
 
+using detdescr::DetectorID;
+using detdescr::EcalDetectorID;
 using event::RootEventWriter;
 using event::Event;
 using event::SimEvent;
@@ -27,13 +29,19 @@ class RootPersistencyManager : public G4PersistencyManager {
 
     public:
 
-        /** Constructor, which will install the object as the global persistency manager. */
+        /**
+         * Constructor, which will install the object as the global persistency manager.
+         */
         RootPersistencyManager();
 
-        /** This is the primary method for building the output ROOT event. */
+        /**
+         * This is the primary method for building the output ROOT event.
+         */
         G4bool Store(const G4Event* anEvent);
 
-        /** This gets called automatically at the end of the run and is used to close the writer. */
+        /**
+         * This gets called automatically at the end of the run and is used to close the writer.
+         */
         G4bool Store(const G4Run* aRun) {
             if (m_verbose > 1) {
                 std::cout << "RootPersistencyManager::Store - closing writer for run " << aRun->GetRunID() << std::endl;
@@ -42,7 +50,9 @@ class RootPersistencyManager : public G4PersistencyManager {
             return true;
         }
 
-        /** Implementing this makes an "overloaded-virtual" compiler warning go away. */
+        /**
+         * Implementing this makes an "overloaded-virtual" compiler warning go away.
+         */
         G4bool Store(const G4VPhysicalVolume*) { return false; }
 
         /** 
@@ -75,31 +85,47 @@ class RootPersistencyManager : public G4PersistencyManager {
             return writer_;
         }
 
-        /** Return the current ROOT persistency manager or null if it is disabled. */
+        /**
+         * Return the current ROOT persistency manager or null if it is disabled.
+         */
         static RootPersistencyManager* getInstance() {
             return (RootPersistencyManager*) G4PersistencyCenter::GetPersistencyCenter()->CurrentPersistencyManager();
         }
 
     private:
         
-        /** Build an output event from the current Geant4 event. */
+        /**
+         * Build an output event from the current Geant4 event.
+         */
         void buildEvent(const G4Event*, Event*);
 
-        /** Write header info into the output event from Geant4. */
+        /**
+         * Write header info into the output event from Geant4.
+         */
         void writeHeader(const G4Event* anEvent, Event* outputEvent);
 
-        /** Write hits collections from Geant4 into a ROOT event. */
+        /**
+         * Write hits collections from Geant4 into a ROOT event.
+         */
         void writeHitsCollections(const G4Event* anEvent, Event* outputEvent);
         
-        /** Print out event info and data depending on the verbose level. */
+        /**
+         * Print out event info and data depending on the verbose level.
+         */
         void printEvent(Event*);
         
 
     private:
 
+        // Helper for building output SimParticle collection.
         SimParticleBuilder simParticleBuilder_;
+
+        // Writes out events to ROOT file.
         RootEventWriter* writer_;
-};
+
+        // Handles ECal hit readout and IO.
+        EcalHitIO* ecalHitIO_;
+    };
 
 }
 
