@@ -6,7 +6,7 @@
       <variable name="tagger_stereo_angle" value="5.72957795130823"/>
       
       <!-- z offset due to target thickness -->
-      <variable name="tagger_z_offset" value="0.35/2"/>
+      <variable name="tagger_z_offset" value="3*mm"/>
       
       <!-- tagger envelope dimensions -->
       <variable name="tagger_envelope_x" value="45.72*cm"/>
