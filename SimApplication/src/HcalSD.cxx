@@ -18,8 +18,8 @@ using event::RootEventWriter;
 namespace sim {
 
 HcalSD::HcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
-		CalorimeterSD(name,theCollectionName,subdetID,detID){};
+		CalorimeterSD(name,theCollectionName,subdetID,detID) {;}
 
-HcalSD::~HcalSD()  {}
+HcalSD::~HcalSD() {;}
 
 }
