@@ -6,6 +6,7 @@
 #include "Event/SimParticle.h"
 #include "SimApplication/TrackMap.h"
 #include "SimApplication/Trajectory.h"
+#include "SimApplication/TrajectoryContainer.h"
 
 // Geant4
 #include "G4Event.hh"
@@ -42,7 +43,9 @@ class SimParticleBuilder {
 
     private:
 
-        void buildSimParticle(SimParticle* p, Trajectory* info);
+        void buildSimParticle(Trajectory* info);
+        
+        void buildParticleMap(TrajectoryContainer* trajectories, TClonesArray* simParticleColl);
 
     private:
 
