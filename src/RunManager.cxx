@@ -2,6 +2,7 @@
 
 // LDMX
 #include "SimApplication/APrimePhysics.h"
+#include "SimApplication/GammaPhysics.h"
 #include "SimApplication/PrimaryGeneratorAction.h"
 #include "SimApplication/PrimaryGeneratorMessenger.h"
 #include "SimApplication/RootPersistencyMessenger.h"
@@ -33,6 +34,7 @@ void RunManager::InitializePhysics() {
     G4VModularPhysicsList* modularPhysicsList = dynamic_cast<G4VModularPhysicsList*>(thePhysicsList);
 
     modularPhysicsList->RegisterPhysics(new APrimePhysics);
+    modularPhysicsList->RegisterPhysics(new GammaPhysics);
     //modularPhysicsList->RegisterPhysics(new TungstenIonPhysics);
 
     SetUserInitialization(thePhysicsList);
