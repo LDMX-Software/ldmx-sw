@@ -55,20 +55,20 @@ void RootPersistencyManager::buildEvent(const G4Event* anEvent,Event* outputEven
     // Set basic event information.
     writeHeader(anEvent, outputEvent);
 
-    // Copy hit objects from SD hit collections into the output event.
-    writeHitsCollections(anEvent, outputEvent);
-
     // Set pointer to current G4Event.
     simParticleBuilder_.setCurrentEvent(anEvent);
 
     // Build the SimParticle list for the output ROOT event.
     simParticleBuilder_.buildSimParticles(outputEvent);
 
+    // Copy hit objects from SD hit collections into the output event.
+    writeHitsCollections(anEvent, outputEvent);
+
     // Assign SimParticle objects to SimTrackerHits.
     simParticleBuilder_.assignTrackerHitSimParticles();
 
     // Assign SimParticle objects to SimCalorimeterHits.
-    simParticleBuilder_.assignCalorimeterHitSimParticles();
+    //simParticleBuilder_.assignCalorimeterHitSimParticles();
 }
 
 void RootPersistencyManager::printEvent(Event* outputEvent) {
@@ -165,7 +165,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event*
             // Perform readout to write out ECal hits collection.
             if (collName == EventConstants::ECAL_SIM_HITS) {
                 G4CalorimeterHitsCollection* ecalHitsColl = dynamic_cast<G4CalorimeterHitsCollection*>(hc);
-                ecalHitIO_->writeHitsCollection(ecalHitsColl, outputColl);
+                ecalHitIO_->writeHitsCollection(ecalHitsColl, outputColl, &this->simParticleBuilder_);
             // Handle generically other calorimeter hit collections.
             } else {
                 for (int iHit = 0; iHit < nHits; iHit++) {
