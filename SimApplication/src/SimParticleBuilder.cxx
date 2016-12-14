@@ -6,7 +6,6 @@
 #include "Event/RootEventWriter.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
-#include "SimApplication/TrajectoryContainer.h"
 
 // Geant4
 #include "G4SystemOfUnits.hh"
@@ -30,7 +29,6 @@ SimParticleBuilder::~SimParticleBuilder() {
 
 void SimParticleBuilder::buildSimParticles(Event* outputEvent) {
 
-    particleMap_.clear();
 
     TrajectoryContainer* trajectories;
     if (currentEvent_->GetTrajectoryContainer() != nullptr) {
@@ -40,15 +38,16 @@ void SimParticleBuilder::buildSimParticles(Event* outputEvent) {
     }
 
     TClonesArray* coll = outputEvent->getCollection(EventConstants::SIM_PARTICLES);
-    for (int iTraj = 0; iTraj < trajectories->entries(); iTraj++) {
-        SimParticle* simParticle = (SimParticle*) coll->ConstructedAt(coll->GetEntries());
-        Trajectory* traj = (Trajectory*)(*trajectories)[iTraj];
-        buildSimParticle(simParticle, traj);
-        particleMap_[traj->GetTrackID()] = simParticle;
+    buildParticleMap(trajectories, coll); 
+    for (auto trajectory : *trajectories->GetVector()) { 
+        buildSimParticle(static_cast<Trajectory*>(trajectory));
     }
 }
 
-void SimParticleBuilder::buildSimParticle(SimParticle* simParticle, Trajectory* traj) {
+//void SimParticleBuilder::buildSimParticle(SimParticle* simParticle, Trajectory* traj) {
+void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
+
+    SimParticle* simParticle = particleMap_[traj->GetTrackID()];
 
     simParticle->setGenStatus(traj->getGenStatus());
     simParticle->setPdgID(traj->GetPDGEncoding());
@@ -73,9 +72,18 @@ void SimParticleBuilder::buildSimParticle(SimParticle* simParticle, Trajectory* 
             simParticle->addParent(parent);
             parent->addDaughter(simParticle);
         } else {
-            std::cerr << "WARNING: SimParticle with parent ID " << traj->GetParentID()
-                << " not found for track ID " << traj->GetTrackID() << std::endl;
+            std::cerr << "[ SimParticleBuilder ]: WARNING: SimParticle with parent ID " 
+                      << traj->GetParentID() << " not found for track ID " 
+                      << traj->GetTrackID() << std::endl;
         }
+    }
+}
+
+void SimParticleBuilder::buildParticleMap(TrajectoryContainer* trajectories, TClonesArray* simParticleColl) { 
+    particleMap_.clear();
+    for (auto trajectory : *trajectories->GetVector()) { 
+        particleMap_[trajectory->GetTrackID()] 
+            = (SimParticle*) simParticleColl->ConstructedAt(simParticleColl->GetEntries());
     }
 }
 
