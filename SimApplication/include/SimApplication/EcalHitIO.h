@@ -10,9 +10,10 @@
 
 // LDMX
 #include "DetDescr/EcalDetectorID.h"
+#include "DetDescr/EcalHexReadout.h"
 #include "Event/SimCalorimeterHit.h"
 #include "SimApplication/G4CalorimeterHit.h"
-#include "DetDescr/EcalHexReadout.h"
+#include "SimApplication/SimParticleBuilder.h"
 
 // ROOT
 #include "TClonesArray.h"
@@ -21,9 +22,9 @@
 #include <utility>
 
 using detdescr::EcalDetectorID;
+using detdescr::EcalHexReadout;
 using event::SimCalorimeterHit;
 using sim::G4CalorimeterHitsCollection;
-using detdescr::EcalHexReadout;
 
 namespace sim {
 
@@ -36,21 +37,18 @@ class EcalHitIO {
 
         /**
          * Write out a Geant4 hits collection to the provided ROOT array.
+         * @param hc The input hits collection.
+         * @param outputColl The output collection in ROOT.
+         * @param simParticleBuilder The sim particle builder for getting sim particles from track ID.
          */
-        void writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl);
-
-    private:
-
-        /**
-         * Make a layer-cell pair from a hit.
-         */
-        LayerCellPair hitToPair(G4CalorimeterHit* g4hit);
+        void writeHitsCollection(G4CalorimeterHitsCollection* hc,
+                TClonesArray* outputColl,
+                SimParticleBuilder* simParticleBuilder);
 
     private:
 
         EcalHexReadout* hexReadout = new EcalHexReadout();
         EcalDetectorID detID;
-        std::map<LayerCellPair, int> ecalReadoutMap;
 
 };
 

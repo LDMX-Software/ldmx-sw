@@ -14,6 +14,13 @@ class SimCalorimeterHit: public TObject {
 
     public:
 
+        struct Contrib {
+            SimParticle* particle{nullptr};
+            int pdgCode{0};
+            float edep{0};
+            float time{0};
+        };
+
         SimCalorimeterHit();
 
         virtual ~SimCalorimeterHit();
@@ -64,6 +71,14 @@ class SimCalorimeterHit: public TObject {
             this->simParticle_ = simParticle;
         }
 
+        unsigned getNumberOfContribs() {
+            return nContribs;
+        }
+
+        void addContrib(SimParticle* simParticle, int pdgCode, float edep, float time);
+
+        Contrib getContrib(int i);
+
     private:
 
         int id_{0};
@@ -73,9 +88,15 @@ class SimCalorimeterHit: public TObject {
         float z_{0};
         float time_{0};
 
+        TRefArray* simParticleContribs_;
+        std::vector<int> pdgCodeContribs_;
+        std::vector<float> edepContribs_;
+        std::vector<float> timeContribs_;
+        unsigned nContribs{0};
+
         TRef simParticle_{nullptr};
 
-    ClassDef(SimCalorimeterHit, 1)
+    ClassDef(SimCalorimeterHit, 2)
 };
 
 }
