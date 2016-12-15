@@ -17,50 +17,70 @@ using detdescr::DetectorID;
 using detdescr::EcalDetectorID;
 using detdescr::EcalHexReadout;
 
+typedef std::pair<int, int>   layer_cell_pair;
 
+typedef std::pair<int, float> cell_energy_pair;
 
 namespace eventproc {
 
-
 class EcalVetoProcessor : public EventProcessor {
 
-public:
-    typedef std::pair<int, int>   layer_cell_pair;
+    public:
 
-    typedef std::pair<int, float> cell_energy_pair;
+        /** Constuctor */
+        EcalVetoProcessor(TTree* outputTree);
 
-    EcalVetoProcessor(TTree* outputTree_,bool verbose_ = false) :
-        outputTree(outputTree_),
-        verbose(verbose_){};
+        /** Destructor */
+        ~EcalVetoProcessor(); 
 
-    void initialize();
+        void initialize();
 
-    void execute();
+        void execute();
 
-    void finish();
+        void finish();
 
- private:
+    private:
 
-    TTree* outputTree;
-    TRandom2 *noiseInjector;
-    std::vector<float> *EcalLayerEdepRaw_,*EcalLayerEdepReadout_,
-    *EcalLayerTime_,*EcalLayerIsoRaw_,*EcalLayerIsoReadout_,
-    *EcalHitId_,*EcalHitLayer_,*EcalHitDep_,*EcalHitNoise_;
-    bool verbose,doesPassVeto;
-    EcalDetectorID* detID;
-    EcalHexReadout* hexReadout;
-    static const int numEcalLayers,numLayersForMedCal,backEcalStartingLayer;
-    static const float meanNoise,readoutThreshold,
-    totalDepCut,totalIsoCut,backEcalCut,ratioCut;
+        EcalDetectorID* detID{new EcalDetectorID};
+        EcalHexReadout* hexReadout{new EcalHexReadout};
+        TTree* outputTree_{nullptr};
+        TRandom2 *noiseInjector{new TRandom2{0}};
 
-    inline layer_cell_pair hitToPair(SimCalorimeterHit* hit){
-        int detIDraw = hit->getID();
-        detID->setRawValue(detIDraw);
-        detID->unpack();
-        int layer = detID->getFieldValue("layer");
-        int cellid = detID->getFieldValue("cell");
-        return (std::make_pair(layer, cellid));
-    };
+        static constexpr int numEcalLayers{40};
+
+        // TODO: Most of these should be settable and not constant.
+        static const float meanNoise;
+        static const float readoutThreshold;
+        static const float totalDepCut;
+        static const float totalIsoCut;
+        static const float backEcalCut; 
+        static const float ratioCut;
+        static const int numLayersForMedCal;
+        static const int backEcalStartingLayer;
+
+        std::vector<float> ecalLayerEdepRaw_{numEcalLayers, 0.0};
+        std::vector<float> ecalLayerEdepReadout_{numEcalLayers, 0.0};
+        std::vector<float> ecalLayerTime_{numEcalLayers, 0.0};
+        std::vector<float> ecalLayerIsoRaw_{numEcalLayers, 0.0};
+        std::vector<float> ecalLayerIsoReadout_{numEcalLayers, 0.0};
+
+        std::vector<float> ecalHitId_;
+        std::vector<float> ecalHitLayer_;
+        std::vector<float> ecalHitDep_;
+        std::vector<float> ecalHitNoise_;
+
+        bool verbose; 
+        bool doesPassVeto;
+
+
+        inline layer_cell_pair hitToPair(SimCalorimeterHit* hit){
+            int detIDraw = hit->getID();
+            detID->setRawValue(detIDraw);
+            detID->unpack();
+            int layer = detID->getFieldValue("layer");
+            int cellid = detID->getFieldValue("cell");
+            return (std::make_pair(layer, cellid));
+        };
 
 };
 
