@@ -38,7 +38,8 @@ class EcalSD : public CalorimeterSD {
         G4ThreeVector getHitPosition(G4Step*);
 
     private:
-        EcalHexReadout* hitMap;
+        EcalHexReadout* hitMap_;
+        std::map<G4VSolid*, G4Polyhedron*> polyMap_;
 };
 
 }
