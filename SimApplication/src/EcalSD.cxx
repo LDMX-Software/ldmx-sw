@@ -22,8 +22,7 @@ using detdescr::EcalHexReadout;
 namespace sim {
 
 EcalSD::EcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID ) :
-		CalorimeterSD(name, theCollectionName, subdetID, detID) {
-    hitMap = new EcalHexReadout();
+		CalorimeterSD(name, theCollectionName, subdetID, detID), hitMap_(new EcalHexReadout) {
 }
 
 EcalSD::~EcalSD() {;}
@@ -63,7 +62,7 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
     // Create the ID for the hit.
     int layerNumber = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth_)->GetCopyNo();
-    int cellID = hitMap->getCellId(hitPosition[0], hitPosition[1]);
+    int cellID = hitMap_->getCellId(hitPosition[0], hitPosition[1]);
     detID_->setFieldValue(1, layerNumber);
     detID_->setFieldValue(2, cellID);
     hit->setID(detID_->pack());
@@ -102,7 +101,14 @@ G4ThreeVector EcalSD::getHitPosition(G4Step* aStep) {
 
     // Get the solid from this step.
     G4VSolid* solid = prePoint->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetSolid();
-    G4Polyhedron* poly = solid->CreatePolyhedron();
+    auto it = polyMap_.find(solid);
+    G4Polyhedron* poly;
+    if (it == polyMap_.end()) {
+        poly = solid->CreatePolyhedron();
+        polyMap_[solid] = poly;
+    } else {
+        poly = polyMap_[solid];
+    }
 
     /**
      * Use facet info of the solid for setting Z to the sensor midpoint.
