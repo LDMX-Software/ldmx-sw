@@ -29,13 +29,13 @@ class Event: public TObject {
 
         void Clear(Option_t* = "");
 
-        int getEventNumber() { return eventNumber_; }
+        int getEventNumber() const { return eventNumber_; }
 
-        int getRun() { return run_; }
+        int getRun() const { return run_; }
 
-        int getTimestamp() { return timestamp_; }
+        int getTimestamp() const { return timestamp_; }
         
-        double getWeight() { return weight_; }
+        double getWeight() const { return weight_; }
 
         void setEventNumber(int eventNumber) { this->eventNumber_ = eventNumber; }
 
@@ -49,7 +49,7 @@ class Event: public TObject {
             return collMap_[collectionName];
         }
 
-        const CollectionMap& getCollectionMap() {
+        const CollectionMap& getCollectionMap() const {
             return collMap_;
         }
 
@@ -62,9 +62,9 @@ class Event: public TObject {
          * Concrete sub-classes must implement this method to return a string
          * with the class name of the event type e.g. "event::SimEvent".
          */
-        virtual const char* getEventType() = 0;
+        virtual const std::string& getEventType() = 0;
 
-    private:
+    protected:
 
         int eventNumber_{-1};
         int run_{-1};
