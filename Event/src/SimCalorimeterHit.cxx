@@ -18,8 +18,21 @@ SimCalorimeterHit::~SimCalorimeterHit() {
 }
 
 void SimCalorimeterHit::Clear(Option_t *option) {
+
     TObject::Clear();
+
     simParticleContribs_->Delete();
+    pdgCodeContribs_.clear();
+    edepContribs_.clear();
+    timeContribs_.clear();
+
+    nContribs_ = 0;
+    id_ = 0;
+    edep_ = 0;
+    x_ = 0;
+    y_ = 0;
+    z_ = 0;
+    time_ = 0;
 }
 
 void SimCalorimeterHit::Print(Option_t *option) const {
@@ -36,7 +49,7 @@ void SimCalorimeterHit::addContrib(SimParticle* simParticle, int pdgCode, float 
     if (time < time_ || time_ == 0) {
         time_ = time;
     }
-    ++nContribs;
+    ++nContribs_;
 }
 
 SimCalorimeterHit::Contrib SimCalorimeterHit::getContrib(int i) {
