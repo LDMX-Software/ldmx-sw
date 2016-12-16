@@ -24,6 +24,20 @@ void SimTrackerHit::Print(Option_t *option) const {
 
 void SimTrackerHit::Clear(Option_t*) {
     TObject::Clear();
+
+    id_ = 0;
+    layerID_ = 0;
+    edep_ = 0;
+    time_ = 0;
+    px_ = 0;
+    py_ = 0;
+    pz_ = 0;
+    x_ = 0;
+    y_ = 0;
+    z_ = 0;
+    pathLength_ = 0;
+
+    simParticle_.SetObject(nullptr);
 }
 
 SimParticle* SimTrackerHit::getSimParticle() const {
