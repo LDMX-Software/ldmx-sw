@@ -35,20 +35,29 @@ class EcalHitIO {
 
     public:
 
+        EcalHitIO(SimParticleBuilder* simParticleBuilder);
+
+        ~EcalHitIO() {;}
+
         /**
          * Write out a Geant4 hits collection to the provided ROOT array.
          * @param hc The input hits collection.
          * @param outputColl The output collection in ROOT.
-         * @param simParticleBuilder The sim particle builder for getting sim particles from track ID.
+         * @param simParticleBuilder_ The sim particle builder for getting sim particles from track ID.
          */
         void writeHitsCollection(G4CalorimeterHitsCollection* hc,
-                TClonesArray* outputColl,
-                SimParticleBuilder* simParticleBuilder);
+                TClonesArray* outputColl);
 
     private:
 
-        EcalHexReadout* hexReadout = new EcalHexReadout();
-        EcalDetectorID detID;
+        /** Access to SimParticle list. */
+        SimParticleBuilder* simParticleBuilder_;
+
+        /** Hex cell readout. */
+        EcalHexReadout hexReadout_;
+
+        /** ECal detector ID. */
+        EcalDetectorID detID_;
 
 };
 
