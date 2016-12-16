@@ -131,7 +131,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event*
             G4Exception("RootPersistencyManager::writeHitsCollections",
                     "",
                     FatalException,
-                    "The output collection " + std::string(collName).c_str() + " was not found.");
+                    "The output collection was not found.");
         }
 
         if (dynamic_cast<G4TrackerHitsCollection*>(hc) != nullptr) {
