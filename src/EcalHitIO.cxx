@@ -11,7 +11,11 @@ using event::SimParticle;
 
 namespace sim {
 
-void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl, SimParticleBuilder* simParticleBuilder) {
+EcalHitIO::EcalHitIO(SimParticleBuilder* simParticleBuilder)
+    : simParticleBuilder_(simParticleBuilder) {
+}
+
+void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl) {
 
     int nHits = hc->GetSize();
 
@@ -39,26 +43,23 @@ void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArra
              * Assign XY position to the hit using the ECal hex readout.
              * Z position is set from the original hit, which should be the middle of the sensor.
              */
-            detID.setRawValue(hitID);
-            detID.unpack();
-            int cellID = detID.getFieldValue("cell");
-            std::pair<float,float> XYPair = hexReadout->getCellCentroidXYPair(cellID);
+            detID_.setRawValue(hitID);
+            detID_.unpack();
+            int cellID = detID_.getFieldValue("cell");
+            std::pair<float,float> XYPair = hexReadout_.getCellCentroidXYPair(cellID);
             simHit->setPosition(XYPair.first, XYPair.second, g4hit->getPosition().z());
 
             hitMap[hitID] = simHit;
 
-            //std::cout << "created new hit with id " << hitID << std::endl;
-
         } else {
+            // Get existing hit from map.
             simHit = hitMap[hitID];
-
-            //std::cout << "found existing hit with id " << hitID << std::endl;
         }
 
         // Add hit contribution.
         float edep = g4hit->getEdep();
         float time = g4hit->getTime();
-        SimParticle* simParticle = simParticleBuilder->findSimParticle(g4hit->getTrackID());
+        SimParticle* simParticle = simParticleBuilder_->findSimParticle(g4hit->getTrackID());
         int pdgCode = g4hit->getPdgCode();
         simHit->addContrib(simParticle, pdgCode, edep, time);
     }
