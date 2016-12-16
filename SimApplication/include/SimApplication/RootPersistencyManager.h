@@ -12,9 +12,10 @@
 #include "G4Run.hh"
 
 // LDMX
-#include "Event/SimEvent.h"
 #include "Event/RootEventWriter.h"
+#include "Event/SimEvent.h"
 #include "SimApplication/EcalHitIO.h"
+#include "SimApplication/G4TrackerHit.h"
 #include "SimApplication/SimParticleBuilder.h"
 
 using detdescr::DetectorID;
@@ -109,6 +110,16 @@ class RootPersistencyManager : public G4PersistencyManager {
          */
         void writeHitsCollections(const G4Event* anEvent, Event* outputEvent);
         
+        /**
+         * Write a collection of tracker hits to an output collection.
+         */
+        void writeTrackerHitsCollection(G4TrackerHitsCollection* hc, TClonesArray* outputColl);
+
+        /**
+         * Write a collection of tracker hits to an output collection.
+         */
+        void writeCalorimeterHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl);
+
         /**
          * Print out event info and data depending on the verbose level.
          */
