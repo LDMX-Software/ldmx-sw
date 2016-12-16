@@ -2,7 +2,6 @@
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
       
   <define>
-    
     <!-- define center position and identity rotation -->
     <position name="center" x="0" y="0" z="0"/>
     <rotation name="identity" x="0" y="0" z="0"/>
@@ -35,9 +34,9 @@
         
     <!-- distance from target to ecal face -->
     <constant name="ecal_front_z" value="20.0*cm"/>
-    
+
     <!-- position of calorimeter mother -->
-    <constant name="calorimeter_thickness" value="3294.0*mm"/>
+    <constant name="calorimeter_thickness" value="3501.0*mm"/>
     <constant name="calorimeter_pos_z" value="ecal_front_z + calorimeter_thickness/2"/>
         
     <!-- define all subdetector positions using above Z values -->
