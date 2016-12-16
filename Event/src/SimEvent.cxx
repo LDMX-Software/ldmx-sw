@@ -24,4 +24,18 @@ SimEvent::SimEvent() :
     collMap_[EventConstants::TARGET_SIM_HITS] = targetSimHits_;
 }
 
+void SimEvent::Print(Option_t*) const {
+    std::cout << std::endl;
+    std::cout << "SimEvent " << eventNumber_ << std::endl;
+    std::cout << "  " << EventConstants::SIM_PARTICLES << " : "        << simParticles_->GetEntries() << std::endl;
+    std::cout << "  " << EventConstants::RECOIL_SIM_HITS << " : "      << recoilSimHits_->GetEntries() << std::endl;
+    std::cout << "  " << EventConstants::TAGGER_SIM_HITS << " : "      << taggerSimHits_->GetEntries() << std::endl;
+    std::cout << "  " << EventConstants::ECAL_SIM_HITS << " : "        << ecalSimHits_->GetEntries() << std::endl;
+    std::cout << "  " << EventConstants::HCAL_SIM_HITS << " : "        << hcalSimHits_->GetEntries() << std::endl;
+    std::cout << "  " << EventConstants::TRIGGER_PAD_SIM_HITS << " : " << triggerPadSimHits_->GetEntries() << std::endl;
+    std::cout << "  " << EventConstants::TARGET_SIM_HITS << " : "      << targetSimHits_->GetEntries() << std::endl;
+    std::cout << std::endl;
+}
+
+
 }
