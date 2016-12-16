@@ -14,6 +14,10 @@ class SimCalorimeterHit: public TObject {
 
     public:
 
+        /**
+         * Information about a contribution to the hit
+         * from a step in the associated cell.
+         */
         struct Contrib {
             SimParticle* particle{nullptr};
             int pdgCode{0};
@@ -33,28 +37,20 @@ class SimCalorimeterHit: public TObject {
             return id_;
         }
 
-        float getEdep() {
-            return edep_;
-        }
-
-        std::vector<float> getPosition() const {
-            return {x_, y_, z_};
-        }
-
-        float getTime() {
-            return time_;
-        }
-
-        SimParticle* getSimParticle() {
-            return (SimParticle*) simParticle_.GetObject();
-        }
-
         void setID(const int id) {
             this->id_ = id;
         }
 
+        float getEdep() {
+            return edep_;
+        }
+
         void setEdep(const float edep) {
             this->edep_ = edep;
+        }
+
+        std::vector<float> getPosition() const {
+            return {x_, y_, z_};
         }
 
         void setPosition(const float x, const float y, const float z) {
@@ -63,16 +59,16 @@ class SimCalorimeterHit: public TObject {
             this->z_ = z;
         }
 
+        float getTime() {
+            return time_;
+        }
+
         void setTime(const float time) {
             this->time_ = time;
         }
 
-        void setSimParticle(SimParticle* simParticle) {
-            this->simParticle_ = simParticle;
-        }
-
         unsigned getNumberOfContribs() {
-            return nContribs;
+            return nContribs_;
         }
 
         void addContrib(SimParticle* simParticle, int pdgCode, float edep, float time);
@@ -92,9 +88,7 @@ class SimCalorimeterHit: public TObject {
         std::vector<int> pdgCodeContribs_;
         std::vector<float> edepContribs_;
         std::vector<float> timeContribs_;
-        unsigned nContribs{0};
-
-        TRef simParticle_{nullptr};
+        unsigned nContribs_{0};
 
     ClassDef(SimCalorimeterHit, 2)
 };
