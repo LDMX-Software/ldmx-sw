@@ -29,12 +29,14 @@ SimParticleBuilder::~SimParticleBuilder() {
 
 void SimParticleBuilder::buildSimParticles(Event* outputEvent) {
 
-
     TrajectoryContainer* trajectories;
     if (currentEvent_->GetTrajectoryContainer() != nullptr) {
         trajectories = (TrajectoryContainer*)(const_cast<G4Event*>(currentEvent_))->GetTrajectoryContainer();
     } else {
-        throw std::runtime_error("Trajectory container for the event is null!");
+        G4Exception("SimParticleBuilder::buildSimParticles",
+                "",
+                FatalException,
+                "TrajectoryContainer for the event is null.");
     }
 
     TClonesArray* coll = outputEvent->getCollection(EventConstants::SIM_PARTICLES);
@@ -44,10 +46,18 @@ void SimParticleBuilder::buildSimParticles(Event* outputEvent) {
     }
 }
 
-//void SimParticleBuilder::buildSimParticle(SimParticle* simParticle, Trajectory* traj) {
 void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
 
     SimParticle* simParticle = particleMap_[traj->GetTrackID()];
+
+    if (!simParticle) {
+        std::cerr << "SimParticle not found for Trajectory with track ID "
+                << traj->GetTrackID() << std::endl;
+        G4Exception("SimParticleBuilder::buildSimParticle",
+                "",
+                FatalException,
+                "SimParticle not found for Trajectory.");
+    }
 
     simParticle->setGenStatus(traj->getGenStatus());
     simParticle->setPdgID(traj->GetPDGEncoding());
@@ -93,60 +103,6 @@ SimParticle* SimParticleBuilder::findSimParticle(G4int trackID) {
         return particleMap_[traj->GetTrackID()];
     } else {
         return NULL;
-    }
-}
-
-void SimParticleBuilder::assignTrackerHitSimParticles() {
-    G4HCofThisEvent* hce = currentEvent_->GetHCofThisEvent();
-    int nColl = hce->GetNumberOfCollections();
-    for (int iColl = 0; iColl < nColl; iColl++) {
-        G4VHitsCollection* hitsColl = hce->GetHC(iColl);
-        G4TrackerHitsCollection* trackerHits = dynamic_cast<G4TrackerHitsCollection*>(hitsColl);
-        if (trackerHits != NULL) {
-            int nHits = trackerHits->GetSize();
-            for (int iHit = 0; iHit < nHits; iHit++) {
-                G4TrackerHit* hit = (G4TrackerHit*) trackerHits->GetHit(iHit);
-                int trackID = hit->getTrackID();
-                if (trackID > 0) {
-                    SimParticle* simParticle = findSimParticle(trackID);
-                    if (simParticle != NULL) {
-                        hit->getSimTrackerHit()->setSimParticle(simParticle);
-                    } else {
-                        std::cerr << "WARNING: Failed to find SimParticle for SimTrackerHit with track ID " << trackID << std::endl;
-                    }
-                }
-            }
-        }
-    }
-}
-
-void SimParticleBuilder::assignCalorimeterHitSimParticles() {
-    G4HCofThisEvent* hce = currentEvent_->GetHCofThisEvent();
-    int nColl = hce->GetNumberOfCollections();
-    for (int iColl = 0; iColl < nColl; iColl++) {
-        G4VHitsCollection* hitsColl = hce->GetHC(iColl);
-        std::string collName = hitsColl->GetName();
-        G4CalorimeterHitsCollection* calHits = dynamic_cast<G4CalorimeterHitsCollection*>(hitsColl);
-        if (calHits != NULL) {
-            int nHits = calHits->GetSize();
-            for (int iHit = 0; iHit < nHits; iHit++) {
-                G4CalorimeterHit* hit = (G4CalorimeterHit*) calHits->GetHit(iHit);
-                int trackID = hit->getTrackID();
-                if (trackID > 0 ) {
-                    SimParticle* simParticle = findSimParticle(trackID);
-
-                    // Found SimParticle for the hit's track ID?
-                    if (simParticle) {
-                        // Only update if hit got its own SimCalorimeterHit.
-                        if (hit->getSimCalorimeterHit()) {
-                            hit->getSimCalorimeterHit()->setSimParticle(simParticle);
-                        }
-                    } else {
-                        std::cerr << "WARNING: Failed to find SimParticle for SimCalorimeterHit with track ID " << trackID << std::endl;
-                    }
-                }
-            }
-        }
     }
 }
 
