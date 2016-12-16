@@ -18,7 +18,7 @@ namespace sim {
 RootPersistencyManager::RootPersistencyManager() :
         G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"),
         writer_(new RootEventWriter("ldmx_sim_events.root", new SimEvent)),
-        ecalHitIO_(new EcalHitIO) {
+        ecalHitIO_(new EcalHitIO(&simParticleBuilder_)) {
     G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
     G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this,"RootPersistencyManager");
 }
@@ -63,29 +63,14 @@ void RootPersistencyManager::buildEvent(const G4Event* anEvent,Event* outputEven
 
     // Copy hit objects from SD hit collections into the output event.
     writeHitsCollections(anEvent, outputEvent);
-
-    // Assign SimParticle objects to SimTrackerHits.
-    simParticleBuilder_.assignTrackerHitSimParticles();
-
-    // Assign SimParticle objects to SimCalorimeterHits.
-    //simParticleBuilder_.assignCalorimeterHitSimParticles();
 }
 
 void RootPersistencyManager::printEvent(Event* outputEvent) {
 
     // verbose level 2
     if (m_verbose > 1) {
-        // Print event number and collection sizes.
-        std::cout << std::endl;
-        std::cout << "Wrote event " << outputEvent->getEventNumber() << std::endl;
-        std::cout << EventConstants::SIM_PARTICLES << ": " << outputEvent->getCollection(EventConstants::SIM_PARTICLES)->GetEntries() << std::endl;
-        std::cout << EventConstants::RECOIL_SIM_HITS << ": "  << outputEvent->getCollection(EventConstants::RECOIL_SIM_HITS)->GetEntries() << std::endl;
-        std::cout << EventConstants::TAGGER_SIM_HITS << ": " << outputEvent->getCollection(EventConstants::TAGGER_SIM_HITS)->GetEntries() << std::endl;
-        std::cout << EventConstants::ECAL_SIM_HITS << ": " << outputEvent->getCollection(EventConstants::ECAL_SIM_HITS)->GetEntries() << std::endl;
-        std::cout << EventConstants::HCAL_SIM_HITS << ": " << outputEvent->getCollection(EventConstants::HCAL_SIM_HITS)->GetEntries() << std::endl;
-        std::cout << EventConstants::TRIGGER_PAD_SIM_HITS << ": " << outputEvent->getCollection(EventConstants::TRIGGER_PAD_SIM_HITS)->GetEntries() << std::endl;
-        std::cout << EventConstants::TARGET_SIM_HITS << ": " << outputEvent->getCollection(EventConstants::TARGET_SIM_HITS)->GetEntries() << std::endl;
-        std::cout << std::endl;
+        // Print output event collection sizes.
+        outputEvent->Print();
     }
 
     // verbose level 3
@@ -123,58 +108,91 @@ void RootPersistencyManager::writeHeader(const G4Event* anEvent, Event* outputEv
 
 void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event* outputEvent) {
 
+    // Get the HC of this event.
     G4HCofThisEvent* hce = anEvent->GetHCofThisEvent();
     if (hce == nullptr) {
         throw std::runtime_error("The HCE of this event is null!");
     }
-
     int nColl = hce->GetNumberOfCollections();
 
     // Loop over all hits collections.
     for (int iColl = 0; iColl < nColl; iColl++) {
 
-        // Get basic info about the current collection.
+        // Get a hits collection and its name.
         G4VHitsCollection* hc = hce->GetHC(iColl);
         std::string collName = hc->GetName();
-        int nHits = hc->GetSize();
 
         // Get the target output collection.
         TClonesArray* outputColl = outputEvent->getCollection(hc->GetName());
 
-        // If output collection is not found, a fatal error occurs!
+        // If the collection is not found in the output ROOT event, then a fatal error occurs!
         if (!outputColl) {
             std::cerr << "ERROR: The output collection " << collName << " was not found!" << std::endl;
             G4Exception("RootPersistencyManager::writeHitsCollections",
                     "",
                     FatalException,
-                    "The output collection was not found.");
+                    "The output collection " + std::string(collName).c_str() + " was not found.");
         }
 
-        // Handle tracker hit collections.
         if (dynamic_cast<G4TrackerHitsCollection*>(hc) != nullptr) {
 
-            // Handle generically the tracker hits by copying data from the G4 hits.
-            for (int iHit = 0; iHit < nHits; iHit++) {
-                G4TrackerHit* g4hit = (G4TrackerHit*) hc->GetHit(iHit);
-                SimTrackerHit* simHit = (SimTrackerHit*) outputColl->ConstructedAt(outputColl->GetEntries());
-                g4hit->setSimTrackerHit(simHit); /* copy data from G4 hit to sim hit */
+            // Write G4TrackerHit collection to output SimTrackerHit collection.
+            G4TrackerHitsCollection* trackerHitsColl = dynamic_cast<G4TrackerHitsCollection*>(hc);
+            writeTrackerHitsCollection(trackerHitsColl, outputColl);
 
-            }
-        // Handle calorimeter hit collections.
         } else if (dynamic_cast<G4CalorimeterHitsCollection*>(hc) != nullptr) {
-            // Perform readout to write out ECal hits collection.
+
+            G4CalorimeterHitsCollection* calHitsColl = dynamic_cast<G4CalorimeterHitsCollection*>(hc);
+
             if (collName == EventConstants::ECAL_SIM_HITS) {
-                G4CalorimeterHitsCollection* ecalHitsColl = dynamic_cast<G4CalorimeterHitsCollection*>(hc);
-                ecalHitIO_->writeHitsCollection(ecalHitsColl, outputColl, &this->simParticleBuilder_);
-            // Handle generically other calorimeter hit collections.
+
+                // Write ECal G4CalorimeterHit collection to output SimCalorimeterHit collection using helper class.
+                ecalHitIO_->writeHitsCollection(calHitsColl, outputColl);
+
             } else {
-                for (int iHit = 0; iHit < nHits; iHit++) {
-                    G4CalorimeterHit* g4hit = (G4CalorimeterHit*) hc->GetHit(iHit);
-                    SimCalorimeterHit* simHit = (SimCalorimeterHit*) outputColl->ConstructedAt(outputColl->GetEntries());
-                    g4hit->updateSimCalorimeterHit(simHit); /* copy data from G4 hit to sim hit */
-                }
+
+                // Write generic G4CalorimeterHit collection to output SimCalorimeterHit collection.
+                writeCalorimeterHitsCollection(calHitsColl, outputColl);
             }
         }
+    }
+}
+
+void RootPersistencyManager::writeTrackerHitsCollection(G4TrackerHitsCollection* hc, TClonesArray* outputColl) {
+    int nHits = hc->GetSize();
+    for (int iHit = 0; iHit < nHits; iHit++) {
+        G4TrackerHit* g4hit = (G4TrackerHit*) hc->GetHit(iHit);
+        SimTrackerHit* simTrackerHit = (SimTrackerHit*) outputColl->ConstructedAt(outputColl->GetEntries());
+        simTrackerHit->setID(g4hit->getID());
+        simTrackerHit->setLayerID(g4hit->getLayerID());
+        simTrackerHit->setEdep(g4hit->getEdep());
+        simTrackerHit->setTime(g4hit->getTime());
+        const G4ThreeVector& momentum = g4hit->getMomentum();
+        simTrackerHit->setMomentum(
+                momentum.x(),
+                momentum.y(),
+                momentum.z());
+        const G4ThreeVector& position = g4hit->getPosition();
+        simTrackerHit->setPosition(
+                position.x(),
+                position.y(),
+                position.z());
+        simTrackerHit->setPathLength(g4hit->getPathLength());
+        SimParticle* simParticle = simParticleBuilder_.findSimParticle(g4hit->getTrackID());
+        simTrackerHit->setSimParticle(simParticle);
+    }
+}
+
+void RootPersistencyManager::writeCalorimeterHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl) {
+    int nHits = hc->GetSize();
+    for (int iHit = 0; iHit < nHits; iHit++) {
+        G4CalorimeterHit* g4hit = (G4CalorimeterHit*) hc->GetHit(iHit);
+        SimCalorimeterHit* simHit = (SimCalorimeterHit*) outputColl->ConstructedAt(outputColl->GetEntries());
+        simHit->setID(g4hit->getID());
+        const G4ThreeVector& pos = g4hit->getPosition();
+        simHit->setPosition(pos.x(), pos.y(), pos.z());
+        SimParticle* particle = simParticleBuilder_.findSimParticle(g4hit->getTrackID());
+        simHit->addContrib(particle, g4hit->getPdgCode(), g4hit->getEdep(), g4hit->getTime());
     }
 }
 
