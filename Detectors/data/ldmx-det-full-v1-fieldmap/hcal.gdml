@@ -277,7 +277,7 @@
           <position name="back_hcal_SSteel_pos" unit="mm" x="0" y="0" z="Back_HCal_start+x*back_layer_width"/>
         </physvol>
   
-        <physvol name="back_hcal_Scintillator_physvol">
+        <physvol name="back_hcal_Scintillator_physvol" copynumber="x">
           <volumeref ref="back_hcal_Scintillator_volume"/>
           <position name="back_hcal_Scintillator_pos" unit="mm" x="0" y="0" z="Back_HCal_start+back_steel_dz/2.+back_scint_dz/2.+back_air_dz+x*(back_layer_width)"/>
         </physvol>
