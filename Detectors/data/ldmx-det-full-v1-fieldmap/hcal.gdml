@@ -51,7 +51,7 @@
     <isotope N="12" Z="6" name="C12">
       <atom unit="g/mole" value="12"/>
     </isotope>
-575    <isotope N="13" Z="6" name="C13">
+    <isotope N="13" Z="6" name="C13">
       <atom unit="g/mole" value="13.0034"/>
     </isotope>
     <element name="C">
