@@ -1,31 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
-  <define>
-    <!-- Back HCal Layer component widths -->
-    <variable name="x" value="0"/>  
-    <variable name="back_hcal_dx" value="3100."/>
-    <variable name="back_hcal_dy" value="3100."/>
-    <variable name="back_steel_dz" value="50."/>
-    <variable name="back_scint_dz" value="6."/>
-    <variable name="back_air_dz" value="2."/>
-    <variable name="back_layer_width" value="back_steel_dz+back_scint_dz+2.*back_air_dz"/>
-    <variable name="back_hcal_layers" value="15"/>
-
-    <!-- Wrap HCal Layer component widths -->
-    <variable name="wrap_hcal_dx" value="276."/>
-    <variable name="wrap_hcal_dy" value="500."/>
-    <variable name="wrap_steel_dz" value="50."/>
-    <variable name="wrap_scint_dz" value="6."/>
-    <variable name="wrap_air_dz" value="2."/>
-    <variable name="wrap_layer_width" value="wrap_steel_dz+wrap_scint_dz+2.*wrap_air_dz"/>
-    <variable name="wrap_hcal_layers" value="5"/>
-
-    <!-- Starting positions (defined by the center of the solid?)-->
-    <variable name="Back_HCal_start" value="-173."/>
-    <variable name="Wrap_HCal_start" value="0."/>
-
-  </define>
+  <define/>
 
   <materials>
     <material Z="13" name="G4_Al0x2705780" state="solid">
@@ -9437,20 +9413,62 @@
       <second ref="Air34box0x2a71ad0"/>
       <position name="Air34box0x2a74420_pos" unit="mm" x="147.449425635621" y="84.6089054398272" z="0"/>
     </union>
-
-    <!-- - - - - - - - - HCal solids - - - - - - - -  -->
-    <box lunit="mm" name="back_hcal_SSteelbox" x="back_hcal_dx" y="back_hcal_dy" z="back_steel_dz"/>
-    <box lunit="mm" name="back_hcal_Airbox" x="back_hcal_dx" y="back_hcal_dy" z="back_air_dz"/>
-    <box lunit="mm" name="back_hcal_Scintillatorbox" x="back_hcal_dx" y="back_hcal_dy" z="back_scint_dz"/>
-
-    <box lunit="mm" name="wrap_hcal_SSteelbox" x="wrap_hcal_dx" y="wrap_hcal_dy" z="wrap_steel_dz"/>
-    <box lunit="mm" name="wrap_hcal_Airbox" x="wrap_hcal_dx" y="wrap_hcal_dy" z="wrap_air_dz"/>
-    <box lunit="mm" name="wrap_hcal_Scintillatorbox" x="wrap_hcal_dx" y="wrap_hcal_dy" z="wrap_scint_dz"/>
-
-    <!-- - - - - - - - - Parent Volumes - - - - - - - -->  
-    <box lunit="mm" name="Wbox0x2730a60" x="3410" y="3410" z="3294"/>
+    <box lunit="mm" name="Steel35box0x2a590d0" x="3100" y="3100" z="50"/>
+    <box lunit="mm" name="Steel35box0x2a74710" x="276" y="500" z="48.780487804878"/>
+    <union name="Steel35box0x2a74b80">
+      <first ref="Steel35box0x2a590d0"/>
+      <second ref="Steel35box0x2a74710"/>
+      <position name="Steel35box0x2a74b80_pos" unit="mm" x="295" y="0" z="-173"/>
+      <rotation name="Steel35box0x2a74b80_rot" unit="deg" x="0" y="-89.9543738355392" z="0"/>
+    </union>
+    <union name="Steel35box0x2a74810">
+      <first ref="Steel35box0x2a74b80"/>
+      <second ref="Steel35box0x2a74710"/>
+      <position name="Steel35box0x2a74810_pos" unit="mm" x="-295" y="0" z="-173"/>
+      <rotation name="Steel35box0x2a74810_rot" unit="deg" x="180" y="89.8631215066177" z="180"/>
+    </union>
+    <box lunit="mm" name="Steel35box0x2a750f0" x="3100" y="276" z="48.780487804878"/>
+    <union name="Steel35box0x2a751d0">
+      <first ref="Steel35box0x2a74810"/>
+      <second ref="Steel35box0x2a750f0"/>
+      <position name="Steel35box0x2a751d0_pos" unit="mm" x="0" y="295" z="-173"/>
+      <rotation name="Steel35box0x2a751d0_rot" unit="deg" x="-89.9543738355392" y="0" z="0"/>
+    </union>
+    <union name="Steel35box0x2a75430">
+      <first ref="Steel35box0x2a751d0"/>
+      <second ref="Steel35box0x2a750f0"/>
+      <position name="Steel35box0x2a75430_pos" unit="mm" x="0" y="-295" z="-173"/>
+      <rotation name="Steel35box0x2a75430_rot" unit="deg" x="90.1368784933823" y="0" z="0"/>
+    </union>
+    <box lunit="mm" name="Air35box0x2a75b80" x="3100" y="3100" z="2"/>
+    <box lunit="mm" name="Air35box0x2a75720" x="276" y="500" z="1.95121951219512"/>
+    <union name="Air35box0x2a75c50">
+      <first ref="Air35box0x2a75b80"/>
+      <second ref="Air35box0x2a75720"/>
+      <position name="Air35box0x2a75c50_pos" unit="mm" x="321" y="0" z="-199"/>
+      <rotation name="Air35box0x2a75c50_rot" unit="deg" x="0" y="-89.9543738355392" z="0"/>
+    </union>
+    <union name="Air35box0x2a75820">
+      <first ref="Air35box0x2a75c50"/>
+      <second ref="Air35box0x2a75720"/>
+      <position name="Air35box0x2a75820_pos" unit="mm" x="-321" y="0" z="-199"/>
+      <rotation name="Air35box0x2a75820_rot" unit="deg" x="180" y="89.8631215066177" z="180"/>
+    </union>
+    <box lunit="mm" name="Air35box0x2a761d0" x="3100" y="276" z="1.95121951219512"/>
+    <union name="Air35box0x2a762b0">
+      <first ref="Air35box0x2a75820"/>
+      <second ref="Air35box0x2a761d0"/>
+      <position name="Air35box0x2a762b0_pos" unit="mm" x="0" y="321" z="-199"/>
+      <rotation name="Air35box0x2a762b0_rot" unit="deg" x="-89.9543738355392" y="0" z="0"/>
+    </union>
+    <union name="Air35box0x2a76510">
+      <first ref="Air35box0x2a762b0"/>
+      <second ref="Air35box0x2a761d0"/>
+      <position name="Air35box0x2a76510_pos" unit="mm" x="0" y="-321" z="-199"/>
+      <rotation name="Air35box0x2a76510_rot" unit="deg" x="90.1368784933823" y="0" z="0"/>
+    </union>
+    <box lunit="mm" name="Wbox0x2730a60" x="499." y="499." z="276."/>
     <box lunit="mm" name="expHall_box0x2731e20" x="20000" y="20000" z="40000"/>
-
   </solids>
 
   <structure>
@@ -10568,1122 +10586,1095 @@
       <materialref ref="G4_AIR0x271da60"/>
       <solidref ref="Air34box0x2a74420"/>
     </volume>
-
-    <!-- HCal Structures -->
-    <volume name="back_hcal_SSteel_volume">
-      <materialref ref="Steel0x2728610"/>
-      <solidref ref="back_hcal_SSteelbox"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
-    </volume>
-    <volume name="back_hcal_Scintillator_volume">
-      <materialref ref="Scintillator0x27297b0"/>
-      <solidref ref="back_hcal_Scintillatorbox"/>
-      <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
-    </volume>
-
-    <volume name="calorimeters">
+    <volume name="em_calorimeters">
       <materialref ref="G4_AIR0x271da60"/>
       <solidref ref="Wbox0x2730a60"/>
       <physvol name="Al1phys0x273c120">
         <volumeref ref="Al1log0x2742600"/>
-        <position name="Al1phys0x273c120_pos" unit="mm" x="0" y="0" z="-1647"/>
+        <position name="Al1phys0x273c120_pos" unit="mm" x="0" y="0" z="-1647+1504.5"/>
       </physvol>
       <physvol name="Al1phys0x2746300">
         <volumeref ref="Al1log0x2745e40"/>
-        <position name="Al1phys0x2746300_pos" unit="mm" x="0" y="0" z="-1646"/>
+        <position name="Al1phys0x2746300_pos" unit="mm" x="0" y="0" z="-1646+1504.5"/>
       </physvol>
       <physvol name="PCB1phys0x2748f10">
         <volumeref ref="PCB1log0x2748a70"/>
-        <position name="PCB1phys0x2748f10_pos" unit="mm" x="0" y="0" z="-1645"/>
+        <position name="PCB1phys0x2748f10_pos" unit="mm" x="0" y="0" z="-1645+1504.5"/>
       </physvol>
       <physvol name="CFMix1phys0x274bb40">
         <volumeref ref="CFMix1log0x274b680"/>
-        <position name="CFMix1phys0x274bb40_pos" unit="mm" x="0" y="0" z="-1643.5"/>
+        <position name="CFMix1phys0x274bb40_pos" unit="mm" x="0" y="0" z="-1643.5+1504.5"/>
       </physvol>
       <physvol name="Si1_0phys0x274e790" copynumber="1">
         <volumeref ref="Si1_0log0x274e270"/>
-        <position name="Si1_0phys0x274e790_pos" unit="mm" x="0" y="0" z="-1643.45"/>
+        <position name="Si1_0phys0x274e790_pos" unit="mm" x="0" y="0" z="-1643.45+1504.5"/>
       </physvol>
       <physvol name="CFMix1phys0x27515b0">
         <volumeref ref="CFMix1log0x27510f0"/>
-        <position name="CFMix1phys0x27515b0_pos" unit="mm" x="0" y="0" z="-1642.95"/>
+        <position name="CFMix1phys0x27515b0_pos" unit="mm" x="0" y="0" z="-1642.951+1504.5"/>
       </physvol>
       <physvol name="C2phys0x27541a0">
         <volumeref ref="C2log0x2753ce0"/>
-        <position name="C2phys0x27541a0_pos" unit="mm" x="0" y="0" z="-1642.75"/>
+        <position name="C2phys0x27541a0_pos" unit="mm" x="0" y="0" z="-1642.75+1504.5"/>
       </physvol>
       <physvol name="Air2phys0x2756df0">
         <volumeref ref="Air2log0x2756b20"/>
-        <position name="Air2phys0x2756df0_pos" unit="mm" x="0" y="0" z="-1642.4"/>
+        <position name="Air2phys0x2756df0_pos" unit="mm" x="0" y="0" z="-1642.4+1504.5"/>
       </physvol>
       <physvol name="C2phys0x275aca0">
         <volumeref ref="C2log0x275a7e0"/>
-        <position name="C2phys0x275aca0_pos" unit="mm" x="0" y="0" z="-1641.1"/>
+        <position name="C2phys0x275aca0_pos" unit="mm" x="0" y="0" z="-1641.1+1504.5"/>
       </physvol>
       <physvol name="CFMix2phys0x275d900">
         <volumeref ref="CFMix2log0x275d440"/>
-        <position name="CFMix2phys0x275d900_pos" unit="mm" x="0" y="0" z="-1640.75"/>
+        <position name="CFMix2phys0x275d900_pos" unit="mm" x="0" y="0" z="-1640.75+1504.5"/>
       </physvol>
       <physvol name="Si2_0phys0x2760560" copynumber="2">
         <volumeref ref="Si2_0log0x2760080"/>
-        <position name="Si2_0phys0x2760560_pos" unit="mm" x="0" y="0" z="-1640.55"/>
+        <position name="Si2_0phys0x2760560_pos" unit="mm" x="0" y="0" z="-1640.55+1504.5"/>
       </physvol>
       <physvol name="CFMix2phys0x2763280">
         <volumeref ref="CFMix2log0x2762dc0"/>
-        <position name="CFMix2phys0x2763280_pos" unit="mm" x="0" y="0" z="-1640.05"/>
+        <position name="CFMix2phys0x2763280_pos" unit="mm" x="0" y="0" z="-1640.05+1504.5"/>
       </physvol>
       <physvol name="PCB2phys0x27667a0">
         <volumeref ref="PCB2log0x27662c0"/>
-        <position name="PCB2phys0x27667a0_pos" unit="mm" x="0" y="0" z="-1640"/>
+        <position name="PCB2phys0x27667a0_pos" unit="mm" x="0" y="0" z="-1640+1504.5"/>
       </physvol>
       <physvol name="Air2phys0x27693a0">
         <volumeref ref="Air2log0x2768f00"/>
-        <position name="Air2phys0x27693a0_pos" unit="mm" x="0" y="0" z="-1638.5"/>
+        <position name="Air2phys0x27693a0_pos" unit="mm" x="0" y="0" z="-1638.5+1504.5"/>
       </physvol>
       <physvol name="W3phys0x276bfd0">
         <volumeref ref="W3log0x276bb10"/>
-        <position name="W3phys0x276bfd0_pos" unit="mm" x="0" y="0" z="-1637.5"/>
+        <position name="W3phys0x276bfd0_pos" unit="mm" x="0" y="0" z="-1637.5+1504.5"/>
       </physvol>
       <physvol name="Air3phys0x276f0f0">
         <volumeref ref="Air3log0x276ec40"/>
-        <position name="Air3phys0x276f0f0_pos" unit="mm" x="0" y="0" z="-1636.75"/>
+        <position name="Air3phys0x276f0f0_pos" unit="mm" x="0" y="0" z="-1636.75+1504.5"/>
       </physvol>
       <physvol name="PCB3phys0x2771e00">
         <volumeref ref="PCB3log0x2771940"/>
-        <position name="PCB3phys0x2771e00_pos" unit="mm" x="0" y="0" z="-1635.75"/>
+        <position name="PCB3phys0x2771e00_pos" unit="mm" x="0" y="0" z="-1635.75+1504.5"/>
       </physvol>
       <physvol name="CFMix3phys0x276f130">
         <volumeref ref="CFMix3log0x2774570"/>
-        <position name="CFMix3phys0x276f130_pos" unit="mm" x="0" y="0" z="-1634.25"/>
+        <position name="CFMix3phys0x276f130_pos" unit="mm" x="0" y="0" z="-1634.25+1504.5"/>
       </physvol>
       <physvol name="Si3_0phys0x2777e30" copynumber="3">
         <volumeref ref="Si3_0log0x2777970"/>
-        <position name="Si3_0phys0x2777e30_pos" unit="mm" x="0" y="0" z="-1634.2"/>
+        <position name="Si3_0phys0x2777e30_pos" unit="mm" x="0" y="0" z="-1634.2+1504.5"/>
       </physvol>
       <physvol name="CFMix3phys0x277abd0">
         <volumeref ref="CFMix3log0x277a710"/>
-        <position name="CFMix3phys0x277abd0_pos" unit="mm" x="0" y="0" z="-1633.7"/>
+        <position name="CFMix3phys0x277abd0_pos" unit="mm" x="0" y="0" z="-1633.7+1504.5"/>
       </physvol>
       <physvol name="W4phys0x277d7c0">
         <volumeref ref="W4log0x277d300"/>
-        <position name="W4phys0x277d7c0_pos" unit="mm" x="0" y="0" z="-1633.5"/>
+        <position name="W4phys0x277d7c0_pos" unit="mm" x="0" y="0" z="-1633.5+1504.5"/>
       </physvol>
       <physvol name="C4phys0x2780400">
         <volumeref ref="C4log0x277ff40"/>
-        <position name="C4phys0x2780400_pos" unit="mm" x="0" y="0" z="-1632.75"/>
+        <position name="C4phys0x2780400_pos" unit="mm" x="0" y="0" z="-1632.75+1504.5"/>
       </physvol>
       <physvol name="Air4phys0x2777e70">
         <volumeref ref="Air4log0x2782b30"/>
-        <position name="Air4phys0x2777e70_pos" unit="mm" x="0" y="0" z="-1632.4"/>
+        <position name="Air4phys0x2777e70_pos" unit="mm" x="0" y="0" z="-1632.4+1504.5"/>
       </physvol>
       <physvol name="C4phys0x2787bc0">
         <volumeref ref="C4log0x2787700"/>
-        <position name="C4phys0x2787bc0_pos" unit="mm" x="0" y="0" z="-1631.1"/>
+        <position name="C4phys0x2787bc0_pos" unit="mm" x="0" y="0" z="-1631.1+1504.5"/>
       </physvol>
       <physvol name="W4phys0x278a7f0">
         <volumeref ref="W4log0x278a330"/>
-        <position name="W4phys0x278a7f0_pos" unit="mm" x="0" y="0" z="-1630.75"/>
+        <position name="W4phys0x278a7f0_pos" unit="mm" x="0" y="0" z="-1630.75+1504.5"/>
       </physvol>
       <physvol name="CFMix4phys0x278d430">
         <volumeref ref="CFMix4log0x278cf70"/>
-        <position name="CFMix4phys0x278d430_pos" unit="mm" x="0" y="0" z="-1630"/>
+        <position name="CFMix4phys0x278d430_pos" unit="mm" x="0" y="0" z="-1630+1504.5"/>
       </physvol>
       <physvol name="Si4_0phys0x278ffd0" copynumber="4">
         <volumeref ref="Si4_0log0x278fb60"/>
-        <position name="Si4_0phys0x278ffd0_pos" unit="mm" x="0" y="0" z="-1629.8"/>
+        <position name="Si4_0phys0x278ffd0_pos" unit="mm" x="0" y="0" z="-1629.8+1504.5"/>
       </physvol>
       <physvol name="CFMix4phys0x27903c0">
         <volumeref ref="CFMix4log0x2792840"/>
-        <position name="CFMix4phys0x27903c0_pos" unit="mm" x="0" y="0" z="-1629.3"/>
+        <position name="CFMix4phys0x27903c0_pos" unit="mm" x="0" y="0" z="-1629.3+1504.5"/>
       </physvol>
       <physvol name="PCB4phys0x2795c10">
         <volumeref ref="PCB4log0x2795750"/>
-        <position name="PCB4phys0x2795c10_pos" unit="mm" x="0" y="0" z="-1629.25"/>
+        <position name="PCB4phys0x2795c10_pos" unit="mm" x="0" y="0" z="-1629.25+1504.5"/>
       </physvol>
       <physvol name="Air4phys0x2798840">
         <volumeref ref="Air4log0x27983a0"/>
-        <position name="Air4phys0x2798840_pos" unit="mm" x="0" y="0" z="-1627.75"/>
+        <position name="Air4phys0x2798840_pos" unit="mm" x="0" y="0" z="-1627.75+1504.5"/>
       </physvol>
       <physvol name="W5phys0x276e6a0">
         <volumeref ref="W5log0x276e1a0"/>
-        <position name="W5phys0x276e6a0_pos" unit="mm" x="0" y="0" z="-1626.75"/>
+        <position name="W5phys0x276e6a0_pos" unit="mm" x="0" y="0" z="-1626.75+1504.5"/>
       </physvol>
       <physvol name="Air5phys0x279ecc0">
         <volumeref ref="Air5log0x279e820"/>
-        <position name="Air5phys0x279ecc0_pos" unit="mm" x="0" y="0" z="-1624.5"/>
+        <position name="Air5phys0x279ecc0_pos" unit="mm" x="0" y="0" z="-1624.5+1504.5"/>
       </physvol>
       <physvol name="PCB5phys0x2795c50">
         <volumeref ref="PCB5log0x27a1430"/>
-        <position name="PCB5phys0x2795c50_pos" unit="mm" x="0" y="0" z="-1623.5"/>
+        <position name="PCB5phys0x2795c50_pos" unit="mm" x="0" y="0" z="-1623.5+1504.5"/>
       </physvol>
       <physvol name="CFMix5phys0x27a5530">
         <volumeref ref="CFMix5log0x27a5080"/>
-        <position name="CFMix5phys0x27a5530_pos" unit="mm" x="0" y="0" z="-1622"/>
+        <position name="CFMix5phys0x27a5530_pos" unit="mm" x="0" y="0" z="-1622+1504.5"/>
       </physvol>
       <physvol name="Si5_0phys0x27a81f0" copynumber="5">
         <volumeref ref="Si5_0log0x27a7d30"/>
-        <position name="Si5_0phys0x27a81f0_pos" unit="mm" x="0" y="0" z="-1621.95"/>
+        <position name="Si5_0phys0x27a81f0_pos" unit="mm" x="0" y="0" z="-1621.95+1504.5"/>
       </physvol>
       <physvol name="CFMix5phys0x27aaf40">
         <volumeref ref="CFMix5log0x27aaa80"/>
-        <position name="CFMix5phys0x27aaf40_pos" unit="mm" x="0" y="0" z="-1621.45"/>
+        <position name="CFMix5phys0x27aaf40_pos" unit="mm" x="0" y="0" z="-1621.45+1504.5"/>
       </physvol>
       <physvol name="W6phys0x27adb30">
         <volumeref ref="W6log0x27ad670"/>
-        <position name="W6phys0x27adb30_pos" unit="mm" x="0" y="0" z="-1621.25"/>
+        <position name="W6phys0x27adb30_pos" unit="mm" x="0" y="0" z="-1621.25+1504.5"/>
       </physvol>
       <physvol name="C6phys0x27b0770">
         <volumeref ref="C6log0x27b02b0"/>
-        <position name="C6phys0x27b0770_pos" unit="mm" x="0" y="0" z="-1619.75"/>
+        <position name="C6phys0x27b0770_pos" unit="mm" x="0" y="0" z="-1619.75+1504.5"/>
       </physvol>
       <physvol name="Air6phys0x27b32f0">
         <volumeref ref="Air6log0x27b2e50"/>
-        <position name="Air6phys0x27b32f0_pos" unit="mm" x="0" y="0" z="-1619.4"/>
+        <position name="Air6phys0x27b32f0_pos" unit="mm" x="0" y="0" z="-1619.4+1504.5"/>
       </physvol>
       <physvol name="C6phys0x27b5f80">
         <volumeref ref="C6log0x27b5ac0"/>
-        <position name="C6phys0x27b5f80_pos" unit="mm" x="0" y="0" z="-1618.1"/>
+        <position name="C6phys0x27b5f80_pos" unit="mm" x="0" y="0" z="-1618.1+1504.5"/>
       </physvol>
       <physvol name="W6phys0x27b8b70">
         <volumeref ref="W6log0x27b86b0"/>
-        <position name="W6phys0x27b8b70_pos" unit="mm" x="0" y="0" z="-1617.75"/>
+        <position name="W6phys0x27b8b70_pos" unit="mm" x="0" y="0" z="-1617.75+1504.5"/>
       </physvol>
       <physvol name="CFMix6phys0x27bb7b0">
         <volumeref ref="CFMix6log0x27bb2f0"/>
-        <position name="CFMix6phys0x27bb7b0_pos" unit="mm" x="0" y="0" z="-1616.25"/>
+        <position name="CFMix6phys0x27bb7b0_pos" unit="mm" x="0" y="0" z="-1616.25+1504.5"/>
       </physvol>
       <physvol name="Si6_0phys0x27be3a0" copynumber="6">
         <volumeref ref="Si6_0log0x27bdee0"/>
-        <position name="Si6_0phys0x27be3a0_pos" unit="mm" x="0" y="0" z="-1616.05"/>
+        <position name="Si6_0phys0x27be3a0_pos" unit="mm" x="0" y="0" z="-1616.05+1504.5"/>
       </physvol>
       <physvol name="CFMix6phys0x27c10f0">
         <volumeref ref="CFMix6log0x27c0c30"/>
-        <position name="CFMix6phys0x27c10f0_pos" unit="mm" x="0" y="0" z="-1615.55"/>
+        <position name="CFMix6phys0x27c10f0_pos" unit="mm" x="0" y="0" z="-1615.55+1504.5"/>
       </physvol>
       <physvol name="PCB6phys0x27c3cc0">
         <volumeref ref="PCB6log0x27c3820"/>
-        <position name="PCB6phys0x27c3cc0_pos" unit="mm" x="0" y="0" z="-1615.5"/>
+        <position name="PCB6phys0x27c3cc0_pos" unit="mm" x="0" y="0" z="-1615.5+1504.5"/>
       </physvol>
       <physvol name="Air6phys0x27c68c0">
         <volumeref ref="Air6log0x27c6430"/>
-        <position name="Air6phys0x27c68c0_pos" unit="mm" x="0" y="0" z="-1614"/>
+        <position name="Air6phys0x27c68c0_pos" unit="mm" x="0" y="0" z="-1614+1504.5"/>
       </physvol>
       <physvol name="W7phys0x27c9480">
         <volumeref ref="W7log0x27c8fe0"/>
-        <position name="W7phys0x27c9480_pos" unit="mm" x="0" y="0" z="-1613"/>
+        <position name="W7phys0x27c9480_pos" unit="mm" x="0" y="0" z="-1613+1504.5"/>
       </physvol>
       <physvol name="Air7phys0x27cc090">
         <volumeref ref="Air7log0x27cbbf0"/>
-        <position name="Air7phys0x27cc090_pos" unit="mm" x="0" y="0" z="-1609.5"/>
+        <position name="Air7phys0x27cc090_pos" unit="mm" x="0" y="0" z="-1609.5+1504.5"/>
       </physvol>
       <physvol name="PCB7phys0x27cc440">
         <volumeref ref="PCB7log0x27ce7b0"/>
-        <position name="PCB7phys0x27cc440_pos" unit="mm" x="0" y="0" z="-1608.5"/>
+        <position name="PCB7phys0x27cc440_pos" unit="mm" x="0" y="0" z="-1608.5+1504.5"/>
       </physvol>
       <physvol name="CFMix7phys0x27d2390">
         <volumeref ref="CFMix7log0x27d20c0"/>
-        <position name="CFMix7phys0x27d2390_pos" unit="mm" x="0" y="0" z="-1607"/>
+        <position name="CFMix7phys0x27d2390_pos" unit="mm" x="0" y="0" z="-1607+1504.5"/>
       </physvol>
       <physvol name="Si7_0phys0x27d6240" copynumber="7">
         <volumeref ref="Si7_0log0x27d5d80"/>
-        <position name="Si7_0phys0x27d6240_pos" unit="mm" x="0" y="0" z="-1606.95"/>
+        <position name="Si7_0phys0x27d6240_pos" unit="mm" x="0" y="0" z="-1606.95+1504.5"/>
       </physvol>
       <physvol name="CFMix7phys0x27d8fb0">
         <volumeref ref="CFMix7log0x27d8af0"/>
-        <position name="CFMix7phys0x27d8fb0_pos" unit="mm" x="0" y="0" z="-1606.45"/>
+        <position name="CFMix7phys0x27d8fb0_pos" unit="mm" x="0" y="0" z="-1606.45+1504.5"/>
       </physvol>
       <physvol name="W8phys0x27dbba0">
         <volumeref ref="W8log0x27db6e0"/>
-        <position name="W8phys0x27dbba0_pos" unit="mm" x="0" y="0" z="-1606.25"/>
+        <position name="W8phys0x27dbba0_pos" unit="mm" x="0" y="0" z="-1606.25+1504.5"/>
       </physvol>
       <physvol name="C8phys0x27de400">
         <volumeref ref="C8log0x27de320"/>
-        <position name="C8phys0x27de400_pos" unit="mm" x="0" y="0" z="-1604.5"/>
+        <position name="C8phys0x27de400_pos" unit="mm" x="0" y="0" z="-1604.5+1504.5"/>
       </physvol>
       <physvol name="Air8phys0x2785b50">
         <volumeref ref="Air8log0x27856b0"/>
-        <position name="Air8phys0x2785b50_pos" unit="mm" x="0" y="0" z="-1604.15"/>
+        <position name="Air8phys0x2785b50_pos" unit="mm" x="0" y="0" z="-1604.15+1504.5"/>
       </physvol>
       <physvol name="C8phys0x27e7fb0">
         <volumeref ref="C8log0x27e7af0"/>
-        <position name="C8phys0x27e7fb0_pos" unit="mm" x="0" y="0" z="-1602.85"/>
+        <position name="C8phys0x27e7fb0_pos" unit="mm" x="0" y="0" z="-1602.85+1504.5"/>
       </physvol>
       <physvol name="W8phys0x27eaba0">
         <volumeref ref="W8log0x27ea6e0"/>
-        <position name="W8phys0x27eaba0_pos" unit="mm" x="0" y="0" z="-1602.5"/>
+        <position name="W8phys0x27eaba0_pos" unit="mm" x="0" y="0" z="-1602.5+1504.5"/>
       </physvol>
       <physvol name="CFMix8phys0x27ed7e0">
         <volumeref ref="CFMix8log0x27ed320"/>
-        <position name="CFMix8phys0x27ed7e0_pos" unit="mm" x="0" y="0" z="-1600.75"/>
+        <position name="CFMix8phys0x27ed7e0_pos" unit="mm" x="0" y="0" z="-1600.75+1504.5"/>
       </physvol>
       <physvol name="Si8_0phys0x27f03d0" copynumber="8">
         <volumeref ref="Si8_0log0x27eff10"/>
-        <position name="Si8_0phys0x27f03d0_pos" unit="mm" x="0" y="0" z="-1600.55"/>
+        <position name="Si8_0phys0x27f03d0_pos" unit="mm" x="0" y="0" z="-1600.55+1504.5"/>
       </physvol>
       <physvol name="CFMix8phys0x27f0830">
         <volumeref ref="CFMix8log0x27f2c60"/>
-        <position name="CFMix8phys0x27f0830_pos" unit="mm" x="0" y="0" z="-1600.05"/>
+        <position name="CFMix8phys0x27f0830_pos" unit="mm" x="0" y="0" z="-1600.05+1504.5"/>
       </physvol>
       <physvol name="PCB8phys0x27f62d0">
         <volumeref ref="PCB8log0x27f5e30"/>
-        <position name="PCB8phys0x27f62d0_pos" unit="mm" x="0" y="0" z="-1600"/>
+        <position name="PCB8phys0x27f62d0_pos" unit="mm" x="0" y="0" z="-1600+1504.5"/>
       </physvol>
       <physvol name="Air8phys0x279b640">
         <volumeref ref="Air8log0x279b160"/>
-        <position name="Air8phys0x279b640_pos" unit="mm" x="0" y="0" z="-1598.5"/>
+        <position name="Air8phys0x279b640_pos" unit="mm" x="0" y="0" z="-1598.5+1504.5"/>
       </physvol>
       <physvol name="W9phys0x27fd3e0">
         <volumeref ref="W9log0x27fcf40"/>
-        <position name="W9phys0x27fd3e0_pos" unit="mm" x="0" y="0" z="-1597.5"/>
+        <position name="W9phys0x27fd3e0_pos" unit="mm" x="0" y="0" z="-1597.5+1504.5"/>
       </physvol>
       <physvol name="Air9phys0x27fff90">
         <volumeref ref="Air9log0x27ffb00"/>
-        <position name="Air9phys0x27fff90_pos" unit="mm" x="0" y="0" z="-1594"/>
+        <position name="Air9phys0x27fff90_pos" unit="mm" x="0" y="0" z="-1594+1504.5"/>
       </physvol>
       <physvol name="PCB9phys0x2802ba0">
         <volumeref ref="PCB9log0x2802700"/>
-        <position name="PCB9phys0x2802ba0_pos" unit="mm" x="0" y="0" z="-1593"/>
+        <position name="PCB9phys0x2802ba0_pos" unit="mm" x="0" y="0" z="-1593+1504.5"/>
       </physvol>
       <physvol name="CFMix9phys0x2805960">
         <volumeref ref="CFMix9log0x28054a0"/>
-        <position name="CFMix9phys0x2805960_pos" unit="mm" x="0" y="0" z="-1591.5"/>
+        <position name="CFMix9phys0x2805960_pos" unit="mm" x="0" y="0" z="-1591.5+1504.5"/>
       </physvol>
       <physvol name="Si9_0phys0x28085b0" copynumber="9">
         <volumeref ref="Si9_0log0x28080f0"/>
-        <position name="Si9_0phys0x28085b0_pos" unit="mm" x="0" y="0" z="-1591.45"/>
+        <position name="Si9_0phys0x28085b0_pos" unit="mm" x="0" y="0" z="-1591.45+1504.5"/>
       </physvol>
       <physvol name="CFMix9phys0x280b340">
         <volumeref ref="CFMix9log0x280ae80"/>
-        <position name="CFMix9phys0x280b340_pos" unit="mm" x="0" y="0" z="-1590.95"/>
+        <position name="CFMix9phys0x280b340_pos" unit="mm" x="0" y="0" z="-1590.95+1504.5"/>
       </physvol>
       <physvol name="W10phys0x280df30">
         <volumeref ref="W10log0x280da70"/>
-        <position name="W10phys0x280df30_pos" unit="mm" x="0" y="0" z="-1590.75"/>
+        <position name="W10phys0x280df30_pos" unit="mm" x="0" y="0" z="-1590.75+1504.5"/>
       </physvol>
       <physvol name="C10phys0x2810b70">
         <volumeref ref="C10log0x28106b0"/>
-        <position name="C10phys0x2810b70_pos" unit="mm" x="0" y="0" z="-1589"/>
+        <position name="C10phys0x2810b70_pos" unit="mm" x="0" y="0" z="-1589+1504.5"/>
       </physvol>
       <physvol name="Air10phys0x2813750">
         <volumeref ref="Air10log0x28132a0"/>
-        <position name="Air10phys0x2813750_pos" unit="mm" x="0" y="0" z="-1588.65"/>
+        <position name="Air10phys0x2813750_pos" unit="mm" x="0" y="0" z="-1588.65+1504.5"/>
       </physvol>
       <physvol name="C10phys0x2816340">
         <volumeref ref="C10log0x2815e80"/>
-        <position name="C10phys0x2816340_pos" unit="mm" x="0" y="0" z="-1587.35"/>
+        <position name="C10phys0x2816340_pos" unit="mm" x="0" y="0" z="-1587.35+1504.5"/>
       </physvol>
       <physvol name="W10phys0x2818f90">
         <volumeref ref="W10log0x2818ad0"/>
-        <position name="W10phys0x2818f90_pos" unit="mm" x="0" y="0" z="-1587"/>
+        <position name="W10phys0x2818f90_pos" unit="mm" x="0" y="0" z="-1587+1504.5"/>
       </physvol>
       <physvol name="CFMix10phys0x281bbd0">
         <volumeref ref="CFMix10log0x281b710"/>
-        <position name="CFMix10phys0x281bbd0_pos" unit="mm" x="0" y="0" z="-1585.25"/>
+        <position name="CFMix10phys0x281bbd0_pos" unit="mm" x="0" y="0" z="-1585.25+1504.5"/>
       </physvol>
       <physvol name="Si10_0phys0x281e7d0" copynumber="10">
         <volumeref ref="Si10_0log0x281e300"/>
-        <position name="Si10_0phys0x281e7d0_pos" unit="mm" x="0" y="0" z="-1585.05"/>
+        <position name="Si10_0phys0x281e7d0_pos" unit="mm" x="0" y="0" z="-1585.05+1504.5"/>
       </physvol>
       <physvol name="CFMix10phys0x2816380">
         <volumeref ref="CFMix10log0x2821050"/>
-        <position name="CFMix10phys0x2816380_pos" unit="mm" x="0" y="0" z="-1584.55"/>
+        <position name="CFMix10phys0x2816380_pos" unit="mm" x="0" y="0" z="-1584.55+1504.5"/>
       </physvol>
       <physvol name="PCB10phys0x28260b0">
         <volumeref ref="PCB10log0x2825bf0"/>
-        <position name="PCB10phys0x28260b0_pos" unit="mm" x="0" y="0" z="-1584.5"/>
+        <position name="PCB10phys0x28260b0_pos" unit="mm" x="0" y="0" z="-1584.5+1504.5"/>
       </physvol>
       <physvol name="Air10phys0x2828ce0">
         <volumeref ref="Air10log0x2828840"/>
-        <position name="Air10phys0x2828ce0_pos" unit="mm" x="0" y="0" z="-1583"/>
+        <position name="Air10phys0x2828ce0_pos" unit="mm" x="0" y="0" z="-1583+1504.5"/>
       </physvol>
       <physvol name="W11phys0x282b900">
         <volumeref ref="W11log0x282b450"/>
-        <position name="W11phys0x282b900_pos" unit="mm" x="0" y="0" z="-1582"/>
+        <position name="W11phys0x282b900_pos" unit="mm" x="0" y="0" z="-1582+1504.5"/>
       </physvol>
       <physvol name="Air11phys0x282e4d0">
         <volumeref ref="Air11log0x282e030"/>
-        <position name="Air11phys0x282e4d0_pos" unit="mm" x="0" y="0" z="-1578.5"/>
+        <position name="Air11phys0x282e4d0_pos" unit="mm" x="0" y="0" z="-1578.5+1504.5"/>
       </physvol>
       <physvol name="PCB11phys0x2831100">
         <volumeref ref="PCB11log0x2830c40"/>
-        <position name="PCB11phys0x2831100_pos" unit="mm" x="0" y="0" z="-1577.5"/>
+        <position name="PCB11phys0x2831100_pos" unit="mm" x="0" y="0" z="-1577.5+1504.5"/>
       </physvol>
       <physvol name="CFMix11phys0x2833cf0">
         <volumeref ref="CFMix11log0x2833830"/>
-        <position name="CFMix11phys0x2833cf0_pos" unit="mm" x="0" y="0" z="-1576"/>
+        <position name="CFMix11phys0x2833cf0_pos" unit="mm" x="0" y="0" z="-1576+1504.5"/>
       </physvol>
       <physvol name="Si11_0phys0x28368f0" copynumber="11">
         <volumeref ref="Si11_0log0x2836420"/>
-        <position name="Si11_0phys0x28368f0_pos" unit="mm" x="0" y="0" z="-1575.95"/>
+        <position name="Si11_0phys0x28368f0_pos" unit="mm" x="0" y="0" z="-1575.95+1504.5"/>
       </physvol>
       <physvol name="CFMix11phys0x2839670">
         <volumeref ref="CFMix11log0x28391b0"/>
-        <position name="CFMix11phys0x2839670_pos" unit="mm" x="0" y="0" z="-1575.45"/>
+        <position name="CFMix11phys0x2839670_pos" unit="mm" x="0" y="0" z="-1575.45+1504.5"/>
       </physvol>
       <physvol name="W12phys0x283c260">
         <volumeref ref="W12log0x283bda0"/>
-        <position name="W12phys0x283c260_pos" unit="mm" x="0" y="0" z="-1575.25"/>
+        <position name="W12phys0x283c260_pos" unit="mm" x="0" y="0" z="-1575.25+1504.5"/>
       </physvol>
       <physvol name="C12phys0x283eea0">
         <volumeref ref="C12log0x283e9e0"/>
-        <position name="C12phys0x283eea0_pos" unit="mm" x="0" y="0" z="-1573.5"/>
+        <position name="C12phys0x283eea0_pos" unit="mm" x="0" y="0" z="-1573.5+1504.5"/>
       </physvol>
       <physvol name="Air12phys0x2841a90">
         <volumeref ref="Air12log0x28415d0"/>
-        <position name="Air12phys0x2841a90_pos" unit="mm" x="0" y="0" z="-1573.15"/>
+        <position name="Air12phys0x2841a90_pos" unit="mm" x="0" y="0" z="-1573.15+1504.5"/>
       </physvol>
       <physvol name="C12phys0x28446d0">
         <volumeref ref="C12log0x2844210"/>
-        <position name="C12phys0x28446d0_pos" unit="mm" x="0" y="0" z="-1571.85"/>
+        <position name="C12phys0x28446d0_pos" unit="mm" x="0" y="0" z="-1571.85+1504.5"/>
       </physvol>
       <physvol name="W12phys0x28472c0">
         <volumeref ref="W12log0x2846e00"/>
-        <position name="W12phys0x28472c0_pos" unit="mm" x="0" y="0" z="-1571.5"/>
+        <position name="W12phys0x28472c0_pos" unit="mm" x="0" y="0" z="-1571.5+1504.5"/>
       </physvol>
       <physvol name="CFMix12phys0x2849f00">
         <volumeref ref="CFMix12log0x2849a40"/>
-        <position name="CFMix12phys0x2849f00_pos" unit="mm" x="0" y="0" z="-1569.75"/>
+        <position name="CFMix12phys0x2849f00_pos" unit="mm" x="0" y="0" z="-1569.75+1504.5"/>
       </physvol>
       <physvol name="Si12_0phys0x284cb10" copynumber="12">
         <volumeref ref="Si12_0log0x284c630"/>
-        <position name="Si12_0phys0x284cb10_pos" unit="mm" x="0" y="0" z="-1569.55"/>
+        <position name="Si12_0phys0x284cb10_pos" unit="mm" x="0" y="0" z="-1569.55+1504.5"/>
       </physvol>
       <physvol name="CFMix12phys0x284f850">
         <volumeref ref="CFMix12log0x284f390"/>
-        <position name="CFMix12phys0x284f850_pos" unit="mm" x="0" y="0" z="-1569.05"/>
+        <position name="CFMix12phys0x284f850_pos" unit="mm" x="0" y="0" z="-1569.05+1504.5"/>
       </physvol>
       <physvol name="PCB12phys0x2852430">
         <volumeref ref="PCB12log0x2851f80"/>
-        <position name="PCB12phys0x2852430_pos" unit="mm" x="0" y="0" z="-1569"/>
+        <position name="PCB12phys0x2852430_pos" unit="mm" x="0" y="0" z="-1569+1504.5"/>
       </physvol>
       <physvol name="Air12phys0x2855050">
         <volumeref ref="Air12log0x2854bb0"/>
-        <position name="Air12phys0x2855050_pos" unit="mm" x="0" y="0" z="-1567.5"/>
+        <position name="Air12phys0x2855050_pos" unit="mm" x="0" y="0" z="-1567.5+1504.5"/>
       </physvol>
       <physvol name="W13phys0x2857be0">
         <volumeref ref="W13log0x2857720"/>
-        <position name="W13phys0x2857be0_pos" unit="mm" x="0" y="0" z="-1566.5"/>
+        <position name="W13phys0x2857be0_pos" unit="mm" x="0" y="0" z="-1566.5+1504.5"/>
       </physvol>
       <physvol name="Air13phys0x285a860">
         <volumeref ref="Air13log0x285a3c0"/>
-        <position name="Air13phys0x285a860_pos" unit="mm" x="0" y="0" z="-1563"/>
+        <position name="Air13phys0x285a860_pos" unit="mm" x="0" y="0" z="-1563+1504.5"/>
       </physvol>
       <physvol name="PCB13phys0x285d420">
         <volumeref ref="PCB13log0x285cf80"/>
-        <position name="PCB13phys0x285d420_pos" unit="mm" x="0" y="0" z="-1562"/>
+        <position name="PCB13phys0x285d420_pos" unit="mm" x="0" y="0" z="-1562+1504.5"/>
       </physvol>
       <physvol name="CFMix13phys0x2857c20">
         <volumeref ref="CFMix13log0x285fb90"/>
-        <position name="CFMix13phys0x2857c20_pos" unit="mm" x="0" y="0" z="-1560.5"/>
+        <position name="CFMix13phys0x2857c20_pos" unit="mm" x="0" y="0" z="-1560.5+1504.5"/>
       </physvol>
       <physvol name="Si13_0phys0x2731a50" copynumber="13">
         <volumeref ref="Si13_0log0x2864730"/>
-        <position name="Si13_0phys0x2731a50_pos" unit="mm" x="0" y="0" z="-1560.45"/>
+        <position name="Si13_0phys0x2731a50_pos" unit="mm" x="0" y="0" z="-1560.45+1504.5"/>
       </physvol>
       <physvol name="CFMix13phys0x2867f60">
         <volumeref ref="CFMix13log0x2867aa0"/>
-        <position name="CFMix13phys0x2867f60_pos" unit="mm" x="0" y="0" z="-1559.95"/>
+        <position name="CFMix13phys0x2867f60_pos" unit="mm" x="0" y="0" z="-1559.95+1504.5"/>
       </physvol>
       <physvol name="W14phys0x286abb0">
         <volumeref ref="W14log0x286a6f0"/>
-        <position name="W14phys0x286abb0_pos" unit="mm" x="0" y="0" z="-1559.75"/>
+        <position name="W14phys0x286abb0_pos" unit="mm" x="0" y="0" z="-1559.75+1504.5"/>
       </physvol>
       <physvol name="C14phys0x286d7f0">
         <volumeref ref="C14log0x286d330"/>
-        <position name="C14phys0x286d7f0_pos" unit="mm" x="0" y="0" z="-1558"/>
+        <position name="C14phys0x286d7f0_pos" unit="mm" x="0" y="0" z="-1558+1504.5"/>
       </physvol>
       <physvol name="Air14phys0x28703e0">
         <volumeref ref="Air14log0x286ff20"/>
-        <position name="Air14phys0x28703e0_pos" unit="mm" x="0" y="0" z="-1557.65"/>
+        <position name="Air14phys0x28703e0_pos" unit="mm" x="0" y="0" z="-1557.65+1504.5"/>
       </physvol>
       <physvol name="C14phys0x2873020">
         <volumeref ref="C14log0x2872b60"/>
-        <position name="C14phys0x2873020_pos" unit="mm" x="0" y="0" z="-1556.35"/>
+        <position name="C14phys0x2873020_pos" unit="mm" x="0" y="0" z="-1556.35+1504.5"/>
       </physvol>
       <physvol name="W14phys0x2875c10">
         <volumeref ref="W14log0x2875750"/>
-        <position name="W14phys0x2875c10_pos" unit="mm" x="0" y="0" z="-1556"/>
+        <position name="W14phys0x2875c10_pos" unit="mm" x="0" y="0" z="-1556+1504.5"/>
       </physvol>
       <physvol name="CFMix14phys0x2878800">
         <volumeref ref="CFMix14log0x2878340"/>
-        <position name="CFMix14phys0x2878800_pos" unit="mm" x="0" y="0" z="-1554.25"/>
+        <position name="CFMix14phys0x2878800_pos" unit="mm" x="0" y="0" z="-1554.25+1504.5"/>
       </physvol>
       <physvol name="Si14_0phys0x287b470" copynumber="14">
         <volumeref ref="Si14_0log0x287af90"/>
-        <position name="Si14_0phys0x287b470_pos" unit="mm" x="0" y="0" z="-1554.05"/>
+        <position name="Si14_0phys0x287b470_pos" unit="mm" x="0" y="0" z="-1554.05+1504.5"/>
       </physvol>
       <physvol name="CFMix14phys0x287e1b0">
         <volumeref ref="CFMix14log0x287dcf0"/>
-        <position name="CFMix14phys0x287e1b0_pos" unit="mm" x="0" y="0" z="-1553.55"/>
+        <position name="CFMix14phys0x287e1b0_pos" unit="mm" x="0" y="0" z="-1553.55+1504.5"/>
       </physvol>
       <physvol name="PCB14phys0x2880da0">
         <volumeref ref="PCB14log0x28808e0"/>
-        <position name="PCB14phys0x2880da0_pos" unit="mm" x="0" y="0" z="-1553.5"/>
+        <position name="PCB14phys0x2880da0_pos" unit="mm" x="0" y="0" z="-1553.5+1504.5"/>
       </physvol>
       <physvol name="Air14phys0x28839c0">
         <volumeref ref="Air14log0x2883520"/>
-        <position name="Air14phys0x28839c0_pos" unit="mm" x="0" y="0" z="-1552"/>
+        <position name="Air14phys0x28839c0_pos" unit="mm" x="0" y="0" z="-1552+1504.5"/>
       </physvol>
       <physvol name="W15phys0x2886590">
         <volumeref ref="W15log0x28860e0"/>
-        <position name="W15phys0x2886590_pos" unit="mm" x="0" y="0" z="-1551"/>
+        <position name="W15phys0x2886590_pos" unit="mm" x="0" y="0" z="-1551+1504.5"/>
       </physvol>
       <physvol name="Air15phys0x28891b0">
         <volumeref ref="Air15log0x2888d10"/>
-        <position name="Air15phys0x28891b0_pos" unit="mm" x="0" y="0" z="-1547.5"/>
+        <position name="Air15phys0x28891b0_pos" unit="mm" x="0" y="0" z="-1547.5+1504.5"/>
       </physvol>
       <physvol name="PCB15phys0x288bd90">
         <volumeref ref="PCB15log0x288b8d0"/>
-        <position name="PCB15phys0x288bd90_pos" unit="mm" x="0" y="0" z="-1546.5"/>
+        <position name="PCB15phys0x288bd90_pos" unit="mm" x="0" y="0" z="-1546.5+1504.5"/>
       </physvol>
       <physvol name="CFMix15phys0x288e5f0">
         <volumeref ref="CFMix15log0x288e510"/>
-        <position name="CFMix15phys0x288e5f0_pos" unit="mm" x="0" y="0" z="-1545"/>
+        <position name="CFMix15phys0x288e5f0_pos" unit="mm" x="0" y="0" z="-1545+1504.5"/>
       </physvol>
       <physvol name="Si15_0phys0x27e33a0" copynumber="15">
         <volumeref ref="Si15_0log0x27e2ed0"/>
-        <position name="Si15_0phys0x27e33a0_pos" unit="mm" x="0" y="0" z="-1544.95"/>
+        <position name="Si15_0phys0x27e33a0_pos" unit="mm" x="0" y="0" z="-1544.95+1504.5"/>
       </physvol>
       <physvol name="CFMix15phys0x27e6150">
         <volumeref ref="CFMix15log0x27e5c90"/>
-        <position name="CFMix15phys0x27e6150_pos" unit="mm" x="0" y="0" z="-1544.45"/>
+        <position name="CFMix15phys0x27e6150_pos" unit="mm" x="0" y="0" z="-1544.45+1504.5"/>
       </physvol>
       <physvol name="W16phys0x28a0f00">
         <volumeref ref="W16log0x28a0a40"/>
-        <position name="W16phys0x28a0f00_pos" unit="mm" x="0" y="0" z="-1544.25"/>
+        <position name="W16phys0x28a0f00_pos" unit="mm" x="0" y="0" z="-1544.25+1504.5"/>
       </physvol>
       <physvol name="C16phys0x28a3af0">
         <volumeref ref="C16log0x28a3630"/>
-        <position name="C16phys0x28a3af0_pos" unit="mm" x="0" y="0" z="-1542.5"/>
+        <position name="C16phys0x28a3af0_pos" unit="mm" x="0" y="0" z="-1542.5+1504.5"/>
       </physvol>
       <physvol name="Air16phys0x28a6730">
         <volumeref ref="Air16log0x28a6270"/>
-        <position name="Air16phys0x28a6730_pos" unit="mm" x="0" y="0" z="-1542.15"/>
+        <position name="Air16phys0x28a6730_pos" unit="mm" x="0" y="0" z="-1542.15+1504.5"/>
       </physvol>
       <physvol name="C16phys0x28a9320">
         <volumeref ref="C16log0x28a8e60"/>
-        <position name="C16phys0x28a9320_pos" unit="mm" x="0" y="0" z="-1540.85"/>
+        <position name="C16phys0x28a9320_pos" unit="mm" x="0" y="0" z="-1540.85+1504.5"/>
       </physvol>
       <physvol name="W16phys0x28abf60">
         <volumeref ref="W16log0x28abaa0"/>
-        <position name="W16phys0x28abf60_pos" unit="mm" x="0" y="0" z="-1540.5"/>
+        <position name="W16phys0x28abf60_pos" unit="mm" x="0" y="0" z="-1540.5+1504.5"/>
       </physvol>
       <physvol name="CFMix16phys0x28aeb50">
         <volumeref ref="CFMix16log0x28ae690"/>
-        <position name="CFMix16phys0x28aeb50_pos" unit="mm" x="0" y="0" z="-1538.75"/>
+        <position name="CFMix16phys0x28aeb50_pos" unit="mm" x="0" y="0" z="-1538.75+1504.5"/>
       </physvol>
       <physvol name="Si16_0phys0x27f87d0" copynumber="16">
         <volumeref ref="Si16_0log0x27f8310"/>
-        <position name="Si16_0phys0x27f87d0_pos" unit="mm" x="0" y="0" z="-1538.55"/>
+        <position name="Si16_0phys0x27f87d0_pos" unit="mm" x="0" y="0" z="-1538.55+1504.5"/>
       </physvol>
       <physvol name="CFMix16phys0x27fb440">
         <volumeref ref="CFMix16log0x27fb0a0"/>
-        <position name="CFMix16phys0x27fb440_pos" unit="mm" x="0" y="0" z="-1538.05"/>
+        <position name="CFMix16phys0x27fb440_pos" unit="mm" x="0" y="0" z="-1538.05+1504.5"/>
       </physvol>
       <physvol name="PCB16phys0x28bae60">
         <volumeref ref="PCB16log0x28ba9b0"/>
-        <position name="PCB16phys0x28bae60_pos" unit="mm" x="0" y="0" z="-1538"/>
+        <position name="PCB16phys0x28bae60_pos" unit="mm" x="0" y="0" z="-1538+1504.5"/>
       </physvol>
       <physvol name="Air16phys0x28bda70">
         <volumeref ref="Air16log0x28bd5d0"/>
-        <position name="Air16phys0x28bda70_pos" unit="mm" x="0" y="0" z="-1536.5"/>
+        <position name="Air16phys0x28bda70_pos" unit="mm" x="0" y="0" z="-1536.5+1504.5"/>
       </physvol>
       <physvol name="W17phys0x28c0650">
         <volumeref ref="W17log0x28c0190"/>
-        <position name="W17phys0x28c0650_pos" unit="mm" x="0" y="0" z="-1535.5"/>
+        <position name="W17phys0x28c0650_pos" unit="mm" x="0" y="0" z="-1535.5+1504.5"/>
       </physvol>
       <physvol name="Air17phys0x28c3280">
         <volumeref ref="Air17log0x28c2de0"/>
-        <position name="Air17phys0x28c3280_pos" unit="mm" x="0" y="0" z="-1532"/>
+        <position name="Air17phys0x28c3280_pos" unit="mm" x="0" y="0" z="-1532+1504.5"/>
       </physvol>
       <physvol name="PCB17phys0x28c5e90">
         <volumeref ref="PCB17log0x28c59f0"/>
-        <position name="PCB17phys0x28c5e90_pos" unit="mm" x="0" y="0" z="-1531"/>
+        <position name="PCB17phys0x28c5e90_pos" unit="mm" x="0" y="0" z="-1531+1504.5"/>
       </physvol>
       <physvol name="CFMix17phys0x28c8e40">
         <volumeref ref="CFMix17log0x28c8980"/>
-        <position name="CFMix17phys0x28c8e40_pos" unit="mm" x="0" y="0" z="-1529.5"/>
+        <position name="CFMix17phys0x28c8e40_pos" unit="mm" x="0" y="0" z="-1529.5+1504.5"/>
       </physvol>
       <physvol name="Si17_0phys0x28cba90" copynumber="17">
         <volumeref ref="Si17_0log0x28cb5d0"/>
-        <position name="Si17_0phys0x28cba90_pos" unit="mm" x="0" y="0" z="-1529.45"/>
+        <position name="Si17_0phys0x28cba90_pos" unit="mm" x="0" y="0" z="-1529.45+1504.5"/>
       </physvol>
       <physvol name="CFMix17phys0x28ce870">
         <volumeref ref="CFMix17log0x28ce3b0"/>
-        <position name="CFMix17phys0x28ce870_pos" unit="mm" x="0" y="0" z="-1528.95"/>
+        <position name="CFMix17phys0x28ce870_pos" unit="mm" x="0" y="0" z="-1528.95+1504.5"/>
       </physvol>
       <physvol name="W18phys0x28d1460">
         <volumeref ref="W18log0x28d0fa0"/>
-        <position name="W18phys0x28d1460_pos" unit="mm" x="0" y="0" z="-1528.75"/>
+        <position name="W18phys0x28d1460_pos" unit="mm" x="0" y="0" z="-1528.75+1504.5"/>
       </physvol>
       <physvol name="C18phys0x28d40a0">
         <volumeref ref="C18log0x28d3be0"/>
-        <position name="C18phys0x28d40a0_pos" unit="mm" x="0" y="0" z="-1527"/>
+        <position name="C18phys0x28d40a0_pos" unit="mm" x="0" y="0" z="-1527+1504.5"/>
       </physvol>
       <physvol name="Air18phys0x28d6c80">
         <volumeref ref="Air18log0x28d67d0"/>
-        <position name="Air18phys0x28d6c80_pos" unit="mm" x="0" y="0" z="-1526.65"/>
+        <position name="Air18phys0x28d6c80_pos" unit="mm" x="0" y="0" z="-1526.65+1504.5"/>
       </physvol>
       <physvol name="C18phys0x28d98c0">
         <volumeref ref="C18log0x28d9400"/>
-        <position name="C18phys0x28d98c0_pos" unit="mm" x="0" y="0" z="-1525.35"/>
+        <position name="C18phys0x28d98c0_pos" unit="mm" x="0" y="0" z="-1525.35+1504.5"/>
       </physvol>
       <physvol name="W18phys0x28dc4b0">
         <volumeref ref="W18log0x28dbff0"/>
-        <position name="W18phys0x28dc4b0_pos" unit="mm" x="0" y="0" z="-1525"/>
+        <position name="W18phys0x28dc4b0_pos" unit="mm" x="0" y="0" z="-1525+1504.5"/>
       </physvol>
       <physvol name="CFMix18phys0x28df0f0">
         <volumeref ref="CFMix18log0x28dec30"/>
-        <position name="CFMix18phys0x28df0f0_pos" unit="mm" x="0" y="0" z="-1523.25"/>
+        <position name="CFMix18phys0x28df0f0_pos" unit="mm" x="0" y="0" z="-1523.25+1504.5"/>
       </physvol>
       <physvol name="Si18_0phys0x28e1cb0" copynumber="18">
         <volumeref ref="Si18_0log0x28e17d0"/>
-        <position name="Si18_0phys0x28e1cb0_pos" unit="mm" x="0" y="0" z="-1523.05"/>
+        <position name="Si18_0phys0x28e1cb0_pos" unit="mm" x="0" y="0" z="-1523.05+1504.5"/>
       </physvol>
       <physvol name="CFMix18phys0x28e4a50">
         <volumeref ref="CFMix18log0x28e4590"/>
-        <position name="CFMix18phys0x28e4a50_pos" unit="mm" x="0" y="0" z="-1522.55"/>
+        <position name="CFMix18phys0x28e4a50_pos" unit="mm" x="0" y="0" z="-1522.55+1504.5"/>
       </physvol>
       <physvol name="PCB18phys0x28e7640">
         <volumeref ref="PCB18log0x28e7180"/>
-        <position name="PCB18phys0x28e7640_pos" unit="mm" x="0" y="0" z="-1522.5"/>
+        <position name="PCB18phys0x28e7640_pos" unit="mm" x="0" y="0" z="-1522.5+1504.5"/>
       </physvol>
       <physvol name="Air18phys0x28ea260">
         <volumeref ref="Air18log0x28e9dc0"/>
-        <position name="Air18phys0x28ea260_pos" unit="mm" x="0" y="0" z="-1521"/>
+        <position name="Air18phys0x28ea260_pos" unit="mm" x="0" y="0" z="-1521+1504.5"/>
       </physvol>
       <physvol name="W19phys0x28ece20">
         <volumeref ref="W19log0x28ec980"/>
-        <position name="W19phys0x28ece20_pos" unit="mm" x="0" y="0" z="-1520"/>
+        <position name="W19phys0x28ece20_pos" unit="mm" x="0" y="0" z="-1520+1504.5"/>
       </physvol>
       <physvol name="Air19phys0x28efa30">
         <volumeref ref="Air19log0x28ef590"/>
-        <position name="Air19phys0x28efa30_pos" unit="mm" x="0" y="0" z="-1516.5"/>
+        <position name="Air19phys0x28efa30_pos" unit="mm" x="0" y="0" z="-1516.5+1504.5"/>
       </physvol>
       <physvol name="PCB19phys0x28f2610">
         <volumeref ref="PCB19log0x28f2150"/>
-        <position name="PCB19phys0x28f2610_pos" unit="mm" x="0" y="0" z="-1515.5"/>
+        <position name="PCB19phys0x28f2610_pos" unit="mm" x="0" y="0" z="-1515.5+1504.5"/>
       </physvol>
       <physvol name="CFMix19phys0x28f5250">
         <volumeref ref="CFMix19log0x28f4d90"/>
-        <position name="CFMix19phys0x28f5250_pos" unit="mm" x="0" y="0" z="-1514"/>
+        <position name="CFMix19phys0x28f5250_pos" unit="mm" x="0" y="0" z="-1514+1504.5"/>
       </physvol>
       <physvol name="Si19_0phys0x28f7e50" copynumber="19">
         <volumeref ref="Si19_0log0x28f7980"/>
-        <position name="Si19_0phys0x28f7e50_pos" unit="mm" x="0" y="0" z="-1513.95"/>
+        <position name="Si19_0phys0x28f7e50_pos" unit="mm" x="0" y="0" z="-1513.95+1504.5"/>
       </physvol>
       <physvol name="CFMix19phys0x28fac40">
         <volumeref ref="CFMix19log0x28fa780"/>
-        <position name="CFMix19phys0x28fac40_pos" unit="mm" x="0" y="0" z="-1513.45"/>
+        <position name="CFMix19phys0x28fac40_pos" unit="mm" x="0" y="0" z="-1513.45+1504.5"/>
       </physvol>
       <physvol name="W20phys0x28fd830">
         <volumeref ref="W20log0x28fd370"/>
-        <position name="W20phys0x28fd830_pos" unit="mm" x="0" y="0" z="-1513.25"/>
+        <position name="W20phys0x28fd830_pos" unit="mm" x="0" y="0" z="-1513.25+1504.5"/>
       </physvol>
       <physvol name="C20phys0x2900470">
         <volumeref ref="C20log0x28fffb0"/>
-        <position name="C20phys0x2900470_pos" unit="mm" x="0" y="0" z="-1511.5"/>
+        <position name="C20phys0x2900470_pos" unit="mm" x="0" y="0" z="-1511.5+1504.5"/>
       </physvol>
       <physvol name="Air20phys0x2903010">
         <volumeref ref="Air20log0x2902b50"/>
-        <position name="Air20phys0x2903010_pos" unit="mm" x="0" y="0" z="-1511.15"/>
+        <position name="Air20phys0x2903010_pos" unit="mm" x="0" y="0" z="-1511.15+1504.5"/>
       </physvol>
       <physvol name="C20phys0x2905cb0">
         <volumeref ref="C20log0x29057f0"/>
-        <position name="C20phys0x2905cb0_pos" unit="mm" x="0" y="0" z="-1509.85"/>
+        <position name="C20phys0x2905cb0_pos" unit="mm" x="0" y="0" z="-1509.85+1504.5"/>
       </physvol>
       <physvol name="W20phys0x29088a0">
         <volumeref ref="W20log0x29083e0"/>
-        <position name="W20phys0x29088a0_pos" unit="mm" x="0" y="0" z="-1509.5"/>
+        <position name="W20phys0x29088a0_pos" unit="mm" x="0" y="0" z="-1509.5+1504.5"/>
       </physvol>
       <physvol name="CFMix20phys0x290b4e0">
         <volumeref ref="CFMix20log0x290b020"/>
-        <position name="CFMix20phys0x290b4e0_pos" unit="mm" x="0" y="0" z="-1507.75"/>
+        <position name="CFMix20phys0x290b4e0_pos" unit="mm" x="0" y="0" z="-1507.75+1504.5"/>
       </physvol>
       <physvol name="Si20_0phys0x290e0f0" copynumber="20">
         <volumeref ref="Si20_0log0x290dc10"/>
-        <position name="Si20_0phys0x290e0f0_pos" unit="mm" x="0" y="0" z="-1507.55"/>
+        <position name="Si20_0phys0x290e0f0_pos" unit="mm" x="0" y="0" z="-1507.55+1504.5"/>
       </physvol>
       <physvol name="CFMix20phys0x2910e30">
         <volumeref ref="CFMix20log0x2910970"/>
-        <position name="CFMix20phys0x2910e30_pos" unit="mm" x="0" y="0" z="-1507.05"/>
+        <position name="CFMix20phys0x2910e30_pos" unit="mm" x="0" y="0" z="-1507.05+1504.5"/>
       </physvol>
       <physvol name="PCB20phys0x2913a10">
         <volumeref ref="PCB20log0x2913560"/>
-        <position name="PCB20phys0x2913a10_pos" unit="mm" x="0" y="0" z="-1507"/>
+        <position name="PCB20phys0x2913a10_pos" unit="mm" x="0" y="0" z="-1507+1504.5"/>
       </physvol>
       <physvol name="Air20phys0x2916630">
         <volumeref ref="Air20log0x2916190"/>
-        <position name="Air20phys0x2916630_pos" unit="mm" x="0" y="0" z="-1505.5"/>
+        <position name="Air20phys0x2916630_pos" unit="mm" x="0" y="0" z="-1505.5+1504.5"/>
       </physvol>
       <physvol name="W21phys0x2919210">
         <volumeref ref="W21log0x2918d50"/>
-        <position name="W21phys0x2919210_pos" unit="mm" x="0" y="0" z="-1504.5"/>
+        <position name="W21phys0x2919210_pos" unit="mm" x="0" y="0" z="-1504.5+1504.5"/>
       </physvol>
       <physvol name="Air21phys0x291be20">
         <volumeref ref="Air21log0x291b990"/>
-        <position name="Air21phys0x291be20_pos" unit="mm" x="0" y="0" z="-1501"/>
+        <position name="Air21phys0x291be20_pos" unit="mm" x="0" y="0" z="-1501+1504.5"/>
       </physvol>
       <physvol name="PCB21phys0x291c1d0">
         <volumeref ref="PCB21log0x291e540"/>
-        <position name="PCB21phys0x291c1d0_pos" unit="mm" x="0" y="0" z="-1500"/>
+        <position name="PCB21phys0x291c1d0_pos" unit="mm" x="0" y="0" z="-1500+1504.5"/>
       </physvol>
       <physvol name="CFMix21phys0x28240e0">
         <volumeref ref="CFMix21log0x2823c20"/>
-        <position name="CFMix21phys0x28240e0_pos" unit="mm" x="0" y="0" z="-1498.5"/>
+        <position name="CFMix21phys0x28240e0_pos" unit="mm" x="0" y="0" z="-1498.5+1504.5"/>
       </physvol>
       <physvol name="Si21_0phys0x2928230" copynumber="21">
         <volumeref ref="Si21_0log0x2927d60"/>
-        <position name="Si21_0phys0x2928230_pos" unit="mm" x="0" y="0" z="-1498.45"/>
+        <position name="Si21_0phys0x2928230_pos" unit="mm" x="0" y="0" z="-1498.45+1504.5"/>
       </physvol>
       <physvol name="CFMix21phys0x292af50">
         <volumeref ref="CFMix21log0x292aa90"/>
-        <position name="CFMix21phys0x292af50_pos" unit="mm" x="0" y="0" z="-1497.95"/>
+        <position name="CFMix21phys0x292af50_pos" unit="mm" x="0" y="0" z="-1497.95+1504.5"/>
       </physvol>
       <physvol name="W22phys0x292db40">
         <volumeref ref="W22log0x292d680"/>
-        <position name="W22phys0x292db40_pos" unit="mm" x="0" y="0" z="-1497.75"/>
+        <position name="W22phys0x292db40_pos" unit="mm" x="0" y="0" z="-1497.75+1504.5"/>
       </physvol>
       <physvol name="C22phys0x2930780">
         <volumeref ref="C22log0x29302c0"/>
-        <position name="C22phys0x2930780_pos" unit="mm" x="0" y="0" z="-1496"/>
+        <position name="C22phys0x2930780_pos" unit="mm" x="0" y="0" z="-1496+1504.5"/>
       </physvol>
       <physvol name="Air22phys0x2933370">
         <volumeref ref="Air22log0x2932eb0"/>
-        <position name="Air22phys0x2933370_pos" unit="mm" x="0" y="0" z="-1495.65"/>
+        <position name="Air22phys0x2933370_pos" unit="mm" x="0" y="0" z="-1495.65+1504.5"/>
       </physvol>
       <physvol name="C22phys0x2935fb0">
         <volumeref ref="C22log0x2935af0"/>
-        <position name="C22phys0x2935fb0_pos" unit="mm" x="0" y="0" z="-1494.35"/>
+        <position name="C22phys0x2935fb0_pos" unit="mm" x="0" y="0" z="-1494.35+1504.5"/>
       </physvol>
       <physvol name="W22phys0x2938ba0">
         <volumeref ref="W22log0x29386e0"/>
-        <position name="W22phys0x2938ba0_pos" unit="mm" x="0" y="0" z="-1494"/>
+        <position name="W22phys0x2938ba0_pos" unit="mm" x="0" y="0" z="-1494+1504.5"/>
       </physvol>
       <physvol name="CFMix22phys0x293b7e0">
         <volumeref ref="CFMix22log0x293b320"/>
-        <position name="CFMix22phys0x293b7e0_pos" unit="mm" x="0" y="0" z="-1492.25"/>
+        <position name="CFMix22phys0x293b7e0_pos" unit="mm" x="0" y="0" z="-1492.25+1504.5"/>
       </physvol>
       <physvol name="Si22_0phys0x273d9f0" copynumber="22">
         <volumeref ref="Si22_0log0x273d510"/>
-        <position name="Si22_0phys0x273d9f0_pos" unit="mm" x="0" y="0" z="-1492.05"/>
+        <position name="Si22_0phys0x273d9f0_pos" unit="mm" x="0" y="0" z="-1492.05+1504.5"/>
       </physvol>
       <physvol name="CFMix22phys0x2945130">
         <volumeref ref="CFMix22log0x2944d00"/>
-        <position name="CFMix22phys0x2945130_pos" unit="mm" x="0" y="0" z="-1491.55"/>
+        <position name="CFMix22phys0x2945130_pos" unit="mm" x="0" y="0" z="-1491.55+1504.5"/>
       </physvol>
       <physvol name="PCB22phys0x2947c80">
         <volumeref ref="PCB22log0x2947780"/>
-        <position name="PCB22phys0x2947c80_pos" unit="mm" x="0" y="0" z="-1491.5"/>
+        <position name="PCB22phys0x2947c80_pos" unit="mm" x="0" y="0" z="-1491.5+1504.5"/>
       </physvol>
       <physvol name="Air22phys0x294a8d0">
         <volumeref ref="Air22log0x294a430"/>
-        <position name="Air22phys0x294a8d0_pos" unit="mm" x="0" y="0" z="-1490"/>
+        <position name="Air22phys0x294a8d0_pos" unit="mm" x="0" y="0" z="-1490+1504.5"/>
       </physvol>
       <physvol name="W23phys0x294d500">
         <volumeref ref="W23log0x294d060"/>
-        <position name="W23phys0x294d500_pos" unit="mm" x="0" y="0" z="-1489"/>
+        <position name="W23phys0x294d500_pos" unit="mm" x="0" y="0" z="-1489+1504.5"/>
       </physvol>
       <physvol name="Air23phys0x29500c0">
         <volumeref ref="Air23log0x294fc20"/>
-        <position name="Air23phys0x29500c0_pos" unit="mm" x="0" y="0" z="-1485.5"/>
+        <position name="Air23phys0x29500c0_pos" unit="mm" x="0" y="0" z="-1485.5+1504.5"/>
       </physvol>
       <physvol name="PCB23phys0x2952cf0">
         <volumeref ref="PCB23log0x2952830"/>
-        <position name="PCB23phys0x2952cf0_pos" unit="mm" x="0" y="0" z="-1484.5"/>
+        <position name="PCB23phys0x2952cf0_pos" unit="mm" x="0" y="0" z="-1484.5+1504.5"/>
       </physvol>
       <physvol name="CFMix23phys0x29558e0">
         <volumeref ref="CFMix23log0x2955420"/>
-        <position name="CFMix23phys0x29558e0_pos" unit="mm" x="0" y="0" z="-1483"/>
+        <position name="CFMix23phys0x29558e0_pos" unit="mm" x="0" y="0" z="-1483+1504.5"/>
       </physvol>
       <physvol name="Si23_0phys0x2958530" copynumber="23">
         <volumeref ref="Si23_0log0x2958060"/>
-        <position name="Si23_0phys0x2958530_pos" unit="mm" x="0" y="0" z="-1482.95"/>
+        <position name="Si23_0phys0x2958530_pos" unit="mm" x="0" y="0" z="-1482.95+1504.5"/>
       </physvol>
       <physvol name="CFMix23phys0x295b250">
         <volumeref ref="CFMix23log0x295ad90"/>
-        <position name="CFMix23phys0x295b250_pos" unit="mm" x="0" y="0" z="-1482.45"/>
+        <position name="CFMix23phys0x295b250_pos" unit="mm" x="0" y="0" z="-1482.45+1504.5"/>
       </physvol>
       <physvol name="W24phys0x295de40">
         <volumeref ref="W24log0x295d980"/>
-        <position name="W24phys0x295de40_pos" unit="mm" x="0" y="0" z="-1482.25"/>
+        <position name="W24phys0x295de40_pos" unit="mm" x="0" y="0" z="-1482.25+1504.5"/>
       </physvol>
       <physvol name="C24phys0x2960a80">
         <volumeref ref="C24log0x29605c0"/>
-        <position name="C24phys0x2960a80_pos" unit="mm" x="0" y="0" z="-1480.5"/>
+        <position name="C24phys0x2960a80_pos" unit="mm" x="0" y="0" z="-1480.5+1504.5"/>
       </physvol>
       <physvol name="Air24phys0x2963670">
         <volumeref ref="Air24log0x29631b0"/>
-        <position name="Air24phys0x2963670_pos" unit="mm" x="0" y="0" z="-1480.15"/>
+        <position name="Air24phys0x2963670_pos" unit="mm" x="0" y="0" z="-1480.15+1504.5"/>
       </physvol>
       <physvol name="C24phys0x29662b0">
         <volumeref ref="C24log0x2965df0"/>
-        <position name="C24phys0x29662b0_pos" unit="mm" x="0" y="0" z="-1478.85"/>
+        <position name="C24phys0x29662b0_pos" unit="mm" x="0" y="0" z="-1478.85+1504.5"/>
       </physvol>
       <physvol name="W24phys0x2968e00">
         <volumeref ref="W24log0x2968900"/>
-        <position name="W24phys0x2968e00_pos" unit="mm" x="0" y="0" z="-1478.5"/>
+        <position name="W24phys0x2968e00_pos" unit="mm" x="0" y="0" z="-1478.5+1504.5"/>
       </physvol>
       <physvol name="CFMix24phys0x296ba70">
         <volumeref ref="CFMix24log0x296b5b0"/>
-        <position name="CFMix24phys0x296ba70_pos" unit="mm" x="0" y="0" z="-1476.75"/>
+        <position name="CFMix24phys0x296ba70_pos" unit="mm" x="0" y="0" z="-1476.75+1504.5"/>
       </physvol>
       <physvol name="Si24_0phys0x296e6f0" copynumber="24">
         <volumeref ref="Si24_0log0x296e210"/>
-        <position name="Si24_0phys0x296e6f0_pos" unit="mm" x="0" y="0" z="-1476.55"/>
+        <position name="Si24_0phys0x296e6f0_pos" unit="mm" x="0" y="0" z="-1476.55+1504.5"/>
       </physvol>
       <physvol name="CFMix24phys0x2971410">
         <volumeref ref="CFMix24log0x2970f50"/>
-        <position name="CFMix24phys0x2971410_pos" unit="mm" x="0" y="0" z="-1476.05"/>
+        <position name="CFMix24phys0x2971410_pos" unit="mm" x="0" y="0" z="-1476.05+1504.5"/>
       </physvol>
       <physvol name="PCB24phys0x2973ff0">
         <volumeref ref="PCB24log0x2973b40"/>
-        <position name="PCB24phys0x2973ff0_pos" unit="mm" x="0" y="0" z="-1476"/>
+        <position name="PCB24phys0x2973ff0_pos" unit="mm" x="0" y="0" z="-1476+1504.5"/>
       </physvol>
       <physvol name="Air24phys0x2976c10">
         <volumeref ref="Air24log0x2976770"/>
-        <position name="Air24phys0x2976c10_pos" unit="mm" x="0" y="0" z="-1474.5"/>
+        <position name="Air24phys0x2976c10_pos" unit="mm" x="0" y="0" z="-1474.5+1504.5"/>
       </physvol>
       <physvol name="W25phys0x29797e0">
         <volumeref ref="W25log0x2979330"/>
-        <position name="W25phys0x29797e0_pos" unit="mm" x="0" y="0" z="-1473.5"/>
+        <position name="W25phys0x29797e0_pos" unit="mm" x="0" y="0" z="-1473.5+1504.5"/>
       </physvol>
       <physvol name="Air25phys0x297c400">
         <volumeref ref="Air25log0x297bf60"/>
-        <position name="Air25phys0x297c400_pos" unit="mm" x="0" y="0" z="-1466.5"/>
+        <position name="Air25phys0x297c400_pos" unit="mm" x="0" y="0" z="-1466.5+1504.5"/>
       </physvol>
       <physvol name="PCB25phys0x297efd0">
         <volumeref ref="PCB25log0x297eb20"/>
-        <position name="PCB25phys0x297efd0_pos" unit="mm" x="0" y="0" z="-1465.5"/>
+        <position name="PCB25phys0x297efd0_pos" unit="mm" x="0" y="0" z="-1465.5+1504.5"/>
       </physvol>
       <physvol name="CFMix25phys0x2981c10">
         <volumeref ref="CFMix25log0x2981750"/>
-        <position name="CFMix25phys0x2981c10_pos" unit="mm" x="0" y="0" z="-1464"/>
+        <position name="CFMix25phys0x2981c10_pos" unit="mm" x="0" y="0" z="-1464+1504.5"/>
       </physvol>
       <physvol name="Si25_0phys0x2984800" copynumber="25">
         <volumeref ref="Si25_0log0x2984340"/>
-        <position name="Si25_0phys0x2984800_pos" unit="mm" x="0" y="0" z="-1463.95"/>
+        <position name="Si25_0phys0x2984800_pos" unit="mm" x="0" y="0" z="-1463.95+1504.5"/>
       </physvol>
       <physvol name="CFMix25phys0x2987550">
         <volumeref ref="CFMix25log0x2987090"/>
-        <position name="CFMix25phys0x2987550_pos" unit="mm" x="0" y="0" z="-1463.45"/>
+        <position name="CFMix25phys0x2987550_pos" unit="mm" x="0" y="0" z="-1463.45+1504.5"/>
       </physvol>
       <physvol name="W26phys0x298a0f0">
         <volumeref ref="W26log0x2989c30"/>
-        <position name="W26phys0x298a0f0_pos" unit="mm" x="0" y="0" z="-1463.25"/>
+        <position name="W26phys0x298a0f0_pos" unit="mm" x="0" y="0" z="-1463.25+1504.5"/>
       </physvol>
       <physvol name="C26phys0x298cd90">
         <volumeref ref="C26log0x298c8d0"/>
-        <position name="C26phys0x298cd90_pos" unit="mm" x="0" y="0" z="-1459.75"/>
+        <position name="C26phys0x298cd90_pos" unit="mm" x="0" y="0" z="-1459.75+1504.5"/>
       </physvol>
       <physvol name="Air26phys0x2864bb0">
         <volumeref ref="Air26log0x298f4c0"/>
-        <position name="Air26phys0x2864bb0_pos" unit="mm" x="0" y="0" z="-1459.4"/>
+        <position name="Air26phys0x2864bb0_pos" unit="mm" x="0" y="0" z="-1459.4+1504.5"/>
       </physvol>
       <physvol name="C26phys0x29931a0">
         <volumeref ref="C26log0x2992ce0"/>
-        <position name="C26phys0x29931a0_pos" unit="mm" x="0" y="0" z="-1458.1"/>
+        <position name="C26phys0x29931a0_pos" unit="mm" x="0" y="0" z="-1458.1+1504.5"/>
       </physvol>
       <physvol name="W26phys0x2995df0">
         <volumeref ref="W26log0x2995930"/>
-        <position name="W26phys0x2995df0_pos" unit="mm" x="0" y="0" z="-1457.75"/>
+        <position name="W26phys0x2995df0_pos" unit="mm" x="0" y="0" z="-1457.75+1504.5"/>
       </physvol>
       <physvol name="CFMix26phys0x2998a30">
         <volumeref ref="CFMix26log0x2998570"/>
-        <position name="CFMix26phys0x2998a30_pos" unit="mm" x="0" y="0" z="-1454.25"/>
+        <position name="CFMix26phys0x2998a30_pos" unit="mm" x="0" y="0" z="-1454.25+1504.5"/>
       </physvol>
       <physvol name="Si26_0phys0x299b620" copynumber="26">
         <volumeref ref="Si26_0log0x299b160"/>
-        <position name="Si26_0phys0x299b620_pos" unit="mm" x="0" y="0" z="-1454.05"/>
+        <position name="Si26_0phys0x299b620_pos" unit="mm" x="0" y="0" z="-1454.05+1504.5"/>
       </physvol>
       <physvol name="CFMix26phys0x299e370">
         <volumeref ref="CFMix26log0x299deb0"/>
-        <position name="CFMix26phys0x299e370_pos" unit="mm" x="0" y="0" z="-1453.55"/>
+        <position name="CFMix26phys0x299e370_pos" unit="mm" x="0" y="0" z="-1453.55+1504.5"/>
       </physvol>
       <physvol name="PCB26phys0x29a0f60">
         <volumeref ref="PCB26log0x29a0aa0"/>
-        <position name="PCB26phys0x29a0f60_pos" unit="mm" x="0" y="0" z="-1453.5"/>
+        <position name="PCB26phys0x29a0f60_pos" unit="mm" x="0" y="0" z="-1453.5+1504.5"/>
       </physvol>
       <physvol name="Air26phys0x29a3b70">
         <volumeref ref="Air26log0x29a36e0"/>
-        <position name="Air26phys0x29a3b70_pos" unit="mm" x="0" y="0" z="-1452"/>
+        <position name="Air26phys0x29a3b70_pos" unit="mm" x="0" y="0" z="-1452+1504.5"/>
       </physvol>
       <physvol name="W27phys0x29a6730">
         <volumeref ref="W27log0x29a6290"/>
-        <position name="W27phys0x29a6730_pos" unit="mm" x="0" y="0" z="-1451"/>
+        <position name="W27phys0x29a6730_pos" unit="mm" x="0" y="0" z="-1451+1504.5"/>
       </physvol>
       <physvol name="Air27phys0x29a9330">
         <volumeref ref="Air27log0x29a8ea0"/>
-        <position name="Air27phys0x29a9330_pos" unit="mm" x="0" y="0" z="-1444"/>
+        <position name="Air27phys0x29a9330_pos" unit="mm" x="0" y="0" z="-1444+1504.5"/>
       </physvol>
       <physvol name="PCB27phys0x29abea0">
         <volumeref ref="PCB27log0x29aba00"/>
-        <position name="PCB27phys0x29abea0_pos" unit="mm" x="0" y="0" z="-1443"/>
+        <position name="PCB27phys0x29abea0_pos" unit="mm" x="0" y="0" z="-1443+1504.5"/>
       </physvol>
       <physvol name="CFMix27phys0x29aeb30">
         <volumeref ref="CFMix27log0x29ae670"/>
-        <position name="CFMix27phys0x29aeb30_pos" unit="mm" x="0" y="0" z="-1441.5"/>
+        <position name="CFMix27phys0x29aeb30_pos" unit="mm" x="0" y="0" z="-1441.5+1504.5"/>
       </physvol>
       <physvol name="Si27_0phys0x29b1720" copynumber="27">
         <volumeref ref="Si27_0log0x29b1260"/>
-        <position name="Si27_0phys0x29b1720_pos" unit="mm" x="0" y="0" z="-1441.45"/>
+        <position name="Si27_0phys0x29b1720_pos" unit="mm" x="0" y="0" z="-1441.45+1504.5"/>
       </physvol>
       <physvol name="CFMix27phys0x29abee0">
         <volumeref ref="CFMix27log0x29b3fb0"/>
-        <position name="CFMix27phys0x29abee0_pos" unit="mm" x="0" y="0" z="-1440.95"/>
+        <position name="CFMix27phys0x29abee0_pos" unit="mm" x="0" y="0" z="-1440.95+1504.5"/>
       </physvol>
       <physvol name="W28phys0x2862bf0">
         <volumeref ref="W28log0x2862730"/>
-        <position name="W28phys0x2862bf0_pos" unit="mm" x="0" y="0" z="-1440.75"/>
+        <position name="W28phys0x2862bf0_pos" unit="mm" x="0" y="0" z="-1440.75+1504.5"/>
       </physvol>
       <physvol name="C28phys0x29bdca0">
         <volumeref ref="C28log0x29bd7e0"/>
-        <position name="C28phys0x29bdca0_pos" unit="mm" x="0" y="0" z="-1437.25"/>
+        <position name="C28phys0x29bdca0_pos" unit="mm" x="0" y="0" z="-1437.25+1504.5"/>
       </physvol>
       <physvol name="Air28phys0x29c0850">
         <volumeref ref="Air28log0x29c03b0"/>
-        <position name="Air28phys0x29c0850_pos" unit="mm" x="0" y="0" z="-1436.9"/>
+        <position name="Air28phys0x29c0850_pos" unit="mm" x="0" y="0" z="-1436.9+1504.5"/>
       </physvol>
       <physvol name="C28phys0x29c3480">
         <volumeref ref="C28log0x29c2fc0"/>
-        <position name="C28phys0x29c3480_pos" unit="mm" x="0" y="0" z="-1435.6"/>
+        <position name="C28phys0x29c3480_pos" unit="mm" x="0" y="0" z="-1435.6+1504.5"/>
       </physvol>
       <physvol name="W28phys0x29c6070">
         <volumeref ref="W28log0x29c5bb0"/>
-        <position name="W28phys0x29c6070_pos" unit="mm" x="0" y="0" z="-1435.25"/>
+        <position name="W28phys0x29c6070_pos" unit="mm" x="0" y="0" z="-1435.25+1504.5"/>
       </physvol>
       <physvol name="CFMix28phys0x29c8cb0">
         <volumeref ref="CFMix28log0x29c87f0"/>
-        <position name="CFMix28phys0x29c8cb0_pos" unit="mm" x="0" y="0" z="-1431.75"/>
+        <position name="CFMix28phys0x29c8cb0_pos" unit="mm" x="0" y="0" z="-1431.75+1504.5"/>
       </physvol>
       <physvol name="Si28_0phys0x29cb810" copynumber="28">
         <volumeref ref="Si28_0log0x29cb300"/>
-        <position name="Si28_0phys0x29cb810_pos" unit="mm" x="0" y="0" z="-1431.55"/>
+        <position name="Si28_0phys0x29cb810_pos" unit="mm" x="0" y="0" z="-1431.55+1504.5"/>
       </physvol>
       <physvol name="CFMix28phys0x29ce5f0">
         <volumeref ref="CFMix28log0x29ce130"/>
-        <position name="CFMix28phys0x29ce5f0_pos" unit="mm" x="0" y="0" z="-1431.05"/>
+        <position name="CFMix28phys0x29ce5f0_pos" unit="mm" x="0" y="0" z="-1431.05+1504.5"/>
       </physvol>
       <physvol name="PCB28phys0x29d11c0">
         <volumeref ref="PCB28log0x29d0d20"/>
-        <position name="PCB28phys0x29d11c0_pos" unit="mm" x="0" y="0" z="-1431"/>
+        <position name="PCB28phys0x29d11c0_pos" unit="mm" x="0" y="0" z="-1431+1504.5"/>
       </physvol>
       <physvol name="Air28phys0x29d3dd0">
         <volumeref ref="Air28log0x29d3930"/>
-        <position name="Air28phys0x29d3dd0_pos" unit="mm" x="0" y="0" z="-1429.5"/>
+        <position name="Air28phys0x29d3dd0_pos" unit="mm" x="0" y="0" z="-1429.5+1504.5"/>
       </physvol>
       <physvol name="W29phys0x29d6990">
         <volumeref ref="W29log0x29d64f0"/>
-        <position name="W29phys0x29d6990_pos" unit="mm" x="0" y="0" z="-1428.5"/>
+        <position name="W29phys0x29d6990_pos" unit="mm" x="0" y="0" z="-1428.5+1504.5"/>
       </physvol>
       <physvol name="Air29phys0x29d95a0">
         <volumeref ref="Air29log0x29d9100"/>
-        <position name="Air29phys0x29d95a0_pos" unit="mm" x="0" y="0" z="-1421.5"/>
+        <position name="Air29phys0x29d95a0_pos" unit="mm" x="0" y="0" z="-1421.5+1504.5"/>
       </physvol>
       <physvol name="PCB29phys0x29dc170">
         <volumeref ref="PCB29log0x29dbcc0"/>
-        <position name="PCB29phys0x29dc170_pos" unit="mm" x="0" y="0" z="-1420.5"/>
+        <position name="PCB29phys0x29dc170_pos" unit="mm" x="0" y="0" z="-1420.5+1504.5"/>
       </physvol>
       <physvol name="CFMix29phys0x29dedb0">
         <volumeref ref="CFMix29log0x29de8f0"/>
-        <position name="CFMix29phys0x29dedb0_pos" unit="mm" x="0" y="0" z="-1419"/>
+        <position name="CFMix29phys0x29dedb0_pos" unit="mm" x="0" y="0" z="-1419+1504.5"/>
       </physvol>
       <physvol name="Si29_0phys0x29e19a0" copynumber="29">
         <volumeref ref="Si29_0log0x29e14e0"/>
-        <position name="Si29_0phys0x29e19a0_pos" unit="mm" x="0" y="0" z="-1418.95"/>
+        <position name="Si29_0phys0x29e19a0_pos" unit="mm" x="0" y="0" z="-1418.95+1504.5"/>
       </physvol>
       <physvol name="CFMix29phys0x29e46f0">
         <volumeref ref="CFMix29log0x29e4230"/>
-        <position name="CFMix29phys0x29e46f0_pos" unit="mm" x="0" y="0" z="-1418.45"/>
+        <position name="CFMix29phys0x29e46f0_pos" unit="mm" x="0" y="0" z="-1418.45+1504.5"/>
       </physvol>
       <physvol name="W30phys0x29e72e0">
         <volumeref ref="W30log0x29e6e20"/>
-        <position name="W30phys0x29e72e0_pos" unit="mm" x="0" y="0" z="-1418.25"/>
+        <position name="W30phys0x29e72e0_pos" unit="mm" x="0" y="0" z="-1418.25+1504.5"/>
       </physvol>
       <physvol name="C30phys0x29e9f20">
         <volumeref ref="C30log0x29e9a60"/>
-        <position name="C30phys0x29e9f20_pos" unit="mm" x="0" y="0" z="-1414.75"/>
+        <position name="C30phys0x29e9f20_pos" unit="mm" x="0" y="0" z="-1414.75+1504.5"/>
       </physvol>
       <physvol name="Air30phys0x29eca50">
         <volumeref ref="Air30log0x29ec570"/>
-        <position name="Air30phys0x29eca50_pos" unit="mm" x="0" y="0" z="-1414.4"/>
+        <position name="Air30phys0x29eca50_pos" unit="mm" x="0" y="0" z="-1414.4+1504.5"/>
       </physvol>
       <physvol name="C30phys0x29ef700">
         <volumeref ref="C30log0x29ef240"/>
-        <position name="C30phys0x29ef700_pos" unit="mm" x="0" y="0" z="-1413.1"/>
+        <position name="C30phys0x29ef700_pos" unit="mm" x="0" y="0" z="-1413.1+1504.5"/>
       </physvol>
       <physvol name="W30phys0x29f2340">
         <volumeref ref="W30log0x29f1e80"/>
-        <position name="W30phys0x29f2340_pos" unit="mm" x="0" y="0" z="-1412.75"/>
+        <position name="W30phys0x29f2340_pos" unit="mm" x="0" y="0" z="-1412.75+1504.5"/>
       </physvol>
       <physvol name="CFMix30phys0x29f4f30">
         <volumeref ref="CFMix30log0x29f4a70"/>
-        <position name="CFMix30phys0x29f4f30_pos" unit="mm" x="0" y="0" z="-1409.25"/>
+        <position name="CFMix30phys0x29f4f30_pos" unit="mm" x="0" y="0" z="-1409.25+1504.5"/>
       </physvol>
       <physvol name="Si30_0phys0x29f7c00" copynumber="30">
         <volumeref ref="Si30_0log0x29f76b0"/>
-        <position name="Si30_0phys0x29f7c00_pos" unit="mm" x="0" y="0" z="-1409.05"/>
+        <position name="Si30_0phys0x29f7c00_pos" unit="mm" x="0" y="0" z="-1409.05+1504.5"/>
       </physvol>
       <physvol name="CFMix30phys0x2891700">
         <volumeref ref="CFMix30log0x2891240"/>
-        <position name="CFMix30phys0x2891700_pos" unit="mm" x="0" y="0" z="-1408.55"/>
+        <position name="CFMix30phys0x2891700_pos" unit="mm" x="0" y="0" z="-1408.55+1504.5"/>
       </physvol>
       <physvol name="PCB30phys0x2894370">
         <volumeref ref="PCB30log0x2893eb0"/>
-        <position name="PCB30phys0x2894370_pos" unit="mm" x="0" y="0" z="-1408.5"/>
+        <position name="PCB30phys0x2894370_pos" unit="mm" x="0" y="0" z="-1408.5+1504.5"/>
       </physvol>
       <physvol name="Air30phys0x2896f60">
         <volumeref ref="Air30log0x2896ac0"/>
-        <position name="Air30phys0x2896f60_pos" unit="mm" x="0" y="0" z="-1407"/>
+        <position name="Air30phys0x2896f60_pos" unit="mm" x="0" y="0" z="-1407+1504.5"/>
       </physvol>
       <physvol name="W31phys0x2899b40">
         <volumeref ref="W31log0x28996a0"/>
-        <position name="W31phys0x2899b40_pos" unit="mm" x="0" y="0" z="-1406"/>
+        <position name="W31phys0x2899b40_pos" unit="mm" x="0" y="0" z="-1406+1504.5"/>
       </physvol>
       <physvol name="Air31phys0x289c710">
         <volumeref ref="Air31log0x289c280"/>
-        <position name="Air31phys0x289c710_pos" unit="mm" x="0" y="0" z="-1399"/>
+        <position name="Air31phys0x289c710_pos" unit="mm" x="0" y="0" z="-1399+1504.5"/>
       </physvol>
       <physvol name="PCB31phys0x2a18440">
         <volumeref ref="PCB31log0x2a17fa0"/>
-        <position name="PCB31phys0x2a18440_pos" unit="mm" x="0" y="0" z="-1398"/>
+        <position name="PCB31phys0x2a18440_pos" unit="mm" x="0" y="0" z="-1398+1504.5"/>
       </physvol>
       <physvol name="CFMix31phys0x2891740">
         <volumeref ref="CFMix31log0x2a1ab60"/>
-        <position name="CFMix31phys0x2891740_pos" unit="mm" x="0" y="0" z="-1396.5"/>
+        <position name="CFMix31phys0x2891740_pos" unit="mm" x="0" y="0" z="-1396.5+1504.5"/>
       </physvol>
       <physvol name="Si31_0phys0x27e13a0" copynumber="31">
         <volumeref ref="Si31_0log0x27e0ee0"/>
-        <position name="Si31_0phys0x27e13a0_pos" unit="mm" x="0" y="0" z="-1396.45"/>
+        <position name="Si31_0phys0x27e13a0_pos" unit="mm" x="0" y="0" z="-1396.45+1504.5"/>
       </physvol>
       <physvol name="CFMix31phys0x2a24980">
         <volumeref ref="CFMix31log0x2a244c0"/>
-        <position name="CFMix31phys0x2a24980_pos" unit="mm" x="0" y="0" z="-1395.95"/>
+        <position name="CFMix31phys0x2a24980_pos" unit="mm" x="0" y="0" z="-1395.95+1504.5"/>
       </physvol>
       <physvol name="W32phys0x2a27550">
         <volumeref ref="W32log0x2a27090"/>
-        <position name="W32phys0x2a27550_pos" unit="mm" x="0" y="0" z="-1395.75"/>
+        <position name="W32phys0x2a27550_pos" unit="mm" x="0" y="0" z="-1395.75+1504.5"/>
       </physvol>
       <physvol name="C32phys0x2a2a190">
         <volumeref ref="C32log0x2a29cd0"/>
-        <position name="C32phys0x2a2a190_pos" unit="mm" x="0" y="0" z="-1392.25"/>
+        <position name="C32phys0x2a2a190_pos" unit="mm" x="0" y="0" z="-1392.25+1504.5"/>
       </physvol>
       <physvol name="Air32phys0x28b3a00">
         <volumeref ref="Air32log0x28b3560"/>
-        <position name="Air32phys0x28b3a00_pos" unit="mm" x="0" y="0" z="-1391.9"/>
+        <position name="Air32phys0x28b3a00_pos" unit="mm" x="0" y="0" z="-1391.9+1504.5"/>
       </physvol>
       <physvol name="C32phys0x28b6680">
         <volumeref ref="C32log0x28b61c0"/>
-        <position name="C32phys0x28b6680_pos" unit="mm" x="0" y="0" z="-1390.6"/>
+        <position name="C32phys0x28b6680_pos" unit="mm" x="0" y="0" z="-1390.6+1504.5"/>
       </physvol>
       <physvol name="W32phys0x2a38900">
         <volumeref ref="W32log0x2a38400"/>
-        <position name="W32phys0x2a38900_pos" unit="mm" x="0" y="0" z="-1390.25"/>
+        <position name="W32phys0x2a38900_pos" unit="mm" x="0" y="0" z="-1390.25+1504.5"/>
       </physvol>
       <physvol name="CFMix32phys0x2a3b5c0">
         <volumeref ref="CFMix32log0x2a3b100"/>
-        <position name="CFMix32phys0x2a3b5c0_pos" unit="mm" x="0" y="0" z="-1386.75"/>
+        <position name="CFMix32phys0x2a3b5c0_pos" unit="mm" x="0" y="0" z="-1386.75+1504.5"/>
       </physvol>
       <physvol name="Si32_0phys0x2a3e1c0" copynumber="32">      
         <volumeref ref="Si32_0log0x2a3dcf0"/>
-        <position name="Si32_0phys0x2a3e1c0_pos" unit="mm" x="0" y="0" z="-1386.55"/>
+        <position name="Si32_0phys0x2a3e1c0_pos" unit="mm" x="0" y="0" z="-1386.55+1504.5"/>
       </physvol>
       <physvol name="CFMix32phys0x2a3e610">
         <volumeref ref="CFMix32log0x2a40a40"/>
-        <position name="CFMix32phys0x2a3e610_pos" unit="mm" x="0" y="0" z="-1386.05"/>
+        <position name="CFMix32phys0x2a3e610_pos" unit="mm" x="0" y="0" z="-1386.05+1504.5"/>
       </physvol>
       <physvol name="PCB32phys0x2a452a0">
         <volumeref ref="PCB32log0x2a44e00"/>
-        <position name="PCB32phys0x2a452a0_pos" unit="mm" x="0" y="0" z="-1386"/>
+        <position name="PCB32phys0x2a452a0_pos" unit="mm" x="0" y="0" z="-1386+1504.5"/>
       </physvol>
       <physvol name="Air32phys0x2a47ec0">
         <volumeref ref="Air32log0x2a47a20"/>
-        <position name="Air32phys0x2a47ec0_pos" unit="mm" x="0" y="0" z="-1384.5"/>
+        <position name="Air32phys0x2a47ec0_pos" unit="mm" x="0" y="0" z="-1384.5+1504.5"/>
       </physvol>
       <physvol name="W33phys0x2a4aad0">
         <volumeref ref="W33log0x2a4a630"/>
-        <position name="W33phys0x2a4aad0_pos" unit="mm" x="0" y="0" z="-1383.5"/>
+        <position name="W33phys0x2a4aad0_pos" unit="mm" x="0" y="0" z="-1383.5+1504.5"/>
       </physvol>
       <physvol name="Air33phys0x2a4d690">
         <volumeref ref="Air33log0x2a4d1f0"/>
-        <position name="Air33phys0x2a4d690_pos" unit="mm" x="0" y="0" z="-1376.5"/>
+        <position name="Air33phys0x2a4d690_pos" unit="mm" x="0" y="0" z="-1376.5+1504.5"/>
       </physvol>
       <physvol name="PCB33phys0x2a502b0">
         <volumeref ref="PCB33log0x2a4fe00"/>
-        <position name="PCB33phys0x2a502b0_pos" unit="mm" x="0" y="0" z="-1375.5"/>
+        <position name="PCB33phys0x2a502b0_pos" unit="mm" x="0" y="0" z="-1375.5+1504.5"/>
       </physvol>
       <physvol name="CFMix33phys0x2a53680">
         <volumeref ref="CFMix33log0x2a531c0"/>
-        <position name="CFMix33phys0x2a53680_pos" unit="mm" x="0" y="0" z="-1374"/>
+        <position name="CFMix33phys0x2a53680_pos" unit="mm" x="0" y="0" z="-1374+1504.5"/>
       </physvol>
       <physvol name="Si33_0phys0x2a562d0" copynumber="33">
         <volumeref ref="Si33_0log0x2a55e10"/>
-        <position name="Si33_0phys0x2a562d0_pos" unit="mm" x="0" y="0" z="-1373.95"/>
+        <position name="Si33_0phys0x2a562d0_pos" unit="mm" x="0" y="0" z="-1373.95+1504.5"/>
       </physvol>
       <physvol name="CFMix33phys0x2a56840">
         <volumeref ref="CFMix33log0x2a58c70"/>
-        <position name="CFMix33phys0x2a56840_pos" unit="mm" x="0" y="0" z="-1373.45"/>
+        <position name="CFMix33phys0x2a56840_pos" unit="mm" x="0" y="0" z="-1373.45+1504.5"/>
       </physvol>
       <physvol name="W34phys0x2a5bd30">
         <volumeref ref="W34log0x2a5b870"/>
-        <position name="W34phys0x2a5bd30_pos" unit="mm" x="0" y="0" z="-1373.25"/>
+        <position name="W34phys0x2a5bd30_pos" unit="mm" x="0" y="0" z="-1373.25+1504.5"/>
       </physvol>
       <physvol name="C34phys0x2a5e920">
         <volumeref ref="C34log0x2a5e460"/>
-        <position name="C34phys0x2a5e920_pos" unit="mm" x="0" y="0" z="-1369.75"/>
+        <position name="C34phys0x2a5e920_pos" unit="mm" x="0" y="0" z="-1369.75+1504.5"/>
       </physvol>
       <physvol name="Air34phys0x2a61540">
         <volumeref ref="Air34log0x2a610a0"/>
-        <position name="Air34phys0x2a61540_pos" unit="mm" x="0" y="0" z="-1369.4"/>
+        <position name="Air34phys0x2a61540_pos" unit="mm" x="0" y="0" z="-1369.4+1504.5"/>
       </physvol>
       <physvol name="C34phys0x2a64120">
         <volumeref ref="C34log0x2a63c60"/>
-        <position name="C34phys0x2a64120_pos" unit="mm" x="0" y="0" z="-1368.1"/>
+        <position name="C34phys0x2a64120_pos" unit="mm" x="0" y="0" z="-1368.1+1504.5"/>
       </physvol>
       <physvol name="W34phys0x2a66d60">
         <volumeref ref="W34log0x2a668a0"/>
-        <position name="W34phys0x2a66d60_pos" unit="mm" x="0" y="0" z="-1367.75"/>
+        <position name="W34phys0x2a66d60_pos" unit="mm" x="0" y="0" z="-1367.75+1504.5"/>
       </physvol>
       <physvol name="CFMix34phys0x2a69950">
         <volumeref ref="CFMix34log0x2a69490"/>
-        <position name="CFMix34phys0x2a69950_pos" unit="mm" x="0" y="0" z="-1364.25"/>
+        <position name="CFMix34phys0x2a69950_pos" unit="mm" x="0" y="0" z="-1364.25+1504.5"/>
       </physvol>
       <physvol name="Si34_0phys0x2a6c590" copynumber="34">
         <volumeref ref="Si34_0log0x2a6c0d0"/>
-        <position name="Si34_0phys0x2a6c590_pos" unit="mm" x="0" y="0" z="-1364.05"/>
+        <position name="Si34_0phys0x2a6c590_pos" unit="mm" x="0" y="0" z="-1364.05+1504.5"/>
       </physvol>
       <physvol name="CFMix34phys0x2a6f2c0">
         <volumeref ref="CFMix34log0x2a6ee00"/>
-        <position name="CFMix34phys0x2a6f2c0_pos" unit="mm" x="0" y="0" z="-1363.55"/>
+        <position name="CFMix34phys0x2a6f2c0_pos" unit="mm" x="0" y="0" z="-1363.55+1504.5"/>
       </physvol>
       <physvol name="PCB34phys0x2a71eb0">
         <volumeref ref="PCB34log0x2a719f0"/>
-        <position name="PCB34phys0x2a71eb0_pos" unit="mm" x="0" y="0" z="-1363.5"/>
+        <position name="PCB34phys0x2a71eb0_pos" unit="mm" x="0" y="0" z="-1363.5+1504.5"/>
       </physvol>
       <physvol name="Air34phys0x2a74ad0">
         <volumeref ref="Air34log0x2a74630"/>
-        <position name="Air34phys0x2a74ad0_pos" unit="mm" x="0" y="0" z="-1362"/>
+        <position name="Air34phys0x2a74ad0_pos" unit="mm" x="0" y="0" z="-1362+1504.5"/>
       </physvol>
-      
-      <loop for="x" to="back_hcal_layers" step="1">
-        <physvol name="back_hcal_SSteel_physvol">
-          <volumeref ref="back_hcal_SSteel_volume"/>
-          <position name="back_hcal_SSteel_pos" unit="mm" x="0" y="0" z="Back_HCal_start+x*(back_steel_dz+back_scint_dz+2*back_air_dz)"/>
-        </physvol>
-  
-        <physvol name="back_hcal_Scintillator_physvol" copynumber="x">
-          <volumeref ref="back_hcal_Scintillator_volume"/>
-          <position name="back_hcal_Scintillator_pos" unit="mm" x="0" y="0" z="Back_HCal_start+back_steel_dz/2.+back_scint_dz/2.+back_air_dz+x*(back_steel_dz+back_scint_dz+2*back_air_dz)"/>
-        </physvol>
-      </loop>
-
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
     </volume>
   </structure>
 
   <setup name="Default" version="1.0">
-    <world ref="calorimeters"/>
+    <world ref="em_calorimeters"/>
   </setup>
 
 </gdml>
