@@ -36,8 +36,11 @@
     <constant name="ecal_front_z" value="20.0*cm"/>
 
     <!-- position of calorimeter mother -->
-    <constant name="calorimeter_thickness" value="3501.0*mm"/>
-    <constant name="calorimeter_pos_z" value="ecal_front_z + calorimeter_thickness/2"/>
+    <constant name="em_calorimeter_thickness" value="290.0*mm"/>
+    <constant name="hadron_calorimeter_thickness" value="3290.0*mm"/>
+    <!-- added fudge offset so that ecal doens't overlap with the tracker.  Something is just wrong with the size of the ecal used above - A. Whitbeck -->
+    <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2.+150."/>
+    <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2.+150."/>
         
     <!-- define all subdetector positions using above Z values -->
     <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
@@ -45,7 +48,8 @@
     <position name="trigger_pad_down_pos" x="0.0" y="0.0" z="trigger_pad_down_z"/>
     <position name="trigger_pad_up_pos"   x="0.0" y="0.0" z="trigger_pad_up_z"/>
     <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
-    <position name="calorimeter_pos" x="0.0" y="0.0" z="calorimeter_pos_z"/>
+    <position name="em_calorimeter_pos" x="0.0" y="0.0" z="em_calorimeter_pos_z"/>
+    <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="hadron_calorimeter_pos_z"/>
     
   </define>
 
@@ -168,8 +172,13 @@
         <rotationref ref="identity"/>
       </physvol>
       <physvol copynumber="5">
+        <file name="ecal.gdml"/>
+        <positionref ref="em_calorimeter_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol copynumber="6">
         <file name="hcal.gdml"/>
-        <positionref ref="calorimeter_pos"/>
+        <positionref ref="hadron_calorimeter_pos"/>
         <rotationref ref="identity"/>
       </physvol>
     </volume>
@@ -277,7 +286,7 @@
       <auxiliary auxtype="B" auxvalue="0.0"/>
       <auxiliary auxtype="A" auxvalue="1.0"/>
       <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>

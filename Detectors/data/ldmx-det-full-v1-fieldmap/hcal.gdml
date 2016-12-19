@@ -17,13 +17,13 @@
     <!-- Wrap Around HCal Layer component widths -->
     <variable name="xx" value="0"/>  
     <variable name="wrap_LR_hcal_dx" value="3100."/>
-    <variable name="wrap_TB_hcal_dx" value="500."/>
-    <variable name="wrap_hcal_dz" value="276."/>
+    <variable name="wrap_TB_hcal_dx" value="700."/>
+    <variable name="wrap_hcal_dz" value="600."/>
     <variable name="wrap_steel_dy" value="50."/>
     <variable name="wrap_scint_dy" value="6."/>
     <variable name="wrap_air_dy" value="2."/>
     <variable name="wrap_layer_width" value="wrap_steel_dy+wrap_scint_dy+2.*wrap_air_dy"/>
-    <variable name="wrap_hcal_layers" value="21"/>
+    <variable name="wrap_hcal_layers" value="20"/>
     <variable name="wrap_hcal_thickness" value="wrap_hcal_dz"/>
 
     <!-- Starting positions (defined by the center of the cal mother volume?)-->    
@@ -51,7 +51,7 @@
     <isotope N="12" Z="6" name="C12">
       <atom unit="g/mole" value="12"/>
     </isotope>
-    <isotope N="13" Z="6" name="C13">
+575    <isotope N="13" Z="6" name="C13">
       <atom unit="g/mole" value="13.0034"/>
     </isotope>
     <element name="C">
@@ -187,7 +187,48 @@
     <box lunit="mm" name="wrap_TB_hcal_Scintillatorbox" x="wrap_TB_hcal_dx" y="wrap_scint_dy" z="wrap_hcal_dz"/>
 
     <!-- - - - - - - - - Parent Volumes - - - - - - - -->  
-    <box lunit="mm" name="hadron_calorimeter_box" x="back_hcal_dx+1." y="back_hcal_dy+1." z="wrap_hcal_thickness+back_hcal_thickness"/>
+    <box lunit="mm" name="back_hadron_calorimeter_box" x="back_hcal_dx+1." y="back_hcal_dy+1." z="back_hcal_thickness+wrap_hcal_thickness"/>
+
+    <box lunit="mm" name="ecal_box" x="wrap_TB_hcal_dx+5." y="wrap_TB_hcal_dx+5." z="wrap_hcal_thickness"/>
+
+    <subtraction name="hadron_calorimeter_box">
+      <first ref="back_hadron_calorimeter_box"/>
+      <second ref="ecal_box"/>
+      <position name="hadron_calorimeter_parent_box_pos" unit="mm" x="0." y="0." z="-back_hcal_thickness/2."/>
+    </subtraction>
+
+    <!--
+    <box lunit="mm" name="wrap_top_hadron_calorimeter_box" x="wrap_TB_hcal_dx+1." y="(back_hcal_dy-500.)/2.+1." z="wrap_hcal_thickness"/>
+    <box lunit="mm" name="wrap_bot_hadron_calorimeter_box" x="wrap_TB_hcal_dx+1." y="(back_hcal_dy-500.)/2.+1." z="wrap_hcal_thickness"/>
+    <box lunit="mm" name="wrap_left_hadron_calorimeter_box" x="(back_hcal_dx-500.)/2.+1." y="back_hcal_dy+1." z="wrap_hcal_thickness"/>
+    <box lunit="mm" name="wrap_right_hadron_calorimeter_box" x="(back_hcal_dx-500.)/2.+1." y="back_hcal_dy+1." z="wrap_hcal_thickness"/>
+
+    <union name="wrap_parent_box_top_bottom">
+      <first ref="wrap_top_hadron_calorimeter_box"/>
+      <second ref="wrap_bot_hadron_calorimeter_box"/>
+      <position name="wrap_parent_box_top_bottom_pos" unit="mm" x="0." y="(back_hcal_dy-500.)/2." z="0."/>
+      <rotation name="wrap_parent_box_top_bottom_rot" unit="deg" x="0." y="0." z="0."/>
+    </union>
+    <union name="wrap_parent_box_left_right">
+      <first ref="wrap_left_hadron_calorimeter_box"/>
+      <second ref="wrap_right_hadron_calorimeter_box"/>
+      <position name="wrap_parent_box_left_right_pos" unit="mm" x="(back_hcal_dx-500.)/2." y="0." z="0."/>
+      <rotation name="wrap_parent_box_left_right_rot" unit="deg" x="0." y="0." z="0."/>
+    </union>
+    <union name="wrap_hadronic_calorimeter_box">
+      <first ref="wrap_parent_box_top_bottom"/>
+      <second ref="wrap_parent_box_left_right"/>
+      <position name="wrap_parent_box_pos" unit="mm" x="0." y="0." z="0."/>
+      <rotation name="wrap_parent_box_rot" unit="deg" x="0." y="0." z="0."/>
+    </union>
+    <union name="hadron_calorimeter_box">
+      <first ref="back_hadron_calorimeter_box"/>
+      <second ref="wrap_hadronic_calorimeter_box"/>
+      <position name="hadron_calorimeter_parent_box_pos" unit="mm" x="0." y="0." z="-back_hcal_thickness/2.-wrap_hcal_dz/2."/>
+      <rotation name="hadron_calorimeter_parent_box_rot" unit="deg" x="0." y="0." z="0."/>
+    </union>
+    -->
+
     <box lunit="mm" name="expHall_box0x2731e20" x="20000" y="20000" z="40000"/>
 
   </solids>
@@ -285,16 +326,16 @@
         </physvol>
 
         <!-- right  -->
-        <physvol name="wrap_left_hcal_SSteel_physvol">
+        <physvol name="wrap_right_hcal_SSteel_physvol">
           <volumeref ref="wrap_LR_hcal_SSteel_volume"/>
-          <position name="wrap_left_hcal_SSteel_pos" unit="mm" x="back_hcal_dx/2.-wrap_layer_width/2.-xx*wrap_layer_width" y="0." z="-back_hcal_thickness/2."/>
-          <rotation name="wrap_left_hcal_SSteel_rot" unit="deg" x="0" y="0." z="0."/>
+          <position name="wrap_right_hcal_SSteel_pos" unit="mm" x="back_hcal_dx/2.-wrap_layer_width/2.-xx*wrap_layer_width" y="0." z="-back_hcal_thickness/2."/>
+          <rotation name="wrap_right_hcal_SSteel_rot" unit="deg" x="0" y="0." z="0."/>
         </physvol>
   
-        <physvol name="wrap_left_hcal_Scintillator_physvol">
+        <physvol name="wrap_right_hcal_Scintillator_physvol">
           <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
-          <position name="wrap_left_hcal_Scintillator_pos" unit="mm" x="back_hcal_dy/2.-wrap_layer_width/2.-wrap_steel_dy/2.0-wrap_air_dy-wrap_scint_dy/2.-xx*wrap_layer_width" y="0." z="-back_hcal_thickness/2."/>
-          <rotation name="wrap_left_hcal_Scintillator_rot" unit="deg" x="0" y="0." z="0."/>
+          <position name="wrap_right_hcal_Scintillator_pos" unit="mm" x="back_hcal_dy/2.-wrap_layer_width/2.-wrap_steel_dy/2.0-wrap_air_dy-wrap_scint_dy/2.-xx*wrap_layer_width" y="0." z="-back_hcal_thickness/2."/>
+          <rotation name="wrap_right_hcal_Scintillator_rot" unit="deg" x="0" y="0." z="0."/>
         </physvol>
 
       </loop>
