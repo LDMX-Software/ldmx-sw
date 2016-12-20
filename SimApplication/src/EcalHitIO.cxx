@@ -18,7 +18,6 @@ EcalHitIO::EcalHitIO(SimParticleBuilder* simParticleBuilder)
 void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl) {
 
     int nHits = hc->GetSize();
-
     std::map<int, event::SimCalorimeterHit*> hitMap;
 
     // Loop over input hits from Geant4.
@@ -56,12 +55,47 @@ void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArra
             simHit = hitMap[hitID];
         }
 
-        // Add hit contribution.
+        // Get info from the G4 hit.
         float edep = g4hit->getEdep();
         float time = g4hit->getTime();
-        SimParticle* simParticle = simParticleBuilder_->findSimParticle(g4hit->getTrackID());
         int pdgCode = g4hit->getPdgCode();
-        simHit->addContrib(simParticle, pdgCode, edep, time);
+
+        // Is hit contrib output enabled?
+        if (enableHitContribs_) {
+
+            // Find the SimParticle associated with this hit.
+            SimParticle* simParticle = simParticleBuilder_->findSimParticle(g4hit->getTrackID());
+
+            // Find if there is an existing hit contrib.
+            int contribIndex = simHit->findContribIndex(simParticle, pdgCode);
+
+            // Is contrib output being compressed and a record exists for this SimParticle and PDG code?
+            if (compressHitContribs_ && contribIndex != -1) {
+
+                // Update an existing hit contrib.
+                simHit->updateContrib(contribIndex, edep, time);
+
+                //std::cout << "updated contrib for hit with ID " << hitID << " with PDGID = "
+                //        << pdgCode << ", edep = " << edep << ", time = " << time << std::endl;;
+
+            } else {
+
+                // Add a hit contrib because all steps are being saved or there is not an existing record.
+                simHit->addContrib(simParticle, pdgCode, edep, time);
+
+                //std::cout << "added new contrib for hit with ID " << hitID << " with PDGID = "
+                //        << pdgCode << ", edep = " << edep << ", time = " << time << std::endl;
+            }
+        } else {
+
+            // Hit contributions are not being saved so manually increment the edep and set time.
+            simHit->setEdep(simHit->getEdep() + edep);
+            if (time < simHit->getTime() || simHit->getTime() == 0) {
+                simHit->setTime(time);
+            }
+
+            //std::cout << "updated hit with ID " << hitID << " with edep = " << edep << ", time = " << time << std::endl;
+        }
     }
 }
 

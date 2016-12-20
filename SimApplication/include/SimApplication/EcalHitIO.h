@@ -45,8 +45,15 @@ class EcalHitIO {
          * @param outputColl The output collection in ROOT.
          * @param simParticleBuilder_ The sim particle builder for getting sim particles from track ID.
          */
-        void writeHitsCollection(G4CalorimeterHitsCollection* hc,
-                TClonesArray* outputColl);
+        void writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl);
+
+        void setEnableHitContribs(bool enableHitContribs) {
+            enableHitContribs_ = enableHitContribs;
+        }
+
+        void setCompressHitContribs(bool compressHitContribs) {
+            compressHitContribs_ = compressHitContribs;
+        }
 
     private:
 
@@ -59,6 +66,11 @@ class EcalHitIO {
         /** ECal detector ID. */
         EcalDetectorID detID_;
 
+        /** Enable hit contribution output. */
+        bool enableHitContribs_{true};
+
+        /** Enable compression of hit contributions by SimParticle and PDG code. */
+        bool compressHitContribs_{true};
 };
 
 } // namespace sim

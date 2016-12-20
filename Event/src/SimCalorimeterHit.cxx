@@ -61,4 +61,24 @@ SimCalorimeterHit::Contrib SimCalorimeterHit::getContrib(int i) {
     return contrib;
 }
 
+int SimCalorimeterHit::findContribIndex(SimParticle* simParticle, int pdgCode) {
+    int contribIndex = -1;
+    for (int iContrib = 0; iContrib < nContribs_; iContrib++) {
+        Contrib contrib = getContrib(iContrib);
+        if (contrib.particle == simParticle && contrib.pdgCode == pdgCode) {
+            contribIndex = iContrib;
+            break;
+        }
+    }
+    return contribIndex;
+}
+
+void SimCalorimeterHit::updateContrib(int i, float edep, float time) {
+    this->edepContribs_[i] += edep;
+    if (time < this->timeContribs_[i]) {
+        this->timeContribs_[i] = time;
+    }
+}
+
+
 }

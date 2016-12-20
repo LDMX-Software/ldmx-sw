@@ -3,6 +3,7 @@
 
 // Geant4
 #include "G4UImessenger.hh"
+#include "G4UIcmdWithABool.hh"
 
 // LDMX
 #include "SimApplication/RootPersistencyManager.h"
@@ -28,6 +29,8 @@ namespace sim {
             G4UIcommand* enableCmd_;
             G4UIcommand* comprCmd_;
             G4UIcommand* modeCmd_;
+            G4UIcmdWithABool* hitContribsCmd_;
+            G4UIcmdWithABool* compressContribsCmd_;
 
             RootPersistencyManager* rootIO_;
     };
