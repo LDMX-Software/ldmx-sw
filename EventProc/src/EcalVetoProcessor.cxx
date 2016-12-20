@@ -20,7 +20,7 @@ using eventproc::RootEventSource;
 const int eventproc::EcalVetoProcessor::numEcalLayers         = 33;
 const int eventproc::EcalVetoProcessor::backEcalStartingLayer = 20;
 const int eventproc::EcalVetoProcessor::numLayersForMedCal    = 10;
-const float eventproc::EcalVetoProcessor::meanNoise           = .15;
+const float eventproc::EcalVetoProcessor::meanNoise           = .015;
 const float eventproc::EcalVetoProcessor::readoutThreshold    = 3*meanNoise;
 
 const float eventproc::EcalVetoProcessor::totalDepCut = 25;
@@ -79,7 +79,7 @@ void eventproc::EcalVetoProcessor::execute(){
     //First we simulate noise injection into each hit and store layer-wise max cell ids
     for(int iHit = 0; iHit < numEcalSimHits; iHit++){
         SimCalorimeterHit* EcalHit = (SimCalorimeterHit*) EcalHits->At(iHit);
-        hitNoise[iHit] = noiseInjector->Gaus(0,.15);
+        hitNoise[iHit] = noiseInjector->Gaus(0,meanNoise);
         layer_cell_pair hit_pair = hitToPair(EcalHit);
 
         EcalHitId_->push_back(hit_pair.second);
@@ -142,7 +142,7 @@ void eventproc::EcalVetoProcessor::execute(){
         std::cout << "Shower Median : " << showerMedianCellId << std::endl;
     }// end verbose
 
-    doesPassVeto = (summedDep < totalDepCut && summedIso < totalIsoCut && backSummedDep < backEcalCut && totalDepCut/totalIsoCut < ratioCut);
+    doesPassVeto = (summedDep < totalDepCut && summedIso < totalIsoCut && backSummedDep < backEcalCut); // add ratio cut in at some point
     outputTree->Fill();
 
     EcalLayerEdepRaw_     = new std::vector<float>(numEcalLayers,0);
