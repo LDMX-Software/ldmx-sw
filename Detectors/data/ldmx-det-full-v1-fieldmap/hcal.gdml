@@ -197,40 +197,6 @@
       <position name="hadron_calorimeter_parent_box_pos" unit="mm" x="0." y="0." z="-back_hcal_thickness/2."/>
     </subtraction>
 
-    <!--
-    <box lunit="mm" name="wrap_top_hadron_calorimeter_box" x="wrap_TB_hcal_dx+1." y="(back_hcal_dy-500.)/2.+1." z="wrap_hcal_thickness"/>
-    <box lunit="mm" name="wrap_bot_hadron_calorimeter_box" x="wrap_TB_hcal_dx+1." y="(back_hcal_dy-500.)/2.+1." z="wrap_hcal_thickness"/>
-    <box lunit="mm" name="wrap_left_hadron_calorimeter_box" x="(back_hcal_dx-500.)/2.+1." y="back_hcal_dy+1." z="wrap_hcal_thickness"/>
-    <box lunit="mm" name="wrap_right_hadron_calorimeter_box" x="(back_hcal_dx-500.)/2.+1." y="back_hcal_dy+1." z="wrap_hcal_thickness"/>
-
-    <union name="wrap_parent_box_top_bottom">
-      <first ref="wrap_top_hadron_calorimeter_box"/>
-      <second ref="wrap_bot_hadron_calorimeter_box"/>
-      <position name="wrap_parent_box_top_bottom_pos" unit="mm" x="0." y="(back_hcal_dy-500.)/2." z="0."/>
-      <rotation name="wrap_parent_box_top_bottom_rot" unit="deg" x="0." y="0." z="0."/>
-    </union>
-    <union name="wrap_parent_box_left_right">
-      <first ref="wrap_left_hadron_calorimeter_box"/>
-      <second ref="wrap_right_hadron_calorimeter_box"/>
-      <position name="wrap_parent_box_left_right_pos" unit="mm" x="(back_hcal_dx-500.)/2." y="0." z="0."/>
-      <rotation name="wrap_parent_box_left_right_rot" unit="deg" x="0." y="0." z="0."/>
-    </union>
-    <union name="wrap_hadronic_calorimeter_box">
-      <first ref="wrap_parent_box_top_bottom"/>
-      <second ref="wrap_parent_box_left_right"/>
-      <position name="wrap_parent_box_pos" unit="mm" x="0." y="0." z="0."/>
-      <rotation name="wrap_parent_box_rot" unit="deg" x="0." y="0." z="0."/>
-    </union>
-    <union name="hadron_calorimeter_box">
-      <first ref="back_hadron_calorimeter_box"/>
-      <second ref="wrap_hadronic_calorimeter_box"/>
-      <position name="hadron_calorimeter_parent_box_pos" unit="mm" x="0." y="0." z="-back_hcal_thickness/2.-wrap_hcal_dz/2."/>
-      <rotation name="hadron_calorimeter_parent_box_rot" unit="deg" x="0." y="0." z="0."/>
-    </union>
-    -->
-
-    <box lunit="mm" name="expHall_box0x2731e20" x="20000" y="20000" z="40000"/>
-
   </solids>
 
   <structure>      
