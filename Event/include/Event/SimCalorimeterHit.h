@@ -71,9 +71,26 @@ class SimCalorimeterHit: public TObject {
             return nContribs_;
         }
 
+        /**
+         * Add a hit contribution from a SimParticle.
+         */
         void addContrib(SimParticle* simParticle, int pdgCode, float edep, float time);
 
+        /**
+         * Get a hit contribution by index.
+         */
         Contrib getContrib(int i);
+
+        /**
+         * Find the index of a hit contribution from a SimParticle and PDG code.
+         */
+        int findContribIndex(SimParticle* simParticle, int pdgCode);
+
+        /**
+         * Update an existing hit contribution by incrementing its edep and setting the time
+         * if the new time is less than the old one.
+         */
+        void updateContrib(int i, float edep, float time);
 
     private:
 

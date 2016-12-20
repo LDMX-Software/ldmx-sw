@@ -36,6 +36,13 @@ class RootPersistencyManager : public G4PersistencyManager {
         RootPersistencyManager();
 
         /**
+         * Return the current ROOT persistency manager or null if it is not registered.
+         */
+        static RootPersistencyManager* getInstance() {
+            return (RootPersistencyManager*) G4PersistencyCenter::GetPersistencyCenter()->CurrentPersistencyManager();
+        }
+
+        /**
          * This is the primary method for building the output ROOT event.
          */
         G4bool Store(const G4Event* anEvent);
@@ -87,10 +94,22 @@ class RootPersistencyManager : public G4PersistencyManager {
         }
 
         /**
-         * Return the current ROOT persistency manager or null if it is disabled.
+         * Enable or disable hit contribution output for SimCalorimeterHits.
+         * This is enabled by default.
          */
-        static RootPersistencyManager* getInstance() {
-            return (RootPersistencyManager*) G4PersistencyCenter::GetPersistencyCenter()->CurrentPersistencyManager();
+        void setEnableHitContribs(bool enableHitContribs) {
+            // Pass this flag to the ECal IO helper.
+            ecalHitIO_->setEnableHitContribs(enableHitContribs);
+        }
+
+        /**
+         * Enable or disable compression of hit contribution output by finding
+         * matching SimParticle and PDG codes and updating the existing record.
+         * This is enabled by default.
+         */
+        void setCompressHitContribs(bool compressHitContribs) {
+            // Pass this flag to the ECal IO helper.
+            ecalHitIO_->setCompressHitContribs(compressHitContribs);
         }
 
     private:
@@ -124,7 +143,6 @@ class RootPersistencyManager : public G4PersistencyManager {
          * Print out event info and data depending on the verbose level.
          */
         void printEvent(Event*);
-        
 
     private:
 
