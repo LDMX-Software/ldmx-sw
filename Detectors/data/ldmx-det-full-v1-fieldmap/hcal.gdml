@@ -153,15 +153,13 @@
       <fraction n="0.036345" ref="Ni62"/>
       <fraction n="0.009256" ref="Ni64"/>
     </element>
-    <material name="SSteel" state="solid">
+    <material name="Steel" state="solid">
       <T unit="K" value="293.15"/>
-      <MEE unit="eV" value="282.578368449796"/>
-      <D unit="g/cm3" value="8.02"/>
-      <fraction n="0.7" ref="Fe"/>
-      <fraction n="0.01" ref="Mn"/>
-      <fraction n="0.19" ref="Cr"/>
-      <fraction n="0.1" ref="Ni"/>
-    </material>
+      <D unit="g/cm3" value="7.87"/>
+      <fraction n="0.9843" ref="Fe0x11e9fb0"/>
+      <fraction n="0.014" ref="Mn0x11eaaf0"/>
+      <fraction n="0.0017" ref="C0x11e79d0"/>
+    </material> 
     <material name="Scintillator" state="solid">
       <T unit="K" value="293.15"/>
       <MEE unit="eV" value="64.7494480275643"/>
@@ -174,15 +172,15 @@
   <solids>
 
     <!-- - - - - - - - - HCal solids - - - - - - - -  -->
-    <box lunit="mm" name="back_hcal_SSteelbox" x="back_hcal_dx" y="back_hcal_dy" z="back_steel_dz"/>
+    <box lunit="mm" name="back_hcal_Steelbox" x="back_hcal_dx" y="back_hcal_dy" z="back_steel_dz"/>
     <box lunit="mm" name="back_hcal_Airbox" x="back_hcal_dx" y="back_hcal_dy" z="back_air_dz"/>
     <box lunit="mm" name="back_hcal_Scintillatorbox" x="back_hcal_dx" y="back_hcal_dy" z="back_scint_dz"/>
 
-    <box lunit="mm" name="wrap_LR_hcal_SSteelbox" x="wrap_steel_dy" y="wrap_LR_hcal_dx" z="wrap_hcal_dz"/>
+    <box lunit="mm" name="wrap_LR_hcal_Steelbox" x="wrap_steel_dy" y="wrap_LR_hcal_dx" z="wrap_hcal_dz"/>
     <box lunit="mm" name="wrap_LR_hcal_Airbox" x="wrap_air_dy" y="wrap_LR_hcal_dx" z="wrap_hcal_dz"/>
     <box lunit="mm" name="wrap_LR_hcal_Scintillatorbox" x="wrap_scint_dy" y="wrap_LR_hcal_dx" z="wrap_hcal_dz"/>
 
-    <box lunit="mm" name="wrap_TB_hcal_SSteelbox" x="wrap_TB_hcal_dx" y="wrap_steel_dy" z="wrap_hcal_dz"/>
+    <box lunit="mm" name="wrap_TB_hcal_Steelbox" x="wrap_TB_hcal_dx" y="wrap_steel_dy" z="wrap_hcal_dz"/>
     <box lunit="mm" name="wrap_TB_hcal_Airbox" x="wrap_TB_hcal_dx" y="wrap_air_dy" z="wrap_hcal_dz"/>
     <box lunit="mm" name="wrap_TB_hcal_Scintillatorbox" x="wrap_TB_hcal_dx" y="wrap_scint_dy" z="wrap_hcal_dz"/>
 
@@ -201,9 +199,9 @@
 
   <structure>      
     <!--Back HCal Structures -->
-    <volume name="back_hcal_SSteel_volume">
-      <materialref ref="SSteel"/>
-      <solidref ref="back_hcal_SSteelbox"/>
+    <volume name="back_hcal_Steel_volume">
+      <materialref ref="Steel"/>
+      <solidref ref="back_hcal_Steelbox"/>
     </volume>
     <volume name="back_hcal_Scintillator_volume">
       <materialref ref="Scintillator"/>
@@ -212,9 +210,9 @@
     </volume>
 
     <!--Top/Bottom Wrap Structures -->
-    <volume name="wrap_TB_hcal_SSteel_volume">
-      <materialref ref="SSteel"/>
-      <solidref ref="wrap_TB_hcal_SSteelbox"/>
+    <volume name="wrap_TB_hcal_Steel_volume">
+      <materialref ref="Steel"/>
+      <solidref ref="wrap_TB_hcal_Steelbox"/>
     </volume>
     <volume name="wrap_TB_hcal_Scintillator_volume">
       <materialref ref="Scintillator"/>
@@ -223,9 +221,9 @@
     </volume>
 
     <!--Left/Right Wrap Structures -->
-    <volume name="wrap_LR_hcal_SSteel_volume">
-      <materialref ref="SSteel"/>
-      <solidref ref="wrap_LR_hcal_SSteelbox"/>
+    <volume name="wrap_LR_hcal_Steel_volume">
+      <materialref ref="Steel"/>
+      <solidref ref="wrap_LR_hcal_Steelbox"/>
     </volume>
     <volume name="wrap_LR_hcal_Scintillator_volume">
       <materialref ref="Scintillator"/>
@@ -238,9 +236,9 @@
       <solidref ref="hadron_calorimeter_box"/>
 
       <loop for="x" to="back_hcal_layers-1" step="1">
-        <physvol name="back_hcal_SSteel_physvol">
-          <volumeref ref="back_hcal_SSteel_volume"/>
-          <position name="back_hcal_SSteel_pos" unit="mm" x="0" y="0" z="Back_HCal_start+x*back_layer_width"/>
+        <physvol name="back_hcal_Steel_physvol">
+          <volumeref ref="back_hcal_Steel_volume"/>
+          <position name="back_hcal_Steel_pos" unit="mm" x="0" y="0" z="Back_HCal_start+x*back_layer_width"/>
         </physvol>
   
         <physvol name="back_hcal_Scintillator_physvol" copynumber="x">
@@ -253,52 +251,52 @@
 
       <loop for="xx" to="wrap_hcal_layers-1" step="1">
         <!-- top  -->
-        <physvol name="wrap_top_hcal_SSteel_physvol">
-          <volumeref ref="wrap_TB_hcal_SSteel_volume"/>
-          <position name="wrap_top_hcal_SSteel_pos" unit="mm" x="0" y="-back_hcal_dy/2.+wrap_layer_width/2.+xx*wrap_layer_width" z="-back_hcal_thickness/2."/>
-          <rotation name="wrap_top_hcal_SSteel_rot" unit="deg" x="0" y="0." z="0."/>
+        <physvol name="wrap_top_hcal_Steel_physvol">
+          <volumeref ref="wrap_TB_hcal_Steel_volume"/>
+          <position name="wrap_top_hcal_Steel_pos" unit="mm" x="0" y="-back_hcal_dy/2.+wrap_layer_width/2.+xx*wrap_layer_width" z="-back_hcal_thickness/2."/>
+          <rotation name="wrap_top_hcal_Steel_rot" unit="deg" x="0" y="0." z="0."/>
         </physvol>
   
-        <physvol name="wrap_top_hcal_Scintillator_physvol">
+        <physvol name="wrap_top_hcal_Scintillator_physvol" copynumber="xx*4+64">
           <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
           <position name="wrap_top_hcal_Scintillator_pos" unit="mm" x="0" y="-back_hcal_dy/2.+wrap_layer_width/2.+wrap_steel_dy/2.+wrap_air_dy+wrap_scint_dy/2.+xx*wrap_layer_width" z="-back_hcal_thickness/2."/>
           <rotation name="wrap_top_hcal_Scintillator_rot" unit="deg" x="0" y="0." z="0."/>
         </physvol>
 
         <!-- bottom  -->
-        <physvol name="wrap_bot_hcal_SSteel_physvol">
-          <volumeref ref="wrap_TB_hcal_SSteel_volume"/>
-          <position name="wrap_bot_hcal_SSteel_pos" unit="mm" x="0" y="back_hcal_dy/2.-wrap_layer_width/2.-xx*wrap_layer_width" z="-back_hcal_thickness/2."/>
-          <rotation name="wrap_bot_hcal_SSteel_rot" unit="deg" x="0" y="0." z="0."/>
+        <physvol name="wrap_bot_hcal_Steel_physvol">
+          <volumeref ref="wrap_TB_hcal_Steel_volume"/>
+          <position name="wrap_bot_hcal_Steel_pos" unit="mm" x="0" y="back_hcal_dy/2.-wrap_layer_width/2.-xx*wrap_layer_width" z="-back_hcal_thickness/2."/>
+          <rotation name="wrap_bot_hcal_Steel_rot" unit="deg" x="0" y="0." z="0."/>
         </physvol>
   
-        <physvol name="wrap_bot_hcal_Scintillator_physvol">
+        <physvol name="wrap_bot_hcal_Scintillator_physvol" copynumber="xx*4+65">
           <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
           <position name="wrap_bot_hcal_Scintillator_pos" unit="mm" x="0" y="back_hcal_dy/2.-wrap_layer_width/2.-wrap_steel_dy/2.-wrap_air_dy-wrap_scint_dy/2.-xx*wrap_layer_width" z="-back_hcal_thickness/2."/>
           <rotation name="wrap_bot_hcal_Scintillator_rot" unit="deg" x="0" y="0." z="0."/>
         </physvol>
 
         <!-- left  -->
-        <physvol name="wrap_left_hcal_SSteel_physvol">
-          <volumeref ref="wrap_LR_hcal_SSteel_volume"/>
-          <position name="wrap_left_hcal_SSteel_pos" unit="mm" x="-back_hcal_dx/2.+wrap_layer_width/2.+xx*wrap_layer_width" y="0." z="-back_hcal_thickness/2."/>
-          <rotation name="wrap_left_hcal_SSteel_rot" unit="deg" x="0" y="0." z="0."/>
+        <physvol name="wrap_left_hcal_Steel_physvol">
+          <volumeref ref="wrap_LR_hcal_Steel_volume"/>
+          <position name="wrap_left_hcal_Steel_pos" unit="mm" x="-back_hcal_dx/2.+wrap_layer_width/2.+xx*wrap_layer_width" y="0." z="-back_hcal_thickness/2."/>
+          <rotation name="wrap_left_hcal_Steel_rot" unit="deg" x="0" y="0." z="0."/>
         </physvol>
   
-        <physvol name="wrap_left_hcal_Scintillator_physvol">
+        <physvol name="wrap_left_hcal_Scintillator_physvol" copynumber="xx*4+66">
           <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
           <position name="wrap_left_hcal_Scintillator_pos" unit="mm" x="-back_hcal_dy/2.+wrap_layer_width/2.+wrap_steel_dy/2.+wrap_air_dy+wrap_scint_dy/2.+xx*wrap_layer_width" y="0." z="-back_hcal_thickness/2."/>
           <rotation name="wrap_left_hcal_Scintillator_rot" unit="deg" x="0" y="0." z="0."/>
         </physvol>
 
         <!-- right  -->
-        <physvol name="wrap_right_hcal_SSteel_physvol">
-          <volumeref ref="wrap_LR_hcal_SSteel_volume"/>
-          <position name="wrap_right_hcal_SSteel_pos" unit="mm" x="back_hcal_dx/2.-wrap_layer_width/2.-xx*wrap_layer_width" y="0." z="-back_hcal_thickness/2."/>
-          <rotation name="wrap_right_hcal_SSteel_rot" unit="deg" x="0" y="0." z="0."/>
+        <physvol name="wrap_right_hcal_Steel_physvol">
+          <volumeref ref="wrap_LR_hcal_Steel_volume"/>
+          <position name="wrap_right_hcal_Steel_pos" unit="mm" x="back_hcal_dx/2.-wrap_layer_width/2.-xx*wrap_layer_width" y="0." z="-back_hcal_thickness/2."/>
+          <rotation name="wrap_right_hcal_Steel_rot" unit="deg" x="0" y="0." z="0."/>
         </physvol>
   
-        <physvol name="wrap_right_hcal_Scintillator_physvol">
+        <physvol name="wrap_right_hcal_Scintillator_physvol" copynumber="xx*4+67">
           <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
           <position name="wrap_right_hcal_Scintillator_pos" unit="mm" x="back_hcal_dy/2.-wrap_layer_width/2.-wrap_steel_dy/2.0-wrap_air_dy-wrap_scint_dy/2.-xx*wrap_layer_width" y="0." z="-back_hcal_thickness/2."/>
           <rotation name="wrap_right_hcal_Scintillator_rot" unit="deg" x="0" y="0." z="0."/>
