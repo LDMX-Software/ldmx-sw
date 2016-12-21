@@ -2,7 +2,6 @@
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
       
   <define>
-    
     <!-- define center position and identity rotation -->
     <position name="center" x="0" y="0" z="0"/>
     <rotation name="identity" x="0" y="0" z="0"/>
@@ -39,8 +38,10 @@
     <constant name="ecal_front_z" value="20.0*cm"/>
             
     <!-- position of calorimeter mother -->
-    <constant name="calorimeter_thickness" value="3294.0*mm"/>
-    <constant name="calorimeter_pos_z" value="ecal_front_z + calorimeter_thickness/2"/>
+    <constant name="em_calorimeter_thickness" value="326.0*mm"/>
+    <constant name="hadron_calorimeter_thickness" value="3326.0*mm"/>
+    <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2."/>
+    <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2."/>
         
     <!-- define all subdetector positions using above Z values -->
     <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
@@ -48,7 +49,8 @@
     <position name="trigger_pad_down_pos" x="0.0" y="0.0" z="trigger_pad_down_z"/>
     <position name="trigger_pad_up_pos"   x="0.0" y="0.0" z="trigger_pad_up_z"/>
     <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
-    <position name="calorimeter_pos" x="0.0" y="0.0" z="calorimeter_pos_z"/>
+    <position name="em_calorimeter_pos" x="0.0" y="0.0" z="em_calorimeter_pos_z"/>
+    <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="hadron_calorimeter_pos_z"/>
     
   </define>
 
@@ -154,12 +156,12 @@
         <volumeref ref="trigger_pad_up"/>
         <positionref ref="trigger_pad_up_pos"/>
         <rotationref ref="identity"/>
-      </physvol>    
+      </physvol>
       <physvol>
         <volumeref ref="target"/>
         <positionref ref="target_pos"/>
         <rotationref ref="identity"/>
-      </physvol>            
+      </physvol>
       <physvol>
         <volumeref ref="trigger_pad_down"/>
         <positionref ref="trigger_pad_down_pos"/>
@@ -171,8 +173,13 @@
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <file name="calorimeters.gdml"/>
-        <positionref ref="calorimeter_pos"/>
+        <file name="ecal.gdml"/>
+        <positionref ref="em_calorimeter_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <file name="hcal.gdml"/>
+        <positionref ref="hadron_calorimeter_pos"/>
         <rotationref ref="identity"/>
       </physvol>
     </volume>
