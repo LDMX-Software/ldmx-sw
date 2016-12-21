@@ -38,11 +38,10 @@
     <constant name="ecal_front_z" value="20.0*cm"/>
             
     <!-- position of calorimeter mother -->
-    <constant name="em_calorimeter_thickness" value="290.0*mm"/>
-    <constant name="hadron_calorimeter_thickness" value="3290.0*mm"/>
-    <!-- added fudge offset so that ecal doens't overlap with the tracker.  Something is just wrong with the size of the ecal used above - A. Whitbeck -->
-    <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2.+150."/>
-    <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2.+150."/>
+    <constant name="em_calorimeter_thickness" value="326.0*mm"/>
+    <constant name="hadron_calorimeter_thickness" value="3326.0*mm"/>
+    <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2."/>
+    <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2."/>
         
     <!-- define all subdetector positions using above Z values -->
     <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
@@ -157,12 +156,12 @@
         <volumeref ref="trigger_pad_up"/>
         <positionref ref="trigger_pad_up_pos"/>
         <rotationref ref="identity"/>
-      </physvol>    
+      </physvol>
       <physvol>
         <volumeref ref="target"/>
         <positionref ref="target_pos"/>
         <rotationref ref="identity"/>
-      </physvol>            
+      </physvol>
       <physvol>
         <volumeref ref="trigger_pad_down"/>
         <positionref ref="trigger_pad_down_pos"/>
@@ -288,7 +287,7 @@
       <auxiliary auxtype="B" auxvalue="0.0"/>
       <auxiliary auxtype="A" auxvalue="1.0"/>
       <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
