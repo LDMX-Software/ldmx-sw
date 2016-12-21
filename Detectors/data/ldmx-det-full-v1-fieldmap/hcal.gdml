@@ -18,7 +18,7 @@
     <variable name="xx" value="1"/>  
     <variable name="wrap_LR_hcal_dx" value="3100."/>
     <variable name="wrap_TB_hcal_dx" value="525."/>
-    <variable name="wrap_hcal_dz" value="326."/>
+    <variable name="wrap_hcal_dz" value="325."/>
     <variable name="wrap_steel_dy" value="50."/>
     <variable name="wrap_scint_dy" value="6."/>
     <variable name="wrap_air_dy" value="2."/>
@@ -165,7 +165,7 @@
     <!-- - - - - - - - - Parent Volumes - - - - - - - -->  
     <box lunit="mm" name="back_hadron_calorimeter_box" x="back_hcal_dx+1." y="back_hcal_dy+1." z="back_hcal_thickness+wrap_hcal_thickness"/>
 
-    <box lunit="mm" name="ecal_box" x="wrap_TB_hcal_dx-1." y="wrap_TB_hcal_dx-1." z="wrap_hcal_thickness"/>
+    <box lunit="mm" name="ecal_box" x="wrap_TB_hcal_dx" y="wrap_TB_hcal_dx" z="wrap_hcal_thickness"/>
 
     <subtraction name="hadron_calorimeter_box">
       <first ref="back_hadron_calorimeter_box"/>
