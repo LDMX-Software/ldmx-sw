@@ -9467,7 +9467,7 @@
       <position name="Air35box0x2a76510_pos" unit="mm" x="0" y="-321" z="-199"/>
       <rotation name="Air35box0x2a76510_rot" unit="deg" x="90.1368784933823" y="0" z="0"/>
     </union>
-    <box lunit="mm" name="Wbox0x2730a60" x="499." y="499." z="276."/>
+    <box lunit="mm" name="Wbox0x2730a60" x="520." y="520." z="325."/>
     <box lunit="mm" name="expHall_box0x2731e20" x="20000" y="20000" z="40000"/>
   </solids>
 
@@ -10611,7 +10611,7 @@
       </physvol>
       <physvol name="CFMix1phys0x27515b0">
         <volumeref ref="CFMix1log0x27510f0"/>
-        <position name="CFMix1phys0x27515b0_pos" unit="mm" x="0" y="0" z="-1642.951+1504.5"/>
+        <position name="CFMix1phys0x27515b0_pos" unit="mm" x="0" y="0" z="-1642.95+1504.5"/>
       </physvol>
       <physvol name="C2phys0x27541a0">
         <volumeref ref="C2log0x2753ce0"/>
@@ -11589,7 +11589,7 @@
         <volumeref ref="CFMix32log0x2a3b100"/>
         <position name="CFMix32phys0x2a3b5c0_pos" unit="mm" x="0" y="0" z="-1386.75+1504.5"/>
       </physvol>
-      <physvol name="Si32_0phys0x2a3e1c0" copynumber="32">      
+      <physvol name="Si32_0phys0x2a3e1c0" copynumber="32">
         <volumeref ref="Si32_0log0x2a3dcf0"/>
         <position name="Si32_0phys0x2a3e1c0_pos" unit="mm" x="0" y="0" z="-1386.55+1504.5"/>
       </physvol>
@@ -11668,8 +11668,9 @@
       <physvol name="Air34phys0x2a74ad0">
         <volumeref ref="Air34log0x2a74630"/>
         <position name="Air34phys0x2a74ad0_pos" unit="mm" x="0" y="0" z="-1362+1504.5"/>
-      </physvol>
+      </physvol>      
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
     </volume>
   </structure>
 
