@@ -12,8 +12,10 @@
 
 // STL
 #include <ostream>
+#include <vector>
 
 using event::SimTrackerHit;
+using std::vector;
 
 namespace sim {
 
@@ -43,20 +45,40 @@ class G4TrackerHit: public G4VHit {
             return this->trackID_;
         }
 
+        int getID() {
+            return id_;
+        }
+
         void setID(int id) {
             this->id_ = id;
+        }
+
+        int getLayerID() {
+            return layerID_;
         }
 
         void setLayerID(int layerID) {
             this->layerID_ = layerID;
         }
 
+        float getEdep() {
+            return edep_;
+        }
+
         void setEdep(float edep) {
             this->edep_ = edep;
         }
 
+        float getTime() {
+            return time_;
+        }
+
         void setTime(float time) {
             this->time_ = time;
+        }
+
+        const G4ThreeVector& getMomentum() {
+            return momentum_;
         }
 
         void setMomentum(float px, float py, float pz) {
@@ -65,36 +87,22 @@ class G4TrackerHit: public G4VHit {
             momentum_.setZ(pz);
         }
 
+        const G4ThreeVector& getPosition() {
+            return position_;
+        }
+
         void setPosition(float x, float y, float z) {
             position_.setX(x);
             position_.setY(y);
             position_.setZ(z);
         }
 
-        void setPathLength(float pathLength) {
-            this->pathLength_ = pathLength;
+        float getPathLength() {
+            return pathLength_;
         }
 
-        /**
-         * Copy the contents of this hit into an output SimTrackerHit.
-         */
-        void setSimTrackerHit(SimTrackerHit* simTrackerHit) {
-
-            simTrackerHit->setID(id_);
-            simTrackerHit->setLayerID(layerID_);
-            simTrackerHit->setEdep(edep_);
-            simTrackerHit->setTime(time_);
-            simTrackerHit->setMomentum(
-                    momentum_.x(),
-                    momentum_.y(),
-                    momentum_.z());
-            simTrackerHit->setPosition(
-                    position_.x(),
-                    position_.y(),
-                    position_.z());
-            simTrackerHit->setPathLength(pathLength_);
-
-            this->simTrackerHit_ = simTrackerHit;
+        void setPathLength(float pathLength) {
+            this->pathLength_ = pathLength;
         }
 
         SimTrackerHit* getSimTrackerHit() {

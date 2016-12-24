@@ -14,7 +14,7 @@ void RootEventWriter::open() {
     // Create the file and tree.  They are cleaned up in the close() method.
     rootFile_ = new TFile(fileName_.c_str(), mode_.c_str(), "", compression_);
     tree_ = new TTree("LDMX_Event", "LDMX event tree");
-    tree_->Branch("LdmxEvent" /* branch name */, outputEvent_->getEventType() /* class name */, &outputEvent_, 32000, 3);
+    tree_->Branch("LdmxEvent" /* branch name */, outputEvent_->getEventType().c_str() /* class name */, &outputEvent_, 32000, 3);
 }
 
 void RootEventWriter::writeEvent() {

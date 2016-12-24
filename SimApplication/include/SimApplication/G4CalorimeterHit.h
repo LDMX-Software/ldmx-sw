@@ -40,28 +40,44 @@ class G4CalorimeterHit : public G4VHit {
             this->trackID_ = trackID;
         }
 
-        void setID(int id) {
-            this->id_ = id;
-        }
-
         int getID() {
             return id_;
         }
 
-        void setEdep(float edep) {
-            this->edep_ = edep;
+        void setID(int id) {
+            this->id_ = id;
         }
 
         float getEdep() {
             return edep_;
         }
 
+        void setEdep(float edep) {
+            this->edep_ = edep;
+        }
+
+        const G4ThreeVector& getPosition() {
+            return position_;
+        }
+
         void setPosition(const float x, const float y, const float z) {
             position_.set(x, y, z);
         }
 
+        float getTime() {
+            return time_;
+        }
+
         void setTime(float time) {
             this->time_ = time;
+        }
+
+        int getPdgCode() {
+            return pdgCode_;
+        }
+
+        void setPdgCode(int pdgCode) {
+            pdgCode_ = pdgCode;
         }
 
         /**
@@ -84,6 +100,7 @@ class G4CalorimeterHit : public G4VHit {
         double edep_{0};
         G4ThreeVector position_;
         float time_{0};
+        int pdgCode_{0};
 
         SimCalorimeterHit* simCalHit_{nullptr};
 

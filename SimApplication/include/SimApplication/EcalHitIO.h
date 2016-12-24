@@ -10,9 +10,10 @@
 
 // LDMX
 #include "DetDescr/EcalDetectorID.h"
+#include "DetDescr/EcalHexReadout.h"
 #include "Event/SimCalorimeterHit.h"
 #include "SimApplication/G4CalorimeterHit.h"
-#include "DetDescr/EcalHexReadout.h"
+#include "SimApplication/SimParticleBuilder.h"
 
 // ROOT
 #include "TClonesArray.h"
@@ -21,9 +22,9 @@
 #include <utility>
 
 using detdescr::EcalDetectorID;
+using detdescr::EcalHexReadout;
 using event::SimCalorimeterHit;
 using sim::G4CalorimeterHitsCollection;
-using detdescr::EcalHexReadout;
 
 namespace sim {
 
@@ -34,24 +35,42 @@ class EcalHitIO {
 
     public:
 
+        EcalHitIO(SimParticleBuilder* simParticleBuilder);
+
+        ~EcalHitIO() {;}
+
         /**
          * Write out a Geant4 hits collection to the provided ROOT array.
+         * @param hc The input hits collection.
+         * @param outputColl The output collection in ROOT.
+         * @param simParticleBuilder_ The sim particle builder for getting sim particles from track ID.
          */
         void writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl);
 
+        void setEnableHitContribs(bool enableHitContribs) {
+            enableHitContribs_ = enableHitContribs;
+        }
+
+        void setCompressHitContribs(bool compressHitContribs) {
+            compressHitContribs_ = compressHitContribs;
+        }
+
     private:
 
-        /**
-         * Make a layer-cell pair from a hit.
-         */
-        LayerCellPair hitToPair(G4CalorimeterHit* g4hit);
+        /** Access to SimParticle list. */
+        SimParticleBuilder* simParticleBuilder_;
 
-    private:
+        /** Hex cell readout. */
+        EcalHexReadout hexReadout_;
 
-        EcalHexReadout* hexReadout = new EcalHexReadout();
-        EcalDetectorID detID;
-        std::map<LayerCellPair, int> ecalReadoutMap;
+        /** ECal detector ID. */
+        EcalDetectorID detID_;
 
+        /** Enable hit contribution output. */
+        bool enableHitContribs_{true};
+
+        /** Enable compression of hit contributions by SimParticle and PDG code. */
+        bool compressHitContribs_{true};
 };
 
 } // namespace sim
