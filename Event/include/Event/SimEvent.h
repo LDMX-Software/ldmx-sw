@@ -14,9 +14,11 @@ class SimEvent : public Event {
 
         virtual ~SimEvent() {;}
 
-        virtual const char* getEventType() {
-            return event::EventConstants::SIM_EVENT.c_str();
+        virtual const std::string& getEventType() {
+            return event::EventConstants::SIM_EVENT;
         }
+
+        void Print(Option_t*) const;
 
     private:
 
