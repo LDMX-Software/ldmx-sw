@@ -182,7 +182,7 @@ void sim::TargetPhotonuclearBiasingPlugin::stepping(const G4Step* step) {
         
     
         // Only record photonuclear events
-        if (processName.compareTo("photonNuclear") != 0) {
+        if (!processName.contains("photonNuclear")) {
             
             
             /*std::cout << "[ TargetPhotonuclearBiasingPlugin ]: "
