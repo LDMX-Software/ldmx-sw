@@ -42,6 +42,18 @@ RootPersistencyMessenger::RootPersistencyMessenger(RootPersistencyManager* rootI
     modeCmd_->SetParameter(mode);
     modeCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
     modeCmd_->SetGuidance("Set the file mode: new update recreate");
+
+    hitContribsCmd_ = new G4UIcmdWithABool("/ldmx/persistency/root/enableHitContribs", this);
+    G4UIparameter* enable = new G4UIparameter("enable", 'b', true);
+    hitContribsCmd_->SetParameter(enable);
+    hitContribsCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
+    hitContribsCmd_->SetGuidance("Enable hit contributions for SimCalorimeterHits (on by default)");
+
+    compressContribsCmd_ = new G4UIcmdWithABool("/ldmx/persistency/root/compressHitContribs", this);
+    G4UIparameter* compress = new G4UIparameter("enable", 'b', true);
+    compressContribsCmd_->SetParameter(compress);
+    compressContribsCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
+    compressContribsCmd_->SetGuidance("Compress hit contributions by matching SimParticle and PDG code");
 }
 
 RootPersistencyMessenger::~RootPersistencyMessenger() {
@@ -76,6 +88,10 @@ void RootPersistencyMessenger::SetNewValue(G4UIcommand* command, G4String newVal
             rootIO_->getWriter()->setCompression(compr);
         } else if (command == modeCmd_) {
             rootIO_->getWriter()->setMode(newValues);
+        } else if (command == hitContribsCmd_) {
+            rootIO_->setEnableHitContribs(hitContribsCmd_->GetNewBoolValue(newValues.c_str()));
+        } else if (command == compressContribsCmd_) {
+            rootIO_->setCompressHitContribs(compressContribsCmd_->GetNewBoolValue(newValues.c_str()));
         }
     } else {
         // Re-enable ROOT IO.

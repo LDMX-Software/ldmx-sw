@@ -37,10 +37,6 @@ class SimParticleBuilder {
 
         SimParticle* findSimParticle(G4int trackID);
 
-        void assignTrackerHitSimParticles();
-
-        void assignCalorimeterHitSimParticles();
-
     private:
 
         void buildSimParticle(Trajectory* info);

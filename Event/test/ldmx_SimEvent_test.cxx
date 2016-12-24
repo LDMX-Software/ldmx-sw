@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     auto outputFile = new TFile("SimEvent_test.root", "recreate");
     auto outputTree = new TTree("LDMX_Event", "LDMX event tree");
     outputTree->Branch("LdmxEvent" /* branch name */,
-            outputEvent->getEventType() /* class name */,
+            outputEvent->getEventType().c_str() /* class name */,
             &outputEvent,
             32000,
             3);
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
     SimParticle* simParticle = (SimParticle*) outputEvent->getCollection(EventConstants::SIM_PARTICLES)->ConstructedAt(0);
 
     simTrackerHit->setSimParticle(simParticle);
-    simCalorimeterHit->setSimParticle(simParticle);
+    //simCalorimeterHit->setSimParticle(simParticle);
 
     outputTree->Fill();
     outputFile->Write();
@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
                     }
                 } else if (dynamic_cast<SimCalorimeterHit*>(obj)) {
                     SimCalorimeterHit* simCalorimeterHit = (SimCalorimeterHit*) obj;
-                    SimParticle* simParticle = simCalorimeterHit->getSimParticle();
+                    //SimParticle* simParticle = simCalorimeterHit->getSimParticle();
                     if (simParticle) {
                         simParticle->Print();
                     } else {

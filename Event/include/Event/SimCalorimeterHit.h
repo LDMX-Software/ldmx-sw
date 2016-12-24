@@ -14,6 +14,17 @@ class SimCalorimeterHit: public TObject {
 
     public:
 
+        /**
+         * Information about a contribution to the hit
+         * from a step in the associated cell.
+         */
+        struct Contrib {
+            SimParticle* particle{nullptr};
+            int pdgCode{0};
+            float edep{0};
+            float time{0};
+        };
+
         SimCalorimeterHit();
 
         virtual ~SimCalorimeterHit();
@@ -26,28 +37,20 @@ class SimCalorimeterHit: public TObject {
             return id_;
         }
 
-        float getEdep() {
-            return edep_;
-        }
-
-        std::vector<float> getPosition() const {
-            return {x_, y_, z_};
-        }
-
-        float getTime() {
-            return time_;
-        }
-
-        SimParticle* getSimParticle() {
-            return (SimParticle*) simParticle_.GetObject();
-        }
-
         void setID(const int id) {
             this->id_ = id;
         }
 
+        float getEdep() {
+            return edep_;
+        }
+
         void setEdep(const float edep) {
             this->edep_ = edep;
+        }
+
+        std::vector<float> getPosition() const {
+            return {x_, y_, z_};
         }
 
         void setPosition(const float x, const float y, const float z) {
@@ -56,13 +59,38 @@ class SimCalorimeterHit: public TObject {
             this->z_ = z;
         }
 
+        float getTime() {
+            return time_;
+        }
+
         void setTime(const float time) {
             this->time_ = time;
         }
 
-        void setSimParticle(SimParticle* simParticle) {
-            this->simParticle_ = simParticle;
+        unsigned getNumberOfContribs() {
+            return nContribs_;
         }
+
+        /**
+         * Add a hit contribution from a SimParticle.
+         */
+        void addContrib(SimParticle* simParticle, int pdgCode, float edep, float time);
+
+        /**
+         * Get a hit contribution by index.
+         */
+        Contrib getContrib(int i);
+
+        /**
+         * Find the index of a hit contribution from a SimParticle and PDG code.
+         */
+        int findContribIndex(SimParticle* simParticle, int pdgCode);
+
+        /**
+         * Update an existing hit contribution by incrementing its edep and setting the time
+         * if the new time is less than the old one.
+         */
+        void updateContrib(int i, float edep, float time);
 
     private:
 
@@ -73,9 +101,13 @@ class SimCalorimeterHit: public TObject {
         float z_{0};
         float time_{0};
 
-        TRef simParticle_{nullptr};
+        TRefArray* simParticleContribs_;
+        std::vector<int> pdgCodeContribs_;
+        std::vector<float> edepContribs_;
+        std::vector<float> timeContribs_;
+        unsigned nContribs_{0};
 
-    ClassDef(SimCalorimeterHit, 1)
+    ClassDef(SimCalorimeterHit, 2)
 };
 
 }
