@@ -16,6 +16,9 @@ class TrajectoryContainer : public G4TrajectoryContainer {
 
     public:
 
+        TrajectoryContainer() {;}
+        virtual ~TrajectoryContainer() {;}
+
         Trajectory* findByTrackID(G4int);
 };
 
