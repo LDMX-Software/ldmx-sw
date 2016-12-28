@@ -1,6 +1,7 @@
 #include "SimApplication/SimApplication.h"
 
 // LDMX
+#include "SimApplication/BiasingMessenger.h"
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RunManager.h"
 #include "SimApplication/SimApplicationMessenger.h"
@@ -38,6 +39,9 @@ void SimApplication::run(int argc, char** argv) {
 
     // Create run manager.
     G4RunManager* runManager = new RunManager;
+
+    // Instantiate the biasing messenger
+    new BiasingMessenger(runManager);
 
     // Setup GDML parser and messenger.
     G4GDMLParser* parser = new G4GDMLParser();
