@@ -4,9 +4,14 @@
 // LDMX
 #include "AuxInfoReader.h"
 
+// Biasing
+#include "Biasing/PhotonuclearXsecBiasingOperator.h"
+
 // Geant4
 #include "G4VUserDetectorConstruction.hh"
 #include "G4GDMLParser.hh"
+#include "G4LogicalVolume.hh"
+#include "G4LogicalVolumeStore.hh"
 
 namespace sim {
 
@@ -19,6 +24,8 @@ class DetectorConstruction: public G4VUserDetectorConstruction {
         virtual ~DetectorConstruction();
 
         G4VPhysicalVolume *Construct();
+
+        void ConstructSDandField();
 
     private:
         G4GDMLParser* parser_;
