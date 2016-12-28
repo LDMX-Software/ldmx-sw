@@ -14,6 +14,7 @@
 
 // Geant4
 #include "FTFP_BERT.hh"
+#include "G4GenericBiasingPhysics.hh"
 #include "G4VModularPhysicsList.hh"
 
 namespace sim {
@@ -36,6 +37,22 @@ void RunManager::InitializePhysics() {
     modularPhysicsList->RegisterPhysics(new APrimePhysics);
     modularPhysicsList->RegisterPhysics(new GammaPhysics);
     //modularPhysicsList->RegisterPhysics(new TungstenIonPhysics);
+
+    if (enableBiasing_) { 
+       
+        std::cout << "[ RunManager ]: Enabling physics biasing." << std::endl;
+        std::cout << "[ RunManager ]: Biasing particle of type " 
+                  << particleTypeToBias_ << std::endl;
+
+        // Instantiate the constructor used when biasing
+        G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
+    
+        // Specify what particles are being biased
+        biasingPhysics->Bias(particleTypeToBias_);
+    
+        // Register the physics constructor to the physics list:
+        modularPhysicsList->RegisterPhysics(biasingPhysics);
+    }
 
     SetUserInitialization(thePhysicsList);
 
