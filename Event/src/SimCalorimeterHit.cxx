@@ -78,6 +78,7 @@ void SimCalorimeterHit::updateContrib(int i, float edep, float time) {
     if (time < this->timeContribs_[i]) {
         this->timeContribs_[i] = time;
     }
+    edep_ += edep;
 }
 
 
