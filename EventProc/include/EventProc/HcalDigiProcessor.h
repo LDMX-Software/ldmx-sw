@@ -1,3 +1,9 @@
+/**
+ * @file HcalDigiProcessor.h
+ * @brief Class that performs digitization of simulated HCal data
+ * @author Andrew Whitbeck, FNAL
+ */
+
 #include "TString.h"
 #include "TRandom.h"
 #include "TFile.h"
@@ -19,7 +25,11 @@ namespace eventproc {
   
 typedef int layer;
 typedef std::pair<double,double> zboundaries;
- 
+
+/**
+ * @class HcalDigiProcessor
+ * @brief Performs digitization of simulated HCal data
+ */
 class HcalDigiProcessor : public EventProcessor {
   
 public:

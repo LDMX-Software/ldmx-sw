@@ -1,3 +1,10 @@
+/**
+ * @file MagneticFieldMap3D.h
+ * @brief Class for defining a global 3D magnetic field
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Norman Graf, SLAC National Accelerator Laboratory
+ */
+
 #ifndef SIMAPPLICATION_MAGNETICFIELDMAP3D_H_
 #define SIMAPPLICATION_MAGNETICFIELDMAP3D_H_
 
@@ -7,6 +14,8 @@
 // STL
 #include <vector>
 using std::vector;
+
+namespace sim {
 
 /**
  * @brief
@@ -46,12 +55,7 @@ using std::vector;
  * x y z B_x B_y B_z
  *
  * Original PurgMagTabulatedField3D code developed by: S.Larsson and J. Generowicz.
- *
- * @author Norman Graf
- * @author Jeremy McCormick
  */
-
-namespace sim {
 
 class MagneticFieldMap3D : public G4MagneticField {
 
@@ -73,25 +77,38 @@ class MagneticFieldMap3D : public G4MagneticField {
 
     private:
 
-        // Storage space for the table
+        /*
+         * Storage space for the table.
+         */
         vector<vector<vector<double>>> xField_;
         vector<vector<vector<double>>> yField_;
         vector<vector<vector<double>>> zField_;
 
-        // The dimensions of the table
+        /*
+         * The dimensions of the table.
+         */
         int nx_, ny_, nz_;
 
-        // The physical limits of the defined region
+        /*
+         * The physical limits of the defined region.
+         */
         double minx_, maxx_, miny_, maxy_, minz_, maxz_;
 
-        // The physical extent of the defined region
+        /*
+         * The physical extent of the defined region.
+         */
         double dx_, dy_, dz_;
 
-        // Offsets if field map is not in global coordinates
+        /*
+         * Offsets if field map is not in global coordinates
+         */
         double xOffset_;
         double yOffset_;
         double zOffset_;
 
+        /*
+         * Flags for inverting dimensions.
+         */
         bool invertX_, invertY_, invertZ_;
 };
 
