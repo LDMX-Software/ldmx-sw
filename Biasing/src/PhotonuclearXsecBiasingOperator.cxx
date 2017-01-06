@@ -43,9 +43,12 @@ G4VBiasingOperation* sim::PhotonuclearXsecBiasingOperator::ProposeOccurenceBiasi
     }
 
     /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
-              << "Parent ID: " << track->GetParentID() << std::endl;*/
+              << "Parent ID: " << track->GetParentID() 
+              << " Created within " << track->GetLogicalVolumeAtVertex()->GetName() 
+              << std::endl;*/
 
-    if (track->GetParentID() != 1) return 0;
+    if (track->GetParentID() != 1 
+            || track->GetLogicalVolumeAtVertex()->GetName().compareTo(vertexVolume_) != 0) return 0;
 
     G4double interactionLength =  
         callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
@@ -59,7 +62,7 @@ G4VBiasingOperation* sim::PhotonuclearXsecBiasingOperator::ProposeOccurenceBiasi
               << xsec << std::endl;*/
    
     // TODO: Make this settable via a macro command 
-    G4double xsecTransformation = 100000;
+    G4double xsecTransformation = 5000;
     /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
               << "Cross-section x transformation factor: " 
               << xsec*xsecTransformation << std::endl;*/
