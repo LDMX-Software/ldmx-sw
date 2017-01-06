@@ -1,8 +1,9 @@
 /**
  * @file RootPersistencyManager.h
- * @brief Persistency manager implementation providing <i>SimEvent</i> output from the Geant4 events.
+ * @brief Class providing persistency manager implementation with SimEvent output
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
+
 #ifndef SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 #define SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 
@@ -26,29 +27,47 @@ using event::SimEvent;
 
 namespace sim {
 
+/**
+ * @class RootPersistencyManager
+ * @brief Provides a <i>G4PersistencyManager</i> implemention with SimEvent output
+ *
+ * @note
+ * Output is written at the end of each event.  A RootEventWriter is used to write
+ * from an Event buffer into an output branch within a tree.  The Event buffer is cleared
+ * after the event is written.  A SimParticleBuilder is used to build a set of SimParticle
+ * objects from the Trajectory objects which were created during event processing.
+ * An EcalHitIO instance provides translation of G4CalorimeterHit objects to an output
+ * SimCalorimeterHit collection.  The tracker hit collections of G4TrackerHit objects
+ * are translated directly into SimTrackerHit collections.
+ */
 class RootPersistencyManager : public G4PersistencyManager {
 
     public:
 
         /**
-         * Constructor, which will install the object as the global persistency manager.
+         * Class constructor.
+         * Installs the object as the global persistency manager.
          */
         RootPersistencyManager();
 
         /**
-         * Return the current ROOT persistency manager or null if it is not registered.
+         * Get the current ROOT persistency manager or <i>nullptr</i> if not registered.
+         * @return The ROOT persistency manager.
          */
         static RootPersistencyManager* getInstance() {
             return (RootPersistencyManager*) G4PersistencyCenter::GetPersistencyCenter()->CurrentPersistencyManager();
         }
 
         /**
-         * This is the primary method for building the output ROOT event.
+         * Builds the output ROOT event.
+         * @param anEvent The Geant4 event data.
          */
         G4bool Store(const G4Event* anEvent);
 
         /**
          * This gets called automatically at the end of the run and is used to close the writer.
+         * @param aRun The Geant4 run data.
+         * @return True if event is stored (hard-coded to true).
          */
         G4bool Store(const G4Run* aRun) {
             if (m_verbose > 1) {
@@ -65,7 +84,6 @@ class RootPersistencyManager : public G4PersistencyManager {
 
         /** 
           * This is called "manually" in UserRunAction to open the ROOT writer for the run.
-          * Is Geant4 supposed to activate this someplace?
           */
         void Initialize() {
             if (m_verbose > 1) {
@@ -81,14 +99,26 @@ class RootPersistencyManager : public G4PersistencyManager {
             }
         }
 
+        /**
+         * Get the current event from the ROOT writer.
+         * @return The current event.
+         */
         Event* getCurrentEvent() {
             return writer_->getEvent();
         }
 
+        /**
+         * Set the output file name.
+         * @param fileName The output file name.
+         */
         void setFileName(std::string fileName) {
             this->writer_->setFileName(fileName);
         }
         
+        /**
+         * Get the ROOT writer.
+         * @return The ROOT writer.
+         */
         RootEventWriter* getWriter() {
             return writer_;
         }
@@ -96,6 +126,7 @@ class RootPersistencyManager : public G4PersistencyManager {
         /**
          * Enable or disable hit contribution output for SimCalorimeterHits.
          * This is enabled by default.
+         * @param enableHitContribs True to enable hit contributions.
          */
         void setEnableHitContribs(bool enableHitContribs) {
             // Pass this flag to the ECal IO helper.
@@ -106,6 +137,7 @@ class RootPersistencyManager : public G4PersistencyManager {
          * Enable or disable compression of hit contribution output by finding
          * matching SimParticle and PDG codes and updating the existing record.
          * This is enabled by default.
+         * @param compressHitContribs True to compress hit contributions.
          */
         void setCompressHitContribs(bool compressHitContribs) {
             // Pass this flag to the ECal IO helper.
@@ -116,43 +148,60 @@ class RootPersistencyManager : public G4PersistencyManager {
         
         /**
          * Build an output event from the current Geant4 event.
+         * @param anEvent The Geant4 event.
+         * @param outputEvent The output event.
          */
-        void buildEvent(const G4Event*, Event*);
+        void buildEvent(const G4Event* anEvent, Event* outputEvent);
 
         /**
          * Write header info into the output event from Geant4.
+         * @param anEvent The Geant4 event.
+         * @param outputEvent The output event.
          */
         void writeHeader(const G4Event* anEvent, Event* outputEvent);
 
         /**
          * Write hits collections from Geant4 into a ROOT event.
+         * @param anEvent The Geant4 event.
+         * @param outputEvent The output event.
          */
         void writeHitsCollections(const G4Event* anEvent, Event* outputEvent);
         
         /**
          * Write a collection of tracker hits to an output collection.
+         * @param hc The collection of G4TrackerHits.
+         * @param outputColl The output collection of SimTrackerHits.
          */
         void writeTrackerHitsCollection(G4TrackerHitsCollection* hc, TClonesArray* outputColl);
 
         /**
          * Write a collection of tracker hits to an output collection.
+         * @param hc The collection of G4CalorimeterHits.
+         * @param outputColl The output collection of SimCalorimeterHits.
          */
         void writeCalorimeterHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl);
 
         /**
          * Print out event info and data depending on the verbose level.
+         * @param anEvent The output event.
          */
-        void printEvent(Event*);
+        void printEvent(Event* anEvent);
 
     private:
 
-        // Helper for building output SimParticle collection.
+        /**
+         * Helper for building output SimParticle collection.
+         */
         SimParticleBuilder simParticleBuilder_;
 
-        // Writes out events to ROOT file.
+        /**
+         * Writes out events to ROOT file.
+         */
         RootEventWriter* writer_;
 
-        // Handles ECal hit readout and IO.
+        /**
+         * Handles ECal hit readout and IO.
+         */
         EcalHitIO* ecalHitIO_;
     };
 

@@ -1,3 +1,9 @@
+/**
+ * @file G4TrackerHit.h
+ * @brief Class defining a tracker hit which is used to create output SimTrackerHit collection
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #ifndef SIMAPPLICATION_G4SIMTRACKERHIT_H_
 #define SIMAPPLICATION_G4SIMTRACKERHIT_H_
 
@@ -19,108 +25,234 @@ using std::vector;
 
 namespace sim {
 
+/**
+ * @class G4TrackerHit
+ * @brief Track hit which is used to create output SimTrackerHit collection
+ *
+ * @note
+ * One of these is created for every step in a TrackerSD.  These are basically
+ * copied verbatim into SimTrackerHit objects by the RootPersistencyManager.
+ */
 class G4TrackerHit: public G4VHit {
 
     public:
 
+        /**
+         * Class constructor.
+         */
         G4TrackerHit() {;}
 
+        /**
+         * Class destructor.
+         */
         virtual ~G4TrackerHit() {;}
 
+        /**
+         * Draw the hit in the Geant4 runtime.
+         */
         void Draw();
 
+        /**
+         * Print out hit information.
+         */
         void Print();
 
+        /**
+         * Print hit information to an output stream.
+         * @param os The output stream.
+         * @return The same output stream.
+         */
         std::ostream& print(std::ostream& os);
 
+        /**
+         * Create a new hit object.
+         * @param s The size of the hit object.
+         */
         inline void *operator new(size_t);
 
+        /**
+         * Delete a hit object.
+         * @param aHit The hit to delete.
+         */
         inline void operator delete(void *aHit);
 
+        /**
+         * Set the track ID.
+         * @param The track ID.
+         */
         void setTrackID(int trackID) {
             this->trackID_ = trackID;
         }
 
+        /**
+         * Get the track ID.
+         * @return The track ID.
+         */
         int getTrackID() {
             return this->trackID_;
         }
 
+        /**
+         * Get the detector ID.
+         * @return The detector ID.
+         */
         int getID() {
             return id_;
         }
 
+        /**
+         * Set the detector ID.
+         * @param id The detector ID.
+         */
         void setID(int id) {
             this->id_ = id;
         }
 
+        /**
+         * Get the layer ID.
+         * @return The layer ID.
+         */
         int getLayerID() {
             return layerID_;
         }
 
+        /**
+         * Set the layer ID.
+         * @param layerID The layer ID.
+         */
         void setLayerID(int layerID) {
             this->layerID_ = layerID;
         }
 
+        /**
+         * Get the energy deposition.
+         * @return The energy deposition.
+         */
         float getEdep() {
             return edep_;
         }
 
+        /**
+         * Set the energy deposition.
+         * @param edep The energy deposition.
+         */
         void setEdep(float edep) {
             this->edep_ = edep;
         }
 
+        /**
+         * Get the global time.
+         * @return The global time.
+         */
         float getTime() {
             return time_;
         }
 
+        /**
+         * Set the global time.
+         * @param time The global time.
+         */
         void setTime(float time) {
             this->time_ = time;
         }
 
+        /**
+         * Get the XYZ momentum.
+         * @return The XYZ momentum.
+         */
         const G4ThreeVector& getMomentum() {
             return momentum_;
         }
 
+        /**
+         * Set the momentum.
+         * @param px The X momentum.
+         * @param py The Y momentum.
+         * @param pz The Z momentum.
+         */
         void setMomentum(float px, float py, float pz) {
             momentum_.setX(px);
             momentum_.setY(py);
             momentum_.setZ(pz);
         }
 
+        /**
+         * Get the XYZ hit position [mm].
+         * @return The hit position.
+         */
         const G4ThreeVector& getPosition() {
             return position_;
         }
 
+        /**
+         * Set the hit position [mm].
+         * @param x The X position.
+         * @param y The Y position.
+         * 2param z The Z position.
+         */
         void setPosition(float x, float y, float z) {
             position_.setX(x);
             position_.setY(y);
             position_.setZ(z);
         }
 
+        /**
+         * Get the path length from the pre and post step points [mm].
+         * @return The path length.
+         */
         float getPathLength() {
             return pathLength_;
         }
 
+        /**
+         * Set the path length [mm].
+         * @pathLength The path length.
+         */
         void setPathLength(float pathLength) {
             this->pathLength_ = pathLength;
         }
 
-        SimTrackerHit* getSimTrackerHit() {
-            return simTrackerHit_;
-        }
-
     private:
 
+        /**
+         * The track ID.
+         */
         G4int trackID_{0};
-        int id_{0};
-        int layerID_{0};
-        float edep_{0};
-        float time_{0};
-        G4ThreeVector momentum_;
-        G4ThreeVector position_;
-        float pathLength_{0};
 
-        SimTrackerHit* simTrackerHit_{nullptr};
+        /**
+         * The detector ID.
+         */
+        int id_{0};
+
+        /**
+         * The layer ID.
+         */
+        int layerID_{0};
+
+        /**
+         * The energy deposition.
+         */
+        float edep_{0};
+
+        /**
+         * The global time.
+         */
+        float time_{0};
+
+        /**
+         * The XYZ momentum.
+         */
+        G4ThreeVector momentum_;
+
+        /**
+         * The XYZ position.
+         */
+        G4ThreeVector position_;
+
+        /**
+         * The path length.
+         */
+        float pathLength_{0};
 };
 
 /**
