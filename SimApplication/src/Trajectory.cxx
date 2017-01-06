@@ -8,8 +8,7 @@ namespace sim {
 G4Allocator<Trajectory> TrajectoryAllocator;
 
 Trajectory::Trajectory(const G4Track* aTrack)
-    : genStatus_(0),
-      simStatus_(0) {
+    : genStatus_(0) {
 
     particleDef_ = aTrack->GetDefinition();
     mass_ = aTrack->GetDynamicParticle()->GetMass();

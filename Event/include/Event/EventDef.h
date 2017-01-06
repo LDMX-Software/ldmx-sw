@@ -1,3 +1,9 @@
+/**
+ * @file EventDef.h
+ * @brief Headers to be processed when creating the ROOT dictionary
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #include "Event/Event.h"
 #include "Event/EventConstants.h"
 #include "Event/SimEvent.h"
