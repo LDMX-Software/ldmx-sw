@@ -1,3 +1,9 @@
+/**
+ * @file EventConstants.h
+ * @brief Class providing string constants for the event model
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #ifndef EVENT_EVENTCONSTANTS_H_
 #define EVENT_EVENTCONSTANTS_H_
 
@@ -5,6 +11,10 @@
 
 namespace event {
 
+/**
+ * @class EventConstants
+ * @brief Provides access to static event constants used by the Event class
+ */
 class EventConstants {
 
     public:
