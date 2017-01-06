@@ -1,3 +1,9 @@
+/**
+ * @file EcalVetoProcessor.h
+ * @brief Class that performs basic ECal digi and determines if an event is vetoable
+ * @author Owen Colegrove, UCSB
+ */
+
 #include "TString.h"
 #include "TRandom.h"
 #include "TFile.h"
@@ -17,11 +23,12 @@ using detdescr::DetectorID;
 using detdescr::EcalDetectorID;
 using detdescr::EcalHexReadout;
 
-
-
 namespace eventproc {
 
-
+/**
+ * @class EcalVetoProcessor
+ * @brief Performs basic ECal digi and determines if event is vetoable
+ */
 class EcalVetoProcessor : public EventProcessor {
 
 public:

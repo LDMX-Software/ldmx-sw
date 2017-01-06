@@ -1,6 +1,6 @@
 /**
  * @file EventPrintPluginMessenger.h
- * @brief Messenger class for setting parameters of EventPrintPlugin.
+ * @brief Class that defines a macro messenger for an EventPrintPlugin
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
@@ -22,27 +22,77 @@ namespace sim {
  */
 class EventPrintPlugin;
 
+/**
+ * @class EventPrintPluginMessenger
+ * @brief Messenger class for setting parameters of the EventPrintPlugin
+ */
 class EventPrintPluginMessenger : public UserActionPluginMessenger {
 
     public:
 
-        EventPrintPluginMessenger(EventPrintPlugin*);
+        /**
+         * Class constructor.
+         * @param The associated EventPrintPlugin object.
+         */
+        EventPrintPluginMessenger(EventPrintPlugin* plugin);
 
+        /**
+         * Class destructor.
+         */
         virtual ~EventPrintPluginMessenger();
 
+        /**
+         * Process the macro command.
+         * @param command The macro command.
+         * @param newValues The argument values.
+         */
         void SetNewValue(G4UIcommand *command, G4String newValue);
 
     private:
 
+        /**
+         * The associated user plugin.
+         */
         EventPrintPlugin* eventPrintPlugin_;
 
+        /**
+         * Command for setting the event print modulus.
+         */
         G4UIcommand* modulusCmd_;
+
+        /**
+         * Command for setting the prepend string.
+         */
         G4UIcommand* prependCmd_;
+
+        /**
+         * Command for setting the append string.
+         */
         G4UIcommand* appendCmd_;
+
+        /**
+         * Command for enabling start of run message.
+         */
         G4UIcommand* enableStartRunCmd_;
+
+        /**
+         * Command for enabling end of run message.
+         */
         G4UIcommand* enableEndRunCmd_;
+
+        /**
+         * Command for enabling start of event message.
+         */
         G4UIcommand* enableStartEventCmd_;
+
+        /**
+         * Command for enabling end of event message.
+         */
         G4UIcommand* enableEndEventCmd_;
+
+        /**
+         * Command for resetting the plugin state.
+         */
         G4UIcommand* resetCmd_;
 };
 

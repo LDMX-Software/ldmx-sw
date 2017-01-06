@@ -15,15 +15,19 @@ UserActionPlugin* PluginLoader::create(std::string pluginName, std::string libNa
     // Is there a proper handle to the lib?
     if (handle) {
 
+        // Get a function pointer from the library to create the plugin object.
         UserActionPlugin* (*createIt)();
         createIt = (UserActionPlugin* (*)())dlsym(handle, std::string("create" + pluginName).c_str());
 
         // Did we get back a good function pointer from the lib?
         if(createIt) {
+
+            // Create the plugin object from the function pointer.
             plugin = (UserActionPlugin*)createIt();
 
-            // Was plugin created successfully?
+            // Was the plugin created successfully?
             if (plugin) {
+                // Register the plugin handle for when it needs to be destroyed.
                 this->pluginHandles_[plugin] = handle;
             } else {
                 // For some reason, the plugin could not be created by the lib function!

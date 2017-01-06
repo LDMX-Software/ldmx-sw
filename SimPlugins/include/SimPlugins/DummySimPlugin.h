@@ -1,3 +1,9 @@
+/**
+ * @file DummySimPlugin.h
+ * @brief Class that defines a dummy simulation plugin
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #ifndef SIMPLUGINS_DUMMYSIMPLUGIN_H_
 #define SIMPLUGINS_DUMMYSIMPLUGIN_H_
 
@@ -6,6 +12,10 @@
 
 namespace sim {
 
+/**
+ * @class DummySimPlugin
+ * @brief Dummy implementation of UserActionPlugin
+ */
 class DummySimPlugin : public UserActionPlugin {
 
     public:
