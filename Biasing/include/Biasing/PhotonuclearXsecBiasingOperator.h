@@ -49,6 +49,9 @@ class PhotonuclearXsecBiasingOperator : public G4VBiasingOperator {
 
         /** Cross-section biasing operation */
         G4BOptnChangeCrossSection* xsecOperation{nullptr};
+    
+        /** Volume at vertex of particle to bias. */
+        G4String vertexVolume_{"target"};
 
         //--------//
         // Unused //
