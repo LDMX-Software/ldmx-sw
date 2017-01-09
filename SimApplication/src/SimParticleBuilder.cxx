@@ -62,7 +62,7 @@ void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
     simParticle->setGenStatus(traj->getGenStatus());
     simParticle->setPdgID(traj->GetPDGEncoding());
     simParticle->setCharge(traj->GetCharge());
-    simParticle->setMass(traj->getMass() / GeV);
+    simParticle->setMass(traj->getMass());
     simParticle->setEnergy(traj->getEnergy());
 
     G4ThreeVector lastTrajPoint = traj->GetPoint(traj->GetPointEntries() - 1)->GetPosition();
