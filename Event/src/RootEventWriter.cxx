@@ -35,4 +35,11 @@ void RootEventWriter::close() {
     }
 }
 
+void RootEventWriter::writeRunHeader(RunHeader* runHeader) {
+    TTree* runTree = new TTree("LDMX_Run", "LDMX run header");
+    TBranch* runBranch = runTree->Branch("LdmxRun", EventConstants::RUN_HEADER.c_str(), &runHeader, 32000, 3);
+    runBranch->SetFile(rootFile_);
+    runTree->Fill();
+}
+
 }

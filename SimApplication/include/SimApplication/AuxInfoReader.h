@@ -10,20 +10,21 @@
 // Geant4
 #include "G4GDMLParser.hh"
 
+// LDMX
+#include "DetDescr/DetectorHeader.h"
+
 namespace sim {
 
 /**
  * @class AuxInfoReader
- * @brief Reads auxiliary information from GDML auxinfo block
+ * @brief Reads auxiliary information from GDML userinfo block
  *
  * @note
- * This class reads information to define sensitive detectors, visualization attributes,
- * magnetic fields, detector IDs, and detector regions from the auxinfo block of a GDML
- * file.  After this information is read, it can assign the objects to the appropriate
- * logical volumes where there is an <i>auxiliary</i> tag that references the information
- * by its name, using the <i>auxtype<i> to define the type of object being referenced
- * and <i>auxvalue</i> as the name of the referenced object from the <i>auxinfo</i>
- * section.
+ * This class reads information to define a detector header block, sensitive detectors,
+ * visualization attributes, magnetic fields, detector IDs, and detector regions from
+ * the userinfo block of a GDML file.  These objects are then assigned to the appropriate
+ * logical volumes which have <i>auxiliary</i> tags that reference these objects
+ * by name.
  */
 class AuxInfoReader {
 
@@ -49,6 +50,14 @@ class AuxInfoReader {
          * Assign auxiliary info to volumes such as sensitive detectors.
          */
         void assignAuxInfoToVolumes();
+
+        /**
+         * Get the detector header that was created from the userinfo block.
+         * @return The detector header.
+         */
+        detdescr::DetectorHeader* getDetectorHeader() {
+            return detectorHeader_;
+        }
 
     private:
 
@@ -87,6 +96,13 @@ class AuxInfoReader {
          */
         void createVisAttributes(G4String name, const G4GDMLAuxListType* auxInfoList);
 
+        /**
+         * Create the detector header from the global auxinfo.
+         * @param name The aux value with the detector version.
+         * @param auxInfoList The aux info with the detector header information.
+         */
+        void createDetectorHeader(G4String detectorVersion, const G4GDMLAuxListType* auxInfoList);
+
     private:
 
         /**
@@ -98,6 +114,11 @@ class AuxInfoReader {
          * The GDML expression evaluator.
          */
         G4GDMLEvaluator* eval_;
+
+        /**
+         * Detector header with name and version.
+         */
+        detdescr::DetectorHeader* detectorHeader_{nullptr};
 };
 
 }

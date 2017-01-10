@@ -14,6 +14,7 @@
 
 // LDMX
 #include "Event/RootEventWriter.h"
+#include "Event/RunHeader.h"
 #include "Event/SimEvent.h"
 #include "SimApplication/EcalHitIO.h"
 #include "SimApplication/G4TrackerHit.h"
@@ -65,17 +66,12 @@ class RootPersistencyManager : public G4PersistencyManager {
         G4bool Store(const G4Event* anEvent);
 
         /**
-         * This gets called automatically at the end of the run and is used to close the writer.
+         * This gets called automatically at the end of the run and is used to write out the run header
+         * and close the writer.
          * @param aRun The Geant4 run data.
-         * @return True if event is stored (hard-coded to true).
+         * @return True if event is stored (function is hard-coded to return true).
          */
-        G4bool Store(const G4Run* aRun) {
-            if (m_verbose > 1) {
-                std::cout << "RootPersistencyManager::Store - closing writer for run " << aRun->GetRunID() << std::endl;
-            }
-            writer_->close();
-            return true;
-        }
+        G4bool Store(const G4Run* aRun);
 
         /**
          * Implementing this makes an "overloaded-virtual" compiler warning go away.
@@ -186,6 +182,13 @@ class RootPersistencyManager : public G4PersistencyManager {
          * @param anEvent The output event.
          */
         void printEvent(Event* anEvent);
+
+        /**
+         * Create the run header for writing into the output file.
+         * @param aRun The current Geant4 run.
+         * @return The created run header.
+         */
+        event::RunHeader* createRunHeader(const G4Run* aRun);
 
     private:
 

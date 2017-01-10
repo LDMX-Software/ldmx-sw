@@ -3,8 +3,10 @@
 // LDMX
 #include "Event/Event.h"
 #include "Event/EventConstants.h"
+#include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/EcalHitIO.h"
 #include "SimApplication/G4TrackerHit.h"
+#include "SimApplication/RunManager.h"
 
 // Geant4
 #include "G4RunManager.hh"
@@ -20,7 +22,7 @@ RootPersistencyManager::RootPersistencyManager() :
         writer_(new RootEventWriter("ldmx_sim_events.root", new SimEvent)),
         ecalHitIO_(new EcalHitIO(&simParticleBuilder_)) {
     G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
-    G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this,"RootPersistencyManager");
+    G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 }
 
 G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
@@ -46,6 +48,23 @@ G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
 
     // Fill the current ROOT event into the tree branch.
     writer_->writeEvent();
+
+    return true;
+}
+
+G4bool RootPersistencyManager::Store(const G4Run* aRun) {
+
+    if (m_verbose > 1) {
+        std::cout << "RootPersistencyManager::Store - closing writer for run " << aRun->GetRunID() << std::endl;
+    }
+
+    // Write out the run header.
+    event::RunHeader* runHeader = createRunHeader(aRun);
+    writer_->writeRunHeader(runHeader);
+    delete runHeader;
+
+    // Close the writer.
+    writer_->close();
 
     return true;
 }
@@ -195,5 +214,37 @@ void RootPersistencyManager::writeCalorimeterHitsCollection(G4CalorimeterHitsCol
         simHit->addContrib(particle, g4hit->getPdgCode(), g4hit->getEdep(), g4hit->getTime());
     }
 }
+
+event::RunHeader* RootPersistencyManager::createRunHeader(const G4Run* aRun) {
+
+    // Get detector header from the user detector construction.
+    DetectorConstruction* detector =
+            ((RunManager*)RunManager::GetRunManager())->getDetectorConstruction();
+    detdescr::DetectorHeader* detectorHeader = detector->getDetectorHeader();
+
+    // Create the run header.
+    event::RunHeader* runHeader =
+            new event::RunHeader(aRun->GetRunID(),
+                    detectorHeader->getName(),
+                    detectorHeader->getVersion(),
+                    "LDMX sim events");
+
+    // Set parameter value with number of events processed.
+    runHeader->setIntParameter("EVENT_COUNT", aRun->GetNumberOfEvent());
+
+    // Print information about run header.
+    if (m_verbose > 1) {
+        std::cout << std::endl;
+        std::cout << "RootPersistencyManager::createRunHeader" << std::endl;
+        std::cout << "  run number: " << runHeader->getRunNumber() << std::endl;
+        std::cout << "  detector name: " << runHeader->getDetectorName() << std::endl;
+        std::cout << "  detector version: " << runHeader->getDetectorVersion() << std::endl;
+        std::cout << "  description: " << runHeader->getDescription() << std::endl;
+        std::cout << std::endl;
+    }
+
+    return runHeader;
+}
+
 
 } // namespace sim
