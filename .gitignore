@@ -13,3 +13,4 @@ sim-events
 root-scripts
 submit-scripts
 ldmx-sw-install
+config/doxygen/doxygen.conf
