@@ -4,3 +4,12 @@
 .pydevproject
 build/
 rebuild.sh
+*.gdml
+*.root
+**.dat
+**.swp
+analyzed-events
+sim-events
+root-scripts
+submit-scripts
+ldmx-sw-install
