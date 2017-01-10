@@ -227,7 +227,6 @@ event::RunHeader* RootPersistencyManager::createRunHeader(const G4Run* aRun) {
             new event::RunHeader(aRun->GetRunID(),
                     detectorHeader->getName(),
                     detectorHeader->getVersion(),
-                    writer_->getEvent()->getEventType().c_str(),
                     "LDMX sim events");
 
     // Set parameter value with number of events processed.
@@ -240,7 +239,6 @@ event::RunHeader* RootPersistencyManager::createRunHeader(const G4Run* aRun) {
         std::cout << "  run number: " << runHeader->getRunNumber() << std::endl;
         std::cout << "  detector name: " << runHeader->getDetectorName() << std::endl;
         std::cout << "  detector version: " << runHeader->getDetectorVersion() << std::endl;
-        std::cout << "  event type: " << runHeader->getEventType() << std::endl;
         std::cout << "  description: " << runHeader->getDescription() << std::endl;
         std::cout << std::endl;
     }

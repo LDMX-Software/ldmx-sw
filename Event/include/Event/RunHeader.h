@@ -34,11 +34,10 @@ class RunHeader : public TObject {
          * @param eventType The type of the events in the file (C++ class name).
          * @param description A short description of the run.
          */
-        RunHeader(int runNumber, std::string detectorName, int detectorVersion, std::string eventType, std::string description)
+        RunHeader(int runNumber, std::string detectorName, int detectorVersion, std::string description)
             : runNumber_(runNumber),
               detectorName_(detectorName),
               detectorVersion_(detectorVersion),
-              eventType_(eventType),
               description_(description) {
         }
 
@@ -85,14 +84,6 @@ class RunHeader : public TObject {
          */
         const std::string& getDescription() const {
             return description_;
-        }
-
-        /**
-         * Get the type of events in the file (C++ class name).
-         * @return The type of events in the file.
-         */
-        const std::string& getEventType() const {
-            return eventType_;
         }
 
         /**
@@ -165,11 +156,6 @@ class RunHeader : public TObject {
          * The detector version.
          */
         int detectorVersion_{0};
-
-        /**
-         * The event type.
-         */
-        std::string eventType_{""};
 
         /**
          * The run description.
