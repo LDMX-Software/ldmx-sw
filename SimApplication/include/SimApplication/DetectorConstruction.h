@@ -48,6 +48,14 @@ class DetectorConstruction: public G4VUserDetectorConstruction {
          */
         G4VPhysicalVolume *Construct();
 
+        /**
+         * Get the detector header.
+         * @return The detector header.
+         */
+        detdescr::DetectorHeader* getDetectorHeader() {
+            return auxInfoReader_->getDetectorHeader();
+        }
+
     private:
 
         /**
