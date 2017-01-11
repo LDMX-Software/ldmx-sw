@@ -10,3 +10,4 @@
 #include "Event/SimCalorimeterHit.h"
 #include "Event/SimTrackerHit.h"
 #include "Event/SimParticle.h"
+#include "Event/TriggerResult.h"

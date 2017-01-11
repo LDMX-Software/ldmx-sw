@@ -22,6 +22,7 @@
 #pragma link C++ class event::SimCalorimeterHit+;
 #pragma link C++ class event::SimTrackerHit+;
 #pragma link C++ class event::SimParticle+;
+#pragma link C++ class event::TriggerResult+;
 
 #endif
 
