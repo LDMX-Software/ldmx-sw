@@ -27,14 +27,14 @@ int main(int argc, const char* argv[])  {
     //fileList.push_back(argv[1]);
 
     //RootEventSource* src = new RootEventSource(fileList, new SimEvent());
-    event::EventFile simFile(argv[1], false);  
+    event::EventFile simFile(argv[1], "LDMX_Event", false, 9);  
     TString outputFileName = argv[2];
     event::EventFile* outputFile = new event::EventFile(argv[2], &simFile);
     event::EventImpl* event = new event::EventImpl("recon");  
     outputFile->setupEvent(event); 
     EventLoop* loop = new EventLoop();
     loop->setEventSource(outputFile);
-    loop->addEventProcessor(new eventproc::EcalVetoProcessor());
+    //loop->addEventProcessor(new eventproc::EcalVetoProcessor());
     loop->initialize();
     loop->run(500);
     loop->finish();
