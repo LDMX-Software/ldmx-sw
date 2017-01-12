@@ -15,6 +15,7 @@ int main(int argc, const char* argv[])  {
         exit(1);
     }
 
+    /*
     std::list<std::string> fileList;
 
     for (int iFile = 1; iFile < argc; iFile++) {
@@ -28,5 +29,5 @@ int main(int argc, const char* argv[])  {
     loop->addEventProcessor(new DummyEventProcessor);
     loop->initialize();
     loop->run(-1);
-    loop->finish();
+    loop->finish(); */
 }

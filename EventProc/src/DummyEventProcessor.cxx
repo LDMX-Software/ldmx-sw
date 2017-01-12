@@ -1,6 +1,7 @@
 #include "EventProc/DummyEventProcessor.h"
 
 #include "Event/EventConstants.h"
+#include <iostream>
 
 using event::EventConstants;
 
@@ -11,15 +12,12 @@ void DummyEventProcessor::initialize() {
 }
 
 void DummyEventProcessor::execute() {
-    Event* event = this->getEvent();
-    std::cout << std::endl;
-    std::cout << "DummyEventProcessor: read event " << event->getEventNumber() << std::endl;
-    std::cout << std::endl;
-    std::cout << "  " << EventConstants::SIM_PARTICLES   << ": " << event->getCollection(EventConstants::SIM_PARTICLES)->GetEntries() << std::endl;
+    event::EventImpl* eventImpl = this->getEvent();
+    /*std::cout << "  " << EventConstants::SIM_PARTICLES   << ": " << event->getCollection(EventConstants::SIM_PARTICLES)->GetEntries() << std::endl;
     std::cout << "  " << EventConstants::RECOIL_SIM_HITS << ": " << event->getCollection(EventConstants::RECOIL_SIM_HITS)->GetEntries() << std::endl;
     std::cout << "  " << EventConstants::TAGGER_SIM_HITS << ": " << event->getCollection(EventConstants::TAGGER_SIM_HITS)->GetEntries() << std::endl;
     std::cout << "  " << EventConstants::ECAL_SIM_HITS   << ": " << event->getCollection(EventConstants::ECAL_SIM_HITS)->GetEntries() << std::endl;
-    std::cout << "  " << EventConstants::HCAL_SIM_HITS   << ": " << event->getCollection(EventConstants::HCAL_SIM_HITS)->GetEntries() << std::endl;
+    std::cout << "  " << EventConstants::HCAL_SIM_HITS   << ": " << event->getCollection(EventConstants::HCAL_SIM_HITS)->GetEntries() << std::endl;*/
     ++nProcessed_;
 }
 

@@ -17,7 +17,7 @@ int main(int argc, const char* argv[])  {
     //////////////////////////////////////////////////////////////////////////
     // - - - - - - - - - - - - output tree setup - - - - - - - - - - - - -  //
     //////////////////////////////////////////////////////////////////////////
-    TString outputFileName = argv[2];
+   /* TString outputFileName = argv[2];
     TFile* outputFile = new TFile(outputFileName,"RECREATE");
     TTree* outputTree = new TTree("hcalDigi","hcalDigi");
   
@@ -36,5 +36,5 @@ int main(int argc, const char* argv[])  {
 
     outputFile->cd();
     outputTree->Write();
-    outputFile->Close();
+    outputFile->Close();*/
 }
