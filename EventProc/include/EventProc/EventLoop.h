@@ -7,6 +7,8 @@
 #ifndef EVENTPROC_EVENTLOOP_H_
 #define EVENTPROC_EVENTLOOP_H_
 
+#include "Event/EventFile.h"
+#include "Event/EventImpl.h"
 #include "EventProc/EventProcessor.h"
 #include "EventProc/EventSource.h"
 
@@ -65,9 +67,7 @@ class EventLoop {
          * Set the event source.
          * @param eventSource The EventSource supplying events to the loop.
          */
-        void setEventSource(EventSource* eventSource) {
-            this->eventSource_ = eventSource;
-        }
+        void setEventSource(event::EventFile* eventSource);
 
     private:
 
@@ -79,7 +79,8 @@ class EventLoop {
         /**
          * The event source supplying events to the loop.
          */
-        EventSource* eventSource_;
+        event::EventFile* eventSource_{nullptr};
+
 };
 
 }
