@@ -29,6 +29,21 @@ class EventHeader : public TObject {
             weight_ = 1.0;
         }
 
+        void Print(Option_t* = "")  const {
+            std::cout << "EventHeader {"
+                    << " eventNumber: " << eventNumber_
+                    << ", run: " << run_
+                    << ", timestamp: " << timestamp_
+                    << ", weight: " << weight_
+                    << " }"
+                    << std::endl;
+        }
+
+        void Copy(TObject& o) const {
+            std::cout << "EventHeader::Copy" << std::endl;
+            ((EventHeader&)o) = *this;
+        }
+
         /**
          * Return the event number.
          */
