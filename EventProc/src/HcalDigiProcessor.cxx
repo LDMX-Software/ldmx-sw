@@ -55,7 +55,7 @@ void eventproc::HcalDigiProcessor::execute(){
     std::map<int,float> hcalLayerEdep,hcalLayerTime;
 
     // looper over sim hits and aggregate energy depositions for each detID
-    TClonesArray* hcalHits = getEvent()->getCollection(event::EventConstants::HCAL_SIM_HITS);
+    TClonesArray* hcalHits = (TClonesArray*) getEvent()->get(event::EventConstants::HCAL_SIM_HITS, "recon");
     int numHCalSimHits = hcalHits->GetEntries();
     for(int iHit = 0; iHit < numHCalSimHits; iHit++){
         SimCalorimeterHit* hcalHit = (SimCalorimeterHit*) hcalHits->At(iHit);
