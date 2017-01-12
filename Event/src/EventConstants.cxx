@@ -22,4 +22,6 @@ namespace event {
     const std::string EventConstants::TARGET_SIM_HITS = "TargetSimHits";
     const std::string EventConstants::TRIGGER_PAD_SIM_HITS = "TriggerPadSimHits";
 
+    const std::string EventConstants::EVENT_TREE_NAME = "LDMX_Events";
+
 } // namespace event

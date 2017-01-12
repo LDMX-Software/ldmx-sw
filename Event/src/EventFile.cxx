@@ -3,42 +3,49 @@
 
 namespace event {
 
-EventFile::EventFile(const std::string& filename, bool isOutputFile) :
+EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :
         fileName_(filename), isOutputFile_(isOutputFile) {
 
-    if (isOutputFile_)
+    if (isOutputFile_) {
         file_ = new TFile(filename.c_str(), "RECREATE");
-    else
+        if (!file_->IsWritable()) {
+            throw std::runtime_error("Output file is not writable.");
+        }
+    } else {
         file_ = new TFile(filename.c_str());
-
-    if (!file_->IsOpen()) {
-        // throw exception eventually?
     }
 
-    // TODO: Make compression level an argument with default value.
+    if (!file_->IsOpen()) {
+        throw std::runtime_error("File is not readable or does not exist.");
+    }
+
     if (isOutputFile_) {
-        file_->SetCompressionLevel(2);
+        file_->SetCompressionLevel(compressionLevel);
     }
 
     if (!isOutputFile_) {
-        tree_ = (TTree*) (file_->Get(EventImpl::TREENAME));
+        tree_ = (TTree*) (file_->Get(EventImpl::TREE_NAME));
         entries_ = tree_->GetEntriesFast();
     }
 }
 
-EventFile::EventFile(const std::string& filename, EventFile* cloneParent) :
+EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :
         fileName_(filename), isOutputFile_(true), parent_(cloneParent) {
 
     file_ = new TFile(filename.c_str(), "RECREATE");
+    if (!file_->IsWritable()) {
+        throw std::runtime_error("Output file is not writable.");
+    }
 
     if (!file_->IsOpen()) {
-        // throw exception eventually?
+        throw std::runtime_error("File is not readable or does not exist.");
     }
 
     parent_->tree_->SetBranchStatus("*", 1);
 
-    if (isOutputFile_)
-        file_->SetCompressionLevel(2);
+    if (isOutputFile_) {
+        file_->SetCompressionLevel(compressionLevel);
+    }
 }
 
 void EventFile::addDrop(const std::string& rule) {
@@ -132,7 +139,7 @@ void EventFile::setupEvent(EventImpl* evt) {
     }
 }
 
-void EventFile::Close() {
+void EventFile::close() {
     if (isOutputFile_)
         tree_->Write();
     file_->Close();

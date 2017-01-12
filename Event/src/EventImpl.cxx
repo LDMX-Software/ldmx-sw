@@ -6,15 +6,16 @@
 
 namespace event {
 
-const char* EventImpl::TREENAME { "Events" };
+const char* EventImpl::TREE_NAME{"LDMX_Events"};
 
 EventImpl::EventImpl(const std::string& thePassName) :
         passName_(thePassName) {
 }
 
 EventImpl::~EventImpl() {
-    for (auto& x : objectsOwned_)
+    for (auto& x : objectsOwned_) {
         delete x.second;
+    }
 }
 
 void EventImpl::add(const std::string& collectionName, TClonesArray* tca) {
@@ -116,7 +117,7 @@ const TObject* EventImpl::get(const std::string& collectionName, const std::stri
 }
 
 TTree* EventImpl::createTree() {
-    otree_ = new TTree("Events", "LDMX Events");
+    otree_ = new TTree("LDMX_Events", "LDMX Events");
     // eventually, add branch for event info
     return otree_;
 }

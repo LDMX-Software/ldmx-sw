@@ -1,6 +1,6 @@
 /**
  * @file SimParticleBuilder.h
- * @brief Class for building output SimParticles from trajectories
+ * @brief Class for building output SimParticle collection from trajectories
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
@@ -8,7 +8,8 @@
 #define SIMAPPLICATION_SIMPARTICLEBUILDER_H_
 
 // LDMX
-#include "Event/Event.h"
+//#include "Event/Event.h"
+#include "Event/EventImpl.h"
 #include "Event/SimParticle.h"
 #include "SimApplication/TrackMap.h"
 #include "SimApplication/Trajectory.h"
@@ -21,7 +22,6 @@
 #include <map>
 
 using event::SimParticle;
-using event::Event;
 
 namespace sim {
 
@@ -60,7 +60,7 @@ class SimParticleBuilder {
          * Build SimParticle collection into an output event.
          * @param outputEvent The output event.
          */
-        void buildSimParticles(Event* outputEvent);
+        void buildSimParticles(event::EventImpl* outputEvent);
 
         /**
          * Find a SimParticle by track ID.
@@ -100,6 +100,8 @@ class SimParticleBuilder {
          * The current Geant4 event.
          */
         G4Event* currentEvent_;
+
+        TClonesArray* outputParticleColl_{new TClonesArray("event::SimParticle", 50)};
 };
 
 }
