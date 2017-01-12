@@ -39,6 +39,7 @@ G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
     }
 
     if (G4RunManager::GetRunManager()->GetCurrentEvent()->IsAborted()) {
+        // TODO: Need event cleanup here?
         return false;
     }
 
@@ -121,8 +122,6 @@ void RootPersistencyManager::printEvent(event::EventImpl* outputEvent) {
     }
 
     // TODO: Print hits collection data here.
-
-
 
     // verbose level 2
     //if (m_verbose > 1) {

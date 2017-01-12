@@ -1,9 +1,7 @@
 #include "EventProc/EventLoop.h"
-#include "EventProc/RootEventSource.h"
 #include "EventProc/EcalVetoProcessor.h"
 
 using eventproc::EventLoop;
-using eventproc::RootEventSource;
 
 #include "Event/SimCalorimeterHit.h"
 
@@ -26,7 +24,6 @@ int main(int argc, const char* argv[])  {
     //std::cout << "Adding file " << argv[1] << std::endl;
     //fileList.push_back(argv[1]);
 
-    //RootEventSource* src = new RootEventSource(fileList, new SimEvent());
     event::EventFile simFile(argv[1], "LDMX_Event", false, 9);  
     TString outputFileName = argv[2];
     event::EventFile* outputFile = new event::EventFile(argv[2], &simFile);
