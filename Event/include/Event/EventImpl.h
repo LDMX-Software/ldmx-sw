@@ -18,7 +18,7 @@ class EventImpl {
 
     public:
 
-        static const char* TREENAME;
+        static const char* TREE_NAME;
 
         EventImpl(const std::string& thePassName);
 
@@ -62,6 +62,10 @@ class EventImpl {
 
         const TObject* get(const std::string& collectionName, const std::string& passName);
 
+        const TClonesArray* getCollection(const std::string& collectionName, const std::string& passName) {
+            return (TClonesArray*) get(collectionName, passName);
+        }
+
         bool nextEvent();
 
         void onEndOfEvent();
@@ -70,8 +74,8 @@ class EventImpl {
 
     private:
 
-        Long64_t entries_{ -1 };
-        Long64_t ientry_ { -1 };
+        Long64_t entries_{-1};
+        Long64_t ientry_ {-1};
         std::string passName_;
         TTree* otree_{nullptr};
         TTree* itree_{nullptr};
