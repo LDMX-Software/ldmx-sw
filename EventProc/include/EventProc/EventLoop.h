@@ -10,10 +10,8 @@
 #include "Event/EventFile.h"
 #include "Event/EventImpl.h"
 #include "EventProc/EventProcessor.h"
-#include "EventProc/EventSource.h"
 
 using eventproc::EventProcessor;
-using eventproc::EventSource;
 
 namespace eventproc {
 
@@ -32,7 +30,7 @@ class EventLoop {
         /**
          * Class constructor.
          */
-        EventLoop() : eventSource_(nullptr) {;}
+        EventLoop() : eventFile_(nullptr) {;}
 
         /**
          * Class destructor.
@@ -79,8 +77,7 @@ class EventLoop {
         /**
          * The event source supplying events to the loop.
          */
-        event::EventFile* eventSource_{nullptr};
-
+        event::EventFile* eventFile_{nullptr};
 };
 
 }

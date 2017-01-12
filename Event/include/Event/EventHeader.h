@@ -3,6 +3,8 @@
 #ifndef EVENT_EVENTHEADER_H_
 #define EVENT_EVENTHEADER_H_
 
+#include <iostream>
+
 namespace event {
 
 class EventHeader : public TObject {
