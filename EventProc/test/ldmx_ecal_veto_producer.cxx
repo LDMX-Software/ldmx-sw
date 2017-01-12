@@ -9,32 +9,38 @@ using eventproc::RootEventSource;
 
 int main(int argc, const char* argv[])  {
 
-    if (argc < 3) {
+    /*if (argc < 3) {
         std::cerr << "Wrong number of inputs - (1) input file (2) output file " << std::endl;
         exit(1);
-    }
+    }*/
 
     //////////////////////////////////////////////////////////////////////////
     // - - - - - - - - - - - - output tree setup - - - - - - - - - - - - -  //
     //////////////////////////////////////////////////////////////////////////
-    TString outputFileName = argv[2];
+    /*
     TFile* outputFile = new TFile(outputFileName,"RECREATE");
-    TTree* outputTree = new TTree("ecalVeto","ecalVeto");
+    TTree* outputTree = new TTree("ecalVeto","ecalVeto");*/
 
-    std::list<std::string> fileList;
+    //std::list<std::string> fileList;
 
-    std::cout << "Adding file " << argv[1] << std::endl;
-    fileList.push_back(argv[1]);
+    //std::cout << "Adding file " << argv[1] << std::endl;
+    //fileList.push_back(argv[1]);
 
-    RootEventSource* src = new RootEventSource(fileList, new SimEvent());
+    //RootEventSource* src = new RootEventSource(fileList, new SimEvent());
+    event::EventFile simFile(argv[1], false);  
+    TString outputFileName = argv[2];
+    event::EventFile* outputFile = new event::EventFile(argv[2], &simFile);
+    event::EventImpl* event = new event::EventImpl("recon");  
+    outputFile->setupEvent(event); 
     EventLoop* loop = new EventLoop();
-    loop->setEventSource(src);
-    loop->addEventProcessor(new eventproc::EcalVetoProcessor(outputTree));
+    loop->setEventSource(outputFile);
+    loop->addEventProcessor(new eventproc::EcalVetoProcessor());
     loop->initialize();
-    loop->run(-1);
+    loop->run(500);
     loop->finish();
 
-    outputFile->cd();
-    outputTree->Write();
-    outputFile->Close();
+    outputFile->close();
+    delete event;
+    delete outputFile;
+    delete loop;
 }

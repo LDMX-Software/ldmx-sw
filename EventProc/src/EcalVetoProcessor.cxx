@@ -42,34 +42,37 @@ void eventproc::EcalVetoProcessor::initialize(){
     EcalLayerIsoRaw_      = new std::vector<float>(numEcalLayers,0);
     EcalLayerIsoReadout_  = new std::vector<float>(numEcalLayers,0);
     EcalLayerTime_        = new std::vector<float>(numEcalLayers,0);
-
     EcalHitId_       = new std::vector<float>();
     EcalHitLayer_    = new std::vector<float>();
     EcalHitDep_      = new std::vector<float>();
+
+    //this->getEvent()->add("EcalLayerEdepRaw", &(EcalLayerEdepRaw_));
+    /*
+
 
     outputTree->Branch("EcalLayerEdepRaw",&(EcalLayerEdepRaw_));
     outputTree->Branch("EcalLayerEdepNoise",&(EcalLayerEdepReadout_));
     outputTree->Branch("EcalLayerIsoRaw",&(EcalLayerIsoRaw_));
     outputTree->Branch("EcalLayerIsoReadout",&(EcalLayerIsoReadout_));
-    outputTree->Branch("EcalLayerTime",&(EcalLayerTime_));
+    outputTree->Branch("EcalLayerTime",&(EcalLayerTime_));*/
 
     /*
      * For now we make four flat arrays containing the ECAL hit information
      *          (to be replaced at a later date w/ custom object)
      */
-    outputTree->Branch("EcalHitId",&(EcalHitId_));
+    /*outputTree->Branch("EcalHitId",&(EcalHitId_));
     outputTree->Branch("EcalHitLayer",&(EcalHitLayer_));
     outputTree->Branch("EcalHitDep",&(EcalHitDep_));
     outputTree->Branch("EcalHitNoise",&(EcalHitNoise_));
 
-    outputTree->Branch("DoesPassVeto",&(doesPassVeto));
+    outputTree->Branch("DoesPassVeto",&(doesPassVeto));*/
 
 }
 
 void eventproc::EcalVetoProcessor::execute(){
 
     // looper over sim hits
-    TClonesArray* EcalHits = getEvent()->getCollection(event::EventConstants::ECAL_SIM_HITS);
+    TClonesArray* EcalHits = (TClonesArray*) getEvent()->get(event::EventConstants::ECAL_SIM_HITS, "recon");
     int numEcalSimHits = EcalHits->GetEntries();
 
     std::vector<cell_energy_pair> layerMaxCellId(numLayersForMedCal,std::make_pair(0,0));
@@ -143,7 +146,7 @@ void eventproc::EcalVetoProcessor::execute(){
     }// end verbose
 
     doesPassVeto = (summedDep < totalDepCut && summedIso < totalIsoCut && backSummedDep < backEcalCut); // add ratio cut in at some point
-    outputTree->Fill();
+    //outputTree->Fill();
 
     EcalLayerEdepRaw_     = new std::vector<float>(numEcalLayers,0);
     EcalLayerEdepReadout_ = new std::vector<float>(numEcalLayers,0);
