@@ -7,9 +7,7 @@
 #ifndef EVENTPROC_EVENTPROCESSOR_H_
 #define EVENTPROC_EVENTPROCESSOR_H_
 
-#include "Event/Event.h"
-
-using event::Event;
+#include "Event/EventImpl.h"
 
 /**
  * @namespace eventproc
@@ -60,7 +58,7 @@ class EventProcessor {
          * this is only called once at the beginning of the job.
          * @param anEvent The current event.
          */
-        void setEvent(Event* anEvent) {
+        void setEvent(event::EventImpl* anEvent) {
             this->event_ = anEvent;
         }
 
@@ -68,7 +66,7 @@ class EventProcessor {
          * Get the current event.
          * @return The current event.
          */
-        Event* getEvent() {
+        event::EventImpl* getEvent() {
             return event_;
         }
 
@@ -77,7 +75,7 @@ class EventProcessor {
         /**
          * Pointer to the event buffer.
          */
-        Event* event_;
+        event::EventImpl* event_;
 };
 
 }
