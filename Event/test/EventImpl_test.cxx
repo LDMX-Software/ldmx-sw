@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
             f.nextEvent();
         }
 
-        f.Close();
+        f.close();
     }
 
     if (!strcmp(argv[1], "-c2")) {
@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
             evt.add("Straight", tl);
         }
 
-        f2.Close();
+        f2.close();
     }
 
     if (!strcmp(argv[1], "-r")) {
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
             tbs->Print();
         }
 
-        f.Close();
+        f.close();
     }
 
     if (!strcmp(argv[1], "-x")) {
@@ -98,13 +98,12 @@ int main(int argc, char* argv[]) {
                     p->setEnergy(j);
                 }
 
-                evt.add("Tartets", &tca);
-
+                evt.add("Targets", &tca);
             }
         }
 
-        f2.Close();
-        f.Close();
+        f2.close();
+        f.close();
     }
 
     if (!strcmp(argv[1], "-d")) { // test dropping something while still using it
@@ -128,8 +127,8 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        f2.Close();
-        f.Close();
+        f2.close();
+        f.close();
     }
 
     return 0;

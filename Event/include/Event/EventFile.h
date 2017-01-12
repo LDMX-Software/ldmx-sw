@@ -17,18 +17,17 @@ class EventFile {
 
     public:
 
-        EventFile(const std::string& filename, bool isOutputFile = false);
+        EventFile(const std::string& filename, bool isOutputFile = false, int compressionLevel = 9);
 
-        EventFile(const std::string& filename, EventFile* cloneParent);
+        EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel = 9);
 
         void addDrop(const std::string& rule);
 
-        // could be source of the event if we have a place to get the pass name from
         void setupEvent(EventImpl* evt);
 
         bool nextEvent();
 
-        void Close();
+        void close();
 
     private:
 
