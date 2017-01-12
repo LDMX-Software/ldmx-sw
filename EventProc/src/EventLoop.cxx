@@ -1,21 +1,22 @@
 #include "EventProc/EventLoop.h"
 
 // STL
+#include <iostream>
 #include <stdexcept>
 
 namespace eventproc {
 
 void EventLoop::initialize() {
     for (EventProcessor* processor : processors_) {
-        processor->setEvent(eventSource_->getEvent()); 
+        processor->setEvent(eventFile_->getEvent()); 
         processor->initialize(); 
     }
 }
 
 void EventLoop::run(int nEvents) {
     int nProcessed = 0;
-    while (eventSource_->nextEvent()) {
-        std::cout << "Event: " << nProcessed << std::endl;
+    while (eventFile_->nextEvent()) {
+        //std::cout << "Event: " << nProcessed << std::endl;
         for (EventProcessor* processor : processors_) {
             processor->execute(); 
         }
@@ -35,7 +36,7 @@ void EventLoop::finish() {
 }
 
 void EventLoop::setEventSource(event::EventFile* eventSource) { 
-    eventSource_ = eventSource;
+    eventFile_ = eventSource;
 }
 
 }

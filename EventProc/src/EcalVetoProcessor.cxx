@@ -6,14 +6,11 @@
 #include "TTree.h"
 #include "TClonesArray.h"
 
-#include "Event/SimEvent.h"
+#include "Event/EventConstants.h"
 #include "EventProc/EventLoop.h"
-#include "EventProc/RootEventSource.h"
 
-using event::SimEvent;
 using event::SimCalorimeterHit;;
 using eventproc::EventLoop;
-using eventproc::RootEventSource;
 
 #include "EventProc/EventProcessor.h"
 

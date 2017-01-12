@@ -10,14 +10,12 @@
 #include "TTree.h"
 #include "TRandom2.h"
 
-#include "Event/SimEvent.h"
 #include "Event/SimCalorimeterHit.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "EventProc/EventProcessor.h"
 
-using event::SimEvent;
 using event::SimCalorimeterHit;
 using detdescr::DetectorID;
 using detdescr::EcalDetectorID;

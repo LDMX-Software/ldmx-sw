@@ -1,7 +1,6 @@
 #include "SimApplication/UserEventAction.h"
 
 // LDMX
-#include "Event/RootEventWriter.h"
 #include "SimApplication/RootPersistencyManager.h"
 #include "SimApplication/TrackMap.h"
 #include "SimApplication/TrajectoryContainer.h"
@@ -15,9 +14,6 @@
 #include <iostream>
 #include <stdio.h>
 #include <time.h>
-
-using event::Event;
-using event::RootEventWriter;
 
 namespace sim {
 
