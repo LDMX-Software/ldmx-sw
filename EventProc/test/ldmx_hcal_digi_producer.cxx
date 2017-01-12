@@ -1,11 +1,11 @@
 #include "EventProc/EventLoop.h"
-#include "EventProc/RootEventSource.h"
 #include "EventProc/HcalDigiProcessor.h"
 
-using eventproc::EventLoop;
-using eventproc::RootEventSource;
-
 #include "Event/SimCalorimeterHit.h"
+
+#include <iostream>
+
+using eventproc::EventLoop;
 
 int main(int argc, const char* argv[])  {
 
