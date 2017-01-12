@@ -13,6 +13,7 @@
 
 // LDMX
 #include "Event/Event.h"
+#include "Event/RunHeader.h"
 
 namespace event {
 
@@ -132,6 +133,12 @@ class RootEventWriter {
         TFile* getFile() const {
             return rootFile_;
         }
+
+        /**
+         * Write a run header to a separate branch in the output file.
+         * @param runHeader The run header to write out.
+         */
+        void writeRunHeader(RunHeader* runHeader);
                
     private:
 
