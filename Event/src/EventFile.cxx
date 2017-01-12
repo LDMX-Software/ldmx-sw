@@ -3,7 +3,7 @@
 
 namespace event {
 
-EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :
+EventFile::EventFile(const std::string& filename, std::string treeName, bool isOutputFile, int compressionLevel) :
         fileName_(filename), isOutputFile_(isOutputFile) {
 
     if (isOutputFile_) {
@@ -24,9 +24,12 @@ EventFile::EventFile(const std::string& filename, bool isOutputFile, int compres
     }
 
     if (!isOutputFile_) {
-        tree_ = (TTree*) (file_->Get(EventImpl::TREE_NAME));
+        tree_ = (TTree*) (file_->Get(treeName.c_str()));
         entries_ = tree_->GetEntriesFast();
     }
+}
+
+EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :    EventFile(filename, EventImpl::TREE_NAME, isOutputFile, compressionLevel) { 
 }
 
 EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :
