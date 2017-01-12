@@ -25,6 +25,8 @@ class EventFile {
 
         void setupEvent(EventImpl* evt);
 
+        EventImpl* getEvent() { return event_; };
+
         bool nextEvent();
 
         void close();
