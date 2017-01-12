@@ -36,8 +36,7 @@ public:
 
     typedef std::pair<int, float> cell_energy_pair;
 
-    EcalVetoProcessor(TTree* outputTree_,bool verbose_ = false) :
-        outputTree(outputTree_),
+    EcalVetoProcessor(bool verbose_ = false) :
         verbose(verbose_){};
 
     void initialize();
