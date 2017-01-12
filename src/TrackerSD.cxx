@@ -11,10 +11,7 @@
 #include "G4ChargedGeantino.hh"
 
 // LDMX
-#include "Event/RootEventWriter.h"
 #include "DetDescr/IDField.h"
-
-using event::RootEventWriter;
 
 namespace sim {
 

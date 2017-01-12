@@ -3,7 +3,6 @@
 // LDMX
 #include "Event/Event.h"
 #include "Event/EventConstants.h"
-#include "Event/RootEventWriter.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
 
@@ -16,7 +15,6 @@
 
 using event::Event;
 using event::EventConstants;
-using event::RootEventWriter;
 
 namespace sim {
 
