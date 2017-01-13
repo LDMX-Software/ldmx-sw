@@ -26,6 +26,7 @@ const float eventproc::EcalVetoProcessor::backEcalCut = 1;
 const float eventproc::EcalVetoProcessor::ratioCut = 10;
 
 void eventproc::EcalVetoProcessor::initialize(){
+
     detID = new EcalDetectorID();
     hexReadout = new EcalHexReadout();
     noiseInjector = new TRandom2(0);
@@ -64,13 +65,13 @@ void eventproc::EcalVetoProcessor::initialize(){
 
     outputTree->Branch("DoesPassVeto",&(doesPassVeto));*/
 
+    ecalSimHits_ = (TClonesArray*) getEvent()->getCollection(event::EventConstants::ECAL_SIM_HITS);
 }
 
 void eventproc::EcalVetoProcessor::execute(){
 
     // looper over sim hits
-    TClonesArray* EcalHits = (TClonesArray*) getEvent()->get(event::EventConstants::ECAL_SIM_HITS, "recon");
-    int numEcalSimHits = EcalHits->GetEntries();
+    int numEcalSimHits = ecalSimHits_->GetEntries();
 
     std::vector<cell_energy_pair> layerMaxCellId(numLayersForMedCal,std::make_pair(0,0));
     std::vector<float> hitNoise(numEcalSimHits,0);
@@ -78,7 +79,7 @@ void eventproc::EcalVetoProcessor::execute(){
 
     //First we simulate noise injection into each hit and store layer-wise max cell ids
     for(int iHit = 0; iHit < numEcalSimHits; iHit++){
-        SimCalorimeterHit* EcalHit = (SimCalorimeterHit*) EcalHits->At(iHit);
+        SimCalorimeterHit* EcalHit = (SimCalorimeterHit*) ecalSimHits_->At(iHit);
         hitNoise[iHit] = noiseInjector->Gaus(0,meanNoise);
         layer_cell_pair hit_pair = hitToPair(EcalHit);
 
@@ -104,7 +105,7 @@ void eventproc::EcalVetoProcessor::execute(){
     //Loop over the hits from the event to calculate the rest of the important quantities
     for(int iHit = 0; iHit < numEcalSimHits; iHit++){
         //Layer-wise quantities
-        SimCalorimeterHit* EcalHit = (SimCalorimeterHit*) EcalHits->At(iHit);
+        SimCalorimeterHit* EcalHit = (SimCalorimeterHit*) ecalSimHits_->At(iHit);
         layer_cell_pair hit_pair = hitToPair(EcalHit);
 
         (*EcalLayerEdepRaw_)[hit_pair.first] += EcalHit->getEdep();

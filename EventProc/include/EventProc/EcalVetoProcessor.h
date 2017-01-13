@@ -9,6 +9,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TRandom2.h"
+#include "TClonesArray.h"
 
 #include "Event/SimCalorimeterHit.h"
 #include "DetDescr/DetectorID.h"
@@ -56,6 +57,8 @@ public:
     static const int numEcalLayers,numLayersForMedCal,backEcalStartingLayer;
     static const float meanNoise,readoutThreshold,
     totalDepCut,totalIsoCut,backEcalCut,ratioCut;
+
+    TClonesArray* ecalSimHits_;
 
     inline layer_cell_pair hitToPair(SimCalorimeterHit* hit){
         int detIDraw = hit->getID();

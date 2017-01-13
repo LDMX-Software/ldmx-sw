@@ -72,6 +72,10 @@ class EventImpl {
 
         void onEndOfFile();
 
+        std::string getPassName() {
+            return passName_;
+        }
+
     private:
 
         Long64_t entries_{-1};
