@@ -57,7 +57,6 @@ G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
 void RootPersistencyManager::writeRunHeader(const G4Run* aRun) {
     event::RunHeader* runHeader = createRunHeader(aRun);
     TTree* runTree = new TTree("LDMX_Run", "LDMX run header");
-    // TBranch* runBranch =
     runTree->Branch("LdmxRun", "event::RunHeader", &runHeader, 32000, 3);
     runTree->Fill();
     delete runHeader;
@@ -71,7 +70,7 @@ G4bool RootPersistencyManager::Store(const G4Run* aRun) {
     // Write out the run header.
     writeRunHeader(aRun);
 
-    // Close and delete the output file.
+    // Close the file and delete the output file object.
     outputFile_->close();
     delete outputFile_;
     outputFile_ = nullptr;
@@ -85,10 +84,11 @@ void RootPersistencyManager::Initialize() {
         std::cout << "[ RootPersistencyManager ] : Opening output file " << fileName_ << std::endl;
     }
 
-    // Setup the output file for writing the events.
+    // Create and setup the output file for writing the events.
     outputFile_ = new event::EventFile(fileName_.c_str(), true, compressionLevel_);
     outputFile_->setupEvent(event_);
 
+    // Setup the file to write event data.
     outputFile_->nextEvent();
 
     // Create map with output hits collections.
@@ -112,52 +112,31 @@ void RootPersistencyManager::buildEvent(const G4Event* anEvent, event::EventImpl
 
 void RootPersistencyManager::printEvent(event::EventImpl* outputEvent) {
 
-    if (m_verbose > 1) {
+    if (m_verbose > 2) {
         auto particleColl = (TClonesArray*) outputEvent->get("SimParticles", "sim");
         if (!particleColl) {
             throw std::runtime_error("SimParticle output collection is null!");
         }
-        std::cout << "[ RootPersistencyManager ] - Printing SimParticle coll" << std::endl;
+        std::cout << std::endl;
+        std::cout << "[ RootPersistencyManager ] - Printing SimParticle collection" << std::endl;
         for (int iColl = 0; iColl < particleColl->GetEntriesFast(); iColl++) {
             particleColl->At(iColl)->Print();
         }
-    }
+        std::cout << std::endl;
 
-    // TODO: Print hits collection data here.
-
-    // verbose level 2
-    //if (m_verbose > 1) {
-        // Print output event collection sizes.
-    //    outputEvent->Print();
-    //}
-
-    // verbose level 3
-    //if (m_verbose > 2) {
-        // Print out the detailed tree info from ROOT with branch sizes.
-    //    writer_->getTree()->Print();
-    //}
-
-    // verbose level 4
-    /*
-    if (m_verbose > 3) {
-        // Print out all collection objects via their TObject::Print() method.
-        const Event::CollectionMap& collMap = outputEvent->getCollectionMap();
-        for (Event::CollectionMap::const_iterator iColl = collMap.begin();
-                iColl != collMap.end(); iColl++) {
-            TClonesArray* coll = (*iColl).second;
-            std::cout << std::endl;
-            std::cout << (*iColl).first << ": " << coll->GetEntries() << std::endl;
-            int nEntries = coll->GetEntries();
-            for (int iEntry = 0; iEntry < nEntries; iEntry++) {
-                coll->At(iEntry)->Print();
+        for (auto entry : outputHitsCollections_) {
+            std::cout << "[ RootPersistencyManager ] - Printing collection " << entry.first << std::endl;
+            TClonesArray* hitsColl = entry.second;
+            int entries = hitsColl->GetEntriesFast();
+            for (int iColl = 0; iColl < entries; iColl++) {
+                TObject* obj = (*hitsColl)[iColl];
+                obj->Print("");
             }
         }
         std::cout << std::endl;
     }
-    */
 }
 
-// FIXME: Does not seem to be working correctly with EventImpl (event number is usually 0).
 void RootPersistencyManager::writeHeader(const G4Event* anEvent, event::EventImpl* outputEvent) {
     eventHeader_.setEventNumber(anEvent->GetEventID());
     eventHeader_.setTimestamp((int) time(NULL));
