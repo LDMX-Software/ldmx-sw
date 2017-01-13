@@ -37,4 +37,4 @@ class ExampleCalHitProcessor : public EventProcessor {
 
 }
 
-#endif /* INCLUDE_EVENTPROC_EXAMPLECALHITPROCESSOR_H_ */
+#endif /* EVENTPROC_EXAMPLECALHITPROCESSOR_H_ */
