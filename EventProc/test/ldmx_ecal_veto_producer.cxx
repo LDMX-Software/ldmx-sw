@@ -7,37 +7,19 @@ using eventproc::EventLoop;
 
 int main(int argc, const char* argv[])  {
 
-    /*if (argc < 3) {
-        std::cerr << "Wrong number of inputs - (1) input file (2) output file " << std::endl;
-        exit(1);
-    }*/
+    if (argc < 3) {
+        std::cerr << "ERROR: Not enough arguments." << std::endl;
+        throw std::runtime_error("Usage: ldmx_ecal_veto_producer inputFileName outputFileName");
+    }
 
-    //////////////////////////////////////////////////////////////////////////
-    // - - - - - - - - - - - - output tree setup - - - - - - - - - - - - -  //
-    //////////////////////////////////////////////////////////////////////////
-    /*
-    TFile* outputFile = new TFile(outputFileName,"RECREATE");
-    TTree* outputTree = new TTree("ecalVeto","ecalVeto");*/
-
-    //std::list<std::string> fileList;
-
-    //std::cout << "Adding file " << argv[1] << std::endl;
-    //fileList.push_back(argv[1]);
-
-    event::EventFile simFile(argv[1], "LDMX_Event", false, 9);  
-    TString outputFileName = argv[2];
-    event::EventFile* outputFile = new event::EventFile(argv[2], &simFile);
-    event::EventImpl* event = new event::EventImpl("recon");  
-    outputFile->setupEvent(event); 
     EventLoop* loop = new EventLoop();
-    loop->setEventSource(outputFile);
-    //loop->addEventProcessor(new eventproc::EcalVetoProcessor());
+    loop->setInputFileName(std::string(argv[1]));
+    loop->setOutputFileName(std::string(argv[2]));
+    loop->addEventProcessor(new eventproc::EcalVetoProcessor());
+
     loop->initialize();
     loop->run(500);
     loop->finish();
 
-    outputFile->close();
-    delete event;
-    delete outputFile;
     delete loop;
 }
