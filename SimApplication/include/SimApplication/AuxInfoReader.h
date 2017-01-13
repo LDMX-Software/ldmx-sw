@@ -98,7 +98,7 @@ class AuxInfoReader {
 
         /**
          * Create the detector header from the global auxinfo.
-         * @param name The aux value with the detector version.
+         * @param detectorVersion The aux value with the detector version.
          * @param auxInfoList The aux info with the detector header information.
          */
         void createDetectorHeader(G4String detectorVersion, const G4GDMLAuxListType* auxInfoList);

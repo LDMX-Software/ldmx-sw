@@ -1,3 +1,9 @@
+/**
+ * @file EventHeader.h
+ * @brief Class defining an event header
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #include "TObject.h"
 
 #ifndef EVENT_EVENTHEADER_H_
@@ -7,6 +13,10 @@
 
 namespace event {
 
+/**
+ * @class EventHeader
+ * @brief Defines an event header with event number and other information
+ */
 class EventHeader : public TObject {
 
     public:
@@ -31,6 +41,9 @@ class EventHeader : public TObject {
             weight_ = 1.0;
         }
 
+        /**
+         * Print out this object.
+         */
         void Print(Option_t* = "")  const {
             std::cout << "EventHeader {"
                     << " eventNumber: " << eventNumber_
@@ -41,6 +54,10 @@ class EventHeader : public TObject {
                     << std::endl;
         }
 
+        /**
+         * Copy this object.
+         * @param o The target object.
+         */
         void Copy(TObject& o) const {
             std::cout << "EventHeader::Copy" << std::endl;
             ((EventHeader&)o) = *this;

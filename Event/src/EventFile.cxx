@@ -29,7 +29,8 @@ EventFile::EventFile(const std::string& filename, std::string treeName, bool isO
     }
 }
 
-EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :    EventFile(filename, EventImpl::TREE_NAME, isOutputFile, compressionLevel) { 
+EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :
+        EventFile(filename, event::EventConstants::EVENT_TREE_NAME, isOutputFile, compressionLevel) {
 }
 
 EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :
@@ -81,8 +82,8 @@ bool EventFile::nextEvent() {
         if (!parent_->tree_)
             return false;
         tree_ = parent_->tree_->CloneTree(0);
-        event_->setITree(parent_->tree_);
-        event_->setOTree(tree_);
+        event_->setInputTree(parent_->tree_);
+        event_->setOutputTree(tree_);
     }
 
     // close up the last event
@@ -135,10 +136,10 @@ void EventFile::setupEvent(EventImpl* evt) {
             tree_ = event_->createTree();
         }
         if (parent_) {
-            event_->setITree(parent_->tree_);
+            event_->setInputTree(parent_->tree_);
         }
     } else {
-        event_->setITree(tree_);
+        event_->setInputTree(tree_);
     }
 }
 

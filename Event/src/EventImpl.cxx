@@ -6,8 +6,6 @@
 
 namespace event {
 
-const char* EventImpl::TREE_NAME{"LDMX_Events"};
-
 EventImpl::EventImpl(const std::string& thePassName) :
         passName_(thePassName) {
 }
@@ -25,8 +23,8 @@ void EventImpl::add(const std::string& collectionName, TClonesArray* tca) {
     std::map<std::string, TObject*>::iterator ito = objects_.find(branchName);
     if (ito == objects_.end()) { // create a new branch
         ito = objects_.insert(std::pair<std::string, TObject*>(branchName, tca)).first;
-        if (otree_ != 0) {
-            TBranch* aBranch = otree_->Branch(branchName.c_str(), tca, 100000, 3);
+        if (outputTree_ != 0) {
+            TBranch* aBranch = outputTree_->Branch(branchName.c_str(), tca, 100000, 3);
             newBranches_.push_back(aBranch);
         }
     }
@@ -42,8 +40,8 @@ void EventImpl::add(const std::string& collectionName, TObject* to) {
         TObject* myCopy = to->Clone();
         ito = objects_.insert(std::pair<std::string, TObject*>(branchName, myCopy)).first;
         objectsOwned_.insert(std::pair<std::string, TObject*>(branchName, myCopy));
-        if (otree_ != 0) {
-            TBranch* aBranch = otree_->Branch(branchName.c_str(), myCopy);
+        if (outputTree_ != 0) {
+            TBranch* aBranch = outputTree_->Branch(branchName.c_str(), myCopy);
             newBranches_.push_back(aBranch);
         }
     }
@@ -59,7 +57,7 @@ const TObject* EventImpl::get(const std::string& collectionName, const std::stri
         //      assert(!passName.empty());
     }
 
-    if (itree_ == 0) {
+    if (inputTree_ == 0) {
         // check the objects map
         std::map<std::string, TObject*>::const_iterator ito = objects_.find(branchName);
         if (ito != objects_.end())
@@ -93,7 +91,7 @@ const TObject* EventImpl::get(const std::string& collectionName, const std::stri
     } else {
 
         // ok, maybe we've not loaded this yet, look for a branch
-        TBranch* branch = itree_->GetBranch(branchName.c_str());
+        TBranch* branch = inputTree_->GetBranch(branchName.c_str());
         if (branch == 0)
             return 0;
 
@@ -117,18 +115,18 @@ const TObject* EventImpl::get(const std::string& collectionName, const std::stri
 }
 
 TTree* EventImpl::createTree() {
-    otree_ = new TTree("LDMX_Events", "LDMX Events");
+    outputTree_ = new TTree("LDMX_Events", "LDMX Events");
     // eventually, add branch for event info
-    return otree_;
+    return outputTree_;
 }
 
-void EventImpl::setOTree(TTree* tree) {
-    otree_ = tree;
+void EventImpl::setOutputTree(TTree* tree) {
+    outputTree_ = tree;
 }
 
-void EventImpl::setITree(TTree* tree) {
-    itree_ = tree;
-    entries_ = itree_->GetEntries();
+void EventImpl::setInputTree(TTree* tree) {
+    inputTree_ = tree;
+    entries_ = inputTree_->GetEntries();
 }
 
 bool EventImpl::nextEvent() {

@@ -18,6 +18,7 @@ int main(int argc, const char* argv[])  {
 
     // Setup the loop.
     EventLoop* loop = new EventLoop();
+    loop->setPassName("recon");
     loop->setInputFileName(argv[1]);
     loop->setOutputFileName("EventLoop_test_output.root");
     loop->addEventProcessor(new DummyEventProcessor());

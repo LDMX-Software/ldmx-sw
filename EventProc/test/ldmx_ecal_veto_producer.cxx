@@ -13,9 +13,10 @@ int main(int argc, const char* argv[])  {
     }
 
     EventLoop* loop = new EventLoop();
+    loop->setPassName("recon");
     loop->setInputFileName(std::string(argv[1]));
     loop->setOutputFileName(std::string(argv[2]));
-    loop->addEventProcessor(new eventproc::EcalVetoProcessor());
+    loop->addEventProcessor(new eventproc::EcalVetoProcessor(true));
 
     loop->initialize();
     loop->run(500);
