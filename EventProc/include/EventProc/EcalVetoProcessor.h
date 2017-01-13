@@ -65,7 +65,7 @@ public:
         detID->setRawValue(detIDraw);
         detID->unpack();
         int layer = detID->getFieldValue("layer");
-        int cellid = detID->getFieldValue("cellid");
+        int cellid = detID->getFieldValue("cell");
         return (std::make_pair(layer, cellid));
     };
 
