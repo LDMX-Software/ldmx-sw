@@ -35,6 +35,7 @@ class EventConstants {
         static const std::string TAGGER_SIM_HITS;
         static const std::string TARGET_SIM_HITS;
         static const std::string TRIGGER_PAD_SIM_HITS;
+        static const std::string TRIGGER_RESULT;
 
 }; // class EventConstants
 
