@@ -36,6 +36,14 @@ class TriggerResult : public TObject {
         void Clear(Option_t *option = "");
 
         /**
+         * Copy this object.
+         * @param o The target object.
+         */
+        void Copy(TObject& o) const {
+            ((TriggerResult&)o) = *this;
+        }
+
+        /**
          * Return the name of the trigger.
          */
         const TString& getName() const { return name_; }
