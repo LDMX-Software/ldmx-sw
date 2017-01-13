@@ -29,9 +29,11 @@ class DummyTriggerProcessor : public EventProcessor {
 
             int eventNumber = getEvent()->getEventHeader("sim")->getEventNumber();
 
-            if (eventNumber % 2 == 0) {
+            if ((eventNumber % 2) == 0) {
+                std::cout << "[ DummyTriggerProcessor ] : Trigger passed" << std::endl;
                 trig_.set("DUMMY_TRIG", true, 1);
             } else {
+                std::cout << "[ DummyTriggerProcessor ] : Trigger failed" << std::endl;
                 trig_.set("DUMMY_TRIG", false, 1);
             }
 
