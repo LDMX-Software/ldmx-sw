@@ -27,7 +27,7 @@ class DummyTriggerProcessor : public EventProcessor {
 
         void execute() {
 
-            int eventNumber = getEvent()->getEventHeader()->getEventNumber();
+            int eventNumber = getEvent()->getEventHeader("sim")->getEventNumber();
 
             if (eventNumber % 2 == 0) {
                 trig_.set("DUMMY_TRIG", true, 1);

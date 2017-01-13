@@ -25,7 +25,7 @@ class ExampleCalHitProcessor : public EventProcessor {
 
         void execute() {
             ecalHits_->Clear("");
-            auto ecalSimHits = event_->getCollection(event::EventConstants::ECAL_SIM_HITS);
+            auto ecalSimHits = event_->getCollection(event::EventConstants::ECAL_SIM_HITS, "sim");
             for (int i = 0; i < ecalSimHits->GetEntriesFast(); i++) {
                 auto simHit = (event::SimCalorimeterHit*) ecalSimHits->At(i);
                 auto calHit = (event::CalorimeterHit*) ecalHits_->ConstructedAt(ecalHits_->GetEntries());
