@@ -35,7 +35,7 @@ namespace event {
  *
  * @note
  * A backing EventImpl object provides the actual data collections
- * via ROOT data structures.
+ * via ROOT data structures (trees and branches).
  */
 class Event: public TObject {
 
@@ -53,10 +53,13 @@ class Event: public TObject {
         
         /**
          * Get the event header.
+         * @param The specific pass name within the event.
          * @return The event header.
+         *
+         * @todo Fix hard-coded default pass name.
          */
-        EventHeader* getEventHeader() {
-            return (EventHeader*) eventImpl_->get("EventHeader", eventImpl_->getPassName());
+        EventHeader* getEventHeader(std::string passName = "sim") {
+            return (EventHeader*) eventImpl_->get("EventHeader", passName);
         }
 
         /**
@@ -99,7 +102,6 @@ class Event: public TObject {
          * @param collectionName The name of the collection.
          */
         const TClonesArray* getCollection(const std::string& collectionName) {
-            std::cout << "[ Event ] : Getting collection " << collectionName << " with pass " << eventImpl_->getPassName() << std::endl;
             return (TClonesArray*) eventImpl_->get(collectionName, eventImpl_->getPassName());
         }
 
@@ -109,7 +111,6 @@ class Event: public TObject {
          * @param passName The pass name.
          */
         const TClonesArray* getCollection(const std::string& collectionName, std::string passName) {
-            std::cout << "[ Event ] : Getting collection " << collectionName << " with pass " << passName << std::endl;
             return (TClonesArray*) eventImpl_->get(collectionName, passName);
         }
 

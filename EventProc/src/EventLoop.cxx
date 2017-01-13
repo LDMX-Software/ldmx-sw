@@ -17,7 +17,7 @@ void EventLoop::initialize() {
     if (outputFileName_ == "") {
         throw std::runtime_error("Output file name was not set.");
     }
-    std::cout << "[ EventLoop ] - Setting up output file " << outputFileName_ << std::endl;
+    std::cout << "[ EventLoop ] : Setting up output file " << outputFileName_ << std::endl;
     outputFile_ = new event::EventFile(outputFileName_, inputFile_);
 
     if (inputFileName_ == outputFileName_) {
@@ -49,7 +49,7 @@ void EventLoop::run(int nEvents) {
             break;
         }
     }
-    std::cout << "EventLoop: Finished processing " << nProcessed << " events out of "
+    std::cout << "[ EventLoop ] : Finished processing " << nProcessed << " events out of "
             << nEvents << " requested." << std::endl;
 }
 
