@@ -4,9 +4,11 @@
 using eventproc::EventLoop;
 
 #include "EventProc/DummyEventProcessor.h"
+#include "EventProc/DummyTriggerProcessor.h"
 #include "EventProc/ExampleCalHitProcessor.h"
 
 using eventproc::DummyEventProcessor;
+using eventproc::DummyTriggerProcessor;
 using eventproc::ExampleCalHitProcessor;
 
 int main(int argc, const char* argv[])  {
@@ -22,6 +24,7 @@ int main(int argc, const char* argv[])  {
     loop->setInputFileName(argv[1]);
     loop->setOutputFileName("EventLoop_test_output.root");
     loop->addEventProcessor(new DummyEventProcessor());
+    loop->addEventProcessor(new DummyTriggerProcessor());
     loop->addEventProcessor(new ExampleCalHitProcessor());
 
     // Run the job.
