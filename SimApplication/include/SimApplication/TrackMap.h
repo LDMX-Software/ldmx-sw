@@ -32,7 +32,6 @@ class TrackMap {
 
         /**
          * Get the global instance of the map.
-         * FIXME: This should be made MT compatible.
          * @return The global instance of the map.
          */
         static TrackMap* getInstance();
@@ -47,6 +46,7 @@ class TrackMap {
         /**
          * Find a trajectory by its track ID in the event.
          * @param anEvent The Geant4 event.
+         * @param trackkID The track ID of the trajectory to find.
          */
         G4VTrajectory* findTrajectory(const G4Event* anEvent, G4int trackID);
 

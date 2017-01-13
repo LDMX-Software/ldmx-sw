@@ -70,13 +70,6 @@ void PluginManager::generatePrimary(G4Event* event) {
     }
 }
 
-/**
- * @brief Return a track classification from the user plugins that have stacking actions.
- *
- * @note The current classification will only be updated if a plugin actually provides a different classification
- *       than the current one.  By default, plugins that do not wish to change a track classification will return
- *       the value of <i>currentTrackClass</i> in order to not override values from previously activated plugins.
- */
 G4ClassificationOfNewTrack PluginManager::stackingClassifyNewTrack(const G4Track* track) {
 
     // Default value of a track is fUrgent.

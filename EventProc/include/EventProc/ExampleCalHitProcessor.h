@@ -1,3 +1,9 @@
+/**
+ * @file ExampleCalHitProcessor.h
+ * @brief Class containing an example SimCalorimeterHit processor
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #ifndef EVENTPROC_EXAMPLECALHITPROCESSOR_H_
 #define EVENTPROC_EXAMPLECALHITPROCESSOR_H_
 
@@ -5,6 +11,10 @@
 
 namespace eventproc {
 
+/**
+ * @class ExampleCalHitProcessor
+ * @brief Example EventProcessor that copies a SimCalorimeterHit collection into a new output collection
+ */
 class ExampleCalHitProcessor : public EventProcessor {
 
     public:
