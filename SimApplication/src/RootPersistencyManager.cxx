@@ -89,6 +89,8 @@ void RootPersistencyManager::Initialize() {
     outputFile_ = new event::EventFile(fileName_.c_str(), true, compressionLevel_);
     outputFile_->setupEvent(event_);
 
+    outputFile_->nextEvent();
+
     // Create map with output hits collections.
     setupHitsCollectionMap();
 }
