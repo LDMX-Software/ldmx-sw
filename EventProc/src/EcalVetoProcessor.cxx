@@ -65,13 +65,15 @@ void eventproc::EcalVetoProcessor::initialize(){
 
     outputTree->Branch("DoesPassVeto",&(doesPassVeto));*/
 
-    ecalSimHits_ = (TClonesArray*) getEvent()->getCollection(event::EventConstants::ECAL_SIM_HITS);
+    ecalSimHits_ = (TClonesArray*) getEvent()->getCollection(event::EventConstants::ECAL_SIM_HITS, "sim");
 }
 
 void eventproc::EcalVetoProcessor::execute(){
 
     // looper over sim hits
     int numEcalSimHits = ecalSimHits_->GetEntries();
+
+    std::cout << "[ EcalVetoProcessor ] : Got " << numEcalSimHits << " ECal hits in event " << event_->getEventHeader()->getEventNumber() << std::endl;
 
     std::vector<cell_energy_pair> layerMaxCellId(numLayersForMedCal,std::make_pair(0,0));
     std::vector<float> hitNoise(numEcalSimHits,0);

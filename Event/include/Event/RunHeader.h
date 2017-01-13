@@ -17,7 +17,7 @@
 namespace event {
 
 /**
- * @name RunHeader
+ * @class RunHeader
  * @brief Run header providing information about a set of events
  *
  * @note
@@ -35,7 +35,6 @@ class RunHeader : public TObject {
          * @param runNumber The run number.
          * @param detectorName The name of the detector.
          * @param detectorVersion The version of the detector.
-         * @param eventType The type of the events in the file (C++ class name).
          * @param description A short description of the run.
          */
         RunHeader(int runNumber, std::string detectorName, int detectorVersion, std::string description)
@@ -92,7 +91,7 @@ class RunHeader : public TObject {
 
         /**
          * Get an int parameter value.
-         * @param The name of the parameter.
+         * @param name The name of the parameter.
          * @return The parameter value.
          */
         int getIntParameter(const std::string& name) {
@@ -101,7 +100,8 @@ class RunHeader : public TObject {
 
         /**
          * Set an int parameter value.
-         * @param The name of the parameter.
+         * @param name The name of the parameter.
+         * @param value The value of the parameter.
          * @return The parameter value.
          */
         void setIntParameter(const std::string& name, int value) {
@@ -110,8 +110,8 @@ class RunHeader : public TObject {
 
         /**
          * Get a float parameter value.
-         * @param The name of the parameter.
-         * @return The parameter value.
+         * @param name The name of the parameter.
+         * @return value The parameter value.
          */
         float getFloatParameter(const std::string& name) {
             return floatParameters_[name];
@@ -119,8 +119,8 @@ class RunHeader : public TObject {
 
         /**
          * Set a float parameter value.
-         * @param The name of the parameter.
-         * @return The parameter value.
+         * @param name The name of the parameter.
+         * @return value The parameter value.
          */
         void setFloatParameter(const std::string& name, float value) {
             floatParameters_[name] = value;
@@ -128,8 +128,8 @@ class RunHeader : public TObject {
 
         /**
          * Get a string parameter value.
-         * @param The name of the parameter.
-         * @return The parameter value.
+         * @param name The name of the parameter.
+         * @return value The parameter value.
          */
         std::string getStringParameter(const std::string& name) {
             return stringParameters_[name];
@@ -137,8 +137,8 @@ class RunHeader : public TObject {
 
         /**
          * Set a string parameter value.
-         * @param The name of the parameter.
-         * @return The parameter value.
+         * @param name The name of the parameter.
+         * @return value The parameter value.
          */
         void setStringParameter(const std::string& name, std::string value) {
             stringParameters_[name] = value;

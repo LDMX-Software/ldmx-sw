@@ -88,9 +88,9 @@ class EventPrintPlugin : public UserActionPlugin {
          * Print an end message with the run number.
          * @param aRun The current Geant4 run that is ending.
          */
-        void endRun(const G4Run* run) {
+        void endRun(const G4Run* aRun) {
             if (enableEndRun_) {
-                std::cout << prepend_ << " End Run " << run->GetRunID() << " " << append_ << std::endl;
+                std::cout << prepend_ << " End Run " << aRun->GetRunID() << " " << append_ << std::endl;
             }
         }
 
@@ -109,7 +109,7 @@ class EventPrintPlugin : public UserActionPlugin {
 
         /**
          * Print an end event message.
-         * @param The Geant4 event that is ending.
+         * @param anEvent The Geant4 event that is ending.
          */
         void endEvent(const G4Event* anEvent) {
             if (enableEndEvent_) {
