@@ -29,12 +29,10 @@ class Event: public TObject {
 
     public:
 
-        typedef std::map<std::string, TClonesArray*> CollectionMap;
-
         /**
          * Class constructor.
          */
-        Event(EventImpl* eventImpl, std::string passName) : eventImpl_(eventImpl), passName_(passName) {;}
+        Event(EventImpl* eventImpl) : eventImpl_(eventImpl) {;}
 
         /**
          * Class destructor.
@@ -42,14 +40,17 @@ class Event: public TObject {
         virtual ~Event() {;}
         
         EventHeader* getEventHeader() {
-            return (EventHeader*) eventImpl_->get("EventHeader", passName_);
+            std::cout << "[ Event ] : Getting EventHeader with pass " << eventImpl_->getPassName() << std::endl;
+            return (EventHeader*) eventImpl_->get("EventHeader", eventImpl_->getPassName());
         }
 
         template<typename ObjectType> const ObjectType get(std::string name) {
-            return (ObjectType) eventImpl_->get(name, passName_);
+            std::cout << "[ Event ] : Getting object " << name << " with pass " << eventImpl_->getPassName() << std::endl;
+            return (ObjectType) eventImpl_->get(name, eventImpl_->getPassName());
         }
 
         template<typename ObjectType> const ObjectType get(std::string name, std::string passName) {
+            std::cout << "[ Event ] : Getting object " << name << " with pass " << passName << std::endl;
             return (ObjectType) eventImpl_->get(name, passName);
         }
 
@@ -62,17 +63,18 @@ class Event: public TObject {
         }
 
         const TClonesArray* getCollection(const std::string& collectionName) {
-            return (TClonesArray*) eventImpl_->get(collectionName, passName_);
+            std::cout << "[ Event ] : Getting collection " << collectionName << " with pass " << eventImpl_->getPassName() << std::endl;
+            return (TClonesArray*) eventImpl_->get(collectionName, eventImpl_->getPassName());
         }
 
         const TClonesArray* getCollection(const std::string& collectionName, std::string passName) {
+            std::cout << "[ Event ] : Getting collection " << collectionName << " with pass " << passName << std::endl;
             return (TClonesArray*) eventImpl_->get(collectionName, passName);
         }
 
     private:
 
         EventImpl* eventImpl_;
-        std::string passName_;
 };
 
 }
