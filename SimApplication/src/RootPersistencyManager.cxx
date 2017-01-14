@@ -139,7 +139,9 @@ void RootPersistencyManager::printEvent(event::EventImpl* outputEvent) {
 
 void RootPersistencyManager::writeHeader(const G4Event* anEvent, event::EventImpl* outputEvent) {
     eventHeader_.setEventNumber(anEvent->GetEventID());
-    eventHeader_.setTimestamp((int) time(NULL));
+    TTimeStamp ts;
+    ts.SetSec((int) time(NULL));
+    eventHeader_.setTimestamp(ts);
     eventHeader_.setRun(G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID());
     if (anEvent->GetPrimaryVertex(0)) {
         eventHeader_.setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
@@ -218,7 +220,6 @@ void RootPersistencyManager::writeTrackerHitsCollection(G4TrackerHitsCollection*
         simTrackerHit->setID(g4hit->getID());
         simTrackerHit->setLayerID(g4hit->getLayerID());
         simTrackerHit->setEdep(g4hit->getEdep());
-        simTrackerHit->setTime(g4hit->getTime());
         const G4ThreeVector& momentum = g4hit->getMomentum();
         simTrackerHit->setMomentum(
                 momentum.x(),
