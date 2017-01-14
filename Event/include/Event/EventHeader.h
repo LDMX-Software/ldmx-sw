@@ -1,22 +1,12 @@
-/**
- * @file EventHeader.h
- * @brief Class defining an event header
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
-
 #include "TObject.h"
+#include "TTimeStamp.h"
 
 #ifndef EVENT_EVENTHEADER_H_
 #define EVENT_EVENTHEADER_H_
 
 #include <iostream>
-
 namespace event {
 
-/**
- * @class EventHeader
- * @brief Defines an event header with event number and other information
- */
 class EventHeader : public TObject {
 
     public:
@@ -37,28 +27,25 @@ class EventHeader : public TObject {
         void Clear(Option_t* = "") {
             eventNumber_ = -1;
             run_= -1;
-            timestamp_ = -1;
+            timestamp_=TTimeStamp(0,0);
             weight_ = 1.0;
+	    isRealData_=false;
         }
 
-        /**
-         * Print out this object.
-         */
         void Print(Option_t* = "")  const {
             std::cout << "EventHeader {"
-                    << " eventNumber: " << eventNumber_
-                    << ", run: " << run_
-                    << ", timestamp: " << timestamp_
-                    << ", weight: " << weight_
-                    << " }"
-                    << std::endl;
+		      << " eventNumber: " << eventNumber_
+		      << ", run: " << run_
+		      << ", timestamp: " << timestamp_
+		      << ", weight: " << weight_;
+	    if (isRealData_) std::cout << ", DATA";
+	    else std::cout << ", MC";
+	    std::cout << " }"
+		      << std::endl;
         }
 
-        /**
-         * Copy this object.
-         * @param o The target object.
-         */
         void Copy(TObject& o) const {
+            std::cout << "EventHeader::Copy" << std::endl;
             ((EventHeader&)o) = *this;
         }
 
@@ -72,15 +59,20 @@ class EventHeader : public TObject {
          */
         int getRun() const { return run_; }
 
-        /**
+       /**
          * Get the event's timestamp, currently in seconds.
          */
-        int getTimestamp() const { return timestamp_; }
+        const TTimeStamp& getTimestamp() const { return timestamp_; }
 
         /**
          * Get the event weight.
          */
         double getWeight() const { return weight_; }
+
+        /**
+         * Is this a real data event?
+         */
+        bool isRealData() const { return isRealData_; }
 
         /**
          * Set the event number.
@@ -98,7 +90,7 @@ class EventHeader : public TObject {
          * Set the timestamp.
          * @param timestamp The timestamp.
          */
-        void setTimestamp(int timestamp) { this->timestamp_ = timestamp; }
+        void setTimestamp(const TTimeStamp& timestamp) { this->timestamp_ = timestamp; }
 
         /**
          * Set the event weight.
@@ -119,14 +111,19 @@ class EventHeader : public TObject {
         int run_{-1};
 
         /**
-         * The event timestamp, in seconds.
+         * The event timestamp
          */
-        int timestamp_{-1};
+        TTimeStamp timestamp_{0,0};
 
         /**
          * The event weight.
          */
         double weight_{1.0};
+
+        /**
+         * Is this event real data?
+         */
+        bool isRealData_{false};
 
     /**
      * ROOT class definition.
