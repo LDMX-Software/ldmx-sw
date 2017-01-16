@@ -159,7 +159,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, event:
 
     // Clear the hits from last event.
     for (auto entry : outputHitsCollections_) {
-        entry.second->Clear("");
+        entry.second->Clear("C");
     }
 
     // Get the HC of this event.
