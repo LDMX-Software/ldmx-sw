@@ -2,6 +2,7 @@
 #define ldmxsw_Framework_EventProcessorFactory_h_included 1
 
 #include <map>
+#include <set>
 #include <vector>
 #include "Framework/EventProcessor.h"
 
@@ -17,6 +18,7 @@ namespace ldmxsw {
     std::vector<std::string> getEventProcessorClasses() const;
     int getEventProcessorClasstype(const std::string&) const;
     EventProcessor* createEventProcessor(const std::string& classname, const std::string& moduleInstanceName, Process& process);
+    void loadLibrary(const std::string& libname);
 
   private:
     EventProcessorFactory();
@@ -27,6 +29,7 @@ namespace ldmxsw {
       EventProcessorMaker* maker;
     };
     std::map<std::string,EventProcessorInfo> moduleInfo_;
+    std::set<std::string> librariesLoaded_;
 
     static EventProcessorFactory theFactory_;
   };
