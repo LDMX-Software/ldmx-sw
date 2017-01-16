@@ -141,6 +141,17 @@ namespace ldmxsw {
       inputFiles_.push_back(PyString_AsString(elem));
     }
     Py_DECREF(pylist);
+
+    pylist=PyObject_GetAttrString(pProcess,"libraries");
+    if (!PyList_Check(pylist)) {
+      std::cerr << "libraries is not a python list as expected.\n";
+      return;
+    }
+    for (Py_ssize_t i=0; i<PyList_Size(pylist); i++) {
+      PyObject* elem=PyList_GetItem(pylist,i);
+      libraries_.push_back(PyString_AsString(elem));
+    }
+    Py_DECREF(pylist);
   }
 
   ConfigurePython::~ConfigurePython() {
@@ -149,8 +160,16 @@ namespace ldmxsw {
 
   Process* ConfigurePython::makeProcess() {
     Process* p=new Process(passname_);
+
+    for (auto lib : libraries_ ) {
+      EventProcessorFactory::getInstance().loadLibrary(lib);
+    }
+
     for (auto proc : sequence_) {
       EventProcessor* ep=EventProcessorFactory::getInstance().createEventProcessor(proc.classname_,proc.instancename_,*p);
+      if (ep==0) {
+	EXCEPTION_RAISE("UnableToCreate","Unable to create instance '"+proc.instancename_+"' of class '"+proc.classname_+"'");
+      }
       ep->configure(proc.params_);
       p->addToSequence(ep);
     }

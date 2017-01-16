@@ -21,7 +21,7 @@ namespace ldmxsw {
     
     std::string passname_;
     int eventLimit_,run_;
-    std::vector<std::string> inputFiles_, keepRules_;
+    std::vector<std::string> inputFiles_, keepRules_, libraries_;
     
     struct ProcessorInfo {
       std::string classname_;
