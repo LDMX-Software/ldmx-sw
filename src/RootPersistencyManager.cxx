@@ -182,7 +182,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, event:
             G4Exception("RootPersistencyManager::writeHitsCollections",
                     "",
                     FatalException,
-                    "The outpCut collection was not found.");
+                    "The output collection was not found.");
         }
 
         if (dynamic_cast<G4TrackerHitsCollection*>(hc) != nullptr) {
