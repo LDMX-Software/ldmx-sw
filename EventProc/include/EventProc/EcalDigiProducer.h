@@ -1,6 +1,6 @@
 /**
- * @file EcalVetoProcessor.h
- * @brief Class that performs basic ECal digi and determines if an event is vetoable
+ * @file EcalDigiProducer.h
+ * @brief Class that performs basic ECal digi
  * @author Owen Colegrove, UCSB
  */
 
@@ -10,46 +10,47 @@
 #include "TTree.h"
 #include "TRandom2.h"
 #include "TClonesArray.h"
-#include "Event/TriggerResult.h"
 
-#include "Event/EcalHit.h"
+#include "Event/SimCalorimeterHit.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 
+using event::SimCalorimeterHit;
 using detdescr::DetectorID;
 using detdescr::EcalDetectorID;
 using detdescr::EcalHexReadout;
 
 
 /**
- * @class EcalVetoProcessor
+ * @class EcalDigiProducer
  * @brief Performs basic ECal digi and determines if event is vetoable
  */
-class EcalVetoProcessor : public ldmxsw::Producer {
+  class EcalDigiProducer : public ldmxsw::Producer {
 
 public:
     typedef std::pair<int, int>   layer_cell_pair;
 
     typedef std::pair<int, float> cell_energy_pair;
 
-  EcalVetoProcessor(const std::string& name, const ldmxsw::Process& process) : ldmxsw::Producer(name,process) { }
-		      
-  virtual void configure(const ldmxsw::ParameterSet&);
+    EcalDigiProducer(const std::string& name, const ldmxsw::Process& process);
 
-  virtual void produce(event::Event& event);
+    virtual void configure(const ldmxsw::ParameterSet&);
+    virtual void produce(event::Event& event);      
 
+    //    void finish();
 
  private:
-    event::TriggerResult result_;
+
+    TRandom2 *noiseInjector;
+    TClonesArray* ecalDigis;
     EcalDetectorID detID;
-    bool verbose,doesPassVeto;
     EcalHexReadout* hexReadout;
     static const int numEcalLayers,numLayersForMedCal,backEcalStartingLayer;
-    static const float totalDepCut,totalIsoCut,backEcalCut,ratioCut;
+    static const float meanNoise,readoutThreshold;
 
-  inline layer_cell_pair hitToPair(event::EcalHit* hit){
+    inline layer_cell_pair hitToPair(SimCalorimeterHit* hit){
         int detIDraw = hit->getID();
         detID.setRawValue(detIDraw);
         detID.unpack();

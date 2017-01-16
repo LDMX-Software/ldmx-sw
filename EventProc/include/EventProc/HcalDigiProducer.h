@@ -1,13 +1,11 @@
 /**
- * @file HcalDigiProcessor.h
+ * @file HcalDigiProducer.h
  * @brief Class that performs digitization of simulated HCal data
  * @author Andrew Whitbeck, FNAL
  */
 
 #include "TString.h"
 #include "TRandom.h"
-#include "TFile.h"
-#include "TTree.h"
 
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/DefaultDetectorID.h"
@@ -15,32 +13,29 @@
 using detdescr::DetectorID;
 using detdescr::DefaultDetectorID;
 
-#include "EventProc/EventProcessor.h"
+#include "Framework/EventProcessor.h"
 #include "Event/SimCalorimeterHit.h"
 
-namespace eventproc {
-  
-typedef int layer;
-typedef std::pair<double,double> zboundaries;
 
 /**
- * @class HcalDigiProcessor
+ * @class HcalDigiProducer
  * @brief Performs digitization of simulated HCal data
  */
-class HcalDigiProcessor : public EventProcessor {
+  class HcalDigiProducer : public ldmxsw::Producer {
   
 public:
+    typedef int layer;
+    typedef std::pair<double,double> zboundaries;
   
-    HcalDigiProcessor(TTree* outputTree_,bool verbose_=false):outputTree(outputTree_),verbose(verbose_){};
-  
-    void initialize();
-    void execute();      
-    void finish();
+    HcalDigiProducer(const std::string& name, const ldmxsw::Process& process);
+    virtual ~HcalDigiProducer() { delete hits; if (random_) delete random_;}
+    
+    virtual void configure(const ldmxsw::ParameterSet&);
+    virtual void produce(event::Event& event);      
    
  private:
-  
-    TTree* outputTree;
-
+    TClonesArray* hits;
+    TRandom* random_{0};
     std::vector<int> *hcalDetId_,*hcalLayerNum_,*hcalLayerPEs_;
     std::vector<float> *hcalLayerEdep_,*hcalLayerTime_,*hcalLayerZpos_;
     std::map<layer,zboundaries> hcalLayers;
@@ -55,7 +50,6 @@ public:
     float depEnergy;
     float meanPE;
     int nProcessed_{0};
-  
 };
 
-}
+
