@@ -36,14 +36,22 @@ class Event {
         
         virtual const EventHeader* getEventHeader() const = 0;
 
-        template<typename ObjectType> const ObjectType get(std::string name) {
-            std::cout << "[ Event ] : Getting object " << name << " with automatic logic pass " << std::endl;
-            return (ObjectType) getReal(name, "");
+        bool exists(const std::string& name) {
+            return getReal(name, "", false)!=0;
         }
 
-        template<typename ObjectType> const ObjectType get(std::string name, std::string passName) {
+        bool exists(const std::string& name, const std::string& passName) {
+            return getReal(name, passName, false)!=0;
+        }
+
+        template<typename ObjectType> const ObjectType get(const std::string& name) {
+            std::cout << "[ Event ] : Getting object " << name << " with automatic logic pass " << std::endl;
+            return (ObjectType) getReal(name, "", true);
+        }
+
+        template<typename ObjectType> const ObjectType get(const std::string& name, const std::string& passName) {
             std::cout << "[ Event ] : Getting object " << name << " with pass " << passName << std::endl;
-            return (ObjectType) getReal(name, passName);
+            return (ObjectType) getReal(name, passName, true);
         }
 
         virtual void add(const std::string& collectionName, TClonesArray* clones) = 0;
@@ -52,16 +60,16 @@ class Event {
 
         const TClonesArray* getCollection(const std::string& collectionName) {
             std::cout << "[ Event ] : Getting collection " << collectionName << " with automatic logic" << std::endl;
-            return (TClonesArray*) getReal(collectionName, "");
+            return (TClonesArray*) getReal(collectionName, "", true);
         }
 
         const TClonesArray* getCollection(const std::string& collectionName, std::string passName) {
             std::cout << "[ Event ] : Getting collection " << collectionName << " with pass " << passName << std::endl;
-            return (TClonesArray*) getReal(collectionName, passName);
+            return (TClonesArray*) getReal(collectionName, passName, true);
         }
 
     protected:
-        virtual const TObject* getReal(const std::string& itemName, const std::string& passName) = 0;
+  virtual const TObject* getReal(const std::string& itemName, const std::string& passName, bool mustExist) = 0;
   
 };
 

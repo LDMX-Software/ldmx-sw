@@ -63,7 +63,7 @@ void EventImpl::add(const std::string& collectionName, TObject* to) {
     to->Copy(*ito->second);
 }
 
-const TObject* EventImpl::getReal(const std::string& collectionName, const std::string& passName) {
+  const TObject* EventImpl::getReal(const std::string& collectionName, const std::string& passName, bool mustExist) {
 
   std::string branchName;
   if (collectionName=="EventHeader") branchName=collectionName;
@@ -79,6 +79,7 @@ const TObject* EventImpl::getReal(const std::string& collectionName, const std::
 	if (!ptr->compare(0,branchName.size(),branchName)) matches.push_back(ptr);
       }
       if (matches.empty()) {
+	if (!mustExist) return nullptr;
 	EXCEPTION_RAISE("ProductNotFound","No product found for name '"+collectionName+"'");
       } else if (matches.size()>1) {
 	std::string names;
@@ -86,7 +87,8 @@ const TObject* EventImpl::getReal(const std::string& collectionName, const std::
 	  if (!names.empty()) names+=", ";
 	  names+=*strs;
 	}
-	EXCEPTION_RAISE("ProductAmbiguous","Multiple product found for name '"+collectionName+"' without specified pass name ("+names+")");
+	if (!mustExist) return nullptr;
+	EXCEPTION_RAISE("ProductAmbiguous","Multiple products found for name '"+collectionName+"' without specified pass name ("+names+")");
       } else {
 	branchName=*matches.front();
 	knownLookups_[collectionName]=branchName;

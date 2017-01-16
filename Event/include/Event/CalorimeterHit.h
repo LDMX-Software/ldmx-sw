@@ -22,12 +22,20 @@ class CalorimeterHit : public TObject {
             id_ = id;
         }
 
-        float getEdep() {
-            return edep_;
+        float getEdepSim() {
+            return edepsim_;
         }
 
-        void setEdep(float edep) {
-            edep_ = edep;
+        void setEdepSim(float edep) {
+            edepsim_ = edep;
+        }
+
+        float getEnergy() {
+            return energy_;
+        }
+
+        void setEnergy(float energy) {
+            energy_ = energy;
         }
 
         float getTime() {
@@ -41,7 +49,8 @@ class CalorimeterHit : public TObject {
     private:
 
         int id_{0};
-        float edep_{0};
+        float edepsim_{0};
+        float energy_{0};
         float time_{0};
 
     /**
