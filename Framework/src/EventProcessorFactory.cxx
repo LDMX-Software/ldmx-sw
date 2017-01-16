@@ -1,6 +1,6 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/EventProcessorFactory.h"
-
+#include <dlfcn.h>
 
 namespace ldmxsw {
 
@@ -35,6 +35,18 @@ namespace ldmxsw {
     auto ptr = moduleInfo_.find(classname);
     if (ptr==moduleInfo_.end()) return 0;
     return ptr->second.maker(moduleInstanceName,process);
+  }
+
+
+  void EventProcessorFactory::loadLibrary(const std::string& libname) {
+    if (librariesLoaded_.find(libname)!=librariesLoaded_.end()) return; // already loaded
+
+    void* handle=dlopen(libname.c_str(),RTLD_NOW);
+    if (handle==nullptr) {
+      EXCEPTION_RAISE("LibraryLoadFailure","Error loading library '"+libname+"':"+dlerror());      
+    }
+    
+    librariesLoaded_.insert(libname);
   }
 
 }
