@@ -182,7 +182,7 @@ void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, event:
             G4Exception("RootPersistencyManager::writeHitsCollections",
                     "",
                     FatalException,
-                    "The output collection was not found.");
+                    "The outpCut collection was not found.");
         }
 
         if (dynamic_cast<G4TrackerHitsCollection*>(hc) != nullptr) {
@@ -299,7 +299,7 @@ void RootPersistencyManager::setupHitsCollectionMap() {
         std::string hcName = hcTable->GetHCname(i);
         G4VSensitiveDetector* sd = sdMgr->FindSensitiveDetector(sdName);
         if (dynamic_cast<CalorimeterSD*>(sd)) {
-            outputHitsCollections_[hcName] = new TClonesArray("event::SimCalorimeterHit", 50);
+            outputHitsCollections_[hcName] = new TClonesArray("event::SimCalorimeterHit", 500);
             if (m_verbose > 1) {
                 std::cout << "[ RootPersistencyManager ] - Created SimCalorimeterHit HC " << hcName << std::endl;
             }
