@@ -1,10 +1,11 @@
 #include "TTree.h"
-#include "Event/EventImpl.h"
+#include "Framework/EventImpl.h"
+#include "Framework/Exception.h"
 #include <iostream>
 #include "TBranchElement.h"
 #include "TBranchClones.h"
 
-namespace event {
+namespace ldmxsw {
 
 EventImpl::EventImpl(const std::string& thePassName) :
         passName_(thePassName) {
@@ -18,6 +19,10 @@ EventImpl::~EventImpl() {
 
 void EventImpl::add(const std::string& collectionName, TClonesArray* tca) {
 
+  if (collectionName.find('_')!=std::string::npos) {
+    EXCEPTION_RAISE("IllegalName","The product name '"+collectionName+"' is illegal as it contains an underscore.");
+  }
+  
     std::string branchName = makeBranchName(collectionName);
 
     std::map<std::string, TObject*>::iterator ito = objects_.find(branchName);
@@ -27,12 +32,20 @@ void EventImpl::add(const std::string& collectionName, TClonesArray* tca) {
             TBranch* aBranch = outputTree_->Branch(branchName.c_str(), tca, 100000, 3);
             newBranches_.push_back(aBranch);
         }
+	branchNames_.push_back(branchName);
+	knownLookups_.clear(); // have to invalidate this cache
     }
 }
 
 void EventImpl::add(const std::string& collectionName, TObject* to) {
 
-    std::string branchName = makeBranchName(collectionName);
+  if (collectionName.find('_')!=std::string::npos) {
+    EXCEPTION_RAISE("IllegalName","The product name '"+collectionName+"' is illegal as it contains an underscore.");
+  }
+  
+    std::string branchName;
+    if (collectionName=="EventHeader") branchName=collectionName;
+    else branchName = makeBranchName(collectionName);
 
     std::map<std::string, TObject*>::iterator ito = objects_.find(branchName);
 
@@ -44,26 +57,53 @@ void EventImpl::add(const std::string& collectionName, TObject* to) {
             TBranch* aBranch = outputTree_->Branch(branchName.c_str(), myCopy);
             newBranches_.push_back(aBranch);
         }
+	branchNames_.push_back(branchName);
+	knownLookups_.clear(); // have to invalidate this cache
     }
     to->Copy(*ito->second);
 }
 
-const TObject* EventImpl::get(const std::string& collectionName, const std::string& passName) {
+const TObject* EventImpl::getReal(const std::string& collectionName, const std::string& passName) {
 
-    std::string branchName = makeBranchName(collectionName, passName);
+  std::string branchName;
+  if (collectionName=="EventHeader") branchName=collectionName;
+  else branchName = makeBranchName(collectionName, passName);
 
-    if (passName.empty()) {
-        // TODO: logic to determine if there is one-and-only-one collection which matches this name
-        //      assert(!passName.empty());
+  if (passName.empty()) {
+    auto ptr=knownLookups_.find(collectionName);
+    if (ptr!=knownLookups_.end()) branchName=ptr->second;
+    else {
+      std::vector<std::vector<std::string>::const_iterator> matches;
+      branchName=collectionName+"_";
+      for (std::vector<std::string>::const_iterator ptr=branchNames_.begin(); ptr!=branchNames_.end(); ptr++) {
+	if (!ptr->compare(0,branchName.size(),branchName)) matches.push_back(ptr);
+      }
+      if (matches.empty()) {
+	EXCEPTION_RAISE("ProductNotFound","No product found for name '"+collectionName+"'");
+      } else if (matches.size()>1) {
+	std::string names;
+	for (auto strs : matches) {
+	  if (!names.empty()) names+=", ";
+	  names+=*strs;
+	}
+	EXCEPTION_RAISE("ProductAmbiguous","Multiple product found for name '"+collectionName+"' without specified pass name ("+names+")");
+      } else {
+	branchName=*matches.front();
+	knownLookups_[collectionName]=branchName;
+      }
     }
+  }
 
+  
     if (inputTree_ == 0) {
         // check the objects map
         std::map<std::string, TObject*>::const_iterator ito = objects_.find(branchName);
         if (ito != objects_.end())
             return ito->second;
-        else
-            return 0;
+        else {
+	  EXCEPTION_RAISE("ProductNotFound","No product found for name '"+collectionName+"' and pass '"+passName_+"'");
+	  return 0;
+	}
     }
 
     // find the active branch and update if necessary
@@ -92,8 +132,9 @@ const TObject* EventImpl::get(const std::string& collectionName, const std::stri
 
         // ok, maybe we've not loaded this yet, look for a branch
         TBranch* branch = inputTree_->GetBranch(branchName.c_str());
-        if (branch == 0)
-            return 0;
+        if (branch == 0) {
+	  EXCEPTION_RAISE("ProductNotFound","No product found for name '"+collectionName+"' and pass '"+passName_+"'");
+	}
 
         // ooh, new branch!
         TObject* top(0);
@@ -116,7 +157,10 @@ const TObject* EventImpl::get(const std::string& collectionName, const std::stri
 
 TTree* EventImpl::createTree() {
     outputTree_ = new TTree("LDMX_Events", "LDMX Events");
-    // eventually, add branch for event info
+
+    eventHeader_=new event::EventHeader();
+    add("EventHeader",eventHeader_);
+    
     return outputTree_;
 }
 
@@ -127,6 +171,13 @@ void EventImpl::setOutputTree(TTree* tree) {
 void EventImpl::setInputTree(TTree* tree) {
     inputTree_ = tree;
     entries_ = inputTree_->GetEntries();
+    eventHeader_=get<event::EventHeader*>("EventHeader");
+
+    // find the names of all the existing branches
+    TObjArray* branches=inputTree_->GetListOfBranches();
+    for (int i=0; i<branches->GetEntriesFast(); i++) {
+      branchNames_.push_back(branches->At(i)->GetName());
+    }
 }
 
 bool EventImpl::nextEvent() {
@@ -134,12 +185,17 @@ bool EventImpl::nextEvent() {
     return true;
 }
 
-void EventImpl::onEndOfEvent() {
+  void EventImpl::beforeFill() {
+    if (inputTree_ == 0) add("EventHeader",eventHeader_);
+  }
+  void EventImpl::Clear() {
     // clear the event objects
-    for (auto obj : objectsOwned_)
-        obj.second->Clear();
-}
-
+    for (auto obj : objects_)
+      obj.second->Clear("C");
+  }
+  void EventImpl::onEndOfEvent() {
+  }
+  
 void EventImpl::onEndOfFile() {
 }
 

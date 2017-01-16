@@ -8,8 +8,7 @@
 #define EVENT_EVENTFILE_H_
 
 // LDMX
-#include "Event/EventConstants.h"
-#include "Event/EventImpl.h"
+#include "Framework/EventImpl.h"
 
 // ROOT
 #include "TTree.h"
@@ -19,7 +18,7 @@
 #include <string>
 #include <vector>
 
-namespace event {
+namespace ldmxsw {
 
 /**
  * @class EventFile
