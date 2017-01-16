@@ -1,6 +1,6 @@
 /**
  * @file Event.h
- * @brief Class defining an interface for accessing event data
+ * @brief Class defining an abstract interface for accessing event information and data collections
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
@@ -12,114 +12,57 @@
 #include "TClonesArray.h"
 
 // LDMX
-#include "Event/EventConstants.h"
 #include "Event/EventHeader.h"
-#include "Event/EventImpl.h"
-#include "Event/SimTrackerHit.h"
-#include "Event/SimCalorimeterHit.h"
-#include "Event/SimParticle.h"
 
 // STL
 #include <string>
 #include <map>
 
-/**
- * @namespace event
- * @brief Physics event model interfaces and implementation classes
- */
 namespace event {
 
-/**
- * @class Event
- * @brief Defines an interface for accessing event data
- *
- * @note
- * A backing EventImpl object provides the actual data collections
- * via ROOT data structures (trees and branches).
- */
-class Event: public TObject {
+class Event {
 
     public:
 
         /**
          * Class constructor.
          */
-        Event(EventImpl* eventImpl) : eventImpl_(eventImpl) {;}
+        Event() {;}
 
         /**
          * Class destructor.
          */
         virtual ~Event() {;}
         
-        /**
-         * Get the event header.
-         * @param The specific pass name within the event.
-         * @return The event header.
-         *
-         * @todo Fix hard-coded default pass name.
-         */
-        EventHeader* getEventHeader(std::string passName = "sim") {
-            return (EventHeader*) eventImpl_->get("EventHeader", passName);
-        }
+        virtual const EventHeader* getEventHeader() const = 0;
 
-        /**
-         * Get a named object with a specific type, using the default pass name.
-         * @return A named object from the event.
-         */
         template<typename ObjectType> const ObjectType get(std::string name) {
-            return (ObjectType) eventImpl_->get(name, eventImpl_->getPassName());
+            std::cout << "[ Event ] : Getting object " << name << " with automatic logic pass " << std::endl;
+            return (ObjectType) getReal(name, "");
         }
 
-        /**
-         * Get a named object with a specific type and pass name.
-         * @param name The name of the object.
-         * @param passName The pass name.
-         */
         template<typename ObjectType> const ObjectType get(std::string name, std::string passName) {
-            return (ObjectType) eventImpl_->get(name, passName);
+            std::cout << "[ Event ] : Getting object " << name << " with pass " << passName << std::endl;
+            return (ObjectType) getReal(name, passName);
         }
 
-        /**
-         * Add a collection of objects to the event using the default pass name.
-         * @param collectionName The name of the collection.
-         * @param tca The TClonesArray containing the objects.
-         */
-        void add(const std::string& collectionName, TClonesArray* tca) {
-            eventImpl_->add(collectionName, tca);
-        }
+        virtual void add(const std::string& collectionName, TClonesArray* clones) = 0;
+ 
+        virtual void add(const std::string& collectionName, TObject* obj) = 0;
 
-        /**
-         * Add a named object to the event using the default pass name.
-         * @param name The name of the object.
-         * @param obj The object to add.
-         */
-        void add(const std::string& name, TObject* obj) {
-            eventImpl_->add(name, obj);
-        }
-
-        /**
-         * Get a collection of objects by name using the default pass name.
-         * @param collectionName The name of the collection.
-         */
         const TClonesArray* getCollection(const std::string& collectionName) {
-            return (TClonesArray*) eventImpl_->get(collectionName, eventImpl_->getPassName());
+            std::cout << "[ Event ] : Getting collection " << collectionName << " with automatic logic" << std::endl;
+            return (TClonesArray*) getReal(collectionName, "");
         }
 
-        /**
-         * Get a collection of objects by name with the pass name.
-         * @param collectionName The name of the collection.
-         * @param passName The pass name.
-         */
         const TClonesArray* getCollection(const std::string& collectionName, std::string passName) {
-            return (TClonesArray*) eventImpl_->get(collectionName, passName);
+            std::cout << "[ Event ] : Getting collection " << collectionName << " with pass " << passName << std::endl;
+            return (TClonesArray*) getReal(collectionName, passName);
         }
 
-    private:
-
-        /**
-         * The object containing the event data.
-         */
-        EventImpl* eventImpl_;
+    protected:
+        virtual const TObject* getReal(const std::string& itemName, const std::string& passName) = 0;
+  
 };
 
 }
