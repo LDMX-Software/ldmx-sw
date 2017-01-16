@@ -1,0 +1,168 @@
+#include "Python.h"
+#include "Framework/ConfigurePython.h"
+#include "Framework/Process.h"
+#include <iostream>
+#include "Framework/EventProcessorFactory.h"
+
+namespace ldmxsw {
+
+  static std::string stringMember(PyObject* owner, const std::string& name) {
+    std::string retval;
+    PyObject* temp=PyObject_GetAttrString(owner,name.c_str());
+    if (temp!=0) {
+      retval=PyString_AsString(temp);
+      Py_DECREF(temp);
+    }
+    return retval;
+  }
+
+    static long intMember(PyObject* owner, const std::string& name) {
+    long retval;
+    PyObject* temp=PyObject_GetAttrString(owner,name.c_str());
+    if (temp!=0) {
+      retval=PyInt_AsLong(temp);
+      Py_DECREF(temp);
+    }
+    return retval;
+  }
+
+  
+  
+  ConfigurePython::ConfigurePython(const std::string& pythonScript) {
+    Py_Initialize();
+
+    PyObject* script, *temp, *process, *pMain, *pylist;
+    std::string cmd=pythonScript;
+    temp=PyString_FromString(cmd.c_str());
+    script=PyImport_ImportModule(cmd.c_str());
+    Py_DECREF(temp);
+
+    if (script==0) {
+      PyErr_Print();
+      EXCEPTION_RAISE("ConfigureError","Problem loading python script");
+    }
+
+    PyObject* pCMod=PyObject_GetAttrString(script,"ldmxcfg");
+    if (pCMod==0) {
+      PyErr_Print();
+      EXCEPTION_RAISE("ConfigureError","Problem loading python script");      
+    }
+    PyObject* pProcessClass=PyObject_GetAttrString(pCMod,"Process"); Py_DECREF(pCMod);
+    if (pProcessClass==0) {
+      PyErr_Print();
+      EXCEPTION_RAISE("ConfigureError","Problem loading python script");      
+    }
+
+    PyObject* pProcess=PyObject_GetAttrString(pProcessClass,"lastProcess"); Py_DECREF(pProcessClass);
+    if (pProcess==0) {
+      PyErr_Print();
+      EXCEPTION_RAISE("ConfigureError","Problem loading python script");      
+    }
+
+    passname_=stringMember(pProcess,"passName");
+    eventLimit_=intMember(pProcess,"maxEvents");
+    run_=intMember(pProcess,"run");
+
+    PyObject* pysequence=PyObject_GetAttrString(pProcess,"sequence");
+    if (!PyList_Check(pysequence)) {
+      EXCEPTION_RAISE("ConfigureError","sequence is not a python list as expected.");      
+    }
+    for (Py_ssize_t i=0; i<PyList_Size(pysequence); i++) {
+      PyObject* processor=PyList_GetItem(pysequence,i);
+      ProcessorInfo pi;
+      pi.classname_=stringMember(processor,"className");
+      pi.instancename_=stringMember(processor,"instanceName");
+
+      PyObject* params=PyObject_GetAttrString(processor,"parameters");
+      if (params!=0 && PyDict_Check(params)) {
+	PyObject *key(0), *value(0);
+	Py_ssize_t pos = 0;
+
+	while (PyDict_Next(params, &pos, &key, &value)) {
+	  std::string skey=PyString_AsString(key);
+	  if (PyInt_Check(value)) {
+	    pi.params_.insert(skey,int(PyInt_AsLong(value)));
+	    printf("Int Key: %s\n",skey.c_str());
+	  } else if (PyFloat_Check(value)) {
+	    pi.params_.insert(skey,PyFloat_AsDouble(value));
+	    printf("Double Key: %s\n",skey.c_str());
+	  } else if (PyString_Check(value)) {
+	    pi.params_.insert(skey,PyString_AsString(value));
+	    printf("String Key: %s\n",skey.c_str());
+	  } else if (PyList_Check(value)) { // assume everything is same value as first value
+	    if (PyList_Size(value)>0) {
+	      PyObject* vec0=PyList_GetItem(value,0);
+	      if (PyInt_Check(vec0)) {
+		std::vector<int> vals;
+		for (Py_ssize_t j=0; j<PyList_Size(value); j++)
+		  vals.push_back(PyInt_AsLong(PyList_GetItem(value,j)));
+		pi.params_.insert(skey,vals);
+		printf("VInt Key: %s\n",skey.c_str());
+	      } else if (PyFloat_Check(vec0)) {
+		std::vector<double> vals;
+		for (Py_ssize_t j=0; j<PyList_Size(value); j++)
+		  vals.push_back(PyFloat_AsDouble(PyList_GetItem(value,j)));
+		pi.params_.insert(skey,vals);
+		printf("VDouble Key: %s\n",skey.c_str());
+	      } else if (PyString_Check(vec0)) {
+		std::vector<std::string> vals;
+		for (Py_ssize_t j=0; j<PyList_Size(value); j++)
+		  vals.push_back(PyString_AsString(PyList_GetItem(value,j)));
+		pi.params_.insert(skey,vals);
+		printf("VString Key: %s\n",skey.c_str());
+	      }
+	    }
+	  }
+	}
+      }
+      
+      sequence_.push_back(pi);
+    }
+    Py_DECREF(pysequence);
+
+    pylist=PyObject_GetAttrString(pProcess,"keep");
+    if (!PyList_Check(pylist)) {
+      std::cerr << "keep is not a python list as expected.\n";
+      return;
+    }
+    for (Py_ssize_t i=0; i<PyList_Size(pylist); i++) {
+      PyObject* elem=PyList_GetItem(pylist,i);
+      keepRules_.push_back(PyString_AsString(elem));
+    }
+    Py_DECREF(pylist);
+
+    pylist=PyObject_GetAttrString(pProcess,"inputFiles");
+    if (!PyList_Check(pylist)) {
+      std::cerr << "inputFiles is not a python list as expected.\n";
+      return;
+    }
+    for (Py_ssize_t i=0; i<PyList_Size(pylist); i++) {
+      PyObject* elem=PyList_GetItem(pylist,i);
+      inputFiles_.push_back(PyString_AsString(elem));
+    }
+    Py_DECREF(pylist);
+  }
+
+  ConfigurePython::~ConfigurePython() {
+    Py_Finalize();
+  }
+
+  Process* ConfigurePython::makeProcess() {
+    Process* p=new Process(passname_);
+    for (auto proc : sequence_) {
+      EventProcessor* ep=EventProcessorFactory::getInstance().createEventProcessor(proc.classname_,proc.instancename_,*p);
+      ep->configure(proc.params_);
+      p->addToSequence(ep);
+    }
+    for (auto file : inputFiles_) {
+      p->addFileToProcess(file);
+    }
+    for (auto rule : keepRules_) {
+      p->addDropKeepRule(rule);
+    }
+    if (run_>0) p->setRunNumber(run_);
+    
+    return p;
+  }
+}
+
