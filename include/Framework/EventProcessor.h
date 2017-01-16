@@ -64,6 +64,8 @@ namespace ldmxsw {
 
 #define DECLARE_ANALYZER(CLASS) extern "C" { ldmxsw::EventProcessor* ldmxsw_make_ ## CLASS (const std::string& name, const ldmxsw::Process& process) { return new CLASS(name,process); } } __attribute__((constructor)) static void ldmxsw_declare_ ## CLASS() { ldmxsw::EventProcessor::declare(#CLASS,::ldmxsw::Analyzer::CLASSTYPE,&ldmxsw_make_ ## CLASS ); }
 
+#define DECLARE_PRODUCER_NS(NS,CLASS) extern "C" { ldmxsw::EventProcessor* ldmxsw_make_ ##NS _ ## CLASS (const std::string& name, const ldmxsw::Process& process) { return new NS::CLASS(name,process); } } __attribute__((constructor)) static void ldmxsw_declare_ ##NS _ ## CLASS() { ldmxsw::EventProcessor::declare(#NS::#CLASS,::ldmxsw::Producer::CLASSTYPE,&ldmxsw_make_ ##NS ## CLASS ); }
+
 
 
 #endif // ldmxsw_Framework_EventProcessor_h_included

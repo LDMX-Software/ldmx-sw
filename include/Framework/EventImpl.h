@@ -83,11 +83,14 @@ namespace ldmxsw {
          * @param collectionName The collection name.
          * @param passName The pass name.
          */
-        virtual const TObject* getReal(const std::string& collectionName, const std::string& passName);
+    virtual const TObject* getReal(const std::string& collectionName, const std::string& passName, bool mustExist);
 
   public:
     
     /** ********* Functionality for storage  ********** **/
+
+
+         event::EventHeader& getEventHeaderMutable() const { return *eventHeader_; }
     
         /**
          * Set the input data tree.
