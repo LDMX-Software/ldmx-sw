@@ -30,7 +30,7 @@ SimParticleBuilder::~SimParticleBuilder() {
 void SimParticleBuilder::buildSimParticles(event::EventImpl* outputEvent) {
 
     // Clear the output particle collection.
-    outputParticleColl_->Clear("");
+    outputParticleColl_->Clear("C");
 
     // Get the trajectory container for the event.
     TrajectoryContainer* trajectories
