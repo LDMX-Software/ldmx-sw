@@ -62,7 +62,7 @@ G4VBiasingOperation* sim::PhotonuclearXsecBiasingOperator::ProposeOccurenceBiasi
               << xsec << std::endl;*/
    
     // TODO: Make this settable via a macro command 
-    G4double xsecTransformation = 5000;
+    G4double xsecTransformation = 100000000;
     /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
               << "Cross-section x transformation factor: " 
               << xsec*xsecTransformation << std::endl;*/

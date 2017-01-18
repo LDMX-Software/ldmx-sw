@@ -24,8 +24,9 @@ void DetectorConstruction::ConstructSDandField() {
         = new PhotonuclearXsecBiasingOperator("PhotonuclearXsecBiasingOperator");
 
     // TODO: This should be configurable from a macro
-    //G4LogicalVolume* logicalVolume = G4LogicalVolumeStore::GetInstance()->GetVolume("target");
-    G4LogicalVolume* logicalVolume = G4LogicalVolumeStore::GetInstance()->GetVolume("em_calorimeters");
+    G4LogicalVolume* logicalVolume = G4LogicalVolumeStore::GetInstance()->GetVolume("target");
+    xsecBiasing->AttachTo(logicalVolume);
+    /*G4LogicalVolume* logicalVolume = G4LogicalVolumeStore::GetInstance()->GetVolume("em_calorimeters");
     for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) { 
         G4String volumeName = volume->GetName();
         std::cout << "Volume name: " << volumeName << std::endl;
@@ -35,7 +36,7 @@ void DetectorConstruction::ConstructSDandField() {
                    << " to logical volume " << logicalVolume->GetName()
                    << G4endl;
         }
-    }
+    }*/
 }
 
 }
