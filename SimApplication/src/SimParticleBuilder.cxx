@@ -27,7 +27,7 @@ SimParticleBuilder::~SimParticleBuilder() {
     delete outputParticleColl_;
 }
 
-void SimParticleBuilder::buildSimParticles(event::EventImpl* outputEvent) {
+void SimParticleBuilder::buildSimParticles(event::Event* outputEvent) {
 
     // Clear the output particle collection.
     outputParticleColl_->Clear("C");
