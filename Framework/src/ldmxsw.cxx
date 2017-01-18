@@ -3,6 +3,8 @@
 #include "Framework/ConfigurePython.h"
 #include <iostream>
 
+using namespace ldmxsw;
+
 int main(int argc, char* argv[]) {
 
   Process* p{0};
