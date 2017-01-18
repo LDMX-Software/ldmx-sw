@@ -47,7 +47,7 @@ class UserActionPluginMessenger : public G4UImessenger {
         /**
          * Process the macro command.
          * @param[in] command The macro command.
-         * @param[in] newValues The argument values.
+         * @param[in] newValue The argument values.
          */
         void SetNewValue(G4UIcommand *command, G4String newValue);
 

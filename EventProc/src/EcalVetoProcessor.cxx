@@ -6,14 +6,11 @@
 #include "TTree.h"
 #include "TClonesArray.h"
 
-#include "Event/SimEvent.h"
+#include "Event/EventConstants.h"
 #include "EventProc/EventLoop.h"
-#include "EventProc/RootEventSource.h"
 
-using event::SimEvent;
 using event::SimCalorimeterHit;;
 using eventproc::EventLoop;
-using eventproc::RootEventSource;
 
 #include "EventProc/EventProcessor.h"
 
@@ -29,6 +26,7 @@ const float eventproc::EcalVetoProcessor::backEcalCut = 1;
 const float eventproc::EcalVetoProcessor::ratioCut = 10;
 
 void eventproc::EcalVetoProcessor::initialize(){
+
     detID = new EcalDetectorID();
     hexReadout = new EcalHexReadout();
     noiseInjector = new TRandom2(0);
@@ -42,35 +40,40 @@ void eventproc::EcalVetoProcessor::initialize(){
     EcalLayerIsoRaw_      = new std::vector<float>(numEcalLayers,0);
     EcalLayerIsoReadout_  = new std::vector<float>(numEcalLayers,0);
     EcalLayerTime_        = new std::vector<float>(numEcalLayers,0);
-
     EcalHitId_       = new std::vector<float>();
     EcalHitLayer_    = new std::vector<float>();
     EcalHitDep_      = new std::vector<float>();
+
+    //this->getEvent()->add("EcalLayerEdepRaw", &(EcalLayerEdepRaw_));
+    /*
+
 
     outputTree->Branch("EcalLayerEdepRaw",&(EcalLayerEdepRaw_));
     outputTree->Branch("EcalLayerEdepNoise",&(EcalLayerEdepReadout_));
     outputTree->Branch("EcalLayerIsoRaw",&(EcalLayerIsoRaw_));
     outputTree->Branch("EcalLayerIsoReadout",&(EcalLayerIsoReadout_));
-    outputTree->Branch("EcalLayerTime",&(EcalLayerTime_));
+    outputTree->Branch("EcalLayerTime",&(EcalLayerTime_));*/
 
     /*
      * For now we make four flat arrays containing the ECAL hit information
      *          (to be replaced at a later date w/ custom object)
      */
-    outputTree->Branch("EcalHitId",&(EcalHitId_));
+    /*outputTree->Branch("EcalHitId",&(EcalHitId_));
     outputTree->Branch("EcalHitLayer",&(EcalHitLayer_));
     outputTree->Branch("EcalHitDep",&(EcalHitDep_));
     outputTree->Branch("EcalHitNoise",&(EcalHitNoise_));
 
-    outputTree->Branch("DoesPassVeto",&(doesPassVeto));
+    outputTree->Branch("DoesPassVeto",&(doesPassVeto));*/
 
+    ecalSimHits_ = (TClonesArray*) getEvent()->getCollection(event::EventConstants::ECAL_SIM_HITS, "sim");
 }
 
 void eventproc::EcalVetoProcessor::execute(){
 
     // looper over sim hits
-    TClonesArray* EcalHits = getEvent()->getCollection(event::EventConstants::ECAL_SIM_HITS);
-    int numEcalSimHits = EcalHits->GetEntries();
+    int numEcalSimHits = ecalSimHits_->GetEntries();
+
+    std::cout << "[ EcalVetoProcessor ] : Got " << numEcalSimHits << " ECal hits in event " << event_->getEventHeader()->getEventNumber() << std::endl;
 
     std::vector<cell_energy_pair> layerMaxCellId(numLayersForMedCal,std::make_pair(0,0));
     std::vector<float> hitNoise(numEcalSimHits,0);
@@ -78,7 +81,7 @@ void eventproc::EcalVetoProcessor::execute(){
 
     //First we simulate noise injection into each hit and store layer-wise max cell ids
     for(int iHit = 0; iHit < numEcalSimHits; iHit++){
-        SimCalorimeterHit* EcalHit = (SimCalorimeterHit*) EcalHits->At(iHit);
+        SimCalorimeterHit* EcalHit = (SimCalorimeterHit*) ecalSimHits_->At(iHit);
         hitNoise[iHit] = noiseInjector->Gaus(0,meanNoise);
         layer_cell_pair hit_pair = hitToPair(EcalHit);
 
@@ -104,7 +107,7 @@ void eventproc::EcalVetoProcessor::execute(){
     //Loop over the hits from the event to calculate the rest of the important quantities
     for(int iHit = 0; iHit < numEcalSimHits; iHit++){
         //Layer-wise quantities
-        SimCalorimeterHit* EcalHit = (SimCalorimeterHit*) EcalHits->At(iHit);
+        SimCalorimeterHit* EcalHit = (SimCalorimeterHit*) ecalSimHits_->At(iHit);
         layer_cell_pair hit_pair = hitToPair(EcalHit);
 
         (*EcalLayerEdepRaw_)[hit_pair.first] += EcalHit->getEdep();
@@ -143,7 +146,7 @@ void eventproc::EcalVetoProcessor::execute(){
     }// end verbose
 
     doesPassVeto = (summedDep < totalDepCut && summedIso < totalIsoCut && backSummedDep < backEcalCut); // add ratio cut in at some point
-    outputTree->Fill();
+    //outputTree->Fill();
 
     EcalLayerEdepRaw_     = new std::vector<float>(numEcalLayers,0);
     EcalLayerEdepReadout_ = new std::vector<float>(numEcalLayers,0);
