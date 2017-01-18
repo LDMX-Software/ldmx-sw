@@ -13,9 +13,9 @@
 #include "G4Run.hh"
 
 // LDMX
-#include "Event/EventFile.h"
+#include "Event/Event.h"
+#include "Framework/EventFile.h"
 #include "Event/EventHeader.h"
-#include "Event/EventImpl.h"
 #include "Event/RunHeader.h"
 #include "SimApplication/EcalHitIO.h"
 #include "SimApplication/G4TrackerHit.h"
@@ -29,7 +29,7 @@ namespace sim {
  *
  * @note
  * Output is written at the end of each event.  An EventFile is used to write from an
- * EventImpl buffer object into an output branch within a tree.  The event buffer is cleared
+ * Event buffer object into an output branch within a tree.  The event buffer is cleared
  * after the event is written.  A SimParticleBuilder is used to build a set of SimParticle
  * objects from the Trajectory objects which were created during event processing.
  * An EcalHitIO instance provides translation of G4CalorimeterHit objects in the ECal
@@ -128,21 +128,21 @@ class RootPersistencyManager : public G4PersistencyManager {
          * @param anEvent The Geant4 event.
          * @param outputEvent The output event.
          */
-        void buildEvent(const G4Event* anEvent, event::EventImpl* outputEvent);
+        void buildEvent(const G4Event* anEvent, event::Event* outputEvent);
 
         /**
          * Write header info into the output event from Geant4.
          * @param anEvent The Geant4 event.
          * @param outputEvent The output event.
          */
-        void writeHeader(const G4Event* anEvent, event::EventImpl* outputEvent);
+        void writeHeader(const G4Event* anEvent, event::Event* outputEvent);
 
         /**
          * Write hits collections from Geant4 into a ROOT event.
          * @param anEvent The Geant4 event.
          * @param outputEvent The output event.
          */
-        void writeHitsCollections(const G4Event* anEvent, event::EventImpl* outputEvent);
+        void writeHitsCollections(const G4Event* anEvent, event::Event* outputEvent);
         
         /**
          * Write a collection of tracker hits to an output collection.
@@ -162,7 +162,7 @@ class RootPersistencyManager : public G4PersistencyManager {
          * Print out event info and data depending on the verbose level.
          * @param anEvent The output event.
          */
-        void printEvent(event::EventImpl* anEvent);
+        void printEvent(event::Event* anEvent);
 
         /**
          * Setup a map of HC names to output TClonesArray collections.
@@ -193,7 +193,7 @@ class RootPersistencyManager : public G4PersistencyManager {
         /**
          * The output file with the event tree.
          */
-        event::EventFile* outputFile_{nullptr};
+        ldmxsw::EventFile* outputFile_{nullptr};
 
         /**
          * Output file compression level.
@@ -203,7 +203,7 @@ class RootPersistencyManager : public G4PersistencyManager {
         /**
          * The event container used to manage the tree/branches/collections.
          */
-        event::EventImpl* event_{nullptr};
+        event::Event* event_{nullptr};
 
         /**
          * Event header for writing out event number, etc. into output.
