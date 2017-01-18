@@ -142,6 +142,17 @@ namespace ldmxsw {
     }
     Py_DECREF(pylist);
 
+    pylist=PyObject_GetAttrString(pProcess,"outputFiles");
+    if (!PyList_Check(pylist)) {
+      std::cerr << "outputFiles is not a python list as expected.\n";
+      return;
+    }
+    for (Py_ssize_t i=0; i<PyList_Size(pylist); i++) {
+      PyObject* elem=PyList_GetItem(pylist,i);
+      outputFiles_.push_back(PyString_AsString(elem));
+    }
+    Py_DECREF(pylist);
+
     pylist=PyObject_GetAttrString(pProcess,"libraries");
     if (!PyList_Check(pylist)) {
       std::cerr << "libraries is not a python list as expected.\n";
@@ -176,6 +187,10 @@ namespace ldmxsw {
     for (auto file : inputFiles_) {
       p->addFileToProcess(file);
     }
+    for (auto file : outputFiles_) {
+      p->addOutputFileName(file);
+    }
+
     for (auto rule : keepRules_) {
       p->addDropKeepRule(rule);
     }
