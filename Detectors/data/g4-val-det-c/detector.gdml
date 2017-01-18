@@ -81,7 +81,7 @@
         <!-- define sensitive detectors -->
         <auxiliary auxtype="SensDet" auxvalue="RadiatorSD1">
             <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
-            <auxiliary auxtype="HitsCollection" auxvalue="TargetSimHits"/>
+            <auxiliary auxtype="HitsCollection" auxvalue="RadiatorSimHits"/>
             <auxiliary auxtype="SubdetID" auxvalue="1"/>
             <auxiliary auxtype="LayerDepth" auxvalue="1"/>
             <auxiliary auxtype="Verbose" auxvalue="0"/>
