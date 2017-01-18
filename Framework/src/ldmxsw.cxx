@@ -4,8 +4,6 @@
 #include <iostream>
 
 using namespace ldmxsw;
-// this static instance must be here so that it comes into existance before any shared library is loaded
-EventProcessorFactory EventProcessorFactory::theFactory_;
 
 int main(int argc, char* argv[]) {
 
