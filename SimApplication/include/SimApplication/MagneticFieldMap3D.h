@@ -70,8 +70,8 @@ class MagneticFieldMap3D : public G4MagneticField {
 
         /**
          * Implementation of primary virtual method from G4MagneticField interface.
-         * @param[in]  Point  The point in 3D space.
-         * @param[out] Bfield The output B-field data at the point.
+         * @param[in]  point  The point in 3D space.
+         * @param[out] bfield The output B-field data at the point.
          */
         void GetFieldValue(const double point[4], double* bfield) const;
 

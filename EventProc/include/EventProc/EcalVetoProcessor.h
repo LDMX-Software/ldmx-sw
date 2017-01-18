@@ -9,15 +9,14 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TRandom2.h"
+#include "TClonesArray.h"
 
-#include "Event/SimEvent.h"
 #include "Event/SimCalorimeterHit.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "EventProc/EventProcessor.h"
 
-using event::SimEvent;
 using event::SimCalorimeterHit;
 using detdescr::DetectorID;
 using detdescr::EcalDetectorID;
@@ -36,8 +35,7 @@ public:
 
     typedef std::pair<int, float> cell_energy_pair;
 
-    EcalVetoProcessor(TTree* outputTree_,bool verbose_ = false) :
-        outputTree(outputTree_),
+    EcalVetoProcessor(bool verbose_ = false) :
         verbose(verbose_){};
 
     void initialize();
@@ -60,12 +58,14 @@ public:
     static const float meanNoise,readoutThreshold,
     totalDepCut,totalIsoCut,backEcalCut,ratioCut;
 
+    TClonesArray* ecalSimHits_;
+
     inline layer_cell_pair hitToPair(SimCalorimeterHit* hit){
         int detIDraw = hit->getID();
         detID->setRawValue(detIDraw);
         detID->unpack();
         int layer = detID->getFieldValue("layer");
-        int cellid = detID->getFieldValue("cellid");
+        int cellid = detID->getFieldValue("cell");
         return (std::make_pair(layer, cellid));
     };
 
