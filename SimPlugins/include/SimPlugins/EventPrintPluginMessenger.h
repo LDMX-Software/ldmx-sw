@@ -32,7 +32,7 @@ class EventPrintPluginMessenger : public UserActionPluginMessenger {
 
         /**
          * Class constructor.
-         * @param The associated EventPrintPlugin object.
+         * @param plugin The associated EventPrintPlugin object.
          */
         EventPrintPluginMessenger(EventPrintPlugin* plugin);
 
@@ -44,7 +44,7 @@ class EventPrintPluginMessenger : public UserActionPluginMessenger {
         /**
          * Process the macro command.
          * @param command The macro command.
-         * @param newValues The argument values.
+         * @param newValue The argument values.
          */
         void SetNewValue(G4UIcommand *command, G4String newValue);
 

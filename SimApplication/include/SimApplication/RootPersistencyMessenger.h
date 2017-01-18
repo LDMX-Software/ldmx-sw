@@ -49,7 +49,7 @@ class RootPersistencyMessenger : public G4UImessenger {
          */
         G4UIdirectory* rootDir_;
 
-        /**
+        /*
          * Command definitions.
          */
         G4UIcommand* rootFileCmd_;
@@ -57,7 +57,7 @@ class RootPersistencyMessenger : public G4UImessenger {
         G4UIcommand* disableCmd_;
         G4UIcommand* enableCmd_;
         G4UIcommand* comprCmd_;
-        G4UIcommand* modeCmd_;
+        //G4UIcommand* modeCmd_;
         G4UIcmdWithABool* hitContribsCmd_;
         G4UIcmdWithABool* compressContribsCmd_;
         

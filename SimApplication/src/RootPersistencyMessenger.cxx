@@ -37,11 +37,13 @@ RootPersistencyMessenger::RootPersistencyMessenger(RootPersistencyManager* rootI
     comprCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
     comprCmd_->SetGuidance("Set the output file compression level (1-9).");
     
+    /*
     modeCmd_ = new G4UIcommand("/ldmx/persistency/root/mode", this);
     G4UIparameter* mode = new G4UIparameter("mode", 's', false);
     modeCmd_->SetParameter(mode);
     modeCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
     modeCmd_->SetGuidance("Set the file mode: new update recreate");
+    */
 
     hitContribsCmd_ = new G4UIcmdWithABool("/ldmx/persistency/root/enableHitContribs", this);
     G4UIparameter* enable = new G4UIparameter("enable", 'b', true);
@@ -62,7 +64,7 @@ RootPersistencyMessenger::~RootPersistencyMessenger() {
     delete enableCmd_;
     delete disableCmd_;
     delete comprCmd_;
-    delete modeCmd_;
+    //delete modeCmd_;
     delete rootDir_;
 }
 
@@ -85,10 +87,10 @@ void RootPersistencyMessenger::SetNewValue(G4UIcommand* command, G4String newVal
             rootIO_ = nullptr;
         } else if (command == comprCmd_) {
             int compr = std::stoi(newValues);
-            rootIO_->getWriter()->setCompression(compr);
-        } else if (command == modeCmd_) {
+            rootIO_->setCompressionLevel(compr);
+        } /*else if (command == modeCmd_) {
             rootIO_->getWriter()->setMode(newValues);
-        } else if (command == hitContribsCmd_) {
+        }*/ else if (command == hitContribsCmd_) {
             rootIO_->setEnableHitContribs(hitContribsCmd_->GetNewBoolValue(newValues.c_str()));
         } else if (command == compressContribsCmd_) {
             rootIO_->setCompressHitContribs(compressContribsCmd_->GetNewBoolValue(newValues.c_str()));
