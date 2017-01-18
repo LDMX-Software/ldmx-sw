@@ -9,8 +9,6 @@
 
 #include "Event/Event.h"
 
-using event::Event;
-
 /**
  * @namespace eventproc
  * @brief Event processing classes for reconstruction and analysis
@@ -55,12 +53,14 @@ class EventProcessor {
         virtual void finish() = 0;
 
         /**
-         * Set the current event.
-         * Since the EventLoop uses Event as a buffer filled from a tree,
-         * this is only called once at the beginning of the job.
-         * @param anEvent The current event.
+         * Set the object for accessing event data.
+         * @param anEvent The current event object.
+         *
+         * @note
+         * Since the EventLoop uses a single Event object as a buffer filled from a tree,
+         * this only needs to be called once for the job.
          */
-        void setEvent(Event* anEvent) {
+        void setEvent(event::Event* anEvent) {
             this->event_ = anEvent;
         }
 
@@ -68,16 +68,16 @@ class EventProcessor {
          * Get the current event.
          * @return The current event.
          */
-        Event* getEvent() {
+        event::Event* getEvent() {
             return event_;
         }
 
-    private:
+    protected:
 
         /**
-         * Pointer to the event buffer.
+         * Pointer to the object for accessing event data.
          */
-        Event* event_;
+        event::Event* event_;
 };
 
 }

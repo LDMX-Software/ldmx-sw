@@ -11,12 +11,6 @@
 #include "G4Geantino.hh"
 #include "G4ChargedGeantino.hh"
 
-// LDMX
-#include "Event/RootEventWriter.h"
-#include "Event/EventConstants.h"
-
-using event::EventConstants;
-using event::RootEventWriter;
 using detdescr::EcalHexReadout;
 
 namespace sim {
