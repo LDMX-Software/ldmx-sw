@@ -69,7 +69,7 @@ void EventImpl::add(const std::string& collectionName, TObject* to) {
   if (collectionName=="EventHeader") branchName=collectionName;
   else branchName = makeBranchName(collectionName, passName);
 
-  if (passName.empty()) {
+  if (passName.empty() && collectionName!="EventHeader") {
     auto ptr=knownLookups_.find(collectionName);
     if (ptr!=knownLookups_.end()) branchName=ptr->second;
     else {
@@ -173,6 +173,7 @@ void EventImpl::setOutputTree(TTree* tree) {
 void EventImpl::setInputTree(TTree* tree) {
     inputTree_ = tree;
     entries_ = inputTree_->GetEntries();
+    branchNames_.clear();
     eventHeader_=get<event::EventHeader*>("EventHeader");
 
     // find the names of all the existing branches
