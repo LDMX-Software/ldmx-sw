@@ -1,11 +1,8 @@
 #include "SimApplication/UserRunAction.h"
 
 // LDMX
-#include "Event/RootEventWriter.h"
 #include "SimPlugins/PluginManager.h"
 #include "SimApplication/RootPersistencyManager.h"
-
-using event::RootEventWriter;
 
 namespace sim {
 

@@ -1,12 +1,7 @@
 #include "SimApplication/SimApplicationMessenger.h"
 
-// LDMX
-#include "Event/RootEventWriter.h"
-
 // Geant4
 #include "G4ApplicationState.hh"
-
-using event::RootEventWriter;
 
 namespace sim {
 

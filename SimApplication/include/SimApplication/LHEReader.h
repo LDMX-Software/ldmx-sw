@@ -16,7 +16,7 @@
 namespace sim {
 
 /**
- * @name LHEReader
+ * @class LHEReader
  * @brief Reads LHE event data into an LHEEvent object
  */
 class LHEReader {

@@ -188,10 +188,10 @@
   <userinfo>
   
     <!-- detector version -->
-    <auxiliary auxtype="DetectorVersion" auxvalue="1.0">
+    <auxiliary auxtype="DetectorVersion" auxvalue="1">
       <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v0-fieldmap"/>
       <auxiliary auxtype="Author" auxvalue="Jeremy McCormick"/>
-      <auxiliary auxtype="Note" auxvalue="The v0 detector with a full 3D field map"/>
+      <auxiliary auxtype="Description" auxvalue="The v0 detector with a full 3D field map"/>
     </auxiliary>
     
     <!-- define sensitive detectors -->

@@ -4,15 +4,13 @@
 #include "TTree.h"
 #include "TClonesArray.h"
 
-#include "Event/SimEvent.h"
-#include "EventProc/EventLoop.h"
-#include "EventProc/RootEventSource.h"
+#include "Event/EventConstants.h"
+#include "Event/SimCalorimeterHit.h"
 #include "EventProc/HcalDigiProcessor.h"
 
-using event::SimEvent;
+#include <iostream>
+
 using event::SimCalorimeterHit;;
-using eventproc::EventLoop;
-using eventproc::RootEventSource;
 
 #include "EventProc/EventProcessor.h"
 #include "Event/SimCalorimeterHit.h"
@@ -55,7 +53,8 @@ void eventproc::HcalDigiProcessor::execute(){
     std::map<int,float> hcalLayerEdep,hcalLayerTime;
 
     // looper over sim hits and aggregate energy depositions for each detID
-    TClonesArray* hcalHits = getEvent()->getCollection(event::EventConstants::HCAL_SIM_HITS);
+    TClonesArray* hcalHits = (TClonesArray*) getEvent()->getCollection(event::EventConstants::HCAL_SIM_HITS, "sim");
+
     int numHCalSimHits = hcalHits->GetEntries();
     for(int iHit = 0; iHit < numHCalSimHits; iHit++){
         SimCalorimeterHit* hcalHit = (SimCalorimeterHit*) hcalHits->At(iHit);
