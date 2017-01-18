@@ -14,7 +14,6 @@ int main(int argc, char* argv[]) {
     p=cfg.makeProcess();
     std::cout << "---- LDMXSW: Configuration load complete  --------" << std::endl;
     
-    p->setOutputFileTemplate("test.root");
     std::cout << "---- LDMXSW: Starting event processing --------" << std::endl;
     p->run(cfg.eventLimit());
     std::cout << "---- LDMXSW: Event processing complete  --------" << std::endl;

@@ -36,6 +36,7 @@ class Process:
         self.maxEvents=-1
         self.run=-1
         self.inputFiles=[]
+        self.outputFiles=[]
         self.sequence=[]
         self.keep=[]
         self.libraries=[]
@@ -50,9 +51,18 @@ class Process:
         for proc in self.sequence:
             proc.printMe("  ")
         if len(self.inputFiles) > 0:
-            print "Input files:"
-            for afile in self.inputFiles:
-                print "   %s"%(afile)
+            if len(self.outputFiles)==len(self.inputFiles):
+                print "Files:"
+                for i in range(0,len(self.inputFiles)):
+                    print "   '%s' -> '%s'"%(self.inputFiles[i],self.outputFiles[i])
+            else:
+                print "Input files:"
+                for afile in self.inputFiles:
+                    print "   %s"%(afile)
+                if len(self.outputFiles) > 0:
+                    print "Output file:", self.outputFiles[0]
+        elif len(self.outputFiles) > 0:
+            print "Output file:", self.outputFiles[0]
         if len(self.keep) > 0:
             print "Rules for keeping previous products:"
             for arule in self.keep:
