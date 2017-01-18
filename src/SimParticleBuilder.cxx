@@ -3,7 +3,6 @@
 // LDMX
 #include "Event/Event.h"
 #include "Event/EventConstants.h"
-#include "Event/RootEventWriter.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
 
@@ -16,34 +15,39 @@
 
 using event::Event;
 using event::EventConstants;
-using event::RootEventWriter;
 
 namespace sim {
 
 SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {
     trackMap_ = TrackMap::getInstance();
+    outputParticleColl_ = new TClonesArray("event::SimParticle", 50);
 }
 
 SimParticleBuilder::~SimParticleBuilder() {
+    delete outputParticleColl_;
 }
 
-void SimParticleBuilder::buildSimParticles(Event* outputEvent) {
+void SimParticleBuilder::buildSimParticles(event::EventImpl* outputEvent) {
 
-    TrajectoryContainer* trajectories;
-    if (currentEvent_->GetTrajectoryContainer() != nullptr) {
-        trajectories = (TrajectoryContainer*)(const_cast<G4Event*>(currentEvent_))->GetTrajectoryContainer();
-    } else {
-        G4Exception("SimParticleBuilder::buildSimParticles",
-                "",
-                FatalException,
-                "TrajectoryContainer for the event is null.");
-    }
+    // Clear the output particle collection.
+    outputParticleColl_->Clear("C");
 
-    TClonesArray* coll = outputEvent->getCollection(EventConstants::SIM_PARTICLES);
-    buildParticleMap(trajectories, coll); 
+    // Get the trajectory container for the event.
+    TrajectoryContainer* trajectories
+        = (TrajectoryContainer*)(const_cast<G4Event*>(currentEvent_))->GetTrajectoryContainer();
+
+    // Create empty SimParticle objects and create the map of track ID to particles.
+    buildParticleMap(trajectories, outputParticleColl_);
+
+    // Fill information into the particles.
     for (auto trajectory : *trajectories->GetVector()) { 
         buildSimParticle(static_cast<Trajectory*>(trajectory));
     }
+
+    // Add the collection data to the output event.
+    outputEvent->add("SimParticles", outputParticleColl_);
+
+    std::cout << "[ SimParticleBuilder ] : Wrote " << outputParticleColl_->GetEntriesFast() << " SimParticle objects" << std::endl;
 }
 
 void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
@@ -51,7 +55,7 @@ void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
     SimParticle* simParticle = particleMap_[traj->GetTrackID()];
 
     if (!simParticle) {
-        std::cerr << "SimParticle not found for Trajectory with track ID "
+        std::cerr << "[ SimParticleBuilder ] : SimParticle not found for Trajectory with track ID "
                 << traj->GetTrackID() << std::endl;
         G4Exception("SimParticleBuilder::buildSimParticle",
                 "",
@@ -62,7 +66,7 @@ void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
     simParticle->setGenStatus(traj->getGenStatus());
     simParticle->setPdgID(traj->GetPDGEncoding());
     simParticle->setCharge(traj->GetCharge());
-    simParticle->setMass(traj->getMass() / GeV);
+    simParticle->setMass(traj->getMass());
     simParticle->setEnergy(traj->getEnergy());
 
     G4ThreeVector lastTrajPoint = traj->GetPoint(traj->GetPointEntries() - 1)->GetPosition();
@@ -82,7 +86,7 @@ void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
             simParticle->addParent(parent);
             parent->addDaughter(simParticle);
         } else {
-            std::cerr << "[ SimParticleBuilder ]: WARNING: SimParticle with parent ID " 
+            std::cerr << "[ SimParticleBuilder ] - WARNING: SimParticle with parent ID "
                       << traj->GetParentID() << " not found for track ID " 
                       << traj->GetTrackID() << std::endl;
         }

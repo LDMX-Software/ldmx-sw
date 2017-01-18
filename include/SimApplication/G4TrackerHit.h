@@ -68,7 +68,7 @@ class G4TrackerHit: public G4VHit {
          * Create a new hit object.
          * @param s The size of the hit object.
          */
-        inline void *operator new(size_t);
+        inline void *operator new(size_t s);
 
         /**
          * Delete a hit object.
@@ -78,7 +78,7 @@ class G4TrackerHit: public G4VHit {
 
         /**
          * Set the track ID.
-         * @param The track ID.
+         * @param trackID  The track ID.
          */
         void setTrackID(int trackID) {
             this->trackID_ = trackID;

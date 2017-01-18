@@ -14,6 +14,7 @@
 
 // LDMX
 #include "SimPlugins/PluginMessenger.h"
+#include "SimApplication/DetectorConstruction.h"
 
 using sim::PluginMessenger;
 
@@ -50,6 +51,14 @@ class RunManager : public G4RunManager {
         void enableBiasing() { enableBiasing_ = true; }
 
         void setParticleTypeToBias(std::string particleTypeToBias) { particleTypeToBias_ = particleTypeToBias;}
+        
+        /**
+         * Get the user detector construction cast to a specific type.
+         * @return The user detector construction.
+         */
+        DetectorConstruction* getDetectorConstruction() {
+            return static_cast<DetectorConstruction*>(this->userDetector);
+        }
 
     private:
 

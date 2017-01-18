@@ -13,17 +13,13 @@
 #include "G4Run.hh"
 
 // LDMX
-#include "Event/RootEventWriter.h"
-#include "Event/SimEvent.h"
+#include "Event/EventFile.h"
+#include "Event/EventHeader.h"
+#include "Event/EventImpl.h"
+#include "Event/RunHeader.h"
 #include "SimApplication/EcalHitIO.h"
 #include "SimApplication/G4TrackerHit.h"
 #include "SimApplication/SimParticleBuilder.h"
-
-using detdescr::DetectorID;
-using detdescr::EcalDetectorID;
-using event::RootEventWriter;
-using event::Event;
-using event::SimEvent;
 
 namespace sim {
 
@@ -32,23 +28,32 @@ namespace sim {
  * @brief Provides a <i>G4PersistencyManager</i> implemention with SimEvent output
  *
  * @note
- * Output is written at the end of each event.  A RootEventWriter is used to write
- * from an Event buffer into an output branch within a tree.  The Event buffer is cleared
+ * Output is written at the end of each event.  An EventFile is used to write from an
+ * EventImpl buffer object into an output branch within a tree.  The event buffer is cleared
  * after the event is written.  A SimParticleBuilder is used to build a set of SimParticle
  * objects from the Trajectory objects which were created during event processing.
- * An EcalHitIO instance provides translation of G4CalorimeterHit objects to an output
- * SimCalorimeterHit collection.  The tracker hit collections of G4TrackerHit objects
- * are translated directly into SimTrackerHit collections.
+ * An EcalHitIO instance provides translation of G4CalorimeterHit objects in the ECal
+ * to an output SimCalorimeterHit collection, transforming the individual steps into
+ * cell energy depositions.  The tracker hit collections of G4TrackerHit objects are
+ * translated directly into output SimTrackerHit collections.
  */
 class RootPersistencyManager : public G4PersistencyManager {
 
     public:
+
+        typedef std::map<std::string, TClonesArray*> HitsCollectionMap;
 
         /**
          * Class constructor.
          * Installs the object as the global persistency manager.
          */
         RootPersistencyManager();
+
+        virtual ~RootPersistencyManager() {
+            for (auto entry : outputHitsCollections_) {
+                delete entry.second;
+            }
+        }
 
         /**
          * Get the current ROOT persistency manager or <i>nullptr</i> if not registered.
@@ -65,17 +70,12 @@ class RootPersistencyManager : public G4PersistencyManager {
         G4bool Store(const G4Event* anEvent);
 
         /**
-         * This gets called automatically at the end of the run and is used to close the writer.
+         * This gets called automatically at the end of the run and is used to write out the run header
+         * and close the writer.
          * @param aRun The Geant4 run data.
-         * @return True if event is stored (hard-coded to true).
+         * @return True if event is stored (function is hard-coded to return true).
          */
-        G4bool Store(const G4Run* aRun) {
-            if (m_verbose > 1) {
-                std::cout << "RootPersistencyManager::Store - closing writer for run " << aRun->GetRunID() << std::endl;
-            }
-            writer_->close();
-            return true;
-        }
+        G4bool Store(const G4Run* aRun);
 
         /**
          * Implementing this makes an "overloaded-virtual" compiler warning go away.
@@ -85,43 +85,16 @@ class RootPersistencyManager : public G4PersistencyManager {
         /** 
           * This is called "manually" in UserRunAction to open the ROOT writer for the run.
           */
-        void Initialize() {
-            if (m_verbose > 1) {
-                std::cout << "RootPersistencyManager: Opening " << writer_->getFileName() << " with mode " 
-                    << writer_->getMode() << " and compression " << writer_->getCompression() << std::endl;
-            }            
-     
-            writer_->open();
-                               
-            // If we can't write to the output file then the run must be aborted immediately.
-            if (!writer_->getFile()->IsWritable()) {
-                G4Exception("RootPersistencyManager::Initialize", "", RunMustBeAborted, "Output ROOT file is not writable.");
-            }
-        }
-
-        /**
-         * Get the current event from the ROOT writer.
-         * @return The current event.
-         */
-        Event* getCurrentEvent() {
-            return writer_->getEvent();
-        }
+        void Initialize();
 
         /**
          * Set the output file name.
          * @param fileName The output file name.
          */
         void setFileName(std::string fileName) {
-            this->writer_->setFileName(fileName);
+            fileName_ = fileName;
         }
         
-        /**
-         * Get the ROOT writer.
-         * @return The ROOT writer.
-         */
-        RootEventWriter* getWriter() {
-            return writer_;
-        }
 
         /**
          * Enable or disable hit contribution output for SimCalorimeterHits.
@@ -144,6 +117,10 @@ class RootPersistencyManager : public G4PersistencyManager {
             ecalHitIO_->setCompressHitContribs(compressHitContribs);
         }
 
+        void setCompressionLevel(int compressionLevel) {
+            compressionLevel_ = compressionLevel;
+        }
+
     private:
         
         /**
@@ -151,21 +128,21 @@ class RootPersistencyManager : public G4PersistencyManager {
          * @param anEvent The Geant4 event.
          * @param outputEvent The output event.
          */
-        void buildEvent(const G4Event* anEvent, Event* outputEvent);
+        void buildEvent(const G4Event* anEvent, event::EventImpl* outputEvent);
 
         /**
          * Write header info into the output event from Geant4.
          * @param anEvent The Geant4 event.
          * @param outputEvent The output event.
          */
-        void writeHeader(const G4Event* anEvent, Event* outputEvent);
+        void writeHeader(const G4Event* anEvent, event::EventImpl* outputEvent);
 
         /**
          * Write hits collections from Geant4 into a ROOT event.
          * @param anEvent The Geant4 event.
          * @param outputEvent The output event.
          */
-        void writeHitsCollections(const G4Event* anEvent, Event* outputEvent);
+        void writeHitsCollections(const G4Event* anEvent, event::EventImpl* outputEvent);
         
         /**
          * Write a collection of tracker hits to an output collection.
@@ -185,9 +162,58 @@ class RootPersistencyManager : public G4PersistencyManager {
          * Print out event info and data depending on the verbose level.
          * @param anEvent The output event.
          */
-        void printEvent(Event* anEvent);
+        void printEvent(event::EventImpl* anEvent);
+
+        /**
+         * Setup a map of HC names to output TClonesArray collections.
+         * This is called once at the beginning of the run.
+         */
+        void setupHitsCollectionMap();
+
+        /**
+         * Create the run header for writing into the output file.
+         * @param aRun The current Geant4 run.
+         * @return The created run header.
+         */
+        event::RunHeader* createRunHeader(const G4Run* aRun);
+
+        /**
+         * Create the run header and write it into the current output file.
+         * @param aRun The current Geant4 run.
+         */
+        void writeRunHeader(const G4Run* aRun);
 
     private:
+
+        /**
+         * The output file name.
+         */
+        std::string fileName_{"ldmx_sim_events.root"};
+
+        /**
+         * The output file with the event tree.
+         */
+        event::EventFile* outputFile_{nullptr};
+
+        /**
+         * Output file compression level.
+         */
+        int compressionLevel_{6};
+
+        /**
+         * The event container used to manage the tree/branches/collections.
+         */
+        event::EventImpl* event_{nullptr};
+
+        /**
+         * Event header for writing out event number, etc. into output.
+         */
+        event::EventHeader eventHeader_;
+
+        /**
+         * Handles ECal hit readout and IO.
+         */
+        EcalHitIO* ecalHitIO_;
 
         /**
          * Helper for building output SimParticle collection.
@@ -195,14 +221,10 @@ class RootPersistencyManager : public G4PersistencyManager {
         SimParticleBuilder simParticleBuilder_;
 
         /**
-         * Writes out events to ROOT file.
+         * Map of HC names to output TClonesArray collection.
          */
-        RootEventWriter* writer_;
+        HitsCollectionMap outputHitsCollections_;
 
-        /**
-         * Handles ECal hit readout and IO.
-         */
-        EcalHitIO* ecalHitIO_;
     };
 
 }
