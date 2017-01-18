@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <cmath>
+#include <stdexcept>
 
 // Geant4
 #include "globals.hh"

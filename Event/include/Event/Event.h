@@ -1,6 +1,6 @@
 /**
  * @file Event.h
- * @brief Class defining an abstract interface for accessing event information and data collections
+ * @brief Class defining an interface for accessing event data
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
@@ -13,6 +13,8 @@
 
 // LDMX
 #include "Event/EventConstants.h"
+#include "Event/EventHeader.h"
+#include "Event/EventImpl.h"
 #include "Event/SimTrackerHit.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Event/SimParticle.h"
@@ -23,154 +25,101 @@
 
 /**
  * @namespace event
- * @brief %Event model classes
+ * @brief Physics event model interfaces and implementation classes
  */
 namespace event {
 
 /**
  * @class Event
- * @brief Abstract interface for accessing event data
+ * @brief Defines an interface for accessing event data
  *
  * @note
- * This is the base class which is extended by concrete event types.
- * It provides access to event number, run number, timestamp and
- * event weight.  Collections contained in <i>TClonesArray</i> objects
- * are accessible by name.  Concrete sub-types should provide the actual
- * collections.
- *
- * @see SimEvent
+ * A backing EventImpl object provides the actual data collections
+ * via ROOT data structures (trees and branches).
  */
 class Event: public TObject {
 
     public:
 
-        typedef std::map<std::string, TClonesArray*> CollectionMap;
-
         /**
          * Class constructor.
          */
-        Event();
+        Event(EventImpl* eventImpl) : eventImpl_(eventImpl) {;}
 
         /**
          * Class destructor.
          */
-        virtual ~Event();
-
-        /**
-         * Clear information from this event including the data collections.
-         */
-        void Clear(Option_t* = "");
-
-        /**
-         * Return the event number.
-         */
-        int getEventNumber() const { return eventNumber_; }
-
-        /**
-         * Return the run number.
-         */
-        int getRun() const { return run_; }
-
-        /**
-         * Get the event's timestamp, currently in seconds.
-         */
-        int getTimestamp() const { return timestamp_; }
+        virtual ~Event() {;}
         
         /**
-         * Get the event weight.
+         * Get the event header.
+         * @param The specific pass name within the event.
+         * @return The event header.
+         *
+         * @todo Fix hard-coded default pass name.
          */
-        double getWeight() const { return weight_; }
+        EventHeader* getEventHeader(std::string passName = "sim") {
+            return (EventHeader*) eventImpl_->get("EventHeader", passName);
+        }
 
         /**
-         * Set the event number.
-         * @param eventNumber The event number.
+         * Get a named object with a specific type, using the default pass name.
+         * @return A named object from the event.
          */
-        void setEventNumber(int eventNumber) { this->eventNumber_ = eventNumber; }
+        template<typename ObjectType> const ObjectType get(std::string name) {
+            return (ObjectType) eventImpl_->get(name, eventImpl_->getPassName());
+        }
 
         /**
-         * Set the run number.
-         * @param run The run number.
+         * Get a named object with a specific type and pass name.
+         * @param name The name of the object.
+         * @param passName The pass name.
          */
-        void setRun(int run) { this->run_ = run; }
+        template<typename ObjectType> const ObjectType get(std::string name, std::string passName) {
+            return (ObjectType) eventImpl_->get(name, passName);
+        }
 
         /**
-         * Set the timestamp.
-         * @param timestamp The timestamp.
+         * Add a collection of objects to the event using the default pass name.
+         * @param collectionName The name of the collection.
+         * @param tca The TClonesArray containing the objects.
          */
-        void setTimestamp(int timestamp) { this->timestamp_ = timestamp; }
-        
-        /**
-         * Set the event weight.
-         * @param weight The event weight.
-         */
-        void setWeight(double weight) { this->weight_ = weight; }
+        void add(const std::string& collectionName, TClonesArray* tca) {
+            eventImpl_->add(collectionName, tca);
+        }
 
         /**
-         * Get a reference to the <i>TClonesArray</i> containing collection data.
+         * Add a named object to the event using the default pass name.
+         * @param name The name of the object.
+         * @param obj The object to add.
+         */
+        void add(const std::string& name, TObject* obj) {
+            eventImpl_->add(name, obj);
+        }
+
+        /**
+         * Get a collection of objects by name using the default pass name.
          * @param collectionName The name of the collection.
          */
-        TClonesArray* getCollection(const std::string& collectionName) {
-            return collMap_[collectionName];
+        const TClonesArray* getCollection(const std::string& collectionName) {
+            return (TClonesArray*) eventImpl_->get(collectionName, eventImpl_->getPassName());
         }
 
         /**
-         * Get a map of names to collections.
-         * @return A map of names to collections.
+         * Get a collection of objects by name with the pass name.
+         * @param collectionName The name of the collection.
+         * @param passName The pass name.
          */
-        const CollectionMap& getCollectionMap() const {
-            return collMap_;
+        const TClonesArray* getCollection(const std::string& collectionName, std::string passName) {
+            return (TClonesArray*) eventImpl_->get(collectionName, passName);
         }
 
-        /**
-         * Add an object to a collection.
-         * The object will have the specific type which was set when the
-         * collection was defined by a <i>TClonesArray</i>.
-         * @return A pointer to the new object.
-         */
-        TObject* addObject(const std::string& collectionName) {
-            auto coll = getCollection(collectionName);
-            return coll->ConstructedAt(coll->GetEntriesFast());
-        }
+    private:
 
         /**
-         * Concrete sub-classes must implement this method to return a string
-         * with the class name of the event type e.g. "event::SimEvent".
+         * The object containing the event data.
          */
-        virtual const std::string& getEventType() = 0;
-
-    protected:
-
-        /**
-         * The event number.
-         */
-        int eventNumber_{-1};
-
-        /**
-         * The run number.
-         */
-        int run_{-1};
-
-        /**
-         * The event timestamp, in seconds.
-         */
-        int timestamp_{-1};
-
-        /**
-         * The event weight.
-         */
-        double weight_{1.0};
-
-    protected:
-
-        /**
-         * Map of names to collections.
-         */
-        CollectionMap collMap_; //!
-
-    /**
-     * ROOT class definition.
-     */
-    ClassDef(Event, 1);
+        EventImpl* eventImpl_;
 };
 
 }

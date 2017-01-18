@@ -7,7 +7,9 @@
 #ifndef EVENTPROC_DUMMYEVENTPROCESSOR_H_
 #define EVENTPROC_DUMMYEVENTPROCESSOR_H_
 
+#include "Event/EventConstants.h"
 #include "EventProc/EventProcessor.h"
+#include <iostream>
 
 namespace eventproc {
 
@@ -19,11 +21,20 @@ class DummyEventProcessor : public EventProcessor {
 
     public:
 
-        void initialize();
+        void initialize() {
+            std::cout << "[ DummyEventProcessor ] : Initializing" << std::endl;
+        }
 
-        void execute();
+        void execute() {
+            std::cout << "[ DummyEventProcessor ] : Processing event "
+                    << event_->getEventHeader("sim")->getEventNumber() << std::endl;
+            ++nProcessed_;
+        }
 
-        void finish();
+        void finish() {
+            std::cout << "[ DummyEventProcessor ] : Finished processing "
+                    << nProcessed_ << " events." << std::endl;
+        }
 
     private:
 

@@ -57,11 +57,11 @@ class EcalHexReadout {
          * @param cellID The cell ID.
          * @return The XY position of the cell.
          */
-        inline std::pair<float, float> getCellCentroidXYPair(int cellId) {
+        inline std::pair<float, float> getCellCentroidXYPair(int cellID) {
             std::pair<std::map<int, XYCoords>::iterator, bool> isInserted;
-            isInserted = cellIdtoCoords.insert(std::pair<int,XYCoords>(cellId,std::pair<float,float>(0, 0)));
+            isInserted = cellIdtoCoords.insert(std::pair<int,XYCoords>(cellID,std::pair<float,float>(0, 0)));
             if (isInserted.second == true) {
-                throw std::runtime_error("Error: cell " + std::to_string(cellId) + " is not valid");
+                throw std::runtime_error("Error: cell " + std::to_string(cellID) + " is not valid");
             }
             return isInserted.first->second;
         }

@@ -10,9 +10,6 @@
 #include "G4Geantino.hh"
 #include "G4ChargedGeantino.hh"
 
-// LDMX
-#include "Event/RootEventWriter.h"
-
 namespace sim {
 
 CalorimeterSD::CalorimeterSD(G4String name, G4String theCollectionName,int subdetID, DetectorID* detID) :

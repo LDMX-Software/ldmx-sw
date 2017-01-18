@@ -163,7 +163,7 @@ class G4CalorimeterHit : public G4VHit {
 
         /**
          * Set the PDG code from the track that made the hit.
-         * @param The PDG code.
+         * @param pdgCode The PDG code.
          */
         void setPdgCode(int pdgCode) {
             pdgCode_ = pdgCode;
