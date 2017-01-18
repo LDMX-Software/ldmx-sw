@@ -1,11 +1,11 @@
 #include "EventProc/EventLoop.h"
-#include "EventProc/RootEventSource.h"
 #include "EventProc/HcalDigiProcessor.h"
 
-using eventproc::EventLoop;
-using eventproc::RootEventSource;
-
 #include "Event/SimCalorimeterHit.h"
+
+#include <iostream>
+
+using eventproc::EventLoop;
 
 int main(int argc, const char* argv[])  {
 
@@ -17,7 +17,7 @@ int main(int argc, const char* argv[])  {
     //////////////////////////////////////////////////////////////////////////
     // - - - - - - - - - - - - output tree setup - - - - - - - - - - - - -  //
     //////////////////////////////////////////////////////////////////////////
-    TString outputFileName = argv[2];
+   /* TString outputFileName = argv[2];
     TFile* outputFile = new TFile(outputFileName,"RECREATE");
     TTree* outputTree = new TTree("hcalDigi","hcalDigi");
   
@@ -36,5 +36,5 @@ int main(int argc, const char* argv[])  {
 
     outputFile->cd();
     outputTree->Write();
-    outputFile->Close();
+    outputFile->Close();*/
 }

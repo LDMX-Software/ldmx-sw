@@ -15,32 +15,58 @@ class TriggerResult : public TObject {
 
     public:
 
-        /** Constructor */
+        /**
+         * Class constructor.
+         */
         TriggerResult();
 
-        /** Destructor */
+        /**
+         * Class destructor.
+         */
         virtual ~TriggerResult();
 
-        /** Print a description of this object */
+        /**
+         * Print a description of this object.
+         */
         void Print(Option_t *option = "") const;
 
-        /** Reset the TriggerResult object */
+        /**
+         * Reset the TriggerResult object.
+         */
         void Clear(Option_t *option = "");
 
-        /** Return the name of the trigger */        
-        const TString& name() const { return name_; }
+        /**
+         * Copy this object.
+         * @param o The target object.
+         */
+        void Copy(TObject& o) const {
+            ((TriggerResult&)o) = *this;
+        }
 
-        /** Return pass/fail status of the trigger */
+        /**
+         * Return the name of the trigger.
+         */
+        const TString& getName() const { return name_; }
+
+        /**
+         * Return pass/fail status of the trigger.
+         */
         bool passed() const { return pass_; }
 
-        /** Return algorithm variable i (see algorithm code for details) */
-        double algoVar(int element) const { return variables_[element]; }
+        /**
+         * Return algorithm variable i (see algorithm code for details).
+         */
+        double getAlgoVar(int element) const { return variables_[element]; }
 
-        /** Set name and pass of trigger */
-        void set(const TString& name, bool pass, int nvar); 
+        /**
+         * Set name and pass of trigger.
+         */
+        void set(const TString& name, bool pass, int nvar);
 
-        /** Set array of variables for trigger */
-        void setVar(int element, double value);
+        /**
+         * Set array of variables for trigger.
+         */
+        void setAlgoVar(int element, double value);
 
     private:
 
@@ -48,8 +74,7 @@ class TriggerResult : public TObject {
         bool pass_{false};
         TArrayD variables_;
 
-        ClassDef(TriggerResult, 1);
-
+    ClassDef(TriggerResult, 1);
 };
 }
 

@@ -72,7 +72,6 @@ class EcalHitIO {
          * Write out a Geant4 hits collection to the provided ROOT array.
          * @param hc The input hits collection.
          * @param outputColl The output collection in ROOT.
-         * @param simParticleBuilder_ The sim particle builder for getting sim particles from track ID.
          */
         void writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl);
 

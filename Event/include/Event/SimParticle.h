@@ -221,8 +221,7 @@ class SimParticle: public TObject {
 
         /**
          * Set the mass of the particle [GeV].
-         * FIXME: Change to MeV.
-         * @param The mass of the particle.
+         * @param mass The mass of the particle.
          */
         void setMass(const float mass) {
             this->mass_ = mass;

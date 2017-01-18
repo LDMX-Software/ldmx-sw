@@ -9,12 +9,9 @@
 #include "TFile.h"
 #include "TTree.h"
 
-#include "Event/SimEvent.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/DefaultDetectorID.h"
 
-using event::SimEvent;
-using event::SimCalorimeterHit;
 using detdescr::DetectorID;
 using detdescr::DefaultDetectorID;
 
