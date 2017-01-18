@@ -8,8 +8,7 @@
 #define SIMAPPLICATION_SIMPARTICLEBUILDER_H_
 
 // LDMX
-//#include "Event/Event.h"
-#include "Event/EventImpl.h"
+#include "Event/Event.h"
 #include "Event/SimParticle.h"
 #include "SimApplication/TrackMap.h"
 #include "SimApplication/Trajectory.h"
@@ -60,7 +59,7 @@ class SimParticleBuilder {
          * Build SimParticle collection into an output event.
          * @param outputEvent The output event.
          */
-        void buildSimParticles(event::EventImpl* outputEvent);
+        void buildSimParticles(event::Event* outputEvent);
 
         /**
          * Find a SimParticle by track ID.
