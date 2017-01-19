@@ -48,7 +48,7 @@ public:
     EcalDetectorID detID;
     EcalHexReadout* hexReadout;
     static const int numEcalLayers,numLayersForMedCal,backEcalStartingLayer;
-    static const float meanNoise,readoutThreshold;
+    float meanNoise_,readoutThreshold_;
 
     inline layer_cell_pair hitToPair(SimCalorimeterHit* hit){
         int detIDraw = hit->getID();
