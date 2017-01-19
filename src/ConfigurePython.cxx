@@ -38,8 +38,6 @@ namespace ldmxsw {
     }
     cmd=cmd.substr(0,cmd.find(".py"));
 
-    printf("'%s' '%s'\n",path.c_str(),cmd.c_str());
-    
     Py_Initialize();
     if (nargs>0) {
       char** targs=new char*[nargs+1];
