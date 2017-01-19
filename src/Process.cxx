@@ -10,7 +10,7 @@ namespace ldmxsw {
     }
 
     
-    void Process::run(int eventlimit) {
+    void Process::run() {
 	try {
 	    int n_events_processed=0;
 	    
@@ -19,7 +19,7 @@ namespace ldmxsw {
 		module->onProcessStart();
 	    
 	    // if we have no input files, but do have an event number, run for that number of events on an output file
-	    if (inputFiles_.empty() && eventlimit>0) {
+	    if (inputFiles_.empty() && eventLimit_>0) {
 		EventFile outFile(outputFiles_[0],true);
 		
 		for (auto module : sequence_)
@@ -28,7 +28,7 @@ namespace ldmxsw {
 		EventImpl theEvent(passname_);
 		outFile.setupEvent(&theEvent);
 		
-		while (n_events_processed<eventlimit) {
+		while (n_events_processed<eventLimit_) {
 		    event::EventHeader& eh=theEvent.getEventHeaderMutable();
 		    eh.setRun(runForGeneration_);
 		    eh.setEventNumber(n_events_processed+1);
@@ -77,7 +77,7 @@ namespace ldmxsw {
 		    
 		    EventFile* masterFile=(outFile)?(outFile):(&inFile);
 		    
-		    while (masterFile->nextEvent()) {	      
+		    while (masterFile->nextEvent() && (eventLimit_<0 || (n_events_processed+1)<eventLimit_)) {	      
 			for (auto module : sequence_)
 			    if (dynamic_cast<Producer*>(module)) (dynamic_cast<Producer*>(module))->produce(theEvent);
 			    else if (dynamic_cast<Analyzer*>(module)) (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
