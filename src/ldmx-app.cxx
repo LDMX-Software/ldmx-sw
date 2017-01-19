@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     std::cout << "---- LDMXSW: Configuration load complete  --------" << std::endl;
     
     std::cout << "---- LDMXSW: Starting event processing --------" << std::endl;
-    p->run(cfg.eventLimit());
+    p->run();
     std::cout << "---- LDMXSW: Event processing complete  --------" << std::endl;
 
     
