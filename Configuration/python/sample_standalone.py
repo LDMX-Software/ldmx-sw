@@ -3,7 +3,7 @@
 import ldmxcfg;
 
 p=ldmxcfg.Process("Fred")
-p.libraries.append("EventProc/libEventProc.so")
+p.libraries.append("libEventProc.so")
 
 test1=ldmxcfg.Analyzer("test1","DummyAnalyzer")
 testp=ldmxcfg.Producer("testp","DummyProducer")
