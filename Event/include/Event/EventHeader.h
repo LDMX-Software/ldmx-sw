@@ -45,7 +45,6 @@ class EventHeader : public TObject {
         }
 
         void Copy(TObject& o) const {
-            std::cout << "EventHeader::Copy" << std::endl;
             ((EventHeader&)o) = *this;
         }
 
