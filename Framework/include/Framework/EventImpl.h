@@ -11,6 +11,9 @@
 #include "TObject.h"
 #include "TClonesArray.h"
 
+// LDMX-SW
+#include "Event/Event.h"
+
 class TTree;
 class TBranch;
 
@@ -18,7 +21,7 @@ class TBranch;
 #include <string>
 #include <map>
 
-namespace event {
+namespace ldmxsw {
 
 /**
  * @class EventImpl
@@ -30,7 +33,7 @@ namespace event {
  * used to add objects and collections from user code, as the class will
  * add a data structure or new ones automatically.
  */
-class EventImpl {
+  class EventImpl : public event::Event {
 
     public:
 
@@ -45,6 +48,50 @@ class EventImpl {
          */
         virtual ~EventImpl();
 
+    /** ********* Implementation of base class methods  ********** **/
+
+        /**
+         * Get the event header
+         */
+        virtual const event::EventHeader* getEventHeader() const { return eventHeader_; }
+
+        /**
+         * Adds a clones array to the event/tree.
+         * @param collectionName
+         * @param tca The clones array to add.
+         */
+        virtual void add(const std::string& collectionName, TClonesArray* tca);
+
+
+       /**
+         * Adds a general object to the event/tree.
+         * @param name The name of the object.
+         * @param obj The object to add.
+         *
+         * @note
+         * All objects must implement/replace TObject::Clone() to
+         * simply call "new" and create an empty new object and
+         * implement TObject::Copy() to either copy the contents of
+         * the object or swap them to the calling function, which
+         * is more efficient.
+         */
+        virtual void add(const std::string& name, TObject* obj);
+
+  protected:
+        /**
+         * Get an object from the event using a custom pass name.
+         * @param collectionName The collection name.
+         * @param passName The pass name.
+         */
+    virtual const TObject* getReal(const std::string& collectionName, const std::string& passName, bool mustExist);
+
+  public:
+    
+    /** ********* Functionality for storage  ********** **/
+
+
+         event::EventHeader& getEventHeaderMutable() const { return *eventHeader_; }
+    
         /**
          * Set the input data tree.
          * @param tree The input data tree.
@@ -73,33 +120,13 @@ class EventImpl {
         }
 
         /**
-         * Make a branch name from a collection and the default pass name.
+         * Make a branch name from a collection and the default(current) pass name.
          * @param collectionName The collection name.
          */
         std::string makeBranchName(const std::string& collectionName) const {
             return makeBranchName(collectionName, passName_);
         }
 
-        /**
-         * Adds a clones array to the event/tree.
-         * @param collectionName
-         * @param tca The clones array to add.
-         */
-        void add(const std::string& collectionName, TClonesArray* tca);
-
-        /**
-         * Adds a general object to the event/tree.
-         * @param name The name of the object.
-         * @param obj The object to add.
-         *
-         * @note
-         * All objects must implement/replace TObject::Clone() to
-         * simply call "new" and create an empty new object and
-         * implement TObject::Copy() to either copy the contents of
-         * the object or swap them to the calling function, which
-         * is more efficient.
-         */
-        void add(const std::string& name, TObject* obj);
 
         /*
          * These two methods only apply to the current pass of processing --
@@ -109,21 +136,6 @@ class EventImpl {
         // TClonesArray* getMutable(const std::string& collectionName,const std::string& passName);
         // TObject* getMutable(const std::string& collectionName, const std::string& passName);
 
-        /**
-         * Get an object from the event using a custom pass name.
-         * @param collectionName The collection name.
-         * @param passName The pass name.
-         */
-        const TObject* get(const std::string& collectionName, const std::string& passName);
-
-        /**
-         * Get a clones array from the event using a custom pass name.
-         * @param collectionName The collection name.
-         * @param passName The pass name.
-         */
-        const TClonesArray* getCollection(const std::string& collectionName, const std::string& passName) {
-            return (TClonesArray*) get(collectionName, passName);
-        }
 
         /**
          * Go to the next event by incrementing the entry index.
@@ -131,6 +143,9 @@ class EventImpl {
          */
         bool nextEvent();
 
+        void beforeFill();
+        void Clear();
+    
         /**
          * Perform end of event action (clears the owned objects).
          */
@@ -151,6 +166,11 @@ class EventImpl {
 
     private:
 
+        /**
+         * The event header object (as pointer)
+         */
+        event::EventHeader* eventHeader_{nullptr};
+    
         /**
          * Number of entries in the tree.
          */
@@ -196,6 +216,19 @@ class EventImpl {
          * List of new branches added.
          */
         std::vector<TBranch*> newBranches_;
+
+
+        /**
+         * Names of all branches
+         */
+        std::vector<std::string> branchNames_;
+
+
+    
+        /**
+         * Efficiency cache for empty pass name lookups
+         */
+        mutable std::map<std::string,std::string> knownLookups_;
 };
 
 }
