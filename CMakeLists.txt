@@ -8,7 +8,8 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 include(MacroModule)
 
 # declare list of modules with correct dependency order
-set(MODULES Event DetDescr EventProc SimPlugins Biasing SimApplication)
+#set(MODULES Event Framework DetDescr EventProc)
+set(MODULES Event Framework DetDescr EventProc SimPlugins Biasing SimApplication)
 
 # build each module in the list
 foreach(module ${MODULES})
@@ -17,9 +18,15 @@ foreach(module ${MODULES})
   message(STATUS "")
 endforeach()
 
-# create env setup script
+# create env setup script and copy to install dir
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/ldmx-setup-env.sh.in ${CMAKE_CURRENT_BINARY_DIR}/ldmx-setup-env.sh)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ldmx-setup-env.sh DESTINATION bin)
+
+# copy python configuration files to install dir
+file(GLOB py_config_files "${PROJECT_SOURCE_DIR}/Configuration/python/*.py")
+install(FILES ${py_config_files}
+    DESTINATION python/Configuration 
+    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 
 # configure and generate documentation using doxygen
 option(INSTALL_DOC "Set to OFF to skip generation of documentation using doxygen." ON)
