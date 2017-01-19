@@ -11,7 +11,7 @@ namespace ldmxsw {
   
   class ConfigurePython {
   public:
-    ConfigurePython(const std::string& pythonScript);
+    ConfigurePython(const std::string& pythonScript, char* args[], int nargs);
     ~ConfigurePython();
     
     Process* makeProcess();

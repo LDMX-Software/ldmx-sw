@@ -7,10 +7,15 @@ using namespace ldmxsw;
 
 int main(int argc, char* argv[]) {
 
+  if (argc<2) {
+    printf("Usage: ldmx-app [application arguments] {configuration_script.py} [arguments to configuration script]\n");
+    return 0;
+  }
+  
   Process* p{0};
   try {
     std::cout << "---- LDMXSW: Loading configuration --------" << std::endl;
-    ConfigurePython cfg(argv[1]);
+    ConfigurePython cfg(argv[1],argv+2,argc-1);
     p=cfg.makeProcess();
     std::cout << "---- LDMXSW: Configuration load complete  --------" << std::endl;
     
