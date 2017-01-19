@@ -93,13 +93,13 @@ void HcalDigiProducer::produce(event::Event& event){
 
 	event::HcalHit *hit = (event::HcalHit*)(hits->ConstructedAt(ihit));
 	
-	hit->setLayer(layer);
+	//	hit->setLayer(layer);
 	hit->setPE(hcalLayerPEs[detIDraw]);
-	hit->setEdepSim(hcalLayerEdep[detIDraw]);
+	hit->setAmplitude(hcalLayerEdep[detIDraw]);
 	hit->setEnergy(energy);
 	hit->setTime(hcalLayerTime[detIDraw]);
         hit->setID(detIDraw);
-	hit->setZpos(hcalZpos[detIDraw]);
+	//	hit->setZpos(hcalZpos[detIDraw]);
 	ihit++;
     }// end loop over detIDs (layers)
     // put it into the event
