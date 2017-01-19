@@ -6,27 +6,41 @@
 
 namespace event {
 
-class EcalHit : public CalorimeterHit {
+    /** 
+     * @class EcalHit
+     * @brief Stores reconstructed hit information from the ECAL
+     *
+     * @note This class representes the reconstructed hit information
+     * from the ECAL, providing particular information for the ECAL,
+     * above and beyond what is available in the CalorimeterHit.
+     */
+    class EcalHit : public CalorimeterHit {
 
     public:
 
+        /**
+         * Class constructor.
+         */
         EcalHit() {;}
 
-        virtual ~EcalHit() {;}
+        /**
+         * Class destructor.
+         */
+         virtual ~EcalHit() {;}
 
-  int getLayer() const {   return layer_; }
-  void setLayer(int layer) { layer_=layer; }
+        /**
+         * Print out the object.
+         */
+        void Print(Option_t *option = "") const;
 
-  private:
-
-        int layer_{0};
+    private:
 
     /**
      * The ROOT class definition.
      */
     ClassDef(EcalHit, 1);
 };
-
+    
 }
 
 

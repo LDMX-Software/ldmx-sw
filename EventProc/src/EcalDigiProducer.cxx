@@ -47,9 +47,9 @@ void EcalDigiProducer::produce(event::Event& event) {
 
 	event::EcalHit* hit=(event::EcalHit*)(ecalDigis->ConstructedAt(iHit));
 
-	hit->setLayer(hit_pair.first);
+	//	hit->setLayer(hit_pair.first);
 	hit->setID(hit_pair.second);
-	hit->setEdepSim(EcalHit->getEdep());
+	hit->setAmplitude(EcalHit->getEdep());
 	double energy=EcalHit->getEdep()+hitNoise;
 	if (energy>readoutThreshold) {
 	  hit->setEnergy(energy);
