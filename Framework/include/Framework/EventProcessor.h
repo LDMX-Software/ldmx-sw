@@ -1,5 +1,5 @@
-#ifndef ldmxsw_Framework_EventProcessor_h_included
-#define ldmxsw_Framework_EventProcessor_h_included 1
+#ifndef LDMXSW_FRAMEWORK_EVENTPROCESSOR_H_
+#define LDMXSW_FRAMEWORK_EVENTPROCESSOR_H_
 
 #include "Framework/Exception.h"
 
@@ -11,52 +11,61 @@ namespace event {
 
 namespace ldmxsw {
 
-  class ParameterSet;
-  class Process;
-  class EventProcessor;
-  
-  typedef EventProcessor* EventProcessorMaker(const std::string& name, const Process& process);
+class ParameterSet;
+class Process;
+class EventProcessor;
 
-  /** Base class for a module
-   */
-  class EventProcessor {
-  public:
-    EventProcessor(const std::string& name, const Process& process);
+typedef EventProcessor* EventProcessorMaker(const std::string& name, const Process& process);
 
-    virtual void configure(const ParameterSet&) { }
-    virtual void onFileOpen() { }
-    virtual void onFileClose() { }
-    virtual void onProcessStart() { }
-    virtual void onProcessEnd() { }
+/** Base class for a module
+ */
+class EventProcessor {
+
+    public:
+
+        EventProcessor(const std::string& name, const Process& process);
     
-      static void declare(const std::string& classname, int classtype,EventProcessorMaker*);
-  protected:
-    const Process& process_;    
-  private:
-    std::string name_;
-  };
+        virtual void configure(const ParameterSet&) { }
+        virtual void onFileOpen() { }
+        virtual void onFileClose() { }
+        virtual void onProcessStart() { }
+        virtual void onProcessEnd() { }
+        
+        static void declare(const std::string& classname, int classtype,EventProcessorMaker*);
 
-  /** Base class for a module which produces a data product (thus needs a mutable copy of the event)
-   */
-  class Producer : public EventProcessor {
-  public:
-    static const int CLASSTYPE{1};
-    Producer(const std::string& name, const Process& process);
+    protected:
 
-    virtual void produce(event::Event& event) = 0;    
-  };
+      const Process& process_;    
 
+    private:
+      std::string name_;
+};
+    
+/** Base class for a module which produces a data product (thus needs a mutable copy of the event)
+ */
+class Producer : public EventProcessor {
 
-  /** Base class for a module which does not produce a data product (thus needs only a constant copy of the event)
-   */
-  class Analyzer : public EventProcessor {
-  public:
-    static const int CLASSTYPE{2};
-    Analyzer(const std::string& name, const Process& process);
+    public:
+    
+        static const int CLASSTYPE{1};
+        Producer(const std::string& name, const Process& process);
+    
+        virtual void produce(event::Event& event) = 0;    
+};
+    
+    
+/** Base class for a module which does not produce a data product (thus needs only a constant copy of the event)
+ */
+class Analyzer : public EventProcessor {
+        
+    public:
 
-    virtual void analyze(const event::Event& event) = 0;    
+        static const int CLASSTYPE{2};
+        Analyzer(const std::string& name, const Process& process);
+    
+        virtual void analyze(const event::Event& event) = 0;    
 
-  };
+};
 
 }
 
@@ -93,4 +102,4 @@ namespace ldmxsw {
 
 
 
-#endif // ldmxsw_Framework_EventProcessor_h_included
+#endif

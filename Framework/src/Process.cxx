@@ -12,18 +12,20 @@ namespace ldmxsw {
     
     void Process::run() {
 	try {
-	    int n_events_processed=0;
+	    int n_events_processed = 0;
 	    
 	    // first, notify everyone that we are starting
-	    for (auto module : sequence_)
+	    for (auto module : sequence_) {
 		module->onProcessStart();
+            }
 	    
 	    // if we have no input files, but do have an event number, run for that number of events on an output file
-	    if (inputFiles_.empty() && eventLimit_>0) {
-		EventFile outFile(outputFiles_[0],true);
+	    if (inputFiles_.empty() && eventLimit_ > 0) {
+		EventFile outFile(outputFiles_[0], true);
 		
-		for (auto module : sequence_)
+		for (auto module : sequence_) {
 		    module->onFileOpen();
+                }
 		
 		EventImpl theEvent(passname_);
 		outFile.setupEvent(&theEvent);
@@ -31,70 +33,87 @@ namespace ldmxsw {
 		while (n_events_processed<eventLimit_) {
 		    event::EventHeader& eh=theEvent.getEventHeaderMutable();
 		    eh.setRun(runForGeneration_);
-		    eh.setEventNumber(n_events_processed+1);
+		    eh.setEventNumber(n_events_processed + 1);
 		    eh.setTimestamp(TTimeStamp());
 		    
 		    theEvent.getEventHeader()->Print();
 		    
-		    for (auto module : sequence_)
-			if (dynamic_cast<Producer*>(module)) (dynamic_cast<Producer*>(module))->produce(theEvent);
-			else if (dynamic_cast<Analyzer*>(module)) (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
-		    
+		    for (auto module : sequence_) {
+			if (dynamic_cast<Producer*>(module)) {
+                            (dynamic_cast<Producer*>(module))->produce(theEvent);
+                        } else if (dynamic_cast<Analyzer*>(module)) {
+                            (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
+		        }
+                    }
 		    outFile.nextEvent();
 		    theEvent.Clear();
 		    n_events_processed++;
 		}
 		
-		for (auto module : sequence_)	  
+		for (auto module : sequence_) {	  
 		    module->onFileClose();
-		
+                }
 		outFile.close();
+
 	    } else {
 		if (!outputFiles_.empty() && outputFiles_.size()!=inputFiles_.size()) {
 		    EXCEPTION_RAISE("Process","Unable to handle case of different number of input and output files (other than zero output files)");
 		}
 		// next, loop through the files
-		int ifile=0;
+		int ifile = 0;
 		for (auto infilename : inputFiles_) {
 		    EventFile inFile(infilename);
 		    std::cout << "Process: Opening file " << infilename << std::endl;
 		    EventFile* outFile(0);
 		    
 		    if (!outputFiles_.empty()) {
-			outFile=new EventFile(outputFiles_[ifile],&inFile);
+			outFile = new EventFile(outputFiles_[ifile], &inFile);
 			ifile++;		    
 		    
-			for (auto rule : dropKeepRules_)
+			for (auto rule : dropKeepRules_) {
 			    outFile->addDrop(rule);
+                        }
 		    }
 		
-		    for (auto module : sequence_)
+		    for (auto module : sequence_) {
 			module->onFileOpen();
+                    }
 		    
 		    EventImpl theEvent(passname_);
-		    if (outFile) outFile->setupEvent(&theEvent);
-		    else inFile.setupEvent(&theEvent);
-		    
+		    if (outFile) {
+                        outFile->setupEvent(&theEvent);
+
+                    } else {
+                        inFile.setupEvent(&theEvent);
+		    } 
 		    EventFile* masterFile=(outFile)?(outFile):(&inFile);
 		    
-		    while (masterFile->nextEvent() && (eventLimit_<0 || (n_events_processed+1)<eventLimit_)) {	      
-			for (auto module : sequence_)
-			    if (dynamic_cast<Producer*>(module)) (dynamic_cast<Producer*>(module))->produce(theEvent);
-			    else if (dynamic_cast<Analyzer*>(module)) (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
+		    while (masterFile->nextEvent() && (eventLimit_ < 0 || (n_events_processed + 1) < eventLimit_)) {	      
+			for (auto module : sequence_) {
+			    if (dynamic_cast<Producer*>(module)) {
+                                (dynamic_cast<Producer*>(module))->produce(theEvent);
+                            } else if (dynamic_cast<Analyzer*>(module)) {
+                                (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
+                            }
+                        }
 			n_events_processed++;
 		    }
 
-		    if (outFile) outFile->close();
+		    if (outFile) {
+                        outFile->close();
+                    }
 		    inFile.close();
 		    std::cout << "Process: Closing file " << infilename << std::endl;	  
-		    for (auto module : sequence_)	  
+		    for (auto module : sequence_) {	  
 			module->onFileClose();
+                    }
 		}
 	    }
       
 	    // finally, notify everyone that we are stopping
-	    for (auto module : sequence_)
+	    for (auto module : sequence_) {
 		module->onProcessEnd();
+            }
 	} catch (Exception& e) {
 	    std::cerr << "Framework Error [" << e.name() << "] : " << e.message() << std::endl;
 	    std::cerr << "  at " << e.module() <<":"<<e.line()<<" in " <<e.function() << std::endl;
