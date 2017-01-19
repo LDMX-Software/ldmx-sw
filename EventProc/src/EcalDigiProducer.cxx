@@ -9,21 +9,24 @@
 #include "Event/EventConstants.h"
 #include "Event/Event.h"
 #include "Event/EcalHit.h"
+#include "Framework/ParameterSet.h"
 
 using event::SimCalorimeterHit;
 
 const int EcalDigiProducer::numEcalLayers         = 33;
 const int EcalDigiProducer::backEcalStartingLayer = 20;
 const int EcalDigiProducer::numLayersForMedCal    = 10;
-const float EcalDigiProducer::meanNoise           = .015;
-const float EcalDigiProducer::readoutThreshold    = 3*meanNoise;
+//const float EcalDigiProducer::meanNoise           = .015;
+//const float EcalDigiProducer::readoutThreshold    = 3*meanNoise;
 
 EcalDigiProducer::EcalDigiProducer(const std::string& name, const ldmxsw::Process& process) : ldmxsw::Producer(name,process) { }
 
 void EcalDigiProducer::configure(const ldmxsw::ParameterSet& ps){
 
     hexReadout = new EcalHexReadout();
-    noiseInjector = new TRandom2(0);
+    noiseInjector = new TRandom2(ps.getInteger("randomSeed",0));
+    meanNoise_ = ps.getDouble("meanNoise");
+    readoutThreshold_ = ps.getDouble("readoutThreshold");
 
     ecalDigis = new TClonesArray("event::EcalHit",10000);
 }
@@ -42,7 +45,7 @@ void EcalDigiProducer::produce(event::Event& event) {
     for(int iHit = 0; iHit < numEcalSimHits; iHit++){
         SimCalorimeterHit* EcalHit = (SimCalorimeterHit*) ecalSimHits->At(iHit);
 
-	double hitNoise = noiseInjector->Gaus(0,meanNoise);
+	double hitNoise = noiseInjector->Gaus(0,meanNoise_);
         layer_cell_pair hit_pair = hitToPair(EcalHit);
 
 	event::EcalHit* hit=(event::EcalHit*)(ecalDigis->ConstructedAt(iHit));
@@ -51,7 +54,7 @@ void EcalDigiProducer::produce(event::Event& event) {
 	hit->setID(hit_pair.second);
 	hit->setAmplitude(EcalHit->getEdep());
 	double energy=EcalHit->getEdep()+hitNoise;
-	if (energy>readoutThreshold) {
+	if (energy>readoutThreshold_) {
 	  hit->setEnergy(energy);
 	  hit->setTime(EcalHit->getTime());
 	} else {
