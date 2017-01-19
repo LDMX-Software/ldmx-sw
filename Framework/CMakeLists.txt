@@ -21,3 +21,6 @@ include(${ROOT_USE_FILE})
 
 # install ROOT pcm file
 install(FILES  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
+# copy Python wrapper to installation dir
+install(FILES ${PROJECT_SOURCE_DIR}/python/ldmxcfg.py DESTINATION python/Framework)
