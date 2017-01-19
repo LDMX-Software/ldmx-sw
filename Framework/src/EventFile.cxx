@@ -5,55 +5,55 @@
 
 namespace ldmxsw {
 
-EventFile::EventFile(const std::string& filename, std::string treeName, bool isOutputFile, int compressionLevel) :
-        fileName_(filename), isOutputFile_(isOutputFile) {
+EventFile::EventFile(const std::string& filename, std::string treeName, bool isOutputFile, int compressionLevel) : fileName_(filename), isOutputFile_(isOutputFile) {
 
-  if (isOutputFile_) {
-    file_ = new TFile(filename.c_str(), "RECREATE");
-    if (!file_->IsWritable()) {
-      EXCEPTION_RAISE("FileError","Output file '"+filename+"' is not writable");
+    if (isOutputFile_) {
+        file_ = new TFile(filename.c_str(), "RECREATE");
+        if (!file_->IsWritable()) {
+            EXCEPTION_RAISE("FileError","Output file '"+filename+"' is not writable");
+        }
+
+    } else {
+        file_ = new TFile(filename.c_str());
     }
-  } else {
-    file_ = new TFile(filename.c_str());
-  }
-  
-  if (!file_->IsOpen()) {
-    EXCEPTION_RAISE("FileError","File '"+filename+"' is not readable or does not exist.");
-  }
-  
-  if (isOutputFile_) {
-    file_->SetCompressionLevel(compressionLevel);
-  }
-  
-  if (!isOutputFile_) {
-    tree_ = (TTree*) (file_->Get(treeName.c_str()));
-    entries_ = tree_->GetEntriesFast();
-  }
+    
+    if (!file_->IsOpen()) {
+        EXCEPTION_RAISE("FileError","File '"+filename+"' is not readable or does not exist.");
+    }
+    
+    if (isOutputFile_) {
+        file_->SetCompressionLevel(compressionLevel);
+    }
+    
+    if (!isOutputFile_) {
+        tree_ = (TTree*) (file_->Get(treeName.c_str()));
+        entries_ = tree_->GetEntriesFast();
+    }
 }
   
-  EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :    EventFile(filename, event::EventConstants::EVENT_TREE_NAME, isOutputFile, compressionLevel) { 
-  }
+EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) : EventFile(filename, event::EventConstants::EVENT_TREE_NAME, isOutputFile, compressionLevel) { }
 
-  EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :
+EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :
+
     fileName_(filename), isOutputFile_(true), parent_(cloneParent) {
     
     file_ = new TFile(filename.c_str(), "RECREATE");
     if (!file_->IsWritable()) {
-      EXCEPTION_RAISE("FileError","Output file '"+filename+"' is not writable");	  
+        EXCEPTION_RAISE("FileError","Output file '"+filename+"' is not writable");	  
     }
     
     if (!file_->IsOpen()) {
-      EXCEPTION_RAISE("FileError","File '"+filename+"' is not readable or does not exist.");
+        EXCEPTION_RAISE("FileError","File '"+filename+"' is not readable or does not exist.");
     }
     
     parent_->tree_->SetBranchStatus("*", 1);
     
     if (isOutputFile_) {
-      file_->SetCompressionLevel(compressionLevel);
+        file_->SetCompressionLevel(compressionLevel);
     }
-  }
+}
   
-  void EventFile::addDrop(const std::string& rule) {
+void EventFile::addDrop(const std::string& rule) {
 
     if (parent_ == 0)
         return;
@@ -69,8 +69,10 @@ EventFile::EventFile(const std::string& filename, std::string treeName, bool isO
     std::string srule = rule.substr(i + 4);
     for (i = srule.find_first_of(" \t\n\r"); i != std::string::npos; i = srule.find_first_of(" \t\n\r"))
         srule.erase(i, 1);
+
     if (srule.length() == 0)
         return;
+
     if (srule.back() != '*')
         srule += '*';
 
@@ -90,9 +92,9 @@ bool EventFile::nextEvent() {
     // close up the last event
     if (ientry_ >= 0) {
         if (isOutputFile_) {
-	  event_->beforeFill();
-	  tree_->Fill(); // fill the clones...
-	  event_->Clear();
+	    event_->beforeFill();
+	    tree_->Fill(); // fill the clones...
+	    event_->Clear();
         }
         if (event_) {
             event_->onEndOfEvent();
@@ -107,6 +109,7 @@ bool EventFile::nextEvent() {
         event_->nextEvent();
         entries_++;
         return true;
+
     } else {
 
         // if we are reading, move the pointer
@@ -140,9 +143,11 @@ void EventFile::setupEvent(EventImpl* evt) {
 	    ientry_ = 0;
 	    entries_ = 0;
         }
+        
         if (parent_) {
             event_->setInputTree(parent_->tree_);
         }
+
     } else {
         event_->setInputTree(tree_);
     }
