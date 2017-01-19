@@ -107,6 +107,11 @@ namespace event {
             time_ = time;
         }
 
+        /**
+         * Get the layer of the hit from the ID
+         */
+        int getLayer() const;
+	
     private:
 
         int id_{0};

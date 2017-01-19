@@ -17,7 +17,7 @@ namespace event {
     }
 
     void HcalHit::Print(Option_t *option)  const {
-	std::cout << "HcalHit { " << "id: " << getID() << ",  energy: " << getEnergy()
+	std::cout << "HcalHit { " << "id: " << std::hex << getID() << std::dec << ",  energy: " << getEnergy()
 		  << "MeV, time: " << getTime() << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE() << std::endl;
 	
     }
