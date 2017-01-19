@@ -33,6 +33,11 @@ namespace event {
          */
         void Print(Option_t *option = "") const;
 
+	/**
+         * Get the cell of the hit from the ID
+         */
+        int getCell() const;
+	
     private:
 
     /**
