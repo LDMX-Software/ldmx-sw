@@ -30,8 +30,8 @@ namespace event {
 
     class Event {
 
-    public:
-
+	public:
+	
         /**
          * Class constructor.
          */
@@ -47,7 +47,7 @@ namespace event {
          * @return The event header.
          */
         virtual const EventHeader* getEventHeader() const = 0;
-
+	
 	/**
          * Check the existance of one-and-only-one object with the
          * given name (excluding the pass) in the event.
