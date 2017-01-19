@@ -22,7 +22,7 @@ const float HcalDigiProducer::layerZwidth = 60.;
 const int HcalDigiProducer::numHcalLayers = 15;
 const float HcalDigiProducer::MeVperMIP = 1.40;
 const float HcalDigiProducer::PEperMIP = 13.5*6./4.;
-const float HcalDigiProducer::meanNoise = 2.;
+
 
 HcalDigiProducer::HcalDigiProducer(const std::string& name, const ldmxsw::Process& process) : ldmxsw::Producer(name,process) {
   hits=new TClonesArray("event::HcalHit");
@@ -30,7 +30,8 @@ HcalDigiProducer::HcalDigiProducer(const std::string& name, const ldmxsw::Proces
 
 void HcalDigiProducer::configure(const ldmxsw::ParameterSet& ps) {
     detID = new DefaultDetectorID();
-    random_=new TRandom(ps.getInteger("randomSeed",1000));      
+    random_=new TRandom(ps.getInteger("randomSeed",1000));
+    meanNoise_=ps.getDouble("meanNoise");
 }
   
 void HcalDigiProducer::produce(event::Event& event){
@@ -70,14 +71,15 @@ void HcalDigiProducer::produce(event::Event& event){
     int ihit=0;
     for(std::map<int,float>::iterator it = hcalLayerEdep.begin(); it != hcalLayerEdep.end(); ++it){    
         int detIDraw = it->first;
-        depEnergy = hcalLayerEdep[detIDraw];
+        double depEnergy = hcalLayerEdep[detIDraw];
         hcalLayerTime[detIDraw] = hcalLayerTime[detIDraw]/hcalLayerEdep[detIDraw];
-        meanPE = depEnergy/MeVperMIP*PEperMIP+meanNoise;
+        double meanPE = depEnergy/MeVperMIP*PEperMIP;
     
 	//        std::default_random_engine generator;
         //std::poisson_distribution<int> distribution(meanPE);
     
         hcalLayerPEs[detIDraw] = random_->Poisson(meanPE);
+	hcalLayerPEs[detIDraw] += random_->Gaus(meanNoise_);
 
         if(verbose){
             std::cout << "detID: " << detIDraw << std::endl;
@@ -95,7 +97,7 @@ void HcalDigiProducer::produce(event::Event& event){
 	
 	//	hit->setLayer(layer);
 	hit->setPE(hcalLayerPEs[detIDraw]);
-	hit->setAmplitude(hcalLayerEdep[detIDraw]);
+	hit->setAmplitude(hcalLayerPEs[detIDraw]);
 	hit->setEnergy(energy);
 	hit->setTime(hcalLayerTime[detIDraw]);
         hit->setID(detIDraw);
