@@ -17,6 +17,14 @@ int main(int argc, char* argv[]) {
   for (ptrpy=1; ptrpy<argc; ptrpy++) {
     if (strstr(argv[ptrpy],".py")) break;
   }
+
+  if (ptrpy==argc) {
+    printf("Usage: ldmx-app [application arguments] {configuration_script.py} [arguments to configuration script]\n");
+    printf("  ** No python script provided. **\n");
+    return 0;
+  }
+
+  
   
   Process* p{0};
   try {
