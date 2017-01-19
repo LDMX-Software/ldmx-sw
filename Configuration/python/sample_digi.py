@@ -9,7 +9,7 @@ p=ldmxcfg.Process("digi")
 
 # Currently, we need to explicitly identify plugin libraries which should be
 # loaded.  In future, we do not expect this be necessary
-p.libraries.append("EventProc/libEventProc.so")
+p.libraries.append("libEventProc.so")
 
 # create a producer with the name 'hcaldigi', from the class 'HcalDigiProducer'
 hcaldigi=ldmxcfg.Producer("hcaldigi","HcalDigiProducer")
