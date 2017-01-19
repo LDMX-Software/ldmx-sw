@@ -6,32 +6,64 @@
 
 namespace event {
 
-class HcalHit : public CalorimeterHit {
+    /** 
+     * @class HcalHit
+     * @brief Stores reconstructed hit information from the HCAL
+     *
+     * @note This class representes the reconstructed hit information
+     * from the HCAL, providing particular information for the HCAL,
+     * above and beyond what is available in the CalorimeterHit.
+     */
+    class HcalHit : public CalorimeterHit {
 
-    public:
+	public:
 
+        /**
+         * Class constructor.
+         */
         HcalHit() {;}
 
+        /**
+         * Class destructor.
+         */
         virtual ~HcalHit() {;}
 
-  int getLayer() const {   return layer_; }
-  void setLayer(int layer) { layer_=layer; }
-  int getPE() const { return pe_; }
-  void setPE(int pe) { pe_=pe; }
-  float getZpos() const { return zpos_; }
-  void setZpos(float zpos) { zpos_=zpos; }
+        /**
+         * Clear the data in the object.
+         */
+        void Clear(Option_t *option = "");
 
-  private:
+        /**
+         * Print out the object.
+         */
+        void Print(Option_t *option = "") const;
 
-        int layer_{0};
-        int pe_{0};
-        float zpos_{0};
-    /**
-     * The ROOT class definition.
-     */
-    ClassDef(HcalHit, 1);
-};
+	/**
+	 * Get the number of photoelectrons estimated for this hit.
+	 * @return Number of photoelectrons, including noise which affects the estimate
+	 */
+	float getPE() const {
+	    return pe_;
+	}
 
+	/**
+	 * Set the number of photoelectrons estimated for this hit.
+	 * @param pe Number of photoelectrons, including noise which affects the estimate
+	 */
+	void setPE(int pe) {
+	    pe_=pe;
+	}
+
+	private:
+	
+        float pe_{0};
+	
+	/**
+	 * The ROOT class definition.
+	 */
+	ClassDef(HcalHit, 1);
+    };
+    
 }
 
 

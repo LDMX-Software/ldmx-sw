@@ -17,5 +17,8 @@
 # set load library path for module libs
 export LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:$LD_LIBRARY_PATH
 
+# set python path
+export PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python/Framework:@CMAKE_INSTALL_PREFIX@/python/Configuration:${PYTHONPATH}
+
 # add bin dir to PATH
 export PATH=@CMAKE_INSTALL_PREFIX@/bin:$PATH

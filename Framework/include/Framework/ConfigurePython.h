@@ -11,7 +11,7 @@ namespace ldmxsw {
   
   class ConfigurePython {
   public:
-    ConfigurePython(const std::string& pythonScript);
+    ConfigurePython(const std::string& pythonScript, char* args[], int nargs);
     ~ConfigurePython();
     
     Process* makeProcess();
@@ -21,7 +21,7 @@ namespace ldmxsw {
     
     std::string passname_;
     int eventLimit_,run_;
-    std::vector<std::string> inputFiles_, keepRules_, libraries_;
+    std::vector<std::string> inputFiles_, keepRules_, libraries_, outputFiles_;
     
     struct ProcessorInfo {
       std::string classname_;

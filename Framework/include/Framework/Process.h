@@ -21,7 +21,8 @@ namespace ldmxsw {
     void addToSequence(EventProcessor* mod);
     void addFileToProcess(const std::string& filename);
     void addDropKeepRule(const std::string& rule);
-    void setOutputFileTemplate(const std::string& filenameOut);
+    void setOutputFileName(const std::string& filenameOut);
+    void addOutputFileName(const std::string& filenameOut);
 
     void setRunNumber(int run) { runForGeneration_=run; }
     void run(int events=-1);
@@ -30,7 +31,7 @@ namespace ldmxsw {
     std::string passname_;
     std::vector<EventProcessor*> sequence_;
     std::vector<std::string> inputFiles_;
-    std::string outputFileNameRule_;
+    std::vector<std::string> outputFiles_;
     std::vector<std::string> dropKeepRules_;
 
     int runForGeneration_{1};
