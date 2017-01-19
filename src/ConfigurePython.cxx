@@ -26,13 +26,31 @@ namespace ldmxsw {
     return retval;
   }
 
-  
-  
-  ConfigurePython::ConfigurePython(const std::string& pythonScript) {
+    
+  ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[], int nargs) {
+    std::string path(".");
+    std::string cmd=pythonScript;
+
+    // if a path was specified, get that out
+    if (pythonScript.rfind("/")!=std::string::npos) {
+      path=pythonScript.substr(0,pythonScript.rfind("/"));
+      cmd=pythonScript.substr(pythonScript.rfind("/")+1);
+    }
+    cmd=cmd.substr(0,cmd.find(".py"));
+
+    printf("'%s' '%s'\n",path.c_str(),cmd.c_str());
+    
     Py_Initialize();
+    if (nargs>0) {
+      char** targs=new char*[nargs+1];
+      targs[0]=(char*)pythonScript.c_str();
+      for (int i=0; i<nargs; i++)
+	targs[i+1]=args[i];
+      PySys_SetArgvEx(nargs,targs,1);
+      delete [] targs;
+    }
 
     PyObject* script, *temp, *process, *pMain, *pylist;
-    std::string cmd=pythonScript;
     temp=PyString_FromString(cmd.c_str());
     script=PyImport_ImportModule(cmd.c_str());
     Py_DECREF(temp);
