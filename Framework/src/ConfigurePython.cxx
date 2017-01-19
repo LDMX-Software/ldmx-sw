@@ -98,13 +98,13 @@ namespace ldmxsw {
 	  std::string skey=PyString_AsString(key);
 	  if (PyInt_Check(value)) {
 	    pi.params_.insert(skey,int(PyInt_AsLong(value)));
-	    printf("Int Key: %s\n",skey.c_str());
+	    //printf("Int Key: %s\n",skey.c_str());
 	  } else if (PyFloat_Check(value)) {
 	    pi.params_.insert(skey,PyFloat_AsDouble(value));
-	    printf("Double Key: %s\n",skey.c_str());
+	    //printf("Double Key: %s\n",skey.c_str());
 	  } else if (PyString_Check(value)) {
 	    pi.params_.insert(skey,PyString_AsString(value));
-	    printf("String Key: %s\n",skey.c_str());
+	    //printf("String Key: %s\n",skey.c_str());
 	  } else if (PyList_Check(value)) { // assume everything is same value as first value
 	    if (PyList_Size(value)>0) {
 	      PyObject* vec0=PyList_GetItem(value,0);
@@ -113,19 +113,19 @@ namespace ldmxsw {
 		for (Py_ssize_t j=0; j<PyList_Size(value); j++)
 		  vals.push_back(PyInt_AsLong(PyList_GetItem(value,j)));
 		pi.params_.insert(skey,vals);
-		printf("VInt Key: %s\n",skey.c_str());
+		//printf("VInt Key: %s\n",skey.c_str());
 	      } else if (PyFloat_Check(vec0)) {
 		std::vector<double> vals;
 		for (Py_ssize_t j=0; j<PyList_Size(value); j++)
 		  vals.push_back(PyFloat_AsDouble(PyList_GetItem(value,j)));
 		pi.params_.insert(skey,vals);
-		printf("VDouble Key: %s\n",skey.c_str());
+		//printf("VDouble Key: %s\n",skey.c_str());
 	      } else if (PyString_Check(vec0)) {
 		std::vector<std::string> vals;
 		for (Py_ssize_t j=0; j<PyList_Size(value); j++)
 		  vals.push_back(PyString_AsString(PyList_GetItem(value,j)));
 		pi.params_.insert(skey,vals);
-		printf("VString Key: %s\n",skey.c_str());
+		//printf("VString Key: %s\n",skey.c_str());
 	      }
 	    }
 	  }

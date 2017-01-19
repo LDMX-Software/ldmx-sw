@@ -36,8 +36,6 @@ public:
  private:
     TClonesArray* hits;
     TRandom* random_{0};
-    std::vector<int> *hcalDetId_,*hcalLayerNum_,*hcalLayerPEs_;
-    std::vector<float> *hcalLayerEdep_,*hcalLayerTime_,*hcalLayerZpos_;
     std::map<layer,zboundaries> hcalLayers;
     bool verbose;  
     DetectorID* detID;
@@ -46,9 +44,7 @@ public:
     static const int numHcalLayers;
     static const float MeVperMIP;
     static const float PEperMIP;
-    static const float meanNoise;
-    float depEnergy;
-    float meanPE;
+    float meanNoise_;
     int nProcessed_{0};
 };
 
