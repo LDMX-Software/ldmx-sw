@@ -92,6 +92,7 @@ bool EventFile::nextEvent() {
         if (isOutputFile_) {
 	  event_->beforeFill();
 	  tree_->Fill(); // fill the clones...
+	  event_->Clear();
         }
         if (event_) {
             event_->onEndOfEvent();

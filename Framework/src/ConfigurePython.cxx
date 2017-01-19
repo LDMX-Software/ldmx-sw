@@ -26,13 +26,29 @@ namespace ldmxsw {
     return retval;
   }
 
-  
-  
-  ConfigurePython::ConfigurePython(const std::string& pythonScript) {
+    
+  ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[], int nargs) {
+    std::string path(".");
+    std::string cmd=pythonScript;
+
+    // if a path was specified, get that out
+    if (pythonScript.rfind("/")!=std::string::npos) {
+      path=pythonScript.substr(0,pythonScript.rfind("/"));
+      cmd=pythonScript.substr(pythonScript.rfind("/")+1);
+    }
+    cmd=cmd.substr(0,cmd.find(".py"));
+
     Py_Initialize();
+    if (nargs>0) {
+      char** targs=new char*[nargs+1];
+      targs[0]=(char*)pythonScript.c_str();
+      for (int i=0; i<nargs; i++)
+	targs[i+1]=args[i];
+      PySys_SetArgvEx(nargs,targs,1);
+      delete [] targs;
+    }
 
     PyObject* script, *temp, *process, *pMain, *pylist;
-    std::string cmd=pythonScript;
     temp=PyString_FromString(cmd.c_str());
     script=PyImport_ImportModule(cmd.c_str());
     Py_DECREF(temp);
@@ -142,6 +158,17 @@ namespace ldmxsw {
     }
     Py_DECREF(pylist);
 
+    pylist=PyObject_GetAttrString(pProcess,"outputFiles");
+    if (!PyList_Check(pylist)) {
+      std::cerr << "outputFiles is not a python list as expected.\n";
+      return;
+    }
+    for (Py_ssize_t i=0; i<PyList_Size(pylist); i++) {
+      PyObject* elem=PyList_GetItem(pylist,i);
+      outputFiles_.push_back(PyString_AsString(elem));
+    }
+    Py_DECREF(pylist);
+
     pylist=PyObject_GetAttrString(pProcess,"libraries");
     if (!PyList_Check(pylist)) {
       std::cerr << "libraries is not a python list as expected.\n";
@@ -176,6 +203,10 @@ namespace ldmxsw {
     for (auto file : inputFiles_) {
       p->addFileToProcess(file);
     }
+    for (auto file : outputFiles_) {
+      p->addOutputFileName(file);
+    }
+
     for (auto rule : keepRules_) {
       p->addDropKeepRule(rule);
     }
