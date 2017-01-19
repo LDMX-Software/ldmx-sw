@@ -88,9 +88,6 @@ void RootPersistencyManager::Initialize() {
     outputFile_ = new ldmxsw::EventFile(fileName_.c_str(), true, compressionLevel_);
     outputFile_->setupEvent((ldmxsw::EventImpl*)event_);
 
-    // Setup the file to write event data.
-    outputFile_->nextEvent();
-
     // Create map with output hits collections.
     setupHitsCollectionMap();
 }
@@ -139,7 +136,7 @@ void RootPersistencyManager::printEvent(event::Event* outputEvent) {
 
 void RootPersistencyManager::writeHeader(const G4Event* anEvent, event::Event* outputEvent) {
     event::EventHeader& eventHeader = ((ldmxsw::EventImpl*)outputEvent)->getEventHeaderMutable();
-  
+
     eventHeader.setEventNumber(anEvent->GetEventID());
     TTimeStamp ts;
     ts.SetSec((int) time(NULL));
