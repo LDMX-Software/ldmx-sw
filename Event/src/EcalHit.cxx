@@ -9,7 +9,7 @@ namespace event {
 
     void EcalHit::Print(Option_t *option)  const {
 	std::cout << "EcalHit { " << "id: " << std::hex << getID() << std::dec << ",  energy: " << getEnergy()
-		  << "MeV, time: " << getTime() << "ns, amplitude: " << getAmplitude() << std::endl;
+		  << "MeV, time: " << getTime() << "ns, amplitude: " << getAmplitude() << "}" << std::endl;
 	
     }
 
