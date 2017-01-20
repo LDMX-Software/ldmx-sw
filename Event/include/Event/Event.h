@@ -78,7 +78,6 @@ namespace event {
 	 * @return A named object from the event.
          */
         template<typename ObjectType> const ObjectType get(const std::string& name) {
-            std::cout << "[ Event ] : Getting object " << name << " with automatic logic pass " << std::endl;
             return (ObjectType) getReal(name, "", true);
         }
 
@@ -91,7 +90,6 @@ namespace event {
 	 * @return A named object from the event.
          */
         template<typename ObjectType> const ObjectType get(const std::string& name, const std::string& passName) {
-            std::cout << "[ Event ] : Getting object " << name << " with pass " << passName << std::endl;
             return (ObjectType) getReal(name, passName, true);
         }
 
@@ -104,7 +102,6 @@ namespace event {
 	 * @return The named TClonesArray from the event.
          */
         const TClonesArray* getCollection(const std::string& collectionName) {
-            std::cout << "[ Event ] : Getting collection " << collectionName << " with automatic logic" << std::endl;
             return (TClonesArray*) getReal(collectionName, "", true);
         }
 
@@ -117,7 +114,6 @@ namespace event {
 	 * @return A named TClonesArray from the event.
          */
         const TClonesArray* getCollection(const std::string& collectionName, std::string passName) {
-            std::cout << "[ Event ] : Getting collection " << collectionName << " with pass " << passName << std::endl;
             return (TClonesArray*) getReal(collectionName, passName, true);
         }
 
@@ -136,6 +132,17 @@ namespace event {
          * @param clones The TClonesArray containing the objects.
          */
         virtual void add(const std::string& name, TObject* obj) = 0;
+
+
+	/**
+         * Add the given object to the named TClonesArray collection
+	 * Objects can only be added to a TClonesArray during the current pass -- TClonesArrays loaded
+	 * from the input data file are not allowed to be changed.
+	 * @note Object types must implement TObject::Copy()
+	 * @param name Name of the collection
+	 * @param obj Object to be appended to the collection
+         */
+        virtual void addToCollection(const std::string& name, const TObject& obj) = 0;
 	
     protected:
 	
