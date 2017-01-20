@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import sys
-print sys.argv
 
 # we need the ldmx configuration package to construct the object
 from LDMX.Framework import ldmxcfg
@@ -23,8 +22,11 @@ hcalDigis.parameters["meanNoise"]=1.5
 # load the template ecalDigis configuration from its python file
 from LDMX.EventProc.ecalDigis import ecalDigis
 
+# load the template ecalDigis configuration from its python file
+from LDMX.EventProc.simpleTrigger import simpleTrigger
+
 # Define the sequence of event processors to be run
-p.sequence=[ecalDigis,hcalDigis]
+p.sequence=[ecalDigis,hcalDigis,simpleTrigger]
 
 # Provide the list of input files to run on
 p.inputFiles=["ldmx_sim_events.root"]
