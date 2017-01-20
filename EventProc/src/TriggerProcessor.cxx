@@ -12,7 +12,7 @@
 #include "DetDescr/EcalHexReadout.h"
 
 void TriggerProcessor::configure(const ldmxsw::ParameterSet& pSet) {
-    
+
     layerESumCut_ = pSet.getDouble("threshold");
     mode_ = pSet.getInteger("mode");
     startLayer_ = pSet.getInteger("start_layer");
@@ -33,14 +33,14 @@ void TriggerProcessor::produce(event::Event& event) {
     const TClonesArray *ecalDigis = event.getCollection("ecalDigis");
     int numEcalHits = ecalDigis->GetEntriesFast();
 
-    std::vector<double> layerDigiE(100,0.0); // big empty vector..
-    
-    /** Loop over all ecal hits in the given event */    
-    for(int iHit = 0; iHit < numEcalHits; ++iHit) {
+    std::vector<double> layerDigiE(100, 0.0); // big empty vector..
+
+    /** Loop over all ecal hits in the given event */
+    for (int iHit = 0; iHit < numEcalHits; ++iHit) {
         EcalHit *hit = (EcalHit*) ecalDigis->At(iHit);
-	if (hit->getLayer()<layerDigiE.size()) { // just to be safe...
+        if (hit->getLayer() < layerDigiE.size()) { // just to be safe...
             if (mode_ == 0) { // Sum over all cells in a given layer
-	        layerDigiE[hit->getLayer()] += hit->getEnergy(); 
+                layerDigiE[hit->getLayer()] += hit->getEnergy();
             } else if (mode_ == 1) { // Sum over cells in central tower only
                 //std::pair<float, float> xyPos = hit->getCellCentroidXYPair(hit->getID());
                 //float cellRadius = sqrt(pow(xyPos.first, 2) + pow(xyPos.second, 2));
@@ -50,22 +50,22 @@ void TriggerProcessor::produce(event::Event& event) {
             }
         }
     }
-    
+
     float layerSum = 0;
     bool pass = false;
 
-    for(int iL = startLayer_; iL < endLayer_; ++iL) {
+    for (int iL = startLayer_; iL < endLayer_; ++iL) {
         layerSum += layerDigiE[iL];
     }
 
     pass = (layerSum <= layerESumCut_);
 
     result_.set(algoName_, pass, 3);
-    result_.setAlgoVar(0,layerSum);
-    result_.setAlgoVar(1,layerESumCut_);
-    result_.setAlgoVar(2,endLayer_-startLayer_);
+    result_.setAlgoVar(0, layerSum);
+    result_.setAlgoVar(1, layerESumCut_);
+    result_.setAlgoVar(2, endLayer_ - startLayer_);
 
-    event.addToCollection("Trigger",result_);
+    event.addToCollection("Trigger", result_);
 
 }
 

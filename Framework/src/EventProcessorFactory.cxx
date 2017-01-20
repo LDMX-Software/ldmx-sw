@@ -2,26 +2,23 @@
 #include "Framework/EventProcessorFactory.h"
 #include <dlfcn.h>
 
-
 ldmxsw::EventProcessorFactory ldmxsw::EventProcessorFactory::theFactory_ __attribute((init_priority(500)));
-
 
 namespace ldmxsw {
 
-  
 EventProcessorFactory::EventProcessorFactory() {
 }
 
 void EventProcessorFactory::registerEventProcessor(const std::string& classname, int classtype, EventProcessorMaker* maker) {
     auto ptr = moduleInfo_.find(classname);
     if (ptr != moduleInfo_.end()) {
-        EXCEPTION_RAISE("ExistingEventProcessorDefinition","Already have a module registered with the classname '"+classname+"'");
+        EXCEPTION_RAISE("ExistingEventProcessorDefinition", "Already have a module registered with the classname '" + classname + "'");
     }
     EventProcessorInfo mi;
-    mi.classname=classname;
-    mi.classtype=classtype;
-    mi.maker=maker;
-    moduleInfo_[classname]=mi;
+    mi.classname = classname;
+    mi.classtype = classtype;
+    mi.maker = maker;
+    moduleInfo_[classname] = mi;
 }
 
 std::vector<std::string> EventProcessorFactory::getEventProcessorClasses() const {
@@ -47,20 +44,19 @@ EventProcessor* EventProcessorFactory::createEventProcessor(const std::string& c
     if (ptr == moduleInfo_.end()) {
         return 0;
     }
-    return ptr->second.maker(moduleInstanceName,process);
+    return ptr->second.maker(moduleInstanceName, process);
 }
-
 
 void EventProcessorFactory::loadLibrary(const std::string& libname) {
     if (librariesLoaded_.find(libname) != librariesLoaded_.end()) {
         return; // already loaded
     }
-  
-    void* handle = dlopen(libname.c_str(),RTLD_NOW);
+
+    void* handle = dlopen(libname.c_str(), RTLD_NOW);
     if (handle == nullptr) {
-      EXCEPTION_RAISE("LibraryLoadFailure","Error loading library '"+libname+"':"+dlerror());      
+        EXCEPTION_RAISE("LibraryLoadFailure", "Error loading library '" + libname + "':" + dlerror());
     }
-    
+
     librariesLoaded_.insert(libname);
 }
 

@@ -1,3 +1,9 @@
+/**
+ * @file EcalHit.h
+ * @brief Class that stores reconstructed hit information from the ECAL
+ * @author Jeremy Mans, University of Minnesota
+ */
+
 #ifndef EVENT_ECALHIT_H_
 #define EVENT_ECALHIT_H_
 
@@ -6,15 +12,15 @@
 
 namespace event {
 
-    /** 
-     * @class EcalHit
-     * @brief Stores reconstructed hit information from the ECAL
-     *
-     * @note This class representes the reconstructed hit information
-     * from the ECAL, providing particular information for the ECAL,
-     * above and beyond what is available in the CalorimeterHit.
-     */
-    class EcalHit : public CalorimeterHit {
+/**
+ * @class EcalHit
+ * @brief Stores reconstructed hit information from the ECAL
+ *
+ * @note This class represents the reconstructed hit information
+ * from the ECAL, providing particular information for the ECAL,
+ * above and beyond what is available in the CalorimeterHit.
+ */
+class EcalHit : public CalorimeterHit {
 
     public:
 
@@ -26,18 +32,19 @@ namespace event {
         /**
          * Class destructor.
          */
-         virtual ~EcalHit() {;}
+        virtual ~EcalHit() {;}
 
         /**
          * Print out the object.
          */
         void Print(Option_t *option = "") const;
 
-	/**
-         * Get the cell of the hit from the ID
+        /**
+         * Get the cell of the hit from the ID.
+         * @return The cell of the hit from the ID.
          */
         int getCell() const;
-	
+
     private:
 
     /**
@@ -45,8 +52,7 @@ namespace event {
      */
     ClassDef(EcalHit, 1);
 };
-    
+
 }
 
-
-#endif /* INCLUDE_EVENT_ECALHIT_H_ */
+#endif /* EVENT_ECALHIT_H_ */

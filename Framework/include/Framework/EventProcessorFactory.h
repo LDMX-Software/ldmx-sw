@@ -1,5 +1,11 @@
-#ifndef LDMXSW_FRAMEWORK_EVENTPROCESSORFACTORY_H_
-#define LDMXSW_FRAMEWORK_EVENTPROCESSORFACTORY_H_
+/**
+ * @file EventProcessorFactory.h
+ * @brief Class which provides a singleton module factory that creates EventProcessor objects
+ * @author Jeremy Mans, University of Minnesota
+ */
+
+#ifndef FRAMEWORK_EVENTPROCESSORFACTORY_H_
+#define FRAMEWORK_EVENTPROCESSORFACTORY_H_
 
 #include <map>
 #include <set>
@@ -8,7 +14,9 @@
 
 namespace ldmxsw {
 
-/** Singleton module factory
+/**
+ * @class EventProcessorFactory
+ * @brief Singleton module factory that creates EventProcessor objects.
  */
 class EventProcessorFactory {
 
@@ -18,7 +26,9 @@ class EventProcessorFactory {
          * Get the factory instance.
          * @return The factory.
          */
-        static EventProcessorFactory& getInstance() { return theFactory_; }
+        static EventProcessorFactory& getInstance() {
+            return theFactory_;
+        }
 
         /**
          * Register the event processor.
@@ -27,7 +37,7 @@ class EventProcessorFactory {
          * @param maker TODO.
          */
         void registerEventProcessor(const std::string& classname, int classtype, EventProcessorMaker* maker);
-        
+
         /**
          * Get the classes associated with the processor.
          * @return a vector of strings corresponding to processor classes.
@@ -62,24 +72,28 @@ class EventProcessorFactory {
         EventProcessorFactory();
 
         /**
-         * Processor info container to hold classname, class type and maker.
+         * @struct EventProcessorInfo
+         * @brief Processor info container to hold classname, class type and maker.
          */
         struct EventProcessorInfo {
-          std::string classname;
-          int classtype;
-          EventProcessorMaker* maker;
+                std::string classname;
+                int classtype;
+                EventProcessorMaker* maker;
         };
 
         /**
          * A map of names to processor containers.
          */
-        std::map<std::string,EventProcessorInfo> moduleInfo_;
+        std::map<std::string, EventProcessorInfo> moduleInfo_;
 
         /**
          * A set of names of loaded libraries.
          */
         std::set<std::string> librariesLoaded_;
 
+        /**
+         * Factor for creating the EventProcessor object.
+         */
         static EventProcessorFactory theFactory_;
 };
 

@@ -53,6 +53,9 @@ if(INSTALL_DOC)
     # generate the documentation
     install(CODE "EXECUTE_PROCESS(COMMAND doxygen ${PROJECT_SOURCE_DIR}/config/doxygen/doxygen.conf)")
 
+    # documentation generation target 
+    add_custom_target(doc COMMAND doxygen ${PROJECT_SOURCE_DIR}/config/doxygen/doxygen.conf)
+
 else()
     # message that documentation is off for this build
     message(STATUS "INSTALL_DOC is set to OFF.  Documentation will not be created.")    
