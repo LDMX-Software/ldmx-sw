@@ -24,7 +24,7 @@ namespace ldmxsw {
 		EventFile outFile(outputFiles_[0], true);
 		
 		for (auto module : sequence_) {
-		    module->onFileOpen();
+		    module->onFileOpen(outputFiles_[0]);
                 }
 		
 		EventImpl theEvent(passname_);
@@ -51,7 +51,7 @@ namespace ldmxsw {
 		}
 		
 		for (auto module : sequence_) {	  
-		    module->onFileClose();
+		    module->onFileClose(outputFiles_[0]);
                 }
 		outFile.close();
 
@@ -61,6 +61,7 @@ namespace ldmxsw {
 		}
 		// next, loop through the files
 		int ifile = 0;
+		int wasRun = -1;
 		for (auto infilename : inputFiles_) {
 		    EventFile inFile(infilename);
 		    std::cout << "Process: Opening file " << infilename << std::endl;
@@ -76,7 +77,7 @@ namespace ldmxsw {
 		    }
 		
 		    for (auto module : sequence_) {
-			module->onFileOpen();
+			module->onFileOpen(infilename);
                     }
 		    
 		    EventImpl theEvent(passname_);
@@ -89,9 +90,18 @@ namespace ldmxsw {
 		    EventFile* masterFile=(outFile)?(outFile):(&inFile);
 		    
 		    while (masterFile->nextEvent() && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
+			// notify for new run if necessary
+			if (theEvent.getEventHeader()->getRun()!=wasRun) {
+			    wasRun=theEvent.getEventHeader()->getRun();
+			    for (auto module : sequence_) {
+				module->onNewRun(wasRun);
+			    }	    
+			}
+			
 			TTimeStamp t;
 			std::cout << "[ Process ] :  Processing " << n_events_processed+1 << " Run " << theEvent.getEventHeader()->getRun()
 				  << " Event " << theEvent.getEventHeader()->getEventNumber() << "  (" << t.AsString("lc") << ")" << std::endl;
+
 			for (auto module : sequence_) {
 			    if (dynamic_cast<Producer*>(module)) {
                                 (dynamic_cast<Producer*>(module))->produce(theEvent);
@@ -112,7 +122,7 @@ namespace ldmxsw {
 		    inFile.close();
 		    std::cout << "Process: Closing file " << infilename << std::endl;	  
 		    for (auto module : sequence_) {	  
-			module->onFileClose();
+			module->onFileClose(infilename);
                     }
 		}
 	    }
