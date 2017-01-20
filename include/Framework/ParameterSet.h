@@ -117,6 +117,9 @@ class ParameterSet {
             et_NoType, et_Integer, et_Double, et_String, et_VInteger, et_VDouble, et_VString, et_ParameterSet
         } ElementType;
 
+        /**
+         * @todo Document me!
+         */
         struct Element {
 
                 Element() : et_{et_NoType} {;}
