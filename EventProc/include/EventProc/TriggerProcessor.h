@@ -22,12 +22,10 @@ private:
     int mode_;
     int startLayer_;
     int endLayer_;
-    bool pass_ = false;
 
     TString algoName_;
     std::string algoNametemp;
     event::TriggerResult result_;
-    std::map<int, float> layerDigiE_;
 
 };
 

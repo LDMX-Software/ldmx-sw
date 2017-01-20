@@ -1,5 +1,7 @@
 #include "Event/TriggerResult.h"
 
+ClassImp(event::TriggerResult)
+
 namespace event {
 
 TriggerResult::TriggerResult()
@@ -31,7 +33,16 @@ void TriggerResult::Clear(Option_t*) {
         variables_[i] = 0;
     }
 }
+    
+    void TriggerResult::Copy(TObject& ob) const {
 
+	TriggerResult& tr=(TriggerResult&)(ob);
+	tr.name_=name_;
+	tr.pass_ = pass_;
+	tr.variables_=variables_;
+    }
+
+    
 void TriggerResult::set(const TString& name, bool pass, int nvar) {
 
     name_ = name;
@@ -44,7 +55,6 @@ void TriggerResult::set(const TString& name, bool pass, int nvar) {
 }
 
 void TriggerResult::setAlgoVar(int element, double value) {
-    // FIXME: Does not set variable or throw an error if element is out of bounds!
     if (element >= 0 && element < variables_.GetSize()) {
         variables_[element] = value;
     }
