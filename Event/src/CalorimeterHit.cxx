@@ -20,7 +20,7 @@ namespace event {
 
     void CalorimeterHit::Print(Option_t *option)  const {
 	std::cout << "CalorimeterHit { " << "id: " << std::hex << id_ << std::dec << ",  energy: " << energy_
-		  << "MeV, time: " << time_ << "ns, amplitude: " << amplitude_ << std::endl;
+		  << "MeV, time: " << time_ << "ns, amplitude: " << amplitude_  << "}" << std::endl;
 	
     }
 
