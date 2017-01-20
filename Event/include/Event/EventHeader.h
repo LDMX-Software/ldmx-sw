@@ -46,7 +46,8 @@ class EventHeader : public TObject {
          * Print this object.
          */
         void Print(Option_t* = "") const {
-            std::cout << "EventHeader {" << " eventNumber: " << eventNumber_ << ", run: " << run_ << ", timestamp: " << timestamp_ << ", weight: " << weight_;
+            std::cout << "EventHeader {" << " eventNumber: " << eventNumber_ << ", run: "
+                    << run_ << ", timestamp: " << timestamp_ << ", weight: " << weight_;
             if (isRealData_)
                 std::cout << ", DATA";
             else
@@ -141,27 +142,27 @@ class EventHeader : public TObject {
         /**
          * The event number.
          */
-        int eventNumber_ { -1 };
+        int eventNumber_{-1};
 
         /**
          * The run number.
          */
-        int run_ { -1 };
+        int run_{-1};
 
         /**
          * The event timestamp
          */
-        TTimeStamp timestamp_ { 0, 0 };
+        TTimeStamp timestamp_{0, 0};
 
         /**
          * The event weight.
          */
-        double weight_ { 1.0 };
+        double weight_{1.0};
 
         /**
          * Is this event real data?
          */
-        bool isRealData_ { false };
+        bool isRealData_{false};
 
         /**
          * ROOT class definition.
