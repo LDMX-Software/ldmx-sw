@@ -5,54 +5,57 @@
 
 namespace ldmxsw {
 
-EventFile::EventFile(const std::string& filename, std::string treeName, bool isOutputFile, int compressionLevel) : fileName_(filename), isOutputFile_(isOutputFile) {
+EventFile::EventFile(const std::string& filename, std::string treeName, bool isOutputFile, int compressionLevel) :
+        fileName_(filename), isOutputFile_(isOutputFile) {
 
     if (isOutputFile_) {
         file_ = new TFile(filename.c_str(), "RECREATE");
         if (!file_->IsWritable()) {
-            EXCEPTION_RAISE("FileError","Output file '"+filename+"' is not writable");
+            EXCEPTION_RAISE("FileError", "Output file '" + filename + "' is not writable");
         }
 
     } else {
         file_ = new TFile(filename.c_str());
     }
-    
+
     if (!file_->IsOpen()) {
-        EXCEPTION_RAISE("FileError","File '"+filename+"' is not readable or does not exist.");
+        EXCEPTION_RAISE("FileError", "File '" + filename + "' is not readable or does not exist.");
     }
-    
+
     if (isOutputFile_) {
         file_->SetCompressionLevel(compressionLevel);
     }
-    
+
     if (!isOutputFile_) {
         tree_ = (TTree*) (file_->Get(treeName.c_str()));
         entries_ = tree_->GetEntriesFast();
     }
 }
-  
-EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) : EventFile(filename, event::EventConstants::EVENT_TREE_NAME, isOutputFile, compressionLevel) { }
+
+EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :
+        EventFile(filename, event::EventConstants::EVENT_TREE_NAME, isOutputFile, compressionLevel) {
+}
 
 EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :
 
-    fileName_(filename), isOutputFile_(true), parent_(cloneParent) {
-    
+        fileName_(filename), isOutputFile_(true), parent_(cloneParent) {
+
     file_ = new TFile(filename.c_str(), "RECREATE");
     if (!file_->IsWritable()) {
-        EXCEPTION_RAISE("FileError","Output file '"+filename+"' is not writable");	  
+        EXCEPTION_RAISE("FileError", "Output file '" + filename + "' is not writable");
     }
-    
+
     if (!file_->IsOpen()) {
-        EXCEPTION_RAISE("FileError","File '"+filename+"' is not readable or does not exist.");
+        EXCEPTION_RAISE("FileError", "File '" + filename + "' is not readable or does not exist.");
     }
-    
+
     parent_->tree_->SetBranchStatus("*", 1);
-    
+
     if (isOutputFile_) {
         file_->SetCompressionLevel(compressionLevel);
     }
 }
-  
+
 void EventFile::addDrop(const std::string& rule) {
 
     if (parent_ == 0)
@@ -83,8 +86,8 @@ bool EventFile::nextEvent() {
 
     if (ientry_ < 0 && parent_) {
         if (!parent_->tree_) {
-	    EXCEPTION_RAISE("EventFile", "No event tree in the file");
-	}
+            EXCEPTION_RAISE("EventFile", "No event tree in the file");
+        }
         tree_ = parent_->tree_->CloneTree(0);
         event_->setInputTree(parent_->tree_);
         event_->setOutputTree(tree_);
@@ -93,9 +96,9 @@ bool EventFile::nextEvent() {
     // close up the last event
     if (ientry_ >= 0) {
         if (isOutputFile_) {
-	    event_->beforeFill();
-	    tree_->Fill(); // fill the clones...
-	    event_->Clear();
+            event_->beforeFill();
+            tree_->Fill(); // fill the clones...
+            event_->Clear();
         }
         if (event_) {
             event_->onEndOfEvent();
@@ -105,7 +108,7 @@ bool EventFile::nextEvent() {
     if (parent_) {
         if (!parent_->nextEvent()) {
             return false;
-	}
+        }
         parent_->tree_->GetEntry(parent_->ientry_);
         ientry_ = parent_->ientry_;
         event_->nextEvent();
@@ -118,8 +121,8 @@ bool EventFile::nextEvent() {
         if (!isOutputFile_) {
 
             if (ientry_ + 1 >= entries_) {
-                return false;		
-	    }
+                return false;
+            }
 
             ientry_++;
             tree_->LoadTree(ientry_);
@@ -143,10 +146,10 @@ void EventFile::setupEvent(EventImpl* evt) {
     if (isOutputFile_) {
         if (!tree_ && !parent_) {
             tree_ = event_->createTree();
-	    ientry_ = 0;
-	    entries_ = 0;
+            ientry_ = 0;
+            entries_ = 0;
         }
-        
+
         if (parent_) {
             event_->setInputTree(parent_->tree_);
         }
