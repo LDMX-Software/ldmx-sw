@@ -11,15 +11,15 @@
 
 namespace event {
 
-class TriggerResult : public TObject {
+    class TriggerResult : public TObject {
 
-    public:
-
-        /**
-         * Class constructor.
-         */
-        TriggerResult();
-
+	public:
+    
+	/**
+	 * Class constructor.
+	 */
+	TriggerResult();
+	
         /**
          * Class destructor.
          */
@@ -39,10 +39,8 @@ class TriggerResult : public TObject {
          * Copy this object.
          * @param o The target object.
          */
-        void Copy(TObject& o) const {
-            ((TriggerResult&)o) = *this;
-        }
-
+	void Copy(TObject& o) const;
+    
         /**
          * Return the name of the trigger.
          */
@@ -57,6 +55,38 @@ class TriggerResult : public TObject {
          * Return algorithm variable i (see algorithm code for details).
          */
         double getAlgoVar(int element) const { return variables_[element]; }
+
+        /**
+         * Return algorithm variable 0 (see algorithm code for details).
+	 * @note Provided for interactive ROOT use
+         */
+        double getAlgoVar0() const { return (variables_.GetSize()<1)?(0):(variables_[0]); }
+
+	/**
+         * Return algorithm variable 1 (see algorithm code for details).
+	 * @note Provided for interactive ROOT use
+         */
+        double getAlgoVar1() const { return (variables_.GetSize()<2)?(0):(variables_[1]); }
+	
+	/**
+         * Return algorithm variable 2 (see algorithm code for details).
+	 * @note Provided for interactive ROOT use
+         */
+        double getAlgoVar2() const { return (variables_.GetSize()<3)?(0):(variables_[2]); }
+	
+	/**
+         * Return algorithm variable 3 (see algorithm code for details).
+	 * @note Provided for interactive ROOT use
+         */
+        double getAlgoVar3() const { return (variables_.GetSize()<4)?(0):(variables_[3]); }
+
+	/**
+         * Return algorithm variable 4 (see algorithm code for details).
+	 * @note Provided for interactive ROOT use
+         */
+        double getAlgoVar4() const { return (variables_.GetSize()<5)?(0):(variables_[4]); }
+
+
 
         /**
          * Set name and pass of trigger.
