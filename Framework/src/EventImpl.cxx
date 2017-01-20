@@ -221,7 +221,6 @@ namespace ldmxsw {
     }
 
     void EventImpl::beforeFill() {
-	if (inputTree_ == 0) add("EventHeader",eventHeader_);
     }
     void EventImpl::Clear() {
 	// clear the event objects
