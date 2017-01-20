@@ -1,5 +1,5 @@
-#ifndef TRIGGERPROCESSOR_H_
-#define TRIGGERPROCESSOR_H_
+#ifndef FRAMEWORK_TRIGGERPROCESSOR_H_
+#define FRAMEWORK_TRIGGERPROCESSOR_H_
 
 #include "Event/TriggerResult.h"
 #include "Event/Event.h"
