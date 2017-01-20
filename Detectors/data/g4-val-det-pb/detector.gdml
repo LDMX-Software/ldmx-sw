@@ -6,6 +6,9 @@
         <!-- dimension of world box side -->
         <constant name="world_dim" value="5.0*m"/>
 
+        <!-- define identity rotation -->
+        <rotation name="identity" x="0" y="0" z="0"/>
+
         <!-- Radiator dimensions --> 
         <constant name="radiator_dim_x" value="3.5*cm"/>
         <constant name="radiator_dim_y" value="9.5*cm"/>
@@ -19,6 +22,10 @@
         <!-- Target thickness (.05X0 of Pb) -->
         <constant name="target_thickness" value="0.05612*cm"/>
         <constant name="target_z" value="20.0*cm"/>
+
+        <!-- Subdetector positions -->
+        <position name="radiator_pos" x="0.0" y="0.0" z="radiator_z" />
+        <position name="target_pos" x="0.0" y="0.0" z="target_z" />
 
     </define>
 
@@ -55,7 +62,7 @@
         </volume>
         <volume name="World" >
             <materialref ref="Vacuum"  />
-            <solid_ref ref="world_box" />
+            <solidref ref="world_box" />
             <physvol>
                 <volumeref ref="radiator" />
                 <positionref ref="radiator_pos" />
