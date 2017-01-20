@@ -1,6 +1,7 @@
 #include "Framework/EventProcessor.h"
 #include <iostream>
 
+namespace dummy {
 class DummyAnalyzer : public ldmxsw::Analyzer {
 public:
   DummyAnalyzer(const std::string& name, const ldmxsw::Process& process) : ldmxsw::Analyzer(name,process) { }
@@ -21,5 +22,6 @@ public:
     std::cout << "DummyAnalyzer: Finishing processing!" << std::endl;
   }
 };
+}
 
-DECLARE_ANALYZER(DummyAnalyzer);
+DECLARE_ANALYZER_NS(dummy,DummyAnalyzer);

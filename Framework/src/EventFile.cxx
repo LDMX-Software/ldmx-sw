@@ -82,8 +82,9 @@ void EventFile::addDrop(const std::string& rule) {
 bool EventFile::nextEvent() {
 
     if (ientry_ < 0 && parent_) {
-        if (!parent_->tree_)
-            return false;
+        if (!parent_->tree_) {
+	    EXCEPTION_RAISE("EventFile", "No event tree in the file");
+	}
         tree_ = parent_->tree_->CloneTree(0);
         event_->setInputTree(parent_->tree_);
         event_->setOutputTree(tree_);
@@ -102,8 +103,9 @@ bool EventFile::nextEvent() {
     }
 
     if (parent_) {
-        if (!parent_->nextEvent())
+        if (!parent_->nextEvent()) {
             return false;
+	}
         parent_->tree_->GetEntry(parent_->ientry_);
         ientry_ = parent_->ientry_;
         event_->nextEvent();
@@ -115,8 +117,9 @@ bool EventFile::nextEvent() {
         // if we are reading, move the pointer
         if (!isOutputFile_) {
 
-            if (ientry_ + 1 >= entries_)
-                return false;
+            if (ientry_ + 1 >= entries_) {
+                return false;		
+	    }
 
             ientry_++;
             tree_->LoadTree(ientry_);
