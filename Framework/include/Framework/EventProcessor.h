@@ -6,66 +6,148 @@
 #include <map>
 
 namespace event {
-  class Event;
+    class Event;
 }
 
 namespace ldmxsw {
 
-class ParameterSet;
-class Process;
-class EventProcessor;
+    class ParameterSet;
+    class Process;
+    class EventProcessor;
 
-typedef EventProcessor* EventProcessorMaker(const std::string& name, const Process& process);
+    /** Typedef for EventProcessorFactory use */
+    typedef EventProcessor* EventProcessorMaker(const std::string& name, const Process& process);
 
-/** Base class for a module
- */
-class EventProcessor {
+    /** Base class for all Event processing 
+     */
+    class EventProcessor {
 
-    public:
+	public:
 
-        EventProcessor(const std::string& name, const Process& process);
-    
-        virtual void configure(const ParameterSet&) { }
-        virtual void onFileOpen() { }
-        virtual void onFileClose() { }
-        virtual void onProcessStart() { }
-        virtual void onProcessEnd() { }
-        
+	/** Class constructor 
+	 *
+	 *@param name Name for this instance of the class.  Should not be
+	 * the class name, but rather a logical label for this instance of
+	 * the class, as more than one copy of a given class can be loaded
+	 * into a Process with different parameters.  Names should not include 
+	 * whitespace or special characters. 
+	 *@param process The Process class associated with EventProcessor,
+	 * provided by the framework
+	 */
+	EventProcessor(const std::string& name, const Process& process);
+
+	/** 
+	 * Callback for the EventProcessor to configure itself from the given set of parameters.
+	 * @param parameters ParameterSet for configuration
+	 */
+        virtual void configure(const ParameterSet& parameters) { }
+
+	/** Callback for the EventProcessor to take any necessary
+	 * action when the run being processed changes.
+	 * @param run The new run number
+	 */
+        virtual void onNewRun(int run) { }
+	
+	/** Callback for the EventProcessor to take any necessary
+	 * action when a new event input ROOT file is opened.  
+	 * @note This callback is rarely used.
+	 * @param filename Input event ROOT file name
+	 */
+        virtual void onFileOpen(const std::string& filename) { }
+	
+	/** Callback for the EventProcessor to take any necessary
+	 * action when a event input ROOT file is closed.  
+	 * @note This callback is rarely used.
+	 * @param filename Input event ROOT file name
+	 */
+        virtual void onFileClose(const std::string& filename) { }
+	
+	/** Callback for the EventProcessor to take any necessary
+	 * action when the processing of events starts, such as
+	 * creating histograms.
+	 */
+	virtual void onProcessStart() { }
+
+	/** Callback for the EventProcessor to take any necessary
+	 * action when the processing of events finishes, such as
+	 * calculating job-summary quantities
+	 */
+	virtual void onProcessEnd() { }
+
+	/** Internal function which is part of the EventProcessorFactory machinery */
         static void declare(const std::string& classname, int classtype,EventProcessorMaker*);
 
-    protected:
+	protected:
 
-      const Process& process_;    
+	/** Handle to the Process */
+	const Process& process_;    
 
-    private:
-      std::string name_;
-};
+	private:
+	/** The name of the EventProcessor */
+	std::string name_;
+    };
     
-/** Base class for a module which produces a data product (thus needs a mutable copy of the event)
- */
-class Producer : public EventProcessor {
+    /** Base class for a module which produces a data product (thus needs a mutable copy of the event)
+     */
+    class Producer : public EventProcessor {
 
-    public:
-    
+	public:
+
+	/** Constant used to track EventProcessor types by the EventProcessorFactory */
         static const int CLASSTYPE{1};
-        Producer(const std::string& name, const Process& process);
-    
-        virtual void produce(event::Event& event) = 0;    
-};
-    
-    
-/** Base class for a module which does not produce a data product (thus needs only a constant copy of the event)
- */
-class Analyzer : public EventProcessor {
-        
-    public:
 
-        static const int CLASSTYPE{2};
-        Analyzer(const std::string& name, const Process& process);
+	/** Class constructor 
+	 *
+	 *@param name Name for this instance of the class.  Should not be
+	 * the class name, but rather a logical label for this instance of
+	 * the class, as more than one copy of a given class can be loaded
+	 * into a Process with different parameters.  Names should not include 
+	 * whitespace or special characters. 
+	 *@param process The Process class associated with EventProcessor,
+	 * provided by the framework
+	 *@note Derived classes must have a constructor of the same interface, which is the
+	 * only constructor which will be called by the framework
+	 */
+        Producer(const std::string& name, const Process& process);
+
+	/**
+	 * Process the event and put new data products into it
+	 * @param event The Event to process
+	 */
+        virtual void produce(event::Event& event) = 0;    
+    };
     
+    
+    /** Base class for a module which does not produce a data product (thus needs only a constant copy of the event)
+     */
+    class Analyzer : public EventProcessor {
+        
+	public:
+
+	/** Constant used to track EventProcessor types by the EventProcessorFactory */
+        static const int CLASSTYPE{2};
+
+	/** Class constructor 
+	 *
+	 *@param name Name for this instance of the class.  Should not be
+	 * the class name, but rather a logical label for this instance of
+	 * the class, as more than one copy of a given class can be loaded
+	 * into a Process with different parameters.  Names should not include 
+	 * whitespace or special characters. 
+	 *@param process The Process class associated with EventProcessor,
+	 * provided by the framework
+	 *@note Derived classes must have a constructor of the same interface, which is the
+	 * only constructor which will be called by the framework
+	 */
+	Analyzer(const std::string& name, const Process& process);
+    
+	/**
+	 * Process the event and make histograms or summaries
+	 * @param event The Event to analyze
+	 */
         virtual void analyze(const event::Event& event) = 0;    
 
-};
+    };
 
 }
 
