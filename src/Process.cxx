@@ -88,7 +88,10 @@ namespace ldmxsw {
 		    } 
 		    EventFile* masterFile=(outFile)?(outFile):(&inFile);
 		    
-		    while (masterFile->nextEvent() && (eventLimit_ < 0 || (n_events_processed + 1) < eventLimit_)) {	      
+		    while (masterFile->nextEvent() && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
+			TTimeStamp t;
+			std::cout << "[ Process ] :  Processing " << n_events_processed+1 << " Run " << theEvent.getEventHeader()->getRun()
+				  << " Event " << theEvent.getEventHeader()->getEventNumber() << "  (" << t.AsString("lc") << ")" << std::endl;
 			for (auto module : sequence_) {
 			    if (dynamic_cast<Producer*>(module)) {
                                 (dynamic_cast<Producer*>(module))->produce(theEvent);
@@ -97,6 +100,10 @@ namespace ldmxsw {
                             }
                         }
 			n_events_processed++;
+			
+		    }
+		    if (eventLimit_ > 0 && n_events_processed==eventLimit_) {
+			std::cout << "[ Process ] : Reached event limit of " << eventLimit_ << " events\n";
 		    }
 
 		    if (outFile) {
