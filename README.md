@@ -18,7 +18,7 @@ You will need the following build tools available in your environment before beg
 
 ### Linux
 
-At this time, the software has been built and tested only on Linux, specifically a CentOS7 virtual machine.  Older Linux releases such as RHEL6 or SLC6 will require you to install and use a more up to date compiler (gcc 4.8).
+The software has been built and tested on CentOS7 and RHEL6.  Using an older Linux releases such as RHEL6 or SLC6 will require you to install and use a more up to date compiler (gcc 4.8 is preferable) than the default system one.
 
 ### CMake
 
