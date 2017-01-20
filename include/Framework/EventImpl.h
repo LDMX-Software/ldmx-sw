@@ -20,23 +20,24 @@ class TBranch;
 // STL
 #include <string>
 #include <map>
+#include <set>
 
 namespace ldmxsw {
 
-/**
- * @class EventImpl
- * @brief Implements an event buffer system for storing event data
- *
- * @note
- * Event data is stored in ROOT trees and branches, which can be added
- * on the fly.  The same TClonesArray and TObject pointers should be
- * used to add objects and collections from user code, as the class will
- * add a data structure or new ones automatically.
- */
-class EventImpl : public event::Event {
+    /**
+     * @class EventImpl
+     * @brief Implements an event buffer system for storing event data
+     *
+     * @note
+     * Event data is stored in ROOT trees and branches, which can be added
+     * on the fly.  The same TClonesArray and TObject pointers should be
+     * used to add objects and collections from user code, as the class will
+     * add a data structure or new ones automatically.
+     */
+    class EventImpl : public event::Event {
 
-    public:
-  
+	public:
+
         /**
          * Class constructor.
          * @param passName The default pass name for adding event data.
@@ -47,9 +48,7 @@ class EventImpl : public event::Event {
          * Class destructor.
          */
         virtual ~EventImpl();
-  
-    /** ********* Implementation of base class methods  ********** **/
-  
+
         /**
          * Get the event header
          */
@@ -61,9 +60,8 @@ class EventImpl : public event::Event {
          * @param tca The clones array to add.
          */
         virtual void add(const std::string& collectionName, TClonesArray* tca);
-  
-  
-       /**
+
+	/**
          * Adds a general object to the event/tree.
          * @param name The name of the object.
          * @param obj The object to add.
@@ -77,7 +75,18 @@ class EventImpl : public event::Event {
          */
         virtual void add(const std::string& name, TObject* obj);
   
-    protected:
+	/**
+         * Add the given object to the named TClonesArray collection
+	 * Objects can only be added to a TClonesArray during the current pass -- TClonesArrays loaded
+	 * from the input data file are not allowed to be changed.
+	 * @note Object types must implement TObject::Copy()
+	 * @param name Name of the collection
+	 * @param obj Object to be appended to the collection
+         */
+        virtual void addToCollection(const std::string& name, const TObject& obj);
+      
+	protected:
+
         /**
          * Get an object from the event using a custom pass name.
          * @param collectionName The collection name.
@@ -86,9 +95,11 @@ class EventImpl : public event::Event {
         virtual const TObject* getReal(const std::string& collectionName, const std::string& passName, bool mustExist);
   
     public:
-      
-      /** ********* Functionality for storage  ********** **/
+
+	public:
     
+	/** ********* Functionality for storage  ********** **/
+
     
         event::EventHeader& getEventHeaderMutable() const { return *eventHeader_; }
       
@@ -163,9 +174,9 @@ class EventImpl : public event::Event {
         std::string getPassName() {
             return passName_;
         }
-    
-    private:
-    
+
+	private:
+
         /**
          * The event header object (as pointer)
          */
@@ -222,14 +233,18 @@ class EventImpl : public event::Event {
          * Names of all branches
          */
         std::vector<std::string> branchNames_;
-    
+
+	/**
+         * Names of branches filled during this event
+         */
+        std::set<std::string> branchesFilled_;
     
       
         /**
          * Efficiency cache for empty pass name lookups
          */
         mutable std::map<std::string,std::string> knownLookups_;
-};
+    };
 
 }
 
