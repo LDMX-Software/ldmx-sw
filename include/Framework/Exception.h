@@ -6,41 +6,91 @@
 
 namespace ldmxsw {
 
-/** Standard base exception class with some useful output information
- */
-class Exception : public std::exception {
+    /** Standard base exception class with some useful output information
+     *
+     * It is strongly recommended to use the EXCEPTION_RAISE macro to throw exceptions.
+     */
+    class Exception : public std::exception {
 
-    public:
-
+	public:
+	/** 
+	 * Empty constructor
+	 */
         Exception() throw() { }
 
+	/** Constructor
+	 * @param name Name of the exeception
+	 * @param message Extended message describing the exception
+	 * @param module Filename in the source code where the exception occurred
+	 * @param line Line in the source code where the exception occurred
+	 * @param function Function in which the exception occurred
+	 */
         Exception( const std::string& name, const std::string& message, const std::string& module, int line, const std::string& function ) : name_{name},message_{message},module_{module},function_{function},line_{line} { }
 
-        virtual ~Exception() throw() { }
-    
+
+        /**
+	 * Class destructor 
+	 */
+	virtual ~Exception() throw() { }
+
+	/** 
+	 * Get the name of the exception
+	 */
         const std::string& name() const throw() { return name_; }
 
+	/** 
+	 * Get the message of the exception
+	 */
         const std::string& message() const throw() { return message_; }
 
+	/** 
+	 * Get the source filename where the exception occurred
+	 */
         const std::string& module() const throw() { return module_; }
 
+	/** 
+	 * Get the function name where the exception occurred
+	 */
         const std::string& function() const throw() { return function_; }
         
+	/** 
+	 * Get the source line number where the exception occurred
+	 */
         int line() const throw() { return line_; }
 
-        const char* what () const throw() { return message_.c_str(); }
+	/** 
+	 * Error message
+	 */
+        virtual const char* what () const throw() { return message_.c_str(); }
 
-    private:
+	private:
 
-        std::string name_, message_, module_, function_;
+	/** Exception name */
+        std::string name_;
+	/** Error message */
+	std::string message_;
+	/** Source filename where the exception occurred */
+	std::string module_;
+	/** Function name where the exception occurred */
+	std::string function_;
+	/** Source line number where the exception occurred */
         int line_;
-};
+    };
 
   
 }
 
-#define EXCEPTION_RAISE( EXCEPTION, MSG ) \
-throw Exception( EXCEPTION, MSG, __FILE__, __LINE__, __FUNCTION__)
+/** @def EXCEPTION_RAISE(EXCEPTION, MSG) 
+ * 
+ * Utility macro for throwing exceptions, automatically including the
+ * necessary file, line, and function information.  The user need only
+ * supply the exception name and error message
+ * @param EXCEPTION Exception name
+ * @param MSG Error message
+ */
+
+#define EXCEPTION_RAISE( EXCEPTION, MSG )				\
+    throw Exception( EXCEPTION, MSG, __FILE__, __LINE__, __FUNCTION__)
 
 
 #endif
