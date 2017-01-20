@@ -27,16 +27,12 @@ class HcalHit : public CalorimeterHit {
         /**
          * Class constructor.
          */
-        HcalHit() {
-            ;
-        }
+        HcalHit() {;}
 
         /**
          * Class destructor.
          */
-        virtual ~HcalHit() {
-            ;
-        }
+        virtual ~HcalHit() {;}
 
         /**
          * Clear the data in the object.

@@ -105,7 +105,6 @@ class SimParticle: public TObject {
 
         /**
          * Get the mass of the particle [GeV].
-         * FIXME: Change to MeV.
          * @return The mass of the particle.
          */
         float getMass() {
