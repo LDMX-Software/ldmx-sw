@@ -211,6 +211,7 @@ namespace ldmxsw {
       p->addDropKeepRule(rule);
     }
     if (run_>0) p->setRunNumber(run_);
+    p->setEventLimit(eventLimit_);
     
     return p;
   }
