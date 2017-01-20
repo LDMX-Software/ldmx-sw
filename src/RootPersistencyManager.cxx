@@ -145,7 +145,6 @@ void RootPersistencyManager::writeHeader(const G4Event* anEvent, event::Event* o
     if (anEvent->GetPrimaryVertex(0)) {
         eventHeader.setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
     }
-    outputEvent->add("EventHeader", &eventHeader_);
 
     if (m_verbose > 1) {
         std::cout << "[ RootPersistencyManager ] : Wrote event header for event ID " << anEvent->GetEventID() << std::endl;
