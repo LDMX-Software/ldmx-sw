@@ -24,7 +24,6 @@ private:
     int endLayer_;
 
     TString algoName_;
-    std::string algoNametemp;
     event::TriggerResult result_;
 
 };
