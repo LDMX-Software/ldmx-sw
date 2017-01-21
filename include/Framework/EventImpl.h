@@ -32,7 +32,7 @@ namespace ldmxsw {
  * Event data is stored in ROOT trees and branches, which can be added
  * on the fly.  The same TClonesArray and TObject pointers should be
  * used to add objects and collections from user code, as the class will
- * add a data structure or new ones automatically.
+ * add a data structure for new ones automatically.
  */
 class EventImpl : public event::Event {
 
