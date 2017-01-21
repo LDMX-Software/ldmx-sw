@@ -1,5 +1,5 @@
 /**
- * @file EventImpl.h
+ * @file Exception.h
  * @brief Class that provides a standard base exception class
  * @author Jeremy Mans, University of Minnesota
  */
