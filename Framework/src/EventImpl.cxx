@@ -103,7 +103,7 @@ void EventImpl::add(const std::string& collectionName, TObject* to) {
 }
 
   
-  const TObject* EventImpl::getReal(const std::string& collectionName, const std::string& passName, bool mustExist) {
+const TObject* EventImpl::getReal(const std::string& collectionName, const std::string& passName, bool mustExist) {
 
     std::string branchName;
     if (collectionName == "EventHeader")
@@ -231,7 +231,7 @@ bool EventImpl::nextEvent() {
     return true;
 }
 
-  void EventImpl::beforeFill() {
+void EventImpl::beforeFill() {
     if (inputTree_==0 && branchesFilled_.find("EventHeader")==branchesFilled_.end()) {
       add("EventHeader",eventHeader_);
     }
