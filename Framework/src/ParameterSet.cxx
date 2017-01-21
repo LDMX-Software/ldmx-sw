@@ -6,6 +6,7 @@ namespace ldmxsw {
 void ParameterSet::insert(const std::string& name, int value) {
     elements_[name] = Element(value);
 }
+
 int ParameterSet::getInteger(const std::string& name) const {
     std::map<std::string, Element>::const_iterator ptr = elements_.find(name);
     if (ptr == elements_.end()) {
@@ -16,6 +17,7 @@ int ParameterSet::getInteger(const std::string& name) const {
     }
     return ptr->second.intval_;
 }
+
 int ParameterSet::getInteger(const std::string& name, int defaultValue) const {
     std::map<std::string, Element>::const_iterator ptr = elements_.find(name);
     if (ptr == elements_.end()) {
@@ -30,6 +32,7 @@ int ParameterSet::getInteger(const std::string& name, int defaultValue) const {
 void ParameterSet::insert(const std::string& name, double value) {
     elements_[name] = Element(value);
 }
+
 double ParameterSet::getDouble(const std::string& name) const {
     std::map<std::string, Element>::const_iterator ptr = elements_.find(name);
     if (ptr == elements_.end()) {
@@ -40,6 +43,7 @@ double ParameterSet::getDouble(const std::string& name) const {
     }
     return ptr->second.doubleval_;
 }
+
 double ParameterSet::getDouble(const std::string& name, double defaultValue) const {
     std::map<std::string, Element>::const_iterator ptr = elements_.find(name);
     if (ptr == elements_.end()) {
@@ -54,6 +58,7 @@ double ParameterSet::getDouble(const std::string& name, double defaultValue) con
 void ParameterSet::insert(const std::string& name, const std::string& value) {
     elements_[name] = Element(value);
 }
+
 const std::string& ParameterSet::getString(const std::string& name) const {
     std::map<std::string, Element>::const_iterator ptr = elements_.find(name);
     if (ptr == elements_.end()) {
@@ -64,6 +69,7 @@ const std::string& ParameterSet::getString(const std::string& name) const {
     }
     return ptr->second.strval_;
 }
+
 const std::string& ParameterSet::getString(const std::string& name, const std::string& defaultValue) const {
     std::map<std::string, Element>::const_iterator ptr = elements_.find(name);
     if (ptr == elements_.end()) {
@@ -94,6 +100,7 @@ const std::vector<int>& ParameterSet::getVInteger(const std::string& name) const
     }
     return ptr->second.ivecVal_;
 }
+
 const std::vector<int>& ParameterSet::getVInteger(const std::string& name, const std::vector<int>& defaultValue) const {
     std::map<std::string, Element>::const_iterator ptr = elements_.find(name);
     if (ptr == elements_.end()) {
@@ -124,6 +131,7 @@ const std::vector<double>& ParameterSet::getVDouble(const std::string& name) con
     }
     return ptr->second.dvecVal_;
 }
+
 const std::vector<double>& ParameterSet::getVDouble(const std::string& name, const std::vector<double>& defaultValue) const {
     std::map<std::string, Element>::const_iterator ptr = elements_.find(name);
     if (ptr == elements_.end()) {
