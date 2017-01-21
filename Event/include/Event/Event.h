@@ -18,6 +18,8 @@
 #include <string>
 #include <map>
 
+namespace event {
+
 /**
  * @class Event
  * @brief Defines an interface for accessing event data
@@ -26,8 +28,6 @@
  * A backing EventImpl object provides the actual data collections
  * via ROOT data structures (trees and branches).  
  */
-namespace event {
-
 class Event {
 
     public:
