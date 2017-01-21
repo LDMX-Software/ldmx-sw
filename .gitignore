@@ -6,6 +6,5 @@ build/
 rebuild.sh
 config/doxygen/doxygen.conf
 *~
-__init__.py
 *#
 *.pyc
