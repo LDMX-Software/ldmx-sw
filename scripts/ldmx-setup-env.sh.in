@@ -14,18 +14,11 @@
 # setup ROOT env
 . @ROOT_DIR@/bin/thisroot.sh
 
-echo "after root setup ..."
-echo PYTHONPATH=$PYTHONPATH
-echo
-
 # set load library path for module libs
 export LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:$LD_LIBRARY_PATH
 
 # set python path
 export PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python:$PYTHONPATH
-
-echo "after ldmx setup ..."
-echo PYTHONPATH=$PYTHONPATH
 
 # add bin dir to PATH
 export PATH=@CMAKE_INSTALL_PREFIX@/bin:$PATH
