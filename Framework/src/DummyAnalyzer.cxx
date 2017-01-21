@@ -1,8 +1,20 @@
+/**
+ * @file DummyAnalyzer.cxx
+ * @brief Class that defines a dummy Analyzer implementation that just prints some messages
+ * @author Jeremy Mans, University of Minnesota
+ */
+
 #include "Framework/EventProcessor.h"
 #include <iostream>
 
 namespace dummy {
+
+/**
+ * @class DummyAnalyzer
+ * @brief An dummy Analyzer implementation that just prints some messages
+ */
 class DummyAnalyzer : public ldmxsw::Analyzer {
+
     public:
         DummyAnalyzer(const std::string& name, const ldmxsw::Process& process) :
                 ldmxsw::Analyzer(name, process) {
