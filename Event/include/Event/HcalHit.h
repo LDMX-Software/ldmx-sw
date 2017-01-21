@@ -1,5 +1,5 @@
 /**
- * @file EcalHit.h
+ * @file HcalHit.h
  * @brief Class that stores Stores reconstructed hit information from the HCAL
  * @author Jeremy Mans, University of Minnesota
  */
