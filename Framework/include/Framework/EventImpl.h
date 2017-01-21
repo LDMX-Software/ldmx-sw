@@ -189,17 +189,17 @@ class EventImpl : public event::Event {
         /**
          * The event header object (as pointer).
          */
-        event::EventHeader* eventHeader_ { nullptr };
+        event::EventHeader* eventHeader_{nullptr};
 
         /**
          * Number of entries in the tree.
          */
-        Long64_t entries_ { -1 };
+        Long64_t entries_{-1};
 
         /**
          * Current entry in the tree.
          */
-        Long64_t ientry_ { -1 };
+        Long64_t ientry_{-1};
 
         /**
          * The default pass name.
@@ -209,12 +209,12 @@ class EventImpl : public event::Event {
         /**
          * The output tree for writing a new file.
          */
-        TTree* outputTree_ { nullptr };
+        TTree* outputTree_{nullptr};
 
         /**
          * The input tree for reading existing data.
          */
-        TTree* inputTree_ { nullptr };
+        TTree* inputTree_{nullptr};
 
         /**
          * Map of names to branches.
@@ -238,17 +238,17 @@ class EventImpl : public event::Event {
         std::vector<TBranch*> newBranches_;
 
         /**
-         * Names of all branches
+         * Names of all branches.
          */
         std::vector<std::string> branchNames_;
 
         /**
-         * Names of branches filled during this event
+         * Names of branches filled during this event.
          */
         std::set<std::string> branchesFilled_;
 
         /**
-         * Efficiency cache for empty pass name lookups
+         * Efficiency cache for empty pass name lookups.
          */
         mutable std::map<std::string, std::string> knownLookups_;
 };
