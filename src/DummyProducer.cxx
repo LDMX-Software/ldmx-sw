@@ -1,3 +1,9 @@
+/**
+ * @file DummyProducer.cxx
+ * @brief Class that defines a dummy Producer implementation that adds some random data to the event
+ * @author Jeremy Mans, University of Minnesota
+ */
+
 #include "Framework/EventProcessor.h"
 #include "Framework/ParameterSet.h"
 #include <iostream>
@@ -6,50 +12,61 @@
 #include "Event/Event.h"
 #include "TRandom.h"
 
+/**
+ * @class DummyProducer
+ * @brief Defines a dummy Producer implementation that adds some random data to the event
+ */
 class DummyProducer : public ldmxsw::Producer {
-        TRandom random_;
+
     public:
+
         DummyProducer(const std::string& name, const ldmxsw::Process& process) :
                 ldmxsw::Producer(name, process) {
         }
 
         virtual void configure(const ldmxsw::ParameterSet& ps) {
-            n_particles = ps.getInteger("n_particles");
-            ave_energy = ps.getDouble("ave_energy");
-            direction = ps.getVDouble("direction");
+            nParticles_ = ps.getInteger("nParticles_");
+            aveEnergy_ = ps.getDouble("aveEnergy_");
+            direction_ = ps.getVDouble("direction_");
         }
 
         virtual void produce(event::Event& event) {
             std::cout << "DummyProducer: Analyzing an event!" << std::endl;
 
-            int np = random_.Poisson(n_particles);
+            int np = random_.Poisson(nParticles_);
             for (int i = 0; i < np; i++) {
-                event::SimParticle* a = (event::SimParticle*) tca->ConstructedAt(i);
+                event::SimParticle* a = (event::SimParticle*) tca_->ConstructedAt(i);
                 do {
-                    a->setEnergy(random_.Gaus(ave_energy, 1.0));
+                    a->setEnergy(random_.Gaus(aveEnergy_, 1.0));
                 } while (a->getEnergy() < 0);
                 a->setPdgID(i + 1);
             }
-            event.add("simParticles", tca);
+            event.add("simParticles", tca_);
         }
+
         virtual void onFileOpen() {
             std::cout << "DummyProducer: Opening a file!" << std::endl;
         }
+
         virtual void onFileClose() {
             std::cout << "DummyProducer: Closing a file!" << std::endl;
         }
+
         virtual void onProcessStart() {
             std::cout << "DummyProducer: Starting processing!" << std::endl;
-            tca = new TClonesArray("event::SimParticle", 1000);
+            tca_ = new TClonesArray("event::SimParticle", 1000);
         }
+
         virtual void onProcessEnd() {
             std::cout << "DummyProducer: Finishing processing!" << std::endl;
         }
+
     private:
-        TClonesArray* tca;
-        int n_particles;
-        double ave_energy;
-        std::vector<double> direction;
+        TClonesArray* tca_{nullptr};
+        int nParticles_{0};
+        double aveEnergy_{0};
+        std::vector<double> direction_;
+        TRandom random_;
 };
 
 DECLARE_ANALYZER(DummyProducer);

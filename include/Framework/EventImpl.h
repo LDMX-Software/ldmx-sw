@@ -150,6 +150,7 @@ class EventImpl : public event::Event {
          */
         // TClonesArray* getMutable(const std::string& collectionName,const std::string& passName);
         // TObject* getMutable(const std::string& collectionName, const std::string& passName);
+
         /**
          * Go to the next event by incrementing the entry index.
          * @return Hard-coded to return true.
