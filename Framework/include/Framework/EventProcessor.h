@@ -33,7 +33,7 @@ class EventProcessor {
     public:
 
         /**
-         * Class constructor
+         * Class constructor.
          * @param name Name for this instance of the class.
          * @param process The Process class associated with EventProcessor, provided by the framework.
          *

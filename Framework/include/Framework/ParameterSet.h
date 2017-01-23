@@ -158,6 +158,7 @@ class ParameterSet {
         /**
          * @struct Element
          * @brief Backing data structure containing parameter values
+         *
          * @todo Fully document me!
          */
         struct Element {

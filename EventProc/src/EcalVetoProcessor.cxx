@@ -10,6 +10,8 @@
 #include "Event/Event.h"
 #include <algorithm>
 
+using detdescr::EcalHexReadout;
+
 const int EcalVetoProcessor::NUM_ECAL_LAYERS = 33;
 const int EcalVetoProcessor::BACK_ECAL_STARTING_LAYER = 20;
 const int EcalVetoProcessor::NUM_LAYERS_FOR_MED_CAL = 10;

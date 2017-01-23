@@ -25,15 +25,16 @@ class Process {
     public:
 
         /**
-         * Constructor.
+         * Class constructor.
          * @param passname Processing pass label
          */
         Process(const std::string& passname);
 
         /**
-         * Get the processing pass label
+         * Get the processing pass label.
+         * @return The processing pass label.
          */
-        const std::string& passname() const {
+        const std::string& getPassName() const {
             return passname_;
         }
 

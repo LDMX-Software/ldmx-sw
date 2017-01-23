@@ -50,7 +50,8 @@ class EventImpl : public event::Event {
         virtual ~EventImpl();
 
         /**
-         * Get the event header
+         * Get the event header.
+         * @return A constant copy of the event header.
          */
         virtual const event::EventHeader* getEventHeader() const {
             return eventHeader_;

@@ -81,19 +81,13 @@ class EventProcessorFactory {
                 EventProcessorMaker* maker;
         };
 
-        /**
-         * A map of names to processor containers.
-         */
+        /** A map of names to processor containers. */
         std::map<std::string, EventProcessorInfo> moduleInfo_;
 
-        /**
-         * A set of names of loaded libraries.
-         */
+        /** A set of names of loaded libraries. */
         std::set<std::string> librariesLoaded_;
 
-        /**
-         * Factor for creating the EventProcessor object.
-         */
+        /** Factor for creating the EventProcessor object. */
         static EventProcessorFactory theFactory_;
 };
 

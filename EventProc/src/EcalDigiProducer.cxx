@@ -12,6 +12,9 @@
 #include "Framework/ParameterSet.h"
 
 using event::SimCalorimeterHit;
+using detdescr::DetectorID;
+using detdescr::EcalDetectorID;
+using detdescr::EcalHexReadout;
 
 const int EcalDigiProducer::NUM_ECAL_LAYERS = 33;
 const int EcalDigiProducer::BACK_ECAL_STARTING_LAYER = 20;
@@ -34,8 +37,6 @@ void EcalDigiProducer::configure(const ldmxsw::ParameterSet& ps) {
 }
 
 void EcalDigiProducer::produce(event::Event& event) {
-
-    // looper over sim hits
 
     TClonesArray* ecalSimHits = (TClonesArray*) event.getCollection(event::EventConstants::ECAL_SIM_HITS);
     int numEcalSimHits = ecalSimHits->GetEntries();
