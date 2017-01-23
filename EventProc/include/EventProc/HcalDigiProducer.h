@@ -13,13 +13,8 @@
 
 // LDMX
 #include "DetDescr/DetectorID.h"
-#include "DetDescr/DefaultDetectorID.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Framework/EventProcessor.h"
-
-using detdescr::DetectorID;
-using detdescr::DefaultDetectorID;
-
 
 /**
  * @class HcalDigiProducer
@@ -57,7 +52,7 @@ class HcalDigiProducer : public ldmxsw::Producer {
         TRandom* random_{0};
         std::map<layer, zboundaries> hcalLayers_;
         bool verbose_{false};
-        DetectorID* detID_;
+        detdescr::DetectorID* detID_{nullptr};
 
         float meanNoise_{0};
         int nProcessed_{0};

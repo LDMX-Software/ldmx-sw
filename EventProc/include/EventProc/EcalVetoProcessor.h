@@ -21,10 +21,6 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 
-using detdescr::DetectorID;
-using detdescr::EcalDetectorID;
-using detdescr::EcalHexReadout;
-
 /**
  * @class EcalVetoProcessor
  * @brief Determines if event is vetoable using ECAL hit information
@@ -69,10 +65,10 @@ class EcalVetoProcessor : public ldmxsw::Producer {
         static const float RATIO_CUT;
 
         event::TriggerResult result_;
-        EcalDetectorID detID_;
+        detdescr::EcalDetectorID detID_;
         bool verbose_{false};
         bool doesPassVeto_{false};
-        EcalHexReadout* hexReadout_{nullptr};
+        detdescr::EcalHexReadout* hexReadout_{nullptr};
 };
 
 #endif

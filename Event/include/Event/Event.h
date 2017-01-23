@@ -59,7 +59,7 @@ class Event {
         }
 
         /**
-         * Check the existence of an object or collection with the
+         * Check for the existence of an object or collection with the
          * given name and pass name in the event.
          * @param name Name (label, not class name) given to the object when it was put into the event.
          * @param passName The process pass label which was in use when this object was put into the event, such as "sim" or "rerecov2".

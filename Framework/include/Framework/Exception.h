@@ -27,7 +27,8 @@ class Exception : public std::exception {
         Exception() throw () {
         }
 
-        /** Constructor
+        /**
+         * Class constructor.
          * @param name Name of the exception.
          * @param message Extended message describing the exception.
          * @param module Filename in the source code where the exception occurred.

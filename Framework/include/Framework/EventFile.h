@@ -77,8 +77,6 @@ class EventFile {
         /**
          * Prepare the next event.
          * @return If event was prepared/read successfully.
-         *
-         * @note This should be called before adding any data to the event.
          */
         bool nextEvent();
 
@@ -89,44 +87,28 @@ class EventFile {
 
     private:
 
-        /**
-         * The number of entries in the tree.
-         */
+        /** The number of entries in the tree. */
         Long64_t entries_{-1};
 
-        /**
-         * The current entry in the tree.
-         */
+        /** The current entry in the tree. */
         Long64_t ientry_{-1};
 
-        /**
-         * The file name.
-         */
+        /** The file name. */
         std::string fileName_;
 
-        /**
-         * True if file is an output file being written to disk.
-         */
+        /** True if file is an output file being written to disk. */
         bool isOutputFile_;
 
-        /**
-         * The backing TFile for this EventFile.
-         */
+        /** The backing TFile for this EventFile. */
         TFile* file_{nullptr};
 
-        /**
-         * The tree with event data.
-         */
+        /** The tree with event data. */
         TTree* tree_{nullptr};
 
-        /**
-         * A parent file containing event data.
-         */
+        /** A parent file containing event data. */
         EventFile* parent_{nullptr};
 
-        /**
-         * The object containing the actual event data (trees and branches).
-         */
+        /** The object containing the actual event data (trees and branches). */
         EventImpl* event_{nullptr};
 };
 }

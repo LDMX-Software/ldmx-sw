@@ -13,9 +13,11 @@
 
 #include <iostream>
 
-using event::SimCalorimeterHit;
-
+#include "DetDescr/DefaultDetectorID.h"
 #include "Event/SimCalorimeterHit.h"
+
+using event::SimCalorimeterHit;
+using detdescr::DefaultDetectorID;
 
 const float HcalDigiProducer::FIRST_LAYER_ZPOS = 569.5;
 const float HcalDigiProducer::LAYER_ZWIDTH = 60.;

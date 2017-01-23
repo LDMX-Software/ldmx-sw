@@ -82,7 +82,7 @@ class CalorimeterHit : public TObject {
 
         /**
          * Get the calorimetric energy of the hit, corrected for 
-         * sampling factors [MeV]
+         * sampling factors [MeV].
          * @return The energy of the hit
          */
         float getEnergy() const {
@@ -91,7 +91,7 @@ class CalorimeterHit : public TObject {
 
         /**
          * Set the calorimetric energy of the hit, corrected for 
-         * sampling factors [MeV]
+         * sampling factors [MeV].
          * @param energy The energy of the hit
          */
         void setEnergy(float energy) {
@@ -99,7 +99,7 @@ class CalorimeterHit : public TObject {
         }
 
         /**
-         * Get the time of the hit [ns]
+         * Get the time of the hit [ns].
          * @return The time of the hit
          */
         float getTime() const {
@@ -107,7 +107,7 @@ class CalorimeterHit : public TObject {
         }
 
         /**
-         * Set the time of the hit [ns]
+         * Set the time of the hit [ns].
          * @param time The time of the hit
          */
         void setTime(float time) {
@@ -115,7 +115,7 @@ class CalorimeterHit : public TObject {
         }
 
         /**
-         * Get the layer of the hit from the ID
+         * Get the layer of the hit from the ID.
          */
         int getLayer() const;
 
