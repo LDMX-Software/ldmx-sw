@@ -18,7 +18,7 @@
 //----------//
 #include "SimPlugins/UserActionPlugin.h"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class TargetPhotonuclearBiasingPlugin

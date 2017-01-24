@@ -1,8 +1,8 @@
 #include "Event/TriggerResult.h"
 
-ClassImp(event::TriggerResult)
+ClassImp(ldmx::TriggerResult)
 
-namespace event {
+namespace ldmx {
 
 TriggerResult::TriggerResult() :
         TObject() {

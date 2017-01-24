@@ -13,7 +13,7 @@
 #include "G4Step.hh"
 #include "G4ClassificationOfNewTrack.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class UserActionPlugin

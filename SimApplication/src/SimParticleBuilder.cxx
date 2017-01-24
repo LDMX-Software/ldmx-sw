@@ -13,21 +13,18 @@
 #include "G4HCofThisEvent.hh"
 #include "G4VTrajectoryPoint.hh"
 
-using event::Event;
-using event::EventConstants;
-
-namespace sim {
+namespace ldmx {
 
 SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {
     trackMap_ = TrackMap::getInstance();
-    outputParticleColl_ = new TClonesArray("event::SimParticle", 50);
+    outputParticleColl_ = new TClonesArray(EventConstants::SIM_PARTICLE.c_str(), 50);
 }
 
 SimParticleBuilder::~SimParticleBuilder() {
     delete outputParticleColl_;
 }
 
-void SimParticleBuilder::buildSimParticles(event::Event* outputEvent) {
+void SimParticleBuilder::buildSimParticles(ldmx::Event* outputEvent) {
 
     // Clear the output particle collection.
     outputParticleColl_->Clear("C");

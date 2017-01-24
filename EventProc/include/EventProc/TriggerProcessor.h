@@ -12,6 +12,8 @@
 #include "Framework/ParameterSet.h"
 #include "Framework/EventProcessor.h"
 
+namespace ldmx {
+
 /**
  * @class TriggerProcessor
  * @brief Provides a trigger decision for recon using a TriggerResult object.
@@ -23,15 +25,15 @@
  * executed and the decision along with the algorithm name and relevant variables
  * are stored in a TriggerResult object which is added to the collection.
  */
-class TriggerProcessor : public ldmxsw::Producer {
+class TriggerProcessor : public Producer {
 
     public:
 
         /**
          * Class constructor.
          */
-        TriggerProcessor(const std::string& name, const ldmxsw::Process& process) :
-                ldmxsw::Producer(name, process) {
+        TriggerProcessor(const std::string& name, const Process& process) :
+                Producer(name, process) {
         }
 
         /**
@@ -45,7 +47,7 @@ class TriggerProcessor : public ldmxsw::Producer {
          * @param pSet A set containing parameters to be used
          * by the trigger algorithm.
          */
-        virtual void configure(const ldmxsw::ParameterSet& pSet);
+        virtual void configure(const ParameterSet& pSet);
 
         /**
          * Run the trigger algorithm and create a TriggerResult
@@ -54,7 +56,7 @@ class TriggerProcessor : public ldmxsw::Producer {
          * etc.
          * param event The event to run trigger algorithm on.
          */
-        virtual void produce(event::Event& event);
+        virtual void produce(Event& event);
 
     private:
 
@@ -77,8 +79,10 @@ class TriggerProcessor : public ldmxsw::Producer {
         TString algoName_;
 
         /** Object to hold trigger results and variables */
-        event::TriggerResult result_;
+        TriggerResult result_;
 
 };
+
+}
 
 #endif

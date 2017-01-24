@@ -16,11 +16,13 @@
 #include "Event/SimCalorimeterHit.h"
 #include "Framework/EventProcessor.h"
 
+namespace ldmx {
+
 /**
  * @class HcalDigiProducer
  * @brief Performs digitization of simulated HCal data
  */
-class HcalDigiProducer : public ldmxsw::Producer {
+class HcalDigiProducer : public ldmx::Producer {
 
     public:
 
@@ -28,7 +30,7 @@ class HcalDigiProducer : public ldmxsw::Producer {
 
         typedef std::pair<double, double> zboundaries;
 
-        HcalDigiProducer(const std::string& name, const ldmxsw::Process& process);
+        HcalDigiProducer(const std::string& name, const ldmx::Process& process);
 
         virtual ~HcalDigiProducer() {
             delete hits_;
@@ -36,9 +38,9 @@ class HcalDigiProducer : public ldmxsw::Producer {
                 delete random_;
         }
 
-        virtual void configure(const ldmxsw::ParameterSet&);
+        virtual void configure(const ldmx::ParameterSet&);
 
-        virtual void produce(event::Event& event);
+        virtual void produce(Event& event);
 
     private:
 
@@ -52,10 +54,12 @@ class HcalDigiProducer : public ldmxsw::Producer {
         TRandom* random_{0};
         std::map<layer, zboundaries> hcalLayers_;
         bool verbose_{false};
-        detdescr::DetectorID* detID_{nullptr};
+        DetectorID* detID_{nullptr};
 
         float meanNoise_{0};
         int nProcessed_{0};
 };
+
+}
 
 #endif

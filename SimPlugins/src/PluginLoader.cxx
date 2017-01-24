@@ -2,7 +2,7 @@
 
 #include <dlfcn.h>
 
-namespace sim {
+namespace ldmx {
 
 UserActionPlugin* PluginLoader::create(std::string pluginName, std::string libName) {
 

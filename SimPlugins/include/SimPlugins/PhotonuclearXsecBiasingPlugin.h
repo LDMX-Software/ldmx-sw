@@ -22,7 +22,7 @@
 #include "SimPlugins/UserActionPlugin.h"
 #include "SimPlugins/PhotonuclearXsecBiasingMessenger.h"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class PhotonuclearXsecBiasingPlugin

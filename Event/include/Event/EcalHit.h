@@ -10,7 +10,7 @@
 // ROOT
 #include "Event/CalorimeterHit.h"
 
-namespace event {
+namespace ldmx {
 
 /**
  * @class EcalHit

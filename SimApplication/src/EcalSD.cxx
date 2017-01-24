@@ -11,9 +11,7 @@
 #include "G4Geantino.hh"
 #include "G4ChargedGeantino.hh"
 
-using detdescr::EcalHexReadout;
-
-namespace sim {
+namespace ldmx {
 
 EcalSD::EcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID ) :
 		CalorimeterSD(name, theCollectionName, subdetID, detID), hitMap_(new EcalHexReadout) {

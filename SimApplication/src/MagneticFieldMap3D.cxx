@@ -12,7 +12,7 @@
 
 using namespace std;
 
-namespace sim {
+namespace ldmx {
 
 MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset, double yOffset, double zOffset) :
         nx_(0), ny_(0), nz_(0), xOffset_(xOffset), yOffset_(yOffset), zOffset_(zOffset), invertX_(false), invertY_(false), invertZ_(false) {

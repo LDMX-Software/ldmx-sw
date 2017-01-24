@@ -10,7 +10,7 @@
 // Geant4
 #include "G4VisAttributes.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class VisAttributesStore

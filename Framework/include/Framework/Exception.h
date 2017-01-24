@@ -10,7 +10,7 @@
 #include <exception>
 #include <string>
 
-namespace ldmxsw {
+namespace ldmx {
 
 /**
  * @class Exception

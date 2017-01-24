@@ -17,7 +17,7 @@
  * @namespace detdescr
  * @brief Detector description and geometry classes
  */
-namespace detdescr {
+namespace ldmx {
 
 /**
  * @class DetectorID

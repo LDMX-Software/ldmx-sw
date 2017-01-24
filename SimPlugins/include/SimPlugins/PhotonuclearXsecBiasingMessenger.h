@@ -9,7 +9,7 @@
 
 #include "SimPlugins/UserActionPluginMessenger.h"
 
-namespace sim {
+namespace ldmx {
 
 // Forward declare to avoid circular dependency in headers.
 class PhotonuclearXsecBiasingPlugin;

@@ -3,7 +3,7 @@
 // Geant4
 #include "G4TrajectoryPoint.hh"
 
-namespace sim {
+namespace ldmx {
 
 G4Allocator<Trajectory> TrajectoryAllocator;
 

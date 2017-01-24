@@ -9,7 +9,7 @@
 
 #include "SimPlugins/PluginManager.h"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class PluginManagerAccessor

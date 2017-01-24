@@ -1,6 +1,6 @@
 #include "DetDescr/DetectorID.h"
 
-namespace detdescr {
+namespace ldmx {
 
 DetectorID::~DetectorID() {
     // Delete the field list and its objects as we assume this class owns it.

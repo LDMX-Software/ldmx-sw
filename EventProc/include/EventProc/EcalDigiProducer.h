@@ -20,16 +20,18 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 
-using event::SimCalorimeterHit;
-using detdescr::DetectorID;
-using detdescr::EcalDetectorID;
-using detdescr::EcalHexReadout;
+using ldmx::SimCalorimeterHit;
+using ldmx::DetectorID;
+using ldmx::EcalDetectorID;
+using ldmx::EcalHexReadout;
+
+namespace ldmx {
 
 /**
  * @class EcalDigiProducer
  * @brief Performs basic ECal digitization
  */
-class EcalDigiProducer : public ldmxsw::Producer {
+class EcalDigiProducer : public ldmx::Producer {
 
     public:
 
@@ -37,13 +39,13 @@ class EcalDigiProducer : public ldmxsw::Producer {
 
         typedef std::pair<int, float> cell_energy_pair;
 
-        EcalDigiProducer(const std::string& name, const ldmxsw::Process& process);
+        EcalDigiProducer(const std::string& name, const ldmx::Process& process);
 
         virtual ~EcalDigiProducer() {;}
 
-        virtual void configure(const ldmxsw::ParameterSet&);
+        virtual void configure(const ldmx::ParameterSet&);
 
-        virtual void produce(event::Event& event);
+        virtual void produce(ldmx::Event& event);
 
     private:
 
@@ -69,5 +71,7 @@ class EcalDigiProducer : public ldmxsw::Producer {
         float meanNoise_{0};
         float readoutThreshold_{0};
 };
+
+}
 
 #endif

@@ -3,9 +3,9 @@
 // STL
 #include <iostream>
 
-ClassImp(event::SimCalorimeterHit)
+ClassImp(ldmx::SimCalorimeterHit)
 
-namespace event {
+namespace ldmx {
 
 SimCalorimeterHit::SimCalorimeterHit()
     : TObject(), simParticleContribs_(new TRefArray) {

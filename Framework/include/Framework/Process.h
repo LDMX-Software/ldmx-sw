@@ -10,7 +10,7 @@
 #include "Framework/Exception.h"
 #include <vector>
 
-namespace ldmxsw {
+namespace ldmx {
 
 class EventProcessor;
 class EventFile;
