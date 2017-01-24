@@ -50,7 +50,7 @@ void EventImpl::add(const std::string& collectionName, TClonesArray* tca) {
 
 void EventImpl::addToCollection(const std::string& name, const TObject& obj) {
     std::string branchName;
-    if (name == EventConstants::EVENT_HEADER.c_str()) return; // no adding to the event header...
+    if (name == EventConstants::EVENT_HEADER) return; // no adding to the event header...
     branchName = makeBranchName(name);
 
     auto location = objectsOwned_.find(branchName);
@@ -80,7 +80,7 @@ void EventImpl::add(const std::string& collectionName, TObject* to) {
     }
 
     std::string branchName;
-    if (collectionName == EventConstants::EVENT_HEADER.c_str())
+    if (collectionName == EventConstants::EVENT_HEADER)
         branchName = collectionName;
     else
         branchName = makeBranchName(collectionName);
@@ -110,12 +110,12 @@ void EventImpl::add(const std::string& collectionName, TObject* to) {
 const TObject* EventImpl::getReal(const std::string& collectionName, const std::string& passName, bool mustExist) {
 
     std::string branchName;
-    if (collectionName == EventConstants::EVENT_HEADER.c_str())
+    if (collectionName == EventConstants::EVENT_HEADER)
         branchName = collectionName;
     else
         branchName = makeBranchName(collectionName, passName);
 
-    if (passName.empty() && collectionName != EventConstants::EVENT_HEADER.c_str()) {
+    if (passName.empty() && collectionName != EventConstants::EVENT_HEADER) {
         auto ptr = knownLookups_.find(collectionName);
         if (ptr != knownLookups_.end())
             branchName = ptr->second;
@@ -220,7 +220,7 @@ void EventImpl::setInputTree(TTree* tree) {
     inputTree_ = tree;
     entries_ = inputTree_->GetEntriesFast();
     branchNames_.clear();
-    eventHeader_ = get<EventHeader*>(EventConstants::EVENT_HEADER.c_str());
+    eventHeader_ = get<EventHeader*>(EventConstants::EVENT_HEADER);
 
     // find the names of all the existing branches
     TObjArray* branches = inputTree_->GetListOfBranches();
@@ -235,8 +235,8 @@ bool EventImpl::nextEvent() {
 }
 
 void EventImpl::beforeFill() {
-    if (inputTree_==0 && branchesFilled_.find(EventConstants::EVENT_HEADER.c_str())==branchesFilled_.end()) {
-      add(EventConstants::EVENT_HEADER.c_str(), eventHeader_);
+    if (inputTree_==0 && branchesFilled_.find(EventConstants::EVENT_HEADER)==branchesFilled_.end()) {
+      add(EventConstants::EVENT_HEADER, eventHeader_);
     }
   }
 
