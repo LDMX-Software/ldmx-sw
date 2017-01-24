@@ -10,7 +10,7 @@
 #include "G4Geantino.hh"
 #include "G4ChargedGeantino.hh"
 
-namespace sim {
+namespace ldmx {
 
 HcalSD::HcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
 		CalorimeterSD(name,theCollectionName,subdetID,detID) {;}

@@ -3,7 +3,7 @@
 // STL
 #include <string>
 
-namespace sim {
+namespace ldmx {
 
 RootPersistencyMessenger::RootPersistencyMessenger(RootPersistencyManager* rootIO)
     : rootIO_(rootIO) {

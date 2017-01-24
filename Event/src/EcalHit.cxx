@@ -3,9 +3,9 @@
 // STL
 #include <iostream>
 
-ClassImp(event::EcalHit)
+ClassImp(ldmx::EcalHit)
 
-namespace event {
+namespace ldmx {
 
 void EcalHit::Print(Option_t *option) const {
     std::cout << "EcalHit { " << "id: " << std::hex << getID() << std::dec

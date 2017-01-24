@@ -14,7 +14,7 @@
 // ROOT
 #include "TH2Poly.h"
 
-namespace detdescr {
+namespace ldmx {
 
 /**
  * @class EcalHexReadout

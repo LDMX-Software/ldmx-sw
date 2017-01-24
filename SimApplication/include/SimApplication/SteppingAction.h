@@ -13,7 +13,7 @@
 // Geant4
 #include "G4UserSteppingAction.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class SteppingAction

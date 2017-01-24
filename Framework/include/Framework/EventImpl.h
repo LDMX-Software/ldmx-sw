@@ -11,18 +11,18 @@
 #include "TObject.h"
 #include "TClonesArray.h"
 
-// LDMX-SW
+// LDMX
 #include "Event/Event.h"
-
-class TTree;
-class TBranch;
 
 // STL
 #include <string>
 #include <map>
 #include <set>
 
-namespace ldmxsw {
+class TTree;
+class TBranch;
+
+namespace ldmx {
 
 /**
  * @class EventImpl
@@ -34,7 +34,7 @@ namespace ldmxsw {
  * used to add objects and collections from user code, as the class will
  * add a data structure for new ones automatically.
  */
-class EventImpl : public event::Event {
+class EventImpl : public Event {
 
     public:
 
@@ -53,7 +53,7 @@ class EventImpl : public event::Event {
          * Get the event header.
          * @return A constant copy of the event header.
          */
-        virtual const event::EventHeader* getEventHeader() const {
+        virtual const EventHeader* getEventHeader() const {
             return eventHeader_;
         }
 
@@ -105,7 +105,7 @@ class EventImpl : public event::Event {
          * Get a mutable copy of the EventHeader object.
          * @return A mutable copy of the EventHeader object.
          */
-        event::EventHeader& getEventHeaderMutable() const {
+        EventHeader& getEventHeaderMutable() const {
             return *eventHeader_;
         }
 
@@ -191,7 +191,7 @@ class EventImpl : public event::Event {
         /**
          * The event header object (as pointer).
          */
-        event::EventHeader* eventHeader_{nullptr};
+        EventHeader* eventHeader_{nullptr};
 
         /**
          * Number of entries in the tree.

@@ -16,9 +16,7 @@
 #include "SimPlugins/PluginMessenger.h"
 #include "SimApplication/DetectorConstruction.h"
 
-using sim::PluginMessenger;
-
-namespace sim {
+namespace ldmx {
 
 /**
  * @class RunManager

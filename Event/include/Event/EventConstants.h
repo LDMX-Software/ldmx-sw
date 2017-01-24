@@ -9,7 +9,7 @@
 
 #include <string>
 
-namespace event {
+namespace ldmx {
 
 /**
  * @class EventConstants
@@ -36,6 +36,16 @@ class EventConstants {
         static const std::string TARGET_SIM_HITS;
         static const std::string TRIGGER_PAD_SIM_HITS;
         static const std::string TRIGGER_RESULT;
+
+        /*
+         * Type names, mostly for initializing clones arrays.
+         */
+        static const std::string ECAL_HIT;
+        static const std::string HCAL_HIT;
+        static const std::string SIM_PARTICLE;
+        static const std::string SIM_CALORIMETER_HIT;
+        static const std::string SIM_TRACKER_HIT;
+        static const std::string RUN_HEADER;
 
 }; // class EventConstants
 

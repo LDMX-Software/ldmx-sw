@@ -1,11 +1,17 @@
+// ROOT
 #include "TTree.h"
-#include "Framework/EventImpl.h"
-#include "Framework/Exception.h"
-#include <iostream>
 #include "TBranchElement.h"
 #include "TBranchClones.h"
 
-namespace ldmxsw {
+// LDMX
+#include "Event/EventConstants.h"
+#include "Framework/EventImpl.h"
+#include "Framework/Exception.h"
+
+// STL
+#include <iostream>
+
+namespace ldmx {
 
 EventImpl::EventImpl(const std::string& thePassName) :
         passName_(thePassName) {
@@ -44,7 +50,7 @@ void EventImpl::add(const std::string& collectionName, TClonesArray* tca) {
 
 void EventImpl::addToCollection(const std::string& name, const TObject& obj) {
     std::string branchName;
-    if (name == "EventHeader") return; // no adding to the event header... 
+    if (name == EventConstants::EVENT_HEADER.c_str()) return; // no adding to the event header...
     branchName = makeBranchName(name);
 
     auto location = objectsOwned_.find(branchName);
@@ -74,7 +80,7 @@ void EventImpl::add(const std::string& collectionName, TObject* to) {
     }
 
     std::string branchName;
-    if (collectionName == "EventHeader")
+    if (collectionName == EventConstants::EVENT_HEADER.c_str())
         branchName = collectionName;
     else
         branchName = makeBranchName(collectionName);
@@ -104,12 +110,12 @@ void EventImpl::add(const std::string& collectionName, TObject* to) {
 const TObject* EventImpl::getReal(const std::string& collectionName, const std::string& passName, bool mustExist) {
 
     std::string branchName;
-    if (collectionName == "EventHeader")
+    if (collectionName == EventConstants::EVENT_HEADER.c_str())
         branchName = collectionName;
     else
         branchName = makeBranchName(collectionName, passName);
 
-    if (passName.empty() && collectionName != "EventHeader") {
+    if (passName.empty() && collectionName != EventConstants::EVENT_HEADER.c_str()) {
         auto ptr = knownLookups_.find(collectionName);
         if (ptr != knownLookups_.end())
             branchName = ptr->second;
@@ -201,7 +207,7 @@ const TObject* EventImpl::getReal(const std::string& collectionName, const std::
 TTree* EventImpl::createTree() {
     outputTree_ = new TTree("LDMX_Events", "LDMX Events");
 
-    eventHeader_ = new event::EventHeader();
+    eventHeader_ = new EventHeader();
 
     return outputTree_;
 }
@@ -214,7 +220,7 @@ void EventImpl::setInputTree(TTree* tree) {
     inputTree_ = tree;
     entries_ = inputTree_->GetEntriesFast();
     branchNames_.clear();
-    eventHeader_ = get<event::EventHeader*>("EventHeader");
+    eventHeader_ = get<EventHeader*>(EventConstants::EVENT_HEADER.c_str());
 
     // find the names of all the existing branches
     TObjArray* branches = inputTree_->GetListOfBranches();
@@ -229,8 +235,8 @@ bool EventImpl::nextEvent() {
 }
 
 void EventImpl::beforeFill() {
-    if (inputTree_==0 && branchesFilled_.find("EventHeader")==branchesFilled_.end()) {
-      add("EventHeader",eventHeader_);
+    if (inputTree_==0 && branchesFilled_.find(EventConstants::EVENT_HEADER.c_str())==branchesFilled_.end()) {
+      add(EventConstants::EVENT_HEADER.c_str(), eventHeader_);
     }
   }
 

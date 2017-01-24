@@ -3,7 +3,7 @@
 // Geant4
 #include "G4ApplicationState.hh"
 
-namespace sim {
+namespace ldmx {
 
 SimApplicationMessenger::SimApplicationMessenger() {
 

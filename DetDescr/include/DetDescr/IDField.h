@@ -11,7 +11,7 @@
 #include <map>
 #include <vector>
 
-namespace detdescr {
+namespace ldmx {
 
 /**
  * @class IDField

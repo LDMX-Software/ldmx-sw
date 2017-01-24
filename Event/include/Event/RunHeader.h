@@ -14,7 +14,7 @@
 #include <string>
 #include <map>
 
-namespace event {
+namespace ldmx {
 
 /**
  * @class RunHeader

@@ -6,8 +6,8 @@
 #include <iostream>
 #include <stdexcept>
 
-using detdescr::IDField;
-using detdescr::DetectorID;
+using ldmx::IDField;
+using ldmx::DetectorID;
 
 int main(int, const char* argv[])  {
 

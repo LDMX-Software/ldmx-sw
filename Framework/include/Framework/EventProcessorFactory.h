@@ -7,12 +7,15 @@
 #ifndef FRAMEWORK_EVENTPROCESSORFACTORY_H_
 #define FRAMEWORK_EVENTPROCESSORFACTORY_H_
 
+// LDMX
+#include "Framework/EventProcessor.h"
+
+// STL
 #include <map>
 #include <set>
 #include <vector>
-#include "Framework/EventProcessor.h"
 
-namespace ldmxsw {
+namespace ldmx {
 
 /**
  * @class EventProcessorFactory

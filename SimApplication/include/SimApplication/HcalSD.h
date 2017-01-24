@@ -10,7 +10,7 @@
 // LDMX
 #include "SimApplication/CalorimeterSD.h"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class HcalSD

@@ -10,7 +10,7 @@
 #include "Event/Event.h"
 #include <algorithm>
 
-using detdescr::EcalHexReadout;
+namespace ldmx {
 
 const int EcalVetoProcessor::NUM_ECAL_LAYERS = 33;
 const int EcalVetoProcessor::BACK_ECAL_STARTING_LAYER = 20;
@@ -20,12 +20,11 @@ const float EcalVetoProcessor::TOTAL_ISO_CUT = 15;
 const float EcalVetoProcessor::BACK_ECAL_CUT = 1;
 const float EcalVetoProcessor::RATIO_CUT = 10;
 
-void EcalVetoProcessor::configure(const ldmxsw::ParameterSet&) {
+void EcalVetoProcessor::configure(const ldmx::ParameterSet&) {
     hexReadout_ = new EcalHexReadout();
 }
 
-void EcalVetoProcessor::produce(event::Event& event) {
-    using namespace event;
+void EcalVetoProcessor::produce(Event& event) {
 
     std::vector<float> EcalLayerEdepRaw(NUM_ECAL_LAYERS, 0);
     std::vector<float> EcalLayerEdepReadout(NUM_ECAL_LAYERS, 0);
@@ -112,3 +111,6 @@ void EcalVetoProcessor::produce(event::Event& event) {
     event.add("EcalVeto", &result_);
 }
 
+}
+
+DECLARE_PRODUCER_NS(ldmx, EcalVetoProcessor);

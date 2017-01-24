@@ -7,15 +7,15 @@
 #ifndef EVENT_TRIGGERRESULT_H_
 #define EVENT_TRIGGERRESULT_H_
 
-// STL
-#include <iostream>
-
 // ROOT
 #include "TObject.h"
 #include "TString.h"
 #include "TArrayD.h"
 
-namespace event {
+// STL
+#include <iostream>
+
+namespace ldmx {
 
 /**
  * @class TriggerResult

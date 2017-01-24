@@ -15,7 +15,7 @@
 #include "G4UIdirectory.hh"
 #include "G4UIcommand.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class UserActionPluginMessenger

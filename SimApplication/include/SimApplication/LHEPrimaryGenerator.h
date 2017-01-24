@@ -13,7 +13,7 @@
 // LDMX
 #include "SimApplication/LHEReader.h"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class LHEPrimaryGenerator

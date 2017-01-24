@@ -4,7 +4,7 @@
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
 
-namespace ldmxsw {
+namespace ldmx {
 
 Process::Process(const std::string& passname) :
         passname_ { passname } {
@@ -31,7 +31,7 @@ void Process::run() {
             outFile.setupEvent(&theEvent);
 
             while (n_events_processed < eventLimit_) {
-                event::EventHeader& eh = theEvent.getEventHeaderMutable();
+                EventHeader& eh = theEvent.getEventHeaderMutable();
                 eh.setRun(runForGeneration_);
                 eh.setEventNumber(n_events_processed + 1);
                 eh.setTimestamp(TTimeStamp());

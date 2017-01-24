@@ -7,14 +7,14 @@
 #ifndef EVENT_SIMPARTICLE_H_
 #define EVENT_SIMPARTICLE_H_
 
-// STL
-#include <vector>
-
 // ROOT
 #include "TObject.h"
 #include "TRefArray.h"
 
-namespace event {
+// STL
+#include <vector>
+
+namespace ldmx {
 
 /**
  * @class SimParticle

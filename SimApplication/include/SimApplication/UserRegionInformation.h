@@ -10,7 +10,7 @@
 // Geant4
 #include "G4VUserRegionInformation.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class UserRegionInformation

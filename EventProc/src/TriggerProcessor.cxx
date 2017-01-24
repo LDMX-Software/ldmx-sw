@@ -11,7 +11,9 @@
 #include "Framework/EventProcessor.h"
 #include "DetDescr/EcalHexReadout.h"
 
-void TriggerProcessor::configure(const ldmxsw::ParameterSet& pSet) {
+namespace ldmx {
+
+void TriggerProcessor::configure(const ParameterSet& pSet) {
 
     layerESumCut_ = pSet.getDouble("threshold");
     mode_ = pSet.getInteger("mode");
@@ -25,9 +27,7 @@ void TriggerProcessor::configure(const ldmxsw::ParameterSet& pSet) {
     }
 }
 
-void TriggerProcessor::produce(event::Event& event) {
-
-    using namespace event;
+void TriggerProcessor::produce(Event& event) {
 
     /** Grab the Ecal hit collection for the given event */
     const TClonesArray *ecalDigis = event.getCollection("ecalDigis");
@@ -66,7 +66,8 @@ void TriggerProcessor::produce(event::Event& event) {
     result_.setAlgoVar(2, endLayer_ - startLayer_);
 
     event.addToCollection("Trigger", result_);
+}
 
 }
 
-DECLARE_PRODUCER(TriggerProcessor)
+DECLARE_PRODUCER_NS(ldmx, TriggerProcessor)
