@@ -8,23 +8,23 @@
 
 #include "SimPlugins/ECalPhotonuclearBiasingPlugin.h"
 
-extern "C" sim::ECalPhotonuclearBiasingPlugin* createECalPhotonuclearBiasingPlugin() {
-    return new sim::ECalPhotonuclearBiasingPlugin;
+extern "C" ldmx::ECalPhotonuclearBiasingPlugin* createECalPhotonuclearBiasingPlugin() {
+    return new ldmx::ECalPhotonuclearBiasingPlugin;
 }
 
-extern "C" void destroyECalPhotonuclearBiasingPlugin(sim::ECalPhotonuclearBiasingPlugin* object) {
+extern "C" void destroyECalPhotonuclearBiasingPlugin(ldmx::ECalPhotonuclearBiasingPlugin* object) {
     delete object;
 }
 
 
-sim::ECalPhotonuclearBiasingPlugin::ECalPhotonuclearBiasingPlugin() { 
+ldmx::ECalPhotonuclearBiasingPlugin::ECalPhotonuclearBiasingPlugin() { 
 }
 
-sim::ECalPhotonuclearBiasingPlugin::~ECalPhotonuclearBiasingPlugin() { 
+ldmx::ECalPhotonuclearBiasingPlugin::~ECalPhotonuclearBiasingPlugin() { 
 }
 
 
-G4ClassificationOfNewTrack sim::ECalPhotonuclearBiasingPlugin::stackingClassifyNewTrack(const G4Track* track, 
+G4ClassificationOfNewTrack ldmx::ECalPhotonuclearBiasingPlugin::stackingClassifyNewTrack(const G4Track* track, 
         const G4ClassificationOfNewTrack& currentTrackClass) {
 
     /*std::cout << "********************************" << std::endl;*/ 
@@ -54,7 +54,7 @@ G4ClassificationOfNewTrack sim::ECalPhotonuclearBiasingPlugin::stackingClassifyN
     return classification;
 }
 
-void sim::ECalPhotonuclearBiasingPlugin::stepping(const G4Step* step) { 
+void ldmx::ECalPhotonuclearBiasingPlugin::stepping(const G4Step* step) { 
 
     // Get the track associated with this step.
     G4Track* track = step->GetTrack();

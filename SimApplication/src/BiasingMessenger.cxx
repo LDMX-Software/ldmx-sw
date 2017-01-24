@@ -7,7 +7,7 @@
 
 #include "SimApplication/BiasingMessenger.h"
 
-sim::BiasingMessenger::BiasingMessenger(G4RunManager* runManager) { 
+ldmx::BiasingMessenger::BiasingMessenger(G4RunManager* runManager) { 
     
     runManager_ = static_cast<RunManager*>(runManager); 
 
@@ -21,12 +21,12 @@ sim::BiasingMessenger::BiasingMessenger(G4RunManager* runManager) {
     particleTypeCmd_->SetGuidance("The particle type to bias.");
 }
 
-sim::BiasingMessenger::~BiasingMessenger() {
+ldmx::BiasingMessenger::~BiasingMessenger() {
     delete enableBiasingCmd_;
     delete biasingDir_; 
 }
 
-void sim::BiasingMessenger::SetNewValue(G4UIcommand* command, G4String newValues) { 
+void ldmx::BiasingMessenger::SetNewValue(G4UIcommand* command, G4String newValues) { 
 
     if (command == enableBiasingCmd_) { 
        runManager_->enableBiasing();  

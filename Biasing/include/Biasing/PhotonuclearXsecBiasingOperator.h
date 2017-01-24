@@ -22,7 +22,7 @@
 #include "G4Track.hh"
 #include "G4VBiasingOperator.hh"
 
-namespace sim { 
+namespace ldmx { 
 
 class PhotonuclearXsecBiasingOperator : public G4VBiasingOperator { 
     
