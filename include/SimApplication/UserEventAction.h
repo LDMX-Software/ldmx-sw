@@ -15,7 +15,7 @@
 #include "G4UserEventAction.hh"
 #include "G4Event.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class UserEventAction

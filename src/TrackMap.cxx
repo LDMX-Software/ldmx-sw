@@ -7,7 +7,7 @@
 // LDMX
 #include "SimApplication/TrajectoryContainer.h"
 
-namespace sim {
+namespace ldmx {
 
 TrackMap* TrackMap::getInstance() {
     static TrackMap INSTANCE;
