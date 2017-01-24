@@ -34,7 +34,7 @@ public:
 
     typedef std::pair<int, float> cell_energy_pair;
 
-  EcalVetoProcessor(const std::string& name, const ldmxsw::Process& process) : ldmxsw::Producer(name,process) { }
+  EcalVetoProcessor(const std::string& name, ldmxsw::Process& process) : ldmxsw::Producer(name,process) { }
 		      
   virtual void configure(const ldmxsw::ParameterSet&);
 

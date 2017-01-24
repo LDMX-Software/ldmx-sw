@@ -10,7 +10,7 @@ class TriggerProcessor : public ldmxsw::Producer {
 
 public:
 
-    TriggerProcessor(const std::string& name, const ldmxsw::Process& process) : ldmxsw::Producer(name,process) { }
+    TriggerProcessor(const std::string& name, ldmxsw::Process& process) : ldmxsw::Producer(name,process) { }
 
     virtual void configure(const ldmxsw::ParameterSet& pSet);
 
