@@ -19,10 +19,6 @@
 // Geant4
 #include "G4Polyhedra.hh"
 
-using ldmx::EcalDetectorID;
-using ldmx::DetectorID;
-using ldmx::EcalHexReadout;
-
 namespace ldmx {
 
 /**

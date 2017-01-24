@@ -22,7 +22,7 @@ namespace ldmx {
  * @class HcalDigiProducer
  * @brief Performs digitization of simulated HCal data
  */
-class HcalDigiProducer : public ldmx::Producer {
+class HcalDigiProducer : public Producer {
 
     public:
 
@@ -30,7 +30,7 @@ class HcalDigiProducer : public ldmx::Producer {
 
         typedef std::pair<double, double> zboundaries;
 
-        HcalDigiProducer(const std::string& name, const ldmx::Process& process);
+        HcalDigiProducer(const std::string& name, const Process& process);
 
         virtual ~HcalDigiProducer() {
             delete hits_;
@@ -38,7 +38,7 @@ class HcalDigiProducer : public ldmx::Producer {
                 delete random_;
         }
 
-        virtual void configure(const ldmx::ParameterSet&);
+        virtual void configure(const ParameterSet&);
 
         virtual void produce(Event& event);
 

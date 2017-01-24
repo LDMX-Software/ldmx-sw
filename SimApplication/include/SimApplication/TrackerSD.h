@@ -11,12 +11,9 @@
 #include "G4VSensitiveDetector.hh"
 
 // LDMX
-#include "SimApplication/G4TrackerHit.h"
-#include "DetDescr/DetectorID.h"
 #include "Event/Event.h"
-
-using ldmx::Event;
-using ldmx::DetectorID;
+#include "DetDescr/DetectorID.h"
+#include "SimApplication/G4TrackerHit.h"
 
 namespace ldmx {
 

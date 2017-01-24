@@ -7,18 +7,13 @@
 #ifndef SIMPLUGINS_PHOTONUCLEARXSECBIASINGPLUGIN_H_
 #define SIMPLUGINS_PHOTONUCLEARXSECBIASINGPLUGIN_H_
 
-//------------//
-//   Geant4   //
-//------------//
+// Geant4
 #include "G4Gamma.hh"
 #include "G4HadronicProcess.hh"
 #include "G4RunManager.hh"
 #include "G4ProcessManager.hh"
 
-
-//----------//
-//   LDMX   //
-//----------//
+// LDMX
 #include "SimPlugins/UserActionPlugin.h"
 #include "SimPlugins/PhotonuclearXsecBiasingMessenger.h"
 

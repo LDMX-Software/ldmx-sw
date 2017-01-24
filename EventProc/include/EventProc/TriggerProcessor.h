@@ -7,6 +7,7 @@
 #ifndef EVENTPROC_TRIGGERPROCESSOR_H_
 #define EVENTPROC_TRIGGERPROCESSOR_H_
 
+// LDMX
 #include "Event/TriggerResult.h"
 #include "Event/Event.h"
 #include "Framework/ParameterSet.h"

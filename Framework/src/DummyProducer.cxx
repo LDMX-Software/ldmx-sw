@@ -4,13 +4,19 @@
  * @author Jeremy Mans, University of Minnesota
  */
 
-#include "Framework/EventProcessor.h"
-#include "Framework/ParameterSet.h"
-#include <iostream>
+// ROOT
 #include "TClonesArray.h"
+#include "TRandom.h"
+
+// LDMX
 #include "Event/SimParticle.h"
 #include "Event/Event.h"
-#include "TRandom.h"
+#include "Event/EventConstants.h"
+#include "Framework/EventProcessor.h"
+#include "Framework/ParameterSet.h"
+
+// STL
+#include <iostream>
 
 namespace ldmx {
 
@@ -22,22 +28,22 @@ class DummyProducer : public Producer {
 
     public:
 
-        DummyProducer(const std::string& name, const ldmx::Process& process) :
-                ldmx::Producer(name, process) {
+        DummyProducer(const std::string& name, const Process& process) :
+                Producer(name, process) {
         }
 
-        virtual void configure(const ldmx::ParameterSet& ps) {
+        virtual void configure(const ParameterSet& ps) {
             nParticles_ = ps.getInteger("nParticles_");
             aveEnergy_ = ps.getDouble("aveEnergy_");
             direction_ = ps.getVDouble("direction_");
         }
 
-        virtual void produce(ldmx::Event& event) {
+        virtual void produce(Event& event) {
             std::cout << "DummyProducer: Analyzing an event!" << std::endl;
 
             int np = random_.Poisson(nParticles_);
             for (int i = 0; i < np; i++) {
-                ldmx::SimParticle* a = (ldmx::SimParticle*) tca_->ConstructedAt(i);
+                SimParticle* a = (SimParticle*) tca_->ConstructedAt(i);
                 do {
                     a->setEnergy(random_.Gaus(aveEnergy_, 1.0));
                 } while (a->getEnergy() < 0);
@@ -56,7 +62,7 @@ class DummyProducer : public Producer {
 
         virtual void onProcessStart() {
             std::cout << "DummyProducer: Starting processing!" << std::endl;
-            tca_ = new TClonesArray("ldmx::SimParticle", 1000);
+            tca_ = new TClonesArray(EventConstants::SIM_PARTICLE.c_str(), 1000);
         }
 
         virtual void onProcessEnd() {

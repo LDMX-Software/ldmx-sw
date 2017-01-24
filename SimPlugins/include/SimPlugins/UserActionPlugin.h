@@ -7,6 +7,7 @@
 #ifndef SIMPLUGINS_USERACTIONPLUGIN_H_
 #define SIMPLUGINS_USERACTIONPLUGIN_H_
 
+// Geant4
 #include "G4Run.hh"
 #include "G4Event.hh"
 #include "G4Track.hh"

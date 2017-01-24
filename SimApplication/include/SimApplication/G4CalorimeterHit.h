@@ -16,8 +16,6 @@
 // LDMX
 #include "Event/SimCalorimeterHit.h"
 
-using ldmx::SimCalorimeterHit;
-
 namespace ldmx {
 
 /**

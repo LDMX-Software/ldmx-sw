@@ -7,9 +7,12 @@
 #ifndef FRAMEWORK_CONFIGUREPYTHON_H_
 #define FRAMEWORK_CONFIGUREPYTHON_H_
 
+// LDMX
+#include "Framework/ParameterSet.h"
+
+// STL
 #include <string>
 #include <vector>
-#include "Framework/ParameterSet.h"
 
 namespace ldmx {
 
