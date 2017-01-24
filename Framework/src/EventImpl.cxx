@@ -44,10 +44,8 @@ void EventImpl::add(const std::string& collectionName, TClonesArray* tca) {
 
 void EventImpl::addToCollection(const std::string& name, const TObject& obj) {
     std::string branchName;
-    if (name == "EventHeader")
-        branchName = name;
-    else
-        branchName = makeBranchName(name);
+    if (name == "EventHeader") return; // no adding to the event header... 
+    branchName = makeBranchName(name);
 
     auto location = objectsOwned_.find(branchName);
     if (location == objectsOwned_.end()) {
@@ -204,7 +202,6 @@ TTree* EventImpl::createTree() {
     outputTree_ = new TTree("LDMX_Events", "LDMX Events");
 
     eventHeader_ = new event::EventHeader();
-    add("EventHeader", eventHeader_);
 
     return outputTree_;
 }
