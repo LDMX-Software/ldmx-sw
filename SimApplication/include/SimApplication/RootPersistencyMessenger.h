@@ -14,7 +14,7 @@
 // LDMX
 #include "SimApplication/RootPersistencyManager.h"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class RootPersistencyMessenger

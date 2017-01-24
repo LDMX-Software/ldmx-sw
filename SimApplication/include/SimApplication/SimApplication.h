@@ -14,7 +14,7 @@
  * @namespace sim
  * @brief Simulation application classes
  */
-namespace sim {
+namespace ldmx {
 
 /**
  * @class SimApplication

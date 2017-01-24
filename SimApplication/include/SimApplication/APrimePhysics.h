@@ -13,7 +13,7 @@
 #include "G4hMultipleScattering.hh"
 #include "G4ProcessManager.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class APrimePhysics

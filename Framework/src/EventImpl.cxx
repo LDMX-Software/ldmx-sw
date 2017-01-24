@@ -5,7 +5,7 @@
 #include "TBranchElement.h"
 #include "TBranchClones.h"
 
-namespace ldmxsw {
+namespace ldmx {
 
 EventImpl::EventImpl(const std::string& thePassName) :
         passName_(thePassName) {
@@ -201,7 +201,7 @@ const TObject* EventImpl::getReal(const std::string& collectionName, const std::
 TTree* EventImpl::createTree() {
     outputTree_ = new TTree("LDMX_Events", "LDMX Events");
 
-    eventHeader_ = new event::EventHeader();
+    eventHeader_ = new EventHeader();
 
     return outputTree_;
 }
@@ -214,7 +214,7 @@ void EventImpl::setInputTree(TTree* tree) {
     inputTree_ = tree;
     entries_ = inputTree_->GetEntriesFast();
     branchNames_.clear();
-    eventHeader_ = get<event::EventHeader*>("EventHeader");
+    eventHeader_ = get<EventHeader*>("EventHeader");
 
     // find the names of all the existing branches
     TObjArray* branches = inputTree_->GetListOfBranches();

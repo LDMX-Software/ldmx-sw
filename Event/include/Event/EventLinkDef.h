@@ -13,19 +13,19 @@
 #pragma link C++ nestedclass;
 #pragma link C++ nestedtypedef;
 
-#pragma link C++ namespace event;
-#pragma link C++ defined_in namespace event;
+#pragma link C++ namespace ldmx;
+#pragma link C++ defined_in namespace ldmx;
 
-#pragma link C++ class event::CalorimeterHit+;
-#pragma link C++ class event::HcalHit+;
-#pragma link C++ class event::EcalHit+;
-#pragma link C++ class event::EventConstants+;
-#pragma link C++ class event::EventHeader+;
-#pragma link C++ class event::RunHeader+;
-#pragma link C++ class event::SimCalorimeterHit+;
-#pragma link C++ class event::SimTrackerHit+;
-#pragma link C++ class event::SimParticle+;
-#pragma link C++ class event::TriggerResult+;
+#pragma link C++ class ldmx::CalorimeterHit+;
+#pragma link C++ class ldmx::HcalHit+;
+#pragma link C++ class ldmx::EcalHit+;
+#pragma link C++ class ldmx::EventConstants+;
+#pragma link C++ class ldmx::EventHeader+;
+#pragma link C++ class ldmx::RunHeader+;
+#pragma link C++ class ldmx::SimCalorimeterHit+;
+#pragma link C++ class ldmx::SimTrackerHit+;
+#pragma link C++ class ldmx::SimParticle+;
+#pragma link C++ class ldmx::TriggerResult+;
 
 #endif
 

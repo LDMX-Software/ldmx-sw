@@ -13,7 +13,7 @@
 // STL
 #include <vector>
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class LHEEvent

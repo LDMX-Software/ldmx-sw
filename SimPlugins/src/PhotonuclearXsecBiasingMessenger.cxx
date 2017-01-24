@@ -6,7 +6,7 @@
 // STL
 #include <string>
 
-namespace sim {
+namespace ldmx {
 
 PhotonuclearXsecBiasingMessenger::PhotonuclearXsecBiasingMessenger(PhotonuclearXsecBiasingPlugin* biasingPlugin)
     : UserActionPluginMessenger(biasingPlugin), biasingPlugin_(biasingPlugin) {

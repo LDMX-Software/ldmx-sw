@@ -3,7 +3,7 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/EventProcessorFactory.h"
 
-namespace ldmxsw {
+namespace ldmx {
 
 EventProcessor::EventProcessor(const std::string& name, const Process& process) :
         process_ { process }, name_ { name } {

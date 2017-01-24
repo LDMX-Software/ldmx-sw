@@ -1,6 +1,6 @@
 #include "SimPlugins/PluginManager.h"
 
-namespace sim {
+namespace ldmx {
 
 PluginManager::~PluginManager() {
     destroyPlugins();

@@ -15,7 +15,7 @@
 #include "TString.h"
 #include "TArrayD.h"
 
-namespace event {
+namespace ldmx {
 
 /**
  * @class TriggerResult

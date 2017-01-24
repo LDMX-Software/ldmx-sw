@@ -16,9 +16,9 @@
 // LDMX
 #include "Event/SimCalorimeterHit.h"
 
-using event::SimCalorimeterHit;
+using ldmx::SimCalorimeterHit;
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class G4CalorimeterHit

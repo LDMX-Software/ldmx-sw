@@ -11,7 +11,8 @@
 #define EVENT_EVENTHEADER_H_
 
 #include <iostream>
-namespace event {
+
+namespace ldmx {
 
 /**
  * @class EventHeader

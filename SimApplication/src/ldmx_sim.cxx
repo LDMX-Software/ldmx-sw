@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-using sim::SimApplication;
+using ldmx::SimApplication;
 
 int main(int argc, char** argv)  {
     SimApplication* app = new SimApplication();

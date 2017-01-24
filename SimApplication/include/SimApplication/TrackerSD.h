@@ -15,10 +15,10 @@
 #include "DetDescr/DetectorID.h"
 #include "Event/Event.h"
 
-using event::Event;
-using detdescr::DetectorID;
+using ldmx::Event;
+using ldmx::DetectorID;
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class TrackerSD

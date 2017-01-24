@@ -10,7 +10,7 @@
 // LDMX
 #include "Event/CalorimeterHit.h"
 
-namespace event {
+namespace ldmx {
 
 /**
  * @class HcalHit

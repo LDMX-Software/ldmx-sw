@@ -21,11 +21,13 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 
+namespace ldmx {
+
 /**
  * @class EcalVetoProcessor
  * @brief Determines if event is vetoable using ECAL hit information
  */
-class EcalVetoProcessor : public ldmxsw::Producer {
+class EcalVetoProcessor : public ldmx::Producer {
 
     public:
 
@@ -33,19 +35,19 @@ class EcalVetoProcessor : public ldmxsw::Producer {
 
         typedef std::pair<int, float> cell_energy_pair;
 
-        EcalVetoProcessor(const std::string& name, const ldmxsw::Process& process) :
-                ldmxsw::Producer(name, process) {
+        EcalVetoProcessor(const std::string& name, const ldmx::Process& process) :
+                ldmx::Producer(name, process) {
         }
 
         virtual ~EcalVetoProcessor() {;}
 
-        void configure(const ldmxsw::ParameterSet&);
+        void configure(const ldmx::ParameterSet&);
 
-        void produce(event::Event& event);
+        void produce(ldmx::Event& event);
 
     private:
 
-        inline layer_cell_pair hitToPair(event::EcalHit* hit) {
+        inline layer_cell_pair hitToPair(ldmx::EcalHit* hit) {
             int detIDraw = hit->getID();
             detID_.setRawValue(detIDraw);
             detID_.unpack();
@@ -64,11 +66,13 @@ class EcalVetoProcessor : public ldmxsw::Producer {
         static const float BACK_ECAL_CUT;
         static const float RATIO_CUT;
 
-        event::TriggerResult result_;
-        detdescr::EcalDetectorID detID_;
+        TriggerResult result_;
+        EcalDetectorID detID_;
         bool verbose_{false};
         bool doesPassVeto_{false};
-        detdescr::EcalHexReadout* hexReadout_{nullptr};
+        EcalHexReadout* hexReadout_{nullptr};
 };
+
+}
 
 #endif

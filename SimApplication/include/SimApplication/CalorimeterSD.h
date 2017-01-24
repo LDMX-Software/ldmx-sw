@@ -15,10 +15,10 @@
 #include "SimApplication/G4CalorimeterHit.h"
 #include "DetDescr/DetectorID.h"
 
-using detdescr::DetectorID;
-using event::Event;
+using ldmx::DetectorID;
+using ldmx::Event;
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class CalorimeterSD

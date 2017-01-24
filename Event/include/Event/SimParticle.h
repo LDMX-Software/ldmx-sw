@@ -14,7 +14,7 @@
 #include "TObject.h"
 #include "TRefArray.h"
 
-namespace event {
+namespace ldmx {
 
 /**
  * @class SimParticle

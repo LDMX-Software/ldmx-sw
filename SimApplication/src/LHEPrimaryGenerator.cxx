@@ -11,7 +11,7 @@
 #include "G4SystemOfUnits.hh"
 #include "G4PhysicalConstants.hh"
 
-namespace sim {
+namespace ldmx {
 
 LHEPrimaryGenerator::LHEPrimaryGenerator(LHEReader* theReader)
     : reader_(theReader) {

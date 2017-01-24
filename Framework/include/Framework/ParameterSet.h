@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace ldmxsw {
+namespace ldmx {
 
 /**
  * @class ParameterSet
