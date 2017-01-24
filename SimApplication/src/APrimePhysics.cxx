@@ -3,7 +3,7 @@
 // Geant4
 #include "G4SystemOfUnits.hh"
 
-namespace sim {
+namespace ldmx {
 
 APrimePhysics::APrimePhysics(const G4String& name)
     : G4VPhysicsConstructor(name), aprimeDef_(NULL) {

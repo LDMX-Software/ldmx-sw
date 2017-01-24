@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
+import sys
+
 # we need the ldmx configuration package to construct the object
-import ldmxcfg;
+from LDMX.Framework import ldmxcfg
 
 # first, we define the process, which must have a name which identifies this
 # processing pass ("pass name").
@@ -11,14 +13,20 @@ p=ldmxcfg.Process("digi")
 # loaded.  In future, we do not expect this be necessary
 p.libraries.append("libEventProc.so")
 
-# create a producer with the name 'hcaldigi', from the class 'HcalDigiProducer'
-hcaldigi=ldmxcfg.Producer("hcaldigi","HcalDigiProducer")
+# load the template hcalDigis configuration from its python file
+from LDMX.EventProc.hcalDigis import hcalDigis
 
-# create a producer with the name 'hcaldigi', from the class 'HcalDigiProducer'
-ecaldigi=ldmxcfg.Producer("ecaldigi","EcalDigiProducer")
+# change the noise level (for testing)
+hcalDigis.parameters["meanNoise"] = 1.5
+
+# load the template ecalDigis configuration from its python file
+from LDMX.EventProc.ecalDigis import ecalDigis
+
+# load the template ecalDigis configuration from its python file
+from LDMX.EventProc.simpleTrigger import simpleTrigger
 
 # Define the sequence of event processors to be run
-p.sequence=[ecaldigi,hcaldigi]
+p.sequence=[ecalDigis,hcalDigis,simpleTrigger]
 
 # Provide the list of input files to run on
 p.inputFiles=["ldmx_sim_events.root"]

@@ -3,22 +3,19 @@
 // STL
 #include <iostream>
 
-ClassImp(event::HcalHit)
+ClassImp(ldmx::HcalHit)
 
-namespace event {
+namespace ldmx {
 
-    void HcalHit::Clear(Option_t *option) {
+void HcalHit::Clear(Option_t *option) {
+    CalorimeterHit::Clear();
+    pe_ = 0;
+}
 
-	CalorimeterHit::Clear();
+void HcalHit::Print(Option_t *option) const {
+    std::cout << "HcalHit { " << "id: " << std::hex << getID() << std::dec
+            << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
+            << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE() << "}" << std::endl;
 
-
-	pe_ = 0;
-
-    }
-
-    void HcalHit::Print(Option_t *option)  const {
-	std::cout << "HcalHit { " << "id: " << std::hex << getID() << std::dec << ",  energy: " << getEnergy()
-		  << "MeV, time: " << getTime() << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE() << std::endl;
-	
-    }
+}
 }

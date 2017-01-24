@@ -8,10 +8,6 @@
 #ifndef EVENT_SIMTRACKERHIT_H_
 #define EVENT_SIMTRACKERHIT_H_
 
-// STL
-#include <iostream>
-#include <bitset>
-
 // ROOT
 #include "TObject.h"
 #include "TRef.h"
@@ -19,7 +15,10 @@
 // LDMX
 #include "Event/SimParticle.h"
 
-namespace event {
+// STL
+#include <iostream>
+
+namespace ldmx {
 
 /**
  * @class SimTrackerHit

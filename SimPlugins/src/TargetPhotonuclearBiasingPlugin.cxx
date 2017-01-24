@@ -8,23 +8,23 @@
 
 #include "SimPlugins/TargetPhotonuclearBiasingPlugin.h"
 
-extern "C" sim::TargetPhotonuclearBiasingPlugin* createTargetPhotonuclearBiasingPlugin() {
-    return new sim::TargetPhotonuclearBiasingPlugin;
+extern "C" ldmx::TargetPhotonuclearBiasingPlugin* createTargetPhotonuclearBiasingPlugin() {
+    return new ldmx::TargetPhotonuclearBiasingPlugin;
 }
 
-extern "C" void destroyTargetPhotonuclearBiasingPlugin(sim::TargetPhotonuclearBiasingPlugin* object) {
+extern "C" void destroyTargetPhotonuclearBiasingPlugin(ldmx::TargetPhotonuclearBiasingPlugin* object) {
     delete object;
 }
 
 
-sim::TargetPhotonuclearBiasingPlugin::TargetPhotonuclearBiasingPlugin() { 
+ldmx::TargetPhotonuclearBiasingPlugin::TargetPhotonuclearBiasingPlugin() { 
 }
 
-sim::TargetPhotonuclearBiasingPlugin::~TargetPhotonuclearBiasingPlugin() { 
+ldmx::TargetPhotonuclearBiasingPlugin::~TargetPhotonuclearBiasingPlugin() { 
 }
 
 
-G4ClassificationOfNewTrack sim::TargetPhotonuclearBiasingPlugin::stackingClassifyNewTrack(const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
+G4ClassificationOfNewTrack ldmx::TargetPhotonuclearBiasingPlugin::stackingClassifyNewTrack(const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
 
     /*std::cout << "********************************" << std::endl;*/ 
     /*std::cout << "*   Track pushed to the stack  *" << std::endl;*/
@@ -52,7 +52,7 @@ G4ClassificationOfNewTrack sim::TargetPhotonuclearBiasingPlugin::stackingClassif
     return classification;
 }
 
-void sim::TargetPhotonuclearBiasingPlugin::stepping(const G4Step* step) { 
+void ldmx::TargetPhotonuclearBiasingPlugin::stepping(const G4Step* step) { 
 
     
     /*std::cout << "************" << std::endl;*/ 

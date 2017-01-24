@@ -3,7 +3,7 @@
 // LDMX
 #include "SimApplication/LHEPrimaryGenerator.h"
 
-namespace sim {
+namespace ldmx {
 
 PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* thePrimaryGeneratorAction) :
     primaryGeneratorAction_(thePrimaryGeneratorAction) {

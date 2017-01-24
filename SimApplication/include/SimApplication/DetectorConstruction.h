@@ -19,7 +19,7 @@
 #include "G4LogicalVolume.hh"
 #include "G4LogicalVolumeStore.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class DetectorConstruction
@@ -59,7 +59,7 @@ class DetectorConstruction: public G4VUserDetectorConstruction {
          * Get the detector header.
          * @return The detector header.
          */
-        detdescr::DetectorHeader* getDetectorHeader() {
+        ldmx::DetectorHeader* getDetectorHeader() {
             return auxInfoReader_->getDetectorHeader();
         }
 

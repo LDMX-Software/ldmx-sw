@@ -7,7 +7,7 @@
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
 
-namespace sim {
+namespace ldmx {
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
  : G4VUserPrimaryGeneratorAction(), generator_(new G4ParticleGun) {

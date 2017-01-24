@@ -1,7 +1,7 @@
 /**
  * @file EventImpl.h
  * @brief Class implementing an event buffer system for storing event data
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Jeremy Mans, University of Minnesota
  */
 
 #ifndef EVENT_EVENTIMPL_H_
@@ -11,17 +11,18 @@
 #include "TObject.h"
 #include "TClonesArray.h"
 
-// LDMX-SW
+// LDMX
 #include "Event/Event.h"
-
-class TTree;
-class TBranch;
 
 // STL
 #include <string>
 #include <map>
+#include <set>
 
-namespace ldmxsw {
+class TTree;
+class TBranch;
+
+namespace ldmx {
 
 /**
  * @class EventImpl
@@ -31,9 +32,9 @@ namespace ldmxsw {
  * Event data is stored in ROOT trees and branches, which can be added
  * on the fly.  The same TClonesArray and TObject pointers should be
  * used to add objects and collections from user code, as the class will
- * add a data structure or new ones automatically.
+ * add a data structure for new ones automatically.
  */
-  class EventImpl : public event::Event {
+class EventImpl : public Event {
 
     public:
 
@@ -48,12 +49,13 @@ namespace ldmxsw {
          */
         virtual ~EventImpl();
 
-    /** ********* Implementation of base class methods  ********** **/
-
         /**
-         * Get the event header
+         * Get the event header.
+         * @return A constant copy of the event header.
          */
-        virtual const event::EventHeader* getEventHeader() const { return eventHeader_; }
+        virtual const EventHeader* getEventHeader() const {
+            return eventHeader_;
+        }
 
         /**
          * Adds a clones array to the event/tree.
@@ -62,8 +64,7 @@ namespace ldmxsw {
          */
         virtual void add(const std::string& collectionName, TClonesArray* tca);
 
-
-       /**
+        /**
          * Adds a general object to the event/tree.
          * @param name The name of the object.
          * @param obj The object to add.
@@ -77,21 +78,37 @@ namespace ldmxsw {
          */
         virtual void add(const std::string& name, TObject* obj);
 
-  protected:
+        /**
+         * Add the given object to the named TClonesArray collection
+         * Objects can only be added to a TClonesArray during the current pass -- TClonesArrays loaded
+         * from the input data file are not allowed to be changed.
+         * @note Object types must implement TObject::Copy()
+         * @param name Name of the collection
+         * @param obj Object to be appended to the collection
+         */
+        virtual void addToCollection(const std::string& name, const TObject& obj);
+
+    protected:
+
         /**
          * Get an object from the event using a custom pass name.
          * @param collectionName The collection name.
          * @param passName The pass name.
          */
-    virtual const TObject* getReal(const std::string& collectionName, const std::string& passName, bool mustExist);
+        virtual const TObject* getReal(const std::string& collectionName, const std::string& passName, bool mustExist);
 
-  public:
-    
-    /** ********* Functionality for storage  ********** **/
+    public:
 
+        /** ********* Functionality for storage  ********** **/
 
-         event::EventHeader& getEventHeaderMutable() const { return *eventHeader_; }
-    
+        /**
+         * Get a mutable copy of the EventHeader object.
+         * @return A mutable copy of the EventHeader object.
+         */
+        EventHeader& getEventHeaderMutable() const {
+            return *eventHeader_;
+        }
+
         /**
          * Set the input data tree.
          * @param tree The input data tree.
@@ -127,7 +144,6 @@ namespace ldmxsw {
             return makeBranchName(collectionName, passName_);
         }
 
-
         /*
          * These two methods only apply to the current pass of processing --
          * it is not allowed to modify any object from a previous pass.  They will
@@ -136,16 +152,22 @@ namespace ldmxsw {
         // TClonesArray* getMutable(const std::string& collectionName,const std::string& passName);
         // TObject* getMutable(const std::string& collectionName, const std::string& passName);
 
-
         /**
          * Go to the next event by incrementing the entry index.
          * @return Hard-coded to return true.
          */
         bool nextEvent();
 
+        /**
+         * Action to be executed before the tree is filled.
+         */
         void beforeFill();
+
+        /**
+         * Clear this object's data.
+         */
         void Clear();
-    
+
         /**
          * Perform end of event action (clears the owned objects).
          */
@@ -167,10 +189,10 @@ namespace ldmxsw {
     private:
 
         /**
-         * The event header object (as pointer)
+         * The event header object (as pointer).
          */
-        event::EventHeader* eventHeader_{nullptr};
-    
+        EventHeader* eventHeader_{nullptr};
+
         /**
          * Number of entries in the tree.
          */
@@ -179,7 +201,7 @@ namespace ldmxsw {
         /**
          * Current entry in the tree.
          */
-        Long64_t ientry_ {-1};
+        Long64_t ientry_{-1};
 
         /**
          * The default pass name.
@@ -217,18 +239,20 @@ namespace ldmxsw {
          */
         std::vector<TBranch*> newBranches_;
 
-
         /**
-         * Names of all branches
+         * Names of all branches.
          */
         std::vector<std::string> branchNames_;
 
-
-    
         /**
-         * Efficiency cache for empty pass name lookups
+         * Names of branches filled during this event.
          */
-        mutable std::map<std::string,std::string> knownLookups_;
+        std::set<std::string> branchesFilled_;
+
+        /**
+         * Efficiency cache for empty pass name lookups.
+         */
+        mutable std::map<std::string, std::string> knownLookups_;
 };
 
 }

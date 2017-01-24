@@ -1,7 +1,7 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "TList.h"
 
-namespace detdescr {
+namespace ldmx {
 
 EcalHexReadout::EcalHexReadout(double width, double side) {
     ecalMap = new TH2Poly();
