@@ -10,7 +10,7 @@
 class DummyProducer : public ldmxsw::Producer {
   TRandom random_;
 public:
-  DummyProducer(const std::string& name, const ldmxsw::Process& process) : ldmxsw::Producer(name,process) { }
+  DummyProducer(const std::string& name, ldmxsw::Process& process) : ldmxsw::Producer(name,process) { }
 
   virtual void configure(const ldmxsw::ParameterSet& ps) {
     n_particles=ps.getInteger("n_particles");
