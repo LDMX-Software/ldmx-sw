@@ -194,8 +194,7 @@ Process* ConfigurePython::makeProcess() {
     }
 
     for (auto proc : sequence_) {
-        // FIXME: The ldmx namespace should not be hard-coded here.
-        EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor("ldmx::" + proc.classname_, proc.instancename_, *p);
+        EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(proc.classname_, proc.instancename_, *p);
         if (ep == 0) {
             EXCEPTION_RAISE("UnableToCreate", "Unable to create instance '" + proc.instancename_ + "' of class '" + proc.classname_ + "'");
         }
