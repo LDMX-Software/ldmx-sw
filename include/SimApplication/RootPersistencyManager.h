@@ -128,21 +128,21 @@ class RootPersistencyManager : public G4PersistencyManager {
          * @param anEvent The Geant4 event.
          * @param outputEvent The output event.
          */
-        void buildEvent(const G4Event* anEvent, ldmx::Event* outputEvent);
+        void buildEvent(const G4Event* anEvent, Event* outputEvent);
 
         /**
          * Write header info into the output event from Geant4.
          * @param anEvent The Geant4 event.
          * @param outputEvent The output event.
          */
-        void writeHeader(const G4Event* anEvent, ldmx::Event* outputEvent);
+        void writeHeader(const G4Event* anEvent, Event* outputEvent);
 
         /**
          * Write hits collections from Geant4 into a ROOT event.
          * @param anEvent The Geant4 event.
          * @param outputEvent The output event.
          */
-        void writeHitsCollections(const G4Event* anEvent, ldmx::Event* outputEvent);
+        void writeHitsCollections(const G4Event* anEvent, Event* outputEvent);
         
         /**
          * Write a collection of tracker hits to an output collection.
@@ -162,7 +162,7 @@ class RootPersistencyManager : public G4PersistencyManager {
          * Print out event info and data depending on the verbose level.
          * @param anEvent The output event.
          */
-        void printEvent(ldmx::Event* anEvent);
+        void printEvent(Event* anEvent);
 
         /**
          * Setup a map of HC names to output TClonesArray collections.
@@ -175,7 +175,7 @@ class RootPersistencyManager : public G4PersistencyManager {
          * @param aRun The current Geant4 run.
          * @return The created run header.
          */
-        ldmx::RunHeader* createRunHeader(const G4Run* aRun);
+        RunHeader* createRunHeader(const G4Run* aRun);
 
         /**
          * Create the run header and write it into the current output file.
@@ -193,7 +193,7 @@ class RootPersistencyManager : public G4PersistencyManager {
         /**
          * The output file with the event tree.
          */
-        ldmx::EventFile* outputFile_{nullptr};
+        EventFile* outputFile_{nullptr};
 
         /**
          * Output file compression level.
@@ -203,12 +203,12 @@ class RootPersistencyManager : public G4PersistencyManager {
         /**
          * The event container used to manage the tree/branches/collections.
          */
-        ldmx::Event* event_{nullptr};
+        Event* event_{nullptr};
 
         /**
          * Event header for writing out event number, etc. into output.
          */
-        ldmx::EventHeader eventHeader_;
+        EventHeader eventHeader_;
 
         /**
          * Handles ECal hit readout and IO.

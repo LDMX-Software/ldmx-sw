@@ -16,8 +16,6 @@
 #include "SimPlugins/PluginMessenger.h"
 #include "SimApplication/DetectorConstruction.h"
 
-using ldmx::PluginMessenger;
-
 namespace ldmx {
 
 /**
