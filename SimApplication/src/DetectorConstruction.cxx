@@ -1,6 +1,6 @@
 #include "SimApplication/DetectorConstruction.h"
 
-namespace sim {
+namespace ldmx {
 
 DetectorConstruction::DetectorConstruction(G4GDMLParser* theParser) :
     parser_(theParser),

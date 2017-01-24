@@ -3,9 +3,9 @@
 // STL
 #include <iostream>
 
-ClassImp(event::SimParticle)
+ClassImp(ldmx::SimParticle)
 
-namespace event {
+namespace ldmx {
 
 SimParticle::SimParticle()
     : TObject(), daughters_(new TRefArray()), parents_(new TRefArray())

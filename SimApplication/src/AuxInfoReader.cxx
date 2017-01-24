@@ -11,6 +11,9 @@
 #include "SimApplication/VisAttributesStore.h"
 #include "DetDescr/DetectorIDStore.h"
 #include "DetDescr/DefaultDetectorID.h"
+#include "DetDescr/EcalDetectorID.h"
+
+// Geant4
 #include "G4LogicalVolumeStore.hh"
 #include "G4SDManager.hh"
 #include "G4FieldManager.hh"
@@ -20,21 +23,13 @@
 #include "G4RegionStore.hh"
 #include "G4Region.hh"
 
-#include "DetDescr/EcalDetectorID.h"
-
 // STL
 #include <string>
 #include <stdlib.h>
 
-using detdescr::DetectorID;
-using detdescr::DefaultDetectorID;
-using detdescr::EcalDetectorID;
-using detdescr::IDField;
-using detdescr::DetectorIDStore;
-
 using std::string;
 
-namespace sim {
+namespace ldmx {
 
 AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser) :
         parser_(theParser), eval_(new G4GDMLEvaluator) {
@@ -556,7 +551,7 @@ void AuxInfoReader::createDetectorHeader(G4String auxValue, const G4GDMLAuxListT
         }
     }
 
-    detectorHeader_ = new detdescr::DetectorHeader(detectorName, detectorVersion, description, author);
+    detectorHeader_ = new DetectorHeader(detectorName, detectorVersion, description, author);
 
     std::cout << std::endl;
     std::cout << "Read detector header from userinfo: " << std::endl;

@@ -7,21 +7,21 @@
 #include "Framework/EventProcessor.h"
 #include <iostream>
 
-namespace dummy {
+namespace ldmx {
 
 /**
  * @class DummyAnalyzer
  * @brief A dummy Analyzer implementation that just prints some messages
  */
-class DummyAnalyzer : public ldmxsw::Analyzer {
+class DummyAnalyzer : public Analyzer {
 
     public:
 
-        DummyAnalyzer(const std::string& name, const ldmxsw::Process& process) :
-                ldmxsw::Analyzer(name, process) {
+        DummyAnalyzer(const std::string& name, const Process& process) :
+                Analyzer(name, process) {
         }
 
-        virtual void analyze(const event::Event& event) {
+        virtual void analyze(const Event& event) {
             std::cout << "DummyAnalyzer: Analyzing an event!" << std::endl;
         }
 
@@ -43,4 +43,4 @@ class DummyAnalyzer : public ldmxsw::Analyzer {
 };
 }
 
-DECLARE_ANALYZER_NS(dummy, DummyAnalyzer);
+DECLARE_ANALYZER_NS(ldmx, DummyAnalyzer);

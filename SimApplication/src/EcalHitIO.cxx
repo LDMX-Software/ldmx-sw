@@ -7,9 +7,7 @@
 #include "Event/SimCalorimeterHit.h"
 #include "Event/SimParticle.h"
 
-using event::SimParticle;
-
-namespace sim {
+namespace ldmx {
 
 EcalHitIO::EcalHitIO(SimParticleBuilder* simParticleBuilder)
     : simParticleBuilder_(simParticleBuilder) {
@@ -18,7 +16,7 @@ EcalHitIO::EcalHitIO(SimParticleBuilder* simParticleBuilder)
 void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl) {
 
     int nHits = hc->GetSize();
-    std::map<int, event::SimCalorimeterHit*> hitMap;
+    std::map<int, SimCalorimeterHit*> hitMap;
 
     // Loop over input hits from Geant4.
     for (int iHit = 0; iHit < nHits; iHit++) {
@@ -28,7 +26,7 @@ void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArra
         int hitID = g4hit->getID();
 
         // See if hit exists in map already.
-        std::map<int, event::SimCalorimeterHit*>::iterator it = hitMap.find(hitID);
+        std::map<int, SimCalorimeterHit*>::iterator it = hitMap.find(hitID);
         SimCalorimeterHit* simHit;
 
         // Is it a new hit?

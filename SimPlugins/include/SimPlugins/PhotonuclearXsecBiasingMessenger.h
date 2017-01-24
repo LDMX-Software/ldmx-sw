@@ -7,9 +7,10 @@
 #ifndef SIMPLUGINS_PHOTONUCLEARXSECBIASINGPLUGINMESSENGER_H
 #define SIMPLUGINS_PHOTONUCLEARXSECBIASINGPLUGINMESSENGER_H
 
+// LDMX
 #include "SimPlugins/UserActionPluginMessenger.h"
 
-namespace sim {
+namespace ldmx {
 
 // Forward declare to avoid circular dependency in headers.
 class PhotonuclearXsecBiasingPlugin;

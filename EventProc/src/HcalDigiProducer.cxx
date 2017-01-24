@@ -16,8 +16,7 @@
 #include "DetDescr/DefaultDetectorID.h"
 #include "Event/SimCalorimeterHit.h"
 
-using event::SimCalorimeterHit;
-using detdescr::DefaultDetectorID;
+namespace ldmx {
 
 const float HcalDigiProducer::FIRST_LAYER_ZPOS = 569.5;
 const float HcalDigiProducer::LAYER_ZWIDTH = 60.;
@@ -25,25 +24,25 @@ const int HcalDigiProducer::NUM_HCAL_LAYERS = 15;
 const float HcalDigiProducer::MEV_PER_MIP = 1.40;
 const float HcalDigiProducer::PE_PER_MIP = 13.5 * 6. / 4.;
 
-HcalDigiProducer::HcalDigiProducer(const std::string& name, const ldmxsw::Process& process) :
-        ldmxsw::Producer(name, process) {
-    hits_ = new TClonesArray("event::HcalHit");
+HcalDigiProducer::HcalDigiProducer(const std::string& name, const Process& process) :
+        Producer(name, process) {
+    hits_ = new TClonesArray(EventConstants::HCAL_HIT.c_str());
 }
 
-void HcalDigiProducer::configure(const ldmxsw::ParameterSet& ps) {
+void HcalDigiProducer::configure(const ParameterSet& ps) {
     detID_ = new DefaultDetectorID();
     random_ = new TRandom(ps.getInteger("randomSeed", 1000));
     meanNoise_ = ps.getDouble("meanNoise");
 }
 
-void HcalDigiProducer::produce(event::Event& event) {
+void HcalDigiProducer::produce(Event& event) {
 
     std::map<int, int> hcalLayerNum, hcalLayerPEs, hcalDetId;
     std::map<int, float> hcalZpos;
     std::map<int, float> hcalLayerEdep, hcalLayerTime;
 
     // looper over sim hits and aggregate energy depositions for each detID
-    TClonesArray* hcalHits = (TClonesArray*) event.getCollection(event::EventConstants::HCAL_SIM_HITS, "sim");
+    TClonesArray* hcalHits = (TClonesArray*) event.getCollection(EventConstants::HCAL_SIM_HITS, "sim");
 
     int numHCalSimHits = hcalHits->GetEntries();
     for (int iHit = 0; iHit < numHCalSimHits; iHit++) {
@@ -97,7 +96,7 @@ void HcalDigiProducer::produce(event::Event& event) {
         int layer = hcalLayerNum[detIDraw];
         double energy = hcalLayerPEs[detIDraw] / PE_PER_MIP * MEV_PER_MIP; // need to add in a weighting factor eventually
 
-        event::HcalHit *hit = (event::HcalHit*) (hits_->ConstructedAt(ihit));
+        HcalHit *hit = (HcalHit*) (hits_->ConstructedAt(ihit));
 
         //	hit->setLayer(layer);
         hit->setPE(hcalLayerPEs[detIDraw]);
@@ -112,5 +111,7 @@ void HcalDigiProducer::produce(event::Event& event) {
     event.add("hcalDigis", hits_);
 }
 
-DECLARE_PRODUCER(HcalDigiProducer);
+}
+
+DECLARE_PRODUCER_NS(ldmx, HcalDigiProducer);
 

@@ -10,7 +10,7 @@
 // ROOT
 #include "TObject.h"
 
-namespace event {
+namespace ldmx {
 
 /**
  * @class CalorimeterHit

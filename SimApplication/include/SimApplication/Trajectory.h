@@ -17,7 +17,7 @@
 
 typedef std::vector<G4VTrajectoryPoint*> TrajectoryPointContainer;
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class Trajectory

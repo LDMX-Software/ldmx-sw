@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <time.h>
 
-namespace sim {
+namespace ldmx {
 
 void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
 
