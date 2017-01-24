@@ -34,7 +34,7 @@ public:
 
     typedef std::pair<int, float> cell_energy_pair;
 
-    EcalDigiProducer(const std::string& name, const ldmxsw::Process& process);
+    EcalDigiProducer(const std::string& name, ldmxsw::Process& process);
 
     virtual void configure(const ldmxsw::ParameterSet&);
     virtual void produce(event::Event& event);      

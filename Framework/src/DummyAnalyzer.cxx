@@ -4,7 +4,7 @@
 namespace dummy {
 class DummyAnalyzer : public ldmxsw::Analyzer {
 public:
-  DummyAnalyzer(const std::string& name, const ldmxsw::Process& process) : ldmxsw::Analyzer(name,process) { }
+  DummyAnalyzer(const std::string& name, ldmxsw::Process& process) : ldmxsw::Analyzer(name,process) { }
   
   virtual void analyze(const event::Event& event) {
     std::cout << "DummyAnalyzer: Analyzing an event!" << std::endl;
