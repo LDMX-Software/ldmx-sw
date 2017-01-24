@@ -4,6 +4,9 @@
 #include "Framework/Exception.h"
 #include <vector>
 
+class TFile;
+class TDirectory;
+
 namespace ldmxsw {
 
     class EventProcessor;
@@ -66,6 +69,13 @@ namespace ldmxsw {
         void addOutputFileName(const std::string& filenameOut);
 
 	/**
+	 * Set the name for a histogram file to contain histograms created by EventProcessor objects.  If this name is not set, any such histograms will be created in memory.
+	 * @param filenameHisto Output histogram ROOT file name
+	 */
+        void setHistogramFileName(const std::string& filenameOut);
+
+	
+	/**
 	 * Set the run number to be used when initiating new events from the job
 	 * @param run Run number to use
 	 */
@@ -82,6 +92,11 @@ namespace ldmxsw {
 	 */
         void run();
 
+	/**
+	 * Construct a TDirectory* for the given module
+	 */
+	TDirectory* makeHistoDirectory(const std::string& dirName);
+	
 	private:
 
 	/** Processing pass name */
@@ -98,6 +113,10 @@ namespace ldmxsw {
         std::vector<std::string> dropKeepRules_;
         /** Run number to use if generating events */
         int runForGeneration_{1};
+	/** Filename for histograms and other user products */
+	std::string histoFilename_;
+	/** TFile for histograms and other user products */
+	TFile* histoTFile_{0};
     };
     
 }

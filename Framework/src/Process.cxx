@@ -1,4 +1,6 @@
 #include <iostream>
+#include "TFile.h"
+#include "TROOT.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/EventImpl.h"
 #include "Framework/EventFile.h"
@@ -151,8 +153,25 @@ namespace ldmxsw {
 	outputFiles_.clear();
 	outputFiles_.push_back(filenameOut);
     }
+    void Process::setHistogramFileName(const std::string& filenameOut) {
+	histoFilename_=filenameOut;
+    }
     void Process::addOutputFileName(const std::string& filenameOut) {
 	outputFiles_.push_back(filenameOut);
+    }
+
+    TDirectory* Process::makeHistoDirectory(const std::string& dirName) {
+	TDirectory* owner;
+	if (histoFilename_.empty()) {
+	    owner=gROOT;
+	} else if (histoTFile_==0) {
+	    histoTFile_=new TFile(histoFilename_.c_str(),"RECREATE");
+	    owner=histoTFile_;
+	} else owner=histoTFile_;
+	owner->cd();
+	TDirectory* child=owner->mkdir((char*)dirName.c_str());
+	if (child) child->cd();
+	return child;	
     }
   
 }
