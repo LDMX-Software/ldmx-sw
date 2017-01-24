@@ -13,3 +13,5 @@
 #include "Event/SimTrackerHit.h"
 #include "Event/SimParticle.h"
 #include "Event/TriggerResult.h"
+#include "Event/HcalHit.h"
+#include "Event/EcalHit.h"

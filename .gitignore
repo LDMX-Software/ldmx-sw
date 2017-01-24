@@ -5,3 +5,6 @@
 build/
 rebuild.sh
 config/doxygen/doxygen.conf
+*~
+*#
+*.pyc
