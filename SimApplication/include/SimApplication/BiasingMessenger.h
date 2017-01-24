@@ -20,7 +20,7 @@
 //----------//
 #include "SimApplication/RunManager.h"
 
-namespace sim { 
+namespace ldmx { 
 
 class BiasingMessenger : public G4UImessenger { 
 

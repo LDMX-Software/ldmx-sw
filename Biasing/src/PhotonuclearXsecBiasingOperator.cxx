@@ -8,14 +8,14 @@
 
 #include "Biasing/PhotonuclearXsecBiasingOperator.h"
 
-sim::PhotonuclearXsecBiasingOperator::PhotonuclearXsecBiasingOperator(std::string name) 
+ldmx::PhotonuclearXsecBiasingOperator::PhotonuclearXsecBiasingOperator(std::string name) 
     : G4VBiasingOperator(name) { 
 }
 
-sim::PhotonuclearXsecBiasingOperator::~PhotonuclearXsecBiasingOperator() {
+ldmx::PhotonuclearXsecBiasingOperator::~PhotonuclearXsecBiasingOperator() {
 }
 
-void sim::PhotonuclearXsecBiasingOperator::StartRun() { 
+void ldmx::PhotonuclearXsecBiasingOperator::StartRun() { 
 
 
     G4ProcessManager* processManager = G4Gamma::GammaDefinition()->GetProcessManager();
@@ -31,7 +31,7 @@ void sim::PhotonuclearXsecBiasingOperator::StartRun() {
     }
 }
 
-G4VBiasingOperation* sim::PhotonuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(const G4Track* track,
+G4VBiasingOperation* ldmx::PhotonuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(const G4Track* track,
         const G4BiasingProcessInterface* callingProcess) {
     /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: " 
               << "Calling process: " 
