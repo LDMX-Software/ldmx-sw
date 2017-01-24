@@ -7,14 +7,16 @@
 #ifndef EVENTPROC_ECALVETOPROCESSOR_H_
 #define EVENTPROC_ECALVETOPROCESSOR_H_
 
+// ROOT
 #include "TString.h"
 #include "TRandom.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TRandom2.h"
 #include "TClonesArray.h"
-#include "Event/TriggerResult.h"
 
+// LDMX
+#include "Event/TriggerResult.h"
 #include "Event/EcalHit.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
@@ -27,7 +29,7 @@ namespace ldmx {
  * @class EcalVetoProcessor
  * @brief Determines if event is vetoable using ECAL hit information
  */
-class EcalVetoProcessor : public ldmx::Producer {
+class EcalVetoProcessor : public Producer {
 
     public:
 
@@ -35,19 +37,19 @@ class EcalVetoProcessor : public ldmx::Producer {
 
         typedef std::pair<int, float> cell_energy_pair;
 
-        EcalVetoProcessor(const std::string& name, const ldmx::Process& process) :
-                ldmx::Producer(name, process) {
+        EcalVetoProcessor(const std::string& name, const Process& process) :
+                Producer(name, process) {
         }
 
         virtual ~EcalVetoProcessor() {;}
 
-        void configure(const ldmx::ParameterSet&);
+        void configure(const ParameterSet&);
 
-        void produce(ldmx::Event& event);
+        void produce(Event& event);
 
     private:
 
-        inline layer_cell_pair hitToPair(ldmx::EcalHit* hit) {
+        inline layer_cell_pair hitToPair(EcalHit* hit) {
             int detIDraw = hit->getID();
             detID_.setRawValue(detIDraw);
             detID_.unpack();

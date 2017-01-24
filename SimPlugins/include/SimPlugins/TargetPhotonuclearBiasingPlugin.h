@@ -8,14 +8,10 @@
 #ifndef SIMPLUGINS_TARGETPHOTONUCLEARBIASINGPLUGIN_H_
 #define SIMPLUGINS_TARGETPHOTONUCLEARBIASINGPLUGIN_H_
 
-//------------//
-//   Geant4   //
-//------------//
+// Geant4
 #include "G4RunManager.hh"
 
-//----------//
-//   LDMX   //
-//----------//
+// LDMX
 #include "SimPlugins/UserActionPlugin.h"
 
 namespace ldmx {

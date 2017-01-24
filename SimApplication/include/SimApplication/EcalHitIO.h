@@ -21,11 +21,6 @@
 // STL
 #include <utility>
 
-using ldmx::EcalDetectorID;
-using ldmx::EcalHexReadout;
-using ldmx::SimCalorimeterHit;
-using ldmx::G4CalorimeterHitsCollection;
-
 namespace ldmx {
 
 /**

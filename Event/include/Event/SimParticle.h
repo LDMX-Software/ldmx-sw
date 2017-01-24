@@ -7,12 +7,12 @@
 #ifndef EVENT_SIMPARTICLE_H_
 #define EVENT_SIMPARTICLE_H_
 
-// STL
-#include <vector>
-
 // ROOT
 #include "TObject.h"
 #include "TRefArray.h"
+
+// STL
+#include <vector>
 
 namespace ldmx {
 

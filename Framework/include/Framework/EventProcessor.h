@@ -146,7 +146,7 @@ class Producer : public EventProcessor {
          * Process the event and put new data products into it.
          * @param event The Event to process.
          */
-        virtual void produce(ldmx::Event& event) = 0;
+        virtual void produce(Event& event) = 0;
 };
 
 /**
@@ -182,7 +182,7 @@ class Analyzer : public EventProcessor {
          * Process the event and make histograms or summaries
          * @param event The Event to analyze
          */
-        virtual void analyze(const ldmx::Event& event) = 0;
+        virtual void analyze(const Event& event) = 0;
 
 };
 

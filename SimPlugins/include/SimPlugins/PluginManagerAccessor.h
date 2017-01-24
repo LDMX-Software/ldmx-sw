@@ -7,6 +7,7 @@
 #ifndef SIMAPPLICATION_PLUGINMANAGERACCESSOR_H
 #define SIMAPPLICATION_PLUGINMANAGERACCESSOR_H
 
+// LDMX
 #include "SimPlugins/PluginManager.h"
 
 namespace ldmx {

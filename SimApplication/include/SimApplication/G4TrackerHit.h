@@ -20,7 +20,6 @@
 #include <ostream>
 #include <vector>
 
-using ldmx::SimTrackerHit;
 using std::vector;
 
 namespace ldmx {

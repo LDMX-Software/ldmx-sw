@@ -7,7 +7,7 @@
 #ifndef EVENT_ECALHIT_H_
 #define EVENT_ECALHIT_H_
 
-// ROOT
+// LDMX
 #include "Event/CalorimeterHit.h"
 
 namespace ldmx {

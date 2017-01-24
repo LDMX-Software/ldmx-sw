@@ -7,6 +7,7 @@
 #ifndef EVENTPROC_ECALDIGIPRODUCER_H_
 #define EVENTPROC_ECALDIGIPRODUCER_H_
 
+// ROOT
 #include "TString.h"
 #include "TRandom.h"
 #include "TFile.h"
@@ -14,16 +15,12 @@
 #include "TRandom2.h"
 #include "TClonesArray.h"
 
+// LDMX
 #include "Event/SimCalorimeterHit.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
-
-using ldmx::SimCalorimeterHit;
-using ldmx::DetectorID;
-using ldmx::EcalDetectorID;
-using ldmx::EcalHexReadout;
 
 namespace ldmx {
 
@@ -31,7 +28,7 @@ namespace ldmx {
  * @class EcalDigiProducer
  * @brief Performs basic ECal digitization
  */
-class EcalDigiProducer : public ldmx::Producer {
+class EcalDigiProducer : public Producer {
 
     public:
 
@@ -39,13 +36,13 @@ class EcalDigiProducer : public ldmx::Producer {
 
         typedef std::pair<int, float> cell_energy_pair;
 
-        EcalDigiProducer(const std::string& name, const ldmx::Process& process);
+        EcalDigiProducer(const std::string& name, const Process& process);
 
         virtual ~EcalDigiProducer() {;}
 
-        virtual void configure(const ldmx::ParameterSet&);
+        virtual void configure(const ParameterSet&);
 
-        virtual void produce(ldmx::Event& event);
+        virtual void produce(Event& event);
 
     private:
 
