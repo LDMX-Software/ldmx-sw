@@ -1,8 +1,13 @@
+// python
 #include "Python.h"
+
+// LDMX
 #include "Framework/ConfigurePython.h"
 #include "Framework/Process.h"
-#include <iostream>
 #include "Framework/EventProcessorFactory.h"
+
+// STL
+#include <iostream>
 
 namespace ldmx {
 
