@@ -13,7 +13,7 @@
 // Geant4
 #include "G4UserTrackingAction.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class UserTrackingAction

@@ -91,13 +91,15 @@ macro(MODULE)
   file(GLOB headers ${MODULE_INCLUDE_DIR}/include/*/*.h)
   
   # add the shared library to build products
-  add_library(${MODULE_NAME} SHARED ${sources} ${MODULE_EXTRA_SOURCES})
+  if (sources)
+    add_library(${MODULE_NAME} SHARED ${sources} ${MODULE_EXTRA_SOURCES})
+   
+    # add ROOT libraries to shared library target
+    target_link_libraries(${PROJECT_NAME} ${MODULE_EXTRA_LINK_LIBRARIES})
   
-  # add ROOT libraries to shared library target
-  target_link_libraries(${PROJECT_NAME} ${MODULE_EXTRA_LINK_LIBRARIES})
-  
-  # install the library
-  install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+    # install the library
+    install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+ endif()
 
   # find test programs
   file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cxx)
@@ -107,7 +109,7 @@ macro(MODULE)
     get_filename_component(test_program ${test_source} NAME)
     string(REPLACE ".cxx" "" test_program ${test_program})
     string(REPLACE "_" "-" test_program ${test_program})
-    #message(STATUS "test_program='${test_program}'")    
+    #message(STATUS "test_program='${test_program}'")
     add_executable(${test_program} ${test_source})
     target_link_libraries(${test_program} ${MODULE_EXTRA_LINK_LIBRARIES} ${PROJECT_NAME} ${MODULE_DEPENDENCIES})
     install(TARGETS ${test_program} DESTINATION bin)
@@ -124,5 +126,21 @@ macro(MODULE)
     target_link_libraries(${executable} ${MODULE_EXTRA_LINK_LIBRARIES} ${MODULE_DEPENDENCIES})
     install(TARGETS ${executable} DESTINATION bin)
   endforeach()
-    
+
+  # setup python scripts
+  # set the local include dir var
+  set(PYTHON_INSTALL_DIR python/LDMX/${MODULE_NAME})
+  file(GLOB py_scripts "${CMAKE_CURRENT_SOURCE_DIR}/python/[!_]*.py")
+
+  if (py_scripts)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# python package")
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION ${PYTHON_INSTALL_DIR})
+  endif()
+  
+  # setup python programs 
+  foreach(pyscript ${py_scripts})
+    install(FILES ${pyscript} DESTINATION ${PYTHON_INSTALL_DIR})
+    message(STATUS "copying python script='${pyscript}'")
+  endforeach()
+  
 endmacro(MODULE)

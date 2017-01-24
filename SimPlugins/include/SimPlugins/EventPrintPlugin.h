@@ -17,7 +17,7 @@
 // STL
 #include <string>
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class EventPrintPlugin

@@ -13,99 +13,105 @@
 
 #include <iostream>
 
-using event::SimCalorimeterHit;;
-
+#include "DetDescr/DefaultDetectorID.h"
 #include "Event/SimCalorimeterHit.h"
 
-const float HcalDigiProducer::firstLayerZpos = 569.5;
-const float HcalDigiProducer::layerZwidth = 60.;
-const int HcalDigiProducer::numHcalLayers = 15;
-const float HcalDigiProducer::MeVperMIP = 1.40;
-const float HcalDigiProducer::PEperMIP = 13.5*6./4.;
-const float HcalDigiProducer::meanNoise = 2.;
+namespace ldmx {
 
-HcalDigiProducer::HcalDigiProducer(const std::string& name, const ldmxsw::Process& process) : ldmxsw::Producer(name,process) {
-  hits=new TClonesArray("event::HcalHit");
+const float HcalDigiProducer::FIRST_LAYER_ZPOS = 569.5;
+const float HcalDigiProducer::LAYER_ZWIDTH = 60.;
+const int HcalDigiProducer::NUM_HCAL_LAYERS = 15;
+const float HcalDigiProducer::MEV_PER_MIP = 1.40;
+const float HcalDigiProducer::PE_PER_MIP = 13.5 * 6. / 4.;
+
+HcalDigiProducer::HcalDigiProducer(const std::string& name, const Process& process) :
+        Producer(name, process) {
+    hits_ = new TClonesArray(EventConstants::HCAL_HIT.c_str());
 }
 
-void HcalDigiProducer::configure(const ldmxsw::ParameterSet& ps) {
-    detID = new DefaultDetectorID();
-    random_=new TRandom(ps.getInteger("randomSeed",1000));      
+void HcalDigiProducer::configure(const ParameterSet& ps) {
+    detID_ = new DefaultDetectorID();
+    random_ = new TRandom(ps.getInteger("randomSeed", 1000));
+    meanNoise_ = ps.getDouble("meanNoise");
 }
-  
-void HcalDigiProducer::produce(event::Event& event){
-  
-    std::map<int,int> hcalLayerNum,hcalLayerPEs,hcalDetId;
-    std::map<int,float> hcalZpos;
-    std::map<int,float> hcalLayerEdep,hcalLayerTime;
+
+void HcalDigiProducer::produce(Event& event) {
+
+    std::map<int, int> hcalLayerNum, hcalLayerPEs, hcalDetId;
+    std::map<int, float> hcalZpos;
+    std::map<int, float> hcalLayerEdep, hcalLayerTime;
 
     // looper over sim hits and aggregate energy depositions for each detID
-    TClonesArray* hcalHits = (TClonesArray*) event.getCollection(event::EventConstants::HCAL_SIM_HITS, "sim");
+    TClonesArray* hcalHits = (TClonesArray*) event.getCollection(EventConstants::HCAL_SIM_HITS, "sim");
 
     int numHCalSimHits = hcalHits->GetEntries();
-    for(int iHit = 0; iHit < numHCalSimHits; iHit++){
+    for (int iHit = 0; iHit < numHCalSimHits; iHit++) {
         SimCalorimeterHit* simHit = (SimCalorimeterHit*) hcalHits->At(iHit);
         //int detID=simHit->getID();
-        int detIDraw=simHit->getID();
-        if(verbose) std::cout << "detIDraw: " << detIDraw << std::endl;
-        detID->setRawValue(detIDraw);
-        detID->unpack();
-        int layer=detID->getFieldValue("layer"); 
-        if(verbose) std::cout << "layer: " << layer << std::endl;
-        if(hcalLayerEdep.find(simHit->getID()) == hcalLayerEdep.end()){
+        int detIDraw = simHit->getID();
+        if (verbose_)
+            std::cout << "detIDraw: " << detIDraw << std::endl;
+        detID_->setRawValue(detIDraw);
+        detID_->unpack();
+        int layer = detID_->getFieldValue("layer");
+        if (verbose_)
+            std::cout << "layer: " << layer << std::endl;
+        if (hcalLayerEdep.find(simHit->getID()) == hcalLayerEdep.end()) {
             // first hit, initialize 
-            hcalLayerEdep[detIDraw]=simHit->getEdep();	
-            hcalLayerTime[detIDraw]=simHit->getTime()*simHit->getEdep();	
-            hcalDetId[detIDraw]=detIDraw;
-            hcalZpos[detIDraw]=simHit->getPosition()[2];
-            hcalLayerNum[detIDraw]=layer;
-        }else{
+            hcalLayerEdep[detIDraw] = simHit->getEdep();
+            hcalLayerTime[detIDraw] = simHit->getTime() * simHit->getEdep();
+            hcalDetId[detIDraw] = detIDraw;
+            hcalZpos[detIDraw] = simHit->getPosition()[2];
+            hcalLayerNum[detIDraw] = layer;
+        } else {
             // not first hit, aggregate 
-            hcalLayerEdep[detIDraw]+=simHit->getEdep();	
-            hcalLayerTime[detIDraw]+=simHit->getTime()*simHit->getEdep();	
+            hcalLayerEdep[detIDraw] += simHit->getEdep();
+            hcalLayerTime[detIDraw] += simHit->getTime() * simHit->getEdep();
         }
-    }// end loop over sim hits
-  
-    // loop over detID (layers) and simulate number of PEs
-    int ihit=0;
-    for(std::map<int,float>::iterator it = hcalLayerEdep.begin(); it != hcalLayerEdep.end(); ++it){    
-        int detIDraw = it->first;
-        depEnergy = hcalLayerEdep[detIDraw];
-        hcalLayerTime[detIDraw] = hcalLayerTime[detIDraw]/hcalLayerEdep[detIDraw];
-        meanPE = depEnergy/MeVperMIP*PEperMIP+meanNoise;
-    
-	//        std::default_random_engine generator;
-        //std::poisson_distribution<int> distribution(meanPE);
-    
-        hcalLayerPEs[detIDraw] = random_->Poisson(meanPE);
+    } // end loop over sim hits
 
-        if(verbose){
+    // loop over detID (layers) and simulate number of PEs
+    int ihit = 0;
+    for (std::map<int, float>::iterator it = hcalLayerEdep.begin(); it != hcalLayerEdep.end(); ++it) {
+        int detIDraw = it->first;
+        double depEnergy = hcalLayerEdep[detIDraw];
+        hcalLayerTime[detIDraw] = hcalLayerTime[detIDraw] / hcalLayerEdep[detIDraw];
+        double meanPE = depEnergy / MEV_PER_MIP * PE_PER_MIP;
+
+        //        std::default_random_engine generator;
+        //std::poisson_distribution<int> distribution(meanPE);
+
+        hcalLayerPEs[detIDraw] = random_->Poisson(meanPE);
+        hcalLayerPEs[detIDraw] += random_->Gaus(meanNoise_);
+
+        if (verbose_) {
             std::cout << "detID: " << detIDraw << std::endl;
             std::cout << "Layer: " << hcalLayerNum[detIDraw] << std::endl;
             std::cout << "Edep: " << hcalLayerEdep[detIDraw] << std::endl;
             std::cout << "numPEs: " << hcalLayerPEs[detIDraw] << std::endl;
             std::cout << "time: " << hcalLayerTime[detIDraw] << std::endl;
             std::cout << "z: " << hcalZpos[detIDraw] << std::endl;
-        }// end verbose 
-        
-        int layer = hcalLayerNum[detIDraw];
-	double energy=hcalLayerPEs[detIDraw]/PEperMIP*MeVperMIP; // need to add in a weighting factor eventually
+        }        // end verbose 
 
-	event::HcalHit *hit = (event::HcalHit*)(hits->ConstructedAt(ihit));
-	
-	//	hit->setLayer(layer);
-	hit->setPE(hcalLayerPEs[detIDraw]);
-	hit->setAmplitude(hcalLayerEdep[detIDraw]);
-	hit->setEnergy(energy);
-	hit->setTime(hcalLayerTime[detIDraw]);
+        int layer = hcalLayerNum[detIDraw];
+        double energy = hcalLayerPEs[detIDraw] / PE_PER_MIP * MEV_PER_MIP; // need to add in a weighting factor eventually
+
+        HcalHit *hit = (HcalHit*) (hits_->ConstructedAt(ihit));
+
+        //	hit->setLayer(layer);
+        hit->setPE(hcalLayerPEs[detIDraw]);
+        hit->setAmplitude(hcalLayerPEs[detIDraw]);
+        hit->setEnergy(energy);
+        hit->setTime(hcalLayerTime[detIDraw]);
         hit->setID(detIDraw);
-	//	hit->setZpos(hcalZpos[detIDraw]);
-	ihit++;
-    }// end loop over detIDs (layers)
-    // put it into the event
-    event.add("hcalDigis",hits);
+        //	hit->setZpos(hcalZpos[detIDraw]);
+        ihit++;
+    } // end loop over detIDs (layers)
+      // put it into the event
+    event.add("hcalDigis", hits_);
 }
 
+}
 
-DECLARE_PRODUCER(HcalDigiProducer);
+DECLARE_PRODUCER_NS(ldmx, HcalDigiProducer);
 

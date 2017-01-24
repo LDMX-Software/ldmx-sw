@@ -1,6 +1,6 @@
 #include "DetDescr/DefaultDetectorID.h"
 
-namespace detdescr {
+namespace ldmx {
 
 DefaultDetectorID::DefaultDetectorID() : DetectorID() {
     IDField::IDFieldList* fieldList = new IDField::IDFieldList();

@@ -14,7 +14,7 @@
 #include <string>
 #include <map>
 
-namespace event {
+namespace ldmx {
 
 /**
  * @class RunHeader
@@ -181,7 +181,7 @@ class RunHeader : public TObject {
          */
         std::map<std::string, std::string> stringParameters_;
 
-    ClassDef(RunHeader, 1);
+        ClassDef(RunHeader, 1);
 };
 
 }

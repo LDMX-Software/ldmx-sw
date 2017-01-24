@@ -20,10 +20,9 @@
 #include <ostream>
 #include <vector>
 
-using event::SimTrackerHit;
 using std::vector;
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class G4TrackerHit

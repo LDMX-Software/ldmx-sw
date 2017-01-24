@@ -1,6 +1,6 @@
 #include "SimPlugins/PluginMessenger.h"
 
-namespace sim {
+namespace ldmx {
 
 PluginMessenger::PluginMessenger(PluginManager* thePluginManager)
     : pluginManager_(thePluginManager) {

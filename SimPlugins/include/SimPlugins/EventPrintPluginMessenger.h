@@ -14,7 +14,7 @@
 #include "G4UIcommand.hh"
 #include "G4UIparameter.hh"
 
-namespace sim {
+namespace ldmx {
 
 /*
  * Declare the plugin class because there is a circular dep between

@@ -17,7 +17,7 @@
 #include "G4GenericBiasingPhysics.hh"
 #include "G4VModularPhysicsList.hh"
 
-namespace sim {
+namespace ldmx {
 
 RunManager::RunManager() {
     pluginManager_ = new PluginManager();
