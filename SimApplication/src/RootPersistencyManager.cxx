@@ -2,7 +2,7 @@
 
 // LDMX
 #include "Event/EventHeader.h"
-#include "Event/EventImpl.h"
+#include "Framework/EventImpl.h"
 #include "Event/EventConstants.h"
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/DetectorConstruction.h"
@@ -28,7 +28,7 @@ RootPersistencyManager::RootPersistencyManager() :
     G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
     G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 
-    event_ = new event::EventImpl("sim");
+    event_ = new ldmxsw::EventImpl("sim");
 }
 
 G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
@@ -85,17 +85,14 @@ void RootPersistencyManager::Initialize() {
     }
 
     // Create and setup the output file for writing the events.
-    outputFile_ = new event::EventFile(fileName_.c_str(), true, compressionLevel_);
-    outputFile_->setupEvent(event_);
-
-    // Setup the file to write event data.
-    outputFile_->nextEvent();
+    outputFile_ = new ldmxsw::EventFile(fileName_.c_str(), true, compressionLevel_);
+    outputFile_->setupEvent((ldmxsw::EventImpl*)event_);
 
     // Create map with output hits collections.
     setupHitsCollectionMap();
 }
 
-void RootPersistencyManager::buildEvent(const G4Event* anEvent, event::EventImpl* outputEvent) {
+void RootPersistencyManager::buildEvent(const G4Event* anEvent, event::Event* outputEvent) {
 
     // Set basic event information.
     writeHeader(anEvent, outputEvent);
@@ -110,10 +107,10 @@ void RootPersistencyManager::buildEvent(const G4Event* anEvent, event::EventImpl
     writeHitsCollections(anEvent, outputEvent);
 }
 
-void RootPersistencyManager::printEvent(event::EventImpl* outputEvent) {
+void RootPersistencyManager::printEvent(event::Event* outputEvent) {
 
     if (m_verbose > 2) {
-        auto particleColl = (TClonesArray*) outputEvent->get("SimParticles", "sim");
+        auto particleColl = outputEvent->get<TClonesArray*>("SimParticles", "sim");
         if (!particleColl) {
             throw std::runtime_error("SimParticle output collection is null!");
         }
@@ -137,25 +134,26 @@ void RootPersistencyManager::printEvent(event::EventImpl* outputEvent) {
     }
 }
 
-void RootPersistencyManager::writeHeader(const G4Event* anEvent, event::EventImpl* outputEvent) {
-    eventHeader_.setEventNumber(anEvent->GetEventID());
+void RootPersistencyManager::writeHeader(const G4Event* anEvent, event::Event* outputEvent) {
+    event::EventHeader& eventHeader = ((ldmxsw::EventImpl*)outputEvent)->getEventHeaderMutable();
+
+    eventHeader.setEventNumber(anEvent->GetEventID());
     TTimeStamp ts;
     ts.SetSec((int) time(NULL));
-    eventHeader_.setTimestamp(ts);
-    eventHeader_.setRun(G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID());
+    eventHeader.setTimestamp(ts);
+    eventHeader.setRun(G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID());
     if (anEvent->GetPrimaryVertex(0)) {
-        eventHeader_.setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
+        eventHeader.setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
     }
-    outputEvent->add("EventHeader", &eventHeader_);
 
     if (m_verbose > 1) {
         std::cout << "[ RootPersistencyManager ] : Wrote event header for event ID " << anEvent->GetEventID() << std::endl;
         std::cout << "  ";
-        eventHeader_.Print("");
+        eventHeader.Print("");
     }
 }
 
-void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, event::EventImpl* outputEvent) {
+void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, event::Event* outputEvent) {
 
     // Clear the hits from last event.
     for (auto entry : outputHitsCollections_) {

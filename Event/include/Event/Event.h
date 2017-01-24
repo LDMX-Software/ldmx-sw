@@ -1,6 +1,6 @@
 /**
  * @file Event.h
- * @brief Class defining an interface for accessing event data
+ * @brief Class defining an abstract interface for accessing event information and data collections
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
@@ -12,21 +12,12 @@
 #include "TClonesArray.h"
 
 // LDMX
-#include "Event/EventConstants.h"
 #include "Event/EventHeader.h"
-#include "Event/EventImpl.h"
-#include "Event/SimTrackerHit.h"
-#include "Event/SimCalorimeterHit.h"
-#include "Event/SimParticle.h"
 
 // STL
 #include <string>
 #include <map>
 
-/**
- * @namespace event
- * @brief Physics event model interfaces and implementation classes
- */
 namespace event {
 
 /**
@@ -35,93 +26,135 @@ namespace event {
  *
  * @note
  * A backing EventImpl object provides the actual data collections
- * via ROOT data structures (trees and branches).
+ * via ROOT data structures (trees and branches).  
  */
-class Event: public TObject {
+class Event {
 
     public:
 
         /**
          * Class constructor.
          */
-        Event(EventImpl* eventImpl) : eventImpl_(eventImpl) {;}
+        Event() {;}
 
         /**
          * Class destructor.
          */
         virtual ~Event() {;}
-        
+
         /**
          * Get the event header.
-         * @param The specific pass name within the event.
          * @return The event header.
-         *
-         * @todo Fix hard-coded default pass name.
          */
-        EventHeader* getEventHeader(std::string passName = "sim") {
-            return (EventHeader*) eventImpl_->get("EventHeader", passName);
+        virtual const EventHeader* getEventHeader() const = 0;
+
+        /**
+         * Check the existence of one-and-only-one object with the
+         * given name (excluding the pass) in the event.
+         * @param name Name (label, not class name) given to the object when it was put into the event.
+         * @return True if the object or collection exists in the event.
+         */
+        bool exists(const std::string& name) {
+            return getReal(name, "", false) != 0;
         }
 
         /**
-         * Get a named object with a specific type, using the default pass name.
+         * Check for the existence of an object or collection with the
+         * given name and pass name in the event.
+         * @param name Name (label, not class name) given to the object when it was put into the event.
+         * @param passName The process pass label which was in use when this object was put into the event, such as "sim" or "rerecov2".
+         * @return True if the object or collection exists in the event.
+         */
+        bool exists(const std::string& name, const std::string& passName) {
+            return getReal(name, passName, false) != 0;
+        }
+
+        /**
+         * Get a named object with a specific type without specifying
+         * the pass name.  If there is one-and-only-one object with the
+         * given name (excluding the pass) in the event, it will be
+         * returned, otherwise an exception will be thrown.
+         * @param name Name (label, not classname) given to the object when it was put into the event.
          * @return A named object from the event.
          */
-        template<typename ObjectType> const ObjectType get(std::string name) {
-            return (ObjectType) eventImpl_->get(name, eventImpl_->getPassName());
+        template<typename ObjectType> const ObjectType get(const std::string& name) {
+            return (ObjectType) getReal(name, "", true);
         }
 
         /**
-         * Get a named object with a specific type and pass name.
-         * @param name The name of the object.
-         * @param passName The pass name.
+         * Get a named object with a specific type, specifying
+         * the pass name.  If there is no object which matches, an exception
+         * will be thrown.
+         * @param name Name (label, not classname) given to the object when it was put into the event.
+         * @param passName The process pass label which was in use when this object was put into the event, such as "sim" or "rerecov2".
+         * @return A named object from the event.
          */
-        template<typename ObjectType> const ObjectType get(std::string name, std::string passName) {
-            return (ObjectType) eventImpl_->get(name, passName);
+        template<typename ObjectType> const ObjectType get(const std::string& name, const std::string& passName) {
+            return (ObjectType) getReal(name, passName, true);
         }
 
         /**
-         * Add a collection of objects to the event using the default pass name.
-         * @param collectionName The name of the collection.
-         * @param tca The TClonesArray containing the objects.
-         */
-        void add(const std::string& collectionName, TClonesArray* tca) {
-            eventImpl_->add(collectionName, tca);
-        }
-
-        /**
-         * Add a named object to the event using the default pass name.
-         * @param name The name of the object.
-         * @param obj The object to add.
-         */
-        void add(const std::string& name, TObject* obj) {
-            eventImpl_->add(name, obj);
-        }
-
-        /**
-         * Get a collection of objects by name using the default pass name.
-         * @param collectionName The name of the collection.
+         * Get a collection (TClonesArray) from the event without specifying
+         * the pass name.  If there is one-and-only-one object with the
+         * given name (excluding the pass) in the event, it will be
+         * returned, otherwise an exception will be thrown.
+         * @param name Name (label, not class name) given to the object when it was put into the event.
+         * @return The named TClonesArray from the event.
          */
         const TClonesArray* getCollection(const std::string& collectionName) {
-            return (TClonesArray*) eventImpl_->get(collectionName, eventImpl_->getPassName());
+            return (TClonesArray*) getReal(collectionName, "", true);
         }
 
         /**
-         * Get a collection of objects by name with the pass name.
-         * @param collectionName The name of the collection.
-         * @param passName The pass name.
+         * Get an object collection (TClonesArray) from the event, specifying
+         * the pass name.  If there is no object which matches, an exception
+         * will be thrown.
+         * @param collectionName Name given to the collection when it was put into the event.
+         * @param passName The process pass label which was in use when this object was put into the event, such as "sim" or "rerecov2".
+         * @return A named TClonesArray from the event.
          */
         const TClonesArray* getCollection(const std::string& collectionName, std::string passName) {
-            return (TClonesArray*) eventImpl_->get(collectionName, passName);
+            return (TClonesArray*) getReal(collectionName, passName, true);
         }
 
-    private:
+        /**
+         * Add a collection (TClonesArray) of objects to the event.
+         * The current pass name will be used for the collection.
+         * @param collectionName The name of the collection.
+         * @param clones The TClonesArray containing the objects.
+         */
+        virtual void add(const std::string& collectionName, TClonesArray* clones) = 0;
 
         /**
-         * The object containing the event data.
+         * Add an object to the event.
+         * The current pass name will be used for the object.
+         * @param collectionName The name of the collection.
+         * @param clones The TClonesArray containing the objects.
          */
-        EventImpl* eventImpl_;
-};
+        virtual void add(const std::string& name, TObject* obj) = 0;
 
+        /**
+         * Add the given object to the named TClonesArray collection
+         * Objects can only be added to a TClonesArray during the current pass -- TClonesArrays loaded
+         * from the input data file are not allowed to be changed.
+         * @note Object types must implement TObject::Copy().
+         * @param name Name of the collection.
+         * @param obj Object to be appended to the collection.
+         */
+        virtual void addToCollection(const std::string& name, const TObject& obj) = 0;
+
+    protected:
+
+        /**
+         * Actual get implementation, provided by derived class.
+         * @param itemName The name of the object or TClonesArray.
+         * @param passName The process pass label which was in use when this object was put into the event.
+         * @param mustExist Determines if an exception should be thrown if the object does not exist -- used by exists() methods.
+         * @param clones The TClonesArray containing the objects.
+         */
+        virtual const TObject* getReal(const std::string& itemName, const std::string& passName, bool mustExist) = 0;
+
+};
 }
 
 #endif
