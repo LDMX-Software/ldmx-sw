@@ -27,7 +27,7 @@ public:
     typedef int layer;
     typedef std::pair<double,double> zboundaries;
   
-    HcalDigiProducer(const std::string& name, const ldmxsw::Process& process);
+    HcalDigiProducer(const std::string& name, ldmxsw::Process& process);
     virtual ~HcalDigiProducer() { delete hits; if (random_) delete random_;}
     
     virtual void configure(const ldmxsw::ParameterSet&);

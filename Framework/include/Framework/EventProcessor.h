@@ -9,6 +9,8 @@ namespace event {
     class Event;
 }
 
+class TDirectory;
+
 namespace ldmxsw {
 
     class ParameterSet;
@@ -16,7 +18,7 @@ namespace ldmxsw {
     class EventProcessor;
 
     /** Typedef for EventProcessorFactory use */
-    typedef EventProcessor* EventProcessorMaker(const std::string& name, const Process& process);
+    typedef EventProcessor* EventProcessorMaker(const std::string& name, Process& process);
 
     /** Base class for all Event processing 
      */
@@ -34,7 +36,7 @@ namespace ldmxsw {
 	 *@param process The Process class associated with EventProcessor,
 	 * provided by the framework
 	 */
-	EventProcessor(const std::string& name, const Process& process);
+	EventProcessor(const std::string& name, Process& process);
 
 	/** 
 	 * Callback for the EventProcessor to configure itself from the given set of parameters.
@@ -74,17 +76,26 @@ namespace ldmxsw {
 	 */
 	virtual void onProcessEnd() { }
 
+	/** Access/create a directory in the histogram file for this event
+	 * processor to create histograms and analysis tuples.
+	 * @note This method makes the returned directory the current directory
+	 *     so that newly created objects should go into that directory
+	 */
+	TDirectory* getHistoDirectory();
+      
 	/** Internal function which is part of the EventProcessorFactory machinery */
         static void declare(const std::string& classname, int classtype,EventProcessorMaker*);
 
 	protected:
 
 	/** Handle to the Process */
-	const Process& process_;    
+	Process& process_;    
 
 	private:
 	/** The name of the EventProcessor */
 	std::string name_;
+	/** Histogram directory */
+	TDirectory* histoDir_{0};
     };
     
     /** Base class for a module which produces a data product (thus needs a mutable copy of the event)
@@ -108,7 +119,7 @@ namespace ldmxsw {
 	 *@note Derived classes must have a constructor of the same interface, which is the
 	 * only constructor which will be called by the framework
 	 */
-        Producer(const std::string& name, const Process& process);
+        Producer(const std::string& name, Process& process);
 
 	/**
 	 * Process the event and put new data products into it
@@ -139,7 +150,7 @@ namespace ldmxsw {
 	 *@note Derived classes must have a constructor of the same interface, which is the
 	 * only constructor which will be called by the framework
 	 */
-	Analyzer(const std::string& name, const Process& process);
+	Analyzer(const std::string& name, Process& process);
     
 	/**
 	 * Process the event and make histograms or summaries
@@ -156,14 +167,14 @@ namespace ldmxsw {
     @brief Macro which allows the framework to construct a producer given its name during configuration.  
     @attention Every Producer class must call this macro or DECLARE_PRODUCER_NS() in the associated implementation (.cxx) file.
 */
-#define DECLARE_PRODUCER(CLASS) ldmxsw::EventProcessor*  CLASS ## _ldmxsw_make (const std::string& name, const ldmxsw::Process& process) { return new CLASS(name,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmxsw_declare() { ldmxsw::EventProcessor::declare(#CLASS,::ldmxsw::Producer::CLASSTYPE,& CLASS ## _ldmxsw_make ); }
+#define DECLARE_PRODUCER(CLASS) ldmxsw::EventProcessor*  CLASS ## _ldmxsw_make (const std::string& name, ldmxsw::Process& process) { return new CLASS(name,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmxsw_declare() { ldmxsw::EventProcessor::declare(#CLASS,::ldmxsw::Producer::CLASSTYPE,& CLASS ## _ldmxsw_make ); }
 
 /** @def DECLARE_ANALYZER(CLASS)
     @param CLASS The name of the class to register, which must not be in a namespace.  If the class is in a namespace, use DECLARE_PRODUCER_NS()
     @brief Macro which allows the framework to construct an analyzer given its name during configuration.  
     @attention Every Analyzer class must call this macro or DECLARE_ANALYZER_NS() in the associated implementation (.cxx) file.
 */
-#define DECLARE_ANALYZER(CLASS)  ldmxsw::EventProcessor*  CLASS ## _ldmxsw_make (const std::string& name, const ldmxsw::Process& process) { return new CLASS(name,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmxsw_declare() { ldmxsw::EventProcessor::declare(#CLASS,::ldmxsw::Analyzer::CLASSTYPE,& CLASS ## _ldmxsw_make); }
+#define DECLARE_ANALYZER(CLASS)  ldmxsw::EventProcessor*  CLASS ## _ldmxsw_make (const std::string& name, ldmxsw::Process& process) { return new CLASS(name,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmxsw_declare() { ldmxsw::EventProcessor::declare(#CLASS,::ldmxsw::Analyzer::CLASSTYPE,& CLASS ## _ldmxsw_make); }
 
 
 /** @def DECLARE_PRODUCER_NS(NS,CLASS)
@@ -172,7 +183,7 @@ namespace ldmxsw {
     @brief Macro which allows the framework to construct a producer given its name during configuration.  
     @attention Every Producer class must call this macro or DECLARE_PRODUCER() in the associated implementation (.cxx) file.
 */
-#define DECLARE_PRODUCER_NS(NS,CLASS) ldmxsw::EventProcessor*  CLASS ## _ldmxsw_make (const std::string& name, const ldmxsw::Process& process) { return new NS::CLASS(name,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmxsw_declare() { ldmxsw::EventProcessor::declare(std::string(#NS)+"::"+std::string(#CLASS),::ldmxsw::Producer::CLASSTYPE,& CLASS ## _ldmxsw_make ); }
+#define DECLARE_PRODUCER_NS(NS,CLASS) ldmxsw::EventProcessor*  CLASS ## _ldmxsw_make (const std::string& name, ldmxsw::Process& process) { return new NS::CLASS(name,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmxsw_declare() { ldmxsw::EventProcessor::declare(std::string(#NS)+"::"+std::string(#CLASS),::ldmxsw::Producer::CLASSTYPE,& CLASS ## _ldmxsw_make ); }
 
 /** @def DECLARE_ANALYZER_NS(NS,CLASS)
     @param NS The full namespace specification for the Analyzer
@@ -180,7 +191,7 @@ namespace ldmxsw {
     @brief Macro which allows the framework to construct an analyzer given its name during configuration.  
     @attention Every Analyzer class must call this macro or DECLARE_ANALYZER() in the associated implementation (.cxx) file.
 */
-#define DECLARE_ANALYZER_NS(NS,CLASS)  ldmxsw::EventProcessor*  CLASS ## _ldmxsw_make (const std::string& name, const ldmxsw::Process& process) { return new NS::CLASS(name,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmxsw_declare() { ldmxsw::EventProcessor::declare(std::string(#NS)+"::"+std::string(#CLASS),::ldmxsw::Analyzer::CLASSTYPE,& CLASS ## _ldmxsw_make); }
+#define DECLARE_ANALYZER_NS(NS,CLASS)  ldmxsw::EventProcessor*  CLASS ## _ldmxsw_make (const std::string& name, ldmxsw::Process& process) { return new NS::CLASS(name,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmxsw_declare() { ldmxsw::EventProcessor::declare(std::string(#NS)+"::"+std::string(#CLASS),::ldmxsw::Analyzer::CLASSTYPE,& CLASS ## _ldmxsw_make); }
 
 
 

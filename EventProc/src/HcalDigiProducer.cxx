@@ -24,7 +24,7 @@ const float HcalDigiProducer::MeVperMIP = 1.40;
 const float HcalDigiProducer::PEperMIP = 13.5*6./4.;
 
 
-HcalDigiProducer::HcalDigiProducer(const std::string& name, const ldmxsw::Process& process) : ldmxsw::Producer(name,process) {
+HcalDigiProducer::HcalDigiProducer(const std::string& name, ldmxsw::Process& process) : ldmxsw::Producer(name,process) {
   hits=new TClonesArray("event::HcalHit");
 }
 
