@@ -11,77 +11,76 @@
 #include <vector>
 #include "Framework/ParameterSet.h"
 
-namespace ldmxsw {
+namespace ldmx {
 
-    class Process;
+class Process;
 
-    /**
-     * @class ConfigurePython
-     * @brief Utility class which reads/executes a python script and creates a Process object based on the input.
-     * @note The configuration language is documented in the overall Framework package documentation.
-     */
-    class ConfigurePython {
+/**
+ * @class ConfigurePython
+ * @brief Utility class which reads/executes a python script and creates a Process object based on the input.
+ * @note The configuration language is documented in the overall Framework package documentation.
+ */
+class ConfigurePython {
 
-	public:
+    public:
 
-	    /** 
-	     * Class constructor.
-	     *
-	     * This method contains all the parsing and execution of the python script.
-	     *
-	     * @param pythonScript Filename location of the python script.
-	     * @param args Commandline arguments to be passed to the python script.
-	     * @param nargs Number of commandline arguments.
-	     */
-	    ConfigurePython(const std::string& pythonScript, char* args[], int nargs);
+        /**
+         * Class constructor.
+         *
+         * This method contains all the parsing and execution of the python script.
+         *
+         * @param pythonScript Filename location of the python script.
+         * @param args Commandline arguments to be passed to the python script.
+         * @param nargs Number of commandline arguments.
+         */
+        ConfigurePython(const std::string& pythonScript, char* args[], int nargs);
 
-	    /** 
-	     * Class destructor.
-	     */
-	    ~ConfigurePython();
+        /**
+         * Class destructor.
+         */
+        ~ConfigurePython();
 
+        /**
+         * Create a process object based on the python file information
+         */
+        Process* makeProcess();
 
-	    /** 
-	     * Create a process object based on the python file information
-	     */
-	    Process* makeProcess();
+    private:
 
-	private:
-    
-	    /** The label for this processing pass. */
-	    std::string passname_;
-	    
-	    /** The maximum number of events to process, if provided in python file. */
-	    int eventLimit_{-1};
-	    
-	    /** The run number to use when generating events (no input file), if provided in python file. */
-	    int run_{-1};
+        /** The label for this processing pass. */
+        std::string passname_;
 
-	    /** List of input ROOT files to process in the job, if provided in python file. */
-	    std::vector<std::string> inputFiles_;
+        /** The maximum number of events to process, if provided in python file. */
+        int eventLimit_ {-1};
 
-	    /** List of rules for keeping and dropping data products, if provided in python file. */
-	    std::vector<std::string> keepRules_;
-	    /** List of rules for shared libraries to load, if provided in python file. */
-	    std::vector<std::string> libraries_;
-	    /** List of rules for output ROOT file names, if provided in python file. */
-	    std::vector<std::string> outputFiles_;
+        /** The run number to use when generating events (no input file), if provided in python file. */
+        int run_ {-1};
 
-	    /**
-	     * @struct ProcessorInfo
-	     * @brief Represents the configuration of an EventProcessor in the job.
-	     */
-	    struct ProcessorInfo {
-	        std::string classname_;
-	        std::string instancename_;
-	        ParameterSet params_;
-	    };
+        /** List of input ROOT files to process in the job, if provided in python file. */
+        std::vector<std::string> inputFiles_;
 
-	    /** The sequence of EventProcessor objects to be executed in order. */
-	    std::vector<ProcessorInfo> sequence_;
-    };
-  
+        /** List of rules for keeping and dropping data products, if provided in python file. */
+        std::vector<std::string> keepRules_;
+        /** List of rules for shared libraries to load, if provided in python file. */
+        std::vector<std::string> libraries_;
+        /** List of rules for output ROOT file names, if provided in python file. */
+        std::vector<std::string> outputFiles_;
+
+        /**
+         * @struct ProcessorInfo
+         * @brief Represents the configuration of an EventProcessor in the job.
+         */
+        struct ProcessorInfo {
+                std::string classname_;
+                std::string instancename_;
+                ParameterSet params_;
+        };
+
+        /** The sequence of EventProcessor objects to be executed in order. */
+        std::vector<ProcessorInfo> sequence_;
+};
+
 }
 
 #endif
- 
+

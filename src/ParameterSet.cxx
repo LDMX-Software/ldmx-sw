@@ -1,7 +1,7 @@
 #include "Framework/ParameterSet.h"
 #include "Framework/Exception.h"
 
-namespace ldmxsw {
+namespace ldmx {
 
 void ParameterSet::insert(const std::string& name, int value) {
     elements_[name] = Element(value);

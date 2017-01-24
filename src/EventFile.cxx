@@ -3,7 +3,7 @@
 #include "Framework/Exception.h"
 #include "Event/EventConstants.h"
 
-namespace ldmxsw {
+namespace ldmx {
 
 EventFile::EventFile(const std::string& filename, std::string treeName, bool isOutputFile, int compressionLevel) :
         fileName_(filename), isOutputFile_(isOutputFile) {
@@ -33,7 +33,7 @@ EventFile::EventFile(const std::string& filename, std::string treeName, bool isO
 }
 
 EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :
-        EventFile(filename, event::EventConstants::EVENT_TREE_NAME, isOutputFile, compressionLevel) {
+        EventFile(filename, EventConstants::EVENT_TREE_NAME, isOutputFile, compressionLevel) {
 }
 
 EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :

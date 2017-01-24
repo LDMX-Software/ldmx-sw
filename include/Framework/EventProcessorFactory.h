@@ -12,7 +12,7 @@
 #include <vector>
 #include "Framework/EventProcessor.h"
 
-namespace ldmxsw {
+namespace ldmx {
 
 /**
  * @class EventProcessorFactory

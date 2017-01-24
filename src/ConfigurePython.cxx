@@ -4,7 +4,7 @@
 #include <iostream>
 #include "Framework/EventProcessorFactory.h"
 
-namespace ldmxsw {
+namespace ldmx {
 
 static std::string stringMember(PyObject* owner, const std::string& name) {
     std::string retval;
@@ -194,7 +194,8 @@ Process* ConfigurePython::makeProcess() {
     }
 
     for (auto proc : sequence_) {
-        EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(proc.classname_, proc.instancename_, *p);
+        // FIXME: The ldmx namespace should not be hard-coded here.
+        EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor("ldmx::" + proc.classname_, proc.instancename_, *p);
         if (ep == 0) {
             EXCEPTION_RAISE("UnableToCreate", "Unable to create instance '" + proc.instancename_ + "' of class '" + proc.classname_ + "'");
         }
