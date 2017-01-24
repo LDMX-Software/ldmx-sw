@@ -1,6 +1,6 @@
 #include "Event/EventConstants.h"
 
-namespace event {
+namespace ldmx {
 
     /*
      * Default name of event tree.
@@ -19,5 +19,15 @@ namespace event {
     const std::string EventConstants::TARGET_SIM_HITS = "TargetSimHits";
     const std::string EventConstants::TRIGGER_PAD_SIM_HITS = "TriggerPadSimHits";
     const std::string EventConstants::TRIGGER_RESULT = "TriggerResult";
+
+    /*
+     * Type names.
+     */
+    const std::string EventConstants::ECAL_HIT = "ldmx::EcalHit";
+    const std::string EventConstants::HCAL_HIT = "ldmx::HcalHit";
+    const std::string EventConstants::SIM_PARTICLE = "ldmx::SimParticle";
+    const std::string EventConstants::SIM_CALORIMETER_HIT = "ldmx::SimCalorimeterHit";
+    const std::string EventConstants::SIM_TRACKER_HIT = "ldmx::SimTrackerHit";
+    const std::string EventConstants::RUN_HEADER = "ldmx::RunHeader";
 
 } // namespace event

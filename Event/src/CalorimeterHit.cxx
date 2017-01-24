@@ -3,9 +3,9 @@
 // STL
 #include <iostream>
 
-ClassImp(event::CalorimeterHit)
+ClassImp(ldmx::CalorimeterHit)
 
-namespace event {
+namespace ldmx {
 
 void CalorimeterHit::Clear(Option_t *option) {
 

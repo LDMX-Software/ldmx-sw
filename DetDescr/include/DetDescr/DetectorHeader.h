@@ -7,7 +7,7 @@
 #ifndef DETDESCR_DETECTORHEADER_H_
 #define DETDESCR_DETECTORHEADER_H_
 
-namespace detdescr {
+namespace ldmx {
 
 /**
  * @class DetectorHeader

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string.h>
 
-using namespace ldmxsw;
+using namespace ldmx;
 
 int main(int argc, char* argv[]) {
 

@@ -4,14 +4,17 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#include "TObject.h"
-#include "TTimeStamp.h"
-
 #ifndef EVENT_EVENTHEADER_H_
 #define EVENT_EVENTHEADER_H_
 
+// ROOT
+#include "TObject.h"
+#include "TTimeStamp.h"
+
+// STL
 #include <iostream>
-namespace event {
+
+namespace ldmx {
 
 /**
  * @class EventHeader

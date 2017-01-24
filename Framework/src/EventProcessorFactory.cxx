@@ -2,9 +2,9 @@
 #include "Framework/EventProcessorFactory.h"
 #include <dlfcn.h>
 
-ldmxsw::EventProcessorFactory ldmxsw::EventProcessorFactory::theFactory_ __attribute((init_priority(500)));
+ldmx::EventProcessorFactory ldmx::EventProcessorFactory::theFactory_ __attribute((init_priority(500)));
 
-namespace ldmxsw {
+namespace ldmx {
 
 EventProcessorFactory::EventProcessorFactory() {
 }

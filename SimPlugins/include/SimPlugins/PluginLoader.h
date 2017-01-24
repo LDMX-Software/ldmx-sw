@@ -7,9 +7,10 @@
 #ifndef SIMPLUGINS_PLUGINLOADER_H_
 #define SIMPLUGINS_PLUGINLOADER_H_
 
+// LDMX
 #include "SimPlugins/UserActionPlugin.h"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class PluginLoader

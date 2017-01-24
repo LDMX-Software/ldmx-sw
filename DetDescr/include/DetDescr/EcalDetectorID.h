@@ -10,7 +10,7 @@
 // LDMX
 #include "DetDescr/DefaultDetectorID.h"
 
-namespace detdescr {
+namespace ldmx {
 
 /**
  * @class EcalDetectorID

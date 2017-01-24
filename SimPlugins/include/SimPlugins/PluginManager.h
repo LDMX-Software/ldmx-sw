@@ -18,7 +18,7 @@
 // Geant4
 #include "G4ClassificationOfNewTrack.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class PluginManager

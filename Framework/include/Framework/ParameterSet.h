@@ -7,11 +7,12 @@
 #ifndef FRAMEWORK_PARAMETERSET_H_
 #define FRAMEWORK_PARAMETERSET_H_
 
+// STL
 #include <map>
 #include <string>
 #include <vector>
 
-namespace ldmxsw {
+namespace ldmx {
 
 /**
  * @class ParameterSet

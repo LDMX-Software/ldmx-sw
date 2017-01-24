@@ -1,8 +1,8 @@
 #include "Event/SimTrackerHit.h"
 
-ClassImp(event::SimTrackerHit)
+ClassImp(ldmx::SimTrackerHit)
 
-namespace event {
+namespace ldmx {
 
 SimTrackerHit::SimTrackerHit()
     : TObject() {

@@ -20,9 +20,7 @@
 // STL
 #include <map>
 
-using event::SimParticle;
-
-namespace sim {
+namespace ldmx {
 
 /**
  * @class SimParticleBuilder
@@ -59,7 +57,7 @@ class SimParticleBuilder {
          * Build SimParticle collection into an output event.
          * @param outputEvent The output event.
          */
-        void buildSimParticles(event::Event* outputEvent);
+        void buildSimParticles(Event* outputEvent);
 
         /**
          * Find a SimParticle by track ID.

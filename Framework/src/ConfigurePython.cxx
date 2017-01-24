@@ -1,10 +1,15 @@
+// python
 #include "Python.h"
+
+// LDMX
 #include "Framework/ConfigurePython.h"
 #include "Framework/Process.h"
-#include <iostream>
 #include "Framework/EventProcessorFactory.h"
 
-namespace ldmxsw {
+// STL
+#include <iostream>
+
+namespace ldmx {
 
 static std::string stringMember(PyObject* owner, const std::string& name) {
     std::string retval;
