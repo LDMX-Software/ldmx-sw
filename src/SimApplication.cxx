@@ -19,7 +19,7 @@
 #include "G4VisExecutive.hh"
 #include "G4RunManager.hh"
 
-namespace sim {
+namespace ldmx {
 
 SimApplication::SimApplication() {
 }

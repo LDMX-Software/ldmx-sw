@@ -15,7 +15,7 @@
 #include <vector>
 using std::vector;
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @brief

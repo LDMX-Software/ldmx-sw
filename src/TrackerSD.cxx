@@ -13,7 +13,7 @@
 // LDMX
 #include "DetDescr/IDField.h"
 
-namespace sim {
+namespace ldmx {
 
 TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
     G4VSensitiveDetector(name),

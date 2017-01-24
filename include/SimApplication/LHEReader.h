@@ -13,7 +13,7 @@
 // STL
 #include <fstream>
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class LHEReader

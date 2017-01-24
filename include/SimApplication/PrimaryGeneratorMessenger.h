@@ -13,7 +13,7 @@
 // LDMX
 #include "SimApplication/PrimaryGeneratorAction.h"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class PrimaryGeneratorMessenger

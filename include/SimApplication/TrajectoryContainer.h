@@ -16,7 +16,7 @@
 // STL
 #include <map>
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class TrajectoryContainer
