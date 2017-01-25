@@ -165,4 +165,15 @@ void EventFile::close() {
     file_->Close();
 }
 
+void EventFile::writeRunHeader(RunHeader* runHeader) {
+    if (!isOutputFile_) {
+        EXCEPTION_RAISE("FileError", "Output file '" + fileName_ + "' is not writable");
+    }
+    TTree* runTree = new TTree("LDMX_Run", "LDMX run header");
+    TBranch* runBranch = runTree->Branch("RunHeader", EventConstants::RUN_HEADER.c_str(), &runHeader, 32000, 3);
+    runBranch->SetFile(file_);
+    runTree->Fill();
+    runTree->Write();
+}
+
 }
