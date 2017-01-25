@@ -18,6 +18,7 @@
 // STL
 #include <string>
 #include <vector>
+#include <map>
 
 namespace ldmx {
 
@@ -94,11 +95,23 @@ class EventFile {
         void writeRunHeader(RunHeader* runHeader);
 
         /**
-         * Get the RunHeader if it exists in the input file.
+         * Get the RunHeader for a given run, if it exists in the input file.
+         * @param runNumber The run number.
          * @return The RunHeader from the input file.
-         * @throw Exception if there is no RunHeader in the file.
+         * @throw Exception if there is no RunHeader in the file with the given run number.
          */
-        const RunHeader& getRunHeader();
+        const RunHeader& getRunHeader(int runNumber);
+
+    private:
+
+        /**
+         * Fill the internal map of run numbers to RunHeader objects from the input file.
+         *
+         * @note This is called automatically the first time nextEvent() is
+         * activated.  If there are no run headers in the input file (e.g. for
+         * a new simulation file) the run map will not be filled.
+         */
+        void createRunMap();
 
     private:
 
@@ -128,6 +141,9 @@ class EventFile {
 
         /** Pointer to run header from input file. */
         RunHeader* runHeader_{nullptr};
+
+        /** Map of run numbers to RunHeader objects read from the input file. */
+        std::map<int, RunHeader*> runMap_;
 };
 }
 
