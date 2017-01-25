@@ -133,6 +133,13 @@ namespace ldmxsw {
 	    for (auto module : sequence_) {
 		module->onProcessEnd();
             }
+
+	    if (histoTFile_) {
+	      histoTFile_->Write();
+	      delete histoTFile_;
+	      histoTFile_=0;
+	    }
+
 	} catch (Exception& e) {
 	    std::cerr << "Framework Error [" << e.name() << "] : " << e.message() << std::endl;
 	    std::cerr << "  at " << e.module() <<":"<<e.line()<<" in " <<e.function() << std::endl;
