@@ -9,6 +9,7 @@
 
 // LDMX
 #include "Framework/EventImpl.h"
+#include "Event/RunHeader.h"
 
 // ROOT
 #include "TTree.h"
@@ -84,6 +85,13 @@ class EventFile {
          * Close the file, writing the tree to disk if creating an output file.
          */
         void close();
+
+        /**
+         * Write the run header into a separate tree in the output file.
+         * @param runHeader The run header to write into the output file.
+         * @throw Exception if file is not writable.
+         */
+        void writeRunHeader(RunHeader* runHeader);
 
     private:
 
