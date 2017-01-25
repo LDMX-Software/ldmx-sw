@@ -78,6 +78,7 @@ namespace ldmxsw {
 	passname_=stringMember(pProcess,"passName");
 	eventLimit_=intMember(pProcess,"maxEvents");
 	run_=intMember(pProcess,"run");
+	histoOutFile_=stringMember(pProcess,"histogramFile");
 
 	PyObject* pysequence=PyObject_GetAttrString(pProcess,"sequence");
 	if (!PyList_Check(pysequence)) {
@@ -206,12 +207,12 @@ namespace ldmxsw {
 	for (auto file : outputFiles_) {
 	    p->addOutputFileName(file);
 	}
-
 	for (auto rule : keepRules_) {
 	    p->addDropKeepRule(rule);
 	}
 	if (run_>0) p->setRunNumber(run_);
 	p->setEventLimit(eventLimit_);
+	p->setHistogramFileName(histoOutFile_);
     
 	return p;
     }

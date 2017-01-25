@@ -98,7 +98,7 @@ namespace ldmxsw {
 	to->Copy(*ito->second);
     }
 
-    const TObject* EventImpl::getReal(const std::string& collectionName, const std::string& passName, bool mustExist) {
+    const TObject* EventImpl::getReal(const std::string& collectionName, const std::string& passName, bool mustExist) const {
 
 	std::string branchName;
 	if (collectionName=="EventHeader") branchName=collectionName;
