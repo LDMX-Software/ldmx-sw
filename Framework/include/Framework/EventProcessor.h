@@ -7,8 +7,11 @@
 #ifndef FRAMEWORK_EVENTPROCESSOR_H_
 #define FRAMEWORK_EVENTPROCESSOR_H_
 
+// LDMX
 #include "Framework/Exception.h"
+#include "Event/RunHeader.h"
 
+// STL
 #include <map>
 
 namespace ldmx {
@@ -57,9 +60,9 @@ class EventProcessor {
         /**
          * Callback for the EventProcessor to take any necessary
          * action when the run being processed changes.
-         * @param run The new run number.
+         * @param runHeader The RunHeader containing run information.
          */
-        virtual void onNewRun(int run) {
+        virtual void onNewRun(const RunHeader& runHeader) {
         }
 
         /**
@@ -125,7 +128,7 @@ class Producer : public EventProcessor {
     public:
 
         /** Constant used to track EventProcessor types by the EventProcessorFactory */
-        static const int CLASSTYPE {1};
+        static const int CLASSTYPE{1};
 
         /**
          * Class constructor.
@@ -160,7 +163,7 @@ class Analyzer : public EventProcessor {
     public:
 
         /** Constant used to track EventProcessor types by the EventProcessorFactory */
-        static const int CLASSTYPE { 2 };
+        static const int CLASSTYPE{2};
 
         /**
          * Class constructor.

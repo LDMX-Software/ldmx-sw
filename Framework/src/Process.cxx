@@ -65,14 +65,6 @@ void Process::run() {
             for (auto infilename : inputFiles_) {
                 EventFile inFile(infilename);
 
-                // Print out run header.
-                try {
-                    const RunHeader& runHeader = inFile.getRunHeader();
-                    runHeader.Print();
-                } catch (const Exception&) {
-                    // Run header not in input file (fine).
-                }
-
                 std::cout << "Process: Opening file " << infilename << std::endl;
                 EventFile* outFile(0);
 
@@ -102,8 +94,14 @@ void Process::run() {
                     // notify for new run if necessary
                     if (theEvent.getEventHeader()->getRun() != wasRun) {
                         wasRun = theEvent.getEventHeader()->getRun();
-                        for (auto module : sequence_) {
-                            module->onNewRun(wasRun);
+                        try {
+                            const RunHeader& runHeader = inFile.getRunHeader(wasRun);
+                            runHeader.Print();
+                            for (auto module : sequence_) {
+                                module->onNewRun(runHeader);
+                            }
+                        } catch (const Exception&) {
+                            std::cout << "Process: WARNING - Run header for run " << wasRun << " was not found in the input file." << std::endl;
                         }
                     }
 
