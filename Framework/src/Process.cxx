@@ -66,8 +66,12 @@ void Process::run() {
                 EventFile inFile(infilename);
 
                 // Print out run header.
-                const RunHeader& runHeader = inFile.getRunHeader();
-                runHeader.Print();
+                try {
+                    const RunHeader& runHeader = inFile.getRunHeader();
+                    runHeader.Print();
+                } catch (const Exception&) {
+                    // Run header not in inut file (fine).
+                }
 
                 std::cout << "Process: Opening file " << infilename << std::endl;
                 EventFile* outFile(0);
