@@ -70,7 +70,7 @@ void Process::run() {
                     const RunHeader& runHeader = inFile.getRunHeader();
                     runHeader.Print();
                 } catch (const Exception&) {
-                    // Run header not in inut file (fine).
+                    // Run header not in input file (fine).
                 }
 
                 std::cout << "Process: Opening file " << infilename << std::endl;
