@@ -5,7 +5,7 @@
  *         SLAC National Accelerator Laboratory
  */
 
-#include "SimApplication/BiasingMessenger.h"
+#include "Biasing/BiasingMessenger.h"
 
 ldmx::BiasingMessenger::BiasingMessenger(G4RunManager* runManager) { 
     
@@ -28,9 +28,8 @@ ldmx::BiasingMessenger::~BiasingMessenger() {
 
 void ldmx::BiasingMessenger::SetNewValue(G4UIcommand* command, G4String newValues) { 
 
-    if (command == enableBiasingCmd_) { 
-       runManager_->enableBiasing();  
-    } else if (command == particleTypeCmd_) { 
-       runManager_->setParticleTypeToBias(newValues);  
+    if (command == enableBiasingCmd_) _biasingEnabled = true; 
+    else if (command == particleTypeCmd_) { 
+       //runManager_->setParticleTypeToBias(newValues);  
     }
 }

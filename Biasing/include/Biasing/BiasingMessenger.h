@@ -20,14 +20,14 @@
 //----------//
 #include "SimApplication/RunManager.h"
 
-namespace ldmx { 
+//namespace ldmx { 
 
 class BiasingMessenger : public G4UImessenger { 
 
     public: 
 
         /** Constructor */
-        BiasingMessenger(G4RunManager* runManager);
+        BiasingMessenger();
 
         /** Destructor */
         ~BiasingMessenger();
@@ -35,9 +35,11 @@ class BiasingMessenger : public G4UImessenger {
         /** */
         void SetNewValue(G4UIcommand* command, G4String newValues);
 
-    private: 
+        /** 
+         */
+        bool isBiasingEnabled() { return _biasingEnabled; }; 
 
-        RunManager* runManager_{nullptr};
+    private: 
 
         /** Directory containing all biasing commands. */
         G4UIdirectory* biasingDir_{new G4UIdirectory{"/ldmx/biasing/"}};
@@ -49,6 +51,9 @@ class BiasingMessenger : public G4UImessenger {
         G4UIcmdWithAString* particleTypeCmd_{new G4UIcmdWithAString{"/ldmx/biasing/particle", this}};
 };
 
-}
+        /** Flag indicating if biasing is enabled */
+        bool _biasingEnabled{false};
+
+//}
 
 #endif
