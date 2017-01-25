@@ -166,14 +166,37 @@ void EventFile::close() {
 }
 
 void EventFile::writeRunHeader(RunHeader* runHeader) {
+
+    // Throw an error if file is not writable.
     if (!isOutputFile_) {
-        EXCEPTION_RAISE("FileError", "Output file '" + fileName_ + "' is not writable");
+        EXCEPTION_RAISE("FileError", "Output file '" + fileName_ + "' is not writable.");
     }
-    TTree* runTree = new TTree("LDMX_Run", "LDMX run header");
+
+    // Throw an error if tree already exists in output file.
+    TTree* runTree = (TTree*) file_->Get("LDMX_Run");
+    if (runTree) {
+        EXCEPTION_RAISE("DataError", "The run header already exists in the output file.");
+    }
+
+    // Create the tree and branch for the RunHeader, fill it, and write out the tree.
+    runTree = new TTree("LDMX_Run", "LDMX run header");
     TBranch* runBranch = runTree->Branch("RunHeader", EventConstants::RUN_HEADER.c_str(), &runHeader, 32000, 3);
     runBranch->SetFile(file_);
     runTree->Fill();
     runTree->Write();
+}
+
+const RunHeader& EventFile::getRunHeader() {
+    // Read the run header from the separate tree in the input file if it was not read already.
+    if (!runHeader_) {
+        TTree* runTree = (TTree*) file_->Get("LDMX_Run");
+        if (!runTree) {
+            EXCEPTION_RAISE("DataError", "The run header does not exist in the input file.");
+        }
+        runTree->SetBranchAddress("RunHeader", &runHeader_);
+        runTree->GetEntry(0);
+    }
+    return *runHeader_;
 }
 
 }
