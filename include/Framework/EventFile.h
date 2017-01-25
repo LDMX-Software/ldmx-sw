@@ -93,6 +93,13 @@ class EventFile {
          */
         void writeRunHeader(RunHeader* runHeader);
 
+        /**
+         * Get the RunHeader if it exists in the input file.
+         * @return The RunHeader from the input file.
+         * @throw Exception if there is no RunHeader in the file.
+         */
+        const RunHeader& getRunHeader();
+
     private:
 
         /** The number of entries in the tree. */
@@ -118,6 +125,9 @@ class EventFile {
 
         /** The object containing the actual event data (trees and branches). */
         EventImpl* event_{nullptr};
+
+        /** Pointer to run header from input file. */
+        RunHeader* runHeader_{nullptr};
 };
 }
 

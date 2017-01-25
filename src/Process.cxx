@@ -64,6 +64,11 @@ void Process::run() {
             int wasRun = -1;
             for (auto infilename : inputFiles_) {
                 EventFile inFile(infilename);
+
+                // Print out run header.
+                const RunHeader& runHeader = inFile.getRunHeader();
+                runHeader.Print();
+
                 std::cout << "Process: Opening file " << infilename << std::endl;
                 EventFile* outFile(0);
 
