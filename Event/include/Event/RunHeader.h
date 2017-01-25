@@ -144,6 +144,11 @@ class RunHeader : public TObject {
             stringParameters_[name] = value;
         }
 
+        /**
+         * Print information about this object.
+         */
+        void Print(Option_t *option = "") const;
+
     private:
 
         /**
