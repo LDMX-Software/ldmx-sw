@@ -77,7 +77,7 @@ namespace event {
 	 * @param name Name (label, not classname) given to the object when it was put into the event
 	 * @return A named object from the event.
          */
-        template<typename ObjectType> const ObjectType get(const std::string& name) {
+        template<typename ObjectType> const ObjectType get(const std::string& name) const {
             return (ObjectType) getReal(name, "", true);
         }
 
@@ -89,7 +89,7 @@ namespace event {
 	 * @param passName The process pass label which was in use when this object was put into the event, such as "sim" or "rerecov2"
 	 * @return A named object from the event.
          */
-        template<typename ObjectType> const ObjectType get(const std::string& name, const std::string& passName) {
+        template<typename ObjectType> const ObjectType get(const std::string& name, const std::string& passName) const {
             return (ObjectType) getReal(name, passName, true);
         }
 
@@ -101,7 +101,7 @@ namespace event {
 	 * @param name Name (label, not classname) given to the object when it was put into the event
 	 * @return The named TClonesArray from the event.
          */
-        const TClonesArray* getCollection(const std::string& collectionName) {
+        const TClonesArray* getCollection(const std::string& collectionName) const {
             return (TClonesArray*) getReal(collectionName, "", true);
         }
 
@@ -153,7 +153,7 @@ namespace event {
 	 * @param mustExist Determines if an exception should be thrown if the object does not exist -- used by exists() methods
          * @param clones The TClonesArray containing the objects.
          */
-	virtual const TObject* getReal(const std::string& itemName, const std::string& passName, bool mustExist) = 0;
+	virtual const TObject* getReal(const std::string& itemName, const std::string& passName, bool mustExist) const = 0;
 	
     };   
 }
