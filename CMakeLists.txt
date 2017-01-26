@@ -37,25 +37,19 @@ if(INSTALL_DOC)
     endif()
 
     # find dot
-    find_program(DOT_EXECUTABLE dot ${PATH})
-    if(DOT_EXECUTABLE-NOTFOUND)
-        message(FATAL_ERROR "The dot executable was not found.")
-    endif()
+    #find_program(DOT_EXECUTABLE dot ${PATH})
+    #if(DOT_EXECUTABLE-NOTFOUND)
+    #    message(FATAL_ERROR "The dot executable was not found.")
+    #endif()
     
-    # find epspdf
-    find_program(EPSPDF_EXECUTABLE epspdf ${PATH})
-    if(EPSPDF_EXECUTABLE-NOTFOUND)
-        message(FATAL_ERROR "The epspdf executable was not found.")
-    endif()
-
-    # configure doxygen output
-    configure_file(${PROJECT_SOURCE_DIR}/config/doxygen/doxygen.conf.in ${PROJECT_SOURCE_DIR}/config/doxygen/doxygen.conf)
+    # configure doxygen file
+    configure_file(${PROJECT_SOURCE_DIR}/docs/doxygen.conf.in ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)
 
     # generate the documentation
-    install(CODE "EXECUTE_PROCESS(COMMAND doxygen ${PROJECT_SOURCE_DIR}/config/doxygen/doxygen.conf)")
+    install(CODE "EXECUTE_PROCESS(COMMAND doxygen ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)")
 
     # documentation generation target 
-    add_custom_target(doc COMMAND doxygen ${PROJECT_SOURCE_DIR}/config/doxygen/doxygen.conf)
+    add_custom_target(doc COMMAND doxygen ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)
 
 else()
     # message that documentation is off for this build
