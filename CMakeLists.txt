@@ -27,7 +27,7 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# python package")
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION python/LDMX)
 
 # configure and generate documentation using doxygen
-option(INSTALL_DOC "Set to OFF to skip generation of documentation using doxygen." ON)
+option(INSTALL_DOC "Set to ON to generate documentation using doxygen." OFF)
 if(INSTALL_DOC)
 
     # find doxygen
