@@ -48,6 +48,7 @@
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
@@ -74,6 +75,12 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for a module which does not produce a data product.  <a href="classldmx_1_1Analyzer.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceldmx"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceldmx.html">ldmx</a></td></tr>
+<tr class="memdesc:namespaceldmx"><td class="mdescLeft">&#160;</td><td class="mdescRight">All classes in the ldmx-sw project use this namespace. <br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a7f742437dc6cdf3d35a9e11dac899448"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="EventProcessor_8h.html#a7f742437dc6cdf3d35a9e11dac899448">DECLARE_PRODUCER</a>(CLASS)&#160;&#160;&#160;<a class="el" href="classldmx_1_1EventProcessor.html">ldmx::EventProcessor</a>*  CLASS ## _ldmx_make (const std::string&amp; name, const <a class="el" href="classldmx_1_1Process.html">ldmx::Process</a>&amp; process) { return new CLASS(name,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmx_declare() { <a class="el" href="classldmx_1_1EventProcessor.html#a13b557e0dd7b52cee597ce4f16bfea1c">ldmx::EventProcessor::declare</a>(#CLASS,::<a class="el" href="classldmx_1_1Producer.html#a23ad69b267e4f827ba0a3de32887bd44">ldmx::Producer::CLASSTYPE</a>,&amp; CLASS ## _ldmx_make ); }</td></tr>
@@ -91,7 +98,7 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a6a4d125990d1315ecd8861bf0010786b"><td class="memItemLeft" align="right" valign="top">typedef EventProcessor *&#160;</td><td class="memItemRight" valign="bottom"><b>ldmx::EventProcessorMaker</b> (const std::string &amp;name, const Process &amp;process)</td></tr>
+<tr class="memitem:a6a4d125990d1315ecd8861bf0010786b"><td class="memItemLeft" align="right" valign="top">typedef EventProcessor *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceldmx.html#a6a4d125990d1315ecd8861bf0010786b">ldmx::EventProcessorMaker</a> (const std::string &amp;name, const Process &amp;process)</td></tr>
 <tr class="separator:a6a4d125990d1315ecd8861bf0010786b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>

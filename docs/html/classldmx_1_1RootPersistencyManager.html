@@ -44,7 +44,7 @@
   </div>
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>ldmx</b></li><li class="navelem"><a class="el" href="classldmx_1_1RootPersistencyManager.html">RootPersistencyManager</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceldmx.html">ldmx</a></li><li class="navelem"><a class="el" href="classldmx_1_1RootPersistencyManager.html">RootPersistencyManager</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -107,9 +107,9 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:aa9454abaf8230b229c1bed2f308fac5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4adc52feb9aa37a1d928055a0362e3d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RootPersistencyManager.html#aa4adc52feb9aa37a1d928055a0362e3d">writeHitsCollections</a> (const G4Event *anEvent, <a class="el" href="classldmx_1_1Event.html">Event</a> *outputEvent)</td></tr>
 <tr class="separator:aa4adc52feb9aa37a1d928055a0362e3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a081c4bf1358bdeb8b943f8f4032349f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RootPersistencyManager.html#a081c4bf1358bdeb8b943f8f4032349f8">writeTrackerHitsCollection</a> (G4TrackerHitsCollection *hc, TClonesArray *outputColl)</td></tr>
+<tr class="memitem:a081c4bf1358bdeb8b943f8f4032349f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RootPersistencyManager.html#a081c4bf1358bdeb8b943f8f4032349f8">writeTrackerHitsCollection</a> (<a class="el" href="namespaceldmx.html#a82b56ca5867315e8829085a3a08c7970">G4TrackerHitsCollection</a> *hc, TClonesArray *outputColl)</td></tr>
 <tr class="separator:a081c4bf1358bdeb8b943f8f4032349f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8198a661380f13f11ebdb89a2fdffda7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RootPersistencyManager.html#a8198a661380f13f11ebdb89a2fdffda7">writeCalorimeterHitsCollection</a> (G4CalorimeterHitsCollection *hc, TClonesArray *outputColl)</td></tr>
+<tr class="memitem:a8198a661380f13f11ebdb89a2fdffda7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RootPersistencyManager.html#a8198a661380f13f11ebdb89a2fdffda7">writeCalorimeterHitsCollection</a> (<a class="el" href="namespaceldmx.html#a2af40c6e88716b748fd4f8359c10883b">G4CalorimeterHitsCollection</a> *hc, TClonesArray *outputColl)</td></tr>
 <tr class="separator:a8198a661380f13f11ebdb89a2fdffda7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0062be98365087e7635c1f889c31dd3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RootPersistencyManager.html#a0062be98365087e7635c1f889c31dd3c">printEvent</a> (<a class="el" href="classldmx_1_1Event.html">Event</a> *anEvent)</td></tr>
 <tr class="separator:a0062be98365087e7635c1f889c31dd3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -777,7 +777,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">void ldmx::RootPersistencyManager::writeCalorimeterHitsCollection </td>
           <td>(</td>
-          <td class="paramtype">G4CalorimeterHitsCollection *&#160;</td>
+          <td class="paramtype"><a class="el" href="namespaceldmx.html#a2af40c6e88716b748fd4f8359c10883b">G4CalorimeterHitsCollection</a> *&#160;</td>
           <td class="paramname"><em>hc</em>, </td>
         </tr>
         <tr>
@@ -973,12 +973,12 @@ Private Attributes</h2></td></tr>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;        <span class="keywordflow">if</span> (dynamic_cast&lt;G4TrackerHitsCollection*&gt;(hc) != <span class="keyword">nullptr</span>) {</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;            <span class="comment">// Write G4TrackerHit collection to output SimTrackerHit collection.</span></div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;            G4TrackerHitsCollection* trackerHitsColl = <span class="keyword">dynamic_cast&lt;</span>G4TrackerHitsCollection*<span class="keyword">&gt;</span>(hc);</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;            <a class="code" href="namespaceldmx.html#a82b56ca5867315e8829085a3a08c7970">G4TrackerHitsCollection</a>* trackerHitsColl = <span class="keyword">dynamic_cast&lt;</span><a class="code" href="namespaceldmx.html#a82b56ca5867315e8829085a3a08c7970">G4TrackerHitsCollection</a>*<span class="keyword">&gt;</span>(hc);</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;            <a class="code" href="classldmx_1_1RootPersistencyManager.html#a081c4bf1358bdeb8b943f8f4032349f8">writeTrackerHitsCollection</a>(trackerHitsColl, outputHitsColl);</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dynamic_cast&lt;G4CalorimeterHitsCollection*&gt;(hc) != <span class="keyword">nullptr</span>) {</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;            G4CalorimeterHitsCollection* calHitsColl = <span class="keyword">dynamic_cast&lt;</span>G4CalorimeterHitsCollection*<span class="keyword">&gt;</span>(hc);</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;            <a class="code" href="namespaceldmx.html#a2af40c6e88716b748fd4f8359c10883b">G4CalorimeterHitsCollection</a>* calHitsColl = <span class="keyword">dynamic_cast&lt;</span><a class="code" href="namespaceldmx.html#a2af40c6e88716b748fd4f8359c10883b">G4CalorimeterHitsCollection</a>*<span class="keyword">&gt;</span>(hc);</div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;            <span class="keywordflow">if</span> (collName == EventConstants::ECAL_SIM_HITS) {</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;                <span class="comment">// Write ECal G4CalorimeterHit collection to output SimCalorimeterHit collection using helper class.</span></div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;                <a class="code" href="classldmx_1_1RootPersistencyManager.html#a1d07ec856dd975b5564ebacf40d29995">ecalHitIO_</a>-&gt;<a class="code" href="classldmx_1_1EcalHitIO.html#aa21c0068c29e699bc4aa31511667383e">writeHitsCollection</a>(calHitsColl, outputHitsColl);</div>
@@ -996,11 +996,13 @@ Private Attributes</h2></td></tr>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        }</div>
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    }</div>
 <div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;}</div>
+<div class="ttc" id="namespaceldmx_html_a2af40c6e88716b748fd4f8359c10883b"><div class="ttname"><a href="namespaceldmx.html#a2af40c6e88716b748fd4f8359c10883b">ldmx::G4CalorimeterHitsCollection</a></div><div class="ttdeci">G4THitsCollection&lt; G4CalorimeterHit &gt; G4CalorimeterHitsCollection</div><div class="ttdef"><b>Definition:</b> <a href="G4CalorimeterHit_8h_source.html#l00207">G4CalorimeterHit.h:207</a></div></div>
 <div class="ttc" id="classldmx_1_1RootPersistencyManager_html_a1d07ec856dd975b5564ebacf40d29995"><div class="ttname"><a href="classldmx_1_1RootPersistencyManager.html#a1d07ec856dd975b5564ebacf40d29995">ldmx::RootPersistencyManager::ecalHitIO_</a></div><div class="ttdeci">EcalHitIO * ecalHitIO_</div><div class="ttdef"><b>Definition:</b> <a href="RootPersistencyManager_8h_source.html#l00216">RootPersistencyManager.h:216</a></div></div>
 <div class="ttc" id="classldmx_1_1RootPersistencyManager_html_a081c4bf1358bdeb8b943f8f4032349f8"><div class="ttname"><a href="classldmx_1_1RootPersistencyManager.html#a081c4bf1358bdeb8b943f8f4032349f8">ldmx::RootPersistencyManager::writeTrackerHitsCollection</a></div><div class="ttdeci">void writeTrackerHitsCollection(G4TrackerHitsCollection *hc, TClonesArray *outputColl)</div><div class="ttdef"><b>Definition:</b> <a href="RootPersistencyManager_8cxx_source.html#l00208">RootPersistencyManager.cxx:208</a></div></div>
 <div class="ttc" id="classldmx_1_1RootPersistencyManager_html_a18dd31bb0e4440d47b3db3441835f893"><div class="ttname"><a href="classldmx_1_1RootPersistencyManager.html#a18dd31bb0e4440d47b3db3441835f893">ldmx::RootPersistencyManager::outputHitsCollections_</a></div><div class="ttdeci">HitsCollectionMap outputHitsCollections_</div><div class="ttdef"><b>Definition:</b> <a href="RootPersistencyManager_8h_source.html#l00226">RootPersistencyManager.h:226</a></div></div>
 <div class="ttc" id="classldmx_1_1Event_html_ab5ea7b34778f5cf8d40504cdf9e69113"><div class="ttname"><a href="classldmx_1_1Event.html#ab5ea7b34778f5cf8d40504cdf9e69113">ldmx::Event::add</a></div><div class="ttdeci">virtual void add(const std::string &amp;collectionName, TClonesArray *clones)=0</div></div>
 <div class="ttc" id="classldmx_1_1RootPersistencyManager_html_a8198a661380f13f11ebdb89a2fdffda7"><div class="ttname"><a href="classldmx_1_1RootPersistencyManager.html#a8198a661380f13f11ebdb89a2fdffda7">ldmx::RootPersistencyManager::writeCalorimeterHitsCollection</a></div><div class="ttdeci">void writeCalorimeterHitsCollection(G4CalorimeterHitsCollection *hc, TClonesArray *outputColl)</div><div class="ttdef"><b>Definition:</b> <a href="RootPersistencyManager_8cxx_source.html#l00232">RootPersistencyManager.cxx:232</a></div></div>
+<div class="ttc" id="namespaceldmx_html_a82b56ca5867315e8829085a3a08c7970"><div class="ttname"><a href="namespaceldmx.html#a82b56ca5867315e8829085a3a08c7970">ldmx::G4TrackerHitsCollection</a></div><div class="ttdeci">G4THitsCollection&lt; G4TrackerHit &gt; G4TrackerHitsCollection</div><div class="ttdef"><b>Definition:</b> <a href="G4TrackerHit_8h_source.html#l00260">G4TrackerHit.h:260</a></div></div>
 <div class="ttc" id="classldmx_1_1EcalHitIO_html_aa21c0068c29e699bc4aa31511667383e"><div class="ttname"><a href="classldmx_1_1EcalHitIO.html#aa21c0068c29e699bc4aa31511667383e">ldmx::EcalHitIO::writeHitsCollection</a></div><div class="ttdeci">void writeHitsCollection(G4CalorimeterHitsCollection *hc, TClonesArray *outputColl)</div><div class="ttdef"><b>Definition:</b> <a href="EcalHitIO_8cxx_source.html#l00016">EcalHitIO.cxx:16</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1060,7 +1062,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">void ldmx::RootPersistencyManager::writeTrackerHitsCollection </td>
           <td>(</td>
-          <td class="paramtype">G4TrackerHitsCollection *&#160;</td>
+          <td class="paramtype"><a class="el" href="namespaceldmx.html#a82b56ca5867315e8829085a3a08c7970">G4TrackerHitsCollection</a> *&#160;</td>
           <td class="paramname"><em>hc</em>, </td>
         </tr>
         <tr>

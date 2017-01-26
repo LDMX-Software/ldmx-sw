@@ -44,7 +44,7 @@
   </div>
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>ldmx</b></li><li class="navelem"><a class="el" href="classldmx_1_1CalorimeterSD.html">CalorimeterSD</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceldmx.html">ldmx</a></li><li class="navelem"><a class="el" href="classldmx_1_1CalorimeterSD.html">CalorimeterSD</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -79,7 +79,7 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a75a547454505bf2e0fe84b1f45e508cd"><td class="memItemLeft" align="right" valign="top">G4CalorimeterHitsCollection *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a></td></tr>
+<tr class="memitem:a75a547454505bf2e0fe84b1f45e508cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceldmx.html#a2af40c6e88716b748fd4f8359c10883b">G4CalorimeterHitsCollection</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a></td></tr>
 <tr class="separator:a75a547454505bf2e0fe84b1f45e508cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f1f237a1729bdbc0514a5df347d9f85"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1CalorimeterSD.html#a0f1f237a1729bdbc0514a5df347d9f85">subdet_</a></td></tr>
 <tr class="separator:a0f1f237a1729bdbc0514a5df347d9f85"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -266,10 +266,11 @@ Protected Attributes</h2></td></tr>
 <div class="fragment"><div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                                                   {</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="comment">// Setup hits collection and the HC ID.</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a> = <span class="keyword">new</span> G4CalorimeterHitsCollection(SensitiveDetectorName,collectionName[0]);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a> = <span class="keyword">new</span> <a class="code" href="namespaceldmx.html#a2af40c6e88716b748fd4f8359c10883b">G4CalorimeterHitsCollection</a>(SensitiveDetectorName,collectionName[0]);</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    G4int hcID = G4SDManager::GetSDMpointer()-&gt;GetCollectionID(collectionName[0]);</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    hce-&gt;AddHitsCollection(hcID, <a class="code" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a>);</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;}</div>
+<div class="ttc" id="namespaceldmx_html_a2af40c6e88716b748fd4f8359c10883b"><div class="ttname"><a href="namespaceldmx.html#a2af40c6e88716b748fd4f8359c10883b">ldmx::G4CalorimeterHitsCollection</a></div><div class="ttdeci">G4THitsCollection&lt; G4CalorimeterHit &gt; G4CalorimeterHitsCollection</div><div class="ttdef"><b>Definition:</b> <a href="G4CalorimeterHit_8h_source.html#l00207">G4CalorimeterHit.h:207</a></div></div>
 <div class="ttc" id="classldmx_1_1CalorimeterSD_html_a75a547454505bf2e0fe84b1f45e508cd"><div class="ttname"><a href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">ldmx::CalorimeterSD::hitsCollection_</a></div><div class="ttdeci">G4CalorimeterHitsCollection * hitsCollection_</div><div class="ttdef"><b>Definition:</b> <a href="CalorimeterSD_8h_source.html#l00080">CalorimeterSD.h:80</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -451,7 +452,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">G4CalorimeterHitsCollection* ldmx::CalorimeterSD::hitsCollection_</td>
+          <td class="memname"><a class="el" href="namespaceldmx.html#a2af40c6e88716b748fd4f8359c10883b">G4CalorimeterHitsCollection</a>* ldmx::CalorimeterSD::hitsCollection_</td>
         </tr>
       </table>
   </td>
