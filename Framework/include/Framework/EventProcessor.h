@@ -9,7 +9,6 @@
 
 // LDMX
 #include "Framework/Exception.h"
-#include "Event/RunHeader.h"
 
 // STL
 #include <map>
@@ -20,6 +19,7 @@ class Event;
 class ParameterSet;
 class Process;
 class EventProcessor;
+class RunHeader;
 
 /** Typedef for EventProcessorFactory use. */
 typedef EventProcessor* EventProcessorMaker(const std::string& name, const Process& process);
