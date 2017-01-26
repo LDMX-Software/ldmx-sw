@@ -44,7 +44,7 @@
   </div>
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>ldmx</b></li><li class="navelem"><a class="el" href="classldmx_1_1TrackerSD.html">TrackerSD</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceldmx.html">ldmx</a></li><li class="navelem"><a class="el" href="classldmx_1_1TrackerSD.html">TrackerSD</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -79,7 +79,7 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:ac70a758fe8ed80eb48333cebbde21f54"><td class="memItemLeft" align="right" valign="top">G4TrackerHitsCollection *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TrackerSD.html#ac70a758fe8ed80eb48333cebbde21f54">hitsCollection_</a></td></tr>
+<tr class="memitem:ac70a758fe8ed80eb48333cebbde21f54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceldmx.html#a82b56ca5867315e8829085a3a08c7970">G4TrackerHitsCollection</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TrackerSD.html#ac70a758fe8ed80eb48333cebbde21f54">hitsCollection_</a></td></tr>
 <tr class="separator:ac70a758fe8ed80eb48333cebbde21f54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2da3c4dfe1a42492823d185c12dbf719"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TrackerSD.html#a2da3c4dfe1a42492823d185c12dbf719">subdetID_</a></td></tr>
 <tr class="separator:a2da3c4dfe1a42492823d185c12dbf719"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -266,11 +266,12 @@ Private Attributes</h2></td></tr>
 <div class="fragment"><div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;                                               {</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    <span class="comment">// Setup hits collection and the HC ID.</span></div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <a class="code" href="classldmx_1_1TrackerSD.html#ac70a758fe8ed80eb48333cebbde21f54">hitsCollection_</a> = <span class="keyword">new</span> G4TrackerHitsCollection(SensitiveDetectorName, collectionName[0]);</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <a class="code" href="classldmx_1_1TrackerSD.html#ac70a758fe8ed80eb48333cebbde21f54">hitsCollection_</a> = <span class="keyword">new</span> <a class="code" href="namespaceldmx.html#a82b56ca5867315e8829085a3a08c7970">G4TrackerHitsCollection</a>(SensitiveDetectorName, collectionName[0]);</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keywordtype">int</span> hcID = G4SDManager::GetSDMpointer()-&gt;GetCollectionID(collectionName[0]);</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    hce-&gt;AddHitsCollection(hcID, <a class="code" href="classldmx_1_1TrackerSD.html#ac70a758fe8ed80eb48333cebbde21f54">hitsCollection_</a>);</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}</div>
 <div class="ttc" id="classldmx_1_1TrackerSD_html_ac70a758fe8ed80eb48333cebbde21f54"><div class="ttname"><a href="classldmx_1_1TrackerSD.html#ac70a758fe8ed80eb48333cebbde21f54">ldmx::TrackerSD::hitsCollection_</a></div><div class="ttdeci">G4TrackerHitsCollection * hitsCollection_</div><div class="ttdef"><b>Definition:</b> <a href="TrackerSD_8h_source.html#l00080">TrackerSD.h:80</a></div></div>
+<div class="ttc" id="namespaceldmx_html_a82b56ca5867315e8829085a3a08c7970"><div class="ttname"><a href="namespaceldmx.html#a82b56ca5867315e8829085a3a08c7970">ldmx::G4TrackerHitsCollection</a></div><div class="ttdeci">G4THitsCollection&lt; G4TrackerHit &gt; G4TrackerHitsCollection</div><div class="ttdef"><b>Definition:</b> <a href="G4TrackerHit_8h_source.html#l00260">G4TrackerHit.h:260</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -477,7 +478,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">G4TrackerHitsCollection* ldmx::TrackerSD::hitsCollection_</td>
+          <td class="memname"><a class="el" href="namespaceldmx.html#a82b56ca5867315e8829085a3a08c7970">G4TrackerHitsCollection</a>* ldmx::TrackerSD::hitsCollection_</td>
         </tr>
       </table>
   </td>

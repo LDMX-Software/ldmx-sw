@@ -44,7 +44,7 @@
   </div>
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>ldmx</b></li><li class="navelem"><a class="el" href="classldmx_1_1Trajectory.html">Trajectory</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceldmx.html">ldmx</a></li><li class="navelem"><a class="el" href="classldmx_1_1Trajectory.html">Trajectory</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -710,10 +710,13 @@ Private Attributes</h2></td></tr>
 </dl>
 
 <p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00228">228</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+
+<p>References <a class="el" href="Trajectory_8cxx_source.html#l00008">ldmx::TrajectoryAllocator</a>.</p>
 <div class="fragment"><div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;                                                         {</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    TrajectoryAllocator.FreeSingle((<a class="code" href="classldmx_1_1Trajectory.html#acb31f9e67274e92f26a0ca8dbfe3865b">Trajectory</a>*) aTrajectory);</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <a class="code" href="namespaceldmx.html#afedcb3c49a60cad51dd23eeb6f61ca70">TrajectoryAllocator</a>.FreeSingle((<a class="code" href="classldmx_1_1Trajectory.html#acb31f9e67274e92f26a0ca8dbfe3865b">Trajectory</a>*) aTrajectory);</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;}</div>
 <div class="ttc" id="classldmx_1_1Trajectory_html_acb31f9e67274e92f26a0ca8dbfe3865b"><div class="ttname"><a href="classldmx_1_1Trajectory.html#acb31f9e67274e92f26a0ca8dbfe3865b">ldmx::Trajectory::Trajectory</a></div><div class="ttdeci">Trajectory(const G4Track *aTrack)</div><div class="ttdef"><b>Definition:</b> <a href="Trajectory_8cxx_source.html#l00010">Trajectory.cxx:10</a></div></div>
+<div class="ttc" id="namespaceldmx_html_afedcb3c49a60cad51dd23eeb6f61ca70"><div class="ttname"><a href="namespaceldmx.html#afedcb3c49a60cad51dd23eeb6f61ca70">ldmx::TrajectoryAllocator</a></div><div class="ttdeci">G4Allocator&lt; Trajectory &gt; TrajectoryAllocator</div><div class="ttdef"><b>Definition:</b> <a href="Trajectory_8cxx_source.html#l00008">Trajectory.cxx:8</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -747,11 +750,14 @@ Private Attributes</h2></td></tr>
 </dl>
 
 <p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00222">222</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+
+<p>References <a class="el" href="Trajectory_8cxx_source.html#l00008">ldmx::TrajectoryAllocator</a>.</p>
 <div class="fragment"><div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;                                            {</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    <span class="keywordtype">void</span>* aTrajectory;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    aTrajectory = (<span class="keywordtype">void</span>*) TrajectoryAllocator.MallocSingle();</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    aTrajectory = (<span class="keywordtype">void</span>*) <a class="code" href="namespaceldmx.html#afedcb3c49a60cad51dd23eeb6f61ca70">TrajectoryAllocator</a>.MallocSingle();</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    <span class="keywordflow">return</span> aTrajectory;</div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;}</div>
+<div class="ttc" id="namespaceldmx_html_afedcb3c49a60cad51dd23eeb6f61ca70"><div class="ttname"><a href="namespaceldmx.html#afedcb3c49a60cad51dd23eeb6f61ca70">ldmx::TrajectoryAllocator</a></div><div class="ttdeci">G4Allocator&lt; Trajectory &gt; TrajectoryAllocator</div><div class="ttdef"><b>Definition:</b> <a href="Trajectory_8cxx_source.html#l00008">Trajectory.cxx:8</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
