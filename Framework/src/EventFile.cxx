@@ -1,7 +1,9 @@
+// LDMX
 #include "Framework/EventFile.h"
 #include "Framework/EventImpl.h"
 #include "Framework/Exception.h"
 #include "Event/EventConstants.h"
+#include "Event/RunHeader.h"
 
 namespace ldmx {
 
@@ -56,6 +58,13 @@ EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int co
     if (isOutputFile_) {
         file_->SetCompressionLevel(compressionLevel);
     }
+}
+
+EventFile::~EventFile() {
+    for (auto entry : runMap_) {
+        delete entry.second;
+    }
+    runMap_.clear();
 }
 
 void EventFile::addDrop(const std::string& rule) {

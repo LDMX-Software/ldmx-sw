@@ -3,6 +3,7 @@
 #include "Framework/EventImpl.h"
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
+#include "Event/RunHeader.h"
 
 namespace ldmx {
 

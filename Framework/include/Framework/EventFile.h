@@ -9,7 +9,6 @@
 
 // LDMX
 #include "Framework/EventImpl.h"
-#include "Event/RunHeader.h"
 
 // ROOT
 #include "TTree.h"
@@ -21,6 +20,8 @@
 #include <map>
 
 namespace ldmx {
+
+class RunHeader;
 
 /**
  * @class EventFile
@@ -54,6 +55,11 @@ class EventFile {
          * @param compressionLevel The compression level.
          */
         EventFile(const std::string& fileName, EventFile* cloneParent, int compressionLevel = 9);
+
+        /**
+         * Class destructor.
+         */
+        virtual ~EventFile();
 
         /**
          * Add a rule for dropping collections from the output.
