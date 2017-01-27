@@ -17,8 +17,11 @@
 // STL
 #include <string>
 #include <vector>
+#include <map>
 
 namespace ldmx {
+
+class RunHeader;
 
 /**
  * @class EventFile
@@ -54,6 +57,11 @@ class EventFile {
         EventFile(const std::string& fileName, EventFile* cloneParent, int compressionLevel = 9);
 
         /**
+         * Class destructor.
+         */
+        virtual ~EventFile();
+
+        /**
          * Add a rule for dropping collections from the output.
          * @param rule The rule for dropping collections.
          *
@@ -85,6 +93,32 @@ class EventFile {
          */
         void close();
 
+        /**
+         * Write the run header into a separate tree in the output file.
+         * @param runHeader The run header to write into the output file.
+         * @throw Exception if file is not writable.
+         */
+        void writeRunHeader(RunHeader* runHeader);
+
+        /**
+         * Get the RunHeader for a given run, if it exists in the input file.
+         * @param runNumber The run number.
+         * @return The RunHeader from the input file.
+         * @throw Exception if there is no RunHeader in the file with the given run number.
+         */
+        const RunHeader& getRunHeader(int runNumber);
+
+    private:
+
+        /**
+         * Fill the internal map of run numbers to RunHeader objects from the input file.
+         *
+         * @note This is called automatically the first time nextEvent() is
+         * activated.  If there are no run headers in the input file (e.g. for
+         * a new simulation file) the run map will not be filled.
+         */
+        void createRunMap();
+
     private:
 
         /** The number of entries in the tree. */
@@ -110,6 +144,12 @@ class EventFile {
 
         /** The object containing the actual event data (trees and branches). */
         EventImpl* event_{nullptr};
+
+        /** Pointer to run header from input file. */
+        RunHeader* runHeader_{nullptr};
+
+        /** Map of run numbers to RunHeader objects read from the input file. */
+        std::map<int, RunHeader*> runMap_;
 };
 }
 
