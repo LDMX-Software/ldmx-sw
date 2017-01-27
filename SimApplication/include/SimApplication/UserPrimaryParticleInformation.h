@@ -10,7 +10,7 @@
 // Geant4
 #include "G4VUserPrimaryParticleInformation.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class UserPrimaryParticleInformation

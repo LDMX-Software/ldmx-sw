@@ -109,7 +109,7 @@ macro(MODULE)
     get_filename_component(test_program ${test_source} NAME)
     string(REPLACE ".cxx" "" test_program ${test_program})
     string(REPLACE "_" "-" test_program ${test_program})
-    #message(STATUS "test_program='${test_program}'")    
+    #message(STATUS "test_program='${test_program}'")
     add_executable(${test_program} ${test_source})
     target_link_libraries(${test_program} ${MODULE_EXTRA_LINK_LIBRARIES} ${PROJECT_NAME} ${MODULE_DEPENDENCIES})
     install(TARGETS ${test_program} DESTINATION bin)
@@ -133,8 +133,8 @@ macro(MODULE)
   file(GLOB py_scripts "${CMAKE_CURRENT_SOURCE_DIR}/python/[!_]*.py")
 
   if (py_scripts)
-    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/python/__init__.py "# python package")
-    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/python/__init__.py DESTINATION ${PYTHON_INSTALL_DIR})
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# python package")
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION ${PYTHON_INSTALL_DIR})
   endif()
   
   # setup python programs 
@@ -142,6 +142,5 @@ macro(MODULE)
     install(FILES ${pyscript} DESTINATION ${PYTHON_INSTALL_DIR})
     message(STATUS "copying python script='${pyscript}'")
   endforeach()
-  
   
 endmacro(MODULE)

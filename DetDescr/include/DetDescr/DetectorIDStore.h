@@ -10,7 +10,7 @@
 // LDMX
 #include "DetectorID.h"
 
-namespace detdescr {
+namespace ldmx {
 
 /**
  * @class DetectorIDStore

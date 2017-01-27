@@ -1,14 +1,18 @@
+#include "Framework/EventProcessor.h"
+
+// LDMX
 #include "Framework/Process.h"
 #include "Framework/ParameterSet.h"
-#include "Framework/EventProcessor.h"
 #include "Framework/EventProcessorFactory.h"
 #include "TDirectory.h"
+#include "Event/RunHeader.h"
 
-namespace ldmxsw {
+namespace ldmx {
 
-  
-    EventProcessor::EventProcessor(const std::string& name, Process& process) : process_{process},name_{name} {
-    }
+    EventProcessor::EventProcessor(const std::string& name, Process& process) :
+        process_ { process }, name_ { name } {
+	}
+    
 
     void EventProcessor::declare(const std::string& classname, int classtype,EventProcessorMaker* maker) {
 	EventProcessorFactory::getInstance().registerEventProcessor(classname,classtype, maker);

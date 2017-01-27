@@ -11,7 +11,7 @@
 #include "G4VPhysicsConstructor.hh"
 #include "G4GammaConversionToMuons.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class GammaPhysics

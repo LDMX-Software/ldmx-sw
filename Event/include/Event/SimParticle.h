@@ -7,14 +7,14 @@
 #ifndef EVENT_SIMPARTICLE_H_
 #define EVENT_SIMPARTICLE_H_
 
-// STL
-#include <vector>
-
 // ROOT
 #include "TObject.h"
 #include "TRefArray.h"
 
-namespace event {
+// STL
+#include <vector>
+
+namespace ldmx {
 
 /**
  * @class SimParticle
@@ -105,7 +105,6 @@ class SimParticle: public TObject {
 
         /**
          * Get the mass of the particle [GeV].
-         * FIXME: Change to MeV.
          * @return The mass of the particle.
          */
         float getMass() {

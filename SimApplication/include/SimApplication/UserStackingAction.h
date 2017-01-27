@@ -13,7 +13,7 @@
 // Geant4
 #include "G4UserStackingAction.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class UserStackingAction

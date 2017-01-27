@@ -17,8 +17,11 @@
 // STL
 #include <string>
 #include <vector>
+#include <map>
 
-namespace ldmxsw {
+namespace ldmx {
+
+class RunHeader;
 
 /**
  * @class EventFile
@@ -54,6 +57,11 @@ class EventFile {
         EventFile(const std::string& fileName, EventFile* cloneParent, int compressionLevel = 9);
 
         /**
+         * Class destructor.
+         */
+        virtual ~EventFile();
+
+        /**
          * Add a rule for dropping collections from the output.
          * @param rule The rule for dropping collections.
          *
@@ -77,8 +85,6 @@ class EventFile {
         /**
          * Prepare the next event.
          * @return If event was prepared/read successfully.
-         *
-         * @note This should be called before adding any data to the event.
          */
         bool nextEvent();
 
@@ -87,47 +93,63 @@ class EventFile {
          */
         void close();
 
+        /**
+         * Write the run header into a separate tree in the output file.
+         * @param runHeader The run header to write into the output file.
+         * @throw Exception if file is not writable.
+         */
+        void writeRunHeader(RunHeader* runHeader);
+
+        /**
+         * Get the RunHeader for a given run, if it exists in the input file.
+         * @param runNumber The run number.
+         * @return The RunHeader from the input file.
+         * @throw Exception if there is no RunHeader in the file with the given run number.
+         */
+        const RunHeader& getRunHeader(int runNumber);
+
     private:
 
         /**
-         * The number of entries in the tree.
+         * Fill the internal map of run numbers to RunHeader objects from the input file.
+         *
+         * @note This is called automatically the first time nextEvent() is
+         * activated.  If there are no run headers in the input file (e.g. for
+         * a new simulation file) the run map will not be filled.
          */
+        void createRunMap();
+
+    private:
+
+        /** The number of entries in the tree. */
         Long64_t entries_{-1};
 
-        /**
-         * The current entry in the tree.
-         */
+        /** The current entry in the tree. */
         Long64_t ientry_{-1};
 
-        /**
-         * The file name.
-         */
+        /** The file name. */
         std::string fileName_;
 
-        /**
-         * True if file is an output file being written to disk.
-         */
+        /** True if file is an output file being written to disk. */
         bool isOutputFile_;
 
-        /**
-         * The backing TFile for this EventFile.
-         */
+        /** The backing TFile for this EventFile. */
         TFile* file_{nullptr};
 
-        /**
-         * The tree with event data.
-         */
+        /** The tree with event data. */
         TTree* tree_{nullptr};
 
-        /**
-         * A parent file containing event data.
-         */
+        /** A parent file containing event data. */
         EventFile* parent_{nullptr};
 
-        /**
-         * The object containing the actual event data (trees and branches).
-         */
+        /** The object containing the actual event data (trees and branches). */
         EventImpl* event_{nullptr};
+
+        /** Pointer to run header from input file. */
+        RunHeader* runHeader_{nullptr};
+
+        /** Map of run numbers to RunHeader objects read from the input file. */
+        std::map<int, RunHeader*> runMap_;
 };
 }
 

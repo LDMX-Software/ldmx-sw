@@ -14,7 +14,7 @@
 // LDMX
 #include "Event/SimParticle.h"
 
-namespace event {
+namespace ldmx {
 
 /**
  * @class SimCalorimeterHit

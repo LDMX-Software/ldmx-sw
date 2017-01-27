@@ -15,12 +15,7 @@
 #include "G4SDManager.hh"
 #include "G4RunManager.hh"
 
-using detdescr::DetectorID;
-using detdescr::EcalDetectorID;
-using event::EventConstants;
-using sim::EcalHitIO;
-
-namespace sim {
+namespace ldmx {
 
 RootPersistencyManager::RootPersistencyManager() :
         G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"),
@@ -28,7 +23,7 @@ RootPersistencyManager::RootPersistencyManager() :
     G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
     G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 
-    event_ = new ldmxsw::EventImpl("sim");
+    event_ = new EventImpl("sim");
 }
 
 G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
@@ -55,10 +50,8 @@ G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
 }
 
 void RootPersistencyManager::writeRunHeader(const G4Run* aRun) {
-    event::RunHeader* runHeader = createRunHeader(aRun);
-    TTree* runTree = new TTree("LDMX_Run", "LDMX run header");
-    runTree->Branch("LdmxRun", "event::RunHeader", &runHeader, 32000, 3);
-    runTree->Fill();
+    RunHeader* runHeader = createRunHeader(aRun);
+    outputFile_->writeRunHeader(runHeader);
     delete runHeader;
 }
 
@@ -85,14 +78,14 @@ void RootPersistencyManager::Initialize() {
     }
 
     // Create and setup the output file for writing the events.
-    outputFile_ = new ldmxsw::EventFile(fileName_.c_str(), true, compressionLevel_);
-    outputFile_->setupEvent((ldmxsw::EventImpl*)event_);
+    outputFile_ = new EventFile(fileName_.c_str(), true, compressionLevel_);
+    outputFile_->setupEvent((EventImpl*)event_);
 
     // Create map with output hits collections.
     setupHitsCollectionMap();
 }
 
-void RootPersistencyManager::buildEvent(const G4Event* anEvent, event::Event* outputEvent) {
+void RootPersistencyManager::buildEvent(const G4Event* anEvent, Event* outputEvent) {
 
     // Set basic event information.
     writeHeader(anEvent, outputEvent);
@@ -107,7 +100,7 @@ void RootPersistencyManager::buildEvent(const G4Event* anEvent, event::Event* ou
     writeHitsCollections(anEvent, outputEvent);
 }
 
-void RootPersistencyManager::printEvent(event::Event* outputEvent) {
+void RootPersistencyManager::printEvent(Event* outputEvent) {
 
     if (m_verbose > 2) {
         auto particleColl = outputEvent->get<TClonesArray*>("SimParticles", "sim");
@@ -134,8 +127,8 @@ void RootPersistencyManager::printEvent(event::Event* outputEvent) {
     }
 }
 
-void RootPersistencyManager::writeHeader(const G4Event* anEvent, event::Event* outputEvent) {
-    event::EventHeader& eventHeader = ((ldmxsw::EventImpl*)outputEvent)->getEventHeaderMutable();
+void RootPersistencyManager::writeHeader(const G4Event* anEvent, Event* outputEvent) {
+    EventHeader& eventHeader = ((EventImpl*)outputEvent)->getEventHeaderMutable();
 
     eventHeader.setEventNumber(anEvent->GetEventID());
     TTimeStamp ts;
@@ -153,7 +146,7 @@ void RootPersistencyManager::writeHeader(const G4Event* anEvent, event::Event* o
     }
 }
 
-void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, event::Event* outputEvent) {
+void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event* outputEvent) {
 
     // Clear the hits from last event.
     for (auto entry : outputHitsCollections_) {
@@ -247,16 +240,16 @@ void RootPersistencyManager::writeCalorimeterHitsCollection(G4CalorimeterHitsCol
     }
 }
 
-event::RunHeader* RootPersistencyManager::createRunHeader(const G4Run* aRun) {
+RunHeader* RootPersistencyManager::createRunHeader(const G4Run* aRun) {
 
     // Get detector header from the user detector construction.
     DetectorConstruction* detector =
             ((RunManager*)RunManager::GetRunManager())->getDetectorConstruction();
-    detdescr::DetectorHeader* detectorHeader = detector->getDetectorHeader();
+    DetectorHeader* detectorHeader = detector->getDetectorHeader();
 
     // Create the run header.
-    event::RunHeader* runHeader =
-            new event::RunHeader(aRun->GetRunID(),
+    RunHeader* runHeader =
+            new RunHeader(aRun->GetRunID(),
                     detectorHeader->getName(),
                     detectorHeader->getVersion(),
                     "LDMX sim events");
@@ -297,12 +290,12 @@ void RootPersistencyManager::setupHitsCollectionMap() {
         std::string hcName = hcTable->GetHCname(i);
         G4VSensitiveDetector* sd = sdMgr->FindSensitiveDetector(sdName);
         if (dynamic_cast<CalorimeterSD*>(sd)) {
-            outputHitsCollections_[hcName] = new TClonesArray("event::SimCalorimeterHit", 500);
+            outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_CALORIMETER_HIT.c_str(), 500);
             if (m_verbose > 1) {
                 std::cout << "[ RootPersistencyManager ] - Created SimCalorimeterHit HC " << hcName << std::endl;
             }
         } else if (dynamic_cast<TrackerSD*>(sd)) {
-            outputHitsCollections_[hcName] = new TClonesArray("event::SimTrackerHit", 50);
+            outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_TRACKER_HIT.c_str(), 50);
             if (m_verbose > 1) {
                 std::cout << "[ RootPersistencyManager ] - Created SimTrackerHit HC " << hcName << std::endl;
             }

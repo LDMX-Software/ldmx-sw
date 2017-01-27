@@ -13,7 +13,7 @@
 // LDMX
 #include "DetDescr/DetectorHeader.h"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class AuxInfoReader
@@ -55,7 +55,7 @@ class AuxInfoReader {
          * Get the detector header that was created from the userinfo block.
          * @return The detector header.
          */
-        detdescr::DetectorHeader* getDetectorHeader() {
+        ldmx::DetectorHeader* getDetectorHeader() {
             return detectorHeader_;
         }
 
@@ -118,7 +118,7 @@ class AuxInfoReader {
         /**
          * Detector header with name and version.
          */
-        detdescr::DetectorHeader* detectorHeader_{nullptr};
+        ldmx::DetectorHeader* detectorHeader_{nullptr};
 };
 
 }

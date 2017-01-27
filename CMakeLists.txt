@@ -22,8 +22,9 @@ endforeach()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/ldmx-setup-env.sh.in ${CMAKE_CURRENT_BINARY_DIR}/ldmx-setup-env.sh)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ldmx-setup-env.sh DESTINATION bin)
 
-file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/python/__init__.py "# python package")
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/python/__init__.py DESTINATION python/LDMX)
+# install python init file for top-level LDMX module
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# python package")
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION python/LDMX)
 
 # configure and generate documentation using doxygen
 option(INSTALL_DOC "Set to OFF to skip generation of documentation using doxygen." ON)
@@ -52,6 +53,9 @@ if(INSTALL_DOC)
 
     # generate the documentation
     install(CODE "EXECUTE_PROCESS(COMMAND doxygen ${PROJECT_SOURCE_DIR}/config/doxygen/doxygen.conf)")
+
+    # documentation generation target 
+    add_custom_target(doc COMMAND doxygen ${PROJECT_SOURCE_DIR}/config/doxygen/doxygen.conf)
 
 else()
     # message that documentation is off for this build

@@ -21,12 +21,7 @@
 // STL
 #include <utility>
 
-using detdescr::EcalDetectorID;
-using detdescr::EcalHexReadout;
-using event::SimCalorimeterHit;
-using sim::G4CalorimeterHitsCollection;
-
-namespace sim {
+namespace ldmx {
 
 /**
  * @class EcalHitIO
