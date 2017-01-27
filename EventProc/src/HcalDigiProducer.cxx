@@ -18,11 +18,8 @@
 
 namespace ldmx {
 
-const float HcalDigiProducer::FIRST_LAYER_ZPOS = 569.5;
-const float HcalDigiProducer::LAYER_ZWIDTH = 60.;
-const int HcalDigiProducer::NUM_HCAL_LAYERS = 15;
-const float HcalDigiProducer::MEV_PER_MIP = 1.40;
-const float HcalDigiProducer::PE_PER_MIP = 13.5 * 6. / 4.;
+    //const float HcalDigiProducer::MEV_PER_MIP = 1.40;
+    //const float HcalDigiProducer::PE_PER_MIP = 13.5 * 6. / 4.;
 
 HcalDigiProducer::HcalDigiProducer(const std::string& name, const Process& process) :
         Producer(name, process) {
@@ -33,6 +30,9 @@ void HcalDigiProducer::configure(const ParameterSet& ps) {
     detID_ = new DefaultDetectorID();
     random_ = new TRandom(ps.getInteger("randomSeed", 1000));
     meanNoise_ = ps.getDouble("meanNoise");
+    mev_per_mip_ = ps.getDouble("mev_per_mip");
+    pe_per_mip_ = ps.getDouble("pe_per_mip");
+    
 }
 
 void HcalDigiProducer::produce(Event& event) {
@@ -76,7 +76,7 @@ void HcalDigiProducer::produce(Event& event) {
         int detIDraw = it->first;
         double depEnergy = hcalLayerEdep[detIDraw];
         hcalLayerTime[detIDraw] = hcalLayerTime[detIDraw] / hcalLayerEdep[detIDraw];
-        double meanPE = depEnergy / MEV_PER_MIP * PE_PER_MIP;
+        double meanPE = depEnergy / mev_per_mip_ * pe_per_mip_;
 
         //        std::default_random_engine generator;
         //std::poisson_distribution<int> distribution(meanPE);
@@ -94,7 +94,7 @@ void HcalDigiProducer::produce(Event& event) {
         }        // end verbose 
 
         int layer = hcalLayerNum[detIDraw];
-        double energy = hcalLayerPEs[detIDraw] / PE_PER_MIP * MEV_PER_MIP; // need to add in a weighting factor eventually
+        double energy = hcalLayerPEs[detIDraw] / pe_per_mip_ * mev_per_mip_; // need to add in a weighting factor eventually
 
         HcalHit *hit = (HcalHit*) (hits_->ConstructedAt(ihit));
 

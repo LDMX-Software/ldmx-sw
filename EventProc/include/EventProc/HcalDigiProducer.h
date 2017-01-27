@@ -44,12 +44,6 @@ class HcalDigiProducer : public Producer {
 
     private:
 
-        static const float FIRST_LAYER_ZPOS;
-        static const float LAYER_ZWIDTH;
-        static const int NUM_HCAL_LAYERS;
-        static const float MEV_PER_MIP;
-        static const float PE_PER_MIP;
-
         TClonesArray* hits_{nullptr};
         TRandom* random_{0};
         std::map<layer, zboundaries> hcalLayers_;
@@ -57,6 +51,8 @@ class HcalDigiProducer : public Producer {
         DetectorID* detID_{nullptr};
 
         float meanNoise_{0};
+        float mev_per_mip_{0};
+        float pe_per_mip_{0};
         int nProcessed_{0};
 };
 
