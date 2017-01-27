@@ -17,7 +17,7 @@ p.libraries.append("libEventProc.so")
 from LDMX.EventProc.hcalDigis import hcalDigis
 
 # change the noise level (for testing)
-hcalDigis.parameters["meanNoise"]=1.5
+hcalDigis.parameters["meanNoise"] = 1.5
 
 # load the template ecalDigis configuration from its python file
 from LDMX.EventProc.ecalDigis import ecalDigis

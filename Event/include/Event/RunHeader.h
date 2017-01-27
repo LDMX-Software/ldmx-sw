@@ -14,7 +14,7 @@
 #include <string>
 #include <map>
 
-namespace event {
+namespace ldmx {
 
 /**
  * @class RunHeader
@@ -144,6 +144,19 @@ class RunHeader : public TObject {
             stringParameters_[name] = value;
         }
 
+        /**
+         * Print information about this object.
+         */
+        void Print(Option_t *option = "") const;
+
+        /**
+         * Copy this object.
+         * @param o The target object.
+         */
+        void Copy(TObject& o) const {
+            ((RunHeader&) o) = *this;
+        }
+
     private:
 
         /**
@@ -181,7 +194,7 @@ class RunHeader : public TObject {
          */
         std::map<std::string, std::string> stringParameters_;
 
-    ClassDef(RunHeader, 1);
+        ClassDef(RunHeader, 1);
 };
 
 }

@@ -19,11 +19,7 @@
 // Geant4
 #include "G4Polyhedra.hh"
 
-using detdescr::EcalDetectorID;
-using detdescr::DetectorID;
-using detdescr::EcalHexReadout;
-
-namespace sim {
+namespace ldmx {
 
 /**
  * @class EcalSD

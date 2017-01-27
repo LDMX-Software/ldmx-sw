@@ -11,7 +11,7 @@
 // LDMX
 #include "DetDescr/DetectorID.h"
 
-namespace detdescr {
+namespace ldmx {
 
 /**
  * @class DefaultDetectorID

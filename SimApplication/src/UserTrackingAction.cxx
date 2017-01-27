@@ -15,7 +15,7 @@
 // STL
 #include <iostream>
 
-namespace sim {
+namespace ldmx {
 
 UserTrackingAction::UserTrackingAction() {
 }

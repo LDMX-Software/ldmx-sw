@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace sim {
+namespace ldmx {
 
 LHEReader::LHEReader(std::string& filename) {
     std::cout << "Opening LHE file " << filename << std::endl;

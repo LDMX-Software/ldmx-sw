@@ -1,11 +1,17 @@
+// ROOT
 #include "TTree.h"
-#include "Framework/EventImpl.h"
-#include "Framework/Exception.h"
-#include <iostream>
 #include "TBranchElement.h"
 #include "TBranchClones.h"
 
-namespace ldmxsw {
+// LDMX
+#include "Event/EventConstants.h"
+#include "Framework/EventImpl.h"
+#include "Framework/Exception.h"
+
+// STL
+#include <iostream>
+
+namespace ldmx {
 
     EventImpl::EventImpl(const std::string& thePassName) :
         passName_(thePassName) {
@@ -19,17 +25,17 @@ namespace ldmxsw {
 
     void EventImpl::add(const std::string& collectionName, TClonesArray* tca) {
 
-	if (collectionName.find('_')!=std::string::npos) {
-	    EXCEPTION_RAISE("IllegalName","The product name '"+collectionName+"' is illegal as it contains an underscore.");
+	if (collectionName.find('_') != std::string::npos) {
+	    EXCEPTION_RAISE("IllegalName", "The product name '" + collectionName + "' is illegal as it contains an underscore.");
 	}
-  
+
 	std::string branchName = makeBranchName(collectionName);
 
-	if (branchesFilled_.find(branchName)!=branchesFilled_.end()) {
-	    EXCEPTION_RAISE("ProductExists","A product named '"+collectionName+"' already exists in the event (has been loaded by a previous producer in this process.");
+	if (branchesFilled_.find(branchName) != branchesFilled_.end()) {
+	    EXCEPTION_RAISE("ProductExists", "A product named '" + collectionName + "' already exists in the event (has been loaded by a previous producer in this process.");
 	}
 	branchesFilled_.insert(branchName);
-	
+
 	std::map<std::string, TObject*>::iterator ito = objects_.find(branchName);
 	if (ito == objects_.end()) { // create a new branch
 	    ito = objects_.insert(std::pair<std::string, TObject*>(branchName, tca)).first;
@@ -42,31 +48,7 @@ namespace ldmxsw {
 	}
     }
 
-    void EventImpl::addToCollection(const std::string& name, const TObject& obj) {
-	std::string branchName;
-	if (name=="EventHeader") branchName=name;
-	else branchName = makeBranchName(name);
-
-	auto location=objectsOwned_.find(branchName);
-	if (location==objectsOwned_.end()) {
-	    TClonesArray* tca=new TClonesArray(obj.ClassName(),100);
-	    objectsOwned_[branchName]=tca;
-	    add(name,tca);
-	    TObject* to=tca->ConstructedAt(0);
-	    obj.Copy(*to);
-	} else {
-	    TClonesArray* ptca=dynamic_cast<TClonesArray*>(location->second);
-	    if (ptca==0) {
-		EXCEPTION_RAISE("ProductProblem","Attempted to add to the collection '"+name+"' which is not a TClonesArray.");
-	    }
-	    if (ptca->At(0)->Class()!=obj.Class()) {
-		EXCEPTION_RAISE("ProductProblem","Attempted to add object of different class to the collection '"+name+"'");
-	    }
-	    TObject* to=ptca->ConstructedAt(ptca->GetEntriesFast());
-	    obj.Copy(*to);
-	}
-    }
-
+    
     void EventImpl::add(const std::string& collectionName, TObject* to) {
 
 	if (collectionName.find('_')!=std::string::npos) {
@@ -74,7 +56,7 @@ namespace ldmxsw {
 	}
     
 	std::string branchName;
-	if (collectionName=="EventHeader") branchName=collectionName;
+	if (collectionName==EventConstants::EVENT_HEADER) branchName=collectionName;
 	else branchName = makeBranchName(collectionName);
 
 	if (branchesFilled_.find(branchName)!=branchesFilled_.end()) {
@@ -98,13 +80,40 @@ namespace ldmxsw {
 	to->Copy(*ito->second);
     }
 
+    
+    void EventImpl::addToCollection(const std::string& name, const TObject& obj) {
+	std::string branchName;
+	if (name == EventConstants::EVENT_HEADER) return; // no adding to the event header...
+	branchName = makeBranchName(name);
+
+	auto location = objectsOwned_.find(branchName);
+	if (location == objectsOwned_.end()) {
+	    TClonesArray* tca = new TClonesArray(obj.ClassName(), 100);
+	    objectsOwned_[branchName] = tca;
+	    add(name, tca);
+	    TObject* to = tca->ConstructedAt(0);
+	    obj.Copy(*to);
+	} else {
+	    TClonesArray* ptca = dynamic_cast<TClonesArray*>(location->second);
+	    if (ptca == 0) {
+		EXCEPTION_RAISE("ProductProblem", "Attempted to add to the collection '" + name + "' which is not a TClonesArray.");
+	    }
+	    if (ptca->At(0)->Class() != obj.Class()) {
+		EXCEPTION_RAISE("ProductProblem", "Attempted to add object of different class to the collection '" + name + "'");
+	    }
+	    TObject* to = ptca->ConstructedAt(ptca->GetEntriesFast());
+	    obj.Copy(*to);
+	}
+    }
+
+
     const TObject* EventImpl::getReal(const std::string& collectionName, const std::string& passName, bool mustExist) const {
 
 	std::string branchName;
-	if (collectionName=="EventHeader") branchName=collectionName;
+	if (collectionName== EventConstants::EVENT_HEADER) branchName=collectionName;
 	else branchName = makeBranchName(collectionName, passName);
 
-	if (passName.empty() && collectionName!="EventHeader") {
+	if (passName.empty() && collectionName!= EventConstants::EVENT_HEADER) {
 	    auto ptr=knownLookups_.find(collectionName);
 	    if (ptr!=knownLookups_.end()) branchName=ptr->second;
 	    else {
@@ -114,7 +123,8 @@ namespace ldmxsw {
 		    if (!ptr->compare(0,branchName.size(),branchName)) matches.push_back(ptr);
 		}
 		if (matches.empty()) {
-		    if (!mustExist) return nullptr;
+		    if (!mustExist)
+			return nullptr;
 		    EXCEPTION_RAISE("ProductNotFound","No product found for name '"+collectionName+"'");
 		} else if (matches.size()>1) {
 		    std::string names;
@@ -122,7 +132,8 @@ namespace ldmxsw {
 			if (!names.empty()) names+=", ";
 			names+=*strs;
 		    }
-		    if (!mustExist) return nullptr;
+		    if (!mustExist)
+			return nullptr;
 		    EXCEPTION_RAISE("ProductAmbiguous","Multiple products found for name '"+collectionName+"' without specified pass name ("+names+")");
 		} else {
 		    branchName=*matches.front();
@@ -130,14 +141,14 @@ namespace ldmxsw {
 		}
 	    }
 	}
+    
 
-  
 	// check the objects map
 	std::map<std::string, TObject*>::const_iterator ito = objects_.find(branchName);
 	if (ito != objects_.end()) {
 	    return ito->second;
 	} else if (inputTree_ == 0) {
-	    EXCEPTION_RAISE("ProductNotFound","No product found for name '"+collectionName+"' and pass '"+passName_+"'");
+	    EXCEPTION_RAISE("ProductNotFound", "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
 	}
 
 	// find the active branch and update if necessary
@@ -167,7 +178,7 @@ namespace ldmxsw {
 	    // ok, maybe we've not loaded this yet, look for a branch
 	    TBranch* branch = inputTree_->GetBranch(branchName.c_str());
 	    if (branch == 0) {
-		EXCEPTION_RAISE("ProductNotFound","No product found for name '"+collectionName+"' and pass '"+passName_+"'");
+		EXCEPTION_RAISE("ProductNotFound", "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
 	    }
 
 	    // ooh, new branch!
@@ -192,9 +203,8 @@ namespace ldmxsw {
     TTree* EventImpl::createTree() {
 	outputTree_ = new TTree("LDMX_Events", "LDMX Events");
 
-	eventHeader_=new event::EventHeader();
-	add("EventHeader",eventHeader_);
-    
+	eventHeader_ = new EventHeader();
+
 	return outputTree_;
     }
 
@@ -206,11 +216,11 @@ namespace ldmxsw {
 	inputTree_ = tree;
 	entries_ = inputTree_->GetEntriesFast();
 	branchNames_.clear();
-	eventHeader_=get<event::EventHeader*>("EventHeader");
+	eventHeader_ = get<EventHeader*>(EventConstants::EVENT_HEADER);
 
 	// find the names of all the existing branches
-	TObjArray* branches=inputTree_->GetListOfBranches();
-	for (int i=0; i<branches->GetEntriesFast(); i++) {
+	TObjArray* branches = inputTree_->GetListOfBranches();
+	for (int i = 0; i < branches->GetEntriesFast(); i++) {
 	    branchNames_.push_back(branches->At(i)->GetName());
 	}
     }
@@ -221,18 +231,22 @@ namespace ldmxsw {
     }
 
     void EventImpl::beforeFill() {
+	if (inputTree_==0 && branchesFilled_.find(EventConstants::EVENT_HEADER)==branchesFilled_.end()) {
+	    add(EventConstants::EVENT_HEADER, eventHeader_);
+	}
     }
+
     void EventImpl::Clear() {
 	// clear the event objects
 	for (auto obj : objects_)
 	    obj.second->Clear("C");
 	branchesFilled_.clear();
-	
+
     }
     void EventImpl::onEndOfEvent() {
 	branchesFilled_.clear();
     }
-  
+
     void EventImpl::onEndOfFile() {
     }
 

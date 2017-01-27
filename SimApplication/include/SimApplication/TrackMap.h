@@ -11,7 +11,7 @@
 #include "G4Event.hh"
 #include "G4VTrajectory.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class TrackMap

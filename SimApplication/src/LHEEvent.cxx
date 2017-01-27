@@ -8,7 +8,7 @@
 #include <sstream>
 #include <stdexcept>
 
-namespace sim {
+namespace ldmx {
 
 LHEEvent::LHEEvent(std::string& line) {
 

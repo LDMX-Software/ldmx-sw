@@ -1,6 +1,6 @@
 #include "SimApplication/UserRegionInformation.h"
 
-namespace sim {
+namespace ldmx {
 
 UserRegionInformation::UserRegionInformation(bool aStoreSecondaries)
     : storeSecondaries_(aStoreSecondaries) {

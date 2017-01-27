@@ -4,48 +4,62 @@
  * @author Andrew Whitbeck, FNAL
  */
 
+#ifndef EVENTPROC_HCALDIGIPRODUCER_H_
+#define EVENTPROC_HCALDIGIPRODUCER_H_
+
+// ROOT
 #include "TString.h"
 #include "TRandom.h"
 
+// LDMX
 #include "DetDescr/DetectorID.h"
-#include "DetDescr/DefaultDetectorID.h"
-
-using detdescr::DetectorID;
-using detdescr::DefaultDetectorID;
-
-#include "Framework/EventProcessor.h"
 #include "Event/SimCalorimeterHit.h"
+#include "Framework/EventProcessor.h"
 
+namespace ldmx {
 
 /**
  * @class HcalDigiProducer
  * @brief Performs digitization of simulated HCal data
  */
-  class HcalDigiProducer : public ldmxsw::Producer {
-  
-public:
-    typedef int layer;
-    typedef std::pair<double,double> zboundaries;
-  
-    HcalDigiProducer(const std::string& name, ldmxsw::Process& process);
-    virtual ~HcalDigiProducer() { delete hits; if (random_) delete random_;}
-    
-    virtual void configure(const ldmxsw::ParameterSet&);
-    virtual void produce(event::Event& event);      
-   
- private:
-    TClonesArray* hits;
-    TRandom* random_{0};
-    std::map<layer,zboundaries> hcalLayers;
-    bool verbose;  
-    DetectorID* detID;
-    static const float firstLayerZpos;
-    static const float layerZwidth;
-    static const int numHcalLayers;
-    static const float MeVperMIP;
-    static const float PEperMIP;
-    float meanNoise_;
-    int nProcessed_{0};
+class HcalDigiProducer : public Producer {
+
+    public:
+
+        typedef int layer;
+
+        typedef std::pair<double, double> zboundaries;
+
+        HcalDigiProducer(const std::string& name, Process& process);
+
+        virtual ~HcalDigiProducer() {
+            delete hits_;
+            if (random_)
+                delete random_;
+        }
+
+        virtual void configure(const ParameterSet&);
+
+        virtual void produce(Event& event);
+
+    private:
+
+        static const float FIRST_LAYER_ZPOS;
+        static const float LAYER_ZWIDTH;
+        static const int NUM_HCAL_LAYERS;
+        static const float MEV_PER_MIP;
+        static const float PE_PER_MIP;
+
+        TClonesArray* hits_{nullptr};
+        TRandom* random_{0};
+        std::map<layer, zboundaries> hcalLayers_;
+        bool verbose_{false};
+        DetectorID* detID_{nullptr};
+
+        float meanNoise_{0};
+        int nProcessed_{0};
 };
 
+}
 
+#endif
