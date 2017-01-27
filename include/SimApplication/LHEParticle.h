@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class LHEParticle

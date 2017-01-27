@@ -14,7 +14,7 @@
 // LDMX
 #include "SimPlugins/PluginManagerAccessor.h"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class PrimaryGeneratorAction

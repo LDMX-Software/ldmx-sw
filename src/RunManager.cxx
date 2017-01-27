@@ -16,7 +16,7 @@
 #include "FTFP_BERT.hh"
 #include "G4VModularPhysicsList.hh"
 
-namespace sim {
+namespace ldmx {
 
 RunManager::RunManager() {
     pluginManager_ = new PluginManager();

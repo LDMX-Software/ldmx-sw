@@ -4,7 +4,7 @@
 #include "SimPlugins/PluginManager.h"
 #include "SimApplication/RootPersistencyManager.h"
 
-namespace sim {
+namespace ldmx {
 
 UserRunAction::UserRunAction() {
 }

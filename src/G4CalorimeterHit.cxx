@@ -6,7 +6,7 @@
 #include "G4Point3D.hh"
 #include "G4Circle.hh"
 
-namespace sim {
+namespace ldmx {
 
 G4Allocator<G4CalorimeterHit> G4CalorimeterHitAllocator;
 

@@ -14,7 +14,7 @@
 #include "G4UserRunAction.hh"
 #include "G4Run.hh"
 
-namespace sim {
+namespace ldmx {
 
 /**
  * @class UserRunAction
