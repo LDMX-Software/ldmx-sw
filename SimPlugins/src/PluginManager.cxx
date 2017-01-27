@@ -165,7 +165,7 @@ void PluginManager::deregisterPlugin(UserActionPlugin* plugin) {
 }
 
 void PluginManager::destroyPlugins() {
-    for (int iPlugin = 0; iPlugin < plugins_.size(); iPlugin++) {
+    for (unsigned iPlugin = 0; iPlugin < plugins_.size(); iPlugin++) {
         destroy(plugins_[iPlugin]);
     }
     plugins_.clear();
