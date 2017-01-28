@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import ldmxcfg;
+from LDMX.Framework import ldmxcfg;
 
 p=ldmxcfg.Process("Fred")
 p.libraries.append("libEventProc.so")
