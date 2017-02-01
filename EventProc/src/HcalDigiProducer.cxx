@@ -24,22 +24,25 @@ HcalDigiProducer::HcalDigiProducer(const std::string& name, const Process& proce
 }
 
 void HcalDigiProducer::configure(const ParameterSet& ps) {
-    detID_ = new DefaultDetectorID();
     random_ = new TRandom(ps.getInteger("randomSeed", 1000));
     meanNoise_ = ps.getDouble("meanNoise");
-    //num_back_hcal_layers_ = ps.getInteger("num_back_hcal_layers");
-    //num_wrap_hcal_layers_ = ps.getInteger("num_wrap_hcal_layers");
     mev_per_mip_ = ps.getDouble("mev_per_mip");
     pe_per_mip_ = ps.getDouble("pe_per_mip");
-    //hcalDetIds(num_back_hcal_layers_,num_wrap_hcal_layers_);
-    hcalDetIds.setNumLayers(ps.getInteger("num_back_hcal_layers"),ps.getInteger("num_wrap_hcal_layers"));
+    verbose_ = bool(ps.getInteger("verbose"));
+    detID_ = new HcalDetId(ps.getInteger("num_back_hcal_layers"),ps.getInteger("num_wrap_hcal_layers"));
+    std::cout << "detID_: " << detID_ << std::endl;
 }
 
 void HcalDigiProducer::produce(Event& event) {
 
-    std::map<int,int> hcalLayerPEs = hcalDetIds.getMap<int>();
-    std::map<int, float> hcalLayerEdep = hcalDetIds.getMap<float>(); 
-    std::map<int, float> hcalLayerTime = hcalDetIds.getMap<float>();
+    std::cout << "HcalDigiProducer::produce" << std::endl;
+    std::cout << "detID_: " << detID_ << std::endl;
+    detID_->dumpInfo();
+    std::map<int,int> hcalLayerPEs = detID_->getMap<int>();
+    std::map<int, float> hcalLayerEdep = detID_->getMap<float>(); 
+    std::map<int, float> hcalLayerTime = detID_->getMap<float>();
+
+    std::cout << "got detid maps" << std::endl;
 
     // looper over sim hits and aggregate energy depositions for each detID
     TClonesArray* hcalHits = (TClonesArray*) event.getCollection(EventConstants::HCAL_SIM_HITS, "sim");
@@ -58,6 +61,7 @@ void HcalDigiProducer::produce(Event& event) {
             std::cout << "layer: " << layer << std::endl;
         if (hcalLayerEdep.find(simHit->getID()) == hcalLayerEdep.end()) {
             std::cout << "ERROR: hcal digi maps not initialized properly" << std::endl;
+            std::cout << "simHit: " << simHit->getID() << std::endl;
             // first hit, initialize 
             hcalLayerEdep[detIDraw] = simHit->getEdep();
             hcalLayerTime[detIDraw] = simHit->getTime() * simHit->getEdep();
@@ -84,8 +88,8 @@ void HcalDigiProducer::produce(Event& event) {
 
         if (verbose_) {
             std::cout << "detID: "  << detIDraw << std::endl;
-            std::cout << "Layer: "  << hcalDetIds.getLayer(detIDraw) << std::endl;
-            std::cout << "SubDet: " << hcalDetIds.getSubDet(detIDraw) << std::endl;
+            std::cout << "Layer: "  << detID_->getLayer() << std::endl;
+            std::cout << "SubDet: " << detID_->getHcalSubDet() << std::endl;
             std::cout << "Edep: "   << hcalLayerEdep[detIDraw] << std::endl;
             std::cout << "numPEs: " << hcalLayerPEs[detIDraw] << std::endl;
             std::cout << "time: "   << hcalLayerTime[detIDraw] << std::endl;

@@ -49,7 +49,7 @@ class HcalDigiProducer : public Producer {
         TRandom* random_{0};
         std::map<layer, zboundaries> hcalLayers_;
         bool verbose_{false};
-        DetectorID* detID_{nullptr};
+        HcalDetId* detID_{nullptr};
         
         static const int NUM_HCAL_LAYERS;
         float meanNoise_{0};
@@ -57,7 +57,6 @@ class HcalDigiProducer : public Producer {
         float pe_per_mip_{0};
         //int num_back_hcal_layers_{0};
         //int num_wrap_hcal_layers_{0};
-        HcalDetId hcalDetIds;
         int nProcessed_{0};
 };
 
