@@ -6,8 +6,8 @@ namespace ldmx{
         std::cout << "HcalDetId::HcalDetId" << std::endl;
         IDField::IDFieldList* fieldList = new IDField::IDFieldList();
         fieldList->push_back(new IDField("subdet", 0, 0, 3));
-        fieldList->push_back(new IDField("hcalsubdet", 1, 4, 6));
-        fieldList->push_back(new IDField("layer", 2, 7, 11));
+        fieldList->push_back(new IDField("hcalsubdet", 1, 4, 5));
+        fieldList->push_back(new IDField("layer", 2, 6, 13));
         setFieldList(fieldList);
         dumpInfo();
     };
