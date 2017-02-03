@@ -11,6 +11,7 @@
 #include "AuxInfoReader.h"
 
 // Biasing
+#include "Biasing/BiasingMessenger.h"
 #include "Biasing/PhotonuclearXsecBiasingOperator.h"
 
 // Geant4
