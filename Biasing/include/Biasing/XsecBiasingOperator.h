@@ -1,13 +1,13 @@
 /**
- * @file PhotonuclearXsecBiasingPlugin.h
+ * @file XsecBiasingPlugin.h
  * @brief Geant4 Biasing Operator used to bias the occurence of photonuclear 
  *        events by modifying the cross-section.
  * @author Omar Moreno
  *         SLAC National Accelerator Laboratory
  */
 
-#ifndef BIASING_PHOTONUCLEARXSECBIASINGOPERATOR_H_
-#define BIASING_PHOTONUCLEARXSECBIASINGOPERATOR_H_
+#ifndef BIASING_XSECBIASINGOPERATOR_H_
+#define BIASING_XSECBIASINGOPERATOR_H_
 
 //------------//
 //   Geant4   //
@@ -31,15 +31,15 @@
 
 namespace ldmx { 
 
-    class PhotonuclearXsecBiasingOperator : public G4VBiasingOperator { 
+    class XsecBiasingOperator : public G4VBiasingOperator { 
 
         public: 
 
             /** Constructor */
-            PhotonuclearXsecBiasingOperator(std::string name);
+            XsecBiasingOperator(std::string name);
 
             /** Destructor */
-            ~PhotonuclearXsecBiasingOperator();
+            ~XsecBiasingOperator();
 
             /** Method called at the beginning of a run. */
             void StartRun();
@@ -72,8 +72,8 @@ namespace ldmx {
             G4VBiasingOperation* ProposeNonPhysicsBiasingOperation(const G4Track*,
                     const G4BiasingProcessInterface*) { return nullptr; }
 
-    };  // PhotonuclearXsecBiasingOperator
+    };  // XsecBiasingOperator
 
 }
 
-#endif // SIMPLUGINS_PHOTONUCLEARXSECBIASINGOPERATOR_H_ 
+#endif // SIMPLUGINS_XSECBIASINGOPERATOR_H_ 
