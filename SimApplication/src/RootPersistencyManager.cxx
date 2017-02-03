@@ -51,9 +51,7 @@ G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
 
 void RootPersistencyManager::writeRunHeader(const G4Run* aRun) {
     RunHeader* runHeader = createRunHeader(aRun);
-    TTree* runTree = new TTree("LDMX_Run", "LDMX run header");
-    runTree->Branch("LdmxRun", EventConstants::RUN_HEADER.c_str(), &runHeader, 32000, 3);
-    runTree->Fill();
+    outputFile_->writeRunHeader(runHeader);
     delete runHeader;
 }
 

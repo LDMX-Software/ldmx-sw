@@ -1,7 +1,9 @@
+// LDMX
 #include "Framework/EventFile.h"
 #include "Framework/EventImpl.h"
 #include "Framework/Exception.h"
 #include "Event/EventConstants.h"
+#include "Event/RunHeader.h"
 
 namespace ldmx {
 
@@ -30,6 +32,8 @@ EventFile::EventFile(const std::string& filename, std::string treeName, bool isO
         tree_ = (TTree*) (file_->Get(treeName.c_str()));
         entries_ = tree_->GetEntriesFast();
     }
+
+    createRunMap();
 }
 
 EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :
@@ -54,6 +58,13 @@ EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int co
     if (isOutputFile_) {
         file_->SetCompressionLevel(compressionLevel);
     }
+}
+
+EventFile::~EventFile() {
+    for (auto entry : runMap_) {
+        delete entry.second;
+    }
+    runMap_.clear();
 }
 
 void EventFile::addDrop(const std::string& rule) {
@@ -91,6 +102,9 @@ bool EventFile::nextEvent() {
         tree_ = parent_->tree_->CloneTree(0);
         event_->setInputTree(parent_->tree_);
         event_->setOutputTree(tree_);
+
+        // Fill map of run numbers to RunHeader objects.
+        createRunMap();
     }
 
     // close up the last event
@@ -163,6 +177,45 @@ void EventFile::close() {
     if (isOutputFile_)
         tree_->Write();
     file_->Close();
+}
+
+void EventFile::writeRunHeader(RunHeader* runHeader) {
+    if (!isOutputFile_) {
+        EXCEPTION_RAISE("FileError", "Output file '" + fileName_ + "' is not writable.");
+    }
+    TTree* runTree = (TTree*) file_->Get("LDMX_Run");
+    if (!runTree) {
+        runTree = new TTree("LDMX_Run", "LDMX run header");
+    }
+    TBranch* runBranch = runTree->GetBranch("RunHeader");
+    if (!runBranch) {
+        runBranch = runTree->Branch("RunHeader", EventConstants::RUN_HEADER.c_str(), &runHeader, 32000, 3);
+    }
+    runBranch->SetFile(file_);
+    runTree->Fill();
+    runTree->Write();
+}
+
+const RunHeader& EventFile::getRunHeader(int runNumber) {
+    if (runMap_.find(runNumber) != runMap_.end()) {
+        return *(runMap_[runNumber]);
+    } else {
+        EXCEPTION_RAISE("DataError", "No run header exists for " + std::to_string(runNumber) + " in the input file.");
+    }
+}
+
+void EventFile::createRunMap() {
+    TTree* runTree = (TTree*) file_->Get("LDMX_Run");
+    if (runTree) {
+        RunHeader* aRunHeader = nullptr;
+        runTree->SetBranchAddress("RunHeader", &aRunHeader);
+        for (int iEntry = 0; iEntry < runTree->GetEntriesFast(); iEntry++) {
+            runTree->GetEntry(0);
+            RunHeader* newRunHeader = new RunHeader();
+            aRunHeader->Copy(*newRunHeader);
+            runMap_[newRunHeader->getRunNumber()] = newRunHeader;
+        }
+    }
 }
 
 }

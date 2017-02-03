@@ -1,7 +1,10 @@
+#include "Framework/EventProcessor.h"
+
+// LDMX
 #include "Framework/Process.h"
 #include "Framework/ParameterSet.h"
-#include "Framework/EventProcessor.h"
 #include "Framework/EventProcessorFactory.h"
+#include "Event/RunHeader.h"
 
 namespace ldmx {
 
