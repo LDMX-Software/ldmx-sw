@@ -1,5 +1,8 @@
 #include "SimApplication/DetectorConstruction.h"
 
+//
+#include "SimApplication/RunManager.h"
+
 namespace ldmx {
 
 DetectorConstruction::DetectorConstruction(G4GDMLParser* theParser) :
@@ -18,25 +21,28 @@ G4VPhysicalVolume* DetectorConstruction::Construct() {
 }
 
 void DetectorConstruction::ConstructSDandField() {
-
-    // Instantiate the biasing operator
-    PhotonuclearXsecBiasingOperator* xsecBiasing 
-        = new PhotonuclearXsecBiasingOperator("PhotonuclearXsecBiasingOperator");
-
-    // TODO: This should be configurable from a macro
-    G4LogicalVolume* logicalVolume = G4LogicalVolumeStore::GetInstance()->GetVolume("target");
-    xsecBiasing->AttachTo(logicalVolume);
-    /*G4LogicalVolume* logicalVolume = G4LogicalVolumeStore::GetInstance()->GetVolume("em_calorimeters");
-    for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) { 
-        G4String volumeName = volume->GetName();
-        std::cout << "Volume name: " << volumeName << std::endl;
-        if (volumeName.contains("W") && volumeName.contains("log")) { 
-            xsecBiasing->AttachTo(volume);
-            G4cout << " Attaching biasing operator " << xsecBiasing->GetName()
-                   << " to logical volume " << logicalVolume->GetName()
-                   << G4endl;
-        }
-    }*/
+    
+    BiasingMessenger* biasingMessenger  
+        = static_cast<RunManager*>(G4RunManager::GetRunManager())->getBiasingMessenger(); 
+    
+    if (biasingMessenger->isBiasingEnabled()) { 
+        
+        // Instantiate the biasing operator
+        // TODO: At some point, this should be more generic i.e. operators should be
+        //       similar to plugins.
+        PhotonuclearXsecBiasingOperator* xsecBiasing 
+            = new PhotonuclearXsecBiasingOperator("PhotonuclearXsecBiasingOperator");
+       
+        for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) { 
+            G4String volumeName = volume->GetName();
+            if (volumeName.contains(biasingMessenger->getVolume())) { 
+                xsecBiasing->AttachTo(volume);
+                std::cout << "[ DetectorConstruction ]: "
+                          << "Attaching biasing operator " << xsecBiasing->GetName()
+                          << " to volume " << volume->GetName() << std::endl;
+            }
+        } 
+    } 
 }
 
 }
