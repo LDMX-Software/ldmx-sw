@@ -8,76 +8,79 @@
 
 #include "Biasing/PhotonuclearXsecBiasingOperator.h"
 
-ldmx::PhotonuclearXsecBiasingOperator::PhotonuclearXsecBiasingOperator(std::string name) 
-    : G4VBiasingOperator(name) { 
-}
+namespace ldmx { 
 
-ldmx::PhotonuclearXsecBiasingOperator::~PhotonuclearXsecBiasingOperator() {
-}
-
-void ldmx::PhotonuclearXsecBiasingOperator::StartRun() { 
-
-    BiasingMessenger* biasingMessenger  
-        = static_cast<RunManager*>(G4RunManager::GetRunManager())->getBiasingMessenger(); 
-    
-    G4ProcessManager* processManager{nullptr}; 
-    if (biasingMessenger->getParticleType() == "gamma") { 
-        processManager = G4Gamma::GammaDefinition()->GetProcessManager();
-    } else { 
-        // Throw an exception
+    PhotonuclearXsecBiasingOperator::PhotonuclearXsecBiasingOperator(std::string name) :
+        G4VBiasingOperator(name) { 
     }
-    
-    process_ = biasingMessenger->getProcess(); 
-    /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
-              << "Process: " << process_ << std::endl;*/ 
-    const G4BiasingProcessSharedData* sharedData = G4BiasingProcessInterface::GetSharedData(processManager);
-    if (sharedData) {
-        for (size_t index = 0 ; index < (sharedData->GetPhysicsBiasingProcessInterfaces()).size(); ++index) {
-            const G4BiasingProcessInterface* wrapperProcess 
-                = (sharedData->GetPhysicsBiasingProcessInterfaces())[index];
-            if (wrapperProcess->GetWrappedProcess()->GetProcessName().compareTo(process_) == 0) { 
-                xsecOperation = new G4BOptnChangeCrossSection("changeXsec-" + process_);
-                break;
-            } 
+
+    PhotonuclearXsecBiasingOperator::~PhotonuclearXsecBiasingOperator() {
+    }
+
+    void PhotonuclearXsecBiasingOperator::StartRun() { 
+
+        BiasingMessenger* biasingMessenger  
+            = static_cast<RunManager*>(G4RunManager::GetRunManager())->getBiasingMessenger(); 
+
+        G4ProcessManager* processManager{nullptr}; 
+        if (biasingMessenger->getParticleType() == "gamma") { 
+            processManager = G4Gamma::GammaDefinition()->GetProcessManager();
+        } else { 
+            // Throw an exception
         }
+
+        process_ = biasingMessenger->getProcess(); 
+        /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
+          << "Process: " << process_ << std::endl;*/ 
+        const G4BiasingProcessSharedData* sharedData = G4BiasingProcessInterface::GetSharedData(processManager);
+        if (sharedData) {
+            for (size_t index = 0 ; index < (sharedData->GetPhysicsBiasingProcessInterfaces()).size(); ++index) {
+                const G4BiasingProcessInterface* wrapperProcess = (sharedData->GetPhysicsBiasingProcessInterfaces())[index];
+                if (wrapperProcess->GetWrappedProcess()->GetProcessName().compareTo(process_) == 0) { 
+                    xsecOperation = new G4BOptnChangeCrossSection("changeXsec-" + process_);
+                    break;
+                } 
+            }
+        }
+
+        xsecTrans_ = biasingMessenger->getXsecTrans();
     }
 
-    xsecTrans_ = biasingMessenger->getXsecTrans();
-}
+    G4VBiasingOperation* PhotonuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
+            const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
+        /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: " 
+                    << "Calling process: " 
+                    << callingProcess->GetWrappedProcess()->GetProcessName() 
+                    << std::endl;*/
 
-G4VBiasingOperation* ldmx::PhotonuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
-        const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
-    /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: " 
-              << "Calling process: " 
-              << callingProcess->GetWrappedProcess()->GetProcessName() 
-              << std::endl;*/
+        if (callingProcess->GetWrappedProcess()->GetProcessName().compareTo(process_) != 0) return 0; 
 
-    if (callingProcess->GetWrappedProcess()->GetProcessName().compareTo(process_) != 0) return 0; 
+        /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
+                    << "Parent ID: " << track->GetParentID() 
+                    << " Created within " << track->GetLogicalVolumeAtVertex()->GetName() 
+                    << std::endl;*/
 
-    /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
-              << "Parent ID: " << track->GetParentID() 
-              << " Created within " << track->GetLogicalVolumeAtVertex()->GetName() 
-              << std::endl;*/
+        //if (track->GetParentID() != 1 
+        // || track->GetLogicalVolumeAtVertex()->GetName().compareTo(vertexVolume_) != 0) return 0;
 
-    //if (track->GetParentID() != 1 
-    //        || track->GetLogicalVolumeAtVertex()->GetName().compareTo(vertexVolume_) != 0) return 0;
+        G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
+        /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
+                    << "Interaction length: " 
+                    << interactionLength << std::endl;*/
 
-    G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
-    /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
-              << "Interaction length: " 
-              << interactionLength << std::endl;*/
-    
-    G4double xsec = 1./interactionLength;
-    /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
-              << "Cross-section: " 
-              << xsec << std::endl;*/
+        G4double xsec = 1./interactionLength;
+        /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
+                    << "Cross-section: " 
+                    << xsec << std::endl;*/
 
-    /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
-              << "Cross-section x transformation factor: " 
-              << xsec*xsecTrans_ << std::endl;*/
+        /*std::cout << "[ PhotonuclearXsecBiasingOperator ]: "
+                    << "Cross-section x transformation factor: " 
+                    << xsec*xsecTrans_ << std::endl;*/
 
-    xsecOperation->SetBiasedCrossSection(xsec*xsecTrans_);
-    xsecOperation->Sample();
+        xsecOperation->SetBiasedCrossSection(xsec*xsecTrans_);
+        xsecOperation->Sample();
 
-    return xsecOperation;
+        return xsecOperation;
+    }
+
 }

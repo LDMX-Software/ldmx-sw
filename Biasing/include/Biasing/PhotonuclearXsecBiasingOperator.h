@@ -31,47 +31,48 @@
 
 namespace ldmx { 
 
-class PhotonuclearXsecBiasingOperator : public G4VBiasingOperator { 
-    
-    public: 
+    class PhotonuclearXsecBiasingOperator : public G4VBiasingOperator { 
 
-        /** Constructor */
-        PhotonuclearXsecBiasingOperator(std::string name);
+        public: 
 
-        /** Destructor */
-        ~PhotonuclearXsecBiasingOperator();
+            /** Constructor */
+            PhotonuclearXsecBiasingOperator(std::string name);
 
-        /** Method called at the beginning of a run. */
-        void StartRun();
+            /** Destructor */
+            ~PhotonuclearXsecBiasingOperator();
 
-        /** 
-         * @return Method that returns the biasing operation that will be used
-         *         to bias the occurence of photonuclear events.
-         */
-        G4VBiasingOperation* ProposeOccurenceBiasingOperation(const G4Track* track,
-                const G4BiasingProcessInterface* callingProcess);
+            /** Method called at the beginning of a run. */
+            void StartRun();
+
+            /** 
+             * @return Method that returns the biasing operation that will be used
+             *         to bias the occurence of photonuclear events.
+             */
+            G4VBiasingOperation* ProposeOccurenceBiasingOperation(const G4Track* track,
+                    const G4BiasingProcessInterface* callingProcess);
 
 
-    private: 
+        private: 
 
-        /** Cross-section biasing operation */
-        G4BOptnChangeCrossSection* xsecOperation{nullptr};
-    
-        /** The process that the biasing will be applied to. */
-        std::string process_; 
+            /** Cross-section biasing operation */
+            G4BOptnChangeCrossSection* xsecOperation{nullptr};
 
-        /** Factor to multiply the xsec by. */
-        double xsecTrans_;
+            /** The process that the biasing will be applied to. */
+            std::string process_; 
 
-        //--------//
-        // Unused //
-        //--------//
-        G4VBiasingOperation* ProposeFinalStateBiasingOperation(const G4Track*,
-                const G4BiasingProcessInterface*) { return nullptr; }
-        
-        G4VBiasingOperation* ProposeNonPhysicsBiasingOperation(const G4Track*,
-                const G4BiasingProcessInterface*) { return nullptr; }
-};
+            /** Factor to multiply the xsec by. */
+            double xsecTrans_;
+
+            //--------//
+            // Unused //
+            //--------//
+            G4VBiasingOperation* ProposeFinalStateBiasingOperation(const G4Track*,
+                    const G4BiasingProcessInterface*) { return nullptr; }
+
+            G4VBiasingOperation* ProposeNonPhysicsBiasingOperation(const G4Track*,
+                    const G4BiasingProcessInterface*) { return nullptr; }
+
+    };  // PhotonuclearXsecBiasingOperator
 
 }
 

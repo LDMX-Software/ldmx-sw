@@ -21,47 +21,48 @@
 
 namespace ldmx {
 
-class ECalPhotonuclearBiasingPlugin : public UserActionPlugin {
+    class ECalPhotonuclearBiasingPlugin : public UserActionPlugin {
 
-    public:
+        public:
 
-        /** Default Ctor */
-        ECalPhotonuclearBiasingPlugin();
+            /** Default Ctor */
+            ECalPhotonuclearBiasingPlugin();
 
-        /** Destructor */
-        ~ECalPhotonuclearBiasingPlugin();
+            /** Destructor */
+            ~ECalPhotonuclearBiasingPlugin();
 
-        /** @return A std::string descriptor of the class. */
-        virtual std::string getName() {
-            return "ECalPhotonuclearBiasingPlugin";
-        }
+            /** @return A std::string descriptor of the class. */
+            virtual std::string getName() {
+                return "ECalPhotonuclearBiasingPlugin";
+            }
 
-        bool hasSteppingAction() {
-            return true;
-        }
+            bool hasSteppingAction() {
+                return true;
+            }
 
-        bool hasStackingAction() { 
-            return true;
-        }
+            bool hasStackingAction() { 
+                return true;
+            }
 
-        void stepping(const G4Step* step);
+            void stepping(const G4Step* step);
 
-        G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track*, const G4ClassificationOfNewTrack&);
+            G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track*, const G4ClassificationOfNewTrack&);
 
-    private:
+        private:
 
-        /** */
-        G4Track* targetGamma{nullptr};
+            /** */
+            G4Track* targetGamma{nullptr};
 
-        /** The volume name of the LDMX target. */
-        G4String targetVolumeName_{"target_PV"};
+            /** The volume name of the LDMX target. */
+            G4String targetVolumeName_{"target_PV"};
 
-        /** The volume name of the ECal */
-        G4String ecalVolumeName_{"em_calorimeters_PV"};
+            /** The volume name of the ECal */
+            G4String ecalVolumeName_{"em_calorimeters_PV"};
 
-        /** Brem photon energy threshold */
-        double photonEnergyThreshold_{2500}; // MeV
-};
+            /** Brem photon energy threshold */
+            double photonEnergyThreshold_{2500}; // MeV
+    
+    }; // EcalPhotonuclearBiasingPlugin
 
 }
 
