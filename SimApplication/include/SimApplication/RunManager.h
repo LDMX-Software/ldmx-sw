@@ -13,10 +13,13 @@
 #include "G4Decay.hh"
 
 // LDMX
+#include "Biasing/BiasingMessenger.h"
 #include "SimPlugins/PluginMessenger.h"
-#include "SimApplication/DetectorConstruction.h"
 
 namespace ldmx {
+
+// Forward declaration
+class DetectorConstruction; 
 
 /**
  * @class RunManager
@@ -45,18 +48,19 @@ class RunManager : public G4RunManager {
          * Perform application initialization.
          */
         void Initialize();
-
-        void enableBiasing() { enableBiasing_ = true; }
-
-        void setParticleTypeToBias(std::string particleTypeToBias) { particleTypeToBias_ = particleTypeToBias;}
-        
+ 
         /**
          * Get the user detector construction cast to a specific type.
          * @return The user detector construction.
          */
         DetectorConstruction* getDetectorConstruction() {
-            return static_cast<DetectorConstruction*>(this->userDetector);
+            return (DetectorConstruction*) this->userDetector;
         }
+
+        /** 
+         *
+         */
+        BiasingMessenger* getBiasingMessenger() { return biasingMessenger_; }; 
 
     private:
 
@@ -66,15 +70,15 @@ class RunManager : public G4RunManager {
         PluginMessenger* pluginMessenger_;
 
         /**
+         * Biasing messenger.
+         */
+        BiasingMessenger* biasingMessenger_{new BiasingMessenger()};
+
+        /**
          * Manager of sim plugins.
          */
         PluginManager* pluginManager_;
 
-        /** Flag indicating whether physics biasing is enabled or disabled */
-        bool enableBiasing_{false};
-
-        /** Particle type to bias. */
-        std::string particleTypeToBias_{"gamma"};
 };
 
 }
