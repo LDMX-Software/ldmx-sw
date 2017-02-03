@@ -19,8 +19,15 @@
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTable.hh"
 #include "G4ProcessManager.hh"
+#include "G4RunManager.hh"
 #include "G4Track.hh"
 #include "G4VBiasingOperator.hh"
+
+//----------//
+//   LDMX   //
+//----------//
+#include "Biasing/BiasingMessenger.h"
+#include "SimApplication/RunManager.h"
 
 namespace ldmx { 
 
@@ -50,8 +57,11 @@ class PhotonuclearXsecBiasingOperator : public G4VBiasingOperator {
         /** Cross-section biasing operation */
         G4BOptnChangeCrossSection* xsecOperation{nullptr};
     
-        /** Volume at vertex of particle to bias. */
-        G4String vertexVolume_{"target"};
+        /** The process that the biasing will be applied to. */
+        std::string process_; 
+
+        /** Factor to multiply the xsec by. */
+        double xsecTrans_;
 
         //--------//
         // Unused //
