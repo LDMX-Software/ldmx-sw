@@ -18,9 +18,8 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "SimApplication/RunManager.h"
 
-//namespace ldmx { 
+namespace ldmx { 
 
 class BiasingMessenger : public G4UImessenger { 
 
@@ -37,7 +36,23 @@ class BiasingMessenger : public G4UImessenger {
 
         /** 
          */
-        bool isBiasingEnabled() { return _biasingEnabled; }; 
+        bool isBiasingEnabled() { return biasingEnabled_; }; 
+
+        /**
+         */
+        std::string getParticleType() { return particleType_; };
+
+        /**
+         */
+        std::string getProcess() { return process_; }; 
+        
+        /**
+         */
+        std::string getVolume() { return volume_; };
+
+        /**
+         */
+        double getXsecTrans() { return xsecTrans_; }; 
 
     private: 
 
@@ -49,11 +64,33 @@ class BiasingMessenger : public G4UImessenger {
 
         /** Command allowing a user to specify what particle type to bias. */
         G4UIcmdWithAString* particleTypeCmd_{new G4UIcmdWithAString{"/ldmx/biasing/particle", this}};
-};
+
+        /** Command allowing a user to specify what process to bias. */
+        G4UIcmdWithAString* processCmd_{new G4UIcmdWithAString{"/ldmx/biasing/process", this}};
+
+        /** Command allowing a user to specify what volume the biasing should be attached to. */
+        G4UIcmdWithAString* volumeCmd_{new G4UIcmdWithAString{"/ldmx/biasing/volume", this}};
+
+        /** Command allowing a user to specify by what factor the xsec of the process will be increased. */
+        G4UIcmdWithAString* xsecTransCmd_{new G4UIcmdWithAString{"/ldmx/biasing/xsec", this}};
 
         /** Flag indicating if biasing is enabled */
-        bool _biasingEnabled{false};
+        bool biasingEnabled_{false};
 
-//}
+        /** Particle specifies to bias. */
+        std::string particleType_{"gamma"};
+
+        /** Process to bias. */
+        std::string process_{"photonNuclear"};
+
+        /** Volume to attach biasing to. */
+        std::string volume_{"target"};
+
+        /** Factor to multiple the xsec by. */
+        double xsecTrans_{1.0};
+
+};
+
+}
 
 #endif
