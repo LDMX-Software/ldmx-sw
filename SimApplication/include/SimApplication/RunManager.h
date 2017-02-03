@@ -18,69 +18,69 @@
 
 namespace ldmx {
 
-// Forward declaration
-class DetectorConstruction; 
+    // Forward declaration
+    class DetectorConstruction; 
 
-/**
- * @class RunManager
- * @brief Extension of Geant4 run manager
- */
-class RunManager : public G4RunManager {
+    /**
+     * @class RunManager
+     * @brief Extension of Geant4 run manager
+     */
+    class RunManager : public G4RunManager {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         */
-        RunManager();
+            /**
+             * Class constructor.
+             */
+            RunManager();
 
-        /**
-         * Class destructor.
-         */
-        virtual ~RunManager();
+            /**
+             * Class destructor.
+             */
+            virtual ~RunManager();
 
-        /**
-         * Initialize physics.
-         */
-        void InitializePhysics();
+            /**
+             * Initialize physics.
+             */
+            void InitializePhysics();
 
-        /**
-         * Perform application initialization.
-         */
-        void Initialize();
- 
-        /**
-         * Get the user detector construction cast to a specific type.
-         * @return The user detector construction.
-         */
-        DetectorConstruction* getDetectorConstruction() {
-            return (DetectorConstruction*) this->userDetector;
-        }
+            /**
+             * Perform application initialization.
+             */
+            void Initialize();
 
-        /** 
-         *
-         */
-        BiasingMessenger* getBiasingMessenger() { return biasingMessenger_; }; 
+            /**
+             * Get the user detector construction cast to a specific type.
+             * @return The user detector construction.
+             */
+            DetectorConstruction* getDetectorConstruction() {
+                return (DetectorConstruction*) this->userDetector;
+            }
 
-    private:
+            /** 
+             *
+             */
+            BiasingMessenger* getBiasingMessenger() { return biasingMessenger_; }; 
 
-        /**
-         * The plugin messenger.
-         */
-        PluginMessenger* pluginMessenger_;
+        private:
 
-        /**
-         * Biasing messenger.
-         */
-        BiasingMessenger* biasingMessenger_{new BiasingMessenger()};
+            /**
+             * The plugin messenger.
+             */
+            PluginMessenger* pluginMessenger_;
 
-        /**
-         * Manager of sim plugins.
-         */
-        PluginManager* pluginManager_;
+            /**
+             * Biasing messenger.
+             */
+            BiasingMessenger* biasingMessenger_{new BiasingMessenger()};
 
-};
+            /**
+             * Manager of sim plugins.
+             */
+            PluginManager* pluginManager_;
+
+    }; // RunManager
 
 }
 
-#endif
+#endif // SIMAPPLICATION_RUNMANAGER_H_
