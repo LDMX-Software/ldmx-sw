@@ -13,7 +13,6 @@
 
 #include <iostream>
 
-#include "DetDescr/DefaultDetectorID.h"
 #include "Event/SimCalorimeterHit.h"
 
 namespace ldmx {
@@ -29,20 +28,14 @@ void HcalDigiProducer::configure(const ParameterSet& ps) {
     mev_per_mip_ = ps.getDouble("mev_per_mip");
     pe_per_mip_ = ps.getDouble("pe_per_mip");
     verbose_ = bool(ps.getInteger("verbose"));
-    detID_ = new HcalDetId(ps.getInteger("num_back_hcal_layers"),ps.getInteger("num_wrap_hcal_layers"));
-    std::cout << "detID_: " << detID_ << std::endl;
+    detID_.setNumLayers(ps.getInteger("num_back_hcal_layers"),ps.getInteger("num_wrap_hcal_layers"));
 }
 
 void HcalDigiProducer::produce(Event& event) {
 
-    std::cout << "HcalDigiProducer::produce" << std::endl;
-    std::cout << "detID_: " << detID_ << std::endl;
-    detID_->dumpInfo();
-    std::map<int,int> hcalLayerPEs = detID_->getMap<int>();
-    std::map<int, float> hcalLayerEdep = detID_->getMap<float>(); 
-    std::map<int, float> hcalLayerTime = detID_->getMap<float>();
-
-    std::cout << "got detid maps" << std::endl;
+    std::map<int,int> hcalLayerPEs = detID_.getMap<int>();
+    std::map<int, float> hcalLayerEdep = detID_.getMap<float>(); 
+    std::map<int, float> hcalLayerTime = detID_.getMap<float>();
 
     // looper over sim hits and aggregate energy depositions for each detID
     TClonesArray* hcalHits = (TClonesArray*) event.getCollection(EventConstants::HCAL_SIM_HITS, "sim");
@@ -50,18 +43,19 @@ void HcalDigiProducer::produce(Event& event) {
     int numHCalSimHits = hcalHits->GetEntries();
     for (int iHit = 0; iHit < numHCalSimHits; iHit++) {
         SimCalorimeterHit* simHit = (SimCalorimeterHit*) hcalHits->At(iHit);
-        //int detID=simHit->getID();
         int detIDraw = simHit->getID();
         if (verbose_)
             std::cout << "detIDraw: " << detIDraw << std::endl;
-        detID_->setRawValue(detIDraw);
-        detID_->unpack();
-        int layer = detID_->getFieldValue("layer");
-        if (verbose_)
-            std::cout << "layer: " << layer << std::endl;
+        detID_.setRawValue(detIDraw);
+        detID_.unpack();
+        int layer = detID_.getFieldValue("layer");
         if (hcalLayerEdep.find(simHit->getID()) == hcalLayerEdep.end()) {
             std::cout << "ERROR: hcal digi maps not initialized properly" << std::endl;
-            std::cout << "simHit: " << simHit->getID() << std::endl;
+            std::cout << "simHit detID: " << detID_.getRawValue() << std::endl;
+            std::cout << "simHit detector: " << detID_.getFieldValue("subdet") << std::endl;
+            std::cout << "simHit layer: " << detID_.getFieldValue("layer") << std::endl;
+            std::cout << "simHit subdetector: " << detID_.getFieldValue("hcalsubdet") << std::endl;
+            std::cout << "simHit pos: " << simHit->getPosition()[0] << " " << simHit->getPosition()[1] << " " << simHit->getPosition()[2] << std::endl;
             // first hit, initialize 
             hcalLayerEdep[detIDraw] = simHit->getEdep();
             hcalLayerTime[detIDraw] = simHit->getTime() * simHit->getEdep();
@@ -88,8 +82,8 @@ void HcalDigiProducer::produce(Event& event) {
 
         if (verbose_) {
             std::cout << "detID: "  << detIDraw << std::endl;
-            std::cout << "Layer: "  << detID_->getLayer() << std::endl;
-            std::cout << "SubDet: " << detID_->getHcalSubDet() << std::endl;
+            std::cout << "Layer: "  << detID_.getLayer() << std::endl;
+            std::cout << "SubDet: " << detID_.getHcalSubDet() << std::endl;
             std::cout << "Edep: "   << hcalLayerEdep[detIDraw] << std::endl;
             std::cout << "numPEs: " << hcalLayerPEs[detIDraw] << std::endl;
             std::cout << "time: "   << hcalLayerTime[detIDraw] << std::endl;

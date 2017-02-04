@@ -13,7 +13,7 @@
 
 // LDMX
 #include "DetDescr/DetectorID.h"
-#include "DetDescr/HcalDetId.h"
+#include "DetDescr/HcalDetectorID.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Framework/EventProcessor.h"
 
@@ -49,7 +49,7 @@ class HcalDigiProducer : public Producer {
         TRandom* random_{0};
         std::map<layer, zboundaries> hcalLayers_;
         bool verbose_{false};
-        HcalDetId* detID_{nullptr};
+        HcalDetectorID detID_;
         
         static const int NUM_HCAL_LAYERS;
         float meanNoise_{0};
