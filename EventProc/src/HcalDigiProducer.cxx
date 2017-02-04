@@ -100,10 +100,10 @@ void HcalDigiProducer::produce(Event& event) {
         hit->setID(detIDraw);
         ihit++;
     } // end loop over detIDs (layers)
-      // put it into the event
+    // put it into the event
     event.add("hcalDigis", hits_);
 }
-
+    
 }
 
 DECLARE_PRODUCER_NS(ldmx, HcalDigiProducer);

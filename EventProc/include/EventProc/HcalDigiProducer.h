@@ -55,8 +55,6 @@ class HcalDigiProducer : public Producer {
         float meanNoise_{0};
         float mev_per_mip_{0};
         float pe_per_mip_{0};
-        //int num_back_hcal_layers_{0};
-        //int num_wrap_hcal_layers_{0};
         int nProcessed_{0};
 };
 
