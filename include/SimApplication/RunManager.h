@@ -57,11 +57,6 @@ namespace ldmx {
                 return (DetectorConstruction*) this->userDetector;
             }
 
-            /** 
-             *
-             */
-            BiasingMessenger* getBiasingMessenger() { return biasingMessenger_; }; 
-
         private:
 
             /**
