@@ -9,7 +9,7 @@
 
 // ROOT
 #include "TObject.h"
-#include "TRef.h"
+#include "TRefArray.h"
 
 // LDMX
 #include "Event/SimParticle.h"
