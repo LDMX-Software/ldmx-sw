@@ -9,6 +9,16 @@
 
 namespace ldmx { 
 
+    bool BiasingMessenger::biasingEnabled_{false}; 
+
+    std::string BiasingMessenger::particleType_{"gamma"};
+
+    std::string BiasingMessenger::process_{"photonNuclear"};
+
+    std::string BiasingMessenger::volume_{"target"};
+
+    double BiasingMessenger::xsecTrans_{1.0};
+
     BiasingMessenger::BiasingMessenger() { 
 
         biasingDir_->SetGuidance("LDMX physics biasing commands.");

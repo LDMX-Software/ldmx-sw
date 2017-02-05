@@ -27,7 +27,6 @@
 //   LDMX   //
 //----------//
 #include "Biasing/BiasingMessenger.h"
-#include "SimApplication/RunManager.h"
 
 namespace ldmx { 
 
