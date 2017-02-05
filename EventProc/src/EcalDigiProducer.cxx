@@ -24,12 +24,9 @@ EcalDigiProducer::EcalDigiProducer(const std::string& name, const Process& proce
 }
 
 void EcalDigiProducer::configure(const ParameterSet& ps) {
-
-    hexReadout_ = new EcalHexReadout();
     noiseInjector_ = new TRandom2(ps.getInteger("randomSeed", 0));
     meanNoise_ = ps.getDouble("meanNoise");
     readoutThreshold_ = ps.getDouble("readoutThreshold");
-
     ecalDigis_ = new TClonesArray(EventConstants::ECAL_HIT.c_str(), 10000);
 }
 
@@ -38,29 +35,32 @@ void EcalDigiProducer::produce(Event& event) {
     TClonesArray* ecalSimHits = (TClonesArray*) event.getCollection(EventConstants::ECAL_SIM_HITS);
     int numEcalSimHits = ecalSimHits->GetEntries();
 
-    std::cout << "[ EcalDigiProducer ] : Got " << numEcalSimHits << " ECal hits in event " << event.getEventHeader()->getEventNumber() << std::endl;
+    //std::cout << "[ EcalDigiProducer ] : Got " << numEcalSimHits << " ECal hits in event " << event.getEventHeader()->getEventNumber() << std::endl;
+
+    std::map<int,float> cellEdep = detID_.getMap();
+    std::map<int,float> cellTime = detID_.getMap();
 
     //First we simulate noise injection into each hit and store layer-wise max cell ids
     int iHitOut = 0;
-    for (int iHit = 0; iHit < numEcalSimHits; iHit++) {
+    for(int iHit = 0; iHit < numEcalSimHits; iHit++) {
         SimCalorimeterHit* simHit = (SimCalorimeterHit*) ecalSimHits->At(iHit);
-
+        cellEdep[simHit->getID()] = simHit->getEdep();
+        cellTime[simHit->getID()] = simHit->getTime();
+    }
+    //Loop through cell and create hits
+    int iHit=0;
+    for (std::map<int, float>::iterator it = cellEdep.begin(); it != cellEdep.end(); ++it){  
         double hitNoise = noiseInjector_->Gaus(0, meanNoise_);
-        layer_cell_pair hit_pair = hitToPair(simHit);
-
-        EcalHit* digiHit = (EcalHit*) (ecalDigis_->ConstructedAt(iHit));
-
-        //	hit->setLayer(hit_pair.first);
-        digiHit->setID(simHit->getID());
-        digiHit->setAmplitude(simHit->getEdep());
-        double energy = simHit->getEdep() + hitNoise;
-        if (energy > readoutThreshold_) {
-            digiHit->setEnergy(energy);
-            digiHit->setTime(simHit->getTime());
-        } else {
-            digiHit->setEnergy(0);
-            digiHit->setTime(-1000);
-        }
+        double energy = it->second + hitNoise;
+        // readout threshold now used as a zero suppression
+        if (energy > readoutThreshold_){
+            EcalHit* digiHit = (EcalHit*) (ecalDigis_->ConstructedAt(iHit));
+            digiHit->setID(it->first);
+            digiHit->setEnergy(it->second);
+            digiHit->setAmplitude(energy);
+            digiHit->setTime(cellTime[it->first]);
+            iHit++;
+        } 
     }
 
     event.add("ecalDigis", ecalDigis_);
