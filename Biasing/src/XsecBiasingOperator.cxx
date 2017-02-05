@@ -19,17 +19,14 @@ namespace ldmx {
 
     void XsecBiasingOperator::StartRun() { 
 
-        BiasingMessenger* biasingMessenger  
-            = static_cast<RunManager*>(G4RunManager::GetRunManager())->getBiasingMessenger(); 
-
         G4ProcessManager* processManager{nullptr}; 
-        if (biasingMessenger->getParticleType() == "gamma") { 
+        if (BiasingMessenger::getParticleType() == "gamma") { 
             processManager = G4Gamma::GammaDefinition()->GetProcessManager();
         } else { 
             // Throw an exception
         }
 
-        process_ = biasingMessenger->getProcess(); 
+        process_ = BiasingMessenger::getProcess(); 
         /*std::cout << "[ XsecBiasingOperator ]: "
           << "Process: " << process_ << std::endl;*/ 
         const G4BiasingProcessSharedData* sharedData = G4BiasingProcessInterface::GetSharedData(processManager);
@@ -43,7 +40,7 @@ namespace ldmx {
             }
         }
 
-        xsecTrans_ = biasingMessenger->getXsecTrans();
+        xsecTrans_ = BiasingMessenger::getXsecTrans();
     }
 
     G4VBiasingOperation* XsecBiasingOperator::ProposeOccurenceBiasingOperation(
