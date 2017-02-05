@@ -149,7 +149,7 @@ class SimTrackerHit: public TObject {
          * Set the Monte Carlo particle that created the hit.
          * @param simParticle The particle that created the hit.
          */
-        void setSimParticle(SimParticle* simParticle) { this->simParticle_.SetObject(simParticle); };
+        void setSimParticle(SimParticle* simParticle) { this->simParticle_ = (TObject*) simParticle; };
 
     private:
 
