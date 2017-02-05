@@ -1,8 +1,5 @@
 #include "SimApplication/DetectorConstruction.h"
 
-//
-#include "SimApplication/RunManager.h"
-
 namespace ldmx {
 
     DetectorConstruction::DetectorConstruction(G4GDMLParser* theParser) :
@@ -22,10 +19,7 @@ namespace ldmx {
 
     void DetectorConstruction::ConstructSDandField() {
 
-        BiasingMessenger* biasingMessenger  
-            = static_cast<RunManager*>(G4RunManager::GetRunManager())->getBiasingMessenger(); 
-
-        if (biasingMessenger->isBiasingEnabled()) { 
+        if (BiasingMessenger::isBiasingEnabled()) { 
 
             // Instantiate the biasing operator
             // TODO: At some point, this should be more generic i.e. operators should be
@@ -35,7 +29,7 @@ namespace ldmx {
 
             for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) { 
                 G4String volumeName = volume->GetName();
-                if (volumeName.contains(biasingMessenger->getVolume())) { 
+                if (volumeName.contains(BiasingMessenger::getVolume())) { 
                     xsecBiasing->AttachTo(volume);
                     std::cout << "[ DetectorConstruction ]: "
                               << "Attaching biasing operator " << xsecBiasing->GetName()

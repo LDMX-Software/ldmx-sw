@@ -36,23 +36,23 @@ namespace ldmx {
 
             /** 
             */
-            bool isBiasingEnabled() { return biasingEnabled_; }; 
+            static bool isBiasingEnabled() { return biasingEnabled_; }; 
 
             /**
             */
-            std::string getParticleType() { return particleType_; };
+            static std::string getParticleType() { return particleType_; };
 
             /**
             */
-            std::string getProcess() { return process_; }; 
+            static std::string getProcess() { return process_; }; 
 
             /**
             */
-            std::string getVolume() { return volume_; };
+            static std::string getVolume() { return volume_; };
 
             /**
             */
-            double getXsecTrans() { return xsecTrans_; }; 
+            static double getXsecTrans() { return xsecTrans_; }; 
 
         private: 
 
@@ -75,19 +75,19 @@ namespace ldmx {
             G4UIcmdWithAString* xsecTransCmd_{new G4UIcmdWithAString{"/ldmx/biasing/xsec", this}};
 
             /** Flag indicating if biasing is enabled */
-            bool biasingEnabled_{false};
+            static bool biasingEnabled_;
 
             /** Particle specifies to bias. */
-            std::string particleType_{"gamma"};
+            static std::string particleType_;
 
             /** Process to bias. */
-            std::string process_{"photonNuclear"};
+            static std::string process_;
 
             /** Volume to attach biasing to. */
-            std::string volume_{"target"};
+            static std::string volume_;
 
             /** Factor to multiple the xsec by. */
-            double xsecTrans_{1.0};
+            static double xsecTrans_;
 
     }; // BiasingMessenger
 

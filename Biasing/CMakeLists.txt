@@ -1,11 +1,6 @@
 # find Geant4
 find_package(Geant4 REQUIRED ui_all vis_all)
 
-include_directories("${PROJECT_SOURCE_DIR}/SimApplication/include/")
-include_directories("${PROJECT_SOURCE_DIR}/SimPlugins/include")
-include_directories("${PROJECT_SOURCE_DIR}/DetDescr/include")
-
-
 # declare SimPlugins module
 module(
   NAME Biasing
