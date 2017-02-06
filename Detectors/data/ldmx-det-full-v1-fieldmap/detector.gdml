@@ -240,7 +240,7 @@
       <auxiliary auxtype="File" auxvalue="BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"/>
       <auxiliary auxtype="OffsetX" auxvalue="0.0" auxunit="mm"/>
       <auxiliary auxtype="OffsetY" auxvalue="0.0" auxunit="mm"/>
-      <auxiliary auxtype="OffsetZ" auxvalue="-100.0" auxunit="mm"/>
+      <auxiliary auxtype="OffsetZ" auxvalue="-400.0" auxunit="mm"/>
     </auxiliary>    
     
     <!-- define regions -->

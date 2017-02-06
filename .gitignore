@@ -4,6 +4,7 @@
 .pydevproject
 build/
 rebuild.sh
+<<<<<<< HEAD
 *.gdml
 *.root
 **.dat
@@ -14,6 +15,9 @@ root-scripts
 submit-scripts
 ldmx-sw-install
 config/doxygen/doxygen.conf
+=======
+docs/doxygen.conf
+>>>>>>> 72be10310b1dacc30a68132522c21eadab811338
 *~
 *#
 *.pyc
