@@ -28,9 +28,9 @@ namespace ldmx {
     void TargetProcessFilter::stepping(const G4Step* step) { 
 
 
-        std::cout << "************" << std::endl; 
-        std::cout << "*   Step   *" << std::endl;
-        std::cout << "************" << std::endl; 
+        /*std::cout << "************" << std::endl;*/ 
+        /*std::cout << "*   Step   *" << std::endl;*/
+        /*std::cout << "************" << std::endl;*/ 
 
 
         // Get the track associated with this step.
@@ -48,14 +48,14 @@ namespace ldmx {
 
 
         // Get the kinetic energy of the particle.
-        double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
+        //double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
 
-        std::cout << "[ TargetProcessFilter ]: " << "\n" 
+        /*std::cout << "[ TargetProcessFilter ]: " << "\n" 
                     << "\tTotal energy of " << particleName      << " ( PDG ID: " << pdgID
                     << " ) : " << incidentParticleEnergy       << "\n"
                     << "\tTrack ID: " << track->GetTrackID()     << "\n" 
                     << "\tStep #: " << track->GetCurrentStepNumber() << "\n"
-                    << "\tParticle currently in " << volumeName  << std::endl;
+                    << "\tParticle currently in " << volumeName  << std::endl;*/
 
         // Get the particles daughters.
         const G4TrackVector* secondaries = step->GetSecondary();
@@ -67,9 +67,9 @@ namespace ldmx {
             if (secondaries->size() == 0) {
 
 
-                std::cout << "[ TargetProcessFilter ]: "
+                /*std::cout << "[ TargetProcessFilter ]: "
                             << "Brem photon did not interact in the target. --> Killing all tracks!"
-                            << std::endl;
+                            << std::endl;*/
 
                 track->SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()->AbortEvent();
@@ -79,19 +79,19 @@ namespace ldmx {
             G4String processName = secondaries->at(0)->GetCreatorProcess()->GetProcessName(); 
 
 
-            std::cout << "[ TargetProcessFilter ]: "
+            /*std::cout << "[ TargetProcessFilter ]: "
                         << "Brem photon produced " << secondaries->size() 
                         << " particle via " << processName << " process." 
-                        << std::endl;
+                        << std::endl;*/
 
 
             // Only record photonuclear events
             if (!processName.contains(BiasingMessenger::getProcess())) {
 
 
-                std::cout << "[ TargetProcessFilter ]: "
+                /*std::cout << "[ TargetProcessFilter ]: "
                   << "Process was not photonuclear. --> Killing all tracks!" 
-                  << std::endl; 
+                  << std::endl;*/ 
 
                 track->SetTrackStatus(fKillTrackAndSecondaries);
 
