@@ -6,27 +6,27 @@
  *         SLAC National Accelerator Laboratory
  */
 
-#include "Biasing/TargetPhotonuclearBiasingPlugin.h"
+#include "Biasing/TargetProcessFilter.h"
 
 namespace ldmx { 
 
-    extern "C" TargetPhotonuclearBiasingPlugin* createTargetPhotonuclearBiasingPlugin() {
-        return new TargetPhotonuclearBiasingPlugin;
+    extern "C" TargetProcessFilter* createTargetProcessFilter() {
+        return new TargetProcessFilter;
     }
 
-    extern "C" void destroyTargetPhotonuclearBiasingPlugin(TargetPhotonuclearBiasingPlugin* object) {
+    extern "C" void destroyTargetProcessFilter(TargetProcessFilter* object) {
         delete object;
     }
 
 
-    TargetPhotonuclearBiasingPlugin::TargetPhotonuclearBiasingPlugin() { 
+    TargetProcessFilter::TargetProcessFilter() { 
     }
 
-    TargetPhotonuclearBiasingPlugin::~TargetPhotonuclearBiasingPlugin() { 
+    TargetProcessFilter::~TargetProcessFilter() { 
     }
 
 
-    G4ClassificationOfNewTrack TargetPhotonuclearBiasingPlugin::stackingClassifyNewTrack(
+    G4ClassificationOfNewTrack TargetProcessFilter::stackingClassifyNewTrack(
             const G4Track* track, 
             const G4ClassificationOfNewTrack& currentTrackClass) {
 
@@ -40,7 +40,7 @@ namespace ldmx {
         // Get the particle type.
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
 
-        /*std::cout << "[ TargetPhotonuclearBiasingPlugin ]: " << "\n" 
+        /*std::cout << "[ TargetProcessFilter ]: " << "\n" 
                     << "\tParticle " << particleName      << " ( PDG ID: " << pdgID << " ) : " << "\n"
                     << "\tTrack ID: " << track->GetTrackID()     << "\n" 
                     << std::endl;*/
@@ -56,7 +56,7 @@ namespace ldmx {
         return classification;
     }
 
-    void TargetPhotonuclearBiasingPlugin::stepping(const G4Step* step) { 
+    void TargetProcessFilter::stepping(const G4Step* step) { 
 
 
         /*std::cout << "************" << std::endl;*/ 
@@ -81,7 +81,7 @@ namespace ldmx {
         // Get the kinetic energy of the particle.
         //double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
 
-        /*std::cout << "[ TargetPhotonuclearBiasingPlugin ]: " << "\n" 
+        /*std::cout << "[ TargetProcessFilter ]: " << "\n" 
                     << "\tTotal energy of " << particleName      << " ( PDG ID: " << pdgID
                     << " ) : " << incidentParticleEnergy       << "\n"
                     << "\tTrack ID: " << track->GetTrackID()     << "\n" 
@@ -103,7 +103,7 @@ namespace ldmx {
                 if (secondaries->size() == 0) {     
                     track->SetTrackStatus(fKillTrackAndSecondaries); 
 
-                    /*std::cout << "[ TargetPhotonuclearBiasingPlugin ]: "
+                    /*std::cout << "[ TargetProcessFilter ]: "
                                 << "Primary did not produce secondaries --> Killing primary track!" 
                                 << std::endl;*/
 
@@ -113,7 +113,7 @@ namespace ldmx {
 
                 G4String processName = secondaries->at(0)->GetCreatorProcess()->GetProcessName(); 
 
-                /*std::cout << "[ TargetPhotonuclearBiasingPlugin ]: "
+                /*std::cout << "[ TargetProcessFilter ]: "
                             << "Incident electron produced " << secondaries->size() 
                             << " particle via " << processName << " process." 
                             << std::endl;*/
@@ -124,7 +124,7 @@ namespace ldmx {
                 if (processName.compareTo("eBrem") != 0 || secondaries->size() != 1) {
 
 
-                    /*std::cout << "[ TargetPhotonuclearBiasingPlugin ]: "
+                    /*std::cout << "[ TargetProcessFilter ]: "
                                 << "The secondaries are not a result of Brem. --> Killing all tracks!"
                                 << std::endl;*/
 
@@ -136,7 +136,7 @@ namespace ldmx {
 
                 G4Track* secondaryTrack = secondaries->at(0);
 
-                /*std::cout << "[ TargetPhotonuclearBiasingPlugin ]: "
+                /*std::cout << "[ TargetProcessFilter ]: "
                             << secondaryTrack->GetParticleDefinition()->GetParticleName() 
                             << " with kinetic energy " << secondaryTrack->GetKineticEnergy()
                             << " MeV was produced." << std::endl;*/
@@ -144,7 +144,7 @@ namespace ldmx {
                 if (secondaryTrack->GetKineticEnergy() < photonEnergyThreshold_) { 
 
 
-                    /*std::cout << "[ TargetPhotonuclearBiasingPlugin ]: "
+                    /*std::cout << "[ TargetProcessFilter ]: "
                                 << "Brem photon failed the energy threshold cut." 
                                 << std::endl;*/ 
 
@@ -169,7 +169,7 @@ namespace ldmx {
             if (secondaries->size() == 0) {
 
 
-                /*std::cout << "[ TargetPhotonuclearBiasingPlugin ]: "
+                /*std::cout << "[ TargetProcessFilter ]: "
                             << "Brem photon did not interact in the target. --> Killing all tracks!"
                             << std::endl;*/
 
@@ -181,7 +181,7 @@ namespace ldmx {
             G4String processName = secondaries->at(0)->GetCreatorProcess()->GetProcessName(); 
 
 
-            /*std::cout << "[ TargetPhotonuclearBiasingPlugin ]: "
+            /*std::cout << "[ TargetProcessFilter ]: "
                         << "Brem photon produced " << secondaries->size() 
                         << " particle via " << processName << " process." 
                         << std::endl;*/
@@ -192,7 +192,7 @@ namespace ldmx {
             if (!processName.contains("")) {
 
 
-                /*std::cout << "[ TargetPhotonuclearBiasingPlugin ]: "
+                /*std::cout << "[ TargetProcessFilter ]: "
                   << "Process was not photonuclear. --> Killing all tracks!" 
                   << std::endl;*/ 
 
@@ -202,7 +202,7 @@ namespace ldmx {
                 return;
             }
 
-            std::cout << "[ TargetPhotonuclearBiasingPlugin ]: "
+            std::cout << "[ TargetProcessFilter ]: "
                 << "Brem photon produced " << secondaries->size() 
                 << " particle via " << processName << " process." 
                 << std::endl;

@@ -1,5 +1,5 @@
 /**
- * @file TargetPhotonuclearBiasingPlugin.h
+ * @file TargetProcessFilter.h
  * @brief Class defining a UserActionPlugin that biases Geant4 to only process events which
  *        involve a photonuclear reaction in the target
  * @author Omar Moreno, SLAC National Accelerator Laboratory
@@ -18,29 +18,29 @@
 namespace ldmx {
 
 /**
- * @class TargetPhotonuclearBiasingPlugin
+ * @class TargetProcessFilter
  * @brief Biases Geant4 to only process events where PN reaction occurred in the target
  */
-class TargetPhotonuclearBiasingPlugin : public UserActionPlugin {
+class TargetProcessFilter : public UserActionPlugin {
 
     public:
 
         /**
          * Class constructor.
          */
-        TargetPhotonuclearBiasingPlugin();
+        TargetProcessFilter();
 
         /**
          * Class destructor.
          */
-        ~TargetPhotonuclearBiasingPlugin();
+        ~TargetProcessFilter();
 
         /**
          * Get the name of the plugin.
          * @return The name of the plugin.
          */
         virtual std::string getName() {
-            return "TargetPhotonuclearBiasingPlugin";
+            return "TargetProcessFilter";
         }
 
         /**
