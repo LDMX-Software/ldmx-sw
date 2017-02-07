@@ -6,7 +6,7 @@
  *         SLAC National Accelerator Laboratory
  */
 
-#include "SimPlugins/TargetPhotonuclearBiasingPlugin.h"
+#include "Biasing/TargetPhotonuclearBiasingPlugin.h"
 
 namespace ldmx { 
 
@@ -92,6 +92,8 @@ namespace ldmx {
         const G4TrackVector* secondaries = step->GetSecondary();
 
         // process primary track
+        // TODO: This block of code is shared by the Target and Ecal biasing plugins
+        //       so it should eventually be pulled out to it's own plugin.
         if (track->GetTrackID() == 1 && pdgID == 11 && track->GetCurrentStepNumber() == 1) {
 
             if (volumeName.compareTo(volumeName_) == 0) {
@@ -186,7 +188,8 @@ namespace ldmx {
 
 
             // Only record photonuclear events
-            if (!processName.contains("photonNuclear")) {
+            //if (!processName.contains(BiasingMessenger::getProcess())) {
+            if (!processName.contains("")) {
 
 
                 /*std::cout << "[ TargetPhotonuclearBiasingPlugin ]: "
