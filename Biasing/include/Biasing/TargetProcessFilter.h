@@ -13,7 +13,7 @@
 
 // LDMX
 #include "SimPlugins/UserActionPlugin.h"
-//#include "Biasing/BiasingMessenger.h"
+#include "Biasing/BiasingMessenger.h"
 
 namespace ldmx {
 
@@ -56,7 +56,7 @@ class TargetProcessFilter : public UserActionPlugin {
          * @return True to indicate this plugin implements the stacking action.
          */
         bool hasStackingAction() { 
-            return true;
+            return false;
         }
 
         /**
@@ -64,14 +64,6 @@ class TargetProcessFilter : public UserActionPlugin {
          * @param step The Geant4 step.
          */
         void stepping(const G4Step* step);
-
-        /**
-         * Classify a new track which postpones track processing.
-         * Track processing resumes normally if a target PN interaction occurred.
-         * @param aTrack The Geant4 track.
-         * @param currentTrackClass The current track classification.
-         */
-        G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& currentTrackClass);
 
     private:
 
