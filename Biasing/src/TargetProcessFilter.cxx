@@ -25,38 +25,6 @@ namespace ldmx {
     TargetProcessFilter::~TargetProcessFilter() { 
     }
 
-
-    /*
-    G4ClassificationOfNewTrack TargetProcessFilter::stackingClassifyNewTrack(
-            const G4Track* track, 
-            const G4ClassificationOfNewTrack& currentTrackClass) {
-
-        std::cout << "********************************" << std::endl; 
-        std::cout << "*   Track pushed to the stack  *" << std::endl;
-        std::cout << "********************************" << std::endl; 
-
-        // get the PDGID of the track.
-        G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
-
-        // Get the particle type.
-        G4String particleName = track->GetParticleDefinition()->GetParticleName();
-
-        std::cout << "[ TargetProcessFilter ]: " << "\n" 
-                    << "\tParticle " << particleName      << " ( PDG ID: " << pdgID << " ) : " << "\n"
-                    << "\tTrack ID: " << track->GetTrackID()     << "\n" 
-                    << std::endl;
-
-
-        // Use current classification by default so values from other plugins are not overridden.
-        G4ClassificationOfNewTrack classification = currentTrackClass;
-
-        if (track->GetTrackID() == 1 && pdgID == 11) {
-            return fWaiting; 
-        }
-
-        return classification;
-    }*/
-
     void TargetProcessFilter::stepping(const G4Step* step) { 
 
 
