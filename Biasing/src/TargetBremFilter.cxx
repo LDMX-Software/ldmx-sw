@@ -150,7 +150,7 @@ namespace ldmx {
                     return;
                 }
 
-                /*std::cout << "[ TargetPhotonuclerBiasingPlugin ]: "
+                /*std::cout << "[ TargetBremFilter ]: "
                             << "Photon passed energy cut --> Suspending primary track!"
                             << std::endl;*/
                 track->SetTrackStatus(fSuspend);   
