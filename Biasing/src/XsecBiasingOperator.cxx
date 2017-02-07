@@ -57,8 +57,7 @@ namespace ldmx {
                     << " Created within " << track->GetLogicalVolumeAtVertex()->GetName() 
                     << std::endl;*/
 
-        //if (track->GetParentID() != 1 
-        // || track->GetLogicalVolumeAtVertex()->GetName().compareTo(vertexVolume_) != 0) return 0;
+        if (track->GetParentID() != 1) return 0;
 
         G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
         /*std::cout << "[ XsecBiasingOperator ]: "
