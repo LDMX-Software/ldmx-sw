@@ -6,27 +6,26 @@
  *         SLAC National Accelerator Laboratory
  */
 
-#include "Biasing/ECalPhotonuclearBiasingPlugin.h"
+#include "Biasing/EcalProcessFilter.h"
 
 namespace ldmx { 
 
-    extern "C" ECalPhotonuclearBiasingPlugin* createECalPhotonuclearBiasingPlugin() {
-        return new ECalPhotonuclearBiasingPlugin;
+    extern "C" EcalProcessFilter* createEcalProcessFilter() {
+        return new EcalProcessFilter;
     }
 
-    extern "C" void destroyECalPhotonuclearBiasingPlugin(ECalPhotonuclearBiasingPlugin* object) {
+    extern "C" void destroyEcalProcessFilter(EcalProcessFilter* object) {
         delete object;
     }
 
 
-    ECalPhotonuclearBiasingPlugin::ECalPhotonuclearBiasingPlugin() { 
+    EcalProcessFilter::EcalProcessFilter() { 
     }
 
-    ECalPhotonuclearBiasingPlugin::~ECalPhotonuclearBiasingPlugin() { 
+    EcalProcessFilter::~EcalProcessFilter() { 
     }
 
-
-    G4ClassificationOfNewTrack ECalPhotonuclearBiasingPlugin::stackingClassifyNewTrack(
+    G4ClassificationOfNewTrack EcalProcessFilter::stackingClassifyNewTrack(
             const G4Track* track, 
             const G4ClassificationOfNewTrack& currentTrackClass) {
 
@@ -40,7 +39,7 @@ namespace ldmx {
         // Get the particle type.
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
 
-        /*std::cout << "[ ECalPhotonuclearBiasingPlugin ]: " << "\n" 
+        /*std::cout << "[ EcalProcessFilter ]: " << "\n" 
                     << "\tParticle " << particleName      << " ( PDG ID: " << pdgID << " ) : " << "\n"
                     << "\tTrack ID: " << track->GetTrackID()     << "\n" 
                     << std::endl;*/
@@ -50,14 +49,14 @@ namespace ldmx {
         G4ClassificationOfNewTrack classification = currentTrackClass;
 
         if (track->GetTrackID() == 1 && pdgID == 11) {
-            /*std::cout << "[ ECalPhotonuclearBiasingPlugin ]: Pushing track to waiting stack." << std::endl;*/
+            /*std::cout << "[ EcalProcessFilter ]: Pushing track to waiting stack." << std::endl;*/
             return fWaiting; 
         }
 
         return classification;
     }
 
-    void ECalPhotonuclearBiasingPlugin::stepping(const G4Step* step) { 
+    void EcalProcessFilter::stepping(const G4Step* step) { 
 
         // Get the track associated with this step.
         G4Track* track = step->GetTrack();
@@ -83,7 +82,7 @@ namespace ldmx {
         // Get the kinetic energy of the particle.
         double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
 
-        /*std::cout << "[ ECalPhotonuclearBiasingPlugin ]:\n" 
+        /*std::cout << "[ EcalProcessFilter ]:\n" 
                     << "\tTotal energy of " << particleName  << ": " << incidentParticleEnergy << " MeV \n"
                     << "\tPDG ID: " << pdgID << "\n"
                     << "\tTrack ID: " << track->GetTrackID() << "\n" 
@@ -104,7 +103,7 @@ namespace ldmx {
             if (secondaries->size() == 0) {     
                 track->SetTrackStatus(fKillTrackAndSecondaries); 
 
-                /*std::cout << "[ ECalPhotonuclearBiasingPlugin ]: "  
+                /*std::cout << "[ EcalProcessFilter ]: "  
                             << "Primary did not produce secondaries --> Killing primary track!" 
                             << std::endl;*/
 
@@ -135,14 +134,14 @@ namespace ldmx {
             } 
 
             G4Track* secondaryTrack = secondaries->at(0);
-            /*std::cout << "[ ECalPhotonuclearBiasingPlugin ]: "
+            /*std::cout << "[ EcalProcessFilter ]: "
                         << secondaryTrack->GetParticleDefinition()->GetParticleName() 
                         << " with kinetic energy " << secondaryTrack->GetKineticEnergy()
                         << " MeV was produced." << std::endl;*/
 
             if (secondaryTrack->GetKineticEnergy() < photonEnergyThreshold_) { 
 
-                /*std::cout << "[ ECalPhotonuclearBiasingPlugin ]: "
+                /*std::cout << "[ EcalProcessFilter ]: "
                             << "Brem photon failed the energy threshold cut." 
                             << std::endl;*/
 
@@ -165,7 +164,7 @@ namespace ldmx {
                     && volumeName.contains("phys")) { 
 
                 G4String processName = secondaries->at(0)->GetCreatorProcess()->GetProcessName(); 
-                /*std::cout << "[ ECalPhotonuclearBiasingPlugin ]: "
+                /*std::cout << "[ EcalProcessFilter ]: "
                             << "Brem photon produced " << secondaries->size() 
                             << " particles via " << processName << " process within "
                             << secondaries->at(0)->GetVolume()->GetName() << "." 
@@ -174,7 +173,7 @@ namespace ldmx {
                 // Only record photonuclear events
                 if (!processName.contains("photonNuclear")) {
 
-                    /*std::cout << "[ ECalPhotonuclearBiasingPlugin ]: "
+                    /*std::cout << "[ EcalProcessFilter ]: "
                                 << "Brem photon produced " << secondaries->size() 
                                 << " particles via " << processName << " process within "
                                 << secondaries->at(0)->GetVolume()->GetName() << "." 
@@ -186,13 +185,13 @@ namespace ldmx {
                     return;
                 }
 
-                std::cout << "[ ECalPhotonuclearBiasingPlugin ]: "
+                std::cout << "[ EcalProcessFilter ]: "
                     << "Brem photon produced " << secondaries->size() 
                     << " particles via " << processName << " process within "
                     << secondaries->at(0)->GetVolume()->GetName() << "." 
                     << std::endl;
             } else if (secondaries->size() != 0) { 
-                /*std::cout << "[ ECalPhotonuclearBiasingPlugin ]: "
+                /*std::cout << "[ EcalProcessFilter ]: "
                             << "Secondaries were produced outside of the ECal --> Killing all tracks!"
                             << std::endl;*/
 
