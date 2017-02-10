@@ -14,6 +14,9 @@
 # setup ROOT env
 . @ROOT_DIR@/bin/thisroot.sh
 
+# set variable pointing to installation dir
+export LDMXSW_DIR=@CMAKE_INSTALL_PREFIX@
+
 # set load library path for module libs
 export LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:$LD_LIBRARY_PATH
 
