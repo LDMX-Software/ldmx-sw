@@ -6,8 +6,8 @@
  *         SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMPLUGINS_ECALPHOTONUCLEARBIASINGPLUGIN_H_
-#define SIMPLUGINS_ECALPHOTONUCLEARBIASINGPLUGIN_H_
+#ifndef SIMPLUGINS_ECALPROCESSFILTER_H_
+#define SIMPLUGINS_ECALPROCESSFILTER_H_
 
 //------------//
 //   Geant4   //
@@ -21,19 +21,19 @@
 
 namespace ldmx {
 
-    class ECalPhotonuclearBiasingPlugin : public UserActionPlugin {
+    class EcalProcessFilter : public UserActionPlugin {
 
         public:
 
             /** Default Ctor */
-            ECalPhotonuclearBiasingPlugin();
+            EcalProcessFilter();
 
             /** Destructor */
-            ~ECalPhotonuclearBiasingPlugin();
+            ~EcalProcessFilter();
 
             /** @return A std::string descriptor of the class. */
             virtual std::string getName() {
-                return "ECalPhotonuclearBiasingPlugin";
+                return "EcalProcessFilter";
             }
 
             bool hasSteppingAction() {
@@ -62,8 +62,7 @@ namespace ldmx {
             /** Brem photon energy threshold */
             double photonEnergyThreshold_{2500}; // MeV
     
-    }; // EcalPhotonuclearBiasingPlugin
-
+    }; // EcalProcessFilter 
 }
 
-#endif // SIMPLUGINS_ECALPHOTONUCLEARBIASINGPLUGIN_H__
+#endif // SIMPLUGINS_ECALPROCESSFILTER_H__
