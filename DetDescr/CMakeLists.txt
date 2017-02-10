@@ -1,5 +1,5 @@
 # find ROOT first so variables are usable in module declaration
-find_package(ROOT REQUIRED COMPONENTS Core RIO)
+find_package(ROOT REQUIRED COMPONENTS Core RIO Geom)
 
 # declare DetDescr module
 module(
