@@ -25,6 +25,11 @@ void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
     // Install custom trajectory container for the event.
     G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
 
+	// G4Random::showEngineStatus();
+	// G4Random::saveEngineStatus();
+	// G4Random::getTheEngine();
+	// G4Random::restoreEngineStatus("currentEvent1.rndm"); // this line will be needed to read in a set of seeds
+
     pluginManager_->beginEvent(anEvent);
 }
 
