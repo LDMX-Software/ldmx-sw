@@ -125,7 +125,7 @@
     </volume>
     
     <!-- define tagger physical volumes inside envelope volume -->
-    <volume name="tagger">
+    <volume name="Tagger">
       <materialref ref="Vacuum"/>
       <solidref ref="tagger_box"/>
       
@@ -212,7 +212,7 @@
   </structure>
 
   <setup name="Default" version="1.0">
-    <world ref="tagger"/>
+    <world ref="Tagger"/>
   </setup>
 
 </gdml>

@@ -126,19 +126,19 @@
   </solids>
 
   <structure>
-    <volume name="target">
+    <volume name="Target">
       <materialref ref="LYSO"/>
       <solidref ref="target_box"/>
       <auxiliary auxtype="SensDet" auxvalue="TargetSD1"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
     </volume>
-    <volume name="trigger_pad_down">
+    <volume name="TriggerPadDown">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_pad_down_box"/>
       <auxiliary auxtype="SensDet" auxvalue="TriggerPadSD1"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>             
     </volume> 
-    <volume name="trigger_pad_up">
+    <volume name="TriggerPadUp">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_pad_up_box"/>
       <auxiliary auxtype="SensDet" auxvalue="TriggerPadSD1"/>
@@ -153,17 +153,17 @@
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <volumeref ref="trigger_pad_up"/>
+        <volumeref ref="TriggerPadUp"/>
         <positionref ref="trigger_pad_up_pos"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <volumeref ref="target"/>
+        <volumeref ref="Target"/>
         <positionref ref="target_pos"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <volumeref ref="trigger_pad_down"/>
+        <volumeref ref="TriggerPadDown"/>
         <positionref ref="trigger_pad_down_pos"/>
         <rotationref ref="identity"/>
       </physvol>

@@ -140,7 +140,7 @@
       </physvol>
       <auxiliary auxtype="VisAttributes" auxvalue="RecoilVis"/>
     </volume>        
-    <volume name="recoil">
+    <volume name="RecoilTracker">
       <materialref ref="Vacuum"/>
       <solidref ref="recoil_box"/>
 
@@ -254,7 +254,7 @@
   </structure>
 
   <setup name="Default" version="1.0">
-    <world ref="recoil"/>
+    <world ref="RecoilTracker"/>
   </setup>
 
 </gdml>
