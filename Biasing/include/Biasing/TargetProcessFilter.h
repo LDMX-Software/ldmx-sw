@@ -52,15 +52,7 @@ class TargetProcessFilter : public UserActionPlugin {
         }
 
         /**
-         * Get whether this plugin implements the stacking aciton.
-         * @return True to indicate this plugin implements the stacking action.
-         */
-        bool hasStackingAction() { 
-            return false;
-        }
-
-        /**
-         * Implement the stepping action which performs the target volume biasing.
+         * Implementmthe stepping action which performs the target volume biasing.
          * @param step The Geant4 step.
          */
         void stepping(const G4Step* step);
