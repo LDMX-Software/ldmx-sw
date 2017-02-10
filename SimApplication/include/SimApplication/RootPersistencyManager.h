@@ -136,6 +136,12 @@ class RootPersistencyManager : public G4PersistencyManager {
          * @param outputEvent The output event.
          */
         void writeHeader(const G4Event* anEvent, Event* outputEvent);
+        
+        /**
+         * Write header info into the output event from Geant4.
+         * @param fileName The filename that stores temporary seeds.
+         */
+        std::vector<long> getEventSeeds(std::string fileName = "currentEvent.rndm");
 
         /**
          * Write hits collections from Geant4 into a ROOT event.

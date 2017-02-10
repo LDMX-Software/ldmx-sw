@@ -101,6 +101,14 @@ class EventHeader : public TObject {
         }
 
         /**
+         * Get the event seeds (default is empty vector).
+         * @return The event seeds.
+         */
+        std::vector<long> getSeeds() const {
+            return seeds_;
+        }        
+
+        /**
          * Is this a real data event?
          * @return True if this is a real data event.
          */
@@ -140,6 +148,14 @@ class EventHeader : public TObject {
             this->weight_ = weight;
         }
 
+        /**
+         * Set the event seeds.
+         * @param seeds The seeds.
+         */
+        void setSeeds(std::vector<long> seeds) {
+            this->seeds_ = seeds;
+        }        
+
     protected:
 
         /**
@@ -161,6 +177,11 @@ class EventHeader : public TObject {
          * The event weight.
          */
         double weight_{1.0};
+
+        /**
+         * The event seeds
+         */
+        std::vector<long> seeds_{ {} };        
 
         /**
          * Is this event real data?
