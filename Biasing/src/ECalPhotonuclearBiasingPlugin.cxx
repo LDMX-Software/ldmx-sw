@@ -6,7 +6,7 @@
  *         SLAC National Accelerator Laboratory
  */
 
-#include "SimPlugins/ECalPhotonuclearBiasingPlugin.h"
+#include "Biasing/ECalPhotonuclearBiasingPlugin.h"
 
 namespace ldmx { 
 
