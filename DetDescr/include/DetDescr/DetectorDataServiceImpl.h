@@ -1,13 +1,13 @@
 /*
  * DetectorServiceImpl.h
- * @brief
+ * @brief Simple detector service implementation for loading GDML files into ROOT
  * @author JeremyMcCormick, SLAC
  */
 
 #ifndef DETDESCR_DETECTORSERVICEIMPL_H_
 #define DETDESCR_DETECTORSERVICEIMPL_H_
 
-#include "DetDescr/DetectorElement.h"
+#include "DetDescr/DetectorElementImpl.h"
 #include "DetDescr/DetectorDataService.h"
 
 #include <iostream>
@@ -16,6 +16,10 @@
 
 namespace ldmx {
 
+    /**
+     * @class DetectorDataServiceImpl
+     * @brief Implements a simple service for loading GDML files into ROOT
+     */
     class DetectorDataServiceImpl : public DetectorDataService {
 
         public:
@@ -28,42 +32,45 @@ namespace ldmx {
                 setupLocalAliases();
             }
 
+            /**
+             * Get the TGeoManager that was setup when loading the detector.
+             * This will return null until initialize() is called.
+             * @return The current geometry manager or null if not setup.
+             */
             TGeoManager* getGeometryManager() {
                 return geoManager_;
             }
 
+            /**
+             * Get the top DetectorElement, pointing to the "world volume."
+             */
             DetectorElement* getTopDetectorElement() {
                 return topDE_;
             }
 
-            void initialize() {
+            /**
+             * Initialize the ROOT geometry system from the current detector name.
+             * This will load the GDML geometry and setup the DetectorElement
+             * hierarchy.
+             */
+            void initialize();
 
-                if (detectorName_.empty()) {
-                    throw std::runtime_error("The detector name was not set.");
-                }
-
-                if (aliasMap_.find(detectorName_) == aliasMap_.end()) {
-                    std::cerr << "ERROR: There is no entry for the detector name "
-                            << detectorName_ << " in the aliases." << std::endl;
-                    throw std::runtime_error("Detector name was not found in the aliases.");
-                }
-
-                std::string location = aliasMap_[detectorName_];
-
-                std::cout << "[ DetectorDataServiceImpl ] : Importing detector " << detectorName_
-                        << " from " << location << std::endl;
-
-                geoManager_ = TGeoManager::Import(location.c_str(), detectorName_.c_str());
-
-                // call setup on top DE which should recursively setup sub-detectors
-
-                geoManager_->CloseGeometry();
-            }
-
+            /**
+             * Set the name of the detector to be loaded when initialize() is called.
+             * If the detector name is never set then an error will be thrown
+             * during initialization.
+             * @param detectorName The name of the detector.
+             */
             void setDetectorName(std::string detectorName) {
                 detectorName_ = detectorName;
             }
 
+            /**
+             * Add an alias mapping a detector name to a physical location
+             * such as a filesystem path.
+             * @param detectorName The name of the detector.
+             * @param alias The alias of the detector (i.e. file path).
+             */
             void addAlias(std::string detectorName, std::string alias) {
                 aliasMap_[detectorName] = alias;
                 std::cout << "[ DetectorDataServiceImpl ] : Added alias " << detectorName << " => " << alias << std::endl;
@@ -83,8 +90,8 @@ namespace ldmx {
             std::string detectorName_;
             DetectorAliasMap aliasMap_;
             TGeoManager* geoManager_{nullptr};
-            DetectorElement* topDE_{nullptr};
+            DetectorElementImpl* topDE_{nullptr};
     };
 }
 
-#endif /* INCLUDE_DETDESCR_DETECTORSERVICEIMPL_H_ */
+#endif /* DETDESCR_DETECTORSERVICEIMPL_H_ */

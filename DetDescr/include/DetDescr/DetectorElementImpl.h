@@ -7,13 +7,41 @@
 #ifndef DETDESCR_DETECTORELEMENTIMPL_H_
 #define DETDESCR_DETECTORELEMENTIMPL_H_
 
+// ROOT
+#include "TGeoNode.h"
+#include "TGeoVolume.h"
+#include "TGeoManager.h"
+
+// LDMX
+#include "DetDescr/DetectorElement.h"
+#include "DetDescr/DetectorID.h"
+
 namespace ldmx {
+
+    class DetectorDataService;
 
     class DetectorElementImpl : public DetectorElement {
 
         public:
 
-            void setup(DetectorDataService* svc) {
+            /**
+             * Class constructor.
+             *
+             * @note
+             * Sets up this DetectorElement with the given parent (can be null)
+             * and support (can also be null).
+             *
+             * @note
+             * It sets the parent DE on this object, and it will
+             * also add this object as a child of the parent, if the
+             * parent is not null.
+             */
+            DetectorElementImpl(DetectorElementImpl* parent, TGeoNode* support = nullptr) {
+                parent_ = parent;
+                if (parent_ != nullptr) {
+                    parent_->addChild(this);
+                }
+                support_ = support;
             }
 
             TGeoNode* getSupport() {
@@ -56,16 +84,19 @@ namespace ldmx {
                 return detID_;
             }
 
-        private:
+            const std::string& getName() {
+                return name_;
+            }
 
-            TGeoNode* support_;
+        protected:
+
+            TGeoNode* support_{nullptr};
             DetectorElementVector children_;
-            DetectorElement* parent_;
-            DetectorID id_;
-            DetectorID* detID_;
+            DetectorElementImpl* parent_{nullptr};
+            DetectorID::RawValue id_{0};
+            DetectorID* detID_{nullptr};
+            std::string name_;
     };
 }
-
-
 
 #endif /* DETDESCR_DETECTORELEMENTIMPL_H_ */

@@ -1,6 +1,6 @@
 /*
  * DetectorElement.h
- * @brief
+ * @brief An identifiable component in the detector hierarchy such as a layer in a subdetector
  * @author JeremyMcCormick, SLAC
  */
 
@@ -36,10 +36,9 @@ namespace ldmx {
             virtual DetectorID::RawValue getID() = 0;
 
             virtual DetectorID* getDetectorID() = 0;
+
+            virtual const std::string& getName() = 0;
     };
 }
 
-
-
-
-#endif /* INCLUDE_DETDESCR_DETECTORELEMENT_H_ */
+#endif /* DETDESCR_DETECTORELEMENT_H_ */
