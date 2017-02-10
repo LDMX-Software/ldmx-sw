@@ -5,8 +5,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMPLUGINS_TARGETPHOTONUCLEARBIASINGPLUGIN_H_
-#define SIMPLUGINS_TARGETPHOTONUCLEARBIASINGPLUGIN_H_
+#ifndef SIMPLUGINS_TARGETPROCESSFILTER_H_
+#define SIMPLUGINS_TARGETPROCESSFILTER_H_
 
 // Geant4
 #include "G4RunManager.hh"
@@ -76,4 +76,4 @@ class TargetProcessFilter : public UserActionPlugin {
 
 }
 
-#endif // SIMPLUGINS_TARGETPHOTONUCLEARBIASINGPLUGIN_H__
+#endif // SIMPLUGINS_TARGETPROCESSFILTER_H__
