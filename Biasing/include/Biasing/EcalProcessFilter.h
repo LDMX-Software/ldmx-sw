@@ -1,5 +1,5 @@
 /**
- * @file ECalPhotonuclearBiasing.cxx
+ * @file EcalProcessFilter.h
  * @brief User action plugin that biases Geant4 to only process events which
  *        involve a photonuclear reaction in the ECal.
  * @author Omar Moreno
@@ -18,6 +18,7 @@
 //   LDMX   //
 //----------//
 #include "SimPlugins/UserActionPlugin.h"
+#include "Biasing/BiasingMessenger.h"
 
 namespace ldmx {
 
@@ -40,24 +41,9 @@ namespace ldmx {
                 return true;
             }
 
-            bool hasStackingAction() { 
-                return true;
-            }
-
             void stepping(const G4Step* step);
 
-            G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track*, const G4ClassificationOfNewTrack&);
-
         private:
-
-            /** */
-            G4Track* targetGamma{nullptr};
-
-            /** The volume name of the LDMX target. */
-            G4String targetVolumeName_{"target_PV"};
-
-            /** The volume name of the ECal */
-            G4String ecalVolumeName_{"em_calorimeters_PV"};
 
             /** Brem photon energy threshold */
             double photonEnergyThreshold_{2500}; // MeV
