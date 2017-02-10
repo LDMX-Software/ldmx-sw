@@ -31,12 +31,6 @@ class TrackMap {
         typedef std::map<G4int, G4int> TrackIDMap;
 
         /**
-         * Get the global instance of the map.
-         * @return The global instance of the map.
-         */
-        static TrackMap* getInstance();
-
-        /**
          * Add a record in the map connecting a track ID to its parent ID.
          * @param trackID The track ID.
          * @param parentID The parent track ID.
