@@ -138,7 +138,9 @@ void RootPersistencyManager::writeHeader(const G4Event* anEvent, Event* outputEv
     if (anEvent->GetPrimaryVertex(0)) {
         eventHeader.setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
     }
-    eventHeader.setSeeds( getEventSeeds() );
+
+    std::string seedString = getEventSeeds();
+    eventHeader.setStringParameter( "eventSeed", seedString );
 
     if (m_verbose > 1) {
         std::cout << "[ RootPersistencyManager ] : Wrote event header for event ID " << anEvent->GetEventID() << std::endl;
@@ -147,22 +149,13 @@ void RootPersistencyManager::writeHeader(const G4Event* anEvent, Event* outputEv
     }
 }
 
-std::vector<long> RootPersistencyManager::getEventSeeds(std::string fileName){
+std::string RootPersistencyManager::getEventSeeds(std::string fileName){
 
-    std::vector<long> currentSeeds{};
-    std::ifstream infile(fileName);
-    std::string line;
-    int ctr = 0;
-    while (std::getline(infile, line))
-    {
-        if (ctr > 0){
-            int i_line = std::stol( line );
-            currentSeeds.push_back(i_line);
-        }
-        ctr++;
-    }
+    std::ifstream t(fileName);
+    std::stringstream buffer;
+    buffer << t.rdbuf();
 
-    return currentSeeds;
+    return buffer.str();
 }
 
 

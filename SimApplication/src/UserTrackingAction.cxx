@@ -25,6 +25,8 @@ UserTrackingAction::~UserTrackingAction() {
 
 void UserTrackingAction::PreUserTrackingAction(const G4Track* aTrack) {
 
+    // std::cout << " ... in PreUserTrackingAction ... " << std::endl;
+
     // Check if trajectory storage should be turned on or off.
     UserRegionInformation* regionInfo =
             (UserRegionInformation*) aTrack->GetLogicalVolumeAtVertex()->GetRegion()->GetUserInformation();
