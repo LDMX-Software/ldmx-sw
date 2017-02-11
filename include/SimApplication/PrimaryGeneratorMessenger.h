@@ -57,6 +57,16 @@ class PrimaryGeneratorMessenger : public G4UImessenger {
          * The command for opening LHE files.
          */
         G4UIcommand* lheOpenCmd_;
+
+        /**
+         * The LHE generator macro directory.
+         */
+        G4UIdirectory* rootDir_;
+
+        /**
+         * The command for opening LHE files.
+         */
+        G4UIcommand* rootOpenCmd_;        
 };
 
 }
