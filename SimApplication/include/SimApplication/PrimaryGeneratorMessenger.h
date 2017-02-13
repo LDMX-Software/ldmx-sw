@@ -9,6 +9,7 @@
 
 // Geant4
 #include "G4UImessenger.hh"
+#include "G4UIcmdWithoutParameter.hh"
 
 // LDMX
 #include "SimApplication/PrimaryGeneratorAction.h"
@@ -41,6 +42,10 @@ class PrimaryGeneratorMessenger : public G4UImessenger {
          */
         void SetNewValue(G4UIcommand* command, G4String newValues);
 
+        /** 
+        */
+        static bool useRootSeed() { return useRootSeed_; };
+
     private:
 
         /**
@@ -64,9 +69,19 @@ class PrimaryGeneratorMessenger : public G4UImessenger {
         G4UIdirectory* rootDir_;
 
         /**
-         * The command for opening LHE files.
+         * The command for opening Root files.
          */
         G4UIcommand* rootOpenCmd_;        
+
+        /**
+         * The command for opening Root files.
+         */
+        G4UIcmdWithoutParameter* rootUseSeedCmd_{new G4UIcmdWithoutParameter{"/ldmx/generators/root/useSeed", this}};
+
+        /**
+         */
+        static bool useRootSeed_;
+
 };
 
 }

@@ -28,7 +28,9 @@ void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
 	// G4Random::showEngineStatus();
 	// G4Random::saveEngineStatus();
 	// G4Random::getTheEngine();
-	// G4Random::restoreEngineStatus("currentEvent1.rndm"); // this line will be needed to read in a set of seeds
+    std::cout << "in UserEventAction::BeginOfEventAction, " << PrimaryGeneratorMessenger::useRootSeed() << std::endl;
+	// if (PrimaryGeneratorMessenger::useRootSeed()) G4Random::restoreEngineStatus("currentEvent-test.rndm"); // this line will be needed to read in a set of seeds
+    if (PrimaryGeneratorMessenger::useRootSeed()) G4Random::restoreEngineStatus("tmpEvent.rndm"); // this line will be needed to read in a set of seeds
 
     pluginManager_->beginEvent(anEvent);
 }

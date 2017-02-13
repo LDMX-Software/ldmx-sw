@@ -9,7 +9,15 @@
 
 // Geant4
 #include "G4VPrimaryGenerator.hh"
+#include "TFile.h"
+#include "TTree.h"
+#include "TClonesArray.h"
+#include "TVector3.h"
+#include <fstream>
+#include <iostream>
 
+
+#include "Event/EventHeader.h"
 
 namespace ldmx {
 
@@ -41,9 +49,36 @@ class RootPrimaryGenerator : public G4VPrimaryGenerator {
     private:
 
         /**
-         * The LHE reader with the event data.
+         * The root filename
          */
         G4String filename_;
+
+        /**
+         * The root file
+         */
+        TFile* ifile_;
+
+        /**
+         * The ldmx root tree
+         */
+        TTree* itree_; 
+
+        /**
+         * The sim particles
+         */
+        TClonesArray* simParticles_;     
+
+        /**
+         * The event header
+         */
+        ldmx::EventHeader* eventHeader_;     
+
+        /**
+         * The event counter
+         */
+        int evtCtr_;
+
+
 };
 
 }
