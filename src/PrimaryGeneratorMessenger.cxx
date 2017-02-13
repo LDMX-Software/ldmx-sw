@@ -6,6 +6,8 @@
 
 namespace ldmx {
 
+bool PrimaryGeneratorMessenger::useRootSeed_{false}; 
+
 PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* thePrimaryGeneratorAction) :
     primaryGeneratorAction_(thePrimaryGeneratorAction) {
 
@@ -27,6 +29,8 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* the
     rootOpenCmd_->SetParameter(rootfilename);
     rootOpenCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
 
+    rootUseSeedCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
+    
 }
 
 PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger() {
@@ -42,6 +46,9 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newVa
         primaryGeneratorAction_->setPrimaryGenerator(
                 new RootPrimaryGenerator( newValues ) );
     }    
+    if (command == rootUseSeedCmd_){
+        useRootSeed_ = true;
+    }
 }
 
 }
