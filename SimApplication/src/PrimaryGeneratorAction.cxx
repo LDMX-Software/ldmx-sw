@@ -43,6 +43,19 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
 
     // Activate the plugin manager hook.        
     pluginManager_->generatePrimary(event);
+
+    // ..... validation ..... 
+    std::cout << "[PrimaryGeneratorAction::GeneratePrimaries]validating the gun" << std::endl;
+    int nPV = event->GetNumberOfPrimaryVertex();
+    for (int iPV = 0; iPV < nPV; ++iPV){
+        G4PrimaryVertex* curPV =  event->GetPrimaryVertex(iPV);
+        int nPar = curPV->GetNumberOfParticle();            
+        for (int iPar = 0; iPar < nPar; ++iPar){
+            std::cout << "pv/primary = " << iPV << "," << iPar << std::endl;
+        }
+    }
+
+
 }
 
 }
