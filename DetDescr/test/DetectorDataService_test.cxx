@@ -4,6 +4,7 @@ using namespace ldmx;
 
 #include "DetDescr/EcalDetectorElement.h"
 #include "DetDescr/HcalDetectorElement.h"
+#include "DetDescr/RecoilTrackerDetectorElement.h"
 #include "DetDescr/TaggerDetectorElement.h"
 
 #include <iostream>
@@ -68,10 +69,13 @@ int main(int, const char* argv[])  {
                     << ((TaggerLayer*)recoilTrackerLayer)->getLayerNumber()
                     << std::endl;
         } else {
-            std::cout << "  " << recoilTrackerLayer->getName() << std::endl;
+            std::cout << "  " << recoilTrackerLayer->getName() << " with layer num "
+                    << ((TaggerLayer*)recoilTrackerLayer)->getLayerNumber() << std::endl;
             for (auto recoilSensor : recoilTrackerLayer->getChildren()) {
                 std::cout << "    " << recoilSensor->getName() << " with support "
-                        << recoilSensor->getSupport()->GetName() << std::endl;
+                        << recoilSensor->getSupport()->GetName() << " and sensor num "
+                        << ((RecoilTrackerSensor*)recoilSensor)->getSensorNumber()
+                        << std::endl;
             }
         }
     }
