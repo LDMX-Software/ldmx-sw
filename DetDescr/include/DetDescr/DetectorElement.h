@@ -38,6 +38,8 @@ namespace ldmx {
             virtual DetectorID* getDetectorID() = 0;
 
             virtual const std::string& getName() = 0;
+
+            virtual DetectorElement* findChild(std::string name) = 0;
     };
 }
 
