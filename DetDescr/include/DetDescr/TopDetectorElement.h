@@ -16,6 +16,14 @@ namespace ldmx {
         public:
 
             TopDetectorElement(TGeoNode* support);
+
+            //EcalDetectorElement* getEcal();
+
+            //HcalDetectorElement* getHcal();
+
+            //TaggerDetectorElement* getTagger();
+
+            //RecoilTrackerDetectorElement* getRecoilTracker();
     };
 }
 

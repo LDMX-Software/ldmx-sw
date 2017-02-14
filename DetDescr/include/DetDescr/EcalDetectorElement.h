@@ -7,28 +7,20 @@
 #ifndef ECALDETECTORELEMENT_H_
 #define DETDESCR_ECALDETECTORELEMENT_H_
 
+// LDMX
 #include "DetDescr/DetectorElementImpl.h"
 
+// STL
+#include <sstream>
 #include <string>
 
 namespace ldmx {
-
-    class EcalDetectorElement : public DetectorElementImpl {
-
-        public:
-
-            EcalDetectorElement(DetectorElementImpl* parent);
-    };
 
     class EcalLayer : public DetectorElementImpl {
 
         public:
 
-            EcalLayer(EcalDetectorElement* ecal, TGeoNode* support, int layerNumber) : DetectorElementImpl(ecal) {
-                support_ = support;
-                layerNumber_ = layerNumber;
-                name_ = "EcalLayer" + std::to_string(layerNumber);
-            }
+            EcalLayer(DetectorElementImpl* ecal, TGeoNode* support, int layerNumber);
 
             int getLayerNumber() {
                 return layerNumber_;
@@ -39,9 +31,15 @@ namespace ldmx {
             int layerNumber_{-1};
 
     };
+
+    class EcalDetectorElement : public DetectorElementImpl {
+
+        public:
+
+            EcalDetectorElement(DetectorElementImpl* parent);
+
+            EcalLayer* getEcalLayer(int num);
+    };
 }
-
-
-
 
 #endif /* DETDESCR_ECALDETECTORELEMENT_H_ */
