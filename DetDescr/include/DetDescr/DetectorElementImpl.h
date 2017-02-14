@@ -26,22 +26,36 @@ namespace ldmx {
 
             /**
              * Class constructor.
+             * @param parent The parent DetectorElement of this one.
+             * @param support The TGeoNode pointing to the physical geometry node.
              *
              * @note
-             * Sets up this DetectorElement with the given parent (can be null)
-             * and support (can also be null).
+             * Sets up this DetectorElement with the given parent and support.
+             * By default, these arguments are both set to null.
              *
              * @note
              * It sets the parent DE on this object, and it will
              * also add this object as a child of the parent, if the
              * parent is not null.
              */
-            DetectorElementImpl(DetectorElementImpl* parent, TGeoNode* support = nullptr) {
+            DetectorElementImpl(DetectorElementImpl* parent = nullptr, TGeoNode* support = nullptr) {
                 parent_ = parent;
                 if (parent_ != nullptr) {
                     parent_->addChild(this);
                 }
                 support_ = support;
+            }
+
+            virtual ~DetectorElementImpl() {
+                // Each DE is responsible for deleting all of its children.
+                for (auto child : children_) {
+                    delete child;
+                }
+
+                // Delete the detector ID.
+                if (detID_) {
+                    delete detID_;
+                }
             }
 
             TGeoNode* getSupport() {
@@ -81,11 +95,34 @@ namespace ldmx {
             }
 
             DetectorID* getDetectorID() {
-                return detID_;
+                if (detID_) {
+                    return detID_;
+                } else {
+                    if (parent_) {
+                        return parent_->getDetectorID();
+                    } else {
+                        return nullptr;
+                    }
+                }
             }
 
             const std::string& getName() {
                 return name_;
+            }
+
+            void setName(std::string name) {
+                name_ = name;
+            }
+
+            DetectorElement* findChild(std::string name) {
+                DetectorElement* foundChild = nullptr;
+                for (auto child : children_) {
+                    if (!child->getName().compare(name)) {
+                        foundChild = child;
+                        break;
+                    }
+                }
+                return foundChild;
             }
 
         protected:
