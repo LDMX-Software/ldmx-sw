@@ -26,7 +26,10 @@ namespace ldmx {
 
             typedef std::map<std::string, std::string> DetectorAliasMap;
 
-            virtual ~DetectorDataServiceImpl() {;}
+            virtual ~DetectorDataServiceImpl() {
+                delete topDE_;
+                delete geoManager_;
+            }
 
             DetectorDataServiceImpl() {
                 setupLocalAliases();
