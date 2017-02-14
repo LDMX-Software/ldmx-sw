@@ -9,6 +9,8 @@
 
 #include "TGeoNode.h"
 
+#include <string>
+
 namespace ldmx {
 
     class GeometryUtil {
@@ -57,6 +59,21 @@ namespace ldmx {
                 return dauVec;
             }
 
+            /**
+             * Strip a name pointer from a name.  These are nine characters
+             * strings starting with '0x' that are sometimes added to GDML
+             * names by Geant4.
+             * @param name Name string from which to strip pointer (in place).
+             *
+             * @note I hope you don't use the string '0x' in volume names or
+             * this will screw them up!
+             */
+            static void stripNamePointer(std::string& name) {
+                std::string::size_type i = name.find("0x");
+                if (i) {
+                    name.erase(i, 9);
+                }
+            }
     };
 
 }
