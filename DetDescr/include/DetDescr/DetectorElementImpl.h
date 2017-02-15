@@ -41,10 +41,12 @@ namespace ldmx {
              * parent is not null.
              */
             DetectorElementImpl(DetectorElementImpl* parent = nullptr, TGeoNode* support = nullptr) {
+
                 parent_ = parent;
                 if (parent_ != nullptr) {
                     parent_->addChild(this);
                 }
+
                 support_ = support;
             }
 
@@ -152,6 +154,26 @@ namespace ldmx {
                 return foundChild;
             }
 
+            /**
+             * Set the global position of the DetectorElement.
+             * @param x The X position.
+             * @param y The Y position.
+             * @param z The Z position.
+             */
+            void setGlobalPosition(double x, double y, double z) {
+                globalPosition_[0] = x;
+                globalPosition_[1] = y;
+                globalPosition_[2] = z;
+            }
+
+            /**
+             * Get the global position of this DetectorElement as vector of doubles.
+             * @return The global position of this DetectorElement.
+             */
+            virtual const std::vector<double>& getGlobalPosition() {
+                return globalPosition_;
+            }
+
         protected:
 
             /**
@@ -183,6 +205,9 @@ namespace ldmx {
 
             /** The name of the DetectorElement. */
             std::string name_;
+
+            /** Global position of this DetectorElement. */
+            std::vector<double> globalPosition_{0, 0, 0};
     };
 }
 
