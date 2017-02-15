@@ -21,6 +21,7 @@
 #pragma link C++ class ldmx::EcalHit+;
 #pragma link C++ class ldmx::EventConstants+;
 #pragma link C++ class ldmx::EventHeader+;
+#pragma link C++ class ldmx::FindableTrackResult+;
 #pragma link C++ class ldmx::RunHeader+;
 #pragma link C++ class ldmx::SimCalorimeterHit+;
 #pragma link C++ class ldmx::SimTrackerHit+;
