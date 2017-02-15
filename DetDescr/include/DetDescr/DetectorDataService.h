@@ -1,27 +1,47 @@
 /*
  * DetectorDataSerivce.h
- * @brief Service for loading detector data at runtime
+ * @brief Class providing a service for loading detector data at runtime
  * @author JeremyMcCormick, SLAC
  */
 
 #ifndef DETDESCR_DETECTORDATASERIVCE_H_
 #define DETDESCR_DETECTORDATASERIVCE_H_
 
-// ROOT
-#include "TGeoManager.h"
+class TGeoManager;
 
 namespace ldmx {
 
+    /**
+     * @class DetectorDataService
+     * @brief Provides an API for accessing detector data at runtime through the DetectorElement interface
+     *
+     * @note
+     * Access to the backing ROOT geometry manager is also provided.
+     */
     class DetectorDataService {
 
         public:
 
+            /**
+             * Class destructor.
+             */
             virtual ~DetectorDataService() {;}
 
+            /**
+             * Get the backing TGeoManager with the physical geometry.
+             * @return The backing TGeoManager.
+             */
             virtual TGeoManager* getGeometryManager() = 0;
 
+            /**
+             * Get the top DetectorElement in the hierarchy.
+             * @return The top top DetectorElement in the hierarchy.
+             */
             virtual DetectorElement* getTopDetectorElement() = 0;
 
+            /**
+             * Initialize the geometry.
+             */
             virtual void initialize() = 0;
     };
 }

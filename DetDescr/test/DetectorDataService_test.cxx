@@ -1,13 +1,21 @@
+/*
+ * DetectorDataService_test.cxx
+ * @brief Loads detector data and prints out DetectorElement information from the hierarchy
+ * @author JeremyMcCormick, SLAC
+ */
+
+// LDMX
 #include "DetDescr/DetectorDataServiceImpl.h"
-
-using namespace ldmx;
-
 #include "DetDescr/EcalDetectorElement.h"
 #include "DetDescr/HcalDetectorElement.h"
 #include "DetDescr/RecoilTrackerDetectorElement.h"
 #include "DetDescr/TaggerDetectorElement.h"
+#include "DetDescr/TargetDetectorElement.h"
 
+// STL
 #include <iostream>
+
+using namespace ldmx;
 
 int main(int, const char* argv[])  {
 
@@ -63,7 +71,7 @@ int main(int, const char* argv[])  {
     DetectorElement* recoilTracker = top->findChild("RecoilTracker");
     std::cout << "Got 'RecoilTracker' DE with support " << recoilTracker->getSupport()->GetName() << "'" << std::endl;
     for (auto recoilTrackerLayer : recoilTracker->getChildren()) {
-        if (recoilTrackerLayer->hasSupport()) {
+        if (recoilTrackerLayer->getSupport()) {
             std::cout << "  " << recoilTrackerLayer->getName() << " with support "
                     << recoilTrackerLayer->getSupport()->GetName() << " and layer num "
                     << ((TaggerLayer*)recoilTrackerLayer)->getLayerNumber()
@@ -79,6 +87,11 @@ int main(int, const char* argv[])  {
             }
         }
     }
+
+    // Print target info.
+    DetectorElement* target = top->findChild("Target");
+    std::cout << "Got 'Target' DE with support " << target->getSupport()->GetName() << "'" << std::endl;
+    std::cout << "  targetThickness = " << ((TargetDetectorElement*)target)->getTargetThickness() << std::endl;
 
     // Destroy the service object, which will delete the DetectorElement tree and the ROOT geometry manager.
     delete svc;

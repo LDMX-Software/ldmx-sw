@@ -1,8 +1,11 @@
 #include "DetDescr/TaggerDetectorElement.h"
 
+// LDMX
 #include "DetDescr/GeometryUtil.h"
 
+// STL
 #include <iostream>
+#include <sstream>
 
 namespace ldmx {
 
@@ -19,5 +22,14 @@ namespace ldmx {
         for (auto layerNode : layerVec) {
             new TaggerLayer(this, layerNode);
         }
+    }
+
+    TaggerLayer::TaggerLayer(DetectorElementImpl* tagger, TGeoNode* support) : DetectorElementImpl(tagger, support) {
+
+        layerNumber_ = support->GetNumber();
+
+        std::stringstream ss;
+        ss << std::setfill('0') << std::setw(2) << layerNumber_;
+        name_ = "TaggerLayer" + ss.str();
     }
 }

@@ -1,6 +1,6 @@
 /*
  * DetectorElementImpl.h
- * @brief Implementation of DetectorElement class
+ * @brief Implementation of DetectorElement interface
  * @author JeremyMcCormick, SLAC
  */
 
@@ -18,8 +18,10 @@
 
 namespace ldmx {
 
-    class DetectorDataService;
-
+    /**
+     * @class DetectorElementImpl
+     * @brief Implements the DetectorElement interface
+     */
     class DetectorElementImpl : public DetectorElement {
 
         public:
@@ -46,6 +48,10 @@ namespace ldmx {
                 support_ = support;
             }
 
+            /**
+             * Class destructor.
+             * @note Deletes child DetectorElement objects and the DetectorID.
+             */
             virtual ~DetectorElementImpl() {
                 // Each DE is responsible for deleting all of its children.
                 for (auto child : children_) {
@@ -58,30 +64,36 @@ namespace ldmx {
                 }
             }
 
+            /**
+             * Get the geometry node corresponding to this component.
+             * @return The geometry node corresponding to this component.
+             * @note This can be null if the component is a container only
+             * with no corresponding node in the geometry.
+             */
             TGeoNode* getSupport() {
                 return support_;
             }
 
-            void setSupport(TGeoNode* support) {
-                support_ = support;
-            }
-
-            bool hasSupport() {
-                return support_ != nullptr;
-            }
-
+            /**
+             * Get the list of child DetectorElement objects.
+             * @return The list of child DetectorElement objects.
+             */
             const DetectorElementVector& getChildren() {
                 return children_;
             }
 
-            void addChild(DetectorElement* child) {
-                children_.push_back(child);
-            }
-
+            /**
+             * Get the parent DetectorElement containing this one.
+             * @return The parent DetectorElement containing this one.
+             */
             DetectorElement* getParent() {
                 return parent_;
             }
 
+            /**
+             * Get the volume of the geometry node.
+             * @return The volume of the geometry node.
+             */
             TGeoVolume* getVolume() {
                 if (support_) {
                     return support_->GetVolume();
@@ -90,10 +102,18 @@ namespace ldmx {
                 }
             }
 
+            /**
+             * Get the raw ID assigned to this component.
+             * @return The raw ID assigned to this component.
+             */
             DetectorID::RawValue getID() {
                 return id_;
             }
 
+            /**
+             * Get the ID decoder assigned to this component.
+             * @return The ID decoder assigned to this component.
+             */
             DetectorID* getDetectorID() {
                 if (detID_) {
                     return detID_;
@@ -106,14 +126,21 @@ namespace ldmx {
                 }
             }
 
+            /**
+             * Get the name of the DetectorElement.
+             * @return The name of the DetectorElement.
+             */
             const std::string& getName() {
                 return name_;
             }
 
-            void setName(std::string name) {
-                name_ = name;
-            }
-
+            /**
+             * Find the first child with a given name.
+             * @param name The first child with a given name.
+             * @note This should return one and only one
+             * DetectorElement provided the child names
+             * are unique.
+             */
             DetectorElement* findChild(std::string name) {
                 DetectorElement* foundChild = nullptr;
                 for (auto child : children_) {
@@ -127,11 +154,34 @@ namespace ldmx {
 
         protected:
 
+            /**
+             * Add a child DetectorElement to this one.
+             * @param The child DetectorElement.
+             * @note This does not set the parent link of
+             * the child, which must be done separately.
+             */
+            void addChild(DetectorElement* child) {
+                children_.push_back(child);
+            }
+
+        protected:
+
+            /** The backing geometry node. */
             TGeoNode* support_{nullptr};
+
+            /** The collection of child DetectorElement objects. */
             DetectorElementVector children_;
+
+            /** The parent DetectorElement. */
             DetectorElementImpl* parent_{nullptr};
+
+            /** The component's raw ID value. */
             DetectorID::RawValue id_{0};
+
+            /** The detector ID decoder. */
             DetectorID* detID_{nullptr};
+
+            /** The name of the DetectorElement. */
             std::string name_;
     };
 }

@@ -13,10 +13,19 @@
 
 namespace ldmx {
 
+    /**
+     * @class GeometryUtil
+     * @brief Miscellaneous static geometry utility functions
+     */
     class GeometryUtil {
 
         private:
 
+            /**
+             * Class constructor.
+             *
+             * @note Made private to disallow class instantiation.
+             */
             GeometryUtil() {;}
 
         public:

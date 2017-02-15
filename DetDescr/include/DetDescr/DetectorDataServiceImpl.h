@@ -1,6 +1,6 @@
 /*
  * DetectorServiceImpl.h
- * @brief Simple detector service implementation for loading GDML files into ROOT
+ * @brief Class implementing the DetectorDataService
  * @author JeremyMcCormick, SLAC
  */
 
@@ -18,19 +18,35 @@ namespace ldmx {
 
     /**
      * @class DetectorDataServiceImpl
-     * @brief Implements a simple service for loading GDML files into ROOT
+     * @brief Implements the DetectorDataService for accessing detector data at runtime
      */
     class DetectorDataServiceImpl : public DetectorDataService {
 
         public:
 
+            /**
+             * Map of detector names to their physical resources on disk.
+             */
             typedef std::map<std::string, std::string> DetectorAliasMap;
 
+            /**
+             * Class destructor.
+             *
+             * @note
+             * Deletes the DetectorElement hierarchy and the ROOT geometry manager.
+             */
             virtual ~DetectorDataServiceImpl() {
                 delete topDE_;
                 delete geoManager_;
             }
 
+            /**
+             * Class constructor.
+             *
+             * @note
+             * Builds the cache of names to local aliases, which are file system paths of
+             * full detector GDML files.
+             */
             DetectorDataServiceImpl() {
                 setupLocalAliases();
             }
@@ -90,9 +106,16 @@ namespace ldmx {
 
         private:
 
+            /** Name of the current detector. */
             std::string detectorName_;
+
+            /** Map of names to detector locations (GDML files). */
             DetectorAliasMap aliasMap_;
+
+            /** The currently active geometry manager. */
             TGeoManager* geoManager_{nullptr};
+
+            /** The top DetectorElement providing access to the hierarchy. */
             DetectorElementImpl* topDE_{nullptr};
     };
 }

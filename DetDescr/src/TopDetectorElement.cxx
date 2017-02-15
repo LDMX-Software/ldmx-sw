@@ -1,11 +1,13 @@
 #include "DetDescr/TopDetectorElement.h"
 
+// LDMX
 #include "DetDescr/DetectorDataService.h"
 #include "DetDescr/DefaultDetectorID.h"
 #include "DetDescr/EcalDetectorElement.h"
 #include "DetDescr/HcalDetectorElement.h"
 #include "DetDescr/RecoilTrackerDetectorElement.h"
 #include "DetDescr/TaggerDetectorElement.h"
+#include "DetDescr/TargetDetectorElement.h"
 
 #include <iostream>
 
@@ -19,14 +21,14 @@ namespace ldmx {
         // Create default detector ID.
         detID_ = new DefaultDetectorID();
 
-        // Create DEs for top-level detector components.
+        // Create top-level detector components.
         new EcalDetectorElement(this);
         new HcalDetectorElement(this);
         new TaggerDetectorElement(this);
         new RecoilTrackerDetectorElement(this);
+        new TargetDetectorElement(this);
 
         // TODO: Add DE for...
-        // Target
         // TriggerPad
     }
 }

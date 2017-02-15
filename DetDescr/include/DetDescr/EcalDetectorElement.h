@@ -1,6 +1,6 @@
 /*
  * EcalDetectorElement.h
- * @brief
+ * @brief Class providing a DetectorElement for the ECal
  * @author JeremyMcCormick, SLAC
  */
 
@@ -10,35 +10,59 @@
 // LDMX
 #include "DetDescr/DetectorElementImpl.h"
 
-// STL
-#include <sstream>
-#include <string>
-
 namespace ldmx {
 
+    /**
+     * @class EcalLayer
+     * @brief DetectorElement for ECal layers
+     */
     class EcalLayer : public DetectorElementImpl {
 
         public:
 
-            EcalLayer(DetectorElementImpl* ecal, TGeoNode* support, int layerNumber);
+            /**
+             * Class constructor.
+             * @param parent The parent DetectorElement.
+             * @param support The geometric support.
+             * @note The layer number is read from the node's copy number.
+             */
+            EcalLayer(DetectorElementImpl* parent, TGeoNode* support);
 
+            /**
+             * Get the layer number.
+             * @return The layer number.
+             */
             int getLayerNumber() {
                 return layerNumber_;
             }
 
         private:
 
+            /** The layer number. */
             int layerNumber_{-1};
 
     };
 
+    /**
+     * @class EcalDetectorElement
+     * @brief The top-level DetectorElement for the ECal.
+     */
     class EcalDetectorElement : public DetectorElementImpl {
 
         public:
 
+            /**
+             * Class constructor.
+             * @param parent The parent DetectorElement.
+             */
             EcalDetectorElement(DetectorElementImpl* parent);
 
-            EcalLayer* getEcalLayer(int num);
+            /**
+             * Get the EcalLayer object by its layer number.
+             * @param layerNumber The layer number.
+             * @note The layers are numbered from 1, not 0.
+             */
+            EcalLayer* getEcalLayer(int layerNumber);
     };
 }
 

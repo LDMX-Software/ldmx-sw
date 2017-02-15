@@ -1,6 +1,6 @@
 /*
  * TaggerDetectorElement.h
- * @brief
+ * @brief Class defining top level DetectorElement for the Tagger
  * @author JeremyMcCormick, SLAC
  */
 
@@ -9,39 +9,54 @@
 
 #include "DetDescr/DetectorElementImpl.h"
 
-#include <sstream>
-
 namespace ldmx {
 
+    /**
+     * @class TaggerDetectorElement
+     * @brief Defines top level DetectorElement for the Tagger
+     */
     class TaggerDetectorElement : public DetectorElementImpl {
 
         public:
 
+            /**
+             * Class constructor.
+             * @param parent The parent DetectorElement.
+             */
             TaggerDetectorElement(DetectorElementImpl* parent);
     };
 
+
+    /**
+     * @class TaggerLayer
+     * @brief DetectorElement representing a layer in the Tagger
+     */
     class TaggerLayer : public DetectorElementImpl {
 
         public:
 
-            TaggerLayer(DetectorElementImpl* tagger, TGeoNode* support) : DetectorElementImpl(tagger, support) {
+            /**
+             * Class constructor.
+             * @param parent The parent DetectorElement.
+             * @param support The geomtric support.
+             * @note The layer number is read from the support's copy number.
+             */
+            TaggerLayer(DetectorElementImpl* parent, TGeoNode* support);
 
-                layerNumber_ = support->GetNumber();
-
-                std::stringstream ss;
-                ss << std::setfill('0') << std::setw(2) << layerNumber_;
-                name_ = "TaggerLayer" + ss.str();
-            }
-
+            /**
+             * Get the layer number.
+             * @return The layer number.
+             * @note The layer numbers are numbered from 1, not 0.
+             */
             int getLayerNumber() {
                 return layerNumber_;
             }
 
         private:
 
+            /** The layer number. */
             int layerNumber_{-1};
     };
 }
-
 
 #endif /* DETDESCR_TAGGERDETECTORELEMENT_H_ */

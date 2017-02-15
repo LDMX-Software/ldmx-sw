@@ -1,19 +1,21 @@
 #include "DetDescr/EcalDetectorElement.h"
 
+// LDMX
 #include "DetDescr/DetectorDataService.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/GeometryUtil.h"
 
+// STL
 #include <iostream>
 #include <sstream>
 
 namespace ldmx {
 
-    EcalLayer::EcalLayer(DetectorElementImpl* ecal, TGeoNode* support, int layerNumber) : DetectorElementImpl(ecal, support) {
-        layerNumber_ = layerNumber;
+    EcalLayer::EcalLayer(DetectorElementImpl* parent, TGeoNode* support) : DetectorElementImpl(parent, support) {
+        layerNumber_ = support->GetNumber();
 
         std::stringstream ss;
-        ss << std::setfill('0') << std::setw(2) << layerNumber;
+        ss << std::setfill('0') << std::setw(2) << layerNumber_;
         name_ = "EcalLayer" + ss.str();
     }
 
@@ -31,7 +33,7 @@ namespace ldmx {
         // Add a DE for each ECal active layer.
         auto layerVec = GeometryUtil::findDauNameStartsWith("Si", support_);
         for (auto layerNode : layerVec) {
-            new EcalLayer(this, layerNode, layerNode->GetNumber());
+            new EcalLayer(this, layerNode);
         }
     }
 

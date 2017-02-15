@@ -1,5 +1,9 @@
 #include "DetDescr/DetectorDataServiceImpl.h"
 
+// ROOT
+#include "TGeoManager.h"
+
+// LDMX
 #include "DetDescr/TopDetectorElement.h"
 
 namespace ldmx {
