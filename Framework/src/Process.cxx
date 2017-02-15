@@ -1,9 +1,12 @@
-#include <iostream>
+
+#include "DetDescr/DetectorDataServiceImpl.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/EventImpl.h"
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
 #include "Event/RunHeader.h"
+
+#include <iostream>
 
 namespace ldmx {
 
@@ -91,15 +94,33 @@ void Process::run() {
                 }
                 EventFile* masterFile = (outFile) ? (outFile) : (&inFile);
 
+                std::string detectorName;
                 while (masterFile->nextEvent() && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
                     // notify for new run if necessary
                     if (theEvent.getEventHeader()->getRun() != wasRun) {
                         wasRun = theEvent.getEventHeader()->getRun();
                         try {
+
+                            // Check if run changed.
                             const RunHeader& runHeader = inFile.getRunHeader(wasRun);
                             runHeader.Print();
                             for (auto module : sequence_) {
                                 module->onNewRun(runHeader);
+                            }
+
+                            // Check if detector data needs to be loaded.
+                            if (detectorName.empty() || runHeader.getDetectorName() != detectorName) {
+                                detectorName = runHeader.getDetectorName();
+                                if (detectorService_) {
+                                    delete detectorService_;
+                                }
+                                detectorService_ = new DetectorDataServiceImpl();
+                                detectorService_->setDetectorName(detectorName);
+                                detectorService_->initialize();
+
+                                for (auto module : sequence_) {
+                                    module->onNewDetector(detectorService_);
+                                }
                             }
                         } catch (const Exception&) {
                             std::cout << "Process: WARNING - Run header for run " << wasRun << " was not found in the input file." << std::endl;
@@ -148,16 +169,20 @@ void Process::run() {
 void Process::addToSequence(EventProcessor* mod) {
     sequence_.push_back(mod);
 }
+
 void Process::addFileToProcess(const std::string& filename) {
     inputFiles_.push_back(filename);
 }
+
 void Process::addDropKeepRule(const std::string& rule) {
     dropKeepRules_.push_back(rule);
 }
+
 void Process::setOutputFileName(const std::string& filenameOut) {
     outputFiles_.clear();
     outputFiles_.push_back(filenameOut);
 }
+
 void Process::addOutputFileName(const std::string& filenameOut) {
     outputFiles_.push_back(filenameOut);
 }

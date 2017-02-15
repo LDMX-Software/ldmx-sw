@@ -5,6 +5,9 @@
  */
 
 #include "Framework/EventProcessor.h"
+#include "DetDescr/DetectorDataService.h"
+#include "Event/RunHeader.h"
+
 #include <iostream>
 
 namespace ldmx {
@@ -39,6 +42,14 @@ class DummyAnalyzer : public Analyzer {
 
         virtual void onProcessEnd() {
             std::cout << "DummyAnalyzer: Finishing processing!" << std::endl;
+        }
+
+        virtual void onNewDetector(DetectorDataService* detectorService) {
+            std::cout << "DummyAnalyzer: Got new detector " << detectorService->getDetectorName() << std::endl;
+        }
+
+        virtual void onNewRun(const RunHeader& runHeader) {
+            std::cout << "DummyAnalyzer: Started new run " << runHeader.getRunNumber() << std::endl;
         }
 };
 }

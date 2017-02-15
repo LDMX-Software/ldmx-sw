@@ -18,6 +18,7 @@ namespace ldmx {
 class EventProcessor;
 class EventFile;
 class EventImpl;
+class DetectorDataServiceImpl;
 
 /**
  * @class Process
@@ -104,18 +105,27 @@ class Process {
 
         /** Processing pass name. */
         std::string passname_;
+
         /** Limit on events to process. */
         int eventLimit_{-1};
+
         /** Ordered list of EventProcessors to execute. */
         std::vector<EventProcessor*> sequence_;
+
         /** List of input files to process.  May be empty if this Process will generate new events. */
         std::vector<std::string> inputFiles_;
+
         /** List of output file names.  If empty, no output file will be created. */
         std::vector<std::string> outputFiles_;
+
         /** Set of drop/keep rules. */
         std::vector<std::string> dropKeepRules_;
+
         /** Run number to use if generating events. */
         int runForGeneration_{1};
+
+        /** Service providing access to detector data. */
+        DetectorDataServiceImpl* detectorService_{nullptr};
 };
 
 }

@@ -20,6 +20,7 @@ class ParameterSet;
 class Process;
 class EventProcessor;
 class RunHeader;
+class DetectorDataService;
 
 /** Typedef for EventProcessorFactory use. */
 typedef EventProcessor* EventProcessorMaker(const std::string& name, const Process& process);
@@ -63,6 +64,14 @@ class EventProcessor {
          * @param runHeader The RunHeader containing run information.
          */
         virtual void onNewRun(const RunHeader& runHeader) {
+        }
+
+        /**
+         * Callback for when there is new detector data activated.
+         * @param detectorService The DetectorDataService providing the detector data.
+         * @note This is called after the <i>onNewRun()</i> method.
+         */
+        virtual void onNewDetector(DetectorDataService* detectorService) {
         }
 
         /**
