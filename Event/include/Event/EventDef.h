@@ -8,6 +8,7 @@
 #include "Event/Event.h"
 #include "Event/EventConstants.h"
 #include "Event/EventHeader.h"
+#include "Event/FindableTrackResult.h"
 #include "Event/RunHeader.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Event/SimTrackerHit.h"
