@@ -82,6 +82,14 @@ namespace ldmx {
             }
 
             /**
+             * Get the name of the current detector.
+             * @return The name of the current detector.
+             */
+            virtual const std::string& getDetectorName() {
+                return detectorName_;
+            }
+
+            /**
              * Add an alias mapping a detector name to a physical location
              * such as a filesystem path.
              * @param detectorName The name of the detector.

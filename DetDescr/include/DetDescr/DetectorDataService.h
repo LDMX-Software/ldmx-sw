@@ -7,7 +7,9 @@
 #ifndef DETDESCR_DETECTORDATASERIVCE_H_
 #define DETDESCR_DETECTORDATASERIVCE_H_
 
-class TGeoManager;
+#include "TGeoManager.h"
+
+#include "DetDescr/DetectorElement.h"
 
 namespace ldmx {
 
@@ -40,13 +42,16 @@ namespace ldmx {
             virtual DetectorElement* getTopDetectorElement() = 0;
 
             /**
+             * Get the name of the current detector.
+             * @return The name of the current detector.
+             */
+            virtual const std::string& getDetectorName() = 0;
+
+            /**
              * Initialize the geometry.
              */
             virtual void initialize() = 0;
     };
 }
-
-
-
 
 #endif /* DETDESCR_DETECTORDATASERIVCE_H_ */
