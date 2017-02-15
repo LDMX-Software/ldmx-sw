@@ -240,7 +240,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Definition at line <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00027">27</a> of file <a class="el" href="EcalVetoProcessor_8cxx_source.html">EcalVetoProcessor.cxx</a>.</p>
 
-<p>References <a class="el" href="CalorimeterHit_8h_source.html#l00088">ldmx::CalorimeterHit::getEnergy()</a>, <a class="el" href="CalorimeterHit_8h_source.html#l00105">ldmx::CalorimeterHit::getTime()</a>, <a class="el" href="EcalHexReadout_8h_source.html#l00072">ldmx::EcalHexReadout::isInShowerInnerRing()</a>, <a class="el" href="EcalHexReadout_8h_source.html#l00084">ldmx::EcalHexReadout::isInShowerOuterRing()</a>, <a class="el" href="TriggerResult_8cxx_source.html#l00044">ldmx::TriggerResult::set()</a>, and <a class="el" href="TriggerResult_8cxx_source.html#l00054">ldmx::TriggerResult::setAlgoVar()</a>.</p>
+<p>References <a class="el" href="CalorimeterHit_8h_source.html#l00088">ldmx::CalorimeterHit::getEnergy()</a>, <a class="el" href="CalorimeterHit_8h_source.html#l00105">ldmx::CalorimeterHit::getTime()</a>, <a class="el" href="EcalHexReadout_8h_source.html#l00072">ldmx::EcalHexReadout::isInShowerInnerRing()</a>, and <a class="el" href="EcalHexReadout_8h_source.html#l00084">ldmx::EcalHexReadout::isInShowerOuterRing()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                                            {</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    std::vector&lt;float&gt; EcalLayerEdepRaw(NUM_ECAL_LAYERS, 0);</div>
@@ -248,12 +248,12 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    std::vector&lt;float&gt; EcalLayerIsoRaw(NUM_ECAL_LAYERS, 0);</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    std::vector&lt;float&gt; EcalLayerIsoReadout(NUM_ECAL_LAYERS, 0);</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    std::vector&lt;float&gt; EcalLayerTime(NUM_ECAL_LAYERS, 0);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    </div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">const</span> TClonesArray* ecalDigis = <span class="keyword">event</span>.getCollection(<span class="stringliteral">&quot;ecalDigis&quot;</span>);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    </div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="comment">// looper over sim hits</span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordtype">int</span> numEcalHits = ecalDigis-&gt;GetEntriesFast();</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    </div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    std::cout &lt;&lt; <span class="stringliteral">&quot;[ EcalVetoProcessor ] : Got &quot;</span> &lt;&lt; numEcalHits &lt;&lt; <span class="stringliteral">&quot; ECal digis in event &quot;</span> &lt;&lt; <span class="keyword">event</span>.getEventHeader()-&gt;getEventNumber() &lt;&lt; std::endl;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    std::vector&lt;cell_energy_pair&gt; layerMaxCellId(NUM_LAYERS_FOR_MED_CAL, std::make_pair(0, 0));</div>
@@ -306,29 +306,30 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keywordflow">if</span> (iLayer &gt; BACK_ECAL_STARTING_LAYER)</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;            backSummedDep += EcalLayerEdepReadout[iLayer];</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    }</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="comment">/*</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment">     if(verbose){</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment">     std::cout &lt;&lt; &quot;EdepRaw[0] : &quot; &lt;&lt; (*EcalLayerEdepRaw_)[0] &lt;&lt; std::endl;</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment">     std::cout &lt;&lt; &quot;EdepReadout[0] : &quot; &lt;&lt; (*EcalLayerEdepReadout_)[0] &lt;&lt; std::endl;</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">     std::cout &lt;&lt; &quot;EcalLayerIsoRaw[0]: &quot; &lt;&lt; (*EcalLayerIsoRaw_)[0] &lt;&lt; std::endl;</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">     std::cout &lt;&lt; &quot;EcalLayerIsoReadout[0]: &quot; &lt;&lt; (*EcalLayerIsoReadout_)[0] &lt;&lt; std::endl;</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment">     std::cout &lt;&lt; &quot;EcalLayerTime[0]: &quot; &lt;&lt; (*EcalLayerTime_)[0] &lt;&lt; std::endl;</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment">     </span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment">     std::cout &lt;&lt; &quot;Shower Median : &quot; &lt;&lt; showerMedianCellId &lt;&lt; std::endl;</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment">     }// end verbose</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">     */</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    doesPassVeto_ = (summedDep &lt; TOTAL_DEP_CUT &amp;&amp; summedIso &lt; TOTAL_ISO_CUT &amp;&amp; backSummedDep &lt; BACK_ECAL_CUT); <span class="comment">// add ratio cut in at some point</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    result_.<a class="code" href="classldmx_1_1TriggerResult.html#a66ad625eaa94cbf33251b7f7b139d5e0">set</a>(<span class="stringliteral">&quot;EcalVetoV1&quot;</span>, doesPassVeto_, 3);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    result_.<a class="code" href="classldmx_1_1TriggerResult.html#af63404d01b3529ff5fb45d1587072b3a">setAlgoVar</a>(0, summedDep);</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    result_.<a class="code" href="classldmx_1_1TriggerResult.html#af63404d01b3529ff5fb45d1587072b3a">setAlgoVar</a>(0, summedIso);</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    result_.<a class="code" href="classldmx_1_1TriggerResult.html#af63404d01b3529ff5fb45d1587072b3a">setAlgoVar</a>(0, backSummedDep);</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keyword">event</span>.add(<span class="stringliteral">&quot;EcalVeto&quot;</span>, &amp;result_);</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}</div>
-<div class="ttc" id="classldmx_1_1TriggerResult_html_a66ad625eaa94cbf33251b7f7b139d5e0"><div class="ttname"><a href="classldmx_1_1TriggerResult.html#a66ad625eaa94cbf33251b7f7b139d5e0">ldmx::TriggerResult::set</a></div><div class="ttdeci">void set(const TString &amp;name, bool pass, int nvar)</div><div class="ttdef"><b>Definition:</b> <a href="TriggerResult_8cxx_source.html#l00044">TriggerResult.cxx:44</a></div></div>
-<div class="ttc" id="classldmx_1_1TriggerResult_html_af63404d01b3529ff5fb45d1587072b3a"><div class="ttname"><a href="classldmx_1_1TriggerResult.html#af63404d01b3529ff5fb45d1587072b3a">ldmx::TriggerResult::setAlgoVar</a></div><div class="ttdeci">void setAlgoVar(int element, double value)</div><div class="ttdef"><b>Definition:</b> <a href="TriggerResult_8cxx_source.html#l00054">TriggerResult.cxx:54</a></div></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    </div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="comment">/*</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment">     if(verbose){</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="comment">     std::cout &lt;&lt; &quot;EdepRaw[0] : &quot; &lt;&lt; (*EcalLayerEdepRaw_)[0] &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">     std::cout &lt;&lt; &quot;EdepReadout[0] : &quot; &lt;&lt; (*EcalLayerEdepReadout_)[0] &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="comment">     std::cout &lt;&lt; &quot;EcalLayerIsoRaw[0]: &quot; &lt;&lt; (*EcalLayerIsoRaw_)[0] &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="comment">     std::cout &lt;&lt; &quot;EcalLayerIsoReadout[0]: &quot; &lt;&lt; (*EcalLayerIsoReadout_)[0] &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment">     std::cout &lt;&lt; &quot;EcalLayerTime[0]: &quot; &lt;&lt; (*EcalLayerTime_)[0] &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="comment">     </span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="comment">     std::cout &lt;&lt; &quot;Shower Median : &quot; &lt;&lt; showerMedianCellId &lt;&lt; std::endl;</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">     }// end verbose</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="comment">     */</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    doesPassVeto_ = (summedDep &lt; TOTAL_DEP_CUT &amp;&amp; summedIso &lt; TOTAL_ISO_CUT &amp;&amp; backSummedDep &lt; BACK_ECAL_CUT); <span class="comment">// add ratio cut in at some point</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="comment">/*</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="comment">    result_.set(&quot;EcalVetoV1&quot;, doesPassVeto_, 3);</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="comment">    result_.setAlgoVar(0, summedDep);</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="comment">    result_.setAlgoVar(0, summedIso);</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="comment">    result_.setAlgoVar(0, backSummedDep);</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="comment">    event.add(&quot;EcalVeto&quot;, &amp;result_);</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="comment">    */</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;}</div>
 <div class="ttc" id="classldmx_1_1EcalHexReadout_html_ad5222bf8d0f8532a7c66686ab456a2cd"><div class="ttname"><a href="classldmx_1_1EcalHexReadout.html#ad5222bf8d0f8532a7c66686ab456a2cd">ldmx::EcalHexReadout::isInShowerOuterRing</a></div><div class="ttdeci">bool isInShowerOuterRing(int centroidId, int cellId)</div><div class="ttdef"><b>Definition:</b> <a href="EcalHexReadout_8h_source.html#l00084">EcalHexReadout.h:84</a></div></div>
 <div class="ttc" id="classldmx_1_1EcalHexReadout_html_ae124c9cef7eb3117e847f1fb1d1881cd"><div class="ttname"><a href="classldmx_1_1EcalHexReadout.html#ae124c9cef7eb3117e847f1fb1d1881cd">ldmx::EcalHexReadout::isInShowerInnerRing</a></div><div class="ttdeci">bool isInShowerInnerRing(int centroidId, int cellId)</div><div class="ttdef"><b>Definition:</b> <a href="EcalHexReadout_8h_source.html#l00072">EcalHexReadout.h:72</a></div></div>
 </div><!-- fragment -->

@@ -42,7 +42,7 @@
   </div>
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_df4befc74a5a42026b680d6c82c82ec6.html">SimApplication</a></li><li class="navelem"><a class="el" href="dir_fb51f67e9bdc9a454585360a2e05e433.html">include</a></li><li class="navelem"><a class="el" href="dir_acd0e34adf8b73e2d078168845307572.html">SimApplication</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_ced645b29f198668b99df9e3ea5fc166.html">SimApplication</a></li><li class="navelem"><a class="el" href="dir_17e4cdf93e74b692bfb028055c2e66de.html">include</a></li><li class="navelem"><a class="el" href="dir_c3febd055b2b9cb4e4cbc8da50b2c19e.html">SimApplication</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -60,50 +60,58 @@
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;G4Decay.hh&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">// LDMX</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="PluginMessenger_8h.html">SimPlugins/PluginMessenger.h</a>&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="DetectorConstruction_8h.html">SimApplication/DetectorConstruction.h</a>&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="BiasingMessenger_8h.html">Biasing/BiasingMessenger.h</a>&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="PluginMessenger_8h.html">SimPlugins/PluginMessenger.h</a>&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>ldmx {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classldmx_1_1RunManager.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="classldmx_1_1RunManager.html">RunManager</a> : <span class="keyword">public</span> G4RunManager {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <a class="code" href="classldmx_1_1RunManager.html#a3e0d4dcdeee9764132cdb4cc0a413fde">RunManager</a>();</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keyword">virtual</span> <a class="code" href="classldmx_1_1RunManager.html#a8a800bb79b9b9663def1e35dc4533bd3">~RunManager</a>();</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1RunManager.html#a000bc6076164c98b4dbe10927623f557">InitializePhysics</a>();</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1RunManager.html#aed6d5fb1fb8e98a94c488044608e023e">Initialize</a>();</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classldmx_1_1RunManager.html#a63555447878dccc848963ec510dee6d7">   53</a></span>&#160;        <a class="code" href="classldmx_1_1DetectorConstruction.html">DetectorConstruction</a>* <a class="code" href="classldmx_1_1RunManager.html#a63555447878dccc848963ec510dee6d7">getDetectorConstruction</a>() {</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><a class="code" href="classldmx_1_1DetectorConstruction.html">DetectorConstruction</a>*<span class="keyword">&gt;</span>(this-&gt;userDetector);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">   62</a></span>&#160;        <a class="code" href="classldmx_1_1PluginMessenger.html">PluginMessenger</a>* <a class="code" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">pluginMessenger_</a>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">   67</a></span>&#160;        <a class="code" href="classldmx_1_1PluginManager.html">PluginManager</a>* <a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;};</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="comment">// Forward declaration</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keyword">class </span>DetectorConstruction; </div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classldmx_1_1RunManager.html">   28</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classldmx_1_1RunManager.html">RunManager</a> : <span class="keyword">public</span> G4RunManager {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <a class="code" href="classldmx_1_1RunManager.html#a3e0d4dcdeee9764132cdb4cc0a413fde">RunManager</a>();</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            <span class="keyword">virtual</span> <a class="code" href="classldmx_1_1RunManager.html#a8a800bb79b9b9663def1e35dc4533bd3">~RunManager</a>();</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1RunManager.html#a000bc6076164c98b4dbe10927623f557">InitializePhysics</a>();</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1RunManager.html#aed6d5fb1fb8e98a94c488044608e023e">Initialize</a>();</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classldmx_1_1RunManager.html#a63555447878dccc848963ec510dee6d7">   56</a></span>&#160;            <a class="code" href="classldmx_1_1DetectorConstruction.html">DetectorConstruction</a>* <a class="code" href="classldmx_1_1RunManager.html#a63555447878dccc848963ec510dee6d7">getDetectorConstruction</a>() {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                <span class="keywordflow">return</span> (<a class="code" href="classldmx_1_1DetectorConstruction.html">DetectorConstruction</a>*) this-&gt;userDetector;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">   65</a></span>&#160;            <a class="code" href="classldmx_1_1PluginMessenger.html">PluginMessenger</a>* <a class="code" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">pluginMessenger_</a>;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classldmx_1_1RunManager.html#ac12319e1c792308197526aa7a887c91a">   70</a></span>&#160;            <a class="code" href="classldmx_1_1BiasingMessenger.html">BiasingMessenger</a>* <a class="code" href="classldmx_1_1RunManager.html#ac12319e1c792308197526aa7a887c91a">biasingMessenger_</a>{<span class="keyword">new</span> <a class="code" href="classldmx_1_1BiasingMessenger.html">BiasingMessenger</a>()};</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="classldmx_1_1DetectorConstruction_html"><div class="ttname"><a href="classldmx_1_1DetectorConstruction.html">ldmx::DetectorConstruction</a></div><div class="ttdoc">Implements the Geant4 detector construction. </div><div class="ttdef"><b>Definition:</b> <a href="DetectorConstruction_8h_source.html#l00030">DetectorConstruction.h:30</a></div></div>
-<div class="ttc" id="DetectorConstruction_8h_html"><div class="ttname"><a href="DetectorConstruction_8h.html">DetectorConstruction.h</a></div><div class="ttdoc">Class implementing the Geant4 detector construction. </div></div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">   75</a></span>&#160;            <a class="code" href="classldmx_1_1PluginManager.html">PluginManager</a>* <a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    }; <span class="comment">// RunManager</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#endif // SIMAPPLICATION_RUNMANAGER_H_</span></div>
+<div class="ttc" id="classldmx_1_1DetectorConstruction_html"><div class="ttname"><a href="classldmx_1_1DetectorConstruction.html">ldmx::DetectorConstruction</a></div><div class="ttdoc">Implements the Geant4 detector construction. </div><div class="ttdef"><b>Definition:</b> <a href="DetectorConstruction_8h_source.html#l00036">DetectorConstruction.h:36</a></div></div>
 <div class="ttc" id="classldmx_1_1PluginManager_html"><div class="ttname"><a href="classldmx_1_1PluginManager.html">ldmx::PluginManager</a></div><div class="ttdoc">Manages user sim plugins. </div><div class="ttdef"><b>Definition:</b> <a href="PluginManager_8h_source.html#l00035">PluginManager.h:35</a></div></div>
-<div class="ttc" id="classldmx_1_1RunManager_html_a000bc6076164c98b4dbe10927623f557"><div class="ttname"><a href="classldmx_1_1RunManager.html#a000bc6076164c98b4dbe10927623f557">ldmx::RunManager::InitializePhysics</a></div><div class="ttdeci">void InitializePhysics()</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8cxx_source.html#l00031">RunManager.cxx:31</a></div></div>
-<div class="ttc" id="classldmx_1_1RunManager_html_a63555447878dccc848963ec510dee6d7"><div class="ttname"><a href="classldmx_1_1RunManager.html#a63555447878dccc848963ec510dee6d7">ldmx::RunManager::getDetectorConstruction</a></div><div class="ttdeci">DetectorConstruction * getDetectorConstruction()</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00053">RunManager.h:53</a></div></div>
-<div class="ttc" id="classldmx_1_1RunManager_html_aed6d5fb1fb8e98a94c488044608e023e"><div class="ttname"><a href="classldmx_1_1RunManager.html#aed6d5fb1fb8e98a94c488044608e023e">ldmx::RunManager::Initialize</a></div><div class="ttdeci">void Initialize()</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8cxx_source.html#l00045">RunManager.cxx:45</a></div></div>
-<div class="ttc" id="classldmx_1_1RunManager_html"><div class="ttname"><a href="classldmx_1_1RunManager.html">ldmx::RunManager</a></div><div class="ttdoc">Extension of Geant4 run manager. </div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00025">RunManager.h:25</a></div></div>
+<div class="ttc" id="classldmx_1_1RunManager_html_a000bc6076164c98b4dbe10927623f557"><div class="ttname"><a href="classldmx_1_1RunManager.html#a000bc6076164c98b4dbe10927623f557">ldmx::RunManager::InitializePhysics</a></div><div class="ttdeci">void InitializePhysics()</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8cxx_source.html#l00032">RunManager.cxx:32</a></div></div>
+<div class="ttc" id="classldmx_1_1RunManager_html_a63555447878dccc848963ec510dee6d7"><div class="ttname"><a href="classldmx_1_1RunManager.html#a63555447878dccc848963ec510dee6d7">ldmx::RunManager::getDetectorConstruction</a></div><div class="ttdeci">DetectorConstruction * getDetectorConstruction()</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00056">RunManager.h:56</a></div></div>
+<div class="ttc" id="BiasingMessenger_8h_html"><div class="ttname"><a href="BiasingMessenger_8h.html">BiasingMessenger.h</a></div><div class="ttdoc">Messenger used to pass physics biasing parameters. </div></div>
+<div class="ttc" id="classldmx_1_1RunManager_html_aed6d5fb1fb8e98a94c488044608e023e"><div class="ttname"><a href="classldmx_1_1RunManager.html#aed6d5fb1fb8e98a94c488044608e023e">ldmx::RunManager::Initialize</a></div><div class="ttdeci">void Initialize()</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8cxx_source.html#l00061">RunManager.cxx:61</a></div></div>
+<div class="ttc" id="classldmx_1_1RunManager_html"><div class="ttname"><a href="classldmx_1_1RunManager.html">ldmx::RunManager</a></div><div class="ttdoc">Extension of Geant4 run manager. </div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00028">RunManager.h:28</a></div></div>
 <div class="ttc" id="PluginMessenger_8h_html"><div class="ttname"><a href="PluginMessenger_8h.html">PluginMessenger.h</a></div><div class="ttdoc">Class defining a messenger for simulation plugins. </div></div>
-<div class="ttc" id="classldmx_1_1RunManager_html_a3e0d4dcdeee9764132cdb4cc0a413fde"><div class="ttname"><a href="classldmx_1_1RunManager.html#a3e0d4dcdeee9764132cdb4cc0a413fde">ldmx::RunManager::RunManager</a></div><div class="ttdeci">RunManager()</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8cxx_source.html#l00021">RunManager.cxx:21</a></div></div>
+<div class="ttc" id="classldmx_1_1RunManager_html_a3e0d4dcdeee9764132cdb4cc0a413fde"><div class="ttname"><a href="classldmx_1_1RunManager.html#a3e0d4dcdeee9764132cdb4cc0a413fde">ldmx::RunManager::RunManager</a></div><div class="ttdeci">RunManager()</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8cxx_source.html#l00022">RunManager.cxx:22</a></div></div>
+<div class="ttc" id="classldmx_1_1RunManager_html_ac12319e1c792308197526aa7a887c91a"><div class="ttname"><a href="classldmx_1_1RunManager.html#ac12319e1c792308197526aa7a887c91a">ldmx::RunManager::biasingMessenger_</a></div><div class="ttdeci">BiasingMessenger * biasingMessenger_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00070">RunManager.h:70</a></div></div>
+<div class="ttc" id="classldmx_1_1BiasingMessenger_html"><div class="ttname"><a href="classldmx_1_1BiasingMessenger.html">ldmx::BiasingMessenger</a></div><div class="ttdef"><b>Definition:</b> <a href="BiasingMessenger_8h_source.html#l00024">BiasingMessenger.h:24</a></div></div>
 <div class="ttc" id="classldmx_1_1PluginMessenger_html"><div class="ttname"><a href="classldmx_1_1PluginMessenger.html">ldmx::PluginMessenger</a></div><div class="ttdoc">Messenger class for loading and destroying user sim plugins using macro commands. ...</div><div class="ttdef"><b>Definition:</b> <a href="PluginMessenger_8h_source.html#l00022">PluginMessenger.h:22</a></div></div>
-<div class="ttc" id="classldmx_1_1RunManager_html_a930c4b11c4eea416a011eeed2d978eef"><div class="ttname"><a href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">ldmx::RunManager::pluginManager_</a></div><div class="ttdeci">PluginManager * pluginManager_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00067">RunManager.h:67</a></div></div>
-<div class="ttc" id="classldmx_1_1RunManager_html_a5c4e0754560b0bb9c30f3332459d6cc3"><div class="ttname"><a href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">ldmx::RunManager::pluginMessenger_</a></div><div class="ttdeci">PluginMessenger * pluginMessenger_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00062">RunManager.h:62</a></div></div>
-<div class="ttc" id="classldmx_1_1RunManager_html_a8a800bb79b9b9663def1e35dc4533bd3"><div class="ttname"><a href="classldmx_1_1RunManager.html#a8a800bb79b9b9663def1e35dc4533bd3">ldmx::RunManager::~RunManager</a></div><div class="ttdeci">virtual ~RunManager()</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8cxx_source.html#l00026">RunManager.cxx:26</a></div></div>
+<div class="ttc" id="classldmx_1_1RunManager_html_a930c4b11c4eea416a011eeed2d978eef"><div class="ttname"><a href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">ldmx::RunManager::pluginManager_</a></div><div class="ttdeci">PluginManager * pluginManager_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00075">RunManager.h:75</a></div></div>
+<div class="ttc" id="classldmx_1_1RunManager_html_a5c4e0754560b0bb9c30f3332459d6cc3"><div class="ttname"><a href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">ldmx::RunManager::pluginMessenger_</a></div><div class="ttdeci">PluginMessenger * pluginMessenger_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00065">RunManager.h:65</a></div></div>
+<div class="ttc" id="classldmx_1_1RunManager_html_a8a800bb79b9b9663def1e35dc4533bd3"><div class="ttname"><a href="classldmx_1_1RunManager.html#a8a800bb79b9b9663def1e35dc4533bd3">ldmx::RunManager::~RunManager</a></div><div class="ttdeci">virtual ~RunManager()</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8cxx_source.html#l00027">RunManager.cxx:27</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

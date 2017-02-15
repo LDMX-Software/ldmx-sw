@@ -103,9 +103,9 @@ Private Attributes</h2></td></tr>
 <tr class="separator:ae07bf50830788dff075b0658117032fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81b6d330edc0d477afa2a9e1a593dcfe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1DetectorDataServiceImpl.html#a424811dd2cc0ae1d0b2e52423a8e7877">DetectorAliasMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorDataServiceImpl.html#a81b6d330edc0d477afa2a9e1a593dcfe">aliasMap_</a></td></tr>
 <tr class="separator:a81b6d330edc0d477afa2a9e1a593dcfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09c8ac953a673d00251df320da071d54"><td class="memItemLeft" align="right" valign="top">TGeoManager *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorDataServiceImpl.html#a09c8ac953a673d00251df320da071d54">geoManager_</a> {nullptr}</td></tr>
-<tr class="separator:a09c8ac953a673d00251df320da071d54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a597ea5f73902cb773bd3057e312813aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1DetectorElementImpl.html">DetectorElementImpl</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorDataServiceImpl.html#a597ea5f73902cb773bd3057e312813aa">topDE_</a> {nullptr}</td></tr>
+<tr class="memitem:a5f2d705fa2f65e834ed7c73b17e076fe"><td class="memItemLeft" align="right" valign="top">TGeoManager *geoManager_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorDataServiceImpl.html#a5f2d705fa2f65e834ed7c73b17e076fe">nullptr</a></td></tr>
+<tr class="separator:a5f2d705fa2f65e834ed7c73b17e076fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a597ea5f73902cb773bd3057e312813aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1DetectorElementImpl.html">DetectorElementImpl</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorDataServiceImpl.html#a597ea5f73902cb773bd3057e312813aa">topDE_</a> {<a class="el" href="classldmx_1_1DetectorDataServiceImpl.html#a5f2d705fa2f65e834ed7c73b17e076fe">nullptr</a>}</td></tr>
 <tr class="separator:a597ea5f73902cb773bd3057e312813aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -154,13 +154,12 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="DetectorDataServiceImpl_8h_source.html#l00035">35</a> of file <a class="el" href="DetectorDataServiceImpl_8h_source.html">DetectorDataServiceImpl.h</a>.</p>
 
-<p>References <a class="el" href="DetectorDataServiceImpl_8h_source.html#l00121">geoManager_</a>, and <a class="el" href="DetectorDataServiceImpl_8h_source.html#l00124">topDE_</a>.</p>
+<p>References <a class="el" href="DetectorDataServiceImpl_8h_source.html#l00124">topDE_</a>.</p>
 <div class="fragment"><div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                                               {</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                <span class="keyword">delete</span> <a class="code" href="classldmx_1_1DetectorDataServiceImpl.html#a597ea5f73902cb773bd3057e312813aa">topDE_</a>;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                <span class="keyword">delete</span> <a class="code" href="classldmx_1_1DetectorDataServiceImpl.html#a09c8ac953a673d00251df320da071d54">geoManager_</a>;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                <span class="keyword">delete</span> geoManager_;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            }</div>
 <div class="ttc" id="classldmx_1_1DetectorDataServiceImpl_html_a597ea5f73902cb773bd3057e312813aa"><div class="ttname"><a href="classldmx_1_1DetectorDataServiceImpl.html#a597ea5f73902cb773bd3057e312813aa">ldmx::DetectorDataServiceImpl::topDE_</a></div><div class="ttdeci">DetectorElementImpl * topDE_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorDataServiceImpl_8h_source.html#l00124">DetectorDataServiceImpl.h:124</a></div></div>
-<div class="ttc" id="classldmx_1_1DetectorDataServiceImpl_html_a09c8ac953a673d00251df320da071d54"><div class="ttname"><a href="classldmx_1_1DetectorDataServiceImpl.html#a09c8ac953a673d00251df320da071d54">ldmx::DetectorDataServiceImpl::geoManager_</a></div><div class="ttdeci">TGeoManager * geoManager_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorDataServiceImpl_8h_source.html#l00121">DetectorDataServiceImpl.h:121</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -310,12 +309,9 @@ Private Attributes</h2></td></tr>
 <p>Implements <a class="el" href="classldmx_1_1DetectorDataService.html#ab8fed5f151c630ce8437984dcf78758e">ldmx::DetectorDataService</a>.</p>
 
 <p>Definition at line <a class="el" href="DetectorDataServiceImpl_8h_source.html#l00056">56</a> of file <a class="el" href="DetectorDataServiceImpl_8h_source.html">DetectorDataServiceImpl.h</a>.</p>
-
-<p>References <a class="el" href="DetectorDataServiceImpl_8h_source.html#l00121">geoManager_</a>.</p>
 <div class="fragment"><div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                              {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1DetectorDataServiceImpl.html#a09c8ac953a673d00251df320da071d54">geoManager_</a>;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                <span class="keywordflow">return</span> geoManager_;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            }</div>
-<div class="ttc" id="classldmx_1_1DetectorDataServiceImpl_html_a09c8ac953a673d00251df320da071d54"><div class="ttname"><a href="classldmx_1_1DetectorDataServiceImpl.html#a09c8ac953a673d00251df320da071d54">ldmx::DetectorDataServiceImpl::geoManager_</a></div><div class="ttdeci">TGeoManager * geoManager_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorDataServiceImpl_8h_source.html#l00121">DetectorDataServiceImpl.h:121</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -403,14 +399,14 @@ Private Attributes</h2></td></tr>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                &lt;&lt; <span class="stringliteral">&quot; from &quot;</span> &lt;&lt; location &lt;&lt; std::endl;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="comment">// Import the geometry into ROOT.</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <a class="code" href="classldmx_1_1DetectorDataServiceImpl.html#a09c8ac953a673d00251df320da071d54">geoManager_</a> = TGeoManager::Import(location.c_str(), <a class="code" href="classldmx_1_1DetectorDataServiceImpl.html#ae07bf50830788dff075b0658117032fe">detectorName_</a>.c_str());</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        geoManager_ = TGeoManager::Import(location.c_str(), <a class="code" href="classldmx_1_1DetectorDataServiceImpl.html#ae07bf50830788dff075b0658117032fe">detectorName_</a>.c_str());</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="comment">// Setup the top DE which will setup subdetector components.</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <a class="code" href="classldmx_1_1DetectorDataServiceImpl.html#a597ea5f73902cb773bd3057e312813aa">topDE_</a> = <span class="keyword">new</span> TopDetectorElement(<a class="code" href="classldmx_1_1DetectorDataServiceImpl.html#a09c8ac953a673d00251df320da071d54">geoManager_</a>-&gt;GetTopNode());</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <a class="code" href="classldmx_1_1DetectorDataServiceImpl.html#a597ea5f73902cb773bd3057e312813aa">topDE_</a> = <span class="keyword">new</span> TopDetectorElement(geoManager_-&gt;GetTopNode());</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="comment">// Build the global matrix cache in the ROOT geometry manager.</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        TGeoNavigator* nav = <a class="code" href="classldmx_1_1DetectorDataServiceImpl.html#a09c8ac953a673d00251df320da071d54">geoManager_</a>-&gt;GetCurrentNavigator();</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        TGeoNavigator* nav = geoManager_-&gt;GetCurrentNavigator();</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        nav-&gt;BuildCache();</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="comment">// Set the global positions on each DetectorElement by walking the hierarchy.</span></div>
@@ -420,7 +416,6 @@ Private Attributes</h2></td></tr>
 <div class="ttc" id="classldmx_1_1DetectorDataServiceImpl_html_a597ea5f73902cb773bd3057e312813aa"><div class="ttname"><a href="classldmx_1_1DetectorDataServiceImpl.html#a597ea5f73902cb773bd3057e312813aa">ldmx::DetectorDataServiceImpl::topDE_</a></div><div class="ttdeci">DetectorElementImpl * topDE_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorDataServiceImpl_8h_source.html#l00124">DetectorDataServiceImpl.h:124</a></div></div>
 <div class="ttc" id="classldmx_1_1DetectorDataServiceImpl_html_a81b6d330edc0d477afa2a9e1a593dcfe"><div class="ttname"><a href="classldmx_1_1DetectorDataServiceImpl.html#a81b6d330edc0d477afa2a9e1a593dcfe">ldmx::DetectorDataServiceImpl::aliasMap_</a></div><div class="ttdeci">DetectorAliasMap aliasMap_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorDataServiceImpl_8h_source.html#l00118">DetectorDataServiceImpl.h:118</a></div></div>
 <div class="ttc" id="classldmx_1_1DetectorDataServiceImpl_html_ae07bf50830788dff075b0658117032fe"><div class="ttname"><a href="classldmx_1_1DetectorDataServiceImpl.html#ae07bf50830788dff075b0658117032fe">ldmx::DetectorDataServiceImpl::detectorName_</a></div><div class="ttdeci">std::string detectorName_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorDataServiceImpl_8h_source.html#l00115">DetectorDataServiceImpl.h:115</a></div></div>
-<div class="ttc" id="classldmx_1_1DetectorDataServiceImpl_html_a09c8ac953a673d00251df320da071d54"><div class="ttname"><a href="classldmx_1_1DetectorDataServiceImpl.html#a09c8ac953a673d00251df320da071d54">ldmx::DetectorDataServiceImpl::geoManager_</a></div><div class="ttdeci">TGeoManager * geoManager_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorDataServiceImpl_8h_source.html#l00121">DetectorDataServiceImpl.h:121</a></div></div>
 <div class="ttc" id="classldmx_1_1DetectorElementVisitor_html_a54ce11ab7a164b64076dd52338a8d28b"><div class="ttname"><a href="classldmx_1_1DetectorElementVisitor.html#a54ce11ab7a164b64076dd52338a8d28b">ldmx::DetectorElementVisitor::walk</a></div><div class="ttdeci">static void walk(DetectorElement *de, DetectorElementVisitor *visitor)</div><div class="ttdef"><b>Definition:</b> <a href="DetectorElement_8cxx_source.html#l00009">DetectorElement.cxx:9</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -568,7 +563,7 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a09c8ac953a673d00251df320da071d54"></a>
+<a class="anchor" id="a5f2d705fa2f65e834ed7c73b17e076fe"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -576,7 +571,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">TGeoManager* ldmx::DetectorDataServiceImpl::geoManager_ {nullptr}</td>
+          <td class="memname">TGeoManager* geoManager_ ldmx::DetectorDataServiceImpl::nullptr</td>
         </tr>
       </table>
   </td>
@@ -589,8 +584,6 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="DetectorDataServiceImpl_8h_source.html#l00121">121</a> of file <a class="el" href="DetectorDataServiceImpl_8h_source.html">DetectorDataServiceImpl.h</a>.</p>
 
-<p>Referenced by <a class="el" href="DetectorDataServiceImpl_8h_source.html#l00056">getGeometryManager()</a>, and <a class="el" href="DetectorDataServiceImpl_8h_source.html#l00035">~DetectorDataServiceImpl()</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="a597ea5f73902cb773bd3057e312813aa"></a>
@@ -601,7 +594,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classldmx_1_1DetectorElementImpl.html">DetectorElementImpl</a>* ldmx::DetectorDataServiceImpl::topDE_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classldmx_1_1DetectorElementImpl.html">DetectorElementImpl</a>* ldmx::DetectorDataServiceImpl::topDE_ {<a class="el" href="classldmx_1_1DetectorDataServiceImpl.html#a5f2d705fa2f65e834ed7c73b17e076fe">nullptr</a>}</td>
         </tr>
       </table>
   </td>

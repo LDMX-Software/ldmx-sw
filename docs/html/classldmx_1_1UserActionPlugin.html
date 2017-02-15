@@ -322,7 +322,7 @@ Protected Attributes</h2></td></tr>
 <p>Get the name of the plugin. The user must override this function. </p>
 <dl class="section return"><dt>Returns</dt><dd>The name of the plugin. </dd></dl>
 
-<p>Implemented in <a class="el" href="classldmx_1_1EventPrintPlugin.html#a5bdda4ffa37103b320c1715101dc5df4">ldmx::EventPrintPlugin</a>, <a class="el" href="classldmx_1_1PhotonuclearXsecBiasingPlugin.html#a3e9c1b7204ca025373982a1635306fce">ldmx::PhotonuclearXsecBiasingPlugin</a>, <a class="el" href="classldmx_1_1TargetPhotonuclearBiasingPlugin.html#a58eb2e5e04be432b14e35f00ae736f49">ldmx::TargetPhotonuclearBiasingPlugin</a>, and <a class="el" href="classldmx_1_1DummySimPlugin.html#a5a687a851e7d8f08443b1fb0823ad5f6">ldmx::DummySimPlugin</a>.</p>
+<p>Implemented in <a class="el" href="classldmx_1_1EventPrintPlugin.html#a5bdda4ffa37103b320c1715101dc5df4">ldmx::EventPrintPlugin</a>, <a class="el" href="classldmx_1_1PhotonuclearXsecBiasingPlugin.html#a3e9c1b7204ca025373982a1635306fce">ldmx::PhotonuclearXsecBiasingPlugin</a>, <a class="el" href="classldmx_1_1TargetProcessFilter.html#a9b0dafaea779b5829bf29fada9164642">ldmx::TargetProcessFilter</a>, <a class="el" href="classldmx_1_1TargetBremFilter.html#a3bbc468dca98f89729e3d45a716d9495">ldmx::TargetBremFilter</a>, <a class="el" href="classldmx_1_1EcalProcessFilter.html#a1dc5661eb9673182557d53c21d51a7ef">ldmx::EcalProcessFilter</a>, and <a class="el" href="classldmx_1_1DummySimPlugin.html#a5a687a851e7d8f08443b1fb0823ad5f6">ldmx::DummySimPlugin</a>.</p>
 
 <p>Referenced by <a class="el" href="PluginLoader_8cxx_source.html#l00053">ldmx::PluginLoader::destroy()</a>, <a class="el" href="UserActionPluginMessenger_8cxx_source.html#l00017">ldmx::UserActionPluginMessenger::SetNewValue()</a>, and <a class="el" href="UserActionPluginMessenger_8cxx_source.html#l00005">ldmx::UserActionPluginMessenger::UserActionPluginMessenger()</a>.</p>
 
@@ -476,7 +476,7 @@ Protected Attributes</h2></td></tr>
 <p>Get whether this plugin implements the stacking action. </p>
 <dl class="section return"><dt>Returns</dt><dd>True if the plugin implements the stacking action. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classldmx_1_1TargetPhotonuclearBiasingPlugin.html#ae0804a048f31c4e3ec3d9fef71dcc5cb">ldmx::TargetPhotonuclearBiasingPlugin</a>, and <a class="el" href="classldmx_1_1DummySimPlugin.html#a92afaa18efe726da5813f968751dc597">ldmx::DummySimPlugin</a>.</p>
+<p>Reimplemented in <a class="el" href="classldmx_1_1TargetBremFilter.html#a397fc2da62de43506574b00f8beee29f">ldmx::TargetBremFilter</a>, and <a class="el" href="classldmx_1_1DummySimPlugin.html#a92afaa18efe726da5813f968751dc597">ldmx::DummySimPlugin</a>.</p>
 
 <p>Definition at line <a class="el" href="UserActionPlugin_8h_source.html#l00109">109</a> of file <a class="el" href="UserActionPlugin_8h_source.html">UserActionPlugin.h</a>.</p>
 <div class="fragment"><div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
@@ -506,7 +506,7 @@ Protected Attributes</h2></td></tr>
 <p>Get whether this plugin implements the stepping action. </p>
 <dl class="section return"><dt>Returns</dt><dd>True if the plugin implements the stepping action. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classldmx_1_1TargetPhotonuclearBiasingPlugin.html#aa6f978d6619d4fb743ffa01002d40b0c">ldmx::TargetPhotonuclearBiasingPlugin</a>, and <a class="el" href="classldmx_1_1DummySimPlugin.html#ab21f2d6dd668db59bbfcb83931779378">ldmx::DummySimPlugin</a>.</p>
+<p>Reimplemented in <a class="el" href="classldmx_1_1TargetProcessFilter.html#a38d5b9c59bb4d0379c497d16dae0a5e8">ldmx::TargetProcessFilter</a>, <a class="el" href="classldmx_1_1TargetBremFilter.html#a94ca082ca7328d5726716e6e1aa48006">ldmx::TargetBremFilter</a>, <a class="el" href="classldmx_1_1EcalProcessFilter.html#ae04bdd97f4544e5aec2075fa6cdc82fe">ldmx::EcalProcessFilter</a>, and <a class="el" href="classldmx_1_1DummySimPlugin.html#ab21f2d6dd668db59bbfcb83931779378">ldmx::DummySimPlugin</a>.</p>
 
 <p>Definition at line <a class="el" href="UserActionPlugin_8h_source.html#l00091">91</a> of file <a class="el" href="UserActionPlugin_8h_source.html">UserActionPlugin.h</a>.</p>
 <div class="fragment"><div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
@@ -689,7 +689,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current track classification returned by default. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classldmx_1_1DummySimPlugin.html#a374565896c3504e2c9a0711195a734a4">ldmx::DummySimPlugin</a>, and <a class="el" href="classldmx_1_1TargetPhotonuclearBiasingPlugin.html#a8b43a93c85cf9419df342d18ea0dde36">ldmx::TargetPhotonuclearBiasingPlugin</a>.</p>
+<p>Reimplemented in <a class="el" href="classldmx_1_1DummySimPlugin.html#a374565896c3504e2c9a0711195a734a4">ldmx::DummySimPlugin</a>, and <a class="el" href="classldmx_1_1TargetBremFilter.html#a66db05a6d7e2290af92c1b042c7544fb">ldmx::TargetBremFilter</a>.</p>
 
 <p>Definition at line <a class="el" href="UserActionPlugin_8h_source.html#l00162">162</a> of file <a class="el" href="UserActionPlugin_8h_source.html">UserActionPlugin.h</a>.</p>
 <div class="fragment"><div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;                                                                                                                                         {</div>
@@ -779,7 +779,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Stepping action. </p>
 
-<p>Reimplemented in <a class="el" href="classldmx_1_1DummySimPlugin.html#aadc52b77b9f90d9c02690003e6b5ccfa">ldmx::DummySimPlugin</a>, and <a class="el" href="classldmx_1_1TargetPhotonuclearBiasingPlugin.html#a9b7aac0cdd5d046d66cf272f43c1f598">ldmx::TargetPhotonuclearBiasingPlugin</a>.</p>
+<p>Reimplemented in <a class="el" href="classldmx_1_1DummySimPlugin.html#aadc52b77b9f90d9c02690003e6b5ccfa">ldmx::DummySimPlugin</a>, <a class="el" href="classldmx_1_1TargetBremFilter.html#a9f51d409c62e392b6c92a4a04243e9ef">ldmx::TargetBremFilter</a>, <a class="el" href="classldmx_1_1TargetProcessFilter.html#ab7c281885d28d8d3b192ce2e46686279">ldmx::TargetProcessFilter</a>, and <a class="el" href="classldmx_1_1EcalProcessFilter.html#af2b9326f0fa961c6638ef3a77b28ef1e">ldmx::EcalProcessFilter</a>.</p>
 
 <p>Definition at line <a class="el" href="UserActionPlugin_8h_source.html#l00130">130</a> of file <a class="el" href="UserActionPlugin_8h_source.html">UserActionPlugin.h</a>.</p>
 <div class="fragment"><div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;{;}</div>

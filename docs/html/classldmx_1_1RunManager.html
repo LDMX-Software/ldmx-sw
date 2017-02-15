@@ -79,13 +79,15 @@ Public Member Functions</h2></td></tr>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a5c4e0754560b0bb9c30f3332459d6cc3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1PluginMessenger.html">PluginMessenger</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">pluginMessenger_</a></td></tr>
 <tr class="separator:a5c4e0754560b0bb9c30f3332459d6cc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac12319e1c792308197526aa7a887c91a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1BiasingMessenger.html">BiasingMessenger</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RunManager.html#ac12319e1c792308197526aa7a887c91a">biasingMessenger_</a> {new <a class="el" href="classldmx_1_1BiasingMessenger.html">BiasingMessenger</a>()}</td></tr>
+<tr class="separator:ac12319e1c792308197526aa7a887c91a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a930c4b11c4eea416a011eeed2d978eef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1PluginManager.html">PluginManager</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a></td></tr>
 <tr class="separator:a930c4b11c4eea416a011eeed2d978eef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Extension of Geant4 run manager. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00025">25</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00028">28</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a3e0d4dcdeee9764132cdb4cc0a413fde"></a>
 <div class="memitem">
@@ -101,15 +103,15 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Class constructor. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00021">21</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00022">22</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
 
-<p>References <a class="el" href="RunManager_8h_source.html#l00067">pluginManager_</a>, and <a class="el" href="RunManager_8h_source.html#l00062">pluginMessenger_</a>.</p>
-<div class="fragment"><div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                       {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a> = <span class="keyword">new</span> PluginManager();</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">pluginMessenger_</a> = <span class="keyword">new</span> PluginMessenger(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}</div>
-<div class="ttc" id="classldmx_1_1RunManager_html_a930c4b11c4eea416a011eeed2d978eef"><div class="ttname"><a href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">ldmx::RunManager::pluginManager_</a></div><div class="ttdeci">PluginManager * pluginManager_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00067">RunManager.h:67</a></div></div>
-<div class="ttc" id="classldmx_1_1RunManager_html_a5c4e0754560b0bb9c30f3332459d6cc3"><div class="ttname"><a href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">ldmx::RunManager::pluginMessenger_</a></div><div class="ttdeci">PluginMessenger * pluginMessenger_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00062">RunManager.h:62</a></div></div>
+<p>References <a class="el" href="RunManager_8h_source.html#l00075">pluginManager_</a>, and <a class="el" href="RunManager_8h_source.html#l00065">pluginMessenger_</a>.</p>
+<div class="fragment"><div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                           {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        <a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a> = <span class="keyword">new</span> PluginManager();</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <a class="code" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">pluginMessenger_</a> = <span class="keyword">new</span> PluginMessenger(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    }</div>
+<div class="ttc" id="classldmx_1_1RunManager_html_a930c4b11c4eea416a011eeed2d978eef"><div class="ttname"><a href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">ldmx::RunManager::pluginManager_</a></div><div class="ttdeci">PluginManager * pluginManager_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00075">RunManager.h:75</a></div></div>
+<div class="ttc" id="classldmx_1_1RunManager_html_a5c4e0754560b0bb9c30f3332459d6cc3"><div class="ttname"><a href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">ldmx::RunManager::pluginMessenger_</a></div><div class="ttdeci">PluginMessenger * pluginMessenger_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00065">RunManager.h:65</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -135,15 +137,15 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Class destructor. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00026">26</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00027">27</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
 
-<p>References <a class="el" href="RunManager_8h_source.html#l00067">pluginManager_</a>, and <a class="el" href="RunManager_8h_source.html#l00062">pluginMessenger_</a>.</p>
-<div class="fragment"><div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                        {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keyword">delete</span> <a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keyword">delete</span> <a class="code" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">pluginMessenger_</a>;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
-<div class="ttc" id="classldmx_1_1RunManager_html_a930c4b11c4eea416a011eeed2d978eef"><div class="ttname"><a href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">ldmx::RunManager::pluginManager_</a></div><div class="ttdeci">PluginManager * pluginManager_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00067">RunManager.h:67</a></div></div>
-<div class="ttc" id="classldmx_1_1RunManager_html_a5c4e0754560b0bb9c30f3332459d6cc3"><div class="ttname"><a href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">ldmx::RunManager::pluginMessenger_</a></div><div class="ttdeci">PluginMessenger * pluginMessenger_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00062">RunManager.h:62</a></div></div>
+<p>References <a class="el" href="RunManager_8h_source.html#l00075">pluginManager_</a>, and <a class="el" href="RunManager_8h_source.html#l00065">pluginMessenger_</a>.</p>
+<div class="fragment"><div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                            {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <span class="keyword">delete</span> <a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <span class="keyword">delete</span> <a class="code" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">pluginMessenger_</a>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    }</div>
+<div class="ttc" id="classldmx_1_1RunManager_html_a930c4b11c4eea416a011eeed2d978eef"><div class="ttname"><a href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">ldmx::RunManager::pluginManager_</a></div><div class="ttdeci">PluginManager * pluginManager_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00075">RunManager.h:75</a></div></div>
+<div class="ttc" id="classldmx_1_1RunManager_html_a5c4e0754560b0bb9c30f3332459d6cc3"><div class="ttname"><a href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">ldmx::RunManager::pluginMessenger_</a></div><div class="ttdeci">PluginMessenger * pluginMessenger_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00065">RunManager.h:65</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -171,10 +173,10 @@ Private Attributes</h2></td></tr>
 <p>Get the user detector construction cast to a specific type. </p>
 <dl class="section return"><dt>Returns</dt><dd>The user detector construction. </dd></dl>
 
-<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00053">53</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
-<div class="fragment"><div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                                                        {</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>DetectorConstruction*<span class="keyword">&gt;</span>(this-&gt;userDetector);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        }</div>
+<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00056">56</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
+<div class="fragment"><div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                                            {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                <span class="keywordflow">return</span> (DetectorConstruction*) this-&gt;userDetector;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -192,40 +194,40 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Perform application initialization. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00045">45</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00061">61</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
 
-<p>References <a class="el" href="RunManager_8h_source.html#l00067">pluginManager_</a>, and <a class="el" href="PluginManagerAccessor_8h_source.html#l00030">ldmx::PluginManagerAccessor::setPluginManager()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                            {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    G4RunManager::Initialize();</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    PrimaryGeneratorAction* primaryGeneratorAction = <span class="keyword">new</span> PrimaryGeneratorAction;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    SetUserAction(primaryGeneratorAction);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">new</span> PrimaryGeneratorMessenger(primaryGeneratorAction);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    UserRunAction* runAction = <span class="keyword">new</span> UserRunAction;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    UserEventAction* eventAction = <span class="keyword">new</span> UserEventAction;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    UserTrackingAction* trackingAction = <span class="keyword">new</span> UserTrackingAction;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    SteppingAction* steppingAction = <span class="keyword">new</span> SteppingAction;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    UserStackingAction* stackingAction = <span class="keyword">new</span> UserStackingAction;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    runAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    eventAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    trackingAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    steppingAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    stackingAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    primaryGeneratorAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    SetUserAction(runAction);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    SetUserAction(eventAction);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    SetUserAction(trackingAction);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    SetUserAction(steppingAction);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    SetUserAction(stackingAction);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    RootPersistencyManager* rootIO = <span class="keyword">new</span> RootPersistencyManager();</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keyword">new</span> RootPersistencyMessenger(rootIO);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;}</div>
-<div class="ttc" id="classldmx_1_1RunManager_html_a930c4b11c4eea416a011eeed2d978eef"><div class="ttname"><a href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">ldmx::RunManager::pluginManager_</a></div><div class="ttdeci">PluginManager * pluginManager_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00067">RunManager.h:67</a></div></div>
+<p>References <a class="el" href="RunManager_8h_source.html#l00075">pluginManager_</a>, and <a class="el" href="PluginManagerAccessor_8h_source.html#l00030">ldmx::PluginManagerAccessor::setPluginManager()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                                {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        G4RunManager::Initialize();</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        PrimaryGeneratorAction* primaryGeneratorAction = <span class="keyword">new</span> PrimaryGeneratorAction;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        SetUserAction(primaryGeneratorAction);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="keyword">new</span> PrimaryGeneratorMessenger(primaryGeneratorAction);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        UserRunAction* runAction = <span class="keyword">new</span> UserRunAction;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        UserEventAction* eventAction = <span class="keyword">new</span> UserEventAction;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        UserTrackingAction* trackingAction = <span class="keyword">new</span> UserTrackingAction;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        SteppingAction* steppingAction = <span class="keyword">new</span> SteppingAction;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        UserStackingAction* stackingAction = <span class="keyword">new</span> UserStackingAction;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        runAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        eventAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        trackingAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        steppingAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        stackingAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        primaryGeneratorAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        SetUserAction(runAction);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        SetUserAction(eventAction);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        SetUserAction(trackingAction);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        SetUserAction(steppingAction);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        SetUserAction(stackingAction);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        RootPersistencyManager* rootIO = <span class="keyword">new</span> RootPersistencyManager();</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keyword">new</span> RootPersistencyMessenger(rootIO);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    }</div>
+<div class="ttc" id="classldmx_1_1RunManager_html_a930c4b11c4eea416a011eeed2d978eef"><div class="ttname"><a href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">ldmx::RunManager::pluginManager_</a></div><div class="ttdeci">PluginManager * pluginManager_</div><div class="ttdef"><b>Definition:</b> <a href="RunManager_8h_source.html#l00075">RunManager.h:75</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -243,24 +245,62 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Initialize physics. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00031">31</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
-<div class="fragment"><div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                                   {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    G4VUserPhysicsList* thePhysicsList = <span class="keyword">new</span> FTFP_BERT;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    G4VModularPhysicsList* modularPhysicsList = <span class="keyword">dynamic_cast&lt;</span>G4VModularPhysicsList*<span class="keyword">&gt;</span>(thePhysicsList);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    modularPhysicsList-&gt;RegisterPhysics(<span class="keyword">new</span> APrimePhysics);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    modularPhysicsList-&gt;RegisterPhysics(<span class="keyword">new</span> GammaPhysics);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="comment">//modularPhysicsList-&gt;RegisterPhysics(new TungstenIonPhysics);</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    SetUserInitialization(thePhysicsList);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    G4RunManager::InitializePhysics();</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}</div>
+<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00032">32</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
+<div class="fragment"><div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                                       {</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        G4VUserPhysicsList* thePhysicsList = <span class="keyword">new</span> FTFP_BERT;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        G4VModularPhysicsList* modularPhysicsList = <span class="keyword">dynamic_cast&lt;</span>G4VModularPhysicsList*<span class="keyword">&gt;</span>(thePhysicsList);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        modularPhysicsList-&gt;RegisterPhysics(<span class="keyword">new</span> APrimePhysics);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        modularPhysicsList-&gt;RegisterPhysics(<span class="keyword">new</span> GammaPhysics);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <span class="comment">//modularPhysicsList-&gt;RegisterPhysics(new TungstenIonPhysics);</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keywordflow">if</span> (BiasingMessenger::isBiasingEnabled()) { </div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot;[ RunManager ]: Enabling biasing of particle type &quot;</span> </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                      &lt;&lt; BiasingMessenger::getParticleType() &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <span class="comment">// Instantiate the constructor used when biasing</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            G4GenericBiasingPhysics* biasingPhysics = <span class="keyword">new</span> G4GenericBiasingPhysics();</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            <span class="comment">// Specify what particles are being biased</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            biasingPhysics-&gt;Bias(BiasingMessenger::getParticleType());</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="comment">// Register the physics constructor to the physics list:</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            modularPhysicsList-&gt;RegisterPhysics(biasingPhysics);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        SetUserInitialization(thePhysicsList);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        G4RunManager::InitializePhysics();</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    }</div>
 </div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="ac12319e1c792308197526aa7a887c91a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classldmx_1_1BiasingMessenger.html">BiasingMessenger</a>* ldmx::RunManager::biasingMessenger_ {new <a class="el" href="classldmx_1_1BiasingMessenger.html">BiasingMessenger</a>()}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Biasing messenger. </p>
+
+<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00070">70</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a930c4b11c4eea416a011eeed2d978eef"></a>
 <div class="memitem">
 <div class="memproto">
@@ -280,9 +320,9 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Manager of sim plugins. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00067">67</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00075">75</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
 
-<p>Referenced by <a class="el" href="RunManager_8cxx_source.html#l00045">Initialize()</a>, <a class="el" href="RunManager_8cxx_source.html#l00021">RunManager()</a>, and <a class="el" href="RunManager_8cxx_source.html#l00026">~RunManager()</a>.</p>
+<p>Referenced by <a class="el" href="RunManager_8cxx_source.html#l00061">Initialize()</a>, <a class="el" href="RunManager_8cxx_source.html#l00022">RunManager()</a>, and <a class="el" href="RunManager_8cxx_source.html#l00027">~RunManager()</a>.</p>
 
 </div>
 </div>
@@ -305,9 +345,9 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The plugin messenger. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00062">62</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00065">65</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
 
-<p>Referenced by <a class="el" href="RunManager_8cxx_source.html#l00021">RunManager()</a>, and <a class="el" href="RunManager_8cxx_source.html#l00026">~RunManager()</a>.</p>
+<p>Referenced by <a class="el" href="RunManager_8cxx_source.html#l00022">RunManager()</a>, and <a class="el" href="RunManager_8cxx_source.html#l00027">~RunManager()</a>.</p>
 
 </div>
 </div>
