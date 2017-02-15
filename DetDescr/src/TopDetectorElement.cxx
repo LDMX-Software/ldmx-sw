@@ -8,6 +8,7 @@
 #include "DetDescr/RecoilTrackerDetectorElement.h"
 #include "DetDescr/TaggerDetectorElement.h"
 #include "DetDescr/TargetDetectorElement.h"
+#include "DetDescr/TriggerPadDetectorElement.h"
 
 #include <iostream>
 
@@ -27,8 +28,7 @@ namespace ldmx {
         new TaggerDetectorElement(this);
         new RecoilTrackerDetectorElement(this);
         new TargetDetectorElement(this);
-
-        // TODO: Add DE for...
-        // TriggerPad
+        new TriggerPadDetectorElement(this, "TriggerPadDown");
+        new TriggerPadDetectorElement(this, "TriggerPadUp");
     }
 }
