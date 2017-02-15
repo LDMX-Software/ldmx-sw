@@ -112,7 +112,7 @@ int main(int, const char* argv[])  {
 
     // Print trigger pad info.
     DetectorElement* triggerPad = top->findChild("TriggerPadUp");
-    std::cout << "Got 'TriggerPadUp' with support " << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << std::endl;
+    std::cout << "Got 'TriggerPadUp' with support '" << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << std::endl;
     std::cout << std::endl;
     triggerPad = top->findChild("TriggerPadDown");
     std::cout << "Got 'TriggerPadDown' with support " << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << std::endl;
