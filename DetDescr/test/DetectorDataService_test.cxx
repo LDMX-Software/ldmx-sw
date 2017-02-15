@@ -108,6 +108,14 @@ int main(int, const char* argv[])  {
     DetectorElement* target = top->findChild("Target");
     std::cout << "Got 'Target' DE with support " << target->getSupport()->GetName() << "'" << target->getGlobalPosition() << std::endl;
     std::cout << "  targetThickness = " << ((TargetDetectorElement*)target)->getTargetThickness() << std::endl;
+    std::cout << std::endl;
+
+    // Print trigger pad info.
+    DetectorElement* triggerPad = top->findChild("TriggerPadUp");
+    std::cout << "Got 'TriggerPadUp' with support " << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << std::endl;
+    std::cout << std::endl;
+    triggerPad = top->findChild("TriggerPadDown");
+    std::cout << "Got 'TriggerPadDown' with support " << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << std::endl;
 
     // Delete the service object, which will delete the DetectorElement tree and the ROOT geometry manager.
     delete svc;
