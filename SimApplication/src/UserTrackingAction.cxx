@@ -17,26 +17,28 @@
 
 namespace ldmx {
 
-UserTrackingAction::UserTrackingAction() {
-}
+    void UserTrackingAction::PreUserTrackingAction(const G4Track* aTrack) {
 
-UserTrackingAction::~UserTrackingAction() {
-}
+        // Process a single track using the utility method.
+        processTrack(aTrack);
 
-void UserTrackingAction::PreUserTrackingAction(const G4Track* aTrack) {
+        // Activate user plugins.
+        pluginManager_->preTracking(aTrack);
+    }
 
-    // std::cout << " ... in PreUserTrackingAction ... " << std::endl;
+    void UserTrackingAction::PostUserTrackingAction(const G4Track* aTrack) {
+        // Activate user plugins.
+        pluginManager_->postTracking(aTrack);
+    }
 
-    // Check if trajectory storage should be turned on or off.
-    UserRegionInformation* regionInfo =
-            (UserRegionInformation*) aTrack->GetLogicalVolumeAtVertex()->GetRegion()->GetUserInformation();
-    if (regionInfo != NULL && !regionInfo->getStoreSecondaries()) {
-        fpTrackingManager->SetStoreTrajectory(false);
-    } else {
+    void UserTrackingAction::storeTrajectory(const G4Track* aTrack) {
+
+        // Create a new trajectory for this track.
         fpTrackingManager->SetStoreTrajectory(true);
         Trajectory* traj = new Trajectory(aTrack);
         fpTrackingManager->SetTrajectory(traj);
 
+        // Update the gen status from the primary particle.
         if (aTrack->GetDynamicParticle()->GetPrimaryParticle() != NULL) {
             G4VUserPrimaryParticleInformation* primaryInfo = aTrack->GetDynamicParticle()->GetPrimaryParticle()->GetUserInformation();
             if (primaryInfo != NULL) {
@@ -45,14 +47,22 @@ void UserTrackingAction::PreUserTrackingAction(const G4Track* aTrack) {
         }
     }
 
-    // Save association between track ID and its parent ID.
-    TrackMap::getInstance()->addSecondary(aTrack->GetTrackID(), aTrack->GetParentID());
+    void UserTrackingAction::processTrack(const G4Track* aTrack) {
 
-    pluginManager_->preTracking(aTrack);
-}
+        // Check if trajectory storage should be turned on or off from the region info.
+        UserRegionInformation* regionInfo =
+                (UserRegionInformation*) aTrack->GetLogicalVolumeAtVertex()->GetRegion()->GetUserInformation();
 
-void UserTrackingAction::PostUserTrackingAction(const G4Track* aTrack) {
-    pluginManager_->postTracking(aTrack);
-}
+        if (regionInfo != NULL && !regionInfo->getStoreSecondaries()) {
+            // Turn off trajectory storage for this track.
+            fpTrackingManager->SetStoreTrajectory(false);
+        } else {
+            // Store a trajectory for this track.
+            storeTrajectory(aTrack);
+        }
+
+        // Save the association between track ID and its parent ID for all tracks in the event.
+        trackMap_.addSecondary(aTrack->GetTrackID(), aTrack->GetParentID());
+    }
 
 }

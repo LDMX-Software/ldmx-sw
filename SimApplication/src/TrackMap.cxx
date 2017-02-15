@@ -9,11 +9,6 @@
 
 namespace ldmx {
 
-TrackMap* TrackMap::getInstance() {
-    static TrackMap INSTANCE;
-    return &INSTANCE;
-}
-
 void TrackMap::addSecondary(G4int trackID, G4int parentID) {
     trackIDMap_[trackID] = parentID;
 }
