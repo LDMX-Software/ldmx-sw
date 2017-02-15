@@ -1,14 +1,16 @@
 /*
  * DetectorElement.h
- * @brief An identifiable component in the detector hierarchy such as a layer in a subdetector
+ * @brief Interface defining an identifiable component in the detector hierarchy
  * @author JeremyMcCormick, SLAC
  */
 
 #ifndef DETDESCR_DETECTORELEMENT_H_
 #define DETDESCR_DETECTORELEMENT_H_
 
+// ROOT
 #include "TGeoNode.h"
 
+// LDMX
 #include "DetDescr/DetectorID.h"
 
 #include <vector>
@@ -84,6 +86,39 @@ namespace ldmx {
              * @param name The first child with a given name.
              */
             virtual DetectorElement* findChild(std::string name) = 0;
+
+            /**
+             * Get the global position of the DetectorElement.
+             * @return The global position of the DetectorElement.
+             */
+            virtual const std::vector<double>& getGlobalPosition() = 0;
+    };
+
+    /**
+     * @class DetectorElementVisitor
+     * @brief Interface for visiting DetectorElement nodes
+     */
+    class DetectorElementVisitor {
+
+        public:
+
+            /**
+             * Class destructor.
+             */
+            virtual ~DetectorElementVisitor() {;}
+
+            /**
+             * Function to be implemented by the visitor.
+             * @param de The DetectorElement to visit.
+             */
+            virtual void visit(DetectorElement* de) = 0;
+
+            /**
+             * Walk a DetectorElement tree in level order.
+             * @param de The top DetectorElement.
+             * @param visitor The visitor to activate at each DetectorElement.
+             */
+            static void walk(DetectorElement* de, DetectorElementVisitor* visitor);
     };
 }
 
