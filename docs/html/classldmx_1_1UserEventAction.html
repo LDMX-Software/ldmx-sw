@@ -165,22 +165,24 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="UserEventAction_8cxx_source.html#l00020">20</a> of file <a class="el" href="UserEventAction_8cxx_source.html">UserEventAction.cxx</a>.</p>
+<p>Definition at line <a class="el" href="UserEventAction_8cxx_source.html#l00021">21</a> of file <a class="el" href="UserEventAction_8cxx_source.html">UserEventAction.cxx</a>.</p>
 
-<p>References <a class="el" href="PluginManager_8cxx_source.html#l00049">ldmx::PluginManager::beginEvent()</a>, <a class="el" href="TrackMap_8cxx_source.html#l00040">ldmx::TrackMap::clear()</a>, and <a class="el" href="TrackMap_8cxx_source.html#l00012">ldmx::TrackMap::getInstance()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                                                               {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="comment">// Clear the global track map.</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="classldmx_1_1TrackMap.html#a8e21a9921c9ce129b77ee6e32bafe427">TrackMap::getInstance</a>()-&gt;<a class="code" href="classldmx_1_1TrackMap.html#aecab88a170705182ca462febd440d741">clear</a>();</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="comment">// Install custom trajectory container for the event.</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    G4EventManager::GetEventManager()-&gt;GetNonconstCurrentEvent()-&gt;SetTrajectoryContainer(<span class="keyword">new</span> TrajectoryContainer);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    pluginManager_-&gt;<a class="code" href="classldmx_1_1PluginManager.html#a1aca07238a62214c1e2c34ae5de8582c">beginEvent</a>(anEvent);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
-<div class="ttc" id="classldmx_1_1TrackMap_html_aecab88a170705182ca462febd440d741"><div class="ttname"><a href="classldmx_1_1TrackMap.html#aecab88a170705182ca462febd440d741">ldmx::TrackMap::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8cxx_source.html#l00040">TrackMap.cxx:40</a></div></div>
+<p>References <a class="el" href="PluginManager_8cxx_source.html#l00049">ldmx::PluginManager::beginEvent()</a>, <a class="el" href="TrackMap_8cxx_source.html#l00035">ldmx::TrackMap::clear()</a>, <a class="el" href="UserTrackingAction_8h_source.html#l00058">ldmx::UserTrackingAction::getTrackMap()</a>, and <a class="el" href="UserTrackingAction_8h_source.html#l00084">ldmx::UserTrackingAction::getUserTrackingAction()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                                                               {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="comment">// Clear the global track map.</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="classldmx_1_1UserTrackingAction.html#a7e1af9180bd57205112c6bc26ec3bfc9">UserTrackingAction::getUserTrackingAction</a>()-&gt;<a class="code" href="classldmx_1_1UserTrackingAction.html#a5e9181fe6327caca3ab916c168bfae44">getTrackMap</a>()-&gt;<a class="code" href="classldmx_1_1TrackMap.html#aecab88a170705182ca462febd440d741">clear</a>();</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="comment">// Install custom trajectory container for the event.</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    G4EventManager::GetEventManager()-&gt;GetNonconstCurrentEvent()-&gt;SetTrajectoryContainer(<span class="keyword">new</span> TrajectoryContainer);</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="comment">// Activate user plugins.</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    pluginManager_-&gt;<a class="code" href="classldmx_1_1PluginManager.html#a1aca07238a62214c1e2c34ae5de8582c">beginEvent</a>(anEvent);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;}</div>
+<div class="ttc" id="classldmx_1_1TrackMap_html_aecab88a170705182ca462febd440d741"><div class="ttname"><a href="classldmx_1_1TrackMap.html#aecab88a170705182ca462febd440d741">ldmx::TrackMap::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8cxx_source.html#l00035">TrackMap.cxx:35</a></div></div>
 <div class="ttc" id="classldmx_1_1PluginManager_html_a1aca07238a62214c1e2c34ae5de8582c"><div class="ttname"><a href="classldmx_1_1PluginManager.html#a1aca07238a62214c1e2c34ae5de8582c">ldmx::PluginManager::beginEvent</a></div><div class="ttdeci">void beginEvent(const G4Event *anEvent)</div><div class="ttdef"><b>Definition:</b> <a href="PluginManager_8cxx_source.html#l00049">PluginManager.cxx:49</a></div></div>
-<div class="ttc" id="classldmx_1_1TrackMap_html_a8e21a9921c9ce129b77ee6e32bafe427"><div class="ttname"><a href="classldmx_1_1TrackMap.html#a8e21a9921c9ce129b77ee6e32bafe427">ldmx::TrackMap::getInstance</a></div><div class="ttdeci">static TrackMap * getInstance()</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8cxx_source.html#l00012">TrackMap.cxx:12</a></div></div>
+<div class="ttc" id="classldmx_1_1UserTrackingAction_html_a5e9181fe6327caca3ab916c168bfae44"><div class="ttname"><a href="classldmx_1_1UserTrackingAction.html#a5e9181fe6327caca3ab916c168bfae44">ldmx::UserTrackingAction::getTrackMap</a></div><div class="ttdeci">TrackMap * getTrackMap()</div><div class="ttdef"><b>Definition:</b> <a href="UserTrackingAction_8h_source.html#l00058">UserTrackingAction.h:58</a></div></div>
+<div class="ttc" id="classldmx_1_1UserTrackingAction_html_a7e1af9180bd57205112c6bc26ec3bfc9"><div class="ttname"><a href="classldmx_1_1UserTrackingAction.html#a7e1af9180bd57205112c6bc26ec3bfc9">ldmx::UserTrackingAction::getUserTrackingAction</a></div><div class="ttdeci">static UserTrackingAction * getUserTrackingAction()</div><div class="ttdef"><b>Definition:</b> <a href="UserTrackingAction_8h_source.html#l00084">UserTrackingAction.h:84</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -205,12 +207,12 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="UserEventAction_8cxx_source.html#l00031">31</a> of file <a class="el" href="UserEventAction_8cxx_source.html">UserEventAction.cxx</a>.</p>
+<p>Definition at line <a class="el" href="UserEventAction_8cxx_source.html#l00033">33</a> of file <a class="el" href="UserEventAction_8cxx_source.html">UserEventAction.cxx</a>.</p>
 
 <p>References <a class="el" href="PluginManager_8cxx_source.html#l00057">ldmx::PluginManager::endEvent()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                                                             {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    pluginManager_-&gt;<a class="code" href="classldmx_1_1PluginManager.html#a36ad013b02d5fe35ad200d0e08421b89">endEvent</a>(anEvent);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                                                             {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    pluginManager_-&gt;<a class="code" href="classldmx_1_1PluginManager.html#a36ad013b02d5fe35ad200d0e08421b89">endEvent</a>(anEvent);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}</div>
 <div class="ttc" id="classldmx_1_1PluginManager_html_a36ad013b02d5fe35ad200d0e08421b89"><div class="ttname"><a href="classldmx_1_1PluginManager.html#a36ad013b02d5fe35ad200d0e08421b89">ldmx::PluginManager::endEvent</a></div><div class="ttdeci">void endEvent(const G4Event *anEvent)</div><div class="ttdef"><b>Definition:</b> <a href="PluginManager_8cxx_source.html#l00057">PluginManager.cxx:57</a></div></div>
 </div><!-- fragment -->
 </div>

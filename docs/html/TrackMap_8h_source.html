@@ -66,29 +66,26 @@
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
 <div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classldmx_1_1TrackMap.html#a1d648a57bee0f9c0e6d7b23c298006e6">   31</a></span>&#160;        <span class="keyword">typedef</span> std::map&lt;G4int, G4int&gt; <a class="code" href="classldmx_1_1TrackMap.html#a1d648a57bee0f9c0e6d7b23c298006e6">TrackIDMap</a>;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <span class="keyword">static</span> <a class="code" href="classldmx_1_1TrackMap.html">TrackMap</a>* <a class="code" href="classldmx_1_1TrackMap.html#a8e21a9921c9ce129b77ee6e32bafe427">getInstance</a>();</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1TrackMap.html#af8575ec9845ef5d2154e0b272866db96">addSecondary</a>(G4int trackID, G4int parentID);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        G4VTrajectory* <a class="code" href="classldmx_1_1TrackMap.html#ac1a8b26a349adb4773d684ca9ce41136">findTrajectory</a>(<span class="keyword">const</span> G4Event* anEvent, G4int trackID);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1TrackMap.html#aecab88a170705182ca462febd440d741">clear</a>();</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1TrackMap.html#af8575ec9845ef5d2154e0b272866db96">addSecondary</a>(G4int trackID, G4int parentID);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        G4VTrajectory* <a class="code" href="classldmx_1_1TrackMap.html#ac1a8b26a349adb4773d684ca9ce41136">findTrajectory</a>(<span class="keyword">const</span> G4Event* anEvent, G4int trackID);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1TrackMap.html#aecab88a170705182ca462febd440d741">clear</a>();</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">   57</a></span>&#160;        <a class="code" href="classldmx_1_1TrackMap.html#a1d648a57bee0f9c0e6d7b23c298006e6">TrackIDMap</a> <a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;};</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">   63</a></span>&#160;        <a class="code" href="classldmx_1_1TrackMap.html#a1d648a57bee0f9c0e6d7b23c298006e6">TrackIDMap</a> <a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;};</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;}</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="classldmx_1_1TrackMap_html_a1d648a57bee0f9c0e6d7b23c298006e6"><div class="ttname"><a href="classldmx_1_1TrackMap.html#a1d648a57bee0f9c0e6d7b23c298006e6">ldmx::TrackMap::TrackIDMap</a></div><div class="ttdeci">std::map&lt; G4int, G4int &gt; TrackIDMap</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8h_source.html#l00031">TrackMap.h:31</a></div></div>
-<div class="ttc" id="classldmx_1_1TrackMap_html_aecab88a170705182ca462febd440d741"><div class="ttname"><a href="classldmx_1_1TrackMap.html#aecab88a170705182ca462febd440d741">ldmx::TrackMap::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8cxx_source.html#l00040">TrackMap.cxx:40</a></div></div>
+<div class="ttc" id="classldmx_1_1TrackMap_html_aecab88a170705182ca462febd440d741"><div class="ttname"><a href="classldmx_1_1TrackMap.html#aecab88a170705182ca462febd440d741">ldmx::TrackMap::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8cxx_source.html#l00035">TrackMap.cxx:35</a></div></div>
 <div class="ttc" id="classldmx_1_1TrackMap_html"><div class="ttname"><a href="classldmx_1_1TrackMap.html">ldmx::TrackMap</a></div><div class="ttdoc">Defines a map of track ID to parent ID. </div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8h_source.html#l00024">TrackMap.h:24</a></div></div>
-<div class="ttc" id="classldmx_1_1TrackMap_html_af8575ec9845ef5d2154e0b272866db96"><div class="ttname"><a href="classldmx_1_1TrackMap.html#af8575ec9845ef5d2154e0b272866db96">ldmx::TrackMap::addSecondary</a></div><div class="ttdeci">void addSecondary(G4int trackID, G4int parentID)</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8cxx_source.html#l00017">TrackMap.cxx:17</a></div></div>
-<div class="ttc" id="classldmx_1_1TrackMap_html_a0d46b5ce93c7431900e0ff42f6954ddd"><div class="ttname"><a href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">ldmx::TrackMap::trackIDMap_</a></div><div class="ttdeci">TrackIDMap trackIDMap_</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8h_source.html#l00063">TrackMap.h:63</a></div></div>
-<div class="ttc" id="classldmx_1_1TrackMap_html_ac1a8b26a349adb4773d684ca9ce41136"><div class="ttname"><a href="classldmx_1_1TrackMap.html#ac1a8b26a349adb4773d684ca9ce41136">ldmx::TrackMap::findTrajectory</a></div><div class="ttdeci">G4VTrajectory * findTrajectory(const G4Event *anEvent, G4int trackID)</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8cxx_source.html#l00021">TrackMap.cxx:21</a></div></div>
-<div class="ttc" id="classldmx_1_1TrackMap_html_a8e21a9921c9ce129b77ee6e32bafe427"><div class="ttname"><a href="classldmx_1_1TrackMap.html#a8e21a9921c9ce129b77ee6e32bafe427">ldmx::TrackMap::getInstance</a></div><div class="ttdeci">static TrackMap * getInstance()</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8cxx_source.html#l00012">TrackMap.cxx:12</a></div></div>
+<div class="ttc" id="classldmx_1_1TrackMap_html_af8575ec9845ef5d2154e0b272866db96"><div class="ttname"><a href="classldmx_1_1TrackMap.html#af8575ec9845ef5d2154e0b272866db96">ldmx::TrackMap::addSecondary</a></div><div class="ttdeci">void addSecondary(G4int trackID, G4int parentID)</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8cxx_source.html#l00012">TrackMap.cxx:12</a></div></div>
+<div class="ttc" id="classldmx_1_1TrackMap_html_a0d46b5ce93c7431900e0ff42f6954ddd"><div class="ttname"><a href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">ldmx::TrackMap::trackIDMap_</a></div><div class="ttdeci">TrackIDMap trackIDMap_</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8h_source.html#l00057">TrackMap.h:57</a></div></div>
+<div class="ttc" id="classldmx_1_1TrackMap_html_ac1a8b26a349adb4773d684ca9ce41136"><div class="ttname"><a href="classldmx_1_1TrackMap.html#ac1a8b26a349adb4773d684ca9ce41136">ldmx::TrackMap::findTrajectory</a></div><div class="ttdeci">G4VTrajectory * findTrajectory(const G4Event *anEvent, G4int trackID)</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8cxx_source.html#l00016">TrackMap.cxx:16</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

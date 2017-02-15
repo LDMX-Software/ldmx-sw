@@ -51,7 +51,6 @@
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classldmx_1_1TrackMap-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -77,11 +76,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac1a8b26a349adb4773d684ca9ce41136"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aecab88a170705182ca462febd440d741"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TrackMap.html#aecab88a170705182ca462febd440d741">clear</a> ()</td></tr>
 <tr class="separator:aecab88a170705182ca462febd440d741"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a8e21a9921c9ce129b77ee6e32bafe427"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classldmx_1_1TrackMap.html">TrackMap</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TrackMap.html#a8e21a9921c9ce129b77ee6e32bafe427">getInstance</a> ()</td></tr>
-<tr class="separator:a8e21a9921c9ce129b77ee6e32bafe427"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -142,15 +136,15 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="TrackMap_8cxx_source.html#l00017">17</a> of file <a class="el" href="TrackMap_8cxx_source.html">TrackMap.cxx</a>.</p>
+<p>Definition at line <a class="el" href="TrackMap_8cxx_source.html#l00012">12</a> of file <a class="el" href="TrackMap_8cxx_source.html">TrackMap.cxx</a>.</p>
 
-<p>References <a class="el" href="TrackMap_8h_source.html#l00063">trackIDMap_</a>.</p>
+<p>References <a class="el" href="TrackMap_8h_source.html#l00057">trackIDMap_</a>.</p>
 
-<p>Referenced by <a class="el" href="UserTrackingAction_8cxx_source.html#l00026">ldmx::UserTrackingAction::PreUserTrackingAction()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                                                         {</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>[trackID] = parentID;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}</div>
-<div class="ttc" id="classldmx_1_1TrackMap_html_a0d46b5ce93c7431900e0ff42f6954ddd"><div class="ttname"><a href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">ldmx::TrackMap::trackIDMap_</a></div><div class="ttdeci">TrackIDMap trackIDMap_</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8h_source.html#l00063">TrackMap.h:63</a></div></div>
+<p>Referenced by <a class="el" href="UserTrackingAction_8cxx_source.html#l00050">ldmx::UserTrackingAction::processTrack()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;                                                         {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>[trackID] = parentID;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;}</div>
+<div class="ttc" id="classldmx_1_1TrackMap_html_a0d46b5ce93c7431900e0ff42f6954ddd"><div class="ttname"><a href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">ldmx::TrackMap::trackIDMap_</a></div><div class="ttdeci">TrackIDMap trackIDMap_</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8h_source.html#l00057">TrackMap.h:57</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -168,15 +162,15 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Clear the map. </p>
 
-<p>Definition at line <a class="el" href="TrackMap_8cxx_source.html#l00040">40</a> of file <a class="el" href="TrackMap_8cxx_source.html">TrackMap.cxx</a>.</p>
+<p>Definition at line <a class="el" href="TrackMap_8cxx_source.html#l00035">35</a> of file <a class="el" href="TrackMap_8cxx_source.html">TrackMap.cxx</a>.</p>
 
-<p>References <a class="el" href="TrackMap_8h_source.html#l00063">trackIDMap_</a>.</p>
+<p>References <a class="el" href="TrackMap_8h_source.html#l00057">trackIDMap_</a>.</p>
 
-<p>Referenced by <a class="el" href="UserEventAction_8cxx_source.html#l00020">ldmx::UserEventAction::BeginOfEventAction()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                     {</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>.clear();</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}</div>
-<div class="ttc" id="classldmx_1_1TrackMap_html_a0d46b5ce93c7431900e0ff42f6954ddd"><div class="ttname"><a href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">ldmx::TrackMap::trackIDMap_</a></div><div class="ttdeci">TrackIDMap trackIDMap_</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8h_source.html#l00063">TrackMap.h:63</a></div></div>
+<p>Referenced by <a class="el" href="UserEventAction_8cxx_source.html#l00021">ldmx::UserEventAction::BeginOfEventAction()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                     {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>.clear();</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;}</div>
+<div class="ttc" id="classldmx_1_1TrackMap_html_a0d46b5ce93c7431900e0ff42f6954ddd"><div class="ttname"><a href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">ldmx::TrackMap::trackIDMap_</a></div><div class="ttdeci">TrackIDMap trackIDMap_</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8h_source.html#l00057">TrackMap.h:57</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -212,63 +206,30 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="TrackMap_8cxx_source.html#l00021">21</a> of file <a class="el" href="TrackMap_8cxx_source.html">TrackMap.cxx</a>.</p>
+<p>Definition at line <a class="el" href="TrackMap_8cxx_source.html#l00016">16</a> of file <a class="el" href="TrackMap_8cxx_source.html">TrackMap.cxx</a>.</p>
 
-<p>References <a class="el" href="TrajectoryContainer_8cxx_source.html#l00005">ldmx::TrajectoryContainer::findByTrackID()</a>, and <a class="el" href="TrackMap_8h_source.html#l00063">trackIDMap_</a>.</p>
+<p>References <a class="el" href="TrajectoryContainer_8cxx_source.html#l00005">ldmx::TrajectoryContainer::findByTrackID()</a>, and <a class="el" href="TrackMap_8h_source.html#l00057">trackIDMap_</a>.</p>
 
-<p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00101">ldmx::SimParticleBuilder::findSimParticle()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                                                                             {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    TrajectoryContainer* trajectories = (TrajectoryContainer*)anEvent-&gt;GetTrajectoryContainer();</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    G4int currTrackID = trackID;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    G4VTrajectory* traj = NULL;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keywordflow">for</span> (;;) {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        traj = trajectories-&gt;findByTrackID(currTrackID);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        <span class="keywordflow">if</span> (traj != NULL) {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;            <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>.find(currTrackID) != <a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>.end()) {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                currTrackID = <a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>[currTrackID];</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            }</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        }</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    }</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordflow">return</span> traj;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
-<div class="ttc" id="classldmx_1_1TrackMap_html_a0d46b5ce93c7431900e0ff42f6954ddd"><div class="ttname"><a href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">ldmx::TrackMap::trackIDMap_</a></div><div class="ttdeci">TrackIDMap trackIDMap_</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8h_source.html#l00063">TrackMap.h:63</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<a class="anchor" id="a8e21a9921c9ce129b77ee6e32bafe427"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classldmx_1_1TrackMap.html">TrackMap</a> * ldmx::TrackMap::getInstance </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Get the global instance of the map. </p>
-<dl class="section return"><dt>Returns</dt><dd>The global instance of the map. </dd></dl>
-
-<p>Definition at line <a class="el" href="TrackMap_8cxx_source.html#l00012">12</a> of file <a class="el" href="TrackMap_8cxx_source.html">TrackMap.cxx</a>.</p>
-
-<p>Referenced by <a class="el" href="UserEventAction_8cxx_source.html#l00020">ldmx::UserEventAction::BeginOfEventAction()</a>, <a class="el" href="UserTrackingAction_8cxx_source.html#l00026">ldmx::UserTrackingAction::PreUserTrackingAction()</a>, and <a class="el" href="SimParticleBuilder_8cxx_source.html#l00018">ldmx::SimParticleBuilder::SimParticleBuilder()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;                                {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keyword">static</span> TrackMap INSTANCE;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keywordflow">return</span> &amp;INSTANCE;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;}</div>
+<p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00102">ldmx::SimParticleBuilder::findSimParticle()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;                                                                             {</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    TrajectoryContainer* trajectories = (TrajectoryContainer*)anEvent-&gt;GetTrajectoryContainer();</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    G4int currTrackID = trackID;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    G4VTrajectory* traj = NULL;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keywordflow">for</span> (;;) {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        traj = trajectories-&gt;findByTrackID(currTrackID);</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <span class="keywordflow">if</span> (traj != NULL) {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>.find(currTrackID) != <a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>.end()) {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                currTrackID = <a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>[currTrackID];</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;            }</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        }</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    }</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordflow">return</span> traj;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;}</div>
+<div class="ttc" id="classldmx_1_1TrackMap_html_a0d46b5ce93c7431900e0ff42f6954ddd"><div class="ttname"><a href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">ldmx::TrackMap::trackIDMap_</a></div><div class="ttdeci">TrackIDMap trackIDMap_</div><div class="ttdef"><b>Definition:</b> <a href="TrackMap_8h_source.html#l00057">TrackMap.h:57</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -292,9 +253,9 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The map of track IDs to parent IDs. </p>
 
-<p>Definition at line <a class="el" href="TrackMap_8h_source.html#l00063">63</a> of file <a class="el" href="TrackMap_8h_source.html">TrackMap.h</a>.</p>
+<p>Definition at line <a class="el" href="TrackMap_8h_source.html#l00057">57</a> of file <a class="el" href="TrackMap_8h_source.html">TrackMap.h</a>.</p>
 
-<p>Referenced by <a class="el" href="TrackMap_8cxx_source.html#l00017">addSecondary()</a>, <a class="el" href="TrackMap_8cxx_source.html#l00040">clear()</a>, and <a class="el" href="TrackMap_8cxx_source.html#l00021">findTrajectory()</a>.</p>
+<p>Referenced by <a class="el" href="TrackMap_8cxx_source.html#l00012">addSecondary()</a>, <a class="el" href="TrackMap_8cxx_source.html#l00035">clear()</a>, and <a class="el" href="TrackMap_8cxx_source.html#l00016">findTrajectory()</a>.</p>
 
 </div>
 </div>

@@ -158,8 +158,9 @@ Private Attributes</h2></td></tr>
 <p>Class constructor. </p>
 
 <p>Definition at line <a class="el" href="SimTrackerHit_8cxx_source.html#l00007">7</a> of file <a class="el" href="SimTrackerHit_8cxx_source.html">SimTrackerHit.cxx</a>.</p>
-<div class="fragment"><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    : TObject() {</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;                                 :</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;        TObject() {</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -188,9 +189,9 @@ Private Attributes</h2></td></tr>
 <p>Definition at line <a class="el" href="SimTrackerHit_8cxx_source.html#l00011">11</a> of file <a class="el" href="SimTrackerHit_8cxx_source.html">SimTrackerHit.cxx</a>.</p>
 
 <p>References <a class="el" href="SimTrackerHit_8cxx_source.html#l00025">Clear()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;                              {</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#afaa705a1ed5907649ae67d25739997a0">Clear</a>();</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;                                  {</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#afaa705a1ed5907649ae67d25739997a0">Clear</a>();</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    }</div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_afaa705a1ed5907649ae67d25739997a0"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#afaa705a1ed5907649ae67d25739997a0">ldmx::SimTrackerHit::Clear</a></div><div class="ttdeci">void Clear(Option_t *option=&quot;&quot;)</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8cxx_source.html#l00025">SimTrackerHit.cxx:25</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -251,23 +252,23 @@ Private Attributes</h2></td></tr>
 <p>References <a class="el" href="SimTrackerHit_8h_source.html#l00169">edep_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00159">id_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00164">layerID_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00209">pathLength_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00179">px_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00184">py_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00189">pz_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00214">simParticle_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00174">time_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00194">x_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00199">y_</a>, and <a class="el" href="SimTrackerHit_8h_source.html#l00204">z_</a>.</p>
 
 <p>Referenced by <a class="el" href="SimTrackerHit_8cxx_source.html#l00011">~SimTrackerHit()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                   {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    TObject::Clear();</div>
+<div class="fragment"><div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                       {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        TObject::Clear();</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#abad52c22ae4f75213d0c8027b5390638">id_</a> = 0;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#a4951d8690f38dbbdd14cfa95e3933171">layerID_</a> = 0;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#a4748caabf7875ab4de2d80a129edf8bb">edep_</a> = 0;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#a38d8bd957fd60ead534c0d464dd29674">time_</a> = 0;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#a43bf23f343df77aefcc36261f1516bb5">px_</a> = 0;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#a8ca473f3c3ce9b2ab2c0c6837895803d">py_</a> = 0;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#a22574cda3f36d312fbf54d5efe8c61d4">pz_</a> = 0;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#a4efe0ee35bdabfe3066f5e0354976bc6">x_</a> = 0;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#a75de05a6b170ee7718978120d2911d69">y_</a> = 0;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#a19015020e1b82da97860e6237d2129ea">z_</a> = 0;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#a22efcefad0402ed3a1fbd23e813b2cb8">pathLength_</a> = 0;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#abad52c22ae4f75213d0c8027b5390638">id_</a> = 0;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#a4951d8690f38dbbdd14cfa95e3933171">layerID_</a> = 0;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#a4748caabf7875ab4de2d80a129edf8bb">edep_</a> = 0;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#a38d8bd957fd60ead534c0d464dd29674">time_</a> = 0;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#a43bf23f343df77aefcc36261f1516bb5">px_</a> = 0;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#a8ca473f3c3ce9b2ab2c0c6837895803d">py_</a> = 0;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#a22574cda3f36d312fbf54d5efe8c61d4">pz_</a> = 0;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#a4efe0ee35bdabfe3066f5e0354976bc6">x_</a> = 0;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#a75de05a6b170ee7718978120d2911d69">y_</a> = 0;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#a19015020e1b82da97860e6237d2129ea">z_</a> = 0;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#a22efcefad0402ed3a1fbd23e813b2cb8">pathLength_</a> = 0;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="classldmx_1_1SimTrackerHit.html#a12e576fcf2257371d2b18988dd91ff9d">simParticle_</a>.SetObject(<span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;}</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <a class="code" href="classldmx_1_1SimTrackerHit.html#a12e576fcf2257371d2b18988dd91ff9d">simParticle_</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    }</div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a22efcefad0402ed3a1fbd23e813b2cb8"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a22efcefad0402ed3a1fbd23e813b2cb8">ldmx::SimTrackerHit::pathLength_</a></div><div class="ttdeci">float pathLength_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00209">SimTrackerHit.h:209</a></div></div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a22574cda3f36d312fbf54d5efe8c61d4"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a22574cda3f36d312fbf54d5efe8c61d4">ldmx::SimTrackerHit::pz_</a></div><div class="ttdeci">float pz_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00189">SimTrackerHit.h:189</a></div></div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a4efe0ee35bdabfe3066f5e0354976bc6"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a4efe0ee35bdabfe3066f5e0354976bc6">ldmx::SimTrackerHit::x_</a></div><div class="ttdeci">float x_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00194">SimTrackerHit.h:194</a></div></div>
@@ -491,9 +492,9 @@ Private Attributes</h2></td></tr>
 <p>Definition at line <a class="el" href="SimTrackerHit_8cxx_source.html#l00043">43</a> of file <a class="el" href="SimTrackerHit_8cxx_source.html">SimTrackerHit.cxx</a>.</p>
 
 <p>References <a class="el" href="SimTrackerHit_8h_source.html#l00214">simParticle_</a>.</p>
-<div class="fragment"><div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                                                 {</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>SimParticle*<span class="keyword">&gt;</span>(<a class="code" href="classldmx_1_1SimTrackerHit.html#a12e576fcf2257371d2b18988dd91ff9d">simParticle_</a>.GetObject());</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                                                     {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>SimParticle*<span class="keyword">&gt;</span>(<a class="code" href="classldmx_1_1SimTrackerHit.html#a12e576fcf2257371d2b18988dd91ff9d">simParticle_</a>.GetObject());</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    }</div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a12e576fcf2257371d2b18988dd91ff9d"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a12e576fcf2257371d2b18988dd91ff9d">ldmx::SimTrackerHit::simParticle_</a></div><div class="ttdeci">TRef simParticle_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00214">SimTrackerHit.h:214</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -547,15 +548,15 @@ Private Attributes</h2></td></tr>
 <p>Definition at line <a class="el" href="SimTrackerHit_8cxx_source.html#l00015">15</a> of file <a class="el" href="SimTrackerHit_8cxx_source.html">SimTrackerHit.cxx</a>.</p>
 
 <p>References <a class="el" href="SimTrackerHit_8h_source.html#l00169">edep_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00159">id_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00164">layerID_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00179">px_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00184">py_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00189">pz_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00174">time_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00194">x_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00199">y_</a>, and <a class="el" href="SimTrackerHit_8h_source.html#l00204">z_</a>.</p>
-<div class="fragment"><div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;                                                {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    std::cout &lt;&lt; <span class="stringliteral">&quot;SimTrackerHit { &quot;</span> &lt;&lt; <span class="stringliteral">&quot;id: &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#abad52c22ae4f75213d0c8027b5390638">id_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;        <span class="stringliteral">&quot;layerID: &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a4951d8690f38dbbdd14cfa95e3933171">layerID_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        <span class="stringliteral">&quot;position: ( &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a4efe0ee35bdabfe3066f5e0354976bc6">x_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a75de05a6b170ee7718978120d2911d69">y_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a19015020e1b82da97860e6237d2129ea">z_</a> &lt;&lt; <span class="stringliteral">&quot; ), &quot;</span> &lt;&lt;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        <span class="stringliteral">&quot;edep: &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a4748caabf7875ab4de2d80a129edf8bb">edep_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        <span class="stringliteral">&quot;time: &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a38d8bd957fd60ead534c0d464dd29674">time_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        <span class="stringliteral">&quot;momentum: ( &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a43bf23f343df77aefcc36261f1516bb5">px_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a8ca473f3c3ce9b2ab2c0c6837895803d">py_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a22574cda3f36d312fbf54d5efe8c61d4">pz_</a> &lt;&lt; <span class="stringliteral">&quot; )&quot;</span> &lt;&lt;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <span class="stringliteral">&quot; }&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;                                                    {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;        std::cout &lt;&lt; <span class="stringliteral">&quot;SimTrackerHit { &quot;</span> &lt;&lt; <span class="stringliteral">&quot;id: &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#abad52c22ae4f75213d0c8027b5390638">id_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                     <span class="stringliteral">&quot;layerID: &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a4951d8690f38dbbdd14cfa95e3933171">layerID_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                     <span class="stringliteral">&quot;position: ( &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a4efe0ee35bdabfe3066f5e0354976bc6">x_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a75de05a6b170ee7718978120d2911d69">y_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a19015020e1b82da97860e6237d2129ea">z_</a> &lt;&lt; <span class="stringliteral">&quot; ), &quot;</span> &lt;&lt;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                     <span class="stringliteral">&quot;edep: &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a4748caabf7875ab4de2d80a129edf8bb">edep_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                     <span class="stringliteral">&quot;time: &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a38d8bd957fd60ead534c0d464dd29674">time_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                     <span class="stringliteral">&quot;momentum: ( &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a43bf23f343df77aefcc36261f1516bb5">px_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a8ca473f3c3ce9b2ab2c0c6837895803d">py_</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1SimTrackerHit.html#a22574cda3f36d312fbf54d5efe8c61d4">pz_</a> &lt;&lt; <span class="stringliteral">&quot; )&quot;</span> &lt;&lt;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                     <span class="stringliteral">&quot; }&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    }</div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a22574cda3f36d312fbf54d5efe8c61d4"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a22574cda3f36d312fbf54d5efe8c61d4">ldmx::SimTrackerHit::pz_</a></div><div class="ttdeci">float pz_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00189">SimTrackerHit.h:189</a></div></div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a4efe0ee35bdabfe3066f5e0354976bc6"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a4efe0ee35bdabfe3066f5e0354976bc6">ldmx::SimTrackerHit::x_</a></div><div class="ttdeci">float x_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00194">SimTrackerHit.h:194</a></div></div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a4951d8690f38dbbdd14cfa95e3933171"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a4951d8690f38dbbdd14cfa95e3933171">ldmx::SimTrackerHit::layerID_</a></div><div class="ttdeci">int layerID_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00164">SimTrackerHit.h:164</a></div></div>
@@ -602,7 +603,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="SimTrackerHit_8h_source.html#l00169">edep_</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00208">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00206">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;{ this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a4748caabf7875ab4de2d80a129edf8bb">edep_</a> = edep; };</div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a4748caabf7875ab4de2d80a129edf8bb"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a4748caabf7875ab4de2d80a129edf8bb">ldmx::SimTrackerHit::edep_</a></div><div class="ttdeci">float edep_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00169">SimTrackerHit.h:169</a></div></div>
 </div><!-- fragment -->
@@ -641,7 +642,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="SimTrackerHit_8h_source.html#l00159">id_</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00208">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00206">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;{ this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#abad52c22ae4f75213d0c8027b5390638">id_</a> = id; };</div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_abad52c22ae4f75213d0c8027b5390638"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#abad52c22ae4f75213d0c8027b5390638">ldmx::SimTrackerHit::id_</a></div><div class="ttdeci">int id_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00159">SimTrackerHit.h:159</a></div></div>
 </div><!-- fragment -->
@@ -680,7 +681,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="SimTrackerHit_8h_source.html#l00164">layerID_</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00208">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00206">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;{ this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a4951d8690f38dbbdd14cfa95e3933171">layerID_</a> = layerID; };</div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a4951d8690f38dbbdd14cfa95e3933171"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a4951d8690f38dbbdd14cfa95e3933171">ldmx::SimTrackerHit::layerID_</a></div><div class="ttdeci">int layerID_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00164">SimTrackerHit.h:164</a></div></div>
 </div><!-- fragment -->
@@ -729,12 +730,12 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="SimTrackerHit_8h_source.html#l00179">px_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00184">py_</a>, and <a class="el" href="SimTrackerHit_8h_source.html#l00189">pz_</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00208">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                                                                              {</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a43bf23f343df77aefcc36261f1516bb5">px_</a> = px;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a8ca473f3c3ce9b2ab2c0c6837895803d">py_</a> = py;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a22574cda3f36d312fbf54d5efe8c61d4">pz_</a> = pz;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}</div>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00206">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                                                                                  {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a43bf23f343df77aefcc36261f1516bb5">px_</a> = px;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a8ca473f3c3ce9b2ab2c0c6837895803d">py_</a> = py;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a22574cda3f36d312fbf54d5efe8c61d4">pz_</a> = pz;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    }</div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a22574cda3f36d312fbf54d5efe8c61d4"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a22574cda3f36d312fbf54d5efe8c61d4">ldmx::SimTrackerHit::pz_</a></div><div class="ttdeci">float pz_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00189">SimTrackerHit.h:189</a></div></div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a43bf23f343df77aefcc36261f1516bb5"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a43bf23f343df77aefcc36261f1516bb5">ldmx::SimTrackerHit::px_</a></div><div class="ttdeci">float px_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00179">SimTrackerHit.h:179</a></div></div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a8ca473f3c3ce9b2ab2c0c6837895803d"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a8ca473f3c3ce9b2ab2c0c6837895803d">ldmx::SimTrackerHit::py_</a></div><div class="ttdeci">float py_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00184">SimTrackerHit.h:184</a></div></div>
@@ -774,7 +775,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="SimTrackerHit_8h_source.html#l00209">pathLength_</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00208">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00206">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;{ this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a22efcefad0402ed3a1fbd23e813b2cb8">pathLength_</a> = pathLength; };</div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a22efcefad0402ed3a1fbd23e813b2cb8"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a22efcefad0402ed3a1fbd23e813b2cb8">ldmx::SimTrackerHit::pathLength_</a></div><div class="ttdeci">float pathLength_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00209">SimTrackerHit.h:209</a></div></div>
 </div><!-- fragment -->
@@ -823,12 +824,12 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="SimTrackerHit_8h_source.html#l00194">x_</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00199">y_</a>, and <a class="el" href="SimTrackerHit_8h_source.html#l00204">z_</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00208">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                                                                           {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a4efe0ee35bdabfe3066f5e0354976bc6">x_</a> = x;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a75de05a6b170ee7718978120d2911d69">y_</a> = y;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a19015020e1b82da97860e6237d2129ea">z_</a> = z;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00206">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                                                                               {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a4efe0ee35bdabfe3066f5e0354976bc6">x_</a> = x;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a75de05a6b170ee7718978120d2911d69">y_</a> = y;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a19015020e1b82da97860e6237d2129ea">z_</a> = z;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    }</div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a4efe0ee35bdabfe3066f5e0354976bc6"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a4efe0ee35bdabfe3066f5e0354976bc6">ldmx::SimTrackerHit::x_</a></div><div class="ttdeci">float x_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00194">SimTrackerHit.h:194</a></div></div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a75de05a6b170ee7718978120d2911d69"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a75de05a6b170ee7718978120d2911d69">ldmx::SimTrackerHit::y_</a></div><div class="ttdeci">float y_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00199">SimTrackerHit.h:199</a></div></div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a19015020e1b82da97860e6237d2129ea"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a19015020e1b82da97860e6237d2129ea">ldmx::SimTrackerHit::z_</a></div><div class="ttdeci">float z_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00204">SimTrackerHit.h:204</a></div></div>
@@ -868,8 +869,8 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="SimTrackerHit_8h_source.html#l00214">simParticle_</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00208">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;{ this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a12e576fcf2257371d2b18988dd91ff9d">simParticle_</a>.SetObject(simParticle); };</div>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00206">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;{ this-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a12e576fcf2257371d2b18988dd91ff9d">simParticle_</a> = (TObject*) simParticle; };</div>
 <div class="ttc" id="classldmx_1_1SimTrackerHit_html_a12e576fcf2257371d2b18988dd91ff9d"><div class="ttname"><a href="classldmx_1_1SimTrackerHit.html#a12e576fcf2257371d2b18988dd91ff9d">ldmx::SimTrackerHit::simParticle_</a></div><div class="ttdeci">TRef simParticle_</div><div class="ttdef"><b>Definition:</b> <a href="SimTrackerHit_8h_source.html#l00214">SimTrackerHit.h:214</a></div></div>
 </div><!-- fragment -->
 </div>

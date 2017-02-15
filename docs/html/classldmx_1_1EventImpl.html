@@ -491,7 +491,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 
 <p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00237">237</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 
-<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00085">ldmx::EventFile::nextEvent()</a>.</p>
+<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00096">ldmx::EventFile::nextEvent()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;                           {</div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1EventImpl.html#ac6b2e6490e67be796ad62b3f4dea564e">inputTree_</a>==0 &amp;&amp; <a class="code" href="classldmx_1_1EventImpl.html#a014ff80a168d22e5d017c893b0a0a08b">branchesFilled_</a>.find(EventConstants::EVENT_HEADER)==<a class="code" href="classldmx_1_1EventImpl.html#a014ff80a168d22e5d017c893b0a0a08b">branchesFilled_</a>.end()) {</div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      <a class="code" href="classldmx_1_1EventImpl.html#a233c96879bfb1cfa587044074f382657">add</a>(EventConstants::EVENT_HEADER, <a class="code" href="classldmx_1_1EventImpl.html#a560faf1ab3e0dbacb1b39e284b7999f0">eventHeader_</a>);</div>
@@ -520,7 +520,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 
 <p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00243">243</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 
-<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00085">ldmx::EventFile::nextEvent()</a>, and <a class="el" href="Process_8cxx_source.html#l00013">ldmx::Process::run()</a>.</p>
+<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00096">ldmx::EventFile::nextEvent()</a>, and <a class="el" href="Process_8cxx_source.html#l00017">ldmx::Process::run()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;                      {</div>
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    <span class="comment">// clear the event objects</span></div>
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> obj : <a class="code" href="classldmx_1_1EventImpl.html#a3fce3d6d953cc2eab6ec3a3a6c7f6654">objects_</a>)</div>
@@ -550,7 +550,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 
 <p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00207">207</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 
-<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00144">ldmx::EventFile::setupEvent()</a>.</p>
+<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00158">ldmx::EventFile::setupEvent()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                             {</div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    <a class="code" href="classldmx_1_1EventImpl.html#ab86657f2fd1c0647f5d32be19db3c0da">outputTree_</a> = <span class="keyword">new</span> TTree(<span class="stringliteral">&quot;LDMX_Events&quot;</span>, <span class="stringliteral">&quot;LDMX Events&quot;</span>);</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;</div>
@@ -592,7 +592,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 
 <p>References <a class="el" href="EventImpl_8h_source.html#l00194">eventHeader_</a>.</p>
 
-<p>Referenced by <a class="el" href="Process_8cxx_source.html#l00013">ldmx::Process::run()</a>.</p>
+<p>Referenced by <a class="el" href="Process_8cxx_source.html#l00017">ldmx::Process::run()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                                          {</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1EventImpl.html#a560faf1ab3e0dbacb1b39e284b7999f0">eventHeader_</a>;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        }</div>
@@ -627,7 +627,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 
 <p>References <a class="el" href="EventImpl_8h_source.html#l00194">eventHeader_</a>.</p>
 
-<p>Referenced by <a class="el" href="Process_8cxx_source.html#l00013">ldmx::Process::run()</a>.</p>
+<p>Referenced by <a class="el" href="Process_8cxx_source.html#l00017">ldmx::Process::run()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                                                   {</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;            <span class="keywordflow">return</span> *<a class="code" href="classldmx_1_1EventImpl.html#a560faf1ab3e0dbacb1b39e284b7999f0">eventHeader_</a>;</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        }</div>
@@ -933,7 +933,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 
 <p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00232">232</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 
-<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00085">ldmx::EventFile::nextEvent()</a>.</p>
+<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00096">ldmx::EventFile::nextEvent()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;                          {</div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    <a class="code" href="classldmx_1_1EventImpl.html#a9cb70520949c542355a8ab114f70205e">ientry_</a>++;</div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
@@ -958,7 +958,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 
 <p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00250">250</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 
-<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00085">ldmx::EventFile::nextEvent()</a>.</p>
+<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00096">ldmx::EventFile::nextEvent()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;                             {</div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    <a class="code" href="classldmx_1_1EventImpl.html#a014ff80a168d22e5d017c893b0a0a08b">branchesFilled_</a>.clear();</div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;}</div>
@@ -1009,7 +1009,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 
 <p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00219">219</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 
-<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00085">ldmx::EventFile::nextEvent()</a>, and <a class="el" href="EventFile_8cxx_source.html#l00144">ldmx::EventFile::setupEvent()</a>.</p>
+<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00096">ldmx::EventFile::nextEvent()</a>, and <a class="el" href="EventFile_8cxx_source.html#l00158">ldmx::EventFile::setupEvent()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;                                        {</div>
 <div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <a class="code" href="classldmx_1_1EventImpl.html#ac6b2e6490e67be796ad62b3f4dea564e">inputTree_</a> = tree;</div>
 <div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <a class="code" href="classldmx_1_1EventImpl.html#a8ee759368e1070017ed9afe00aac9ae9">entries_</a> = <a class="code" href="classldmx_1_1EventImpl.html#ac6b2e6490e67be796ad62b3f4dea564e">inputTree_</a>-&gt;GetEntriesFast();</div>
@@ -1052,7 +1052,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 
 <p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00215">215</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 
-<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00085">ldmx::EventFile::nextEvent()</a>.</p>
+<p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00096">ldmx::EventFile::nextEvent()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;                                         {</div>
 <div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <a class="code" href="classldmx_1_1EventImpl.html#ab86657f2fd1c0647f5d32be19db3c0da">outputTree_</a> = tree;</div>
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;}</div>

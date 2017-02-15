@@ -76,6 +76,10 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onFileClose</
 <tr class="separator:a440d728aa55f6b2bf97791746c324510"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b3674055d4de9fa9d692312764007db"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DummyAnalyzer.html#a9b3674055d4de9fa9d692312764007db">onProcessEnd</a> ()</td></tr>
 <tr class="separator:a9b3674055d4de9fa9d692312764007db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa210d51b5da2d7cc6261fc74d04cca53"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DummyAnalyzer.html#aa210d51b5da2d7cc6261fc74d04cca53">onNewDetector</a> (<a class="el" href="classldmx_1_1DetectorDataService.html">DetectorDataService</a> *detectorService)</td></tr>
+<tr class="separator:aa210d51b5da2d7cc6261fc74d04cca53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff4590d36b648759d568f7c79da4d92c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DummyAnalyzer.html#aff4590d36b648759d568f7c79da4d92c">onNewRun</a> (const <a class="el" href="classldmx_1_1RunHeader.html">RunHeader</a> &amp;runHeader)</td></tr>
+<tr class="separator:aff4590d36b648759d568f7c79da4d92c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classldmx_1_1Analyzer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classldmx_1_1Analyzer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classldmx_1_1Analyzer.html">ldmx::Analyzer</a></td></tr>
 <tr class="memitem:a8611e15a7a65f96803b95e698d881d80 inherit pub_methods_classldmx_1_1Analyzer"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Analyzer.html#a8611e15a7a65f96803b95e698d881d80">Analyzer</a> (const std::string &amp;name, const <a class="el" href="classldmx_1_1Process.html">Process</a> &amp;process)</td></tr>
 <tr class="separator:a8611e15a7a65f96803b95e698d881d80 inherit pub_methods_classldmx_1_1Analyzer"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -86,8 +90,6 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onFileClose</
 <tr class="separator:ab68e52016c598c53d2d9978bb244213a inherit pub_methods_classldmx_1_1EventProcessor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a5ada71abe64354bfbbf5481843e955 inherit pub_methods_classldmx_1_1EventProcessor"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EventProcessor.html#a6a5ada71abe64354bfbbf5481843e955">configure</a> (const <a class="el" href="classldmx_1_1ParameterSet.html">ParameterSet</a> &amp;parameters)</td></tr>
 <tr class="separator:a6a5ada71abe64354bfbbf5481843e955 inherit pub_methods_classldmx_1_1EventProcessor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e9c8671787ab4f5b0bb597536b63b7f inherit pub_methods_classldmx_1_1EventProcessor"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EventProcessor.html#a3e9c8671787ab4f5b0bb597536b63b7f">onNewRun</a> (int run)</td></tr>
-<tr class="separator:a3e9c8671787ab4f5b0bb597536b63b7f inherit pub_methods_classldmx_1_1EventProcessor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ee4ef7e76fb282c80f208a295ab6509 inherit pub_methods_classldmx_1_1EventProcessor"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EventProcessor.html#a9ee4ef7e76fb282c80f208a295ab6509">onFileOpen</a> (const std::string &amp;filename)</td></tr>
 <tr class="separator:a9ee4ef7e76fb282c80f208a295ab6509 inherit pub_methods_classldmx_1_1EventProcessor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8bf0298ed6b424e1168ad3d90e82387 inherit pub_methods_classldmx_1_1EventProcessor"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EventProcessor.html#aa8bf0298ed6b424e1168ad3d90e82387">onFileClose</a> (const std::string &amp;filename)</td></tr>
@@ -99,7 +101,7 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a13b557e0dd7b52cee597ce4f16bfea1c inherit pub_static_methods_classldmx_1_1EventProcessor"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EventProcessor.html#a13b557e0dd7b52cee597ce4f16bfea1c">declare</a> (const std::string &amp;classname, int classtype, <a class="el" href="namespaceldmx.html#a6a4d125990d1315ecd8861bf0010786b">EventProcessorMaker</a> *)</td></tr>
 <tr class="separator:a13b557e0dd7b52cee597ce4f16bfea1c inherit pub_static_methods_classldmx_1_1EventProcessor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_static_attribs_classldmx_1_1Analyzer"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classldmx_1_1Analyzer')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="classldmx_1_1Analyzer.html">ldmx::Analyzer</a></td></tr>
-<tr class="memitem:a6ca64f210cca3706d88547ad02015096 inherit pub_static_attribs_classldmx_1_1Analyzer"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Analyzer.html#a6ca64f210cca3706d88547ad02015096">CLASSTYPE</a> { 2 }</td></tr>
+<tr class="memitem:a6ca64f210cca3706d88547ad02015096 inherit pub_static_attribs_classldmx_1_1Analyzer"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Analyzer.html#a6ca64f210cca3706d88547ad02015096">CLASSTYPE</a> {2}</td></tr>
 <tr class="separator:a6ca64f210cca3706d88547ad02015096 inherit pub_static_attribs_classldmx_1_1Analyzer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classldmx_1_1EventProcessor"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classldmx_1_1EventProcessor')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classldmx_1_1EventProcessor.html">ldmx::EventProcessor</a></td></tr>
 <tr class="memitem:afeb48bc9b899e1aad3f1af162cd9b4be inherit pro_attribs_classldmx_1_1EventProcessor"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classldmx_1_1Process.html">Process</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EventProcessor.html#afeb48bc9b899e1aad3f1af162cd9b4be">process_</a></td></tr>
@@ -108,7 +110,7 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A dummy <a class="el" href="classldmx_1_1Analyzer.html" title="Base class for a module which does not produce a data product. ">Analyzer</a> implementation that just prints some messages. </p>
 
-<p>Definition at line <a class="el" href="DummyAnalyzer_8cxx_source.html#l00016">16</a> of file <a class="el" href="DummyAnalyzer_8cxx_source.html">DummyAnalyzer.cxx</a>.</p>
+<p>Definition at line <a class="el" href="DummyAnalyzer_8cxx_source.html#l00019">19</a> of file <a class="el" href="DummyAnalyzer_8cxx_source.html">DummyAnalyzer.cxx</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="ac724138eb2204c0ab0a543504a65a32a"></a>
 <div class="memitem">
@@ -141,10 +143,91 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classldmx_1_1Analyzer.html#abf95b685858c4b01883553f31be68727">ldmx::Analyzer</a>.</p>
 
-<p>Definition at line <a class="el" href="DummyAnalyzer_8cxx_source.html#l00024">24</a> of file <a class="el" href="DummyAnalyzer_8cxx_source.html">DummyAnalyzer.cxx</a>.</p>
-<div class="fragment"><div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                                                 {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot;DummyAnalyzer: Analyzing an event!&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        }</div>
+<p>Definition at line <a class="el" href="DummyAnalyzer_8cxx_source.html#l00027">27</a> of file <a class="el" href="DummyAnalyzer_8cxx_source.html">DummyAnalyzer.cxx</a>.</p>
+<div class="fragment"><div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                                                 {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot;DummyAnalyzer: Analyzing an event!&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a class="anchor" id="aa210d51b5da2d7cc6261fc74d04cca53"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void ldmx::DummyAnalyzer::onNewDetector </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classldmx_1_1DetectorDataService.html">DetectorDataService</a> *&#160;</td>
+          <td class="paramname"><em>detectorService</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Callback for when there is new detector data activated. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">detectorService</td><td>The <a class="el" href="classldmx_1_1DetectorDataService.html" title="Provides an API for accessing detector data at runtime through the DetectorElement interface...">DetectorDataService</a> providing the detector data. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>This is called after the <em><a class="el" href="classldmx_1_1DummyAnalyzer.html#aff4590d36b648759d568f7c79da4d92c">onNewRun()</a></em> method. </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classldmx_1_1EventProcessor.html#a0828d517ab5280bd5e07e606da9b746f">ldmx::EventProcessor</a>.</p>
+
+<p>Definition at line <a class="el" href="DummyAnalyzer_8cxx_source.html#l00047">47</a> of file <a class="el" href="DummyAnalyzer_8cxx_source.html">DummyAnalyzer.cxx</a>.</p>
+
+<p>References <a class="el" href="classldmx_1_1DetectorDataService.html#a52cea49438aaece9370bf5ddbd88ce59">ldmx::DetectorDataService::getDetectorName()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                                                                         {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot;DummyAnalyzer: Got new detector &quot;</span> &lt;&lt; detectorService-&gt;getDetectorName() &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a class="anchor" id="aff4590d36b648759d568f7c79da4d92c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void ldmx::DummyAnalyzer::onNewRun </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classldmx_1_1RunHeader.html">RunHeader</a> &amp;&#160;</td>
+          <td class="paramname"><em>runHeader</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Callback for the <a class="el" href="classldmx_1_1EventProcessor.html" title="Base class for all event processing components. ">EventProcessor</a> to take any necessary action when the run being processed changes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">runHeader</td><td>The <a class="el" href="classldmx_1_1RunHeader.html" title="Run header providing information about a set of events. ">RunHeader</a> containing run information. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented from <a class="el" href="classldmx_1_1EventProcessor.html#a668ae5d32705c4f65368bb3b25dcf13f">ldmx::EventProcessor</a>.</p>
+
+<p>Definition at line <a class="el" href="DummyAnalyzer_8cxx_source.html#l00051">51</a> of file <a class="el" href="DummyAnalyzer_8cxx_source.html">DummyAnalyzer.cxx</a>.</p>
+
+<p>References <a class="el" href="RunHeader_8h_source.html#l00064">ldmx::RunHeader::getRunNumber()</a>.</p>
+<div class="fragment"><div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                                                          {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot;DummyAnalyzer: Started new run &quot;</span> &lt;&lt; runHeader.getRunNumber() &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -172,10 +255,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classldmx_1_1EventProcessor.html#ad217e06c4e1cb63ee2a8ee0a2c4f6fe4">ldmx::EventProcessor</a>.</p>
 
-<p>Definition at line <a class="el" href="DummyAnalyzer_8cxx_source.html#l00040">40</a> of file <a class="el" href="DummyAnalyzer_8cxx_source.html">DummyAnalyzer.cxx</a>.</p>
-<div class="fragment"><div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                                    {</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot;DummyAnalyzer: Finishing processing!&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        }</div>
+<p>Definition at line <a class="el" href="DummyAnalyzer_8cxx_source.html#l00043">43</a> of file <a class="el" href="DummyAnalyzer_8cxx_source.html">DummyAnalyzer.cxx</a>.</p>
+<div class="fragment"><div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                                    {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot;DummyAnalyzer: Finishing processing!&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -203,10 +286,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classldmx_1_1EventProcessor.html#ac9915215ea81db00eca7eacc35aac08e">ldmx::EventProcessor</a>.</p>
 
-<p>Definition at line <a class="el" href="DummyAnalyzer_8cxx_source.html#l00036">36</a> of file <a class="el" href="DummyAnalyzer_8cxx_source.html">DummyAnalyzer.cxx</a>.</p>
-<div class="fragment"><div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                                      {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot;DummyAnalyzer: Starting processing!&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        }</div>
+<p>Definition at line <a class="el" href="DummyAnalyzer_8cxx_source.html#l00039">39</a> of file <a class="el" href="DummyAnalyzer_8cxx_source.html">DummyAnalyzer.cxx</a>.</p>
+<div class="fragment"><div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                                      {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot;DummyAnalyzer: Starting processing!&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        }</div>
 </div><!-- fragment -->
 </div>
 </div>

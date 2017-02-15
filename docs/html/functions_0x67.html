@@ -117,6 +117,12 @@
 : <a class="el" href="classldmx_1_1SimParticle.html#a58241d5facc510ae199edbcaa45c4b4b">ldmx::SimParticle</a>
 , <a class="el" href="classldmx_1_1Trajectory.html#ac3873da2051642557288af6d10f58d99">ldmx::Trajectory</a>
 </li>
+<li>geoManager_
+: <a class="el" href="classldmx_1_1DetectorDataServiceImpl.html#a09c8ac953a673d00251df320da071d54">ldmx::DetectorDataServiceImpl</a>
+</li>
+<li>GeometryUtil()
+: <a class="el" href="classldmx_1_1GeometryUtil.html#aec3fd17d7a81b013966ff1e03187bf8b">ldmx::GeometryUtil</a>
+</li>
 <li>get()
 : <a class="el" href="classldmx_1_1Event.html#ab6c8c290bfe03a923bfc5742207b0dda">ldmx::Event</a>
 </li>
@@ -159,17 +165,21 @@
 <li>getCellCentroidXYPair()
 : <a class="el" href="classldmx_1_1EcalHexReadout.html#a97a4fd396db26d47ea43f14d7c8d3bb0">ldmx::EcalHexReadout</a>
 </li>
+<li>getCellId()
+: <a class="el" href="classldmx_1_1EcalHexReadout.html#a1c8c123bd0dabf04032c60e72e93bdd1">ldmx::EcalHexReadout</a>
+</li>
 <li>getCellID()
 : <a class="el" href="classldmx_1_1EcalDetectorID.html#a63ebf662c93dae813189f61be7000038">ldmx::EcalDetectorID</a>
 </li>
-<li>getCellId()
-: <a class="el" href="classldmx_1_1EcalHexReadout.html#a1c8c123bd0dabf04032c60e72e93bdd1">ldmx::EcalHexReadout</a>
+<li>GetCharge()
+: <a class="el" href="classldmx_1_1Trajectory.html#a1e26a1245a7ab4e43a6da589007ef414">ldmx::Trajectory</a>
 </li>
 <li>getCharge()
 : <a class="el" href="classldmx_1_1SimParticle.html#a80a3f1072d0c83cc10d87511917eaea3">ldmx::SimParticle</a>
 </li>
-<li>GetCharge()
-: <a class="el" href="classldmx_1_1Trajectory.html#a1e26a1245a7ab4e43a6da589007ef414">ldmx::Trajectory</a>
+<li>getChildren()
+: <a class="el" href="classldmx_1_1DetectorElement.html#a026a3c4cea40926dac9212a8b23a5343">ldmx::DetectorElement</a>
+, <a class="el" href="classldmx_1_1DetectorElementImpl.html#ade831d1f0d7aca1a2b1d378afa6f1b11">ldmx::DetectorElementImpl</a>
 </li>
 <li>getCollection()
 : <a class="el" href="classldmx_1_1Event.html#ab4b39dfad8ac7d584be35b170e11182c">ldmx::Event</a>
@@ -194,14 +204,23 @@
 : <a class="el" href="classldmx_1_1AuxInfoReader.html#ad1f681f54d6099e12067814908053523">ldmx::AuxInfoReader</a>
 , <a class="el" href="classldmx_1_1DetectorConstruction.html#ad0809a1a4002fd4e6806691021485dee">ldmx::DetectorConstruction</a>
 </li>
+<li>getDetectorID()
+: <a class="el" href="classldmx_1_1DetectorElement.html#a8435c7a628ac64b456a7f6c1af5fc513">ldmx::DetectorElement</a>
+, <a class="el" href="classldmx_1_1DetectorElementImpl.html#a051152497469b87b8c1ddc76d81959ce">ldmx::DetectorElementImpl</a>
+</li>
 <li>getDetectorName()
-: <a class="el" href="classldmx_1_1RunHeader.html#acc95cf00bfc5c05562e17673e9ed10d9">ldmx::RunHeader</a>
+: <a class="el" href="classldmx_1_1DetectorDataService.html#a52cea49438aaece9370bf5ddbd88ce59">ldmx::DetectorDataService</a>
+, <a class="el" href="classldmx_1_1DetectorDataServiceImpl.html#a556d3a5982e028f1cbfa86f2c122929d">ldmx::DetectorDataServiceImpl</a>
+, <a class="el" href="classldmx_1_1RunHeader.html#acc95cf00bfc5c05562e17673e9ed10d9">ldmx::RunHeader</a>
 </li>
 <li>getDetectorVersion()
 : <a class="el" href="classldmx_1_1RunHeader.html#acf57c030863a962f21f775e9a192080c">ldmx::RunHeader</a>
 </li>
 <li>getDouble()
 : <a class="el" href="classldmx_1_1ParameterSet.html#a9d4efe40ea4c8d8a4756cdd243966714">ldmx::ParameterSet</a>
+</li>
+<li>getEcalLayer()
+: <a class="el" href="classldmx_1_1EcalDetectorElement.html#a404f677ecef66ff74d72f627ee28c4de">ldmx::EcalDetectorElement</a>
 </li>
 <li>getEdep()
 : <a class="el" href="classldmx_1_1SimCalorimeterHit.html#a16c19eeaab38d7dfbd33e3def3d6a69e">ldmx::SimCalorimeterHit</a>
@@ -217,9 +236,9 @@
 , <a class="el" href="classldmx_1_1Trajectory.html#a6ac5c7babff118014a77fad08a14204d">ldmx::Trajectory</a>
 </li>
 <li>getEnergy()
-: <a class="el" href="classldmx_1_1CalorimeterHit.html#a991b9dc382e3e5f7c678f4ff10238750">ldmx::CalorimeterHit</a>
-, <a class="el" href="classldmx_1_1SimParticle.html#ad493b83671a4c5d9deefc204a731a9e2">ldmx::SimParticle</a>
+: <a class="el" href="classldmx_1_1SimParticle.html#ad493b83671a4c5d9deefc204a731a9e2">ldmx::SimParticle</a>
 , <a class="el" href="classldmx_1_1Trajectory.html#a2cd4e909e02dacc418d84f45fb1f667a">ldmx::Trajectory</a>
+, <a class="el" href="classldmx_1_1CalorimeterHit.html#a991b9dc382e3e5f7c678f4ff10238750">ldmx::CalorimeterHit</a>
 </li>
 <li>getEvent()
 : <a class="el" href="classldmx_1_1EventFile.html#ab3071c2d4abf04d84b3d2643c7ebfbd1">ldmx::EventFile</a>
@@ -262,11 +281,22 @@
 : <a class="el" href="classldmx_1_1SimParticle.html#a68fa3bd653cd5961950792c887765c33">ldmx::SimParticle</a>
 , <a class="el" href="classldmx_1_1Trajectory.html#a703fa76e40298b4a0f60387bd965eda8">ldmx::Trajectory</a>
 </li>
+<li>getGeometryManager()
+: <a class="el" href="classldmx_1_1DetectorDataService.html#ab8fed5f151c630ce8437984dcf78758e">ldmx::DetectorDataService</a>
+, <a class="el" href="classldmx_1_1DetectorDataServiceImpl.html#a0214496aff1cd7d9f9c782c3fabe1ee5">ldmx::DetectorDataServiceImpl</a>
+</li>
+<li>getGlobalPosition()
+: <a class="el" href="classldmx_1_1DetectorElement.html#ae187fd0d6415ee5e4468de091240f277">ldmx::DetectorElement</a>
+, <a class="el" href="classldmx_1_1DetectorElementImpl.html#a865d67adf3757f409f8945a168a42523">ldmx::DetectorElementImpl</a>
+</li>
 <li>getGlobalTime()
 : <a class="el" href="classldmx_1_1Trajectory.html#af89d7e32032317c6d7af253bed7e9bd4">ldmx::Trajectory</a>
 </li>
 <li>getHandle()
 : <a class="el" href="classldmx_1_1PluginLoader.html#a9248d98689874feea5bb45522027d37b">ldmx::PluginLoader</a>
+</li>
+<li>getHcalStation()
+: <a class="el" href="classldmx_1_1HcalDetectorElement.html#a82c6c1e69057d6f23742fe3ed91df458">ldmx::HcalDetectorElement</a>
 </li>
 <li>getHepEvtStatus()
 : <a class="el" href="classldmx_1_1UserPrimaryParticleInformation.html#aff0659c377bbaa0e4da1babc78973a33">ldmx::UserPrimaryParticleInformation</a>
@@ -278,7 +308,9 @@
 : <a class="el" href="classldmx_1_1LHEParticle.html#a6d99d3e119a879081a7c18d9ae2eeef2">ldmx::LHEParticle</a>
 </li>
 <li>getID()
-: <a class="el" href="classldmx_1_1DetectorIDStore.html#ada0ee149ce9475e62cc13c8ec7ee708f">ldmx::DetectorIDStore</a>
+: <a class="el" href="classldmx_1_1DetectorElement.html#a44279b7652cfc77b22a82310cb527b82">ldmx::DetectorElement</a>
+, <a class="el" href="classldmx_1_1DetectorElementImpl.html#a5994259a310d60c7a10d2026f5d8d713">ldmx::DetectorElementImpl</a>
+, <a class="el" href="classldmx_1_1DetectorIDStore.html#ada0ee149ce9475e62cc13c8ec7ee708f">ldmx::DetectorIDStore</a>
 , <a class="el" href="classldmx_1_1CalorimeterHit.html#a4605061d072279c9bf478e98e72566cc">ldmx::CalorimeterHit</a>
 , <a class="el" href="classldmx_1_1SimCalorimeterHit.html#a098bcb57e75536c1121da434e8b4b626">ldmx::SimCalorimeterHit</a>
 , <a class="el" href="classldmx_1_1SimTrackerHit.html#a967b944ae405d893ca441f850d86ac8e">ldmx::SimTrackerHit</a>
@@ -305,7 +337,6 @@
 , <a class="el" href="classldmx_1_1EventProcessorFactory.html#a288aa4dd9ba6fb37f13ee78e9054ac83">ldmx::EventProcessorFactory</a>
 , <a class="el" href="classldmx_1_1MagneticFieldStore.html#a8d759e45078f5fb42f74e0e4995c7573">ldmx::MagneticFieldStore</a>
 , <a class="el" href="classldmx_1_1RootPersistencyManager.html#af3516eda2c73f7a241130658e63516d6">ldmx::RootPersistencyManager</a>
-, <a class="el" href="classldmx_1_1TrackMap.html#a8e21a9921c9ce129b77ee6e32bafe427">ldmx::TrackMap</a>
 , <a class="el" href="classldmx_1_1VisAttributesStore.html#a594168ede52f88644396b9a0f21bf076">ldmx::VisAttributesStore</a>
 </li>
 <li>getInteger()
@@ -325,16 +356,21 @@
 , <a class="el" href="classldmx_1_1SimTrackerHit.html#a0e9d47ca4daf5824a97e06e32253e0ad">ldmx::SimTrackerHit</a>
 , <a class="el" href="classldmx_1_1G4TrackerHit.html#a51f5705abc8654664ab93d982223fa5d">ldmx::G4TrackerHit</a>
 </li>
+<li>getLayerNumber()
+: <a class="el" href="classldmx_1_1RecoilTrackerLayer.html#a02d5748d993ef2fd905cc9b609692ba5">ldmx::RecoilTrackerLayer</a>
+, <a class="el" href="classldmx_1_1EcalLayer.html#a70236ed7930cb2d96556548c40040624">ldmx::EcalLayer</a>
+, <a class="el" href="classldmx_1_1TaggerLayer.html#a31d713b63118e60239d428a93c40013a">ldmx::TaggerLayer</a>
+</li>
 <li>getMagneticField()
 : <a class="el" href="classldmx_1_1MagneticFieldStore.html#a75371c8a924ce6ae4f1e85f055ba68d7">ldmx::MagneticFieldStore</a>
 </li>
 <li>getMass()
-: <a class="el" href="classldmx_1_1SimParticle.html#a8887ab65e7fb15bc445278f36d7461b6">ldmx::SimParticle</a>
-, <a class="el" href="classldmx_1_1Trajectory.html#a33d402bc9cc24857e07892cd48881e15">ldmx::Trajectory</a>
+: <a class="el" href="classldmx_1_1Trajectory.html#a33d402bc9cc24857e07892cd48881e15">ldmx::Trajectory</a>
+, <a class="el" href="classldmx_1_1SimParticle.html#a8887ab65e7fb15bc445278f36d7461b6">ldmx::SimParticle</a>
 </li>
 <li>getMomentum()
-: <a class="el" href="classldmx_1_1SimTrackerHit.html#aa457a1192d03e21a9bce65190976bd25">ldmx::SimTrackerHit</a>
-, <a class="el" href="classldmx_1_1SimParticle.html#a5ea02cdce75da459eb4a5063626a622e">ldmx::SimParticle</a>
+: <a class="el" href="classldmx_1_1SimParticle.html#a5ea02cdce75da459eb4a5063626a622e">ldmx::SimParticle</a>
+, <a class="el" href="classldmx_1_1SimTrackerHit.html#aa457a1192d03e21a9bce65190976bd25">ldmx::SimTrackerHit</a>
 , <a class="el" href="classldmx_1_1G4TrackerHit.html#ac1d35d1f45c836828dbd7a76f2fea452">ldmx::G4TrackerHit</a>
 </li>
 <li>getMother()
@@ -344,13 +380,15 @@
 : <a class="el" href="classldmx_1_1LHEParticle.html#a7475628aa3cac5ab8f10f66f6996ef40">ldmx::LHEParticle</a>
 </li>
 <li>getName()
-: <a class="el" href="classldmx_1_1DetectorHeader.html#a04f3dd3a9a7238e1c0ee95b9c7ba2698">ldmx::DetectorHeader</a>
+: <a class="el" href="classldmx_1_1DetectorElement.html#afde6f5b02c36732185431a17ca08b26b">ldmx::DetectorElement</a>
+, <a class="el" href="classldmx_1_1DetectorElementImpl.html#a08c7f00206a95f6b483504fc730f5607">ldmx::DetectorElementImpl</a>
+, <a class="el" href="classldmx_1_1DetectorHeader.html#a04f3dd3a9a7238e1c0ee95b9c7ba2698">ldmx::DetectorHeader</a>
 , <a class="el" href="classldmx_1_1TriggerResult.html#a0a86ee2667ae3d609142d0b16a48ae8f">ldmx::TriggerResult</a>
 , <a class="el" href="classldmx_1_1DummySimPlugin.html#a5a687a851e7d8f08443b1fb0823ad5f6">ldmx::DummySimPlugin</a>
 , <a class="el" href="classldmx_1_1EventPrintPlugin.html#a5bdda4ffa37103b320c1715101dc5df4">ldmx::EventPrintPlugin</a>
-, <a class="el" href="classldmx_1_1PhotonuclearXsecBiasingPlugin.html#a3e9c1b7204ca025373982a1635306fce">ldmx::PhotonuclearXsecBiasingPlugin</a>
 , <a class="el" href="classldmx_1_1TargetPhotonuclearBiasingPlugin.html#a58eb2e5e04be432b14e35f00ae736f49">ldmx::TargetPhotonuclearBiasingPlugin</a>
 , <a class="el" href="classldmx_1_1UserActionPlugin.html#a918d79cfc55afb068562d71f3cd5d6ff">ldmx::UserActionPlugin</a>
+, <a class="el" href="classldmx_1_1PhotonuclearXsecBiasingPlugin.html#a3e9c1b7204ca025373982a1635306fce">ldmx::PhotonuclearXsecBiasingPlugin</a>
 </li>
 <li>getNumberOfContribs()
 : <a class="el" href="classldmx_1_1SimCalorimeterHit.html#ac8fad2d8113990db1cea6966e6edd986">ldmx::SimCalorimeterHit</a>
@@ -362,7 +400,9 @@
 : <a class="el" href="classldmx_1_1EcalHexReadout.html#a33142f803ef86b92f524e2dec65a609a">ldmx::EcalHexReadout</a>
 </li>
 <li>getParent()
-: <a class="el" href="classldmx_1_1SimParticle.html#a701bbd7b850dd6ad2f6b3cb1702b5e6e">ldmx::SimParticle</a>
+: <a class="el" href="classldmx_1_1DetectorElement.html#aad9123f36df1c77e5b10009dbcdc42be">ldmx::DetectorElement</a>
+, <a class="el" href="classldmx_1_1DetectorElementImpl.html#a4d6183eb06629cf8d0dfaaaf3e4781aa">ldmx::DetectorElementImpl</a>
+, <a class="el" href="classldmx_1_1SimParticle.html#a701bbd7b850dd6ad2f6b3cb1702b5e6e">ldmx::SimParticle</a>
 </li>
 <li>getParentCount()
 : <a class="el" href="classldmx_1_1SimParticle.html#aa9640b733ce492f3b5fdc1da3e691c97">ldmx::SimParticle</a>
@@ -413,9 +453,9 @@
 </li>
 <li>getPosition()
 : <a class="el" href="classldmx_1_1SimTrackerHit.html#a014e9d9d2e733262024889d299140f19">ldmx::SimTrackerHit</a>
+, <a class="el" href="classldmx_1_1SimCalorimeterHit.html#add30152b90435cffdf9b2e46bee09039">ldmx::SimCalorimeterHit</a>
 , <a class="el" href="classldmx_1_1G4TrackerHit.html#a86d6db2b45885b53a68ec5223f9940f1">ldmx::G4TrackerHit</a>
 , <a class="el" href="classldmx_1_1G4CalorimeterHit.html#a8f57ae1472ef5317ce1cb250bc84a031">ldmx::G4CalorimeterHit</a>
-, <a class="el" href="classldmx_1_1SimCalorimeterHit.html#add30152b90435cffdf9b2e46bee09039">ldmx::SimCalorimeterHit</a>
 </li>
 <li>getPUP()
 : <a class="el" href="classldmx_1_1LHEParticle.html#aa4123de292a8d11117c55a214afe3d95">ldmx::LHEParticle</a>
@@ -424,17 +464,23 @@
 : <a class="el" href="classldmx_1_1DetectorID.html#af0545d6fc148cdb35bbb6228f545ead3">ldmx::DetectorID</a>
 </li>
 <li>getReal()
-: <a class="el" href="classldmx_1_1Event.html#a2fcd2533dd2a02be5b7eaa98dcc3120f">ldmx::Event</a>
-, <a class="el" href="classldmx_1_1EventImpl.html#a5f7375bda142b0d6f6ab8ad183e12dd4">ldmx::EventImpl</a>
+: <a class="el" href="classldmx_1_1EventImpl.html#a5f7375bda142b0d6f6ab8ad183e12dd4">ldmx::EventImpl</a>
+, <a class="el" href="classldmx_1_1Event.html#a2fcd2533dd2a02be5b7eaa98dcc3120f">ldmx::Event</a>
 </li>
 <li>getRun()
 : <a class="el" href="classldmx_1_1EventHeader.html#a15558db1605b2c1e31541d526ca87862">ldmx::EventHeader</a>
+</li>
+<li>getRunHeader()
+: <a class="el" href="classldmx_1_1EventFile.html#abbc3f27120b256e0bb656f4be7fab602">ldmx::EventFile</a>
 </li>
 <li>getRunNumber()
 : <a class="el" href="classldmx_1_1RunHeader.html#a0d5d1d1937d042892dbe821d0257e4ef">ldmx::RunHeader</a>
 </li>
 <li>getSCALUP()
 : <a class="el" href="classldmx_1_1LHEEvent.html#ab28605c6b0f80aeea0628952edaed950">ldmx::LHEEvent</a>
+</li>
+<li>getSensorNumber()
+: <a class="el" href="classldmx_1_1RecoilTrackerSensor.html#ada2bf61c09fde700d0a423ef1131cfa2">ldmx::RecoilTrackerSensor</a>
 </li>
 <li>getSimParticle()
 : <a class="el" href="classldmx_1_1SimTrackerHit.html#a6e17e02874376f412faf6bcf1f9ef1aa">ldmx::SimTrackerHit</a>
@@ -445,8 +491,11 @@
 <li>getStartBit()
 : <a class="el" href="classldmx_1_1IDField.html#a1bc244aadbbba3fe563115988fe2bbfd">ldmx::IDField</a>
 </li>
+<li>getStationNumber()
+: <a class="el" href="classldmx_1_1HcalStation.html#aaf4f6d8efc96b589e2a6cb01d218c9a5">ldmx::HcalStation</a>
+</li>
 <li>getString()
-: <a class="el" href="classldmx_1_1ParameterSet.html#a8cfc5f0f218264d20faa1e947351ec98">ldmx::ParameterSet</a>
+: <a class="el" href="classldmx_1_1ParameterSet.html#a91cf64bdc7f092ae3018093fbab436ad">ldmx::ParameterSet</a>
 </li>
 <li>getStringParameter()
 : <a class="el" href="classldmx_1_1RunHeader.html#a73299b6a0251c2cdead0eae3f812c786">ldmx::RunHeader</a>
@@ -454,23 +503,40 @@
 <li>getSubdetID()
 : <a class="el" href="classldmx_1_1DefaultDetectorID.html#a980935b67c397901826422928b7fdb02">ldmx::DefaultDetectorID</a>
 </li>
+<li>getSupport()
+: <a class="el" href="classldmx_1_1DetectorElement.html#aa937575b911b5e44c48b77484f2287d0">ldmx::DetectorElement</a>
+, <a class="el" href="classldmx_1_1DetectorElementImpl.html#a2b7fa4d733786c0045dc0dbc607c0125">ldmx::DetectorElementImpl</a>
+</li>
+<li>getTargetThickness()
+: <a class="el" href="classldmx_1_1TargetDetectorElement.html#adaa76c9b3d0f2240aa24b74fafac884f">ldmx::TargetDetectorElement</a>
+</li>
 <li>getTime()
 : <a class="el" href="classldmx_1_1SimCalorimeterHit.html#a5aa10cbab3e58a989d3c01c2886c4f23">ldmx::SimCalorimeterHit</a>
 , <a class="el" href="classldmx_1_1SimTrackerHit.html#a6bdf07960a9cc57cd6f9432164709aeb">ldmx::SimTrackerHit</a>
 , <a class="el" href="classldmx_1_1CalorimeterHit.html#a91172961b734876ecc8cea08736867a6">ldmx::CalorimeterHit</a>
 , <a class="el" href="classldmx_1_1G4TrackerHit.html#ae9c5f66deb35b6da1ad561235f216e5c">ldmx::G4TrackerHit</a>
-, <a class="el" href="classldmx_1_1G4CalorimeterHit.html#a52ceaf729ae50da534fb7fad3840a7f4">ldmx::G4CalorimeterHit</a>
 , <a class="el" href="classldmx_1_1SimParticle.html#a55d4f6d3f1fc4a1e4801afb49ab65dab">ldmx::SimParticle</a>
+, <a class="el" href="classldmx_1_1G4CalorimeterHit.html#a52ceaf729ae50da534fb7fad3840a7f4">ldmx::G4CalorimeterHit</a>
 </li>
 <li>getTimestamp()
 : <a class="el" href="classldmx_1_1EventHeader.html#a3d8acb96a9e6b1b3f0b0dd91d308e38b">ldmx::EventHeader</a>
+</li>
+<li>getTopDetectorElement()
+: <a class="el" href="classldmx_1_1DetectorDataServiceImpl.html#a8d785de3260089e94968dfdd7956d221">ldmx::DetectorDataServiceImpl</a>
+, <a class="el" href="classldmx_1_1DetectorDataService.html#a1c67178e197222f5bf70d596ff74523c">ldmx::DetectorDataService</a>
 </li>
 <li>GetTrackID()
 : <a class="el" href="classldmx_1_1Trajectory.html#a2a6374f75be408029aa5ac17d19ae462">ldmx::Trajectory</a>
 </li>
 <li>getTrackID()
-: <a class="el" href="classldmx_1_1G4TrackerHit.html#a1470169e90d4f0f575e9130e38aafb43">ldmx::G4TrackerHit</a>
-, <a class="el" href="classldmx_1_1G4CalorimeterHit.html#acbc7cc180e084bc61aaa320cbce551c9">ldmx::G4CalorimeterHit</a>
+: <a class="el" href="classldmx_1_1G4CalorimeterHit.html#acbc7cc180e084bc61aaa320cbce551c9">ldmx::G4CalorimeterHit</a>
+, <a class="el" href="classldmx_1_1G4TrackerHit.html#a1470169e90d4f0f575e9130e38aafb43">ldmx::G4TrackerHit</a>
+</li>
+<li>getTrackMap()
+: <a class="el" href="classldmx_1_1UserTrackingAction.html#a5e9181fe6327caca3ab916c168bfae44">ldmx::UserTrackingAction</a>
+</li>
+<li>getUserTrackingAction()
+: <a class="el" href="classldmx_1_1UserTrackingAction.html#a7e1af9180bd57205112c6bc26ec3bfc9">ldmx::UserTrackingAction</a>
 </li>
 <li>getVDouble()
 : <a class="el" href="classldmx_1_1ParameterSet.html#a3cc8172522d7ec006c9bd0ba47c8c888">ldmx::ParameterSet</a>
@@ -493,8 +559,12 @@
 <li>getVisAttributes()
 : <a class="el" href="classldmx_1_1VisAttributesStore.html#a8c5a6dbd6ff128131308acc70e178bb4">ldmx::VisAttributesStore</a>
 </li>
+<li>getVolume()
+: <a class="el" href="classldmx_1_1DetectorElementImpl.html#ae4285ba5c2ac2037c18162289f63f666">ldmx::DetectorElementImpl</a>
+, <a class="el" href="classldmx_1_1DetectorElement.html#afe7684f77c939e590a3ba9671d44dce4">ldmx::DetectorElement</a>
+</li>
 <li>getVString()
-: <a class="el" href="classldmx_1_1ParameterSet.html#a1090b95cb5aa7c69e473f56fb424f279">ldmx::ParameterSet</a>
+: <a class="el" href="classldmx_1_1ParameterSet.html#a62563c29ad4c72fdbfa7b2f4309004f2">ldmx::ParameterSet</a>
 </li>
 <li>getVTIMUP()
 : <a class="el" href="classldmx_1_1LHEParticle.html#a8249045beb6f54d42849faaab94bd869">ldmx::LHEParticle</a>
@@ -504,6 +574,12 @@
 </li>
 <li>getXWGTUP()
 : <a class="el" href="classldmx_1_1LHEEvent.html#a74efe974b58de6f84817d8429768e24a">ldmx::LHEEvent</a>
+</li>
+<li>globalPosition_
+: <a class="el" href="classldmx_1_1DetectorElementImpl.html#a1588e66e0882c23711f80ba8323abb6d">ldmx::DetectorElementImpl</a>
+</li>
+<li>GlobalPositionCacheBuilder()
+: <a class="el" href="classldmx_1_1GlobalPositionCacheBuilder.html#a72e5e659f27bcc21f389882a55141a46">ldmx::GlobalPositionCacheBuilder</a>
 </li>
 <li>globalTime_
 : <a class="el" href="classldmx_1_1Trajectory.html#adecf9b7cc4172e986c2ec782591df495">ldmx::Trajectory</a>

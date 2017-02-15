@@ -236,7 +236,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="PluginManager_8h_source.html#l00188">plugins_</a>.</p>
 
-<p>Referenced by <a class="el" href="UserEventAction_8cxx_source.html#l00020">ldmx::UserEventAction::BeginOfEventAction()</a>.</p>
+<p>Referenced by <a class="el" href="UserEventAction_8cxx_source.html#l00021">ldmx::UserEventAction::BeginOfEventAction()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                                                   {</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">for</span> (PluginVec::iterator it = <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.begin(); it != <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.end(); it++) {</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordflow">if</span> ((*it)-&gt;hasEventAction()) {</div>
@@ -492,7 +492,7 @@ Private Attributes</h2></td></tr>
 
 <p>Referenced by <a class="el" href="PluginManager_8cxx_source.html#l00005">~PluginManager()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;                                   {</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> iPlugin = 0; iPlugin &lt; <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.size(); iPlugin++) {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> iPlugin = 0; iPlugin &lt; <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.size(); iPlugin++) {</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        <a class="code" href="classldmx_1_1PluginManager.html#adef8dfee6ab319c367e273ef2a630344">destroy</a>(<a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>[iPlugin]);</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    }</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.clear();</div>
@@ -527,7 +527,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="PluginManager_8h_source.html#l00188">plugins_</a>.</p>
 
-<p>Referenced by <a class="el" href="UserEventAction_8cxx_source.html#l00031">ldmx::UserEventAction::EndOfEventAction()</a>.</p>
+<p>Referenced by <a class="el" href="UserEventAction_8cxx_source.html#l00033">ldmx::UserEventAction::EndOfEventAction()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                                 {</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">for</span> (PluginVec::iterator it = <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.begin(); it != <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.end(); it++) {</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">if</span> ((*it)-&gt;hasEventAction()) {</div>
@@ -679,7 +679,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="PluginManager_8h_source.html#l00188">plugins_</a>.</p>
 
-<p>Referenced by <a class="el" href="UserTrackingAction_8cxx_source.html#l00052">ldmx::UserTrackingAction::PostUserTrackingAction()</a>.</p>
+<p>Referenced by <a class="el" href="UserTrackingAction_8cxx_source.html#l00029">ldmx::UserTrackingAction::PostUserTrackingAction()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                                     {</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">for</span> (PluginVec::iterator it = <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.begin(); it != <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.end(); it++) {</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordflow">if</span> ((*it)-&gt;hasTrackingAction()) {</div>
@@ -716,7 +716,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="PluginManager_8h_source.html#l00188">plugins_</a>.</p>
 
-<p>Referenced by <a class="el" href="UserTrackingAction_8cxx_source.html#l00026">ldmx::UserTrackingAction::PreUserTrackingAction()</a>.</p>
+<p>Referenced by <a class="el" href="UserTrackingAction_8cxx_source.html#l00020">ldmx::UserTrackingAction::PreUserTrackingAction()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                                                    {</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordflow">for</span> (PluginVec::iterator it = <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.begin(); it != <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.end(); it++) {</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <span class="keywordflow">if</span> ((*it)-&gt;hasTrackingAction()) {</div>

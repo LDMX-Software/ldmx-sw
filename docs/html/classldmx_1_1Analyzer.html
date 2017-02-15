@@ -75,8 +75,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab68e52016c598c53d2d9978bb244213a inherit pub_methods_classldmx_1_1EventProcessor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a5ada71abe64354bfbbf5481843e955 inherit pub_methods_classldmx_1_1EventProcessor"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EventProcessor.html#a6a5ada71abe64354bfbbf5481843e955">configure</a> (const <a class="el" href="classldmx_1_1ParameterSet.html">ParameterSet</a> &amp;parameters)</td></tr>
 <tr class="separator:a6a5ada71abe64354bfbbf5481843e955 inherit pub_methods_classldmx_1_1EventProcessor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e9c8671787ab4f5b0bb597536b63b7f inherit pub_methods_classldmx_1_1EventProcessor"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EventProcessor.html#a3e9c8671787ab4f5b0bb597536b63b7f">onNewRun</a> (int run)</td></tr>
-<tr class="separator:a3e9c8671787ab4f5b0bb597536b63b7f inherit pub_methods_classldmx_1_1EventProcessor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a668ae5d32705c4f65368bb3b25dcf13f inherit pub_methods_classldmx_1_1EventProcessor"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EventProcessor.html#a668ae5d32705c4f65368bb3b25dcf13f">onNewRun</a> (const <a class="el" href="classldmx_1_1RunHeader.html">RunHeader</a> &amp;runHeader)</td></tr>
+<tr class="separator:a668ae5d32705c4f65368bb3b25dcf13f inherit pub_methods_classldmx_1_1EventProcessor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0828d517ab5280bd5e07e606da9b746f inherit pub_methods_classldmx_1_1EventProcessor"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EventProcessor.html#a0828d517ab5280bd5e07e606da9b746f">onNewDetector</a> (<a class="el" href="classldmx_1_1DetectorDataService.html">DetectorDataService</a> *detectorService)</td></tr>
+<tr class="separator:a0828d517ab5280bd5e07e606da9b746f inherit pub_methods_classldmx_1_1EventProcessor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ee4ef7e76fb282c80f208a295ab6509 inherit pub_methods_classldmx_1_1EventProcessor"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EventProcessor.html#a9ee4ef7e76fb282c80f208a295ab6509">onFileOpen</a> (const std::string &amp;filename)</td></tr>
 <tr class="separator:a9ee4ef7e76fb282c80f208a295ab6509 inherit pub_methods_classldmx_1_1EventProcessor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8bf0298ed6b424e1168ad3d90e82387 inherit pub_methods_classldmx_1_1EventProcessor"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EventProcessor.html#aa8bf0298ed6b424e1168ad3d90e82387">onFileClose</a> (const std::string &amp;filename)</td></tr>
@@ -88,7 +90,7 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a6ca64f210cca3706d88547ad02015096"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Analyzer.html#a6ca64f210cca3706d88547ad02015096">CLASSTYPE</a> { 2 }</td></tr>
+<tr class="memitem:a6ca64f210cca3706d88547ad02015096"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Analyzer.html#a6ca64f210cca3706d88547ad02015096">CLASSTYPE</a> {2}</td></tr>
 <tr class="separator:a6ca64f210cca3706d88547ad02015096"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
@@ -104,7 +106,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="textblock"><p>Base class for a module which does not produce a data product. </p>
 <dl class="section note"><dt>Note</dt><dd>This class processes a constant copy of the event which cannot be updated. </dd></dl>
 
-<p>Definition at line <a class="el" href="EventProcessor_8h_source.html#l00158">158</a> of file <a class="el" href="EventProcessor_8h_source.html">EventProcessor.h</a>.</p>
+<p>Definition at line <a class="el" href="EventProcessor_8h_source.html#l00170">170</a> of file <a class="el" href="EventProcessor_8h_source.html">EventProcessor.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a8611e15a7a65f96803b95e698d881d80"></a>
 <div class="memitem">
@@ -141,11 +143,11 @@ Additional Inherited Members</h2></td></tr>
 <dd>
 The provided name should not be the class name, but rather a logical label for this instance of the class, as more than one copy of a given class can be loaded into a <a class="el" href="classldmx_1_1Process.html" title="Class which represents the process under execution. ">Process</a> with different parameters. Names should not include whitespace or special characters. </dd></dl>
 
-<p>Definition at line <a class="el" href="EventProcessor_8cxx_source.html#l00019">19</a> of file <a class="el" href="EventProcessor_8cxx_source.html">EventProcessor.cxx</a>.</p>
-<div class="fragment"><div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                                                                :</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        <a class="code" href="classldmx_1_1EventProcessor.html#a10699ff0d290289b227eac06b69622fb">EventProcessor</a>(name, process) {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
-<div class="ttc" id="classldmx_1_1EventProcessor_html_a10699ff0d290289b227eac06b69622fb"><div class="ttname"><a href="classldmx_1_1EventProcessor.html#a10699ff0d290289b227eac06b69622fb">ldmx::EventProcessor::EventProcessor</a></div><div class="ttdeci">EventProcessor(const std::string &amp;name, const Process &amp;process)</div><div class="ttdef"><b>Definition:</b> <a href="EventProcessor_8cxx_source.html#l00008">EventProcessor.cxx:8</a></div></div>
+<p>Definition at line <a class="el" href="EventProcessor_8cxx_source.html#l00022">22</a> of file <a class="el" href="EventProcessor_8cxx_source.html">EventProcessor.cxx</a>.</p>
+<div class="fragment"><div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                                                                :</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        <a class="code" href="classldmx_1_1EventProcessor.html#a10699ff0d290289b227eac06b69622fb">EventProcessor</a>(name, process) {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}</div>
+<div class="ttc" id="classldmx_1_1EventProcessor_html_a10699ff0d290289b227eac06b69622fb"><div class="ttname"><a href="classldmx_1_1EventProcessor.html#a10699ff0d290289b227eac06b69622fb">ldmx::EventProcessor::EventProcessor</a></div><div class="ttdeci">EventProcessor(const std::string &amp;name, const Process &amp;process)</div><div class="ttdef"><b>Definition:</b> <a href="EventProcessor_8cxx_source.html#l00011">EventProcessor.cxx:11</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -192,7 +194,7 @@ The provided name should not be the class name, but rather a logical label for t
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const int ldmx::Analyzer::CLASSTYPE { 2 }</td>
+          <td class="memname">const int ldmx::Analyzer::CLASSTYPE {2}</td>
         </tr>
       </table>
   </td>
@@ -203,7 +205,7 @@ The provided name should not be the class name, but rather a logical label for t
 </div><div class="memdoc">
 <p>Constant used to track <a class="el" href="classldmx_1_1EventProcessor.html" title="Base class for all event processing components. ">EventProcessor</a> types by the <a class="el" href="classldmx_1_1EventProcessorFactory.html" title="Singleton module factory that creates EventProcessor objects. ">EventProcessorFactory</a> </p>
 
-<p>Definition at line <a class="el" href="EventProcessor_8h_source.html#l00163">163</a> of file <a class="el" href="EventProcessor_8h_source.html">EventProcessor.h</a>.</p>
+<p>Definition at line <a class="el" href="EventProcessor_8h_source.html#l00175">175</a> of file <a class="el" href="EventProcessor_8h_source.html">EventProcessor.h</a>.</p>
 
 </div>
 </div>

@@ -217,7 +217,7 @@
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;}</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;</div>
 <div class="line"><a name="l00167"></a><span class="lineno"><a class="line" href="classldmx_1_1PluginManager.html#a37ceffb67db969dc35f620ef4fe2e089">  167</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classldmx_1_1PluginManager.html#a37ceffb67db969dc35f620ef4fe2e089">PluginManager::destroyPlugins</a>() {</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> iPlugin = 0; iPlugin &lt; <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.size(); iPlugin++) {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> iPlugin = 0; iPlugin &lt; <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.size(); iPlugin++) {</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        <a class="code" href="classldmx_1_1PluginManager.html#adef8dfee6ab319c367e273ef2a630344">destroy</a>(<a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>[iPlugin]);</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    }</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    <a class="code" href="classldmx_1_1PluginManager.html#a35dc99bdd7e6a88d68966421116fbe4d">plugins_</a>.clear();</div>
