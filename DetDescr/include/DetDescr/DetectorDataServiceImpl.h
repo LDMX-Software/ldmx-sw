@@ -7,12 +7,9 @@
 #ifndef DETDESCR_DETECTORSERVICEIMPL_H_
 #define DETDESCR_DETECTORSERVICEIMPL_H_
 
+// LDMX
 #include "DetDescr/DetectorElementImpl.h"
 #include "DetDescr/DetectorDataService.h"
-
-#include <iostream>
-#include <cstdlib>
-#include <dirent.h>
 
 namespace ldmx {
 
@@ -92,7 +89,7 @@ namespace ldmx {
              */
             void addAlias(std::string detectorName, std::string alias) {
                 aliasMap_[detectorName] = alias;
-                std::cout << "[ DetectorDataServiceImpl ] : Added alias " << detectorName << " => " << alias << std::endl;
+                //std::cout << "[ DetectorDataServiceImpl ] : Added alias " << detectorName << " => " << alias << std::endl;
             }
 
         private:
@@ -117,6 +114,32 @@ namespace ldmx {
 
             /** The top DetectorElement providing access to the hierarchy. */
             DetectorElementImpl* topDE_{nullptr};
+    };
+
+    /**
+     * @class GlobalPositionCacheBuilder
+     * @brief Caches the global positions of every DetectorElement in the hierarchy
+     */
+    class GlobalPositionCacheBuilder : public DetectorElementVisitor {
+
+        public:
+
+            /**
+             * Class constructor.
+             * @param nav The TGeoNavigator for navigating the detector geometry.
+             */
+            GlobalPositionCacheBuilder(TGeoNavigator* nav) : nav_(nav) {;}
+
+            /**
+             * Visit the given DetectorElement and set its global position.
+             * @param de The DetectorElement to visit.
+             */
+            void visit(DetectorElement* de);
+
+        private:
+
+            /** The geometry navigator. */
+            TGeoNavigator* nav_;
     };
 }
 

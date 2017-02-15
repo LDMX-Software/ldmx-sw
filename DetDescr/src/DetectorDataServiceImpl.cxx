@@ -2,9 +2,17 @@
 
 // ROOT
 #include "TGeoManager.h"
+#include "TGeoNavigator.h"
 
 // LDMX
 #include "DetDescr/TopDetectorElement.h"
+
+#include <queue>
+#include <iostream>
+#include <cstdlib>
+#include <dirent.h>
+
+using namespace std;
 
 namespace ldmx {
 
@@ -58,5 +66,48 @@ namespace ldmx {
 
         // Setup the top DE which will setup subdetector components.
         topDE_ = new TopDetectorElement(geoManager_->GetTopNode());
+
+
+        // Build the global matrix cache in the ROOT geometry manager.
+        TGeoNavigator* nav = geoManager_->GetCurrentNavigator();
+        nav->BuildCache();
+
+        // Set the global positions on each DetectorElement by walking the hierarchy.
+        GlobalPositionCacheBuilder cacheBuilder(nav);
+        DetectorElementVisitor::walk(topDE_, &cacheBuilder);
+    }
+
+    /**
+     * @todo Make this function more efficient, because it currently resets the navigator for every node
+     * in the hierarchy.
+     */
+    void GlobalPositionCacheBuilder::visit(DetectorElement* de) {
+
+        /*
+         * Make a list of nodes from this DetectorElement to the top.
+         */
+        vector<TGeoNode*> nodes;
+        DetectorElement* cur = de;
+        while (cur) {
+            if (cur->getSupport()) {
+                nodes.push_back(cur->getSupport());
+            }
+            cur = cur->getParent();
+        }
+
+        /*
+         * Set the navigator by going into each daughter node.
+         */
+        nav_->cd();
+        for (int i = nodes.size() - 1; i >= 0; i--) {
+            nav_->CdDown(nodes[i]);
+        }
+
+        /*
+         * Set the global position on the DetectorElement from the navigator state.
+         */
+        Double_t* trans = nav_->GetCurrentMatrix()->GetTranslation();
+        static_cast<DetectorElementImpl*>(de)->setGlobalPosition(trans[0], trans[1], trans[2]);
+        const vector<double>& pos = de->getGlobalPosition();
     }
 }
