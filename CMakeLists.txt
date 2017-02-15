@@ -8,7 +8,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 include(MacroModule)
 
 # declare list of modules with correct dependency order
-set(MODULES Event DetDescr Framework EventProc SimPlugins SimApplication Configuration Detectors)
+set(MODULES Event DetDescr Framework EventProc SimPlugins Biasing SimApplication Configuration Detectors)
 
 # build each module in the list
 foreach(module ${MODULES})
