@@ -12,10 +12,9 @@
 
 namespace ldmx {
 
-CalorimeterSD::CalorimeterSD(G4String name, G4String theCollectionName,int subdetID, DetectorID* detID) :
+CalorimeterSD::CalorimeterSD(G4String name, G4String theCollectionName, DetectorID* detID) :
         G4VSensitiveDetector(name),
         hitsCollection_(0),
-        subdet_(subdetID),
         detID_(detID) {
 
     // Add the collection name to vector of names.
@@ -23,9 +22,6 @@ CalorimeterSD::CalorimeterSD(G4String name, G4String theCollectionName,int subde
 
     // Register this SD with the manager.
     G4SDManager::GetSDMpointer()->AddNewDetector(this);
-
-    // Set the subdet ID as it will always be the same for every hit.
-    detID_->setFieldValue("subdet", subdet_);
 }
 
 CalorimeterSD::~CalorimeterSD() {
@@ -61,10 +57,8 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
         return false;
     }
 
-    // Create a new hit object using the ROOT event.
-    //SimCalorimeterHit* simCalorimeterHit =
-    //        (SimCalorimeterHit*) currentEvent->addObject(collectionName[0]);
-    G4CalorimeterHit* hit = new G4CalorimeterHit(/*simCalorimeterHit*/);
+    // Create a new hit object.
+    G4CalorimeterHit* hit = new G4CalorimeterHit();
 
     // Set the edep.
     hit->setEdep(edep);
@@ -81,8 +75,10 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
     hit->setTime(aStep->GetTrack()->GetGlobalTime());
 
     // Set the ID on the hit.
-    int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth_)->GetCopyNo();
-    detID_->setFieldValue(1, layerNumber);
+    int subdet = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(1)->GetCopyNo();
+    int layer = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
+    detID_->setFieldValue(0, subdet);
+    detID_->setFieldValue(1, layer);
     hit->setID(detID_->pack());
 
     // Set the track ID on the hit.
@@ -90,8 +86,8 @@ G4bool CalorimeterSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
     if (this->verboseLevel > 2) {
         std::cout << "Created new SimCalorimeterHit in detector "
-                << this->GetName() << " with subdet ID " << subdet_
-                << " and layer " << layerNumber << " ..." << std::endl;
+                << this->GetName() << " with subdet ID " << subdet
+                << " and layer " << layer << " ..." << std::endl;
         hit->Print();
         std::cout << std::endl;
     }

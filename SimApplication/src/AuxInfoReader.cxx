@@ -5,13 +5,11 @@
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/EcalSD.h"
 #include "SimApplication/HcalSD.h"
+#include "SimApplication/TargetSD.h"
 #include "SimApplication/MagneticFieldStore.h"
 #include "SimApplication/MagneticFieldMap3D.h"
 #include "SimApplication/UserRegionInformation.h"
 #include "SimApplication/VisAttributesStore.h"
-#include "DetDescr/DetectorIDStore.h"
-#include "DetDescr/DefaultDetectorID.h"
-#include "DetDescr/EcalDetectorID.h"
 
 // Geant4
 #include "G4LogicalVolumeStore.hh"
@@ -52,8 +50,6 @@ void AuxInfoReader::readGlobalAuxInfo() {
 
         if (auxType == "SensDet") {
             createSensitiveDetector(auxVal, iaux->auxList);
-        } else if (auxType == "DetectorID") {
-            createDetectorID(auxVal, iaux->auxList);
         } else if (auxType == "MagneticField") {
             createMagneticField(auxVal, iaux->auxList);
         } else if (auxType == "Region") {
@@ -74,9 +70,6 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName,
 
     G4String sdType("");
     G4String hcName("");
-    G4String idName("");
-    int subdetID = -1;
-    int layerDepth = -1;
     int verbose = 0;
     for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
             auxInfoList->begin(); iaux != auxInfoList->end(); iaux++) {
@@ -94,13 +87,7 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName,
             hcName = auxVal;
         } else if (auxType == "Verbose") {
             verbose = atoi(auxVal.c_str());
-        } else if (auxType == "SubdetID") {
-            subdetID = atoi(auxVal.c_str());
-        } else if (auxType == "DetectorID") {
-            idName = auxVal;
-        } else if (auxType == "LayerDepth") {
-            layerDepth = atoi(auxVal.c_str());
-        }
+        } 
     }
 
     if (sdType == "") {
@@ -113,53 +100,30 @@ void AuxInfoReader::createSensitiveDetector(G4String theSensDetName,
                 "The SensDet is missing the HitsCollection.");
     }
 
-    if (subdetID <= 0) {
-        std::cerr << "Bad SubdetID: " << subdetID << std::endl;
-        G4Exception("", "", FatalException,
-                "The SubdetID is missing or has an invalid value.");
-    }
-
-    /*
-     * Use the default detector ID or create one from information supplied in the userinfo block, if present.
-     */
-    DetectorID* detID = new DefaultDetectorID();
-    if (idName != "") {
-        detID = DetectorIDStore::getInstance()->getID(idName);
-        if (!detID) {
-            std::cerr << "The Detector ID" << idName
-                    << " does not exist.  Is it defined before the SensDet in userinfo?"
-                    << std::endl;
-            G4Exception("", "", FatalException,
-                    "The referenced Detector ID was not found.");
-        }
-    }
     /*
      * Build the Sensitive Detector, and re-assign the detID if applicable
      */
     G4VSensitiveDetector* sd = 0;
 
     if (sdType == "TrackerSD") {
-        sd = new TrackerSD(theSensDetName, hcName, subdetID, detID);
+        sd = new TrackerSD(theSensDetName, hcName);
     } else if (sdType == "EcalSD") {
-        detID = new EcalDetectorID();
-        sd = new EcalSD(theSensDetName, hcName, subdetID, detID);
+        sd = new EcalSD(theSensDetName, hcName);
     } else if (sdType == "HcalSD") {
-        sd = new HcalSD(theSensDetName, hcName, subdetID, detID);
+        sd = new HcalSD(theSensDetName, hcName);
     } else if (sdType == "CalorimeterSD") {
-        sd = new CalorimeterSD(theSensDetName, hcName, subdetID, detID);
-    } else {
+        sd = new CalorimeterSD(theSensDetName, hcName);
+    } else if (sdType == "TargetSD") {
+        sd = new TargetSD(theSensDetName, hcName);
+    } 
+    
+    else {
         std::cerr << "Unknown SensitiveDetector type: " << sdType << std::endl;
         G4Exception("", "", FatalException,
                 "Unknown SensitiveDetector type in aux info.");
     }
 
-    /*
-     * Fix  layer depth if the Sensitive Detector is not the Tracker
-     */
-    if (sdType != "TrackerSD" && layerDepth != -1) {
-        ((CalorimeterSD*) sd)->setLayerDepth(layerDepth);
-        std::cout << "Layer depth set to " << layerDepth << std::endl;
-    }
+    // Set verbose level.
     sd->SetVerboseLevel(verbose);
 
     std::cout << "Created " << sdType << " " << theSensDetName
@@ -251,72 +215,6 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
             }
         }
     }
-}
-
-void AuxInfoReader::createDetectorID(G4String idName,
-        const G4GDMLAuxListType* auxInfoList) {
-
-    std::cout << "Creating DetectorID " << idName << std::endl;
-    IDField::IDFieldList* fieldList = new IDField::IDFieldList();
-
-    // iterate fields
-    int fieldIndex = 0;
-    for (std::vector<G4GDMLAuxStructType>::const_iterator fieldIt =
-            auxInfoList->begin(); fieldIt != auxInfoList->end(); fieldIt++) {
-
-        std::vector<G4GDMLAuxStructType>* fieldsAux = fieldIt->auxList;
-
-        G4String auxType = fieldIt->type;
-        G4String auxVal = fieldIt->value;
-
-        if (auxType == "IDField") {
-
-            string fieldName = auxVal;
-
-            std::cout << "Creating IDField " << fieldName << std::endl;
-
-            int startBit, endBit = -1;
-
-            // iterate field aux values
-            for (std::vector<G4GDMLAuxStructType>::const_iterator fieldValsIt =
-                    fieldsAux->begin(); fieldValsIt != fieldsAux->end();
-                    fieldValsIt++) {
-
-                G4String fieldValAuxType = fieldValsIt->type;
-                G4String fieldValAuxValue = fieldValsIt->value;
-
-                if (fieldValAuxType == "StartBit") {
-                    startBit = atoi(fieldValAuxValue.c_str());
-                } else if (fieldValAuxType == "EndBit") {
-                    endBit = atoi(fieldValAuxValue.c_str());
-                }
-            }
-
-            if (startBit == -1) {
-                G4Exception("", "", FatalException,
-                        "The DetectorID is missing the StartBit.");
-            }
-
-            if (endBit == -1) {
-                G4Exception("", "", FatalException,
-                        "The DetectorID is missing the EndBit.");
-            }
-
-            fieldList->push_back(
-                    new IDField(fieldName, fieldIndex, startBit, endBit));
-
-            std::cout << "Added IDField " << fieldName << " with StartBit = "
-                    << startBit << ", EndBit = " << endBit << ", Index = "
-                    << fieldIndex << std::endl;
-
-            // Increment field index which is assigned automatically based on element ordering.
-            fieldIndex++;
-        }
-    }
-
-    DetectorID* id = new DetectorID(fieldList);
-    DetectorIDStore::getInstance()->addID(idName, id);
-    std::cout << "Created detector ID " << idName << std::endl << std::endl;
 }
 
 void AuxInfoReader::createMagneticField(G4String magFieldName,

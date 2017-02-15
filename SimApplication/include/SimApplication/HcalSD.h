@@ -27,8 +27,7 @@ class HcalSD : public CalorimeterSD {
 
         HcalSD(G4String name,
                 G4String theCollectionName,
-                int subdet,
-                DetectorID* detID);
+                DetectorID* detID = new DefaultDetectorID);
 
         virtual ~HcalSD();
 };

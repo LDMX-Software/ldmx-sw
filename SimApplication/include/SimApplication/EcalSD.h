@@ -33,12 +33,10 @@ class EcalSD : public CalorimeterSD {
          * Class constructor.
          * @param name The name of the sensitive detector.
          * @param theCollectionName The name of the hits collection.
-         * @param subdet The subdetector ID.
          * @param detID The detector ID (defaults to ECal ID).
          */
         EcalSD(G4String name,
                 G4String theCollectionName,
-                int subdet,
                 DetectorID* detID = new EcalDetectorID);
 
         /**
