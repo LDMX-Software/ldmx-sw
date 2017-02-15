@@ -12,13 +12,19 @@
 //   LDMX   //
 //----------//
 #include "Event/Event.h"
+#include "Event/FindableTrackResult.h"
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
 #include "Framework/EventProcessor.h"
 
+//----------//
+//   ROOT   //
+//----------//
+#include <TClonesArray.h>
+
 namespace ldmx { 
 
-    class FindableTrackProcessor : public EventProcessor { 
+    class FindableTrackProcessor : public Producer { 
         
         public: 
 
@@ -28,12 +34,32 @@ namespace ldmx {
             /** Destructor */
             ~FindableTrackProcessor();
 
+            /** 
+             *
+             */
+            void configure(const ParameterSet &pset); 
+
             /**
              *
              */
             void produce(Event &event); 
             
         private:
+
+            /**
+             *
+             */
+            void createHitMap(const TClonesArray* recoilSimHits);
+          
+            /** */
+            bool isFindable(std::vector<int> hitCount); 
+
+            /** */ 
+            std::map<SimParticle*, std::vector<int>> hitMap_;
+
+            /** */
+            TClonesArray* findableTrackResults_{nullptr};
+
 
     }; // FindableTrackProcessor
 }
