@@ -64,7 +64,7 @@ class PrimaryGeneratorMessenger : public G4UImessenger {
         G4UIcommand* lheOpenCmd_;
 
         /**
-         * The LHE generator macro directory.
+         * The Root generator macro directory.
          */
         G4UIdirectory* rootDir_;
 
