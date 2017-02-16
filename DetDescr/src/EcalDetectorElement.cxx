@@ -17,18 +17,25 @@ namespace ldmx {
         std::stringstream ss;
         ss << std::setfill('0') << std::setw(2) << layerNumber_;
         name_ = "EcalLayer" + ss.str();
+
+        getDetectorID()->setFieldValue(1, support->GetNumber());
+        id_ = getDetectorID()->pack();
     }
 
     EcalDetectorElement::EcalDetectorElement(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
 
         name_ = "Ecal";
 
-        detID_ = new EcalDetectorID();
+        detectorID_ = new EcalDetectorID();
 
         support_ = GeometryUtil::findFirstDauNameStartsWith("Ecal", parent->getSupport());
         if (!support_) {
             throw std::runtime_error("The Ecal volume was not found.");
         }
+
+        detectorID_->clear();
+        detectorID_->setFieldValue(0, support_->GetNumber());
+        id_ = detectorID_->pack();
 
         // Add a DE for each ECal active layer.
         auto layerVec = GeometryUtil::findDauNameStartsWith("Si", support_);

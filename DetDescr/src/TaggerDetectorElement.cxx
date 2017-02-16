@@ -17,6 +17,10 @@ namespace ldmx {
             throw std::runtime_error("The Tagger volume was not found.");
         }
 
+       getDetectorID()->clear();
+       getDetectorID()->setFieldValue(0, support_->GetNumber());
+       id_ = getDetectorID()->pack();
+
         // Add a DE for each Tagger active layer.
         auto layerVec = GeometryUtil::findDauNameStartsWith("TaggerModuleVolume_physvol", support_);
         for (auto layerNode : layerVec) {
@@ -31,5 +35,8 @@ namespace ldmx {
         std::stringstream ss;
         ss << std::setfill('0') << std::setw(2) << layerNumber_;
         name_ = "TaggerLayer" + ss.str();
+
+        getDetectorID()->setFieldValue(1, support_->GetNumber());
+        id_ = getDetectorID()->pack();
     }
 }

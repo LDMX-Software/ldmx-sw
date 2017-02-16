@@ -20,7 +20,7 @@ namespace ldmx {
         name_ = "Top";
 
         // Create default detector ID.
-        detID_ = new DefaultDetectorID();
+        detectorID_ = new DefaultDetectorID();
 
         // Create top-level detector components.
         new EcalDetectorElement(this);

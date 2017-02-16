@@ -61,8 +61,8 @@ namespace ldmx {
                 }
 
                 // Delete the detector ID.
-                if (detID_) {
-                    delete detID_;
+                if (detectorID_) {
+                    delete detectorID_;
                 }
             }
 
@@ -117,8 +117,8 @@ namespace ldmx {
              * @return The ID decoder assigned to this component.
              */
             DetectorID* getDetectorID() {
-                if (detID_) {
-                    return detID_;
+                if (detectorID_) {
+                    return detectorID_;
                 } else {
                     if (parent_) {
                         return parent_->getDetectorID();
@@ -201,7 +201,7 @@ namespace ldmx {
             DetectorID::RawValue id_{0};
 
             /** The detector ID decoder. */
-            DetectorID* detID_{nullptr};
+            DetectorID* detectorID_{nullptr};
 
             /** The name of the DetectorElement. */
             std::string name_;

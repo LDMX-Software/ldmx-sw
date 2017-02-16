@@ -25,6 +25,9 @@ namespace ldmx {
         stringstream ss;
         ss << std::setfill('0') << std::setw(2) << layerNumber_;
         name_ = "RecoilLayer" + ss.str();
+
+        getDetectorID()->setFieldValue(1, layerNumber_);
+        id_ = getDetectorID()->pack();
     }
 
     RecoilTrackerDetectorElement::RecoilTrackerDetectorElement(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
@@ -33,6 +36,10 @@ namespace ldmx {
         if (!support_) {
             throw std::runtime_error("The RecoilTracker volume was not found.");
         }
+
+        getDetectorID()->clear();
+        getDetectorID()->setFieldValue(0, support_->GetNumber());
+        id_ = getDetectorID()->pack();
 
         /*
          * Build a map of copy numbers to a list of nodes so we can tell which

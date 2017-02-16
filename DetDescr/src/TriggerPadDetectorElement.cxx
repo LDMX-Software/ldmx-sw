@@ -12,6 +12,9 @@ namespace ldmx {
         if (!support_) {
             throw std::runtime_error("The volume for the trigger pad was not found.");
         }
+
+        getDetectorID()->setFieldValue(0, support_->GetNumber());
+        id_ = getDetectorID()->pack();
     }
 
 }

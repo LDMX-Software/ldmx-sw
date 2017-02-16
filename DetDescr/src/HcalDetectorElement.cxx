@@ -13,6 +13,8 @@ namespace ldmx {
         std::stringstream ss;
         ss << std::setfill('0') << std::setw(3) << stationNumber_;
         name_ = "HcalStation" + ss.str();
+
+        // TODO: Set detector ID value.
     }
 
     HcalDetectorElement::HcalDetectorElement(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
@@ -25,6 +27,10 @@ namespace ldmx {
         if (!support_) {
             throw std::runtime_error("The Hcal volume was not found.");
         }
+
+        getDetectorID()->clear();
+        getDetectorID()->setFieldValue(0, support_->GetNumber());
+        id_ = getDetectorID()->pack();
 
         int nTopDau = support_->GetNdaughters();
         for (int iDau = 0; iDau < nTopDau; iDau++) {
