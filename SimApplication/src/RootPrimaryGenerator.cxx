@@ -1,6 +1,7 @@
 #include "SimApplication/RootPrimaryGenerator.h"
 
 // Geant4
+#include "G4RunManager.hh"
 #include "G4Event.hh"
 #include "G4IonTable.hh"
 
@@ -23,6 +24,7 @@ RootPrimaryGenerator::RootPrimaryGenerator( G4String filename ) {
     itree_->SetBranchAddress("EventHeader", &eventHeader_);
     itree_->SetBranchAddress("SimParticles_sim", &simParticles_);
     evtCtr_ = 0;
+    nEvts_ = itree_->GetEntriesFast();
 }
 
 RootPrimaryGenerator::~RootPrimaryGenerator() {
@@ -31,6 +33,8 @@ RootPrimaryGenerator::~RootPrimaryGenerator() {
 void RootPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
     std::cout << "Reading next Root event ..." << std::endl;
+    if (evtCtr_ > nEvts_) G4RunManager::GetRunManager()->AbortEvent();
+
     itree_->GetEntry(evtCtr_);
 
     // put in protection for if we run out of ROOT events

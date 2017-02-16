@@ -78,7 +78,10 @@ class RootPrimaryGenerator : public G4VPrimaryGenerator {
          */
         int evtCtr_;
 
-
+        /**
+         * Events in the tree...
+         */
+        int nEvts_;
 };
 
 }
