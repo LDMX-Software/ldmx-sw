@@ -26,7 +26,7 @@
 
 using namespace ldmx;
 
-TEveStraightLineSet* drawHexColumn(Double_t xCenter, Double_t yCenter, Double_t frontZ, Double_t backZ, Double_t h) {
+TEveStraightLineSet* drawHexColumn(Double_t xCenter, Double_t yCenter, Double_t frontZ, Double_t backZ, Double_t h, Int_t color) {
     static int icol=0;
     char name[100];
     sprintf(name,"Tower %d",icol); icol++;
@@ -64,9 +64,53 @@ TEveStraightLineSet* drawHexColumn(Double_t xCenter, Double_t yCenter, Double_t 
         lineset->AddLine(x[nline], y[nline], frontZ, x[nline], y[nline], backZ);
     }
 
-    lineset->SetLineColor(kCyan);
+    lineset->SetLineColor(color);
     return lineset;
 }
+
+void visualizeECAL(TEveElement* ecal) {
+
+    static const double zOffset = 200+510/2;
+
+    TEveStraightLineSet* hexCol1 = drawHexColumn(0, 0, -252.75+zOffset, 246.75+zOffset, 170, kCyan);
+    TEveStraightLineSet* hexCol2 = drawHexColumn(0, 170, -252.75+zOffset, 246.75+zOffset, 170, kCyan);
+    TEveStraightLineSet* hexCol3 = drawHexColumn(0, -170, -252.75+zOffset, 246.75+zOffset, 170, kCyan);
+    TEveStraightLineSet* hexCol4 = drawHexColumn(170*sqrt(3)/2, 85, -252.75+zOffset, 246.75+zOffset, 170, kCyan);
+    TEveStraightLineSet* hexCol5 = drawHexColumn(-170*sqrt(3)/2, 85, -252.75+zOffset, 246.75+zOffset, 170, kCyan);
+    TEveStraightLineSet* hexCol6 = drawHexColumn(-170*sqrt(3)/2, -85, -252.75+zOffset, 246.75+zOffset, 170, kCyan);
+    TEveStraightLineSet* hexCol7 = drawHexColumn(170*sqrt(3)/2, -85, -252.75+zOffset, 246.75+zOffset, 170, kCyan);
+
+    ecal->AddElement(hexCol1);
+    ecal->AddElement(hexCol2);
+    ecal->AddElement(hexCol3);
+    ecal->AddElement(hexCol4);
+    ecal->AddElement(hexCol5);
+    ecal->AddElement(hexCol6);
+    ecal->AddElement(hexCol7);
+
+}
+
+void visualizeTriggerRegion(TEveElement* trigReg) {
+
+    static const double zOffset = 200+510/2;
+    TEveStraightLineSet* col1 = drawHexColumn(0, 0, -252.75+zOffset, -59.25+zOffset, 170, kRed);
+    TEveStraightLineSet* col2 = drawHexColumn(0, 170, -252.75+zOffset, -59.25+zOffset, 170, kRed);
+    TEveStraightLineSet* col3 = drawHexColumn(0, -170, -252.75+zOffset, -59.25+zOffset, 170, kRed);
+    TEveStraightLineSet* col4 = drawHexColumn(170*sqrt(3)/2, 85, -252.75+zOffset, -59.25+zOffset, 170, kRed);
+    TEveStraightLineSet* col5 = drawHexColumn(-170*sqrt(3)/2, 85, -252.75+zOffset, -59.25+zOffset, 170, kRed);
+    TEveStraightLineSet* col6 = drawHexColumn(-170*sqrt(3)/2, -85, -252.75+zOffset, -59.25+zOffset, 170, kRed);
+    TEveStraightLineSet* col7 = drawHexColumn(170*sqrt(3)/2, -85, -252.75+zOffset, -59.25+zOffset, 170, kRed);
+
+    trigReg->AddElement(col1);
+    trigReg->AddElement(col2);
+    trigReg->AddElement(col3);
+    trigReg->AddElement(col4);
+    trigReg->AddElement(col5);
+    trigReg->AddElement(col6);
+    trigReg->AddElement(col7);
+
+}
+
 
 double maxHitEdep(TTree* tree, TClonesArray* ecalDigis, int iEvt) {
 
@@ -143,18 +187,23 @@ TEveElement* visualizeRecoilHits(TClonesArray* hits) {
 
         std::vector<float> xyzPos = hit->getPosition();
 
-        if ((xyzPos[2] < 6 && xyzPos[2] > 3) || (xyzPos[2] < 22 && xyzPos[2] > 18) || (xyzPos[2] < 37 && xyzPos[2] > 33) || (xyzPos[2] < 49 && xyzPos[2] > 43)) {
+        if ((xyzPos[2] < 6 && xyzPos[2] > 3) || (xyzPos[2] < 22 && xyzPos[2] > 18) || (xyzPos[2] < 40 && xyzPos[2] > 31) || (xyzPos[2] < 53 && xyzPos[2] > 41)) {
             
-            recoilHitSet->AddBox(xyzPos[0], -30, xyzPos[2], 1, 60, 1);
+            recoilHitSet->AddBox(xyzPos[0], -35, xyzPos[2], 1, 60, 1);
             recoilHitSet->DigitValue(110);
 
-        } else if ((xyzPos[2] < 12 && xyzPos[2] > 8) || (xyzPos[2] < 27 && xyzPos[2] > 23) || (xyzPos[2] < 42 && xyzPos[2] > 38) || (xyzPos[2] < 58 && xyzPos[2] > 52)) { 
+        } else if ((xyzPos[2] < 12 && xyzPos[2] > 8) || (xyzPos[2] < 27 && xyzPos[2] > 23) || (xyzPos[2] < 44 && xyzPos[2] > 36) || (xyzPos[2] < 60 && xyzPos[2] > 50)) { 
 
-            recoilHitSet->AddBox(-30, xyzPos[1], xyzPos[2], 60, 1, 1);
+            recoilHitSet->AddBox(-35, xyzPos[1], xyzPos[2], 60, 1, 1);
             recoilHitSet->DigitValue(110);
 
-        } 
-        
+        } else if (xyzPos[2] > 65) {
+         
+            recoilHitSet->AddBox(-35, xyzPos[1], xyzPos[2], 60, 1, 1);
+            recoilHitSet->DigitValue(110);
+            
+        }
+
     }
 
     return recoilHitSet;
@@ -189,23 +238,14 @@ int main(int argc, char** argv) {
 
     TEveElement* detector = new TEveElementList("Detector");
     TEveElement* ecal = new TEveElementList("ECAL");
+    visualizeECAL(ecal);
+
+    TEveElement* trigReg = new TEveElementList("Trigger Sum Region");
+    visualizeTriggerRegion(trigReg);
+    
     detector->AddElement(ecal);
 
-    TEveStraightLineSet* hexCol1 = drawHexColumn(0, 0, -252.75, 246.75, 170);
-    TEveStraightLineSet* hexCol2 = drawHexColumn(0, 170, -252.75, 246.75, 170);
-    TEveStraightLineSet* hexCol3 = drawHexColumn(0, -170, -252.75, 246.75, 170);
-    TEveStraightLineSet* hexCol4 = drawHexColumn(170*sqrt(3)/2, 85, -252.75, 246.75, 170);
-    TEveStraightLineSet* hexCol5 = drawHexColumn(-170*sqrt(3)/2, 85, -252.75, 246.75, 170);
-    TEveStraightLineSet* hexCol6 = drawHexColumn(-170*sqrt(3)/2, -85, -252.75, 246.75, 170);
-    TEveStraightLineSet* hexCol7 = drawHexColumn(170*sqrt(3)/2, -85, -252.75, 246.75, 170);
-    ecal->AddElement(hexCol1);
-    ecal->AddElement(hexCol2);
-    ecal->AddElement(hexCol3);
-    ecal->AddElement(hexCol4);
-    ecal->AddElement(hexCol5);
-    ecal->AddElement(hexCol6);
-    ecal->AddElement(hexCol7);
-
+    gEve->AddElement(trigReg);
     gEve->AddElement(detector);
     gEve->AddElement(ecalHitSet);
     gEve->AddElement(recoilHitSet);
