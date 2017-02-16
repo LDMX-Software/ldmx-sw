@@ -59,6 +59,8 @@ namespace ldmx {
 
         if (track->GetParentID() != 1) return 0;
 
+        if (track->GetKineticEnergy() < BiasingMessenger::getThreshold()) return 0; 
+
         G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
         /*std::cout << "[ XsecBiasingOperator ]: "
                     << "Interaction length: " 
