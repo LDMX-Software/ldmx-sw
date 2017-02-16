@@ -208,3 +208,4 @@ If you plan on starting a major (sub)project within the repository like adding a
 ## References
 
 * [LDMX Simulation Framework](https://www.dropbox.com/s/oosmuyo553kvlce/LDMX%20Simulation%20Framework.pptx?dl=0) - Powerpoint presentation
+* [LDMX-SW Doxygen Documentation](https://ldmxanalysis.github.io/ldmx-sw/html/index.html)

@@ -30,12 +30,12 @@ void EcalVetoProcessor::produce(Event& event) {
     std::vector<float> EcalLayerIsoRaw(NUM_ECAL_LAYERS, 0);
     std::vector<float> EcalLayerIsoReadout(NUM_ECAL_LAYERS, 0);
     std::vector<float> EcalLayerTime(NUM_ECAL_LAYERS, 0);
-
+    
     const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
-
+    
     // looper over sim hits
     int numEcalHits = ecalDigis->GetEntriesFast();
-
+    
     std::cout << "[ EcalVetoProcessor ] : Got " << numEcalHits << " ECal digis in event " << event.getEventHeader()->getEventNumber() << std::endl;
 
     std::vector<cell_energy_pair> layerMaxCellId(NUM_LAYERS_FOR_MED_CAL, std::make_pair(0, 0));
@@ -88,6 +88,7 @@ void EcalVetoProcessor::produce(Event& event) {
         if (iLayer > BACK_ECAL_STARTING_LAYER)
             backSummedDep += EcalLayerEdepReadout[iLayer];
     }
+    
 
     /*
      if(verbose){
@@ -102,12 +103,14 @@ void EcalVetoProcessor::produce(Event& event) {
      */
 
     doesPassVeto_ = (summedDep < TOTAL_DEP_CUT && summedIso < TOTAL_ISO_CUT && backSummedDep < BACK_ECAL_CUT); // add ratio cut in at some point
+    /*
 
     result_.set("EcalVetoV1", doesPassVeto_, 3);
     result_.setAlgoVar(0, summedDep);
     result_.setAlgoVar(1, summedIso);
     result_.setAlgoVar(2, backSummedDep);
     event.add("EcalVeto", &result_);
+    */
 }
 
 }
