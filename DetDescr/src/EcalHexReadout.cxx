@@ -80,4 +80,4 @@ void EcalHexReadout::buildMap(Double_t xstart, Double_t ystart, Double_t a, Int_
     }
 }
 
-} // namespace detdescr
+}
