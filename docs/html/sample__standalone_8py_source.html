@@ -52,35 +52,29 @@
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">#!/usr/bin/python</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="keyword">from</span> LDMX.Framework <span class="keyword">import</span> ldmxcfg</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="keyword">import</span> ldmxcfg;</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;p=<a class="code" href="classldmxcfg_1_1Process.html">ldmxcfg.Process</a>(<span class="stringliteral">&quot;Fred&quot;</span>)</div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;p.libraries.append(<span class="stringliteral">&quot;libEventProc.so&quot;</span>)</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;test1=<a class="code" href="classldmxcfg_1_1Analyzer.html">ldmxcfg.Analyzer</a>(<span class="stringliteral">&quot;test1&quot;</span>, <span class="stringliteral">&quot;ldmx::DummyAnalyzer&quot;</span>)</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">#testp=ldmxcfg.Producer(&quot;testp&quot;, &quot;ldmx::DummyProducer&quot;)</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">#testhc=ldmxcfg.Producer(&quot;hcaldigi&quot;, &quot;ldmx::HcalDigiProducer&quot;)</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;testp=<a class="code" href="classldmxcfg_1_1Producer.html">ldmxcfg.Producer</a>(<span class="stringliteral">&quot;testp&quot;</span>, <span class="stringliteral">&quot;ldmx::DummyProducer&quot;</span>)</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;testhc=<a class="code" href="classldmxcfg_1_1Producer.html">ldmxcfg.Producer</a>(<span class="stringliteral">&quot;hcaldigi&quot;</span>, <span class="stringliteral">&quot;ldmx::HcalDigiProducer&quot;</span>)</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="stringliteral">testp.parameters[&quot;n_particles&quot;] = 10</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="stringliteral">testp.parameters[&quot;ave_energy&quot;] = 0.50</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="stringliteral">testp.parameters[&quot;direction&quot;] = [0.0,0.0,1.0]</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="stringliteral">testp.parameters[&quot;favorite_directory&quot;] = &quot;/tmp&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="stringliteral">&quot;&quot;&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">#p.inputFiles=[&quot;test.root&quot;]</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">#p.sequence = [testp, test1, testhc]</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">#p.sequence = [testp, test1]</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;p.sequence = [test1]</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;p.maxEvents = 5</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">#p.run = 101</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;p.inputFiles=[<span class="stringliteral">&quot;ldmx_sim_events.root&quot;</span>]</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;p.outputFiles=[<span class="stringliteral">&quot;derp.root&quot;</span>]</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;p.printMe()</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;testp.parameters[<span class="stringliteral">&quot;n_particles&quot;</span>] = 10</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;testp.parameters[<span class="stringliteral">&quot;ave_energy&quot;</span>] = 0.50</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;testp.parameters[<span class="stringliteral">&quot;direction&quot;</span>] = [0.0,0.0,1.0]</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;testp.parameters[<span class="stringliteral">&quot;favorite_directory&quot;</span>] = <span class="stringliteral">&quot;/tmp&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">#p.inputFiles=[&quot;test.root&quot;]</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;p.sequence = [testp, test1, testhc]</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;p.maxEvents = 5</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;p.run = 101</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;p.printMe()</div>
 <div class="ttc" id="classldmxcfg_1_1Analyzer_html"><div class="ttname"><a href="classldmxcfg_1_1Analyzer.html">ldmxcfg.Analyzer</a></div><div class="ttdef"><b>Definition:</b> <a href="ldmxcfg_8py_source.html#l00017">ldmxcfg.py:17</a></div></div>
 <div class="ttc" id="classldmxcfg_1_1Process_html"><div class="ttname"><a href="classldmxcfg_1_1Process.html">ldmxcfg.Process</a></div><div class="ttdef"><b>Definition:</b> <a href="ldmxcfg_8py_source.html#l00031">ldmxcfg.py:31</a></div></div>
+<div class="ttc" id="classldmxcfg_1_1Producer_html"><div class="ttname"><a href="classldmxcfg_1_1Producer.html">ldmxcfg.Producer</a></div><div class="ttdef"><b>Definition:</b> <a href="ldmxcfg_8py_source.html#l00003">ldmxcfg.py:3</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

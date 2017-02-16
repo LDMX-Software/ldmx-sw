@@ -109,8 +109,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a62bc697d2947c79305fb69baba85bae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6301a9e5a7d6cacb266479be184cc0f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1DetectorID.html#a950b09b90f52a3328285aca1e0f6bd58">DetectorID::RawValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorElementImpl.html#a6301a9e5a7d6cacb266479be184cc0f0">id_</a> {0}</td></tr>
 <tr class="separator:a6301a9e5a7d6cacb266479be184cc0f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62c28401a5ab676cbc23c0d72f515a7b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1DetectorID.html">DetectorID</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorElementImpl.html#a62c28401a5ab676cbc23c0d72f515a7b">detID_</a> {nullptr}</td></tr>
-<tr class="separator:a62c28401a5ab676cbc23c0d72f515a7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d8173f3686d6aa28e009f3d3777a14b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1DetectorID.html">DetectorID</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorElementImpl.html#a5d8173f3686d6aa28e009f3d3777a14b">detectorID_</a> {nullptr}</td></tr>
+<tr class="separator:a5d8173f3686d6aa28e009f3d3777a14b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a189c719fb37f6e6f5c81f077fa7c3424"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorElementImpl.html#a189c719fb37f6e6f5c81f077fa7c3424">name_</a></td></tr>
 <tr class="separator:a189c719fb37f6e6f5c81f077fa7c3424"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1588e66e0882c23711f80ba8323abb6d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorElementImpl.html#a1588e66e0882c23711f80ba8323abb6d">globalPosition_</a> {0, 0, 0}</td></tr>
@@ -214,7 +214,7 @@ It sets the parent DE on this object, and it will also add this object as a chil
 
 <p>Definition at line <a class="el" href="DetectorElementImpl_8h_source.html#l00057">57</a> of file <a class="el" href="DetectorElementImpl_8h_source.html">DetectorElementImpl.h</a>.</p>
 
-<p>References <a class="el" href="DetectorElementImpl_8h_source.html#l00195">children_</a>, and <a class="el" href="DetectorElementImpl_8h_source.html#l00204">detID_</a>.</p>
+<p>References <a class="el" href="DetectorElementImpl_8h_source.html#l00195">children_</a>, and <a class="el" href="DetectorElementImpl_8h_source.html#l00204">detectorID_</a>.</p>
 <div class="fragment"><div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                           {</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                <span class="comment">// Each DE is responsible for deleting all of its children.</span></div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                <span class="keywordflow">for</span> (<span class="keyword">auto</span> child : <a class="code" href="classldmx_1_1DetectorElementImpl.html#a3f193f42065197065cede31bb352f72a">children_</a>) {</div>
@@ -222,12 +222,12 @@ It sets the parent DE on this object, and it will also add this object as a chil
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                }</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                <span class="comment">// Delete the detector ID.</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1DetectorElementImpl.html#a62c28401a5ab676cbc23c0d72f515a7b">detID_</a>) {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                    <span class="keyword">delete</span> <a class="code" href="classldmx_1_1DetectorElementImpl.html#a62c28401a5ab676cbc23c0d72f515a7b">detID_</a>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1DetectorElementImpl.html#a5d8173f3686d6aa28e009f3d3777a14b">detectorID_</a>) {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                    <span class="keyword">delete</span> <a class="code" href="classldmx_1_1DetectorElementImpl.html#a5d8173f3686d6aa28e009f3d3777a14b">detectorID_</a>;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                }</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            }</div>
-<div class="ttc" id="classldmx_1_1DetectorElementImpl_html_a62c28401a5ab676cbc23c0d72f515a7b"><div class="ttname"><a href="classldmx_1_1DetectorElementImpl.html#a62c28401a5ab676cbc23c0d72f515a7b">ldmx::DetectorElementImpl::detID_</a></div><div class="ttdeci">DetectorID * detID_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorElementImpl_8h_source.html#l00204">DetectorElementImpl.h:204</a></div></div>
 <div class="ttc" id="classldmx_1_1DetectorElementImpl_html_a3f193f42065197065cede31bb352f72a"><div class="ttname"><a href="classldmx_1_1DetectorElementImpl.html#a3f193f42065197065cede31bb352f72a">ldmx::DetectorElementImpl::children_</a></div><div class="ttdeci">DetectorElementVector children_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorElementImpl_8h_source.html#l00195">DetectorElementImpl.h:195</a></div></div>
+<div class="ttc" id="classldmx_1_1DetectorElementImpl_html_a5d8173f3686d6aa28e009f3d3777a14b"><div class="ttname"><a href="classldmx_1_1DetectorElementImpl.html#a5d8173f3686d6aa28e009f3d3777a14b">ldmx::DetectorElementImpl::detectorID_</a></div><div class="ttdeci">DetectorID * detectorID_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorElementImpl_8h_source.html#l00204">DetectorElementImpl.h:204</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -385,12 +385,12 @@ It sets the parent DE on this object, and it will also add this object as a chil
 
 <p>Definition at line <a class="el" href="DetectorElementImpl_8h_source.html#l00119">119</a> of file <a class="el" href="DetectorElementImpl_8h_source.html">DetectorElementImpl.h</a>.</p>
 
-<p>References <a class="el" href="DetectorElementImpl_8h_source.html#l00204">detID_</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00119">getDetectorID()</a>, and <a class="el" href="DetectorElementImpl_8h_source.html#l00198">parent_</a>.</p>
+<p>References <a class="el" href="DetectorElementImpl_8h_source.html#l00204">detectorID_</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00119">getDetectorID()</a>, and <a class="el" href="DetectorElementImpl_8h_source.html#l00198">parent_</a>.</p>
 
-<p>Referenced by <a class="el" href="DetectorElementImpl_8h_source.html#l00119">getDetectorID()</a>.</p>
+<p>Referenced by <a class="el" href="EcalDetectorElement_8cxx_source.html#l00014">ldmx::EcalLayer::EcalLayer()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00119">getDetectorID()</a>, <a class="el" href="HcalDetectorElement_8cxx_source.html#l00020">ldmx::HcalDetectorElement::HcalDetectorElement()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00033">ldmx::RecoilTrackerDetectorElement::RecoilTrackerDetectorElement()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00015">ldmx::RecoilTrackerLayer::RecoilTrackerLayer()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00012">ldmx::TaggerDetectorElement::TaggerDetectorElement()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00031">ldmx::TaggerLayer::TaggerLayer()</a>, <a class="el" href="TargetDetectorElement_8cxx_source.html#l00011">ldmx::TargetDetectorElement::TargetDetectorElement()</a>, and <a class="el" href="TriggerPadDetectorElement_8cxx_source.html#l00007">ldmx::TriggerPadDetectorElement::TriggerPadDetectorElement()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                                        {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;                <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1DetectorElementImpl.html#a62c28401a5ab676cbc23c0d72f515a7b">detID_</a>) {</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                    <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1DetectorElementImpl.html#a62c28401a5ab676cbc23c0d72f515a7b">detID_</a>;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;                <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1DetectorElementImpl.html#a5d8173f3686d6aa28e009f3d3777a14b">detectorID_</a>) {</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                    <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1DetectorElementImpl.html#a5d8173f3686d6aa28e009f3d3777a14b">detectorID_</a>;</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;                } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                    <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1DetectorElementImpl.html#a62bc697d2947c79305fb69baba85bae7">parent_</a>) {</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;                        <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1DetectorElementImpl.html#a62bc697d2947c79305fb69baba85bae7">parent_</a>-&gt;<a class="code" href="classldmx_1_1DetectorElementImpl.html#a051152497469b87b8c1ddc76d81959ce">getDetectorID</a>();</div>
@@ -401,7 +401,7 @@ It sets the parent DE on this object, and it will also add this object as a chil
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;            }</div>
 <div class="ttc" id="classldmx_1_1DetectorElementImpl_html_a051152497469b87b8c1ddc76d81959ce"><div class="ttname"><a href="classldmx_1_1DetectorElementImpl.html#a051152497469b87b8c1ddc76d81959ce">ldmx::DetectorElementImpl::getDetectorID</a></div><div class="ttdeci">DetectorID * getDetectorID()</div><div class="ttdef"><b>Definition:</b> <a href="DetectorElementImpl_8h_source.html#l00119">DetectorElementImpl.h:119</a></div></div>
 <div class="ttc" id="classldmx_1_1DetectorElementImpl_html_a62bc697d2947c79305fb69baba85bae7"><div class="ttname"><a href="classldmx_1_1DetectorElementImpl.html#a62bc697d2947c79305fb69baba85bae7">ldmx::DetectorElementImpl::parent_</a></div><div class="ttdeci">DetectorElementImpl * parent_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorElementImpl_8h_source.html#l00198">DetectorElementImpl.h:198</a></div></div>
-<div class="ttc" id="classldmx_1_1DetectorElementImpl_html_a62c28401a5ab676cbc23c0d72f515a7b"><div class="ttname"><a href="classldmx_1_1DetectorElementImpl.html#a62c28401a5ab676cbc23c0d72f515a7b">ldmx::DetectorElementImpl::detID_</a></div><div class="ttdeci">DetectorID * detID_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorElementImpl_8h_source.html#l00204">DetectorElementImpl.h:204</a></div></div>
+<div class="ttc" id="classldmx_1_1DetectorElementImpl_html_a5d8173f3686d6aa28e009f3d3777a14b"><div class="ttname"><a href="classldmx_1_1DetectorElementImpl.html#a5d8173f3686d6aa28e009f3d3777a14b">ldmx::DetectorElementImpl::detectorID_</a></div><div class="ttdeci">DetectorID * detectorID_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorElementImpl_8h_source.html#l00204">DetectorElementImpl.h:204</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -575,7 +575,7 @@ It sets the parent DE on this object, and it will also add this object as a chil
 
 <p>References <a class="el" href="DetectorElementImpl_8h_source.html#l00192">support_</a>.</p>
 
-<p>Referenced by <a class="el" href="EcalDetectorElement_8cxx_source.html#l00022">ldmx::EcalDetectorElement::EcalDetectorElement()</a>, <a class="el" href="HcalDetectorElement_8cxx_source.html#l00018">ldmx::HcalDetectorElement::HcalDetectorElement()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00030">ldmx::RecoilTrackerDetectorElement::RecoilTrackerDetectorElement()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00012">ldmx::TaggerDetectorElement::TaggerDetectorElement()</a>, <a class="el" href="TargetDetectorElement_8cxx_source.html#l00011">ldmx::TargetDetectorElement::TargetDetectorElement()</a>, and <a class="el" href="TriggerPadDetectorElement_8cxx_source.html#l00007">ldmx::TriggerPadDetectorElement::TriggerPadDetectorElement()</a>.</p>
+<p>Referenced by <a class="el" href="EcalDetectorElement_8cxx_source.html#l00025">ldmx::EcalDetectorElement::EcalDetectorElement()</a>, <a class="el" href="HcalDetectorElement_8cxx_source.html#l00020">ldmx::HcalDetectorElement::HcalDetectorElement()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00033">ldmx::RecoilTrackerDetectorElement::RecoilTrackerDetectorElement()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00012">ldmx::TaggerDetectorElement::TaggerDetectorElement()</a>, <a class="el" href="TargetDetectorElement_8cxx_source.html#l00011">ldmx::TargetDetectorElement::TargetDetectorElement()</a>, and <a class="el" href="TriggerPadDetectorElement_8cxx_source.html#l00007">ldmx::TriggerPadDetectorElement::TriggerPadDetectorElement()</a>.</p>
 <div class="fragment"><div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                                   {</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1DetectorElementImpl.html#a7eb66edb10f3c446fd4a94f5c6a7815e">support_</a>;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;            }</div>
@@ -703,11 +703,11 @@ It sets the parent DE on this object, and it will also add this object as a chil
 
 <p>Definition at line <a class="el" href="DetectorElementImpl_8h_source.html#l00195">195</a> of file <a class="el" href="DetectorElementImpl_8h_source.html">DetectorElementImpl.h</a>.</p>
 
-<p>Referenced by <a class="el" href="DetectorElementImpl_8h_source.html#l00185">addChild()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00146">findChild()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00083">getChildren()</a>, <a class="el" href="EcalDetectorElement_8cxx_source.html#l00040">ldmx::EcalDetectorElement::getEcalLayer()</a>, <a class="el" href="HcalDetectorElement_8cxx_source.html#l00038">ldmx::HcalDetectorElement::getHcalStation()</a>, and <a class="el" href="DetectorElementImpl_8h_source.html#l00057">~DetectorElementImpl()</a>.</p>
+<p>Referenced by <a class="el" href="DetectorElementImpl_8h_source.html#l00185">addChild()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00146">findChild()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00083">getChildren()</a>, <a class="el" href="EcalDetectorElement_8cxx_source.html#l00047">ldmx::EcalDetectorElement::getEcalLayer()</a>, <a class="el" href="HcalDetectorElement_8cxx_source.html#l00044">ldmx::HcalDetectorElement::getHcalStation()</a>, and <a class="el" href="DetectorElementImpl_8h_source.html#l00057">~DetectorElementImpl()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a62c28401a5ab676cbc23c0d72f515a7b"></a>
+<a class="anchor" id="a5d8173f3686d6aa28e009f3d3777a14b"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -715,7 +715,7 @@ It sets the parent DE on this object, and it will also add this object as a chil
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classldmx_1_1DetectorID.html">DetectorID</a>* ldmx::DetectorElementImpl::detID_ {nullptr}</td>
+          <td class="memname"><a class="el" href="classldmx_1_1DetectorID.html">DetectorID</a>* ldmx::DetectorElementImpl::detectorID_ {nullptr}</td>
         </tr>
       </table>
   </td>
@@ -728,7 +728,7 @@ It sets the parent DE on this object, and it will also add this object as a chil
 
 <p>Definition at line <a class="el" href="DetectorElementImpl_8h_source.html#l00204">204</a> of file <a class="el" href="DetectorElementImpl_8h_source.html">DetectorElementImpl.h</a>.</p>
 
-<p>Referenced by <a class="el" href="EcalDetectorElement_8cxx_source.html#l00022">ldmx::EcalDetectorElement::EcalDetectorElement()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00119">getDetectorID()</a>, <a class="el" href="TopDetectorElement_8cxx_source.html#l00017">ldmx::TopDetectorElement::TopDetectorElement()</a>, and <a class="el" href="DetectorElementImpl_8h_source.html#l00057">~DetectorElementImpl()</a>.</p>
+<p>Referenced by <a class="el" href="EcalDetectorElement_8cxx_source.html#l00025">ldmx::EcalDetectorElement::EcalDetectorElement()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00119">getDetectorID()</a>, <a class="el" href="TopDetectorElement_8cxx_source.html#l00017">ldmx::TopDetectorElement::TopDetectorElement()</a>, and <a class="el" href="DetectorElementImpl_8h_source.html#l00057">~DetectorElementImpl()</a>.</p>
 
 </div>
 </div>
@@ -778,7 +778,7 @@ It sets the parent DE on this object, and it will also add this object as a chil
 
 <p>Definition at line <a class="el" href="DetectorElementImpl_8h_source.html#l00201">201</a> of file <a class="el" href="DetectorElementImpl_8h_source.html">DetectorElementImpl.h</a>.</p>
 
-<p>Referenced by <a class="el" href="DetectorElementImpl_8h_source.html#l00111">getID()</a>.</p>
+<p>Referenced by <a class="el" href="EcalDetectorElement_8cxx_source.html#l00025">ldmx::EcalDetectorElement::EcalDetectorElement()</a>, <a class="el" href="EcalDetectorElement_8cxx_source.html#l00014">ldmx::EcalLayer::EcalLayer()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00111">getID()</a>, <a class="el" href="HcalDetectorElement_8cxx_source.html#l00020">ldmx::HcalDetectorElement::HcalDetectorElement()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00033">ldmx::RecoilTrackerDetectorElement::RecoilTrackerDetectorElement()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00015">ldmx::RecoilTrackerLayer::RecoilTrackerLayer()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00012">ldmx::TaggerDetectorElement::TaggerDetectorElement()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00031">ldmx::TaggerLayer::TaggerLayer()</a>, <a class="el" href="TargetDetectorElement_8cxx_source.html#l00011">ldmx::TargetDetectorElement::TargetDetectorElement()</a>, and <a class="el" href="TriggerPadDetectorElement_8cxx_source.html#l00007">ldmx::TriggerPadDetectorElement::TriggerPadDetectorElement()</a>.</p>
 
 </div>
 </div>
@@ -803,7 +803,7 @@ It sets the parent DE on this object, and it will also add this object as a chil
 
 <p>Definition at line <a class="el" href="DetectorElementImpl_8h_source.html#l00207">207</a> of file <a class="el" href="DetectorElementImpl_8h_source.html">DetectorElementImpl.h</a>.</p>
 
-<p>Referenced by <a class="el" href="EcalDetectorElement_8cxx_source.html#l00022">ldmx::EcalDetectorElement::EcalDetectorElement()</a>, <a class="el" href="EcalDetectorElement_8cxx_source.html#l00014">ldmx::EcalLayer::EcalLayer()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00135">getName()</a>, <a class="el" href="HcalDetectorElement_8cxx_source.html#l00018">ldmx::HcalDetectorElement::HcalDetectorElement()</a>, <a class="el" href="HcalDetectorElement_8cxx_source.html#l00010">ldmx::HcalStation::HcalStation()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00030">ldmx::RecoilTrackerDetectorElement::RecoilTrackerDetectorElement()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00015">ldmx::RecoilTrackerLayer::RecoilTrackerLayer()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00069">ldmx::RecoilTrackerSensor::RecoilTrackerSensor()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00012">ldmx::TaggerDetectorElement::TaggerDetectorElement()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00027">ldmx::TaggerLayer::TaggerLayer()</a>, <a class="el" href="TargetDetectorElement_8cxx_source.html#l00011">ldmx::TargetDetectorElement::TargetDetectorElement()</a>, <a class="el" href="TopDetectorElement_8cxx_source.html#l00017">ldmx::TopDetectorElement::TopDetectorElement()</a>, and <a class="el" href="TriggerPadDetectorElement_8cxx_source.html#l00007">ldmx::TriggerPadDetectorElement::TriggerPadDetectorElement()</a>.</p>
+<p>Referenced by <a class="el" href="EcalDetectorElement_8cxx_source.html#l00025">ldmx::EcalDetectorElement::EcalDetectorElement()</a>, <a class="el" href="EcalDetectorElement_8cxx_source.html#l00014">ldmx::EcalLayer::EcalLayer()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00135">getName()</a>, <a class="el" href="HcalDetectorElement_8cxx_source.html#l00020">ldmx::HcalDetectorElement::HcalDetectorElement()</a>, <a class="el" href="HcalDetectorElement_8cxx_source.html#l00010">ldmx::HcalStation::HcalStation()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00033">ldmx::RecoilTrackerDetectorElement::RecoilTrackerDetectorElement()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00015">ldmx::RecoilTrackerLayer::RecoilTrackerLayer()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00076">ldmx::RecoilTrackerSensor::RecoilTrackerSensor()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00012">ldmx::TaggerDetectorElement::TaggerDetectorElement()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00031">ldmx::TaggerLayer::TaggerLayer()</a>, <a class="el" href="TargetDetectorElement_8cxx_source.html#l00011">ldmx::TargetDetectorElement::TargetDetectorElement()</a>, <a class="el" href="TopDetectorElement_8cxx_source.html#l00017">ldmx::TopDetectorElement::TopDetectorElement()</a>, and <a class="el" href="TriggerPadDetectorElement_8cxx_source.html#l00007">ldmx::TriggerPadDetectorElement::TriggerPadDetectorElement()</a>.</p>
 
 </div>
 </div>
@@ -853,7 +853,7 @@ It sets the parent DE on this object, and it will also add this object as a chil
 
 <p>Definition at line <a class="el" href="DetectorElementImpl_8h_source.html#l00192">192</a> of file <a class="el" href="DetectorElementImpl_8h_source.html">DetectorElementImpl.h</a>.</p>
 
-<p>Referenced by <a class="el" href="DetectorElementImpl_8h_source.html#l00043">DetectorElementImpl()</a>, <a class="el" href="EcalDetectorElement_8cxx_source.html#l00022">ldmx::EcalDetectorElement::EcalDetectorElement()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00075">getSupport()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00099">getVolume()</a>, <a class="el" href="HcalDetectorElement_8cxx_source.html#l00018">ldmx::HcalDetectorElement::HcalDetectorElement()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00030">ldmx::RecoilTrackerDetectorElement::RecoilTrackerDetectorElement()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00012">ldmx::TaggerDetectorElement::TaggerDetectorElement()</a>, <a class="el" href="TargetDetectorElement_8cxx_source.html#l00011">ldmx::TargetDetectorElement::TargetDetectorElement()</a>, and <a class="el" href="TriggerPadDetectorElement_8cxx_source.html#l00007">ldmx::TriggerPadDetectorElement::TriggerPadDetectorElement()</a>.</p>
+<p>Referenced by <a class="el" href="DetectorElementImpl_8h_source.html#l00043">DetectorElementImpl()</a>, <a class="el" href="EcalDetectorElement_8cxx_source.html#l00025">ldmx::EcalDetectorElement::EcalDetectorElement()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00075">getSupport()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00099">getVolume()</a>, <a class="el" href="HcalDetectorElement_8cxx_source.html#l00020">ldmx::HcalDetectorElement::HcalDetectorElement()</a>, <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00033">ldmx::RecoilTrackerDetectorElement::RecoilTrackerDetectorElement()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00012">ldmx::TaggerDetectorElement::TaggerDetectorElement()</a>, <a class="el" href="TaggerDetectorElement_8cxx_source.html#l00031">ldmx::TaggerLayer::TaggerLayer()</a>, <a class="el" href="TargetDetectorElement_8cxx_source.html#l00011">ldmx::TargetDetectorElement::TargetDetectorElement()</a>, and <a class="el" href="TriggerPadDetectorElement_8cxx_source.html#l00007">ldmx::TriggerPadDetectorElement::TriggerPadDetectorElement()</a>.</p>
 
 </div>
 </div>

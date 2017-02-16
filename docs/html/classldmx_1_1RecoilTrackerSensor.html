@@ -121,8 +121,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a62bc697d2947c79305fb69baba85bae7 inherit pro_attribs_classldmx_1_1DetectorElementImpl"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6301a9e5a7d6cacb266479be184cc0f0 inherit pro_attribs_classldmx_1_1DetectorElementImpl"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1DetectorID.html#a950b09b90f52a3328285aca1e0f6bd58">DetectorID::RawValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorElementImpl.html#a6301a9e5a7d6cacb266479be184cc0f0">id_</a> {0}</td></tr>
 <tr class="separator:a6301a9e5a7d6cacb266479be184cc0f0 inherit pro_attribs_classldmx_1_1DetectorElementImpl"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62c28401a5ab676cbc23c0d72f515a7b inherit pro_attribs_classldmx_1_1DetectorElementImpl"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1DetectorID.html">DetectorID</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorElementImpl.html#a62c28401a5ab676cbc23c0d72f515a7b">detID_</a> {nullptr}</td></tr>
-<tr class="separator:a62c28401a5ab676cbc23c0d72f515a7b inherit pro_attribs_classldmx_1_1DetectorElementImpl"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d8173f3686d6aa28e009f3d3777a14b inherit pro_attribs_classldmx_1_1DetectorElementImpl"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1DetectorID.html">DetectorID</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorElementImpl.html#a5d8173f3686d6aa28e009f3d3777a14b">detectorID_</a> {nullptr}</td></tr>
+<tr class="separator:a5d8173f3686d6aa28e009f3d3777a14b inherit pro_attribs_classldmx_1_1DetectorElementImpl"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a189c719fb37f6e6f5c81f077fa7c3424 inherit pro_attribs_classldmx_1_1DetectorElementImpl"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorElementImpl.html#a189c719fb37f6e6f5c81f077fa7c3424">name_</a></td></tr>
 <tr class="separator:a189c719fb37f6e6f5c81f077fa7c3424 inherit pro_attribs_classldmx_1_1DetectorElementImpl"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1588e66e0882c23711f80ba8323abb6d inherit pro_attribs_classldmx_1_1DetectorElementImpl"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1DetectorElementImpl.html#a1588e66e0882c23711f80ba8323abb6d">globalPosition_</a> {0, 0, 0}</td></tr>
@@ -165,20 +165,20 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00069">69</a> of file <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html">RecoilTrackerDetectorElement.cxx</a>.</p>
+<p>Definition at line <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00076">76</a> of file <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html">RecoilTrackerDetectorElement.cxx</a>.</p>
 
 <p>References <a class="el" href="RecoilTrackerDetectorElement_8h_source.html#l00054">ldmx::RecoilTrackerLayer::getLayerNumber()</a>, <a class="el" href="DetectorElementImpl_8h_source.html#l00207">ldmx::DetectorElementImpl::name_</a>, <a class="el" href="RecoilTrackerDetectorElement_8h_source.html#l00091">sensorNumber_</a>, and <a class="el" href="GeometryUtil_8h_source.html#l00080">ldmx::GeometryUtil::stripNamePointer()</a>.</p>
-<div class="fragment"><div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                                                                                         : <a class="code" href="classldmx_1_1DetectorElementImpl.html#a9dc6366689c181a6b03947578a46f9ef">DetectorElementImpl</a>(layer, support) {</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keywordtype">string</span> nodeName = support-&gt;GetName();</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <a class="code" href="classldmx_1_1GeometryUtil.html#a2643e517c36fb2d0c9ee725ab3ca6caf">GeometryUtil::stripNamePointer</a>(nodeName);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keywordtype">string</span> sensorNum = nodeName.substr(16, 2);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        stringstream ss1;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        ss1 &lt;&lt; std::setfill(<span class="charliteral">&#39;0&#39;</span>) &lt;&lt; std::setw(2) &lt;&lt; sensorNum;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        stringstream ss2;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        ss2 &lt;&lt; std::setfill(<span class="charliteral">&#39;0&#39;</span>) &lt;&lt; std::setw(2) &lt;&lt; layer-&gt;getLayerNumber();</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <a class="code" href="classldmx_1_1DetectorElementImpl.html#a189c719fb37f6e6f5c81f077fa7c3424">name_</a> = <span class="stringliteral">&quot;RecoilTrackerLayer&quot;</span> + ss1.str() + <span class="stringliteral">&quot;_Sensor&quot;</span> + ss2.str();</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <a class="code" href="classldmx_1_1RecoilTrackerSensor.html#a5e6ded02b13f3b4dd5573403dcbc0537">sensorNumber_</a> = std::stoi(sensorNum);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    }</div>
+<div class="fragment"><div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                                                                                         : <a class="code" href="classldmx_1_1DetectorElementImpl.html#a9dc6366689c181a6b03947578a46f9ef">DetectorElementImpl</a>(layer, support) {</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        <span class="keywordtype">string</span> nodeName = support-&gt;GetName();</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <a class="code" href="classldmx_1_1GeometryUtil.html#a2643e517c36fb2d0c9ee725ab3ca6caf">GeometryUtil::stripNamePointer</a>(nodeName);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        <span class="keywordtype">string</span> sensorNum = nodeName.substr(16, 2);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        stringstream ss1;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        ss1 &lt;&lt; std::setfill(<span class="charliteral">&#39;0&#39;</span>) &lt;&lt; std::setw(2) &lt;&lt; sensorNum;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        stringstream ss2;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        ss2 &lt;&lt; std::setfill(<span class="charliteral">&#39;0&#39;</span>) &lt;&lt; std::setw(2) &lt;&lt; layer-&gt;getLayerNumber();</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        <a class="code" href="classldmx_1_1DetectorElementImpl.html#a189c719fb37f6e6f5c81f077fa7c3424">name_</a> = <span class="stringliteral">&quot;RecoilTrackerLayer&quot;</span> + ss1.str() + <span class="stringliteral">&quot;_Sensor&quot;</span> + ss2.str();</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        <a class="code" href="classldmx_1_1RecoilTrackerSensor.html#a5e6ded02b13f3b4dd5573403dcbc0537">sensorNumber_</a> = std::stoi(sensorNum);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    }</div>
 <div class="ttc" id="classldmx_1_1DetectorElementImpl_html_a9dc6366689c181a6b03947578a46f9ef"><div class="ttname"><a href="classldmx_1_1DetectorElementImpl.html#a9dc6366689c181a6b03947578a46f9ef">ldmx::DetectorElementImpl::DetectorElementImpl</a></div><div class="ttdeci">DetectorElementImpl(DetectorElementImpl *parent=nullptr, TGeoNode *support=nullptr)</div><div class="ttdef"><b>Definition:</b> <a href="DetectorElementImpl_8h_source.html#l00043">DetectorElementImpl.h:43</a></div></div>
 <div class="ttc" id="classldmx_1_1DetectorElementImpl_html_a189c719fb37f6e6f5c81f077fa7c3424"><div class="ttname"><a href="classldmx_1_1DetectorElementImpl.html#a189c719fb37f6e6f5c81f077fa7c3424">ldmx::DetectorElementImpl::name_</a></div><div class="ttdeci">std::string name_</div><div class="ttdef"><b>Definition:</b> <a href="DetectorElementImpl_8h_source.html#l00207">DetectorElementImpl.h:207</a></div></div>
 <div class="ttc" id="classldmx_1_1RecoilTrackerSensor_html_a5e6ded02b13f3b4dd5573403dcbc0537"><div class="ttname"><a href="classldmx_1_1RecoilTrackerSensor.html#a5e6ded02b13f3b4dd5573403dcbc0537">ldmx::RecoilTrackerSensor::sensorNumber_</a></div><div class="ttdeci">int sensorNumber_</div><div class="ttdef"><b>Definition:</b> <a href="RecoilTrackerDetectorElement_8h_source.html#l00091">RecoilTrackerDetectorElement.h:91</a></div></div>
@@ -243,7 +243,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Definition at line <a class="el" href="RecoilTrackerDetectorElement_8h_source.html#l00091">91</a> of file <a class="el" href="RecoilTrackerDetectorElement_8h_source.html">RecoilTrackerDetectorElement.h</a>.</p>
 
-<p>Referenced by <a class="el" href="RecoilTrackerDetectorElement_8h_source.html#l00084">getSensorNumber()</a>, and <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00069">RecoilTrackerSensor()</a>.</p>
+<p>Referenced by <a class="el" href="RecoilTrackerDetectorElement_8h_source.html#l00084">getSensorNumber()</a>, and <a class="el" href="RecoilTrackerDetectorElement_8cxx_source.html#l00076">RecoilTrackerSensor()</a>.</p>
 
 </div>
 </div>
