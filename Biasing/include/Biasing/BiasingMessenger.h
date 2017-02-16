@@ -47,6 +47,10 @@ namespace ldmx {
             static std::string getProcess() { return process_; }; 
 
             /**
+             */
+            static double getThreshold() { return threshold_; }; 
+
+            /**
             */
             static std::string getVolume() { return volume_; };
 
@@ -68,6 +72,9 @@ namespace ldmx {
             /** Command allowing a user to specify what process to bias. */
             G4UIcmdWithAString* processCmd_{new G4UIcmdWithAString{"/ldmx/biasing/process", this}};
 
+            /** Command allowing a user to specify an energy threshold. */
+            G4UIcmdWithAString* thresholdCmd_{new G4UIcmdWithAString{"/ldmx/biasing/threshold", this}};
+
             /** Command allowing a user to specify what volume the biasing should be attached to. */
             G4UIcmdWithAString* volumeCmd_{new G4UIcmdWithAString{"/ldmx/biasing/volume", this}};
 
@@ -82,6 +89,9 @@ namespace ldmx {
 
             /** Process to bias. */
             static std::string process_;
+
+            /** Particle energy threshold. */
+            static double threshold_;
 
             /** Volume to attach biasing to. */
             static std::string volume_;
