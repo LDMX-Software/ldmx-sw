@@ -111,31 +111,10 @@ void visualizeTriggerRegion(TEveElement* trigReg) {
 
 }
 
-
-double maxHitEdep(TTree* tree, TClonesArray* ecalDigis, int iEvt) {
-
-    double edepMax = 0.0;
-    ecalDigis->Clear();
-    tree->GetEntry(iEvt);
-
-    TIter next(ecalDigis);
-    EcalHit* hit;
-
-    while (hit = (EcalHit*)next()) {
-        
-        if (hit->getEnergy() > edepMax) {
-            
-            edepMax = hit->getEnergy();
-        }
-    }
-
-    return edepMax;
-}
-
 TEveElement* visualizeECALHits(TClonesArray* hits) {
     static const double layerZPos[] = {-250.5,-237.75,-225.0,-212.25,-199.5,-186.75,-174.0,-161.25,-148.5,-135.75,-123.0,-110.25,-97.5,-84.75,-72.0,-59.25,-46.5,-33.75,-21.0,-8.25,4.5,17.25,30.0,    42.75,55.5,68.25,81.0,93.75,106.5,119.25,132.0,144.75,157.5,170.25,183.0,195.75,208.5,221.25,234.0,246.75};
  
-    static const double zOffset = 200+510/2;
+    static const double zOffset = 200+510.0/2;
 
     EcalHexReadout hex;
     EcalDetectorID detID;
@@ -166,7 +145,7 @@ TEveElement* visualizeECALHits(TClonesArray* hits) {
         ecalHitSet->DigitValue(10.0*energy);
 
     }
-        //ecalHitSet->RefitPlex();
+    //ecalHitSet->RefitPlex();
 
     TEveTrans& t = ecalHitSet->RefMainTrans();
     t.SetPos(0,0,0);
@@ -183,24 +162,36 @@ TEveElement* visualizeRecoilHits(TClonesArray* hits) {
     TEveBoxSet* recoilHitSet = new TEveBoxSet("Recoil Hits");
     recoilHitSet->Reset(TEveBoxSet::kBT_AABox, kFALSE, 64);
 
+    const double stereo_strip_length=98.0;
+    const double mono_strip_length=78.0;
+    const double stereo_angle=100e-3; // radians
+    
     for (TIter next(hits); hit = (SimTrackerHit*)next();) {
 
         std::vector<float> xyzPos = hit->getPosition();
 
         if ((xyzPos[2] < 6 && xyzPos[2] > 3) || (xyzPos[2] < 22 && xyzPos[2] > 18) || (xyzPos[2] < 40 && xyzPos[2] > 31) || (xyzPos[2] < 53 && xyzPos[2] > 41)) {
             
-            recoilHitSet->AddBox(xyzPos[0], -35, xyzPos[2], 1, 60, 1);
+            recoilHitSet->AddBox(xyzPos[0], -stereo_strip_length/2, xyzPos[2], 1, stereo_strip_length, 1);
             recoilHitSet->DigitValue(110);
 
         } else if ((xyzPos[2] < 12 && xyzPos[2] > 8) || (xyzPos[2] < 27 && xyzPos[2] > 23) || (xyzPos[2] < 44 && xyzPos[2] > 36) || (xyzPos[2] < 60 && xyzPos[2] > 50)) { 
 
-            recoilHitSet->AddBox(-35, xyzPos[1], xyzPos[2], 60, 1, 1);
+	    // need to change to actually show as stereo strip...    
+            recoilHitSet->AddBox(-stereo_strip_length/2, xyzPos[1], xyzPos[2], stereo_strip_length, 1, 1);
             recoilHitSet->DigitValue(110);
 
         } else if (xyzPos[2] > 65) {
-         
-            recoilHitSet->AddBox(-35, xyzPos[1], xyzPos[2], 60, 1, 1);
-            recoilHitSet->DigitValue(110);
+	    if (fabs(xyzPos[1])>1.0) { // dead region
+
+		if (xyzPos[1]>0) {
+		    recoilHitSet->AddBox(xyzPos[0], 1, xyzPos[2], 1, mono_strip_length, 1);
+		    recoilHitSet->DigitValue(110);
+		} else {
+		    recoilHitSet->AddBox(xyzPos[0], -1-mono_strip_length, xyzPos[2], 1, mono_strip_length, 1);
+		    recoilHitSet->DigitValue(110);
+		}
+	    }
             
         }
 
