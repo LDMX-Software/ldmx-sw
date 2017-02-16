@@ -24,10 +24,11 @@ DetectorID::RawValue DetectorID::getRawValue() {
 
 void DetectorID::setRawValue(RawValue rawValue) {
     this->rawValue_ = rawValue;
+    std::fill(fieldValues_.begin(), fieldValues_.end(), 0);
 }
 
 const DetectorID::FieldValueList& DetectorID::unpack() {
-    std::fill(fieldValues_.begin(), fieldValues_.end(), 0);
+    //std::fill(fieldValues_.begin(), fieldValues_.end(), 0);
     for (IDField::IDFieldList::iterator it = fieldList_->begin();
             it != fieldList_->end(); it++) {
         IDField* field = (*it);
@@ -90,6 +91,11 @@ void DetectorID::init() {
 
     // Resize array to hold the correct number of field values.
     this->fieldValues_.resize(fieldList_->size());
+}
+
+void DetectorID::clear() {
+    std::fill(fieldValues_.begin(), fieldValues_.end(), 0);
+    rawValue_ = 0;
 }
 
 }

@@ -124,6 +124,11 @@ class DetectorID {
          */
         FieldValue getFieldValue(const std::string& fieldName);
 
+        /**
+         * Clear the current raw ID and field value vector.
+         */
+        void clear();
+
     protected:
 
         /**
