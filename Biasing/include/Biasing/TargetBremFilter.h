@@ -9,6 +9,11 @@
 #ifndef SIMPLUGINS_TARGETBREMFILTER_H_
 #define SIMPLUGINS_TARGETBREMFILTER_H_
 
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <algorithm>
+
 // Geant4
 #include "G4RunManager.hh"
 
@@ -70,13 +75,25 @@ namespace ldmx {
              */
             G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& currentTrackClass);
 
+            /**
+             *
+             */
+            static std::vector<G4Track*> getBremGammaList() { return bremGammaTracks_; };
+
+            /**
+             *
+             */
+            static void removeBremFromList(G4Track* track);
+
         private:
+
+            static std::vector<G4Track*> bremGammaTracks_; 
 
             /** The volume name of the LDMX target. */
             G4String volumeName_{"target_PV"};
 
-            /** Brem photon energy threshold. */
-            double photonEnergyThreshold_{2500}; // MeV
+            /** Recoil electron threshold. */
+            double recoilElectronThreshold_{1500}; // MeV
 
     }; // TargetBremFilter
 }
