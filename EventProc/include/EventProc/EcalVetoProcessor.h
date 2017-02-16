@@ -22,6 +22,7 @@
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/ParameterSet.h"
 
 namespace ldmx {
 
@@ -60,14 +61,14 @@ class EcalVetoProcessor : public Producer {
 
     private:
 
-        static const int NUM_ECAL_LAYERS;
-        static const int NUM_LAYERS_FOR_MED_CAL;
-        static const int BACK_ECAL_STARTING_LAYER;
-        static const float TOTAL_DEP_CUT;
-        static const float TOTAL_ISO_CUT;
-        static const float BACK_ECAL_CUT;
-        static const float RATIO_CUT;
-
+        int NUM_ECAL_LAYERS;
+        int NUM_LAYERS_FOR_MED_CAL;
+        int BACK_ECAL_STARTING_LAYER;
+        float TOTAL_DEP_CUT;
+        float TOTAL_ISO_CUT;
+        float BACK_ECAL_CUT;
+        float RATIO_CUT;
+        
         TriggerResult result_;
         EcalDetectorID detID_;
         bool verbose_{false};
