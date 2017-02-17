@@ -1,4 +1,5 @@
 #include "SimApplication/PrimaryGeneratorAction.h"
+#include "SimApplication/UserPrimaryParticleInformation.h"
 
 // Geant4
 #include "G4Event.hh"
@@ -24,8 +25,25 @@ void PrimaryGeneratorAction::setPrimaryGenerator(G4VPrimaryGenerator* aGenerator
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
     generator_->GeneratePrimaryVertex(event);
  
-    // Activate the plugin manager hook.		
+    // automatically setting genStatus to 1 for particle gun primaries
+    if (dynamic_cast<G4ParticleGun*>(generator_) != NULL){
+        
+        int nPV = event->GetNumberOfPrimaryVertex();
+        for (int iPV = 0; iPV < nPV; ++iPV){
+            G4PrimaryVertex* curPV =  event->GetPrimaryVertex(iPV);
+            int nPar = curPV->GetNumberOfParticle();            
+            for (int iPar = 0; iPar < nPar; ++iPar){
+                UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
+                primaryInfo->setHepEvtStatus(1);
+                curPV->GetPrimary(iPar)->SetUserInformation(primaryInfo);
+            }
+        }
+               
+    }
+
+    // Activate the plugin manager hook.        
     pluginManager_->generatePrimary(event);
+
 }
 
 }
