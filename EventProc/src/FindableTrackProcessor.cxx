@@ -14,6 +14,7 @@ namespace ldmx {
     }
 
     FindableTrackProcessor::~FindableTrackProcessor() { 
+        delete findableTrackResults_; 
     }
 
     void FindableTrackProcessor::configure(const ParameterSet &pset) { 
@@ -23,8 +24,6 @@ namespace ldmx {
     }
 
     void FindableTrackProcessor::produce(Event &event) {
-
-        std::cout << "event: " << std::endl; 
 
         // Get the collection of sim particles from the event 
         const TClonesArray *simParticles = event.getCollection("SimParticles");
@@ -49,9 +48,15 @@ namespace ldmx {
             // Check if the track is findable 
             if (hitMap_.count(simParticle) == 1) {
                 
+                // Create a result instance
                 FindableTrackResult* findableTrackResult 
-                    = (FindableTrackResult*) findableTrackResults_->ConstructedAt(resultCount); 
-                findableTrackResult->setResult(simParticle, this->isFindable(hitMap_[simParticle]));
+                    = (FindableTrackResult*) findableTrackResults_->ConstructedAt(resultCount);
+                
+                // Set the sim particle associated with the result
+                findableTrackResult->setSimParticle(simParticle); 
+
+                // Check if the track is findable
+                this->isFindable(findableTrackResult, hitMap_[simParticle]); 
                 resultCount++;
             }      
         }
@@ -87,7 +92,7 @@ namespace ldmx {
         }
     }
 
-    bool FindableTrackProcessor::isFindable(std::vector<int> hitCount) { 
+    void FindableTrackProcessor::isFindable(FindableTrackResult* result, std::vector<int> hitCount) { 
         
         // Count how many 3D stereo hits are created by this particle
         double hit3dCount{0};
@@ -99,11 +104,20 @@ namespace ldmx {
         // 1) The first four stereo layers are hit
         // 2) Three of the first four layers are hit and an axial layer is hit
         // 3) Two of the first four layers are hit and both axial layers are hit
-        if (hit3dCount > 3) return true;
-        else if (hit3dCount == 3 && (hitCount[8] > 0 || hitCount[9] > 0)) return true;
-        else if (hit3dCount == 2 && (hitCount[8] > 0 && hitCount[9] > 0)) return true;
-        
-        return false; 
+        if (hit3dCount > 3) { 
+            result->setResult(FindableTrackResult::STRATEGY_4S, 1); 
+            return;
+        } else if (hit3dCount == 3 && (hitCount[8] > 0 || hitCount[9] > 0)) {
+            result->setResult(FindableTrackResult::STRATEGY_3S1A, 1); 
+            return;
+        } else if (hit3dCount == 2 && (hitCount[8] > 0 && hitCount[9] > 0)) {
+            result->setResult(FindableTrackResult::STRATEGY_2S2A, 1); 
+            return;
+        } else if (hitCount[8] > 0 && hitCount[9] > 0) { 
+            result->setResult(FindableTrackResult::STRATEGY_2A, 1); 
+            return;
+        }
+        result->setResult(FindableTrackResult::STRATEGY_NONE, 0);    
     }
 
 }
