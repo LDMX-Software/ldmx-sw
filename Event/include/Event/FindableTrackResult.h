@@ -31,6 +31,15 @@ namespace ldmx {
         
         public: 
 
+            // Strategies
+            enum Strategy {
+                STRATEGY_NONE = 0, 
+                STRATEGY_4S   = 1, 
+                STRATEGY_3S1A = 2, 
+                STRATEGY_2S2A = 3, 
+                STRATEGY_2A   = 4,
+            };
+
             /** Constructor */
             FindableTrackResult(); 
 
@@ -38,32 +47,78 @@ namespace ldmx {
             ~FindableTrackResult(); 
 
             /** 
-             * Checks if the sim particle can be found by the recoil 
-             * tracker.
+             * Checks if a sim particle is findable using the 4 stereo layers 
+             * of the recoil tracker only. 
              */
-            bool isFindable() { return isFindable_; };
+            bool is4sFindable() { return is4sFindable_; };
+
+            /** 
+             * Checks if a sim particle is findable using the strategy 3 
+             * stereo + 1 axial.
+             *
+             */
+            bool is3s1aFindable() { return is3s1aFindable_; };
+
+            /** 
+             * Checks if a sim particle is findable using the strategy 2 
+             * stereo + 2 axial.
+             *
+             */
+            bool is2s2aFindable() { return is2s2aFindable_; };
+           
+            /** 
+             * Checks if a sim particle is findable using the strategy 2 
+             * axial.
+             *
+             */
+            bool is2aFindable() { return is2aFindable_; };
 
             /**
              * Get the sim particle associated with this result.
              */
             SimParticle* getSimParticle() { return (SimParticle*) simParticle_.GetObject(); };
-            
+            /**
+             * Set the sim particle associated with this result.
+             */
+            void setSimParticle(SimParticle* simParticle) { simParticle_ = simParticle; };
+
             /**
              * Set the sim particle and 'is findable' flag.
              */
-            void setResult(SimParticle* simParticle, bool isFindable); 
+            void setResult(Strategy strategy, bool isFindable); 
 
             /** Print out the object */
             void Print(Option_t *option = "");
 
         private:
-
+            
             /** Refence to the sim particle. */
             TRef simParticle_;
 
-            /** Flag indicating whether a particle is findable. */
-            bool isFindable_; 
+            /**
+             * Flag indicating whether a particle is findable using the
+             * strategy that requires 4 stereo layers.
+             */
+            bool is4sFindable_{false};
 
+            /** 
+             * Flag indicating whether a particle is findable using the 
+             * strategy 3 stereo + 1 axial. 
+             */
+            bool is3s1aFindable_{false}; 
+
+            /** 
+             * Flag indicating whether a particle is findable using the 
+             * strategy 2 stereo + 2 axial. 
+             */
+            bool is2s2aFindable_{false}; 
+            
+            /** 
+             * Flag indicating whether a particle is findable using the 
+             * strategy 2 axial.  This will be mainly used to reject
+             * back scattered particles. 
+             */
+            bool is2aFindable_{false}; 
 
         ClassDef(FindableTrackResult, 1); 
 
