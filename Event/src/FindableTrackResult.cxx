@@ -9,8 +9,8 @@
 
 ClassImp(ldmx::FindableTrackResult)
 
-namespace ldmx { 
-    
+namespace ldmx {
+            
     FindableTrackResult::FindableTrackResult() :
         TObject() {  
     }
@@ -18,15 +18,34 @@ namespace ldmx {
     FindableTrackResult::~FindableTrackResult() {
     }
 
-    void FindableTrackResult::setResult(SimParticle* simParticle, bool isFindable) { 
-        simParticle_ = simParticle; 
-        isFindable_ = isFindable;
+    void FindableTrackResult::setResult(Strategy strategy, bool isFindable) { 
+        
+        switch (strategy) { 
+            case FindableTrackResult::STRATEGY_NONE: 
+                break;
+            case FindableTrackResult::STRATEGY_4S: 
+                is4sFindable_ = isFindable;
+                break;
+            case FindableTrackResult::STRATEGY_3S1A: 
+                is3s1aFindable_ = isFindable;
+                break;
+            case FindableTrackResult::STRATEGY_2S2A: 
+                is2s2aFindable_ = isFindable;
+                break;
+            case FindableTrackResult::STRATEGY_2A:
+                is2aFindable_ = isFindable; 
+                break;
+        }
     }
 
     void FindableTrackResult::Print(Option_t *option) { 
         std::cout << "[ FindableTrackResult ]: "
                   << "Sim particle PDG ID: " 
-                  << static_cast<SimParticle*>(simParticle_.GetObject())->getPdgID() 
-                  << " is Findable: " << isFindable_ << std::endl;
+                  << static_cast<SimParticle*>(simParticle_.GetObject())->getPdgID() << "\n" 
+                  << "\t4s Findable: "   << is4sFindable_    << "\n" 
+                  << "\t3s1a Findable: " << is3s1aFindable_  << "\n"
+                  << "\t2s2a Findable: " << is2s2aFindable_  << "\n"
+                  << "\t2a Findable: "   << is2aFindable_  << "\n"
+                  << std::endl;
     }
 }
