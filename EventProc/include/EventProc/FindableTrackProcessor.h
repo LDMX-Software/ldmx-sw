@@ -35,29 +35,44 @@ namespace ldmx {
             ~FindableTrackProcessor();
 
             /** 
-             *
+             * Configure the processor using the given user specified parameters.
+             * 
+             * @param pSet Set of parameters used to configure this processor.
              */
-            void configure(const ParameterSet &pset); 
+            void configure(const ParameterSet &pSet); 
 
             /**
+             * Run the processor and create a collection of results which 
+             * indicate if a charge particle can be found by the recoil tracker.
              *
+             * @param event The event to process.
              */
             void produce(Event &event); 
             
         private:
 
             /**
+             * Create a hit map which associates a charged particle to it's 
+             * hits in the recoil tracker.
              *
+             * @param recoilSimHit collection of simulated recoil tracker hits.
              */
             void createHitMap(const TClonesArray* recoilSimHits);
           
-            /** */
-            bool isFindable(std::vector<int> hitCount); 
+            /** 
+             * Given a set of hits, check if a sim particle is expected to fall
+             * within the acceptance of the recoil tracker.
+             *
+             * @param result The object used to encapsulate the results.
+             * @param hitCount Vector indicating whether the nth layer of the 
+             *                 recoil tracker has a hit.
+             */
+            void isFindable(FindableTrackResult* result, std::vector<int> hitCount); 
 
-            /** */ 
+            /** Map between a sim particle and it's hit array. */ 
             std::map<SimParticle*, std::vector<int>> hitMap_;
 
-            /** */
+            /** Collection of results. */
             TClonesArray* findableTrackResults_{nullptr};
 
 
