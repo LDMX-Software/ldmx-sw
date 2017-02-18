@@ -11,6 +11,9 @@
 #include "SimApplication/VisAttributesStore.h"
 #include "DetDescr/DetectorIDStore.h"
 #include "DetDescr/DefaultDetectorID.h"
+#include "DetDescr/EcalDetectorID.h"
+
+// Geant4
 #include "G4LogicalVolumeStore.hh"
 #include "G4SDManager.hh"
 #include "G4FieldManager.hh"
@@ -20,21 +23,13 @@
 #include "G4RegionStore.hh"
 #include "G4Region.hh"
 
-#include "DetDescr/EcalDetectorID.h"
-
 // STL
 #include <string>
 #include <stdlib.h>
 
-using detdescr::DetectorID;
-using detdescr::DefaultDetectorID;
-using detdescr::EcalDetectorID;
-using detdescr::IDField;
-using detdescr::DetectorIDStore;
-
 using std::string;
 
-namespace sim {
+namespace ldmx {
 
 AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser) :
         parser_(theParser), eval_(new G4GDMLEvaluator) {
@@ -42,6 +37,7 @@ AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser) :
 
 AuxInfoReader::~AuxInfoReader() {
     delete eval_;
+    delete detectorHeader_;
 }
 
 void AuxInfoReader::readGlobalAuxInfo() {
@@ -64,6 +60,8 @@ void AuxInfoReader::readGlobalAuxInfo() {
             createRegion(auxVal, iaux->auxList);
         } else if (auxType == "VisAttributes") {
             createVisAttributes(auxVal, iaux->auxList);
+        } else if (auxType == "DetectorVersion") {
+            createDetectorHeader(auxVal, iaux->auxList);
         }
     }
     return;
@@ -460,7 +458,7 @@ void AuxInfoReader::createRegion(G4String name,
 void AuxInfoReader::createVisAttributes(G4String name,
         const G4GDMLAuxListType* auxInfoList) {
 
-    G4double rgba[4] = { 1., 1., 1., 1. };
+    G4double rgba[4] = {1., 1., 1., 1.};
     G4bool visible = true;
     G4bool dauInvisible = false;
     G4bool forceWireframe = false;
@@ -526,6 +524,43 @@ void AuxInfoReader::createVisAttributes(G4String name,
 
     std::cout << "Created VisAttributes " << name << std::endl
             << (*visAttributes) << std::endl << std::endl;
+}
+
+
+void AuxInfoReader::createDetectorHeader(G4String auxValue, const G4GDMLAuxListType* auxInfoList) {
+
+    int detectorVersion = atoi(auxValue.c_str());
+
+    std::string detectorName("");
+    std::string author("");
+    std::string description("");
+
+    for (std::vector<G4GDMLAuxStructType>::const_iterator iaux =
+                auxInfoList->begin(); iaux != auxInfoList->end(); iaux++) {
+
+        G4String auxType = iaux->type;
+        G4String auxVal = iaux->value;
+        G4String auxUnit = iaux->unit;
+
+        if (auxType == "DetectorName") {
+            detectorName = auxVal;
+        } else if (auxType == "Author") {
+            author = auxVal;
+        } else if (auxType == "Description") {
+            description = auxVal;
+        }
+    }
+
+    detectorHeader_ = new DetectorHeader(detectorName, detectorVersion, description, author);
+
+    std::cout << std::endl;
+    std::cout << "Read detector header from userinfo: " << std::endl;
+    std::cout << "  DetectorName: " << detectorHeader_->getName() << std::endl;
+    std::cout << "  DetectorVersion: " << detectorHeader_->getVersion() << std::endl;
+    std::cout << "  Author: " << detectorHeader_->getAuthor() << std::endl;
+    std::cout << "  Description: " << detectorHeader_->getDescription() << std::endl;
+    std::cout << std::endl;
+
 }
 
 }

@@ -7,12 +7,7 @@
 // LDMX
 #include "SimApplication/TrajectoryContainer.h"
 
-namespace sim {
-
-TrackMap* TrackMap::getInstance() {
-    static TrackMap INSTANCE;
-    return &INSTANCE;
-}
+namespace ldmx {
 
 void TrackMap::addSecondary(G4int trackID, G4int parentID) {
     trackIDMap_[trackID] = parentID;

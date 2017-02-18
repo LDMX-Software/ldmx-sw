@@ -1,3 +1,9 @@
+/**
+ * @file Event.h
+ * @brief Class defining an abstract interface for accessing event information and data collections
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #ifndef EVENT_EVENT_H_
 #define EVENT_EVENT_H_
 
@@ -6,78 +12,149 @@
 #include "TClonesArray.h"
 
 // LDMX
-#include "Event/EventConstants.h"
-#include "Event/SimTrackerHit.h"
-#include "Event/SimCalorimeterHit.h"
-#include "Event/SimParticle.h"
+#include "Event/EventHeader.h"
 
 // STL
 #include <string>
 #include <map>
 
-namespace event {
+namespace ldmx {
 
-class Event: public TObject {
+/**
+ * @class Event
+ * @brief Defines an interface for accessing event data
+ *
+ * @note
+ * A backing EventImpl object provides the actual data collections
+ * via ROOT data structures (trees and branches).  
+ */
+class Event {
 
     public:
 
-        typedef std::map<std::string, TClonesArray*> CollectionMap;
+        /**
+         * Class constructor.
+         */
+        Event() {;}
 
-        Event();
+        /**
+         * Class destructor.
+         */
+        virtual ~Event() {;}
 
-        virtual ~Event();
+        /**
+         * Get the event header.
+         * @return The event header.
+         */
+        virtual const EventHeader* getEventHeader() const = 0;
 
-        void Clear(Option_t* = "");
-
-        int getEventNumber() { return eventNumber_; }
-
-        int getRun() { return run_; }
-
-        int getTimestamp() { return timestamp_; }
-        
-        double getWeight() { return weight_; }
-
-        void setEventNumber(int eventNumber) { this->eventNumber_ = eventNumber; }
-
-        void setRun(int run) { this->run_ = run; }
-
-        void setTimestamp(int timestamp) { this->timestamp_ = timestamp; }
-        
-        void setWeight(double weight) { this->weight_ = weight; }
-
-        TClonesArray* getCollection(const std::string& collectionName) {
-            return collMap_[collectionName];
-        }
-
-        const CollectionMap& getCollectionMap() {
-            return collMap_;
-        }
-
-        TObject* addObject(const std::string& collectionName) {
-            auto coll = getCollection(collectionName);
-            return coll->ConstructedAt(coll->GetEntriesFast());
+        /**
+         * Check the existence of one-and-only-one object with the
+         * given name (excluding the pass) in the event.
+         * @param name Name (label, not class name) given to the object when it was put into the event.
+         * @return True if the object or collection exists in the event.
+         */
+        bool exists(const std::string& name) {
+            return getReal(name, "", false) != 0;
         }
 
         /**
-         * Concrete sub-classes must implement this method to return a string
-         * with the class name of the event type e.g. "event::SimEvent".
+         * Check for the existence of an object or collection with the
+         * given name and pass name in the event.
+         * @param name Name (label, not class name) given to the object when it was put into the event.
+         * @param passName The process pass label which was in use when this object was put into the event, such as "sim" or "rerecov2".
+         * @return True if the object or collection exists in the event.
          */
-        virtual const char* getEventType() = 0;
+        bool exists(const std::string& name, const std::string& passName) {
+            return getReal(name, passName, false) != 0;
+        }
 
-    private:
+        /**
+         * Get a named object with a specific type without specifying
+         * the pass name.  If there is one-and-only-one object with the
+         * given name (excluding the pass) in the event, it will be
+         * returned, otherwise an exception will be thrown.
+         * @param name Name (label, not classname) given to the object when it was put into the event.
+         * @return A named object from the event.
+         */
+        template<typename ObjectType> const ObjectType get(const std::string& name) {
+            return (ObjectType) getReal(name, "", true);
+        }
 
-        int eventNumber_{-1};
-        int run_{-1};
-        int timestamp_{-1};
-        double weight_{1.0};
+        /**
+         * Get a named object with a specific type, specifying
+         * the pass name.  If there is no object which matches, an exception
+         * will be thrown.
+         * @param name Name (label, not classname) given to the object when it was put into the event.
+         * @param passName The process pass label which was in use when this object was put into the event, such as "sim" or "rerecov2".
+         * @return A named object from the event.
+         */
+        template<typename ObjectType> const ObjectType get(const std::string& name, const std::string& passName) {
+            return (ObjectType) getReal(name, passName, true);
+        }
+
+        /**
+         * Get a collection (TClonesArray) from the event without specifying
+         * the pass name.  If there is one-and-only-one object with the
+         * given name (excluding the pass) in the event, it will be
+         * returned, otherwise an exception will be thrown.
+         * @param name Name (label, not class name) given to the object when it was put into the event.
+         * @return The named TClonesArray from the event.
+         */
+        const TClonesArray* getCollection(const std::string& collectionName) {
+            return (TClonesArray*) getReal(collectionName, "", true);
+        }
+
+        /**
+         * Get an object collection (TClonesArray) from the event, specifying
+         * the pass name.  If there is no object which matches, an exception
+         * will be thrown.
+         * @param collectionName Name given to the collection when it was put into the event.
+         * @param passName The process pass label which was in use when this object was put into the event, such as "sim" or "rerecov2".
+         * @return A named TClonesArray from the event.
+         */
+        const TClonesArray* getCollection(const std::string& collectionName, std::string passName) {
+            return (TClonesArray*) getReal(collectionName, passName, true);
+        }
+
+        /**
+         * Add a collection (TClonesArray) of objects to the event.
+         * The current pass name will be used for the collection.
+         * @param collectionName The name of the collection.
+         * @param clones The TClonesArray containing the objects.
+         */
+        virtual void add(const std::string& collectionName, TClonesArray* clones) = 0;
+
+        /**
+         * Add an object to the event.
+         * The current pass name will be used for the object.
+         * @param collectionName The name of the collection.
+         * @param clones The TClonesArray containing the objects.
+         */
+        virtual void add(const std::string& name, TObject* obj) = 0;
+
+        /**
+         * Add the given object to the named TClonesArray collection
+         * Objects can only be added to a TClonesArray during the current pass -- TClonesArrays loaded
+         * from the input data file are not allowed to be changed.
+         * @note Object types must implement TObject::Copy().
+         * @param name Name of the collection.
+         * @param obj Object to be appended to the collection.
+         */
+        virtual void addToCollection(const std::string& name, const TObject& obj) = 0;
 
     protected:
 
-        CollectionMap collMap_; //!
+        /**
+         * Actual get implementation, provided by derived class.
+         * @param itemName The name of the object or TClonesArray.
+         * @param passName The process pass label which was in use when this object was put into the event.
+         * @param mustExist Determines if an exception should be thrown if the object does not exist -- used by exists() methods.
+         * @param clones The TClonesArray containing the objects.
+         */
+        virtual const TObject* getReal(const std::string& itemName, const std::string& passName, bool mustExist) = 0;
 
-        ClassDef(Event, 1);
 };
-
 }
 
 #endif

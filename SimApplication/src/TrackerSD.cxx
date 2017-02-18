@@ -11,12 +11,9 @@
 #include "G4ChargedGeantino.hh"
 
 // LDMX
-#include "Event/RootEventWriter.h"
 #include "DetDescr/IDField.h"
 
-using event::RootEventWriter;
-
-namespace sim {
+namespace ldmx {
 
 TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
     G4VSensitiveDetector(name),

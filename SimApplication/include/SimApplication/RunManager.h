@@ -1,3 +1,9 @@
+/**
+ * @file RunManager.h
+ * @brief Class providing a Geant4 run manager implementation
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #ifndef SIMAPPLICATION_RUNMANAGER_H_
 #define SIMAPPLICATION_RUNMANAGER_H_
 
@@ -7,30 +13,69 @@
 #include "G4Decay.hh"
 
 // LDMX
+#include "Biasing/BiasingMessenger.h"
 #include "SimPlugins/PluginMessenger.h"
 
-using sim::PluginMessenger;
+namespace ldmx {
 
-namespace sim {
+    // Forward declaration
+    class DetectorConstruction; 
 
-class RunManager : public G4RunManager {
+    /**
+     * @class RunManager
+     * @brief Extension of Geant4 run manager
+     */
+    class RunManager : public G4RunManager {
 
-    public:
+        public:
 
-        RunManager();
+            /**
+             * Class constructor.
+             */
+            RunManager();
 
-        virtual ~RunManager();
+            /**
+             * Class destructor.
+             */
+            virtual ~RunManager();
 
-        void InitializePhysics();
+            /**
+             * Initialize physics.
+             */
+            void InitializePhysics();
 
-        void Initialize();
+            /**
+             * Perform application initialization.
+             */
+            void Initialize();
 
-    private:
+            /**
+             * Get the user detector construction cast to a specific type.
+             * @return The user detector construction.
+             */
+            DetectorConstruction* getDetectorConstruction() {
+                return (DetectorConstruction*) this->userDetector;
+            }
 
-        PluginMessenger* pluginMessenger_;
-        PluginManager* pluginManager_;
-};
+        private:
+
+            /**
+             * The plugin messenger.
+             */
+            PluginMessenger* pluginMessenger_;
+
+            /**
+             * Biasing messenger.
+             */
+            BiasingMessenger* biasingMessenger_{new BiasingMessenger()};
+
+            /**
+             * Manager of sim plugins.
+             */
+            PluginManager* pluginManager_;
+
+    }; // RunManager
 
 }
 
-#endif
+#endif // SIMAPPLICATION_RUNMANAGER_H_

@@ -1,10 +1,10 @@
 #include "SimApplication/UserEventAction.h"
 
 // LDMX
-#include "Event/RootEventWriter.h"
 #include "SimApplication/RootPersistencyManager.h"
 #include "SimApplication/TrackMap.h"
 #include "SimApplication/TrajectoryContainer.h"
+#include "SimApplication/UserTrackingAction.h"
 #include "SimPlugins/PluginManager.h"
 
 // Geant4
@@ -16,19 +16,22 @@
 #include <stdio.h>
 #include <time.h>
 
-using event::Event;
-using event::RootEventWriter;
-
-namespace sim {
+namespace ldmx {
 
 void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
 
     // Clear the global track map.
-    TrackMap::getInstance()->clear();
+    UserTrackingAction::getUserTrackingAction()->getTrackMap()->clear();
 
     // Install custom trajectory container for the event.
     G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
 
+    // G4Random::showEngineStatus();
+    // G4Random::saveEngineStatus();
+    // G4Random::getTheEngine();
+    if (PrimaryGeneratorMessenger::useRootSeed()) G4Random::restoreEngineStatus("tmpEvent.rndm"); // this line will be needed to read in a set of seeds
+
+    // Activate user plugins.
     pluginManager_->beginEvent(anEvent);
 }
 

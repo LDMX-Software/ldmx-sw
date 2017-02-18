@@ -165,10 +165,10 @@
   <userinfo>
   
     <!-- detector version -->
-    <auxiliary auxtype="DetectorVersion" auxvalue="1.0">
+    <auxiliary auxtype="DetectorVersion" auxvalue="1">
       <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v0"/>
       <auxiliary auxtype="Author" auxvalue="Jeremy McCormick"/>
-      <auxiliary auxtype="Note" auxvalue="Full LDMX detector model based on 2016 LOI design"/>
+      <auxiliary auxtype="Description" auxvalue="Full LDMX detector model based on 2016 LOI design"/>
     </auxiliary>
     
     <!-- define sensitive detectors -->

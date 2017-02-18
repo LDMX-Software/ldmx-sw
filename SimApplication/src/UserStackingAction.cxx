@@ -2,7 +2,7 @@
 
 #include "SimPlugins/PluginManager.h"
 
-namespace sim {
+namespace ldmx {
 
 G4ClassificationOfNewTrack UserStackingAction::ClassifyNewTrack (const G4Track *aTrack) {
     return pluginManager_->stackingClassifyNewTrack(aTrack);

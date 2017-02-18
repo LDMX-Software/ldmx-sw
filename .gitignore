@@ -4,3 +4,7 @@
 .pydevproject
 build/
 rebuild.sh
+docs/doxygen.conf
+*~
+*#
+*.pyc
