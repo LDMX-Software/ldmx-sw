@@ -1,11 +1,21 @@
+/**
+ * @file DummySimPlugin.h
+ * @brief Class that defines a dummy simulation plugin
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #ifndef SIMPLUGINS_DUMMYSIMPLUGIN_H_
 #define SIMPLUGINS_DUMMYSIMPLUGIN_H_
 
 // LDMX
 #include "SimPlugins/UserActionPlugin.h"
 
-namespace sim {
+namespace ldmx {
 
+/**
+ * @class DummySimPlugin
+ * @brief Dummy implementation of UserActionPlugin
+ */
 class DummySimPlugin : public UserActionPlugin {
 
     public:

@@ -18,7 +18,7 @@ You will need the following build tools available in your environment before beg
 
 ### Linux
 
-At this time, the software has been built and tested only on Linux, specifically a CentOS7 virtual machine.  Older Linux releases such as RHEL6 or SLC6 will likely not work due to various issues.  (ROOT6 installation does not seem to work with the RHEL devtoolset developer kits, unfortunately.)
+The software has been built and tested on CentOS7 and RHEL6.  Using an older Linux releases such as RHEL6 or SLC6 will require you to install and use a more up to date compiler (gcc 4.8 is preferable) than the default system one.
 
 ### CMake
 
@@ -163,7 +163,7 @@ The detector file is located in the *Detectors* module data directory and the ea
 
 To contribute code to the project, you will need to create an account on [github](https://github.com/) if you don't have one already, and then request to be added to the [LDMXAnalysis](https://github.com/orgs/LDMXAnalysis/) organization.
 
-When adding new code, you should do this on a branch created by a command like `git checkout -b johndoe-dev` in order to make sure you don't apply changes directly to the master (replace "johndoe" with your user name).
+When adding new code, you should do this on a branch created by a command like `git checkout -b johndoe-dev` in order to make sure you don't apply changes directly to the master (replace "johndoe" with your user name).  We typically create branches based on issue names in the github bug tracker, so "Issue 1234" turns into the branch name `iss1234`.
 
 Then you would `git add` and `git commit` your changes to this branch.
 
@@ -208,3 +208,4 @@ If you plan on starting a major (sub)project within the repository like adding a
 ## References
 
 * [LDMX Simulation Framework](https://www.dropbox.com/s/oosmuyo553kvlce/LDMX%20Simulation%20Framework.pptx?dl=0) - Powerpoint presentation
+* [LDMX-SW Doxygen Documentation](https://ldmxanalysis.github.io/ldmx-sw/html/index.html)

@@ -4,7 +4,7 @@
 
 #include <sstream>
 
-namespace sim {
+namespace ldmx {
 
 EventPrintPluginMessenger::EventPrintPluginMessenger(EventPrintPlugin* plugin) :
         UserActionPluginMessenger(plugin), eventPrintPlugin_(plugin) {

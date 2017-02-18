@@ -6,9 +6,9 @@
 #include <iostream>
 #include <stdexcept>
 
-using detdescr::IDField;
-using detdescr::DefaultDetectorID;
-using detdescr::DetectorID;
+using ldmx::IDField;
+using ldmx::DefaultDetectorID;
+using ldmx::DetectorID;
 
 int main(int, const char* argv[])  {
 

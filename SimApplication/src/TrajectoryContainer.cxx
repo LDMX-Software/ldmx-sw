@@ -1,6 +1,6 @@
 #include "SimApplication/TrajectoryContainer.h"
 
-namespace sim {
+namespace ldmx {
 
 Trajectory* TrajectoryContainer::findByTrackID(G4int trackID) {
     Trajectory* traj = NULL;

@@ -8,23 +8,23 @@
 
 #include "SimPlugins/PhotonuclearXsecBiasingPlugin.h"
 
-extern "C" sim::PhotonuclearXsecBiasingPlugin* createPhotonuclearXsecBiasingPlugin() {
-    return new sim::PhotonuclearXsecBiasingPlugin;
+extern "C" ldmx::PhotonuclearXsecBiasingPlugin* createPhotonuclearXsecBiasingPlugin() {
+    return new ldmx::PhotonuclearXsecBiasingPlugin;
 }
 
-extern "C" void destroyPhotonuclearXsecBiasingPlugin(sim::PhotonuclearXsecBiasingPlugin* object) {
+extern "C" void destroyPhotonuclearXsecBiasingPlugin(ldmx::PhotonuclearXsecBiasingPlugin* object) {
     delete object;
 }
 
 
-sim::PhotonuclearXsecBiasingPlugin::PhotonuclearXsecBiasingPlugin() {
+ldmx::PhotonuclearXsecBiasingPlugin::PhotonuclearXsecBiasingPlugin() {
 }
 
-sim::PhotonuclearXsecBiasingPlugin::~PhotonuclearXsecBiasingPlugin() { 
+ldmx::PhotonuclearXsecBiasingPlugin::~PhotonuclearXsecBiasingPlugin() { 
     delete messenger_;
 }
 
-void sim::PhotonuclearXsecBiasingPlugin::beginRun(const G4Run*) { 
+void ldmx::PhotonuclearXsecBiasingPlugin::beginRun(const G4Run*) { 
     
     // Get the process manager associated with reactions involving photons.
     G4ProcessManager* pm = G4Gamma::GammaDefinition()->GetProcessManager();
