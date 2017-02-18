@@ -1,87 +1,65 @@
+/**
+ * @file EcalVetoProcessor.h
+ * @brief Class that determines if event is vetoable using ECAL hit information
+ * @author Owen Colegrove, UCSB
+ */
+
+#ifndef EVENTPROC_ECALVETOPROCESSOR_H_
+#define EVENTPROC_ECALVETOPROCESSOR_H_
+
+// ROOT
 #include "TString.h"
 #include "TRandom.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TRandom2.h"
+#include "TClonesArray.h"
 
-#include "Event/SimEvent.h"
-#include "Event/SimCalorimeterHit.h"
+// LDMX
+#include "Event/TriggerResult.h"
+#include "Event/EcalHit.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/ParameterSet.h"
 
-using event::SimEvent;
-using event::SimCalorimeterHit;
-using detdescr::DetectorID;
-using detdescr::EcalDetectorID;
-using detdescr::EcalHexReadout;
+namespace ldmx {
 
-typedef std::pair<int, int>   layer_cell_pair;
-
-typedef std::pair<int, float> cell_energy_pair;
-
-namespace eventproc {
-
-class EcalVetoProcessor : public EventProcessor {
+/**
+ * @class EcalVetoProcessor
+ * @brief Determines if event is vetoable using ECAL hit information
+ */
+class EcalVetoProcessor : public Producer {
 
     public:
 
-        /** Constuctor */
-        EcalVetoProcessor(TTree* outputTree);
+        typedef std::pair<int, int> layer_cell_pair;
 
-        /** Destructor */
-        ~EcalVetoProcessor(); 
+        typedef std::pair<int, float> cell_energy_pair;
 
-        void initialize();
+        EcalVetoProcessor(const std::string& name, const Process& process) :
+                Producer(name, process) {
+        }
 
-        void execute();
+        virtual ~EcalVetoProcessor() {;}
 
-        void finish();
+        void configure(const ParameterSet&);
+
+        void produce(Event& event);
 
     private:
 
-        EcalDetectorID* detID{new EcalDetectorID};
-        EcalHexReadout* hexReadout{new EcalHexReadout};
-        TTree* outputTree_{nullptr};
-        TRandom2 *noiseInjector{new TRandom2{0}};
-
-        static constexpr int numEcalLayers{40};
-
-        // TODO: Most of these should be settable and not constant.
-        static const float meanNoise;
-        static const float readoutThreshold;
-        static const float totalDepCut;
-        static const float totalIsoCut;
-        static const float backEcalCut; 
-        static const float ratioCut;
-        static const int numLayersForMedCal;
-        static const int backEcalStartingLayer;
-
-        std::vector<float> ecalLayerEdepRaw_{numEcalLayers, 0.0};
-        std::vector<float> ecalLayerEdepReadout_{numEcalLayers, 0.0};
-        std::vector<float> ecalLayerTime_{numEcalLayers, 0.0};
-        std::vector<float> ecalLayerIsoRaw_{numEcalLayers, 0.0};
-        std::vector<float> ecalLayerIsoReadout_{numEcalLayers, 0.0};
-
-        std::vector<float> ecalHitId_;
-        std::vector<float> ecalHitLayer_;
-        std::vector<float> ecalHitDep_;
-        std::vector<float> ecalHitNoise_;
-
-        bool verbose; 
-        bool doesPassVeto;
-
-
-        inline layer_cell_pair hitToPair(SimCalorimeterHit* hit){
+        inline layer_cell_pair hitToPair(EcalHit* hit) {
             int detIDraw = hit->getID();
-            detID->setRawValue(detIDraw);
-            detID->unpack();
-            int layer = detID->getFieldValue("layer");
-            int cellid = detID->getFieldValue("cell");
+            detID_.setRawValue(detIDraw);
+            detID_.unpack();
+            int layer = detID_.getFieldValue("layer");
+            int cellid = detID_.getFieldValue("cell");
             return (std::make_pair(layer, cellid));
-        };
+        }
+
+    private:
 
         int NUM_ECAL_LAYERS;
         int NUM_LAYERS_FOR_MED_CAL;
@@ -99,3 +77,5 @@ class EcalVetoProcessor : public EventProcessor {
 };
 
 }
+
+#endif
