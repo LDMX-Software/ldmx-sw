@@ -15,21 +15,21 @@ namespace ldmx {
 void EcalVetoProcessor::configure(const ParameterSet& ps) {
     hexReadout_ = new EcalHexReadout();
 
-    NUM_ECAL_LAYERS = ps.getInteger("num_ecal_layers");
-    BACK_ECAL_STARTING_LAYER = ps.getInteger("back_ecal_starting_layers");
-    NUM_LAYERS_FOR_MED_CAL = ps.getInteger("num_layers_for_med_cal");
-    TOTAL_DEP_CUT = ps.getDouble("total_dep_cut");
-    TOTAL_ISO_CUT = ps.getDouble("total_iso_cut");
-    BACK_ECAL_CUT = ps.getDouble("back_ecal_cut");
-    RATIO_CUT = ps.getDouble("ratio_cut");
+    nEcalLayers_ = ps.getInteger("num_ecal_layers");
+    nLayersMedCal_ = ps.getInteger("back_ecal_starting_layers");
+    backEcalStartingLayer_ = ps.getInteger("num_layers_for_med_cal");
+    totalDepCut_ = ps.getDouble("total_dep_cut");
+    totalIsoCut_ = ps.getDouble("total_iso_cut");
+    backEcalCut_ = ps.getDouble("back_ecal_cut");
+    ratioCut_ = ps.getDouble("ratio_cut");
 }
 
 void EcalVetoProcessor::produce(Event& event) {
-    std::vector<float> EcalLayerEdepRaw(NUM_ECAL_LAYERS, 0);
-    std::vector<float> EcalLayerEdepReadout(NUM_ECAL_LAYERS, 0);
-    std::vector<float> EcalLayerIsoRaw(NUM_ECAL_LAYERS, 0);
-    std::vector<float> EcalLayerIsoReadout(NUM_ECAL_LAYERS, 0);
-    std::vector<float> EcalLayerTime(NUM_ECAL_LAYERS, 0);
+    std::vector<float> EcalLayerEdepRaw(nEcalLayers_, 0);
+    std::vector<float> EcalLayerEdepReadout(nEcalLayers_, 0);
+    std::vector<float> EcalLayerIsoRaw(nEcalLayers_, 0);
+    std::vector<float> EcalLayerIsoReadout(nEcalLayers_, 0);
+    std::vector<float> EcalLayerTime(nEcalLayers_, 0);
     
     const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
     
@@ -38,14 +38,14 @@ void EcalVetoProcessor::produce(Event& event) {
     
     std::cout << "[ EcalVetoProcessor ] : Got " << numEcalHits << " ECal digis in event " << event.getEventHeader()->getEventNumber() << std::endl;
 
-    std::vector<cell_energy_pair> layerMaxCellId(NUM_LAYERS_FOR_MED_CAL, std::make_pair(0, 0));
+    std::vector<cell_energy_pair> layerMaxCellId(nLayersMedCal_, std::make_pair(0, 0));
 
     //First, we find layer-wise max cell ids
     for (int iHit = 0; iHit < numEcalHits; iHit++) {
         EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
         layer_cell_pair hit_pair = hitToPair(hit);
 
-        if (hit_pair.first < NUM_LAYERS_FOR_MED_CAL) {
+        if (hit_pair.first < nLayersMedCal_) {
             if (layerMaxCellId[hit_pair.first].second < hit->getEnergy()) {
                 layerMaxCellId[hit_pair.first] = std::make_pair(hit_pair.second, hit->getEnergy());
             }
@@ -85,7 +85,7 @@ void EcalVetoProcessor::produce(Event& event) {
         EcalLayerTime[iLayer] = EcalLayerTime[iLayer] / EcalLayerEdepReadout[iLayer];
         summedDep += EcalLayerEdepReadout[iLayer];
         summedIso += EcalLayerIsoReadout[iLayer];
-        if (iLayer > BACK_ECAL_STARTING_LAYER)
+        if (iLayer > backEcalStartingLayer_)
             backSummedDep += EcalLayerEdepReadout[iLayer];
     }
     
@@ -102,7 +102,7 @@ void EcalVetoProcessor::produce(Event& event) {
      }// end verbose
      */
 
-    doesPassVeto_ = (summedDep < TOTAL_DEP_CUT && summedIso < TOTAL_ISO_CUT && backSummedDep < BACK_ECAL_CUT); // add ratio cut in at some point
+    doesPassVeto_ = (summedDep < totalDepCut_ && summedIso < totalIsoCut_ && backSummedDep < backEcalCut_); // add ratio cut in at some point
     /*
 
     result_.set("EcalVetoV1", doesPassVeto_, 3);
