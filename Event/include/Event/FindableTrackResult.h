@@ -87,13 +87,16 @@ namespace ldmx {
              */
             void setResult(Strategy strategy, bool isFindable); 
 
+            /** Reset the object. */
+            void Clear(Option_t *option = ""); 
+            
             /** Print out the object */
             void Print(Option_t *option = "");
 
         private:
             
             /** Refence to the sim particle. */
-            TRef simParticle_;
+            TRef simParticle_{nullptr};
 
             /**
              * Flag indicating whether a particle is findable using the

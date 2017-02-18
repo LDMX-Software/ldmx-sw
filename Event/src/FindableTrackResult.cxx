@@ -38,6 +38,14 @@ namespace ldmx {
         }
     }
 
+    void FindableTrackResult::Clear(Option_t *option) { 
+        simParticle_ = nullptr;
+        is4sFindable_ = false; 
+        is3s1aFindable_ = false;
+        is2s2aFindable_ = false;
+        is2aFindable_ = false; 
+    }
+
     void FindableTrackResult::Print(Option_t *option) { 
         std::cout << "[ FindableTrackResult ]: "
                   << "Sim particle PDG ID: " 
