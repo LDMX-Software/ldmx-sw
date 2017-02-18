@@ -61,14 +61,14 @@ class EcalVetoProcessor : public Producer {
 
     private:
 
-        int NUM_ECAL_LAYERS;
-        int NUM_LAYERS_FOR_MED_CAL;
-        int BACK_ECAL_STARTING_LAYER;
-        float TOTAL_DEP_CUT;
-        float TOTAL_ISO_CUT;
-        float BACK_ECAL_CUT;
-        float RATIO_CUT;
-        
+        int nEcalLayers_;
+        int nLayersMedCal_; 
+        int backEcalStartingLayer_;
+        double totalDepCut_;
+        double totalIsoCut_;
+        double backEcalCut_;
+        double ratioCut_;
+
         TriggerResult result_;
         EcalDetectorID detID_;
         bool verbose_{false};
