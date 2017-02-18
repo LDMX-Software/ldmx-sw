@@ -1,14 +1,24 @@
+/**
+ *
+ * @file DefaultDetectorID.h
+ * @brief Class that defines a default detector ID
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #ifndef DETDESCR_DEFAULTDETECTORID_H_
 #define DETDESCR_DEFAULTDETECTORID_H_
 
 // LDMX
 #include "DetDescr/DetectorID.h"
 
-namespace detdescr {
+namespace ldmx {
 
 /**
  * @class DefaultDetectorID
- * @brief Defines a default detector ID with encoded layer and subdetector values.
+ * @brief Defines a default detector ID with encoded layer and subdetector values
+ *
+ * @note
+ * This class provides access to a subdetector ID and layer number.
  */
 class DefaultDetectorID : public DetectorID {
 
@@ -21,7 +31,7 @@ class DefaultDetectorID : public DetectorID {
 
         /**
          * Get the subdetector value.
-         * @return the subdetector value
+         * @return The subdetector value.
          */
         int getSubdetID() {
             return this->getFieldValue(0);
@@ -29,7 +39,7 @@ class DefaultDetectorID : public DetectorID {
 
         /**
          * Get the layer value.
-         * @return the layer value
+         * @return The layer value.
          */
         int getLayerID() {
             return this->getFieldValue(1);

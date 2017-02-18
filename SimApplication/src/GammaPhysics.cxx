@@ -3,7 +3,7 @@
 // Geant4
 #include "G4ProcessManager.hh"
 
-namespace sim {
+namespace ldmx {
 
 GammaPhysics::GammaPhysics(const G4String& name)
     : G4VPhysicsConstructor(name) {

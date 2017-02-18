@@ -11,15 +11,7 @@
 #include "G4Geantino.hh"
 #include "G4ChargedGeantino.hh"
 
-// LDMX
-#include "Event/RootEventWriter.h"
-#include "Event/EventConstants.h"
-
-using event::EventConstants;
-using event::RootEventWriter;
-using detdescr::EcalHexReadout;
-
-namespace sim {
+namespace ldmx {
 
 EcalSD::EcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID ) :
 		CalorimeterSD(name, theCollectionName, subdetID, detID), hitMap_(new EcalHexReadout) {
@@ -69,6 +61,9 @@ G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
     // Set the track ID on the hit.
     hit->setTrackID(aStep->GetTrack()->GetTrackID());
+
+    // Set the PDG code from the track.
+    hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
 
     if (this->verboseLevel > 2) {
         std::cout << "Created new SimCalorimeterHit in detector " << this->GetName()

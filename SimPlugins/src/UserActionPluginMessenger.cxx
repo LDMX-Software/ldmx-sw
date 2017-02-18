@@ -1,6 +1,6 @@
 #include "SimPlugins/UserActionPluginMessenger.h"
 
-namespace sim {
+namespace ldmx {
 
 UserActionPluginMessenger::UserActionPluginMessenger(UserActionPlugin* userPlugin) : userPlugin_(userPlugin) {
 

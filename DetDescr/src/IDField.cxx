@@ -1,6 +1,6 @@
 #include "DetDescr/IDField.h"
 
-namespace detdescr {
+namespace ldmx {
 
 IDField::IDField(std::string fieldName, unsigned index, unsigned startBit, unsigned endBit)
     : fieldName(fieldName), index(index), startBit(startBit), endBit(endBit) {
