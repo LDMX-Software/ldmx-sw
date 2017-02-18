@@ -9,7 +9,8 @@
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
-#include "EventProc/EventProcessor.h"
+#include "Framework/EventProcessor.h"
+#include "Framework/ParameterSet.h"
 
 using event::SimEvent;
 using event::SimCalorimeterHit;
@@ -82,6 +83,19 @@ class EcalVetoProcessor : public EventProcessor {
             return (std::make_pair(layer, cellid));
         };
 
+        int NUM_ECAL_LAYERS;
+        int NUM_LAYERS_FOR_MED_CAL;
+        int BACK_ECAL_STARTING_LAYER;
+        float TOTAL_DEP_CUT;
+        float TOTAL_ISO_CUT;
+        float BACK_ECAL_CUT;
+        float RATIO_CUT;
+        
+        TriggerResult result_;
+        EcalDetectorID detID_;
+        bool verbose_{false};
+        bool doesPassVeto_{false};
+        EcalHexReadout* hexReadout_{nullptr};
 };
 
 }
