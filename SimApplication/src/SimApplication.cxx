@@ -18,7 +18,7 @@
 #include "G4VisExecutive.hh"
 #include "G4RunManager.hh"
 
-namespace sim {
+namespace ldmx {
 
 SimApplication::SimApplication() {
 }
@@ -48,6 +48,7 @@ void SimApplication::run(int argc, char** argv) {
 
     // Supply default user initializations and actions.
     runManager->SetUserInitialization(new DetectorConstruction(parser));
+    runManager->SetRandomNumberStore(true);
 
     // Initialize G4 visualization framework.
     G4VisManager* visManager = new G4VisExecutive;

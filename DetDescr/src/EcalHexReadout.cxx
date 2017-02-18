@@ -1,6 +1,7 @@
 #include "DetDescr/EcalHexReadout.h"
+#include "TList.h"
 
-namespace detdescr {
+namespace ldmx {
 
 EcalHexReadout::EcalHexReadout(double width, double side) {
     ecalMap = new TH2Poly();
@@ -17,7 +18,7 @@ EcalHexReadout::EcalHexReadout(double width, double side) {
 
     buildMap(xstart, ystart, side, ny, nx);
 
-    TIter next(ecalMap->GetBins());
+    TListIter next(ecalMap->GetBins());
     TObject *obj = 0;
     TH2PolyBin *polyBin = 0;
 
@@ -79,4 +80,4 @@ void EcalHexReadout::buildMap(Double_t xstart, Double_t ystart, Double_t a, Int_
     }
 }
 
-} // namespace detdescr
+}

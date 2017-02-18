@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <cmath>
+#include <stdexcept>
 
 // Geant4
 #include "globals.hh"
@@ -11,10 +12,18 @@
 
 using namespace std;
 
-namespace sim {
+namespace ldmx {
 
 MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset, double yOffset, double zOffset) :
         nx_(0), ny_(0), nz_(0), xOffset_(xOffset), yOffset_(yOffset), zOffset_(zOffset), invertX_(false), invertY_(false), invertZ_(false) {
+
+    ifstream file(filename); // Open the file for reading.
+
+    // Throw an error if file does not exist.
+    if (!file.good()) {
+        G4cerr << "ERROR: Field map file " << filename << " does not exist!" << std::endl;
+        throw std::runtime_error("The field map file does not exist.");
+    }
 
     G4cout << "-----------------------------------------------------------" << G4endl;
     G4cout << "    Magnetic Field Map 3D" << G4endl;
@@ -22,7 +31,6 @@ MagneticFieldMap3D::MagneticFieldMap3D(const char* filename, double xOffset, dou
 
     G4cout << "Reading the field grid from " << filename << " ... " << endl;
     G4cout << "  Offsets: " << xOffset << " " << yOffset << " " << zOffset << G4endl;
-    ifstream file(filename); // Open the file for reading.
 
     // Ignore first blank line
     char buffer[256];
@@ -196,50 +204,6 @@ void MagneticFieldMap3D::GetFieldValue(const double point[4], double *bfield) co
         bfield[1] = 0.0;
         bfield[2] = 0.0;
     }
-
-    // DEBUG
-    /*
-    G4cout << "[ MagneticFieldMap3D ] - set B-field ("
-            << bfield[0] << ", " << bfield[1] << ", " << bfield[2]
-            << ") at point ("
-            << point[0] << ", " << point[1] << ", " << point[2] << ")"
-            << G4endl;
-    */
 }
 
 } // namespace
-
-/*
- int main()
- {
- Cartesian3DMagneticFieldMap field("C:/work/magfield/magfield3DMap/ThreeDFieldMap.dat", 0.,0.,0.);
- double pos[4];
- pos[0]=0.;
- pos[1]=0.;
- pos[2]=0.;
- pos[3]=0.;
- double B[3];
-
- for(double x=-0.05; x<=0.05; x+=.005)
- {
- for(double y=-0.05; y<=0.17; y+=.005)
- {
- for(double z=-0.26; z<=0.1; z+=.05)
- {
- pos[0]=x;
- pos[1] =y;
- pos[2] = z;
- field.GetFieldValue(pos, B);
- //G4cout << pos[0] << " " << pos[1] << " " << pos[2] << " " << B[0] << " " << B[1] << " " << B[2] << endl;
- }
- }
- }
-
- pos[0]=-0.01;
- pos[1]=0.038;
- pos[2]=-0.02;
- field.GetFieldValue(pos, B);
- //G4cout << pos[0] << " " << pos[1] << " " << pos[2] << " " << B[0] << " " << B[1] << " " << B[2] << endl;
- return 0;
- }
- */

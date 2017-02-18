@@ -1,3 +1,9 @@
+/**
+ * @file APrimePhysics.h
+ * @brief Class which defines basic APrime physics
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #ifndef SIMAPPLICATION_APRIMEPHYSICS_H_
 #define SIMAPPLICATION_APRIMEPHYSICS_H 1_
 
@@ -7,22 +13,46 @@
 #include "G4hMultipleScattering.hh"
 #include "G4ProcessManager.hh"
 
-namespace sim {
+namespace ldmx {
 
+/**
+ * @class APrimePhysics
+ * @brief Defines basic APrime physics
+ *
+ * @note
+ * This class basically does not do anything except define
+ * a dummy particle so that event generation works properly.
+ */
 class APrimePhysics : public G4VPhysicsConstructor {
 
     public:
 
+        /**
+         * Class constructor.
+         * @param name The name of the physics.
+         */
         APrimePhysics(const G4String& name = "APrime");
 
+        /**
+         * Class destructor.
+         */
         virtual ~APrimePhysics();
 
+        /**
+         * Construct particles.
+         */
         void ConstructParticle();
 
+        /**
+         * Construct the process.
+         */
         void ConstructProcess();
 
     private:
 
+        /**
+         * Definition of the APrime particle.
+         */
         G4ParticleDefinition* aprimeDef_;
         //G4Decay decayProcess;
         //G4hMultipleScattering scatterProcess;

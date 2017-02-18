@@ -1,11 +1,21 @@
+/**
+ * @file EcalDetectorID.h
+ * @brief Class that defines an ECal detector ID with a cell number
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
 #ifndef DETDESCR_ECALDETECTORID_H_
 #define DETDESCR_ECALDETECTORID_H_
 
 // LDMX
 #include "DetDescr/DefaultDetectorID.h"
 
-namespace detdescr {
+namespace ldmx {
 
+/**
+ * @class EcalDetectorID
+ * @brief Extension of DefaultDetectorID providing access to ECal cell number in a hex grid
+ */
 class EcalDetectorID : public DefaultDetectorID {
 
     public:
