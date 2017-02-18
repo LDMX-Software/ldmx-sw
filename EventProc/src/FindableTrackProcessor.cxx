@@ -53,7 +53,7 @@ namespace ldmx {
                     = (FindableTrackResult*) findableTrackResults_->ConstructedAt(resultCount);
                 
                 // Set the sim particle associated with the result
-                findableTrackResult->setSimParticle(simParticle); 
+                findableTrackResult->setSimParticle(simParticle);
 
                 // Check if the track is findable
                 this->isFindable(findableTrackResult, hitMap_[simParticle]); 
@@ -80,7 +80,7 @@ namespace ldmx {
                 = static_cast<SimTrackerHit*>(recoilSimHits->At(hitCount));
             
             // Get the MC particle associated with this hit
-            SimParticle* simParticle = recoilSimHit->getSimParticle(); 
+            SimParticle* simParticle = recoilSimHit->getSimParticle();
 
             // If the particle ins't in the hit map, add it.
             if (hitMap_.count(simParticle) == 0) {
@@ -93,33 +93,63 @@ namespace ldmx {
     }
 
     void FindableTrackProcessor::isFindable(FindableTrackResult* result, std::vector<int> hitCount) { 
-        
+       
+        /*std::cout << "[ FindableTrackProcessor ]: Hit Vec [ ";
+        for (auto index : hitCount) { 
+            std::cout << index << ", ";
+        }
+        std::cout << " ]" << std::endl;*/
+
         // Count how many 3D stereo hits are created by this particle
-        double hit3dCount{0};
+        std::vector<int> hit3dVec{0, 0, 0, 0};
+        int hit3dCount{0};
         for (int layerN = 0; layerN  < 8; layerN += 2) { 
-            if (hitCount[layerN]*hitCount[layerN+1] != 0) hit3dCount++; 
-        } 
+            if (hitCount[layerN]*hitCount[layerN+1] != 0) {
+                hit3dCount++;
+                hit3dVec[layerN/2]++; 
+            }
+        }
+        /*std::cout << "[ FindableTrackProcessor ]: " 
+                  << "Total 3D Hits: " << hit3dCount << std::endl;*/
+         
 
         // A track is considered findable if 
         // 1) The first four stereo layers are hit
         // 2) Three of the first four layers are hit and an axial layer is hit
         // 3) Two of the first four layers are hit and both axial layers are hit
-        if (hit3dCount > 3) { 
-            result->setResult(FindableTrackResult::STRATEGY_4S, 1); 
-            return;
-        } else if (hit3dCount == 3 && (hitCount[8] > 0 || hitCount[9] > 0)) {
-            result->setResult(FindableTrackResult::STRATEGY_3S1A, 1); 
-            return;
-        } else if (hit3dCount == 2 && (hitCount[8] > 0 && hitCount[9] > 0)) {
-            result->setResult(FindableTrackResult::STRATEGY_2S2A, 1); 
-            return;
-        } else if (hitCount[8] > 0 && hitCount[9] > 0) { 
-            result->setResult(FindableTrackResult::STRATEGY_2A, 1); 
-            return;
+        bool trackFound{false};
+        if (hit3dCount == 4) { 
+            result->setResult(FindableTrackResult::STRATEGY_4S, true); 
+            trackFound = true;
+            /*std::cout << "[ FindableTrackProcessor ]: " 
+                      << "Can be found using 4S strategy." << std::endl;*/
+        } 
+        
+        if ((hit3dVec[0]*hit3dVec[1]*hit3dVec[2] > 0) && (hitCount[8] > 0 || hitCount[9] > 0)) {
+            result->setResult(FindableTrackResult::STRATEGY_3S1A, true); 
+            trackFound = true;
+            /*std::cout << "[ findabletrackprocessor ]: " 
+                      << "can be found using 3s1a strategy." << std::endl;*/
+        } 
+        
+        if (hit3dVec[0]*hit3dVec[1] > 0 && (hitCount[8] > 0 && hitCount[9] > 0)) {
+            result->setResult(FindableTrackResult::STRATEGY_2S2A, true); 
+            trackFound = true;
+            /*std::cout << "[ findabletrackprocessor ]: " 
+                      << "can be found using 2s2a strategy." << std::endl;*/
+        } 
+        
+        if (hitCount[8] > 0 && hitCount[9] > 0) { 
+            result->setResult(FindableTrackResult::STRATEGY_2A, true); 
+            trackFound = true;
+            /*std::cout << "[ findabletrackprocessor ]: " 
+                      << "can be found using 2a strategy." << std::endl;*/
         }
-        result->setResult(FindableTrackResult::STRATEGY_NONE, 0);    
-    }
 
+        if (!trackFound) { 
+            result->setResult(FindableTrackResult::STRATEGY_NONE, false);    
+        }
+    }
 }
 
 DECLARE_PRODUCER_NS(ldmx, FindableTrackProcessor) 
