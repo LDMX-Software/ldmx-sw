@@ -1,17 +1,16 @@
 #include "EventProc/EcalVetoProcessor.h"
 
 #include "TString.h"
+#include "TRandom.h"
 #include "TFile.h"
+#include "TTree.h"
 #include "TClonesArray.h"
 
-#include "Event/SimEvent.h"
-#include "EventProc/EventLoop.h"
-#include "EventProc/RootEventSource.h"
+#include "Event/EventConstants.h"
+#include "Event/Event.h"
+#include <algorithm>
 
-using event::SimEvent;
-using event::SimCalorimeterHit;;
-using eventproc::EventLoop;
-using eventproc::RootEventSource;
+namespace ldmx {
 
 void EcalVetoProcessor::configure(const ParameterSet& ps) {
     hexReadout_ = new EcalHexReadout();
@@ -39,72 +38,57 @@ void EcalVetoProcessor::produce(Event& event) {
     
     std::cout << "[ EcalVetoProcessor ] : Got " << numEcalHits << " ECal digis in event " << event.getEventHeader()->getEventNumber() << std::endl;
 
-}
+    std::vector<cell_energy_pair> layerMaxCellId(NUM_LAYERS_FOR_MED_CAL, std::make_pair(0, 0));
 
-void eventproc::EcalVetoProcessor::execute(){
+    //First, we find layer-wise max cell ids
+    for (int iHit = 0; iHit < numEcalHits; iHit++) {
+        EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
+        layer_cell_pair hit_pair = hitToPair(hit);
 
-    // looper over sim hits
-    TClonesArray* ecalHits = getEvent()->getCollection(event::EventConstants::ECAL_SIM_HITS);
-    int numEcalSimHits = ecalHits->GetEntries();
-
-    std::vector<cell_energy_pair> layerMaxCellId(numLayersForMedCal,std::make_pair(0,0));
-    std::vector<float> hitNoise(numEcalSimHits,0);
-
-
-    //First we simulate noise injection into each hit and store layer-wise max cell ids
-    for(int iHit = 0; iHit < numEcalSimHits; iHit++){
-        SimCalorimeterHit* ecalHit = (SimCalorimeterHit*) ecalHits->At(iHit);
-        hitNoise[iHit] = noiseInjector->Gaus(0,.15);
-        layer_cell_pair hit_pair = hitToPair(ecalHit);
-
-        ecalHitId_.push_back(hit_pair.second);
-        ecalHitLayer_.push_back(hit_pair.first);
-        ecalHitDep_.push_back(ecalHit->getEdep());
-        ecalHitNoise_.push_back(hitNoise[iHit]);
-        if (hit_pair.first < numLayersForMedCal){
-            if (layerMaxCellId[hit_pair.first].second < ecalHit->getEdep() + hitNoise[iHit]){
-                layerMaxCellId[hit_pair.first] = std::make_pair(hit_pair.second,ecalHit->getEdep());
+        if (hit_pair.first < NUM_LAYERS_FOR_MED_CAL) {
+            if (layerMaxCellId[hit_pair.first].second < hit->getEnergy()) {
+                layerMaxCellId[hit_pair.first] = std::make_pair(hit_pair.second, hit->getEnergy());
             }
         }
     }
 
     //Sort the layer-wise max energy deposition cells by energy and then select the median
-    std::sort (layerMaxCellId.begin(), layerMaxCellId.end(),
-            [](const cell_energy_pair & a, const cell_energy_pair & b)
-            {
-                return a.second > b.second;
-            });
-    int showerMedianCellId = layerMaxCellId[layerMaxCellId.size()/2].first;
+    std::sort(layerMaxCellId.begin(), layerMaxCellId.end(), [](const cell_energy_pair & a, const cell_energy_pair & b)
+    {
+        return a.second > b.second;
+    });
+    int showerMedianCellId = layerMaxCellId[layerMaxCellId.size() / 2].first;
 
     //Loop over the hits from the event to calculate the rest of the important quantities
-    for(int iHit = 0; iHit < numEcalSimHits; iHit++){
+    for (int iHit = 0; iHit < numEcalHits; iHit++) {
         //Layer-wise quantities
-        SimCalorimeterHit* ecalHit = (SimCalorimeterHit*) ecalHits->At(iHit);
-        layer_cell_pair hit_pair = hitToPair(ecalHit);
-        ecalLayerEdepRaw_[hit_pair.first] += ecalHit->getEdep();
+        EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
+        layer_cell_pair hit_pair = hitToPair(hit);
 
-        if (ecalHit->getEdep()  + hitNoise[iHit] > readoutThreshold){
-            ecalLayerEdepReadout_[hit_pair.first] +=  ecalHit->getEdep()  + hitNoise[iHit];
-            ecalLayerTime_[hit_pair.first] +=  (ecalHit->getEdep()  + hitNoise[iHit]) * ecalHit->getTime();
+        EcalLayerEdepRaw[hit_pair.first] += hit->getEnergy();
+
+        if (hit->getEnergy() > 0) {
+            EcalLayerEdepReadout[hit_pair.first] += hit->getEnergy();
+            EcalLayerTime[hit_pair.first] += (hit->getEnergy()) * hit->getTime();
         }
         //Check iso
-        if (!(hexReadout->isInShowerInnerRing(showerMedianCellId,hit_pair.second)) &&
-            !(hexReadout->isInShowerOuterRing(showerMedianCellId,hit_pair.second)) &&
-            !(hit_pair.second == showerMedianCellId)){
+        if (!(hexReadout_->isInShowerInnerRing(showerMedianCellId, hit_pair.second)) && !(hexReadout_->isInShowerOuterRing(showerMedianCellId, hit_pair.second)) && !(hit_pair.second == showerMedianCellId)) {
 
-            ecalLayerIsoRaw_[hit_pair.first]   +=  ecalHit->getEdep();
+            EcalLayerIsoRaw[hit_pair.first] += hit->getEnergy();
 
-            if (ecalHit->getEdep()  + hitNoise[iHit] > readoutThreshold)
-                ecalLayerIsoReadout_[hit_pair.first] +=  ecalHit->getEdep()  + hitNoise[iHit];
+            if (hit->getEnergy() > 0)
+                EcalLayerIsoReadout[hit_pair.first] += hit->getEnergy();
         }
-    }// end loop over sim hits
-    float summedDep = 0,summedIso = 0, backSummedDep = 0;
-    for (int iLayer=  0; iLayer < ecalLayerEdepReadout_.size(); iLayer++){
-        ecalLayerTime_[iLayer] = ecalLayerTime_[iLayer]/ecalLayerEdepReadout_[iLayer];
-        summedDep += ecalLayerEdepReadout_[iLayer];
-        summedIso += ecalLayerIsoReadout_[iLayer];
-        if (iLayer > backEcalStartingLayer) backSummedDep += ecalLayerEdepReadout_[iLayer];
+    } // end loop over sim hits
+    float summedDep = 0, summedIso = 0, backSummedDep = 0;
+    for (int iLayer = 0; iLayer < EcalLayerEdepReadout.size(); iLayer++) {
+        EcalLayerTime[iLayer] = EcalLayerTime[iLayer] / EcalLayerEdepReadout[iLayer];
+        summedDep += EcalLayerEdepReadout[iLayer];
+        summedIso += EcalLayerIsoReadout[iLayer];
+        if (iLayer > BACK_ECAL_STARTING_LAYER)
+            backSummedDep += EcalLayerEdepReadout[iLayer];
     }
+    
 
     /*
      if(verbose){
@@ -129,5 +113,6 @@ void eventproc::EcalVetoProcessor::execute(){
     */
 }
 
-void eventproc::EcalVetoProcessor::finish(){
 }
+
+DECLARE_PRODUCER_NS(ldmx, EcalVetoProcessor);
