@@ -12,20 +12,19 @@
 
 namespace ldmx {
 
-const int EcalVetoProcessor::NUM_ECAL_LAYERS = 33;
-const int EcalVetoProcessor::BACK_ECAL_STARTING_LAYER = 20;
-const int EcalVetoProcessor::NUM_LAYERS_FOR_MED_CAL = 10;
-const float EcalVetoProcessor::TOTAL_DEP_CUT = 25;
-const float EcalVetoProcessor::TOTAL_ISO_CUT = 15;
-const float EcalVetoProcessor::BACK_ECAL_CUT = 1;
-const float EcalVetoProcessor::RATIO_CUT = 10;
-
-void EcalVetoProcessor::configure(const ldmx::ParameterSet&) {
+void EcalVetoProcessor::configure(const ParameterSet& ps) {
     hexReadout_ = new EcalHexReadout();
+
+    NUM_ECAL_LAYERS = ps.getInteger("num_ecal_layers");
+    BACK_ECAL_STARTING_LAYER = ps.getInteger("back_ecal_starting_layers");
+    NUM_LAYERS_FOR_MED_CAL = ps.getInteger("num_layers_for_med_cal");
+    TOTAL_DEP_CUT = ps.getDouble("total_dep_cut");
+    TOTAL_ISO_CUT = ps.getDouble("total_iso_cut");
+    BACK_ECAL_CUT = ps.getDouble("back_ecal_cut");
+    RATIO_CUT = ps.getDouble("ratio_cut");
 }
 
 void EcalVetoProcessor::produce(Event& event) {
-
     std::vector<float> EcalLayerEdepRaw(NUM_ECAL_LAYERS, 0);
     std::vector<float> EcalLayerEdepReadout(NUM_ECAL_LAYERS, 0);
     std::vector<float> EcalLayerIsoRaw(NUM_ECAL_LAYERS, 0);
@@ -108,8 +107,8 @@ void EcalVetoProcessor::produce(Event& event) {
 
     result_.set("EcalVetoV1", doesPassVeto_, 3);
     result_.setAlgoVar(0, summedDep);
-    result_.setAlgoVar(0, summedIso);
-    result_.setAlgoVar(0, backSummedDep);
+    result_.setAlgoVar(1, summedIso);
+    result_.setAlgoVar(2, backSummedDep);
     event.add("EcalVeto", &result_);
     */
 }
