@@ -34,9 +34,9 @@ class EcalVetoProcessor : public Producer {
 
     public:
 
-        typedef std::pair<int, int> layer_cell_pair;
+        typedef std::pair<int, int> LayerCellPair;
 
-        typedef std::pair<int, float> cell_energy_pair;
+        typedef std::pair<int, float> CellEnergyPair;
 
         EcalVetoProcessor(const std::string& name, const Process& process) :
                 Producer(name, process) {
@@ -50,7 +50,7 @@ class EcalVetoProcessor : public Producer {
 
     private:
 
-        inline layer_cell_pair hitToPair(EcalHit* hit) {
+        inline LayerCellPair hitToPair(EcalHit* hit) {
             int detIDraw = hit->getID();
             detID_.setRawValue(detIDraw);
             detID_.unpack();

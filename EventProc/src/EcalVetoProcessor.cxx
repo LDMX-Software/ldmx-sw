@@ -25,25 +25,27 @@ void EcalVetoProcessor::configure(const ParameterSet& ps) {
 }
 
 void EcalVetoProcessor::produce(Event& event) {
+    
     std::vector<float> EcalLayerEdepRaw(nEcalLayers_, 0);
     std::vector<float> EcalLayerEdepReadout(nEcalLayers_, 0);
     std::vector<float> EcalLayerIsoRaw(nEcalLayers_, 0);
     std::vector<float> EcalLayerIsoReadout(nEcalLayers_, 0);
     std::vector<float> EcalLayerTime(nEcalLayers_, 0);
-    
+   
+    // Get the collection of digitized Ecal hits from the event. 
     const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
+    int nEcalHits = ecalDigis->GetEntriesFast();
     
-    // looper over sim hits
-    int numEcalHits = ecalDigis->GetEntriesFast();
-    
-    std::cout << "[ EcalVetoProcessor ] : Got " << numEcalHits << " ECal digis in event " << event.getEventHeader()->getEventNumber() << std::endl;
+    //std::cout << "[ EcalVetoProcessor ] : Got " << nEcalHits << " ECal digis in event " << event.getEventHeader()->getEventNumber() << std::endl;
 
-    std::vector<cell_energy_pair> layerMaxCellId(nLayersMedCal_, std::make_pair(0, 0));
+    std::vector<CellEnergyPair> layerMaxCellId(nLayersMedCal_, std::make_pair(0, 0));
 
     //First, we find layer-wise max cell ids
-    for (int iHit = 0; iHit < numEcalHits; iHit++) {
-        EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
-        layer_cell_pair hit_pair = hitToPair(hit);
+    for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
+        
+        // Get the nth digitized Ecal hit
+        EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
+        LayerCellPair hit_pair = hitToPair(hit);
 
         if (hit_pair.first < nLayersMedCal_) {
             if (layerMaxCellId[hit_pair.first].second < hit->getEnergy()) {
@@ -53,17 +55,17 @@ void EcalVetoProcessor::produce(Event& event) {
     }
 
     //Sort the layer-wise max energy deposition cells by energy and then select the median
-    std::sort(layerMaxCellId.begin(), layerMaxCellId.end(), [](const cell_energy_pair & a, const cell_energy_pair & b)
+    std::sort(layerMaxCellId.begin(), layerMaxCellId.end(), [](const CellEnergyPair & a, const CellEnergyPair & b)
     {
         return a.second > b.second;
     });
     int showerMedianCellId = layerMaxCellId[layerMaxCellId.size() / 2].first;
 
     //Loop over the hits from the event to calculate the rest of the important quantities
-    for (int iHit = 0; iHit < numEcalHits; iHit++) {
+    for (int iHit = 0; iHit < nEcalHits; iHit++) {
         //Layer-wise quantities
         EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
-        layer_cell_pair hit_pair = hitToPair(hit);
+        LayerCellPair hit_pair = hitToPair(hit);
 
         EcalLayerEdepRaw[hit_pair.first] += hit->getEnergy();
 
