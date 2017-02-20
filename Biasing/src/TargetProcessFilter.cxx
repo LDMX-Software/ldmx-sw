@@ -34,7 +34,7 @@ namespace ldmx {
         /*std::cout << "********************************" << std::endl;*/
 
         // get the PDGID of the track.
-        G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
+        //G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
 
         // Get the particle type.
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
@@ -85,7 +85,7 @@ namespace ldmx {
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
 
         // Get the kinetic energy of the particle.
-        double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
+        //double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
 
         /*std::cout << "[ TargetProcessFilter ]: " << "\n" 
                     << "\tTotal energy of " << particleName      << " ( PDG ID: " << pdgID
@@ -95,8 +95,15 @@ namespace ldmx {
                     << "\tParticle currently in " << volumeName  << std::endl;*/
         
         // 
-        std::vector<G4Track*> bremGammaList = TargetBremFilter::getBremGammaList(); 
-        if (std::find(bremGammaList.begin(), bremGammaList.end(), track) == bremGammaList.end()) { 
+        std::vector<G4Track*> bremGammaList = TargetBremFilter::getBremGammaList();
+        if (bremGammaList.empty()) { 
+            /*std::cout << "[ TargetProcessFilter ]: "
+                      << "Brem list is empty --> Aborting event." << std::endl;*/
+            track->SetTrackStatus(fKillTrackAndSecondaries);
+            G4RunManager::GetRunManager()->AbortEvent();
+            currentTrack_ = nullptr;
+            return;
+        } else if (std::find(bremGammaList.begin(), bremGammaList.end(), track) == bremGammaList.end()) { 
             /*std::cout << "[ TargetProcessFilter ]: "
                       << "Brem list doesn't contain track." << std::endl;*/
             return;
@@ -139,7 +146,7 @@ namespace ldmx {
 
                 /*std::cout << "[ TargetProcessFilter ]: "
                           << "Process was not " << BiasingMessenger::getProcess() << "--> Killing all tracks!" 
-                          << std::endl;*/ 
+                          << std::endl;*/
                 
                 if (bremGammaList.size() == 1) { 
                     track->SetTrackStatus(fKillTrackAndSecondaries);
