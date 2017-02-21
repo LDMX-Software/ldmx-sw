@@ -26,61 +26,61 @@
 
 namespace ldmx {
 
-/**
- * @class EcalVetoProcessor
- * @brief Determines if event is vetoable using ECAL hit information
- */
-class EcalVetoProcessor : public Producer {
+    /**
+     * @class EcalVetoProcessor
+     * @brief Determines if event is vetoable using ECAL hit information
+     */
+    class EcalVetoProcessor : public Producer {
 
-    public:
+        public:
 
-        typedef std::pair<int, int> LayerCellPair;
+            typedef std::pair<int, int> LayerCellPair;
 
-        typedef std::pair<int, float> CellEnergyPair;
+            typedef std::pair<int, float> CellEnergyPair;
 
-        EcalVetoProcessor(const std::string& name, const Process& process) :
+            EcalVetoProcessor(const std::string& name, const Process& process) :
                 Producer(name, process) {
-        }
+                }
 
-        virtual ~EcalVetoProcessor() {;}
+            virtual ~EcalVetoProcessor() {;}
 
-        void configure(const ParameterSet&);
+            void configure(const ParameterSet&);
 
-        void produce(Event& event);
+            void produce(Event& event);
 
-    private:
+        private:
 
-        inline LayerCellPair hitToPair(EcalHit* hit) {
-            int detIDraw = hit->getID();
-            detID_.setRawValue(detIDraw);
-            detID_.unpack();
-            int layer = detID_.getFieldValue("layer");
-            int cellid = detID_.getFieldValue("cell");
-            return (std::make_pair(layer, cellid));
-        }
+            inline LayerCellPair hitToPair(EcalHit* hit) {
+                int detIDraw = hit->getID();
+                detID_.setRawValue(detIDraw);
+                detID_.unpack();
+                int layer = detID_.getFieldValue("layer");
+                int cellid = detID_.getFieldValue("cell");
+                return (std::make_pair(layer, cellid));
+            }
 
-    private:
+        private:
 
-        std::vector<double> EcalLayerEdepRaw_; 
-        std::vector<double> EcalLayerEdepReadout_;
-        std::vector<double> EcalLayerIsoRaw_; 
-        std::vector<double> EcalLayerIsoReadout_;
-        std::vector<double> EcalLayerTime_;
+            std::vector<float> EcalLayerEdepRaw_; 
+            std::vector<float> EcalLayerEdepReadout_;
+            std::vector<float> EcalLayerIsoRaw_; 
+            std::vector<float> EcalLayerIsoReadout_;
+            std::vector<float> EcalLayerTime_;
 
-        int nEcalLayers_;
-        int nLayersMedCal_; 
-        int backEcalStartingLayer_;
-        double totalDepCut_;
-        double totalIsoCut_;
-        double backEcalCut_;
-        double ratioCut_;
+            int nEcalLayers_;
+            int nLayersMedCal_; 
+            int backEcalStartingLayer_;
+            double totalDepCut_;
+            double totalIsoCut_;
+            double backEcalCut_;
+            double ratioCut_;
 
-        TriggerResult result_;
-        EcalDetectorID detID_;
-        bool verbose_{false};
-        bool doesPassVeto_{false};
-        EcalHexReadout* hexReadout_{nullptr};
-};
+            TriggerResult result_;
+            EcalDetectorID detID_;
+            bool verbose_{false};
+            bool doesPassVeto_{false};
+            EcalHexReadout* hexReadout_{nullptr};
+    };
 
 }
 
