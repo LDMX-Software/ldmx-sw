@@ -61,6 +61,12 @@ class EcalVetoProcessor : public Producer {
 
     private:
 
+        std::vector<double> EcalLayerEdepRaw_; 
+        std::vector<double> EcalLayerEdepReadout_;
+        std::vector<double> EcalLayerIsoRaw_; 
+        std::vector<double> EcalLayerIsoReadout_;
+        std::vector<double> EcalLayerTime_;
+
         int nEcalLayers_;
         int nLayersMedCal_; 
         int backEcalStartingLayer_;
