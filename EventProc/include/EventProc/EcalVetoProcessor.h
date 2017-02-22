@@ -16,7 +16,7 @@
 #include "TClonesArray.h"
 
 // LDMX
-#include "Event/TriggerResult.h"
+#include "Event/EcalVetoResult.h"
 #include "Event/EcalHit.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
@@ -26,55 +26,61 @@
 
 namespace ldmx {
 
-/**
- * @class EcalVetoProcessor
- * @brief Determines if event is vetoable using ECAL hit information
- */
-class EcalVetoProcessor : public Producer {
+    /**
+     * @class EcalVetoProcessor
+     * @brief Determines if event is vetoable using ECAL hit information
+     */
+    class EcalVetoProcessor : public Producer {
 
-    public:
+        public:
 
-        typedef std::pair<int, int> layer_cell_pair;
+            typedef std::pair<int, int> LayerCellPair;
 
-        typedef std::pair<int, float> cell_energy_pair;
+            typedef std::pair<int, float> CellEnergyPair;
 
-        EcalVetoProcessor(const std::string& name, const Process& process) :
+            EcalVetoProcessor(const std::string& name, const Process& process) :
                 Producer(name, process) {
-        }
+            }
 
-        virtual ~EcalVetoProcessor() {;}
+            virtual ~EcalVetoProcessor() {;}
 
-        void configure(const ParameterSet&);
+            void configure(const ParameterSet&);
 
-        void produce(Event& event);
+            void produce(Event& event);
 
-    private:
+        private:
 
-        inline layer_cell_pair hitToPair(EcalHit* hit) {
-            int detIDraw = hit->getID();
-            detID_.setRawValue(detIDraw);
-            detID_.unpack();
-            int layer = detID_.getFieldValue("layer");
-            int cellid = detID_.getFieldValue("cell");
-            return (std::make_pair(layer, cellid));
-        }
+            inline LayerCellPair hitToPair(EcalHit* hit) {
+                int detIDraw = hit->getID();
+                detID_.setRawValue(detIDraw);
+                detID_.unpack();
+                int layer = detID_.getFieldValue("layer");
+                int cellid = detID_.getFieldValue("cell");
+                return (std::make_pair(layer, cellid));
+            }
 
-    private:
+        private:
 
-        int NUM_ECAL_LAYERS;
-        int NUM_LAYERS_FOR_MED_CAL;
-        int BACK_ECAL_STARTING_LAYER;
-        float TOTAL_DEP_CUT;
-        float TOTAL_ISO_CUT;
-        float BACK_ECAL_CUT;
-        float RATIO_CUT;
-        
-        TriggerResult result_;
-        EcalDetectorID detID_;
-        bool verbose_{false};
-        bool doesPassVeto_{false};
-        EcalHexReadout* hexReadout_{nullptr};
-};
+            std::vector<float> EcalLayerEdepRaw_; 
+            std::vector<float> EcalLayerEdepReadout_;
+            std::vector<float> EcalLayerIsoRaw_; 
+            std::vector<float> EcalLayerIsoReadout_;
+            std::vector<float> EcalLayerTime_;
+
+            int nEcalLayers_;
+            int nLayersMedCal_; 
+            int backEcalStartingLayer_;
+            double totalDepCut_;
+            double totalIsoCut_;
+            double backEcalCut_;
+            double ratioCut_;
+
+            EcalVetoResult result_;
+            EcalDetectorID detID_;
+            bool verbose_{false};
+            bool doesPassVeto_{false};
+            EcalHexReadout* hexReadout_{nullptr};
+    };
 
 }
 
