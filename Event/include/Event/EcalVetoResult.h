@@ -44,8 +44,15 @@ namespace ldmx {
             /** Reset the object. */
             void Clear(Option_t *option = ""); 
             
-            /** Print out the object */
-            void Print(Option_t *option = "");
+            /**
+             * Copy this object. 
+             *
+             * @param object The target object. 
+             */
+            void Copy(TObject& object) const;
+
+            /** Print the object */
+            void Print(Option_t *option = "") const;
 
         private:
            
