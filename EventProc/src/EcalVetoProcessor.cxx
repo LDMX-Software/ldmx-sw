@@ -113,7 +113,7 @@ namespace ldmx {
         doesPassVeto_ = (summedDep < totalDepCut_ && summedIso < totalIsoCut_ && backSummedDep < backEcalCut_); // add ratio cut in at some point
        
         result_.setResult(doesPassVeto_, summedDep, summedIso, backSummedDep);
-        event.add("EcalVeto", &result_);
+        event.addToCollection("EcalVeto", result_);
     }
 }
 
