@@ -80,4 +80,32 @@ void EcalHexReadout::buildMap(Double_t xstart, Double_t ystart, Double_t a, Int_
     }
 }
 
+std::vector<int> EcalHexReadout::getInnerRingCellIds(int cellID) { 
+    return { 
+            cellID + SHIFT_UP, 
+            cellID + SHIFT_DOWN, 
+            cellID + SHIFT_RIGHT_UP, 
+            cellID + SHIFT_RIGHT_DOWN, 
+            cellID + SHIFT_LEFT_UP, 
+            cellID + SHIFT_LEFT_DOWN
+    };
+}
+
+std::vector<int> EcalHexReadout::getOuterRingCellIds(int cellID) { 
+    return { 
+            cellID + 2*SHIFT_UP, 
+            cellID + SHIFT_RIGHT_UP + SHIFT_UP, 
+            cellID + SHIFT_LEFT_UP + SHIFT_UP, 
+            cellID + 2*SHIFT_DOWN, 
+            cellID + SHIFT_RIGHT_DOWN + SHIFT_DOWN, 
+            cellID + SHIFT_LEFT_DOWN + SHIFT_DOWN, 
+            cellID + 2*SHIFT_RIGHT_UP, 
+            cellID + 2*SHIFT_RIGHT_UP + SHIFT_DOWN, 
+            cellID + 2*SHIFT_RIGHT_UP + SHIFT_DOWN, 
+            cellID + 2*SHIFT_LEFT_UP, 
+            cellID + 2*SHIFT_LEFT_UP + SHIFT_DOWN, 
+            cellID + 2*SHIFT_LEFT_UP + SHIFT_DOWN
+    };
+}
+
 }
