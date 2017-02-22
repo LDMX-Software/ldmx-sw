@@ -17,6 +17,24 @@ namespace ldmx {
     }
 
     EcalVetoResult::~EcalVetoResult() {
+        Clear(); 
+    }
+
+    void EcalVetoResult::Clear(Option_t *option) {
+        TObject::Clear();  
+        passesVeto_ = false; 
+        summedDep_      = 0;
+        summedIso_      = 0;  
+        backSummedDep_  = 0;  
+    }
+
+    void EcalVetoResult::Copy(TObject& object) const {
+        
+        EcalVetoResult& result = (EcalVetoResult&) object;
+        result.passesVeto_    = passesVeto_;
+        result.summedDep_     = summedDep_; 
+        result.summedIso_     = summedIso_; 
+        result.backSummedDep_ = backSummedDep_; 
     }
 
     void EcalVetoResult::setResult(bool passesVeto, float summedDep, float summedIso, float backSummedDep) { 
@@ -26,14 +44,7 @@ namespace ldmx {
         backSummedDep_ = backSummedDep; 
     }
 
-    void EcalVetoResult::Clear(Option_t *option) { 
-        passesVeto_ = false; 
-        summedDep_      = 0;
-        summedIso_      = 0;  
-        backSummedDep_  = 0;  
-    }
-
-    void EcalVetoResult::Print(Option_t *option) { 
+    void EcalVetoResult::Print(Option_t *option) const { 
         std::cout << "[ EcalVetoResult ]:\n" 
           << "\t Passes veto : " << passesVeto_ << "\n"
           << "\t summedDep: " << summedDep_ << "\n"
