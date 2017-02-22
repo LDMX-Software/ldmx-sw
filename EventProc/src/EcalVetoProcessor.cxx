@@ -111,16 +111,10 @@ namespace ldmx {
           << std::endl;*/
 
         doesPassVeto_ = (summedDep < totalDepCut_ && summedIso < totalIsoCut_ && backSummedDep < backEcalCut_); // add ratio cut in at some point
-        /*
-
-           result_.set("EcalVetoV1", doesPassVeto_, 3);
-           result_.setAlgoVar(0, summedDep);
-           result_.setAlgoVar(1, summedIso);
-           result_.setAlgoVar(2, backSummedDep);
-           event.add("EcalVeto", &result_);
-           */
+       
+        result_.setResult(doesPassVeto_, summedDep, summedIso, backSummedDep);
+        event.add("EcalVeto", &result_);
     }
-
 }
 
 DECLARE_PRODUCER_NS(ldmx, EcalVetoProcessor);
