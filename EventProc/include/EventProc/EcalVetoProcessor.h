@@ -16,7 +16,7 @@
 #include "TClonesArray.h"
 
 // LDMX
-#include "Event/TriggerResult.h"
+#include "Event/EcalVetoResult.h"
 #include "Event/EcalHit.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
@@ -40,7 +40,7 @@ namespace ldmx {
 
             EcalVetoProcessor(const std::string& name, const Process& process) :
                 Producer(name, process) {
-                }
+            }
 
             virtual ~EcalVetoProcessor() {;}
 
@@ -75,7 +75,7 @@ namespace ldmx {
             double backEcalCut_;
             double ratioCut_;
 
-            TriggerResult result_;
+            EcalVetoResult result_;
             EcalDetectorID detID_;
             bool verbose_{false};
             bool doesPassVeto_{false};
