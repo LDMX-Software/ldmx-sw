@@ -12,6 +12,10 @@ GammaPhysics::GammaPhysics(const G4String& name)
 GammaPhysics::~GammaPhysics() {
 }
 
+#ifndef aParticleIterator
+#define aParticleIterator ((subInstanceManager.offset[g4vpcInstanceID])._aParticleIterator)
+#endif
+
 void GammaPhysics::ConstructProcess() {
     aParticleIterator->reset();
     while((*aParticleIterator)()) {
