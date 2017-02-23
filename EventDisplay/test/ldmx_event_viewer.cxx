@@ -188,15 +188,20 @@ TEveElement* drawRecoilHits(TClonesArray* hits) {
 
         std::vector<float> xyzPos = hit->getPosition();
         
-        if ((xyzPos[2] < 5 && xyzPos[2] > 4) || (xyzPos[2] < 20 && xyzPos[2] > 19) || (xyzPos[2] < 35 && xyzPos[2] > 34) || (xyzPos[2] < 50 && xyzPos[2] > 49)) {
+        if ((xyzPos[2] > 4 && xyzPos[2] < 5) || (xyzPos[2] > 19 && xyzPos[2] < 20) || (xyzPos[2] > 34 && xyzPos[2] < 35) || (xyzPos[2] > 49 && xyzPos[2] < 50)) {
             
+            TEveBox *recoilHit = drawBox(xyzPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+recoil_sensor_thickness, 0, kYellow, 0, "Recoil Hit");
+            recoilHitSet->AddElement(recoilHit);
+
+        } else if ((xyzPos[2] > 10 && xyzPos[2] < 11) || (xyzPos[2] > 40 && xyzPos[2] < 41)) { 
+
             TVector3 rotPos = {xyzPos[0], xyzPos[1], xyzPos[2]};
             rotPos.RotateZ(-stereo_angle);
 
             TEveBox *recoilHit = drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+recoil_sensor_thickness, stereo_angle, kYellow, 0, "Recoil Hit");
             recoilHitSet->AddElement(recoilHit);
 
-        } else if ((xyzPos[2] < 11 && xyzPos[2] > 10) || (xyzPos[2] < 26 && xyzPos[2] > 25) || (xyzPos[2] < 41 && xyzPos[2] > 40) || (xyzPos[2] < 56 && xyzPos[2] > 55)) { 
+        } else if ((xyzPos[2] > 25 && xyzPos[2] < 26) || (xyzPos[2] > 55 && xyzPos[2] < 56)) {
 
             TVector3 rotPos = {xyzPos[0], xyzPos[1], xyzPos[2]};
             rotPos.RotateZ(stereo_angle);
@@ -244,11 +249,17 @@ TEveElement* drawRecoilTracker() {
         char nback[50];
         sprintf(nback, "Stereo%d_back", j+1);
 
-        TEveBox *front = drawBox(0, 0, zPos[j]-stereo_sep, stereo_x_width, stereo_y_width, zPos[j]-stereo_sep+recoil_sensor_thickness, stereo_angle, kCyan, 100, nfront);
-        TEveBox *back = drawBox(0, 0, zPos[j]+stereo_sep, stereo_x_width, stereo_y_width, zPos[j]+stereo_sep+recoil_sensor_thickness, -stereo_angle, kCyan, 100, nback);
+        TEveBox *front = drawBox(0, 0, zPos[j]-stereo_sep, stereo_x_width, stereo_y_width, zPos[j]-stereo_sep+recoil_sensor_thickness, 0, kCyan, 100, nfront);
+
+        if (j % 2 == 0) { // Alternate angle for back layer of a stereo pair.
+            TEveBox *back = drawBox(0, 0, zPos[j]+stereo_sep, stereo_x_width, stereo_y_width, zPos[j]+stereo_sep+recoil_sensor_thickness, stereo_angle, kCyan, 100, nback);
+            recoilTracker->AddElement(back);
+        } else {
+            TEveBox *back = drawBox(0, 0, zPos[j]+stereo_sep, stereo_x_width, stereo_y_width, zPos[j]+stereo_sep+recoil_sensor_thickness, -stereo_angle, kCyan, 100, nback);
+            recoilTracker->AddElement(back);
+        }
 
         recoilTracker->AddElement(front);
-        recoilTracker->AddElement(back);
     }
 
     int module1 = 1;
