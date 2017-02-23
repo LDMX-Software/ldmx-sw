@@ -65,17 +65,60 @@ namespace ldmx {
         geoManager_ = TGeoManager::Import(location.c_str(), detectorName_.c_str());
 
         // Setup the top DE which will setup subdetector components.
-        topDE_ = new TopDetectorElement(geoManager_->GetTopNode());
-
+        deTop_ = new TopDetectorElement(geoManager_->GetTopNode());
 
         // Build the global matrix cache in the ROOT geometry manager.
         TGeoNavigator* nav = geoManager_->GetCurrentNavigator();
         nav->BuildCache();
 
         // Set the global positions on each DetectorElement by walking the hierarchy.
-        GlobalPositionCacheBuilder cacheBuilder(nav);
-        DetectorElementVisitor::walk(topDE_, &cacheBuilder);
+        GlobalPositionCacheBuilder globPosBuilder(nav);
+        DetectorElementVisitor::walk(deTop_, &globPosBuilder);
+
+        // Cache maps of ID and nodes to DetectorElements.
+        DetectorElementCacheBuilder cacheBuilder(&deCache_);
+        DetectorElementVisitor::walk(deTop_, &cacheBuilder);
     }
+
+    DetectorElement* DetectorDataServiceImpl::findDetectorElement(TGeoNode* node) {
+        DetectorElement* de = nullptr;
+        if (deCache_.contains(node)) {
+            /*
+             * Return assigned node from the cache.
+             */
+            de = deCache_.get(node);
+        } else {
+            /*
+             * Search up the geometry hierarchy until a DetectorElement is found
+             * or the top is reached.
+             */
+            TGeoNavigator* nav = geoManager_->GetCurrentNavigator();
+            TGeoNode* top = deTop_->getSupport();
+            TGeoNode* cur = node;
+            while (cur) {
+                nav->CdUp();
+                cur = nav->GetCurrentNode();
+                if (deCache_.contains(cur)) {
+                    de = deCache_.get(cur);
+                    break;
+                }
+                if (cur == top) {
+                    de = deTop_;
+                    break;
+                }
+            }
+        }
+        return de;
+    }
+
+
+    DetectorElement* DetectorDataServiceImpl::locateDetectorElement(std::vector<double>& globalPosition) {
+        TGeoNavigator* nav = geoManager_->GetCurrentNavigator();
+        nav->SetCurrentPoint(globalPosition[0], globalPosition[1], globalPosition[2]);
+        TGeoNode* node = nav->FindNode();
+        return findDetectorElement(node);
+    }
+
 
     /**
      * @todo Make this function more efficient, because it currently resets the navigator for every node

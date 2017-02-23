@@ -36,6 +36,41 @@ ostream& operator<<(ostream& stream, DetectorID::FieldValueList& id) {
     return stream;
 }
 
+void find(DetectorDataService* svc, DetectorElement* de, const char* indent = "    ") {
+    DetectorElement* srch = nullptr;
+
+    // Check ID lookup.
+    if (de->getID()) {
+        srch = svc->getDetectorElement(de->getID());
+        if (srch) {
+            auto decoder = srch->getDetectorID();
+            decoder->setRawValue(srch->getID());
+            auto values = decoder->unpack();
+            if (srch) {
+                std::cout << indent << "Found " << srch->getName() << values << std::endl;
+            }
+        }
+    } else {
+        std::cout << indent << "Skipping lookup of " << de->getName() << " with ID = 0" << std::endl;
+    }
+
+    // Check global pos lookup for leaf nodes.
+    vector<double> pos = de->getGlobalPosition();
+    srch = svc->locateDetectorElement(pos);
+    if (srch) {
+        std::cout << indent << "Found " << srch->getName() << de->getGlobalPosition() << std::endl;
+    }
+
+    // Check node lookup.
+    if (de->getSupport()) {
+        TGeoNode* node = de->getSupport();
+        srch = svc->findDetectorElement(node);
+        if (srch) {
+            std::cout << indent << "Found " << srch->getName() << " with support '" << node->GetName() << "'" << std::endl;
+        }
+    }
+}
+
 int main(int, const char* argv[])  {
 
     std::cout << "Running DetectorDataService test ..." << std::endl;
@@ -69,6 +104,7 @@ int main(int, const char* argv[])  {
                 << ecalLayer->getGlobalPosition()
                 << values
                 << std::endl;
+        find(svc, ecalLayer);
     }
     std::cout << std::endl;
 
@@ -88,6 +124,7 @@ int main(int, const char* argv[])  {
                 << hcalStation->getGlobalPosition()
                 << values
                 << std::endl;
+        find(svc, hcalStation);
     }
 
     std::cout << std::endl;
@@ -109,6 +146,7 @@ int main(int, const char* argv[])  {
                         << taggerLayer->getGlobalPosition()
                         << values
                         << std::endl;
+        find(svc, taggerLayer);
     }
 
     std::cout << std::endl;
@@ -130,6 +168,7 @@ int main(int, const char* argv[])  {
                     << recoilTrackerLayer->getGlobalPosition()
                     << values
                     << std::endl;
+            find(svc, recoilTrackerLayer);
         } else {
             std::cout << "  " << recoilTrackerLayer->getName() << " with layer num "
                     << ((TaggerLayer*)recoilTrackerLayer)->getLayerNumber() << values << std::endl;
@@ -139,6 +178,7 @@ int main(int, const char* argv[])  {
                         << ((RecoilTrackerSensor*)recoilSensor)->getSensorNumber()
                         << recoilSensor->getGlobalPosition()
                         << std::endl;
+                find(svc, recoilSensor, "        ");
             }
         }
     }
@@ -151,6 +191,7 @@ int main(int, const char* argv[])  {
     values = decoder->unpack();
     std::cout << "Got 'Target' DE with support " << target->getSupport()->GetName() << "'" << target->getGlobalPosition() << values << std::endl;
     std::cout << "  targetThickness = " << ((TargetDetectorElement*)target)->getTargetThickness() << std::endl;
+    find(svc, target, "  ");
     std::cout << std::endl;
 
     // Print trigger pad info.
@@ -159,12 +200,14 @@ int main(int, const char* argv[])  {
     decoder->setRawValue(triggerPad->getID());
     values = decoder->unpack();
     std::cout << "Got 'TriggerPadUp' with support '" << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << values << std::endl;
+    find(svc, triggerPad, "  ");
     std::cout << std::endl;
     triggerPad = top->findChild("TriggerPadDown");
     decoder = triggerPad->getDetectorID();
     decoder->setRawValue(triggerPad->getID());
     values = decoder->unpack();
     std::cout << "Got 'TriggerPadDown' with support " << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << values << std::endl;
+    find(svc, triggerPad, "  ");
 
     // Delete the service object, which will delete the DetectorElement tree and the ROOT geometry manager.
     delete svc;

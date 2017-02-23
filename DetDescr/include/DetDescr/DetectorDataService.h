@@ -11,6 +11,8 @@
 
 #include "DetDescr/DetectorElement.h"
 
+#include <vector>
+
 namespace ldmx {
 
     /**
@@ -51,6 +53,30 @@ namespace ldmx {
              * Initialize the geometry.
              */
             virtual void initialize() = 0;
+            
+            /**
+             * Get a DetectorElement by its ID.
+             * @return The DetectorElement with the id or null if none exists.
+             */
+            virtual DetectorElement* getDetectorElement(int id) = 0;
+           
+            /**
+             * Get a DetectorElement by its assigned node.
+             * @return The DetectorElement with the matching node or the top DetectorElement if none exists.
+             *
+             * @note If the node is not explicitly assigned to a DetectorElement,
+             * the geometry hierarchy will be searched upwards for the containing
+             * DetectorElement.  In case none is found, the top DetectorElement
+             * will be returned.
+             */
+            virtual DetectorElement* findDetectorElement(TGeoNode* node) = 0;
+
+            /**
+             * Locate a DetectorElement leaf from a global position.
+             * @return The DetectorElement containing the position.
+             */            
+            virtual DetectorElement* locateDetectorElement(std::vector<double>& globalPosition) = 0;
+           
     };
 }
 

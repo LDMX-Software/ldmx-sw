@@ -11,7 +11,64 @@
 #include "DetDescr/DetectorElementImpl.h"
 #include "DetDescr/DetectorDataService.h"
 
+#include <map>
+#include <fstream>
+#include <iostream>
+
 namespace ldmx {
+
+    /**
+     * @class DetectorElementCache
+     * @brief Map of IDs and geometry nodes to DetectorElement objects
+     */
+    class DetectorElementCache {
+
+        public:
+
+            void set(int id, DetectorElement* de) {
+                if (get(id)) {
+                    // FIXME: Should use base Exception class here.
+                    throw std::runtime_error("The id is already used in the DE cache.");
+                }
+                idMap_[id] = de;
+            }
+
+            void set(TGeoNode* node, DetectorElement* de) {
+                if (get(node)) {
+                    // FIXME: Should use base Exception class here.
+                    throw std::runtime_error("The node is already used in the DE cache.");
+                }
+                nodeMap_[node] = de;
+            }
+
+            DetectorElement* get(int id) {
+                if (idMap_.find(id) != idMap_.end()) {
+                    return idMap_[id];
+                } else {
+                    return nullptr;
+                }
+            }
+
+            DetectorElement* get(TGeoNode* node) {
+                if (nodeMap_.find(node) != nodeMap_.end()) {
+                    return nodeMap_[node];
+                } else {
+                    return nullptr;
+                }
+            }
+
+            bool contains(TGeoNode* node) {
+                return nodeMap_.find(node) != nodeMap_.end();
+            }
+
+            bool contains(int id) {
+                return idMap_.find(id) != idMap_.end();
+            }
+
+        private:
+            std::map<int, DetectorElement*> idMap_;
+            std::map<TGeoNode*, DetectorElement*> nodeMap_;
+    };
 
     /**
      * @class DetectorDataServiceImpl
@@ -33,7 +90,7 @@ namespace ldmx {
              * Deletes the DetectorElement hierarchy and the ROOT geometry manager.
              */
             virtual ~DetectorDataServiceImpl() {
-                delete topDE_;
+                delete deTop_;
                 delete geoManager_;
             }
 
@@ -61,7 +118,7 @@ namespace ldmx {
              * Get the top DetectorElement, pointing to the "world volume."
              */
             DetectorElement* getTopDetectorElement() {
-                return topDE_;
+                return deTop_;
             }
 
             /**
@@ -94,11 +151,39 @@ namespace ldmx {
              * such as a filesystem path.
              * @param detectorName The name of the detector.
              * @param alias The alias of the detector (i.e. file path).
+             * @throw runtime_error If the alias is not a valid file path.
              */
             void addAlias(std::string detectorName, std::string alias) {
-                aliasMap_[detectorName] = alias;
+                std::ifstream f(alias.c_str());
+                if (f.good()) {
+                    aliasMap_[detectorName] = alias;
+                }
                 //std::cout << "[ DetectorDataServiceImpl ] : Added alias " << detectorName << " => " << alias << std::endl;
             }
+
+            /**
+             * Get a DetectorElement by its ID.
+             * @return The DetectorElement with the id or nullptr if none exists.
+             */
+            DetectorElement* getDetectorElement(int id) {
+                return deCache_.get(id);
+            }
+
+            /**
+             * Get a DetectorElement by its assigned node.
+             * @return The DetectorElement with the matching node or null if none exists.
+             *
+             * @note If the node is not explicitly assigned to a DetectorElement, a search
+             * will be performed up the geometry hierarchy until a DetectorElement is
+             * found that maps to a parent node or the top is reached.
+             */
+            DetectorElement* findDetectorElement(TGeoNode* node);
+
+            /**
+             * Locate a DetectorElement leaf from a global position.
+             * @return The DetectorElement containing the position.
+             */
+            DetectorElement* locateDetectorElement(std::vector<double>& globalPosition);
 
         private:
 
@@ -121,7 +206,10 @@ namespace ldmx {
             TGeoManager* geoManager_{nullptr};
 
             /** The top DetectorElement providing access to the hierarchy. */
-            DetectorElementImpl* topDE_{nullptr};
+            DetectorElementImpl* deTop_{nullptr};
+
+            /** Map of IDs and nodes to DetectorElement objects. */
+            DetectorElementCache deCache_;
     };
 
     /**
@@ -148,6 +236,41 @@ namespace ldmx {
 
             /** The geometry navigator. */
             TGeoNavigator* nav_;
+    };
+
+    /**
+     * @class DetectorElementCacheBuilder
+     * @brief Sets the mapping of IDs and nodes to DetectorElement objects
+     */
+    class DetectorElementCacheBuilder : public DetectorElementVisitor {
+
+        public:
+
+            /**
+             * Class constructor.
+             * @param cache The DetectorElementCache to update.
+             */
+            DetectorElementCacheBuilder(DetectorElementCache* cache) : cache_(cache) {
+            }
+
+            /**
+             * Visit the given DetectorElement and cache the lookup to its ID and node.
+             * @param de The DetectorElement to visit.
+             */
+            void visit(DetectorElement* de) {
+                if (de->getSupport()) {
+                    cache_->set(de->getSupport(), de);
+                }
+                if (de->getID()) {
+                    cache_->set(de->getID(), de);
+                }
+            }
+
+        private:
+
+            /** Pointer to cache that will be updated. */
+            DetectorElementCache* cache_;
+
     };
 }
 
