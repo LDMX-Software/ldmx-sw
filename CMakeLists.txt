@@ -8,8 +8,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 include(MacroModule)
 
 # declare list of modules with correct dependency order
-#set(MODULES Event Framework DetDescr EventProc Configuration)
-set(MODULES Event Framework DetDescr EventProc SimPlugins SimApplication Configuration)
+set(MODULES Event Framework DetDescr EventProc SimPlugins Biasing SimApplication Configuration)
 
 # build each module in the list
 foreach(module ${MODULES})
@@ -27,7 +26,7 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# python package")
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION python/LDMX)
 
 # configure and generate documentation using doxygen
-option(INSTALL_DOC "Set to OFF to skip generation of documentation using doxygen." ON)
+option(INSTALL_DOC "Set to ON to generate documentation using doxygen." OFF)
 if(INSTALL_DOC)
 
     # find doxygen
@@ -37,25 +36,19 @@ if(INSTALL_DOC)
     endif()
 
     # find dot
-    find_program(DOT_EXECUTABLE dot ${PATH})
-    if(DOT_EXECUTABLE-NOTFOUND)
-        message(FATAL_ERROR "The dot executable was not found.")
-    endif()
+    #find_program(DOT_EXECUTABLE dot ${PATH})
+    #if(DOT_EXECUTABLE-NOTFOUND)
+    #    message(FATAL_ERROR "The dot executable was not found.")
+    #endif()
     
-    # find epspdf
-    find_program(EPSPDF_EXECUTABLE epspdf ${PATH})
-    if(EPSPDF_EXECUTABLE-NOTFOUND)
-        message(FATAL_ERROR "The epspdf executable was not found.")
-    endif()
-
-    # configure doxygen output
-    configure_file(${PROJECT_SOURCE_DIR}/config/doxygen/doxygen.conf.in ${PROJECT_SOURCE_DIR}/config/doxygen/doxygen.conf)
+    # configure doxygen file
+    configure_file(${PROJECT_SOURCE_DIR}/docs/doxygen.conf.in ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)
 
     # generate the documentation
-    install(CODE "EXECUTE_PROCESS(COMMAND doxygen ${PROJECT_SOURCE_DIR}/config/doxygen/doxygen.conf)")
+    install(CODE "EXECUTE_PROCESS(COMMAND doxygen ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)")
 
     # documentation generation target 
-    add_custom_target(doc COMMAND doxygen ${PROJECT_SOURCE_DIR}/config/doxygen/doxygen.conf)
+    add_custom_target(doc COMMAND doxygen ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)
 
 else()
     # message that documentation is off for this build
