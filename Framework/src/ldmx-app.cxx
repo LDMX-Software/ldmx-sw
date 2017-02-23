@@ -4,8 +4,24 @@
 #include <iostream>
 #include <string.h>
 
+/**
+ * @namespace ldmx
+ * @brief All classes in the ldmx-sw project use this namespace.
+ */
 using namespace ldmx;
 
+/**
+ * @mainpage
+ *
+ * <a href="https://confluence.slac.stanford.edu/display/MME/Light+Dark+Matter+Experiment">LDMX</a> 
+ * C++ Software Framework providing a full <a href="http://geant4.cern.ch">Geant4</a> simulation and 
+ * flexible event processing and analysis chain.  The IO and analysis tools are based on 
+ * <a href="http://root.cern.ch">ROOT</a>, and detectors are described in the 
+ * <a href="https://gdml.web.cern.ch/GDML/">GDML</a> XML language.
+ *
+ * Refer to the <a href="https://github.com/LDMXAnalysis/ldmx-sw/">ldmx-sw github</a> for more information,
+ * including build and usage instructions.
+ */
 int main(int argc, char* argv[]) {
 
     if (argc < 2) {
