@@ -13,10 +13,6 @@
 // LDMX
 #include "DetDescr/IDField.h"
 
-/**
- * @namespace detdescr
- * @brief Detector description and geometry classes
- */
 namespace ldmx {
 
 /**

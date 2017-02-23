@@ -139,12 +139,25 @@ void RootPersistencyManager::writeHeader(const G4Event* anEvent, Event* outputEv
         eventHeader.setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
     }
 
+    std::string seedString = getEventSeeds();
+    eventHeader.setStringParameter( "eventSeed", seedString );
+
     if (m_verbose > 1) {
         std::cout << "[ RootPersistencyManager ] : Wrote event header for event ID " << anEvent->GetEventID() << std::endl;
         std::cout << "  ";
         eventHeader.Print("");
     }
 }
+
+std::string RootPersistencyManager::getEventSeeds(std::string fileName){
+
+    std::ifstream t(fileName);
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+
+    return buffer.str();
+}
+
 
 void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event* outputEvent) {
 

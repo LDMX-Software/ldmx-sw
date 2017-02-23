@@ -13,60 +13,69 @@
 #include "G4Decay.hh"
 
 // LDMX
+#include "Biasing/BiasingMessenger.h"
 #include "SimPlugins/PluginMessenger.h"
-#include "SimApplication/DetectorConstruction.h"
 
 namespace ldmx {
 
-/**
- * @class RunManager
- * @brief Extension of Geant4 run manager
- */
-class RunManager : public G4RunManager {
+    // Forward declaration
+    class DetectorConstruction; 
 
-    public:
+    /**
+     * @class RunManager
+     * @brief Extension of Geant4 run manager
+     */
+    class RunManager : public G4RunManager {
 
-        /**
-         * Class constructor.
-         */
-        RunManager();
+        public:
 
-        /**
-         * Class destructor.
-         */
-        virtual ~RunManager();
+            /**
+             * Class constructor.
+             */
+            RunManager();
 
-        /**
-         * Initialize physics.
-         */
-        void InitializePhysics();
+            /**
+             * Class destructor.
+             */
+            virtual ~RunManager();
 
-        /**
-         * Perform application initialization.
-         */
-        void Initialize();
+            /**
+             * Initialize physics.
+             */
+            void InitializePhysics();
 
-        /**
-         * Get the user detector construction cast to a specific type.
-         * @return The user detector construction.
-         */
-        DetectorConstruction* getDetectorConstruction() {
-            return static_cast<DetectorConstruction*>(this->userDetector);
-        }
+            /**
+             * Perform application initialization.
+             */
+            void Initialize();
 
-    private:
+            /**
+             * Get the user detector construction cast to a specific type.
+             * @return The user detector construction.
+             */
+            DetectorConstruction* getDetectorConstruction() {
+                return (DetectorConstruction*) this->userDetector;
+            }
 
-        /**
-         * The plugin messenger.
-         */
-        PluginMessenger* pluginMessenger_;
+        private:
 
-        /**
-         * Manager of sim plugins.
-         */
-        PluginManager* pluginManager_;
-};
+            /**
+             * The plugin messenger.
+             */
+            PluginMessenger* pluginMessenger_;
+
+            /**
+             * Biasing messenger.
+             */
+            BiasingMessenger* biasingMessenger_{new BiasingMessenger()};
+
+            /**
+             * Manager of sim plugins.
+             */
+            PluginManager* pluginManager_;
+
+    }; // RunManager
 
 }
 
-#endif
+#endif // SIMAPPLICATION_RUNMANAGER_H_
