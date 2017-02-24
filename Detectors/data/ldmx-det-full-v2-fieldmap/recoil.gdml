@@ -186,70 +186,88 @@
       
       <physvol copynumber="9" name="recoil_L5_sensor1">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol23_pos" unit="mm" x="48" y="40" z="recoil_L5_z1"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol23_pos" unit="mm" x="96" y="40" z="recoil_L5_z2"/>
       </physvol>
       <physvol copynumber="9" name="recoil_L5_sensor2">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol24_pos" unit="mm" x="0" y="40" z="recoil_L5_z2"/>
-      </physvol>      
+        <position name="LDMXRecoilL56ModuleVolume_physvol24_pos" unit="mm" x="48" y="40" z="recoil_L5_z1"/>
+      </physvol>
       <physvol copynumber="9" name="recoil_L5_sensor3">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol25_pos" unit="mm" x="-48" y="40" z="recoil_L5_z1"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol25_pos" unit="mm" x="0" y="40" z="recoil_L5_z2"/>
       </physvol>
       <physvol copynumber="9" name="recoil_L5_sensor4">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol26_pos" unit="mm" x="48" y="-40" z="recoil_L5_z1"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol26_pos" unit="mm" x="-48" y="40" z="recoil_L5_z1"/>
       </physvol>
       <physvol copynumber="9" name="recoil_L5_sensor5">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol27_pos" unit="mm" x="0" y="-40" z="recoil_L5_z2"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol27_pos" unit="mm" x="-96" y="40" z="recoil_L5_z2" />
       </physvol>
       <physvol copynumber="9" name="recoil_L5_sensor6">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol28_pos" unit="mm" x="-48" y="-40" z="recoil_L5_z1"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol28_pos" unit="mm" x="96" y="-40" z="recoil_L5_z2"/>
+      </physvol>
+      <physvol copynumber="9" name="recoil_L5_sensor7">
+        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol29_pos" unit="mm" x="48" y="-40" z="recoil_L5_z1"/>
+      </physvol>
+      <physvol copynumber="9" name="recoil_L5_sensor8">
+        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol30_pos" unit="mm" x="0" y="-40" z="recoil_L5_z2"/>
+      </physvol>
+      <physvol copynumber="9" name="recoil_L5_sensor9">
+        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol31_pos" unit="mm" x="-48" y="-40" z="recoil_L5_z1"/>
+      </physvol>
+      <physvol copynumber="9" name="recoil_L5_sensor10">
+        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol32_pos" unit="mm" x="-96" y="-40" z="recoil_L5_z2"/>
       </physvol>
       
       <physvol copynumber="10" name="recoil_L6_sensor1">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol29_pos" unit="mm" x="96" y="40" z="recoil_L6_z2"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol33_pos" unit="mm" x="96" y="40" z="recoil_L6_z2"/>
       </physvol>
       <physvol copynumber="10" name="recoil_L6_sensor2">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol30_pos" unit="mm" x="48" y="40" z="recoil_L6_z1"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol34_pos" unit="mm" x="48" y="40" z="recoil_L6_z1"/>
       </physvol>
       <physvol copynumber="10" name="recoil_L6_sensor3">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol31_pos" unit="mm" x="0" y="40" z="recoil_L6_z2"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol35_pos" unit="mm" x="0" y="40" z="recoil_L6_z2"/>
       </physvol>
       <physvol copynumber="10" name="recoil_L6_sensor4">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol32_pos" unit="mm" x="-48" y="40" z="recoil_L6_z1"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol36_pos" unit="mm" x="-48" y="40" z="recoil_L6_z1"/>
       </physvol>
       <physvol copynumber="10" name="recoil_L6_sensor5">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol33_pos" unit="mm" x="-96" y="40" z="recoil_L6_z2" />
+        <position name="LDMXRecoilL56ModuleVolume_physvol37_pos" unit="mm" x="-96" y="40" z="recoil_L6_z2" />
       </physvol>
       <physvol copynumber="10" name="recoil_L6_sensor6">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol34_pos" unit="mm" x="96" y="-40" z="recoil_L6_z2"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol38_pos" unit="mm" x="96" y="-40" z="recoil_L6_z2"/>
       </physvol>
       <physvol copynumber="10" name="recoil_L6_sensor7">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol35_pos" unit="mm" x="48" y="-40" z="recoil_L6_z1"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol39_pos" unit="mm" x="48" y="-40" z="recoil_L6_z1"/>
       </physvol>
       <physvol copynumber="10" name="recoil_L6_sensor8">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol36_pos" unit="mm" x="0" y="-40" z="recoil_L6_z2"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol40_pos" unit="mm" x="0" y="-40" z="recoil_L6_z2"/>
       </physvol>
       <physvol copynumber="10" name="recoil_L6_sensor9">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol37_pos" unit="mm" x="-48" y="-40" z="recoil_L6_z1"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol41_pos" unit="mm" x="-48" y="-40" z="recoil_L6_z1"/>
       </physvol>
       <physvol copynumber="10" name="recoil_L6_sensor10">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol38_pos" unit="mm" x="-96" y="-40" z="recoil_L6_z2"/>
+        <position name="LDMXRecoilL56ModuleVolume_physvol42_pos" unit="mm" x="-96" y="-40" z="recoil_L6_z2"/>
       </physvol>
+      
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+      
     </volume>    
   </structure>
 
