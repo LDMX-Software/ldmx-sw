@@ -87,7 +87,6 @@ void Process::run() {
                 EventImpl theEvent(passname_);
                 if (outFile) {
                     outFile->setupEvent(&theEvent);
-
                 } else {
                     inFile.setupEvent(&theEvent);
                 }
