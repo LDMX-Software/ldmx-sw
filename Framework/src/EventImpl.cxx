@@ -185,6 +185,7 @@ namespace ldmx {
 	    TObject* top(0);
 	    branch->SetAutoDelete(false);
 	    branch->SetStatus(1);
+		    
 	    branch->GetEntry(ientry_);
 	    TBranchElement* tbe = dynamic_cast<TBranchElement*>(branch);
 	    if (tbe) {
@@ -216,13 +217,15 @@ namespace ldmx {
 	inputTree_ = tree;
 	entries_ = inputTree_->GetEntriesFast();
 	branchNames_.clear();
-	eventHeader_ = get<EventHeader*>(EventConstants::EVENT_HEADER);
 
 	// find the names of all the existing branches
 	TObjArray* branches = inputTree_->GetListOfBranches();
 	for (int i = 0; i < branches->GetEntriesFast(); i++) {
 	    branchNames_.push_back(branches->At(i)->GetName());
 	}
+	ientry_=0;
+	eventHeader_ = get<EventHeader*>(EventConstants::EVENT_HEADER);
+	ientry_=-1;
     }
 
     bool EventImpl::nextEvent() {
