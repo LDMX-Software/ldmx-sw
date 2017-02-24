@@ -5,6 +5,7 @@
 #include "Event/EventConstants.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
+#include "SimApplication/UserTrackingAction.h"
 
 // Geant4
 #include "G4SystemOfUnits.hh"
@@ -16,7 +17,7 @@
 namespace ldmx {
 
 SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {
-    trackMap_ = TrackMap::getInstance();
+    trackMap_ = UserTrackingAction::getUserTrackingAction()->getTrackMap();
     outputParticleColl_ = new TClonesArray(EventConstants::SIM_PARTICLE.c_str(), 50);
 }
 
