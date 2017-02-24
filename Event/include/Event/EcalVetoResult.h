@@ -54,6 +54,15 @@ namespace ldmx {
             /** Print the object */
             void Print(Option_t *option = "") const;
 
+            /** Checks if the event passes the Ecal veto. */
+            bool passesVeto() { return passesVeto_; };
+
+            float getSummedDep() { return summedDep_; }; 
+
+            float getSummedIso() { return summedIso_; };
+
+            float getBackSummedDep() { return backSummedDep_; };
+
         private:
            
             /** Flag indicating whether the event is vetoed by the Ecal. */
