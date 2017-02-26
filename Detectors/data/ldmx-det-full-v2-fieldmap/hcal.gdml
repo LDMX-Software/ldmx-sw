@@ -7,11 +7,11 @@
     <variable name="x" value="1"/>  
     <variable name="back_hcal_dx" value="3100."/>
     <variable name="back_hcal_dy" value="3100."/>
-    <variable name="back_steel_dz" value="50."/>
+    <variable name="back_steel_dz" value="10."/>
     <variable name="back_scint_dz" value="6."/>
     <variable name="back_air_dz" value="2."/>
     <variable name="back_layer_width" value="back_steel_dz+back_scint_dz+2.*back_air_dz"/>
-    <variable name="back_hcal_layers" value="50"/>
+    <variable name="back_hcal_layers" value="150"/>
     <variable name="back_hcal_thickness" value="back_hcal_layers*back_layer_width"/>
 
     <!-- Wrap Around HCal Layer component widths -->
@@ -19,11 +19,11 @@
     <variable name="wrap_LR_hcal_dx" value="3100."/>
     <variable name="wrap_TB_hcal_dx" value="525."/>
     <variable name="wrap_hcal_dz" value="325."/>
-    <variable name="wrap_steel_dy" value="50."/>
+    <variable name="wrap_steel_dy" value="10."/>
     <variable name="wrap_scint_dy" value="6."/>
     <variable name="wrap_air_dy" value="2."/>
     <variable name="wrap_layer_width" value="wrap_steel_dy+wrap_scint_dy+2.*wrap_air_dy"/>
-    <variable name="wrap_hcal_layers" value="21"/>
+    <variable name="wrap_hcal_layers" value="63"/>
     <variable name="wrap_hcal_thickness" value="wrap_hcal_dz"/>
 
     <!-- Starting positions (defined by the center of the cal mother volume?)-->    
