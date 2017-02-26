@@ -46,6 +46,14 @@ namespace ldmx {
             }
 
             /**
+             * Get whether this plugin implements the event action.
+             * @return True if the plugin implements the event action.
+             */
+            virtual bool hasEventAction() { 
+                return true;
+            }
+
+            /**
              * Get whether this plugin implements the stepping action.
              * @return True to indicate this plugin implements the stepping action.
              */
@@ -66,6 +74,11 @@ namespace ldmx {
              * @param step The Geant4 step.
              */
             void stepping(const G4Step* step);
+
+            /**
+             * End of event action.
+             */
+            virtual void endEvent(const G4Event*);
 
             /**
              * Classify a new track which postpones track processing.
