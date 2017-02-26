@@ -13,10 +13,11 @@
 
 // LDMX
 #include "DetDescr/DetectorID.h"
+#include "DetDescr/HcalDetectorID.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Framework/EventProcessor.h"
 
-namespace ldmx {
+namespace ldmx{
 
 /**
  * @class HcalDigiProducer
@@ -44,19 +45,16 @@ class HcalDigiProducer : public Producer {
 
     private:
 
-        static const float FIRST_LAYER_ZPOS;
-        static const float LAYER_ZWIDTH;
-        static const int NUM_HCAL_LAYERS;
-        static const float MEV_PER_MIP;
-        static const float PE_PER_MIP;
-
         TClonesArray* hits_{nullptr};
         TRandom* random_{0};
         std::map<layer, zboundaries> hcalLayers_;
         bool verbose_{false};
-        DetectorID* detID_{nullptr};
-
+        HcalDetectorID detID_;
+        
+        static const int NUM_HCAL_LAYERS;
         float meanNoise_{0};
+        float mev_per_mip_{0};
+        float pe_per_mip_{0};
         int nProcessed_{0};
 };
 

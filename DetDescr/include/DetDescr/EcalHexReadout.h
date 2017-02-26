@@ -90,6 +90,10 @@ class EcalHexReadout {
             return matched;
         }
 
+        int getNcells(){
+            return ecalMap->GetNumberOfBins();
+        }
+
     private:
 
         /**

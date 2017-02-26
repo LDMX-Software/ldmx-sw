@@ -9,6 +9,7 @@
 
 // LDMX
 #include "DetDescr/DefaultDetectorID.h"
+#include "DetDescr/EcalHexReadout.h"
 
 namespace ldmx {
 
@@ -18,12 +19,16 @@ namespace ldmx {
  */
 class EcalDetectorID : public DefaultDetectorID {
 
+    private:
+        EcalHexReadout* hexReadout_{nullptr};
+
     public:
 
         /**
          * Adds a cell field and re-initializes the ID.
          */
         EcalDetectorID() {
+            hexReadout_ = new EcalHexReadout();
             this->getFieldList()->push_back(new IDField("cell", 2, 12, 31));
             init();
         }
@@ -35,6 +40,8 @@ class EcalDetectorID : public DefaultDetectorID {
         int getCellID() {
             return this->getFieldValue(2);
         }
+
+        std::map<int,float> getMap();
 };
 
 }

@@ -64,7 +64,6 @@ class EcalDigiProducer : public Producer {
         TRandom2 *noiseInjector_{nullptr};
         TClonesArray* ecalDigis_{nullptr};
         EcalDetectorID detID_;
-        EcalHexReadout* hexReadout_{nullptr};
         float meanNoise_{0};
         float readoutThreshold_{0};
 };
