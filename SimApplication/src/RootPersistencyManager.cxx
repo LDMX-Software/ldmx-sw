@@ -154,7 +154,8 @@ std::string RootPersistencyManager::getEventSeeds(std::string fileName){
     std::ifstream t(fileName);
     std::stringstream buffer;
     buffer << t.rdbuf();
-
+    t.close();
+    
     return buffer.str();
 }
 
