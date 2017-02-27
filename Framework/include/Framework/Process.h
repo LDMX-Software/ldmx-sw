@@ -13,6 +13,10 @@
 // STL
 #include <vector>
 
+
+class TFile;
+class TDirectory;
+
 namespace ldmx {
 
 class EventProcessor;
@@ -79,28 +83,40 @@ class Process {
          */
         void addOutputFileName(const std::string& filenameOut);
 
-        /**
-         * Set the run number to be used when initiating new events from the job
-         * @param run Run number to use
-         */
-        void setRunNumber(int run) {
-            runForGeneration_ = run;
-        }
+	/**
+	 * Set the name for a histogram file to contain histograms created by EventProcessor objects.  If this name is not set, any such histograms will be created in memory.
+	 * @param filenameHisto Output histogram ROOT file name
+	 */
+        void setHistogramFileName(const std::string& filenameOut);
 
-        /**
-         * Set the maximum number of events to process.  Processing will stop when either there are no more input events or when this number of events have been processed.
-         * @param limit Maximum number of events to process.  -1 indicates no limit.
-         */
-        void setEventLimit(int limit = -1) {
-            eventLimit_ = limit;
-        }
+	
+	/**
+	 * Set the run number to be used when initiating new events from the job
+	 * @param run Run number to use
+	 */
+	void setRunNumber(int run) {
+	  runForGeneration_=run;
+	}
+	
+	/**
+	 * Set the maximum number of events to process.  Processing will stop when either there are no more input events or when this number of events have been processed.
+	 * @param limit Maximum number of events to process.  -1 indicates no limit.
+	 */
+        void setEventLimit(int limit=-1) {
+	  eventLimit_=limit;
+	}
 
-        /**
-         * Run the process.
-         */
+	/**
+	 * Run the process.
+	 */
         void run();
 
-    private:
+	/**
+	 * Construct a TDirectory* for the given module
+	 */
+	TDirectory* makeHistoDirectory(const std::string& dirName);
+	
+	private:
 
         /** Processing pass name. */
         std::string passname_;
@@ -116,7 +132,12 @@ class Process {
         std::vector<std::string> dropKeepRules_;
         /** Run number to use if generating events. */
         int runForGeneration_{1};
+	/** Filename for histograms and other user products */
+	std::string histoFilename_;
+	/** TFile for histograms and other user products */
+	TFile* histoTFile_{0};
 };
+
 
 }
 

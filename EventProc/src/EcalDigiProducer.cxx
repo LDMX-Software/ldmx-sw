@@ -20,7 +20,7 @@ const std::vector<double> LAYER_WEIGHTS = {0.103,0.055,0.037,0.028,0.024,0.022,0
 //const float EcalDigiProducer::meanNoise           = .015;
 //const float EcalDigiProducer::readoutThreshold    = 3*meanNoise;
 
-EcalDigiProducer::EcalDigiProducer(const std::string& name, const Process& process) :
+EcalDigiProducer::EcalDigiProducer(const std::string& name, Process& process) :
         Producer(name, process) {
 }
 
