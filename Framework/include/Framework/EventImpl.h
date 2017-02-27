@@ -95,7 +95,7 @@ class EventImpl : public Event {
          * @param collectionName The collection name.
          * @param passName The pass name.
          */
-        virtual const TObject* getReal(const std::string& collectionName, const std::string& passName, bool mustExist);
+        virtual const TObject* getReal(const std::string& collectionName, const std::string& passName, bool mustExist) const;
 
     public:
 

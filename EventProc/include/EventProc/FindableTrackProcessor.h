@@ -29,7 +29,7 @@ namespace ldmx {
         public: 
 
             /** Constructor */
-            FindableTrackProcessor(const std::string &name, const Process &process); 
+            FindableTrackProcessor(const std::string &name, Process &process); 
 
             /** Destructor */
             ~FindableTrackProcessor();
