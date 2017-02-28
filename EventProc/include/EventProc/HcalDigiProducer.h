@@ -30,7 +30,7 @@ class HcalDigiProducer : public Producer {
 
         typedef std::pair<double, double> zboundaries;
 
-        HcalDigiProducer(const std::string& name, const Process& process);
+        HcalDigiProducer(const std::string& name, Process& process);
 
         virtual ~HcalDigiProducer() {
             delete hits_;
