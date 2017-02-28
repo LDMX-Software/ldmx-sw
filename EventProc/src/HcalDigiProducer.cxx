@@ -24,7 +24,7 @@ const int HcalDigiProducer::NUM_HCAL_LAYERS = 15;
 const float HcalDigiProducer::MEV_PER_MIP = 1.40;
 const float HcalDigiProducer::PE_PER_MIP = 13.5 * 6. / 4.;
 
-HcalDigiProducer::HcalDigiProducer(const std::string& name, const Process& process) :
+HcalDigiProducer::HcalDigiProducer(const std::string& name, Process& process) :
         Producer(name, process) {
     hits_ = new TClonesArray(EventConstants::HCAL_HIT.c_str());
 }
