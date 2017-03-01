@@ -68,6 +68,8 @@ class ConfigurePython {
         std::vector<std::string> libraries_;
         /** List of rules for output ROOT file names, if provided in python file. */
         std::vector<std::string> outputFiles_;
+	/** Histogram output file name */
+	std::string histoOutFile_;
 
         /**
          * @struct ProcessorInfo
