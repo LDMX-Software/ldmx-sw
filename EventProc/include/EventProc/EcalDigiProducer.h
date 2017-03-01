@@ -36,7 +36,7 @@ class EcalDigiProducer : public Producer {
 
         typedef std::pair<int, float> cell_energy_pair;
 
-        EcalDigiProducer(const std::string& name, const Process& process);
+        EcalDigiProducer(const std::string& name, Process& process);
 
         virtual ~EcalDigiProducer() {;}
 
