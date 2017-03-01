@@ -168,6 +168,9 @@ namespace ldmx {
         }
     }
 
+    void TargetBremFilter::endEvent(const G4Event* event) { 
+        bremGammaTracks_.clear();  
+    }
     
     void TargetBremFilter::removeBremFromList(G4Track* track) {   
         bremGammaTracks_.erase(std::remove(bremGammaTracks_.begin(), 
