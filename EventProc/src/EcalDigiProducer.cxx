@@ -19,7 +19,7 @@ const int EcalDigiProducer::NUM_LAYERS_FOR_MED_CAL = 10;
 //const float EcalDigiProducer::meanNoise           = .015;
 //const float EcalDigiProducer::readoutThreshold    = 3*meanNoise;
 
-EcalDigiProducer::EcalDigiProducer(const std::string& name, const Process& process) :
+EcalDigiProducer::EcalDigiProducer(const std::string& name, Process& process) :
         Producer(name, process) {
 }
 
