@@ -1,0 +1,9 @@
+/persistency/gdml/read detector.gdml
+/random/setSeeds 77777 23465 
+/run/initialize
+
+/ldmx/generators/root/open test-input.root
+/ldmx/generators/root/useSeed
+
+/ldmx/persistency/root/file test-output-rootinput.root
+/run/beamOn 2
