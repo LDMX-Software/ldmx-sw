@@ -12,108 +12,123 @@
 
 namespace ldmx {
 
-const int EcalVetoProcessor::NUM_ECAL_LAYERS = 33;
-const int EcalVetoProcessor::BACK_ECAL_STARTING_LAYER = 20;
-const int EcalVetoProcessor::NUM_LAYERS_FOR_MED_CAL = 10;
-const float EcalVetoProcessor::TOTAL_DEP_CUT = 25;
-const float EcalVetoProcessor::TOTAL_ISO_CUT = 15;
-const float EcalVetoProcessor::BACK_ECAL_CUT = 1;
-const float EcalVetoProcessor::RATIO_CUT = 10;
+    void EcalVetoProcessor::configure(const ParameterSet& ps) {
+        hexReadout_ = new EcalHexReadout();
 
-void EcalVetoProcessor::configure(const ldmx::ParameterSet&) {
-    hexReadout_ = new EcalHexReadout();
-}
+        nEcalLayers_ = ps.getInteger("num_ecal_layers");
+        nLayersMedCal_ = ps.getInteger("back_ecal_starting_layers");
+        backEcalStartingLayer_ = ps.getInteger("num_layers_for_med_cal");
+        totalDepCut_ = ps.getDouble("total_dep_cut");
+        totalOuterCut_ = ps.getDouble("total_outer_cut");
+        backEcalCut_ = ps.getDouble("back_ecal_cut");
+        ratioCut_ = ps.getDouble("ratio_cut");
 
-void EcalVetoProcessor::produce(Event& event) {
+        EcalLayerEdepRaw_.resize(nEcalLayers_, 0);
+        EcalLayerEdepReadout_.resize(nEcalLayers_, 0);
+        EcalLayerOuterRaw_.resize(nEcalLayers_, 0);
+        EcalLayerOuterReadout_.resize(nEcalLayers_, 0);
+        EcalLayerTime_.resize(nEcalLayers_, 0);
+        cellMap_.resize(nEcalLayers_,std::map<int,float>());
+        cellMapIso_.resize(nEcalLayers_,std::map<int,float>());
 
-    std::vector<float> EcalLayerEdepRaw(NUM_ECAL_LAYERS, 0);
-    std::vector<float> EcalLayerEdepReadout(NUM_ECAL_LAYERS, 0);
-    std::vector<float> EcalLayerIsoRaw(NUM_ECAL_LAYERS, 0);
-    std::vector<float> EcalLayerIsoReadout(NUM_ECAL_LAYERS, 0);
-    std::vector<float> EcalLayerTime(NUM_ECAL_LAYERS, 0);
-    
-    const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
-    
-    // looper over sim hits
-    int numEcalHits = ecalDigis->GetEntriesFast();
-    
-    std::cout << "[ EcalVetoProcessor ] : Got " << numEcalHits << " ECal digis in event " << event.getEventHeader()->getEventNumber() << std::endl;
 
-    std::vector<cell_energy_pair> layerMaxCellId(NUM_LAYERS_FOR_MED_CAL, std::make_pair(0, 0));
+    }
 
-    //First, we find layer-wise max cell ids
-    for (int iHit = 0; iHit < numEcalHits; iHit++) {
-        EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
-        layer_cell_pair hit_pair = hitToPair(hit);
+    void EcalVetoProcessor::produce(Event& event) {
+    	for (int i = 0; i < nEcalLayers_; i++){
+            cellMap_[i].clear();
+            cellMapIso_[i].clear();
+    	}
 
-        if (hit_pair.first < NUM_LAYERS_FOR_MED_CAL) {
-            if (layerMaxCellId[hit_pair.first].second < hit->getEnergy()) {
-                layerMaxCellId[hit_pair.first] = std::make_pair(hit_pair.second, hit->getEnergy());
+    	nReadoutHits_  = 0;
+        nIsoHits_      = 0;
+        maxIsoDep_     = 0;
+        summedIso_     = 0;
+        longestMipTrack_ = 0;
+        mipTrackDep_   = 0;
+        trackVector_.clear();
+        std::fill(EcalLayerEdepRaw_.begin(), EcalLayerEdepRaw_.end(), 0);
+        std::fill(EcalLayerEdepReadout_.begin(), EcalLayerEdepReadout_.end(), 0);
+        std::fill(EcalLayerOuterRaw_.begin(), EcalLayerOuterRaw_.end(), 0);
+        std::fill(EcalLayerOuterReadout_.begin(), EcalLayerOuterReadout_.end(), 0);
+        std::fill(EcalLayerTime_.begin(), EcalLayerTime_.end(), 0); 
+
+        // Get the collection of digitized Ecal hits from the event. 
+        const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
+        int nEcalHits = ecalDigis->GetEntriesFast();
+
+        std::cout << "[ EcalVetoProcessor ] : Got " << nEcalHits << " ECal digis in event " << event.getEventHeader()->getEventNumber() << std::endl;
+
+        int globalCentroid = GetShowerCentroidID(ecalDigis);
+        fillHitMap(ecalDigis,cellMap_);
+        fillIsolatedHitMap(ecalDigis,globalCentroid,cellMap_,cellMapIso_);
+        fillMipTracks(globalCentroid,cellMapIso_,trackVector_);
+
+        //Loop over the hits from the event to calculate the rest of the important quantities
+        for (int iHit = 0; iHit < nEcalHits; iHit++) {
+            //Layer-wise quantities
+            EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
+            LayerCellPair hit_pair = hitToPair(hit);
+            EcalLayerEdepRaw_[hit_pair.first] = EcalLayerEdepRaw_[hit_pair.first] + hit->getEnergy();
+
+            if (hit->getEnergy() > 0) {
+            	nReadoutHits_++;
+                EcalLayerEdepReadout_[hit_pair.first] += hit->getEnergy();
+                EcalLayerTime_[hit_pair.first] += (hit->getEnergy()) * hit->getTime();
+            }
+            //Check Outer
+            if (!(hexReadout_->isInShowerInnerRing(globalCentroid, hit_pair.second)) && !(hexReadout_->isInShowerOuterRing(globalCentroid, hit_pair.second)) && !(hit_pair.second == globalCentroid)) {
+
+                EcalLayerOuterRaw_[hit_pair.first] += hit->getEnergy();
+
+                if (hit->getEnergy() > 0)
+                    EcalLayerOuterReadout_[hit_pair.first] += hit->getEnergy();
             }
         }
-    }
 
-    //Sort the layer-wise max energy deposition cells by energy and then select the median
-    std::sort(layerMaxCellId.begin(), layerMaxCellId.end(), [](const cell_energy_pair & a, const cell_energy_pair & b)
-    {
-        return a.second > b.second;
-    });
-    int showerMedianCellId = layerMaxCellId[layerMaxCellId.size() / 2].first;
+        // end loop over sim hits
+        float summedDet = 0, summedOuter = 0, backSummedDet = 0;
 
-    //Loop over the hits from the event to calculate the rest of the important quantities
-    for (int iHit = 0; iHit < numEcalHits; iHit++) {
-        //Layer-wise quantities
-        EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
-        layer_cell_pair hit_pair = hitToPair(hit);
+        for (int iLayer = 0; iLayer < EcalLayerEdepReadout_.size(); iLayer++) {
+    		for (auto cell : cellMapIso_[iLayer]){
+    			if (cell.second > 0){
+    				nIsoHits_++;
+    				summedIso_ += cell.second;
+    			}
 
-        EcalLayerEdepRaw[hit_pair.first] += hit->getEnergy();
-
-        if (hit->getEnergy() > 0) {
-            EcalLayerEdepReadout[hit_pair.first] += hit->getEnergy();
-            EcalLayerTime[hit_pair.first] += (hit->getEnergy()) * hit->getTime();
+    			if (cell.second > maxIsoDep_){
+    				maxIsoDep_ = cell.second;
+    			}
+    		}
+    		EcalLayerTime_[iLayer] = EcalLayerTime_[iLayer] / EcalLayerEdepReadout_[iLayer];
+            summedDet += EcalLayerEdepReadout_[iLayer];
+            summedOuter += EcalLayerOuterReadout_[iLayer];
+            if (iLayer > backEcalStartingLayer_)
+                backSummedDet += EcalLayerEdepReadout_[iLayer];
         }
-        //Check iso
-        if (!(hexReadout_->isInShowerInnerRing(showerMedianCellId, hit_pair.second)) && !(hexReadout_->isInShowerOuterRing(showerMedianCellId, hit_pair.second)) && !(hit_pair.second == showerMedianCellId)) {
+        std::cout << "[ EcalVetoProcessor ]:\n" <<
+        		"The global centroid = " << globalCentroid << "\n" << std::endl;
+        /*std::cout << "[ EcalVetoProcessor ]:\n" 
+          << "\t EdepRaw[0] : " << EcalLayerEdepRaw_[0] << "\n"
+          << "\t EdepReadout[0] : " << EcalLayerEdepReadout_[0] << "\n"
+          << "\t EdepLayerOuterRaw[0] : " << EcalLayerOuterRaw_[0] << "\n"
+          << "\t EdepLayerOuterReadout[0] : " << EcalLayerOuterReadout_[0] << "\n"
+          << "\t EdepLayerTime[0] : " << EcalLayerTime_[0] << "\n"
+          << "\t Shower Median: " << showerMedianCellId 
+          << std::endl;*/
+        nMipTracks_ = trackVector_.size();
 
-            EcalLayerIsoRaw[hit_pair.first] += hit->getEnergy();
-
-            if (hit->getEnergy() > 0)
-                EcalLayerIsoReadout[hit_pair.first] += hit->getEnergy();
+        for (auto track : trackVector_){
+        	mipTrackDep_ += track.second;
+        	if (track.first > longestMipTrack_){
+        		longestMipTrack_ = track.first;
+        	}
         }
-    } // end loop over sim hits
-    float summedDep = 0, summedIso = 0, backSummedDep = 0;
-    for (int iLayer = 0; iLayer < EcalLayerEdepReadout.size(); iLayer++) {
-        EcalLayerTime[iLayer] = EcalLayerTime[iLayer] / EcalLayerEdepReadout[iLayer];
-        summedDep += EcalLayerEdepReadout[iLayer];
-        summedIso += EcalLayerIsoReadout[iLayer];
-        if (iLayer > BACK_ECAL_STARTING_LAYER)
-            backSummedDep += EcalLayerEdepReadout[iLayer];
+
+        result_.setResult(true, globalCentroid, nReadoutHits_, nIsoHits_, nMipTracks_, mipTrackDep_, longestMipTrack_,
+        		summedDet, summedOuter,summedIso_, backSummedDet, maxIsoDep_, EcalLayerEdepRaw_);
+        event.addToCollection("EcalVeto", result_);
     }
-    
-
-    /*
-     if(verbose){
-     std::cout << "EdepRaw[0] : " << (*EcalLayerEdepRaw_)[0] << std::endl;
-     std::cout << "EdepReadout[0] : " << (*EcalLayerEdepReadout_)[0] << std::endl;
-     std::cout << "EcalLayerIsoRaw[0]: " << (*EcalLayerIsoRaw_)[0] << std::endl;
-     std::cout << "EcalLayerIsoReadout[0]: " << (*EcalLayerIsoReadout_)[0] << std::endl;
-     std::cout << "EcalLayerTime[0]: " << (*EcalLayerTime_)[0] << std::endl;
-     
-     std::cout << "Shower Median : " << showerMedianCellId << std::endl;
-     }// end verbose
-     */
-
-    doesPassVeto_ = (summedDep < TOTAL_DEP_CUT && summedIso < TOTAL_ISO_CUT && backSummedDep < BACK_ECAL_CUT); // add ratio cut in at some point
-    /*
-
-    result_.set("EcalVetoV1", doesPassVeto_, 3);
-    result_.setAlgoVar(0, summedDep);
-    result_.setAlgoVar(0, summedIso);
-    result_.setAlgoVar(0, backSummedDep);
-    event.add("EcalVeto", &result_);
-    */
-}
-
 }
 
 DECLARE_PRODUCER_NS(ldmx, EcalVetoProcessor);

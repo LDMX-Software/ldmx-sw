@@ -33,9 +33,10 @@ class TriggerProcessor : public Producer {
         /**
          * Class constructor.
          */
-        TriggerProcessor(const std::string& name, const Process& process) :
+        TriggerProcessor(const std::string& name, Process& process) :
                 Producer(name, process) {
         }
+
 
         /**
          * Class destructor.
