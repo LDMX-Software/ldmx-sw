@@ -127,7 +127,6 @@ namespace ldmx {
 
 					//Skip hits that are on centroid inner ring
 					if (hexReadout_->isInShowerInnerRing(globalCentroid, hit_pair.second)) {
-						std::cout << "Continuing b/c in inner shower ring " << std::endl;
 						continue;
 					}
 
@@ -141,7 +140,6 @@ namespace ldmx {
 				    }
 
 				    if (!isolatedHit.first) {
-				    	std::cout << "stupid cell was overlapped by inner ring ids" << std::endl;
 				    	continue;
 				    }
 
@@ -152,24 +150,20 @@ namespace ldmx {
             }
 
             inline void fillMipTracks(int globalCentroid,std::vector<std::map<int,float>>& cellMapIso_, std::vector<std::pair<int,float>>& trackVector){
-        		std::cout << " cellMapIso_.size() = " << cellMapIso_.size() << std::endl;
-            	for (int iLayer = 0; iLayer < cellMapIso_.size() - 1; iLayer++){
+        		for (int iLayer = 0; iLayer < cellMapIso_.size() - 1; iLayer++){
         			std::vector<LayerCellPair> trackCellPairs;
         			float trackEdep = 0;
         		    for (auto && seedCell : cellMapIso_[iLayer]){
-        		    	std::cout << "Accessing a cell" << std::endl;
-						LayerCellPair seedCellPair = std::make_pair(iLayer,seedCell.first);
+        		    	LayerCellPair seedCellPair = std::make_pair(iLayer,seedCell.first);
         		        trackEdep += seedCell.second;
         		        trackCellPairs.clear();
         		        trackCellPairs.push_back(seedCellPair);
         		        if (globalCentroid == seedCellPair.second || hexReadout_->isInShowerInnerRing(globalCentroid, seedCellPair.second)) {
-        		        	std::cout << "Continuing b/c seed cell overlaps w/ global centroid " << std::endl;
         		        	continue;
         		        }
 
         		        while(true){
         		            if (seedCellPair.first + 1 >= cellMapIso_.size() - 1) {
-        		            	std::cout << "Breaking b/c we are at end of map" << std::endl;
         		            	break;
         		            }
 							float matchCellDep;
@@ -182,7 +176,6 @@ namespace ldmx {
                 		        		hexReadout_->isInShowerInnerRing(globalCentroid, tempMatchCellPair.second)) continue;
                 		        if (tempMatchCellPair.second == seedCellPair.second ||
                 		        		hexReadout_->isInShowerInnerRing(tempMatchCellPair.first, seedCellPair.second)){
-                		        	std::cout << "Breaking b/c we found a match " << std::endl;
                 		        	matchCellPair = tempMatchCellPair;
                 		        	break;
                 		        }
@@ -190,16 +183,12 @@ namespace ldmx {
 
                             if (matchCellPair.first != -1){
                             	trackCellPairs.push_back(matchCellPair);
-                            	std::cout << "Match was found " << std::endl;
-                            	std::cout << "The size of trackCellPairs = " << trackCellPairs.size() << std::endl;
-                		        trackEdep 	 +=  matchCellDep;
+                            	trackEdep 	 +=  matchCellDep;
                 		        seedCellPair  = matchCellPair;
                             }
 
                             else{
-                            	std::cout << "No match was found " << std::endl;
-                            	std::cout << "The size of trackCellPairs = " << trackCellPairs.size() << std::endl;
-                                break;
+                            	break;
                             }
         		        }
 
@@ -207,11 +196,8 @@ namespace ldmx {
         		        	trackVector.push_back(std::make_pair(trackCellPairs.size(),trackEdep));
                             for (auto cell : trackCellPairs){
                             	std::map<int,float>::iterator it  = cellMapIso_[cell.first].find(cell.second);
-
-								std::cout << "erasing" << std::endl;
 								cellMapIso_[cell.first].erase(it);
-								std::cout << "erased" << std::endl;
-								std::cout << "The track vector size = " << trackCellPairs.size() << std::endl;
+
                             }
         		        }
         		    }
