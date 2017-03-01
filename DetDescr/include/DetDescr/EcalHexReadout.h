@@ -49,7 +49,7 @@ class EcalHexReadout {
          * @param y The Y position.
          */
         inline int getCellId(float x, float y) {
-            return ecalMap->FindBin(x, y);
+            return ecalMap->FindBin(x,y);
         }
 
         /**
@@ -67,7 +67,10 @@ class EcalHexReadout {
         }
 
         /**
-         * @todo Document this function.
+         * Lattice spacing is periodic in ecal map
+         * Offsets to move right,left,up and down are hardcoded
+         * @param centroidId is center cell id, cellId is neighbor we want to check
+         * @return if cell matching centroidId is within inner ring of cellID
          */
         inline bool isInShowerInnerRing(int centroidId, int cellId) {
             bool matched = false;
@@ -79,7 +82,7 @@ class EcalHexReadout {
         }
 
         /**
-         * @todo Document this function.
+         * Same as InnerShowerRing, but with more neighbors checked
          */
         inline bool isInShowerOuterRing(int centroidId, int cellId) {
             bool matched = false;
@@ -89,8 +92,6 @@ class EcalHexReadout {
             }
             return matched;
         }
-
-    private:
 
         /**
          * @todo Document this function.
@@ -112,6 +113,10 @@ class EcalHexReadout {
                 cellId - 2, cellId - 2 - 76, cellId - 2 + 77};
         }*/
 
+
+    private:
+
+
         /**
          * @todo Document this function.
          */
@@ -127,8 +132,8 @@ class EcalHexReadout {
         static const int SHIFT_DOWN{-1}; 
         static const int SHIFT_RIGHT_UP{109};
         static const int SHIFT_RIGHT_DOWN{108};
-        static const int SHIFT_LEFT_UP{SHIFT_RIGHT_UP - 1};
-        static const int SHIFT_LEFT_DOWN{SHIFT_RIGHT_DOWN + 1};
+        static const int SHIFT_LEFT_UP{-SHIFT_RIGHT_DOWN};
+        static const int SHIFT_LEFT_DOWN{-SHIFT_RIGHT_UP};
 
 
         TH2Poly* ecalMap;
