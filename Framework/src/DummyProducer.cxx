@@ -28,7 +28,7 @@ class DummyProducer : public Producer {
 
     public:
 
-        DummyProducer(const std::string& name, const Process& process) :
+        DummyProducer(const std::string& name, Process& process) :
                 Producer(name, process) {
         }
 

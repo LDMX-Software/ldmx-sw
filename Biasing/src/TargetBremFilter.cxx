@@ -10,6 +10,8 @@
 
 namespace ldmx { 
 
+    std::vector<G4Track*> TargetBremFilter::bremGammaTracks_ = {};
+
     extern "C" TargetBremFilter* createTargetBremFilter() {
         return new TargetBremFilter;
     }
@@ -31,7 +33,7 @@ namespace ldmx {
 
         /*std::cout << "********************************" << std::endl;*/ 
         /*std::cout << "*   Track pushed to the stack  *" << std::endl;*/
-        /*std::cout << "********************************" << std::endl;*/ 
+        /*std::cout << "********************************" << std::endl;*/
 
         // get the PDGID of the track.
         G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
@@ -40,8 +42,8 @@ namespace ldmx {
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
 
         /*std::cout << "[ TargetBremFilter ]: " << "\n" 
-                    << "\tParticle " << particleName      << " ( PDG ID: " << pdgID << " ) : " << "\n"
-                    << "\tTrack ID: " << track->GetTrackID()     << "\n" 
+                    << "\tParticle " << particleName << " ( PDG ID: " << pdgID << " ) : " << "\n"
+                    << "\tTrack ID: " << track->GetTrackID() << "\n" 
                     << std::endl;*/
 
 
@@ -49,6 +51,7 @@ namespace ldmx {
         G4ClassificationOfNewTrack classification = currentTrackClass;
 
         if (track->GetTrackID() == 1 && pdgID == 11) {
+            /*std::cout << "[ TargetBremFilter ]: Pushing track to waiting stack." << std::endl;*/
             return fWaiting; 
         }
 
@@ -57,25 +60,34 @@ namespace ldmx {
 
     void TargetBremFilter::stepping(const G4Step* step) { 
 
-        /*std::cout << "************" << std::endl;*/ 
-        /*std::cout << "*   Step   *" << std::endl;*/
-        /*std::cout << "************" << std::endl;*/ 
-
         // Get the track associated with this step.
         G4Track* track = step->GetTrack();
 
+        // Only process the primary electron track
+        if (track->GetParentID() != 0) return;
+
         // get the PDGID of the track.
         G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
+        
+        // Make sure that the particle being processed is an electron.
+        if (pdgID != 11) return; // Throw an exception
 
-        // Get the particle type.
-        G4String particleName = track->GetParticleDefinition()->GetParticleName();
+        /*std::cout << "*******************************" << std::endl;*/ 
+        /*std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;*/
+        /*std::cout << "********************************" << std::endl;*/ 
 
         // Get the volume the particle is in.
         G4VPhysicalVolume* volume = track->GetVolume();
         G4String volumeName = volume->GetName();
+       
+        // If the particle isn't in the target, don't continue with the processing.
+        if (volumeName.compareTo(volumeName_) != 0) return;
+
+        // Get the particle type.
+        G4String particleName = track->GetParticleDefinition()->GetParticleName();
 
         // Get the kinetic energy of the particle.
-        //double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
+        double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
 
         /*std::cout << "[ TargetBremFilter ]: " << "\n" 
                     << "\tTotal energy of " << particleName      << " ( PDG ID: " << pdgID
@@ -84,79 +96,85 @@ namespace ldmx {
                     << "\tStep #: " << track->GetCurrentStepNumber() << "\n"
                     << "\tParticle currently in " << volumeName  << std::endl;*/
 
-        // Get the particles daughters.
-        const G4TrackVector* secondaries = step->GetSecondary();
+        // Check if the particle is exiting the volume.
+        if (step->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) { 
+           
+            // Clear all of the gamma tracks remaining from the previous event.
+            TargetBremFilter::bremGammaTracks_.clear();
 
-        // process primary track
-        // TODO: This block of code is shared by the Target and Ecal biasing plugins
-        //       so it should eventually be pulled out to it's own plugin.
-        if (track->GetTrackID() == 1 && pdgID == 11 && track->GetCurrentStepNumber() == 1) {
-
-            if (volumeName.compareTo(volumeName_) == 0) {
-
-                // If the initial interaction didn't result in any secondaries e.g.
-                // a brem photon, don't bother processing the rest of the event.
-                if (secondaries->size() == 0) {     
-                    track->SetTrackStatus(fKillTrackAndSecondaries); 
-
-                    /*std::cout << "[ TargetBremFilter ]: "
-                                << "Primary did not produce secondaries --> Killing primary track!" 
-                                << std::endl;*/
-
-                    G4RunManager::GetRunManager()->AbortEvent();
-                    return;
-                }
-
-                G4String processName = secondaries->at(0)->GetCreatorProcess()->GetProcessName(); 
-
+            /*std::cout << "[ TargetBremFilter ]: "
+                      << "Particle " << particleName << "is leaving the "
+                      << volumeName << " volume with momentum "
+                      << track->GetMomentum().mag() << std::endl;*/ 
+            
+            if (track->GetMomentum().mag() >= recoilElectronThreshold_) { 
                 /*std::cout << "[ TargetBremFilter ]: "
-                            << "Incident electron produced " << secondaries->size() 
-                            << " particle via " << processName << " process." 
-                            << std::endl;*/
-
-
-                // If secondaries were produced via a process other than brem, stop 
-                // tracking all tracks.
-                if (processName.compareTo("eBrem") != 0 || secondaries->size() != 1) {
-
-
-                    /*std::cout << "[ TargetBremFilter ]: "
-                                << "The secondaries are not a result of Brem. --> Killing all tracks!"
-                                << std::endl;*/
-
-                    track->SetTrackStatus(fKillTrackAndSecondaries);
-
-                    G4RunManager::GetRunManager()->AbortEvent();
-                    return;
-                } 
-
-                G4Track* secondaryTrack = secondaries->at(0);
-
-                /*std::cout << "[ TargetBremFilter ]: "
-                            << secondaryTrack->GetParticleDefinition()->GetParticleName() 
-                            << " with kinetic energy " << secondaryTrack->GetKineticEnergy()
-                            << " MeV was produced." << std::endl;*/
-
-                if (secondaryTrack->GetKineticEnergy() < photonEnergyThreshold_) { 
-
-
-                    /*std::cout << "[ TargetBremFilter ]: "
-                                << "Brem photon failed the energy threshold cut." 
-                                << std::endl;*/ 
-
-                    track->SetTrackStatus(fKillTrackAndSecondaries);
-
-                    G4RunManager::GetRunManager()->AbortEvent();
-                    return;
-                }
-
-                /*std::cout << "[ TargetBremFilter ]: "
-                            << "Photon passed energy cut --> Suspending primary track!"
-                            << std::endl;*/
-                track->SetTrackStatus(fSuspend);   
-
+                          << "Electron energy is above threshold --> Aborting event."
+                          << std::endl;*/
+                
+                track->SetTrackStatus(fKillTrackAndSecondaries);
+                G4RunManager::GetRunManager()->AbortEvent();
+                return;
+            
             }
+
+            // Get the particles daughters.
+            const G4TrackVector* secondaries = step->GetSecondary();
+           
+            /*std::cout << "[ TargetBremFilter ]: "
+                      << "Incident " << particleName  << " produced " << secondaries->size() 
+                      << " secondaries." << std::endl;*/
+           
+          
+            // If the particle didn't produce any secondaries, stop processing
+            // the event.
+            if (secondaries->size() == 0) { 
+                /*std::cout << "[ TargetBremFilter ]: "
+                          << "Primary did not produce secondaries --> Killing primary track!" 
+                          << std::endl;*/
+                
+                track->SetTrackStatus(fKillTrackAndSecondaries);
+                G4RunManager::GetRunManager()->AbortEvent();
+                return;
+            }
+       
+            bool isBrem = false; 
+            for (auto& secondary_track : *secondaries) {
+                G4String processName = secondary_track->GetCreatorProcess()->GetProcessName();
+                /*std::cout << "[ TargetBremFilter ]: "
+                          << "Secondary produced via process " << processName 
+                          << std::endl;*/
+                if (processName.compareTo("eBrem") == 0) {
+                    TargetBremFilter::bremGammaTracks_.push_back(secondary_track); 
+                    isBrem = true;
+                } 
+            }
+
+            if (!isBrem) { 
+                /*std::cout << "[ TargetBremFilter ]: "
+                          << "The secondaries are not a result of Brem. --> Killing all tracks!"
+                          << std::endl;*/
+
+                track->SetTrackStatus(fKillTrackAndSecondaries);
+                G4RunManager::GetRunManager()->AbortEvent();
+                return;
+            }
+
+
+            /*std::cout << "[ TargetBremFilter ]: "
+                      << bremGammaTracks_.size() << " were produced in the target --> Suspending primary track!"
+                      << std::endl;*/
+            track->SetTrackStatus(fSuspend);   
         }
+    }
+
+    void TargetBremFilter::endEvent(const G4Event* event) { 
+        bremGammaTracks_.clear();  
+    }
+    
+    void TargetBremFilter::removeBremFromList(G4Track* track) {   
+        bremGammaTracks_.erase(std::remove(bremGammaTracks_.begin(), 
+                    bremGammaTracks_.end(), track), bremGammaTracks_.end());
     }
 }
 
