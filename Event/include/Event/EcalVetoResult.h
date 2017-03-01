@@ -39,7 +39,9 @@ namespace ldmx {
             /**
              * Set the sim particle and 'is findable' flag.
              */
-            void setResult(bool passesVeto, float summedDep, float summedIso, float backSummedDep); 
+            void setResult(bool passesVeto, int centroidCell, int nReadoutHits, int nIsoHits, int nMipTracks,
+            		float mipTrackDep, int longestMipTrack, float summedDet, float summedOuter, float summedIso,
+            		float backEcalSummedDet, float maxIsoHit, std::vector<float> digiECALVec);
 
             /** Reset the object. */
             void Clear(Option_t *option = ""); 
@@ -57,20 +59,49 @@ namespace ldmx {
             /** Checks if the event passes the Ecal veto. */
             bool passesVeto() { return passesVeto_; };
 
-            float getSummedDep() { return summedDep_; }; 
+            int getNReadoutHits() { return nReadoutHits_; };
+
+            int getNIsoHits() { return nIsoHits_; };
+
+            int getNMipTracks() { return nMipTracks_; };
+
+            int getLongestMipTrack() { return longestMipTrack_; };
+
+
+            float getSummedDet() { return summedDet_; };
+
+            float getSummedOuter() { return summedOuter_; };
 
             float getSummedIso() { return summedIso_; };
 
-            float getBackSummedDep() { return backSummedDep_; };
+            float getBackSummedDep() { return backEcalSummedDet_; };
+
+            float getMaxIsoHit() { return maxIsoHit_; };
+
+            float getMipTrackDep() { return mipTrackDep_; };
+
+
+            std::vector<float> digiECALVec() { return digiECALVec_; };
+
 
         private:
            
             /** Flag indicating whether the event is vetoed by the Ecal. */
             bool passesVeto_{false};
             
-            float summedDep_{0}; 
+            int   centroidCell_{0};
+            int   nReadoutHits_{0};
+            int   nIsoHits_{0};
+            int   nMipTracks_{0};
+            int   longestMipTrack_{0};
+            float summedDet_{0};
             float summedIso_{0};
-            float backSummedDep_{0};
+            float summedOuter_{0};
+            float maxIsoHit_{0};
+            float backEcalSummedDet_{0};
+            float mipTrackDep_{0};
+
+            std::vector<float> digiECALVec_;
             
         ClassDef(EcalVetoResult, 1); 
 
