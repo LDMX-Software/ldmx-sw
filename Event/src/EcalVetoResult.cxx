@@ -23,91 +23,66 @@ namespace ldmx {
 
 
 
-
     void EcalVetoResult::Clear(Option_t *option) {
-		TObject::Clear();
-		passesVeto_ 	 = false;
-		nReadoutHits_	 = 0;
-		nLooseIsoHits_	 = 0;
-		nTightIsoHits_	 = 0;
-		summedDet_	 	 = 0;
-		summedOuter_	 = 0;
-		backSummedDet_	 = 0;
-		summedLooseIso_	 = 0;
-		maxLooseIsoDep_	 = 0;
-		summedTightIso_	 = 0;
-		maxTightIsoDep_	 = 0;
-		maxCellDep_		 = 0;
-		showerRMS_		 = 0;
-		nLooseMipTracks_ = 0;
-		nMediumMipTracks_= 0;
-		nTightMipTracks_ = 0;
-
-		EcalLayerEdepReadout_.clear();
-		looseMipTracks_.clear();
-		mediumMipTracks_.clear();
-		tightMipTracks_.clear();
+        TObject::Clear();  
+        passesVeto_ 	= false;
+        nReadoutHits_ 	= 0;
+        centroidCell_	= 0;
+        nIsoHits_ 		= 0;
+        nMipTracks_		= 0;
+        longestMipTrack_	= 0;
+        mipTrackDep_	= 0;
+        summedDet_      = 0;
+        summedOuter_	= 0;
+        summedIso_      = 0;  
+        backEcalSummedDet_  = 0;
+        maxIsoHit_		= 0;
+        digiECALVec_.clear();
 
     }
 
     void EcalVetoResult::Copy(TObject& object) const {
         
         EcalVetoResult& result = (EcalVetoResult&) object;
-		result.passesVeto_     = passesVeto_;
-		result.nReadoutHits_   = nReadoutHits_;
-		result.nLooseIsoHits_  = nLooseIsoHits_;
-		result.nTightIsoHits_  = nTightIsoHits_;
-		result.summedDet_ 	   = summedDet_;
-		result.summedOuter_    = summedOuter_;
-		result.backSummedDet_  = backSummedDet_;
-		result.summedLooseIso_ = summedLooseIso_;
-		result.maxLooseIsoDep_ = maxLooseIsoDep_;
-		result.summedTightIso_ = summedTightIso_;
-		result.maxTightIsoDep_ = maxTightIsoDep_;
-		result.maxCellDep_ 	   = maxCellDep_;
-		result.showerRMS_ 	   = showerRMS_;
-		result.EcalLayerEdepReadout_ = EcalLayerEdepReadout_;
-		result.looseMipTracks_ 		 = looseMipTracks_;
-		result.mediumMipTracks_		 = mediumMipTracks_;
-		result.tightMipTracks_		 = tightMipTracks_;
-		result.nLooseMipTracks_ 	 = nLooseMipTracks_;
-		result.nMediumMipTracks_     = nMediumMipTracks_;
-		result.nTightMipTracks_		 = nTightMipTracks_;
-
+        result.passesVeto_	    	= passesVeto_;
+        result.nReadoutHits_    	= nReadoutHits_;
+        result.nIsoHits_    		= nIsoHits_;
+        result.nMipTracks_    		= nMipTracks_;
+        result.longestMipTrack_    	= longestMipTrack_;
+        result.mipTrackDep_    		= mipTrackDep_;
+        result.summedDet_     		= summedDet_;
+        result.summedOuter_     	= summedOuter_;
+        result.summedIso_     		= summedIso_;
+        result.backEcalSummedDet_	= backEcalSummedDet_;
+        result.maxIsoHit_ 			= maxIsoHit_;
+        result.digiECALVec_ 		= digiECALVec_;
+        result.centroidCell_		= centroidCell_;
     }
 
-    void EcalVetoResult::setResult(bool passesVeto, int nReadoutHits, int nLooseIsoHits, int nTightIsoHits,
-    		float summedDet, int summedOuter, float backSummedDet,
-			float summedLooseIso, float maxLooseIsoDep,float summedTightIso, float maxTightIsoDep,
-    		float maxCellDep, float showerRMS, std::vector<float> EcalLayerEdepReadout,
-			std::vector<std::pair<int,float>> looseMipTracks,std::vector<std::pair<int,float>> mediumMipTracks,std::vector<std::pair<int,float>> tightMipTracks){
-			passesVeto_     = passesVeto;
-			nReadoutHits_   = nReadoutHits;
-			nLooseIsoHits_  = nLooseIsoHits;
-			nTightIsoHits_  = nTightIsoHits;
-			summedDet_ 	    = summedDet;
-			summedOuter_    = summedOuter;
-			backSummedDet_  = backSummedDet;
-			summedLooseIso_ = summedLooseIso;
-			maxLooseIsoDep_ = maxLooseIsoDep;
-			summedTightIso_ = summedTightIso;
-			maxTightIsoDep_ = maxTightIsoDep;
-			maxCellDep_ 	= maxCellDep;
-			showerRMS_ 	    = showerRMS;
-
-			EcalLayerEdepReadout_ 	 = EcalLayerEdepReadout;
-			looseMipTracks_ 		 = looseMipTracks;
-			mediumMipTracks_		 = mediumMipTracks;
-			tightMipTracks_		 	 = tightMipTracks;
-
-			nLooseMipTracks_  = looseMipTracks.size();
-			nMediumMipTracks_ = mediumMipTracks.size();
-			nTightMipTracks_  = tightMipTracks.size();
+    void EcalVetoResult::setResult(bool passesVeto, int centroidCell, int nReadoutHits, int nIsoHits, int nMipTracks,
+    		float mipTrackDep, int longestMipTrack, float summedDet, float summedOuter, float summedIso,
+    		float backEcalSummedDet, float maxIsoHit, std::vector<float> digiECALVec){
+    	 passesVeto_ 		= passesVeto;
+         nReadoutHits_    	= nReadoutHits;
+         nIsoHits_    		= nIsoHits;
+         nMipTracks_    	= nMipTracks;
+         mipTrackDep_    	= mipTrackDep;
+         longestMipTrack_   = longestMipTrack;
+         summedDet_     	= summedDet;
+         summedOuter_     	= summedOuter;
+         summedIso_     	= summedIso;
+         backEcalSummedDet_ = backEcalSummedDet;
+         maxIsoHit_ 		= maxIsoHit;
+         digiECALVec_ 		= digiECALVec;
+         centroidCell_      = centroidCell;
     }
 
     void EcalVetoResult::Print(Option_t *option) const { 
         std::cout << "[ EcalVetoResult ]:\n" 
           << "\t Passes veto : " << passesVeto_ << "\n"
+          << "\t summedDep: " << summedDet_ << "\n"
+          << "\t summedIso: " << summedIso_ << "\n"
+          << "\t backSummedDep: " << backEcalSummedDet_ << "\n"
           << std::endl;
     }
 }
