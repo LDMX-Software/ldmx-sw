@@ -72,9 +72,9 @@ namespace ldmx {
         // Make sure that the particle being processed is an electron.
         if (pdgID != 11) return; // Throw an exception
 
-        /*std::cout << "*******************************" << std::endl; 
-        std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;
-        std::cout << "********************************" << std::endl;*/ 
+        /*std::cout << "*******************************" << std::endl;*/ 
+        /*std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;*/
+        /*std::cout << "********************************" << std::endl;*/
 
         // Get the volume the particle is in.
         G4VPhysicalVolume* volume = track->GetVolume();
@@ -87,14 +87,16 @@ namespace ldmx {
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
 
         // Get the kinetic energy of the particle.
-        //double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
+        //double incidentParticleEnergy = step->GetPostStepPoint()->GetTotalEnergy();
 
         /*std::cout << "[ TargetBremFilter ]: " << "\n" 
                     << "\tTotal energy of " << particleName      << " ( PDG ID: " << pdgID
                     << " ) : " << incidentParticleEnergy       << "\n"
                     << "\tTrack ID: " << track->GetTrackID()     << "\n" 
                     << "\tStep #: " << track->GetCurrentStepNumber() << "\n"
-                    << "\tParticle currently in " << volumeName  << std::endl;*/
+                    << "\tParticle currently in " << volumeName  
+                    << "\tPost step process: " << step->GetPostStepPoint()->GetStepStatus() 
+                    << std::endl;*/
 
         // Check if the particle is exiting the volume.
         if (step->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) { 
@@ -105,7 +107,7 @@ namespace ldmx {
             /*std::cout << "[ TargetBremFilter ]: "
                       << "Particle " << particleName << "is leaving the "
                       << volumeName << " volume with momentum "
-                      << track->GetMomentum().mag() << std::endl;*/ 
+                      << track->GetMomentum().mag() << std::endl;*/
             
             if (track->GetMomentum().mag() >= recoilElectronThreshold_) { 
                 /*std::cout << "[ TargetBremFilter ]: "
@@ -167,6 +169,14 @@ namespace ldmx {
                       << bremGammaTracks_.size() << " candidates were produced in the target --> Suspending primary track!"
                       << std::endl;*/
             track->SetTrackStatus(fSuspend);   
+        } else if (step->GetPostStepPoint()->GetKineticEnergy() == 0) { 
+            /*std::cout << "[ TargetBremFilter ]: "
+                      << "Electron never made it out of the target --> Killing all tracks!"
+                      << std::endl;*/
+
+            track->SetTrackStatus(fKillTrackAndSecondaries);
+            G4RunManager::GetRunManager()->AbortEvent();
+            return;
         }
     }
 
