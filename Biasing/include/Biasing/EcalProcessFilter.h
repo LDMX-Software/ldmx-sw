@@ -6,8 +6,13 @@
  *         SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMPLUGINS_ECALPROCESSFILTER_H_
-#define SIMPLUGINS_ECALPROCESSFILTER_H_
+#ifndef BIASINGS_ECALPROCESSFILTER_H_
+#define BIASINGS_ECALPROCESSFILTER_H_
+
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <algorithm>
 
 //------------//
 //   Geant4   //
@@ -19,6 +24,7 @@
 //----------//
 #include "SimPlugins/UserActionPlugin.h"
 #include "Biasing/BiasingMessenger.h"
+#include "Biasing/TargetBremFilter.h"
 
 namespace ldmx {
 
@@ -37,18 +43,41 @@ namespace ldmx {
                 return "EcalProcessFilter";
             }
 
+            /**
+             * Get whether this plugin implements the stepping action.
+             * @return True to indicate this plugin implements the stepping action.
+             */
             bool hasSteppingAction() {
+                return true;
+            }
+
+            /**
+             * Get whether this plugin implements the stacking aciton.
+             * @return True to indicate this plugin implements the stacking action.
+             */
+            bool hasStackingAction() { 
                 return true;
             }
 
             void stepping(const G4Step* step);
 
+            /**
+             * Classify a new track which postpones track processing.
+             * Track processing resumes normally if a target PN interaction occurred.
+             * @param aTrack The Geant4 track.
+             * @param currentTrackClass The current track classification.
+             */
+            G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& currentTrackClass);
+
         private:
+
+            /** Pointer to the current track being processed. */
+            G4Track* currentTrack_{nullptr};
 
             /** Brem photon energy threshold */
             double photonEnergyThreshold_{2500}; // MeV
-    
+
     }; // EcalProcessFilter 
 }
 
-#endif // SIMPLUGINS_ECALPROCESSFILTER_H__
+#endif // BIASINGS_ECALPROCESSFILTER_H__
