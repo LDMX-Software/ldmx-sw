@@ -13,6 +13,8 @@
 
 namespace ldmx {
 
+class Trajectory;
+
 /**
  * @class TrackMap
  * @brief Defines a map of track ID to parent ID
