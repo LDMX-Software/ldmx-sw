@@ -45,6 +45,9 @@ class EventHeader : public TObject {
             timestamp_ = TTimeStamp(0, 0);
             weight_ = 1.0;
             isRealData_ = false;
+            intParameters_.clear();
+            floatParameters_.clear();
+            stringParameters_.clear();
         }
 
         /**
