@@ -111,4 +111,14 @@ void Trajectory::setGenStatus(int theGenStatus) {
     genStatus_ = theGenStatus;
 }
 
+Trajectory* Trajectory::findByTrackID(G4TrajectoryContainer* trajCont, int trackID) {
+    TrajectoryVector* vec = trajCont->GetVector();
+    for (TrajectoryVector::const_iterator it = vec->begin(); it != vec->end(); it++) {
+        if ((*it)->GetTrackID() == trackID) {
+            return dynamic_cast<Trajectory*>(*it);
+        }
+    }
+    return nullptr;
+}
+
 }
