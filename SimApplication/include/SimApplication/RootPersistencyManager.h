@@ -14,6 +14,7 @@
 
 // LDMX
 #include "Event/Event.h"
+#include "Biasing/BiasingMessenger.h"
 #include "Framework/EventFile.h"
 #include "Event/EventHeader.h"
 #include "Event/RunHeader.h"
