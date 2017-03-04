@@ -24,7 +24,7 @@ void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
     UserTrackingAction::getUserTrackingAction()->getTrackMap()->clear();
 
     // Install custom trajectory container for the event.
-    G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
+    //G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
 
     // G4Random::showEngineStatus();
     // G4Random::saveEngineStatus();
