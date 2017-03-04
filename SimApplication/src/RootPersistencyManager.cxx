@@ -135,7 +135,9 @@ void RootPersistencyManager::writeHeader(const G4Event* anEvent, Event* outputEv
     ts.SetSec((int) time(NULL));
     eventHeader.setTimestamp(ts);
     eventHeader.setRun(G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID());
-    if (anEvent->GetPrimaryVertex(0)) {
+    if (BiasingMessenger::isBiasingEnabled()) {
+        eventHeader.setWeight(BiasingMessenger::getEventWeight()); 
+    } else if (anEvent->GetPrimaryVertex(0)) {
         eventHeader.setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
     }
 
