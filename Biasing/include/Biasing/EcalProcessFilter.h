@@ -6,8 +6,8 @@
  *         SLAC National Accelerator Laboratory
  */
 
-#ifndef BIASINGS_ECALPROCESSFILTER_H_
-#define BIASINGS_ECALPROCESSFILTER_H_
+#ifndef BIASING_ECALPROCESSFILTER_H_
+#define BIASING_ECALPROCESSFILTER_H_
 
 //----------------//
 //   C++ StdLib   //
@@ -80,4 +80,4 @@ namespace ldmx {
     }; // EcalProcessFilter 
 }
 
-#endif // BIASINGS_ECALPROCESSFILTER_H__
+#endif // BIASING_ECALPROCESSFILTER_H__
