@@ -11,11 +11,13 @@ namespace ldmx {
 
     bool BiasingMessenger::biasingEnabled_{false}; 
 
+    double BiasingMessenger::eventWeight_{1}; 
+
     std::string BiasingMessenger::particleType_{"gamma"};
 
     std::string BiasingMessenger::process_{"photonNuclear"};
 
-    double BiasingMessenger::threshold_{100000000000};
+    double BiasingMessenger::threshold_{0};
 
     std::string BiasingMessenger::volume_{"target"};
 
