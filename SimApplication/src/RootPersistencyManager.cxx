@@ -152,15 +152,14 @@ namespace ldmx {
     }
 
     std::string RootPersistencyManager::getEventSeeds(std::string fileName){
-
         std::ifstream t(fileName);
         std::stringstream buffer;
         buffer << t.rdbuf();
-
+        t.close();
+    
         return buffer.str();
     }
-
-
+    
     void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event* outputEvent) {
 
         // Clear the hits from last event.
