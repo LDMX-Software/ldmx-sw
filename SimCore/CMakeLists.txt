@@ -1,9 +1,9 @@
 # find Geant4
 find_package(Geant4 REQUIRED ui_all vis_all)
 
-# declare SimPlugins module
+# declare SimApplication module
 module(
-  NAME SimPlugins
+  NAME SimCore
   EXTRA_LINK_LIBRARIES ${Geant4_LIBRARIES}
   DEPENDENCIES SimCore
 )

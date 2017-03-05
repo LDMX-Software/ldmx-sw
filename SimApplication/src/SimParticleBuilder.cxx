@@ -18,6 +18,7 @@ namespace ldmx {
 
 SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {
     trackMap_ = UserTrackingAction::getUserTrackingAction()->getTrackMap();
+    trajectoryMap_ = UserTrackingAction::getUserTrackingAction()->getTrajectoryMap();
     outputParticleColl_ = new TClonesArray(EventConstants::SIM_PARTICLE.c_str(), 50);
 }
 
@@ -100,11 +101,14 @@ void SimParticleBuilder::buildParticleMap(TrajectoryContainer* trajectories, TCl
 }
 
 SimParticle* SimParticleBuilder::findSimParticle(G4int trackID) {
-    G4VTrajectory* traj = trackMap_->findTrajectory(currentEvent_, trackID);
-    if (traj != NULL) {
+    G4VTrajectory* traj = nullptr;
+    if (trajectoryMap_->find(trackID) != trajectoryMap_->end()) {
+        traj = (*trajectoryMap_)[trackID];      
+    }
+    if (traj != nullptr) {
         return particleMap_[traj->GetTrackID()];
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
