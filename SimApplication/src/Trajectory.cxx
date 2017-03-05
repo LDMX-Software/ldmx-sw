@@ -20,7 +20,10 @@ Trajectory::Trajectory(const G4Track* aTrack)
     vertexPosition_ = aTrack->GetVertexPosition();
 
     trajPoints_ = new TrajectoryPointContainer();
-    trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
+    trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetVertexPosition()));
+    if (aTrack->GetPosition() != aTrack->GetVertexPosition()) {
+        trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
+    }
 }
 
 Trajectory::~Trajectory() {

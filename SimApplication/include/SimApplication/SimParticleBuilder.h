@@ -93,6 +93,8 @@ class SimParticleBuilder {
          */
         TrackMap* trackMap_;
 
+        Trajectory::TrajectoryMap* trajectoryMap_;
+
         /**
          * The current Geant4 event.
          */
