@@ -5,6 +5,7 @@
 #include "SimApplication/Trajectory.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
 #include "SimApplication/UserRegionInformation.h"
+#include "SimCore/UserTrackInformation.h"
 #include "SimPlugins/PluginManager.h"
 
 // Geant4
@@ -27,8 +28,16 @@ namespace ldmx {
     }
 
     void UserTrackingAction::PostUserTrackingAction(const G4Track* aTrack) {
+
         // Activate user plugins.
         pluginManager_->postTracking(aTrack);
+
+        // Save extra trajectories that were flagged during event processing.
+        if (dynamic_cast<UserTrackInformation*>(aTrack->GetUserInformation())->getSaveFlag()) {
+            if (trajectoryMap_.find(aTrack->GetTrackID()) == trajectoryMap_.end()) {
+                storeTrajectory(aTrack);
+            }
+        }
     }
 
     void UserTrackingAction::storeTrajectory(const G4Track* aTrack) {
@@ -45,9 +54,15 @@ namespace ldmx {
                 traj->setGenStatus(((UserPrimaryParticleInformation*) primaryInfo)->getHepEvtStatus());
             }
         }
+
+        // Map track ID to trajectory.
+        trajectoryMap_[aTrack->GetTrackID()] = traj;
     }
 
     void UserTrackingAction::processTrack(const G4Track* aTrack) {
+
+       // Set user track info on new track.
+       const_cast<G4Track*>(aTrack)->SetUserInformation(new UserTrackInformation);
 
         // Check if trajectory storage should be turned on or off from the region info.
         UserRegionInformation* regionInfo =
@@ -64,5 +79,4 @@ namespace ldmx {
         // Save the association between track ID and its parent ID for all tracks in the event.
         trackMap_.addSecondary(aTrack->GetTrackID(), aTrack->GetParentID());
     }
-
 }
