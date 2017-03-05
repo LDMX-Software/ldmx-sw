@@ -5,8 +5,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMPLUGINS_TARGETPROCESSFILTER_H_
-#define SIMPLUGINS_TARGETPROCESSFILTER_H_
+#ifndef BIASING_TARGETPROCESSFILTER_H_
+#define BIASING_TARGETPROCESSFILTER_H_
 
 //----------------//
 //   C++ StdLib   //
@@ -94,4 +94,4 @@ class TargetProcessFilter : public UserActionPlugin {
 
 }
 
-#endif // SIMPLUGINS_TARGETPROCESSFILTER_H__
+#endif // BIASING_TARGETPROCESSFILTER_H__

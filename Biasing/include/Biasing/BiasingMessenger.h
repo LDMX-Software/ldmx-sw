@@ -15,10 +15,6 @@
 #include "G4UIcmdWithAString.hh"
 #include "G4UImessenger.hh"
 
-//----------//
-//   LDMX   //
-//----------//
-
 namespace ldmx { 
 
     class BiasingMessenger : public G4UImessenger { 
@@ -31,31 +27,40 @@ namespace ldmx {
             /** Destructor */
             ~BiasingMessenger();
 
+            /** Set the event weight. */
+            static void setEventWeight(double eventWeight) { eventWeight_ = eventWeight; };
+
             /** */
             void SetNewValue(G4UIcommand* command, G4String newValues);
 
-            /** 
-            */
-            static bool isBiasingEnabled() { return biasingEnabled_; }; 
+            /** Method to indicate whether biasing is enabled. */
+            static bool isBiasingEnabled() { return biasingEnabled_; };
 
-            /**
-            */
+            /** 
+             * Get the event weight.  The weight is corrected to take into 
+             * account the biased cross-section. 
+             */
+            static double getEventWeight() { return eventWeight_; }; 
+
+            /** 
+             * Get the particle type (e.g. gamma, e-) to which the biasing is
+             * being applied. 
+             */
             static std::string getParticleType() { return particleType_; };
 
-            /**
-            */
+            /** Get the process (e.g. photonNuclear) that is being processed. */
             static std::string getProcess() { return process_; }; 
 
             /**
+             * Get the energy threshold required for the biasing operation to 
+             * be applied.
              */
             static double getThreshold() { return threshold_; }; 
 
-            /**
-            */
+            /** Get the volume to which the biasing operation is attached to. */
             static std::string getVolume() { return volume_; };
 
-            /**
-            */
+            /** Get the factor by which the xsec is being multiplied by. */
             static double getXsecTrans() { return xsecTrans_; }; 
 
         private: 
@@ -84,6 +89,9 @@ namespace ldmx {
             /** Flag indicating if biasing is enabled */
             static bool biasingEnabled_;
 
+            /** Event weight corrected to account for biased cross-section. */
+            static double eventWeight_;
+
             /** Particle specifies to bias. */
             static std::string particleType_;
 
@@ -100,7 +108,6 @@ namespace ldmx {
             static double xsecTrans_;
 
     }; // BiasingMessenger
-
 }
 
 #endif // SIMAPPLICATION_BIASING_MESSENGER_H
