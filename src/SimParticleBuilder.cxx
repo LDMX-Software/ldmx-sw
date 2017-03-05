@@ -68,7 +68,7 @@ void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
     simParticle->setMass(traj->getMass());
     simParticle->setEnergy(traj->getEnergy());
 
-    G4ThreeVector lastTrajPoint = traj->GetPoint(traj->GetPointEntries() - 1)->GetPosition();
+    G4ThreeVector lastTrajPoint = traj->getEndPoint();
     simParticle->setEndPoint(lastTrajPoint[0], lastTrajPoint[1], lastTrajPoint[2]);
 
     const G4ThreeVector& momentum = traj->GetInitialMomentum();
@@ -101,15 +101,12 @@ void SimParticleBuilder::buildParticleMap(TrajectoryContainer* trajectories, TCl
 }
 
 SimParticle* SimParticleBuilder::findSimParticle(G4int trackID) {
-    G4VTrajectory* traj = nullptr;
-    if (trajectoryMap_->find(trackID) != trajectoryMap_->end()) {
-        traj = (*trajectoryMap_)[trackID];      
-    }
+    G4VTrajectory* traj = trackMap_->findTrajectory(currentEvent_, trackID);
     if (traj != nullptr) {
         return particleMap_[traj->GetTrackID()];
     } else {
         return nullptr;
     }
-}
+}    
 
 }
