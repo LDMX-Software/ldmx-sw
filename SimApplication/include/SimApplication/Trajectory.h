@@ -32,6 +32,8 @@ class Trajectory : public G4VTrajectory {
 
     public:
 
+        typedef std::map<int, Trajectory*> TrajectoryMap;
+
         /**
          * Class constructor.
          * @param aTrack The Track from which to construct the trajectory.
