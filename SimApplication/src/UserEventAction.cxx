@@ -23,6 +23,9 @@ void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
     // Clear the global track map.
     UserTrackingAction::getUserTrackingAction()->getTrackMap()->clear();
 
+    // Clear the global trajectory map.
+    UserTrackingAction::getUserTrackingAction()->getTrajectoryMap()->clear();
+
     // Install custom trajectory container for the event.
     //G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
 
