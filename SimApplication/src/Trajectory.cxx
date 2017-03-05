@@ -87,7 +87,7 @@ void Trajectory::MergeTrajectory(G4VTrajectory* secondTrajectory) {
 }
 
 const G4ThreeVector& Trajectory::getEndPoint() const {
-    return endPoint_;
+    return GetPoint(GetPointEntries() - 1)->GetPosition();
 }
 
 G4double Trajectory::getEnergy() const {
