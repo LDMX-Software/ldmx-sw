@@ -68,7 +68,7 @@ void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
     simParticle->setMass(traj->getMass());
     simParticle->setEnergy(traj->getEnergy());
 
-    G4ThreeVector lastTrajPoint = traj->GetPoint(traj->GetPointEntries() - 1)->GetPosition();
+    G4ThreeVector lastTrajPoint = traj->getEndPoint();
     simParticle->setEndPoint(lastTrajPoint[0], lastTrajPoint[1], lastTrajPoint[2]);
 
     const G4ThreeVector& momentum = traj->GetInitialMomentum();

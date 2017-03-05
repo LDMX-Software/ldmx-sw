@@ -218,11 +218,6 @@ class Trajectory : public G4VTrajectory {
          * The particle's vertex position.
          */
         G4ThreeVector vertexPosition_;
-
-        /**
-         * The particle's end point.
-         */
-        G4ThreeVector endPoint_;
 };
 
 /**
