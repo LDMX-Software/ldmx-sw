@@ -101,7 +101,7 @@ void SimParticleBuilder::buildParticleMap(TrajectoryContainer* trajectories, TCl
 }
 
 SimParticle* SimParticleBuilder::findSimParticle(G4int trackID) {
-    G4VTrajectory* traj = trackMap_->findTrajectory(currentEvent_, trackID);
+    G4VTrajectory* traj = trackMap_->findTrajectory(trajectoryMap_, trackID);
     if (traj != nullptr) {
         return particleMap_[traj->GetTrackID()];
     } else {
