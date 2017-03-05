@@ -10,6 +10,7 @@
 // LDMX
 #include "SimPlugins/PluginManagerAccessor.h"
 #include "SimApplication/TrackMap.h"
+#include "SimApplication/Trajectory.h"
 
 // Geant4
 #include "G4RunManager.hh"
@@ -86,10 +87,16 @@ namespace ldmx {
                 (const_cast<G4UserTrackingAction*>(G4RunManager::GetRunManager()->GetUserTrackingAction()));
             }
 
+            Trajectory::TrajectoryMap* getTrajectoryMap() {
+                return &trajectoryMap_;
+            }
+
         private:
 
             /** Stores parentage information for all tracks in the event. */
             TrackMap trackMap_;
+
+            Trajectory::TrajectoryMap trajectoryMap_;
     };
 }
 
