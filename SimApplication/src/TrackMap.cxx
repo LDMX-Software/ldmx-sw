@@ -13,13 +13,12 @@ void TrackMap::addSecondary(G4int trackID, G4int parentID) {
     trackIDMap_[trackID] = parentID;
 }
 
-G4VTrajectory* TrackMap::findTrajectory(const G4Event* anEvent, G4int trackID) {
-    G4TrajectoryContainer* trajCont = anEvent->GetTrajectoryContainer();
+G4VTrajectory* TrackMap::findTrajectory(Trajectory::TrajectoryMap* trajectoryMap, G4int trackID) {
     G4int currTrackID = trackID;
-    G4VTrajectory* traj = NULL;
+    G4VTrajectory* traj = nullptr;
     for (;;) {
-        traj = Trajectory::findByTrackID(trajCont, currTrackID);
-        if (traj != NULL) {
+        traj = (*trajectoryMap)[currTrackID];
+        if (traj != nullptr) {
             break;
         } else {
             if (trackIDMap_.find(currTrackID) != trackIDMap_.end()) {

@@ -11,9 +11,9 @@
 #include "G4Event.hh"
 #include "G4VTrajectory.hh"
 
-namespace ldmx {
+#include "SimApplication/Trajectory.h"
 
-class Trajectory;
+namespace ldmx {
 
 /**
  * @class TrackMap
@@ -40,11 +40,13 @@ class TrackMap {
         void addSecondary(G4int trackID, G4int parentID);
 
         /**
-         * Find a trajectory by its track ID in the event.
+         * Find a trajectory by its track ID.
+         * If this track ID does not have a trajectory, then the 
+         * first trajectory found in its parentage is returned.
          * @param anEvent The Geant4 event.
          * @param trackkID The track ID of the trajectory to find.
          */
-        G4VTrajectory* findTrajectory(const G4Event* anEvent, G4int trackID);
+        G4VTrajectory* findTrajectory(Trajectory::TrajectoryMap* trajectoryMap, G4int trackID);
 
         /**
          * Clear the map.
