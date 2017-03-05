@@ -6,8 +6,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMPLUGINS_TARGETBREMFILTER_H_
-#define SIMPLUGINS_TARGETBREMFILTER_H_
+#ifndef BIASING_TARGETBREMFILTER_H_
+#define BIASING_TARGETBREMFILTER_H_
 
 //----------------//
 //   C++ StdLib   //
@@ -111,4 +111,4 @@ namespace ldmx {
     }; // TargetBremFilter
 }
 
-#endif // SIMPLUGINS_TARGETBREMFILTER_H__
+#endif // BIASING_TARGETBREMFILTER_H__

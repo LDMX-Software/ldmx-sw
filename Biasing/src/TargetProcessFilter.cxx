@@ -165,6 +165,7 @@ namespace ldmx {
                       << " particle via " << processName << " process." 
                       << std::endl;
             TargetBremFilter::removeBremFromList(track);
+            BiasingMessenger::setEventWeight(track->GetWeight());
         }
     }       
 }
