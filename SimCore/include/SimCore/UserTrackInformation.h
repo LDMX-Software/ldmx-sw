@@ -21,7 +21,7 @@ namespace ldmx {
 
         private:
 
-            bool saveFlag_;
+            bool saveFlag_{false};
     };
 }
 
