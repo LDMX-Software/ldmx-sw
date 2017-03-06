@@ -9,11 +9,5 @@ namespace ldmx {
     extern "C" void destroyTrackSaver(TrackSaver* object) {
         delete object;
     }
-
-    TrackSaver::TrackSaver() { 
-    }
-
-    TrackSaver::~TrackSaver() { 
-    }
 }
 
