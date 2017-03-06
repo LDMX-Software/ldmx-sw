@@ -178,6 +178,25 @@ namespace ldmx {
                       << std::endl;
             TargetBremFilter::removeBremFromList(track);
             BiasingMessenger::setEventWeight(track->GetWeight());
+            photonGammaID_ = track->GetTrackID(); 
+        }
+    }
+
+    void EcalProcessFilter::postTracking(const G4Track* track) { 
+       
+        if (track->GetParentID() == photonGammaID_) { 
+            UserTrackInformation* userInfo 
+              = dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
+            userInfo->setSaveFlag(true); 
+            // get the PDGID of the track.
+            G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
+            G4ThreeVector pvec = track->GetMomentum();
+            std::cout << "[ EcalProcessFilter ]:\n" 
+                      << "\tPDG ID: " << pdgID << "\n"
+                      << "\tTrack ID: " << track->GetTrackID() << "\n" 
+                      << "\tStep #: " << track->GetCurrentStepNumber() << "\n"
+                      << "\tParent ID: " << track->GetParentID() << "\n"
+                      << "\t p: [ " << pvec[0] << ", " << pvec[1] << ", " << pvec[2] << " ]" << std::endl;
         }
     }
 }
