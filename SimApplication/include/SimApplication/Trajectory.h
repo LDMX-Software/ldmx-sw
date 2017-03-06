@@ -32,6 +32,7 @@ class Trajectory : public G4VTrajectory {
 
     public:
 
+        /** Map of track ID to Trajectory objects. */
         typedef std::map<int, Trajectory*> TrajectoryMap;
 
         /**
