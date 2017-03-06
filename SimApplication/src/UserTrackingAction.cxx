@@ -34,7 +34,7 @@ namespace ldmx {
 
         // Save extra trajectories that were flagged during event processing.
         if (dynamic_cast<UserTrackInformation*>(aTrack->GetUserInformation())->getSaveFlag()) {
-            if (trajectoryMap_.find(aTrack->GetTrackID()) == trajectoryMap_.end()) {
+            if (!trackMap_.hasTrajectory(aTrack->GetTrackID())) {
                 storeTrajectory(aTrack);
             }
         }
@@ -56,7 +56,7 @@ namespace ldmx {
         }
 
         // Map track ID to trajectory.
-        trajectoryMap_[aTrack->GetTrackID()] = traj;
+        trackMap_.addTrajectory(traj);
     }
 
     void UserTrackingAction::processTrack(const G4Track* aTrack) {
