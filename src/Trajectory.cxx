@@ -17,14 +17,12 @@ Trajectory::Trajectory(const G4Track* aTrack)
     parentID_ = aTrack->GetParentID();
     globalTime_ = aTrack->GetGlobalTime();
     vertexPosition_ = aTrack->GetVertexPosition();
+    energy_ = aTrack->GetTotalEnergy();
 
-    // Compute momentum by multiplying unit vector of vertex momentum by KE. 
+    // Compute momentum by multiplying unit vector of vertex momentum by KE.
     const G4ThreeVector& vmd = aTrack->GetVertexMomentumDirection(); 
     G4double kE = aTrack->GetVertexKineticEnergy();
     initialMomentum_ = G4ThreeVector(vmd[0] * kE, vmd[1] * kE, vmd[2] * kE);
-
-    // Set energy as rest mass of particle plus KE at the vertex.
-    energy_ = aTrack->GetTotalEnergy() + kE;
 
     // If the track has not been stepped, then only the first point is added.
     // Otherwise, the track has already been stepped so we add also its last location
