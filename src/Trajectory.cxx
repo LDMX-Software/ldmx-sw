@@ -2,6 +2,7 @@
 
 // Geant4
 #include "G4TrajectoryPoint.hh"
+#include "G4VProcess.hh"
 
 namespace ldmx {
 
@@ -19,8 +20,16 @@ Trajectory::Trajectory(const G4Track* aTrack)
     vertexPosition_ = aTrack->GetVertexPosition();
     energy_ = aTrack->GetTotalEnergy();
 
+    // Get the creator process type.  The sub-type must be used here to get
+    // the type for a specific physics process like photonuclear.
+    const G4VProcess* process = aTrack->GetCreatorProcess();
+    if (process) {
+        processType_ = process->GetProcessSubType();
+        std::cout << "setting processType to " << processType_ << " in Trajectory" << std::endl;
+    }
+
     // Compute momentum by multiplying unit vector of vertex momentum by KE.
-    const G4ThreeVector& vmd = aTrack->GetVertexMomentumDirection(); 
+    const G4ThreeVector& vmd = aTrack->GetVertexMomentumDirection();
     G4double kE = aTrack->GetVertexKineticEnergy();
     initialMomentum_ = G4ThreeVector(vmd[0] * kE, vmd[1] * kE, vmd[2] * kE);
 
