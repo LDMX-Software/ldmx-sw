@@ -25,7 +25,6 @@ Trajectory::Trajectory(const G4Track* aTrack)
     const G4VProcess* process = aTrack->GetCreatorProcess();
     if (process) {
         processType_ = process->GetProcessSubType();
-        std::cout << "setting processType to " << processType_ << " in Trajectory" << std::endl;
     }
 
     // Compute momentum by multiplying unit vector of vertex momentum by KE.
