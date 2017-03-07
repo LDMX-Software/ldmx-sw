@@ -71,6 +71,28 @@ namespace ldmx {
             }
 
             /**
+             * Return true if the track ID is in the map.
+             * @return True if the track ID is in the map.
+             */
+            bool contains(G4int trackID) {
+                return trackIDMap_.find(trackID) != trackIDMap_.end();
+            }
+
+            /**
+             * Get a Trajectory from a track ID.
+             * @return A Trajectory from a track ID.
+             * @note Does not search for a parent Trajectory if this
+             * track ID is not assigned to a Trajectory.
+             */
+            inline Trajectory* getTrajectory(G4int trackID) {
+                if (hasTrajectory(trackID)) {
+                    return trajectoryMap_[trackID];
+                } else {
+                    return nullptr;
+                }
+            }
+
+            /**
              * Clear the internal maps.
              */
             void clear();
