@@ -44,9 +44,6 @@ void SimParticleBuilder::buildSimParticles(ldmx::Event* outputEvent) {
 
     // Add the collection data to the output event.
     outputEvent->add("SimParticles", outputParticleColl_);
-
-    // FIXME: Hard-coded print out.
-    std::cout << "[ SimParticleBuilder ] : Wrote " << outputParticleColl_->GetEntriesFast() << " SimParticle objects" << std::endl;
 }
 
 void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
@@ -86,10 +83,13 @@ void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
             parent->addDaughter(simParticle);
         } else {
             // If the parent particle can not be found by its track ID, this is a fatal error!
-            std::cerr << "[ SimParticleBuilder ] : SimParticle with parent ID "
+            std::cerr << "[ SimParticleBuilder ] : ERROR - SimParticle with parent ID "
                       << traj->GetParentID() << " not found for track ID " 
                       << traj->GetTrackID() << std::endl;
-            G4Exception("", "", FatalException, "Failed to find parent particle for SimParticle.");
+            G4Exception("SimParticleBuilder::buildSimParticle",
+                    "",
+                    FatalException,
+                    "SimParticle not found from parent track ID.");
         }
     }
 }
