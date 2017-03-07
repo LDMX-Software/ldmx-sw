@@ -45,6 +45,7 @@ void SimParticleBuilder::buildSimParticles(ldmx::Event* outputEvent) {
     // Add the collection data to the output event.
     outputEvent->add("SimParticles", outputParticleColl_);
 
+    // FIXME: Hard-coded print out.
     std::cout << "[ SimParticleBuilder ] : Wrote " << outputParticleColl_->GetEntriesFast() << " SimParticle objects" << std::endl;
 }
 
@@ -68,7 +69,6 @@ void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
     simParticle->setEnergy(traj->getEnergy());
     simParticle->setTime(traj->getGlobalTime());
     simParticle->setProcessType(traj->getProcessType());
-    std::cout << "set processType to " << simParticle->getProcessType() << " in SimParticleBuilder" << std::endl;
 
     const G4ThreeVector& vertex = traj->getVertexPosition();
     simParticle->setVertex(vertex[0], vertex[1], vertex[2]);
