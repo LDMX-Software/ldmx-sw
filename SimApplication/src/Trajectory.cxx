@@ -29,7 +29,7 @@ Trajectory::Trajectory(const G4Track* aTrack)
     // which should be its endpoint.
     trajPoints_ = new TrajectoryPointContainer();
     trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetVertexPosition()));
-    if (aTrack->GetPosition() != aTrack->GetVertexPosition()) {
+    if (aTrack->GetTrackStatus() == G4TrackStatus::fStopAndKill) {
         trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
     }
 }
