@@ -40,7 +40,7 @@ namespace ldmx {
 		public:
 
 			BDTHelper(TString importBDTFile, int FeatureVecLen) {
-				TPython * pyEnv = new TPython::TPython();
+				TPython * pyEnv = new TPython();
 				/* Train a fake bdt, to be replaced by real bdt in future!!! */
 
 				//pyEnv->Exec("import xgboost as xgb");
