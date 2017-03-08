@@ -62,7 +62,7 @@ namespace ldmx {
 			}
 			double getSinglePred(std::vector<float> bdtFeatures){
 				if (bdtFeatures.size() != nFeatures){
-					throw std::runtime_error("Error: You passed " << bdtFeatures.size() << " instead of " << nFeatures);
+					throw std::runtime_error("Error: You passed the wrong number of features to the BDT");
 				}
 				TString cmd = vectorToPredCMD(bdtFeatures);
 				//pyEnv->Exec("pred = " + cmd);
