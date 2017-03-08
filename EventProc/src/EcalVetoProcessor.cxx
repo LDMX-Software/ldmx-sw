@@ -127,11 +127,13 @@ namespace ldmx {
         	}
         }
 
-    	double pred = BDTHelper_->getSinglePred(nBdtVars_);
         result_.setVariables(globalCentroid, nReadoutHits_, nIsoHits_, nMipTracks_, mipTrackDep_, longestMipTrack_,
         		summedDet, summedOuter,summedIso_, backSummedDet, maxIsoDep_, EcalLayerEdepRaw_);
-        result_.setVetoResult(pred > bdtCutVal_);
         BDTHelper_->buildFeatureVector(bdtFeatures_,result_);
+    	double pred = BDTHelper_->getSinglePred(nBdtVars_);
+
+        result_.setVetoResult(pred > bdtCutVal_);
+
         event.addToCollection("EcalVeto", result_);
     }
 }
