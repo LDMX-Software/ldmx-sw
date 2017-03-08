@@ -57,7 +57,7 @@ namespace ldmx {
 
 			void buildFeatureVector(std::vector<double> & bdtFeatures,EcalVetoResult result_){
 		    	for (int i = 0; i < nFeatures; i++){
-		    		bdtFeatures.append(rand()%1000 *1/1000.);
+		    		bdtFeatures.push_back(rand()%1000 *1/1000.);
 		    	}
 			}
 			double getSinglePred(std::vector<float> bdtFeatures){
