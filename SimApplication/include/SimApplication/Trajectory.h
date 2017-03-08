@@ -8,6 +8,7 @@
 #define SIMAPPLICATION_TRAJECTORY_H_
 
 // Geant4
+#include "G4TrajectoryContainer.hh"
 #include "G4VTrajectory.hh"
 #include "G4Allocator.hh"
 #include "G4Track.hh"
@@ -155,6 +156,14 @@ class Trajectory : public G4VTrajectory {
          * @param genStatus The particle's generator status.
          */
         void setGenStatus(int genStatus);
+
+        /**
+         * Find a Trajectory by its track ID within a G4TrajectoryContainer.
+         * @param trajCont The G4TrajectoryContainer to search.
+         * @param trackID The track ID.
+         * @return The matching Trajectory or null if does not exist.
+         */
+        static Trajectory* findByTrackID(G4TrajectoryContainer* trajCont, int trackID);
 
     private:
 
