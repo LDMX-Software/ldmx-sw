@@ -21,6 +21,7 @@ namespace ldmx {
         filename_ = filename;
         ifile_ = new TFile( filename_ );
         itree_ = (TTree*) ifile_->Get(EventConstants::EVENT_TREE_NAME.c_str());
+	eventHeader_ = 0;
         simParticles_ = new TClonesArray(EventConstants::SIM_PARTICLE.c_str());
         itree_->SetBranchAddress(EventConstants::EVENT_HEADER.c_str(), &eventHeader_);
         itree_->SetBranchAddress("SimParticles_sim", &simParticles_);

@@ -39,11 +39,9 @@ namespace ldmx {
             /**
              * Set the sim particle and 'is findable' flag.
              */
-            void setResult(bool passesVeto, int nReadoutHits, int nLooseIsoHits, int nTightIsoHits,
-            		float summedDet, int summedOuter, float backSummedDet,
-					float summedLooseIso, float maxLooseIsoDep,float summedTightIso, float maxTightIsoDep,
-            		float maxCellDep, float showerRMS, std::vector<float> EcalLayerEdepReadout,
-					std::vector<std::pair<int,float>> looseMipTracks,std::vector<std::pair<int,float>> mediumMipTracks,std::vector<std::pair<int,float>> tightMipTracks);
+            void setResult(bool passesVeto, int centroidCell, int nReadoutHits, int nIsoHits, int nMipTracks,
+            		float mipTrackDep, int longestMipTrack, float summedDet, float summedOuter, float summedIso,
+            		float backEcalSummedDet, float maxIsoHit, std::vector<float> digiECALVec);
 
             /** Reset the object. */
             void Clear(Option_t *option = ""); 
@@ -63,67 +61,48 @@ namespace ldmx {
 
             int getNReadoutHits() { return nReadoutHits_; };
 
-            int getNLooseIsoHits() { return nLooseIsoHits_; };
+            int getNIsoHits() { return nIsoHits_; };
 
-            int getNTightIsoHits() { return nTightIsoHits_; };
+            int getNMipTracks() { return nMipTracks_; };
 
+            int getLongestMipTrack() { return longestMipTrack_; };
 
-            int nLooseMipTracks() { return nLooseMipTracks_; };
-
-            int nMediumMipTracks() { return nMediumMipTracks_; };
-
-            int nTightMipTracks() { return nTightMipTracks_; };
 
             float getSummedDet() { return summedDet_; };
 
             float getSummedOuter() { return summedOuter_; };
 
-            float getBackSummedDep() { return backSummedDet_; };
+            float getSummedIso() { return summedIso_; };
 
-            float getSummedLooseIso() { return summedLooseIso_; };
+            float getBackSummedDep() { return backEcalSummedDet_; };
 
-            float getMaxLooseIsoDep() { return maxLooseIsoDep_; };
+            float getMaxIsoHit() { return maxIsoHit_; };
 
-            float getSummedTightIso() { return summedTightIso_; };
+            float getMipTrackDep() { return mipTrackDep_; };
 
-            float getMaxTightIsoDep() { return maxTightIsoDep_; };
 
-            std::vector<float> getEcalLayerEdepReadout() { return EcalLayerEdepReadout_; };
-
-            std::vector<std::pair<int,float>> getLooseMipTracks() { return looseMipTracks_; };
-
-            std::vector<std::pair<int,float>> getMediumMipTracks() { return mediumMipTracks_; };
-
-            std::vector<std::pair<int,float>> getTightMipTracks() { return tightMipTracks_; };
-
+            std::vector<float> digiECALVec() { return digiECALVec_; };
 
 
         private:
            
             /** Flag indicating whether the event is vetoed by the Ecal. */
             bool passesVeto_{false};
+            
+            int   centroidCell_{0};
             int   nReadoutHits_{0};
-            int   nLooseIsoHits_{0};
-            int   nTightIsoHits_{0};
-            int   nLooseMipTracks_{0};
-            int   nMediumMipTracks_{0};
-            int   nTightMipTracks_{0};
-
+            int   nIsoHits_{0};
+            int   nMipTracks_{0};
+            int   longestMipTrack_{0};
             float summedDet_{0};
+            float summedIso_{0};
             float summedOuter_{0};
-            float backSummedDet_{0};
-            float summedLooseIso_{0};
-            float maxLooseIsoDep_{0};
-            float summedTightIso_{0};
-            float maxTightIsoDep_{0};
-            float maxCellDep_{0};
-            float showerRMS_{0};
+            float maxIsoHit_{0};
+            float backEcalSummedDet_{0};
+            float mipTrackDep_{0};
 
-            std::vector<float> EcalLayerEdepReadout_;
-            std::vector<std::pair<int,float>> looseMipTracks_;
-            std::vector<std::pair<int,float>> mediumMipTracks_;
-            std::vector<std::pair<int,float>> tightMipTracks_;
-
+            std::vector<float> digiECALVec_;
+            
         ClassDef(EcalVetoResult, 1); 
 
     }; // EcalVetoResult
