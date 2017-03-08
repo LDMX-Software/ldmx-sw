@@ -54,8 +54,10 @@ namespace ldmx {
 			};
 			virtual ~BDTHelper() {;}
 
-			double buildFeatureVector(std::vector<double> & bdtFeatures){
-
+			void buildFeatureVector(std::vector<double> & bdtFeatures,EcalVetoResult result_){
+		    	for (int i = 0; i < nBdtVars_; i++){
+		    		bdtFeatures_.append(rand()%1000 *1/1000.);
+		    	}
 			}
 			double getSinglePred(std::vector<float> bdtFeatures){
 				if (bdtFeatures.size() != nFeatures){
