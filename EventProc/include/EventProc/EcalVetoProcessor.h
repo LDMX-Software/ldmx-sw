@@ -35,7 +35,7 @@ namespace ldmx {
      * @brief Determines if event is vetoable using ECAL hit information
      */
 
-	inline class BDTHelper{
+	class BDTHelper{
 		#include "TPython.h"
 		public:
 
