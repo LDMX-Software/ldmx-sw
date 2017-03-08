@@ -37,6 +37,7 @@ namespace ldmx {
 
 	class BDTHelper{
 		#include "TPython.h"
+		#include "Event/EcalVetoResult.h"
 		public:
 
 			BDTHelper(TString importBDTFile, int FeatureVecLen) {
