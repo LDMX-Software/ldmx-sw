@@ -56,7 +56,7 @@ namespace ldmx {
 			};
 			virtual ~BDTHelper() {;}
 
-			void buildFeatureVector(std::vector<double>& bdtFeatures,ldmx::EcalVetoResult& result_){
+			void buildFeatureVector(std::vector<float>& bdtFeatures,ldmx::EcalVetoResult& result_){
 		    	for (int i = 0; i < nFeatures; i++){
 		    		bdtFeatures.push_back(rand()%1000 *1/1000.);
 		    	}
