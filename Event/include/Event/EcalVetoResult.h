@@ -39,7 +39,7 @@ namespace ldmx {
             /**
              * Set the sim particle and 'is findable' flag.
              */
-            void setResult(bool passesVeto, int centroidCell, int nReadoutHits, int nIsoHits, int nMipTracks,
+            void setVariables(int centroidCell, int nReadoutHits, int nIsoHits, int nMipTracks,
             		float mipTrackDep, int longestMipTrack, float summedDet, float summedOuter, float summedIso,
             		float backEcalSummedDet, float maxIsoHit, std::vector<float> digiECALVec);
 
@@ -79,6 +79,8 @@ namespace ldmx {
             float getMaxIsoHit() { return maxIsoHit_; };
 
             float getMipTrackDep() { return mipTrackDep_; };
+
+            void setVetoResult(double passesVeto) {    	 passesVeto_ 		= passesVeto;}
 
 
             std::vector<float> digiECALVec() { return digiECALVec_; };
