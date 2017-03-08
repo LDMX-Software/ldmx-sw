@@ -48,6 +48,7 @@ namespace ldmx {
         longestMipTrack_ = 0;
         mipTrackDep_   = 0;
         trackVector_.clear();
+        bdtFeatures_.clear();
         std::fill(EcalLayerEdepRaw_.begin(), EcalLayerEdepRaw_.end(), 0);
         std::fill(EcalLayerEdepReadout_.begin(), EcalLayerEdepReadout_.end(), 0);
         std::fill(EcalLayerOuterRaw_.begin(), EcalLayerOuterRaw_.end(), 0);
@@ -126,7 +127,7 @@ namespace ldmx {
         	}
         }
     	for (int i = 0; i < nBdtVars_; i++){
-    		bdtFeatures.append(rand()%1000 *1/1000.);
+    		bdtFeatures_.append(rand()%1000 *1/1000.);
     	}
     	double pred = BDTHelper_->getSinglePred(nBdtVars_);
         result_.setResult((pred > bdtCutVal_), globalCentroid, nReadoutHits_, nIsoHits_, nMipTracks_, mipTrackDep_, longestMipTrack_,
