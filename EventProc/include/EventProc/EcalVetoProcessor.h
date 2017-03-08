@@ -54,22 +54,25 @@ namespace ldmx {
 			};
 			virtual ~BDTHelper() {;}
 
-			double getSinglePred(vector<float> featureVector){
-				if (featureVector.size() != nFeatures){
-					throw std::runtime_error("Error: You passed " << featureVector.size() << " instead of " << nFeatures);
+			double buildFeatureVector(std::vector<double> & bdtFeatures){
+
+			}
+			double getSinglePred(std::vector<float> bdtFeatures){
+				if (bdtFeatures.size() != nFeatures){
+					throw std::runtime_error("Error: You passed " << bdtFeatures.size() << " instead of " << nFeatures);
 				}
-				TString cmd = vectorToPredCMD(featureVector);
+				TString cmd = vectorToPredCMD(bdtFeatures);
 				//pyEnv->Exec("pred = " + cmd);
 				//double pred = pyEnv->Eval("pred");
 				double pred = rand()%100 * 1/100.;
 				return pred;
 			};
 
-			TString vectorToPredCMD(vector<float> featureVector){
+			TString vectorToPredCMD(std::vector<float> bdtFeatures){
 				TString featuresStrVector = "[[";
-				for (int i = 0; i < featureVector.size(); i++){
-					featuresStrVector += std::to_string(featureVector[i]);
-					if (i < featureVector.size() - 1)
+				for (int i = 0; i < bdtFeatures.size(); i++){
+					featuresStrVector += std::to_string(bdtFeatures[i]);
+					if (i < bdtFeatures.size() - 1)
 							featuresStrVector += ",";
 				}
 				featuresStrVector += "]]";
@@ -262,7 +265,7 @@ namespace ldmx {
             std::vector<float> EcalLayerOuterRaw_;
             std::vector<float> EcalLayerOuterReadout_;
             std::vector<float> EcalLayerTime_;
-            std::vector<float> bdtFeatures;
+            std::vector<float> bdtFeatures_;
             std::vector<std::pair<int,float>> trackVector_;
 
             int nEcalLayers_;
