@@ -36,7 +36,7 @@ namespace ldmx {
      */
 
 	inline class BDTHelper{
-		#import "TPython.h"
+		#include "TPython.h"
 		public:
 
 			BDTHelper(TString importBDTFile, int FeatureVecLen) {
