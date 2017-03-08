@@ -14,7 +14,7 @@
 #include "TTree.h"
 #include "TRandom2.h"
 #include "TClonesArray.h"
-#import "TPython.h"
+
 
 // LDMX
 #include "Event/EcalVetoResult.h"
@@ -36,7 +36,7 @@ namespace ldmx {
      */
 
 	inline class BDTHelper{
-
+		#import "TPython.h"
 		public:
 
 			BDTHelper(TString importBDTFile, int FeatureVecLen) {
