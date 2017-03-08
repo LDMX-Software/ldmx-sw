@@ -14,6 +14,7 @@
 #include "TTree.h"
 #include "TRandom2.h"
 #include "TClonesArray.h"
+#import "TPython.h"
 
 // LDMX
 #include "Event/EcalVetoResult.h"
@@ -34,12 +35,10 @@ namespace ldmx {
      * @brief Determines if event is vetoable using ECAL hit information
      */
 
-	inline class BDTHelper
-	#import "TPython.h"
-	#import "TString.h"
-	#include <vector>
-	{
+	inline class BDTHelper{
+
 		public:
+
 			BDTHelper(TString importBDTFile, int FeatureVecLen) {
 				TPython * pyEnv = new TPython::TPython();
 				/* Train a fake bdt, to be replaced by real bdt in future!!! */
@@ -62,7 +61,7 @@ namespace ldmx {
 				TString cmd = vectorToPredCMD(featureVector);
 				//pyEnv->Exec("pred = " + cmd);
 				//double pred = pyEnv->Eval("pred");
-				double pred = rand()%100 * 1/.100.;
+				double pred = rand()%100 * 1/100.;
 				return pred;
 			};
 
