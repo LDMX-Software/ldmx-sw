@@ -17,6 +17,6 @@ trigger.parameters["start_layer"] = 1
 trigger.parameters["end_layer"] = 16
 findable_track = ldmxcfg.Producer("findable", "ldmx::FindableTrackProcessor")
 p.sequence=[ecalDigis, hcalDigis, ecalVeto, trigger, findable_track]
-p.inputFiles=["SLAC.4.0GeV.W.map.0.2.4_unweighted_events.root"]
-p.outputFiles=["SLAC.4.0GeV.W.map.0.2.4_unweighted_events_recon.root"]
+p.inputFiles=["ldmx_sim_events.root"]
+p.outputFiles=["ldmx_sim_recon_events.root"]
 p.printMe()
