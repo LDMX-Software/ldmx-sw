@@ -59,10 +59,9 @@ namespace ldmx {
         result.centroidCell_		= centroidCell_;
     }
 
-    void EcalVetoResult::setResult(bool passesVeto, int centroidCell, int nReadoutHits, int nIsoHits, int nMipTracks,
+    void EcalVetoResult::setVariables( int centroidCell, int nReadoutHits, int nIsoHits, int nMipTracks,
     		float mipTrackDep, int longestMipTrack, float summedDet, float summedOuter, float summedIso,
     		float backEcalSummedDet, float maxIsoHit, std::vector<float> digiECALVec){
-    	 passesVeto_ 		= passesVeto;
          nReadoutHits_    	= nReadoutHits;
          nIsoHits_    		= nIsoHits;
          nMipTracks_    	= nMipTracks;
