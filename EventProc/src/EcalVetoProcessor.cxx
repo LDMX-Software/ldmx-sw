@@ -17,6 +17,11 @@ namespace ldmx {
 
         nEcalLayers_ = ps.getInteger("num_ecal_layers");
         backEcalStartingLayer_ = ps.getInteger("back_ecal_starting_layer");
+        nBDTVars_ = ps.getInteger("n_bdt_vars");
+        if (nBDTVars_ != 0){
+        	BDTHelper_ = new BDTHelper("",nBDTVars_);
+        }
+        bdtCutVal_ = ps.getDouble("discCut");
 
         EcalLayerEdepRaw_.resize(nEcalLayers_, 0);
         EcalLayerEdepReadout_.resize(nEcalLayers_, 0);
@@ -34,6 +39,7 @@ namespace ldmx {
             cellMap_[i].clear();
             cellMapIso_[i].clear();
     	}
+
 
     	nReadoutHits_  = 0;
         nIsoHits_      = 0;
@@ -119,8 +125,11 @@ namespace ldmx {
         		longestMipTrack_ = track.first;
         	}
         }
-
-        result_.setResult(true, globalCentroid, nReadoutHits_, nIsoHits_, nMipTracks_, mipTrackDep_, longestMipTrack_,
+    	for (int i = 0; i < nBdtVars_; i++){
+    		bdtFeatures.append(rand()%1000 *1/1000.);
+    	}
+    	double pred = BDTHelper_->getSinglePred(nBdtVars_);
+        result_.setResult((pred > bdtCutVal_), globalCentroid, nReadoutHits_, nIsoHits_, nMipTracks_, mipTrackDep_, longestMipTrack_,
         		summedDet, summedOuter,summedIso_, backSummedDet, maxIsoDep_, EcalLayerEdepRaw_);
         event.addToCollection("EcalVeto", result_);
     }

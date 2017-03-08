@@ -33,6 +33,54 @@ namespace ldmx {
      * @class EcalVetoProcessor
      * @brief Determines if event is vetoable using ECAL hit information
      */
+
+	inline class BDTHelper
+	#import "TPython.h"
+	#import "TString.h"
+	#include <vector>
+	{
+		public:
+			BDTHelper(TString importBDTFile, int FeatureVecLen) {
+				TPython * pyEnv = new TPython::TPython();
+				/* Train a fake bdt, to be replaced by real bdt in future!!! */
+
+				//pyEnv->Exec("import xgboost as xgb");
+				pyEnv->Exec("import numpy as np");
+				pyEnv->Exec("a = np.random.rand(100," + FeatureVecLen +")");
+				pyEnv->Exec("b = np.zeros(len(a))");
+				pyEnv->Exec("b[0:50] = 1");
+				//pyEnv->Exec("param = {}");
+				//pyEnv->Exec("param[\'objective\'] = \'binary:logistic\'");
+				//pyEnv->Exec("model = xgb.train(param,xgb.DMatrix(a,label = b))");
+			};
+			virtual ~BDTHelper() {;}
+
+			double getSinglePred(vector<float> featureVector){
+				if (featureVector.size() != nFeatures){
+					throw std::runtime_error("Error: You passed " << featureVector.size() << " instead of " << nFeatures);
+				}
+				TString cmd = vectorToPredCMD(featureVector);
+				//pyEnv->Exec("pred = " + cmd);
+				//double pred = pyEnv->Eval("pred");
+				double pred = rand()%100 * 1/.100.;
+				return pred;
+			};
+
+			TString vectorToPredCMD(vector<float> featureVector){
+				TString featuresStrVector = "[[";
+				for (int i = 0; i < featureVector.size(); i++){
+					featuresStrVector += std::to_string(featureVector[i]);
+					if (i < featureVector.size() - 1)
+							featuresStrVector += ",";
+				}
+				featuresStrVector += "]]";
+				TString cmd = "float(model.predict(xgb.DMatrix(" + featuresStrVector + "))[0])";
+				return cmd;
+			};
+		private:
+			int nFeatures;
+	};
+
     class EcalVetoProcessor : public Producer {
 
         public:
@@ -203,6 +251,9 @@ namespace ldmx {
         		    }
         		}
             }
+
+
+
         private:
 
             std::vector<std::map<int,float>> cellMap_;
@@ -212,6 +263,7 @@ namespace ldmx {
             std::vector<float> EcalLayerOuterRaw_;
             std::vector<float> EcalLayerOuterReadout_;
             std::vector<float> EcalLayerTime_;
+            std::vector<float> bdtFeatures;
             std::vector<std::pair<int,float>> trackVector_;
 
             int nEcalLayers_;
@@ -222,6 +274,7 @@ namespace ldmx {
             int nIsoHits_;
             int nMipTracks_;
             int longestMipTrack_;
+            int nBDTVars;
 
             std::vector<float> EcalIsoHitsEnergy;
             std::vector<float> EcalMipTrackLength;
@@ -234,12 +287,14 @@ namespace ldmx {
             double ratioCut_;
             double summedIso_;
             double maxIsoDep_;
+            double bdtCutVal_;
             float mipTrackDep_;
             EcalVetoResult result_;
             EcalDetectorID detID_;
             bool verbose_{false};
             bool doesPassVeto_{false};
             EcalHexReadout* hexReadout_{nullptr};
+            BDTHelper* BDTHelper_;
     };
 
 }
