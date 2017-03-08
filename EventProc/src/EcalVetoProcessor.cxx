@@ -129,8 +129,9 @@ namespace ldmx {
 
         result_.setVariables(globalCentroid, nReadoutHits_, nIsoHits_, nMipTracks_, mipTrackDep_, longestMipTrack_,
         		summedDet, summedOuter,summedIso_, backSummedDet, maxIsoDep_, EcalLayerEdepRaw_);
+
         BDTHelper_->buildFeatureVector(bdtFeatures_,result_);
-    	double pred = BDTHelper_->getSinglePred(nBdtVars_);
+    	double pred = BDTHelper_->getSinglePred(bdtFeatures_);
 
         result_.setVetoResult(pred > bdtCutVal_);
 
