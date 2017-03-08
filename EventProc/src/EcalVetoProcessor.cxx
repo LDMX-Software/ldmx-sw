@@ -126,12 +126,11 @@ namespace ldmx {
         		longestMipTrack_ = track.first;
         	}
         }
-    	for (int i = 0; i < nBdtVars_; i++){
-    		bdtFeatures_.append(rand()%1000 *1/1000.);
-    	}
+
     	double pred = BDTHelper_->getSinglePred(nBdtVars_);
         result_.setResult((pred > bdtCutVal_), globalCentroid, nReadoutHits_, nIsoHits_, nMipTracks_, mipTrackDep_, longestMipTrack_,
         		summedDet, summedOuter,summedIso_, backSummedDet, maxIsoDep_, EcalLayerEdepRaw_);
+        BDTHelper_->buildFeatureVector(bdtFeatures_,result_);
         event.addToCollection("EcalVeto", result_);
     }
 }
