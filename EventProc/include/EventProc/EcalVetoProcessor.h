@@ -278,7 +278,7 @@ namespace ldmx {
             int nIsoHits_;
             int nMipTracks_;
             int longestMipTrack_;
-            int nBDTVars;
+            int nBDTVars_;
 
             std::vector<float> EcalIsoHitsEnergy;
             std::vector<float> EcalMipTrackLength;
@@ -292,7 +292,8 @@ namespace ldmx {
             double summedIso_;
             double maxIsoDep_;
             double bdtCutVal_;
-            float mipTrackDep_;
+            double mipTrackDep_;
+
             EcalVetoResult result_;
             EcalDetectorID detID_;
             bool verbose_{false};
