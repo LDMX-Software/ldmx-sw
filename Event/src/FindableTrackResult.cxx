@@ -35,6 +35,9 @@ namespace ldmx {
             case FindableTrackResult::STRATEGY_2A:
                 is2aFindable_ = isFindable; 
                 break;
+            case FindableTrackResult::STRATEGY_2S:
+                is2sFindable_ = isFindable; 
+                break;
         }
     }
 
@@ -44,6 +47,7 @@ namespace ldmx {
         is3s1aFindable_ = false;
         is2s2aFindable_ = false;
         is2aFindable_ = false; 
+        is2sFindable_  = false;
     }
 
     void FindableTrackResult::Print(Option_t *option) { 
@@ -54,6 +58,7 @@ namespace ldmx {
                   << "\t3s1a Findable: " << is3s1aFindable_  << "\n"
                   << "\t2s2a Findable: " << is2s2aFindable_  << "\n"
                   << "\t2a Findable: "   << is2aFindable_  << "\n"
+                  << "\t2s Findable: "   << is2sFindable_  << "\n"
                   << std::endl;
     }
 }
