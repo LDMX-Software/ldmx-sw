@@ -65,7 +65,7 @@ namespace ldmx {
             }
 
             /* Function to calculate the energy weighted shower centroid */
-            inline int GetShowerCentroidIDAndRMS(const TClonesArray* ecalDigis, double & showerRMS){
+            inline int GetShowerCentroidID(const TClonesArray* ecalDigis){
             	int nEcalHits = ecalDigis->GetEntriesFast();
             	XYCoords wgtCentroidCoords = std::make_pair<float,float>(0.,0.);
             	float sumEdep = 0;
@@ -87,19 +87,17 @@ namespace ldmx {
             	for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
             		EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
             		LayerCellPair hit_pair = hitToPair(hit);
+            		CellEnergyPair cell_energy_pair = std::make_pair(hit_pair.second, hit->getEnergy());
     		        XYCoords centroidCoords = hexReadout_->getCellCentroidXYPair(hit_pair.second);
 
 
                     float deltaR = pow( pow((centroidCoords.first - wgtCentroidCoords.first),2)
                             +  pow((centroidCoords.second - wgtCentroidCoords.second),2),.5);
-                    showerRMS += deltaR * hit->getEnergy();
                     if ( deltaR < maxDist ){
                         maxDist = deltaR;
                         returnCellId = hit_pair.second;
                     }
             	}
-            	if (sumEdep > 0)
-            		showerRMS = showerRMS/sumEdep;
             	return returnCellId;
             }
 
@@ -117,20 +115,19 @@ namespace ldmx {
 
             /* Function to take loaded hit maps and find isolated hits in them */
             inline void fillIsolatedHitMap(const TClonesArray* ecalDigis,float globalCentroid,
-            		std::vector<std::map<int,float>>& cellMap_, std::vector<std::map<int,float>>& cellMapIso_, bool doTight = false){
+            		std::vector<std::map<int,float>>& cellMap_, std::vector<std::map<int,float>>& cellMapIso_){
             	int nEcalHits = ecalDigis->GetEntriesFast();
 				for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
 					std::pair<bool,int> isolatedHit = std::make_pair(true,0);
 					EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
 					LayerCellPair hit_pair = hitToPair(hit);
-					if (doTight){
-						//Disregard hits that are on the centroid.
-						if(hit_pair.second == globalCentroid) continue;
 
-						//Skip hits that are on centroid inner ring
-						if (hexReadout_->isInShowerInnerRing(globalCentroid, hit_pair.second)) {
-							continue;
-						}
+					//Disregard hits that are on the centroid.
+					if(hit_pair.second == globalCentroid) continue;
+
+					//Skip hits that are on centroid inner ring
+					if (hexReadout_->isInShowerInnerRing(globalCentroid, hit_pair.second)) {
+						continue;
 					}
 
 					//Skip hits that have a readout neighbor
@@ -141,34 +138,29 @@ namespace ldmx {
 				        std::map<int,float>::iterator it = cellMap_[hit_pair.first ].find(cellNbrIds[k]);
 				        if(it != cellMap_[hit_pair.first ].end()) {isolatedHit = std::make_pair(false,cellNbrIds[k]); break;}
 				    }
+
 				    if (!isolatedHit.first) {
 				    	continue;
 				    }
+
 				    //Insert isolated hit
 					CellEnergyPair cell_energy_pair = std::make_pair(hit_pair.second, hit->getEnergy());
 					cellMapIso_[hit_pair.first].insert(cell_energy_pair);
 				}
             }
 
-            inline void fillMipTracks(std::vector<std::map<int,float>>& cellMapIso_,
-            		std::vector<std::pair<int,float>>& trackVector, int minTrackLen = 2){
-
-            	std::vector<std::vector<int>> trackTuple;
-            	for (int iLayer = 0; iLayer < cellMapIso_.size() - 1; iLayer++){
+            inline void fillMipTracks(int globalCentroid,std::vector<std::map<int,float>>& cellMapIso_, std::vector<std::pair<int,float>>& trackVector){
+        		for (int iLayer = 0; iLayer < cellMapIso_.size() - 1; iLayer++){
+        			std::vector<LayerCellPair> trackCellPairs;
         			float trackEdep = 0;
-        		    //for (auto && seedCell : cellMapIso_[iLayer]){
-        			auto itEnd = cellMapIso_[iLayer].cend();
-        			for (auto it = cellMapIso_[iLayer].cbegin(); it != cellMapIso_[iLayer].cend(); ){
-
-        				auto seedCell = (*it);//.second;
-
-        		    	std::pair<int,int> trackEndPoints;
-        		    	std::vector<LayerCellPair> trackCellPairs;
+        		    for (auto && seedCell : cellMapIso_[iLayer]){
         		    	LayerCellPair seedCellPair = std::make_pair(iLayer,seedCell.first);
         		        trackEdep += seedCell.second;
         		        trackCellPairs.clear();
         		        trackCellPairs.push_back(seedCellPair);
-        		        trackEndPoints.first = seedCell.first;
+        		        if (globalCentroid == seedCellPair.second || hexReadout_->isInShowerInnerRing(globalCentroid, seedCellPair.second)) {
+        		        	continue;
+        		        }
 
         		        while(true){
         		            if (seedCellPair.first + 1 >= cellMapIso_.size() - 1) {
@@ -176,9 +168,12 @@ namespace ldmx {
         		            }
 							float matchCellDep;
 							LayerCellPair matchCellPair = std::make_pair(-1,1e6);
+
                             for (auto matchCell : cellMapIso_[seedCellPair.first+1]){
                 		        matchCellDep = matchCell.second;
                 		        LayerCellPair tempMatchCellPair  = std::make_pair(seedCellPair.first + 1,matchCell.first);
+                		        if (globalCentroid == tempMatchCellPair.second ||
+                		        		hexReadout_->isInShowerInnerRing(globalCentroid, tempMatchCellPair.second)) continue;
                 		        if (tempMatchCellPair.second == seedCellPair.second ||
                 		        		hexReadout_->isInShowerInnerRing(tempMatchCellPair.first, seedCellPair.second)){
                 		        	matchCellPair = tempMatchCellPair;
@@ -188,9 +183,8 @@ namespace ldmx {
 
                             if (matchCellPair.first != -1){
                             	trackCellPairs.push_back(matchCellPair);
-                            	trackEdep 	  +=  matchCellDep;
+                            	trackEdep 	 +=  matchCellDep;
                 		        seedCellPair  = matchCellPair;
-                		        trackEndPoints.second = matchCellPair.first;
                             }
 
                             else{
@@ -198,84 +192,49 @@ namespace ldmx {
                             }
         		        }
 
-        		        if (trackCellPairs.size() >= minTrackLen) {
+        		        if (trackCellPairs.size() >= 3) {
         		        	trackVector.push_back(std::make_pair(trackCellPairs.size(),trackEdep));
-        		        	std::vector<int> trackInfo = {iLayer,trackEndPoints.first,trackEndPoints.second};
-        		        	trackTuple.push_back(trackInfo);
-        		        	int counter = 0;
-        		        	cellMapIso_[iLayer].erase(it++);
                             for (auto cell : trackCellPairs){
-                            	if (counter == 0){
-                            		counter = counter + 1;
-                            		continue;
-                            	}
-                            	std::map<int,float>::iterator it_2  = cellMapIso_[cell.first].find(cell.second);
-								cellMapIso_[cell.first].erase(it_2);
+                            	std::map<int,float>::iterator it  = cellMapIso_[cell.first].find(cell.second);
+								cellMapIso_[cell.first].erase(it);
 
                             }
         		        }
-        		        else{
-        		        	it++;
-        		        }
         		    }
         		}
-
-    		    for (int iTrack = 0; iTrack < trackVector.size(); iTrack++){
-    		    	if (iTrack >= trackVector.size() - 1) break;
-    		    	int prevEndLayer = trackTuple[iTrack][0];
-    		    	int prevEndId 	 = trackTuple[iTrack][2];
-    		    	int prevLen = trackVector[iTrack].first;
-    		    	for (int jTrack = 0; jTrack < trackVector.size(); jTrack++){
-    		    		if (jTrack >= trackVector.size() - 1) break;
-    		    		int nextStartLayer = trackTuple[jTrack][0];
-    		    		int nextStartId    = trackTuple[jTrack][1];
-    		    		if ( prevEndLayer + prevLen != nextStartLayer - 1 ) break;
-    		    		if (hexReadout_->isInShowerOuterRing(prevEndId, nextStartId)){
-    		    			trackVector[iTrack].second = trackVector[iTrack].second  + trackVector[jTrack].second;
-    		    			trackVector[iTrack].first  = trackVector[iTrack].first + trackVector[jTrack].first;
-    		    			trackTuple[iTrack][2] = trackTuple[jTrack][2];
-
-    		    			trackVector.erase (trackVector.begin()+jTrack);
-    		    			trackTuple.erase (trackTuple.begin()+jTrack);
-    		    			jTrack --;
-    		    		}
-    		    	}
-    		    }
             }
         private:
 
             std::vector<std::map<int,float>> cellMap_;
-            std::vector<std::map<int,float>> cellMapLooseIso_;
-            std::vector<std::map<int,float>> cellMapTightIso_;
-
+            std::vector<std::map<int,float>> cellMapIso_;
             std::vector<float> EcalLayerEdepRaw_; 
             std::vector<float> EcalLayerEdepReadout_;
             std::vector<float> EcalLayerOuterRaw_;
             std::vector<float> EcalLayerOuterReadout_;
             std::vector<float> EcalLayerTime_;
-
-            std::vector<std::pair<int,float>> looseMipTracks_;
-            std::vector<std::pair<int,float>> mediumMipTracks_;
-            std::vector<std::pair<int,float>> tightMipTracks_;
+            std::vector<std::pair<int,float>> trackVector_;
 
             int nEcalLayers_;
+            int nLayersMedCal_; 
             int backEcalStartingLayer_;
             //Begin New variables
             int nReadoutHits_;
-            int nLooseIsoHits_;
-    		int nTightIsoHits_;
+            int nIsoHits_;
+            int nMipTracks_;
+            int longestMipTrack_;
 
-    		double summedDet_;
-    		double summedOuter_;
-    		double backSummedDet_;
-            double summedLooseIso_;
-            double maxLooseIsoDep_;
-            double summedTightIso_;
-            double maxTightIsoDep_;
-            double maxCellDep_;
-            double showerRMS_;
+            std::vector<float> EcalIsoHitsEnergy;
+            std::vector<float> EcalMipTrackLength;
+            std::vector<float> EcalMipTrackEdep;
 
-
+            //End New Variables
+            double totalDepCut_;
+            double totalOuterCut_;
+            double backEcalCut_;
+            double ratioCut_;
+            double summedIso_;
+            double maxIsoDep_;
+            float mipTrackDep_;
             EcalVetoResult result_;
             EcalDetectorID detID_;
             bool verbose_{false};
