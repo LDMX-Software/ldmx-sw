@@ -45,7 +45,7 @@ namespace ldmx {
 
 				//pyEnv->Exec("import xgboost as xgb");
 				pyEnv->Exec("import numpy as np");
-				pyEnv->Exec("a = np.random.rand(100," + FeatureVecLen +")");
+				pyEnv->Exec("a = np.random.rand(100," + std::to_string(FeatureVecLen) +")");
 				pyEnv->Exec("b = np.zeros(len(a))");
 				pyEnv->Exec("b[0:50] = 1");
 				//pyEnv->Exec("param = {}");
