@@ -103,10 +103,9 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
         anEvent->AddPrimaryVertex(vertex);
 
     } else {
-        G4Exception("LHEPrimaryGenerator::GeneratePrimaryVertex",
-                "EventUnderflow",
-                RunMustBeAborted,
-                "No more LHE events found in input file.");
+        std::cout << "[ LHEPrimaryGenerator ] : Ran out of input events so run will be aborted!" << std::endl;
+        G4RunManager::GetRunManager()->AbortRun(true);
+        anEvent->SetEventAborted();
     }
 
     delete lheEvent;
