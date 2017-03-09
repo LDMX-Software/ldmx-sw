@@ -39,10 +39,12 @@ namespace ldmx {
             /**
              * Set the sim particle and 'is findable' flag.
              */
-            void setVariables(int nReadoutHits, int nIsoHits, int nMipTracks,
-            		float mipTrackDep, int longestMipTrack, float summedDet, float summedOuter, float summedIso,
-            		float backEcalSummedDet, float maxIsoHit, std::vector<float> digiECALVec);
 
+	    void EcalVetoResult::setVariables(int nReadoutHits, int nLooseIsoHits, int nTightIsoHits,
+                float summedDet, int summedOuter, float backSummedDet,
+                        float summedLooseIso, float maxLooseIsoDep,float summedTightIso, float maxTightIsoDep,
+                float maxCellDep, float showerRMS, std::vector<float> EcalLayerEdepReadout,
+                        std::vector<std::pair<int,float>> looseMipTracks,std::vector<std::pair<int,float>> mediumMipTracks,std::vector<std::pair<int,float>> tightMipTracks);
             /** Reset the object. */
             void Clear(Option_t *option = ""); 
             
