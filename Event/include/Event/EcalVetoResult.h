@@ -39,7 +39,7 @@ namespace ldmx {
             /**
              * Set the sim particle and 'is findable' flag.
              */
-            void setVariables(int centroidCell, int nReadoutHits, int nIsoHits, int nMipTracks,
+            void setVariables(int nReadoutHits, int nIsoHits, int nMipTracks,
             		float mipTrackDep, int longestMipTrack, float summedDet, float summedOuter, float summedIso,
             		float backEcalSummedDet, float maxIsoHit, std::vector<float> digiECALVec);
 
