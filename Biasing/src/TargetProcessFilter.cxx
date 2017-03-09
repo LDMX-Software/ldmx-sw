@@ -58,7 +58,7 @@ namespace ldmx {
 
     void TargetProcessFilter::stepping(const G4Step* step) { 
 
-        if (TargetBremFilter::getBremGammaList().empty()) { 
+        if (TargetBremFilter::getBremGammaList().empty() || reactionOccurred_) { 
             return;
         } 
 
@@ -116,8 +116,8 @@ namespace ldmx {
         if (secondaries->size() == 0) {
 
             /*std::cout << "[ TargetProcessFilter ]: "
-                      << "Brem photon did not interact in the target. --> Postponing tracks."
-                      << std::endl;*/
+                        << "Brem photon did not interact in the target. --> Postponing tracks."
+                        << std::endl;*/
             
 
             if (bremGammaList.size() == 1) { 
@@ -166,7 +166,12 @@ namespace ldmx {
                       << std::endl;
             TargetBremFilter::removeBremFromList(track);
             BiasingMessenger::setEventWeight(track->GetWeight());
+            reactionOccurred_ = true;
         }
-    }       
+    }    
+
+    void TargetProcessFilter::endEvent(const G4Event* event) { 
+        reactionOccurred_ = false; 
+    }
 }
 
