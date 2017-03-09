@@ -50,6 +50,7 @@ namespace ldmx {
 				//pyEnv->Exec("param = {}");
 				//pyEnv->Exec("param[\'objective\'] = \'binary:logistic\'");
 				//pyEnv->Exec("model = xgb.train(param,xgb.DMatrix(a,label = b))");
+				nFeatures = FeatureVecLen;
 			};
 			virtual ~BDTHelper() {;}
 
