@@ -14,6 +14,7 @@
 #include "TTree.h"
 #include "TRandom2.h"
 #include "TClonesArray.h"
+#include "TPython.h"
 
 // LDMX
 #include "Event/EcalVetoResult.h"
@@ -34,8 +35,6 @@ namespace ldmx {
      * @brief Determines if event is vetoable using ECAL hit information
      */
 	class BDTHelper{
-		#include "TPython.h"
-		#include "Event/EcalVetoResult.h"
 		public:
 
 			BDTHelper(TString importBDTFile, int FeatureVecLen) {
