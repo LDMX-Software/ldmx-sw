@@ -81,7 +81,6 @@ namespace ldmx {
 			float summedLooseIso, float maxLooseIsoDep,float summedTightIso, float maxTightIsoDep,
     		float maxCellDep, float showerRMS, std::vector<float> EcalLayerEdepReadout,
 			std::vector<std::pair<int,float>> looseMipTracks,std::vector<std::pair<int,float>> mediumMipTracks,std::vector<std::pair<int,float>> tightMipTracks){
-			passesVeto_     = passesVeto;
 			nReadoutHits_   = nReadoutHits;
 			nLooseIsoHits_  = nLooseIsoHits;
 			nTightIsoHits_  = nTightIsoHits;
