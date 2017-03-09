@@ -155,9 +155,12 @@ namespace ldmx {
         fillMipTracks(looseIsoCopy,mediumMipTracks_,trackLen);
         fillMipTracks(cellMapTightIso_,tightMipTracks_,trackLen);
 
-        result_.setVariables(globalCentroid, nReadoutHits_, nIsoHits_, nMipTracks_, mipTrackDep_, longestMipTrack_,
-        		summedDet, summedOuter,summedIso_, backSummedDet, maxIsoDep_, EcalLayerEdepRaw_);
-
+        result_.setVariables(nReadoutHits_,nLooseIsoHits_,nTightIsoHits_,
+                                summedDet_,summedOuter_,backSummedDet_,
+                                summedLooseIso_,maxLooseIsoDep_,
+                                summedTightIso_,maxTightIsoDep_,
+                                maxCellDep_,showerRMS_,
+                        EcalLayerEdepReadout_,looseMipTracks_,mediumMipTracks_,tightMipTracks_);
         BDTHelper_->buildFeatureVector(bdtFeatures_,result_);
     	double pred = BDTHelper_->getSinglePred(bdtFeatures_);
 
