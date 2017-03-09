@@ -76,7 +76,7 @@ namespace ldmx {
 
     }
 
-    void EcalVetoResult::setVariable(int nReadoutHits, int nLooseIsoHits, int nTightIsoHits,
+    void EcalVetoResult::setVariables(int nReadoutHits, int nLooseIsoHits, int nTightIsoHits,
     		float summedDet, int summedOuter, float backSummedDet,
 			float summedLooseIso, float maxLooseIsoDep,float summedTightIso, float maxTightIsoDep,
     		float maxCellDep, float showerRMS, std::vector<float> EcalLayerEdepReadout,
