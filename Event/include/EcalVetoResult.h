@@ -39,7 +39,7 @@ namespace ldmx {
             /**
              * Set the sim particle and 'is findable' flag.
              */
-            void setResult(bool passesVeto, int nReadoutHits, int nLooseIsoHits, int nTightIsoHits,
+            void setVariables(bool passesVeto, int nReadoutHits, int nLooseIsoHits, int nTightIsoHits,
             		float summedDet, int summedOuter, float backSummedDet,
 					float summedLooseIso, float maxLooseIsoDep,float summedTightIso, float maxTightIsoDep,
             		float maxCellDep, float showerRMS, std::vector<float> EcalLayerEdepReadout,
@@ -95,9 +95,9 @@ namespace ldmx {
             std::vector<std::pair<int,float>> getMediumMipTracks() { return mediumMipTracks_; };
 
             std::vector<std::pair<int,float>> getTightMipTracks() { return tightMipTracks_; };
+	    void setVetoResult(bool passesVeto) { passesVeto_ = passesVeto;};
 
-
-
+	
         private:
            
             /** Flag indicating whether the event is vetoed by the Ecal. */
