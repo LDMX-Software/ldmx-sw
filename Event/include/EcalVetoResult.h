@@ -39,7 +39,7 @@ namespace ldmx {
             /**
              * Set the sim particle and 'is findable' flag.
              */
-            void setsetVariables(bool passesVeto, int nReadoutHits, int nLooseIsoHits, int nTightIsoHits,
+            void setResult(bool passesVeto, int nReadoutHits, int nLooseIsoHits, int nTightIsoHits,
             		float summedDet, int summedOuter, float backSummedDet,
 					float summedLooseIso, float maxLooseIsoDep,float summedTightIso, float maxTightIsoDep,
             		float maxCellDep, float showerRMS, std::vector<float> EcalLayerEdepReadout,
@@ -96,7 +96,7 @@ namespace ldmx {
 
             std::vector<std::pair<int,float>> getTightMipTracks() { return tightMipTracks_; };
 
-	    void setResult(bool passesVeto) {passesVeto_ = passesVeto;}
+
 
         private:
            
