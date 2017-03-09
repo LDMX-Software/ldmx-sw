@@ -95,7 +95,7 @@ namespace ldmx {
 
             typedef std::pair<float, float> XYCoords;
 
-            EcalVetoProcessor(const std::string& name, const Process& process) :
+            EcalVetoProcessor(const std::string& name, Process& process) :
                 Producer(name, process) {
             }
 
