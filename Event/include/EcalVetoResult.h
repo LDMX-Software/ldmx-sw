@@ -39,7 +39,7 @@ namespace ldmx {
             /**
              * Set the sim particle and 'is findable' flag.
              */
-            void setVariables(bool passesVeto, int nReadoutHits, int nLooseIsoHits, int nTightIsoHits,
+            void setVariables(int nReadoutHits, int nLooseIsoHits, int nTightIsoHits,
             		float summedDet, int summedOuter, float backSummedDet,
 					float summedLooseIso, float maxLooseIsoDep,float summedTightIso, float maxTightIsoDep,
             		float maxCellDep, float showerRMS, std::vector<float> EcalLayerEdepReadout,
