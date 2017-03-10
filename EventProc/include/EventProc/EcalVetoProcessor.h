@@ -35,7 +35,7 @@ namespace ldmx {
 
         public:
 
-            BDTHelper(TString importBDTFile, int FeatureVecLen);
+            BDTHelper(TString importBDTFile);
 
             virtual ~BDTHelper() {}
 
@@ -47,9 +47,6 @@ namespace ldmx {
         private:
 
             TString vectorToPredCMD(std::vector<float> bdtFeatures);
-
-        private:
-            int nFeatures_;
     };
 
     /**
@@ -140,6 +137,7 @@ namespace ldmx {
 
             EcalHexReadout* hexReadout_{nullptr};
 
+            std::string bdtFileName_;
             BDTHelper* BDTHelper_{nullptr};
             std::vector<float> bdtFeatures_;
     };
