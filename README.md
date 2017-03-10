@@ -2,15 +2,9 @@
 
 The *ldmx-sw* github repository contains a C++ software framework for the proposed [Light Dark Matter Experiment (LDMX)](https://confluence.slac.stanford.edu/display/MME/Light+Dark+Matter+Experiment) based at [SLAC](https://slac.stanford.edu).
 
-Currently it includes the following modules:
+The `ldmx-sim` simulation application can read a [GDML](http://gdml.web.cern.ch/GDML/) detector description and write out [ROOT](https://root.cern.ch) files containing the simulated hits and particles.  The output file can be loaded into the ROOT environment for analysis.
 
-- [Event](https://github.com/LDMXAnalysis/ldmx-sw/tree/master/Event) - Event model classes and ROOT IO implementation
-- [SimApplication](https://github.com/LDMXAnalysis/ldmx-sw/tree/master/SimApplication) - Geant4 simulation application with GDML input and ROOT output
-- [Detectors](https://github.com/LDMXAnalysis/ldmx-sw/tree/master/Detectors) - GDML detector data files
-- [DetDescr](https://github.com/LDMXAnalysis/ldmx-sw/tree/master/DetDescr) - Detector description utilities including detector ID encoding and decoding
-- [SimPlugins](https://github.com/LDMXAnalysis/ldmx-sw/tree/master/SimPlugins) - Sim plugin framework providing dynamically loaded user action hooks in Geant4
-
-The primary program created from building this framework is a simulation application which reads a [GDML](http://gdml.web.cern.ch/GDML/) detector description and writes out a [ROOT](https://root.cern.ch) file containing the simulated hits and particles.  The output file can be loaded into the ROOT environment for analysis.
+There is also an `ldmx-app` program that can run analysis jobs using Python for the configuration file.
 
 ## Prerequisites
 
@@ -158,6 +152,12 @@ LHE input events in XML format can also be used for event generation:
 ```
 
 The detector file is located in the *Detectors* module data directory and the easiest way to access this is by setting some sym links in your current directory using `ln -s ldmx-sw/Detectors/data/ldmx-det-full-v0/*.gdml .`, and then the program should be able to find all the detector files.
+
+## Running the LDMX Analysis Application
+
+The `ldmx-app` command will run an analysis job using an input configuration file.
+
+Sample configuration files can be found in `Configuration/python` in the git repository.
 
 ## Contributing
 
