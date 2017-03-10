@@ -113,7 +113,12 @@ namespace ldmx {
             float getMaxTightIsoDep() {
                 return maxTightIsoDep_;
             }
-
+            float getMaxCellDep() {
+                return maxCellDep_;
+            }
+            float getShowerRMS() {
+                return showerRMS_;
+            }
             std::vector<float> getEcalLayerEdepReadout() {
                 return ecalLayerEdepReadout_;
             }

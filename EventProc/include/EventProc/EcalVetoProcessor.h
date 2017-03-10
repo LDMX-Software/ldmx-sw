@@ -39,39 +39,75 @@ namespace ldmx {
         public:
 
             BDTHelper(TString importBDTFile, int FeatureVecLen) {
-                TPython * pyEnv = new TPython();
-                /* Train a fake bdt, to be replaced by real bdt in future!!! */
+                pyEnv = new TPython();
+                /*BDT Should really be imported up here!!!! */
 
-                //pyEnv->Exec("import xgboost as xgb");
-                pyEnv->Exec("import numpy as np");
-                TString featLen = std::to_string(FeatureVecLen);
-                pyEnv->Exec("a = np.random.rand(100," + featLen + ")");
-                pyEnv->Exec("b = np.zeros(len(a))");
-                pyEnv->Exec("b[0:50] = 1");
-                //pyEnv->Exec("param = {}");
-                //pyEnv->Exec("param[\'objective\'] = \'binary:logistic\'");
-                //pyEnv->Exec("model = xgb.train(param,xgb.DMatrix(a,label = b))");
                 nFeatures_ = FeatureVecLen;
             }
 
             virtual ~BDTHelper() {;}
 
             void buildFeatureVector(std::vector<float>& bdtFeatures,
-                    ldmx::EcalVetoResult& result_) {
-                for (int i = 0; i < nFeatures_; i++) {
-                    bdtFeatures.push_back(rand() % 1000 * 1 / 1000.);
+                    ldmx::EcalVetoResult& result) {
+                for (int i = 0; i < 33; i++){
+                    bdtFeatures.push_back(result.getEcalLayerEdepReadout()[i]);
                 }
+                bdtFeatures.push_back(result.getNReadoutHits());
+                bdtFeatures.push_back(result.getNLooseIsoHits());
+                bdtFeatures.push_back(result.getNTightIsoHits());
+                bdtFeatures.push_back(result.nLooseMipTracks());
+                bdtFeatures.push_back(result.nMediumMipTracks());
+                bdtFeatures.push_back(result.nTightMipTracks());
+                bdtFeatures.push_back(result.getSummedDet());
+                bdtFeatures.push_back(result.getSummedOuter());
+                bdtFeatures.push_back(result.getBackSummedDep());
+                bdtFeatures.push_back(result.getSummedLooseIso());
+                bdtFeatures.push_back(result.getMaxLooseIsoDep());
+                bdtFeatures.push_back(result.getSummedTightIso());
+                bdtFeatures.push_back(result.getMaxTightIsoDep());
+                bdtFeatures.push_back(result.getMaxCellDep());
+                bdtFeatures.push_back(result.getShowerRMS());
+                double maxLen = 0,summedDep = 0;
+                for (auto track : result.getLooseMipTracks()){
+                    if (track.first > maxLen)
+                        maxLen = track.first;
+                    summedDep += track.second;
+                }
+                bdtFeatures.push_back(maxLen);
+                bdtFeatures.push_back(summedDep);
+
+                maxLen = 0,summedDep = 0;
+                for (auto track : result.getMediumMipTracks()){
+                    if (track.first > maxLen)
+                        maxLen = track.first;
+                    summedDep += track.second;
+                }
+                bdtFeatures.push_back(maxLen);
+                bdtFeatures.push_back(summedDep);
+
+                maxLen = 0,summedDep = 0;
+                for (auto track : result.getTightMipTracks()){
+                    if (track.first > maxLen)
+                        maxLen = track.first;
+                    summedDep += track.second;
+                }
+                bdtFeatures.push_back(maxLen);
+                bdtFeatures.push_back(summedDep);
             }
 
             double getSinglePred(std::vector<float> bdtFeatures) {
                 if (bdtFeatures.size() != nFeatures_) {
+                    std::cout << "You a feature vec of size = " << bdtFeatures.size() << std::endl;
                     throw std::runtime_error(
                             "Error: You passed the wrong number of features to the BDT");
                 }
                 TString cmd = vectorToPredCMD(bdtFeatures);
-                //pyEnv->Exec("pred = " + cmd);
-                //double pred = pyEnv->Eval("pred");
-                double pred = rand() % 100 * 1 / 100.;
+                pyEnv->Exec("import xgboost as xgb");
+                pyEnv->Exec("import numpy as np");
+                pyEnv->Exec("import pickle as pkl");
+                TPython::Exec("model = pkl.load(open(r\"bdt_3_9_2017.pkl\",\"r\"))");
+                pyEnv->Exec("pred = " + cmd);
+                double pred = pyEnv->Eval("pred");
                 return pred;
             }
 
@@ -83,6 +119,7 @@ namespace ldmx {
                         featuresStrVector += ",";
                 }
                 featuresStrVector += "]]";
+
                 TString cmd = "float(model.predict(xgb.DMatrix("
                         + featuresStrVector + "))[0])";
                 return cmd;
@@ -90,6 +127,7 @@ namespace ldmx {
 
         private:
             int nFeatures_;
+            TPython * pyEnv;
     };
 
     class EcalVetoProcessor: public Producer {
