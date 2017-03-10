@@ -135,30 +135,31 @@ namespace ldmx {
                 return tightMipTracks_;
             }
 
-            void setVetoResult(double passesVeto) {
+            void setVetoResult(bool passesVeto) {
                 passesVeto_ = passesVeto;
             }
 
         private:
 
             /** Flag indicating whether the event is vetoed by the Ecal. */
-            bool passesVeto_ {false};
-            int nReadoutHits_ {0};
-            int nLooseIsoHits_ {0};
-            int nTightIsoHits_ {0};
-            int nLooseMipTracks_ {0};
-            int nMediumMipTracks_ {0};
-            int nTightMipTracks_ {0};
+            bool passesVeto_{false};
 
-            float summedDet_ {0};
-            float summedOuter_ {0};
-            float backSummedDet_ {0};
-            float summedLooseIso_ {0};
-            float maxLooseIsoDep_ {0};
-            float summedTightIso_ {0};
-            float maxTightIsoDep_ {0};
-            float maxCellDep_ {0};
-            float showerRMS_ {0};
+            int nReadoutHits_{0};
+            int nLooseIsoHits_{0};
+            int nTightIsoHits_{0};
+            int nLooseMipTracks_{0};
+            int nMediumMipTracks_{0};
+            int nTightMipTracks_{0};
+
+            float summedDet_{0};
+            float summedOuter_{0};
+            float backSummedDet_{0};
+            float summedLooseIso_{0};
+            float maxLooseIsoDep_{0};
+            float summedTightIso_{0};
+            float maxTightIsoDep_{0};
+            float maxCellDep_{0};
+            float showerRMS_{0};
 
             std::vector<float> ecalLayerEdepReadout_;
             std::vector<std::pair<int, float>> looseMipTracks_;
