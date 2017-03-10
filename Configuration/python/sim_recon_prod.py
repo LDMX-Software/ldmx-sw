@@ -11,7 +11,7 @@ ecalVeto = ldmxcfg.Producer("ecalVeto", "ldmx::EcalVetoProcessor")
 ecalVeto.parameters["num_ecal_layers"] = 50
 ecalVeto.parameters["back_ecal_starting_layer"] = 22
 ecalVeto.parameters["n_bdt_vars"] = 54
-ecalVeto.parameters["discCut"] = .5
+ecalVeto.parameters["disc_cut"] = .5
 trigger = ldmxcfg.Producer("trigger", "ldmx::TriggerProcessor")
 trigger.parameters["threshold"] = 12.0
 trigger.parameters["mode"] = 0
@@ -21,4 +21,6 @@ findable_track = ldmxcfg.Producer("findable", "ldmx::FindableTrackProcessor")
 p.sequence=[ecalDigis, hcalDigis, ecalVeto, trigger, findable_track]
 p.inputFiles=["ldmx_sim_events.root"]
 p.outputFiles=["ldmx_sim_recon_events.root"]
+p.histogramFile="histo.root"
+#p.maxEvents=50
 p.printMe()
