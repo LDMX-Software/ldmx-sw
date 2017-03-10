@@ -15,17 +15,19 @@
 // C++
 #include <algorithm>
 #include <stdlib.h>
+#include <fstream>
 
 namespace ldmx {
 
-    BDTHelper::BDTHelper(TString importBDTFile, int FeatureVecLen) {
+    BDTHelper::BDTHelper(TString importBDTFile) {
 
+        // Import the python packages and load the features into xgboost.
         TPython::Exec("print 'Importing BDT python packages'");
         TPython::Exec("print 'importing xgb'; import xgboost as xgb; print xgb");
         TPython::Exec("print 'importing pkl'; import pickle as pkl; print pkl");
-        TPython::Exec("print 'importing model'; model = pkl.load(open(r\"bdt_3_9_2017.pkl\",\"r\")); model.dump_model('model.txt')");
+        TPython::Exec("print 'importing model in xgb'; model = pkl.load(open('" + importBDTFile + "','r')); print model");
 
-        nFeatures_ = FeatureVecLen;
+        // ; model.dump_model('model.txt')
     }
 
     void BDTHelper::buildFeatureVector(std::vector<float>& bdtFeatures, ldmx::EcalVetoResult& result) {
@@ -77,10 +79,6 @@ namespace ldmx {
 
 
     double BDTHelper::getSinglePred(std::vector<float> bdtFeatures) {
-        if (bdtFeatures.size() != nFeatures_) {
-            //std::cout << "You a feature vec of size = " << bdtFeatures.size() << std::endl;
-            throw std::runtime_error("Error: You passed the wrong number of features to the BDT");
-        }
 
         //std::cout << "bdtFeatures: { ";
         //for (auto f : bdtFeatures) {
@@ -113,14 +111,19 @@ namespace ldmx {
     }
 
     void EcalVetoProcessor::configure(const ParameterSet& ps) {
-        hexReadout_ = new EcalHexReadout();
 
+        // Config and init the BDT.
+        bdtFileName_ = ps.getString("bdt_file", "bdt.pkl");
+        if (!std::ifstream(bdtFileName_).good()) {
+            EXCEPTION_RAISE("EcalVetoProcessor",
+                    "The specified BDT file '" + bdtFileName_ + "' does not exist!");
+        }
+        BDTHelper_ = new BDTHelper(bdtFileName_);
+
+        hexReadout_ = new EcalHexReadout();
         nEcalLayers_ = ps.getInteger("num_ecal_layers");
         backEcalStartingLayer_ = ps.getInteger("back_ecal_starting_layer");
-        nBDTVars_ = ps.getInteger("n_bdt_vars");
-        if (nBDTVars_ != 0) {
-            BDTHelper_ = new BDTHelper("", nBDTVars_);
-        }
+
         bdtCutVal_ = ps.getDouble("discCut");
         ecalLayerEdepRaw_.resize(nEcalLayers_, 0);
         ecalLayerEdepReadout_.resize(nEcalLayers_, 0);
@@ -130,7 +133,6 @@ namespace ldmx {
         cellMap_.resize(nEcalLayers_, std::map<int, float>());
         cellMapLooseIso_.resize(nEcalLayers_, std::map<int, float>());
         cellMapTightIso_.resize(nEcalLayers_, std::map<int, float>());
-
     }
 
     void EcalVetoProcessor::produce(Event& event) {
