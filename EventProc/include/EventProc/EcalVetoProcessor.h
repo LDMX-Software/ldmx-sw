@@ -102,11 +102,7 @@ namespace ldmx {
                             "Error: You passed the wrong number of features to the BDT");
                 }
                 TString cmd = vectorToPredCMD(bdtFeatures);
-                pyEnv->Exec("import xgboost as xgb");
-                pyEnv->Exec("import numpy as np");
-                pyEnv->Exec("import pickle as pkl");
-                TPython::Exec("model = pkl.load(open(r\"bdt_3_9_2017.pkl\",\"r\"))");
-                pyEnv->Exec("pred = " + cmd);
+                pyEnv->Exec("import xgboost as xgb; import pickle as pkl; model = pkl.load(open(r\"bdt_3_9_2017.pkl\",\"r\")); pred = " + cmd);
                 double pred = pyEnv->Eval("pred");
                 return pred;
             }
