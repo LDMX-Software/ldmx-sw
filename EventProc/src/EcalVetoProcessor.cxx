@@ -124,7 +124,7 @@ namespace ldmx {
         nEcalLayers_ = ps.getInteger("num_ecal_layers");
         backEcalStartingLayer_ = ps.getInteger("back_ecal_starting_layer");
 
-        bdtCutVal_ = ps.getDouble("discCut");
+        bdtCutVal_ = ps.getDouble("disc_cut");
         ecalLayerEdepRaw_.resize(nEcalLayers_, 0);
         ecalLayerEdepReadout_.resize(nEcalLayers_, 0);
         ecalLayerOuterRaw_.resize(nEcalLayers_, 0);
@@ -267,6 +267,7 @@ namespace ldmx {
         BDTHelper_->buildFeatureVector(bdtFeatures_, result_);
         double pred = BDTHelper_->getSinglePred(bdtFeatures_);
 
+        std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
         result_.setVetoResult(pred > bdtCutVal_);
         event.addToCollection("EcalVeto", result_);
     }
