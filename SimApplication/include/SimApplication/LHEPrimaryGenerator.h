@@ -8,6 +8,7 @@
 #define SIMAPPLICATION_LHEPRIMARYGENERATOR_H_
 
 // Geant4
+#include "G4RunManager.hh"
 #include "G4VPrimaryGenerator.hh"
 
 // LDMX
