@@ -153,6 +153,13 @@ namespace ldmx {
                       << "can be found using 2s strategy." << std::endl;*/
         } 
 
+        if (hit3dVec[0]*hit3dVec[1]*hit3dVec[2] > 0) {
+            result->setResult(FindableTrackResult::STRATEGY_3S, true); 
+            trackFound = true;
+            /*std::cout << "[ findabletrackprocessor ]: " 
+                      << "can be found using 3s strategy." << std::endl;*/
+        } 
+
         if (!trackFound) { 
             result->setResult(FindableTrackResult::STRATEGY_NONE, false);    
         }

@@ -39,6 +39,7 @@ namespace ldmx {
                 STRATEGY_2S2A = 3, 
                 STRATEGY_2A   = 4,
                 STRATEGY_2S   = 5,
+                STRATEGY_3S   = 6, 
             };
 
             /** Constructor */
@@ -75,9 +76,16 @@ namespace ldmx {
             bool is2aFindable() { return is2aFindable_; };
 
             /**
-             * Checks if a sim particle is findable using the 2 stereo strategy.
+             * Checks if a sim particle is findable using the 2 stereo hit 
+             * strategy.
              */
             bool is2sFindable() { return is2sFindable_; };
+
+            /**
+             * Checks if a sim particle is findable using the 3 stereo hit 
+             * strategy.
+             */
+            bool is3sFindable() { return is3sFindable_; };
 
             /**
              * Get the sim particle associated with this result.
@@ -135,8 +143,14 @@ namespace ldmx {
              * strategy. 
              */
             bool is2sFindable_{false}; 
+            
+            /**
+             * Flag indicating whether a particle is findable using the 3 stereo
+             * hit strategy. 
+             */
+            bool is3sFindable_{false}; 
 
-        ClassDef(FindableTrackResult, 2); 
+        ClassDef(FindableTrackResult, 3); 
 
     }; // FindableTrackResult
 }
