@@ -18,8 +18,6 @@ from math import sqrt
 class sampleContainer:
     def __init__(self, fn,maxEvts,trainFrac,isBkg,dataMethod = False):
         print "Initializing Container!"
-        #self.fin = r.TFile(fn);
-        #self.tin = self.fin.Get("LDMX_Events")
         self.tin = r.TChain("LDMX_Events");
         self.tin.Add(fn);
 
