@@ -96,6 +96,12 @@ cmake -DGeant4_DIR=$G4DIR -DROOT_DIR=$ROOTDIR -DCMAKE_INSTALL_PREFIX=../ldmx-sw-
 make install
 ```
 
+If you need to compile with a custom Python environment, e.g. not the system installation, then the following additional definitions should be added to the above `cmake` command.
+
+``` bash
+-DPYTHON_EXECUTABLE=`which python` -DPYTHON_INCLUDE_DIR=${PYTHONHOME}/include/python2.7 -DPYTHON_LIBRARY=$PYTHONHOME/lib/libpython2.7.so ..
+```
+
 Now you should have an installation of *ldmx-sw* in the *ldmx-sw-install* directory.
 
 ## Setting Up the Environment 
