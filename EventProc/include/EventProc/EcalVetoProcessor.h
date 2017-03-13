@@ -42,7 +42,7 @@ namespace ldmx {
             void buildFeatureVector(std::vector<float>& bdtFeatures,
                     ldmx::EcalVetoResult& result);
 
-            double getSinglePred(std::vector<float> bdtFeatures);
+            float getSinglePred(std::vector<float> bdtFeatures);
 
         private:
 

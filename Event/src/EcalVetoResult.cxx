@@ -21,6 +21,7 @@ namespace ldmx {
     void EcalVetoResult::Clear(Option_t *option) {
         TObject::Clear();
         passesVeto_ = false;
+        discValue_ = 0;
         nReadoutHits_ = 0;
         nLooseIsoHits_ = 0;
         nTightIsoHits_ = 0;
@@ -47,6 +48,7 @@ namespace ldmx {
 
         EcalVetoResult& result = (EcalVetoResult&) object;
         result.passesVeto_ = passesVeto_;
+        result.discValue_ = discValue_;
         result.nReadoutHits_ = nReadoutHits_;
         result.nLooseIsoHits_ = nLooseIsoHits_;
         result.nTightIsoHits_ = nTightIsoHits_;

@@ -24,16 +24,17 @@ namespace ldmx {
         // Import the python packages and load the features into xgboost.
         TPython::Exec("print 'Importing BDT python packages'");
         TPython::Exec("print 'importing xgb'; import xgboost as xgb; print xgb");
+        TPython::Exec("print 'importing numpy'; import numpy as np; print np");
         TPython::Exec("print 'importing pkl'; import pickle as pkl; print pkl");
+        std::cout << "Unpickling bdt from file = " << importBDTFile << std::endl;
         TPython::Exec("print 'importing model in xgb'; model = pkl.load(open('" + importBDTFile + "','r')); print model");
-
         // ; model.dump_model('model.txt')
     }
 
     void BDTHelper::buildFeatureVector(std::vector<float>& bdtFeatures, ldmx::EcalVetoResult& result) {
-        for (int i = 0; i < 33; i++) {
+        /*for (int i = 0; i < 33; i++) {
             bdtFeatures.push_back(result.getEcalLayerEdepReadout()[i]);
-        }
+        }*/
         bdtFeatures.push_back(result.getNReadoutHits());
         bdtFeatures.push_back(result.getNLooseIsoHits());
         bdtFeatures.push_back(result.getNTightIsoHits());
@@ -78,21 +79,10 @@ namespace ldmx {
     }
 
 
-    double BDTHelper::getSinglePred(std::vector<float> bdtFeatures) {
-
-        //std::cout << "bdtFeatures: { ";
-        //for (auto f : bdtFeatures) {
-        //    std::cout << f << " ";
-        //}
-        //std::cout << "}" << std::endl;
-
+    float BDTHelper::getSinglePred(std::vector<float> bdtFeatures) {
         TString cmd = vectorToPredCMD(bdtFeatures);
-        //std::cout << "command {" << std::endl;
-        //std::cout << cmd << std::endl;
-        //std::cout << "}" << std::endl;
         TPython::Exec("pred = " + cmd);
-        //TPython::Exec("print pred");
-        double pred = TPython::Eval("pred");
+        float pred = TPython::Eval("pred");
         std::cout << "  pred = " << pred << std::endl;
 
         return pred;
@@ -106,7 +96,8 @@ namespace ldmx {
                 featuresStrVector += ",";
         }
         featuresStrVector += "]]";
-        TString cmd = "float(model.predict(xgb.DMatrix(" + featuresStrVector + "))[0])";
+        TString cmd = "float(model.predict(xgb.DMatrix(np.array(" + featuresStrVector + ")))[0])";
+
         return cmd;
     }
 
@@ -118,6 +109,7 @@ namespace ldmx {
             EXCEPTION_RAISE("EcalVetoProcessor",
                     "The specified BDT file '" + bdtFileName_ + "' does not exist!");
         }
+
         BDTHelper_ = new BDTHelper(bdtFileName_);
 
         hexReadout_ = new EcalHexReadout();
@@ -265,10 +257,11 @@ namespace ldmx {
                 summedLooseIso_, maxLooseIsoDep_, summedTightIso_, maxTightIsoDep_, maxCellDep_, showerRMS_,
                 ecalLayerEdepReadout_, looseMipTracks_, mediumMipTracks_, tightMipTracks_);
         BDTHelper_->buildFeatureVector(bdtFeatures_, result_);
-        double pred = BDTHelper_->getSinglePred(bdtFeatures_);
+        float pred = BDTHelper_->getSinglePred(bdtFeatures_);
 
         std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
         result_.setVetoResult(pred > bdtCutVal_);
+        result_.setDiscValue(pred);
         event.addToCollection("EcalVeto", result_);
     }
 
