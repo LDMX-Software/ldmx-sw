@@ -117,7 +117,7 @@ namespace ldmx {
             int nReadoutHits_{0};
             int nLooseIsoHits_{0};
             int nTightIsoHits_{0};
-            int nBDTVars_{0};
+            int doBdt_{0};
 
             double summedDet_{0};
             double summedOuter_{0};
