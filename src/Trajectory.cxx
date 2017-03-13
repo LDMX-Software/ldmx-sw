@@ -1,5 +1,8 @@
 #include "SimApplication/Trajectory.h"
 
+// LDMX
+#include "SimCore/UserTrackInformation.h"
+
 // Geant4
 #include "G4TrajectoryPoint.hh"
 #include "G4VProcess.hh"
@@ -27,10 +30,10 @@ Trajectory::Trajectory(const G4Track* aTrack)
         processType_ = process->GetProcessSubType();
     }
 
-    // Compute momentum by multiplying unit vector of vertex momentum by KE.
-    const G4ThreeVector& vmd = aTrack->GetVertexMomentumDirection();
-    G4double kE = aTrack->GetVertexKineticEnergy();
-    initialMomentum_ = G4ThreeVector(vmd[0] * kE, vmd[1] * kE, vmd[2] * kE);
+    // Set initial momentum from track information.
+    UserTrackInformation* trackInfo = dynamic_cast<UserTrackInformation*>(aTrack->GetUserInformation());
+    const G4ThreeVector& p = trackInfo->getInitialMomentum();
+    initialMomentum_.set(p.x(), p.y(), p.z());
 
     // If the track has not been stepped, then only the first point is added.
     // Otherwise, the track has already been stepped so we add also its last location
