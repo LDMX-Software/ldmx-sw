@@ -73,7 +73,9 @@ namespace ldmx {
 
         // Set user track info on new track.
         if (!aTrack->GetUserInformation()) {
-            const_cast<G4Track*>(aTrack)->SetUserInformation(new UserTrackInformation);
+            auto trackInfo = new UserTrackInformation;
+            trackInfo->setInitialMomentum(aTrack->GetMomentum());
+            const_cast<G4Track*>(aTrack)->SetUserInformation(trackInfo);
         }
 
         // Check if trajectory storage should be turned on or off from the region info.
