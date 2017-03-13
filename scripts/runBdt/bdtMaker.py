@@ -115,7 +115,7 @@ class sampleContainer:
         if (self.isBkg == False):
           np.random.shuffle(self.events)
         self.train_x = self.events[0:int(len(self.events)*self.trainFrac)]
-        self.test_x  = self.events[0:int(len(self.events)*(1-self.trainFrac))]
+        self.test_x  = self.events[int(len(self.events)*self.trainFrac):]
         if (self.isBkg and self.dataMethod):
           self.train_x = self.events[self.events[:,-1] > 8][:,range(len(self.events[0])-1)]
           self.test_x  = self.events[self.events[:,-1] < 8][:,range(len(self.events[0])-1)]
