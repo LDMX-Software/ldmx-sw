@@ -61,7 +61,9 @@ namespace ldmx {
             bool passesVeto() {
                 return passesVeto_;
             }
-
+            float getDisc() {
+                return discValue_;
+            }
             int getNReadoutHits() {
                 return nReadoutHits_;
             }
@@ -138,7 +140,9 @@ namespace ldmx {
             void setVetoResult(bool passesVeto) {
                 passesVeto_ = passesVeto;
             }
-
+            void setDiscValue(float discValue) {
+                discValue_ = discValue;
+            }
         private:
 
             /** Flag indicating whether the event is vetoed by the Ecal. */
@@ -160,7 +164,7 @@ namespace ldmx {
             float maxTightIsoDep_{0};
             float maxCellDep_{0};
             float showerRMS_{0};
-
+            float discValue_{0};
             std::vector<float> ecalLayerEdepReadout_;
             std::vector<std::pair<int, float>> looseMipTracks_;
             std::vector<std::pair<int, float>> mediumMipTracks_;
