@@ -103,15 +103,17 @@ namespace ldmx {
 
     void EcalVetoProcessor::configure(const ParameterSet& ps) {
 
-        // Config and init the BDT.
-        bdtFileName_ = ps.getString("bdt_file", "bdt.pkl");
-        if (!std::ifstream(bdtFileName_).good()) {
-            EXCEPTION_RAISE("EcalVetoProcessor",
-                    "The specified BDT file '" + bdtFileName_ + "' does not exist!");
+        doBdt_ = ps.getInteger("do_bdt");
+        if (doBdt_){
+            // Config and init the BDT.
+            bdtFileName_ = ps.getString("bdt_file", "bdt.pkl");
+            if (!std::ifstream(bdtFileName_).good()) {
+                EXCEPTION_RAISE("EcalVetoProcessor",
+                        "The specified BDT file '" + bdtFileName_ + "' does not exist!");
+            }
+
+            BDTHelper_ = new BDTHelper(bdtFileName_);
         }
-
-        BDTHelper_ = new BDTHelper(bdtFileName_);
-
         hexReadout_ = new EcalHexReadout();
         nEcalLayers_ = ps.getInteger("num_ecal_layers");
         backEcalStartingLayer_ = ps.getInteger("back_ecal_starting_layer");
@@ -256,12 +258,13 @@ namespace ldmx {
         result_.setVariables(nReadoutHits_, nLooseIsoHits_, nTightIsoHits_, summedDet_, summedOuter_, backSummedDet_,
                 summedLooseIso_, maxLooseIsoDep_, summedTightIso_, maxTightIsoDep_, maxCellDep_, showerRMS_,
                 ecalLayerEdepReadout_, looseMipTracks_, mediumMipTracks_, tightMipTracks_);
-        BDTHelper_->buildFeatureVector(bdtFeatures_, result_);
-        float pred = BDTHelper_->getSinglePred(bdtFeatures_);
-
-        std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
-        result_.setVetoResult(pred > bdtCutVal_);
-        result_.setDiscValue(pred);
+        if (doBdt_) {
+            BDTHelper_->buildFeatureVector(bdtFeatures_, result_);
+            float pred = BDTHelper_->getSinglePred(bdtFeatures_);
+            result_.setVetoResult(pred > bdtCutVal_);
+            result_.setDiscValue(pred);
+            std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
+        }
         event.addToCollection("EcalVeto", result_);
     }
 
