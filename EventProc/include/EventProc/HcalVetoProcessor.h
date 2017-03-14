@@ -52,6 +52,9 @@ namespace ldmx {
             /** Collection of results. */
             HcalVetoResult result_;
 
+            /** Total PE threshold. */
+            double totalPEThreshold_{8};
+
     }; // HcalVetoProcessor
 }
 
