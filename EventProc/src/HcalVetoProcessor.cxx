@@ -15,7 +15,8 @@ namespace ldmx {
     HcalVetoProcessor::~HcalVetoProcessor() { 
     }
 
-    void HcalVetoProcessor::configure(const ParameterSet& pset) {
+    void HcalVetoProcessor::configure(const ParameterSet& pSet) {
+        //totalPEThreshold_  = pSet.getDouble("pe_threshold"); 
     }
 
     void HcalVetoProcessor::produce(Event& event) {
@@ -29,13 +30,13 @@ namespace ldmx {
         double totalPe{0}; 
         for (int iHit = 0; iHit < hcalHits->GetEntriesFast(); ++iHit) { 
             HcalHit* hcalHit = (HcalHit*) hcalHits->At(iHit);
-            std::cout << "[ HcalVeto ]: Hit PE: " << hcalHit->getPE() << std::endl;
+            //std::cout << "[ HcalVeto ]: Hit PE: " << hcalHit->getPE() << std::endl;
             totalPe += hcalHit->getPE(); 
         }
 
         bool passesVeto{true}; 
-        std::cout << "[ HcalVeto ]: total PE: " << totalPe << std::endl;
-        if (totalPe >= 8) passesVeto = false;
+        //std::cout << "[ HcalVeto ]: total PE: " << totalPe << std::endl;
+        if (totalPe >= totalPEThreshold_) passesVeto = false;
         
         result_.setResult(passesVeto); 
         event.addToCollection("HcalVeto", result_);
