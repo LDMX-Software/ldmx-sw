@@ -29,9 +29,9 @@ namespace ldmx {
             const G4Track* track, 
             const G4ClassificationOfNewTrack& currentTrackClass) {
 
-        /*std::cout << "********************************" << std::endl;*/ 
-        /*std::cout << "*   Track pushed to the stack  *" << std::endl;*/
-        /*std::cout << "********************************" << std::endl;*/
+        /*std::cout << "********************************" << std::endl; 
+        std::cout << "*   Track pushed to the stack  *" << std::endl;
+        std::cout << "********************************" << std::endl;*/
 
         // get the PDGID of the track.
         //G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
@@ -46,7 +46,7 @@ namespace ldmx {
 
         if (track == currentTrack_) {
             currentTrack_ = nullptr; 
-            /*std::cout << "[ TargetBremFilter ]: Pushing track to waiting stack." << std::endl;*/
+            //std::cout << "[ TargetBremFilter ]: Pushing track to waiting stack." << std::endl;
             return fWaiting; 
         }
 
@@ -57,6 +57,10 @@ namespace ldmx {
     }
 
     void TargetProcessFilter::stepping(const G4Step* step) { 
+
+        if (TargetBremFilter::getBremGammaList().empty() || reactionOccurred_) { 
+            return;
+        } 
 
         // Get the track associated with this step.
         G4Track* track = step->GetTrack();
@@ -77,9 +81,9 @@ namespace ldmx {
         // If the particle isn't in the target, don't continue with the processing.
         if (volumeName.compareTo(volumeName_) != 0) return;
 
-        /*std::cout << "*******************************" << std::endl;*/ 
-        /*std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;*/
-        /*std::cout << "********************************" << std::endl;*/ 
+        /*std::cout << "*******************************" << std::endl; 
+        std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;
+        std::cout << "********************************" << std::endl;*/
 
         // Get the particle type.
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
@@ -96,16 +100,11 @@ namespace ldmx {
         
         // 
         std::vector<G4Track*> bremGammaList = TargetBremFilter::getBremGammaList();
-        if (bremGammaList.empty()) { 
-            /*std::cout << "[ TargetProcessFilter ]: "
-                      << "Brem list is empty --> Aborting event." << std::endl;*/
-            track->SetTrackStatus(fKillTrackAndSecondaries);
-            G4RunManager::GetRunManager()->AbortEvent();
-            currentTrack_ = nullptr;
-            return;
-        } else if (std::find(bremGammaList.begin(), bremGammaList.end(), track) == bremGammaList.end()) { 
+        if (std::find(bremGammaList.begin(), bremGammaList.end(), track) == bremGammaList.end()) { 
             /*std::cout << "[ TargetProcessFilter ]: "
                       << "Brem list doesn't contain track." << std::endl;*/
+            currentTrack_ = track; 
+            track->SetTrackStatus(fSuspend);
             return;
         }
 
@@ -117,8 +116,8 @@ namespace ldmx {
         if (secondaries->size() == 0) {
 
             /*std::cout << "[ TargetProcessFilter ]: "
-                      << "Brem photon did not interact in the target. --> Postponing tracks."
-                      << std::endl;*/
+                        << "Brem photon did not interact in the target. --> Postponing tracks."
+                        << std::endl;*/
             
 
             if (bremGammaList.size() == 1) { 
@@ -165,7 +164,14 @@ namespace ldmx {
                       << "Brem photon produced " << secondaries->size() 
                       << " particle via " << processName << " process." 
                       << std::endl;
+            TargetBremFilter::removeBremFromList(track);
+            BiasingMessenger::setEventWeight(track->GetWeight());
+            reactionOccurred_ = true;
         }
-    }       
+    }    
+
+    void TargetProcessFilter::endEvent(const G4Event* event) { 
+        reactionOccurred_ = false; 
+    }
 }
 
