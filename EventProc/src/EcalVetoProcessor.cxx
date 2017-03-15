@@ -16,12 +16,7 @@ namespace ldmx {
         hexReadout_ = new EcalHexReadout();
 
         nEcalLayers_ = ps.getInteger("num_ecal_layers");
-        nLayersMedCal_ = ps.getInteger("back_ecal_starting_layers");
-        backEcalStartingLayer_ = ps.getInteger("num_layers_for_med_cal");
-        totalDepCut_ = ps.getDouble("total_dep_cut");
-        totalOuterCut_ = ps.getDouble("total_outer_cut");
-        backEcalCut_ = ps.getDouble("back_ecal_cut");
-        ratioCut_ = ps.getDouble("ratio_cut");
+        backEcalStartingLayer_ = ps.getInteger("back_ecal_starting_layer");
 
         EcalLayerEdepRaw_.resize(nEcalLayers_, 0);
         EcalLayerEdepReadout_.resize(nEcalLayers_, 0);
