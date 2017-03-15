@@ -3,6 +3,8 @@
 .settings
 .pydevproject
 build/
+bin/
+lib/
 rebuild.sh
 docs/doxygen.conf
 *~
