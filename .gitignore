@@ -3,6 +3,7 @@
 .settings
 .pydevproject
 build/
+build.*/
 bin/
 lib/
 rebuild.sh
