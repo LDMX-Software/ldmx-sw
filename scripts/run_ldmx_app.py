@@ -28,7 +28,7 @@ def main():
         raise Exception("ERROR: The output file %s already exists!" % output_file)
 
     # create and cd to local tmp dir
-    tmp_dir = mk_tmpdir('/scratch')
+    tmp_dir = mk_tmpdir()
     os.chdir(tmp_dir)
 
     # HACK: Symlink data items from Configuration/data e.g. for running the ecal veto BDT.
@@ -51,8 +51,8 @@ def main():
     # delete scratch dir
     subprocess.Popen('rm -rf %s' % tmp_dir, shell=True).wait()
 
-def mk_tmpdir(bdir):
-    scratch_dir = bdir+'/'+getpass.getuser()
+def mk_tmpdir():
+    scratch_dir = '/scratch/'+getpass.getuser()
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
     tmp_dir = '%s/%s' % (scratch_dir, os.environ['LSB_JOBID'])
@@ -66,6 +66,7 @@ def create_config_file(tmpl_file, val_dict):
     src = Template(tf.read())
     res = src.substitute(val_dict)
     print "Created config from template '%s'" % tmpl_file
+    print
     print res
     print
     of = open(os.path.basename(tmpl_file.replace('.tmpl', '')), 'w')

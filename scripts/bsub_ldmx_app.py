@@ -50,7 +50,7 @@ def main():
             subprocess.Popen(cmd, shell=True).wait()
 
     if dryrun:
-        print "WARNING: Dry run was enabled.  No jobs were submitted!"
+        print "\nWARNING: Dry run was enabled.  No jobs were submitted!"
 
 if __name__ == '__main__' :
     main()
