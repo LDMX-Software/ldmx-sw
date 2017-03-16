@@ -46,18 +46,19 @@ def main():
     tmp_dir = '%s/%s' % (scratch_dir, os.environ['LSB_JOBID'])
     if not os.path.exists(tmp_dir):
         os.makedirs(tmp_dir)
-
     os.chdir(tmp_dir)
+
     detector_data_dir=ldmxsw+'/Detectors/data/'+detector_name+'/'
     for item in os.listdir(detector_data_dir):
         os.symlink(detector_data_dir+item,tmp_dir+'/'+ item)
     os.symlink(field_map, os.path.basename(field_map)) 
 
     if os.path.exists(output_file):
-        raise Exception("ERROR: The output file %s already exists!" % output_file)
+        raise Exception("ERROR: The output file '%s' already exists!" % output_file)
 
     create_macro(detector_name, output_file, input_file, macros, nevents, ldmxsw)
-
+    
+    # Send this to a process so it appears at the top of the job log.
     subprocess.Popen('echo ---- Job macro ----; cat run.mac; echo', shell=True).wait()
 
     command = 'ldmx-sim %s' % macro_path
