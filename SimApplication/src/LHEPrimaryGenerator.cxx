@@ -23,8 +23,6 @@ LHEPrimaryGenerator::~LHEPrimaryGenerator() {
 
 void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
-    std::cout << "Reading next LHE event ..." << std::endl;
-
     LHEEvent* lheEvent = reader_->readNextEvent();
 
     if (lheEvent != NULL) {
@@ -35,14 +33,10 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
         std::map<LHEParticle*, G4PrimaryParticle*> particleMap;
 
-        std::cout << std::endl;
-
         int particleIndex = 0;
         const std::vector<LHEParticle*>& particles = lheEvent->getParticles();
         for (std::vector<LHEParticle*>::const_iterator it = particles.begin();
                 it != particles.end(); it++) {
-
-            std::cout << "Processing input LHE particle[" << particleIndex << "]" << std::endl;
 
             LHEParticle* particle = (*it);
 
@@ -82,17 +76,14 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
                     G4PrimaryParticle* primaryMom = particleMap[particle->getMother(0)];
                     if (primaryMom != NULL) {
                         primaryMom->SetDaughter(primary);
-                        std::cout << "  Added dau to mother primary" << std::endl;
                     }
                 } else {
                     vertex->SetPrimary(primary);
-                    std::cout << "  Added primary to vertex" << std::endl;
                 }
 
                 primary->Print();
 
             } else {
-                std::cout << "  Skipping LHE particle with status " << particle->getISTUP() << std::endl;
             }
 
             std::cout << std::endl;
@@ -103,10 +94,9 @@ void LHEPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
         anEvent->AddPrimaryVertex(vertex);
 
     } else {
-        G4Exception("LHEPrimaryGenerator::GeneratePrimaryVertex",
-                "EventUnderflow",
-                RunMustBeAborted,
-                "No more LHE events found in input file.");
+        std::cout << "[ LHEPrimaryGenerator ] : Ran out of input events so run will be aborted!" << std::endl;
+        G4RunManager::GetRunManager()->AbortRun(true);
+        anEvent->SetEventAborted();
     }
 
     delete lheEvent;
