@@ -24,3 +24,4 @@ docs/doxygen.conf
 *~
 *#
 *.pyc
+/python
