@@ -1,5 +1,5 @@
 # find ROOT
-find_package(ROOT REQUIRED COMPONENTS Core RIO TreePlayer)
+find_package(ROOT REQUIRED COMPONENTS Core RIO TreePlayer PyROOT)
 
 # declare SimApplication module
 module(
