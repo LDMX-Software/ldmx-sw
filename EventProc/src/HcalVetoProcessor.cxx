@@ -16,7 +16,7 @@ namespace ldmx {
     }
 
     void HcalVetoProcessor::configure(const ParameterSet& pSet) {
-        //totalPEThreshold_  = pSet.getDouble("pe_threshold"); 
+        totalPEThreshold_  = pSet.getDouble("pe_threshold"); 
     }
 
     void HcalVetoProcessor::produce(Event& event) {
