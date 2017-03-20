@@ -108,6 +108,14 @@ class EventFile {
          */
         const RunHeader& getRunHeader(int runNumber);
 
+        const std::string& getFileName() {
+            return fileName_;
+        }
+
+        const std::map<int, RunHeader*>& getRunMap() {
+            return runMap_;
+        }
+
     private:
 
         /**
@@ -118,6 +126,11 @@ class EventFile {
          * a new simulation file) the run map will not be filled.
          */
         void createRunMap();
+
+        /**
+         * Copy run header tree from parent to output file.
+         */
+        void copyRunHeaders();
 
     private:
 
