@@ -19,7 +19,7 @@ endforeach()
 
 # create env setup script and copy to install dir
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/ldmx-setup-env.sh.in ${CMAKE_CURRENT_BINARY_DIR}/ldmx-setup-env.sh)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ldmx-setup-env.sh DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ldmx-setup-env.sh DESTINATION bin PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 
 # install python init file for top-level LDMX module
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# python package")
@@ -28,7 +28,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION python/
 # install scripts to bin dir
 file(GLOB script_files ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.sh ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.py)
 foreach(script_file ${script_files}) 
-    install(FILES ${script_file} DESTINATION bin)
+    install(FILES ${script_file} DESTINATION bin PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endforeach()
 
 # configure and generate documentation using doxygen
