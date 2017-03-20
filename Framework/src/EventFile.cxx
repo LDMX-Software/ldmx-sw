@@ -35,7 +35,8 @@ EventFile::EventFile(const std::string& filename, std::string treeName, bool isO
         entries_ = tree_->GetEntriesFast();
     }
 
-    //createRunMap();
+    // Create run map from tree in this file.
+    createRunMap();
 }
 
 EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :
@@ -204,12 +205,6 @@ void EventFile::writeRunHeader(RunHeader* runHeader) {
 }
 
 const RunHeader& EventFile::getRunHeader(int runNumber) {
-    std::cout << "[EventFile] printing run map ... " << std::endl;
-    for (auto entry : runMap_) {
-        std::cout << entry.first << std::endl;
-        entry.second->Print();
-        std::cout << std::endl;
-    }
     if (runMap_.find(runNumber) != runMap_.end()) {
         return *(runMap_[runNumber]);
     } else {
@@ -218,10 +213,8 @@ const RunHeader& EventFile::getRunHeader(int runNumber) {
 }
 
 void EventFile::createRunMap() {
-    std::cout << "[EventFile] creating run map within EventFile " << file_->GetName() << std::endl;
     TTree* runTree = (TTree*) file_->Get("LDMX_Run");
     if (runTree) {
-        std::cout << "[EventFile] got run tree" << std::endl;
         RunHeader* aRunHeader = nullptr;
         runTree->SetBranchAddress("RunHeader", &aRunHeader);
         for (int iEntry = 0; iEntry < runTree->GetEntriesFast(); iEntry++) {
@@ -229,8 +222,8 @@ void EventFile::createRunMap() {
             RunHeader* newRunHeader = new RunHeader();
             aRunHeader->Copy(*newRunHeader);
             runMap_[newRunHeader->getRunNumber()] = newRunHeader;
-            std::cout << "[EventFile] inserted run " << newRunHeader->getRunNumber() << " into map" << std::endl;
         }
+        runTree->ResetBranchAddresses();
     } else {
         std::cout << "[EventFile] no run tree found in " << file_->GetName() << std::endl;
     }
@@ -240,19 +233,11 @@ void EventFile::copyRunHeaders() {
     if (parent_ && parent_->file_) {
         TTree* oldtree = (TTree*)parent_->file_->Get("LDMX_Run");
         if (oldtree && !file_->Get("LDMX_Run")) {
-            std::cout << "[EventFile] copying run headers from " << parent_->file_->GetName() 
-                << " to " << file_->GetName() << std::endl;
             oldtree->SetBranchStatus("RunHeader", 1);
             file_->cd();
             TTree* newtree = oldtree->CloneTree();
             file_->Write();
             file_->Flush();
-            
-            if (file_->Get("LDMX_Run")) {
-                file_->Get("LDMX_Run")->Print();
-            } else {
-                std::cout << "[EventFile] Failed to copy run header tree!!!" << std::endl;
-            }
         }
     }
 }
