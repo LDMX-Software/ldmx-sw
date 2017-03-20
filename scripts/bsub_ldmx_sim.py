@@ -50,7 +50,7 @@ def main():
     if 'no %s in' % RUN_SCRIPT in exe:
         raise Exception("ERROR: The %s script was not found!  (Is it in the path?)" % RUN_SCRIPT)
     exe = exe[:-1]
-
+    submitted = 0
     for jobnum in xrange(1, jobs + 1):
         output_file = '%s_%04d' % (filename, jobnum)
         log_file = '%s/%s.log' % (output_dir, output_file)
@@ -67,13 +67,14 @@ def main():
             print cmd
             if not dryrun:
                 subprocess.Popen(cmd, shell=True).wait()
+                submitted += 1
         else:
             print "Skipping submission for '%s' which already exists in '%s'." % (output_file, output_dir)
 
     if dryrun:
         print "\nWARNING: Dry run was enabled.  No jobs were submitted!"
     else:
-        print "\nSubmitted %d LSF jobs." % jobs
+        print "\nSubmitted %d LSF jobs." % submitted
 
 if __name__ == '__main__' :
     main()
