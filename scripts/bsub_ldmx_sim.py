@@ -29,7 +29,7 @@ def main():
     else:
         detector = DEFAULT_DETECTOR
     nevents = int(args.n[0])
-    outputdir = os.path.abspath(args.p[0])
+    output_dir = os.path.abspath(args.p[0])
     filename = args.o[0]
     dryrun = args.x
     skip_existing = args.s
@@ -53,12 +53,12 @@ def main():
 
     for jobnum in xrange(1, jobs + 1):
         output_file = '%s_%04d' % (filename, jobnum)
-        log_file = '%s/%s.log' % (outputdir, output_file)
+        log_file = '%s/%s.log' % (output_dir, output_file)
         if not (skip_existing and os.path.exists(os.path.join(output_dir, output_file + ".root"))):
             if os.path.exists(log_file):
                 subprocess.Popen('rm %s' % log_file, shell=True).wait()                
             cmd = 'bsub -W %d:0 -q long -o %s -e %s python %s -o %s.root -d %s -n %d -p %s' % \
-                (jobtime, log_file, log_file, exe, output_file, detector, nevents, outputdir)
+                (jobtime, log_file, log_file, exe, output_file, detector, nevents, output_dir)
             for m in macros:
                 cmd = '%s -m %s' % (cmd, os.path.abspath(m))
             if len(input_files):
