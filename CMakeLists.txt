@@ -25,6 +25,12 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ldmx-setup-env.sh DESTINATION bin)
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# python package")
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION python/LDMX)
 
+# install scripts to bin dir
+file(GLOB script_files ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.sh ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.py)
+foreach(script_file ${script_files}) 
+    install(FILES ${script_file} DESTINATION bin)
+endforeach()
+
 # configure and generate documentation using doxygen
 option(INSTALL_DOC "Set to ON to generate documentation using doxygen." OFF)
 if(INSTALL_DOC)
