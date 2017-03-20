@@ -10,6 +10,8 @@ namespace ldmx {
 EventFile::EventFile(const std::string& filename, std::string treeName, bool isOutputFile, int compressionLevel) :
         fileName_(filename), isOutputFile_(isOutputFile) {
 
+    std::cout << "[EventFile] filename: " << filename << ", treeName: " << treeName << ", isOutputFile: " << isOutputFile << std::endl;
+
     if (isOutputFile_) {
         file_ = new TFile(filename.c_str(), "RECREATE");
         if (!file_->IsWritable()) {
@@ -33,7 +35,7 @@ EventFile::EventFile(const std::string& filename, std::string treeName, bool isO
         entries_ = tree_->GetEntriesFast();
     }
 
-    createRunMap();
+    //createRunMap();
 }
 
 EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :
@@ -43,6 +45,8 @@ EventFile::EventFile(const std::string& filename, bool isOutputFile, int compres
 EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :
 
         fileName_(filename), isOutputFile_(true), parent_(cloneParent) {
+
+    std::cout << "[EventFile] filename: " << filename << ", cloneParent: " << cloneParent->file_->GetName() << std::endl;
 
     file_ = new TFile(filename.c_str(), "RECREATE");
     if (!file_->IsWritable()) {
@@ -58,6 +62,12 @@ EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int co
     if (isOutputFile_) {
         file_->SetCompressionLevel(compressionLevel);
     }
+
+    // Copy run headers from parent to output file.
+    copyRunHeaders();
+
+    // Create run header map.
+    createRunMap();
 }
 
 EventFile::~EventFile() {
@@ -102,9 +112,6 @@ bool EventFile::nextEvent() {
         tree_ = parent_->tree_->CloneTree(0);
         event_->setInputTree(parent_->tree_);
         event_->setOutputTree(tree_);
-
-        // Fill map of run numbers to RunHeader objects.
-        createRunMap();
     }
 
     // close up the last event
@@ -197,6 +204,12 @@ void EventFile::writeRunHeader(RunHeader* runHeader) {
 }
 
 const RunHeader& EventFile::getRunHeader(int runNumber) {
+    std::cout << "[EventFile] printing run map ... " << std::endl;
+    for (auto entry : runMap_) {
+        std::cout << entry.first << std::endl;
+        entry.second->Print();
+        std::cout << std::endl;
+    }
     if (runMap_.find(runNumber) != runMap_.end()) {
         return *(runMap_[runNumber]);
     } else {
@@ -205,15 +218,41 @@ const RunHeader& EventFile::getRunHeader(int runNumber) {
 }
 
 void EventFile::createRunMap() {
+    std::cout << "[EventFile] creating run map within EventFile " << file_->GetName() << std::endl;
     TTree* runTree = (TTree*) file_->Get("LDMX_Run");
     if (runTree) {
+        std::cout << "[EventFile] got run tree" << std::endl;
         RunHeader* aRunHeader = nullptr;
         runTree->SetBranchAddress("RunHeader", &aRunHeader);
         for (int iEntry = 0; iEntry < runTree->GetEntriesFast(); iEntry++) {
-            runTree->GetEntry(0);
+            runTree->GetEntry(iEntry);
             RunHeader* newRunHeader = new RunHeader();
             aRunHeader->Copy(*newRunHeader);
             runMap_[newRunHeader->getRunNumber()] = newRunHeader;
+            std::cout << "[EventFile] inserted run " << newRunHeader->getRunNumber() << " into map" << std::endl;
+        }
+    } else {
+        std::cout << "[EventFile] no run tree found in " << file_->GetName() << std::endl;
+    }
+}
+
+void EventFile::copyRunHeaders() {
+    if (parent_ && parent_->file_) {
+        TTree* oldtree = (TTree*)parent_->file_->Get("LDMX_Run");
+        if (oldtree && !file_->Get("LDMX_Run")) {
+            std::cout << "[EventFile] copying run headers from " << parent_->file_->GetName() 
+                << " to " << file_->GetName() << std::endl;
+            oldtree->SetBranchStatus("RunHeader", 1);
+            file_->cd();
+            TTree* newtree = oldtree->CloneTree();
+            file_->Write();
+            file_->Flush();
+            
+            if (file_->Get("LDMX_Run")) {
+                file_->Get("LDMX_Run")->Print();
+            } else {
+                std::cout << "[EventFile] Failed to copy run header tree!!!" << std::endl;
+            }
         }
     }
 }
