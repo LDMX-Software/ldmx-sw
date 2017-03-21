@@ -58,14 +58,17 @@ def main():
 
     create_macro(detector_name, output_file, input_file, macros, nevents, ldmxsw)
     
+    subprocess.Popen('echo -n \"started: \"; date', shell=True).wait()
+
     # Send this to a process so it appears at the top of the job log.
     subprocess.Popen('echo ---- Job macro ----; cat run.mac; echo', shell=True).wait()
 
-    command = 'ldmx-sim %s' % macro_path
+    command = 'time ldmx-sim %s' % macro_path
     subprocess.Popen(command, shell=True).wait()
 
     os.system('cp -r %s/%s %s' % (tmp_dir, output_file, output_dir))
-
+    os.system('ls -lah %s' % os.path.join(output_dir, output_file))
+    subprocess.Popen('echo -n \"ended: \"; date', shell=True).wait()
     subprocess.Popen('rm -rf %s' % tmp_dir, shell=True).wait()
 
 def create_macro(detector, output_file, input_file, macros, nevents, ldmxsw_dir):
