@@ -48,7 +48,7 @@ def main():
         os.makedirs(tmp_dir)
     os.chdir(tmp_dir)
 
-    detector_data_dir=ldmxsw+'/Detectors/data/'+detector_name+'/'
+    detector_data_dir=ldmxsw+'/data/detectors'+detector_name+'/'
     for item in os.listdir(detector_data_dir):
         os.symlink(detector_data_dir+item,tmp_dir+'/'+ item)
     os.symlink(field_map, os.path.basename(field_map)) 
