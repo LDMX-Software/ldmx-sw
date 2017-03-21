@@ -13,4 +13,3 @@ LSB_JOB_REPORT_MAIL=N
 # Setup necessary runtime libraries.
 . /nfs/slac/g/ldmx/software/gcc/rhel6-64/setup.sh
 . /nfs/slac/g/ldmx/software/xerces/rhel6-64/setup.sh
-. /nfs/slac/g/ldmx/software/python/rhel6-64/setup.sh

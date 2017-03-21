@@ -21,6 +21,7 @@ endif()
 find_package(PythonLibs REQUIRED)
 if (PYTHONLIBS_FOUND)
   message(STATUS "PythonLibs found with lib '${PYTHON_LIBRARIES}' and include dir '${PYTHON_INCLUDE_DIRS}'")
+  get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
 else()
   message(FATAL_ERROR "PythonLibs was not found.")
 endif()
@@ -33,6 +34,9 @@ if (INSTALL_FIELDMAP)
 else()
   message(STATUS "Field map installation disabled.")
 endif()
+
+# option to print extra module information during CMake config
+option(MODULE_DEBUG "Print extra module information during CMake config" OFF)
 
 # add dir with extra CMake modules 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
@@ -47,7 +51,6 @@ set(MODULES Event Framework DetDescr EventProc SimPlugins Biasing SimApplication
 foreach(module ${MODULES})
   message(STATUS "Adding module '${module}'")
   add_subdirectory(${module})
-  message(STATUS "")
 endforeach()
 
 # configure scripts and copy to installation dir 

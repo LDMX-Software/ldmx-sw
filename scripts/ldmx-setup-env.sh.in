@@ -18,7 +18,7 @@ export LDMXSW_DIR=@CMAKE_INSTALL_PREFIX@
 . @ROOT_DIR@/bin/thisroot.sh
 
 # set load library path for module libs
-export LD_LIBRARY_PATH=$LDMXSW_DIR/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$LDMXSW_DIR/lib:@PYTHON_LIBRARY_DIR@:$LD_LIBRARY_PATH
 
 # set python path
 export PYTHONPATH=$LDMXSW_DIR/lib/python:$PYTHONPATH
