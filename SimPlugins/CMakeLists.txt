@@ -1,6 +1,3 @@
-# find Geant4
-find_package(Geant4 REQUIRED ui_all vis_all)
-
 # declare SimPlugins module
 module(
   NAME SimPlugins

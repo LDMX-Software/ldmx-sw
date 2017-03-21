@@ -1,6 +1,3 @@
-# find ROOT first so variables are usable in module declaration
-find_package(ROOT REQUIRED COMPONENTS Core RIO)
-
 # declare DetDescr module
 module(
   NAME DetDescr
