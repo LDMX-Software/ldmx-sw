@@ -29,7 +29,7 @@ def main():
     else:
         detector = DEFAULT_DETECTOR
     nevents = int(args.n[0])
-    outputdir = os.path.abspath(args.p[0])
+    output_dir = os.path.abspath(args.p[0])
     filename = args.o[0]
     dryrun = args.x
     skip_existing = args.s
@@ -50,32 +50,31 @@ def main():
     if 'no %s in' % RUN_SCRIPT in exe:
         raise Exception("ERROR: The %s script was not found!  (Is it in the path?)" % RUN_SCRIPT)
     exe = exe[:-1]
-
-    macrostr = ' '.join([os.path.abspath(m) for m in macros])
-
+    submitted = 0
     for jobnum in xrange(1, jobs + 1):
         output_file = '%s_%04d' % (filename, jobnum)
-        log_file = '%s/%s.log' % (outputdir, output_file)
+        log_file = '%s/%s.log' % (output_dir, output_file)
         if not (skip_existing and os.path.exists(os.path.join(output_dir, output_file + ".root"))):
             if os.path.exists(log_file):
                 subprocess.Popen('rm %s' % log_file, shell=True).wait()                
             cmd = 'bsub -W %d:0 -q long -o %s -e %s python %s -o %s.root -d %s -n %d -p %s' % \
-                (jobtime, log_file, log_file, exe, output_file, detector, nevents, outputdir)
-            if len(macrostr):
-                cmd = '%s -m %s' % (cmd, macrostr)
+                (jobtime, log_file, log_file, exe, output_file, detector, nevents, output_dir)
+            for m in macros:
+                cmd = '%s -m %s' % (cmd, os.path.abspath(m))
             if len(input_files):
                 input_file = os.path.abspath(input_files[jobnum-1])
                 cmd = '%s -i %s' % (cmd, input_file)
             print cmd
             if not dryrun:
                 subprocess.Popen(cmd, shell=True).wait()
+                submitted += 1
         else:
             print "Skipping submission for '%s' which already exists in '%s'." % (output_file, output_dir)
 
     if dryrun:
         print "\nWARNING: Dry run was enabled.  No jobs were submitted!"
     else:
-        print "\nSubmitted %d LSF jobs." % jobs
+        print "\nSubmitted %d LSF jobs." % submitted
 
 if __name__ == '__main__' :
     main()

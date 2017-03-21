@@ -31,6 +31,11 @@ def main():
 
     input_glob = glob.glob('%s*.root' % (input_pattern))
 
+    input_files = []
+    for i in input_glob:
+        if not os.path.splitext(os.path.basename(i))[0].endswith(output_append):
+            input_files.append(i)
+
     if len(input_glob) == 0:
         raise Exception("ERROR: No input files found matching '%s'." % (input_pattern))
 
@@ -39,11 +44,12 @@ def main():
         raise Exception("ERROR: The %s script was not found!  (Is it in the path?)" % RUN_SCRIPT)
     exe = exe[:-1]
 
-    for input_file in input_glob:                
+    submitted = 0
+    for input_file in input_files:                
         output_file = os.path.splitext(os.path.basename(input_file))[0] + "_" + output_append
         log_file = os.path.join(output_dir, output_file + ".log")
         input_path = os.path.abspath(input_file)
-        if not (skip_existing and os.path.exists(os.path.join(output_dir, output_file))):
+        if not (skip_existing and os.path.exists(os.path.join(output_dir, output_file + ".root"))):
             if os.path.exists(log_file):
                 subprocess.Popen('rm %s' % log_file, shell=True).wait()
             cmd = 'bsub -W %d:0 -q long -o %s -e %s python %s -o %s.root -i %s -t %s -d %s' % \
@@ -51,13 +57,14 @@ def main():
             print cmd
             if not dryrun:
                 subprocess.Popen(cmd, shell=True).wait()
+                submitted += 1
         else:
             print "Skipping submission for '%s' which already exists in '%s'." % (output_file, output_dir)
                 
     if dryrun:
         print "\nWARNING: Dry run was enabled.  No jobs were submitted!"
     else:
-        print "\nSubmitted %d LSF jobs." % len(input_glob)
+        print "\nSubmitted %d LSF jobs." % submitted
 
 if __name__ == '__main__' :
     main()
