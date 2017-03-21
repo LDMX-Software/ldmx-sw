@@ -33,8 +33,6 @@ find_package(PythonLibs REQUIRED)
 if(PYTHONLIBS_FOUND)
   message(STATUS "PythonLibs found with lib '${PYTHON_LIBRARIES}' and include dir '${PYTHON_INCLUDE_DIRS}'")
   get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
-else()
-  message(FATAL_ERROR "PythonLibs was not found.")
 endif()
 
 # mag field map installation
