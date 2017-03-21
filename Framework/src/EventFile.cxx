@@ -10,8 +10,6 @@ namespace ldmx {
 EventFile::EventFile(const std::string& filename, std::string treeName, bool isOutputFile, int compressionLevel) :
         fileName_(filename), isOutputFile_(isOutputFile) {
 
-    std::cout << "[EventFile] filename: " << filename << ", treeName: " << treeName << ", isOutputFile: " << isOutputFile << std::endl;
-
     if (isOutputFile_) {
         file_ = new TFile(filename.c_str(), "RECREATE");
         if (!file_->IsWritable()) {
@@ -46,8 +44,6 @@ EventFile::EventFile(const std::string& filename, bool isOutputFile, int compres
 EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :
 
         fileName_(filename), isOutputFile_(true), parent_(cloneParent) {
-
-    std::cout << "[EventFile] filename: " << filename << ", cloneParent: " << cloneParent->file_->GetName() << std::endl;
 
     file_ = new TFile(filename.c_str(), "RECREATE");
     if (!file_->IsWritable()) {
@@ -224,9 +220,7 @@ void EventFile::createRunMap() {
             runMap_[newRunHeader->getRunNumber()] = newRunHeader;
         }
         runTree->ResetBranchAddresses();
-    } else {
-        std::cout << "[EventFile] no run tree found in " << file_->GetName() << std::endl;
-    }
+    } 
 }
 
 void EventFile::copyRunHeaders() {
