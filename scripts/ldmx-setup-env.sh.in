@@ -21,7 +21,7 @@ export LDMXSW_DIR=@CMAKE_INSTALL_PREFIX@
 export LD_LIBRARY_PATH=$LDMXSW_DIR/lib:$LD_LIBRARY_PATH
 
 # set python path
-export PYTHONPATH=$LDMXSW_DIR/python:$PYTHONPATH
+export PYTHONPATH=$LDMXSW_DIR/lib/python:$PYTHONPATH
 
 # add bin dir to PATH
 export PATH=$LDMXSW_DIR/bin:$PATH
