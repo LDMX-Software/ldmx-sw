@@ -1,6 +1,3 @@
-# find ROOT
-find_package(ROOT REQUIRED COMPONENTS Core RIO TreePlayer PyROOT)
-
 # declare SimApplication module
 module(
   NAME EventProc
@@ -11,5 +8,5 @@ module(
 
 # include ROOT CMake macros and compilation settings
 include(${ROOT_USE_FILE})
-target_link_libraries(DetDescr)
+#target_link_libraries(DetDescr)
  
