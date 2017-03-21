@@ -1,13 +1,37 @@
 # minimum cmake version
 cmake_minimum_required(VERSION 3.0)
 
+# find ROOT installation
+find_package(ROOT REQUIRED COMPONENTS Core RIO PyROOT Geom)
+if (ROOT_FOUND)
+  message(STATUS "ROOT found at '${ROOT_DIR}'")
+else()
+  message(FATAL_ERROR "ROOT installation was not found.")
+endif()
+
+# find Geant4 installation
+find_package(Geant4 REQUIRED ui_all vis_all)
+if (Geant4_FOUND)
+  message(STATUS "Geant4 found at '${Geant4_DIR}'")
+else()
+  message(FATAL_ERROR "Geant4 installation was not found.")
+endif()
+
+# find Python installation
+find_package(PythonLibs REQUIRED)
+if (PYTHONLIBS_FOUND)
+  message(STATUS "PythonLibs found with lib '${PYTHON_LIBRARIES}' and include dir '${PYTHON_INCLUDE_DIRS}'")
+else()
+  message(FATAL_ERROR "PythonLibs was not found.")
+endif()
+
 # mag field map installation
 option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
 if (INSTALL_FIELDMAP)
-    message(STATUS "Field map will be installed.")
-    install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Scripts/InstallMagFieldMap.cmake")
+  message(STATUS "Field map will be installed.")
+  install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Scripts/InstallMagFieldMap.cmake")
 else()
-    message(STATUS "Field map installation disabled.")
+  message(STATUS "Field map installation disabled.")
 endif()
 
 # add dir with extra CMake modules 

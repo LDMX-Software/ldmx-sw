@@ -1,9 +1,3 @@
-# find Geant4
-find_package(Geant4 REQUIRED ui_all vis_all)
-
-# find ROOT
-find_package(ROOT REQUIRED COMPONENTS Core RIO)
-
 # declare SimApplication module
 module(
   NAME SimApplication
