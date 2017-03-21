@@ -7,9 +7,6 @@ import os
 import getpass
 import subprocess
 
-# FIXME: Hard-coded mag field map location.
-field_map = '/nfs/slac/g/ldmx/users/omoreno/production/fieldmap/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat'
-
 # Geant4 macro that will be created by this script
 macro_path = './run.mac'
 
@@ -48,15 +45,17 @@ def main():
         os.makedirs(tmp_dir)
     os.chdir(tmp_dir)
 
-    detector_data_dir=ldmxsw+'/data/detectors'+detector_name+'/'
-    for item in os.listdir(detector_data_dir):
-        os.symlink(detector_data_dir+item,tmp_dir+'/'+ item)
-    os.symlink(field_map, os.path.basename(field_map)) 
+    detector_data_dir = os.path.join(ldmxsw, 'data', 'detectors', detector_name)
+    detector_path = os.path.join(detector_data_dir, 'detector.gdml')
+
+    fieldmap_dir = os.path.join(ldmxsw, 'data', 'fieldmap')
+    for item in os.listdir(fieldmap_dir):
+        os.symlink(os.path.join(fieldmap_dir, item), os.path.join(tmp_dir, item))
 
     if os.path.exists(output_file):
         raise Exception("ERROR: The output file '%s' already exists!" % output_file)
 
-    create_macro(detector_name, output_file, input_file, macros, nevents, ldmxsw)
+    create_macro(detector_path, output_file, input_file, macros, nevents)
     
     subprocess.Popen('echo -n \"started: \"; date', shell=True).wait()
 
@@ -71,14 +70,14 @@ def main():
     subprocess.Popen('echo -n \"ended: \"; date', shell=True).wait()
     subprocess.Popen('rm -rf %s' % tmp_dir, shell=True).wait()
 
-def create_macro(detector, output_file, input_file, macros, nevents, ldmxsw_dir):
+def create_macro(detector_path, output_file, input_file, macros, nevents):
 
     random.seed(time.time())
     seed1 = int(random.random()*10000)
     seed2 = int(random.random()*10000)
 
     macro_file = open(macro_path, 'w')
-    macro_file.write('/persistency/gdml/read '+ldmxsw_dir+'/Detectors/data/'+detector+'/detector.gdml\n')
+    macro_file.write('/persistency/gdml/read '+detector_path+'\n')
     macro_file.write('/run/initialize\n')
     macro_file.write('/random/setSeeds %d %d\n' % (seed1, seed2))
     for macro in macros:
