@@ -129,7 +129,7 @@ macro(MODULE)
 
   # setup python scripts
   # set the local include dir var
-  set(PYTHON_INSTALL_DIR python/LDMX/${MODULE_NAME})
+  set(PYTHON_INSTALL_DIR lib/python/LDMX/${MODULE_NAME})
   file(GLOB py_scripts "${CMAKE_CURRENT_SOURCE_DIR}/python/[!_]*.py")
 
   if (py_scripts)
