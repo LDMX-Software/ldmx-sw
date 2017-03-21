@@ -42,13 +42,14 @@ def main():
     val_dict = {'input_file':input_file, 'output_file':output_file}
     config_file = create_config_file(tmpl_file, val_dict)
 
-    command = 'ldmx-app %s' % config_file
+    subprocess.Popen('echo -n \"started: \"; date', shell=True).wait()
+
+    command = 'time ldmx-app %s' % config_file
     subprocess.Popen(command, shell=True).wait()
 
-    cp_cmd = 'cp -r %s/%s %s' % (tmp_dir, output_file, output_dir)
-    os.system(cp_cmd)
-
-    # delete scratch dir
+    os.system('cp -r %s/%s %s' % (tmp_dir, output_file, output_dir))
+    os.system('ls -lah %s' % os.path.join(output_dir, output_file))
+    subprocess.Popen('echo -n \"ended: \"; date', shell=True).wait()
     subprocess.Popen('rm -rf %s' % tmp_dir, shell=True).wait()
 
 def mk_tmpdir():
