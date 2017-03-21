@@ -31,8 +31,8 @@ def main():
     tmp_dir = mk_tmpdir()
     os.chdir(tmp_dir)
 
-    # HACK: Symlink data items from Configuration/data e.g. for running the ecal veto BDT.
-    config_dir = ldmxsw + '/Configuration/data'
+    # HACK: Symlink data items from data/config e.g. for running the ecal veto BDT.
+    config_dir = ldmxsw + '/data/config'
     for item in os.listdir(config_dir):
         src = config_dir+'/'+item
         targ = tmp_dir+'/'+item
