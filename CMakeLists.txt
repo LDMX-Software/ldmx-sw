@@ -1,6 +1,15 @@
 # minimum cmake version
 cmake_minimum_required(VERSION 3.0)
 
+# mag field map installation
+option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
+if (INSTALL_FIELDMAP)
+    message(STATUS "Field map will be installed.")
+    install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Scripts/InstallMagFieldMap.cmake")
+else()
+    message(STATUS "Field map installation disabled.")
+endif()
+
 # add dir with extra CMake modules 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 
@@ -35,6 +44,7 @@ file(GLOB script_files ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.sh ${CMAKE_CURRENT_
 foreach(script_file ${script_files}) 
     install(FILES ${script_file} DESTINATION bin PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endforeach()
+
 
 # configure and generate documentation using doxygen
 option(INSTALL_DOC "Set to ON to generate documentation using doxygen." OFF)
