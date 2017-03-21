@@ -28,7 +28,7 @@ endforeach()
 
 # install python init file for top-level LDMX module
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# python package")
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION python/LDMX)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION lib/python/LDMX)
 
 # install scripts to bin dir
 file(GLOB script_files ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.sh ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.py)
