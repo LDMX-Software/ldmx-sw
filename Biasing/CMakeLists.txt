@@ -1,9 +1,6 @@
 # declare Biasing module
 module(
   NAME Biasing
-  EXTRA_LINK_LIBRARIES ${Geant4_LIBRARIES}
   DEPENDENCIES SimPlugins 
+  EXTERNAL_DEPENDENCIES Geant4
 )
-
-# include Geant4 CMake config file (compiler settings, etc.)
-include(${Geant4_USE_FILE})

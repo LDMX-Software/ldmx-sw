@@ -2,12 +2,8 @@
 module(
   NAME Event
   EXTRA_SOURCES EventDict.cxx
-  EXTRA_LINK_LIBRARIES ${ROOT_LIBRARIES}
-  EXTRA_INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}
+  EXTERNAL_DEPENDENCIES ROOT
 )
-
-# include ROOT CMake macros and compilation settings
-include(${ROOT_USE_FILE})
 
 # generate ROOT dictionary for Event classes
 root_generate_dictionary(EventDict ${Event_INCLUDE_DIR}/Event/EventDef.h MODULE ${PROJECT_NAME} LINKDEF ${Event_INCLUDE_DIR}/Event/EventLinkDef.h)
