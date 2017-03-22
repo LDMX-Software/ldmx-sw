@@ -38,7 +38,7 @@ macro(MODULE)
   # define options for this function
   set(options)
   set(oneValueArgs NAME INCLUDE_DIR SOURCE_DIR)
-  set(multiValueArgs DEPENDENCIES EXTRA_SOURCES EXTRA_LINK_LIBRARIES EXTRA_INCLUDE_DIRS EXECUTABLES)
+  set(multiValueArgs DEPENDENCIES EXTRA_SOURCES EXTRA_LINK_LIBRARIES EXTRA_INCLUDE_DIRS EXECUTABLES EXTERNAL_DEPENDENCIES)
   
   # parse command options
   cmake_parse_arguments(MODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -66,6 +66,7 @@ macro(MODULE)
     message(STATUS "MODULE_EXTRA_LINK_LIBRARIES='${MODULE_EXTRA_LINK_LIBRARIES}'")
     message(STATUS "MODULE_EXTRA_INCLUDE_DIRS='${MODULE_EXTRA_INCLUDE_DIRS}'")
     message(STATUS "MODULE_EXECUTABLES='${MODULE_EXECUTABLES}'")
+    message(STATUS "MODULE_EXTERNAL_DEPENDENCIES='${MODULE_EXTERNAL_DEPENDENCIES}'")
   endif()
 
   # define current project based on module name
@@ -91,7 +92,7 @@ macro(MODULE)
   # get source and header lists for building the application
   file(GLOB sources ${MODULE_SOURCE_DIR}/*.cxx)
   file(GLOB headers ${MODULE_INCLUDE_DIR}/include/*/*.h)
-  
+ 
   # add the shared library to build products
   if (sources)
     add_library(${MODULE_NAME} SHARED ${sources} ${MODULE_EXTRA_SOURCES})
@@ -105,14 +106,20 @@ macro(MODULE)
 
   # find test programs
   file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cxx)
-  
+
+  # setup external dependencies
+  ext_deps(DEPENDENCIES ${MODULE_EXTERNAL_DEPENDENCIES}) 
+  if (EXT_DEP_INCLUDE_DIRS)
+    include_directories(${EXT_DEP_INCLUDE_DIRS})
+  endif()
+ 
   # setup test programs from all source files in test directory
   foreach(test_source ${test_sources})
     get_filename_component(test_program ${test_source} NAME)
     string(REPLACE ".cxx" "" test_program ${test_program})
     string(REPLACE "_" "-" test_program ${test_program})
     add_executable(${test_program} ${test_source})
-    target_link_libraries(${test_program} ${MODULE_EXTRA_LINK_LIBRARIES} ${PROJECT_NAME} ${MODULE_DEPENDENCIES})
+    target_link_libraries(${test_program} ${MODULE_EXTRA_LINK_LIBRARIES} ${PROJECT_NAME} ${MODULE_DEPENDENCIES} ${EXT_DEP_LIBRARIES})
     install(TARGETS ${test_program} DESTINATION bin)
     if(MODULE_DEBUG)
       message(STATUS "test_program='${test_program}'")
@@ -128,7 +135,7 @@ macro(MODULE)
       message(STATUS "executable='${executable}'")    
     endif()
     add_executable(${executable} ${executable_source} ${sources} ${headers})
-    target_link_libraries(${executable} ${MODULE_EXTRA_LINK_LIBRARIES} ${MODULE_DEPENDENCIES})
+    target_link_libraries(${executable} ${MODULE_EXTRA_LINK_LIBRARIES} ${MODULE_DEPENDENCIES} ${EXT_DEP_LIBRARIES})
     install(TARGETS ${executable} DESTINATION bin)
   endforeach()
 

@@ -44,6 +44,9 @@ else()
   message(STATUS "Field map installation disabled.")
 endif()
 
+# set C++ options
+#set(BASE_CXX_FLAGS "-pipe -m64 -fsigned-char -fPIC -pthread -std=c++11 -fPIC -Wall -pedantic")
+
 # option to print extra module information during CMake config
 option(MODULE_DEBUG "Print extra module information during CMake config" OFF)
 
@@ -52,6 +55,8 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 
 # import macro for declaring modules
 include(MacroModule)
+
+include(MacroExtDeps)
 
 # declare list of modules with correct dependency order
 set(MODULES Event Framework DetDescr EventProc SimPlugins Biasing SimApplication Configuration Detectors)
@@ -109,4 +114,12 @@ if(INSTALL_DOC)
 else()
     # message that documentation is off for this build
     message(STATUS "Generation of Doxygen documentation is disabled.")    
+endif()
+
+option(DUMP_CMAKE_VARIABLES OFF)
+if(DUMP_CMAKE_VARIABLES)
+  get_cmake_property(_variableNames VARIABLES)
+  foreach(_variableName ${_variableNames})
+    message(STATUS "${_variableName}=${${_variableName}}")
+  endforeach()
 endif()
