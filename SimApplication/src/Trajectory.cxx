@@ -21,7 +21,7 @@ Trajectory::Trajectory(const G4Track* aTrack)
     parentID_ = aTrack->GetParentID();
     globalTime_ = aTrack->GetGlobalTime();
     vertexPosition_ = aTrack->GetVertexPosition();
-    energy_ = aTrack->GetTotalEnergy();
+    energy_ = aTrack->GetVertexKineticEnergy() + mass_;
 
     // Get the creator process type.  The sub-type must be used here to get
     // the type for a specific physics process like photonuclear.
