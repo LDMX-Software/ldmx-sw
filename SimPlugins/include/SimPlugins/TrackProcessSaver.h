@@ -61,9 +61,11 @@ namespace ldmx {
             /**
              * Add the name of a process to save e.g. "photonNuclear".
              * @param processName The name of the physics process.
+             * @param exactMatch True if process name should be matched exactly.
              */
-            void addProcess(std::string processName) {
-                processNames_.insert(processName);
+            void addProcess(std::string processName, bool exactMatch) {
+                processNames_.push_back(processName);
+                exactMatch_[processName] = exactMatch;
             }
 
         private:
@@ -72,7 +74,10 @@ namespace ldmx {
             TrackProcessSaverMessenger* messenger_;
 
             /** Names of physics processes to save. */
-            std::unordered_set<std::string> processNames_;
+            std::vector<std::string> processNames_;
+
+            /** Map indicating whether process name needs to be matched exactly. */
+            std::map<std::string, bool> exactMatch_;
     };
 }
 
