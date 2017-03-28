@@ -51,7 +51,8 @@ void SimParticle::Print(Option_t *option) const {
             "momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " ), " <<
             "mass: " << mass_ << ", " <<
             "nDaughters: " << daughters_->GetEntries() << ", "
-            "nParents: " << parents_->GetEntries() <<
+            "nParents: " << parents_->GetEntries() << ", "
+            "processType: " << processType_ <<
             " }" << std::endl;
 }
 
