@@ -102,28 +102,35 @@ namespace ldmx {
 
     void RootPersistencyManager::printEvent(Event* outputEvent) {
 
+        auto particleColl = outputEvent->get<TClonesArray*>("SimParticles", "sim");
+        if (!particleColl) {
+            throw std::runtime_error("SimParticle output collection is null!");
+        }
+
+        if (m_verbose > 1) {
+            std::cout << "[ RootPersistencyManager ] : Wrote " << particleColl->GetEntriesFast() << " SimParticle objects" << std::endl;
+        }
+
         if (m_verbose > 2) {
-            auto particleColl = outputEvent->get<TClonesArray*>("SimParticles", "sim");
-            if (!particleColl) {
-                throw std::runtime_error("SimParticle output collection is null!");
-            }
-            std::cout << std::endl;
-            std::cout << "[ RootPersistencyManager ] - Printing SimParticle collection" << std::endl;
             for (int iColl = 0; iColl < particleColl->GetEntriesFast(); iColl++) {
                 particleColl->At(iColl)->Print();
             }
             std::cout << std::endl;
+        }
 
-            for (auto entry : outputHitsCollections_) {
-                std::cout << "[ RootPersistencyManager ] - Printing collection " << entry.first << std::endl;
-                TClonesArray* hitsColl = entry.second;
-                int entries = hitsColl->GetEntriesFast();
+        for (auto entry : outputHitsCollections_) {
+            TClonesArray* hitsColl = entry.second;
+            int entries = hitsColl->GetEntriesFast();
+            if (m_verbose > 1) {
+                std::cout << "[ RootPersistencyManager ] : Wrote " <<  hitsColl->GetEntriesFast() << " hits into " << entry.first << std::endl;
+            }
+            if (m_verbose > 2) {
                 for (int iColl = 0; iColl < entries; iColl++) {
                     TObject* obj = (*hitsColl)[iColl];
                     obj->Print("");
                 }
+                std::cout << std::endl;
             }
-            std::cout << std::endl;
         }
     }
 
@@ -210,10 +217,6 @@ namespace ldmx {
 
             // Add hits collection to output event.
             outputEvent->add(collName, outputHitsColl);
-
-            if (m_verbose > 1) {
-                std::cout << "[ RootPersistencyManager ] : Wrote " <<  outputHitsColl->GetEntriesFast() << " hits into " << collName << std::endl;
-            }
         }
     }
 
