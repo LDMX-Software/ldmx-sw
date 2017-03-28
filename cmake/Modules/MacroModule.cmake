@@ -4,8 +4,6 @@
 # The following arguments are accepted by this macro:
 # 
 #   NAME - the name of the module (required)
-#   INCLUDE_DIR - base include directory (optional)
-#   SOURCE_DIR - base source directory (optional)
 #   DEPENDENCIES - list of module dependencies such as 'Event' (optional)
 #   EXTRA_SOURCES - extra source files produced by this module (optional)
 #   EXTRA_LINK_LIBRARIES - extra link libraries (optional)
@@ -15,7 +13,7 @@
 # Only 'NAME' is required as an argument to this macro.  All other arguments 
 # will either be assigned reasonable defaults or will not be used.
 #
-# The following conventions are assumed when not overridden by macro arguments:
+# The following conventions are assumed:
 #
 # - The C++ header files are in a directory 'include' with a subdirectory like 
 #   'include/${MODULE_NAME}' and have the '.h' extension.
@@ -29,7 +27,7 @@
 # the source file names using the file's base name stripped of its extension,
 # with underscores replaced by dashes.  All test programs and executables will
 # be installed into the output 'bin' directory so their names should be unique 
-# across all modules within the project.
+# across all modules within the repository.
 #
 # @author Jeremy McCormick, SLAC
 ###############################################################################
@@ -131,7 +129,7 @@ macro(MODULE)
     target_link_libraries(${test_program} ${MODULE_BIN_LIBRARIES})
     install(TARGETS ${test_program} DESTINATION bin)
     if(MODULE_DEBUG)
-      message("adding test program: ${test_program}")
+      message("building test program: ${test_program}")
     endif()
   endforeach()
   
@@ -141,7 +139,7 @@ macro(MODULE)
     string(REPLACE ".cxx" "" executable ${executable})
     string(REPLACE "_" "-" executable ${executable})
     if(MODULE_DEBUG)
-      message("adding executable: ${executable}")
+      message("building executable: ${executable}")
     endif()
     add_executable(${executable} ${executable_source} ${sources} ${headers})
     target_link_libraries(${executable} ${MODULE_BIN_LIBRARIES})
@@ -160,7 +158,7 @@ macro(MODULE)
   foreach(pyscript ${py_scripts})
     install(FILES ${pyscript} DESTINATION ${PYTHON_INSTALL_DIR})
     if(MODULE_DEBUG)
-      message("copying python script: ${pyscript}")
+      message("installing python script: ${pyscript}")
     endif()
   endforeach()
 
