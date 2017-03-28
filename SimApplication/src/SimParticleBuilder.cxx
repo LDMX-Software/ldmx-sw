@@ -45,6 +45,7 @@ void SimParticleBuilder::buildSimParticles(ldmx::Event* outputEvent) {
     // Add the collection data to the output event.
     outputEvent->add("SimParticles", outputParticleColl_);
 
+    // FIXME: Hard-coded print out.
     std::cout << "[ SimParticleBuilder ] : Wrote " << outputParticleColl_->GetEntriesFast() << " SimParticle objects" << std::endl;
 }
 
@@ -66,27 +67,29 @@ void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
     simParticle->setCharge(traj->GetCharge());
     simParticle->setMass(traj->getMass());
     simParticle->setEnergy(traj->getEnergy());
-
-    G4ThreeVector lastTrajPoint = traj->GetPoint(traj->GetPointEntries() - 1)->GetPosition();
-    simParticle->setEndPoint(lastTrajPoint[0], lastTrajPoint[1], lastTrajPoint[2]);
-
-    const G4ThreeVector& momentum = traj->GetInitialMomentum();
-    simParticle->setMomentum(momentum[0], momentum[1], momentum[2]);
+    simParticle->setTime(traj->getGlobalTime());
+    simParticle->setProcessType(traj->getProcessType());
 
     const G4ThreeVector& vertex = traj->getVertexPosition();
     simParticle->setVertex(vertex[0], vertex[1], vertex[2]);
 
-    simParticle->setTime(traj->getGlobalTime());
+    const G4ThreeVector& momentum = traj->GetInitialMomentum();
+    simParticle->setMomentum(momentum[0], momentum[1], momentum[2]);
+
+    G4ThreeVector endpoint = traj->getEndPoint();
+    simParticle->setEndPoint(endpoint[0], endpoint[1], endpoint[2]);
 
     if (traj->GetParentID() > 0) {
         SimParticle* parent = findSimParticle(traj->GetParentID());
-        if (parent != NULL) {
+        if (parent != nullptr) {
             simParticle->addParent(parent);
             parent->addDaughter(simParticle);
         } else {
-            std::cerr << "[ SimParticleBuilder ] - WARNING: SimParticle with parent ID "
+            // If the parent particle can not be found by its track ID, this is a fatal error!
+            std::cerr << "[ SimParticleBuilder ] : SimParticle with parent ID "
                       << traj->GetParentID() << " not found for track ID " 
                       << traj->GetTrackID() << std::endl;
+            G4Exception("", "", FatalException, "Failed to find parent particle for SimParticle.");
         }
     }
 }
@@ -100,12 +103,12 @@ void SimParticleBuilder::buildParticleMap(TrajectoryContainer* trajectories, TCl
 }
 
 SimParticle* SimParticleBuilder::findSimParticle(G4int trackID) {
-    G4VTrajectory* traj = trackMap_->findTrajectory(currentEvent_, trackID);
-    if (traj != NULL) {
+    G4VTrajectory* traj = trackMap_->findTrajectory(trackID);
+    if (traj != nullptr) {
         return particleMap_[traj->GetTrackID()];
     } else {
-        return NULL;
+        return nullptr;
     }
-}
+}    
 
 }
