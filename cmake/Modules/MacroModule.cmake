@@ -37,36 +37,28 @@ macro(MODULE)
 
   # define options for this function
   set(options)
-  set(oneValueArgs NAME INCLUDE_DIR SOURCE_DIR)
-  set(multiValueArgs DEPENDENCIES EXTRA_SOURCES EXTRA_LINK_LIBRARIES EXTRA_INCLUDE_DIRS EXECUTABLES EXTERNAL_DEPENDENCIES)
+  set(oneValueArgs NAME)
+  set(multiValueArgs DEPENDENCIES EXTRA_SOURCES EXTRA_LINK_LIBRARIES EXECUTABLES EXTERNAL_DEPENDENCIES)
   
   # parse command options
   cmake_parse_arguments(MODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-  # set library name which is always the same as the module
-  set(MODULE_LIBRARY_NAME ${MODULE_NAME})
+  # set module's include dir
+  set(MODULE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
   
-  # set module's include dir if not provided
-  if ("${MODULE_INCLUDE_DIR}" STREQUAL "")
-    set(MODULE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
-  endif()
-  
-  # set module's source dir if not provided
-  if ("${MODULE_SOURCE_DIR}" STREQUAL "")
-    set(MODULE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  endif()
- 
+  # set module's source dir
+  set(MODULE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+  # print debug info 
   if(MODULE_DEBUG) 
-    message(STATUS "MODULE_NAME='${MODULE_NAME}'")
-    message(STATUS "MODULE_INCLUDE_DIR='${MODULE_INCLUDE_DIR}'")
-    message(STATUS "MODULE_SOURCE_DIR='${MODULE_SOURCE_DIR}'")
-    message(STATUS "MODULE_LIBRARY_NAME='${MODULE_LIBRARY_NAME}'")
-    message(STATUS "MODULE_DEPENDENCIES='${MODULE_DEPENDENCIES}'")
-    message(STATUS "MODULE_EXTRA_SOURCES='${MODULE_EXTRA_SOURCES}'")
-    message(STATUS "MODULE_EXTRA_LINK_LIBRARIES='${MODULE_EXTRA_LINK_LIBRARIES}'")
-    message(STATUS "MODULE_EXTRA_INCLUDE_DIRS='${MODULE_EXTRA_INCLUDE_DIRS}'")
-    message(STATUS "MODULE_EXECUTABLES='${MODULE_EXECUTABLES}'")
-    message(STATUS "MODULE_EXTERNAL_DEPENDENCIES='${MODULE_EXTERNAL_DEPENDENCIES}'")
+    message("MODULE_NAME='${MODULE_NAME}'")
+    message("MODULE_DEPENDENCIES='${MODULE_DEPENDENCIES}'")
+    message("MODULE_EXTERNAL_DEPENDENCIES='${MODULE_EXTERNAL_DEPENDENCIES}'")
+    message("MODULE_INCLUDE_DIR='${MODULE_INCLUDE_DIR}'")
+    message("MODULE_SOURCE_DIR='${MODULE_SOURCE_DIR}'")
+    message("MODULE_EXTRA_SOURCES='${MODULE_EXTRA_SOURCES}'")
+    message("MODULE_EXTRA_LINK_LIBRARIES='${MODULE_EXTRA_LINK_LIBRARIES}'")
+    message("MODULE_EXECUTABLES='${MODULE_EXECUTABLES}'")
   endif()
 
   # define current project based on module name
@@ -86,43 +78,51 @@ macro(MODULE)
     include_directories(${${dependency}_INCLUDE_DIR})
   endforeach()
   
-  # add extra include directories
-  include_directories(${MODULE_EXTRA_INCLUDE_DIRS})
-      
   # get source and header lists for building the application
   file(GLOB sources ${MODULE_SOURCE_DIR}/*.cxx)
   file(GLOB headers ${MODULE_INCLUDE_DIR}/include/*/*.h)
- 
-  # add the shared library to build products
-  if (sources)
-    add_library(${MODULE_NAME} SHARED ${sources} ${MODULE_EXTRA_SOURCES})
-   
-    # add ROOT libraries to shared library target
-    target_link_libraries(${PROJECT_NAME} ${MODULE_EXTRA_LINK_LIBRARIES})
-  
-    # install the library
-    install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
- endif()
-
-  # find test programs
-  file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cxx)
 
   # setup external dependencies
   ext_deps(DEPENDENCIES ${MODULE_EXTERNAL_DEPENDENCIES}) 
   if (EXT_DEP_INCLUDE_DIRS)
     include_directories(${EXT_DEP_INCLUDE_DIRS})
   endif()
- 
+
+  # make list of all library dependencies
+  set(MODULE_LIBRARIES ${MODULE_DEPENDENCIES} ${EXT_DEP_LIBRARIES} ${MODULE_EXTRA_LINK_LIBRARIES})
+  if(MODULE_DEBUG)
+    message("MODULE_LIBRARIES='${MODULE_LIBRARIES}'")
+  endif()
+
+  # add the shared library to build products
+  if (sources)
+
+    # add library target
+    add_library(${MODULE_NAME} SHARED ${sources} ${MODULE_EXTRA_SOURCES})
+   
+    # add lib deps
+    target_link_libraries(${MODULE_NAME} ${MODULE_LIBRARIES})
+  
+    # install the library
+    install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+  endif()
+
+  # make list of libraries required by executables and test programs which includes this module's lib
+  set(MODULE_BIN_LIBRARIES ${MODULE_LIBRARIES} ${MODULE_NAME})
+
+  # find test programs
+  file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cxx)
+
   # setup test programs from all source files in test directory
   foreach(test_source ${test_sources})
     get_filename_component(test_program ${test_source} NAME)
     string(REPLACE ".cxx" "" test_program ${test_program})
     string(REPLACE "_" "-" test_program ${test_program})
     add_executable(${test_program} ${test_source})
-    target_link_libraries(${test_program} ${MODULE_EXTRA_LINK_LIBRARIES} ${PROJECT_NAME} ${MODULE_DEPENDENCIES} ${EXT_DEP_LIBRARIES})
+    target_link_libraries(${test_program} ${MODULE_BIN_LIBRARIES})
     install(TARGETS ${test_program} DESTINATION bin)
     if(MODULE_DEBUG)
-      message(STATUS "test_program='${test_program}'")
+      message("adding test program: ${test_program}")
     endif()
   endforeach()
   
@@ -132,29 +132,31 @@ macro(MODULE)
     string(REPLACE ".cxx" "" executable ${executable})
     string(REPLACE "_" "-" executable ${executable})
     if(MODULE_DEBUG)
-      message(STATUS "executable='${executable}'")    
+      message("adding executable: ${executable}")
     endif()
     add_executable(${executable} ${executable_source} ${sources} ${headers})
-    target_link_libraries(${executable} ${MODULE_EXTRA_LINK_LIBRARIES} ${MODULE_DEPENDENCIES} ${EXT_DEP_LIBRARIES})
+    target_link_libraries(${executable} ${MODULE_BIN_LIBRARIES})
     install(TARGETS ${executable} DESTINATION bin)
   endforeach()
 
-  # setup python scripts
-  # set the local include dir var
+  # install python scripts
   set(PYTHON_INSTALL_DIR lib/python/LDMX/${MODULE_NAME})
   file(GLOB py_scripts "${CMAKE_CURRENT_SOURCE_DIR}/python/[!_]*.py")
-
   if (py_scripts)
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# python package")
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION ${PYTHON_INSTALL_DIR})
   endif()
   
-  # setup python programs 
+  # install python programs 
   foreach(pyscript ${py_scripts})
     install(FILES ${pyscript} DESTINATION ${PYTHON_INSTALL_DIR})
     if(MODULE_DEBUG)
-      message(STATUS "copying python script '${pyscript}'")
+      message("copying python script: ${pyscript}")
     endif()
   endforeach()
+
+  if (MODULE_DEBUG)
+    message("")
+  endif()
   
 endmacro(MODULE)
