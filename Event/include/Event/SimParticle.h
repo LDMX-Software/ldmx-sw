@@ -250,97 +250,85 @@ class SimParticle: public TObject {
             parents_->Add(parent);
         }
 
+        /**
+         * Get the creator process type of this particle.
+         * This corresponds to the value returned by <i>G4VProcess::GetProcessSubType()</i>
+         * e.g. 121 for products of photonuclear reactions.
+         * @return The creator process type of this particle.
+         */
+        int getProcessType() {
+            return processType_;
+        }
+
+        /**
+         * Set the creator process type of this particle.
+         * This is set from the value of <i>G4VProcess::GetProcessSubType()</i>.
+         * @param processType The creator process type of this particle.
+         */
+        void setProcessType(int processType) {
+            processType_ = processType;
+        }
+
     private:
 
-        /**
-         * The energy of the particle.
-         */
+        /** The energy of the particle. */
         double energy_{0};
 
-        /**
-         * The PDG code of the particle.
-         */
+        /** The PDG code of the particle. */
         int pdgID_{0};
 
-        /**
-         * The generator status.
-         */
+        /** The generator status. */
         int genStatus_{-1};
 
-        /**
-         * The global creation time.
-         */
+        /** The global creation time. */
         double time_{0};
 
-        /**
-         * The X vertex.
-         */
+        /** The X vertex. */
         double x_{0};
 
-        /**
-         * The Y vertex.
-         */
+        /** The Y vertex. */
         double y_{0};
 
-        /**
-         * The Z vertex.
-         */
+        /** The Z vertex. */
         double z_{0};
 
-        /**
-         * The X end point.
-         */
+        /** The X end point. */
         double endX_{0};
 
-        /**
-         * The Y end point.
-         */
+        /** The Y end point. */
         double endY_{0};
 
-        /**
-         * The Z end point.
-         */
+        /** The Z end point. */
         double endZ_{0};
 
-        /**
-         * The X momentum.
-         */
+        /** The X momentum.*/
         double px_{0};
 
-        /**
-         * The Y momentum.
-         */
+        /** The Y momentum. */
         double py_{0};
 
-        /**
-         * The Z momentum.
-         */
+        /** The Z momentum. */
         double pz_{0};
 
-        /**
-         * The particle's mass.
-         */
+        /** The particle's mass. */
         double mass_{0};
 
-        /**
-         * The particle's charge.
-         */
+        /** The particle's charge. */
         double charge_{0};
 
-        /**
-         * The list of daughter particles.
-         */
+        /** The list of daughter particles. */
         TRefArray* daughters_;
 
-        /**
-         * The list of parent particles.
-         */
+        /** The list of parent particles. */
         TRefArray* parents_;
+
+        /** Encoding of Geant4 process type. */
+        int processType_{-1};
 
     /**
      * ROOT class definition.
      */
-    ClassDef(SimParticle, 2);
+    ClassDef(SimParticle, 3);
 };
 
 }
