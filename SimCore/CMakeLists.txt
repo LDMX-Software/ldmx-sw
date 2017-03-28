@@ -1,11 +1,11 @@
 # find Geant4
 find_package(Geant4 REQUIRED ui_all vis_all)
 
-# declare Biasing module
+# declare SimApplication module
 module(
-  NAME Biasing
+  NAME SimCore
   EXTRA_LINK_LIBRARIES ${Geant4_LIBRARIES}
-  DEPENDENCIES SimPlugins SimCore 
+  DEPENDENCIES SimCore
 )
 
 # include Geant4 CMake config file (compiler settings, etc.)

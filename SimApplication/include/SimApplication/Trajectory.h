@@ -32,6 +32,9 @@ class Trajectory : public G4VTrajectory {
 
     public:
 
+        /** Map of track ID to Trajectory objects. */
+        typedef std::map<int, Trajectory*> TrajectoryMap;
+
         /**
          * Class constructor.
          * @param aTrack The Track from which to construct the trajectory.
@@ -216,11 +219,6 @@ class Trajectory : public G4VTrajectory {
          * The particle's vertex position.
          */
         G4ThreeVector vertexPosition_;
-
-        /**
-         * The particle's end point.
-         */
-        G4ThreeVector endPoint_;
 };
 
 /**

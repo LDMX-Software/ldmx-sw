@@ -10,17 +10,28 @@ G4Allocator<Trajectory> TrajectoryAllocator;
 Trajectory::Trajectory(const G4Track* aTrack)
     : genStatus_(0) {
 
+    // Copy basic info from the track.
     particleDef_ = aTrack->GetDefinition();
     mass_ = aTrack->GetDynamicParticle()->GetMass();
     trackID_ = aTrack->GetTrackID();
     parentID_ = aTrack->GetParentID();
-    initialMomentum_ = aTrack->GetMomentum();
-    energy_ = aTrack->GetTotalEnergy();
     globalTime_ = aTrack->GetGlobalTime();
     vertexPosition_ = aTrack->GetVertexPosition();
+    energy_ = aTrack->GetTotalEnergy();
 
+    // Compute momentum by multiplying unit vector of vertex momentum by KE.
+    const G4ThreeVector& vmd = aTrack->GetVertexMomentumDirection(); 
+    G4double kE = aTrack->GetVertexKineticEnergy();
+    initialMomentum_ = G4ThreeVector(vmd[0] * kE, vmd[1] * kE, vmd[2] * kE);
+
+    // If the track has not been stepped, then only the first point is added.
+    // Otherwise, the track has already been stepped so we add also its last location
+    // which should be its endpoint.
     trajPoints_ = new TrajectoryPointContainer();
-    trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
+    trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetVertexPosition()));
+    if (aTrack->GetTrackStatus() == G4TrackStatus::fStopAndKill) {
+        trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
+    }
 }
 
 Trajectory::~Trajectory() {
@@ -84,7 +95,7 @@ void Trajectory::MergeTrajectory(G4VTrajectory* secondTrajectory) {
 }
 
 const G4ThreeVector& Trajectory::getEndPoint() const {
-    return endPoint_;
+    return GetPoint(GetPointEntries() - 1)->GetPosition();
 }
 
 G4double Trajectory::getEnergy() const {
