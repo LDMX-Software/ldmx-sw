@@ -94,22 +94,31 @@ macro(MODULE)
     message("MODULE_LIBRARIES='${MODULE_LIBRARIES}'")
   endif()
 
-  # add the shared library to build products
+  # if there are C++ source files then build a shared library
   if (sources)
 
     # add library target
     add_library(${MODULE_NAME} SHARED ${sources} ${MODULE_EXTRA_SOURCES})
    
-    # add lib deps
-    target_link_libraries(${MODULE_NAME} ${MODULE_LIBRARIES})
+    # add link libs
+    target_link_libraries(${MODULE_NAME} ${MODULE_EXTRA_LINK_LIBRARIES})
   
     # install the library
     install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
   endif()
-
+  
   # make list of libraries required by executables and test programs which includes this module's lib
-  set(MODULE_BIN_LIBRARIES ${MODULE_LIBRARIES} ${MODULE_NAME})
-
+  if (sources)
+    set(MODULE_BIN_LIBRARIES ${MODULE_LIBRARIES} ${MODULE_NAME})
+  else()
+    set(MODULE_BIN_LIBRARIES ${MODULE_LIBRARIES})
+  endif()
+    
+  if(MODULE_DEBUG)
+    message("MODULE_BIN_LIBRARIES='${MODULE_BIN_LIBRARIES}'")
+  endif()
+ 
   # find test programs
   file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cxx)
 
