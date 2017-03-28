@@ -18,6 +18,7 @@
 //   Geant4   //
 //------------//
 #include "G4RunManager.hh"
+//#include "G4UserTrackingAction.hh"
 
 //----------//
 //   LDMX   //
@@ -25,6 +26,9 @@
 #include "SimPlugins/UserActionPlugin.h"
 #include "Biasing/BiasingMessenger.h"
 #include "Biasing/TargetBremFilter.h"
+#include "SimCore/UserTrackInformation.h"
+
+class UserTrackingAction;
 
 namespace ldmx {
 
@@ -52,6 +56,14 @@ namespace ldmx {
             }
 
             /**
+             * Get whether this plugin implements the tracking action.
+             * @return True if the plugin implements the tracking action.
+             */
+            bool hasTrackingAction() { 
+                return true;
+            }
+
+            /**
              * Get whether this plugin implements the stacking aciton.
              * @return True to indicate this plugin implements the stacking action.
              */
@@ -60,6 +72,11 @@ namespace ldmx {
             }
 
             void stepping(const G4Step* step);
+
+            /**
+             * Pre-tracking action.
+             */
+            void postTracking(const G4Track*); 
 
             /**
              * Classify a new track which postpones track processing.
@@ -76,6 +93,9 @@ namespace ldmx {
 
             /** Brem photon energy threshold */
             double photonEnergyThreshold_{2500}; // MeV
+
+            /** PN gamma parent ID. */
+            double photonGammaID_{-1}; 
 
     }; // EcalProcessFilter 
 }
