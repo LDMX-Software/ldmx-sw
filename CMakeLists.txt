@@ -1,51 +1,42 @@
 # minimum cmake version
 cmake_minimum_required(VERSION 3.0)
 
-# find ROOT installation
-find_package(ROOT REQUIRED COMPONENTS Core RIO PyROOT Geom)
-if(ROOT_FOUND)
-  message(STATUS "ROOT found at '${ROOT_DIR}'")
-endif()
-
 # find XercesC installation
 if(XercesC_DIR)
   set(XercesC_INCLUDE_DIR "${XercesC_DIR}/include")
-  set(XercesC_LIBRARIES "${XercesC_DIR}/lib/libxerces-c.so")
-  if (NOT EXISTS "${XercesC_LIBRARIES}")
-    message(FATAL_ERROR "Unable to guess location of Xerces lib from XercesC_DIR.  Please specify using '-DXercesC_LIBRARIES'.")
+  set(XercesC_LIBRARY "${XercesC_DIR}/lib/libxerces-c.so")
+  if (NOT EXISTS "${XercesC_LIBRARY}")
+    message(FATAL_ERROR "Unable to guess location of Xerces lib.  Please specify using: -DXercesC_LIBRARY")
   endif()
-  message(STATUS "Set XercesC_INCLUDE_DIR='${XercesC_INCLUDE_DIR}' and XercesC_LIBRARIES='${XercesC_LIBRARIES}' from Xerces_DIR='${Xerces_DIR}'")
+  message(STATUS "XercesC dir set to: ${XercesC_DIR}")
+  message(STATUS "XercesC include dir set to: ${XercesC_INCLUDE_DIR}")
+  message(STATUS "XercesC library set to: ${XercesC_LIBRARY}")
 endif()
 find_package(XercesC REQUIRED)
-if(XercesC_FOUND)
-  message(STATUS "XercesC found with lib '${XercesC_LIBRARIES}' and include dir '${XercesC_INCLUDE_DIRS}'")
-  get_filename_component(XercesC_LIBRARY_DIR ${XercesC_LIBRARIES} DIRECTORY)
-endif() 
+message(STATUS "XercesC libs found at: ${XercesC_LIBRARIES}")
+message(STATUS "XercesC include dir found at: ${XercesC_INCLUDE_DIRS}")
+get_filename_component(XercesC_LIBRARY_DIR ${XercesC_LIBRARIES} DIRECTORY)
 
 # find Geant4 installation
 find_package(Geant4 REQUIRED ui_all vis_all)
-if(Geant4_FOUND)
-  message(STATUS "Geant4 found at '${Geant4_DIR}'")
-endif()
+message(STATUS "Geant4 found at: ${Geant4_DIR}")
 
 # find Python installation
 find_package(PythonLibs REQUIRED)
-if(PYTHONLIBS_FOUND)
-  message(STATUS "PythonLibs found with lib '${PYTHON_LIBRARIES}' and include dir '${PYTHON_INCLUDE_DIRS}'")
-  get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
-endif()
+message(STATUS "Python lib found at: ${PYTHON_LIBRARIES}")
+message(STATUS "Python include dir found at: ${PYTHON_INCLUDE_DIRS}")
+get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
+
+# find ROOT installation
+find_package(ROOT REQUIRED COMPONENTS Core RIO PyROOT Geom)
+message(STATUS "ROOT found at: ${ROOT_DIR}")
 
 # mag field map installation
 option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
+message(STATUS "MagFieldMap installation: ${INSTALL_FIELDMAP}")
 if(INSTALL_FIELDMAP)
-  message(STATUS "Field map will be installed.")
   install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Scripts/InstallMagFieldMap.cmake")
-else()
-  message(STATUS "Field map installation disabled.")
 endif()
-
-# set C++ options
-#set(BASE_CXX_FLAGS "-pipe -m64 -fsigned-char -fPIC -pthread -std=c++11 -fPIC -Wall -pedantic")
 
 # option to print extra module information during CMake config
 option(MODULE_DEBUG "Print extra module information during CMake config" OFF)
@@ -56,6 +47,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 # import macro for declaring modules
 include(MacroModule)
 
+# import macro for declaring external dependencies
 include(MacroExtDeps)
 
 # declare list of modules with correct dependency order
@@ -63,7 +55,7 @@ set(MODULES Event Framework DetDescr EventProc SimPlugins Biasing SimApplication
 
 # build each module in the list
 foreach(module ${MODULES})
-  message(STATUS "Adding module '${module}'")
+  message(STATUS "Adding module: ${module}")
   add_subdirectory(${module})
 endforeach()
 
@@ -87,13 +79,17 @@ foreach(script_file ${script_files})
 endforeach()
 
 # configure and generate documentation using doxygen
-option(INSTALL_DOC "Set to ON to generate documentation using doxygen." OFF)
+option(INSTALL_DOC "Set to ON to generate documentation using doxygen" OFF)
+message(STATUS "Doxygen documentation: ${INSTALL_DOC}")
 if(INSTALL_DOC)
+
+    # message that documentation is off for this build
+    message(STATUS "Doxygen documentation will be generated")
 
     # find doxygen
     find_program(DOXYGEN_EXECUTABLE doxygen ${PATH})
     if(DOXYGEN_EXECUTABLE-NOTFOUND)
-        message(FATAL_ERROR "The doxygen executable was not found.")
+        message(FATAL_ERROR "The doxygen executable was not found")
     endif()
 
     # find dot
@@ -111,11 +107,9 @@ if(INSTALL_DOC)
     # documentation generation target 
     add_custom_target(doc COMMAND doxygen ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)
 
-else()
-    # message that documentation is off for this build
-    message(STATUS "Generation of Doxygen documentation is disabled.")    
 endif()
 
+# option for dumping full CMake env
 option(DUMP_CMAKE_VARIABLES OFF)
 if(DUMP_CMAKE_VARIABLES)
   get_cmake_property(_variableNames VARIABLES)
@@ -123,3 +117,6 @@ if(DUMP_CMAKE_VARIABLES)
     message(STATUS "${_variableName}=${${_variableName}}")
   endforeach()
 endif()
+
+# info message about install prefix
+message(STATUS "ldmx-sw will be installed to: ${CMAKE_INSTALL_PREFIX}")
