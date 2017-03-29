@@ -36,10 +36,6 @@ namespace ldmx {
                 bool save = false;
                 for (auto filter : filters) {
                     save = filter->passes(aTrack);
-
-                    // DEBUG
-                    std::cout << "[ TrackFilter ] : filter '" << filter->getName() << "' returned: " << save << std::endl;
-
                     if (!save) {
                         break;
                     }
@@ -86,10 +82,6 @@ namespace ldmx {
                 bool save = false;
                 for (auto filterChain : filters) {
                     save = filterChain->process(aTrack);
-
-                    // DEBUG
-                    std::cout << "[ TrackFilter ] : chain '" << filterChain->getName() << "' returned: " << save << std::endl;
-
                     if (save) {
                         break;
                     }
@@ -173,19 +165,10 @@ namespace ldmx {
                     for (const auto& processName : processNames_) {
                         if (exactMatch_[processName]) {
                             if (!processName.compare(process->GetProcessName())) {
-                                std::cout << "[ TrackProcessFilter ] : pass track ID " << aTrack->GetTrackID()
-                                        << " on exact match of process '" << process->GetProcessName() << "'"
-                                        << "' with '" << processName << "'"
-                                        << std::endl;
-
                                 return true;
                             }
                         } else {
                             if (process->GetProcessName().find(processName) != std::string::npos) {
-                                std::cout << "[ TrackProcessFilter ] : pass track ID " << aTrack->GetTrackID()
-                                        << " on partial match of process '" << process->GetProcessName() << "' with '"
-                                        << processName << "'"
-                                        << std::endl;
                                 return true;
                             }
                         }
@@ -224,27 +207,16 @@ namespace ldmx {
                     return false;
                 }
                 G4TrackVector* tracks = mgr->GimmeSecondaries();
-                std::cout << "[ TrackParentProcessFilter ] : looking at " << tracks->size() << " dau" << std::endl;
                 for (auto track : *tracks) {
                     const G4VProcess* process = track->GetCreatorProcess();
                     if (process) {
-                        std::cout << "[ TrackParentProcessFilter ] : dau with process '" << process->GetProcessName()
-                                << "'" << std::endl;
                         for (const auto& processName : processNames_) {
                             if (exactMatch_[processName]) {
                                 if (!processName.compare(process->GetProcessName())) {
-                                    std::cout << "[ TrackParentProcessFilter ] : pass track ID " << aTrack->GetTrackID()
-                                        << " on exact match of dau process '" << process->GetProcessName() << "'"
-                                        << "' with '" << processName << "'"
-                                        << std::endl;
                                     return true;
                                 }
                             } else {
                                 if (process->GetProcessName().find(processName) != std::string::npos) {
-                                    std::cout << "[ TrackParentProcessFilter ] : pass track ID " << aTrack->GetTrackID()
-                                        << " on partial match of dau process '" << process->GetProcessName() << "' with '"
-                                        << processName << "'"
-                                        << std::endl;
                                     return true;
                                 }
                             }
@@ -255,7 +227,9 @@ namespace ldmx {
             }
     };
 
-    // TODO: region filter where secondary saving is turned off
+    // TODO:
+    // Filter for looking at the region flag where secondary saving is turned off.
+    // Name of region could be parameter with true/false for saving.
 
 }
 

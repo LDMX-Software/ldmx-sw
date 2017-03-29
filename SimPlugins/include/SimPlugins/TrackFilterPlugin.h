@@ -61,7 +61,7 @@ namespace ldmx {
                 if (save) {
                     trackInfo->setSaveFlag(true);
                     if (verbose_ > 1) {
-                        std::cout << "[ TrackFilterPlugin ] : set save flag for track ID " << aTrack->GetTrackID()
+                        std::cout << "[ TrackFilterPlugin ] : set save flag for track " << aTrack->GetTrackID()
                                 << ", KE = " << (aTrack->GetVertexKineticEnergy())
                                 << ", PDGID = " << aTrack->GetDynamicParticle()->GetPDGcode();
                         if (aTrack->GetCreatorProcess()) {
