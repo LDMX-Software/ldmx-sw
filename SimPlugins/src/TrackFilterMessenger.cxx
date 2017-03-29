@@ -26,8 +26,7 @@ namespace ldmx {
         processCmd_->SetParameter(exactMatch);
 
         parentCmd_ = new G4UIcommand(std::string(getPath() + "parent").c_str(), this);
-        parentCmd_ = new G4UIcommand(std::string(getPath() + "process").c_str(), this);
-        parentCmd_->SetGuidance("Add a physics process name for saving parent particles");
+        parentCmd_->SetGuidance("Add a physics process name of daughter for saving its parent particle");
         parentCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
         processName = new G4UIparameter("processName", 's', false);
         processName->SetGuidance("Name of Geant4 physics process to save");
@@ -61,7 +60,6 @@ namespace ldmx {
             }
             pdgFilter->addPDGCode(pdgid);
         } else if (cmd == processCmd_ || cmd == parentCmd_) {
-            std::cout << "newValue '" << newValue << "'" << std::endl;
             std::stringstream ss(newValue);
             std::string processName;
             bool exactMatch = false;
@@ -72,10 +70,8 @@ namespace ldmx {
                 exactMatch = G4UIcommand::ConvertToBool(exactMatchStr.c_str());
             }
             if (cmd == processCmd_) {
-                std::cout << "adding TrackProcessFilter with processName '" << processName << "' and exact match '" << exactMatch << "'" << std::endl;
                 filters_.push_back(new TrackProcessFilter(processName, exactMatch));
             } else if (cmd == parentCmd_) {
-                std::cout << "adding TrackParentProcessFilter with processName '" << processName << "' and exact match '" << exactMatch << "'" << std::endl;
                 filters_.push_back(new TrackParentProcessFilter(processName, exactMatch));
             }
         } else if (cmd == createCmd_) {
@@ -84,6 +80,7 @@ namespace ldmx {
                 filterChain->addFilter(filter);
             }
             plugin_->addFilterChain(filterChain);
+            filters_.clear();
         }
     }
 }
