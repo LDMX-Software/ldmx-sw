@@ -52,6 +52,8 @@ namespace ldmx {
             // create a new filter chain
             G4UIcmdWithAString* createCmd_;
 
+            G4UIcommand* regionCmd_;
+
             // current set of filters being built
             //TrackFilterChain* filters_{new TrackFilterChain};
             std::vector<TrackFilter*> filters_;
