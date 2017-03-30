@@ -35,6 +35,16 @@ namespace ldmx {
         exactMatch->SetGuidance("True if process name match should be exact");
         parentCmd_->SetParameter(exactMatch);
 
+        regionCmd_ = new G4UIcommand(std::string(getPath() + "region").c_str(), this);
+        regionCmd_->SetGuidance("Add a detector region for saving tracks");
+        regionCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
+        G4UIparameter* regionName = new G4UIparameter("regionName", 's', false);
+        regionName->SetGuidance("Name of region");
+        regionCmd_->SetParameter(regionName);
+        G4UIparameter* regionSave = new G4UIparameter("save", 'b', true);
+        regionSave->SetGuidance("True to save tracks in the region or false to not save");
+        regionCmd_->SetParameter(regionSave);
+
         createCmd_ = new G4UIcmdWithAString(std::string(getPath() + "create").c_str(), this);
         createCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
     }
@@ -81,6 +91,27 @@ namespace ldmx {
             }
             plugin_->addFilterChain(filterChain);
             filters_.clear();
-        }
+        } else if (cmd == regionCmd_) {
+            TrackRegionFilter* regionFilter = nullptr;
+            for (auto filter : filters_) {
+                if (dynamic_cast<TrackRegionFilter*>(filter)) {
+                    regionFilter = dynamic_cast<TrackRegionFilter*>(filter);
+                }
+            }
+            if (!regionFilter) {
+                regionFilter = new TrackRegionFilter;
+                filters_.push_back(regionFilter);
+            }
+            std::stringstream ss(newValue);
+            std::string regionName;
+            bool regionSave = true;
+            ss >> regionName;
+            if (!ss.eof()) {
+                std::string regionSaveStr;
+                ss >> regionSaveStr;
+                regionSave = G4UIcommand::ConvertToBool(regionSaveStr.c_str());
+            }
+            regionFilter->addRegion(regionName, regionSave);
+        } 
     }
 }
