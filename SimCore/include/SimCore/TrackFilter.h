@@ -10,11 +10,10 @@
 #include "G4VProcess.hh"
 #include "G4TrackingManager.hh"
 #include "G4RunManagerKernel.hh"
+#include "G4Region.hh"
 
 #include <unordered_set>
 #include <vector>
-
-#include <typeinfo>
 
 namespace ldmx {
 
@@ -22,15 +21,11 @@ namespace ldmx {
 
         public:
 
-            TrackFilter(std::string name) : name_(name) {;}
+            TrackFilter() {;}
 
             virtual ~TrackFilter() {;}
 
             virtual bool passes(const G4Track*) = 0;
-
-            const std::string& getName() {
-                return name_;
-            }
 
             static bool filter(const std::vector<TrackFilter*> filters, const G4Track* aTrack) {
                 bool save = false;
@@ -42,10 +37,6 @@ namespace ldmx {
                 }
                 return save;
             }
-
-        protected:
-
-            std::string name_;
     };
 
     class TrackFilterChain {
@@ -111,7 +102,7 @@ namespace ldmx {
 
         public:
 
-            TrackEnergyFilter(double threshold) : TrackFilter("Vertex KE Threshold"), threshold_(threshold) {
+            TrackEnergyFilter(double threshold) : threshold_(threshold) {
             }
 
             bool passes(const G4Track* aTrack) {
@@ -131,7 +122,7 @@ namespace ldmx {
 
         public:
 
-            TrackPDGCodeFilter() : TrackFilter("PDG ID") {
+            TrackPDGCodeFilter() {
             }
 
             bool passes(const G4Track* aTrack) {
@@ -155,7 +146,7 @@ namespace ldmx {
 
         public:
 
-            TrackProcessFilter(std::string processName, bool exactMatch) : TrackFilter("Physics Process") {
+            TrackProcessFilter(std::string processName, bool exactMatch) {
                 addProcess(processName, exactMatch);
             }
 
@@ -198,11 +189,10 @@ namespace ldmx {
 
             TrackParentProcessFilter(std::string processName, bool exactMatch)
                 : TrackProcessFilter(processName, exactMatch) {
-                name_ = "Parent Physics Process";
             }
 
             bool passes(const G4Track* aTrack) {
-                G4TrackingManager* mgr = G4RunManagerKernel::GetRunManagerKernel()->GetTrackingManager();
+                static G4TrackingManager* mgr = G4RunManagerKernel::GetRunManagerKernel()->GetTrackingManager();
                 if (aTrack != mgr->GetTrack()) {
                     return false;
                 }
@@ -227,10 +217,31 @@ namespace ldmx {
             }
     };
 
-    // TODO:
-    // Filter for looking at the region flag where secondary saving is turned off.
-    // Name of region could be parameter with true/false for saving.
+    class TrackRegionFilter : public TrackFilter {
 
+        public:
+
+            TrackRegionFilter() {;}
+
+            void addRegion(std::string regionName, bool regionSave) {
+                regions_.insert(regionName);
+                regionSave_[regionName] = regionSave;
+            }
+
+            bool passes(const G4Track* aTrack) {
+                G4Region* region = aTrack->GetLogicalVolumeAtVertex()->GetRegion();
+                if (regions_.find(region->GetName()) != regions_.end()) {
+                    return regionSave_[region->GetName()];
+                } else {
+                    return false;
+                }
+            }
+
+        private:
+
+            std::unordered_set<std::string> regions_;
+            std::map<std::string, bool> regionSave_;
+    };
 }
 
 #endif /* SIMCORE_TRACKFILTER_H_ */
