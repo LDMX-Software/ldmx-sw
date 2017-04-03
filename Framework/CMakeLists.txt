@@ -1,8 +1,7 @@
 # declare Event module
 module(
-  NAME Framework
-  EXTRA_LINK_LIBRARIES dl
+  NAME Framework  
   EXECUTABLES src/ldmx-app.cxx
-  DEPENDENCIES Event
+  DEPENDENCIES Event DetDescr
   EXTERNAL_DEPENDENCIES ROOT Python
 )
