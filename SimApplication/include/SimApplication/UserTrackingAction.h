@@ -10,6 +10,7 @@
 // LDMX
 #include "SimPlugins/PluginManagerAccessor.h"
 #include "SimApplication/TrackMap.h"
+#include "SimApplication/Trajectory.h"
 
 // Geant4
 #include "G4RunManager.hh"
