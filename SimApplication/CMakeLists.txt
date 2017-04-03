@@ -10,7 +10,7 @@ module(
   EXTRA_INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}
   EXECUTABLES src/ldmx_sim.cxx
   EXTRA_LINK_LIBRARIES ${Geant4_LIBRARIES} ${ROOT_LIBRARIES}
-  DEPENDENCIES Event Framework DetDescr SimPlugins Biasing
+  DEPENDENCIES Event Framework DetDescr SimCore SimPlugins Biasing
 )
 
 # include Geant4 CMake config file (compiler settings, etc.)
