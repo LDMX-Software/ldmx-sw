@@ -1,11 +1,5 @@
-# find Geant4
-find_package(Geant4 REQUIRED ui_all vis_all)
-
 # declare SimApplication module
 module(
   NAME SimCore
-  EXTRA_LINK_LIBRARIES ${Geant4_LIBRARIES}
+  EXTERNAL_DEPENDENCIES Geant4
 )
-
-# include Geant4 CMake config file (compiler settings, etc.)
-include(${Geant4_USE_FILE})
