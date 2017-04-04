@@ -83,21 +83,16 @@ class SimParticleBuilder {
 
     private:
 
-        /**
-         * The map of track IDs to SimParticles.
-         */
+        /** The map of track IDs to SimParticles. */
         SimParticleMap particleMap_;
 
-        /**
-         * The map of track ancestry (track ID to parent ID).
-         */
+        /** The map of tracks to their parent IDs and Trajectory objects. */
         TrackMap* trackMap_;
 
-        /**
-         * The current Geant4 event.
-         */
+        /** The current Geant4 event. */
         G4Event* currentEvent_;
 
+        /** The output SimParticle collection. */
         TClonesArray* outputParticleColl_{new TClonesArray("event::SimParticle", 50)};
 };
 
