@@ -58,6 +58,91 @@ void Process::run() {
             }
             outFile.close();
 
+        } else if (outputFiles_.size() != inputFiles_.size()) {
+            if (outputFiles_.size() != 1) {
+                EXCEPTION_RAISE("Process", "Unable to handle case of different number of input and output files (other than zero or one output files)");
+            }
+            // next, loop through the files
+            int ifile = 0;
+            int wasRun = -1;
+            EventFile* outFile(0);
+            for (auto infilename : inputFiles_) {
+                EventFile inFile(infilename);
+
+                std::cout << "Process: Opening file " << infilename << std::endl;
+                
+                if (ifile == 0) {
+                    outFile = new EventFile(outputFiles_[0], &inFile);
+                } else {
+                    //outFile->handOff(&inFile); 
+                }
+                ifile++;
+
+                for (auto rule : dropKeepRules_) {
+                    outFile->addDrop(rule);
+                }
+
+                for (auto module : sequence_) {
+                    module->onFileOpen(infilename);
+                }
+
+                EventImpl theEvent(passname_);
+                if (outFile) {
+                    outFile->setupEvent(&theEvent);
+
+                } else {
+                    inFile.setupEvent(&theEvent);
+                }
+                EventFile* masterFile = (outFile) ? (outFile) : (&inFile);
+
+                while (masterFile->nextEvent() && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
+                    // notify for new run if necessary
+                    if (theEvent.getEventHeader()->getRun() != wasRun) {
+                        wasRun = theEvent.getEventHeader()->getRun();
+                        try {
+                            const RunHeader& runHeader = inFile.getRunHeader(wasRun);
+                            runHeader.Print();
+                            for (auto module : sequence_) {
+                                module->onNewRun(runHeader);
+                            }
+                        } catch (const Exception&) {
+                            std::cout << "Process: WARNING - Run header for run " << wasRun << " was not found in the input file." << std::endl;
+                        }
+                    }
+
+                    TTimeStamp t;
+                    std::cout << "[ Process ] :  Processing " << n_events_processed + 1 << " Run " << theEvent.getEventHeader()->getRun() << " Event " << theEvent.getEventHeader()->getEventNumber() << "  (" << t.AsString("lc") << ")" << std::endl;
+
+                    for (auto module : sequence_) {
+                        if (dynamic_cast<Producer*>(module)) {
+                            (dynamic_cast<Producer*>(module))->produce(theEvent);
+                        } else if (dynamic_cast<Analyzer*>(module)) {
+                            (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
+                        }
+                    }
+                    n_events_processed++;
+
+                }
+                if (eventLimit_ > 0 && n_events_processed == eventLimit_) {
+                    std::cout << "[ Process ] : Reached event limit of " << eventLimit_ << " events\n";
+                }
+
+                if (outFile) {
+                    outFile->close();
+                }
+                inFile.close();
+                std::cout << "Process: Closing file " << infilename << std::endl;
+                for (auto module : sequence_) {
+                    module->onFileClose(infilename);
+                }
+            }
+
+	    if (histoTFile_) {
+		histoTFile_->Write();
+		delete histoTFile_;
+		histoTFile_=0;
+	    }
+	    
         } else {
             if (!outputFiles_.empty() && outputFiles_.size() != inputFiles_.size()) {
                 EXCEPTION_RAISE("Process", "Unable to handle case of different number of input and output files (other than zero output files)");
@@ -142,6 +227,7 @@ void Process::run() {
 	    }
 	    
         }
+
 	
         // finally, notify everyone that we are stopping
         for (auto module : sequence_) {
