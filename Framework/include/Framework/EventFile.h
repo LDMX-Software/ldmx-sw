@@ -61,6 +61,8 @@ class EventFile {
          */
         virtual ~EventFile();
 
+        void handOff(EventFile* inFile);
+
         /**
          * Add a rule for dropping collections from the output.
          * @param rule The rule for dropping collections.
