@@ -7,9 +7,7 @@
 #include "TClonesArray.h"
 
 #include "Event/EventConstants.h"
-#include "Event/Event.h"
 #include "Event/EcalHit.h"
-#include "Framework/ParameterSet.h"
 
 namespace ldmx {
 
