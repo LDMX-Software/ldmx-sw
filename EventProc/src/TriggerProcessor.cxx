@@ -6,7 +6,6 @@
 
 #include "Event/TriggerResult.h"
 #include "Event/EcalHit.h"
-#include "Event/Event.h"
 #include "EventProc/TriggerProcessor.h"
 #include "Framework/EventProcessor.h"
 #include "DetDescr/EcalHexReadout.h"

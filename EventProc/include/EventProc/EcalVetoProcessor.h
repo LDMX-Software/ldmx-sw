@@ -15,9 +15,7 @@
 // LDMX
 #include "DetDescr/EcalDetectorID.h"
 #include "Event/EcalVetoResult.h"
-#include "Event/Event.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/ParameterSet.h"
 
 //C++
 #include <map>
