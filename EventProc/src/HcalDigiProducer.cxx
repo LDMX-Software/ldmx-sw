@@ -5,11 +5,9 @@
 #include "TClonesArray.h"
 
 #include "Event/EventConstants.h"
-#include "Event/Event.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Event/HcalHit.h"
 #include "EventProc/HcalDigiProducer.h"
-#include "Framework/ParameterSet.h"
 
 #include <iostream>
 
