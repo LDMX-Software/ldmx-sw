@@ -11,9 +11,13 @@ namespace ldmx {
 
     bool BiasingMessenger::biasingEnabled_{false}; 
 
+    double BiasingMessenger::eventWeight_{1}; 
+
     std::string BiasingMessenger::particleType_{"gamma"};
 
     std::string BiasingMessenger::process_{"photonNuclear"};
+
+    double BiasingMessenger::threshold_{0};
 
     std::string BiasingMessenger::volume_{"target"};
 
@@ -41,6 +45,7 @@ namespace ldmx {
         if (command == enableBiasingCmd_) biasingEnabled_ = true; 
         else if (command == particleTypeCmd_) particleType_ = newValues;  
         else if (command == processCmd_)      process_ = newValues;
+        else if (command == thresholdCmd_)    threshold_ = G4UIcommand::ConvertToDouble(newValues);    
         else if (command == volumeCmd_)       volume_ = newValues; 
         else if (command == xsecTransCmd_)    xsecTrans_ = G4UIcommand::ConvertToDouble(newValues); 
     }

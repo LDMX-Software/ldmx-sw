@@ -13,6 +13,8 @@
 
 // STL
 #include <iostream>
+#include <string>
+#include <map>
 
 namespace ldmx {
 
@@ -43,6 +45,9 @@ class EventHeader : public TObject {
             timestamp_ = TTimeStamp(0, 0);
             weight_ = 1.0;
             isRealData_ = false;
+            intParameters_.clear();
+            floatParameters_.clear();
+            stringParameters_.clear();
         }
 
         /**
@@ -98,7 +103,7 @@ class EventHeader : public TObject {
          */
         double getWeight() const {
             return weight_;
-        }
+        }   
 
         /**
          * Is this a real data event?
@@ -140,6 +145,61 @@ class EventHeader : public TObject {
             this->weight_ = weight;
         }
 
+        /**
+         * Get an int parameter value.
+         * @param name The name of the parameter.
+         * @return The parameter value.
+         */
+        int getIntParameter(const std::string& name) {
+            return intParameters_[name];
+        }
+
+        /**
+         * Set an int parameter value.
+         * @param name The name of the parameter.
+         * @param value The value of the parameter.
+         * @return The parameter value.
+         */
+        void setIntParameter(const std::string& name, int value) {
+            intParameters_[name] = value;
+        }
+
+        /**
+         * Get a float parameter value.
+         * @param name The name of the parameter.
+         * @return value The parameter value.
+         */
+        float getFloatParameter(const std::string& name) {
+            return floatParameters_[name];
+        }
+
+        /**
+         * Set a float parameter value.
+         * @param name The name of the parameter.
+         * @return value The parameter value.
+         */
+        void setFloatParameter(const std::string& name, float value) {
+            floatParameters_[name] = value;
+        }
+
+        /**
+         * Get a string parameter value.
+         * @param name The name of the parameter.
+         * @return value The parameter value.
+         */
+        std::string getStringParameter(const std::string& name) {
+            return stringParameters_[name];
+        }
+
+        /**
+         * Set a string parameter value.
+         * @param name The name of the parameter.
+         * @return value The parameter value.
+         */
+        void setStringParameter(const std::string& name, std::string value) {
+            stringParameters_[name] = value;
+        }    
+
     protected:
 
         /**
@@ -160,12 +220,27 @@ class EventHeader : public TObject {
         /**
          * The event weight.
          */
-        double weight_{1.0};
+        double weight_{1.0};        
 
         /**
          * Is this event real data?
          */
         bool isRealData_{false};
+
+        /**
+         * The int parameters.
+         */
+        std::map<std::string, int> intParameters_;
+
+        /**
+         * The float parameters.
+         */
+        std::map<std::string, float> floatParameters_;
+
+        /**
+         * The string parameters.
+         */
+        std::map<std::string, std::string> stringParameters_;
 
         /**
          * ROOT class definition.

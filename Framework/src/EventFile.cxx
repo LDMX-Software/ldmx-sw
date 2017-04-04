@@ -33,6 +33,7 @@ EventFile::EventFile(const std::string& filename, std::string treeName, bool isO
         entries_ = tree_->GetEntriesFast();
     }
 
+    // Create run map from tree in this file.
     createRunMap();
 }
 
@@ -58,6 +59,12 @@ EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int co
     if (isOutputFile_) {
         file_->SetCompressionLevel(compressionLevel);
     }
+
+    // Copy run headers from parent to output file.
+    copyRunHeaders();
+
+    // Create run header map.
+    createRunMap();
 }
 
 EventFile::~EventFile() {
@@ -65,6 +72,12 @@ EventFile::~EventFile() {
         delete entry.second;
     }
     runMap_.clear();
+}
+
+void EventFile::handOff(EventFile* inFile) {
+    ientry_ = -1;
+    parent_ = inFile;
+    parent_->tree_->SetBranchStatus("*", 1);
 }
 
 void EventFile::addDrop(const std::string& rule) {
@@ -102,9 +115,6 @@ bool EventFile::nextEvent() {
         tree_ = parent_->tree_->CloneTree(0);
         event_->setInputTree(parent_->tree_);
         event_->setOutputTree(tree_);
-
-        // Fill map of run numbers to RunHeader objects.
-        createRunMap();
     }
 
     // close up the last event
@@ -210,10 +220,24 @@ void EventFile::createRunMap() {
         RunHeader* aRunHeader = nullptr;
         runTree->SetBranchAddress("RunHeader", &aRunHeader);
         for (int iEntry = 0; iEntry < runTree->GetEntriesFast(); iEntry++) {
-            runTree->GetEntry(0);
+            runTree->GetEntry(iEntry);
             RunHeader* newRunHeader = new RunHeader();
             aRunHeader->Copy(*newRunHeader);
             runMap_[newRunHeader->getRunNumber()] = newRunHeader;
+        }
+        runTree->ResetBranchAddresses();
+    } 
+}
+
+void EventFile::copyRunHeaders() {
+    if (parent_ && parent_->file_) {
+        TTree* oldtree = (TTree*)parent_->file_->Get("LDMX_Run");
+        if (oldtree && !file_->Get("LDMX_Run")) {
+            oldtree->SetBranchStatus("RunHeader", 1);
+            file_->cd();
+            TTree* newtree = oldtree->CloneTree();
+            file_->Write();
+            file_->Flush();
         }
     }
 }

@@ -11,12 +11,12 @@ GammaPhysics::GammaPhysics(const G4String& name)
 
 GammaPhysics::~GammaPhysics() {
 }
-
+  // needed for GEANT4 10.3.0 and later
 #ifndef aParticleIterator
 #define aParticleIterator ((subInstanceManager.offset[g4vpcInstanceID])._aParticleIterator)
 #endif
 
-void GammaPhysics::ConstructProcess() {
+  void GammaPhysics::ConstructProcess() {
     aParticleIterator->reset();
     while((*aParticleIterator)()) {
         G4ParticleDefinition* particle = aParticleIterator->value();

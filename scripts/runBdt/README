@@ -1,0 +1,10 @@
+#The command to produce the latest bkg pickle is listed below, it was ran w/ Jeremies latest reco'd skim in bkg.root
+#This will result in a 75/25 test training split.  The numbers quoted in my powerpoint were created using this code
+python bdtMaker.py --sig_file '/nfs/slac/g/ldmx/data/mc/signal_v2_SIM-RECO-TRAIN/r*.root'  --bkg_file '/nfs/slac/g/ldmx/data/mc/test/skim_test_recon.root' --max_evt 10000000 --out_name bdt_data_train_FALSE 
+
+
+python bdtMaker.py --sig_file '/nfs/slac/g/ldmx/data/mc/signal_v2_SIM-RECO-TRAIN/r*.root'  --bkg_file '/nfs/slac/g/ldmx/data/mc/test/skim_test_recon.root' --max_evt 10000000 --data_train --out_name bdt_data_train_TRUE                          
+ 
+
+#The pickle in the data folder was created via --
+python bdtMaker.py --sig_file '/nfs/slac/g/ldmx/data/mc/signal_v2_SIM-RECO-TRAIN/r*.root' —bkg_file '/nfs/slac/g/ldmx/data/mc/owenreco/reco_good_bdt_omar_skim.root' --max_evt 1000000 --out_name tester

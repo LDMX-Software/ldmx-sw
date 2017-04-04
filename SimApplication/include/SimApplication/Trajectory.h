@@ -8,6 +8,7 @@
 #define SIMAPPLICATION_TRAJECTORY_H_
 
 // Geant4
+#include "G4TrajectoryContainer.hh"
 #include "G4VTrajectory.hh"
 #include "G4Allocator.hh"
 #include "G4Track.hh"
@@ -30,6 +31,9 @@ namespace ldmx {
 class Trajectory : public G4VTrajectory {
 
     public:
+
+        /** Map of track ID to Trajectory objects. */
+        typedef std::map<int, Trajectory*> TrajectoryMap;
 
         /**
          * Class constructor.
@@ -156,6 +160,24 @@ class Trajectory : public G4VTrajectory {
          */
         void setGenStatus(int genStatus);
 
+        /**
+         * Find a Trajectory by its track ID within a G4TrajectoryContainer.
+         * @param trajCont The G4TrajectoryContainer to search.
+         * @param trackID The track ID.
+         * @return The matching Trajectory or null if does not exist.
+         */
+        static Trajectory* findByTrackID(G4TrajectoryContainer* trajCont, int trackID);
+
+        /**
+         * Get the creator process type of this particle.
+         * This corresponds to the value returned by <i>G4VProcess::GetProcessSubType()</i>
+         * e.g. 121 for products of photonuclear reactions.
+         * @return The creator process type of this particle.
+         */
+        int getProcessType() {
+            return processType_;
+        }
+
     private:
 
         /**
@@ -209,9 +231,9 @@ class Trajectory : public G4VTrajectory {
         G4ThreeVector vertexPosition_;
 
         /**
-         * The particle's end point.
+         * The type of the process which created the track.
          */
-        G4ThreeVector endPoint_;
+        int processType_;
 };
 
 /**

@@ -6,8 +6,13 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMPLUGINS_TARGETBREMFILTER_H_
-#define SIMPLUGINS_TARGETBREMFILTER_H_
+#ifndef BIASING_TARGETBREMFILTER_H_
+#define BIASING_TARGETBREMFILTER_H_
+
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <algorithm>
 
 // Geant4
 #include "G4RunManager.hh"
@@ -41,6 +46,14 @@ namespace ldmx {
             }
 
             /**
+             * Get whether this plugin implements the event action.
+             * @return True if the plugin implements the event action.
+             */
+            virtual bool hasEventAction() { 
+                return true;
+            }
+
+            /**
              * Get whether this plugin implements the stepping action.
              * @return True to indicate this plugin implements the stepping action.
              */
@@ -63,6 +76,11 @@ namespace ldmx {
             void stepping(const G4Step* step);
 
             /**
+             * End of event action.
+             */
+            virtual void endEvent(const G4Event*);
+
+            /**
              * Classify a new track which postpones track processing.
              * Track processing resumes normally if a target PN interaction occurred.
              * @param aTrack The Geant4 track.
@@ -70,15 +88,27 @@ namespace ldmx {
              */
             G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& currentTrackClass);
 
+            /**
+             *
+             */
+            static std::vector<G4Track*> getBremGammaList() { return bremGammaTracks_; };
+
+            /**
+             *
+             */
+            static void removeBremFromList(G4Track* track);
+
         private:
+
+            static std::vector<G4Track*> bremGammaTracks_; 
 
             /** The volume name of the LDMX target. */
             G4String volumeName_{"target_PV"};
 
-            /** Brem photon energy threshold. */
-            double photonEnergyThreshold_{2500}; // MeV
+            /** Recoil electron threshold. */
+            double recoilElectronThreshold_{1500}; // MeV
 
     }; // TargetBremFilter
 }
 
-#endif // SIMPLUGINS_TARGETBREMFILTER_H__
+#endif // BIASING_TARGETBREMFILTER_H__

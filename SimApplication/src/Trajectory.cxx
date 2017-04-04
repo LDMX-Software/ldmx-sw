@@ -1,7 +1,11 @@
 #include "SimApplication/Trajectory.h"
 
+// LDMX
+#include "SimCore/UserTrackInformation.h"
+
 // Geant4
 #include "G4TrajectoryPoint.hh"
+#include "G4VProcess.hh"
 
 namespace ldmx {
 
@@ -10,17 +14,35 @@ G4Allocator<Trajectory> TrajectoryAllocator;
 Trajectory::Trajectory(const G4Track* aTrack)
     : genStatus_(0) {
 
+    // Copy basic info from the track.
     particleDef_ = aTrack->GetDefinition();
     mass_ = aTrack->GetDynamicParticle()->GetMass();
     trackID_ = aTrack->GetTrackID();
     parentID_ = aTrack->GetParentID();
-    initialMomentum_ = aTrack->GetMomentum();
-    energy_ = aTrack->GetTotalEnergy();
     globalTime_ = aTrack->GetGlobalTime();
     vertexPosition_ = aTrack->GetVertexPosition();
+    energy_ = aTrack->GetVertexKineticEnergy() + mass_;
 
+    // Get the creator process type.  The sub-type must be used here to get
+    // the type for a specific physics process like photonuclear.
+    const G4VProcess* process = aTrack->GetCreatorProcess();
+    if (process) {
+        processType_ = process->GetProcessSubType();
+    }
+
+    // Set initial momentum from track information.
+    UserTrackInformation* trackInfo = dynamic_cast<UserTrackInformation*>(aTrack->GetUserInformation());
+    const G4ThreeVector& p = trackInfo->getInitialMomentum();
+    initialMomentum_.set(p.x(), p.y(), p.z());
+
+    // If the track has not been stepped, then only the first point is added.
+    // Otherwise, the track has already been stepped so we add also its last location
+    // which should be its endpoint.
     trajPoints_ = new TrajectoryPointContainer();
-    trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
+    trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetVertexPosition()));
+    if (aTrack->GetTrackStatus() == G4TrackStatus::fStopAndKill) {
+        trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
+    }
 }
 
 Trajectory::~Trajectory() {
@@ -84,7 +106,7 @@ void Trajectory::MergeTrajectory(G4VTrajectory* secondTrajectory) {
 }
 
 const G4ThreeVector& Trajectory::getEndPoint() const {
-    return endPoint_;
+    return GetPoint(GetPointEntries() - 1)->GetPosition();
 }
 
 G4double Trajectory::getEnergy() const {
@@ -109,6 +131,16 @@ const G4ThreeVector& Trajectory::getVertexPosition() const {
 
 void Trajectory::setGenStatus(int theGenStatus) {
     genStatus_ = theGenStatus;
+}
+
+Trajectory* Trajectory::findByTrackID(G4TrajectoryContainer* trajCont, int trackID) {
+    TrajectoryVector* vec = trajCont->GetVector();
+    for (TrajectoryVector::const_iterator it = vec->begin(); it != vec->end(); it++) {
+        if ((*it)->GetTrackID() == trackID) {
+            return dynamic_cast<Trajectory*>(*it);
+        }
+    }
+    return nullptr;
 }
 
 }

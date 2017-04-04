@@ -24,7 +24,12 @@ void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
     UserTrackingAction::getUserTrackingAction()->getTrackMap()->clear();
 
     // Install custom trajectory container for the event.
-    G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
+    //G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
+
+    // G4Random::showEngineStatus();
+    // G4Random::saveEngineStatus();
+    // G4Random::getTheEngine();
+    if (PrimaryGeneratorMessenger::useRootSeed()) G4Random::restoreEngineStatus("tmpEvent.rndm"); // this line will be needed to read in a set of seeds
 
     // Activate user plugins.
     pluginManager_->beginEvent(anEvent);

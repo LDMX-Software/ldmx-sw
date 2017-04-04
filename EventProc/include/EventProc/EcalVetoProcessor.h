@@ -9,71 +9,138 @@
 
 // ROOT
 #include "TString.h"
-#include "TRandom.h"
 #include "TFile.h"
 #include "TTree.h"
-#include "TRandom2.h"
-#include "TClonesArray.h"
 
 // LDMX
-#include "Event/TriggerResult.h"
-#include "Event/EcalHit.h"
-#include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
-#include "DetDescr/EcalHexReadout.h"
+#include "Event/EcalVetoResult.h"
+#include "Event/Event.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/ParameterSet.h"
+
+//C++
+#include <map>
 
 namespace ldmx {
 
-/**
- * @class EcalVetoProcessor
- * @brief Determines if event is vetoable using ECAL hit information
- */
-class EcalVetoProcessor : public Producer {
+    class EcalHit;
+    class EcalHexReadout;
 
-    public:
+    /**
+     * @class BDTHelper
+     * @brief Runs the Boost Decision Tree (BDT) on EcalVetoResult objects using TPython
+     */
+    class BDTHelper {
 
-        typedef std::pair<int, int> layer_cell_pair;
+        public:
 
-        typedef std::pair<int, float> cell_energy_pair;
+            BDTHelper(TString importBDTFile);
 
-        EcalVetoProcessor(const std::string& name, const Process& process) :
-                Producer(name, process) {
-        }
+            virtual ~BDTHelper() {}
 
-        virtual ~EcalVetoProcessor() {;}
+            void buildFeatureVector(std::vector<float>& bdtFeatures,
+                    ldmx::EcalVetoResult& result);
 
-        void configure(const ParameterSet&);
+            float getSinglePred(std::vector<float> bdtFeatures);
 
-        void produce(Event& event);
+        private:
 
-    private:
+            TString vectorToPredCMD(std::vector<float> bdtFeatures);
+    };
 
-        inline layer_cell_pair hitToPair(EcalHit* hit) {
-            int detIDraw = hit->getID();
-            detID_.setRawValue(detIDraw);
-            detID_.unpack();
-            int layer = detID_.getFieldValue("layer");
-            int cellid = detID_.getFieldValue("cell");
-            return (std::make_pair(layer, cellid));
-        }
+    /**
+     * @class EcalVetoProcessor
+     * @brief Determines if event is vetoable using ECAL hit information
+     */
+    class EcalVetoProcessor: public Producer {
 
-    private:
+        public:
 
-        static const int NUM_ECAL_LAYERS;
-        static const int NUM_LAYERS_FOR_MED_CAL;
-        static const int BACK_ECAL_STARTING_LAYER;
-        static const float TOTAL_DEP_CUT;
-        static const float TOTAL_ISO_CUT;
-        static const float BACK_ECAL_CUT;
-        static const float RATIO_CUT;
+            typedef std::pair<int, int> LayerCellPair;
 
-        TriggerResult result_;
-        EcalDetectorID detID_;
-        bool verbose_{false};
-        bool doesPassVeto_{false};
-        EcalHexReadout* hexReadout_{nullptr};
-};
+            typedef std::pair<int, float> CellEnergyPair;
+
+            typedef std::pair<float, float> XYCoords;
+
+            EcalVetoProcessor(const std::string& name, Process& process) :
+                    Producer(name, process) {
+            }
+
+            virtual ~EcalVetoProcessor() {
+                delete BDTHelper_;
+            }
+
+            void configure(const ParameterSet&);
+
+            void produce(Event& event);
+
+        private:
+
+            LayerCellPair hitToPair(EcalHit* hit);
+
+            /* Function to calculate the energy weighted shower centroid */
+            int GetShowerCentroidIDAndRMS(const TClonesArray* ecalDigis, double & showerRMS);
+
+            /* Function to load up empty vector of hit maps */
+            void fillHitMap(const TClonesArray* ecalDigis,
+                    std::vector<std::map<int, float>>& cellMap_);
+
+            /* Function to take loaded hit maps and find isolated hits in them */
+            void fillIsolatedHitMap(const TClonesArray* ecalDigis,
+                    float globalCentroid,
+                    std::vector<std::map<int, float>>& cellMap_,
+                    std::vector<std::map<int, float>>& cellMapIso_,
+                    bool doTight = false);
+
+            void fillMipTracks(std::vector<std::map<int, float>>& cellMapIso_,
+                    std::vector<std::pair<int, float>>& trackVector, int minTrackLen = 2);
+
+        private:
+
+            std::vector<std::map<int, float>> cellMap_;
+            std::vector<std::map<int, float>> cellMapLooseIso_;
+            std::vector<std::map<int, float>> cellMapTightIso_;
+
+            std::vector<float> ecalLayerEdepRaw_;
+            std::vector<float> ecalLayerEdepReadout_;
+            std::vector<float> ecalLayerOuterRaw_;
+            std::vector<float> ecalLayerOuterReadout_;
+            std::vector<float> ecalLayerTime_;
+
+            std::vector<std::pair<int, float>> looseMipTracks_;
+            std::vector<std::pair<int, float>> mediumMipTracks_;
+            std::vector<std::pair<int, float>> tightMipTracks_;
+
+            int nEcalLayers_{0};
+            int backEcalStartingLayer_{0};
+            int nReadoutHits_{0};
+            int nLooseIsoHits_{0};
+            int nTightIsoHits_{0};
+            int doBdt_{0};
+
+            double summedDet_{0};
+            double summedOuter_{0};
+            double backSummedDet_{0};
+            double summedLooseIso_{0};
+            double maxLooseIsoDep_{0};
+            double summedTightIso_{0};
+            double maxTightIsoDep_{0};
+            double maxCellDep_{0};
+            double showerRMS_{0};
+            double bdtCutVal_{0};
+
+            EcalVetoResult result_;
+            EcalDetectorID detID_;
+            bool verbose_{false};
+            bool doesPassVeto_{false};
+
+            EcalHexReadout* hexReadout_{nullptr};
+
+            std::string bdtFileName_;
+            BDTHelper* BDTHelper_{nullptr};
+            std::vector<float> bdtFeatures_;
+    };
 
 }
 

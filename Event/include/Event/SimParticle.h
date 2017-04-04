@@ -48,7 +48,7 @@ class SimParticle: public TObject {
          * Get the energy of the particle [MeV].
          * @return The energy of the particle.
          */
-        float getEnergy() {
+        double getEnergy() {
             return energy_;
         }
 
@@ -74,7 +74,7 @@ class SimParticle: public TObject {
          * Get the global time of the particle's creation [ns].
          * @return The global time of the particle's creation.
          */
-        float getTime() {
+        double getTime() {
             return time_;
         }
 
@@ -82,7 +82,7 @@ class SimParticle: public TObject {
          * Get the XYZ vertex of the particle's creation [mm].
          * @return The vertex of the particle.
          */
-        std::vector<float> getVertex() {
+        std::vector<double> getVertex() {
             return {x_, y_, z_};
         }
 
@@ -91,7 +91,7 @@ class SimParticle: public TObject {
          * or left the detector [mm].
          * @return The endpoint of the particle
          */
-        std::vector<float> getEndPoint() {
+        std::vector<double> getEndPoint() {
             return {endX_, endY_, endZ_};
         }
 
@@ -99,7 +99,7 @@ class SimParticle: public TObject {
          * Get the XYZ momentum of the particle [MeV].
          * @return The momentum of the particle.
          */
-        std::vector<float> getMomentum() {
+        std::vector<double> getMomentum() {
             return {px_, py_, pz_};
         }
 
@@ -107,7 +107,7 @@ class SimParticle: public TObject {
          * Get the mass of the particle [GeV].
          * @return The mass of the particle.
          */
-        float getMass() {
+        double getMass() {
             return mass_;
         }
 
@@ -115,7 +115,7 @@ class SimParticle: public TObject {
          * The charge of the particle (units of electron charge).
          * @return The charge of the particle.
          */
-        float getCharge() {
+        double getCharge() {
             return charge_;
         }
 
@@ -154,7 +154,7 @@ class SimParticle: public TObject {
          * Set the energy of the particle [MeV].
          * @param energy The energy of the particle.
          */
-        void setEnergy(const float energy) {
+        void setEnergy(const double energy) {
             this->energy_ = energy;
         }
 
@@ -178,7 +178,7 @@ class SimParticle: public TObject {
          * Set the global time of the particle's creation [ns].
          * @param time The global time of the particle's creation.
          */
-        void setTime(const float time) {
+        void setTime(const double time) {
             this->time_ = time;
         }
 
@@ -188,7 +188,7 @@ class SimParticle: public TObject {
          * @param y The vertex Y position.
          * @param z The vertex Z position.
          */
-        void setVertex(const float x, const float y, const float z) {
+        void setVertex(const double x, const double y, const double z) {
             this->x_ = x;
             this->y_ = y;
             this->z_ = z;
@@ -200,7 +200,7 @@ class SimParticle: public TObject {
          * @param endY The Y end point.
          * @param endZ The Z end point.
          */
-        void setEndPoint(const float endX, const float endY, const float endZ) {
+        void setEndPoint(const double endX, const double endY, const double endZ) {
             this->endX_ = endX;
             this->endY_ = endY;
             this->endZ_ = endZ;
@@ -212,7 +212,7 @@ class SimParticle: public TObject {
          * @param py The Y momentum.
          * @param pz The Z momentum.
          */
-        void setMomentum(const float px, const float py, const float pz) {
+        void setMomentum(const double px, const double py, const double pz) {
             this->px_ = px;
             this->py_ = py;
             this->pz_ = pz;
@@ -222,7 +222,7 @@ class SimParticle: public TObject {
          * Set the mass of the particle [GeV].
          * @param mass The mass of the particle.
          */
-        void setMass(const float mass) {
+        void setMass(const double mass) {
             this->mass_ = mass;
         }
 
@@ -230,7 +230,7 @@ class SimParticle: public TObject {
          * Set the charge of the particle.
          * @param charge The charge of the particle.
          */
-        void setCharge(const float charge) {
+        void setCharge(const double charge) {
             this->charge_ = charge;
         }
 
@@ -250,97 +250,85 @@ class SimParticle: public TObject {
             parents_->Add(parent);
         }
 
+        /**
+         * Get the creator process type of this particle.
+         * This corresponds to the value returned by <i>G4VProcess::GetProcessSubType()</i>
+         * e.g. 121 for products of photonuclear reactions.
+         * @return The creator process type of this particle.
+         */
+        int getProcessType() {
+            return processType_;
+        }
+
+        /**
+         * Set the creator process type of this particle.
+         * This is set from the value of <i>G4VProcess::GetProcessSubType()</i>.
+         * @param processType The creator process type of this particle.
+         */
+        void setProcessType(int processType) {
+            processType_ = processType;
+        }
+
     private:
 
-        /**
-         * The energy of the particle.
-         */
+        /** The energy of the particle. */
         double energy_{0};
 
-        /**
-         * The PDG code of the particle.
-         */
+        /** The PDG code of the particle. */
         int pdgID_{0};
 
-        /**
-         * The generator status.
-         */
+        /** The generator status. */
         int genStatus_{-1};
 
-        /**
-         * The global creation time.
-         */
-        float time_{0};
+        /** The global creation time. */
+        double time_{0};
 
-        /**
-         * The X vertex.
-         */
-        float x_{0};
+        /** The X vertex. */
+        double x_{0};
 
-        /**
-         * The Y vertex.
-         */
-        float y_{0};
+        /** The Y vertex. */
+        double y_{0};
 
-        /**
-         * The Z vertex.
-         */
-        float z_{0};
+        /** The Z vertex. */
+        double z_{0};
 
-        /**
-         * The X end point.
-         */
-        float endX_{0};
+        /** The X end point. */
+        double endX_{0};
 
-        /**
-         * The Y end point.
-         */
-        float endY_{0};
+        /** The Y end point. */
+        double endY_{0};
 
-        /**
-         * The Z end point.
-         */
-        float endZ_{0};
+        /** The Z end point. */
+        double endZ_{0};
 
-        /**
-         * The X momentum.
-         */
-        float px_{0};
+        /** The X momentum.*/
+        double px_{0};
 
-        /**
-         * The Y momentum.
-         */
-        float py_{0};
+        /** The Y momentum. */
+        double py_{0};
 
-        /**
-         * The Z momentum.
-         */
-        float pz_{0};
+        /** The Z momentum. */
+        double pz_{0};
 
-        /**
-         * The particle's mass.
-         */
-        float mass_{0};
+        /** The particle's mass. */
+        double mass_{0};
 
-        /**
-         * The particle's charge.
-         */
-        float charge_{0};
+        /** The particle's charge. */
+        double charge_{0};
 
-        /**
-         * The list of daughter particles.
-         */
+        /** The list of daughter particles. */
         TRefArray* daughters_;
 
-        /**
-         * The list of parent particles.
-         */
+        /** The list of parent particles. */
         TRefArray* parents_;
+
+        /** Encoding of Geant4 process type. */
+        int processType_{-1};
 
     /**
      * ROOT class definition.
      */
-    ClassDef(SimParticle, 2);
+    ClassDef(SimParticle, 3);
 };
 
 }
