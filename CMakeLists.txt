@@ -51,8 +51,6 @@ include(MacroModule)
 include(MacroExtDeps)
 
 # declare list of modules with correct dependency order
-
-#set(MODULES Event Framework DetDescr EventProc Configuration)
 set(MODULES Event Framework DetDescr EventProc SimCore SimPlugins Biasing SimApplication Configuration Detectors EventDisplay)
 
 # build each module in the list
