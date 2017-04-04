@@ -9,6 +9,9 @@
 
 // LDMX
 #include "Framework/Exception.h"
+#include "Event/Event.h"
+#include "Event/RunHeader.h"
+#include "Framework/ParameterSet.h"
 
 // STL
 #include <map>
@@ -17,11 +20,8 @@ class TDirectory;
 
 namespace ldmx {
 
-class Event;
-class ParameterSet;
 class Process;
 class EventProcessor;
-class RunHeader;
 class DetectorDataService;
 
 /** Typedef for EventProcessorFactory use. */

@@ -17,3 +17,4 @@
 #include "Event/SimParticle.h"
 #include "Event/TriggerResult.h"
 #include "Event/HcalHit.h"
+#include "Event/HcalVetoResult.h"

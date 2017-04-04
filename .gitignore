@@ -2,9 +2,14 @@
 .project
 .settings
 .pydevproject
-build/
-rebuild.sh
-docs/doxygen.conf
+/docs/doxygen.conf
 *~
 *#
 *.pyc
+/bin
+/lib
+/data
+/build
+/build.*
+/install
+/install.*

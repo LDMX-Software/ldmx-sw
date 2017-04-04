@@ -98,13 +98,14 @@ void Process::run() {
 
                 std::string detectorName;
                 while (masterFile->nextEvent() && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
+
                     // notify for new run if necessary
                     if (theEvent.getEventHeader()->getRun() != wasRun) {
                         wasRun = theEvent.getEventHeader()->getRun();
                         try {
 
                             // Check if run changed.
-                            const RunHeader& runHeader = inFile.getRunHeader(wasRun);
+                            const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
                             runHeader.Print();
                             for (auto module : sequence_) {
                                 module->onNewRun(runHeader);
@@ -125,7 +126,7 @@ void Process::run() {
                                 }
                             }
                         } catch (const Exception&) {
-                            std::cout << "Process: WARNING - Run header for run " << wasRun << " was not found in the input file." << std::endl;
+                            std::cout << "[Process] [WARNING] Run header for run " << wasRun << " was not found!" << std::endl;
                         }
                     }
 
