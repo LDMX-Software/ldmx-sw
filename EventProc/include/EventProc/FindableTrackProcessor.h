@@ -11,7 +11,6 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/Event.h"
 #include "Event/FindableTrackResult.h"
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"

@@ -9,8 +9,6 @@
 
 // LDMX
 #include "Event/TriggerResult.h"
-#include "Event/Event.h"
-#include "Framework/ParameterSet.h"
 #include "Framework/EventProcessor.h"
 
 namespace ldmx {
