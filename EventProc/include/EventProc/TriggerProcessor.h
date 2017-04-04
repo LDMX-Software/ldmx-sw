@@ -10,8 +10,6 @@
 // LDMX
 #include "Event/TriggerResult.h"
 #include "Event/Event.h"
-#include "DetDescr/EcalDetectorID.h"
-#include "DetDescr/EcalHexReadout.h"
 #include "Framework/ParameterSet.h"
 #include "Framework/EventProcessor.h"
 
@@ -65,7 +63,7 @@ class TriggerProcessor : public Producer {
     private:
 
         /** The energy sum to make cut on. */
-        double layerESumCut_{0};
+        float layerESumCut_{0};
 
         /** The trigger mode to run in. Mode zero sums over
          * all cells in layer, while in mode 1 only cells in 
@@ -79,18 +77,12 @@ class TriggerProcessor : public Producer {
         /** The last layer of layer sum. */
         int endLayer_{0};
 
-        /** Trigger pad readout threshold */
-        double padThreshold_{0};
-
         /** The name of the trigger algorithm used. */
         TString algoName_;
 
         /** Object to hold trigger results and variables */
         TriggerResult result_;
 
-        EcalHexReadout hexReadout_;
-        EcalDetectorID detID_;
-        
 };
 
 }

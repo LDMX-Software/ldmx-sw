@@ -16,7 +16,6 @@ namespace ldmx {
 const int EcalDigiProducer::NUM_ECAL_LAYERS = 33;
 const int EcalDigiProducer::BACK_ECAL_STARTING_LAYER = 20;
 const int EcalDigiProducer::NUM_LAYERS_FOR_MED_CAL = 10;
-const std::vector<double> LAYER_WEIGHTS = {0.103,0.055,0.037,0.028,0.024,0.022,0.022,0.022,0.022,0.022,0.022,0.022,0.022,0.022,0.022,0.022,0.022,0.022,0.022,0.022,0.022,0.022,0.015,0.012,0.012,0.012,0.012,0.012,0.012,0.012,0.012,0.012,0.012,0.012,0.012,0.022};
 //const float EcalDigiProducer::meanNoise           = .015;
 //const float EcalDigiProducer::readoutThreshold    = 3*meanNoise;
 
@@ -56,8 +55,7 @@ void EcalDigiProducer::produce(Event& event) {
         digiHit->setAmplitude(simHit->getEdep());
         double energy = simHit->getEdep() + hitNoise;
         if (energy > readoutThreshold_) {
-        
-            digiHit->setEnergy(energy/LAYER_WEIGHTS[hit_pair.first-1]);
+            digiHit->setEnergy(energy);
             digiHit->setTime(simHit->getTime());
         } else {
             digiHit->setEnergy(0);

@@ -74,12 +74,6 @@ EventFile::~EventFile() {
     runMap_.clear();
 }
 
-void EventFile::handOff(EventFile* inFile) {
-    ientry_ = -1;
-    parent_ = inFile;
-    parent_->tree_->SetBranchStatus("*", 1);
-}
-
 void EventFile::addDrop(const std::string& rule) {
 
     if (parent_ == 0)
