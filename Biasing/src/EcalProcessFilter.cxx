@@ -18,11 +18,10 @@ namespace ldmx {
         delete object;
     }
 
-
-    EcalProcessFilter::EcalProcessFilter() { 
+    EcalProcessFilter::EcalProcessFilter() {
     }
 
-    EcalProcessFilter::~EcalProcessFilter() { 
+    EcalProcessFilter::~EcalProcessFilter() {
     }
 
     G4ClassificationOfNewTrack EcalProcessFilter::stackingClassifyNewTrack(
