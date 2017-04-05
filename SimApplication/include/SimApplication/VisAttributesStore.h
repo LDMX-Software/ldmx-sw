@@ -12,53 +12,53 @@
 
 namespace ldmx {
 
-/**
- * @class VisAttributesStore
- * @brief Global store of <i>G4VisAttributes</i> created from GDML data
- */
-class VisAttributesStore {
+    /**
+     * @class VisAttributesStore
+     * @brief Global store of <i>G4VisAttributes</i> created from GDML data
+     */
+    class VisAttributesStore {
 
-    public:
+        public:
 
-        /**
-         * Map of name to vis attributes.
-         */
-        typedef std::map<std::string, G4VisAttributes*> VisAttributesMap;
+            /**
+             * Map of name to vis attributes.
+             */
+            typedef std::map<std::string, G4VisAttributes*> VisAttributesMap;
 
-        /**
-         * Get the global instance of the store.
-         * @return The vis attributes store.
-         */
-        static VisAttributesStore* getInstance() {
-            static VisAttributesStore INSTANCE;
-            return &INSTANCE;
-        }
+            /**
+             * Get the global instance of the store.
+             * @return The vis attributes store.
+             */
+            static VisAttributesStore* getInstance() {
+                static VisAttributesStore INSTANCE;
+                return &INSTANCE;
+            }
 
-        /**
-         * Get vis attributes by name.
-         * @param name The name of the vis attributes.
-         * @return The vis attributes or <i>nullptr</i> if does not exist.
-         */
-        G4VisAttributes* getVisAttributes(const std::string& name) {
-            return visAttributesMap_[name];
-        }
+            /**
+             * Get vis attributes by name.
+             * @param name The name of the vis attributes.
+             * @return The vis attributes or <i>nullptr</i> if does not exist.
+             */
+            G4VisAttributes* getVisAttributes(const std::string& name) {
+                return visAttributesMap_[name];
+            }
 
-        /**
-         * Register a vis attributes by name.
-         * @param name The name of the vis attributes.
-         * @param visAttributes The vis attributes to register.
-         */
-        void addVisAttributes(const std::string& name, G4VisAttributes* visAttributes) {
-            visAttributesMap_[name] = visAttributes;
-        }
+            /**
+             * Register a vis attributes by name.
+             * @param name The name of the vis attributes.
+             * @param visAttributes The vis attributes to register.
+             */
+            void addVisAttributes(const std::string& name, G4VisAttributes* visAttributes) {
+                visAttributesMap_[name] = visAttributes;
+            }
 
-    private:
+        private:
 
-        /**
-         * The map of names to vis attributes.
-         */
-        VisAttributesMap visAttributesMap_;
-};
+            /**
+             * The map of names to vis attributes.
+             */
+            VisAttributesMap visAttributesMap_;
+    };
 
 }
 

@@ -19,9 +19,11 @@ namespace ldmx {
 
         public:
 
-            UserTrackInformation() {;}
+            UserTrackInformation() {
+            }
 
-            virtual ~UserTrackInformation() {;}
+            virtual ~UserTrackInformation() {
+            }
 
             /**
              * Overload pure virtual method (we don't implement it!).

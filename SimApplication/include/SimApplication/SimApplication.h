@@ -16,31 +16,31 @@
  */
 namespace ldmx {
 
-/**
- * @class SimApplication
- * @brief Entry point for initializing and running the <i>ldmx-sim</i> application
- */
-class SimApplication {
+    /**
+     * @class SimApplication
+     * @brief Entry point for initializing and running the <i>ldmx-sim</i> application
+     */
+    class SimApplication {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         */
-        SimApplication();
+            /**
+             * Class constructor.
+             */
+            SimApplication();
 
-        /**
-         * Class destructor.
-         */
-        virtual ~SimApplication();
+            /**
+             * Class destructor.
+             */
+            virtual ~SimApplication();
 
-        /**
-         * Run the application with arguments passed from <i>main()</i>.
-         * @param argc The command line argument count.
-         * @param argv The command line arguments.
-         */
-        void run(int argc, char** argv);
-};
+            /**
+             * Run the application with arguments passed from <i>main()</i>.
+             * @param argc The command line argument count.
+             * @param argv The command line arguments.
+             */
+            void run(int argc, char** argv);
+    };
 
 }
 

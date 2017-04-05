@@ -10,7 +10,7 @@
 namespace ldmx { 
 
     FindableTrackProcessor::FindableTrackProcessor(const std::string &name, Process &process) :
-        Producer(name, process) { 
+            Producer(name, process) {
     }
 
     FindableTrackProcessor::~FindableTrackProcessor() { 

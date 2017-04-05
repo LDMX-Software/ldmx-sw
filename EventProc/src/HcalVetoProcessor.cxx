@@ -9,7 +9,7 @@
 namespace ldmx {
 
     HcalVetoProcessor::HcalVetoProcessor(const std::string &name, Process &process) : 
-        Producer(name, process) { 
+            Producer(name, process) {
     }
     
     HcalVetoProcessor::~HcalVetoProcessor() { 

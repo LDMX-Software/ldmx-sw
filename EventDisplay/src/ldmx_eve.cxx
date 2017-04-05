@@ -9,7 +9,7 @@
 
 #include <string>
 
-class EventDisplay;
+using ldmx::EventDisplay;
 
 int main(int argc, char** argv) {
 
