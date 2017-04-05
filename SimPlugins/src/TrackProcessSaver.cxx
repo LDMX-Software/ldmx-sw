@@ -4,7 +4,7 @@
 
 #include "G4VProcess.hh"
 
-namespace ldmx { 
+namespace ldmx {
 
     TrackProcessSaver::TrackProcessSaver() {
         messenger_ = new TrackProcessSaverMessenger(this);
@@ -31,8 +31,7 @@ namespace ldmx {
             }
             if (trackInfo->getSaveFlag()) {
                 if (verbose_ > 1) {
-                    std::cout << "[ TrackProcessSaver ] : saving track ID " << aTrack->GetTrackID()
-                            << " with process '" << process->GetProcessName() << "'" << std::endl;
+                    std::cout << "[ TrackProcessSaver ] : saving track ID " << aTrack->GetTrackID() << " with process '" << process->GetProcessName() << "'" << std::endl;
                 }
             }
         }

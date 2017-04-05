@@ -18,47 +18,47 @@
 
 namespace ldmx {
 
-/**
- * @class HcalDigiProducer
- * @brief Performs digitization of simulated HCal data
- */
-class HcalDigiProducer : public Producer {
+    /**
+     * @class HcalDigiProducer
+     * @brief Performs digitization of simulated HCal data
+     */
+    class HcalDigiProducer : public Producer {
 
-    public:
+        public:
 
-        typedef int layer;
+            typedef int layer;
 
-        typedef std::pair<double, double> zboundaries;
+            typedef std::pair<double, double> zboundaries;
 
-        HcalDigiProducer(const std::string& name, Process& process);
+            HcalDigiProducer(const std::string& name, Process& process);
 
-        virtual ~HcalDigiProducer() {
-            delete hits_;
-            if (random_)
-                delete random_;
-        }
+            virtual ~HcalDigiProducer() {
+                delete hits_;
+                if (random_)
+                    delete random_;
+            }
 
-        virtual void configure(const ParameterSet&);
+            virtual void configure(const ParameterSet&);
 
-        virtual void produce(Event& event);
+            virtual void produce(Event& event);
 
-    private:
+        private:
 
-        static const float FIRST_LAYER_ZPOS;
-        static const float LAYER_ZWIDTH;
-        static const int NUM_HCAL_LAYERS;
-        static const float MEV_PER_MIP;
-        static const float PE_PER_MIP;
+            static const float FIRST_LAYER_ZPOS;
+            static const float LAYER_ZWIDTH;
+            static const int NUM_HCAL_LAYERS;
+            static const float MEV_PER_MIP;
+            static const float PE_PER_MIP;
 
-        TClonesArray* hits_{nullptr};
-        TRandom* random_{0};
-        std::map<layer, zboundaries> hcalLayers_;
-        bool verbose_{false};
-        DetectorID* detID_{nullptr};
+            TClonesArray* hits_{nullptr};
+            TRandom* random_{0};
+            std::map<layer, zboundaries> hcalLayers_;
+            bool verbose_{false};
+            DetectorID* detID_{nullptr};
 
-        float meanNoise_{0};
-        int nProcessed_{0};
-};
+            float meanNoise_{0};
+            int nProcessed_{0};
+    };
 
 }
 

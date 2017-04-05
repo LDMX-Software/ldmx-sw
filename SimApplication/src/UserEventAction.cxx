@@ -18,25 +18,26 @@
 
 namespace ldmx {
 
-void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
+    void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
 
-    // Clear the global track map.
-    UserTrackingAction::getUserTrackingAction()->getTrackMap()->clear();
+        // Clear the global track map.
+        UserTrackingAction::getUserTrackingAction()->getTrackMap()->clear();
 
-    // Install custom trajectory container for the event.
-    //G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
+        // Install custom trajectory container for the event.
+        //G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
 
-    // G4Random::showEngineStatus();
-    // G4Random::saveEngineStatus();
-    // G4Random::getTheEngine();
-    if (PrimaryGeneratorMessenger::useRootSeed()) G4Random::restoreEngineStatus("tmpEvent.rndm"); // this line will be needed to read in a set of seeds
+        // G4Random::showEngineStatus();
+        // G4Random::saveEngineStatus();
+        // G4Random::getTheEngine();
+        if (PrimaryGeneratorMessenger::useRootSeed())
+            G4Random::restoreEngineStatus("tmpEvent.rndm"); // this line will be needed to read in a set of seeds
 
-    // Activate user plugins.
-    pluginManager_->beginEvent(anEvent);
-}
+            // Activate user plugins.
+        pluginManager_->beginEvent(anEvent);
+    }
 
-void UserEventAction::EndOfEventAction(const G4Event* anEvent) {
-    pluginManager_->endEvent(anEvent);
-}
+    void UserEventAction::EndOfEventAction(const G4Event* anEvent) {
+        pluginManager_->endEvent(anEvent);
+    }
 
 }
