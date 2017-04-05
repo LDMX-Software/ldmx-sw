@@ -8,7 +8,7 @@
 
 #include "SimPlugins/TrackKiller.h"
 
-namespace ldmx { 
+namespace ldmx {
 
     extern "C" TrackKiller* createTrackKiller() {
         return new TrackKiller;
@@ -18,18 +18,17 @@ namespace ldmx {
         delete object;
     }
 
-    TrackKiller::TrackKiller() { 
+    TrackKiller::TrackKiller() {
     }
 
-    TrackKiller::~TrackKiller() { 
+    TrackKiller::~TrackKiller() {
     }
 
-
-    void TrackKiller::stepping(const G4Step* step) { 
+    void TrackKiller::stepping(const G4Step* step) {
 
         // Get the track associated with this step.
         G4Track* track = step->GetTrack();
-        
+
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();
         return;

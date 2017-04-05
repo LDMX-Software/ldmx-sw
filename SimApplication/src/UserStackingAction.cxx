@@ -4,16 +4,16 @@
 
 namespace ldmx {
 
-G4ClassificationOfNewTrack UserStackingAction::ClassifyNewTrack (const G4Track *aTrack) {
-    return pluginManager_->stackingClassifyNewTrack(aTrack);
-}
+    G4ClassificationOfNewTrack UserStackingAction::ClassifyNewTrack(const G4Track *aTrack) {
+        return pluginManager_->stackingClassifyNewTrack(aTrack);
+    }
 
-void UserStackingAction::NewStage() {
-    pluginManager_->stackingNewStage();
-}
+    void UserStackingAction::NewStage() {
+        pluginManager_->stackingNewStage();
+    }
 
-void UserStackingAction::PrepareNewEvent() {
-    pluginManager_->stackingPrepareNewEvent();
-}
+    void UserStackingAction::PrepareNewEvent() {
+        pluginManager_->stackingPrepareNewEvent();
+    }
 
 }

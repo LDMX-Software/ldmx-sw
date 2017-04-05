@@ -3,8 +3,8 @@
 
 namespace ldmx {
 
-void SteppingAction::UserSteppingAction(const G4Step* aStep) {
-    pluginManager_->stepping(aStep);
-}
+    void SteppingAction::UserSteppingAction(const G4Step* aStep) {
+        pluginManager_->stepping(aStep);
+    }
 
 }

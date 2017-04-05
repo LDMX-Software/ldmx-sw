@@ -15,8 +15,7 @@ namespace ldmx {
         TObject() {  
     }
 
-    FindableTrackResult::~FindableTrackResult() {
-    }
+    FindableTrackResult::~FindableTrackResult() {}
 
     void FindableTrackResult::setResult(Strategy strategy, bool isFindable) { 
         

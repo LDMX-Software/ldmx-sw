@@ -16,45 +16,43 @@
 
 namespace ldmx {
 
-/**
- * @class PrimaryGeneratorAction
- * @brief Implementation of Geant4 primary generator action
- */
-class PrimaryGeneratorAction :
-        public G4VUserPrimaryGeneratorAction,
-        public PluginManagerAccessor {
+    /**
+     * @class PrimaryGeneratorAction
+     * @brief Implementation of Geant4 primary generator action
+     */
+    class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction, public PluginManagerAccessor {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         */
-        PrimaryGeneratorAction();
+            /**
+             * Class constructor.
+             */
+            PrimaryGeneratorAction();
 
-        /**
-         * Class destructor.
-         */
-        virtual ~PrimaryGeneratorAction();
+            /**
+             * Class destructor.
+             */
+            virtual ~PrimaryGeneratorAction();
 
-        /**
-         * Generate the event.
-         * @param anEvent The Geant4 event.
-         */
-        virtual void GeneratePrimaries(G4Event* anEvent);
+            /**
+             * Generate the event.
+             * @param anEvent The Geant4 event.
+             */
+            virtual void GeneratePrimaries(G4Event* anEvent);
 
-        /**
-         * Set the primary generator.
-         * @param primaryGenerator The primary generator.
-         */
-        void setPrimaryGenerator(G4VPrimaryGenerator* primaryGenerator);
+            /**
+             * Set the primary generator.
+             * @param primaryGenerator The primary generator.
+             */
+            void setPrimaryGenerator(G4VPrimaryGenerator* primaryGenerator);
 
-    private:
+        private:
 
-        /**
-         * The primary generator.
-         */
-        G4VPrimaryGenerator* generator_;
-};
+            /**
+             * The primary generator.
+             */
+            G4VPrimaryGenerator* generator_;
+    };
 
 }
 

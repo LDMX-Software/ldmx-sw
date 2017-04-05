@@ -12,43 +12,43 @@
 
 namespace ldmx {
 
-/**
- * @class SimApplicationMessenger
- * @brief Macro commands for the simulation application
- *
- * @brief
- * Currently this just defines the base <i>/ldmx</i> macro directory.
- */
-class SimApplicationMessenger : public G4UImessenger {
+    /**
+     * @class SimApplicationMessenger
+     * @brief Macro commands for the simulation application
+     *
+     * @brief
+     * Currently this just defines the base <i>/ldmx</i> macro directory.
+     */
+    class SimApplicationMessenger : public G4UImessenger {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         */
-        SimApplicationMessenger();
+            /**
+             * Class constructor.
+             */
+            SimApplicationMessenger();
 
-        /**
-         * Class destructor.
-         */
-        virtual ~SimApplicationMessenger();
+            /**
+             * Class destructor.
+             */
+            virtual ~SimApplicationMessenger();
 
-    public:
+        public:
 
-        /**
-         * Process the macro command.
-         * @param[in] command The macro command.
-         * @param[in] newValues The argument values.
-         */
-        void SetNewValue(G4UIcommand* command, G4String newValues);
+            /**
+             * Process the macro command.
+             * @param[in] command The macro command.
+             * @param[in] newValues The argument values.
+             */
+            void SetNewValue(G4UIcommand* command, G4String newValues);
 
-    private:
+        private:
 
-        /**
-         * Top-level LDMX directory.
-         */
-        G4UIdirectory* ldmxDir_;
-};
+            /**
+             * Top-level LDMX directory.
+             */
+            G4UIdirectory* ldmxDir_;
+    };
 
 }
 

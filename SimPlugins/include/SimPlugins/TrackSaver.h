@@ -23,12 +23,16 @@ namespace ldmx {
             /**
              * Class constructor.
              */
-            TrackSaver() {;}
+            TrackSaver() {
+                ;
+            }
 
             /**
              * Class destructor.
              */
-            ~TrackSaver() {;}
+            ~TrackSaver() {
+                ;
+            }
 
             /**
              * Get the name of the plugin.
