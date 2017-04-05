@@ -16,16 +16,15 @@ extern "C" void destroyPhotonuclearXsecBiasingPlugin(ldmx::PhotonuclearXsecBiasi
     delete object;
 }
 
-
 ldmx::PhotonuclearXsecBiasingPlugin::PhotonuclearXsecBiasingPlugin() {
 }
 
-ldmx::PhotonuclearXsecBiasingPlugin::~PhotonuclearXsecBiasingPlugin() { 
+ldmx::PhotonuclearXsecBiasingPlugin::~PhotonuclearXsecBiasingPlugin() {
     delete messenger_;
 }
 
-void ldmx::PhotonuclearXsecBiasingPlugin::beginRun(const G4Run*) { 
-    
+void ldmx::PhotonuclearXsecBiasingPlugin::beginRun(const G4Run*) {
+
     // Get the process manager associated with reactions involving photons.
     G4ProcessManager* pm = G4Gamma::GammaDefinition()->GetProcessManager();
 
@@ -34,16 +33,14 @@ void ldmx::PhotonuclearXsecBiasingPlugin::beginRun(const G4Run*) {
 
     // Bias the photonuclear process by the user specified factor.
     for (int processIndex = 0; processIndex < processes->entries(); processIndex++) {
-        
+
         G4VProcess* process = (*processes)[processIndex];
-        
+
         if (process->GetProcessName().compareTo("photonNuclear") == 0) {
-        
+
             ((G4HadronicProcess*) process)->BiasCrossSectionByFactor(xsecBiasingFactor_);
-            
-            std::cout << "[ PhotonuclearXsecBiasingPlugin ]: "
-                      << "Photonuclear xsec has increased by a factor of " 
-                      << xsecBiasingFactor_ << std::endl;
+
+            std::cout << "[ PhotonuclearXsecBiasingPlugin ]: " << "Photonuclear xsec has increased by a factor of " << xsecBiasingFactor_ << std::endl;
         }
     }
 }

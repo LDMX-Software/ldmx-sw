@@ -4,8 +4,7 @@ ClassImp(ldmx::SimTrackerHit)
 
 namespace ldmx {
 
-    SimTrackerHit::SimTrackerHit() :
-        TObject() {
+    SimTrackerHit::SimTrackerHit() : TObject() {
     }
 
     SimTrackerHit::~SimTrackerHit() {
@@ -14,12 +13,12 @@ namespace ldmx {
 
     void SimTrackerHit::Print(Option_t *option) const {
         std::cout << "SimTrackerHit { " << "id: " << id_ << ", " <<
-                     "layerID: " << layerID_ << ", " <<
-                     "position: ( " << x_ << ", " << y_ << ", " << z_ << " ), " <<
-                     "edep: " << edep_ << ", " <<
-                     "time: " << time_ << ", " <<
-                     "momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " )" <<
-                     " }" << std::endl;
+                "layerID: " << layerID_ << ", " <<
+                "position: ( " << x_ << ", " << y_ << ", " << z_ << " ), " <<
+                "edep: " << edep_ << ", " <<
+                "time: " << time_ << ", " <<
+                "momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " )" <<
+                " }" << std::endl;
     }
 
     void SimTrackerHit::Clear(Option_t*) {

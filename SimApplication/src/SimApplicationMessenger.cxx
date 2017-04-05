@@ -5,16 +5,14 @@
 
 namespace ldmx {
 
-SimApplicationMessenger::SimApplicationMessenger() {
+    SimApplicationMessenger::SimApplicationMessenger() {
+        ldmxDir_ = new G4UIdirectory("/ldmx/");
+        ldmxDir_->SetGuidance("LDMX Simulation Application commands");
+    }
 
-    ldmxDir_ = new G4UIdirectory("/ldmx/");
-    ldmxDir_->SetGuidance("LDMX Simulation Application commands");
-}
+    SimApplicationMessenger::~SimApplicationMessenger() {}
 
-SimApplicationMessenger::~SimApplicationMessenger() {
-}
-
-void SimApplicationMessenger::SetNewValue(G4UIcommand*, G4String) {
-}
+    void SimApplicationMessenger::SetNewValue(G4UIcommand*, G4String) {
+    }
 
 }

@@ -33,7 +33,7 @@ namespace ldmx {
      *
      * @see AuxInfoReader
      */
-    class DetectorConstruction: public G4VUserDetectorConstruction {
+    class DetectorConstruction : public G4VUserDetectorConstruction {
 
         public:
 

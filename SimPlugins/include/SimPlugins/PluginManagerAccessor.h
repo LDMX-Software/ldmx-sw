@@ -12,38 +12,38 @@
 
 namespace ldmx {
 
-/**
- * @class PluginManagerAccessor
- * @brief Mixin for accessing the PluginManager
- *
- * @note
- * This class is used to assign a plugin manager to each of the user action classes.
- */
-class PluginManagerAccessor {
+    /**
+     * @class PluginManagerAccessor
+     * @brief Mixin for accessing the PluginManager
+     *
+     * @note
+     * This class is used to assign a plugin manager to each of the user action classes.
+     */
+    class PluginManagerAccessor {
 
-    public:
+        public:
 
-        /**
-         * Set the plugin manager pointer.
-         * @param pluginManager Pointer to the plugin manager.
-         */
-        void setPluginManager(PluginManager* pluginManager) {
-            pluginManager_ = pluginManager;
-        }
+            /**
+             * Set the plugin manager pointer.
+             * @param pluginManager Pointer to the plugin manager.
+             */
+            void setPluginManager(PluginManager* pluginManager) {
+                pluginManager_ = pluginManager;
+            }
 
-        /**
-         * Get the plugin manager.
-         * @return The plugin manager.
-         */
-        PluginManager* getPluginManager() {
-            return pluginManager_;
-        }
+            /**
+             * Get the plugin manager.
+             * @return The plugin manager.
+             */
+            PluginManager* getPluginManager() {
+                return pluginManager_;
+            }
 
-    protected:
+        protected:
 
-        /* The plugin manager pointer; allow protected access for convenience of sub-classes. */
-        PluginManager* pluginManager_;
-};
+            /* The plugin manager pointer; allow protected access for convenience of sub-classes. */
+            PluginManager* pluginManager_;
+    };
 
 }
 

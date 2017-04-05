@@ -12,53 +12,53 @@
 
 namespace ldmx {
 
-/**
- * @class UserPrimaryParticleInformation
- * @brief Defines extra information attached to a Geant4 primary particle
- */
-class UserPrimaryParticleInformation : public G4VUserPrimaryParticleInformation {
+    /**
+     * @class UserPrimaryParticleInformation
+     * @brief Defines extra information attached to a Geant4 primary particle
+     */
+    class UserPrimaryParticleInformation : public G4VUserPrimaryParticleInformation {
 
-    public:
+        public:
 
-        /**
-         * Class Constructor.
-         */
-        UserPrimaryParticleInformation() {;}
+            /**
+             * Class Constructor.
+             */
+            UserPrimaryParticleInformation() {;}
 
-        /**
-         * Class destructor.
-         */
-        virtual ~UserPrimaryParticleInformation() {;}
+            /**
+             * Class destructor.
+             */
+            virtual ~UserPrimaryParticleInformation() {;}
 
-        /**
-         * Set the HEP event status (generator status) e.g. from an LHE particle.
-         * @param hepEvtStatus The HEP event status.
-         */
-        void setHepEvtStatus(int hepEvtStatus) {
-            hepEvtStatus_ = hepEvtStatus;
-        }
+            /**
+             * Set the HEP event status (generator status) e.g. from an LHE particle.
+             * @param hepEvtStatus The HEP event status.
+             */
+            void setHepEvtStatus(int hepEvtStatus) {
+                hepEvtStatus_ = hepEvtStatus;
+            }
 
-        /**
-         * Get the HEP event status.
-         * @return The HEP event status.
-         */
-        int getHepEvtStatus() {
-            return hepEvtStatus_;
-        }
+            /**
+             * Get the HEP event status.
+             * @return The HEP event status.
+             */
+            int getHepEvtStatus() {
+                return hepEvtStatus_;
+            }
 
-        /**
-         * Implement virtual method (no-op).
-         */
-        void Print() const {
-        }
+            /**
+             * Implement virtual method (no-op).
+             */
+            void Print() const {
+            }
 
-    private:
+        private:
 
-        /**
-         * The HEP event status.
-         */
-        int hepEvtStatus_{-1};
-};
+            /**
+             * The HEP event status.
+             */
+            int hepEvtStatus_ {-1};
+    };
 
 }
 
