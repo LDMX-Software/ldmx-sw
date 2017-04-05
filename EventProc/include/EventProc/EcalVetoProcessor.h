@@ -35,7 +35,8 @@ namespace ldmx {
 
             BDTHelper(TString importBDTFile);
 
-            virtual ~BDTHelper() {}
+            virtual ~BDTHelper() {
+            }
 
             void buildFeatureVector(std::vector<float>& bdtFeatures,
                     ldmx::EcalVetoResult& result);

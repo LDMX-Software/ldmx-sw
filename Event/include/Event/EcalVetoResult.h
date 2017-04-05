@@ -165,13 +165,13 @@ namespace ldmx {
             float maxCellDep_{0};
             float showerRMS_{0};
             float discValue_{0};
+
             std::vector<float> ecalLayerEdepReadout_;
             std::vector<std::pair<int, float>> looseMipTracks_;
             std::vector<std::pair<int, float>> mediumMipTracks_;
             std::vector<std::pair<int, float>> tightMipTracks_;
 
-        ClassDef(EcalVetoResult, 2);
-
+            ClassDef(EcalVetoResult, 2);
     };
 }
 

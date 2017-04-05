@@ -20,12 +20,11 @@ namespace ldmx {
         delete object;
     }
 
-    TargetBremFilter::TargetBremFilter() { 
+    TargetBremFilter::TargetBremFilter() {
     }
 
-    TargetBremFilter::~TargetBremFilter() { 
+    TargetBremFilter::~TargetBremFilter() {
     }
-
 
     G4ClassificationOfNewTrack TargetBremFilter::stackingClassifyNewTrack(
             const G4Track* track, 
@@ -180,8 +179,8 @@ namespace ldmx {
         }
     }
 
-    void TargetBremFilter::endEvent(const G4Event* event) { 
-        bremGammaTracks_.clear();  
+    void TargetBremFilter::endEvent(const G4Event*) {
+        bremGammaTracks_.clear();
     }
     
     void TargetBremFilter::removeBremFromList(G4Track* track) {   
