@@ -22,21 +22,21 @@ namespace ldmx {
      * @class UserTrackingAction
      * @brief Implementation of user tracking action
      */
-    class UserTrackingAction :
-            public G4UserTrackingAction,
-            public PluginManagerAccessor {
+    class UserTrackingAction : public G4UserTrackingAction, public PluginManagerAccessor {
 
         public:
 
             /**
              * Class constructor.
              */
-            UserTrackingAction() {;}
+            UserTrackingAction() {
+            }
 
             /**
              * Class destructor.
              */
-            virtual ~UserTrackingAction() {;}
+            virtual ~UserTrackingAction() {
+            }
 
         public:
 
@@ -83,8 +83,7 @@ namespace ldmx {
              * @return A pointer to the current UserTrackingAction.
              */
             static UserTrackingAction* getUserTrackingAction() {
-                return static_cast<UserTrackingAction*>
-                (const_cast<G4UserTrackingAction*>(G4RunManager::GetRunManager()->GetUserTrackingAction()));
+                return static_cast<UserTrackingAction*>(const_cast<G4UserTrackingAction*>(G4RunManager::GetRunManager()->GetUserTrackingAction()));
             }
 
         private:
