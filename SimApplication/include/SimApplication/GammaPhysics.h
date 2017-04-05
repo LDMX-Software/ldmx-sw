@@ -13,46 +13,47 @@
 
 namespace ldmx {
 
-/**
- * @class GammaPhysics
- * @brief Adds extra gamma particle physics for simulation
- *
- * @note
- * Currently adds gamma -> mumu reaction using the
- * <i>G4GammaConversionToMuons</i> process.
- */
-class GammaPhysics : public G4VPhysicsConstructor {
+    /**
+     * @class GammaPhysics
+     * @brief Adds extra gamma particle physics for simulation
+     *
+     * @note
+     * Currently adds gamma -> mumu reaction using the
+     * <i>G4GammaConversionToMuons</i> process.
+     */
+    class GammaPhysics : public G4VPhysicsConstructor {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         * @param name The name of the physics.
-         */
-        GammaPhysics(const G4String& name = "GammaPhysics");
+            /**
+             * Class constructor.
+             * @param name The name of the physics.
+             */
+            GammaPhysics(const G4String& name = "GammaPhysics");
 
-        /**
-         * Class destructor.
-         */
-        virtual ~GammaPhysics();
+            /**
+             * Class destructor.
+             */
+            virtual ~GammaPhysics();
 
-        /**
-         * Construct particles (no-op).
-         */
-        void ConstructParticle() {}
+            /**
+             * Construct particles (no-op).
+             */
+            void ConstructParticle() {
+            }
 
-        /**
-         * Construct the process (gamma to muons).
-         */
-        void ConstructProcess();
+            /**
+             * Construct the process (gamma to muons).
+             */
+            void ConstructProcess();
 
-    private:
+        private:
 
-        /**
-         * The gamma to muons process.
-         */
-        G4GammaConversionToMuons gammaConvProcess;
-};
+            /**
+             * The gamma to muons process.
+             */
+            G4GammaConversionToMuons gammaConvProcess;
+    };
 
 }
 

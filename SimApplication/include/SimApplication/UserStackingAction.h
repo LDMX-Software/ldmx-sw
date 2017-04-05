@@ -15,43 +15,43 @@
 
 namespace ldmx {
 
-/**
- * @class UserStackingAction
- * @brief User stacking action implementation
- */
-class UserStackingAction :
-        public G4UserStackingAction,
-        public PluginManagerAccessor {
+    /**
+     * @class UserStackingAction
+     * @brief User stacking action implementation
+     */
+    class UserStackingAction : public G4UserStackingAction, public PluginManagerAccessor {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         */
-        UserStackingAction() {;}
+            /**
+             * Class constructor.
+             */
+            UserStackingAction() {
+            }
 
-        /**
-         * Class destructor.
-         */
-        virtual ~UserStackingAction() {;}
+            /**
+             * Class destructor.
+             */
+            virtual ~UserStackingAction() {
+            }
 
-        /**
-         * Classify a new track.
-         * @param aTrack The track to classify.
-         * @return The track classification.
-         */
-        G4ClassificationOfNewTrack ClassifyNewTrack (const G4Track *aTrack);
+            /**
+             * Classify a new track.
+             * @param aTrack The track to classify.
+             * @return The track classification.
+             */
+            G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track *aTrack);
 
-        /**
-         * Invoked when there is a new stacking stage.
-         */
-        void NewStage();
+            /**
+             * Invoked when there is a new stacking stage.
+             */
+            void NewStage();
 
-        /**
-         * Invoked for a new event.
-         */
-        void PrepareNewEvent();
-};
+            /**
+             * Invoked for a new event.
+             */
+            void PrepareNewEvent();
+    };
 
 }
 

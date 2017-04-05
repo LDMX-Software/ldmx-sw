@@ -12,32 +12,32 @@
 
 namespace ldmx {
 
-/**
- * @class UserRegionInformation
- * @brief Defines extra information for a detector region
- *
- * @note
- * This extension to the user region information has a flag indicating
- * whether secondary particles should be stored.  This flag is used
- * in the UserTrackingAction to determine whether or not a trajectory
- * is created for a track created in the region.
- */
-class UserRegionInformation: public G4VUserRegionInformation {
+    /**
+     * @class UserRegionInformation
+     * @brief Defines extra information for a detector region
+     *
+     * @note
+     * This extension to the user region information has a flag indicating
+     * whether secondary particles should be stored.  This flag is used
+     * in the UserTrackingAction to determine whether or not a trajectory
+     * is created for a track created in the region.
+     */
+    class UserRegionInformation : public G4VUserRegionInformation {
 
-public:
+        public:
 
-    UserRegionInformation(bool storeSecondaries);
+            UserRegionInformation(bool storeSecondaries);
 
-    virtual ~UserRegionInformation();
+            virtual ~UserRegionInformation();
 
-    void Print() const;
+            void Print() const;
 
-    bool getStoreSecondaries() const;
+            bool getStoreSecondaries() const;
 
-private:
+        private:
 
-    bool storeSecondaries_;
-};
+            bool storeSecondaries_;
+    };
 
 }
 

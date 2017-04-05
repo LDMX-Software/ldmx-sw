@@ -11,8 +11,8 @@
 
 namespace ldmx {
 
-    TrackProcessSaverMessenger::TrackProcessSaverMessenger(TrackProcessSaver* plugin)
-                : UserActionPluginMessenger(plugin), plugin_(plugin) {
+    TrackProcessSaverMessenger::TrackProcessSaverMessenger(TrackProcessSaver* plugin) :
+            UserActionPluginMessenger(plugin), plugin_(plugin) {
 
         addProcessCmd_ = new G4UIcommand(std::string(getPath() + "addProcess").c_str(), this);
         addProcessCmd_->SetGuidance("Add a creator physics process name for saving tracks.");

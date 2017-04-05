@@ -1,6 +1,6 @@
 #include "SimPlugins/TrackSaver.h"
 
-namespace ldmx { 
+namespace ldmx {
 
     extern "C" TrackSaver* createTrackSaver() {
         return new TrackSaver;
