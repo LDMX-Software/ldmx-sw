@@ -15,48 +15,48 @@
 
 namespace ldmx {
 
-/**
- * @class APrimePhysics
- * @brief Defines basic APrime physics
- *
- * @note
- * This class basically does not do anything except define
- * a dummy particle so that event generation works properly.
- */
-class APrimePhysics : public G4VPhysicsConstructor {
+    /**
+     * @class APrimePhysics
+     * @brief Defines basic APrime physics
+     *
+     * @note
+     * This class basically does not do anything except define
+     * a dummy particle so that event generation works properly.
+     */
+    class APrimePhysics : public G4VPhysicsConstructor {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         * @param name The name of the physics.
-         */
-        APrimePhysics(const G4String& name = "APrime");
+            /**
+             * Class constructor.
+             * @param name The name of the physics.
+             */
+            APrimePhysics(const G4String& name = "APrime");
 
-        /**
-         * Class destructor.
-         */
-        virtual ~APrimePhysics();
+            /**
+             * Class destructor.
+             */
+            virtual ~APrimePhysics();
 
-        /**
-         * Construct particles.
-         */
-        void ConstructParticle();
+            /**
+             * Construct particles.
+             */
+            void ConstructParticle();
 
-        /**
-         * Construct the process.
-         */
-        void ConstructProcess();
+            /**
+             * Construct the process.
+             */
+            void ConstructProcess();
 
-    private:
+        private:
 
-        /**
-         * Definition of the APrime particle.
-         */
-        G4ParticleDefinition* aprimeDef_;
-        //G4Decay decayProcess;
-        //G4hMultipleScattering scatterProcess;
-};
+            /**
+             * Definition of the APrime particle.
+             */
+            G4ParticleDefinition* aprimeDef_;
+            //G4Decay decayProcess;
+            //G4hMultipleScattering scatterProcess;
+    };
 
 }
 

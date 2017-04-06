@@ -18,13 +18,12 @@
 namespace ldmx {
 
     RootPersistencyManager::RootPersistencyManager() :
-        G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"),
-        ecalHitIO_(new EcalHitIO(&simParticleBuilder_)) {
-            G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
-            G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
+            G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"), ecalHitIO_(new EcalHitIO(&simParticleBuilder_)) {
+        G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
+        G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 
-            event_ = new EventImpl("sim");
-        }
+        event_ = new EventImpl("sim");
+    }
 
     G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
 
@@ -79,7 +78,7 @@ namespace ldmx {
 
         // Create and setup the output file for writing the events.
         outputFile_ = new EventFile(fileName_.c_str(), true, compressionLevel_);
-        outputFile_->setupEvent((EventImpl*)event_);
+        outputFile_->setupEvent((EventImpl*) event_);
 
         // Create map with output hits collections.
         setupHitsCollectionMap();
@@ -122,7 +121,7 @@ namespace ldmx {
             TClonesArray* hitsColl = entry.second;
             int entries = hitsColl->GetEntriesFast();
             if (m_verbose > 1) {
-                std::cout << "[ RootPersistencyManager ] : Wrote " <<  hitsColl->GetEntriesFast() << " hits into " << entry.first << std::endl;
+                std::cout << "[ RootPersistencyManager ] : Wrote " << hitsColl->GetEntriesFast() << " hits into " << entry.first << std::endl;
             }
             if (m_verbose > 2) {
                 for (int iColl = 0; iColl < entries; iColl++) {
@@ -135,7 +134,7 @@ namespace ldmx {
     }
 
     void RootPersistencyManager::writeHeader(const G4Event* anEvent, Event* outputEvent) {
-        EventHeader& eventHeader = ((EventImpl*)outputEvent)->getEventHeaderMutable();
+        EventHeader& eventHeader = ((EventImpl*) outputEvent)->getEventHeaderMutable();
 
         eventHeader.setEventNumber(anEvent->GetEventID());
         TTimeStamp ts;
@@ -143,13 +142,13 @@ namespace ldmx {
         eventHeader.setTimestamp(ts);
         eventHeader.setRun(G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID());
         if (BiasingMessenger::isBiasingEnabled()) {
-            eventHeader.setWeight(BiasingMessenger::getEventWeight()); 
+            eventHeader.setWeight(BiasingMessenger::getEventWeight());
         } else if (anEvent->GetPrimaryVertex(0)) {
             eventHeader.setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
         }
 
         std::string seedString = getEventSeeds();
-        eventHeader.setStringParameter( "eventSeed", seedString );
+        eventHeader.setStringParameter("eventSeed", seedString);
 
         if (m_verbose > 1) {
             std::cout << "[ RootPersistencyManager ] : Wrote event header for event ID " << anEvent->GetEventID() << std::endl;
@@ -158,15 +157,15 @@ namespace ldmx {
         }
     }
 
-    std::string RootPersistencyManager::getEventSeeds(std::string fileName){
+    std::string RootPersistencyManager::getEventSeeds(std::string fileName) {
         std::ifstream t(fileName);
         std::stringstream buffer;
         buffer << t.rdbuf();
         t.close();
-    
+
         return buffer.str();
     }
-    
+
     void RootPersistencyManager::writeHitsCollections(const G4Event* anEvent, Event* outputEvent) {
 
         // Clear the hits from last event.
@@ -191,10 +190,7 @@ namespace ldmx {
             // If the collection is not found in the output ROOT event, then a fatal error occurs!
             if (!outputHitsColl) {
                 std::cerr << "ERROR: The output collection " << collName << " was not found!" << std::endl;
-                G4Exception("RootPersistencyManager::writeHitsCollections",
-                        "",
-                        FatalException,
-                        "The output collection was not found.");
+                G4Exception("RootPersistencyManager::writeHitsCollections", "", FatalException, "The output collection was not found.");
             }
 
             if (dynamic_cast<G4TrackerHitsCollection*>(hc) != nullptr) {
@@ -229,15 +225,9 @@ namespace ldmx {
             simTrackerHit->setLayerID(g4hit->getLayerID());
             simTrackerHit->setEdep(g4hit->getEdep());
             const G4ThreeVector& momentum = g4hit->getMomentum();
-            simTrackerHit->setMomentum(
-                    momentum.x(),
-                    momentum.y(),
-                    momentum.z());
+            simTrackerHit->setMomentum(momentum.x(), momentum.y(), momentum.z());
             const G4ThreeVector& position = g4hit->getPosition();
-            simTrackerHit->setPosition(
-                    position.x(),
-                    position.y(),
-                    position.z());
+            simTrackerHit->setPosition(position.x(), position.y(), position.z());
             simTrackerHit->setPathLength(g4hit->getPathLength());
             SimParticle* simParticle = simParticleBuilder_.findSimParticle(g4hit->getTrackID());
             simTrackerHit->setSimParticle(simParticle);
@@ -260,16 +250,11 @@ namespace ldmx {
     RunHeader* RootPersistencyManager::createRunHeader(const G4Run* aRun) {
 
         // Get detector header from the user detector construction.
-        DetectorConstruction* detector =
-            ((RunManager*)RunManager::GetRunManager())->getDetectorConstruction();
+        DetectorConstruction* detector = ((RunManager*) RunManager::GetRunManager())->getDetectorConstruction();
         DetectorHeader* detectorHeader = detector->getDetectorHeader();
 
         // Create the run header.
-        RunHeader* runHeader =
-            new RunHeader(aRun->GetRunID(),
-                    detectorHeader->getName(),
-                    detectorHeader->getVersion(),
-                    "LDMX sim events");
+        RunHeader* runHeader = new RunHeader(aRun->GetRunID(), detectorHeader->getName(), detectorHeader->getVersion(), "LDMX sim events");
 
         // Set parameter value with number of events processed.
         runHeader->setIntParameter("EVENT_COUNT", aRun->GetNumberOfEvent());

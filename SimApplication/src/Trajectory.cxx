@@ -9,138 +9,138 @@
 
 namespace ldmx {
 
-G4Allocator<Trajectory> TrajectoryAllocator;
+    G4Allocator<Trajectory> TrajectoryAllocator;
 
-Trajectory::Trajectory(const G4Track* aTrack)
-    : genStatus_(0) {
+    Trajectory::Trajectory(const G4Track* aTrack) :
+            genStatus_(0) {
 
-    // Copy basic info from the track.
-    particleDef_ = aTrack->GetDefinition();
-    mass_ = aTrack->GetDynamicParticle()->GetMass();
-    trackID_ = aTrack->GetTrackID();
-    parentID_ = aTrack->GetParentID();
-    globalTime_ = aTrack->GetGlobalTime();
-    vertexPosition_ = aTrack->GetVertexPosition();
-    energy_ = aTrack->GetVertexKineticEnergy() + mass_;
+        // Copy basic info from the track.
+        particleDef_ = aTrack->GetDefinition();
+        mass_ = aTrack->GetDynamicParticle()->GetMass();
+        trackID_ = aTrack->GetTrackID();
+        parentID_ = aTrack->GetParentID();
+        globalTime_ = aTrack->GetGlobalTime();
+        vertexPosition_ = aTrack->GetVertexPosition();
+        energy_ = aTrack->GetVertexKineticEnergy() + mass_;
 
-    // Get the creator process type.  The sub-type must be used here to get
-    // the type for a specific physics process like photonuclear.
-    const G4VProcess* process = aTrack->GetCreatorProcess();
-    if (process) {
-        processType_ = process->GetProcessSubType();
-    }
+        // Get the creator process type.  The sub-type must be used here to get
+        // the type for a specific physics process like photonuclear.
+        const G4VProcess* process = aTrack->GetCreatorProcess();
+        if (process) {
+            processType_ = process->GetProcessSubType();
+        }
 
-    // Set initial momentum from track information.
-    UserTrackInformation* trackInfo = dynamic_cast<UserTrackInformation*>(aTrack->GetUserInformation());
-    const G4ThreeVector& p = trackInfo->getInitialMomentum();
-    initialMomentum_.set(p.x(), p.y(), p.z());
+        // Set initial momentum from track information.
+        UserTrackInformation* trackInfo = dynamic_cast<UserTrackInformation*>(aTrack->GetUserInformation());
+        const G4ThreeVector& p = trackInfo->getInitialMomentum();
+        initialMomentum_.set(p.x(), p.y(), p.z());
 
-    // If the track has not been stepped, then only the first point is added.
-    // Otherwise, the track has already been stepped so we add also its last location
-    // which should be its endpoint.
-    trajPoints_ = new TrajectoryPointContainer();
-    trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetVertexPosition()));
-    if (aTrack->GetTrackStatus() == G4TrackStatus::fStopAndKill) {
-        trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
-    }
-}
-
-Trajectory::~Trajectory() {
-    // Delete trajectory points and their container.
-    size_t i;
-    for(i = 0; i < trajPoints_->size(); i++) {
-        delete (*trajPoints_)[i];
-    }
-    trajPoints_->clear();
-    delete trajPoints_;
-}
-
-void Trajectory::AppendStep(const G4Step* aStep) {
-   trajPoints_->push_back(new G4TrajectoryPoint(aStep->GetPostStepPoint()->GetPosition()));
-}
-
-G4int Trajectory::GetTrackID() const {
-    return trackID_;
-}
-
-G4int Trajectory::GetParentID() const {
-    return parentID_;
-}
-
-G4String Trajectory::GetParticleName() const {
-    return particleDef_->GetParticleName();
-}
-
-G4double Trajectory::GetCharge() const {
-    return particleDef_->GetPDGCharge();
-}
-
-G4int Trajectory::GetPDGEncoding() const {
-    return particleDef_->GetPDGEncoding();
-}
-
-G4ThreeVector Trajectory::GetInitialMomentum () const {
-    return initialMomentum_;
-}
-
-int Trajectory::GetPointEntries() const {
-    return trajPoints_->size();
-}
-
-G4VTrajectoryPoint* Trajectory::GetPoint(G4int i) const {
-    return (*trajPoints_)[i];
-}
-
-void Trajectory::MergeTrajectory(G4VTrajectory* secondTrajectory) {
-    if (secondTrajectory == NULL) {
-        return;
-    }
-
-    Trajectory* seco = (Trajectory*)secondTrajectory;
-    G4int ent = seco->GetPointEntries();
-    for(int i=1; i<ent; i++) {
-        trajPoints_->push_back((*(seco->trajPoints_))[i]);
-    }
-    delete (*seco->trajPoints_)[0];
-    seco->trajPoints_->clear();
-}
-
-const G4ThreeVector& Trajectory::getEndPoint() const {
-    return GetPoint(GetPointEntries() - 1)->GetPosition();
-}
-
-G4double Trajectory::getEnergy() const {
-    return energy_;
-}
-
-G4double Trajectory::getMass() const {
-    return mass_;
-}
-
-G4float Trajectory::getGlobalTime() const {
-    return globalTime_;
-}
-
-G4int Trajectory::getGenStatus() const {
-    return genStatus_;
-}
-
-const G4ThreeVector& Trajectory::getVertexPosition() const {
-    return vertexPosition_;
-}
-
-void Trajectory::setGenStatus(int theGenStatus) {
-    genStatus_ = theGenStatus;
-}
-
-Trajectory* Trajectory::findByTrackID(G4TrajectoryContainer* trajCont, int trackID) {
-    TrajectoryVector* vec = trajCont->GetVector();
-    for (TrajectoryVector::const_iterator it = vec->begin(); it != vec->end(); it++) {
-        if ((*it)->GetTrackID() == trackID) {
-            return dynamic_cast<Trajectory*>(*it);
+        // If the track has not been stepped, then only the first point is added.
+        // Otherwise, the track has already been stepped so we add also its last location
+        // which should be its endpoint.
+        trajPoints_ = new TrajectoryPointContainer();
+        trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetVertexPosition()));
+        if (aTrack->GetTrackStatus() == G4TrackStatus::fStopAndKill) {
+            trajPoints_->push_back(new G4TrajectoryPoint(aTrack->GetPosition()));
         }
     }
-    return nullptr;
-}
+
+    Trajectory::~Trajectory() {
+        // Delete trajectory points and their container.
+        size_t i;
+        for (i = 0; i < trajPoints_->size(); i++) {
+            delete (*trajPoints_)[i];
+        }
+        trajPoints_->clear();
+        delete trajPoints_;
+    }
+
+    void Trajectory::AppendStep(const G4Step* aStep) {
+        trajPoints_->push_back(new G4TrajectoryPoint(aStep->GetPostStepPoint()->GetPosition()));
+    }
+
+    G4int Trajectory::GetTrackID() const {
+        return trackID_;
+    }
+
+    G4int Trajectory::GetParentID() const {
+        return parentID_;
+    }
+
+    G4String Trajectory::GetParticleName() const {
+        return particleDef_->GetParticleName();
+    }
+
+    G4double Trajectory::GetCharge() const {
+        return particleDef_->GetPDGCharge();
+    }
+
+    G4int Trajectory::GetPDGEncoding() const {
+        return particleDef_->GetPDGEncoding();
+    }
+
+    G4ThreeVector Trajectory::GetInitialMomentum() const {
+        return initialMomentum_;
+    }
+
+    int Trajectory::GetPointEntries() const {
+        return trajPoints_->size();
+    }
+
+    G4VTrajectoryPoint* Trajectory::GetPoint(G4int i) const {
+        return (*trajPoints_)[i];
+    }
+
+    void Trajectory::MergeTrajectory(G4VTrajectory* secondTrajectory) {
+        if (secondTrajectory == NULL) {
+            return;
+        }
+
+        Trajectory* seco = (Trajectory*) secondTrajectory;
+        G4int ent = seco->GetPointEntries();
+        for (int i = 1; i < ent; i++) {
+            trajPoints_->push_back((*(seco->trajPoints_))[i]);
+        }
+        delete (*seco->trajPoints_)[0];
+        seco->trajPoints_->clear();
+    }
+
+    const G4ThreeVector& Trajectory::getEndPoint() const {
+        return GetPoint(GetPointEntries() - 1)->GetPosition();
+    }
+
+    G4double Trajectory::getEnergy() const {
+        return energy_;
+    }
+
+    G4double Trajectory::getMass() const {
+        return mass_;
+    }
+
+    G4float Trajectory::getGlobalTime() const {
+        return globalTime_;
+    }
+
+    G4int Trajectory::getGenStatus() const {
+        return genStatus_;
+    }
+
+    const G4ThreeVector& Trajectory::getVertexPosition() const {
+        return vertexPosition_;
+    }
+
+    void Trajectory::setGenStatus(int theGenStatus) {
+        genStatus_ = theGenStatus;
+    }
+
+    Trajectory* Trajectory::findByTrackID(G4TrajectoryContainer* trajCont, int trackID) {
+        TrajectoryVector* vec = trajCont->GetVector();
+        for (TrajectoryVector::const_iterator it = vec->begin(); it != vec->end(); it++) {
+            if ((*it)->GetTrackID() == trackID) {
+                return dynamic_cast<Trajectory*>(*it);
+            }
+        }
+        return nullptr;
+    }
 
 }
