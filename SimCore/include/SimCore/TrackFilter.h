@@ -415,6 +415,30 @@ namespace ldmx {
             std::unordered_set<std::string> volumes_;
             std::map<std::string, bool> volumeSave_;
     };
+
+    /**
+     * @class TrackIDFilter
+     * @brief Filters tracks based on track ID
+     */
+    class TrackIDFilter : public TrackFilter {
+
+        public:
+
+            TrackIDFilter() {
+            }
+
+            void addTrackID(int trackID) {
+                trackIDs_.insert(trackID);
+            }
+
+            bool passes(const G4Track* aTrack) {
+                return trackIDs_.find(aTrack->GetTrackID()) != trackIDs_.end();
+            }
+
+        private:
+
+            std::unordered_set<int> trackIDs_;
+    };
 }
 
 #endif /* SIMCORE_TRACKFILTER_H_ */
