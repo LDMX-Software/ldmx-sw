@@ -16,38 +16,38 @@
 
 namespace ldmx {
 
-/**
- * @class LHEPrimaryGenerator
- * @brief Generates a Geant4 event from an LHEEvent
- */
-class LHEPrimaryGenerator : public G4VPrimaryGenerator {
+    /**
+     * @class LHEPrimaryGenerator
+     * @brief Generates a Geant4 event from an LHEEvent
+     */
+    class LHEPrimaryGenerator : public G4VPrimaryGenerator {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         * @param reader The LHE reader with the event data.
-         */
-        LHEPrimaryGenerator(LHEReader* reader);
+            /**
+             * Class constructor.
+             * @param reader The LHE reader with the event data.
+             */
+            LHEPrimaryGenerator(LHEReader* reader);
 
-        /**
-         * Class destructor.
-         */
-        virtual ~LHEPrimaryGenerator();
+            /**
+             * Class destructor.
+             */
+            virtual ~LHEPrimaryGenerator();
 
-        /**
-         * Generate vertices in the Geant4 event.
-         * @param anEvent The Geant4 event.
-         */
-        void GeneratePrimaryVertex(G4Event* anEvent);
+            /**
+             * Generate vertices in the Geant4 event.
+             * @param anEvent The Geant4 event.
+             */
+            void GeneratePrimaryVertex(G4Event* anEvent);
 
-    private:
+        private:
 
-        /**
-         * The LHE reader with the event data.
-         */
-        LHEReader* reader_;
-};
+            /**
+             * The LHE reader with the event data.
+             */
+            LHEReader* reader_;
+    };
 
 }
 

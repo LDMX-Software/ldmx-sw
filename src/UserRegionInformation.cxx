@@ -2,19 +2,19 @@
 
 namespace ldmx {
 
-UserRegionInformation::UserRegionInformation(bool aStoreSecondaries)
-    : storeSecondaries_(aStoreSecondaries) {
-}
+    UserRegionInformation::UserRegionInformation(bool aStoreSecondaries) :
+            storeSecondaries_(aStoreSecondaries) {
+    }
 
-UserRegionInformation::~UserRegionInformation() {
-}
+    UserRegionInformation::~UserRegionInformation() {
+    }
 
-bool UserRegionInformation::getStoreSecondaries() const {
-    return storeSecondaries_;
-}
+    bool UserRegionInformation::getStoreSecondaries() const {
+        return storeSecondaries_;
+    }
 
-void UserRegionInformation::Print() const {
-}
+    void UserRegionInformation::Print() const {
+    }
 
 }
 

@@ -15,38 +15,38 @@
 
 namespace ldmx {
 
-/**
- * @class LHEReader
- * @brief Reads LHE event data into an LHEEvent object
- */
-class LHEReader {
+    /**
+     * @class LHEReader
+     * @brief Reads LHE event data into an LHEEvent object
+     */
+    class LHEReader {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         * @param fileName The input file name.
-         */
-        LHEReader(std::string& fileName);
+            /**
+             * Class constructor.
+             * @param fileName The input file name.
+             */
+            LHEReader(std::string& fileName);
 
-        /**
-         * Class destructor.
-         */
-        virtual ~LHEReader();
+            /**
+             * Class destructor.
+             */
+            virtual ~LHEReader();
 
-        /**
-         * Read the next event.
-         * @return The next LHE event.
-         */
-        LHEEvent* readNextEvent();
+            /**
+             * Read the next event.
+             * @return The next LHE event.
+             */
+            LHEEvent* readNextEvent();
 
-    private:
+        private:
 
-        /**
-         * The input file stream.
-         */
-        std::ifstream ifs_;
-};
+            /**
+             * The input file stream.
+             */
+            std::ifstream ifs_;
+    };
 
 }
 
