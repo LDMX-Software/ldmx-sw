@@ -7,11 +7,12 @@
 #ifndef SIMPLUGINS_TRACKFILTERPLUGIN_H_
 #define SIMPLUGINS_TRACKFILTERPLUGIN_H_
 
-// LDMX
 #include "SimCore/UserTrackInformation.h"
 #include "SimPlugins/UserActionPlugin.h"
 #include "SimCore/TrackFilter.h"
 #include "SimPlugins/TrackFilterMessenger.h"
+
+#include <iostream>
 
 namespace ldmx {
 
@@ -31,10 +32,14 @@ namespace ldmx {
              */
             ~TrackFilterPlugin() {
 
-                for (auto filterChain : filterChains_) {
-                    delete filterChain;
+                for (auto entry : filterChains_) {
+                    delete entry.second;
                 }
                 filterChains_.clear();
+
+                postFilterChains_.clear();
+
+                preFilterChains_.clear();
 
                 delete messenger_;
             }
@@ -56,7 +61,37 @@ namespace ldmx {
             }
 
             void postTracking(const G4Track* aTrack) {
-                bool save = TrackFilterChain::process(aTrack, filterChains_);
+                process(postFilterChains_, aTrack);
+            }
+
+            void preTracking(const G4Track* aTrack) {
+                process(preFilterChains_, aTrack);
+            }
+
+            void addPostFilterChain(TrackFilterChain* filterChain) {
+                postFilterChains_.push_back(filterChain);
+                filterChains_[filterChain->getName()] = filterChain;
+            }
+
+            void addPreFilterChain(TrackFilterChain* filterChain) {
+                preFilterChains_.push_back(filterChain);
+                filterChains_[filterChain->getName()] = filterChain;
+            }
+
+            bool isPostFilterChain(TrackFilterChain* filterChain) {
+                return (find(postFilterChains_.begin(), postFilterChains_.end(), filterChain) != postFilterChains_.end());
+            }
+
+            bool isPreFilterChain(TrackFilterChain* filterChain) {
+                return (find(preFilterChains_.begin(), preFilterChains_.end(), filterChain) != preFilterChains_.end());
+            }
+
+            TrackFilterChain* getFilterChain(std::string name) {
+                return filterChains_[name];
+            }
+
+            void process(std::vector<TrackFilterChain*> filterChains, const G4Track* aTrack) {
+                bool save = TrackFilterChain::process(aTrack, filterChains);
                 auto trackInfo = dynamic_cast<UserTrackInformation*>(aTrack->GetUserInformation());
                 if (save) {
                     trackInfo->setSaveFlag(true);
@@ -72,15 +107,40 @@ namespace ldmx {
                 }
             }
 
-            void addFilterChain(TrackFilterChain* filterChain) {
-                filterChains_.push_back(filterChain);
+            std::ostream& print(std::ostream& os, TrackFilterChain* filterChain) {
+                os << filterChain->getName() << "[";
+                if (isPreFilterChain(filterChain)) {
+                    os << "pre";
+                } else {
+                    os << "post";
+                }
+                os << "]" << std::endl;
+                for (auto filter : filterChain->getFilters()) {
+                    os << "  ";
+                    filter->print(os);
+                    os << std::endl;
+                }
+                return os;
+            }
+
+            std::ostream& print(std::ostream& os) {
+                for (auto entry : filterChains_) {
+                    print(os, entry.second);
+                }
+                return os;
             }
 
         private:
 
             TrackFilterMessenger* messenger_;
 
-            std::vector<TrackFilterChain*> filterChains_;
+            // list of post-tracking filter chains
+            std::vector<TrackFilterChain*> postFilterChains_;
+
+            // list of pre-tracking filter chains
+            std::vector<TrackFilterChain*> preFilterChains_;
+
+            std::map<std::string, TrackFilterChain*> filterChains_;
     };
 }
 
