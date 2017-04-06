@@ -12,13 +12,12 @@
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWithAnInteger.hh"
+#include "G4UIcmdWithoutParameter.hh"
 
 namespace ldmx {
 
     class TrackFilterPlugin;
     class TrackFilter;
-    class TrackPDGCodeFilter;
-    class TrackRegionFilter;
 
     class TrackFilterMessenger : public UserActionPluginMessenger {
 
@@ -75,6 +74,9 @@ namespace ldmx {
 
             // save by volume name
             G4UIcommand* volumeCmd_;
+
+            // add a filter that always passes
+            G4UIcmdWithoutParameter* passCmd_;
 
             // set pre or post tracking hook for the current chain
             G4UIcmdWithAString* actionCmd_;
