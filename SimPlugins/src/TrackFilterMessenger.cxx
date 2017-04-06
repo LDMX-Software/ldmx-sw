@@ -9,21 +9,22 @@ namespace ldmx {
             : UserActionPluginMessenger(plugin), plugin_(plugin) {
 
         thresholdCmd_ = new G4UIcmdWithADoubleAndUnit(std::string(getPath() + "threshold").c_str(), this);
+        thresholdCmd_->SetGuidance("Filter on minimum KE at track vertex");
         thresholdCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
 
         pdgCodeCmd_ = new G4UIcmdWithAnInteger(std::string(getPath() + "pdgid").c_str(), this);
-        pdgCodeCmd_->SetGuidance("Add a PDG ID code for saving tracks");
+        pdgCodeCmd_->SetGuidance("Filter on PDG ID code");
         pdgCodeCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
 
         particleCmd_ = new G4UIcmdWithAString(std::string(getPath() + "particle").c_str(), this);
-        particleCmd_->SetGuidance("Add the name of a particle for saving tracks");
+        particleCmd_->SetGuidance("Filter on the name of a particle");
         particleCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
         G4UIparameter* particle = new G4UIparameter("particleName", 's', false);
         particle->SetGuidance("Name of particle");
         particleCmd_->SetParameter(particle);
 
         processCmd_ = new G4UIcommand(std::string(getPath() + "process").c_str(), this);
-        processCmd_->SetGuidance("Add a creator physics process name for saving tracks.");
+        processCmd_->SetGuidance("Filter on creator physics process name");
         processCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
         G4UIparameter* processName = new G4UIparameter("processName", 's', false);
         processName->SetGuidance("Name of Geant4 physics process to save");
@@ -33,7 +34,7 @@ namespace ldmx {
         processCmd_->SetParameter(exactMatch);
 
         parentCmd_ = new G4UIcommand(std::string(getPath() + "parent").c_str(), this);
-        parentCmd_->SetGuidance("Add a physics process name of daughter for saving its parent particle");
+        parentCmd_->SetGuidance("Filter on creator physics process of daughter tracks");
         parentCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
         processName = new G4UIparameter("processName", 's', false);
         processName->SetGuidance("Name of Geant4 physics process to save");
@@ -43,7 +44,7 @@ namespace ldmx {
         parentCmd_->SetParameter(exactMatch);
 
         regionCmd_ = new G4UIcommand(std::string(getPath() + "region").c_str(), this);
-        regionCmd_->SetGuidance("Add a detector region for saving tracks");
+        regionCmd_->SetGuidance("Filter on name of detector region");
         regionCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
         G4UIparameter* regionName = new G4UIparameter("regionName", 's', false);
         regionName->SetGuidance("Name of region");
@@ -53,7 +54,7 @@ namespace ldmx {
         regionCmd_->SetParameter(regionSave);
 
         volumeCmd_ = new G4UIcommand(std::string(getPath() + "volume").c_str(), this);
-        volumeCmd_->SetGuidance("Add a detector volume for saving tracks");
+        volumeCmd_->SetGuidance("Filter on name of logical volume at track vertex");
         volumeCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
         G4UIparameter* volumeName = new G4UIparameter("volumeName", 's', false);
         volumeName->SetGuidance("Name of volume");
@@ -62,16 +63,22 @@ namespace ldmx {
         volumeSave->SetGuidance("True to save tracks in the volume or false to not save");
         volumeCmd_->SetParameter(volumeSave);
 
+        passCmd_ = new G4UIcmdWithoutParameter(std::string(getPath() + "pass").c_str(), this);
+        passCmd_->SetGuidance("Filter that always passes");
+        passCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
+
         createCmd_ = new G4UIcmdWithAString(std::string(getPath() + "create").c_str(), this);
-        createCmd_->SetGuidance("Add the current set of filters as a named filter chain");
+        createCmd_->SetGuidance("Create a filter chain from the current set of filters");
         createCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
 
         printCmd_ = new G4UIcmdWithAString(std::string(getPath() + "print").c_str(), this);
+        printCmd_->SetGuidance("Print out filter chain information");
+        printCmd_->GetParameter(0)->SetGuidance("Name of the filter chain to print out");
         printCmd_->GetParameter(0)->SetOmittable(true);
         createCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
 
         actionCmd_ = new G4UIcmdWithAString(std::string(getPath() + "action").c_str(), this);
-        actionCmd_->SetGuidance("Set the tracking action for the filters ('pre' or 'post')");
+        actionCmd_->SetGuidance("Set the tracking action ('pre' or 'post')");
         actionCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
     }
 
@@ -137,6 +144,8 @@ namespace ldmx {
             } else {
                 action_ = newAction;
             }
+        } else if (cmd == passCmd_) {
+            filters_.push_back(new TrackPassFilter);
         } else if (cmd == createCmd_) {
             TrackFilterChain* filterChain = new TrackFilterChain(newValue);
             for (auto filter : filters_) {
@@ -149,7 +158,7 @@ namespace ldmx {
             }
             filters_.clear();
         } else if (cmd == printCmd_) {
-            if (newValue.size() != 0) {
+            if (newValue.size()) {
                 TrackFilterChain* filterChain = plugin_->getFilterChain(newValue);
                 if (filterChain) {
                     plugin_->print(std::cout, filterChain);
