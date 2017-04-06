@@ -16,6 +16,12 @@
 
 namespace ldmx {
 
+    /**
+     * @class TrackFilterPlugin
+     * @brief Sim plugin for creating track filters to flag tracks for saving
+     * @note Full documentation is provided by the
+     * <a href="https://github.com/LDMXAnalysis/ldmx-sw/wiki/Track-Filtering-Documentation">Track Filtering Documentation</a>
+     */
     class TrackFilterPlugin : public UserActionPlugin {
 
         public:
@@ -78,14 +84,6 @@ namespace ldmx {
                 filterChains_[filterChain->getName()] = filterChain;
             }
 
-            bool isPostFilterChain(TrackFilterChain* filterChain) {
-                return (find(postFilterChains_.begin(), postFilterChains_.end(), filterChain) != postFilterChains_.end());
-            }
-
-            bool isPreFilterChain(TrackFilterChain* filterChain) {
-                return (find(preFilterChains_.begin(), preFilterChains_.end(), filterChain) != preFilterChains_.end());
-            }
-
             TrackFilterChain* getFilterChain(std::string name) {
                 return filterChains_[name];
             }
@@ -128,6 +126,16 @@ namespace ldmx {
                     print(os, entry.second);
                 }
                 return os;
+            }
+
+        private:
+
+            bool isPostFilterChain(TrackFilterChain* filterChain) {
+                return find(postFilterChains_.begin(), postFilterChains_.end(), filterChain) != postFilterChains_.end();
+            }
+
+            bool isPreFilterChain(TrackFilterChain* filterChain) {
+                return find(preFilterChains_.begin(), preFilterChains_.end(), filterChain) != preFilterChains_.end();
             }
 
         private:
