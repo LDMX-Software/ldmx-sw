@@ -19,7 +19,7 @@
 namespace ldmx {
 
     // Forward declaration
-    class DetectorConstruction; 
+    class DetectorConstruction;
 
     /**
      * @class RunManager
@@ -67,14 +67,15 @@ namespace ldmx {
             /**
              * Biasing messenger.
              */
-            BiasingMessenger* biasingMessenger_{new BiasingMessenger()};
+            BiasingMessenger* biasingMessenger_ {new BiasingMessenger()};
 
             /**
              * Manager of sim plugins.
              */
             PluginManager* pluginManager_;
 
-    }; // RunManager
+    };
+// RunManager
 
 }
 

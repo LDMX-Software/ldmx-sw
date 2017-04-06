@@ -12,64 +12,66 @@
 
 namespace ldmx {
 
-/**
- * @class HcalHit
- * @brief Stores reconstructed hit information from the HCAL
- *
- * @note This class represents the reconstructed hit information
- * from the HCAL, providing particular information for the HCAL,
- * above and beyond what is available in the CalorimeterHit.
- */
-class HcalHit : public CalorimeterHit {
+    /**
+     * @class HcalHit
+     * @brief Stores reconstructed hit information from the HCAL
+     *
+     * @note This class represents the reconstructed hit information
+     * from the HCAL, providing particular information for the HCAL,
+     * above and beyond what is available in the CalorimeterHit.
+     */
+    class HcalHit : public CalorimeterHit {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         */
-        HcalHit() {;}
+            /**
+             * Class constructor.
+             */
+            HcalHit() {
+            }
 
-        /**
-         * Class destructor.
-         */
-        virtual ~HcalHit() {;}
+            /**
+             * Class destructor.
+             */
+            virtual ~HcalHit() {
+            }
 
-        /**
-         * Clear the data in the object.
-         */
-        void Clear(Option_t *option = "");
+            /**
+             * Clear the data in the object.
+             */
+            void Clear(Option_t *option = "");
 
-        /**
-         * Print out the object.
-         */
-        void Print(Option_t *option = "") const;
+            /**
+             * Print out the object.
+             */
+            void Print(Option_t *option = "") const;
 
-        /**
-         * Get the number of photoelectrons estimated for this hit.
-         * @return Number of photoelectrons, including noise which affects the estimate.
-         */
-        float getPE() const {
-            return pe_;
-        }
+            /**
+             * Get the number of photoelectrons estimated for this hit.
+             * @return Number of photoelectrons, including noise which affects the estimate.
+             */
+            float getPE() const {
+                return pe_;
+            }
 
-        /**
-         * Set the number of photoelectrons estimated for this hit.
-         * @param pe Number of photoelectrons, including noise which affects the estimate.
-         */
-        void setPE(float pe) {
-            pe_ = pe;
-        }
+            /**
+             * Set the number of photoelectrons estimated for this hit.
+             * @param pe Number of photoelectrons, including noise which affects the estimate.
+             */
+            void setPE(float pe) {
+                pe_ = pe;
+            }
 
-    private:
+        private:
 
-        /** The number of PE estimated for this hit. */
-        float pe_{0};
+            /** The number of PE estimated for this hit. */
+            float pe_{0};
 
-        /**
-         * The ROOT class definition.
-         */
-        ClassDef(HcalHit, 1);
-};
+            /**
+             * The ROOT class definition.
+             */
+            ClassDef(HcalHit, 1);
+    };
 
 }
 

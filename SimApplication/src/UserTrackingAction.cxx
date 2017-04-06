@@ -79,8 +79,7 @@ namespace ldmx {
         }
 
         // Check if trajectory storage should be turned on or off from the region info.
-        UserRegionInformation* regionInfo =
-                (UserRegionInformation*) aTrack->GetLogicalVolumeAtVertex()->GetRegion()->GetUserInformation();
+        UserRegionInformation* regionInfo = (UserRegionInformation*) aTrack->GetLogicalVolumeAtVertex()->GetRegion()->GetUserInformation();
 
         if (regionInfo && !regionInfo->getStoreSecondaries()) {
             // Turn off trajectory storage for this track from region flag.

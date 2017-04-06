@@ -81,7 +81,9 @@ namespace ldmx {
             /**
              * Implementing this makes an "overloaded-virtual" compiler warning go away.
              */
-            G4bool Store(const G4VPhysicalVolume*) { return false; }
+            G4bool Store(const G4VPhysicalVolume*) {
+                return false;
+            }
 
             /** 
              * This is called "manually" in UserRunAction to open the ROOT writer for the run.
@@ -95,7 +97,6 @@ namespace ldmx {
             void setFileName(std::string fileName) {
                 fileName_ = fileName;
             }
-
 
             /**
              * Enable or disable hit contribution output for SimCalorimeterHits.
@@ -195,22 +196,22 @@ namespace ldmx {
             /**
              * The output file name.
              */
-            std::string fileName_{"ldmx_sim_events.root"};
+            std::string fileName_ {"ldmx_sim_events.root"};
 
             /**
              * The output file with the event tree.
              */
-            EventFile* outputFile_{nullptr};
+            EventFile* outputFile_ {nullptr};
 
             /**
              * Output file compression level.
              */
-            int compressionLevel_{6};
+            int compressionLevel_ {6};
 
             /**
              * The event container used to manage the tree/branches/collections.
              */
-            Event* event_{nullptr};
+            Event* event_ {nullptr};
 
             /**
              * Event header for writing out event number, etc. into output.
