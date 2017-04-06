@@ -149,6 +149,24 @@ namespace ldmx {
     };
 
     /**
+     * @class TrackPassFilter
+     * @brief A track filter that always passes
+     */
+    class TrackPassFilter : public TrackFilter {
+
+        public:
+
+            virtual bool passes(const G4Track*) {
+                return true;
+            }
+
+            virtual std::ostream& print(std::ostream& os) {
+                os << "pass";
+                return os;
+            }
+    };
+
+    /**
      * @class TrackEnergyFilter
      * @brief Filters tracks on kinetic energy threshold
      */
