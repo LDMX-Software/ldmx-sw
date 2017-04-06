@@ -11,22 +11,43 @@
 #include "G4TrackingManager.hh"
 #include "G4RunManagerKernel.hh"
 #include "G4Region.hh"
+#include "G4ParticleTable.hh"
+#include "G4SystemOfUnits.hh"
 
 #include <unordered_set>
 #include <vector>
+#include <iostream>
 
 namespace ldmx {
 
+    /**
+     * @class TrackFilter
+     * @brief Abstract class for creating user track filters
+     * @note Filters that have multiple rules generally OR them together,
+     * e.g. for multiple physics processes.  So only one of these sub-rules
+     * must pass for the filter to return true.
+     */
     class TrackFilter {
 
         public:
 
-            TrackFilter() {;}
+            TrackFilter() {
+            }
 
-            virtual ~TrackFilter() {;}
+            virtual ~TrackFilter() {
+            }
 
+            /**
+             * Return whether this filter passes or not for the given track.
+             * @return True if filter passes for this track.
+             */
             virtual bool passes(const G4Track*) = 0;
 
+            /**
+             * Utility method to process a track with a list of filters.
+             * All filters must return true for this to pass.
+             * @return True if all filters pass.
+             */
             static bool filter(const std::vector<TrackFilter*> filters, const G4Track* aTrack) {
                 bool save = false;
                 for (auto filter : filters) {
@@ -37,8 +58,21 @@ namespace ldmx {
                 }
                 return save;
             }
+
+            /**
+             * Print the filter rules to the output stream.
+             * @param os The output stream.
+             * @return The same output stream.
+             */
+            virtual std::ostream& print(std::ostream& os) {
+                return os;
+            }
     };
 
+    /**
+     * @class TrackFilterChain
+     * @brief Implements a chain of one or more track filters that all must pass
+     */
     class TrackFilterChain {
 
         public:
@@ -80,16 +114,32 @@ namespace ldmx {
                 return save;
             }
 
+            /**
+             * Add a filter to the chain.
+             * @param filter The filter to add.
+             */
             void addFilter(TrackFilter* filter) {
                 filters_.push_back(filter);
             }
 
+            /**
+             * Set the name of this filter chain.
+             * @param name The name of this filter chain.
+             */
             void setName(std::string name) {
                 name_ = name;
             }
 
+            /**
+             * Get the name of the filter chain.
+             * @return The name of the filter chain.
+             */
             const std::string& getName() {
                 return name_;
+            }
+
+            const std::vector<TrackFilter*> getFilters() {
+                return filters_;
             }
 
         private:
@@ -98,6 +148,10 @@ namespace ldmx {
             std::vector<TrackFilter*> filters_;
     };
 
+    /**
+     * @class TrackEnergyFilter
+     * @brief Filters tracks on kinetic energy threshold
+     */
     class TrackEnergyFilter : public TrackFilter {
 
         public:
@@ -113,11 +167,20 @@ namespace ldmx {
                 threshold_ = threshold;
             }
 
+            std::ostream& print(std::ostream& os) {
+                os << "KE > " << (threshold_ / MeV) << " MeV";
+                return os;
+            }
+
         private:
 
             double threshold_{0.};
     };
 
+    /**
+     * @class TrackPDGCodeFilter
+     * @brief Filters tracks based on PDG code of the particle
+     */
     class TrackPDGCodeFilter : public TrackFilter {
 
         public:
@@ -137,17 +200,38 @@ namespace ldmx {
                 pdgids_.insert(pdgid);
             }
 
+            void addParticle(std::string particleName) {
+                G4ParticleDefinition* particleDef = G4ParticleTable::GetParticleTable()->FindParticle(particleName);
+                if (particleDef) {
+                    pdgids_.insert(particleDef->GetPDGEncoding());
+                } else {
+                    G4Exception("", "", FatalException, std::string("Unknown particle name: " + particleName).c_str());
+                }
+            }
+
+            std::ostream& print(std::ostream& os) {
+                os << "PDG Codes:";
+                for (int pdgid : pdgids_) {
+                    os << " " << pdgid;
+                }
+                return os;
+            }
+
+
         private:
 
             std::unordered_set<int> pdgids_;
     };
 
+    /**
+     * @class TrackProcessFilter
+     * @brief Filters tracks based on creator physics process type
+     */
     class TrackProcessFilter : public TrackFilter {
 
         public:
 
-            TrackProcessFilter(std::string processName, bool exactMatch) {
-                addProcess(processName, exactMatch);
+            TrackProcessFilter() {
             }
 
             virtual bool passes(const G4Track* aTrack) {
@@ -173,6 +257,14 @@ namespace ldmx {
                 exactMatch_[processName] = exactMatch;
             }
 
+            std::ostream& print(std::ostream& os) {
+                os << "processes:";
+                for (auto processName : processNames_) {
+                    os << " " << processName;
+                }
+                return os;
+            }
+
         protected:
 
             /** Names of physics processes to save. */
@@ -183,12 +275,15 @@ namespace ldmx {
 
     };
 
+    /**
+     * @clsas TrackParentProcessFilter
+     * @brief Filters tracks based on matching process type of secondaries
+     */
     class TrackParentProcessFilter : public TrackProcessFilter {
 
         public:
 
-            TrackParentProcessFilter(std::string processName, bool exactMatch)
-                : TrackProcessFilter(processName, exactMatch) {
+            TrackParentProcessFilter() {
             }
 
             bool passes(const G4Track* aTrack) {
@@ -215,13 +310,26 @@ namespace ldmx {
                 }
                 return false;
             }
+
+            std::ostream& print(std::ostream& os) {
+                os << "daughter processes:";
+                for (auto processName : processNames_) {
+                    os << " " << processName;
+                }
+                return os;
+            }
     };
 
+    /**
+     * @class TrackRegionFilter
+     * @brief Filters tracks based on name of detector region
+     */
     class TrackRegionFilter : public TrackFilter {
 
         public:
 
-            TrackRegionFilter() {;}
+            TrackRegionFilter() {
+            }
 
             void addRegion(std::string regionName, bool regionSave) {
                 regions_.insert(regionName);
@@ -237,10 +345,57 @@ namespace ldmx {
                 }
             }
 
+            std::ostream& print(std::ostream& os) {
+                os << "regions:";
+                for (auto region : regions_) {
+                    os << " " << region;
+                }
+                return os;
+            }
+
         private:
 
             std::unordered_set<std::string> regions_;
             std::map<std::string, bool> regionSave_;
+    };
+
+    /**
+     * @class TrackVolumeFilter
+     * @brief Filters tracks based on name of logical volume
+     */
+    class TrackVolumeFilter : public TrackFilter {
+
+        public:
+
+            TrackVolumeFilter() {
+            }
+
+            void addVolume(std::string volumeName, bool volumeSave) {
+                volumes_.insert(volumeName);
+                volumeSave_[volumeName] = volumeSave;
+            }
+
+            bool passes(const G4Track* aTrack) {
+                const G4LogicalVolume* vol = aTrack->GetLogicalVolumeAtVertex();
+                if (volumes_.find(vol->GetName()) != volumes_.end()) {
+                    return volumeSave_[vol->GetName()];
+                } else {
+                    return false;
+                }
+            }
+
+            std::ostream& print(std::ostream& os) {
+                os << "volumes:";
+                for (auto volume : volumes_) {
+                    os << " " << volume;
+                }
+                return os;
+            }
+
+        private:
+
+            std::unordered_set<std::string> volumes_;
+            std::map<std::string, bool> volumeSave_;
     };
 }
 
