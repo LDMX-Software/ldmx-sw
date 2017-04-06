@@ -63,6 +63,10 @@ namespace ldmx {
         volumeSave->SetGuidance("True to save tracks in the volume or false to not save");
         volumeCmd_->SetParameter(volumeSave);
 
+        trackIDCmd_ = new G4UIcmdWithAnInteger(std::string(getPath() + "trackid").c_str(), this);
+        trackIDCmd_->SetGuidance("Filter on track ID");
+        trackIDCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
+
         passCmd_ = new G4UIcmdWithoutParameter(std::string(getPath() + "pass").c_str(), this);
         passCmd_->SetGuidance("Filter that always passes");
         passCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
@@ -144,6 +148,9 @@ namespace ldmx {
             } else {
                 action_ = newAction;
             }
+        } else if (cmd == trackIDCmd_) {
+            int trackID = trackIDCmd_->GetNewIntValue(newValue);
+            getFilter<TrackIDFilter>()->addTrackID(trackID);
         } else if (cmd == passCmd_) {
             filters_.push_back(new TrackPassFilter);
         } else if (cmd == createCmd_) {

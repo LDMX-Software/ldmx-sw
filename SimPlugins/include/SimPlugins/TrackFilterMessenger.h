@@ -75,6 +75,9 @@ namespace ldmx {
             // save by volume name
             G4UIcommand* volumeCmd_;
 
+            // save by track ID
+            G4UIcmdWithAnInteger* trackIDCmd_;
+
             // add a filter that always passes
             G4UIcmdWithoutParameter* passCmd_;
 
