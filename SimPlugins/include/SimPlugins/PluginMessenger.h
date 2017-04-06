@@ -15,59 +15,59 @@
 
 namespace ldmx {
 
-/**
- * @class PluginMessenger
- * @brief Messenger class for loading and destroying user sim plugins using macro commands
- */
-class PluginMessenger : public G4UImessenger {
+    /**
+     * @class PluginMessenger
+     * @brief Messenger class for loading and destroying user sim plugins using macro commands
+     */
+    class PluginMessenger : public G4UImessenger {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         * @param mgr The plugin manager.
-         */
-        PluginMessenger(PluginManager* mgr);
+            /**
+             * Class constructor.
+             * @param mgr The plugin manager.
+             */
+            PluginMessenger(PluginManager* mgr);
 
-        /**
-         * Class destructor.
-         */
-        virtual ~PluginMessenger();
+            /**
+             * Class destructor.
+             */
+            virtual ~PluginMessenger();
 
-        /**
-         * Process the macro command.
-         * @param[in] command The macro command.
-         * @param[in] newValues The argument values.
-         */
-        void SetNewValue(G4UIcommand* command, G4String newValues);
+            /**
+             * Process the macro command.
+             * @param[in] command The macro command.
+             * @param[in] newValues The argument values.
+             */
+            void SetNewValue(G4UIcommand* command, G4String newValues);
 
-    private:
+        private:
 
-        /**
-         * The plugin manager.
-         */
-        PluginManager* pluginManager_;
+            /**
+             * The plugin manager.
+             */
+            PluginManager* pluginManager_;
 
-        /**
-         * Directory for plugin commands.
-         */
-        G4UIdirectory* pluginDir_;
+            /**
+             * Directory for plugin commands.
+             */
+            G4UIdirectory* pluginDir_;
 
-        /**
-         * Command for loading a plugin by name.
-         */
-        G4UIcommand* loadCmd_;
+            /**
+             * Command for loading a plugin by name.
+             */
+            G4UIcommand* loadCmd_;
 
-        /**
-         * Command for destroying a plugin by name.
-         */
-        G4UIcommand* destroyCmd_;
+            /**
+             * Command for destroying a plugin by name.
+             */
+            G4UIcommand* destroyCmd_;
 
-        /**
-         * Command for listing currently registered plugins.
-         */
-        G4UIcommand* listCmd_;
-};
+            /**
+             * Command for listing currently registered plugins.
+             */
+            G4UIcommand* listCmd_;
+    };
 
 }
 

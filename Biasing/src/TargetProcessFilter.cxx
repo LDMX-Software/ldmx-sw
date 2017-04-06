@@ -18,11 +18,10 @@ namespace ldmx {
         delete object;
     }
 
-
-    TargetProcessFilter::TargetProcessFilter() { 
+    TargetProcessFilter::TargetProcessFilter() {
     }
 
-    TargetProcessFilter::~TargetProcessFilter() { 
+    TargetProcessFilter::~TargetProcessFilter() {
     }
 
     G4ClassificationOfNewTrack TargetProcessFilter::stackingClassifyNewTrack(
@@ -170,7 +169,7 @@ namespace ldmx {
         }
     }    
 
-    void TargetProcessFilter::endEvent(const G4Event* event) { 
+    void TargetProcessFilter::endEvent(const G4Event*) {
         reactionOccurred_ = false; 
     }
 }
