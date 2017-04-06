@@ -24,50 +24,51 @@
 
 namespace ldmx {
 
-/**
- * @class EcalDigiProducer
- * @brief Performs basic ECal digitization
- */
-class EcalDigiProducer : public Producer {
+    /**
+     * @class EcalDigiProducer
+     * @brief Performs basic ECal digitization
+     */
+    class EcalDigiProducer : public Producer {
 
-    public:
+        public:
 
-        typedef std::pair<int, int> layer_cell_pair;
+            typedef std::pair<int, int> layer_cell_pair;
 
-        typedef std::pair<int, float> cell_energy_pair;
+            typedef std::pair<int, float> cell_energy_pair;
 
-        EcalDigiProducer(const std::string& name, Process& process);
+            EcalDigiProducer(const std::string& name, Process& process);
 
-        virtual ~EcalDigiProducer() {;}
+            virtual ~EcalDigiProducer() {
+            }
 
-        virtual void configure(const ParameterSet&);
+            virtual void configure(const ParameterSet&);
 
-        virtual void produce(Event& event);
+            virtual void produce(Event& event);
 
-    private:
+        private:
 
-        inline layer_cell_pair hitToPair(SimCalorimeterHit* hit) {
-            int detIDraw = hit->getID();
-            detID_.setRawValue(detIDraw);
-            detID_.unpack();
-            int layer = detID_.getFieldValue("layer");
-            int cellid = detID_.getFieldValue("cell");
-            return (std::make_pair(layer, cellid));
-        }
+            inline layer_cell_pair hitToPair(SimCalorimeterHit* hit) {
+                int detIDraw = hit->getID();
+                detID_.setRawValue(detIDraw);
+                detID_.unpack();
+                int layer = detID_.getFieldValue("layer");
+                int cellid = detID_.getFieldValue("cell");
+                return (std::make_pair(layer, cellid));
+            }
 
-    private:
+        private:
 
-        static const int NUM_ECAL_LAYERS;
-        static const int NUM_LAYERS_FOR_MED_CAL;
-        static const int BACK_ECAL_STARTING_LAYER;
+            static const int NUM_ECAL_LAYERS;
+            static const int NUM_LAYERS_FOR_MED_CAL;
+            static const int BACK_ECAL_STARTING_LAYER;
 
-        TRandom2 *noiseInjector_{nullptr};
-        TClonesArray* ecalDigis_{nullptr};
-        EcalDetectorID detID_;
-        EcalHexReadout* hexReadout_{nullptr};
-        float meanNoise_{0};
-        float readoutThreshold_{0};
-};
+            TRandom2 *noiseInjector_{nullptr};
+            TClonesArray* ecalDigis_{nullptr};
+            EcalDetectorID detID_;
+            EcalHexReadout* hexReadout_{nullptr};
+            float meanNoise_{0};
+            float readoutThreshold_{0};
+    };
 
 }
 

@@ -15,27 +15,25 @@
 
 namespace ldmx {
 
-/**
- * @class SteppingAction
- * @brief Implements the Geant4 user stepping action
- */
-class SteppingAction :
-        public G4UserSteppingAction,
-        public PluginManagerAccessor {
+    /**
+     * @class SteppingAction
+     * @brief Implements the Geant4 user stepping action
+     */
+    class SteppingAction : public G4UserSteppingAction, public PluginManagerAccessor {
 
-    public:
+        public:
 
-        /**
-         * Class destructor.
-         */
-        virtual ~SteppingAction() {;}
+            /**
+             * Class destructor.
+             */
+            virtual ~SteppingAction() {;}
 
-        /**
-         * Process a step.
-         * @param aStep The step information.
-         */
-        void UserSteppingAction(const G4Step* aStep);
-};
+            /**
+             * Process a step.
+             * @param aStep The step information.
+             */
+            void UserSteppingAction(const G4Step* aStep);
+    };
 
 }
 

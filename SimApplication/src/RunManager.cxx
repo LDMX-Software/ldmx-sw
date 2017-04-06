@@ -38,10 +38,9 @@ namespace ldmx {
         modularPhysicsList->RegisterPhysics(new GammaPhysics);
         //modularPhysicsList->RegisterPhysics(new TungstenIonPhysics);
 
-        if (BiasingMessenger::isBiasingEnabled()) { 
+        if (BiasingMessenger::isBiasingEnabled()) {
 
-            std::cout << "[ RunManager ]: Enabling biasing of particle type " 
-                      << BiasingMessenger::getParticleType() << std::endl;
+            std::cout << "[ RunManager ]: Enabling biasing of particle type " << BiasingMessenger::getParticleType() << std::endl;
 
             // Instantiate the constructor used when biasing
             G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();

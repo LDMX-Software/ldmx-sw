@@ -18,35 +18,35 @@
 
 namespace ldmx {
 
-/**
- * @class TrajectoryContainer
- * @brief Trajectory container extension that allows searching by track ID
- *
- * @note Not currently used!!!
- */
-class TrajectoryContainer : public G4TrajectoryContainer {
+    /**
+     * @class TrajectoryContainer
+     * @brief Trajectory container extension that allows searching by track ID
+     *
+     * @note Not currently used!!!
+     */
+    class TrajectoryContainer : public G4TrajectoryContainer {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         */
-        TrajectoryContainer() {;}
+            /**
+             * Class constructor.
+             */
+            TrajectoryContainer() {;}
 
-        /**
-         * Class destructor.
-         */
-        virtual ~TrajectoryContainer() {;}
+            /**
+             * Class destructor.
+             */
+            virtual ~TrajectoryContainer() {;}
 
-        /**
-         * Find a trajectory by its track ID.
-         * @return The trajectory or <i>nullptr</i> if it does not exist.
-         * @todo Speed this up by using a map instead of linear search.
-         *
-         * @note Replaced by static method in Trajectory class for now.
-         */
-        Trajectory* findByTrackID(G4int);
-};
+            /**
+             * Find a trajectory by its track ID.
+             * @return The trajectory or <i>nullptr</i> if it does not exist.
+             * @todo Speed this up by using a map instead of linear search.
+             *
+             * @note Replaced by static method in Trajectory class for now.
+             */
+            Trajectory* findByTrackID(G4int);
+    };
 
 }
 

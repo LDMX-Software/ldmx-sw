@@ -22,6 +22,7 @@ namespace ldmx {
     BDTHelper::BDTHelper(TString importBDTFile) {
 
         // Import the python packages and load the features into xgboost.
+        // FIXME: These debug prints can be removed.
         TPython::Exec("print 'Importing BDT python packages'");
         TPython::Exec("print 'importing xgb'; import xgboost as xgb; print xgb");
         TPython::Exec("print 'importing numpy'; import numpy as np; print np");

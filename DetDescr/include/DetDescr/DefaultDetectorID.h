@@ -13,38 +13,38 @@
 
 namespace ldmx {
 
-/**
- * @class DefaultDetectorID
- * @brief Defines a default detector ID with encoded layer and subdetector values
- *
- * @note
- * This class provides access to a subdetector ID and layer number.
- */
-class DefaultDetectorID : public DetectorID {
+    /**
+     * @class DefaultDetectorID
+     * @brief Defines a default detector ID with encoded layer and subdetector values
+     *
+     * @note
+     * This class provides access to a subdetector ID and layer number.
+     */
+    class DefaultDetectorID : public DetectorID {
 
-    public:
+        public:
 
-        /**
-         * Class constructor which adds layer and subdetector fields to the ID definition.
-         */
-        DefaultDetectorID();
+            /**
+             * Class constructor which adds layer and subdetector fields to the ID definition.
+             */
+            DefaultDetectorID();
 
-        /**
-         * Get the subdetector value.
-         * @return The subdetector value.
-         */
-        int getSubdetID() {
-            return this->getFieldValue(0);
-        }
+            /**
+             * Get the subdetector value.
+             * @return The subdetector value.
+             */
+            int getSubdetID() {
+                return this->getFieldValue(0);
+            }
 
-        /**
-         * Get the layer value.
-         * @return The layer value.
-         */
-        int getLayerID() {
-            return this->getFieldValue(1);
-        }
-};
+            /**
+             * Get the layer value.
+             * @return The layer value.
+             */
+            int getLayerID() {
+                return this->getFieldValue(1);
+            }
+    };
 
 }
 
