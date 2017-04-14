@@ -15,6 +15,7 @@
 
 // STL
 #include <vector>
+#include <cmath>
 
 typedef std::vector<G4VTrajectoryPoint*> TrajectoryPointContainer;
 
@@ -180,7 +181,13 @@ namespace ldmx {
 
             void setEndPointMomentum(const G4Track* aTrack) {
                 G4ThreeVector p = aTrack->GetMomentum();
-                endPointMomentum_.set(p.x(), p.y(), p.z());
+                double px = p.x();
+                double py = p.y();
+                double pz = p.z();
+                if (px == -0) px = 0;
+                if (py == -0) py = 0;
+                if (pz == -0) pz = 0;
+                endPointMomentum_.set(px, py, pz);
             }
 
             const G4ThreeVector getEndPointMomentum() {
