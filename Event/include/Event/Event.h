@@ -13,6 +13,7 @@
 
 // LDMX
 #include "Event/EventHeader.h"
+#include "Event/ProductTag.h"
 
 // STL
 #include <string>
@@ -71,6 +72,20 @@ namespace ldmx {
                 return getReal(name, passName, false) != 0;
             }
 
+            /**
+             * Get a list of the data products in the event
+	     */
+            virtual const std::vector<ProductTag>& getProducts() const = 0;
+
+            /**
+	     * Get a list of products which match the given POSIX-Extended regular-expressions.
+	     * An empty argument is interpreted as ".*", which matches everything.
+	     * @param namematch Regular expression to compare with the product name
+	     * @param passmatch Regular expression to compare with the pass name
+	     * @param typematch Regular expression to compare with the type name
+	     */
+            void std::vector<ProductTag> searchProducts(const std::string& namematch, const std::string& passmatch, const std::string& typematch) const;
+      
             /**
              * Get a named object with a specific type without specifying
              * the pass name.  If there is one-and-only-one object with the
