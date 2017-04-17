@@ -173,7 +173,8 @@ namespace ldmx {
             }
 
         } else {
-            event_->setInputTree(tree_);
+	  ientry_ = 0;
+	  event_->setInputTree(tree_);
         }
     }
 
