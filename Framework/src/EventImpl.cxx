@@ -144,13 +144,13 @@ namespace ldmx {
 
 
         std::map<std::string, TBranch*>::const_iterator itb = branches_.find(branchName);
-	
+
         // check the objects map
         std::map<std::string, TObject*>::const_iterator ito = objects_.find(branchName);
         if (ito != objects_.end()) {
-	    if (itb!=branches_.end())
-		itb->second->GetEntry(ientry_);
-            return ito->second;
+           if (itb!=branches_.end())
+              itb->second->GetEntry(ientry_);
+           return ito->second;
         } else if (inputTree_ == 0) {
             EXCEPTION_RAISE("ProductNotFound", "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
         }
@@ -230,7 +230,7 @@ namespace ldmx {
 
     bool EventImpl::nextEvent() {
         ientry_++;
-	eventHeader_=get<EventHeader*>(EventConstants::EVENT_HEADER);
+        eventHeader_=get<EventHeader*>(EventConstants::EVENT_HEADER);
         return true;
     }
 
