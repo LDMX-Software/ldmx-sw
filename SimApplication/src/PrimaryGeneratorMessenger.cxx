@@ -3,10 +3,14 @@
 // LDMX
 #include "SimApplication/LHEPrimaryGenerator.h"
 #include "SimApplication/RootPrimaryGenerator.h"
+#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
 
 namespace ldmx {
 
     bool PrimaryGeneratorMessenger::useRootSeed_{false};
+    std::string PrimaryGeneratorMessenger::particleType_{"e-"};
+    double PrimaryGeneratorMessenger::particleEnergy_{4.0};
+    int PrimaryGeneratorMessenger::nInteractions_{1};
 
     PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* thePrimaryGeneratorAction) :
             primaryGeneratorAction_(thePrimaryGeneratorAction) {
@@ -30,20 +34,24 @@ namespace ldmx {
         rootOpenCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
 
         rootUseSeedCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
+
     }
 
     PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger() {;}
 
     void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
-        if (command == lheOpenCmd_) {
-            primaryGeneratorAction_->setPrimaryGenerator(new LHEPrimaryGenerator(new LHEReader(newValues)));
+
+        if      (command == lheOpenCmd_)           { primaryGeneratorAction_->setPrimaryGenerator(new LHEPrimaryGenerator(new LHEReader(newValues))); }
+        else if (command == rootOpenCmd_)          { primaryGeneratorAction_->setPrimaryGenerator(new RootPrimaryGenerator(newValues)); }
+        else if (command == rootUseSeedCmd_)       { useRootSeed_ = true; }
+        else if (command == mpgunEnergyCmd_)       { particleEnergy_ = G4UIcommand::ConvertToDouble(newValues); }
+        else if (command == mpgunNIntCmd_)         { nInteractions_ = G4UIcommand::ConvertToInt(newValues); }
+        else if (command == mpgunParticleTypeCmd_) { particleType_ = newValues; }
+        else if (command == enableMPGunCmd_) {
+            std::cout << "we are using the multiparitcle gun!" << std::endl;
+            primaryGeneratorAction_->setPrimaryGenerator(new MultiParticleGunPrimaryGenerator());
         }
-        if (command == rootOpenCmd_) {
-            primaryGeneratorAction_->setPrimaryGenerator(new RootPrimaryGenerator(newValues));
-        }
-        if (command == rootUseSeedCmd_) {
-            useRootSeed_ = true;
-        }
+
     }
 
 }
