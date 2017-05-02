@@ -23,11 +23,14 @@ namespace ldmx {
     }
 
     void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
+        
         generator_->GeneratePrimaryVertex(event);
+        std::cout << "outta here!" << std::endl;
 
         // automatically setting genStatus to 1 for particle gun primaries
-        if (dynamic_cast<G4ParticleGun*>(generator_) != NULL) {
+        if (dynamic_cast<G4ParticleGun*>(generator_) !=  NULL) {
 
+            std::cout << "in here?" << std::endl;
             int nPV = event->GetNumberOfPrimaryVertex();
             for (int iPV = 0; iPV < nPV; ++iPV) {
                 G4PrimaryVertex* curPV = event->GetPrimaryVertex(iPV);
@@ -41,8 +44,10 @@ namespace ldmx {
 
         }
 
+        std::cout << "[PrimaryGeneratorAction::GeneratePrimaries] Generating! " << event->GetNumberOfPrimaryVertex() << std::endl;
         // Activate the plugin manager hook.        
         pluginManager_->generatePrimary(event);
+
     }
 
 }
