@@ -53,7 +53,7 @@ Assuming you have [downloaded a Geant4 tarball](http://geant4.web.cern.ch/geant4
 tar -zxvf geant4.10.02.p02.tar.gz
 cd geant4.10.02.p02
 mkdir build; cd build
-cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DXERCESC_ROOT_DIR=$XERCESDIR \
+cmake -DXercesC_DIR=$XercesC_DIR -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DXERCESC_ROOT_DIR=$XERCESDIR \
     -DGEANT4_USE_OPENGL_X11=ON -DCMAKE_INSTALL_PREFIX=../../geant4.10.02.p02-install ..
 make install
 cd ../../geant4.10.02.p02-install
