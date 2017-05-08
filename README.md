@@ -38,7 +38,7 @@ tar -zxvf xerces-c-3.1.4.tar.gz
 cd xerces-c-3.1.4
 ./configure --prefix=$PWD
 make install
-export XERCESDIR=$PWD
+export XercesC_DIR=$PWD
 ```
 
 The *XERCESDIR* environment variable is optional and for convenience.  Where you see these types of variables in these instructions, you may also substitute the actual full path to your local installation of that dependency.
@@ -53,7 +53,7 @@ Assuming you have [downloaded a Geant4 tarball](http://geant4.web.cern.ch/geant4
 tar -zxvf geant4.10.02.p02.tar.gz
 cd geant4.10.02.p02
 mkdir build; cd build
-cmake -DXercesC_DIR=$XercesC_DIR -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DXERCESC_ROOT_DIR=$XERCESDIR \
+cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DXERCESC_ROOT_DIR=$XercesC_DIR \
     -DGEANT4_USE_OPENGL_X11=ON -DCMAKE_INSTALL_PREFIX=../../geant4.10.02.p02-install ..
 make install
 cd ../../geant4.10.02.p02-install
@@ -92,7 +92,7 @@ These commands should install the software locally:
 git clone https://github.com/LDMXAnalysis/ldmx-sw.git
 cd ldmx-sw
 mkdir build; cd build
-cmake -DGeant4_DIR=$G4DIR -DROOT_DIR=$ROOTDIR -DCMAKE_INSTALL_PREFIX=../ldmx-sw-install ..
+cmake -DGeant4_DIR=$G4DIR -DROOT_DIR=$ROOTDIR -DXercesC_DIR=$XercesC_DIR -DCMAKE_INSTALL_PREFIX=../ldmx-sw-install ..
 make install
 ```
 
