@@ -41,7 +41,7 @@ make install
 export XercesC_DIR=$PWD
 ```
 
-The *XERCESDIR* environment variable is optional and for convenience.  Where you see these types of variables in these instructions, you may also substitute the actual full path to your local installation of that dependency.
+The *XercesC_DIR* environment variable is optional and for convenience.  Where you see these types of variables in these instructions, you may also substitute the actual full path to your local installation of that dependency.
 
 ## Geant4
 
