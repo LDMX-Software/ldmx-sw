@@ -12,7 +12,11 @@
 namespace ldmx {
 
     PrimaryGeneratorAction::PrimaryGeneratorAction() :
-            G4VUserPrimaryGeneratorAction(), generator_(new G4ParticleGun), random_(new TRandom) {
+            G4VUserPrimaryGeneratorAction(), 
+            generator_(new G4ParticleGun), 
+            random_(new TRandom),
+            useBeamspot_(false),
+            beamspotSize_(20.) {
     }
 
     PrimaryGeneratorAction::~PrimaryGeneratorAction() {
@@ -43,7 +47,8 @@ namespace ldmx {
 
         }
 
-        if (PrimaryGeneratorMessenger::useBeamspot()) smearingBeamspot(event);
+        std::cout << "[PrimaryGeneratorAction::GeneratePrimaries] useBeamspot_ = " << useBeamspot_ << ", " << beamspotSize_ << std::endl;
+        if (useBeamspot_) smearingBeamspot(event);
         
         // Activate the plugin manager hook.        
         pluginManager_->generatePrimary(event);
@@ -52,23 +57,17 @@ namespace ldmx {
 
     void PrimaryGeneratorAction::smearingBeamspot(G4Event* event) {
         
-        std::cout << "[PrimaryGeneratorAction::smearingBeamspot] Number of vertices! " << event->GetNumberOfPrimaryVertex() << std::endl;
-        double IPWidth = PrimaryGeneratorMessenger::getBeamspotSize();
-        std::cout << "using beamspot? " << PrimaryGeneratorMessenger::useBeamspot() << ", size = " << IPWidth << std::endl;
+        double IPWidth = beamspotSize_;
 
         int nPV = event->GetNumberOfPrimaryVertex();
         for (int iPV = 0; iPV < nPV; ++iPV) {
             G4PrimaryVertex* curPV = event->GetPrimaryVertex(iPV);
-
-            std::cout << "vertex, particle = " << iPV << ": " << curPV->GetX0() << "," << curPV->GetY0() << "," << curPV->GetZ0() << std::endl;
             double x0_i = curPV->GetX0();
             double y0_i = curPV->GetY0();
             double z0_i = curPV->GetZ0();
             double x0_f = random_->Uniform( x0_i - IPWidth, x0_i + IPWidth );
             double y0_f = random_->Uniform( y0_i - IPWidth, y0_i + IPWidth );
             curPV->SetPosition( x0_f, y0_f, z0_i );
-            std::cout << "modified vertex, particle = " << iPV  << ": " << curPV->GetX0() << "," << curPV->GetY0() << "," << curPV->GetZ0() << std::endl;
-
         }        
 
     }
