@@ -11,6 +11,8 @@ namespace ldmx {
     std::string PrimaryGeneratorMessenger::particleType_{"e-"};
     double PrimaryGeneratorMessenger::particleEnergy_{4.0};
     int PrimaryGeneratorMessenger::nInteractions_{1};
+    bool PrimaryGeneratorMessenger::useBeamspot_{false};
+    double PrimaryGeneratorMessenger::beamspotSize_{20.};
 
     PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* thePrimaryGeneratorAction) :
             primaryGeneratorAction_(thePrimaryGeneratorAction) {
@@ -51,7 +53,8 @@ namespace ldmx {
             std::cout << "we are using the multiparitcle gun!" << std::endl;
             primaryGeneratorAction_->setPrimaryGenerator(new MultiParticleGunPrimaryGenerator());
         }
-
+        else if (command == enableBeamspotCmd_)    { useBeamspot_ = true; }
+        else if (command == beamspotSizeCmd_)      { beamspotSize_ = G4UIcommand::ConvertToDouble(newValues); }
     }
 
 }
