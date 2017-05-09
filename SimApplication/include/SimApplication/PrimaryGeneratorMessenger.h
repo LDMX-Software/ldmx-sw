@@ -58,6 +58,10 @@ namespace ldmx {
             /** Get the particle energy for mpg */
             static int getMPGnInteractions() { return nInteractions_; };
 
+            static bool useBeamspot() { return useBeamspot_; };
+            /** Get the particle energy for mpg */
+            static double getBeamspotSize() { return beamspotSize_; };
+
         private:
 
             /**
@@ -99,6 +103,11 @@ namespace ldmx {
             /** Command allowing a user to specify what particle type to generate. */
             G4UIcmdWithAString* mpgunNIntCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/nInteractions", this}};
 
+            /** Command allowing a user to specify what particle type to generate. */
+            G4UIcmdWithoutParameter* enableBeamspotCmd_{new G4UIcmdWithoutParameter{"/ldmx/generators/beamspot/enable", this}};
+            /** Command allowing a user to specify what particle type to generate. */
+            G4UIcmdWithAString* beamspotSizeCmd_{new G4UIcmdWithAString{"/ldmx/generators/beamspot/size", this}};
+
             /**
              * FIXME: This should not be static.
              */
@@ -109,6 +118,11 @@ namespace ldmx {
             static double particleEnergy_;
             // * Particle energy threshold. 
             static int nInteractions_;
+
+            // * Particle energy threshold. 
+            static bool useBeamspot_;
+            // * Particle energy threshold. 
+            static double beamspotSize_;
 
     };
 
