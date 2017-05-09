@@ -8,11 +8,10 @@
 namespace ldmx {
 
     bool PrimaryGeneratorMessenger::useRootSeed_{false};
-    std::string PrimaryGeneratorMessenger::particleType_{"e-"};
-    double PrimaryGeneratorMessenger::particleEnergy_{4.0};
-    int PrimaryGeneratorMessenger::nInteractions_{1};
-    bool PrimaryGeneratorMessenger::useBeamspot_{false};
-    double PrimaryGeneratorMessenger::beamspotSize_{20.};
+    int PrimaryGeneratorMessenger::nParticles_{1};
+    bool PrimaryGeneratorMessenger::enablePoisson_{false};
+    // std::string PrimaryGeneratorMessenger::particleType_{"e-"};
+    // double PrimaryGeneratorMessenger::particleEnergy_{4.0};
 
     PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* thePrimaryGeneratorAction) :
             primaryGeneratorAction_(thePrimaryGeneratorAction) {
@@ -43,18 +42,18 @@ namespace ldmx {
 
     void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
 
-        if      (command == lheOpenCmd_)           { primaryGeneratorAction_->setPrimaryGenerator(new LHEPrimaryGenerator(new LHEReader(newValues))); }
-        else if (command == rootOpenCmd_)          { primaryGeneratorAction_->setPrimaryGenerator(new RootPrimaryGenerator(newValues)); }
-        else if (command == rootUseSeedCmd_)       { useRootSeed_ = true; }
-        else if (command == mpgunEnergyCmd_)       { particleEnergy_ = G4UIcommand::ConvertToDouble(newValues); }
-        else if (command == mpgunNIntCmd_)         { nInteractions_ = G4UIcommand::ConvertToInt(newValues); }
-        else if (command == mpgunParticleTypeCmd_) { particleType_ = newValues; }
-        else if (command == enableMPGunCmd_) {
-            std::cout << "we are using the multiparitcle gun!" << std::endl;
-            primaryGeneratorAction_->setPrimaryGenerator(new MultiParticleGunPrimaryGenerator());
-        }
-        else if (command == enableBeamspotCmd_)    { useBeamspot_ = true; }
-        else if (command == beamspotSizeCmd_)      { beamspotSize_ = G4UIcommand::ConvertToDouble(newValues); }
+        if      (command == lheOpenCmd_)            { primaryGeneratorAction_->setPrimaryGenerator(new LHEPrimaryGenerator(new LHEReader(newValues))); }
+        else if (command == rootOpenCmd_)           { primaryGeneratorAction_->setPrimaryGenerator(new RootPrimaryGenerator(newValues)); }
+        else if (command == rootUseSeedCmd_)        { useRootSeed_ = true; }
+         
+        // else if (command == mpgunEnergyCmd_)        { particleEnergy_ = G4UIcommand::ConvertToDouble(newValues); }
+        // else if (command == mpgunParticleTypeCmd_)  { particleType_ = newValues; }
+        else if (command == enableMPGunCmd_)        { primaryGeneratorAction_->setPrimaryGenerator(new MultiParticleGunPrimaryGenerator()); }
+        else if (command == mpgunNParCmd_)          { nParticles_ = G4UIcommand::ConvertToInt(newValues); }        
+        else if (command == enableMPGunPoissonCmd_) { enablePoisson_ = true; }
+ 
+        else if (command == enableBeamspotCmd_)     { primaryGeneratorAction_->setUseBeamspot(true); }
+        else if (command == beamspotSizeCmd_)       { primaryGeneratorAction_->setBeamspotSize( G4UIcommand::ConvertToDouble(newValues) ); }
     }
 
 }

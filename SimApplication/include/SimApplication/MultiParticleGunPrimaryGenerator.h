@@ -48,12 +48,8 @@ namespace ldmx {
              */
             void GeneratePrimaryVertex(G4Event* anEvent);
 
-        private:
 
-            /**
-             * The number of particles to generate
-             */
-            int nParticles_;
+        private:        
 
             /**
              * The RNG
