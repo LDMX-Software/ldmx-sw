@@ -16,8 +16,8 @@
 
 namespace ldmx {
 
-    MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator() {
-        random_ = new TRandom();
+    MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator():
+        random_ (new TRandom){
     }
 
     MultiParticleGunPrimaryGenerator::~MultiParticleGunPrimaryGenerator() {
@@ -25,15 +25,9 @@ namespace ldmx {
 
     void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
-        std::cout << "Generating some gun events! ... " << std::endl;
-        std::cout << "Particle energy = " << PrimaryGeneratorMessenger::getMPGParticleEnergy() << std::endl;
-
-        // get the random number of interactions to generate
-        int nInteractions = PrimaryGeneratorMessenger::getMPGnInteractions();
-        int nInteractions_Poisson = random_->Poisson(nInteractions);
-        std::cout << "n Incoming = " << nInteractions << ", n random = " << random_->Poisson(nInteractions) << std::endl;
-
-        // if (nInteractions_Poisson == 0) G4RunManager::GetRunManager()->AbortEvent();
+        int nInteractionsInput = PrimaryGeneratorMessenger::getMPGNParticles();
+        int nInteractions = nInteractionsInput;
+        if (PrimaryGeneratorMessenger::getEnablePoisson()) nInteractions = random_->Poisson(nInteractionsInput);
 
         // make a for loop
         for (int i = 0; i < nInteractions; ++i){

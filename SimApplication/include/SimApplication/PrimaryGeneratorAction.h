@@ -50,6 +50,20 @@ namespace ldmx {
              */
             void setPrimaryGenerator(G4VPrimaryGenerator* primaryGenerator);
 
+            /**
+             * Enable beamspot smearing.
+             * @param bool
+             */
+            void setUseBeamspot(bool usebs){ useBeamspot_ = usebs; };
+
+            /**
+             * Set beamspot size
+             * @param beamspot size
+             */
+            void setBeamspotSize(double bssize){ beamspotSize_ = bssize; };
+
+            G4VPrimaryGenerator* getPrimaryGenerator(){ return generator_; };
+
         private:
 
             /**
@@ -67,6 +81,12 @@ namespace ldmx {
              * The RNG
              */
             TRandom* random_;
+
+            // * Particle energy threshold. 
+            bool useBeamspot_;
+            
+            // * Particle energy threshold. 
+            double beamspotSize_;            
 
     };
 

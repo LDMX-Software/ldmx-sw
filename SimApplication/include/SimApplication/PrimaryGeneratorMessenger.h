@@ -49,18 +49,14 @@ namespace ldmx {
                 return useRootSeed_;
             };
 
-            /** Get the particle type (e.g. gamma, e-) for mpg */
-            static std::string getMPGParticleType() { return particleType_; };
+            // /** Get the particle type (e.g. gamma, e-) for mpg */
+            // static std::string getMPGParticleType() { return particleType_; };
         
             /** Get the particle energy for mpg */
-            static double getMPGParticleEnergy() { return particleEnergy_; };
+            static bool getEnablePoisson() { return enablePoisson_; };
 
             /** Get the particle energy for mpg */
-            static int getMPGnInteractions() { return nInteractions_; };
-
-            static bool useBeamspot() { return useBeamspot_; };
-            /** Get the particle energy for mpg */
-            static double getBeamspotSize() { return beamspotSize_; };
+            static int getMPGNParticles() { return nParticles_; };
 
         private:
 
@@ -96,12 +92,14 @@ namespace ldmx {
 
             /** The command for using the multiparticle gun. */
             G4UIcmdWithoutParameter* enableMPGunCmd_ {new G4UIcmdWithoutParameter {"/ldmx/generators/mpgun/enable", this}};
+                        /** The command for using the multiparticle gun. */
+            G4UIcmdWithoutParameter* enableMPGunPoissonCmd_ {new G4UIcmdWithoutParameter {"/ldmx/generators/mpgun/enablePoisson", this}};
             /** Command allowing a user to specify what particle type to generate. */
-            G4UIcmdWithAString* mpgunParticleTypeCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/particle", this}};
+            // G4UIcmdWithAString* mpgunParticleTypeCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/particle", this}};
             /** Command allowing a user to specify what particle type to generate. */
-            G4UIcmdWithAString* mpgunEnergyCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/energy", this}};
+            // G4UIcmdWithAString* mpgunEnergyCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/energy", this}};
             /** Command allowing a user to specify what particle type to generate. */
-            G4UIcmdWithAString* mpgunNIntCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/nInteractions", this}};
+            G4UIcmdWithAString* mpgunNParCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/nInteractions", this}};
 
             /** Command allowing a user to specify what particle type to generate. */
             G4UIcmdWithoutParameter* enableBeamspotCmd_{new G4UIcmdWithoutParameter{"/ldmx/generators/beamspot/enable", this}};
@@ -112,17 +110,24 @@ namespace ldmx {
              * FIXME: This should not be static.
              */
             static bool useRootSeed_;
-            // /** particle type */
-            static std::string particleType_;
-            // * Particle energy threshold. 
-            static double particleEnergy_;
-            // * Particle energy threshold. 
-            static int nInteractions_;
+            
+            /**
+             * The number of particles to generate
+             */
+            static int nParticles_;
 
-            // * Particle energy threshold. 
-            static bool useBeamspot_;
-            // * Particle energy threshold. 
-            static double beamspotSize_;
+            /**
+             * Enable poisson
+             */
+            static bool enablePoisson_;    
+
+            // // /** particle type */
+            // static std::string particleType_;
+            // // * Particle energy threshold. 
+            // static double particleEnergy_;
+            // // * Particle energy threshold. 
+            // static int nInteractions_;
+
 
     };
 
