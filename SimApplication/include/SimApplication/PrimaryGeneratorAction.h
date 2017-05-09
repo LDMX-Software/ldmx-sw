@@ -14,6 +14,10 @@
 // LDMX
 #include "SimPlugins/PluginManagerAccessor.h"
 
+// RNG
+#include "TRandom.h"
+
+
 namespace ldmx {
 
     /**
@@ -49,9 +53,21 @@ namespace ldmx {
         private:
 
             /**
+             * Smearing beamspot
+             * @param anEvent The Geant4 event.
+             */
+            void smearingBeamspot(G4Event* anEvent);
+
+            /**
              * The primary generator.
              */
             G4VPrimaryGenerator* generator_;
+
+            /**
+             * The RNG
+             */
+            TRandom* random_;
+
     };
 
 }
