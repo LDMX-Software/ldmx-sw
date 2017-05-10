@@ -104,7 +104,8 @@ namespace ldmx {
             /** Command allowing a user to specify what particle type to generate. */
             G4UIcmdWithoutParameter* enableBeamspotCmd_{new G4UIcmdWithoutParameter{"/ldmx/generators/beamspot/enable", this}};
             /** Command allowing a user to specify what particle type to generate. */
-            G4UIcmdWithAString* beamspotSizeCmd_{new G4UIcmdWithAString{"/ldmx/generators/beamspot/size", this}};
+            G4UIcmdWithAString* beamspotXSizeCmd_{new G4UIcmdWithAString{"/ldmx/generators/beamspot/sizeX", this}};
+            G4UIcmdWithAString* beamspotYSizeCmd_{new G4UIcmdWithAString{"/ldmx/generators/beamspot/sizeY", this}};
 
             /**
              * FIXME: This should not be static.
