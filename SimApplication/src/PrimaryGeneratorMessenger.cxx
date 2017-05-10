@@ -53,7 +53,8 @@ namespace ldmx {
         else if (command == enableMPGunPoissonCmd_) { enablePoisson_ = true; }
  
         else if (command == enableBeamspotCmd_)     { primaryGeneratorAction_->setUseBeamspot(true); }
-        else if (command == beamspotSizeCmd_)       { primaryGeneratorAction_->setBeamspotSize( G4UIcommand::ConvertToDouble(newValues) ); }
+        else if (command == beamspotXSizeCmd_)      { primaryGeneratorAction_->setBeamspotXSize( G4UIcommand::ConvertToDouble(newValues) ); }
+        else if (command == beamspotYSizeCmd_)      { primaryGeneratorAction_->setBeamspotYSize( G4UIcommand::ConvertToDouble(newValues) ); }
     }
 
 }
