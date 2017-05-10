@@ -60,7 +60,8 @@ namespace ldmx {
              * Set beamspot size
              * @param beamspot size
              */
-            void setBeamspotSize(double bssize){ beamspotSize_ = bssize; };
+            void setBeamspotXSize(double bssize){ beamspotXSize_ = bssize; };
+            void setBeamspotYSize(double bssize){ beamspotYSize_ = bssize; };
 
             G4VPrimaryGenerator* getPrimaryGenerator(){ return generator_; };
 
@@ -86,7 +87,8 @@ namespace ldmx {
             bool useBeamspot_;
             
             // * Particle energy threshold. 
-            double beamspotSize_;            
+            double beamspotXSize_;            
+            double beamspotYSize_;            
 
     };
 

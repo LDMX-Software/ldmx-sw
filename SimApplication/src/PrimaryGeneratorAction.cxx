@@ -16,7 +16,8 @@ namespace ldmx {
             generator_(new G4ParticleGun), 
             random_(new TRandom),
             useBeamspot_(false),
-            beamspotSize_(20.) {
+            beamspotXSize_(20.),
+            beamspotYSize_(10.)  {
     }
 
     PrimaryGeneratorAction::~PrimaryGeneratorAction() {
@@ -47,7 +48,7 @@ namespace ldmx {
 
         }
 
-        std::cout << "[PrimaryGeneratorAction::GeneratePrimaries] useBeamspot_ = " << useBeamspot_ << ", " << beamspotSize_ << std::endl;
+        std::cout << "[PrimaryGeneratorAction::GeneratePrimaries] useBeamspot_ = " << useBeamspot_ << ", " << beamspotXSize_ << ", " << beamspotYSize_ << std::endl;
         if (useBeamspot_) smearingBeamspot(event);
         
         // Activate the plugin manager hook.        
@@ -57,7 +58,8 @@ namespace ldmx {
 
     void PrimaryGeneratorAction::smearingBeamspot(G4Event* event) {
         
-        double IPWidth = beamspotSize_;
+        double IPWidthX = beamspotXSize_;
+        double IPWidthY = beamspotYSize_;
 
         int nPV = event->GetNumberOfPrimaryVertex();
         for (int iPV = 0; iPV < nPV; ++iPV) {
@@ -65,8 +67,8 @@ namespace ldmx {
             double x0_i = curPV->GetX0();
             double y0_i = curPV->GetY0();
             double z0_i = curPV->GetZ0();
-            double x0_f = random_->Uniform( x0_i - IPWidth, x0_i + IPWidth );
-            double y0_f = random_->Uniform( y0_i - IPWidth, y0_i + IPWidth );
+            double x0_f = random_->Uniform( x0_i - IPWidthX, x0_i + IPWidthX );
+            double y0_f = random_->Uniform( y0_i - IPWidthY, y0_i + IPWidthY );
             curPV->SetPosition( x0_f, y0_f, z0_i );
         }        
 
