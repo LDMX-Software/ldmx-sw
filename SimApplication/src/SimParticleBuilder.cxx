@@ -69,6 +69,9 @@ namespace ldmx {
         const G4ThreeVector& momentum = traj->GetInitialMomentum();
         simParticle->setMomentum(momentum[0], momentum[1], momentum[2]);
 
+        const G4ThreeVector& endpMomentum = traj->getEndPointMomentum();
+        simParticle->setEndPointMomentum(endpMomentum[0], endpMomentum[1], endpMomentum[2]);
+
         G4ThreeVector endpoint = traj->getEndPoint();
         simParticle->setEndPoint(endpoint[0], endpoint[1], endpoint[2]);
 
