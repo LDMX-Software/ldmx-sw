@@ -3,6 +3,7 @@
 #include "SimApplication/PrimaryGeneratorMessenger.h"
 
 // Geant4
+#include "G4RunManager.hh"
 #include "G4Event.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
@@ -45,15 +46,15 @@ namespace ldmx {
                     curPV->GetPrimary(iPar)->SetUserInformation(primaryInfo);
                 }
             }
-
         }
 
-        std::cout << "[PrimaryGeneratorAction::GeneratePrimaries] useBeamspot_ = " << useBeamspot_ << ", " << beamspotXSize_ << ", " << beamspotYSize_ << std::endl;
-        if (useBeamspot_) smearingBeamspot(event);
+        // std::cout << "[PrimaryGeneratorAction::GeneratePrimaries] useBeamspot_ = " << useBeamspot_ << ", " << beamspotXSize_ << ", " << beamspotYSize_ << "," << event->GetNumberOfPrimaryVertex() << std::endl;
         
         // Activate the plugin manager hook.        
-        pluginManager_->generatePrimary(event);
-
+        if (event->GetNumberOfPrimaryVertex() > 0){
+            if (useBeamspot_) smearingBeamspot(event);
+            pluginManager_->generatePrimary(event);
+        }
     }
 
     void PrimaryGeneratorAction::smearingBeamspot(G4Event* event) {

@@ -8,7 +8,7 @@
 namespace ldmx {
 
     bool PrimaryGeneratorMessenger::useRootSeed_{false};
-    int PrimaryGeneratorMessenger::nParticles_{1};
+    double PrimaryGeneratorMessenger::nParticles_{1.0};
     bool PrimaryGeneratorMessenger::enablePoisson_{false};
     // std::string PrimaryGeneratorMessenger::particleType_{"e-"};
     // double PrimaryGeneratorMessenger::particleEnergy_{4.0};
@@ -49,7 +49,7 @@ namespace ldmx {
         // else if (command == mpgunEnergyCmd_)        { particleEnergy_ = G4UIcommand::ConvertToDouble(newValues); }
         // else if (command == mpgunParticleTypeCmd_)  { particleType_ = newValues; }
         else if (command == enableMPGunCmd_)        { primaryGeneratorAction_->setPrimaryGenerator(new MultiParticleGunPrimaryGenerator()); }
-        else if (command == mpgunNParCmd_)          { nParticles_ = G4UIcommand::ConvertToInt(newValues); }        
+        else if (command == mpgunNParCmd_)          { nParticles_ = G4UIcommand::ConvertToDouble(newValues); }        
         else if (command == enableMPGunPoissonCmd_) { enablePoisson_ = true; }
  
         else if (command == enableBeamspotCmd_)     { primaryGeneratorAction_->setUseBeamspot(true); }

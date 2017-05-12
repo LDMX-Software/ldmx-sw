@@ -56,7 +56,7 @@ namespace ldmx {
             static bool getEnablePoisson() { return enablePoisson_; };
 
             /** Get the particle energy for mpg */
-            static int getMPGNParticles() { return nParticles_; };
+            static double getMPGNParticles() { return nParticles_; };
 
         private:
 
@@ -115,7 +115,7 @@ namespace ldmx {
             /**
              * The number of particles to generate
              */
-            static int nParticles_;
+            static double nParticles_;
 
             /**
              * Enable poisson

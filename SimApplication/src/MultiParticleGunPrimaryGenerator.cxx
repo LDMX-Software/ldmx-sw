@@ -25,9 +25,16 @@ namespace ldmx {
 
     void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
-        int nInteractionsInput = PrimaryGeneratorMessenger::getMPGNParticles();
+        double nInteractionsInput = PrimaryGeneratorMessenger::getMPGNParticles();
         int nInteractions = nInteractionsInput;
-        if (PrimaryGeneratorMessenger::getEnablePoisson()) nInteractions = random_->Poisson(nInteractionsInput);
+        if (PrimaryGeneratorMessenger::getEnablePoisson()){ 
+			nInteractions = 0;
+			while (nInteractions == 0){ // keep generating a random poisson until > 0, no point in generator 0 vertices...
+        		nInteractions = random_->Poisson(nInteractionsInput);
+        	}
+        }
+
+	    // std::cout << "[MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex] number of interactions = " << nInteractions << std::endl;
 
         // make a for loop
         for (int i = 0; i < nInteractions; ++i){
