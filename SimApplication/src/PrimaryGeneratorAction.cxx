@@ -1,7 +1,9 @@
 #include "SimApplication/PrimaryGeneratorAction.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
+#include "SimApplication/PrimaryGeneratorMessenger.h"
 
 // Geant4
+#include "G4RunManager.hh"
 #include "G4Event.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
@@ -11,7 +13,12 @@
 namespace ldmx {
 
     PrimaryGeneratorAction::PrimaryGeneratorAction() :
-            G4VUserPrimaryGeneratorAction(), generator_(new G4ParticleGun) {
+            G4VUserPrimaryGeneratorAction(), 
+            generator_(new G4ParticleGun), 
+            random_(new TRandom),
+            useBeamspot_(false),
+            beamspotXSize_(20.),
+            beamspotYSize_(10.)  {
     }
 
     PrimaryGeneratorAction::~PrimaryGeneratorAction() {
@@ -23,10 +30,11 @@ namespace ldmx {
     }
 
     void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
+        
         generator_->GeneratePrimaryVertex(event);
 
         // automatically setting genStatus to 1 for particle gun primaries
-        if (dynamic_cast<G4ParticleGun*>(generator_) != NULL) {
+        if (dynamic_cast<G4ParticleGun*>(generator_) !=  NULL) {
 
             int nPV = event->GetNumberOfPrimaryVertex();
             for (int iPV = 0; iPV < nPV; ++iPV) {
@@ -38,11 +46,32 @@ namespace ldmx {
                     curPV->GetPrimary(iPar)->SetUserInformation(primaryInfo);
                 }
             }
-
         }
 
+        // std::cout << "[PrimaryGeneratorAction::GeneratePrimaries] useBeamspot_ = " << useBeamspot_ << ", " << beamspotXSize_ << ", " << beamspotYSize_ << "," << event->GetNumberOfPrimaryVertex() << std::endl;
+        
         // Activate the plugin manager hook.        
-        pluginManager_->generatePrimary(event);
+        if (event->GetNumberOfPrimaryVertex() > 0){
+            if (useBeamspot_) smearingBeamspot(event);
+            pluginManager_->generatePrimary(event);
+        }
     }
 
+    void PrimaryGeneratorAction::smearingBeamspot(G4Event* event) {
+        
+        double IPWidthX = beamspotXSize_;
+        double IPWidthY = beamspotYSize_;
+
+        int nPV = event->GetNumberOfPrimaryVertex();
+        for (int iPV = 0; iPV < nPV; ++iPV) {
+            G4PrimaryVertex* curPV = event->GetPrimaryVertex(iPV);
+            double x0_i = curPV->GetX0();
+            double y0_i = curPV->GetY0();
+            double z0_i = curPV->GetZ0();
+            double x0_f = random_->Uniform( x0_i - IPWidthX, x0_i + IPWidthX );
+            double y0_f = random_->Uniform( y0_i - IPWidthY, y0_i + IPWidthY );
+            curPV->SetPosition( x0_f, y0_f, z0_i );
+        }        
+
+    }
 }
