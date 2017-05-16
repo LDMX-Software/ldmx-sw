@@ -9,6 +9,9 @@ namespace ldmx {
 
     bool PrimaryGeneratorMessenger::useRootSeed_{false};
     double PrimaryGeneratorMessenger::nParticles_{1.0};
+    int PrimaryGeneratorMessenger::mpg_pdgId_{11};
+    G4ThreeVector PrimaryGeneratorMessenger::mpg_vertex_{G4ThreeVector(0.,0.,0.)};
+    G4ThreeVector PrimaryGeneratorMessenger::mpg_momentum_{G4ThreeVector(0.,0.,0.)};
     bool PrimaryGeneratorMessenger::enablePoisson_{false};
     // std::string PrimaryGeneratorMessenger::particleType_{"e-"};
     // double PrimaryGeneratorMessenger::particleEnergy_{4.0};
@@ -51,6 +54,10 @@ namespace ldmx {
         else if (command == enableMPGunCmd_)        { primaryGeneratorAction_->setPrimaryGenerator(new MultiParticleGunPrimaryGenerator()); }
         else if (command == mpgunNParCmd_)          { nParticles_ = G4UIcommand::ConvertToDouble(newValues); }        
         else if (command == enableMPGunPoissonCmd_) { enablePoisson_ = true; }
+
+        else if (command == mpgunPIDCmd_)           { mpg_pdgId_ = G4UIcommand::ConvertToInt(newValues); }        
+        else if (command == mpgunVtxCmd_)           { mpg_vertex_ = G4UIcommand::ConvertToDimensioned3Vector(newValues); }        
+        else if (command == mpgunMomCmd_)           { mpg_momentum_ = G4UIcommand::ConvertToDimensioned3Vector(newValues); }        
  
         else if (command == enableBeamspotCmd_)     { primaryGeneratorAction_->setUseBeamspot(true); }
         else if (command == beamspotXSizeCmd_)      { primaryGeneratorAction_->setBeamspotXSize( G4UIcommand::ConvertToDouble(newValues) ); }

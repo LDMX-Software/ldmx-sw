@@ -63,7 +63,7 @@ namespace ldmx {
             void setBeamspotXSize(double bssize){ beamspotXSize_ = bssize; };
             void setBeamspotYSize(double bssize){ beamspotYSize_ = bssize; };
 
-            G4VPrimaryGenerator* getPrimaryGenerator(){ return generator_; };
+            // G4VPrimaryGenerator* getPrimaryGenerator(){ return generator_; };
 
         private:
 
@@ -76,7 +76,7 @@ namespace ldmx {
             /**
              * The primary generator.
              */
-            G4VPrimaryGenerator* generator_;
+            std::vector< G4VPrimaryGenerator* > generator_;
 
             /**
              * The RNG
