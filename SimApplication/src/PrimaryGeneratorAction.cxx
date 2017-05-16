@@ -14,7 +14,7 @@ namespace ldmx {
 
     PrimaryGeneratorAction::PrimaryGeneratorAction() :
             G4VUserPrimaryGeneratorAction(), 
-            generator_(new G4ParticleGun), 
+            // generator_(new G4ParticleGun), 
             random_(new TRandom),
             useBeamspot_(false),
             beamspotXSize_(20.),
@@ -22,34 +22,37 @@ namespace ldmx {
     }
 
     PrimaryGeneratorAction::~PrimaryGeneratorAction() {
-        delete generator_;
+        // delete generator_;
     }
 
     void PrimaryGeneratorAction::setPrimaryGenerator(G4VPrimaryGenerator* aGenerator) {
-        PrimaryGeneratorAction::generator_ = aGenerator;
+        // PrimaryGeneratorAction::generator_ = aGenerator;
+        generator_.push_back(aGenerator);
     }
 
     void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
         
-        generator_->GeneratePrimaryVertex(event);
+        unsigned int ngens = generator_.size();
+        for (unsigned int i = 0; i < ngens; ++i){
+            generator_[i]->GeneratePrimaryVertex(event);
 
-        // automatically setting genStatus to 1 for particle gun primaries
-        if (dynamic_cast<G4ParticleGun*>(generator_) !=  NULL) {
+            // automatically setting genStatus to 1 for particle gun primaries
+            if (dynamic_cast<G4ParticleGun*>(generator_[i]) !=  NULL) {
 
-            int nPV = event->GetNumberOfPrimaryVertex();
-            for (int iPV = 0; iPV < nPV; ++iPV) {
-                G4PrimaryVertex* curPV = event->GetPrimaryVertex(iPV);
-                int nPar = curPV->GetNumberOfParticle();
-                for (int iPar = 0; iPar < nPar; ++iPar) {
-                    UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
-                    primaryInfo->setHepEvtStatus(1);
-                    curPV->GetPrimary(iPar)->SetUserInformation(primaryInfo);
+                int nPV = event->GetNumberOfPrimaryVertex();
+                for (int iPV = 0; iPV < nPV; ++iPV) {
+                    G4PrimaryVertex* curPV = event->GetPrimaryVertex(iPV);
+                    int nPar = curPV->GetNumberOfParticle();
+                    for (int iPar = 0; iPar < nPar; ++iPar) {
+                        UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
+                        primaryInfo->setHepEvtStatus(1);
+                        curPV->GetPrimary(iPar)->SetUserInformation(primaryInfo);
+                    }
                 }
             }
         }
-
         // std::cout << "[PrimaryGeneratorAction::GeneratePrimaries] useBeamspot_ = " << useBeamspot_ << ", " << beamspotXSize_ << ", " << beamspotYSize_ << "," << event->GetNumberOfPrimaryVertex() << std::endl;
-        
+            
         // Activate the plugin manager hook.        
         if (event->GetNumberOfPrimaryVertex() > 0){
             if (useBeamspot_) smearingBeamspot(event);

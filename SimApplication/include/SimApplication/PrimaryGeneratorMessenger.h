@@ -57,6 +57,10 @@ namespace ldmx {
 
             /** Get the particle energy for mpg */
             static double getMPGNParticles() { return nParticles_; };
+            static int getMPGPdgId() { return mpg_pdgId_; };
+            static G4ThreeVector getMPGVertex() { return mpg_vertex_; };
+            static G4ThreeVector getMPGMomentum() { return mpg_momentum_; };
+
 
         private:
 
@@ -100,6 +104,9 @@ namespace ldmx {
             // G4UIcmdWithAString* mpgunEnergyCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/energy", this}};
             /** Command allowing a user to specify what particle type to generate. */
             G4UIcmdWithAString* mpgunNParCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/nInteractions", this}};
+            G4UIcmdWithAString* mpgunVtxCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/vertex", this}};
+            G4UIcmdWithAString* mpgunPIDCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/pdgID", this}};
+            G4UIcmdWithAString* mpgunMomCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/momentum", this}};
 
             /** Command allowing a user to specify what particle type to generate. */
             G4UIcmdWithoutParameter* enableBeamspotCmd_{new G4UIcmdWithoutParameter{"/ldmx/generators/beamspot/enable", this}};
@@ -123,11 +130,11 @@ namespace ldmx {
             static bool enablePoisson_;    
 
             // // /** particle type */
-            // static std::string particleType_;
-            // // * Particle energy threshold. 
-            // static double particleEnergy_;
-            // // * Particle energy threshold. 
-            // static int nInteractions_;
+            static int mpg_pdgId_;
+            // // * Particle energy vertex. 
+            static G4ThreeVector mpg_vertex_;
+            // // * Particle momentum. 
+            static G4ThreeVector mpg_momentum_;
 
 
     };
