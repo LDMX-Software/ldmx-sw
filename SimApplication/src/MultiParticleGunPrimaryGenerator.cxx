@@ -25,6 +25,14 @@ namespace ldmx {
 
     void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
+        int cur_mpg_pdgid = PrimaryGeneratorMessenger::getMPGPdgId();
+        G4ThreeVector cur_mpg_vertex = PrimaryGeneratorMessenger::getMPGVertex();
+        G4ThreeVector cur_mpg_momentum = PrimaryGeneratorMessenger::getMPGMomentum();
+
+        // current number of vertices in the event! 
+        // std::cout << "number of vertices in the event! " << anEvent->GetNumberOfPrimaryVertex() << std::endl;
+        int curNVertices = anEvent->GetNumberOfPrimaryVertex();
+
         double nInteractionsInput = PrimaryGeneratorMessenger::getMPGNParticles();
         int nInteractions = nInteractionsInput;
         if (PrimaryGeneratorMessenger::getEnablePoisson()){ 
@@ -34,20 +42,20 @@ namespace ldmx {
         	}
         }
 
-	    // std::cout << "[MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex] number of interactions = " << nInteractions << std::endl;
+	    // std::cout << "[MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex] number of interactions = " << nInteractions << "," << nInteractionsInput << std::endl;
 
         // make a for loop
-        for (int i = 0; i < nInteractions; ++i){
+        for (int i = 0; i < (nInteractions-curNVertices); ++i){
 
-            G4PrimaryVertex* curvertex = new G4PrimaryVertex();
-            curvertex->SetPosition(0. * mm,0. * mm,-10. * mm);
+            G4PrimaryVertex* curvertex = new G4PrimaryVertex(cur_mpg_vertex,0.); //second input is t0
+            // curvertex->SetPosition(0. * mm,0. * mm,-10. * mm);
             curvertex->SetWeight(1.);
             
-            G4PrimaryParticle* primary = new G4PrimaryParticle();
+            G4PrimaryParticle* primary = new G4PrimaryParticle(cur_mpg_pdgid,cur_mpg_momentum.x(),cur_mpg_momentum.y(),cur_mpg_momentum.z());
 
-            primary->SetPDGcode(11);
-            primary->SetMomentum(0. * MeV, 0. * MeV, 3967.2 * MeV);
-            primary->SetMass(511. * MeV);
+            // primary->SetPDGcode(11);
+            // primary->SetMomentum(0. * MeV, 0. * MeV, 3967.2 * MeV);
+            // primary->SetMass(511. * MeV);
 
             UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
             primaryInfo->setHepEvtStatus(1.);
@@ -57,6 +65,7 @@ namespace ldmx {
             anEvent->AddPrimaryVertex(curvertex);
 
         }      
-    }
+        // std::cout << "after mpg, number of vertices in the event! " << anEvent->GetNumberOfPrimaryVertex() << std::endl;
 
+    }
 }
