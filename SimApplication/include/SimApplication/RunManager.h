@@ -8,18 +8,22 @@
 #define SIMAPPLICATION_RUNMANAGER_H_
 
 // Geant4
-#include "G4RunManager.hh"
-#include "G4hMultipleScattering.hh"
 #include "G4Decay.hh"
+#include "G4hMultipleScattering.hh"
+#include "G4GDMLParser.hh"
+#include "G4RunManager.hh"
 
 // LDMX
 #include "Biasing/BiasingMessenger.h"
 #include "SimPlugins/PluginMessenger.h"
+#include "SimApplication/ParallelWorldMessenger.h"
+#include "SimApplication/DetectorConstruction.h"
+#include "SimApplication/ParallelWorld.h"
 
 namespace ldmx {
 
     // Forward declaration
-    class DetectorConstruction;
+    //class DetectorConstruction;
 
     /**
      * @class RunManager
@@ -59,15 +63,14 @@ namespace ldmx {
 
         private:
 
-            /**
-             * The plugin messenger.
-             */
+            /** Plugin messenger. */
             PluginMessenger* pluginMessenger_;
 
-            /**
-             * Biasing messenger.
-             */
+            /** Biasing messenger. */
             BiasingMessenger* biasingMessenger_ {new BiasingMessenger()};
+
+            /** Parallel world messenger. */
+            ParallelWorldMessenger* pwMessenger_{new ParallelWorldMessenger()};
 
             /**
              * Manager of sim plugins.
