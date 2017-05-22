@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+    <define>
+        <!-- Define the identity matrix -->
+        <rotation name="identity" x="0" y="0" z="0"/>
+
+        <!-- Dimension of world box side -->
+        <constant name="world_dim" value="5.0*m"/>
+        
+        <!-- Position of the front face of the Ecal -->
+        <constant name="ecal_front_z" value="20.0*cm"/>
+
+        <!-- Dimensions of the scoring planes -->
+        <constant name="sp_thickness" value=".1*mm"/>
+        <constant name="sp_ecal_front_xy" value="4.0*m"/>
+
+        <!-- Scoring plane positions -->
+        <position name="sp_ecal_front_pos" x="0.0" y="0.0" z="ecal_front_z + (sp_thickness/2)" />
+    </define>
+
+    <materials>
+        <material name="Vacuum" Z="1" state="gas">
+            <D unit="g/cm3" value="1e-12"/>
+            <atom unit="g/mole" value="1" />
+        </material>
+    </materials>
+
+    <solids>
+        <box name="world_box" x="world_dim" y="world_dim" z="world_dim"/>
+        <box name="sp_ecal_front_box" x="sp_ecal_front_xy" y="sp_ecal_front_xy" z="sp_thickness" />
+    </solids>
+
+    <structure>
+        <volume name="sp_ecal_front">
+            <materialref ref="Vacuum" />
+            <solidref ref="sp_ecal_front_box" />
+            <auxilary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+        </volume>
+        <volume name="SP_World">
+            <materialref ref="Vacuum" />
+            <solidref ref="world_box" />
+            <physvol copynumber="1">
+                <volumeref ref="sp_ecal_front" />
+                <positionref ref="sp_ecal_front_pos" />
+                <rotationref ref="identity" />
+            </physvol>
+        </volume>
+    </structure>
+
+    <userinfo>
+        <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" >
+            <auxiliary auxtype="SensDetType"    auxvalue="TrackerSD" />
+            <auxiliary auxtype="HitsCollection" auxvalue="ScoringPlaneHits" />
+            <auxiliary auxtype="SubdetID"       auxvalue="100" />
+            <auxiliary auxtype="Verbose"        auxvalue="0" />
+        </auxiliary>
+    </userinfo>
+
+    <setup name="Default" version="1.0">
+        <world ref="SP_World" />
+    </setup>
+</gdml>
