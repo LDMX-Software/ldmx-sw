@@ -58,6 +58,17 @@ namespace ldmx {
     }
 
     void RunManager::Initialize() {
+        
+        
+        // The parallel world needs to be registered before the mass world is
+        // constructed i.e. before G4RunManager::Initialize() is called. 
+        if (ParallelWorldMessenger::isParallelWorldEnabled()) {
+            std::cout << "[ RunManager ]: Parallel worlds have been enabled." << std::endl;
+
+            G4GDMLParser* pwParser = new G4GDMLParser();
+            pwParser->Read(ParallelWorldMessenger::getDetectorPath());
+            this->getDetectorConstruction()->RegisterParallelWorld(new ParallelWorld(pwParser, "ldmxParallelWorld"));
+        }
 
         G4RunManager::Initialize();
 
