@@ -20,6 +20,7 @@
 // LDMX
 #include "SimPlugins/UserActionPlugin.h"
 #include "Biasing/BiasingMessenger.h"
+#include "Biasing/TargetBremFilterMessenger.h"
 
 namespace ldmx {
 
@@ -93,12 +94,21 @@ namespace ldmx {
              */
             static std::vector<G4Track*> getBremGammaList() { return bremGammaTracks_; };
 
+            /** 
+             * Enable/disable killing of the recoil electron track.  If the 
+             * recoil track is killed, only the brem gamma is propagated.
+             */
+            void setKillRecoilElectron(bool killRecoilElectron) { killRecoilElectron_ = killRecoilElectron; };
+
             /**
              *
              */
             static void removeBremFromList(G4Track* track);
 
         private:
+            
+            /** Messenger used to pass arguments to this class. */
+            //TargetBremFilterMessenger* messenger_{new TargetBremFilterMessenger{this}};
 
             static std::vector<G4Track*> bremGammaTracks_; 
 
@@ -107,6 +117,10 @@ namespace ldmx {
 
             /** Recoil electron threshold. */
             double recoilElectronThreshold_{1500}; // MeV
+
+            /** Flag indicating if the recoil electron track should be killed. */
+            bool killRecoilElectron_{false};
+
 
     }; // TargetBremFilter
 }
