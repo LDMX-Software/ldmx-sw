@@ -269,6 +269,26 @@ namespace ldmx {
                 processType_ = processType;
             }
 
+            /**
+             * Set the momentum at the particle's end point.
+             * @param endpx The X momentum.
+             * @param endpy The Y momentum.
+             * @param endpz The Z momentum.
+             */ 
+            void setEndPointMomentum(const double endpx, const double endpy, const double endpz) {
+                endpx_ = endpx;
+                endpy_ = endpy;
+                endpz_ = endpz;
+            }
+
+            /**
+             * Get the momentum at the particle's end point.
+             * @return The momentum at the particle's end point as a vector.
+             */
+            std::vector<double> getEndPointMomentum() {
+                return {endpx_, endpy_, endpz_};
+            }
+
         private:
 
             /** The energy of the particle. */
@@ -310,6 +330,15 @@ namespace ldmx {
             /** The Z momentum. */
             double pz_{0};
 
+            /** The X momentum.*/
+            double endpx_{0};
+
+            /** The Y momentum. */
+            double endpy_{0};
+
+            /** The Z momentum. */
+            double endpz_{0};
+
             /** The particle's mass. */
             double mass_{0};
 
@@ -328,7 +357,7 @@ namespace ldmx {
             /**
              * ROOT class definition.
              */
-            ClassDef(SimParticle, 3);
+            ClassDef(SimParticle, 4);
     };
 
 }

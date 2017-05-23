@@ -15,6 +15,7 @@
 
 // STL
 #include <vector>
+#include <cmath>
 
 typedef std::vector<G4VTrajectoryPoint*> TrajectoryPointContainer;
 
@@ -178,61 +179,57 @@ namespace ldmx {
                 return processType_;
             }
 
+            void setEndPointMomentum(const G4Track* aTrack) {
+                G4ThreeVector p = aTrack->GetMomentum();
+                double px = p.x();
+                double py = p.y();
+                double pz = p.z();
+                if (px == -0) px = 0;
+                if (py == -0) py = 0;
+                if (pz == -0) pz = 0;
+                endPointMomentum_.set(px, py, pz);
+            }
+
+            const G4ThreeVector getEndPointMomentum() {
+                return endPointMomentum_;
+            }
+
         private:
 
-            /**
-             * The list of trajectory points.
-             */
+            /** The list of trajectory points. */
             TrajectoryPointContainer* trajPoints_;
 
-            /**
-             * The particle definition.
-             */
+            /** The particle definition. */
             G4ParticleDefinition* particleDef_;
 
-            /**
-             * The track ID.
-             */
+            /** The track ID. */
             G4int trackID_;
 
-            /**
-             * The parent track ID.
-             */
+            /** The parent track ID. */
             G4int parentID_;
 
-            /**
-             * The particle's energy.
-             */
+            /** The particle's energy. */
             G4double energy_;
 
-            /**
-             * The particle's mass.
-             */
+            /** The particle's mass. */
             G4double mass_;
 
-            /**
-             * The particle's global time.
-             */
+            /** The particle's global time. */
             G4float globalTime_;
 
-            /**
-             * The particle's generator status.
-             */
+            /** The particle's generator status. */
             G4int genStatus_;
 
-            /**
-             * The particle's initial momentum.
-             */
+            /** The particle's initial momentum. */
             G4ThreeVector initialMomentum_;
 
-            /**
-             * The particle's vertex position.
-             */
+            /** The momentum at the particle's end point. */
+            G4ThreeVector endPointMomentum_;
+
+            /** The particle's vertex position. */
             G4ThreeVector vertexPosition_;
 
-            /**
-             * The type of the process which created the track.
-             */
+            /** The type of the process which created the track. */
             int processType_;
     };
 
