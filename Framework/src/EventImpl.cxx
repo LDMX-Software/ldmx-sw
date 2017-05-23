@@ -143,16 +143,19 @@ namespace ldmx {
         }
 
 
+        std::map<std::string, TBranch*>::const_iterator itb = branches_.find(branchName);
+
         // check the objects map
         std::map<std::string, TObject*>::const_iterator ito = objects_.find(branchName);
         if (ito != objects_.end()) {
-            return ito->second;
+           if (itb!=branches_.end())
+              itb->second->GetEntry(ientry_);
+           return ito->second;
         } else if (inputTree_ == 0) {
             EXCEPTION_RAISE("ProductNotFound", "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
         }
 
         // find the active branch and update if necessary
-        std::map<std::string, TBranch*>::const_iterator itb = branches_.find(branchName);
         if (itb != branches_.end()) {
 
             std::map<std::string, TObject*>::iterator ito = objects_.find(branchName);
@@ -185,7 +188,7 @@ namespace ldmx {
             TObject* top(0);
             branch->SetAutoDelete(false);
             branch->SetStatus(1);
-            branch->GetEntry(ientry_);
+            branch->GetEntry((ientry_<0)?(0):(ientry_));
             TBranchElement* tbe = dynamic_cast<TBranchElement*>(branch);
             if (tbe) {
                 top = (TObject*) tbe->GetObject();
@@ -216,7 +219,7 @@ namespace ldmx {
         inputTree_ = tree;
         entries_ = inputTree_->GetEntriesFast();
         branchNames_.clear();
-        eventHeader_ = get<EventHeader*>(EventConstants::EVENT_HEADER);
+
 
         // find the names of all the existing branches
         TObjArray* branches = inputTree_->GetListOfBranches();
@@ -227,6 +230,7 @@ namespace ldmx {
 
     bool EventImpl::nextEvent() {
         ientry_++;
+        eventHeader_=get<EventHeader*>(EventConstants::EVENT_HEADER);
         return true;
     }
 
