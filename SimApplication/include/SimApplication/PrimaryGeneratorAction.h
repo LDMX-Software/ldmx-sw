@@ -14,6 +14,10 @@
 // LDMX
 #include "SimPlugins/PluginManagerAccessor.h"
 
+// RNG
+#include "TRandom.h"
+
+
 namespace ldmx {
 
     /**
@@ -46,12 +50,46 @@ namespace ldmx {
              */
             void setPrimaryGenerator(G4VPrimaryGenerator* primaryGenerator);
 
+            /**
+             * Enable beamspot smearing.
+             * @param bool
+             */
+            void setUseBeamspot(bool usebs){ useBeamspot_ = usebs; };
+
+            /**
+             * Set beamspot size
+             * @param beamspot size
+             */
+            void setBeamspotXSize(double bssize){ beamspotXSize_ = bssize; };
+            void setBeamspotYSize(double bssize){ beamspotYSize_ = bssize; };
+
+            G4VPrimaryGenerator* getPrimaryGenerator(){ return generator_; };
+
         private:
+
+            /**
+             * Smearing beamspot
+             * @param anEvent The Geant4 event.
+             */
+            void smearingBeamspot(G4Event* anEvent);
 
             /**
              * The primary generator.
              */
             G4VPrimaryGenerator* generator_;
+
+            /**
+             * The RNG
+             */
+            TRandom* random_;
+
+            // * Particle energy threshold. 
+            bool useBeamspot_;
+            
+            // * Particle energy threshold. 
+            double beamspotXSize_;            
+            double beamspotYSize_;            
+
     };
 
 }

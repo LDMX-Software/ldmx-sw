@@ -49,6 +49,7 @@ namespace ldmx {
                 "vertex: ( " << x_ << ", " << y_ << ", " << z_ << " ), " <<
                 "endPoint: ( " << endX_ << ", " << endY_ << ", " << endZ_ << " ), " <<
                 "momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " ), " <<
+                "endPointMomentum: ( " << endpx_ << ", " << endpy_ << ", " << endpz_ << " ), " <<
                 "mass: " << mass_ << ", " <<
                 "nDaughters: " << daughters_->GetEntries() << ", "
                 "nParents: " << parents_->GetEntries() << ", "
