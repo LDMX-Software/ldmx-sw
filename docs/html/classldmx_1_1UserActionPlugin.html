@@ -249,7 +249,7 @@ Public Member Functions</h2></td></tr>
 <p>Get the name of the plugin. The user must override this function. </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>The name of the plugin. </dd></dl>
 
-<p>Implemented in <a class="el" href="classldmx_1_1EcalProcessFilter.html#a1dc5661eb9673182557d53c21d51a7ef">ldmx::EcalProcessFilter</a>, <a class="el" href="classldmx_1_1TargetBremFilter.html#a3bbc468dca98f89729e3d45a716d9495">ldmx::TargetBremFilter</a>, <a class="el" href="classldmx_1_1TargetProcessFilter.html#a9b0dafaea779b5829bf29fada9164642">ldmx::TargetProcessFilter</a>, <a class="el" href="classldmx_1_1DummySimPlugin.html#a5a687a851e7d8f08443b1fb0823ad5f6">ldmx::DummySimPlugin</a>, <a class="el" href="classldmx_1_1EventPrintPlugin.html#a5bdda4ffa37103b320c1715101dc5df4">ldmx::EventPrintPlugin</a>, <a class="el" href="classldmx_1_1PhotonuclearXsecBiasingPlugin.html#a3e9c1b7204ca025373982a1635306fce">ldmx::PhotonuclearXsecBiasingPlugin</a>, <a class="el" href="classldmx_1_1TrackKiller.html#a6cc5ef75a17c26f4a22cf613cab04f1a">ldmx::TrackKiller</a>, <a class="el" href="classldmx_1_1TrackProcessSaver.html#a7f8b802953b764c13d67844b32aed0fe">ldmx::TrackProcessSaver</a>, and <a class="el" href="classldmx_1_1TrackSaver.html#ad50209ff76c66159fb8f9d83bb74dddf">ldmx::TrackSaver</a>.</p>
+<p>Implemented in <a class="el" href="classldmx_1_1EcalProcessFilter.html#a1dc5661eb9673182557d53c21d51a7ef">ldmx::EcalProcessFilter</a>, <a class="el" href="classldmx_1_1TargetBremFilter.html#a3bbc468dca98f89729e3d45a716d9495">ldmx::TargetBremFilter</a>, <a class="el" href="classldmx_1_1TargetProcessFilter.html#a9b0dafaea779b5829bf29fada9164642">ldmx::TargetProcessFilter</a>, <a class="el" href="classldmx_1_1DummySimPlugin.html#a5a687a851e7d8f08443b1fb0823ad5f6">ldmx::DummySimPlugin</a>, <a class="el" href="classldmx_1_1EventPrintPlugin.html#a5bdda4ffa37103b320c1715101dc5df4">ldmx::EventPrintPlugin</a>, <a class="el" href="classldmx_1_1PhotonuclearXsecBiasingPlugin.html#a3e9c1b7204ca025373982a1635306fce">ldmx::PhotonuclearXsecBiasingPlugin</a>, <a class="el" href="classldmx_1_1TrackFilterPlugin.html#a0485a794f357be44f923ba5d62f9d9b6">ldmx::TrackFilterPlugin</a>, <a class="el" href="classldmx_1_1TrackKiller.html#a6cc5ef75a17c26f4a22cf613cab04f1a">ldmx::TrackKiller</a>, and <a class="el" href="classldmx_1_1TrackSaver.html#ad50209ff76c66159fb8f9d83bb74dddf">ldmx::TrackSaver</a>.</p>
 
 <p>Referenced by <a class="el" href="PluginLoader_8cxx_source.html#l00053">ldmx::PluginLoader::destroy()</a>, <a class="el" href="UserActionPluginMessenger_8cxx_source.html#l00018">ldmx::UserActionPluginMessenger::SetNewValue()</a>, and <a class="el" href="UserActionPluginMessenger_8cxx_source.html#l00005">ldmx::UserActionPluginMessenger::UserActionPluginMessenger()</a>.</p>
 
@@ -421,7 +421,7 @@ Public Member Functions</h2></td></tr>
 <p>Get whether this plugin implements the tracking action. </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>True if the plugin implements the tracking action. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classldmx_1_1EcalProcessFilter.html#aedb5fa4f6f4ef5edc1638dbac747703a">ldmx::EcalProcessFilter</a>, <a class="el" href="classldmx_1_1DummySimPlugin.html#a6800077997eded5ae5848d70df3ed6a5">ldmx::DummySimPlugin</a>, <a class="el" href="classldmx_1_1TrackProcessSaver.html#ad389c1651eb8ab6e6f6195c3e76edc28">ldmx::TrackProcessSaver</a>, and <a class="el" href="classldmx_1_1TrackSaver.html#af7e94d51ba7b369253c0550134102d68">ldmx::TrackSaver</a>.</p>
+<p>Reimplemented in <a class="el" href="classldmx_1_1EcalProcessFilter.html#aedb5fa4f6f4ef5edc1638dbac747703a">ldmx::EcalProcessFilter</a>, <a class="el" href="classldmx_1_1DummySimPlugin.html#a6800077997eded5ae5848d70df3ed6a5">ldmx::DummySimPlugin</a>, <a class="el" href="classldmx_1_1TrackFilterPlugin.html#a896d89dab60a2634988b5bce001086a5">ldmx::TrackFilterPlugin</a>, and <a class="el" href="classldmx_1_1TrackSaver.html#af7e94d51ba7b369253c0550134102d68">ldmx::TrackSaver</a>.</p>
 
 <p>Definition at line <a class="el" href="UserActionPlugin_8h_source.html#l00103">103</a> of file <a class="el" href="UserActionPlugin_8h_source.html">UserActionPlugin.h</a>.</p>
 <div class="fragment"><pre class="fragment">                                             {
@@ -446,7 +446,7 @@ Public Member Functions</h2></td></tr>
 <div class="memdoc">
 <p>Post-tracking action. </p>
 
-<p>Reimplemented in <a class="el" href="classldmx_1_1EcalProcessFilter.html#afc0da733e1a15be575f224a7f6ace1d8">ldmx::EcalProcessFilter</a>, and <a class="el" href="classldmx_1_1DummySimPlugin.html#a9b39b56abe2fc2dfabdc1b96e73d7781">ldmx::DummySimPlugin</a>.</p>
+<p>Reimplemented in <a class="el" href="classldmx_1_1EcalProcessFilter.html#afc0da733e1a15be575f224a7f6ace1d8">ldmx::EcalProcessFilter</a>, <a class="el" href="classldmx_1_1DummySimPlugin.html#a9b39b56abe2fc2dfabdc1b96e73d7781">ldmx::DummySimPlugin</a>, and <a class="el" href="classldmx_1_1TrackFilterPlugin.html#a91ec962be28a706f98eded2d625d94eb">ldmx::TrackFilterPlugin</a>.</p>
 
 <p>Definition at line <a class="el" href="UserActionPlugin_8h_source.html#l00158">158</a> of file <a class="el" href="UserActionPlugin_8h_source.html">UserActionPlugin.h</a>.</p>
 <div class="fragment"><pre class="fragment">                                                      {
@@ -470,7 +470,7 @@ Public Member Functions</h2></td></tr>
 <div class="memdoc">
 <p>Pre-tracking action. </p>
 
-<p>Reimplemented in <a class="el" href="classldmx_1_1DummySimPlugin.html#a35768f23fd6ac4fefed29531624aea60">ldmx::DummySimPlugin</a>, <a class="el" href="classldmx_1_1TrackProcessSaver.html#a13373a3f96466d5a6a1a7b877dd6a7e2">ldmx::TrackProcessSaver</a>, and <a class="el" href="classldmx_1_1TrackSaver.html#ac9c93670369d9614c77b02ab8c3f6989">ldmx::TrackSaver</a>.</p>
+<p>Reimplemented in <a class="el" href="classldmx_1_1DummySimPlugin.html#a35768f23fd6ac4fefed29531624aea60">ldmx::DummySimPlugin</a>, <a class="el" href="classldmx_1_1TrackFilterPlugin.html#ab9017b91beb79c6e62b85518669ba52d">ldmx::TrackFilterPlugin</a>, and <a class="el" href="classldmx_1_1TrackSaver.html#ac9c93670369d9614c77b02ab8c3f6989">ldmx::TrackSaver</a>.</p>
 
 <p>Definition at line <a class="el" href="UserActionPlugin_8h_source.html#l00152">152</a> of file <a class="el" href="UserActionPlugin_8h_source.html">UserActionPlugin.h</a>.</p>
 <div class="fragment"><pre class="fragment">                                                     {
