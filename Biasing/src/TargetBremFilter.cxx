@@ -167,7 +167,12 @@ namespace ldmx {
             /*std::cout << "[ TargetBremFilter ]: "
                       << bremGammaTracks_.size() << " candidates were produced in the target --> Suspending primary track!"
                       << std::endl;*/
-            track->SetTrackStatus(fSuspend);   
+
+            // Check if the recoil electron should be killed.  If not, postpone 
+            // its processing until the brem gamma has been processed.
+            if (killRecoilElectron_) track->SetTrackStatus(fStopAndKill);
+            else track->SetTrackStatus(fSuspend);  
+
         } else if (step->GetPostStepPoint()->GetKineticEnergy() == 0) { 
             /*std::cout << "[ TargetBremFilter ]: "
                       << "Electron never made it out of the target --> Killing all tracks!"
