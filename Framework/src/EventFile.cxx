@@ -171,8 +171,8 @@ namespace ldmx {
             if (parent_) {
                 event_->setInputTree(parent_->tree_);
             }
-
         } else {
+            ientry_ = 0;
             event_->setInputTree(tree_);
         }
     }
