@@ -19,7 +19,10 @@
 #include "SimPlugins/UserActionPluginMessenger.h"
 
 namespace ldmx { 
-    
+   
+    // Forward declare to avoid circular dependency in headers
+    class TargetBremFilter;
+
     class TargetBremFilterMessenger : UserActionPluginMessenger {
         
         public: 
@@ -44,10 +47,7 @@ namespace ldmx {
             TargetBremFilter* filter_{nullptr};
 
             /** Command dictating whether the electron track gets killed. */
-            G4UIcmdWithoutParameter* killElectronCmd_{nullptr};
-
-            /** Flag indicating whether the electron track gets killed. */
-            bool killElectron_{false};
+            G4UIcmdWithoutParameter* killRecoilElectronCmd_{nullptr};
 
     }; // TargetBremFilterMessenger
 }
