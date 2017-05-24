@@ -15,6 +15,7 @@
 
 // STL
 #include <iostream>
+#include <unordered_set>
 
 namespace ldmx {
 
@@ -24,8 +25,7 @@ namespace ldmx {
 
         if (trackMap_.contains(trackID)) {
             if (trackMap_.hasTrajectory(trackID)) {
-                // If this track has already been processed in this method,
-                // then make sure its trajectory does not get deleted!
+                // This makes sure the tracking manager does not delete the trajectory.
                 fpTrackingManager->SetStoreTrajectory(true);
             }
         } else {
@@ -42,16 +42,20 @@ namespace ldmx {
         // Activate user plugins.
         pluginManager_->postTracking(aTrack);
 
-        // Set end point momentum on the trajectory.
-        if (fpTrackingManager->GetStoreTrajectory()) {
-           auto traj = dynamic_cast<Trajectory*>(fpTrackingManager->GimmeTrajectory());
-           traj->setEndPointMomentum(aTrack); 
-        }
-
         // Save extra trajectories on tracks that were flagged for saving during event processing.
         if (dynamic_cast<UserTrackInformation*>(aTrack->GetUserInformation())->getSaveFlag()) {
             if (!trackMap_.hasTrajectory(aTrack->GetTrackID())) {
                 storeTrajectory(aTrack);
+            }
+        }
+
+        // Set end point momentum on the trajectory.
+        if (fpTrackingManager->GetStoreTrajectory()) {
+            auto traj = dynamic_cast<Trajectory*>(fpTrackingManager->GimmeTrajectory());
+            if (traj) {
+                if (aTrack->GetTrackStatus() == G4TrackStatus::fStopAndKill) {
+                    traj->setEndPointMomentum(aTrack);
+                }
             }
         }
     }
