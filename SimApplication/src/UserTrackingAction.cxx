@@ -15,7 +15,6 @@
 
 // STL
 #include <iostream>
-#include <unordered_set>
 
 namespace ldmx {
 
