@@ -34,6 +34,11 @@ namespace ldmx {
         G4VUserPhysicsList* thePhysicsList = new FTFP_BERT;
         G4VModularPhysicsList* modularPhysicsList = dynamic_cast<G4VModularPhysicsList*>(thePhysicsList);
 
+        if (ParallelWorldMessenger::isParallelWorldEnabled()) {
+            std::cout << "[ RunManager ]: Parallel worlds physics list has been registered." << std::endl;
+            modularPhysicsList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld", true));
+        }
+
         modularPhysicsList->RegisterPhysics(new APrimePhysics);
         modularPhysicsList->RegisterPhysics(new GammaPhysics);
         //modularPhysicsList->RegisterPhysics(new TungstenIonPhysics);
