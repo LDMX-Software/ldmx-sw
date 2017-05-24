@@ -10,6 +10,8 @@
 #include "TEveBoxSet.h"
 #include "TEveRGBAPalette.h"
 
+ClassImp(ldmx::EventDisplay);
+
 // All lengths are in mm
 static const double ECAL_Z_OFFSET = 200+510.0/2;
 static const double RECOIL_SENSOR_THICKNESS = 0.52;
