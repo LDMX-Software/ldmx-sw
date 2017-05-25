@@ -45,9 +45,27 @@ namespace ldmx {
 
             /** The filter associated with this messenger. */
             TargetBremFilter* filter_{nullptr};
+            
+            /**
+             * Command allowing a user to specify the minimum energy that the
+             * brem gamma must have. 
+             */
+            G4UIcmdWithAString* bremEnergyThresholdCmd_{nullptr};
 
             /** Command dictating whether the electron track gets killed. */
-            G4UIcmdWithoutParameter* killRecoilElectronCmd_{nullptr};
+            G4UIcmdWithoutParameter* killRecoilCmd_{nullptr};
+
+            /**
+             * Command allowing a user to specify the energy threshold that the
+             * recoil electron must not exceed. 
+             */
+            G4UIcmdWithAString* recoilEnergyThresholdCmd_{nullptr};
+
+            /** 
+             * Command allowing a user to specify what volume the filter 
+             * should be applied to.
+             */
+            G4UIcmdWithAString* volumeCmd_{nullptr};
 
     }; // TargetBremFilterMessenger
 }
