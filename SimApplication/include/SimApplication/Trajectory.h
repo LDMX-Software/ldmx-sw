@@ -190,7 +190,7 @@ namespace ldmx {
                 endPointMomentum_.set(px, py, pz);
             }
 
-            const G4ThreeVector getEndPointMomentum() {
+            const G4ThreeVector& getEndPointMomentum() const {
                 return endPointMomentum_;
             }
 
