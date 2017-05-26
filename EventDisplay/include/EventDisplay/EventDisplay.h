@@ -66,6 +66,7 @@ namespace ldmx {
             TEveElementList* detector_ = new TEveElementList("Detector");
             TGTextEntry* textBox_;
 
+            ClassDef(EventDisplay, 1);
     };
 
 }
