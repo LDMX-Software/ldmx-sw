@@ -83,6 +83,9 @@ namespace ldmx {
         // Set the track ID on the hit.
         hit->setTrackID(aStep->GetTrack()->GetTrackID());
 
+        // Set the PDG code from the track.
+        hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
+
         if (this->verboseLevel > 2) {
             std::cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << subdet_ << " and layer " << layerNumber << " ..." << std::endl;
             hit->Print();
