@@ -10,7 +10,7 @@
 //------------//
 //   Geant4   //
 //------------//
-#include "G4UIcmdWithoutParameter.hh"
+#include "G4UIcmdWithAString.hh"
 
 //-------------//
 //   ldmx-sw   //
@@ -51,6 +51,14 @@ namespace ldmx {
              * should be applied to.
              */
             G4UIcmdWithAString* volumeCmd_{nullptr};
+
+            /** 
+             * Command allowing a user to specify whether a particle should 
+             * be bound to the specified volume.  If so, once the particle
+             * exits the volume it will be killed. 
+             */
+            G4UIcmdWithAString* boundCmd_{nullptr};
+
 
     }; // EcalProcessFilterMessenger
 }
