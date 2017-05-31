@@ -14,15 +14,21 @@
 //----------------//
 #include <algorithm>
 
-// Geant4
+//------------//
+//   Geant4   //
+//------------//
 #include "G4RunManager.hh"
 
-// LDMX
+//----------//
+//   LDMX   //
+//----------//
 #include "SimPlugins/UserActionPlugin.h"
 #include "Biasing/BiasingMessenger.h"
 #include "Biasing/TargetBremFilterMessenger.h"
 
 namespace ldmx {
+
+    class TargetBremFilterMessenger; 
 
     class TargetBremFilter : public UserActionPlugin {
 
@@ -87,18 +93,40 @@ namespace ldmx {
              * @param aTrack The Geant4 track.
              * @param currentTrackClass The current track classification.
              */
-            G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& currentTrackClass);
+            G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack, 
+                    const G4ClassificationOfNewTrack& currentTrackClass);
 
             /**
              *
              */
-            static std::vector<G4Track*> getBremGammaList() { return bremGammaTracks_; };
+            static std::vector<G4Track*> getBremGammaList() { return bremGammaTracks_; }
 
             /** 
              * Enable/disable killing of the recoil electron track.  If the 
              * recoil track is killed, only the brem gamma is propagated.
              */
-            void setKillRecoilElectron(bool killRecoilElectron) { killRecoilElectron_ = killRecoilElectron; };
+            void setKillRecoilElectron(bool killRecoilElectron) { 
+                killRecoilElectron_ = killRecoilElectron; 
+            }
+
+            /** 
+             * @param volume Set the volume that the filter will be applied to. 
+             */
+            void setVolume(std::string volumeName) { volumeName_ = volumeName; }; 
+
+            /**
+             * Set the energy threshold that the recoil electron must exceed.
+             */
+            void setRecoilEnergyThreshold(double recoilEnergyThreshold) { 
+                recoilEnergyThreshold_ = recoilEnergyThreshold; 
+            }
+
+            /**
+             * Set the minimum energy that the brem gamma must have.
+             */
+            void setBremEnergyThreshold(double bremEnergyThreshold) { 
+                bremEnergyThreshold_ = bremEnergyThreshold; 
+            }
 
             /**
              *
@@ -108,15 +136,18 @@ namespace ldmx {
         private:
             
             /** Messenger used to pass arguments to this class. */
-            //TargetBremFilterMessenger* messenger_{new TargetBremFilterMessenger{this}};
+            TargetBremFilterMessenger* messenger_{nullptr};
 
             static std::vector<G4Track*> bremGammaTracks_; 
 
-            /** The volume name of the LDMX target. */
+            /** The volume that the filter will be applied to. */
             G4String volumeName_{"target_PV"};
 
             /** Recoil electron threshold. */
-            double recoilElectronThreshold_{1500}; // MeV
+            double recoilEnergyThreshold_{1500}; // MeV
+
+            /** Brem gamma energy treshold. */
+            double bremEnergyThreshold_{0}; 
 
             /** Flag indicating if the recoil electron track should be killed. */
             bool killRecoilElectron_{false};
