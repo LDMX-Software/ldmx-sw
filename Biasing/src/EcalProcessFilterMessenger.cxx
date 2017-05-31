@@ -12,6 +12,13 @@ namespace ldmx {
     EcalProcessFilterMessenger::EcalProcessFilterMessenger(EcalProcessFilter* filter) :
         UserActionPluginMessenger(filter), filter_(filter) {
 
+            boundCmd_ 
+                = new G4UIcmdWithAString{std::string(getPath() + "bound_volume").c_str(), this};
+            boundCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit,
+                    G4ApplicationState::G4State_Idle);
+            boundCmd_->SetGuidance("Bound a particle to the given volume."); 
+
+
             volumeCmd_ = new G4UIcmdWithAString{std::string(getPath() + "volume").c_str(), this};
             volumeCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit,
                                            G4ApplicationState::G4State_Idle);
@@ -23,6 +30,7 @@ namespace ldmx {
     }
 
     void EcalProcessFilterMessenger::SetNewValue(G4UIcommand* command, G4String newValue) {
-        if (command == volumeCmd_) filter_->addVolume(newValue); 
+        if (command == volumeCmd_) filter_->addVolume(newValue);
+        else if (command == boundCmd_) filter_->addBoundingVolume(newValue); 
     }
 }
