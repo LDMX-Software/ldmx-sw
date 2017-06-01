@@ -13,11 +13,11 @@
         <constant name="ecal_front_z" value="20.0*cm"/>
 
         <!-- Dimensions of the scoring planes -->
-        <constant name="sp_thickness" value=".1*mm"/>
+        <constant name="sp_thickness" value="0.1*mm"/>
         <constant name="sp_ecal_front_xy" value="4.0*m"/>
 
         <!-- Scoring plane positions -->
-        <position name="sp_ecal_front_pos" x="0.0" y="0.0" z="ecal_front_z + (sp_thickness/2)" />
+        <position name="sp_ecal_front_pos" x="0.0" y="0.0" z="ecal_front_z - (sp_thickness/2)" />
     </define>
 
     <materials>
@@ -36,12 +36,12 @@
         <volume name="sp_ecal_front">
             <materialref ref="Vacuum" />
             <solidref ref="sp_ecal_front_box" />
-            <auxilary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
         </volume>
         <volume name="SP_World">
             <materialref ref="Vacuum" />
             <solidref ref="world_box" />
-            <physvol copynumber="1">
+            <physvol copynumber="10">
                 <volumeref ref="sp_ecal_front" />
                 <positionref ref="sp_ecal_front_pos" />
                 <rotationref ref="identity" />
