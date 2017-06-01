@@ -16,6 +16,7 @@
 #include "FTFP_BERT.hh"
 #include "G4GenericBiasingPhysics.hh"
 #include "G4VModularPhysicsList.hh"
+#include "G4ParallelWorldPhysics.hh"
 
 namespace ldmx {
 
