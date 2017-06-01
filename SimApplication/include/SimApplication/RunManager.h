@@ -22,8 +22,8 @@
 
 namespace ldmx {
 
-    // Forward declaration
-    //class DetectorConstruction;
+    // Forward declare to avoid circular dependency in headers
+    class ParallelWorldMessenger; 
 
     /**
      * @class RunManager
@@ -61,6 +61,14 @@ namespace ldmx {
                 return (DetectorConstruction*) this->userDetector;
             }
 
+            /** Enable a parallel world. */
+            void enableParallelWorld(bool isPWEnabled) { isPWEnabled_ = isPWEnabled; }
+
+            /** Set the path to the GDML description of the parallel world. */
+            void setParallelWorldPath(std::string parallelWorldPath) {
+                parallelWorldPath_ = parallelWorldPath; 
+            }
+
         private:
 
             /** Plugin messenger. */
@@ -70,13 +78,21 @@ namespace ldmx {
             BiasingMessenger* biasingMessenger_ {new BiasingMessenger()};
 
             /** Parallel world messenger. */
-            ParallelWorldMessenger* pwMessenger_{new ParallelWorldMessenger()};
+            ParallelWorldMessenger* pwMessenger_{nullptr};
 
             /**
              * Manager of sim plugins.
              */
-            PluginManager* pluginManager_;
+            PluginManager* pluginManager_{nullptr};
 
+            /** 
+             * Flag indicating whether a parallel world should be 
+             * registered 
+             */
+            bool isPWEnabled_{false};
+
+            /** Path to GDML description of parallel world. */
+            std::string parallelWorldPath_{""};
     };
 // RunManager
 
