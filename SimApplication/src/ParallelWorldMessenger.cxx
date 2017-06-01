@@ -8,13 +8,8 @@
 
 namespace ldmx { 
    
-    /** Flag indicating if a parallel world should be loaded. */
-    bool ParallelWorldMessenger::enableParallelWorld_{false};
-
-    /** Path to GDML file containing the detector description. */
-    std::string ParallelWorldMessenger::gdmlPath_{""}; 
-
-    ParallelWorldMessenger::ParallelWorldMessenger() {
+    ParallelWorldMessenger::ParallelWorldMessenger(RunManager* runManager) :
+   runManager_(runManager) {
         
         pwDir_->SetGuidance("UI commands specific to parallel worlds.");
         
@@ -33,7 +28,7 @@ namespace ldmx {
 
     void ParallelWorldMessenger::SetNewValue(G4UIcommand* command, G4String newValues) { 
         
-        if (command == enablePWCmd_) enableParallelWorld_ = true;
-        else if (command == readCmd_) gdmlPath_ = newValues; 
+        if (command == enablePWCmd_) runManager_->enableParallelWorld(true);
+        else if (command == readCmd_) runManager_->setParallelWorldPath(newValues); 
     }
 }
