@@ -1,6 +1,6 @@
 /**
  * @file ParallelWorldMessnger.h
- * @brief Messenger used to pass parameters used to setup a parallel world.
+ * @brief Messenger for setting parallel world parameters.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
@@ -14,14 +14,22 @@
 #include "G4UIcmdWithAString.hh"
 #include "G4UImessenger.hh"
 
+//-------------//
+//   ldmx-sw   //
+//-------------//
+#include "SimApplication/RunManager.h"
+
 namespace ldmx { 
+
+    // Forward declare to avoid circular depedency in headers
+    class RunManager;
 
     class ParallelWorldMessenger : public G4UImessenger { 
         
         public: 
 
             /** Constructor */
-            ParallelWorldMessenger();
+            ParallelWorldMessenger(RunManager* runManager);
 
             /** Destructor */
             ~ParallelWorldMessenger(); 
@@ -29,19 +37,10 @@ namespace ldmx {
             /** */
             void SetNewValue(G4UIcommand* command, G4String newValues);
 
-            /**
-             * Method used to check if the use of a parallel world has been 
-             * enabled.
-             */
-            static bool isParallelWorldEnabled() { return enableParallelWorld_; }; 
-        
-            /**
-             * @return The path to the GDML file containing the detector
-             *         description. 
-             */
-            static std::string getDetectorPath() { return gdmlPath_; };
-
         private: 
+
+            /** Run manager */
+            RunManager* runManager_{nullptr};
 
             /** Directory containing all of the parallel world commands. */
             G4UIdirectory* pwDir_{new G4UIdirectory{"/ldmx/pw/"}};
@@ -51,12 +50,6 @@ namespace ldmx {
 
             /** Path to GDML file containing the detector description. */
             G4UIcmdWithAString* readCmd_{new G4UIcmdWithAString{"/ldmx/pw/read", this}};
-
-            /** Flag indicating if a parallel world should be loaded. */
-            static bool enableParallelWorld_;
-
-            /** Path to GDML file containing the detector description. */
-            static std::string gdmlPath_; 
 
     }; // ParallelWorldMessenger
 }
