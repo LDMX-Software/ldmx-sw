@@ -9,15 +9,44 @@
         <!-- Dimension of world box side -->
         <constant name="world_dim" value="5.0*m"/>
         
+        <!-- Thickness of the Ecal -->
+        <constant name="ecal_thickness" value="32.60*cm"/>
+        <!-- Hcal thickness -->
+        <constant name="hcal_thickness" value="332.60*cm"/>
         <!-- Position of the front face of the Ecal -->
         <constant name="ecal_front_z" value="20.0*cm"/>
+        <!-- Position of the back face of the Ecal -->
+        <constant name="ecal_back_z" value="20.0*cm + ecal_thickness" />
+        <!-- Starting position of the top Ecal SP -->
+        <constant name="ecal_top_y" value="52.5/2*cm" />
+        <!-- Starting position of the bot Ecal SP -->
+        <constant name="ecal_bot_y" value="-52.5/2*cm" />
+        <!-- Starting position of the left Ecal SP -->
+        <constant name="ecal_left_x" value="-52.5/2*cm" />
+        <!-- Starting position of the right Ecal SP -->
+        <constant name="ecal_bot_x" value="52.5/2*cm" />
+        <!-- Position of the back face of the Hcal -->
+        <constant name="hcal_back_z" value="ecal_front_z + hcal_thickness" />
+
+        <!-- Z position of the target -->
+        <constant name="target_z" value="0.0*mm"/>
+        <!-- Thickness of the target -->
+        <constant name="target_thickness" value="1.1*mm"/>
 
         <!-- Dimensions of the scoring planes -->
         <constant name="sp_thickness" value="0.1*mm"/>
-        <constant name="sp_ecal_front_xy" value="4.0*m"/>
+        <constant name="sp_xy" value="4.0*m"/>
 
         <!-- Scoring plane positions -->
+        <position name="sp_ecal_back_pos" x="0.0" y="0.0" z="ecal_back_z + (sp_thickness/2)" />
         <position name="sp_ecal_front_pos" x="0.0" y="0.0" z="ecal_front_z - (sp_thickness/2)" />
+        <position name="sp_ecal_top_pos" x="0.0" y="ecal_top_y + (sp_thickness/2)" z="world_dim/2" />
+        <position name="sp_ecal_bot_pos" x="0.0" y="ecal_bot_y - (sp_thickness/2)" z="world_dim/2" />
+        <position name="sp_ecal_left_pos" x="ecal_left_x + (sp_thickness/2)" y="0.0" z="world_dim/2" />
+        <position name="sp_ecal_right_pos" x="ecal_bot_x - (sp_thickness/2)" y="0.0" z="world_dim/2" />
+        <position name="sp_hcal_back_pos" x="0.0" y="0.0" z="hcal_back_z + (sp_thickness/2)" />
+        <position name="sp_target_back_pos" x="0.0" y="0.0" z="target_z + (target_thickness/2) + (sp_thickness/2)" />
+        <position name="sp_target_front_pos" x="0.0" y="0.0" z="target_z - (target_thickness/2) - (sp_thickness/2)" />
     </define>
 
     <materials>
@@ -29,7 +58,15 @@
 
     <solids>
         <box name="world_box" x="world_dim" y="world_dim" z="world_dim"/>
-        <box name="sp_ecal_front_box" x="sp_ecal_front_xy" y="sp_ecal_front_xy" z="sp_thickness" />
+        <box name="sp_ecal_front_box"   x="sp_xy" y="sp_xy" z="sp_thickness" />
+        <box name="sp_ecal_back_box"    x="sp_xy" y="sp_xy" z="sp_thickness" />
+        <box name="sp_ecal_top_box"     x="sp_xy" y="sp_thickness" z="sp_xy" />
+        <box name="sp_ecal_bot_box"     x="sp_xy" y="sp_thickness" z="sp_xy" />
+        <box name="sp_ecal_left_box"    x="sp_thickness" y="sp_xy" z="sp_xy" />
+        <box name="sp_ecal_right_box"   x="sp_thickness" y="sp_xy" z="sp_xy" />
+        <box name="sp_hcal_back_box"    x="sp_xy" y="sp_xy" z="sp_thickness" />
+        <box name="sp_target_front_box" x="sp_xy" y="sp_xy" z="sp_thickness" />
+        <box name="sp_target_back_box"  x="sp_xy" y="sp_xy" z="sp_thickness" />
     </solids>
 
     <structure>
@@ -38,14 +75,94 @@
             <solidref ref="sp_ecal_front_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
         </volume>
+        <volume name="sp_ecal_back">
+            <materialref ref="Vacuum" />
+            <solidref ref="sp_ecal_back_box" />
+            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+        </volume>
+        <volume name="sp_hcal_back">
+            <materialref ref="Vacuum" />
+            <solidref ref="sp_hcal_back_box" />
+            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+        </volume>
+        <volume name="sp_target_front">
+            <materialref ref="Vacuum" />
+            <solidref ref="sp_target_front_box" />
+            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+        </volume> 
+        <volume name="sp_target_back">
+            <materialref ref="Vacuum" />
+            <solidref ref="sp_target_back_box" />
+            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+        </volume>
+        <volume name="sp_ecal_top">
+            <materialref ref="Vacuum" />
+            <solidref ref="sp_ecal_top_box" />
+            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+        </volume>
+        <volume name="sp_ecal_bot">
+            <materialref ref="Vacuum" />
+            <solidref ref="sp_ecal_bot_box" />
+            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+        </volume>
+        <volume name="sp_ecal_left">
+            <materialref ref="Vacuum" />
+            <solidref ref="sp_ecal_left_box" />
+            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+        </volume>
+        <volume name="sp_ecal_right">
+            <materialref ref="Vacuum" />
+            <solidref ref="sp_ecal_right_box" />
+            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+        </volume>
         <volume name="SP_World">
             <materialref ref="Vacuum" />
             <solidref ref="world_box" />
-            <physvol copynumber="10">
+            <physvol copynumber="100">
                 <volumeref ref="sp_ecal_front" />
                 <positionref ref="sp_ecal_front_pos" />
                 <rotationref ref="identity" />
             </physvol>
+            <physvol copynumber="101">
+                <volumeref ref="sp_ecal_back" />
+                <positionref ref="sp_ecal_back_pos" />
+                <rotationref ref="identity" />
+            </physvol>
+            <physvol copynumber="102">
+                <volumeref ref="sp_hcal_back" />
+                <positionref ref="sp_hcal_back_pos" />
+                <rotationref ref="identity" />
+            </physvol> 
+            <physvol copynumber="103">
+                <volumeref ref="sp_target_front" />
+                <positionref ref="sp_target_front_pos" />
+                <rotationref ref="identity" />
+            </physvol>
+            <physvol copynumber="104">
+                <volumeref ref="sp_target_back" />
+                <positionref ref="sp_target_back_pos" />
+                <rotationref ref="identity" />
+            </physvol> 
+            <physvol copynumber="105">
+                <volumeref ref="sp_ecal_top" />
+                <positionref ref="sp_ecal_top_pos" />
+                <rotationref ref="identity" />
+            </physvol>
+            <physvol copynumber="106">
+                <volumeref ref="sp_ecal_bot" />
+                <positionref ref="sp_ecal_bot_pos" />
+                <rotationref ref="identity" />
+            </physvol> 
+            <physvol copynumber="107">
+                <volumeref ref="sp_ecal_left" />
+                <positionref ref="sp_ecal_left_pos" />
+                <rotationref ref="identity" />
+            </physvol>
+            <physvol copynumber="108">
+                <volumeref ref="sp_ecal_right" />
+                <positionref ref="sp_ecal_right_pos" />
+                <rotationref ref="identity" />
+            </physvol> 
         </volume>
     </structure>
 

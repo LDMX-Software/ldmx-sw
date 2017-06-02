@@ -38,7 +38,7 @@ namespace ldmx {
 
         if (isPWEnabled_) {
             std::cout << "[ RunManager ]: Parallel worlds physics list has been registered." << std::endl;
-            modularPhysicsList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld", true));
+            modularPhysicsList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
         }
 
         modularPhysicsList->RegisterPhysics(new APrimePhysics);
