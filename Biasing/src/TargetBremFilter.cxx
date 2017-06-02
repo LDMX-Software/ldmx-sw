@@ -1,4 +1,4 @@
-/**
+/*
  * @file TargetBremFilter.cxx
  * @class TargetBremFilter
  * @brief Class defining a UserActionPlugin that allows a user to filter out 
@@ -21,6 +21,7 @@ namespace ldmx {
     }
 
     TargetBremFilter::TargetBremFilter() {
+        messenger_ = new TargetBremFilterMessenger(this);
     }
 
     TargetBremFilter::~TargetBremFilter() {
@@ -30,9 +31,9 @@ namespace ldmx {
             const G4Track* track, 
             const G4ClassificationOfNewTrack& currentTrackClass) {
 
-        /*std::cout << "********************************" << std::endl; 
-        std::cout << "*   Track pushed to the stack  *" << std::endl;
-        std::cout << "********************************" << std::endl;*/
+        /*std::cout << "********************************" << std::endl;*/ 
+        /*std::cout << "*   Track pushed to the stack  *" << std::endl;*/
+        /*std::cout << "********************************" << std::endl;*/
 
         // get the PDGID of the track.
         G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
@@ -50,7 +51,7 @@ namespace ldmx {
         G4ClassificationOfNewTrack classification = currentTrackClass;
 
         if (track->GetTrackID() == 1 && pdgID == 11) {
-            //std::cout << "[ TargetBremFilter ]: Pushing track to waiting stack." << std::endl;
+            ///*std::cout << "[ TargetBremFilter ]: Pushing track to waiting stack." << std::endl;*/
             return fWaiting; 
         }
 
@@ -71,22 +72,18 @@ namespace ldmx {
         // Make sure that the particle being processed is an electron.
         if (pdgID != 11) return; // Throw an exception
 
-        /*std::cout << "*******************************" << std::endl;*/ 
-        /*std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;*/
-        /*std::cout << "********************************" << std::endl;*/
-
         // Get the volume the particle is in.
         G4VPhysicalVolume* volume = track->GetVolume();
         G4String volumeName = volume->GetName();
-       
-        // If the particle isn't in the target, don't continue with the processing.
-        if (volumeName.compareTo(volumeName_) != 0) return;
 
         // Get the particle type.
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
 
         // Get the kinetic energy of the particle.
         //double incidentParticleEnergy = step->GetPostStepPoint()->GetTotalEnergy();
+        /*std::cout << "*******************************" << std::endl;*/ 
+        /*std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;*/
+        /*std::cout << "********************************" << std::endl;*/
 
         /*std::cout << "[ TargetBremFilter ]: " << "\n" 
                     << "\tTotal energy of " << particleName      << " ( PDG ID: " << pdgID
@@ -96,6 +93,9 @@ namespace ldmx {
                     << "\tParticle currently in " << volumeName  
                     << "\tPost step process: " << step->GetPostStepPoint()->GetStepStatus() 
                     << std::endl;*/
+ 
+        // If the particle isn't in the target, don't continue with the processing.
+        if (volumeName.compareTo(volumeName_) != 0) return;
 
         // Check if the particle is exiting the volume.
         if (step->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) { 
@@ -104,14 +104,14 @@ namespace ldmx {
             TargetBremFilter::bremGammaTracks_.clear();
 
             /*std::cout << "[ TargetBremFilter ]: "
-                      << "Particle " << particleName << "is leaving the "
-                      << volumeName << " volume with momentum "
-                      << track->GetMomentum().mag() << std::endl;*/
+                        << "Particle " << particleName << "is leaving the "
+                        << volumeName << " volume with momentum "
+                        << track->GetMomentum().mag() << std::endl;*/
             
-            if (track->GetMomentum().mag() >= recoilElectronThreshold_) { 
+            if (track->GetMomentum().mag() >= recoilEnergyThreshold_) { 
                 /*std::cout << "[ TargetBremFilter ]: "
-                          << "Electron energy is above threshold --> Aborting event."
-                          << std::endl;*/
+                            << "Electron energy is above threshold --> Aborting event."
+                            << std::endl;*/
                 
                 track->SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()->AbortEvent();
@@ -123,16 +123,16 @@ namespace ldmx {
             const G4TrackVector* secondaries = step->GetSecondary();
            
             /*std::cout << "[ TargetBremFilter ]: "
-                      << "Incident " << particleName  << " produced " << secondaries->size() 
-                      << " secondaries." << std::endl;*/
+                        << "Incident " << particleName  << " produced " << secondaries->size() 
+                        << " secondaries." << std::endl;*/
            
           
             // If the particle didn't produce any secondaries, stop processing
             // the event.
             if (secondaries->size() == 0) { 
                 /*std::cout << "[ TargetBremFilter ]: "
-                          << "Primary did not produce secondaries --> Killing primary track!" 
-                          << std::endl;*/
+                            << "Primary did not produce secondaries --> Killing primary track!" 
+                            << std::endl;*/
                 
                 track->SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()->AbortEvent();
@@ -143,12 +143,12 @@ namespace ldmx {
             for (auto& secondary_track : *secondaries) {
                 G4String processName = secondary_track->GetCreatorProcess()->GetProcessName();
                 /*std::cout << "[ TargetBremFilter ]: "
-                          << "Secondary produced via process " << processName 
-                          << std::endl;*/
+                            << "Secondary produced via process " << processName 
+                            << std::endl;*/
                 if (processName.compareTo("eBrem") == 0 
-                        && secondary_track->GetKineticEnergy() > BiasingMessenger::getThreshold()) {
+                        && secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
                     /*std::cout << "[ TargetBremFilter ]: " 
-                              << "Adding secondary to brem list." << std::endl;*/
+                                << "Adding secondary to brem list." << std::endl;*/
                     TargetBremFilter::bremGammaTracks_.push_back(secondary_track); 
                     hasBremCandidate = true;
                 } 
@@ -156,22 +156,27 @@ namespace ldmx {
 
             if (!hasBremCandidate) { 
                 /*std::cout << "[ TargetBremFilter ]: "
-                          << "The secondaries are not a result of Brem. --> Killing all tracks!"
-                          << std::endl;*/
+                            << "The secondaries are not a result of Brem. --> Killing all tracks!"
+                            << std::endl;*/
 
                 track->SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()->AbortEvent();
                 return;
             }
 
-            /*std::cout << "[ TargetBremFilter ]: "
-                      << bremGammaTracks_.size() << " candidates were produced in the target --> Suspending primary track!"
-                      << std::endl;*/
-            track->SetTrackStatus(fSuspend);   
+            // Check if the recoil electron should be killed.  If not, postpone 
+            // its processing until the brem gamma has been processed.
+            if (killRecoilElectron_) { 
+                /*std::cout << "[ TargetBremFilter ]: Killing electron track."
+                            << std::endl;*/ 
+
+                track->SetTrackStatus(fStopAndKill);
+            } else track->SetTrackStatus(fSuspend);  
+
         } else if (step->GetPostStepPoint()->GetKineticEnergy() == 0) { 
             /*std::cout << "[ TargetBremFilter ]: "
-                      << "Electron never made it out of the target --> Killing all tracks!"
-                      << std::endl;*/
+                        << "Electron never made it out of the target --> Killing all tracks!"
+                        << std::endl;*/
 
             track->SetTrackStatus(fKillTrackAndSecondaries);
             G4RunManager::GetRunManager()->AbortEvent();
