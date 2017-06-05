@@ -51,12 +51,9 @@ namespace ldmx {
         private:
             bool verbose_{false}; 
 
-            /** Threshold for W_p above which to calculate a weight */
             double wpThreshold_;
 
-            /** Object to hold results and variables */
             PnWeightResult result_;
-
     };
 }
 

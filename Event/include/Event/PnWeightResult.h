@@ -45,17 +45,25 @@ namespace ldmx {
                 return weight_;
             }
 
+            double getTest() {
+                return test_;
+            }
+
             void setWeight(double inWeight) {
                 weight_ = inWeight;
             }
 
+            void setTest(double inTest) {
+                test_ = inTest;
+            }
 
         private:
 
             /** Calculated PN weight */
-            double weight_{1.};
+            double weight_ = 1.;
+            double test_ = 0.5;
 
-            ClassDef(PnWeightResult, 2);
+            ClassDef(PnWeightResult, 1);
     };
 }
 
