@@ -27,8 +27,20 @@ namespace ldmx {
     }
 
     void PrimaryGeneratorAction::setPrimaryGenerator(G4VPrimaryGenerator* aGenerator) {
-        // PrimaryGeneratorAction::generator_ = aGenerator;
+       
+        // the other generators don't place nice with G4ParticleGun, so
+        // if there is already a generator and it's the G4ParticleGun just clear the vector	
+        bool clearGeneratorVector = false;
+        unsigned int ngens = generator_.size();
+        for (unsigned int i = 0; i < ngens; ++i){
+            if (dynamic_cast<G4ParticleGun*>(generator_[i]) !=  NULL) {
+            	clearGeneratorVector = true;
+            }
+        }
+        if (clearGeneratorVector) generator_.clear();
+
         generator_.push_back(aGenerator);
+        
     }
 
     void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
