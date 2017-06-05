@@ -19,7 +19,7 @@ namespace ldmx {
             useBeamspot_(false),
             beamspotXSize_(20.),
             beamspotYSize_(10.)  {
-      //generator_.push_back(new G4ParticleGun);
+      generator_.push_back(new G4ParticleGun());
     }
 
     PrimaryGeneratorAction::~PrimaryGeneratorAction() {

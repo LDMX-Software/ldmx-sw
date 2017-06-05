@@ -30,7 +30,7 @@ namespace ldmx {
         G4ThreeVector cur_mpg_momentum = PrimaryGeneratorMessenger::getMPGMomentum();
 
         // current number of vertices in the event! 
-        // std::cout << "number of vertices in the event! " << anEvent->GetNumberOfPrimaryVertex() << std::endl;
+        std::cout << "[MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex] number of vertices in the event! " << anEvent->GetNumberOfPrimaryVertex() << std::endl;
         int curNVertices = anEvent->GetNumberOfPrimaryVertex();
 
         double nInteractionsInput = PrimaryGeneratorMessenger::getMPGNParticles();
@@ -42,7 +42,7 @@ namespace ldmx {
         	}
         }
 
-	    // std::cout << "[MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex] number of interactions = " << nInteractions << "," << nInteractionsInput << std::endl;
+	    std::cout << "[MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex] number of interactions = " << nInteractions << "," << nInteractionsInput << std::endl;
 
         // make a for loop
         for (int i = 0; i < (nInteractions-curNVertices); ++i){
