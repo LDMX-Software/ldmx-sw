@@ -27,8 +27,7 @@ namespace ldmx {
         }
 
         process_ = BiasingMessenger::getProcess(); 
-        /*std::cout << "[ XsecBiasingOperator ]: "
-          << "Process: " << process_ << std::endl;*/ 
+        /*std::cout << "[ XsecBiasingOperator ]: "<< "Process: " << process_ << std::endl;*/ 
         const G4BiasingProcessSharedData* sharedData = G4BiasingProcessInterface::GetSharedData(processManager);
         if (sharedData) {
             for (size_t index = 0 ; index < (sharedData->GetPhysicsBiasingProcessInterfaces()).size(); ++index) {
