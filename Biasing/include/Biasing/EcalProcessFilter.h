@@ -17,6 +17,8 @@
 //------------//
 //   Geant4   //
 //------------//
+#include "G4VPhysicalVolume.hh"
+#include "G4PhysicalVolumeStore.hh"
 #include "G4RunManager.hh"
 
 //----------//
