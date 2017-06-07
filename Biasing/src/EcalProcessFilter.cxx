@@ -46,7 +46,6 @@ namespace ldmx {
 
         if (track == currentTrack_) {
             currentTrack_ = nullptr; 
-            ///*std::cout << "[ TargetBremFilter ]: Pushing track to waiting stack." << std::endl;*/
             return fWaiting; 
         }
 
@@ -253,8 +252,19 @@ namespace ldmx {
     }
 
     void EcalProcessFilter::addVolume(std::string volume) { 
+        
         std::cout << "[ EcalProcessFilter ]: Applying filter to volume " << volume << std::endl;
-        volumes_.push_back(volume);
+        if (volume.compare("ecal") == 0) { 
+            for (G4VPhysicalVolume* physVolume : *G4PhysicalVolumeStore::GetInstance()) {
+                G4String physVolumeName = physVolume->GetName();
+                if ((physVolumeName.contains("W") || physVolumeName.contains("Si")) 
+                        && physVolumeName.contains("phys")) {
+                    volumes_.push_back(physVolumeName);
+                }
+            }
+        } else { 
+            volumes_.push_back(volume);
+        } 
     }        
     
     void EcalProcessFilter::addBoundingVolume(std::string volume) { 
