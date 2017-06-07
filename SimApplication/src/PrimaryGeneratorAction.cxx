@@ -1,6 +1,7 @@
 #include "SimApplication/PrimaryGeneratorAction.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
 #include "SimApplication/PrimaryGeneratorMessenger.h"
+#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
 
 // Geant4
 #include "G4RunManager.hh"
@@ -18,7 +19,8 @@ namespace ldmx {
             random_(new TRandom),
             useBeamspot_(false),
             beamspotXSize_(20.),
-            beamspotYSize_(10.)  {
+            beamspotYSize_(10.),
+            index_mpg_(-1)  {
       generator_.push_back(new G4ParticleGun());
     }
 
@@ -39,7 +41,13 @@ namespace ldmx {
         }
         if (clearGeneratorVector) generator_.clear();
 
+        std::cout << "generator size before = " << generator_.size() << std::endl;
         generator_.push_back(aGenerator);
+        std::cout << "generator size after = " << generator_.size() << std::endl;
+
+        if ((dynamic_cast<MultiParticleGunPrimaryGenerator*>(aGenerator)) != NULL){
+            index_mpg_ = ((int) generator_.size()) - 1;
+        }
         
     }
 

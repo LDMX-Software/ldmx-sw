@@ -49,19 +49,6 @@ namespace ldmx {
                 return useRootSeed_;
             };
 
-            // /** Get the particle type (e.g. gamma, e-) for mpg */
-            // static std::string getMPGParticleType() { return particleType_; };
-        
-            /** Get the particle energy for mpg */
-            static bool getEnablePoisson() { return enablePoisson_; };
-
-            /** Get the particle energy for mpg */
-            static double getMPGNParticles() { return nParticles_; };
-            static int getMPGPdgId() { return mpg_pdgId_; };
-            static G4ThreeVector getMPGVertex() { return mpg_vertex_; };
-            static G4ThreeVector getMPGMomentum() { return mpg_momentum_; };
-
-
         private:
 
             /**
@@ -96,13 +83,9 @@ namespace ldmx {
 
             /** The command for using the multiparticle gun. */
             G4UIcmdWithoutParameter* enableMPGunCmd_ {new G4UIcmdWithoutParameter {"/ldmx/generators/mpgun/enable", this}};
-                        /** The command for using the multiparticle gun. */
+            
+            /** The command for using the multiparticle gun. */
             G4UIcmdWithoutParameter* enableMPGunPoissonCmd_ {new G4UIcmdWithoutParameter {"/ldmx/generators/mpgun/enablePoisson", this}};
-            /** Command allowing a user to specify what particle type to generate. */
-            // G4UIcmdWithAString* mpgunParticleTypeCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/particle", this}};
-            /** Command allowing a user to specify what particle type to generate. */
-            // G4UIcmdWithAString* mpgunEnergyCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/energy", this}};
-            /** Command allowing a user to specify what particle type to generate. */
             G4UIcmdWithAString* mpgunNParCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/nInteractions", this}};
             G4UIcmdWithAString* mpgunVtxCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/vertex", this}};
             G4UIcmdWithAString* mpgunPIDCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/pdgID", this}};
