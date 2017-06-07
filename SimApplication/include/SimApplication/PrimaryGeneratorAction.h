@@ -65,6 +65,10 @@ namespace ldmx {
 
             // G4VPrimaryGenerator* getPrimaryGenerator(){ return generator_; };
 
+            G4VPrimaryGenerator* getGenerator(int i){ return generator_.at(i); }
+
+            int getIndexMPG(){ return index_mpg_; }
+
         private:
 
             /**
@@ -88,7 +92,10 @@ namespace ldmx {
             
             // * Particle energy threshold. 
             double beamspotXSize_;            
-            double beamspotYSize_;            
+            double beamspotYSize_;   
+
+            //
+            int index_mpg_;          
 
     };
 

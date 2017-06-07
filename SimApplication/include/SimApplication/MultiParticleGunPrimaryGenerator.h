@@ -20,6 +20,7 @@
 
 #include "Event/EventHeader.h"
 #include "SimApplication/PrimaryGeneratorMessenger.h"
+#include <string>
 
 namespace ldmx {
 
@@ -48,6 +49,11 @@ namespace ldmx {
              */
             void GeneratePrimaryVertex(G4Event* anEvent);
 
+            void enablePoisson(){ mpg_enablePoisson_ = true; }
+            void setMpgPdgId( int iPdgid ){ mpg_pdgId_ = iPdgid; }
+            void setMpgNparticles( double iNPar ){ mpg_nparticles_ = iNPar; }
+            void setMpgVertex( G4ThreeVector iVert ){ mpg_vertex_ = iVert; }
+            void setMpgMomentum( G4ThreeVector iMom ){ mpg_momentum_ = iMom; }
 
         private:        
 
@@ -55,6 +61,12 @@ namespace ldmx {
              * The RNG
              */
             TRandom* random_;
+
+            bool mpg_enablePoisson_;
+            int mpg_pdgId_;
+            double mpg_nparticles_;
+            G4ThreeVector mpg_vertex_;
+            G4ThreeVector mpg_momentum_;
     };
 
 }
