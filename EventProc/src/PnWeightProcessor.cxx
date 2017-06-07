@@ -56,24 +56,8 @@ namespace ldmx {
         //
 
         std::cout << std::endl << std::endl << "[ pnWeightProcessor ] : survived skim: " << std::endl;
-        for(auto thing : skimEcalPN){
-          std::cout <<
-                "energy: " << thing->getEnergy() << ", " <<
-                std::endl << "PDG ID: " << thing->getPdgID() << ", " <<
-                std::endl << "time: " << thing->getTime() << ", " <<
-                std::endl << "vertex: ( " << thing->getVertex()[0] << ", " << thing->getVertex()[1] << ", " << thing->getVertex()[2] << " ), " <<
-                std::endl << "endPoint: ( " << thing->getEndPoint()[0] << ", " << thing->getEndPoint()[1]  << ", " << thing->getEndPoint()[2]  << " ), " <<
-                std::endl << "momentum: ( " << thing->getMomentum()[0] << ", " << thing->getMomentum()[1] << ", " << thing->getMomentum()[2] << " ), " <<
-                std::endl << "endPointMomentum: ( " << thing->getEndPointMomentum()[0] << ", " << thing->getEndPointMomentum()[1] << ", " << thing->getEndPointMomentum()[2] << " ), " <<
-                std::endl << "mass: " << thing->getMass() << ", " <<
-                std::endl << "nDaughters: " << thing->getDaughterCount() << ", " <<
-                std::endl << "nParents: " << thing->getParentCount() << ", " <<
-                std::endl << "processType: " << thing->getProcessType() <<
-                std::endl << std::endl;
-
-//          thing->Print();
-//            TString::Format("ptr %x, pdgid %d, start z %f, parents %d, daughters %d", thing, 
-//            thing->getPdgID(), thing->getVertex()[2], thing->getParentCount(), thing->getDaughterCount()) << std::endl;
+        for(auto skimTrack : skimEcalPN){
+            printTrack(skimTrack);
         }
 
         // calculate PN weight
@@ -97,7 +81,21 @@ namespace ldmx {
         event.addToCollection("pnWeight", result_);
     }
 
-    void PrintSimParticle(const SimParticle * 
+    void PnWeightProcessor::printTrack(SimParticle * inTrack){
+          std::cout <<
+                std::endl << "energy:      " << inTrack->getEnergy() << ", " <<
+                std::endl << "PDG ID:      " << inTrack->getPdgID() << ", " <<
+                std::endl << "time:        " << inTrack->getTime() << ", " <<
+                std::endl << "vertex:    ( " << inTrack->getVertex()[0] << ", " << inTrack->getVertex()[1] << ", " << inTrack->getVertex()[2] << " ), " <<
+                std::endl << "endPoint:  ( " << inTrack->getEndPoint()[0] << ", " << inTrack->getEndPoint()[1]  << ", " << inTrack->getEndPoint()[2]  << " ), " <<
+                std::endl << "momentum:  ( " << inTrack->getMomentum()[0] << ", " << inTrack->getMomentum()[1] << ", " << inTrack->getMomentum()[2] << " ), " <<
+                std::endl << "endPointMomentum: ( " << inTrack->getEndPointMomentum()[0] << ", " << inTrack->getEndPointMomentum()[1] << ", " << inTrack->getEndPointMomentum()[2] << " ), " <<
+                std::endl << "mass:        " << inTrack->getMass() << ", " <<
+                std::endl << "nDaughters:  " << inTrack->getDaughterCount() << ", " <<
+                std::endl << "nParents:    " << inTrack->getParentCount() << ", " <<
+                std::endl << "processType: " << inTrack->getProcessType() <<
+                std::endl << std::endl;
+    }
 
 }
 
