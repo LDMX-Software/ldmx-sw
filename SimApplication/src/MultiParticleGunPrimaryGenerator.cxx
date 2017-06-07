@@ -17,7 +17,10 @@
 namespace ldmx {
 
     MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator():
-        random_ (new TRandom){
+        random_ (new TRandom),
+        mpg_enablePoisson_ (false),
+        mpg_pdgId_ (99999),
+        mpg_nparticles_ (1.) {
     }
 
     MultiParticleGunPrimaryGenerator::~MultiParticleGunPrimaryGenerator() {
@@ -25,24 +28,21 @@ namespace ldmx {
 
     void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
-        int cur_mpg_pdgid = PrimaryGeneratorMessenger::getMPGPdgId();
-        G4ThreeVector cur_mpg_vertex = PrimaryGeneratorMessenger::getMPGVertex();
-        G4ThreeVector cur_mpg_momentum = PrimaryGeneratorMessenger::getMPGMomentum();
+        int cur_mpg_pdgid = mpg_pdgId_;
+        G4ThreeVector cur_mpg_vertex = mpg_vertex_;
+        G4ThreeVector cur_mpg_momentum = mpg_momentum_;
 
         // current number of vertices in the event! 
-        std::cout << "[MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex] number of vertices in the event! " << anEvent->GetNumberOfPrimaryVertex() << std::endl;
         int curNVertices = anEvent->GetNumberOfPrimaryVertex();
 
-        double nInteractionsInput = PrimaryGeneratorMessenger::getMPGNParticles();
+        double nInteractionsInput = mpg_nparticles_;
         int nInteractions = nInteractionsInput;
-        if (PrimaryGeneratorMessenger::getEnablePoisson()){ 
+        if (mpg_enablePoisson_){ 
 			nInteractions = 0;
 			while (nInteractions == 0){ // keep generating a random poisson until > 0, no point in generator 0 vertices...
         		nInteractions = random_->Poisson(nInteractionsInput);
         	}
         }
-
-	    std::cout << "[MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex] number of interactions = " << nInteractions << "," << nInteractionsInput << std::endl;
 
         // make a for loop
         for (int i = 0; i < (nInteractions-curNVertices); ++i){
@@ -53,10 +53,6 @@ namespace ldmx {
             
             G4PrimaryParticle* primary = new G4PrimaryParticle(cur_mpg_pdgid,cur_mpg_momentum.x(),cur_mpg_momentum.y(),cur_mpg_momentum.z());
 
-            // primary->SetPDGcode(11);
-            // primary->SetMomentum(0. * MeV, 0. * MeV, 3967.2 * MeV);
-            // primary->SetMass(511. * MeV);
-
             UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
             primaryInfo->setHepEvtStatus(1.);
             primary->SetUserInformation(primaryInfo);
@@ -65,7 +61,6 @@ namespace ldmx {
             anEvent->AddPrimaryVertex(curvertex);
 
         }      
-        // std::cout << "after mpg, number of vertices in the event! " << anEvent->GetNumberOfPrimaryVertex() << std::endl;
 
     }
 }
