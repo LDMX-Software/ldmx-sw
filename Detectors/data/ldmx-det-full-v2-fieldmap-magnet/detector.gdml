@@ -42,7 +42,10 @@
     <constant name="hadron_calorimeter_thickness" value="3326.0*mm"/>
     <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2."/>
     <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2."/>
-        
+    
+    <!-- magnet position -->
+    <constant name="magnet_pos_z" value="-40*cm" />
+
     <!-- define all subdetector positions using above Z values -->
     <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
     <position name="target_pos" x="0.0" y="0.0" z="target_z"/>
@@ -51,7 +54,8 @@
     <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
     <position name="em_calorimeter_pos" x="0.0" y="0.0" z="em_calorimeter_pos_z"/>
     <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="hadron_calorimeter_pos_z"/>
-    
+    <position name="magnet_pos" x="0.0" y="0.0" z="magnet_pos_z" />
+
   </define>
 
   <materials>
@@ -180,6 +184,11 @@
       <physvol>
         <file name="hcal.gdml"/>
         <positionref ref="hadron_calorimeter_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <file name="ldmx_magnet_14in_gap.gdml"/>
+        <positionref ref="magnet_pos"/>
         <rotationref ref="identity"/>
       </physvol>
     </volume>
