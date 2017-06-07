@@ -10260,7 +10260,7 @@
    <materialref ref="G4_Al" />
    <solidref ref="ldmx_magnet_14in_gap_3" />
   </volume>
-  <volume name="World" >
+  <volume name="ldmx_magnet" >
    <materialref ref="vacuum" />
    <solidref ref="WorldBox" />
    <physvol>
@@ -10286,6 +10286,6 @@
   </volume>
  </structure>
  <setup name="Default" version="1.0" >
-  <world ref="World" />
+  <world ref="ldmx_magnet" />
  </setup>
 </gdml>
