@@ -48,6 +48,11 @@ namespace ldmx {
             */
             virtual void produce(Event& event);
 
+            /**
+            *  Print track information
+            */
+            void printTrack(SimParticle * inTrack);
+
         private:
             bool verbose_{false}; 
 
