@@ -8,13 +8,6 @@
 namespace ldmx {
 
     bool PrimaryGeneratorMessenger::useRootSeed_{false};
-    double PrimaryGeneratorMessenger::nParticles_{1.0};
-    int PrimaryGeneratorMessenger::mpg_pdgId_{11};
-    G4ThreeVector PrimaryGeneratorMessenger::mpg_vertex_{G4ThreeVector(0.,0.,0.)};
-    G4ThreeVector PrimaryGeneratorMessenger::mpg_momentum_{G4ThreeVector(0.,0.,0.)};
-    bool PrimaryGeneratorMessenger::enablePoisson_{false};
-    // std::string PrimaryGeneratorMessenger::particleType_{"e-"};
-    // double PrimaryGeneratorMessenger::particleEnergy_{4.0};
 
     PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* thePrimaryGeneratorAction) :
             primaryGeneratorAction_(thePrimaryGeneratorAction) {
@@ -45,20 +38,41 @@ namespace ldmx {
 
     void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
 
+
+
+        ///////// LHE input
         if      (command == lheOpenCmd_)            { primaryGeneratorAction_->setPrimaryGenerator(new LHEPrimaryGenerator(new LHEReader(newValues))); }
+        
+        ///////// ROOT input
         else if (command == rootOpenCmd_)           { primaryGeneratorAction_->setPrimaryGenerator(new RootPrimaryGenerator(newValues)); }
         else if (command == rootUseSeedCmd_)        { useRootSeed_ = true; }
-         
-        // else if (command == mpgunEnergyCmd_)        { particleEnergy_ = G4UIcommand::ConvertToDouble(newValues); }
-        // else if (command == mpgunParticleTypeCmd_)  { particleType_ = newValues; }
-        else if (command == enableMPGunCmd_)        { primaryGeneratorAction_->setPrimaryGenerator(new MultiParticleGunPrimaryGenerator()); }
-        else if (command == mpgunNParCmd_)          { nParticles_ = G4UIcommand::ConvertToDouble(newValues); }        
-        else if (command == enableMPGunPoissonCmd_) { enablePoisson_ = true; }
 
-        else if (command == mpgunPIDCmd_)           { mpg_pdgId_ = G4UIcommand::ConvertToInt(newValues); }        
-        else if (command == mpgunVtxCmd_)           { mpg_vertex_ = G4UIcommand::ConvertToDimensioned3Vector(newValues); }        
-        else if (command == mpgunMomCmd_)           { mpg_momentum_ = G4UIcommand::ConvertToDimensioned3Vector(newValues); }        
- 
+        //////// MPGun commands
+        else if (command == enableMPGunCmd_){ 
+                                                    primaryGeneratorAction_->setPrimaryGenerator(new MultiParticleGunPrimaryGenerator());
+        }
+        else if (command == mpgunNParCmd_){ 
+                                                    int curi = primaryGeneratorAction_->getIndexMPG();
+                                                    if (curi >= 0) ( dynamic_cast<MultiParticleGunPrimaryGenerator*>(primaryGeneratorAction_->getGenerator(curi)) )->setMpgNparticles( G4UIcommand::ConvertToDouble(newValues) ); 
+        }        
+        else if (command == enableMPGunPoissonCmd_) { 
+                                                    int curi = primaryGeneratorAction_->getIndexMPG();
+                                                    if (curi >= 0) ( dynamic_cast<MultiParticleGunPrimaryGenerator*>(primaryGeneratorAction_->getGenerator(curi)) )->enablePoisson(); 
+        }
+        else if (command == mpgunPIDCmd_)           { 
+                                                    int curi = primaryGeneratorAction_->getIndexMPG();
+                                                    if (curi >= 0) ( dynamic_cast<MultiParticleGunPrimaryGenerator*>(primaryGeneratorAction_->getGenerator(curi)) )->setMpgPdgId( G4UIcommand::ConvertToInt(newValues) ); 
+        }        
+        else if (command == mpgunVtxCmd_)           { 
+                                                    int curi = primaryGeneratorAction_->getIndexMPG();
+                                                    if (curi >= 0) ( dynamic_cast<MultiParticleGunPrimaryGenerator*>(primaryGeneratorAction_->getGenerator(curi)) )->setMpgVertex( G4UIcommand::ConvertToDimensioned3Vector(newValues) ); 
+        }        
+        else if (command == mpgunMomCmd_)           { 
+                                                    int curi = primaryGeneratorAction_->getIndexMPG();
+                                                    if (curi >= 0) ( dynamic_cast<MultiParticleGunPrimaryGenerator*>(primaryGeneratorAction_->getGenerator(curi)) )->setMpgMomentum( G4UIcommand::ConvertToDimensioned3Vector(newValues) ); 
+        }        
+
+        //////// Beamspot commands    
         else if (command == enableBeamspotCmd_)     { primaryGeneratorAction_->setUseBeamspot(true); }
         else if (command == beamspotXSizeCmd_)      { primaryGeneratorAction_->setBeamspotXSize( G4UIcommand::ConvertToDouble(newValues) ); }
         else if (command == beamspotYSizeCmd_)      { primaryGeneratorAction_->setBeamspotYSize( G4UIcommand::ConvertToDouble(newValues) ); }
