@@ -47,7 +47,8 @@ namespace ldmx {
             double getFitWp() { return fitWp_; }
 
             /** Set the event weight and measured/fit wp. */
-            void setResult(double weight, double measuredWp, double wpFit);
+            void setResult(double fitWp, double ke, double measuredWp, 
+                           double theta, double weight);
 
             /** Reset the object. */
             void Clear(Option_t *option = "");
@@ -63,15 +64,21 @@ namespace ldmx {
             void Print(Option_t *option = "") const;
         
         private:
+ 
+            /** Fit Wp */
+            double fitWp_{0.0};
 
-            /** Calculated PN weight */
-            double weight_{0.0};
+            /** Kinetic energy of nucleon used to calculate Wp */
+            double ke_{0.0};
             
             /** Measured Wp */
             double measuredWp_{0.0}; 
 
-            /** Fit Wp */
-            double fitWp_{0.0};
+            /** Polar angle of nucleon used to calculate Wp */
+            double theta_{0.0}; 
+            
+            /** Calculated PN weight */
+            double weight_{0.0};
 
             ClassDef(PnWeightResult, 1);
     };
