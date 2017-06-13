@@ -1,7 +1,9 @@
 /**
  * @file pnWeightProcessor.h
- * @brief Processor that calculates pnWeight based on photonNuclear track properties.
+ * @brief Processor that calculates pnWeight based on photonNuclear track 
+ *        properties.
  * @author Alex Patterson, UCSB
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
 #ifndef EVENTPROC_PNWEIGHTPROCESSOR_H_
@@ -47,13 +49,22 @@ namespace ldmx {
             *  Run the weight calculation and create a pnWeightResult
             */
             virtual void produce(Event& event);
-
+            
             /**
-            *  Print track information
-            */
-            void printTrack(SimParticle * inTrack);
+             * Calculate the fit variable
+             *     W_p = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p)) 
+             * where 
+             *     p is the total momentum of the particle
+             *     K is its kinetic energy
+             *     p_z is the z component of the momentum
+             * all defined at the vertex.
+             *
+             * @return W_p 
+             */
+            double calculateWp(SimParticle* particle);
 
         private:
+        
             bool verbose_{false}; 
 
             double wpThreshold_;
