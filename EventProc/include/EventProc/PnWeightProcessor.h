@@ -49,16 +49,30 @@ namespace ldmx {
             *  Run the weight calculation and create a pnWeightResult
             */
             virtual void produce(Event& event);
-            
+
             /**
-             * Calculate the fit variable
-             *     W_p = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p)) 
+             * Calculate the fitted W_p defined as
+             *     W_p(fit) = c1*exp(c2*(W_p(measured) - c3))
+             * where
+             *     c1 = 1.78032e+04
+             *     c2 = -8.07561e-03
+             *     c3 = 7.91244e+02
+             * 
+             * @param wp Measured W_p.
+             * @return W_p(fit)
+             */
+            double calculateFitWp(double wp); 
+
+            /**
+             * Calculate the measured W_p defined as
+             *     W_p(measured) = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p)) 
              * where 
              *     p is the total momentum of the particle
              *     K is its kinetic energy
              *     p_z is the z component of the momentum
              * all defined at the vertex.
              *
+             * @param particle SimParticle used to calculate W_p.
              * @return W_p 
              */
             double calculateWp(SimParticle* particle);
