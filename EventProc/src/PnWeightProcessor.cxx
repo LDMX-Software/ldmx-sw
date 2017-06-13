@@ -45,7 +45,6 @@ namespace ldmx {
 
             // If the particle doesn't correspond to the recoil electron, 
             // continue to the next particle.
-            simParticle->Print();
             if ((simParticle->getPdgID() == 11) && (simParticle->getParentCount() == 0)) {
                 //std::cout << "[ pnWeightProcessor ]: Recoil electron found." << std::endl;
                 recoilElectron = simParticle; 
@@ -88,21 +87,22 @@ namespace ldmx {
 
         // 
         double weight = 1.0;
-        if (wp >= wpThreshold_) { 
-
+        double wpFit = 0.0;
+        if (wp >= wpThreshold_) {
+            wpFit = this->calculateFitWp(wp);  
+            weight = wpFit/wp; 
         } 
+        //std::cout << "[ pnWeightProcessor ] : PN weight: " << result_.getWeight() << std::endl;
+    
+        // Set the resulting weight.
+        result_.setResult(weight, wp, wpFit);
 
-        result_.setWeight(weight);
-        /*
-
-        //verbose_ = true;
-        if(verbose_) std::cout << "[ pnWeightProcessor ] : pnWeight: " << result_.getWeight() << std::endl;
-        if(verbose_) std::cout << "[ pnWeightProcessor ] : test: " << result_.getTest() << std::endl;
-        if(verbose_) std::cout << "[ pnWeightProcessor ] : wpThreshold_: " << wpThreshold_ << std::endl;
-
-        //Put it into the event
+        // Add the result to the collection     
         event.addToCollection("pnWeight", result_);
-        */
+    }
+
+    double PnWeightProcessor::calculateFitWp(double wp) { 
+        return 1.78032e+04*exp(-8.07561e-03*(wp - 7.91244e+02)); 
     }
 
     double PnWeightProcessor::calculateWp(SimParticle* particle) {
