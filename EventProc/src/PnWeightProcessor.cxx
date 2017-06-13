@@ -1,7 +1,9 @@
 /**
  * @file pnWeightProcessor.cxx
- * @brief Processor that calculates pnWeight based on photonNuclear track properties.
+ * @brief Processor that calculates pnWeight based on photonNuclear track 
+ *        properties.
  * @author Alex Patterson, UCSB
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
 #include "TString.h"
@@ -27,50 +29,71 @@ namespace ldmx {
     void PnWeightProcessor::produce(Event& event) {
         result_.Clear();
 
-        double weight = 1.;
-        double test = 2.;
-
+        // Get the collection of sim particles from the event.  If the 
+        // collection of sim particles is empty, don't process the
+        // event.
         const TClonesArray *simParticles = event.getCollection("SimParticles");
         if (simParticles->GetEntriesFast() == 0) return; 
 
-
-        // skim simParticles for PN secondaries in Ecal
-        /* TODO:
-        *   in G4HadronicProcess.hh, 121 = G4HadronicProcessType.fHadronInelastic. switch to >> simParticle.GetProcessName().compareTo("photonNuclear") <<
-        *   fetch ecal dimensions from somewhere
-        */
-        std::vector<SimParticle*> skimEcalPN;
-        for (int particleCount = 0; particleCount < simParticles->GetEntriesFast(); ++particleCount) {
+        // Loop through all of the particles and search for the recoil electron
+        // i.e. an electron which doesn't have any parents.
+        SimParticle* recoilElectron{nullptr};
+        for (int particleCount = 0; particleCount < simParticles->GetEntriesFast(); ++particleCount) { 
+            
+            // Get the nth particle from the collection of particles
             SimParticle* simParticle = static_cast<SimParticle*>(simParticles->At(particleCount));
 
-            // PN secondary originating in Ecal?
-            std::vector<double> vtx = simParticle->getVertex();
-            double vtx_z = vtx[2];
-            if(vtx_z < 200. || vtx_z > 526.) continue;
-            if(simParticle->getProcessType() != 121) continue;
-
-            skimEcalPN.push_back(simParticle);
+            // If the particle doesn't correspond to the recoil electron, 
+            // continue to the next particle.
+            simParticle->Print();
+            if ((simParticle->getPdgID() == 11) && (simParticle->getParentCount() == 0)) {
+                //std::cout << "[ pnWeightProcessor ]: Recoil electron found." << std::endl;
+                recoilElectron = simParticle; 
+                break;
+            }
         }
 
-        // second skim for hardest backwards-going nucleon
-        //
-
-        std::cout << std::endl << std::endl << "[ pnWeightProcessor ] : survived skim: " << std::endl;
-        for(auto skimTrack : skimEcalPN){
-            printTrack(skimTrack);
+        // Search for the PN gamma and use it to get the PN daughters.
+        SimParticle* pnGamma{nullptr};
+        for (int daughterCount = 0; daughterCount < recoilElectron->getDaughterCount(); ++daughterCount) {
+            SimParticle* daughter = recoilElectron->getDaughter(daughterCount);
+            if ((daughter->getDaughterCount() > 0) 
+                &&(daughter->getDaughter(0)->getProcessType() == 121)) {
+                pnGamma = daughter; 
+                break;
+            }
         }
+        
+        // For PN biased events, there should always be a gamma that 
+        // underwent a PN reaction.
+        if (pnGamma == nullptr) return; // throw a runtime exception 
+        
+        // Loop over all PN daughters and find the highest energy 
+        // back-scattered proton(nucleon?).  
+        SimParticle* nucleon{nullptr};
+        double keNucleon{0}; 
+        for (int pnDaughterCount = 0; pnDaughterCount < pnGamma->getDaughterCount(); ++pnDaughterCount) { 
+            SimParticle* pnDaughter = pnGamma->getDaughter(pnDaughterCount);
+            double ke = (pnDaughter->getEnergy() - pnDaughter->getMass());
+            if ((pnDaughter->getPdgID() == 2112) && (ke > keNucleon)) { 
+                keNucleon = ke;
+                nucleon = pnDaughter; 
+            } 
+        }  
 
-        // calculate PN weight
-     /*
-     *   fit variable W_p = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p))
-     *     where p_tot = sqrt(K^2 + 2*K*m)
-     *           K = kinetic energy of nucleon at PN vertex
-     *           p, p_z = momentum, z-component of nucleon at PN vertex
-     */
+        if (nucleon == nullptr) return; // throw a runtime exception
 
+        // Calculate W_p
+        double wp = this->calculateWp(nucleon); 
+
+        // 
+        double weight = 1.0;
+        if (wp >= wpThreshold_) { 
+
+        } 
 
         result_.setWeight(weight);
-        result_.setTest(test);
+        /*
 
         //verbose_ = true;
         if(verbose_) std::cout << "[ pnWeightProcessor ] : pnWeight: " << result_.getWeight() << std::endl;
@@ -79,24 +102,18 @@ namespace ldmx {
 
         //Put it into the event
         event.addToCollection("pnWeight", result_);
+        */
     }
 
-    void PnWeightProcessor::printTrack(SimParticle * inTrack){
-          std::cout <<
-                std::endl << "energy:      " << inTrack->getEnergy() << ", " <<
-                std::endl << "PDG ID:      " << inTrack->getPdgID() << ", " <<
-                std::endl << "time:        " << inTrack->getTime() << ", " <<
-                std::endl << "vertex:    ( " << inTrack->getVertex()[0] << ", " << inTrack->getVertex()[1] << ", " << inTrack->getVertex()[2] << " ), " <<
-                std::endl << "endPoint:  ( " << inTrack->getEndPoint()[0] << ", " << inTrack->getEndPoint()[1]  << ", " << inTrack->getEndPoint()[2]  << " ), " <<
-                std::endl << "momentum:  ( " << inTrack->getMomentum()[0] << ", " << inTrack->getMomentum()[1] << ", " << inTrack->getMomentum()[2] << " ), " <<
-                std::endl << "endPointMomentum: ( " << inTrack->getEndPointMomentum()[0] << ", " << inTrack->getEndPointMomentum()[1] << ", " << inTrack->getEndPointMomentum()[2] << " ), " <<
-                std::endl << "mass:        " << inTrack->getMass() << ", " <<
-                std::endl << "nDaughters:  " << inTrack->getDaughterCount() << ", " <<
-                std::endl << "nParents:    " << inTrack->getParentCount() << ", " <<
-                std::endl << "processType: " << inTrack->getProcessType() <<
-                std::endl << std::endl;
-    }
+    double PnWeightProcessor::calculateWp(SimParticle* particle) {
+        double px = particle->getMomentum()[0];
+        double py = particle->getMomentum()[1];
+        double pz = particle->getMomentum()[2];
+        double p = sqrt(px*px + py*py + pz*pz); 
+        double ke = particle->getEnergy() - particle->getMass();
 
+        return 0.5*(p + ke)*(1.12 - 0.5*(pz/p));
+    }
 }
 
 DECLARE_PRODUCER_NS(ldmx, PnWeightProcessor)
