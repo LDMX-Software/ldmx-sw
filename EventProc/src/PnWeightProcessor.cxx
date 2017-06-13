@@ -70,13 +70,20 @@ namespace ldmx {
         // Loop over all PN daughters and find the highest energy 
         // back-scattered proton(nucleon?).  
         SimParticle* nucleon{nullptr};
-        double keNucleon{0}; 
+        double keNucleon{0};
+        double thetaNucleon{0}; 
         for (int pnDaughterCount = 0; pnDaughterCount < pnGamma->getDaughterCount(); ++pnDaughterCount) { 
             SimParticle* pnDaughter = pnGamma->getDaughter(pnDaughterCount);
             double ke = (pnDaughter->getEnergy() - pnDaughter->getMass());
-            if ((pnDaughter->getPdgID() == 2112) && (ke > keNucleon)) { 
+            double px = pnDaughter->getMomentum()[0];
+            double py = pnDaughter->getMomentum()[1];
+            double pz = pnDaughter->getMomentum()[2];
+            double p = sqrt(px*px + py*py + pz*pz); 
+            double theta = acos(pz/p)*180.0/3.14159;
+            if ((pnDaughter->getPdgID() == 2112) && (theta > 100) && (ke > keNucleon)) { 
                 keNucleon = ke;
-                nucleon = pnDaughter; 
+                nucleon = pnDaughter;
+                thetaNucleon = theta;  
             } 
         }  
 
@@ -95,7 +102,7 @@ namespace ldmx {
         //std::cout << "[ pnWeightProcessor ] : PN weight: " << result_.getWeight() << std::endl;
     
         // Set the resulting weight.
-        result_.setResult(weight, wp, wpFit);
+        result_.setResult(wpFit, keNucleon, wp, thetaNucleon, weight);
 
         // Add the result to the collection     
         event.addToCollection("pnWeight", result_);
