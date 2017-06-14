@@ -36,15 +36,24 @@ namespace ldmx {
 
             /** Destructor */
             ~PnWeightResult();
+            
+            /** Return the fit W_p. */
+            double getFitWp() { return fitWp_; }
 
-            /** Return the calcualted PN weight associated with this event. */
-            double getWeight() { return weight_; }
+            /** 
+             * Return the kinetic energy of the nucleon used to calculate 
+             * W_p.
+             */ 
+            double getKineticEnergy() { return ke_; }
 
             /** Return the measured W_p. */
             double getMeasuredWp() { return measuredWp_; }
+           
+            /** Return the polar angle of the nucleon used to calculate W_p. */
+            double getTheta() { return theta_; }
 
-            /** Return the fit W_p. */
-            double getFitWp() { return fitWp_; }
+            /** Return the calcualted PN weight associated with this event. */
+            double getWeight() { return weight_; }
 
             /** Set the event weight and measured/fit wp. */
             void setResult(double fitWp, double ke, double measuredWp, 
