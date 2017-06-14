@@ -80,7 +80,7 @@ namespace ldmx {
             double pz = pnDaughter->getMomentum()[2];
             double p = sqrt(px*px + py*py + pz*pz); 
             double theta = acos(pz/p)*180.0/3.14159;
-            if ((pnDaughter->getPdgID() == 2112) && (theta > 100) && (ke > keNucleon)) { 
+            if ((pnDaughter->getPdgID() == 2112) && (ke > keNucleon)) { 
                 keNucleon = ke;
                 nucleon = pnDaughter;
                 thetaNucleon = theta;  
@@ -95,7 +95,7 @@ namespace ldmx {
         // 
         double weight = 1.0;
         double wpFit = 0.0;
-        if (wp >= wpThreshold_) {
+        if ((wp >= wpThreshold_ ) && (thetaNucleon > 100)) {
             wpFit = this->calculateFitWp(wp);  
             weight = wpFit/wp; 
         } 
