@@ -4,21 +4,17 @@
  *        properties.
  * @author Alex Patterson, UCSB
  * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @note
+ * pnWeightProcessor calculates an event weight which is added to the 
+ * collection as a pnWeight object. This weight is based on simParticles
+ * arising from photonNuclear reactions, and is intended to correct
+ * the simulation in the case of high-momentum, backwards-going nucleons
+ * arising from those reactions.
+ *   fit variable W_p = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p))
+ *   where p_tot = sqrt(K^2 + 2*K*m)
+ *           K = kinetic energy of nucleon at PN vertex
+ *           p, p_z = momentum, z-component of nucleon at PN vertex
  */
-
-#include "TString.h"
-#include "TRandom.h"
-#include "TFile.h"
-#include "TTree.h"
-#include "TClonesArray.h"
-
-#include "EventProc/PnWeightProcessor.h"
-#include "Event/EventConstants.h"
-#include "Event/SimCalorimeterHit.h"
-#include "DetDescr/DefaultDetectorID.h"
-
-#include <iostream>
-
 
 namespace ldmx {
 
