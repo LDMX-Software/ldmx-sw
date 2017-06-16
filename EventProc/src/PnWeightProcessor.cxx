@@ -16,6 +16,8 @@
  *           p, p_z = momentum, z-component of nucleon at PN vertex
  */
 
+#include "EventProc/PnWeightProcessor.h"
+
 namespace ldmx {
 
     void PnWeightProcessor::configure(const ParameterSet& pSet) {
