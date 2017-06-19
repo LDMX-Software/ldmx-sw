@@ -49,11 +49,11 @@ namespace ldmx {
              */
             void GeneratePrimaryVertex(G4Event* anEvent);
 
-            void enablePoisson(){ mpg_enablePoisson_ = true; }
-            void setMpgPdgId( int iPdgid ){ mpg_pdgId_ = iPdgid; }
-            void setMpgNparticles( double iNPar ){ mpg_nparticles_ = iNPar; }
-            void setMpgVertex( G4ThreeVector iVert ){ mpg_vertex_ = iVert; }
-            void setMpgMomentum( G4ThreeVector iMom ){ mpg_momentum_ = iMom; }
+            void enablePoisson() { mpg_enablePoisson_ = true; }
+            void setMpgPdgId( int iPdgid ) { mpg_pdgId_ = iPdgid; }
+            void setMpgNparticles( double iNPar ) { mpg_nparticles_ = iNPar; }
+            void setMpgVertex( G4ThreeVector iVert ) { mpg_vertex_ = iVert; }
+            void setMpgMomentum( G4ThreeVector iMom ) { mpg_momentum_ = iMom; }
 
         private:        
 
