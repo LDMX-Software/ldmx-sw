@@ -41,9 +41,7 @@ namespace ldmx {
         }
         if (clearGeneratorVector) generator_.clear();
 
-        std::cout << "generator size before = " << generator_.size() << std::endl;
         generator_.push_back(aGenerator);
-        std::cout << "generator size after = " << generator_.size() << std::endl;
 
         if ((dynamic_cast<MultiParticleGunPrimaryGenerator*>(aGenerator)) != NULL){
             index_mpg_ = ((int) generator_.size()) - 1;
@@ -54,7 +52,7 @@ namespace ldmx {
     void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
         
         unsigned int ngens = generator_.size();
-        for (unsigned int i = 0; i < ngens; ++i){
+        for (unsigned int i = 0; i < ngens; ++i) {
             generator_[i]->GeneratePrimaryVertex(event);
 
             // automatically setting genStatus to 1 for particle gun primaries
@@ -75,7 +73,7 @@ namespace ldmx {
         // std::cout << "[PrimaryGeneratorAction::GeneratePrimaries] useBeamspot_ = " << useBeamspot_ << ", " << beamspotXSize_ << ", " << beamspotYSize_ << "," << event->GetNumberOfPrimaryVertex() << std::endl;
             
         // Activate the plugin manager hook.        
-        if (event->GetNumberOfPrimaryVertex() > 0){
+        if (event->GetNumberOfPrimaryVertex() > 0) {
             if (useBeamspot_) smearingBeamspot(event);
             pluginManager_->generatePrimary(event);
         }
