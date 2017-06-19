@@ -54,18 +54,18 @@ namespace ldmx {
              * Enable beamspot smearing.
              * @param bool
              */
-            void setUseBeamspot(bool usebs){ useBeamspot_ = usebs; };
+            void setUseBeamspot(bool usebs) { useBeamspot_ = usebs; };
 
             /**
              * Set beamspot size
              * @param beamspot size
              */
-            void setBeamspotXSize(double bssize){ beamspotXSize_ = bssize; };
-            void setBeamspotYSize(double bssize){ beamspotYSize_ = bssize; };
+            void setBeamspotXSize(double bssize) { beamspotXSize_ = bssize; };
+            void setBeamspotYSize(double bssize) { beamspotYSize_ = bssize; };
 
             // G4VPrimaryGenerator* getPrimaryGenerator(){ return generator_; };
 
-            G4VPrimaryGenerator* getGenerator(int i){ return generator_.at(i); }
+            G4VPrimaryGenerator* getGenerator(int i) { return generator_.at(i); }
 
             int getIndexMPG(){ return index_mpg_; }
 
