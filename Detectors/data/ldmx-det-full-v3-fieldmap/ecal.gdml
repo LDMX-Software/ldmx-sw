@@ -22,27 +22,29 @@
     <variable name="Si_dz" value="0.5"/>
     <variable name="C_dz" value="0.35"/>
     <variable name="Air_dz" value="1.0"/>
-    <variable name="Al_dz" value="1.0"/>
+    <variable name="AirThick_dz" value="1.3"/>
+    <variable name="Al_dz" value="2.0"/>
 
     <variable name="Hex_radius" value="85."/>
     
-    <variable name="ECal_start_pos" value="-141.5"/>
+    <variable name="ECal_start_pos" value="-140."/>
     <variable name="ECal_dx" value="Hex_radius*6."/>
     <variable name="ECal_dy" value="Hex_radius*6."/>
+    <variable name="ECal_dz" value="160.0*2."/>
 
     <variable name="ecal_A_layers" value="1"/>
     <variable name="ecal_B_layers" value="1"/>
     <variable name="ecal_C_layers" value="9"/>
     <variable name="ecal_D_layers" value="5"/>    
 
-    <variable name="preshower_Thickness" value="Al_dz+2.*PCB_dz+2.*CFMix_dz+2.*CFMixThick_dz+2.*Si_dz+2.*C_dz+Air_dz"/>
-    <variable name="layer_A_Thickness" value="2.*Air_dz+2.*CFMix_dz+2.*CFMix_dz+Wthick_A_dz+2.*W_A_dz+2.*PCB_dz+2.*C_dz+2.*Si_dz"/>
+    <variable name="preshower_Thickness" value="Al_dz+2.*PCB_dz+2.*CFMix_dz+2.*CFMixThick_dz+2.*Si_dz+2.*C_dz+AirThick_dz"/>
+    <variable name="layer_A_Thickness" value="2.*Air_dz+AirThick_dz+2.*CFMix_dz+2.*CFMixThick_dz+Wthick_A_dz+2.*W_A_dz+2.*PCB_dz+2.*C_dz+2.*Si_dz"/>
     <variable name="layer_A_Start_pos" value="ECal_start_pos+preshower_Thickness"/>
-    <variable name="layer_B_Thickness" value="2.*Air_dz+2.*CFMix_dz+2.*CFMix_dz+Wthick_B_dz+2.*W_B_dz+2.*PCB_dz+2.*C_dz+2.*Si_dz"/>
+    <variable name="layer_B_Thickness" value="2.*Air_dz+AirThick_dz+2.*CFMix_dz+2.*CFMixThick_dz+Wthick_B_dz+2.*W_B_dz+2.*PCB_dz+2.*C_dz+2.*Si_dz"/>
     <variable name="layer_B_Start_pos" value="layer_A_Start_pos+layer_A_Thickness*ecal_A_layers"/>
-    <variable name="layer_C_Thickness" value="2.*Air_dz+2.*CFMix_dz+2.*CFMix_dz+Wthick_C_dz+2.*W_C_dz+2.*PCB_dz+2.*C_dz+2.*Si_dz"/>
+    <variable name="layer_C_Thickness" value="2.*Air_dz+AirThick_dz+2.*CFMix_dz+2.*CFMixThick_dz+Wthick_C_dz+2.*W_C_dz+2.*PCB_dz+2.*C_dz+2.*Si_dz"/>
     <variable name="layer_C_Start_pos" value="layer_B_Start_pos+layer_B_Thickness*ecal_B_layers"/>
-    <variable name="layer_D_Thickness" value="2.*Air_dz+2.*CFMix_dz+2.*CFMix_dz+Wthick_D_dz+2.*W_D_dz+2.*PCB_dz+2.*C_dz+2.*Si_dz"/>
+    <variable name="layer_D_Thickness" value="2.*Air_dz+AirThick_dz+2.*CFMix_dz+2.*CFMixThick_dz+Wthick_D_dz+2.*W_D_dz+2.*PCB_dz+2.*C_dz+2.*Si_dz"/>
     <variable name="layer_D_Start_pos" value="layer_C_Start_pos+layer_C_Thickness*ecal_C_layers"/>
 
   </define>
@@ -311,7 +313,7 @@
       <zplane rmax="Hex_radius" rmin="0" z="Al_dz"/>
     </polyhedra>
 
-    <box lunit="mm" name="ECal_box" x="ECal_dx+1." y="ECal_dy+1." z="ECal_start_pos*-2.+1."/>
+    <box lunit="mm" name="ECal_box" x="ECal_dx+1." y="ECal_dy+1." z="ECal_dz+1."/>
 
   </solids>
 
@@ -404,49 +406,49 @@
         <position name="PCB_physvol_PS1_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz"/>
       </physvol>      
       
-      <physvol name="CFMixThick_physvol_PS1">
-        <volumeref ref="CFMixThick_volume"/>
-        <position name="CFMixThick_physvol_PS1_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz"/>
+      <physvol name="CFMix_physvol_PS1">
+        <volumeref ref="CFMix_volume"/>
+        <position name="CFMix_physvol_PS1_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz"/>
       </physvol>
       
       <physvol name="Si_physvol_PS1" copynumber="1">
         <volumeref ref="Si_volume"/>
-        <position name="Si_physvol_PS1_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMixThick_dz"/>
+        <position name="Si_physvol_PS1_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMix_dz"/>
       </physvol>
       
-      <physvol name="CFMix_physvol_PS1">
-        <volumeref ref="CFMix_volume"/>
-        <position name="CFMix_physvol_PS1_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMixThick_dz+Si_dz"/>
+      <physvol name="CFMixThick_physvol_PS1">
+        <volumeref ref="CFMixThick_volume"/>
+        <position name="CFMixThick_physvol_PS1_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMix_dz+Si_dz"/>
       </physvol>
 
       <physvol name="C_physvol_PS1">
         <volumeref ref="C_volume"/>
-        <position name="C_physvol_PS1_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+        <position name="C_physvol_PS1_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz"/>
       </physvol>
       
       <physvol name="C_physvol_PS2">
         <volumeref ref="C_volume"/>
-        <position name="C_physvol_PS2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+Air_dz+C_dz"/>
+        <position name="C_physvol_PS2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+AirThick_dz+C_dz"/>
       </physvol>
 
-      <physvol name="CFMix_physvol_PS2">
-        <volumeref ref="CFMix_volume"/>
-        <position name="CFMix_physvol_PS2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+Air_dz+2.*C_dz"/>
+      <physvol name="CFMixThick_physvol_PS2">
+        <volumeref ref="CFMixThick_volume"/>
+        <position name="CFMixThick_physvol_PS2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+AirThick_dz+2.*C_dz"/>
       </physvol>
       
       <physvol name="Si_physvol_PS2" copynumber="2">
         <volumeref ref="Si_volume"/>
-        <position name="Si_physvol_PS2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+Air_dz+2.*C_dz+CFMix_dz"/>
+        <position name="Si_physvol_PS2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+AirThick_dz+2.*C_dz+CFMixThick_dz"/>
       </physvol>
       
-      <physvol name="CFMixThick_physvol_PS2">
-        <volumeref ref="CFMixThick_volume"/>
-        <position name="CFMixThick_physvol_PS2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+Air_dz+2.*C_dz+CFMix_dz+Si_dz"/>
+      <physvol name="CFMix_physvol_PS2">
+        <volumeref ref="CFMix_volume"/>
+        <position name="CFMix_physvol_PS2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+AirThick_dz+2.*C_dz+CFMixThick_dz+Si_dz"/>
       </physvol>
       
       <physvol name="PCB_physvol_PS2">
         <volumeref ref="PCB_volume"/>
-        <position name="PCB_physvol_PS2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+Air_dz+2.*C_dz+CFMix_dz+Si_dz+CFMixThick_dz"/>
+        <position name="PCB_physvol_PS2_pos" unit="mm" x="0" y="0" z="ECal_start_pos+Al_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+AirThick_dz+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
       </physvol>
 
       <!-- SECTION A OF THE ECAL -->
@@ -462,59 +464,59 @@
           <position name="PCB_A_physvol1_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz"/>
         </physvol>
 
-        <physvol name="CFMixThick_A_physvol1">
-          <volumeref ref="CFMixThick_volume"/>
-          <position name="CFMixThick_A_physvol1_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz"/>
+        <physvol name="CFMix_A_physvol1">
+          <volumeref ref="CFMix_volume"/>
+          <position name="CFMix_A_physvol1_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz"/>
         </physvol>
 
         <physvol name="Si_A_physvol1" copynumber="2*a+1">
           <volumeref ref="Si_volume"/>
-          <position name="Si_A_physvol1_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMixThick_dz"/>
+          <position name="Si_A_physvol1_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMix_dz"/>
         </physvol>
 
-        <physvol name="CFMix_A_physvol1">
-          <volumeref ref="CFMix_volume"/>
-          <position name="CFMix_A_physvol1_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz"/>
+        <physvol name="CFMixThick_A_physvol1">
+          <volumeref ref="CFMixThick_volume"/>
+          <position name="CFMixThick_A_physvol1_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz"/>
         </physvol>
         
         <physvol name="W_A_physvol1">
           <volumeref ref="W_A_volume"/>
-          <position name="W_A_physvol1_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+          <position name="W_A_physvol1_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz"/>
         </physvol>
         
         <physvol name="C_A_physvol1">
           <volumeref ref="C_volume"/>
-          <position name="C_A_physvol1_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_A_dz"/>
+          <position name="C_A_physvol1_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz"/>
         </physvol>
         
         <physvol name="C_A_physvol2">
           <volumeref ref="C_volume"/>
-          <position name="C_A_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_A_dz+Air_dz"/>
+          <position name="C_A_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+AirThick_dz"/>
         </physvol>
         
         <physvol name="W_A_physvol2">
           <volumeref ref="W_A_volume"/>
-          <position name="W_A_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_A_dz+Air_dz+C_dz"/>
-        </physvol>
-        
-        <physvol name="CFMix_A_physvol2">
-          <volumeref ref="CFMix_volume"/>
-          <position name="CFMix_A_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_A_dz+Air_dz+C_dz+W_A_dz"/>
-        </physvol>
-        
-        <physvol name="Si_A_physvol2" copynumber="2*a+2">
-          <volumeref ref="Si_volume"/>
-          <position name="Si_A_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_A_dz+Air_dz+C_dz+W_A_dz+CFMix_dz"/>
+          <position name="W_A_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+AirThick_dz+C_dz"/>
         </physvol>
         
         <physvol name="CFMixThick_A_physvol2">
           <volumeref ref="CFMixThick_volume"/>
-          <position name="CFMixThick_A_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_A_dz+Air_dz+C_dz+W_A_dz+CFMix_dz+Si_dz"/>
+          <position name="CFMixThick_A_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+AirThick_dz+C_dz+W_A_dz"/>
+        </physvol>
+        
+        <physvol name="Si_A_physvol2" copynumber="2*a+2">
+          <volumeref ref="Si_volume"/>
+          <position name="Si_A_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+AirThick_dz+C_dz+W_A_dz+CFMixThick_dz"/>
+        </physvol>
+        
+        <physvol name="CFMix_A_physvol2">
+          <volumeref ref="CFMix_volume"/>
+          <position name="CFMix_A_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+AirThick_dz+C_dz+W_A_dz+CFMixThick_dz+Si_dz"/>
         </physvol>
         
         <physvol name="PCB_A_physvol2">
           <volumeref ref="PCB_volume"/>
-          <position name="PCB_A_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_A_dz+Air_dz+C_dz+W_A_dz+CFMix_dz+Si_dz+CFMixThick_dz"/>
+          <position name="PCB_A_physvol2_pos" unit="mm" x="0" y="0" z="(a-1)*layer_A_Thickness+layer_A_Start_pos+Air_dz+Wthick_A_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+AirThick_dz+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
         </physvol>
 
       </loop>
@@ -532,59 +534,59 @@
           <position name="PCB_B_physvol1_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz"/>
         </physvol>
 
-        <physvol name="CFMixThick_B_physvol1">
-          <volumeref ref="CFMixThick_volume"/>
-          <position name="CFMixThick_B_physvol1_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz"/>
+        <physvol name="CFMix_B_physvol1">
+          <volumeref ref="CFMix_volume"/>
+          <position name="CFMix_B_physvol1_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz"/>
         </physvol>
 
         <physvol name="Si_B_physvol1" copynumber="2*b+2*ecal_A_layers+1">
           <volumeref ref="Si_volume"/>
-          <position name="Si_B_physvol1_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMixThick_dz"/>
+          <position name="Si_B_physvol1_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMix_dz"/>
         </physvol>
 
-        <physvol name="CFMix_B_physvol1">
-          <volumeref ref="CFMix_volume"/>
-          <position name="CFMix_B_physvol1_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz"/>
+        <physvol name="CFMixThick_B_physvol1">
+          <volumeref ref="CFMixThick_volume"/>
+          <position name="CFMixThick_B_physvol1_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz"/>
         </physvol>
         
         <physvol name="W_B_physvol1">
           <volumeref ref="W_B_volume"/>
-          <position name="W_B_physvol1_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+          <position name="W_B_physvol1_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz"/>
         </physvol>
         
         <physvol name="C_B_physvol1">
           <volumeref ref="C_volume"/>
-          <position name="C_B_physvol1_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_B_dz"/>
+          <position name="C_B_physvol1_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz"/>
         </physvol>
         
         <physvol name="C_B_physvol2">
           <volumeref ref="C_volume"/>
-          <position name="C_B_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_B_dz+Air_dz"/>
+          <position name="C_B_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+AirThick_dz"/>
         </physvol>
         
         <physvol name="W_B_physvol2">
           <volumeref ref="W_B_volume"/>
-          <position name="W_B_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_B_dz+Air_dz+C_dz"/>
-        </physvol>
-        
-        <physvol name="CFMix_B_physvol2">
-          <volumeref ref="CFMix_volume"/>
-          <position name="CFMix_B_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_B_dz+Air_dz+C_dz+W_B_dz"/>
-        </physvol>
-        
-        <physvol name="Si_B_physvol2" copynumber="2*b+2*ecal_A_layers+2">
-          <volumeref ref="Si_volume"/>
-          <position name="Si_B_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_B_dz+Air_dz+C_dz+W_B_dz+CFMix_dz"/>
+          <position name="W_B_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+AirThick_dz+C_dz"/>
         </physvol>
         
         <physvol name="CFMixThick_B_physvol2">
           <volumeref ref="CFMixThick_volume"/>
-          <position name="CFMixThick_B_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_B_dz+Air_dz+C_dz+W_B_dz+CFMix_dz+Si_dz"/>
+          <position name="CFMixThick_B_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+AirThick_dz+C_dz+W_B_dz"/>
+        </physvol>
+        
+        <physvol name="Si_B_physvol2" copynumber="2*b+2*ecal_A_layers+2">
+          <volumeref ref="Si_volume"/>
+          <position name="Si_B_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+AirThick_dz+C_dz+W_B_dz+CFMixThick_dz"/>
+        </physvol>
+        
+        <physvol name="CFMix_B_physvol2">
+          <volumeref ref="CFMix_volume"/>
+          <position name="CFMix_B_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+AirThick_dz+C_dz+W_B_dz+CFMixThick_dz+Si_dz"/>
         </physvol>
         
         <physvol name="PCB_B_physvol2">
           <volumeref ref="PCB_volume"/>
-          <position name="PCB_B_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_B_dz+Air_dz+C_dz+W_B_dz+CFMix_dz+Si_dz+CFMixThick_dz"/>
+          <position name="PCB_B_physvol2_pos" unit="mm" x="0" y="0" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+AirThick_dz+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
         </physvol>
 
       </loop>
@@ -601,59 +603,59 @@
           <position name="PCB_C_physvol1_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz"/>
         </physvol>
 
-        <physvol name="CFMixThick_C_physvol1">
-          <volumeref ref="CFMixThick_volume"/>
-          <position name="CFMixThick_C_physvol1_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz"/>
+        <physvol name="CFMix_C_physvol1">
+          <volumeref ref="CFMix_volume"/>
+          <position name="CFMix_C_physvol1_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz"/>
         </physvol>
 
         <physvol name="Si_C_physvol1" copynumber="2*c+2*ecal_B_layers+1">
           <volumeref ref="Si_volume"/>
-          <position name="Si_C_physvol1_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMixThick_dz"/>
+          <position name="Si_C_physvol1_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMix_dz"/>
         </physvol>
 
-        <physvol name="CFMix_C_physvol1">
-          <volumeref ref="CFMix_volume"/>
-          <position name="CFMix_C_physvol1_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz"/>
+        <physvol name="CFMixThick_C_physvol1">
+          <volumeref ref="CFMixThick_volume"/>
+          <position name="CFMixThick_C_physvol1_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz"/>
         </physvol>
         
         <physvol name="W_C_physvol1">
           <volumeref ref="W_C_volume"/>
-          <position name="W_C_physvol1_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+          <position name="W_C_physvol1_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz"/>
         </physvol>
         
         <physvol name="C_C_physvol1">
           <volumeref ref="C_volume"/>
-          <position name="C_C_physvol1_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_C_dz"/>
+          <position name="C_C_physvol1_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz"/>
         </physvol>
         
         <physvol name="C_C_physvol2">
           <volumeref ref="C_volume"/>
-          <position name="C_C_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_C_dz+Air_dz"/>
+          <position name="C_C_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+AirThick_dz"/>
         </physvol>
         
         <physvol name="W_C_physvol2">
           <volumeref ref="W_C_volume"/>
-          <position name="W_C_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_C_dz+Air_dz+C_dz"/>
-        </physvol>
-        
-        <physvol name="CFMix_C_physvol2">
-          <volumeref ref="CFMix_volume"/>
-          <position name="CFMix_C_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_C_dz+Air_dz+C_dz+W_C_dz"/>
-        </physvol>
-        
-        <physvol name="Si_C_physvol2" copynumber="2*c+2*ecal_B_layers+2">
-          <volumeref ref="Si_volume"/>
-          <position name="Si_C_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_C_dz+Air_dz+C_dz+W_C_dz+CFMix_dz"/>
+          <position name="W_C_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+AirThick_dz+C_dz"/>
         </physvol>
         
         <physvol name="CFMixThick_C_physvol2">
           <volumeref ref="CFMixThick_volume"/>
-          <position name="CFMixThick_C_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_C_dz+Air_dz+C_dz+W_C_dz+CFMix_dz+Si_dz"/>
+          <position name="CFMixThick_C_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+AirThick_dz+C_dz+W_C_dz"/>
+        </physvol>
+        
+        <physvol name="Si_C_physvol2" copynumber="2*c+2*ecal_B_layers+2">
+          <volumeref ref="Si_volume"/>
+          <position name="Si_C_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+AirThick_dz+C_dz+W_C_dz+CFMixThick_dz"/>
+        </physvol>
+        
+        <physvol name="CFMix_C_physvol2">
+          <volumeref ref="CFMix_volume"/>
+          <position name="CFMix_C_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+AirThick_dz+C_dz+W_C_dz+CFMixThick_dz+Si_dz"/>
         </physvol>
         
         <physvol name="PCB_C_physvol2">
           <volumeref ref="PCB_volume"/>
-          <position name="PCB_C_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_C_dz+Air_dz+C_dz+W_C_dz+CFMix_dz+Si_dz+CFMixThick_dz"/>
+          <position name="PCB_C_physvol2_pos" unit="mm" x="0" y="0" z="(c-1)*layer_C_Thickness+layer_C_Start_pos+Air_dz+Wthick_C_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+AirThick_dz+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
         </physvol>
 
       </loop>
@@ -671,59 +673,59 @@
           <position name="PCB_D_physvol1_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz"/>
         </physvol>
 
-        <physvol name="CFMixThick_D_physvol1">
-          <volumeref ref="CFMixThick_volume"/>
-          <position name="CFMixThick_D_physvol1_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz"/>
+        <physvol name="CFMix_D_physvol1">
+          <volumeref ref="CFMix_volume"/>
+          <position name="CFMix_D_physvol1_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz"/>
         </physvol>
 
         <physvol name="Si_D_physvol1" copynumber="2*d+2*ecal_C_layers+1">
           <volumeref ref="Si_volume"/>
-          <position name="Si_D_physvol1_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMixThick_dz"/>
+          <position name="Si_D_physvol1_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMix_dz"/>
         </physvol>
 
-        <physvol name="CFMix_D_physvol1">
-          <volumeref ref="CFMix_volume"/>
-          <position name="CFMix_D_physvol1_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz"/>
+        <physvol name="CFMixThick_D_physvol1">
+          <volumeref ref="CFMixThick_volume"/>
+          <position name="CFMixThick_D_physvol1_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz"/>
         </physvol>
         
         <physvol name="W_D_physvol1">
           <volumeref ref="W_D_volume"/>
-          <position name="W_D_physvol1_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
+          <position name="W_D_physvol1_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz"/>
         </physvol>
         
         <physvol name="C_D_physvol1">
           <volumeref ref="C_volume"/>
-          <position name="C_D_physvol1_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_D_dz"/>
+          <position name="C_D_physvol1_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz"/>
         </physvol>
         
         <physvol name="C_D_physvol2">
           <volumeref ref="C_volume"/>
-          <position name="C_D_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_D_dz+Air_dz"/>
+          <position name="C_D_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+AirThick_dz"/>
         </physvol>
         
         <physvol name="W_D_physvol2">
           <volumeref ref="W_D_volume"/>
-          <position name="W_D_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_D_dz+Air_dz+C_dz"/>
-        </physvol>
-        
-        <physvol name="CFMix_D_physvol2">
-          <volumeref ref="CFMix_volume"/>
-          <position name="CFMix_D_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_D_dz+Air_dz+C_dz+W_D_dz"/>
-        </physvol>
-        
-        <physvol name="Si_D_physvol2" copynumber="2*d+2*ecal_C_layers+2">
-          <volumeref ref="Si_volume"/>
-          <position name="Si_D_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_D_dz+Air_dz+C_dz+W_D_dz+CFMix_dz"/>
+          <position name="W_D_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+AirThick_dz+C_dz"/>
         </physvol>
         
         <physvol name="CFMixThick_D_physvol2">
           <volumeref ref="CFMixThick_volume"/>
-          <position name="CFMixThick_D_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_D_dz+Air_dz+C_dz+W_D_dz+CFMix_dz+Si_dz"/>
+          <position name="CFMixThick_D_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+AirThick_dz+C_dz+W_D_dz"/>
+        </physvol>
+        
+        <physvol name="Si_D_physvol2" copynumber="2*d+2*ecal_C_layers+2">
+          <volumeref ref="Si_volume"/>
+          <position name="Si_D_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+AirThick_dz+C_dz+W_D_dz+CFMixThick_dz"/>
+        </physvol>
+        
+        <physvol name="CFMix_D_physvol2">
+          <volumeref ref="CFMix_volume"/>
+          <position name="CFMix_D_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+AirThick_dz+C_dz+W_D_dz+CFMixThick_dz+Si_dz"/>
         </physvol>
         
         <physvol name="PCB_D_physvol2">
           <volumeref ref="PCB_volume"/>
-          <position name="PCB_D_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMixThick_dz+Si_dz+CFMix_dz+W_D_dz+Air_dz+C_dz+W_D_dz+CFMix_dz+Si_dz+CFMixThick_dz"/>
+          <position name="PCB_D_physvol2_pos" unit="mm" x="0" y="0" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+AirThick_dz+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz"/>
         </physvol>
 
       </loop>
