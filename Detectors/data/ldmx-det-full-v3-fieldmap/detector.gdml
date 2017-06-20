@@ -38,7 +38,7 @@
     <constant name="ecal_front_z" value="20.0*cm"/>
             
     <!-- position of calorimeter mother -->
-    <constant name="em_calorimeter_thickness" value="284.0*mm"/>
+    <constant name="em_calorimeter_thickness" value="321.0*mm"/>
     <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2."/>
         
     <!-- define all subdetector positions using above Z values -->
