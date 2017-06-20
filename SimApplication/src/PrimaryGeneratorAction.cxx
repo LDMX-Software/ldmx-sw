@@ -1,57 +1,67 @@
-#include "SimApplication/PrimaryGeneratorAction.h"
-#include "SimApplication/UserPrimaryParticleInformation.h"
-#include "SimApplication/PrimaryGeneratorMessenger.h"
+/**
+ * @file PrimaryGeneratorAction.cxx
+ * @brief Class implementing the Geant4 primary generator action
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
 
-// Geant4
-#include "G4RunManager.hh"
-#include "G4Event.hh"
-#include "G4ParticleGun.hh"
-#include "G4ParticleTable.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4SystemOfUnits.hh"
+#include "SimApplication/PrimaryGeneratorAction.h"
 
 namespace ldmx {
 
     PrimaryGeneratorAction::PrimaryGeneratorAction() :
-            G4VUserPrimaryGeneratorAction(), 
-            generator_(new G4ParticleGun), 
-            random_(new TRandom),
-            useBeamspot_(false),
-            beamspotXSize_(20.),
-            beamspotYSize_(10.)  {
+        G4VUserPrimaryGeneratorAction(), 
+        random_(new TRandom) {
+        generator_.push_back(new G4ParticleGun());
     }
 
     PrimaryGeneratorAction::~PrimaryGeneratorAction() {
-        delete generator_;
     }
 
     void PrimaryGeneratorAction::setPrimaryGenerator(G4VPrimaryGenerator* aGenerator) {
-        PrimaryGeneratorAction::generator_ = aGenerator;
+       
+        // The other generators don't play nice with G4ParticleGun, so
+        // if there is already a generator and it's the G4ParticleGun just clear the vector 
+        bool clearGeneratorVector = false;
+        unsigned int ngens = generator_.size();
+        for (unsigned int i = 0; i < ngens; ++i){
+            if (dynamic_cast<G4ParticleGun*>(generator_[i]) !=  NULL) {
+                clearGeneratorVector = true;
+            }
+        }
+        if (clearGeneratorVector) generator_.clear();
+
+        generator_.push_back(aGenerator);
+
+        if ((dynamic_cast<MultiParticleGunPrimaryGenerator*>(aGenerator)) != NULL){
+            indexMpg_ = ((int) generator_.size()) - 1;
+        }
+        
     }
 
     void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
         
-        generator_->GeneratePrimaryVertex(event);
+        unsigned int ngens = generator_.size();
+        for (unsigned int i = 0; i < ngens; ++i) {
+            generator_[i]->GeneratePrimaryVertex(event);
 
-        // automatically setting genStatus to 1 for particle gun primaries
-        if (dynamic_cast<G4ParticleGun*>(generator_) !=  NULL) {
+            // automatically setting genStatus to 1 for particle gun primaries
+            if (dynamic_cast<G4ParticleGun*>(generator_[i]) !=  NULL) {
 
-            int nPV = event->GetNumberOfPrimaryVertex();
-            for (int iPV = 0; iPV < nPV; ++iPV) {
-                G4PrimaryVertex* curPV = event->GetPrimaryVertex(iPV);
-                int nPar = curPV->GetNumberOfParticle();
-                for (int iPar = 0; iPar < nPar; ++iPar) {
-                    UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
-                    primaryInfo->setHepEvtStatus(1);
-                    curPV->GetPrimary(iPar)->SetUserInformation(primaryInfo);
+                int nPV = event->GetNumberOfPrimaryVertex();
+                for (int iPV = 0; iPV < nPV; ++iPV) {
+                    G4PrimaryVertex* curPV = event->GetPrimaryVertex(iPV);
+                    int nPar = curPV->GetNumberOfParticle();
+                    for (int iPar = 0; iPar < nPar; ++iPar) {
+                        UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
+                        primaryInfo->setHepEvtStatus(1);
+                        curPV->GetPrimary(iPar)->SetUserInformation(primaryInfo);
+                    }
                 }
             }
         }
-
-        // std::cout << "[PrimaryGeneratorAction::GeneratePrimaries] useBeamspot_ = " << useBeamspot_ << ", " << beamspotXSize_ << ", " << beamspotYSize_ << "," << event->GetNumberOfPrimaryVertex() << std::endl;
-        
+            
         // Activate the plugin manager hook.        
-        if (event->GetNumberOfPrimaryVertex() > 0){
+        if (event->GetNumberOfPrimaryVertex() > 0) {
             if (useBeamspot_) smearingBeamspot(event);
             pluginManager_->generatePrimary(event);
         }
