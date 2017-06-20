@@ -35,7 +35,7 @@ namespace ldmx {
         }
 
         // make a for loop
-        for (int i = 0; i < (nInteractions-curNVertices); ++i){
+        for (int i = 0; i < (nInteractions-curNVertices); ++i) {
 
             G4PrimaryVertex* curvertex = new G4PrimaryVertex(cur_mpg_vertex,0.); //second input is t0
             // curvertex->SetPosition(0. * mm,0. * mm,-10. * mm);
