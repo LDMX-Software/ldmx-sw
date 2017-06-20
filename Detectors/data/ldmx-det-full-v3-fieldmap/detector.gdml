@@ -145,7 +145,7 @@
       <materialref ref="Vacuum"/>
       <solidref ref="world_box"/>                      
       <physvol>
-        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/Detectors/data/ldmx-det-full-v3-fieldmap/tagger.gdml"/>
+        <file name="tagger.gdml"/>
         <positionref ref="tagger_pos"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -165,12 +165,12 @@
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/Detectors/data/ldmx-det-full-v3-fieldmap/recoil.gdml"/>
+        <file name="recoil.gdml"/>
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/Detectors/data/ldmx-det-full-v3-fieldmap/ecal.gdml"/>
+        <file name="ecal.gdml"/>
         <positionref ref="em_calorimeter_pos"/>
         <rotationref ref="identity"/>
       </physvol>
