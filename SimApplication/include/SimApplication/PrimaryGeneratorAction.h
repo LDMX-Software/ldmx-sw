@@ -7,16 +7,30 @@
 #ifndef SIMAPPLICATION_PRIMARYGENERATORACTION_H_
 #define SIMAPPLICATION_PRIMARYGENERATORACTION_H_
 
-// Geant4
-#include "G4VUserPrimaryGeneratorAction.hh"
+//------------//
+//   Geant4   //
+//------------//
+#include "G4Event.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
 #include "G4VPrimaryGenerator.hh"
+#include "G4RunManager.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4VUserPrimaryGeneratorAction.hh"
 
-// LDMX
-#include "SimPlugins/PluginManagerAccessor.h"
-
-// RNG
+//----------//
+//   ROOT   //
+//----------//
 #include "TRandom.h"
 
+//-------------//
+//   LDMX-SW   //
+//-------------//
+#include "SimPlugins/PluginManagerAccessor.h"
+#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
+#include "SimApplication/PrimaryGeneratorMessenger.h"
+#include "SimApplication/UserPrimaryParticleInformation.h"
 
 namespace ldmx {
 
@@ -57,17 +71,25 @@ namespace ldmx {
             void setUseBeamspot(bool usebs){ useBeamspot_ = usebs; };
 
             /**
-             * Set beamspot size
+             * Set beamspot size in x.
              * @param beamspot size
              */
             void setBeamspotXSize(double bssize){ beamspotXSize_ = bssize; };
+            
+            /**
+             * Set beamspot size in y.
+             * @param beamspot size
+             */
             void setBeamspotYSize(double bssize){ beamspotYSize_ = bssize; };
 
-            // G4VPrimaryGenerator* getPrimaryGenerator(){ return generator_; };
-
+            /** Return the ith generator. */ 
             G4VPrimaryGenerator* getGenerator(int i){ return generator_.at(i); }
 
-            int getIndexMPG(){ return index_mpg_; }
+            /** 
+             * Get the index of the last generator in the list of 
+             * generators.
+             */
+            int getIndexMPG(){ return indexMpg_; }
 
         private:
 
@@ -82,23 +104,24 @@ namespace ldmx {
              */
             std::vector< G4VPrimaryGenerator* > generator_;
 
-            /**
-             * The RNG
-             */
+            /** Random number generator. */
             TRandom* random_;
 
-            // * Particle energy threshold. 
-            bool useBeamspot_;
+            /** 
+             * Flag denoting whether the vertex position of a particle 
+             * should be smeared.
+             */ 
+            bool useBeamspot_{false};
             
-            // * Particle energy threshold. 
-            double beamspotXSize_;            
-            double beamspotYSize_;   
+            /** Extent of the beamspot in x. */
+            double beamspotXSize_{20.};            
+            
+            /** Extent of the beamspot in y. */
+            double beamspotYSize_{10.};   
 
-            //
-            int index_mpg_;          
+            /** The index of the last generator in the list of generators. */ 
+            int indexMpg_{-1};          
 
-    };
-
+    };  // PrimaryGeneratorAction
 }
-
-#endif
+#endif // SIMAPPLICATION_PRIMARYGENERATORACTION_H_
