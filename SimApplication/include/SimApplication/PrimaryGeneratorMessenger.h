@@ -96,16 +96,17 @@ namespace ldmx {
             
             /** The command for using the multiparticle gun. */
             G4UIcmdWithoutParameter* enableMPGunPoissonCmd_ {new G4UIcmdWithoutParameter {"/ldmx/generators/mpgun/enablePoisson", this}};
-            G4UIcmdWithAString* mpgunNParCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/nInteractions", this}};
-            G4UIcmdWithAString* mpgunVtxCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/vertex", this}};
-            G4UIcmdWithAString* mpgunPIDCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/pdgID", this}};
-            G4UIcmdWithAString* mpgunMomCmd_{new G4UIcmdWithAString{"/ldmx/generators/mpgun/momentum", this}};
+            G4UIcmdWithAString* mpgunNParCmd_ {new G4UIcmdWithAString{"/ldmx/generators/mpgun/nInteractions", this}};
+            G4UIcmdWithAString* mpgunVtxCmd_ {new G4UIcmdWithAString{"/ldmx/generators/mpgun/vertex", this}};
+            G4UIcmdWithAString* mpgunPIDCmd_ {new G4UIcmdWithAString{"/ldmx/generators/mpgun/pdgID", this}};
+            G4UIcmdWithAString* mpgunMomCmd_ {new G4UIcmdWithAString{"/ldmx/generators/mpgun/momentum", this}};
 
             /** Command allowing a user to specify what particle type to generate. */
-            G4UIcmdWithoutParameter* enableBeamspotCmd_{new G4UIcmdWithoutParameter{"/ldmx/generators/beamspot/enable", this}};
+            G4UIcmdWithoutParameter* enableBeamspotCmd_ {new G4UIcmdWithoutParameter{"/ldmx/generators/beamspot/enable", this}};
+
             /** Command allowing a user to specify what particle type to generate. */
-            G4UIcmdWithAString* beamspotXSizeCmd_{new G4UIcmdWithAString{"/ldmx/generators/beamspot/sizeX", this}};
-            G4UIcmdWithAString* beamspotYSizeCmd_{new G4UIcmdWithAString{"/ldmx/generators/beamspot/sizeY", this}};
+            G4UIcmdWithAString* beamspotXSizeCmd_ {new G4UIcmdWithAString{"/ldmx/generators/beamspot/sizeX", this}};
+            G4UIcmdWithAString* beamspotYSizeCmd_ {new G4UIcmdWithAString{"/ldmx/generators/beamspot/sizeY", this}};
 
             /**
              * FIXME: This should not be static.
