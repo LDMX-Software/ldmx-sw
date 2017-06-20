@@ -1,26 +1,16 @@
+/**
+ * @file MultiParticleGunPrimaryGenerator.cxx
+ * @brief Class for generating an event using multiple particles.
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Nhan Tran, FNAL
+ */
+
 #include "SimApplication/MultiParticleGunPrimaryGenerator.h"
-
-// Geant4
-#include "G4RunManager.hh"
-#include "G4Event.hh"
-#include "G4IonTable.hh"
-
-// LDMX
-#include "SimApplication/UserPrimaryParticleInformation.h"
-#include "Event/SimParticle.h"
-#include "Event/EventConstants.h"
-
-// Geant4
-#include "G4SystemOfUnits.hh"
-#include "G4PhysicalConstants.hh"
 
 namespace ldmx {
 
     MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator():
-        random_ (new TRandom),
-        mpg_enablePoisson_ (false),
-        mpg_pdgId_ (99999),
-        mpg_nparticles_ (1.) {
+        random_ (new TRandom) {
     }
 
     MultiParticleGunPrimaryGenerator::~MultiParticleGunPrimaryGenerator() {
@@ -28,20 +18,20 @@ namespace ldmx {
 
     void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
-        int cur_mpg_pdgid = mpg_pdgId_;
-        G4ThreeVector cur_mpg_vertex = mpg_vertex_;
-        G4ThreeVector cur_mpg_momentum = mpg_momentum_;
+        int cur_mpg_pdgid = mpgPdgID_;
+        G4ThreeVector cur_mpg_vertex = mpgVertex_;
+        G4ThreeVector cur_mpg_momentum = mpgMomentum_;
 
         // current number of vertices in the event! 
         int curNVertices = anEvent->GetNumberOfPrimaryVertex();
 
-        double nInteractionsInput = mpg_nparticles_;
+        double nInteractionsInput = mpgNParticles_;
         int nInteractions = nInteractionsInput;
-        if (mpg_enablePoisson_){ 
-			nInteractions = 0;
-			while (nInteractions == 0){ // keep generating a random poisson until > 0, no point in generator 0 vertices...
-        		nInteractions = random_->Poisson(nInteractionsInput);
-        	}
+        if (mpgEnablePoisson_){ 
+            nInteractions = 0;
+            while (nInteractions == 0){ // keep generating a random poisson until > 0, no point in generator 0 vertices...
+                nInteractions = random_->Poisson(nInteractionsInput);
+            }
         }
 
         // make a for loop
@@ -61,6 +51,5 @@ namespace ldmx {
             anEvent->AddPrimaryVertex(curvertex);
 
         }      
-
     }
 }

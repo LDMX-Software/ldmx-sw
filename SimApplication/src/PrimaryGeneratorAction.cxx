@@ -1,52 +1,39 @@
-#include "SimApplication/PrimaryGeneratorAction.h"
-#include "SimApplication/UserPrimaryParticleInformation.h"
-#include "SimApplication/PrimaryGeneratorMessenger.h"
-#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
+/**
+ * @file PrimaryGeneratorAction.cxx
+ * @brief Class implementing the Geant4 primary generator action
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
 
-// Geant4
-#include "G4RunManager.hh"
-#include "G4Event.hh"
-#include "G4ParticleGun.hh"
-#include "G4ParticleTable.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4SystemOfUnits.hh"
+#include "SimApplication/PrimaryGeneratorAction.h"
 
 namespace ldmx {
 
     PrimaryGeneratorAction::PrimaryGeneratorAction() :
-            G4VUserPrimaryGeneratorAction(), 
-            // generator_(new G4ParticleGun), 
-            random_(new TRandom),
-            useBeamspot_(false),
-            beamspotXSize_(20.),
-            beamspotYSize_(10.),
-            index_mpg_(-1)  {
-      generator_.push_back(new G4ParticleGun());
+        G4VUserPrimaryGeneratorAction(), 
+        random_(new TRandom) {
+        generator_.push_back(new G4ParticleGun());
     }
 
     PrimaryGeneratorAction::~PrimaryGeneratorAction() {
-        // delete generator_;
     }
 
     void PrimaryGeneratorAction::setPrimaryGenerator(G4VPrimaryGenerator* aGenerator) {
        
-        // the other generators don't place nice with G4ParticleGun, so
-        // if there is already a generator and it's the G4ParticleGun just clear the vector	
+        // The other generators don't play nice with G4ParticleGun, so
+        // if there is already a generator and it's the G4ParticleGun just clear the vector 
         bool clearGeneratorVector = false;
         unsigned int ngens = generator_.size();
         for (unsigned int i = 0; i < ngens; ++i){
             if (dynamic_cast<G4ParticleGun*>(generator_[i]) !=  NULL) {
-            	clearGeneratorVector = true;
+                clearGeneratorVector = true;
             }
         }
         if (clearGeneratorVector) generator_.clear();
 
-        std::cout << "generator size before = " << generator_.size() << std::endl;
         generator_.push_back(aGenerator);
-        std::cout << "generator size after = " << generator_.size() << std::endl;
 
         if ((dynamic_cast<MultiParticleGunPrimaryGenerator*>(aGenerator)) != NULL){
-            index_mpg_ = ((int) generator_.size()) - 1;
+            indexMpg_ = ((int) generator_.size()) - 1;
         }
         
     }
@@ -72,7 +59,6 @@ namespace ldmx {
                 }
             }
         }
-        // std::cout << "[PrimaryGeneratorAction::GeneratePrimaries] useBeamspot_ = " << useBeamspot_ << ", " << beamspotXSize_ << ", " << beamspotYSize_ << "," << event->GetNumberOfPrimaryVertex() << std::endl;
             
         // Activate the plugin manager hook.        
         if (event->GetNumberOfPrimaryVertex() > 0){
