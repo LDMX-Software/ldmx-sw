@@ -4,33 +4,40 @@
  *        properties.
  * @author Alex Patterson, UCSB
  * @author Omar Moreno, SLAC National Accelerator Laboratory
+ *
+ * @note
+ * pnWeightProcessor calculates an event weight which is added to the 
+ * collection as a pnWeight object. This weight is based on simParticles
+ * arising from photonNuclear reactions, and is intended to correct
+ * the simulation in the case of high-momentum, backwards-going nucleons
+ * arising from those reactions.
+ *   fit variable W_p = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p))
+ *   where p_tot = sqrt(K^2 + 2*K*m)
+ *           K = kinetic energy of nucleon at PN vertex
+ *           p, p_z = momentum, z-component of nucleon at PN vertex
  */
 
 #ifndef EVENTPROC_PNWEIGHTPROCESSOR_H_
 #define EVENTPROC_PNWEIGHTPROCESSOR_H_
 
-// LDMX
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <iostream>
+
+//----------//
+//   LDMX   //
+//----------//
 #include "Event/PnWeightResult.h"
+#include "Event/SimParticle.h"
 #include "Framework/EventProcessor.h"
 
-namespace ldmx {
+//----------//
+//   ROOT   //
+//----------//
+#include "TClonesArray.h"
 
-    /**
-     * @class pnWeightProcessor
-     * @brief Calculates pnWeight based on photonNuclear track properties.
-     *
-     * @note
-     * pnWeightProcessor calculates an event weight which is added to the 
-     * collection as a pnWeight object. This weight is based on simParticles
-     * arising from photonNuclear reactions, and is intended to correct
-     * the simulation in the case of high-momentum, backwards-going nucleons
-     * arising from those reactions.
-     *   fit variable W_p = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p))
-     *     where p_tot = sqrt(K^2 + 2*K*m)
-     *           K = kinetic energy of nucleon at PN vertex
-     *           p, p_z = momentum, z-component of nucleon at PN vertex
-     * 
-     */
+namespace ldmx {
 
     class PnWeightProcessor : public Producer {
         public:
@@ -41,13 +48,13 @@ namespace ldmx {
             virtual ~PnWeightProcessor() {}
 
             /**
-            *  Read in user-specified parameters
-            */
+             *  Read in user-specified parameters
+             */
             virtual void configure(const ParameterSet& pSet);
 
             /**
-            *  Run the weight calculation and create a pnWeightResult
-            */
+             *  Run the weight calculation and create a pnWeightResult
+             */
             virtual void produce(Event& event);
 
             /**
