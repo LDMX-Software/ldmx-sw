@@ -7,15 +7,25 @@
 #ifndef SIMAPPLICATION_PRIMARYGENERATORMESSENGER_H_
 #define SIMAPPLICATION_PRIMARYGENERATORMESSENGER_H_
 
-// Geant4
+//------------//
+//   Geant4   //
+//------------//
 #include "G4UImessenger.hh"
 #include "G4UIcmdWithoutParameter.hh"
 #include "G4UIcmdWithAString.hh"
 
-// LDMX
+//-------------//
+//   LDMX-SW   //
+//-------------//
+#include "SimApplication/LHEPrimaryGenerator.h"
+#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
 #include "SimApplication/PrimaryGeneratorAction.h"
+#include "SimApplication/RootPrimaryGenerator.h"
 
 namespace ldmx {
+
+    // Forward declare to avoid circular dependency in headers
+    class PrimaryGeneratorAction; 
 
     /**
      * @class PrimaryGeneratorMessenger
@@ -101,27 +111,7 @@ namespace ldmx {
              * FIXME: This should not be static.
              */
             static bool useRootSeed_;
-            
-            /**
-             * The number of particles to generate
-             */
-            static double nParticles_;
-
-            /**
-             * Enable poisson
-             */
-            static bool enablePoisson_;    
-
-            // // /** particle type */
-            static int mpg_pdgId_;
-            // // * Particle energy vertex. 
-            static G4ThreeVector mpg_vertex_;
-            // // * Particle momentum. 
-            static G4ThreeVector mpg_momentum_;
-
-
-    };
-
-}
-
-#endif
+    
+    }; // PrimaryGeneratorMessenger
+}  // ldmx
+#endif // SIMAPPLICATION_PRIMARYGENERATORMESSENGER_H_
