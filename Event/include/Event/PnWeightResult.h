@@ -47,7 +47,7 @@ namespace ldmx {
             double getKineticEnergy() { return ke_; }
 
             /** Return the measured W_p. */
-            double getMeasuredWp() { return measuredWp_; }
+            double getMeasuredWp() { return wp_; }
            
             /** Return the polar angle of the nucleon used to calculate W_p. */
             double getTheta() { return theta_; }
@@ -56,8 +56,11 @@ namespace ldmx {
             double getWeight() { return weight_; }
 
             /** Set the event weight and measured/fit wp. */
-            void setResult(double fitWp, double ke, double measuredWp, 
-                           double theta, double weight);
+            void setResult(
+                           double fitWp, double ke, double wp, double theta, double weight, 
+                           double fitWp_max, double ke_max, double wp_max, double theta_max, double weight_max, 
+                           double fitWp_p, double ke_p, double wp_p, double theta_p, double weight_p
+                          );
 
             /** Reset the object. */
             void Clear(Option_t *option = "");
@@ -81,13 +84,25 @@ namespace ldmx {
             double ke_{0.0};
             
             /** Measured Wp */
-            double measuredWp_{0.0}; 
+            double wp_{0.0}; 
 
             /** Polar angle of nucleon used to calculate Wp */
             double theta_{0.0}; 
             
             /** Calculated PN weight */
             double weight_{0.0};
+
+            double fitWp_max_{0.0};
+            double ke_max_{0.};
+            double wp_max_{0.};
+            double theta_max_{0.};
+            double weight_max_{0.0};
+
+            double fitWp_p_{0.0};
+            double ke_p_{0.};
+            double wp_p_{0.};
+            double theta_p_{0.};
+            double weight_p_{0.0};
 
             ClassDef(PnWeightResult, 1);
     };
