@@ -35,7 +35,7 @@ namespace ldmx {
 
         // Calculate max(Wp) over all daughers of PN reactions
         // nucleon_max = PN daughter with highest Wp
-        std::set<double> setWp;
+        //std::set<double> setWp;
         double wp_max = -1.;
         SimParticle* nucleon_max{nullptr};
         double keNucleon_max{0};
@@ -56,10 +56,10 @@ namespace ldmx {
                   nucleon_max = simParticle;
                   thetaNucleon_max = theta;
                 }
-                setWp.insert(thisWp);
+                //setWp.insert(thisWp);
             }
         }
-        double wp_max_set = *setWp.rbegin();
+        //double wp_max_set = *setWp.rbegin();
         //std::cout << TString::Format("wp_max %.3f, keNucleon_max %.3f, thetaNucleon_max %.3f", wp_max, keNucleon_max, thetaNucleon_max) << std::endl;
 
         // Loop through all of the particles and search for the recoil electron
