@@ -53,8 +53,7 @@ namespace ldmx {
                         primary->SetPDGcode(particle->getIDUP());
                     }
 
-                    primary->SetMomentum(particle->getPUP(0) * GeV, particle->getPUP(1) * GeV, particle->getPUP(2) * GeV);
-                    primary->SetMass(particle->getPUP(4) * GeV);
+                    primary->Set4Momentum(particle->getPUP(0) * GeV, particle->getPUP(1) * GeV, particle->getPUP(2) * GeV, particle->getPUP(3) * GeV);
                     primary->SetProperTime(particle->getVTIMUP() * nanosecond);
 
                     UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
