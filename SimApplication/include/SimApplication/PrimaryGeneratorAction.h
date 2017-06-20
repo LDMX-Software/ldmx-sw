@@ -68,7 +68,7 @@ namespace ldmx {
              * Enable beamspot smearing.
              * @param bool
              */
-            void setUseBeamspot(bool usebs){ useBeamspot_ = usebs; };
+            void setUseBeamspot(bool usebs) { useBeamspot_ = usebs; };
 
             /**
              * Set beamspot size in x.
