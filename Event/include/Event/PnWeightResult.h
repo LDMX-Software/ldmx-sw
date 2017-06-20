@@ -6,7 +6,6 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-
 #ifndef EVENT_PNWEIGHTRESULT_H_
 #define EVENT_PNWEIGHTRESULT_H_
 
