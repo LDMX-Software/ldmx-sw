@@ -8,6 +8,7 @@
 *.pyc
 /bin
 /lib
+/data
 /build
 /build.*
 /install
