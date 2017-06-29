@@ -37,29 +37,25 @@ namespace ldmx {
             ~PnWeightResult();
             
             /** Return the fit W_p. */
-            double getFitWp() { return fitWp_; }
+            double getFitW() { return fitW_; }
 
             /** 
-             * Return the kinetic energy of the nucleon used to calculate 
-             * W_p.
+             * Return the kinetic energy of the nucleon used to calculate W
+             *
              */ 
             double getKineticEnergy() { return ke_; }
 
-            /** Return the measured W_p. */
-            double getMeasuredWp() { return wp_; }
+            /** Return the measured W */
+            double getMeasuredW() { return w_; }
            
-            /** Return the polar angle of the nucleon used to calculate W_p. */
+            /** Return the polar angle of the nucleon used to calculate W */
             double getTheta() { return theta_; }
 
             /** Return the calcualted PN weight associated with this event. */
             double getWeight() { return weight_; }
 
-            /** Set the event weight and measured/fit wp. */
-            void setResult(
-                           double fitWp, double ke, double wp, double theta, double weight, 
-                           double fitWp_max, double ke_max, double wp_max, double theta_max, double weight_max, 
-                           double fitWp_p, double ke_p, double wp_p, double theta_p, double weight_p
-                          );
+            /** Set the event weight and measured/fit w */
+            void setResult(double ke, double theta, double w, double fitW, double weight);
 
             /** Reset the object. */
             void Clear(Option_t *option = "");
@@ -76,32 +72,20 @@ namespace ldmx {
         
         private:
  
-            /** Fit Wp */
-            double fitWp_{0.0};
+            /** Fit W */
+            double fitW_{0.0};
 
-            /** Kinetic energy of nucleon used to calculate Wp */
+            /** Kinetic energy of nucleon used to calculate W */
             double ke_{0.0};
             
-            /** Measured Wp */
-            double wp_{0.0}; 
+            /** Measured W */
+            double w_{0.0}; 
 
-            /** Polar angle of nucleon used to calculate Wp */
+            /** Polar angle of nucleon used to calculate W */
             double theta_{0.0}; 
             
             /** Calculated PN weight */
             double weight_{0.0};
-
-            double fitWp_max_{0.0};
-            double ke_max_{0.};
-            double wp_max_{0.};
-            double theta_max_{0.};
-            double weight_max_{0.0};
-
-            double fitWp_p_{0.0};
-            double ke_p_{0.};
-            double wp_p_{0.};
-            double theta_p_{0.};
-            double weight_p_{0.0};
 
             ClassDef(PnWeightResult, 1);
     };
