@@ -19,9 +19,10 @@ p.libraries.append("libEventProc.so")
 # Load the PN re-weighting processor
 pn_reweight = ldmxcfg.Producer("pn_reweight", "ldmx::PnWeightProcessor")
 
-# Set the W_p threshold above which an event will be re-weighted.  For the 
-# definition of W_p, see the processor.
-pn_reweight.parameters["wp_threshold"] = 1500.
+# Set the W threshold above which an event will be re-weighted.  For the 
+# definition of W, see the processor.
+pn_reweight.parameters["w_threshold"] = 1150.
+pn_reweight.parameters["w_theta"] = 100.
 
 # Define the sequence of event processors to be run
 p.sequence = [pn_reweight]
