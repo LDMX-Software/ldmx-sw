@@ -92,4 +92,8 @@ namespace ldmx {
         this->fieldValues_.resize(fieldList_->size());
     }
 
+    void DetectorID::clear() {
+        std::fill(fieldValues_.begin(), fieldValues_.end(), 0);
+        rawValue_ = 0;
+    }
 }

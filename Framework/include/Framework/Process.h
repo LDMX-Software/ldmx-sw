@@ -9,10 +9,10 @@
 
 // LDMX
 #include "Framework/Exception.h"
+#include "DetDescr/DetectorDataServiceImpl.h"
 
 // STL
 #include <vector>
-
 
 class TFile;
 class TDirectory;
@@ -144,6 +144,9 @@ namespace ldmx {
 
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};
+
+            /** Service providing access to detector data. */
+            DetectorDataServiceImpl* detectorService_{nullptr};
     };
 
 

@@ -94,6 +94,7 @@ namespace ldmx {
                     }
                     EventFile* masterFile = (outFile) ? (outFile) : (&inFile);
 
+                    std::string detectorName;
                     while (masterFile->nextEvent() && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
 
                         // notify for new run if necessary
@@ -106,6 +107,22 @@ namespace ldmx {
                                 for (auto module : sequence_) {
                                     module->onNewRun(runHeader);
                                 }
+
+                                // Check if detector data needs to be loaded.
+                                if (detectorName.empty() || runHeader.getDetectorName() != detectorName) {
+                                    detectorName = runHeader.getDetectorName();
+                                    if (detectorService_) {
+                                        delete detectorService_;
+                                    }
+                                    detectorService_ = new DetectorDataServiceImpl();
+                                    detectorService_->setDetectorName(detectorName);
+                                    detectorService_->initialize();
+
+                                    for (auto module : sequence_) {
+                                        module->onNewDetector(detectorService_);
+                                    }
+                                }
+
                             } catch (const Exception&) {
                                 std::cout << "[Process] [WARNING] Run header for run " << wasRun << " was not found!" << std::endl;
                             }

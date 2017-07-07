@@ -209,7 +209,7 @@
       <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
     </volume>
 
-    <volume name="hadronic_calorimeter">
+    <volume name="Hcal">
       <materialref ref="G4_AIR"/>
       <solidref ref="hadron_calorimeter_box"/>
 
@@ -279,10 +279,8 @@
     </volume>
   </structure>
 
-
-
   <setup name="Default" version="1.0">
-    <world ref="hadronic_calorimeter"/>
+    <world ref="Hcal"/>
   </setup>
 
 </gdml>
