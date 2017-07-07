@@ -53,7 +53,8 @@ namespace ldmx {
              */
             void stepping(const G4Step* step);
 
-    }; // TrackKiller
+    };
+// TrackKiller
 }
 
 #endif // SIMPLUGINS_TRACKKILLER_H__

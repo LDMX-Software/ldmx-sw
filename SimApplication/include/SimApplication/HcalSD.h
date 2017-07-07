@@ -12,25 +12,23 @@
 
 namespace ldmx {
 
-/**
- * @class HcalSD
- * @brief HCal sensitive detector
- *
- * @note
- * This class basically doesn't do anything right now.
- *
- * @todo Add actual custom hit processing for HCal detector.
- */
-class HcalSD : public CalorimeterSD {
+    /**
+     * @class HcalSD
+     * @brief HCal sensitive detector
+     *
+     * @note
+     * This class basically doesn't do anything right now.
+     *
+     * @todo Add actual custom hit processing for HCal detector.
+     */
+    class HcalSD : public CalorimeterSD {
 
-    public:
+        public:
 
-        HcalSD(G4String name,
-                G4String theCollectionName,
-                DetectorID* detID = new DefaultDetectorID);
+            HcalSD(G4String name, G4String theCollectionName, int subdet, DetectorID* detID);
 
-        virtual ~HcalSD();
-};
+            virtual ~HcalSD();
+    };
 
 }
 

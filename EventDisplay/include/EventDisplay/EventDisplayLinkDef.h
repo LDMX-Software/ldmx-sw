@@ -13,7 +13,7 @@
 #pragma link C++ nestedclass;
 #pragma link C++ nestedtypedef;
 
-#pragma link C++ class EventDisplay+;
+#pragma link C++ class ldmx::EventDisplay+;
 
 #endif
 

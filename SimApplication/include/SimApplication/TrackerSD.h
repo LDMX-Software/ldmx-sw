@@ -12,68 +12,80 @@
 
 // LDMX
 #include "Event/Event.h"
-#include "DetDescr/DefaultDetectorID.h"
+#include "DetDescr/DetectorID.h"
 #include "SimApplication/G4TrackerHit.h"
 
 namespace ldmx {
 
-/**
- * @class TrackerSD
- * @brief Basic sensitive detector for trackers
- *
- * @note
- * This class creates a G4TrackerHit for each step within the subdetector.
- */
-class TrackerSD: public G4VSensitiveDetector {
+    /**
+     * @class TrackerSD
+     * @brief Basic sensitive detector for trackers
+     *
+     * @note
+     * This class creates a G4TrackerHit for each step within the subdetector.
+     */
+    class TrackerSD : public G4VSensitiveDetector {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         * @param name The name of the sensitive detector.
-         * @param theCollectionName The name of the hits collection.
-         * @param detID The detector ID.
-         */
-        TrackerSD(G4String name,
-                G4String theCollectionName,
-                DetectorID* detID = new DefaultDetectorID);
+            /**
+             * Class constructor.
+             * @param name The name of the sensitive detector.
+             * @param theCollectionName The name of the hits collection.
+             * @param subdetID The subdetector ID.
+             * @param detID The detector ID.
+             */
+            TrackerSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID);
 
-        /**
-         * Class destructor.
-         */
-        virtual ~TrackerSD();
+            /**
+             * Class destructor.
+             */
+            virtual ~TrackerSD();
 
-        /**
-         * Process a step by creating a hit.
-         * @param aStep The step information
-         * @param ROhist The readout history.
-         */
-        G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
+            /**
+             * Set the detector ID.
+             * @param detID The detector ID.
+             */
+            void setDetectorID(DetectorID* detID) {
+                this->detID_ = detID;
+            }
 
-        /**
-         * Initialize the sensitive detector.
-         * @param hcEvent The hits collections of the event.
-         */
-        void Initialize(G4HCofThisEvent* hcEvent);
+            /**
+             * Process a step by creating a hit.
+             * @param aStep The step information
+             * @param ROhist The readout history.
+             */
+            G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
 
-        /**
-         * End of event hook.
-         * @param hcEvent The hits collections of the event.
-         */
-        void EndOfEvent(G4HCofThisEvent* hcEvent);
+            /**
+             * Initialize the sensitive detector.
+             * @param hcEvent The hits collections of the event.
+             */
+            void Initialize(G4HCofThisEvent* hcEvent);
 
-    private:
+            /**
+             * End of event hook.
+             * @param hcEvent The hits collections of the event.
+             */
+            void EndOfEvent(G4HCofThisEvent* hcEvent);
 
-        /**
-         * The output hits collection of G4TrackerHits.
-         */
-        G4TrackerHitsCollection* hitsCollection_;
+        private:
 
-        /**
-         * The detector ID.
-         */
-        DetectorID* detID_;
-};
+            /**
+             * The output hits collection of G4TrackerHits.
+             */
+            G4TrackerHitsCollection* hitsCollection_;
+
+            /**
+             * The subdetector ID.
+             */
+            int subdetID_;
+
+            /**
+             * The detector ID.
+             */
+            DetectorID* detID_;
+    };
 
 }
 
