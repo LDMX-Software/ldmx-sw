@@ -100,7 +100,7 @@ namespace ldmx {
         parent_->tree_->SetBranchStatus(srule.c_str(), (iskeep) ? (1) : (0));
     }
 
-    bool EventFile::nextEvent() {
+    bool EventFile::nextEvent(bool storeCurrentEvent) {
 
         if (ientry_ < 0 && parent_) {
             if (!parent_->tree_) {
@@ -115,7 +115,7 @@ namespace ldmx {
         if (ientry_ >= 0) {
             if (isOutputFile_) {
                 event_->beforeFill();
-                tree_->Fill(); // fill the clones...
+                if (storeCurrentEvent) tree_->Fill(); // fill the clones...
                 event_->Clear();
             }
             if (event_) {
