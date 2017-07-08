@@ -86,7 +86,7 @@ namespace ldmx {
              * Prepare the next event.
              * @return If event was prepared/read successfully.
              */
-            bool nextEvent();
+            bool nextEvent(bool storeCurrentEvent=true);
 
             /**
              * Close the file, writing the tree to disk if creating an output file.

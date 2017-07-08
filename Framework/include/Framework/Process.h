@@ -9,6 +9,7 @@
 
 // LDMX
 #include "Framework/Exception.h"
+#include "Framework/StorageControl.h"
 
 // STL
 #include <vector>
@@ -116,6 +117,13 @@ namespace ldmx {
              */
             TDirectory* makeHistoDirectory(const std::string& dirName);
 
+
+	    /**  
+             * Access the storage control unit for this process
+             */
+	    StorageControl& getStorageController() { return m_storageController; }
+
+	
         private:
 
             /** Processing pass name. */
@@ -123,6 +131,9 @@ namespace ldmx {
 
             /** Limit on events to process. */
             int eventLimit_{-1};
+
+	    /** Storage controller */
+	    StorageControl m_storageController;
 
             /** Ordered list of EventProcessors to execute. */
             std::vector<EventProcessor*> sequence_;
