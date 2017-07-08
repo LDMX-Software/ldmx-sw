@@ -41,6 +41,8 @@ namespace ldmx {
                     eh.setTimestamp(TTimeStamp());
 
                     theEvent.getEventHeader()->Print();
+		    // reset the storage controller state
+		    m_storageController.resetEventState();
 
                     for (auto module : sequence_) {
                         if (dynamic_cast<Producer*>(module)) {
@@ -49,7 +51,7 @@ namespace ldmx {
                             (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
                         }
                     }
-                    outFile.nextEvent();
+                    outFile.nextEvent(m_storageController.keepEvent());
                     theEvent.Clear();
                     n_events_processed++;
                 }
@@ -94,8 +96,11 @@ namespace ldmx {
                     }
                     EventFile* masterFile = (outFile) ? (outFile) : (&inFile);
 
-                    while (masterFile->nextEvent() && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
+                    while (masterFile->nextEvent(m_storageController.keepEvent()) && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
 
+			// clean up for storage control calculation
+			m_storageController.resetEventState();
+			
                         // notify for new run if necessary
                         if (theEvent.getEventHeader()->getRun() != wasRun) {
                             wasRun = theEvent.getEventHeader()->getRun();
