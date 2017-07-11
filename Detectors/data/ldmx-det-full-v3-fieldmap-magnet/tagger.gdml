@@ -1,6 +1,9 @@
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
-
-  <define>
+<?xml version="1.0" encoding="UTF-8" ?>
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
+  
+    <define>
             
       <!-- stereo angle -->
       <variable name="tagger_stereo_angle" value="5.72957795130823"/>
@@ -8,9 +11,14 @@
       <!-- z offset due to target thickness -->
       <variable name="tagger_z_offset" value="3*mm"/>
       
-      <!-- tagger envelope dimensions -->
-      <variable name="tagger_envelope_x" value="45.72*cm"/>
-      <variable name="tagger_envelope_y" value="30.48*cm"/>
+      <!-- 
+           Tagger envelope dimensions. These are set 5 mm smaller than the
+           magnet gap defined in magnet.gdml in order to avoid overlaps.
+           The magnet gaps were extracted from the drawing of the magnet
+           obtained from JLab.
+       -->
+      <variable name="tagger_envelope_x" value="425*mm"/>
+      <variable name="tagger_envelope_y" value="345*mm"/>
       <variable name="tagger_envelope_z" value="857.2 - tagger_z_offset"/>
       
       <!-- tagger module and sensor dimensions -->
