@@ -3,6 +3,17 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
     <define>
+        
+        <!-- Dimensions of the magnet box -->
+        <variable name="magnet_box_x" value="2150*mm" />
+        <variable name="magnet_box_y" value="1500*mm" />
+        <variable name="magnet_box_z" value="1250*mm" />
+
+        <!-- Magnet gap dimensions -->
+        <variable name="magnet_gap_x" value="430*mm"/>
+        <variable name="magnet_gap_y" value="350*mm"/>
+        <variable name="magnet_gap_z" value="magnet_box_z + 1"/>
+
         <position name="v0" unit="mm" z="-457.200012207031" x="1047.75" y="730.25" />
         <position name="v1" unit="mm" z="-457.200012207031" x="-1047.75" y="730.25" />
         <position name="v2" unit="mm" z="457.200012207031" x="1047.75" y="730.25" />
@@ -3407,34 +3418,41 @@
         <position name="v3401" unit="mm" z="457.200012207031" x="1047.7509765625" y="-177.800003051758" />
         <position name="v3402" unit="mm" z="457.200012207031" x="1047.7509765625" y="177.800003051758" />
         <position name="v3403" unit="mm" z="457.200012207031" x="564.75" y="-177.800003051758" />
-        <position name="t0" unit="mm" z="0" x="0" y="0" />
-        <rotation name="r0" unit="radian" z="0" x="0" y="0" />
+        <position name="center" unit="mm" z="0" x="0" y="0" />
+        <rotation name="identity" unit="radian" z="0" x="0" y="0" />
     </define>
+
     <materials>
-        <define>
-            <quantity type="density" name="universe_mean_density" value="1.e-25" unit="g/cm3" />
-        </define>
-        <element Z="8" formula="O" name="Oxygen" >
-            <atom value="16" />
+        <element Z="1" formula="H" name="H">
+            <atom type="A" unit="g/mol" value="1.00794"/>
         </element>
-        <element Z="7" formula="N" name="Nitrogen" >
-            <atom value="14.01" />
-        </element>
-        <material formula="noFormula" name="Air" >
-            <D value="1.29" />
-            <fraction n="0.3" ref="Oxygen" />
-            <fraction n="0.7" ref="Nitrogen" />
+        <material name="Vacuum" state="gas">
+            <MEE unit="eV" value="19.2"/>
+            <D unit="g/cm3" value="9.99999473841014e-09"/>
+            <fraction n="1" ref="H"/>
         </material>
-        <material Z="1" name="vacuum" >
-            <T value="2.73" />
-            <P value=" 3.0E-18" unit="pascal" />
-            <Dref ref="universe_mean_density" />
-            <atom value="1.01" />
+        <material name="Fe" Z="26.0">
+            <D value="7.874" />
+            <atom value="55.845" />
+        </material>
+        <material name="Cu" Z="29.0">
+            <D value="8.96" />
+            <atom value="63.546" />
         </material>
     </materials>
+
     <solids>
-        <box aunit="radian" lunit="mm" name="WorldBox" z="1433.5200" x="2514.6012" y="1752.6000"/>
-        <tessellated aunit="radian" lunit="mm" name="ldmx_magnet_14in_gap" >
+        <box aunit="radian" lunit="mm" name="magnet_box" x="magnet_box_x" y="magnet_box_y" z="magnet_box_z" />
+        <box lunit="mm" name="magnet_gap_box" x="magnet_gap_x" y="magnet_gap_y" z="magnet_gap_z"/>    
+        
+        <subtraction name="magnet_box_with_gap">
+            <first ref="magnet_box" />
+            <second ref="magnet_gap_box" />
+            <positionref ref="center"/> 
+            <rotationref ref="identity"/>
+        </subtraction>
+
+        <tessellated aunit="radian" lunit="mm" name="iron_block_0" >
             <triangular vertex1="v0"  vertex2="v1"  vertex3="v2" />
             <triangular vertex1="v8"  vertex2="v1"  vertex3="v0" />
             <triangular vertex1="v1"  vertex2="v3"  vertex3="v2" />
@@ -3504,7 +3522,7 @@
             <triangular vertex1="v30"  vertex2="v31"  vertex3="v29" />
             <triangular vertex1="v28"  vertex2="v30"  vertex3="v29" />
         </tessellated>
-        <tessellated aunit="radian" lunit="mm" name="ldmx_magnet_14in_gap_1" >
+        <tessellated aunit="radian" lunit="mm" name="coil_1" >
             <triangular vertex1="v32"  vertex2="v33"  vertex3="v34" />
             <triangular vertex1="v35"  vertex2="v33"  vertex3="v32" />
             <triangular vertex1="v34"  vertex2="v33"  vertex3="v163" />
@@ -6866,7 +6884,7 @@
             <triangular vertex1="v1619"  vertex2="v1630"  vertex3="v1502" />
             <triangular vertex1="v1630"  vertex2="v1628"  vertex3="v1501" />
         </tessellated>
-        <tessellated aunit="radian" lunit="mm" name="ldmx_magnet_14in_gap_2" >
+        <tessellated aunit="radian" lunit="mm" name="coil_2" >
             <triangular vertex1="v1712"  vertex2="v1713"  vertex3="v1714" />
             <triangular vertex1="v1716"  vertex2="v1713"  vertex3="v1712" />
             <triangular vertex1="v1714"  vertex2="v1713"  vertex3="v1879" />
@@ -10228,7 +10246,7 @@
             <triangular vertex1="v3308"  vertex2="v3178"  vertex3="v3180" />
             <triangular vertex1="v3308"  vertex2="v3307"  vertex3="v3178" />
         </tessellated>
-        <tessellated aunit="radian" lunit="mm" name="ldmx_magnet_14in_gap_3" >
+        <tessellated aunit="radian" lunit="mm" name="iron_block_2" >
             <triangular vertex1="v3396"  vertex2="v3397"  vertex3="v3398" />
             <triangular vertex1="v3401"  vertex2="v3397"  vertex3="v3396" />
             <triangular vertex1="v3397"  vertex2="v3399"  vertex3="v3398" />
@@ -10243,45 +10261,46 @@
             <triangular vertex1="v3400"  vertex2="v3403"  vertex3="v3401" />
         </tessellated>
     </solids>
+    
     <structure>
-        <volume name="ldmx_magnet_14in_gap_vol" >
-            <materialref ref="G4_Al" />
-            <solidref ref="ldmx_magnet_14in_gap" />
+        <volume name="iron_block_0_vol" >
+            <materialref ref="Fe" />
+            <solidref ref="iron_block_0" />
         </volume>
-        <volume name="ldmx_magnet_14in_gap_1_vol" >
-            <materialref ref="G4_Al" />
-            <solidref ref="ldmx_magnet_14in_gap_1" />
+        <volume name="coil_1_vol" >
+            <materialref ref="Cu" />
+            <solidref ref="coil_1" />
         </volume>
-        <volume name="ldmx_magnet_14in_gap_2_vol" >
-            <materialref ref="G4_Al" />
-            <solidref ref="ldmx_magnet_14in_gap_2" />
+        <volume name="coil_2_vol" >
+            <materialref ref="Cu" />
+            <solidref ref="coil_2" />
         </volume>
-        <volume name="ldmx_magnet_14in_gap_3_vol" >
-            <materialref ref="G4_Al" />
-            <solidref ref="ldmx_magnet_14in_gap_3" />
+        <volume name="iron_block_2_vol" >
+            <materialref ref="Fe" />
+            <solidref ref="iron_block_2" />
         </volume>
         <volume name="ldmx_magnet" >
-            <materialref ref="vacuum" />
-            <solidref ref="WorldBox" />
+            <materialref ref="Vacuum" />
+            <solidref ref="magnet_box_with_gap" />
             <physvol>
-                <volumeref ref="ldmx_magnet_14in_gap_vol" />
-                <positionref ref="t0" />
-                <rotationref ref="r0" />
+                <volumeref ref="iron_block_0_vol" />
+                <positionref ref="center" />
+                <rotationref ref="identity" />
             </physvol>
             <physvol>
-                <volumeref ref="ldmx_magnet_14in_gap_1_vol" />
-                <positionref ref="t0" />
-                <rotationref ref="r0" />
+                <volumeref ref="coil_1_vol" />
+                <positionref ref="center" />
+                <rotationref ref="identity" />
             </physvol>
             <physvol>
-                <volumeref ref="ldmx_magnet_14in_gap_2_vol" />
-                <positionref ref="t0" />
-                <rotationref ref="r0" />
+                <volumeref ref="coil_2_vol" />
+                <positionref ref="center" />
+                <rotationref ref="identity" />
             </physvol>
             <physvol>
-                <volumeref ref="ldmx_magnet_14in_gap_3_vol" />
-                <positionref ref="t0" />
-                <rotationref ref="r0" />
+                <volumeref ref="iron_block_2_vol" />
+                <positionref ref="center" />
+                <rotationref ref="identity" />
             </physvol>
         </volume>
     </structure>
