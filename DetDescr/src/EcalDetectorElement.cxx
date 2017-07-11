@@ -47,4 +47,6 @@ namespace ldmx {
     EcalLayer* EcalDetectorElement::getEcalLayer(int num) {
         return static_cast<EcalLayer*>(children_[num - 1]);
     }
+
+    DE_ADD(EcalDetectorElement)
 }

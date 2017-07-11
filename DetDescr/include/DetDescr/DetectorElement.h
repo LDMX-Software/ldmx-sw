@@ -14,6 +14,7 @@
 #include "DetDescr/DetectorID.h"
 
 #include <vector>
+#include <iostream>
 
 namespace ldmx {
 
@@ -120,6 +121,45 @@ namespace ldmx {
              */
             static void walk(DetectorElement* de, DetectorElementVisitor* visitor);
     };
+
+    template<typename T> DetectorElement* createType() {
+        return new T;
+    }
+
+    class DetectorElementFactory {
+
+        public:
+
+            typedef DetectorElement* (*CreatorFunc)();
+            typedef std::map<std::string, CreatorFunc> FuncMap;
+
+            FuncMap map_;
+
+            static DetectorElementFactory* instance() {
+                static DetectorElementFactory fac;
+                return &fac;
+            }
+
+            DetectorElement* create(std::string name) {
+                DetectorElementFactory::FuncMap::iterator it = map_.find(name);
+                return it->second();
+            }
+
+        public:
+
+            template<typename T>
+            short add(const char* name) {
+                CreatorFunc func = &createType<T>;
+                map_[name] = func;
+                return 0;
+            }
+    };
+
+    #define DE_INIT(NAME) \
+    static short NAME##Init;
+
+    #define DE_ADD(NAME) \
+    static short NAME##Init = DetectorElementFactory::instance()->add<NAME>(#NAME);
 }
 
 #endif /* DETDESCR_DETECTORELEMENT_H_ */

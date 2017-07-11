@@ -4,7 +4,7 @@
  * @author JeremyMcCormick, SLAC
  */
 
-#ifndef ECALDETECTORELEMENT_H_
+#ifndef DETDESCR_ECALDETECTORELEMENT_H_
 #define DETDESCR_ECALDETECTORELEMENT_H_
 
 // LDMX
@@ -51,6 +51,9 @@ namespace ldmx {
 
         public:
 
+            EcalDetectorElement() {
+            }
+
             /**
              * Class constructor.
              * @param parent The parent DetectorElement.
@@ -63,6 +66,9 @@ namespace ldmx {
              * @note The layers are numbered from 1, not 0.
              */
             EcalLayer* getEcalLayer(int layerNumber);
+
+        private:
+            DE_INIT(EcalDetectorElement)
     };
 }
 
