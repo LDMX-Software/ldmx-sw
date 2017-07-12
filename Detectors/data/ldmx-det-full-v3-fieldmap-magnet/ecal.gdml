@@ -9467,7 +9467,7 @@
       <position name="Air35box0x2a76510_pos" unit="mm" x="0" y="-321" z="-199"/>
       <rotation name="Air35box0x2a76510_rot" unit="deg" x="90.1368784933823" y="0" z="0"/>
     </union>
-    <box lunit="mm" name="Wbox0x2730a60" x="520." y="520." z="325."/>
+    <box lunit="mm" name="Wbox0x2730a60" x="520." y="520." z="290."/>
     <box lunit="mm" name="expHall_box0x2731e20" x="20000" y="20000" z="40000"/>
   </solids>
 
