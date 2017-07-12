@@ -1,51 +1,73 @@
-#include "DetDescr/EcalDetectorElement.h"
+#include "../include/DetDescr/EcalDetectorElement.h"
 
-// LDMX
-#include "DetDescr/DetectorDataService.h"
-#include "DetDescr/EcalDetectorID.h"
-#include "DetDescr/GeometryUtil.h"
-
-// STL
+#include <Rtypes.h>
+#include <TGeoNode.h>
+#include <TNamed.h>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
+#include <string>
+
+#include "../include/DetDescr/DetectorElement.h"
+#include "../include/DetDescr/EcalDetectorID.h"
 
 namespace ldmx {
 
-    EcalLayer::EcalLayer(DetectorElementImpl* parent, TGeoNode* support) : DetectorElementImpl(parent, support) {
-        layerNumber_ = support->GetNumber();
+    EcalStation::EcalStation() {
+    }
+
+    void EcalStation::initialize() {
+        layerNumber_ = support_->GetNumber();
 
         std::stringstream ss;
         ss << std::setfill('0') << std::setw(2) << layerNumber_;
-        name_ = "EcalLayer" + ss.str();
+        std::cout << "layer: " << layerNumber_ << std::endl;
+        name_ = "EcalStation" + ss.str();
 
-        getDetectorID()->setFieldValue(1, support->GetNumber());
+        getDetectorID()->setFieldValue(1, support_->GetNumber());
         id_ = getDetectorID()->pack();
     }
 
-    EcalDetectorElement::EcalDetectorElement(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
+    EcalStation* EcalDetectorElement::getEcalLayer(int num) {
+        return static_cast<EcalStation*>(children_[num - 1]);
+    }
+
+    void EcalDetectorElement::initialize() {
+
+        std::cout << "EcalDetectorElement::initialize" << std::endl;
 
         name_ = "Ecal";
 
         detectorID_ = new EcalDetectorID();
 
-        support_ = GeometryUtil::findFirstDauNameStartsWith("Ecal", parent->getSupport());
         if (!support_) {
-            throw std::runtime_error("The Ecal volume was not found.");
+            throw std::runtime_error("The Ecal support is not set.");
+        }
+
+        if (!parent_) {
+            throw std::runtime_error("The Ecal parent is not set.");
         }
 
         detectorID_->clear();
         detectorID_->setFieldValue(0, support_->GetNumber());
         id_ = detectorID_->pack();
 
-        // Add a DE for each ECal active layer.
-        auto layerVec = GeometryUtil::findDauNameStartsWith("Si", support_);
-        for (auto layerNode : layerVec) {
-            new EcalLayer(this, layerNode);
+        int nDau = this->support_->GetNdaughters();
+        std::cout << "support has " << nDau << " dau vols" << std::endl;
+        TGeoNode* dau = nullptr;
+        for (int iDau = 0; iDau < nDau; iDau++) {
+            auto dau = support_->GetDaughter(iDau);
+            std::cout << "ECal subvol: " << dau->GetName() << std::endl;
+            static std::string prefix = "Si_";
+            if (!std::string(dau->GetName()).compare(0, prefix.size(), prefix)) {
+                std::cout << "adding ECal station: " << dau->GetName() << std::endl;
+                auto ecalStation = new EcalStation();
+                ecalStation->setSupport(dau);
+                ecalStation->setParent(this);
+                ecalStation->initialize();
+            }
         }
-    }
-
-    EcalLayer* EcalDetectorElement::getEcalLayer(int num) {
-        return static_cast<EcalLayer*>(children_[num - 1]);
     }
 
     DE_ADD(EcalDetectorElement)

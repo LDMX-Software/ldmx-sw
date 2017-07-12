@@ -16,7 +16,7 @@ namespace ldmx {
      * @class EcalLayer
      * @brief DetectorElement for ECal layers
      */
-    class EcalLayer : public DetectorElementImpl {
+    class EcalStation : public DetectorElementImpl {
 
         public:
 
@@ -26,7 +26,9 @@ namespace ldmx {
              * @param support The geometric support.
              * @note The layer number is read from the node's copy number.
              */
-            EcalLayer(DetectorElementImpl* parent, TGeoNode* support);
+            EcalStation();
+
+            void initialize();
 
             /**
              * Get the layer number.
@@ -65,7 +67,9 @@ namespace ldmx {
              * @param layerNumber The layer number.
              * @note The layers are numbered from 1, not 0.
              */
-            EcalLayer* getEcalLayer(int layerNumber);
+            EcalStation* getEcalLayer(int layerNumber);
+
+            void initialize();
 
         private:
             DE_INIT(EcalDetectorElement)

@@ -174,6 +174,17 @@ namespace ldmx {
                 return globalPosition_;
             }
 
+            void setSupport(TGeoNode* node) {
+                support_ = node;
+            }
+
+            void setParent(DetectorElementImpl* parent) {
+                parent_ = parent;
+            }
+
+            virtual void initialize() {
+            }
+
         protected:
 
             /**

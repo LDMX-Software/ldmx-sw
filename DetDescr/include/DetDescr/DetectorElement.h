@@ -93,6 +93,8 @@ namespace ldmx {
              * @return The global position of the DetectorElement.
              */
             virtual const std::vector<double>& getGlobalPosition() = 0;
+
+            virtual void initialize() = 0;
     };
 
     /**
@@ -142,7 +144,12 @@ namespace ldmx {
 
             DetectorElement* create(std::string name) {
                 DetectorElementFactory::FuncMap::iterator it = map_.find(name);
-                return it->second();
+                if (it != map_.end()) {
+                    return it->second();
+                } else {
+                    std::cerr << "No DetectorElement found with type <" << name << ">" << std::endl;
+                    throw std::runtime_error("Failed to find DetectorElement type.");
+                }
             }
 
         public:

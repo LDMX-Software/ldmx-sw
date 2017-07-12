@@ -23,6 +23,7 @@ namespace ldmx {
         detectorID_ = new DefaultDetectorID();
 
         // Create top-level detector components.
+        /*
         new EcalDetectorElement(this);
         new HcalDetectorElement(this);
         new TaggerDetectorElement(this);
@@ -30,5 +31,8 @@ namespace ldmx {
         new TargetDetectorElement(this);
         new TriggerPadDetectorElement(this, "TriggerPadDown");
         new TriggerPadDetectorElement(this, "TriggerPadUp");
+        */
     }
+
+    DE_ADD(TopDetectorElement)
 }

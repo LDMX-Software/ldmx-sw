@@ -102,6 +102,7 @@ namespace ldmx {
              * full detector GDML files.
              */
             DetectorDataServiceImpl() {
+                fac_ = DetectorElementFactory::instance();
                 setupLocalAliases();
             }
 
@@ -187,6 +188,8 @@ namespace ldmx {
 
         private:
 
+            void buildDetectorElements();
+
             /**
              * Build a cache of detector aliases from names to their locations on
              * disk, using the LDMXSW_DIR environment variable to locate the main
@@ -210,6 +213,8 @@ namespace ldmx {
 
             /** Map of IDs and nodes to DetectorElement objects. */
             DetectorElementCache deCache_;
+
+            DetectorElementFactory* fac_;
     };
 
     /**

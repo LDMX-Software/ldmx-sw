@@ -20,11 +20,17 @@ namespace ldmx {
 
         public:
 
+            TopDetectorElement() {
+            }
+
             /**
              * Class constructor.
              * @param support The geometric support (points to world volume).
              */
             TopDetectorElement(TGeoNode* support);
+
+        private:
+            DE_INIT(TopDetectorElement)
     };
 }
 
