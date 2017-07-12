@@ -47,7 +47,7 @@ The *XercesC_DIR* environment variable is optional and for convenience.  Where y
 
 You need to have a local Geant4 installation available with GDML enabled.  You can check for this by looking for the header files in the Geant4 include dir, e.g. by doing `ls G4GDML*.hh` from that directory.  If no files are found, then it is not enabled in your installation.
 
-Assuming you have [downloaded a Geant4 tarball](http://geant4.web.cern.ch/geant4/support/download.shtml), the installation procedure is like the following:
+Assuming you have [downloaded a Geant4 tarball](http://geant4.web.cern.ch/geant4/support/download.shtml), the installation procedure is like the following (see cmake dependencies below):
 
 ``` bash
 tar -zxvf geant4.10.02.p02.tar.gz
@@ -62,11 +62,22 @@ export G4DIR=$PWD
 
 If you get errors about Xerces not being found, then check that the path you provided is correct and that the directory contains a lib dir with the Xerces so (shared library) files.
 
+Installing on Ubuntu laptops (us: Linux Mint) can require a couple of dependencies to fix the errors: EXPAT error, Could not find X11, Could not find X11 headers, Could not find OpenGL. Add `-DGEANT4_USE_SYSTEM_EXPAT=OFF' to the CMake argument, before the last `..', and install these dependencies before the CMake step:
+
+``` bash
+sudo apt-get install libx11-dev libxmu-dev libgl1-mesa-dev
+```
+
 ## ROOT
 
 LDMX is standardizing on ROOT 6, and no support for ROOT 5 is planned.
 
 ROOT has many installation options and optional dependencies, and the [building ROOT documentation](https://root.cern.ch/building-root) covers this in full detail.
+
+Some prerequisites under Ubuntu (if not sufficient, see Prerequesites page on ROOT website):
+```bash
+sudo apt-get install libxpm-dev libxft-dev libxext-dev libgl-dev libglu-dev
+```
 
 These commands should install a current version of ROOT locally:
 
