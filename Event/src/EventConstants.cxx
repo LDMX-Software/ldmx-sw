@@ -29,5 +29,6 @@ namespace ldmx {
     const std::string EventConstants::SIM_CALORIMETER_HIT = "ldmx::SimCalorimeterHit";
     const std::string EventConstants::SIM_TRACKER_HIT = "ldmx::SimTrackerHit";
     const std::string EventConstants::RUN_HEADER = "ldmx::RunHeader";
+    const std::string EventConstants::PN_WEIGHT = "ldmx::pnWeight";
 
 } // namespace event
