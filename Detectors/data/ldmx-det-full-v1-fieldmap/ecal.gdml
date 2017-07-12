@@ -10586,7 +10586,7 @@
       <materialref ref="G4_AIR0x271da60"/>
       <solidref ref="Air34box0x2a74420"/>
     </volume>
-    <volume name="Ecal">
+    <volume name="em_calorimeters">
       <materialref ref="G4_AIR0x271da60"/>
       <solidref ref="Wbox0x2730a60"/>
       <physvol name="Al1phys0x273c120">
@@ -11675,7 +11675,7 @@
   </structure>
 
   <setup name="Default" version="1.0">
-    <world ref="Ecal"/>
+    <world ref="em_calorimeters"/>
   </setup>
 
 </gdml>
