@@ -20,40 +20,39 @@ namespace ldmx {
         Clear();
     }
 
-    void PnWeightResult::setResult(double fitWp, double ke, 
-                                   double measuredWp, double theta, 
-                                   double weight) {
-        
-        fitWp_ = fitWp;
+    void PnWeightResult::setResult(double ke, double theta, double w, double fitW, double weight){
+        fitW_ = fitW;
         ke_ = ke;  
-        measuredWp_ = measuredWp;
+        w_ = w;
         theta_ = theta; 
         weight_ = weight;
     }
 
     void PnWeightResult::Clear(Option_t *option) {
         TObject::Clear();
-        fitWp_ = 0.0;
+
+        fitW_ = 0.0;
         ke_ = 0; 
-        measuredWp_ = 0.0;
+        w_ = 0.0;
         theta_ = 0.0;
         weight_ = 0.0;
     }
 
     void PnWeightResult::Copy(TObject& object) const { 
         PnWeightResult& result = (PnWeightResult&) object; 
-        result.fitWp_ = fitWp_;
+
+        result.fitW_ = fitW_;
         result.ke_ = ke_; 
         result.theta_ = theta_;  
-        result.measuredWp_ = measuredWp_; 
+        result.w_ = w_; 
         result.weight_ = weight_; 
     }
 
     void PnWeightResult::Print(Option_t *option) const {
         std::cout << "[ PnWeightResult ]:\n" 
-                  << "\t W_p fit : "      << fitWp_ << "\n"
+                  << "\t W fit : "      << fitW_ << "\n"
                   << "\t PN daughter kinetic energy: " << ke_ << "\n"
-                  << "\t W_p measured : " << measuredWp_ << "\n"
+                  << "\t W measured : " << w_ << "\n"
                   << "\t PN daughter polar angle: " << theta_ << "\n"
                   << "\t PN Weight : "    << weight_ << "\n" 
                   << std::endl;

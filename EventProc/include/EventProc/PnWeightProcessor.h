@@ -35,6 +35,9 @@
 //----------//
 //   ROOT   //
 //----------//
+#include "TTree.h"
+#include "TFile.h"
+#include "TH1F.h"
 #include "TClonesArray.h"
 
 namespace ldmx {
@@ -58,37 +61,51 @@ namespace ldmx {
             virtual void produce(Event& event);
 
             /**
-             * Calculate the fitted W_p defined as
-             *     W_p(fit) = c1*exp(c2*(W_p(measured) - c3))
-             * where
-             *     c1 = 1.78032e+04
-             *     c2 = -8.07561e-03
-             *     c3 = 7.91244e+02
-             * 
-             * @param wp Measured W_p.
-             * @return W_p(fit)
+             * Calculate the fitted W
+             *     W(fit) = exp(a+b*x)
+             * @param w Measured W.
+             * @return W(fit)
              */
-            double calculateFitWp(double wp); 
+            double calculateFitW(double w);
 
             /**
-             * Calculate the measured W_p defined as
-             *     W_p(measured) = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p)) 
+             * Calculate the measured W defined as
+             *     W(measured) = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p)) 
              * where 
              *     p is the total momentum of the particle
              *     K is its kinetic energy
              *     p_z is the z component of the momentum
-             * all defined at the vertex.
+             * all defined at the hardest PN vertex.
              *
-             * @param particle SimParticle used to calculate W_p.
-             * @return W_p 
+             * @param particle SimParticle used to calculate W.
+             * @return W
              */
-            double calculateWp(SimParticle* particle);
+            double calculateW(SimParticle* particle);
 
         private:
         
             bool verbose_{false}; 
 
-            double wpThreshold_;
+            /**
+             * File and histogram of W from unweighted PN events
+             */
+            TFile * wFile;
+            TH1F * wHist;
+
+            /**
+             * Threshold after which to apply W reweighting
+             */
+            double wThreshold_;
+
+            /**
+             * Use proton or neutron hists/fits for reweighting
+             */
+            int wPdgId_;
+
+            /**
+             * Minimum angle for backwards-going hadron
+             */
+            double wTheta_;
 
             PnWeightResult result_;
     };
