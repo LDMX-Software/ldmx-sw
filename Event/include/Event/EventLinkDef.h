@@ -29,6 +29,7 @@
 #pragma link C++ class ldmx::SimTrackerHit+;
 #pragma link C++ class ldmx::SimParticle+;
 #pragma link C++ class ldmx::TriggerResult+;
+#pragma link C++ class ldmx::PnWeightResult+;
 
 #endif
 

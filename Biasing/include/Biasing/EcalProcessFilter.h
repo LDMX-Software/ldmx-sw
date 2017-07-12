@@ -17,20 +17,26 @@
 //------------//
 //   Geant4   //
 //------------//
+#include "G4VPhysicalVolume.hh"
+#include "G4PhysicalVolumeStore.hh"
 #include "G4RunManager.hh"
-//#include "G4UserTrackingAction.hh"
 
 //----------//
 //   LDMX   //
 //----------//
 #include "SimPlugins/UserActionPlugin.h"
 #include "Biasing/BiasingMessenger.h"
+#include "Biasing/EcalProcessFilterMessenger.h"
 #include "Biasing/TargetBremFilter.h"
 #include "SimCore/UserTrackInformation.h"
 
 class UserTrackingAction;
 
 namespace ldmx {
+
+    
+    // Forward declaration to avoid circular dependecies
+    class EcalProcessFilterMessenger; 
 
     class EcalProcessFilter : public UserActionPlugin {
 
@@ -86,10 +92,33 @@ namespace ldmx {
              */
             G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& currentTrackClass);
 
+            /** 
+             * Add a volume to apply the filter to.
+             *
+             * @param Volume name
+             */
+            void addVolume(std::string volume);
+
+            /** 
+             * Add a volume to bound the particle of interest to.
+             *
+             * @param Volume name
+             */
+            void addBoundingVolume(std::string volume);
+
         private:
+
+            /** Messenger used to pass arguments to this class. */
+            EcalProcessFilterMessenger* messenger_{nullptr};
 
             /** Pointer to the current track being processed. */
             G4Track* currentTrack_{nullptr};
+
+            /** List of volumes to apply filter to. */
+            std::vector<std::string> volumes_; 
+
+            /** List of volumes to bound the particle to. */
+            std::vector<std::string> boundVolumes_;
 
             /** Brem photon energy threshold */
             double photonEnergyThreshold_{2500}; // MeV
