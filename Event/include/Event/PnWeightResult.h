@@ -37,26 +37,25 @@ namespace ldmx {
             ~PnWeightResult();
             
             /** Return the fit W_p. */
-            double getFitWp() { return fitWp_; }
+            double getFitW() { return fitW_; }
 
             /** 
-             * Return the kinetic energy of the nucleon used to calculate 
-             * W_p.
+             * Return the kinetic energy of the nucleon used to calculate W
+             *
              */ 
             double getKineticEnergy() { return ke_; }
 
-            /** Return the measured W_p. */
-            double getMeasuredWp() { return measuredWp_; }
+            /** Return the measured W */
+            double getMeasuredW() { return w_; }
            
-            /** Return the polar angle of the nucleon used to calculate W_p. */
+            /** Return the polar angle of the nucleon used to calculate W */
             double getTheta() { return theta_; }
 
             /** Return the calcualted PN weight associated with this event. */
             double getWeight() { return weight_; }
 
-            /** Set the event weight and measured/fit wp. */
-            void setResult(double fitWp, double ke, double measuredWp, 
-                           double theta, double weight);
+            /** Set the event weight and measured/fit w */
+            void setResult(double ke, double theta, double w, double fitW, double weight);
 
             /** Reset the object. */
             void Clear(Option_t *option = "");
@@ -73,16 +72,16 @@ namespace ldmx {
         
         private:
  
-            /** Fit Wp */
-            double fitWp_{0.0};
+            /** Fit W */
+            double fitW_{0.0};
 
-            /** Kinetic energy of nucleon used to calculate Wp */
+            /** Kinetic energy of nucleon used to calculate W */
             double ke_{0.0};
             
-            /** Measured Wp */
-            double measuredWp_{0.0}; 
+            /** Measured W */
+            double w_{0.0}; 
 
-            /** Polar angle of nucleon used to calculate Wp */
+            /** Polar angle of nucleon used to calculate W */
             double theta_{0.0}; 
             
             /** Calculated PN weight */
