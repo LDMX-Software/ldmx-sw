@@ -187,7 +187,7 @@
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <file name="ldmx_magnet_14in_gap.gdml"/>
+        <file name="magnet.gdml"/>
         <positionref ref="magnet_pos"/>
         <rotationref ref="identity"/>
       </physvol>
