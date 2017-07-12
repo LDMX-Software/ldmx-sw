@@ -3435,6 +3435,8 @@
         <position name="v3402" unit="mm" z="457.200012207031" x="1047.7509765625" y="177.800003051758" />
         <position name="v3403" unit="mm" z="457.200012207031" x="564.75" y="-177.800003051758" />
         <position name="center" unit="mm" z="0" x="0" y="0" />
+        <position name="top_coil_pos" unit="mm" x="0" y="-0.5*mm" z="0" />
+        <position name="bot_coil_pos" unit="mm" x="0" y="0.5*mm" z="0" />
         <rotation name="identity" unit="radian" z="0" x="0" y="0" />
     </define>
 
@@ -10318,12 +10320,12 @@
             </physvol>
             <physvol>
                 <volumeref ref="coil_1_vol" />
-                <positionref ref="center" />
+                <positionref ref="top_coil_pos" />
                 <rotationref ref="identity" />
             </physvol>
             <physvol>
                 <volumeref ref="coil_2_vol" />
-                <positionref ref="center" />
+                <positionref ref="bot_coil_pos" />
                 <rotationref ref="identity" />
             </physvol>
             <physvol>
