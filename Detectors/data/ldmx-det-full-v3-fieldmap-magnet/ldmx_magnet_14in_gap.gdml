@@ -7,12 +7,28 @@
         <!-- Dimensions of the magnet box -->
         <variable name="magnet_box_x" value="2150*mm" />
         <variable name="magnet_box_y" value="1500*mm" />
-        <variable name="magnet_box_z" value="1250*mm" />
+        <variable name="magnet_box_z" value="1225*mm" />
+
+        <!-- Dimensions of Ecal box -->
+        <variable name="ecal_box_x" value="521*mm" />
+        <variable name="ecal_box_y" value="521*mm" />
+        <variable name="ecal_box_z" value="291*mm" />
 
         <!-- Magnet gap dimensions -->
         <variable name="magnet_gap_x" value="430*mm"/>
         <variable name="magnet_gap_y" value="350*mm"/>
         <variable name="magnet_gap_z" value="magnet_box_z + 1"/>
+
+        <!-- 
+             Distance from target to ecal face.  The front face is defined
+             with respect to the center of the magnet.
+        -->
+        <constant name="ecal_front_z" value="600*mm"/>
+        <constant name="ecal_thickness" value="326.0*mm"/>
+
+        <!-- Position of ecal box -->
+        <constant name="ecal_pos_z" value="ecal_front_z + ecal_thickness/2."/>
+        <position name="ecal_pos" x="0.0" y="0.0" z="ecal_pos_z"/>
 
         <position name="v0" unit="mm" z="-457.200012207031" x="1047.75" y="730.25" />
         <position name="v1" unit="mm" z="-457.200012207031" x="-1047.75" y="730.25" />
@@ -3444,11 +3460,24 @@
     <solids>
         <box aunit="radian" lunit="mm" name="magnet_box" x="magnet_box_x" y="magnet_box_y" z="magnet_box_z" />
         <box lunit="mm" name="magnet_gap_box" x="magnet_gap_x" y="magnet_gap_y" z="magnet_gap_z"/>    
-        
+        <box aunit="radian" lunit="mm" name="ecal_box" x="ecal_box_x" y="ecal_box_y" z="ecal_box_z" />
+
+        <!-- 
+             Create a magnet box with the gap and ecal physical volumes
+             subtracted out.  This avoides overlapping with the 
+             tagger/recoil tracker as well as the ecal.
+        -->
         <subtraction name="magnet_box_with_gap">
             <first ref="magnet_box" />
             <second ref="magnet_gap_box" />
             <positionref ref="center"/> 
+            <rotationref ref="identity"/>
+        </subtraction>
+        
+        <subtraction name="magnet_box_with_gap_ecal_sub">
+            <first ref="magnet_box_with_gap" />
+            <second ref="ecal_box" />
+            <positionref ref="ecal_pos"/> 
             <rotationref ref="identity"/>
         </subtraction>
 
@@ -10281,7 +10310,7 @@
         </volume>
         <volume name="ldmx_magnet" >
             <materialref ref="Vacuum" />
-            <solidref ref="magnet_box_with_gap" />
+            <solidref ref="magnet_box_with_gap_ecal_sub" />
             <physvol>
                 <volumeref ref="iron_block_0_vol" />
                 <positionref ref="center" />
