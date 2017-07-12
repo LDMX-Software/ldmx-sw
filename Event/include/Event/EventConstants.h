@@ -46,6 +46,7 @@ namespace ldmx {
             static const std::string SIM_CALORIMETER_HIT;
             static const std::string SIM_TRACKER_HIT;
             static const std::string RUN_HEADER;
+            static const std::string PN_WEIGHT;
 
     }; // class EventConstants
 
