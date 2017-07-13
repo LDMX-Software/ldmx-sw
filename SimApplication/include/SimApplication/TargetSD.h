@@ -17,61 +17,59 @@
 
 namespace ldmx {
 
-/**
- * @class TargetSD
- * @brief Sensitive detector for target or trigger pad 
- * @note Same as CalorimeterSD except no layer number is set on the ID.
- */
-class TargetSD: public G4VSensitiveDetector {
+    /**
+     * @class TargetSD
+     * @brief Sensitive detector for target or trigger pad
+     * @note Same as CalorimeterSD except no layer number is set on the ID.
+     */
+    class TargetSD : public G4VSensitiveDetector {
 
-    public:
+        public:
 
-        /**
-         * Class constructor.
-         * @param name The name of the calorimeter.
-         * @param theCollectionName The name of the hits collection.
-         * @param detID The detector ID.
-         */
-        TargetSD(G4String name,
-                G4String theCollectionName,
-                DetectorID* detID = new DefaultDetectorID);
+            /**
+             * Class constructor.
+             * @param name The name of the calorimeter.
+             * @param theCollectionName The name of the hits collection.
+             * @param detID The detector ID.
+             */
+            TargetSD(G4String name, G4String theCollectionName, DetectorID* detID = new DefaultDetectorID);
 
-        /**
-         * Class destructor.
-         */
-        virtual ~TargetSD();
+            /**
+             * Class destructor.
+             */
+            virtual ~TargetSD();
 
-        /**
-         * Process a step by creating a hit.
-         * @param aStep The step information
-         * @param ROhist The readout history.
-         */
-        G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
+            /**
+             * Process a step by creating a hit.
+             * @param aStep The step information
+             * @param ROhist The readout history.
+             */
+            G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
 
-        /**
-         * Initialize the sensitive detector.
-         * @param hcEvent The hits collections of the event.
-         */
-        void Initialize(G4HCofThisEvent* hcEvent);
+            /**
+             * Initialize the sensitive detector.
+             * @param hcEvent The hits collections of the event.
+             */
+            void Initialize(G4HCofThisEvent* hcEvent);
 
-        /**
-         * End of event hook.
-         * @param hcEvent The hits collections of the event.
-         */
-        void EndOfEvent(G4HCofThisEvent* hcEvent);
+            /**
+             * End of event hook.
+             * @param hcEvent The hits collections of the event.
+             */
+            void EndOfEvent(G4HCofThisEvent* hcEvent);
 
-    protected:
+        protected:
 
-        /**
-         * The hits collections of the sensitive detector.
-         */
-        G4CalorimeterHitsCollection* hitsCollection_;
+            /**
+             * The hits collections of the sensitive detector.
+             */
+            G4CalorimeterHitsCollection* hitsCollection_;
 
-        /**
-         * The detector ID.
-         */
-        DetectorID* detID_;
-};
+            /**
+             * The detector ID.
+             */
+            DetectorID* detID_;
+    };
 
 }
 
