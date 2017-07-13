@@ -77,12 +77,14 @@ namespace ldmx {
              * @note I hope you don't use the string '0x' in volume names or
              * this will screw them up!
              */
+            /*
             static void stripNamePointer(std::string& name) {
                 std::string::size_type i = name.find("0x");
                 if (i) {
                     name.erase(i, 9);
                 }
             }
+            */
     };
 
 }

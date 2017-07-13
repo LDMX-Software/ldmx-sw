@@ -11,24 +11,16 @@
 
 namespace ldmx {
 
-    Top::Top(TGeoNode* support) : DetectorElementImpl(nullptr, support) {
-
+    Top::Top() {
         // Name of this DE.
         name_ = "Top";
 
         // Create default detector ID.
         detectorID_ = new DefaultDetectorID();
+    }
 
-        // Create top-level detector components.
-        /*
-        new EcalDetectorElement(this);
-        new HcalDetectorElement(this);
-        new TaggerDetectorElement(this);
-        new RecoilTrackerDetectorElement(this);
-        new TargetDetectorElement(this);
-        new TriggerPadDetectorElement(this, "TriggerPadDown");
-        new TriggerPadDetectorElement(this, "TriggerPadUp");
-        */
+    Top::~Top() {
+        //delete detectorID_;
     }
 
     DE_ADD(Top)

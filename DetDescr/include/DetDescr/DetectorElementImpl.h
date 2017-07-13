@@ -182,11 +182,6 @@ namespace ldmx {
                 parent_ = parent;
             }
 
-            virtual void initialize() {
-            }
-
-        protected:
-
             /**
              * Add a child DetectorElement to this one.
              * @param The child DetectorElement.
@@ -195,6 +190,12 @@ namespace ldmx {
              */
             void addChild(DetectorElement* child) {
                 children_.push_back(child);
+            }
+
+            /**
+             * Initialization hook for adding custom setup code.
+             */
+            virtual void initialize() {
             }
 
         protected:

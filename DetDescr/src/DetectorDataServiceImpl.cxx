@@ -32,7 +32,7 @@ namespace ldmx {
                 std::string detectorName = entry->d_name;
                 if (detectorName != "." && detectorName != "..") {
                     std::string location = baseDir + "/" + detectorName + "/detector_full.gdml";
-                    std::cout << "adding detector alias: " << detectorName << " -> " << location << std::endl;
+                    //std::cout << "adding detector alias: " << detectorName << " -> " << location << std::endl;
                     addAlias(detectorName, location);
                 }
             }
@@ -69,20 +69,17 @@ namespace ldmx {
         // Build detector element tree from loaded ROOT geometry.
         buildDetectorElements();
 
-        // Setup the top DE which will setup subdetector components.
-        //deTop_ = new TopDetectorElement(geoManager_->GetTopNode());
-
         // Build the global matrix cache in the ROOT geometry manager.
-        //TGeoNavigator* nav = geoManager_->GetCurrentNavigator();
-        //nav->BuildCache();
+        TGeoNavigator* nav = geoManager_->GetCurrentNavigator();
+        nav->BuildCache();
 
         // Set the global positions on each DetectorElement by walking the hierarchy.
-        //GlobalPositionCacheBuilder globPosBuilder(nav);
-        //DetectorElementVisitor::walk(deTop_, &globPosBuilder);
+        GlobalPositionCacheBuilder globPosBuilder(nav);
+        DetectorElementVisitor::walk(deTop_, &globPosBuilder);
 
         // Cache maps of ID and nodes to DetectorElements.
-        //DetectorElementCacheBuilder cacheBuilder(&deCache_);
-        //DetectorElementVisitor::walk(deTop_, &cacheBuilder);
+        DetectorElementCacheBuilder cacheBuilder(&deCache_);
+        DetectorElementVisitor::walk(deTop_, &cacheBuilder);
     }
 
     DetectorElement* DetectorDataServiceImpl::findDetectorElement(TGeoNode* node) {
@@ -136,17 +133,19 @@ namespace ldmx {
                 TObjString* obj = (TObjString*) aux->GetValue("DetElem");
                 if (obj) {
                     TString str = obj->GetString();
-                    std::cout << "creating DE with type <" << str << ">" << std::endl;
+                    //std::cout << "creating DE with type <" << str << ">" << std::endl;
                     DetectorElementImpl* de = (DetectorElementImpl*) fac_->create(str.Data());
                     de->setSupport(curr);
                     if (str == "Top") {
                         this->deTop_ = de;
-                        std::cout << "assigned top DE with node " << curr->GetName() << std::endl;
+                        //std::cout << "assigned top DE with node " << curr->GetName() << std::endl;
                     } else {
                         de->setParent(deTop_);
-                        std::cout << "assigned top as parent to DE with node " << curr->GetName() << std::endl;
+                        deTop_->addChild(de);
                     }
                     de->initialize();
+
+                    std::cout << "created DE <" << de->getName() << "> with support <" << de->getSupport()->GetName() << ">" << std::endl;
                 }
             }
         }

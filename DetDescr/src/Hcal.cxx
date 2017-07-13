@@ -24,10 +24,13 @@ namespace ldmx {
     }
 
     void Hcal::initialize() {
-        /*
-        support_ = GeometryUtil::findFirstDauNameStartsWith("Hcal", parent->getSupport());
+
         if (!support_) {
-            throw std::runtime_error("The Hcal volume was not found.");
+            throw std::runtime_error("The Hcal support is not set.");
+        }
+
+        if (!parent_) {
+            throw std::runtime_error("The Hcal parent is not set.");
         }
 
         getDetectorID()->clear();
@@ -41,7 +44,6 @@ namespace ldmx {
                 new HcalStation(this, dau);
             }
         }
-        */
     }
 
     HcalStation* Hcal::getHcalStation(int num) {

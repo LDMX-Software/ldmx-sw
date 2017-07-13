@@ -21,7 +21,6 @@ namespace ldmx {
 
         std::stringstream ss;
         ss << std::setfill('0') << std::setw(2) << layerNumber_;
-        std::cout << "layer: " << layerNumber_ << std::endl;
         name_ = "EcalStation" + ss.str();
 
         getDetectorID()->setFieldValue(1, support_->GetNumber());
@@ -38,7 +37,7 @@ namespace ldmx {
     }
 
     Ecal::~Ecal() {
-        delete detectorID_;
+        //delete detectorID_;
     }
 
     void Ecal::initialize() {
@@ -61,7 +60,6 @@ namespace ldmx {
             auto dau = support_->GetDaughter(iDau);
             static std::string prefix = "Si";
             if (!std::string(dau->GetName()).compare(0, prefix.size(), prefix)) {
-                std::cout << "adding ECal station <" << dau->GetName() << "> with copynum " << dau->GetNumber() << std::endl;
                 auto ecalStation = new EcalStation();
                 ecalStation->setSupport(dau);
                 ecalStation->setParent(this);

@@ -35,9 +35,9 @@ namespace ldmx {
 
     /**
      * @class RecoilTrackerLayer
-     * @brief DetectorElement representing a layer in the Recoil Tracker
+     * @brief DetectorElement representing a readout station in the Recoil Tracker
      */
-    class RecoilTrackerLayer : public DetectorElementImpl {
+    class RecoilTrackerStation : public DetectorElementImpl {
 
         public:
 
@@ -49,7 +49,7 @@ namespace ldmx {
              * @note If the support is non-null, then the layer number is read from the
              * node's copy number if not provided explicitly.
              */
-            RecoilTrackerLayer(DetectorElementImpl* parent, TGeoNode* support, int layerNum = -1);
+            RecoilTrackerStation(DetectorElementImpl* parent, TGeoNode* support, int layerNum = -1);
 
             /**
              * Get the layer number.
@@ -78,7 +78,7 @@ namespace ldmx {
              * @param layer The parent RecoilTrackerLayer DetectorElement.
              * @param support The geometric support.
              */
-            RecoilTrackerSensor(RecoilTrackerLayer* layer, TGeoNode* support);
+            RecoilTrackerSensor(RecoilTrackerStation* layer, TGeoNode* support);
 
             /**
              * Get the sensor number.

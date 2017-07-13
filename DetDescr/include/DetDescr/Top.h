@@ -20,14 +20,9 @@ namespace ldmx {
 
         public:
 
-            Top() {
-            }
+            Top();
 
-            /**
-             * Class constructor.
-             * @param support The geometric support (points to world volume).
-             */
-            Top(TGeoNode* support);
+            ~Top();
 
         private:
             DE_INIT(Top)

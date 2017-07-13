@@ -36,7 +36,7 @@ namespace ldmx {
      * @class TaggerLayer
      * @brief DetectorElement representing a layer in the Tagger
      */
-    class TaggerLayer : public DetectorElementImpl {
+    class TaggerStation : public DetectorElementImpl {
 
         public:
 
@@ -46,7 +46,7 @@ namespace ldmx {
              * @param support The geomtric support.
              * @note The layer number is read from the support's copy number.
              */
-            TaggerLayer(DetectorElementImpl* parent, TGeoNode* support);
+            TaggerStation(DetectorElementImpl* parent, TGeoNode* support);
 
             /**
              * Get the layer number.

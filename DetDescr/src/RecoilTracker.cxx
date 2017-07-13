@@ -11,7 +11,7 @@ using std::vector;
 
 namespace ldmx {
 
-    RecoilTrackerLayer::RecoilTrackerLayer(DetectorElementImpl* tagger, TGeoNode* support, int layerNumber) : DetectorElementImpl(tagger, support) {
+    RecoilTrackerStation::RecoilTrackerStation(DetectorElementImpl* tagger, TGeoNode* support, int layerNumber) : DetectorElementImpl(tagger, support) {
 
         if (layerNumber == -1) {
             // Front layer where node's number can be used.
@@ -34,29 +34,29 @@ namespace ldmx {
     }
 
     void RecoilTracker::initialize() {
-        /*
-        support_ = GeometryUtil::findFirstDauNameStartsWith("RecoilTracker", parent->getSupport());
+
         if (!support_) {
-            throw std::runtime_error("The RecoilTracker volume was not found.");
+            throw std::runtime_error("The RecoilTracker support is not set.");
+        }
+
+        if (!parent_) {
+            throw std::runtime_error("The RecoilTracker parent is not set.");
         }
 
         getDetectorID()->clear();
         getDetectorID()->setFieldValue(0, support_->GetNumber());
         id_ = getDetectorID()->pack();
-        */
 
         /*
          * Build a map of copy numbers to a list of nodes so we can tell which
          * layers have an actual node in the geometry.
          */
-        /*
         map<int, vector<TGeoNode*>> nodeMap;
         auto dauVec = GeometryUtil::findDauNameStartsWith("recoil", support_);
         for (auto dau : dauVec) {
             int dauNum = dau->GetNumber();
             nodeMap[dauNum].push_back(dau);
         }
-        */
 
         /*
          * Create DE for the layers and sensors.
@@ -65,25 +65,23 @@ namespace ldmx {
          * the entire layer.  So a layer is created without a support
          * node and these nodes are added as children to the layer.
          */
-        /*
         for (auto entry : nodeMap) {
             int copyNum = entry.first;
             vector<TGeoNode*>& nodes = entry.second;
             if (nodes.size() == 1) {
-                new RecoilTrackerLayer(this, nodes[0]);
+                new RecoilTrackerStation(this, nodes[0]);
             } else {
-                RecoilTrackerLayer* layer = new RecoilTrackerLayer(this, nullptr, copyNum);
+                RecoilTrackerStation* layer = new RecoilTrackerStation(this, nullptr, copyNum);
                 for (auto sensorNode : nodes) {
                     new RecoilTrackerSensor(layer, sensorNode);
                 }
             }
         }
-        */
     }
 
-    RecoilTrackerSensor::RecoilTrackerSensor(RecoilTrackerLayer* layer, TGeoNode* support) : DetectorElementImpl(layer, support) {
+    RecoilTrackerSensor::RecoilTrackerSensor(RecoilTrackerStation* layer, TGeoNode* support) : DetectorElementImpl(layer, support) {
         string nodeName = support->GetName();
-        GeometryUtil::stripNamePointer(nodeName);
+        //GeometryUtil::stripNamePointer(nodeName);
         string sensorNum = nodeName.substr(16, 2);
         stringstream ss1;
         ss1 << std::setfill('0') << std::setw(2) << sensorNum;
