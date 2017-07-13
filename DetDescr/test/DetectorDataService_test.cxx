@@ -9,11 +9,11 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-#include "../include/DetDescr/Ecal.h"
-#include "../include/DetDescr/Hcal.h"
-#include "../include/DetDescr/RecoilTracker.h"
-#include "../include/DetDescr/Tagger.h"
-#include "../include/DetDescr/Target.h"
+#include "DetDescr/Ecal.h"
+#include "DetDescr/Hcal.h"
+#include "DetDescr/RecoilTracker.h"
+#include "DetDescr/Tagger.h"
+#include "DetDescr/Target.h"
 
 using namespace ldmx;
 using namespace std;
@@ -73,14 +73,11 @@ int main(int argc, const char* argv[])  {
 
     std::cout << "Running DetectorDataService test ..." << std::endl;
 
-    // Initialize a detector.
+    // Initialize a test detector.
     DetectorDataServiceImpl* svc = new DetectorDataServiceImpl();
-
     svc->setDetectorName("ldmx-det-full-v2-test");
-
     svc->initialize();
 
-    /*
     // Get the top DE.
     DetectorElement* top = svc->getTopDetectorElement();
 
@@ -94,14 +91,14 @@ int main(int argc, const char* argv[])  {
     decoder = ecal->getDetectorID();
     decoder->setRawValue(ecal->getID());
     values = decoder->unpack();
-    std::cout << "Got 'Ecal' DE with support '" << ecal->getSupport()->GetName() << "'"
+    std::cout << "Got 'Ecal' DE with support <" << ecal->getSupport()->GetName() << ">"
             << ecal->getGlobalPosition() << values << std::endl;
     for (auto ecalLayer : ecal->getChildren()) {
         decoder->setRawValue(ecalLayer->getID());
         values = decoder->unpack();
-        std::cout << "  " << ecalLayer->getName() << " with support "
-                << ecalLayer->getSupport()->GetName() << " and layer num "
-                << ((EcalLayer*)ecalLayer)->getLayerNumber()
+        std::cout << "  " << ecalLayer->getName() << " with support <"
+                << ecalLayer->getSupport()->GetName() << "> and layer num "
+                << ((EcalStation*)ecalLayer)->getLayerNumber()
                 << ecalLayer->getGlobalPosition()
                 << values
                 << std::endl;
@@ -119,15 +116,14 @@ int main(int argc, const char* argv[])  {
     for (auto hcalStation : hcal->getChildren()) {
         decoder->setRawValue(hcalStation->getID());
         values = decoder->unpack();
-        std::cout << "  " << hcalStation->getName() << " with support "
-                << hcalStation->getSupport()->GetName() << " and station num "
+        std::cout << "  " << hcalStation->getName() << " with support <"
+                << hcalStation->getSupport()->GetName() << "> and station num "
                 << ((HcalStation*)hcalStation)->getStationNumber()
                 << hcalStation->getGlobalPosition()
                 << values
                 << std::endl;
         find(svc, hcalStation);
     }
-
     std::cout << std::endl;
 
     // Print Tagger info.
@@ -143,13 +139,12 @@ int main(int argc, const char* argv[])  {
         values = decoder->unpack();
         std::cout << "  " << taggerLayer->getName() << " with support "
                         << taggerLayer->getSupport()->GetName() << " and layer num "
-                        << ((TaggerLayer*)taggerLayer)->getLayerNumber()
+                        << ((TaggerStation*)taggerLayer)->getLayerNumber()
                         << taggerLayer->getGlobalPosition()
                         << values
                         << std::endl;
         find(svc, taggerLayer);
     }
-
     std::cout << std::endl;
 
     // Print Recoil Tracker info.
@@ -157,25 +152,25 @@ int main(int argc, const char* argv[])  {
     decoder = recoilTracker->getDetectorID();
     decoder->setRawValue(recoilTracker->getID());
     values = decoder->unpack();
-    std::cout << "Got 'RecoilTracker' DE with support '" << recoilTracker->getSupport()->GetName() << "'"
+    std::cout << "Got 'RecoilTracker' DE with support <" << recoilTracker->getSupport()->GetName() << ">"
             << recoilTracker->getGlobalPosition() << values << std::endl;
     for (auto recoilTrackerLayer : recoilTracker->getChildren()) {
         decoder->setRawValue(recoilTrackerLayer->getID());
         values = decoder->unpack();
         if (recoilTrackerLayer->getSupport()) {
-            std::cout << "  " << recoilTrackerLayer->getName() << " with support "
-                    << recoilTrackerLayer->getSupport()->GetName() << " and layer num "
-                    << ((TaggerLayer*)recoilTrackerLayer)->getLayerNumber()
+            std::cout << "  " << recoilTrackerLayer->getName() << " with support <"
+                    << recoilTrackerLayer->getSupport()->GetName() << "> and layer num "
+                    << ((TaggerStation*)recoilTrackerLayer)->getLayerNumber()
                     << recoilTrackerLayer->getGlobalPosition()
                     << values
                     << std::endl;
             find(svc, recoilTrackerLayer);
         } else {
             std::cout << "  " << recoilTrackerLayer->getName() << " with layer num "
-                    << ((TaggerLayer*)recoilTrackerLayer)->getLayerNumber() << values << std::endl;
+                    << ((TaggerStation*)recoilTrackerLayer)->getLayerNumber() << values << std::endl;
             for (auto recoilSensor : recoilTrackerLayer->getChildren()) {
-                std::cout << "    " << recoilSensor->getName() << " with support "
-                        << recoilSensor->getSupport()->GetName() << " and sensor num "
+                std::cout << "    " << recoilSensor->getName() << " with support <"
+                        << recoilSensor->getSupport()->GetName() << "> and sensor num "
                         << ((RecoilTrackerSensor*)recoilSensor)->getSensorNumber()
                         << recoilSensor->getGlobalPosition()
                         << std::endl;
@@ -191,7 +186,7 @@ int main(int argc, const char* argv[])  {
     decoder->setRawValue(target->getID());
     values = decoder->unpack();
     std::cout << "Got 'Target' DE with support " << target->getSupport()->GetName() << "'" << target->getGlobalPosition() << values << std::endl;
-    std::cout << "  targetThickness = " << ((TargetDetectorElement*)target)->getTargetThickness() << std::endl;
+    std::cout << "  targetThickness = " << ((Target*)target)->getTargetThickness() << std::endl;
     find(svc, target, "  ");
     std::cout << std::endl;
 
@@ -214,7 +209,6 @@ int main(int argc, const char* argv[])  {
     delete svc;
 
     std::cout << std::endl;
-    */
 
     std::cout << "Done running DetectorDataService test!" << std::endl;
 }
