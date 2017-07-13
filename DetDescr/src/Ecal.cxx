@@ -1,3 +1,10 @@
+#include "DetDescr/Ecal.h"
+
+// LDMX
+#include "DetDescr/DetectorElement.h"
+#include "DetDescr/EcalDetectorID.h"
+
+// ROOT
 #include <Rtypes.h>
 #include <TGeoNode.h>
 #include <TNamed.h>
@@ -6,10 +13,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-
-#include "../include/DetDescr/DetectorElement.h"
-#include "../include/DetDescr/Ecal.h"
-#include "../include/DetDescr/EcalDetectorID.h"
 
 namespace ldmx {
 

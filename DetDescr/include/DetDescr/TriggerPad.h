@@ -1,11 +1,11 @@
 /*
- * TriggerPadDetectorElement.h
+ * TriggerPad.h
  * @brief Class defining a DetectorElement for the trigger pads
  * @author JeremyMcCormick, SLAC
  */
 
-#ifndef DETDESCR_TRIGGERPADDETECTORELEMENT_H_
-#define DETDESCR_TRIGGERPADDETECTORELEMENT_H_
+#ifndef DETDESCR_TRIGGERPAD_H_
+#define DETDESCR_TRIGGERPAD_H_
 
 #include <string>
 
@@ -14,18 +14,13 @@
 namespace ldmx {
 
     /**
-     * @class TriggerPadDetectorElement
+     * @class TriggerPad
      * @brief Defines a DetectorElement for a trigger pad
      */
     class TriggerPad : public DetectorElementImpl {
 
         public:
 
-            /**
-             * Class constructor.
-             * @param parent The parent DetectorElement.
-             * @param name The name of the trigger pad in the geometry.
-             */
             TriggerPad();
 
             void initialize();

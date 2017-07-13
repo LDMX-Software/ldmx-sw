@@ -1,11 +1,11 @@
 /*
- * TargetDetectorElement.h
+ * Target.h
  * @brief Class defining DetectorElement for the beam target
  * @author JeremyMcCormick, SLAC
  */
 
-#ifndef INCLUDE_DETDESCR_TARGETDETECTORELEMENT_H_
-#define INCLUDE_DETDESCR_TARGETDETECTORELEMENT_H_
+#ifndef INCLUDE_DETDESCR_TARGET_H_
+#define INCLUDE_DETDESCR_TARGET_H_
 
 // LDMX
 #include "DetDescr/DetectorElementImpl.h"
@@ -13,7 +13,7 @@
 namespace ldmx {
 
     /**
-     * @class TargetDetectorElement
+     * @class Target
      * @brief Defines a DetectorElement for the beam target
      */
     class Target : public DetectorElementImpl {

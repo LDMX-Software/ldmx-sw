@@ -1,11 +1,11 @@
 /*
- * HcalDetectorElement.h
+ * Hcal.h
  * @brief Class representing the DetectorElement for an HCal station
  * @author JeremyMcCormick, SLAC
  */
 
-#ifndef DETDESCR_HCALDETECTORELEMENT_H_
-#define DETDESCR_HCALDETECTORELEMENT_H_
+#ifndef DETDESCR_HCAL_H_
+#define DETDESCR_HCAL_H_
 
 #include "DetDescr/DetectorElementImpl.h"
 
@@ -47,7 +47,7 @@ namespace ldmx {
     };
 
     /**
-     * @class HcalDetectorElement
+     * @class Hcal
      * @brief Top level DetectorElement representing the HCal
      */
     class Hcal : public DetectorElementImpl {

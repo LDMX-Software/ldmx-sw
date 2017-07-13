@@ -1,18 +1,18 @@
 /*
- * TaggerDetectorElement.h
+ * Tagger.h
  * @brief Class defining top level DetectorElement for the Tagger
  * @author JeremyMcCormick, SLAC
  */
 
-#ifndef DETDESCR_TAGGERDETECTORELEMENT_H_
-#define DETDESCR_TAGGERDETECTORELEMENT_H_
+#ifndef DETDESCR_TAGGER_H_
+#define DETDESCR_TAGGER_H_
 
 #include "DetDescr/DetectorElementImpl.h"
 
 namespace ldmx {
 
     /**
-     * @class TaggerDetectorElement
+     * @class Tagger
      * @brief Defines top level DetectorElement for the Tagger
      */
     class Tagger : public DetectorElementImpl {

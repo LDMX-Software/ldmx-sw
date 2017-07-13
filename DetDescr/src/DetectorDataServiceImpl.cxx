@@ -8,11 +8,13 @@
 #include "TObjString.h"
 
 // LDMX
+#include "DetDescr/Top.h"
+
+// C++
 #include <queue>
 #include <iostream>
 #include <cstdlib>
 #include <dirent.h>
-#include "../include/DetDescr/Top.h"
 
 using namespace std;
 
@@ -144,8 +146,7 @@ namespace ldmx {
                         deTop_->addChild(de);
                     }
                     de->initialize();
-
-                    std::cout << "created DE <" << de->getName() << "> with support <" << de->getSupport()->GetName() << ">" << std::endl;
+                    //std::cout << "created DE <" << de->getName() << "> with support <" << de->getSupport()->GetName() << ">" << std::endl;
                 }
             }
         }

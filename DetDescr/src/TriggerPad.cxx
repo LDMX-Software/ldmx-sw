@@ -1,4 +1,4 @@
-#include "../include/DetDescr/TriggerPad.h"
+#include "DetDescr/TriggerPad.h"
 #include "DetDescr/GeometryUtil.h"
 
 namespace ldmx {

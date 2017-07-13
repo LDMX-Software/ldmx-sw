@@ -1,8 +1,10 @@
+#include "DetDescr/RecoilTracker.h"
+
+// C++
 #include <map>
 #include <vector>
 #include <iostream>
 #include <sstream>
-#include "../include/DetDescr/RecoilTracker.h"
 
 using std::stringstream;
 using std::string;

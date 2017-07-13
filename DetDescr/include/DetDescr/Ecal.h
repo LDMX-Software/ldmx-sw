@@ -1,11 +1,11 @@
 /*
- * EcalDetectorElement.h
+ * Ecal.h
  * @brief Class providing a DetectorElement for the ECal
  * @author JeremyMcCormick, SLAC
  */
 
-#ifndef DETDESCR_ECALDETECTORELEMENT_H_
-#define DETDESCR_ECALDETECTORELEMENT_H_
+#ifndef DETDESCR_ECAL_H_
+#define DETDESCR_ECAL_H_
 
 // LDMX
 #include "DetDescr/DetectorElementImpl.h"
@@ -40,7 +40,7 @@ namespace ldmx {
     };
 
     /**
-     * @class EcalDetectorElement
+     * @class Ecal
      * @brief The top-level DetectorElement for the ECal.
      */
     class Ecal : public DetectorElementImpl {

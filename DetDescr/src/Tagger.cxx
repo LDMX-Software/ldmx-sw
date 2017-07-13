@@ -1,9 +1,12 @@
+#include "DetDescr/Tagger.h"
+
+// LDMX
 #include "DetDescr/GeometryUtil.h"
 
 // STL
 #include <iostream>
 #include <sstream>
-#include "../include/DetDescr/Tagger.h"
+
 
 namespace ldmx {
 

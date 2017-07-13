@@ -1,6 +1,8 @@
+#include "DetDescr/Target.h"
+
+// ROOT
 #include "TGeoBBox.h"
 
-#include "../include/DetDescr/Target.h"
 // LDMX
 #include "DetDescr/GeometryUtil.h"
 

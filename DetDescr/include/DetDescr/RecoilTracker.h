@@ -1,11 +1,11 @@
 /*
- * RecoilTrackerDetectorElement.h
+ * Recoil.h
  * @brief Class defining top level DetectorElement for the Recoil Tracker
  * @author JeremyMcCormick, SLAC
  */
 
-#ifndef DETDESCR_RECOILTRACKERDETECTORELEMENT_H_
-#define DETDESCR_RECOILTRACKERDETECTORELEMENT_H_
+#ifndef DETDESCR_RECOILTRACK_H_
+#define DETDESCR_RECOILTRACK_H_
 
 // LDMX
 #include "DetDescr/DetectorElementImpl.h"
@@ -14,7 +14,7 @@
 namespace ldmx {
 
     /**
-     * @class RecoilTrackerDetectorElement
+     * @class RecoilTracker
      * @brief Top level DetectorElement for the Recoil Tracker
      */
     class RecoilTracker : public DetectorElementImpl {
@@ -30,7 +30,7 @@ namespace ldmx {
     };
 
     /**
-     * @class RecoilTrackerLayer
+     * @class RecoilTrackerStation
      * @brief DetectorElement representing a readout station in the Recoil Tracker
      */
     class RecoilTrackerStation : public DetectorElementImpl {

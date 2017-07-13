@@ -1,8 +1,11 @@
+#include "DetDescr/Hcal.h"
+
+// LDMX
 #include "DetDescr/GeometryUtil.h"
 
+// C++
 #include <iostream>
 #include <sstream>
-#include "../include/DetDescr/Hcal.h"
 
 namespace ldmx {
 
