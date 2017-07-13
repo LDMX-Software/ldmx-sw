@@ -35,7 +35,7 @@ class sampleContainer:
         self.hcalSimHits = r.TClonesArray('ldmx::SimCalorimeterHit');
         self.ecalVetoRes = r.TClonesArray('ldmx::EcalVetoResult');
         self.trackRes    = r.TClonesArray('ldmx::FindableTrackResult');
-        self.tin.SetBranchAddress("EventHeader",  r.AddressOf( self.evHeader ));
+        #self.tin.SetBranchAddress("EventHeader",  r.AddressOf( self.evHeader ));
         self.tin.SetBranchAddress("Trigger_recon",  r.AddressOf( self.trigRes ));
         self.tin.SetBranchAddress("SimParticles_sim",  r.AddressOf( self.simParticles ));
         self.tin.SetBranchAddress("EcalSimHits_sim",  r.AddressOf( self.ecalSimHits ));
@@ -48,7 +48,7 @@ class sampleContainer:
         self.events =  []
         for event in xrange(min(self.maxEvts,self.tin.GetEntries())):
             evt = []
-            self.tin.GetEntry(event)
+            self.tin.GetEntry(event);
             #for entry in (self.ecalVetoRes[0].getEcalLayerEdepReadout())[0:33]:
             #    evt.append(entry)
 
