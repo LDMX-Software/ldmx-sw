@@ -8,12 +8,11 @@
 #include "TObjString.h"
 
 // LDMX
-#include "DetDescr/TopDetectorElement.h"
-
 #include <queue>
 #include <iostream>
 #include <cstdlib>
 #include <dirent.h>
+#include "../include/DetDescr/Top.h"
 
 using namespace std;
 
@@ -140,7 +139,7 @@ namespace ldmx {
                     std::cout << "creating DE with type <" << str << ">" << std::endl;
                     DetectorElementImpl* de = (DetectorElementImpl*) fac_->create(str.Data());
                     de->setSupport(curr);
-                    if (str == "TopDetectorElement") {
+                    if (str == "Top") {
                         this->deTop_ = de;
                         std::cout << "assigned top DE with node " << curr->GetName() << std::endl;
                     } else {
