@@ -24,7 +24,9 @@ namespace ldmx {
              * Class constructor.
              * @param parent The parent DetectorElement.
              */
-            Target(DetectorElementImpl* parent);
+            Target();
+
+            void initialize();
 
             /**
              * Get the thickness of the target [mm].
@@ -38,6 +40,8 @@ namespace ldmx {
 
             /** The thickness of the target from the Z dimension of the box. */
             double targetThickness_;
+
+            DE_INIT(Target)
     };
 }
 

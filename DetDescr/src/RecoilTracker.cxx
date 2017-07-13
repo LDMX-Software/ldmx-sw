@@ -29,8 +29,12 @@ namespace ldmx {
         id_ = getDetectorID()->pack();
     }
 
-    RecoilTracker::RecoilTracker(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
+    RecoilTracker::RecoilTracker() {
         name_ = "RecoilTracker";
+    }
+
+    void RecoilTracker::initialize() {
+        /*
         support_ = GeometryUtil::findFirstDauNameStartsWith("RecoilTracker", parent->getSupport());
         if (!support_) {
             throw std::runtime_error("The RecoilTracker volume was not found.");
@@ -39,17 +43,20 @@ namespace ldmx {
         getDetectorID()->clear();
         getDetectorID()->setFieldValue(0, support_->GetNumber());
         id_ = getDetectorID()->pack();
+        */
 
         /*
          * Build a map of copy numbers to a list of nodes so we can tell which
          * layers have an actual node in the geometry.
          */
+        /*
         map<int, vector<TGeoNode*>> nodeMap;
         auto dauVec = GeometryUtil::findDauNameStartsWith("recoil", support_);
         for (auto dau : dauVec) {
             int dauNum = dau->GetNumber();
             nodeMap[dauNum].push_back(dau);
         }
+        */
 
         /*
          * Create DE for the layers and sensors.
@@ -58,18 +65,20 @@ namespace ldmx {
          * the entire layer.  So a layer is created without a support
          * node and these nodes are added as children to the layer.
          */
+        /*
         for (auto entry : nodeMap) {
             int copyNum = entry.first;
             vector<TGeoNode*>& nodes = entry.second;
             if (nodes.size() == 1) {
                 new RecoilTrackerLayer(this, nodes[0]);
             } else {
-                RecoilTrackerLayer* layer = new RecoilTrackerLayer(this, nullptr /* no volume for this DE */, copyNum);
+                RecoilTrackerLayer* layer = new RecoilTrackerLayer(this, nullptr, copyNum);
                 for (auto sensorNode : nodes) {
                     new RecoilTrackerSensor(layer, sensorNode);
                 }
             }
         }
+        */
     }
 
     RecoilTrackerSensor::RecoilTrackerSensor(RecoilTrackerLayer* layer, TGeoNode* support) : DetectorElementImpl(layer, support) {
@@ -83,4 +92,6 @@ namespace ldmx {
         name_ = "RecoilTrackerLayer" + ss1.str() + "_Sensor" + ss2.str();
         sensorNumber_ = std::stoi(sensorNum);
     }
+
+    DE_ADD(RecoilTracker)
 }

@@ -26,7 +26,12 @@ namespace ldmx {
              * @param parent The parent DetectorElement.
              * @param name The name of the trigger pad in the geometry.
              */
-            TriggerPad(DetectorElementImpl* parent, std::string name);
+            TriggerPad();
+
+            void initialize();
+
+        private:
+            DE_INIT(TriggerPad)
     };
 }
 

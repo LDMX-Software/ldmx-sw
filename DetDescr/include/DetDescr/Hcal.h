@@ -58,7 +58,9 @@ namespace ldmx {
              * Class constructor.
              * @param parent The parent DetectorElement.
              */
-            Hcal(DetectorElementImpl* parent);
+            Hcal();
+
+            void initialize();
 
             /**
              * Get the DetectorElement for an Hcal station.
@@ -67,6 +69,9 @@ namespace ldmx {
              * @return The HcalStation with the matching number.
              */
             HcalStation* getHcalStation(int num);
+
+        private:
+            DE_INIT(Hcal)
     };
 }
 

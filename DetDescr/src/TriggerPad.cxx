@@ -3,10 +3,12 @@
 
 namespace ldmx {
 
-    TriggerPad::TriggerPad(DetectorElementImpl* parent, std::string name) : DetectorElementImpl(parent) {
+    TriggerPad::TriggerPad() {
+        name_ = "TriggerPadXXX"; // FIXME
+    }
 
-        name_ = name;
-
+    void TriggerPad::initialize() {
+        /*
         support_ = GeometryUtil::findFirstDauNameStartsWith(name_, parent->getSupport());
         if (!support_) {
             throw std::runtime_error("The volume for the trigger pad was not found.");
@@ -14,6 +16,8 @@ namespace ldmx {
 
         getDetectorID()->setFieldValue(0, support_->GetNumber());
         id_ = getDetectorID()->pack();
+        */
     }
 
+    DE_ADD(TriggerPad)
 }

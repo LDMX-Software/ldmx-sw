@@ -7,10 +7,13 @@
 
 namespace ldmx {
 
-    Tagger::Tagger(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
-
+    Tagger::Tagger() {
         name_ = "Tagger";
-        support_ = GeometryUtil::findFirstDauNameStartsWith("Tagger", parent->getSupport());
+    }
+
+    void Tagger::initialize() {
+        /*
+         support_ = GeometryUtil::findFirstDauNameStartsWith("Tagger", parent->getSupport());
         if (!support_) {
             throw std::runtime_error("The Tagger volume was not found.");
         }
@@ -24,6 +27,7 @@ namespace ldmx {
         for (auto layerNode : layerVec) {
             new TaggerLayer(this, layerNode);
         }
+        */
     }
 
     TaggerLayer::TaggerLayer(DetectorElementImpl* tagger, TGeoNode* support) : DetectorElementImpl(tagger, support) {
@@ -37,4 +41,6 @@ namespace ldmx {
         getDetectorID()->setFieldValue(1, support_->GetNumber());
         id_ = getDetectorID()->pack();
     }
+
+    DE_ADD(Tagger)
 }

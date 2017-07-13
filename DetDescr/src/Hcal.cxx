@@ -16,12 +16,15 @@ namespace ldmx {
         // TODO: Set detector ID value.
     }
 
-    Hcal::Hcal(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
+    Hcal::Hcal() {
 
         name_ = "Hcal";
 
         //detID_ = new HcalDetectorID();
+    }
 
+    void Hcal::initialize() {
+        /*
         support_ = GeometryUtil::findFirstDauNameStartsWith("Hcal", parent->getSupport());
         if (!support_) {
             throw std::runtime_error("The Hcal volume was not found.");
@@ -38,10 +41,12 @@ namespace ldmx {
                 new HcalStation(this, dau);
             }
         }
+        */
     }
 
     HcalStation* Hcal::getHcalStation(int num) {
         return static_cast<HcalStation*>(children_[num - 1]);
     }
 
+    DE_ADD(Hcal)
 }

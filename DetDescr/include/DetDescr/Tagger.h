@@ -23,7 +23,12 @@ namespace ldmx {
              * Class constructor.
              * @param parent The parent DetectorElement.
              */
-            Tagger(DetectorElementImpl* parent);
+            Tagger();
+
+            void initialize();
+
+        private:
+            DE_INIT(Tagger)
     };
 
 

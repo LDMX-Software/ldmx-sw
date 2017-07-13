@@ -44,11 +44,11 @@ namespace ldmx {
     void Ecal::initialize() {
 
         if (!support_) {
-            throw std::runtime_error("The ECal support vol is not set.");
+            throw std::runtime_error("The Ecal support is not set.");
         }
 
         if (!parent_) {
-            throw std::runtime_error("The Ecal parent detelem is not set.");
+            throw std::runtime_error("The Ecal parent is not set.");
         }
 
         detectorID_->clear();

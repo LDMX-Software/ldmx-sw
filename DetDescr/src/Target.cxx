@@ -6,10 +6,13 @@
 
 namespace ldmx {
 
-    Target::Target(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
-
+    Target::Target() {
         name_ = "Target";
+        targetThickness_ = -1.0;
+    }
 
+    void Target::initialize() {
+        /*
         support_ = GeometryUtil::findFirstDauNameStartsWith("Target", parent->getSupport());
         if (!support_) {
             throw std::runtime_error("The Target volume was not found.");
@@ -21,6 +24,8 @@ namespace ldmx {
         getDetectorID()->clear();
         getDetectorID()->setFieldValue(0, support_->GetNumber());
         id_ = getDetectorID()->pack();
+        */
     }
 
+    DE_ADD(Target)
 }
