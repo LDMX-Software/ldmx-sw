@@ -17,7 +17,7 @@ namespace ldmx {
      * @class TriggerPadDetectorElement
      * @brief Defines a DetectorElement for a trigger pad
      */
-    class TriggerPadDetectorElement : public DetectorElementImpl {
+    class TriggerPad : public DetectorElementImpl {
 
         public:
 
@@ -26,7 +26,7 @@ namespace ldmx {
              * @param parent The parent DetectorElement.
              * @param name The name of the trigger pad in the geometry.
              */
-            TriggerPadDetectorElement(DetectorElementImpl* parent, std::string name);
+            TriggerPad(DetectorElementImpl* parent, std::string name);
     };
 }
 

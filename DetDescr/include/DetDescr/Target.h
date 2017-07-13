@@ -16,7 +16,7 @@ namespace ldmx {
      * @class TargetDetectorElement
      * @brief Defines a DetectorElement for the beam target
      */
-    class TargetDetectorElement : public DetectorElementImpl {
+    class Target : public DetectorElementImpl {
 
         public:
 
@@ -24,7 +24,7 @@ namespace ldmx {
              * Class constructor.
              * @param parent The parent DetectorElement.
              */
-            TargetDetectorElement(DetectorElementImpl* parent);
+            Target(DetectorElementImpl* parent);
 
             /**
              * Get the thickness of the target [mm].

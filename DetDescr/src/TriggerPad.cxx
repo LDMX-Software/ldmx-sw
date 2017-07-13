@@ -1,10 +1,9 @@
-#include "DetDescr/TriggerPadDetectorElement.h"
-
+#include "../include/DetDescr/TriggerPad.h"
 #include "DetDescr/GeometryUtil.h"
 
 namespace ldmx {
 
-    TriggerPadDetectorElement::TriggerPadDetectorElement(DetectorElementImpl* parent, std::string name) : DetectorElementImpl(parent) {
+    TriggerPad::TriggerPad(DetectorElementImpl* parent, std::string name) : DetectorElementImpl(parent) {
 
         name_ = name;
 

@@ -1,20 +1,17 @@
-#include "DetDescr/TopDetectorElement.h"
-
-// LDMX
 #include "DetDescr/DetectorDataService.h"
 #include "DetDescr/DefaultDetectorID.h"
-#include "DetDescr/EcalDetectorElement.h"
-#include "DetDescr/HcalDetectorElement.h"
-#include "DetDescr/RecoilTrackerDetectorElement.h"
-#include "DetDescr/TaggerDetectorElement.h"
-#include "DetDescr/TargetDetectorElement.h"
-#include "DetDescr/TriggerPadDetectorElement.h"
-
 #include <iostream>
+#include "../include/DetDescr/Ecal.h"
+#include "../include/DetDescr/Hcal.h"
+#include "../include/DetDescr/RecoilTracker.h"
+#include "../include/DetDescr/Tagger.h"
+#include "../include/DetDescr/Target.h"
+#include "../include/DetDescr/Top.h"
+#include "../include/DetDescr/TriggerPad.h"
 
 namespace ldmx {
 
-    TopDetectorElement::TopDetectorElement(TGeoNode* support) : DetectorElementImpl(nullptr, support) {
+    Top::Top(TGeoNode* support) : DetectorElementImpl(nullptr, support) {
 
         // Name of this DE.
         name_ = "Top";
@@ -34,5 +31,5 @@ namespace ldmx {
         */
     }
 
-    DE_ADD(TopDetectorElement)
+    DE_ADD(Top)
 }

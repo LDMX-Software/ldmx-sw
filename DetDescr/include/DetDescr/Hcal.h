@@ -50,7 +50,7 @@ namespace ldmx {
      * @class HcalDetectorElement
      * @brief Top level DetectorElement representing the HCal
      */
-    class HcalDetectorElement : public DetectorElementImpl {
+    class Hcal : public DetectorElementImpl {
 
         public:
 
@@ -58,7 +58,7 @@ namespace ldmx {
              * Class constructor.
              * @param parent The parent DetectorElement.
              */
-            HcalDetectorElement(DetectorElementImpl* parent);
+            Hcal(DetectorElementImpl* parent);
 
             /**
              * Get the DetectorElement for an Hcal station.

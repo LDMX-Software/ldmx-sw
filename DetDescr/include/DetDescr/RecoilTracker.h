@@ -17,7 +17,7 @@ namespace ldmx {
      * @class RecoilTrackerDetectorElement
      * @brief Top level DetectorElement for the Recoil Tracker
      */
-    class RecoilTrackerDetectorElement : DetectorElementImpl {
+    class RecoilTracker : DetectorElementImpl {
 
         public:
 
@@ -25,7 +25,7 @@ namespace ldmx {
              * Class constructor.
              * @param parent The parent DetectorElement.
              */
-            RecoilTrackerDetectorElement(DetectorElementImpl* parent);
+            RecoilTracker(DetectorElementImpl* parent);
 
     };
 

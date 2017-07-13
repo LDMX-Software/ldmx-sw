@@ -49,18 +49,13 @@ namespace ldmx {
      * @class EcalDetectorElement
      * @brief The top-level DetectorElement for the ECal.
      */
-    class EcalDetectorElement : public DetectorElementImpl {
+    class Ecal : public DetectorElementImpl {
 
         public:
 
-            EcalDetectorElement() {
-            }
+            Ecal();
 
-            /**
-             * Class constructor.
-             * @param parent The parent DetectorElement.
-             */
-            EcalDetectorElement(DetectorElementImpl* parent);
+            ~Ecal();
 
             /**
              * Get the EcalLayer object by its layer number.
@@ -72,7 +67,7 @@ namespace ldmx {
             void initialize();
 
         private:
-            DE_INIT(EcalDetectorElement)
+            DE_INIT(Ecal)
     };
 }
 

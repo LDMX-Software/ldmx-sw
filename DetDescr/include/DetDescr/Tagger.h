@@ -15,7 +15,7 @@ namespace ldmx {
      * @class TaggerDetectorElement
      * @brief Defines top level DetectorElement for the Tagger
      */
-    class TaggerDetectorElement : public DetectorElementImpl {
+    class Tagger : public DetectorElementImpl {
 
         public:
 
@@ -23,7 +23,7 @@ namespace ldmx {
              * Class constructor.
              * @param parent The parent DetectorElement.
              */
-            TaggerDetectorElement(DetectorElementImpl* parent);
+            Tagger(DetectorElementImpl* parent);
     };
 
 

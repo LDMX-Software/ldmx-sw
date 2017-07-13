@@ -1,14 +1,12 @@
-#include "DetDescr/TargetDetectorElement.h"
-
-// ROOT
 #include "TGeoBBox.h"
 
+#include "../include/DetDescr/Target.h"
 // LDMX
 #include "DetDescr/GeometryUtil.h"
 
 namespace ldmx {
 
-    TargetDetectorElement::TargetDetectorElement(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
+    Target::Target(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
 
         name_ = "Target";
 

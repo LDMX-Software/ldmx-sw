@@ -1,9 +1,8 @@
-#include "DetDescr/HcalDetectorElement.h"
-
 #include "DetDescr/GeometryUtil.h"
 
 #include <iostream>
 #include <sstream>
+#include "../include/DetDescr/Hcal.h"
 
 namespace ldmx {
 
@@ -17,7 +16,7 @@ namespace ldmx {
         // TODO: Set detector ID value.
     }
 
-    HcalDetectorElement::HcalDetectorElement(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
+    Hcal::Hcal(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
 
         name_ = "Hcal";
 
@@ -41,7 +40,7 @@ namespace ldmx {
         }
     }
 
-    HcalStation* HcalDetectorElement::getHcalStation(int num) {
+    HcalStation* Hcal::getHcalStation(int num) {
         return static_cast<HcalStation*>(children_[num - 1]);
     }
 

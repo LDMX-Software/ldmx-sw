@@ -1,5 +1,3 @@
-#include "../include/DetDescr/EcalDetectorElement.h"
-
 #include <Rtypes.h>
 #include <TGeoNode.h>
 #include <TNamed.h>
@@ -10,6 +8,7 @@
 #include <string>
 
 #include "../include/DetDescr/DetectorElement.h"
+#include "../include/DetDescr/Ecal.h"
 #include "../include/DetDescr/EcalDetectorID.h"
 
 namespace ldmx {
@@ -29,24 +28,27 @@ namespace ldmx {
         id_ = getDetectorID()->pack();
     }
 
-    EcalStation* EcalDetectorElement::getEcalLayer(int num) {
+    EcalStation* Ecal::getEcalLayer(int num) {
         return static_cast<EcalStation*>(children_[num - 1]);
     }
 
-    void EcalDetectorElement::initialize() {
-
-        std::cout << "EcalDetectorElement::initialize" << std::endl;
-
+    Ecal::Ecal() {
         name_ = "Ecal";
-
         detectorID_ = new EcalDetectorID();
+    }
+
+    Ecal::~Ecal() {
+        delete detectorID_;
+    }
+
+    void Ecal::initialize() {
 
         if (!support_) {
-            throw std::runtime_error("The Ecal support is not set.");
+            throw std::runtime_error("The ECal support vol is not set.");
         }
 
         if (!parent_) {
-            throw std::runtime_error("The Ecal parent is not set.");
+            throw std::runtime_error("The Ecal parent detelem is not set.");
         }
 
         detectorID_->clear();
@@ -54,14 +56,12 @@ namespace ldmx {
         id_ = detectorID_->pack();
 
         int nDau = this->support_->GetNdaughters();
-        std::cout << "support has " << nDau << " dau vols" << std::endl;
         TGeoNode* dau = nullptr;
         for (int iDau = 0; iDau < nDau; iDau++) {
             auto dau = support_->GetDaughter(iDau);
-            std::cout << "ECal subvol: " << dau->GetName() << std::endl;
-            static std::string prefix = "Si_";
+            static std::string prefix = "Si";
             if (!std::string(dau->GetName()).compare(0, prefix.size(), prefix)) {
-                std::cout << "adding ECal station: " << dau->GetName() << std::endl;
+                std::cout << "adding ECal station <" << dau->GetName() << "> with copynum " << dau->GetNumber() << std::endl;
                 auto ecalStation = new EcalStation();
                 ecalStation->setSupport(dau);
                 ecalStation->setParent(this);
@@ -70,5 +70,5 @@ namespace ldmx {
         }
     }
 
-    DE_ADD(EcalDetectorElement)
+    DE_ADD(Ecal)
 }

@@ -16,21 +16,21 @@ namespace ldmx {
      * @class TopDetectorElement
      * @brief Sets up the main detector subsystems such as ECal, Recoil Tracker, etc.
      */
-    class TopDetectorElement : public DetectorElementImpl {
+    class Top : public DetectorElementImpl {
 
         public:
 
-            TopDetectorElement() {
+            Top() {
             }
 
             /**
              * Class constructor.
              * @param support The geometric support (points to world volume).
              */
-            TopDetectorElement(TGeoNode* support);
+            Top(TGeoNode* support);
 
         private:
-            DE_INIT(TopDetectorElement)
+            DE_INIT(Top)
     };
 }
 

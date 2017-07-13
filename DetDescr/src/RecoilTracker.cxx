@@ -1,9 +1,8 @@
-#include "DetDescr/RecoilTrackerDetectorElement.h"
-
 #include <map>
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include "../include/DetDescr/RecoilTracker.h"
 
 using std::stringstream;
 using std::string;
@@ -30,7 +29,7 @@ namespace ldmx {
         id_ = getDetectorID()->pack();
     }
 
-    RecoilTrackerDetectorElement::RecoilTrackerDetectorElement(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
+    RecoilTracker::RecoilTracker(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
         name_ = "RecoilTracker";
         support_ = GeometryUtil::findFirstDauNameStartsWith("RecoilTracker", parent->getSupport());
         if (!support_) {

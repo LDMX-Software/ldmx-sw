@@ -1,15 +1,13 @@
-#include "DetDescr/TaggerDetectorElement.h"
-
-// LDMX
 #include "DetDescr/GeometryUtil.h"
 
 // STL
 #include <iostream>
 #include <sstream>
+#include "../include/DetDescr/Tagger.h"
 
 namespace ldmx {
 
-    TaggerDetectorElement::TaggerDetectorElement(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
+    Tagger::Tagger(DetectorElementImpl* parent) : DetectorElementImpl(parent) {
 
         name_ = "Tagger";
         support_ = GeometryUtil::findFirstDauNameStartsWith("Tagger", parent->getSupport());
