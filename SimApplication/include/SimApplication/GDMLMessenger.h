@@ -5,20 +5,24 @@
 #include "G4UIcommand.hh"
 #include "G4UIcmdWithAString.hh"
 
-class GDMLMessenger : public G4UImessenger {
+namespace ldmx {
 
-    public:
+    class GDMLMessenger : public G4UImessenger {
 
-        GDMLMessenger(G4GDMLParser*);
-        ~GDMLMessenger();
+        public:
 
-        void SetNewValue(G4UIcommand*, G4String);
+            GDMLMessenger(G4GDMLParser*);
+            ~GDMLMessenger();
 
-    private:
+            void SetNewValue(G4UIcommand*, G4String);
 
-        G4GDMLParser* parser_;
-        G4UIdirectory* gdmlDir_{new G4UIdirectory{"/ldmx/persistency/gdml/"}};
-        G4UIcmdWithAString* writeCmd_{new G4UIcmdWithAString{"/ldmx/persistency/gdml/write", this}};
-};
+        private:
+
+            G4GDMLParser* parser_;
+            G4UIdirectory* gdmlDir_ {new G4UIdirectory {"/ldmx/persistency/gdml/"}};
+            G4UIcmdWithAString* writeCmd_ {new G4UIcmdWithAString {"/ldmx/persistency/gdml/write", this}};
+    };
+
+}
 
 #endif
