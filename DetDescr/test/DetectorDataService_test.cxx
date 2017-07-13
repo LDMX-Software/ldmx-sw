@@ -6,16 +6,14 @@
 
 // LDMX
 #include "DetDescr/DetectorDataServiceImpl.h"
-#include "DetDescr/EcalDetectorElement.h"
-#include "DetDescr/HcalDetectorElement.h"
-#include "DetDescr/RecoilTrackerDetectorElement.h"
-#include "DetDescr/TaggerDetectorElement.h"
-#include "DetDescr/TargetDetectorElement.h"
-
-// STL
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include "../include/DetDescr/Ecal.h"
+#include "../include/DetDescr/Hcal.h"
+#include "../include/DetDescr/RecoilTracker.h"
+#include "../include/DetDescr/Tagger.h"
+#include "../include/DetDescr/Target.h"
 
 using namespace ldmx;
 using namespace std;
@@ -71,15 +69,18 @@ void find(DetectorDataService* svc, DetectorElement* de, const char* indent = " 
     }
 }
 
-int main(int, const char* argv[])  {
+int main(int argc, const char* argv[])  {
 
     std::cout << "Running DetectorDataService test ..." << std::endl;
 
     // Initialize a detector.
     DetectorDataServiceImpl* svc = new DetectorDataServiceImpl();
-    svc->setDetectorName("ldmx-det-full-v1-fieldmap");
+
+    svc->setDetectorName("ldmx-det-full-v2-test");
+
     svc->initialize();
 
+    /*
     // Get the top DE.
     DetectorElement* top = svc->getTopDetectorElement();
 
@@ -213,5 +214,7 @@ int main(int, const char* argv[])  {
     delete svc;
 
     std::cout << std::endl;
+    */
+
     std::cout << "Done running DetectorDataService test!" << std::endl;
 }
