@@ -19,10 +19,6 @@ namespace ldmx {
 
         public:
 
-            /**
-             * Class constructor.
-             * @param parent The parent DetectorElement.
-             */
             Tagger();
 
             void initialize();

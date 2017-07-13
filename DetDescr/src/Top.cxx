@@ -20,7 +20,6 @@ namespace ldmx {
     }
 
     Top::~Top() {
-        //delete detectorID_;
     }
 
     DE_ADD(Top)

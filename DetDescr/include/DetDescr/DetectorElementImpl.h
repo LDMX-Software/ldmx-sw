@@ -41,12 +41,10 @@ namespace ldmx {
              * parent is not null.
              */
             DetectorElementImpl(DetectorElementImpl* parent = nullptr, TGeoNode* support = nullptr) {
-
                 parent_ = parent;
                 if (parent_ != nullptr) {
                     parent_->addChild(this);
                 }
-
                 support_ = support;
             }
 

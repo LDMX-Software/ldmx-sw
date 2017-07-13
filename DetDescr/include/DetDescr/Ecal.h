@@ -20,12 +20,6 @@ namespace ldmx {
 
         public:
 
-            /**
-             * Class constructor.
-             * @param parent The parent DetectorElement.
-             * @param support The geometric support.
-             * @note The layer number is read from the node's copy number.
-             */
             EcalStation();
 
             void initialize();

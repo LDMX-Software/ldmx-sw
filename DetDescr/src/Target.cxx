@@ -12,6 +12,15 @@ namespace ldmx {
     }
 
     void Target::initialize() {
+
+        if (!support_) {
+            throw std::runtime_error("The Target support is not set.");
+        }
+
+        if (!parent_) {
+            throw std::runtime_error("The Target parent is not set.");
+        }
+
         // Get target thickness from volume's box shape.
         targetThickness_ = dynamic_cast<TGeoBBox*>(support_->GetVolume()->GetShape())->GetDZ() * 2;
 

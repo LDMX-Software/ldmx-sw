@@ -20,10 +20,6 @@ namespace ldmx {
 
         public:
 
-            /**
-             * Class constructor.
-             * @param parent The parent DetectorElement.
-             */
             Target();
 
             void initialize();

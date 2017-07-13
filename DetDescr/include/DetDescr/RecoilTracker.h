@@ -21,10 +21,6 @@ namespace ldmx {
 
         public:
 
-            /**
-             * Class constructor.
-             * @param parent The parent DetectorElement.
-             */
             RecoilTracker();
 
             void initialize();

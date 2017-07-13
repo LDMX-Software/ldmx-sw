@@ -37,7 +37,6 @@ namespace ldmx {
     }
 
     Ecal::~Ecal() {
-        //delete detectorID_;
     }
 
     void Ecal::initialize() {
