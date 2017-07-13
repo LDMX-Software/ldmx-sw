@@ -207,6 +207,7 @@
       </physvol>
       
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+      <auxiliary auxtype="DetElem" auxvalue="Tagger"/>
     </volume>       
       
   </structure>

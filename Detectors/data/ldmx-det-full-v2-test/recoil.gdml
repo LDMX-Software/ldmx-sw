@@ -267,7 +267,7 @@
       </physvol>
       
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-      
+      <auxiliary auxtype="DetElem" auxvalue="RecoilTracker"/>
     </volume>    
   </structure>
 

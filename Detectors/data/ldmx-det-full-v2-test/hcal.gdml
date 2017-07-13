@@ -276,6 +276,7 @@
 
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
       <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="Hcal"/>
     </volume>
   </structure>
 
