@@ -13,8 +13,8 @@
 
 namespace ldmx {
 
-    EcalSD::EcalSD(G4String name, G4String theCollectionName, DetectorID* detID) :
-            CalorimeterSD(name, theCollectionName, detID), hitMap_(new EcalHexReadout) {
+    EcalSD::EcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
+            CalorimeterSD(name, theCollectionName, subdetID, detID), hitMap_(new EcalHexReadout) {
     }
 
     EcalSD::~EcalSD() {
@@ -54,12 +54,10 @@ namespace ldmx {
         hit->setTime(aStep->GetTrack()->GetGlobalTime());
 
         // Create the ID for the hit.
-        int subdet = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetVolume(1)->GetCopyNo();
-        int layer = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
-        int cell = hitMap_->getCellId(hitPosition[0], hitPosition[1]);
-        detID_->setFieldValue(0, subdet);
-        detID_->setFieldValue(1, layer);
-        detID_->setFieldValue(2, cell);
+        int layerNumber = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth_)->GetCopyNo();
+        int cellID = hitMap_->getCellId(hitPosition[0], hitPosition[1]);
+        detID_->setFieldValue(1, layerNumber);
+        detID_->setFieldValue(2, cellID);
         hit->setID(detID_->pack());
 
         // Set the track ID on the hit.
@@ -69,7 +67,7 @@ namespace ldmx {
         hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
 
         if (this->verboseLevel > 2) {
-            std::cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << subdet << " and layer " << layer << " and cellid " << cell << " ...";
+            std::cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << subdet_ << " and layer " << layerNumber << " and cellid " << cellID << " ...";
             hit->Print();
             std::cout << std::endl;
         }

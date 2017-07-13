@@ -25,7 +25,7 @@ namespace ldmx {
 
         public:
 
-            HcalSD(G4String name, G4String theCollectionName, DetectorID* detID = new DefaultDetectorID);
+            HcalSD(G4String name, G4String theCollectionName, int subdet, DetectorID* detID);
 
             virtual ~HcalSD();
     };

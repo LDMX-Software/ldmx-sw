@@ -12,7 +12,7 @@
 
 // LDMX
 #include "Event/Event.h"
-#include "DetDescr/DefaultDetectorID.h"
+#include "DetDescr/DetectorID.h"
 #include "SimApplication/G4TrackerHit.h"
 
 namespace ldmx {
@@ -32,14 +32,23 @@ namespace ldmx {
              * Class constructor.
              * @param name The name of the sensitive detector.
              * @param theCollectionName The name of the hits collection.
+             * @param subdetID The subdetector ID.
              * @param detID The detector ID.
              */
-            TrackerSD(G4String name, G4String theCollectionName, DetectorID* detID = new DefaultDetectorID);
+            TrackerSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID);
 
             /**
              * Class destructor.
              */
             virtual ~TrackerSD();
+
+            /**
+             * Set the detector ID.
+             * @param detID The detector ID.
+             */
+            void setDetectorID(DetectorID* detID) {
+                this->detID_ = detID;
+            }
 
             /**
              * Process a step by creating a hit.
@@ -66,6 +75,11 @@ namespace ldmx {
              * The output hits collection of G4TrackerHits.
              */
             G4TrackerHitsCollection* hitsCollection_;
+
+            /**
+             * The subdetector ID.
+             */
+            int subdetID_;
 
             /**
              * The detector ID.

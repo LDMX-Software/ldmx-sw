@@ -15,14 +15,17 @@
 
 namespace ldmx {
 
-    TrackerSD::TrackerSD(G4String name, G4String theCollectionName, DetectorID* detID) :
-            G4VSensitiveDetector(name), hitsCollection_(0), detID_(detID) {
+    TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
+            G4VSensitiveDetector(name), hitsCollection_(0), subdetID_(subdetID), detID_(detID) {
 
         // Add the collection name to vector of names.
         this->collectionName.push_back(theCollectionName);
 
         // Register this SD with the manager.
         G4SDManager::GetSDMpointer()->AddNewDetector(this);
+
+        // Set the subdet ID as it will always be the same for every hit.
+        detID_->setFieldValue("subdet", subdetID_);
     }
 
     TrackerSD::~TrackerSD() {
@@ -96,18 +99,16 @@ namespace ldmx {
         /*
          * Set the 32-bit ID on the hit.
          */
-        int subdet = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(1)->GetCopyNo();
-        int layer = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
-        detID_->setFieldValue(0, subdet);
-        detID_->setFieldValue(1, layer);
+        int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
+        detID_->setFieldValue(1, layerNumber);
         hit->setID(detID_->pack());
-        hit->setLayerID(layer);
+        hit->setLayerID(layerNumber);
 
         /*
          * Debug print.
          */
         if (this->verboseLevel > 2) {
-            std::cout << "Created new SimTrackerHit in detector " << this->GetName() << " with subdet ID " << subdet << " and layer " << layer << " ..." << std::endl;
+            std::cout << "Created new SimTrackerHit in detector " << this->GetName() << " with subdet ID " << subdetID_ << " and layer " << layerNumber << " ..." << std::endl;
             hit->Print();
             std::cout << std::endl;
         }
