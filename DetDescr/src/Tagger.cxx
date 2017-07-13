@@ -13,12 +13,20 @@ namespace ldmx {
 
     void Tagger::initialize() {
 
+        if (!support_) {
+            throw std::runtime_error("The Tagger support is not set.");
+        }
+
+        if (!parent_) {
+            throw std::runtime_error("The Tagger parent is not set.");
+        }
+
         getDetectorID()->clear();
         getDetectorID()->setFieldValue(0, support_->GetNumber());
         id_ = getDetectorID()->pack();
 
         // Add a DE for each Tagger active layer.
-        auto layerVec = GeometryUtil::findDauNameStartsWith("TaggerModuleVolume_physvol", support_);
+        auto layerVec = GeometryUtil::findDauNameStartsWith("LDMXTaggerModuleVolume_physvol", support_);
         for (auto layerNode : layerVec) {
             auto layer = new TaggerStation(this, layerNode);
         }
