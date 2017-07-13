@@ -20,9 +20,7 @@ namespace ldmx {
 
         public:
 
-            EcalStation();
-
-            void initialize();
+            EcalStation(DetectorElementImpl* parent, TGeoNode* support);
 
             /**
              * Get the layer number.

@@ -16,10 +16,7 @@
 
 namespace ldmx {
 
-    EcalStation::EcalStation() {
-    }
-
-    void EcalStation::initialize() {
+    EcalStation::EcalStation(DetectorElementImpl* parent, TGeoNode* support) : DetectorElementImpl(parent, support) {
         layerNumber_ = support_->GetNumber();
 
         std::stringstream ss;
@@ -62,10 +59,7 @@ namespace ldmx {
             auto dau = support_->GetDaughter(iDau);
             static std::string prefix = "Si";
             if (!std::string(dau->GetName()).compare(0, prefix.size(), prefix)) {
-                auto ecalStation = new EcalStation();
-                ecalStation->setSupport(dau);
-                ecalStation->setParent(this);
-                ecalStation->initialize();
+                new EcalStation(this, dau);
             }
         }
     }
