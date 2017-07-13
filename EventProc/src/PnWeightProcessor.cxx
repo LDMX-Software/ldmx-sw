@@ -114,7 +114,7 @@ namespace ldmx {
             // hardest nucleus
             if ((dauID > nucPrefix) && (ke > ke_hard)) {
                 p_hard = p;
-                pz_hard = pz;
+                pz_hard = TMath::Abs(pz);
                 ke_hard = ke;
                 sim_hard = pnDaughter;
                 theta_hard = theta;
@@ -123,7 +123,7 @@ namespace ldmx {
             // heaviest nucleus
             if ((dauID > nucPrefix) && (nucA > A_heavy)) {
                 p_heavy = p;
-                pz_heavy = pz;
+                pz_heavy = TMath::Abs(pz);
                 ke_heavy = ke;
                 sim_heavy = pnDaughter;
                 theta_heavy = theta;
@@ -132,7 +132,7 @@ namespace ldmx {
             // hardest daughter which is not a nucleus
             if ((dauID < nucPrefix) && (ke > ke_dau)) {
                 p_dau = p;
-                pz_dau = pz;
+                pz_dau = TMath::Abs(pz);
                 ke_dau = ke;
                 sim_dau = pnDaughter;
                 theta_dau = theta;
