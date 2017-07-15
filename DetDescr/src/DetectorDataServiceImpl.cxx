@@ -35,7 +35,14 @@ namespace ldmx {
                 if (detectorName != "." && detectorName != "..") {
                     std::string location = baseDir + "/" + detectorName + "/detector_full.gdml";
                     //std::cout << "adding detector alias: " << detectorName << " -> " << location << std::endl;
-                    addAlias(detectorName, location);
+                    if (ifstream(location).good()) {
+                        std::cout << "[ DetectorDataServiceImpl ] : registered detector alias <"
+                                << detectorName << "> -> <" << location << ">" << std::endl;
+                        addAlias(detectorName, location);
+                    } else {
+                        std::cerr << "WARNING: There is no 'detector_full.gdml' for detector model <"
+                                << detectorName << ">.  No alias was registered!" << std::endl;
+                    }
                 }
             }
             entry = readdir(dir);
@@ -87,9 +94,7 @@ namespace ldmx {
     DetectorElement* DetectorDataServiceImpl::findDetectorElement(TGeoNode* node) {
         DetectorElement* de = nullptr;
         if (deCache_.contains(node)) {
-            /*
-             * Return assigned node from the cache.
-             */
+            // Return assigned node from the cache.
             de = deCache_.get(node);
         } else {
             /*
@@ -135,18 +140,15 @@ namespace ldmx {
                 TObjString* obj = (TObjString*) aux->GetValue("DetElem");
                 if (obj) {
                     TString str = obj->GetString();
-                    //std::cout << "creating DE with type <" << str << ">" << std::endl;
                     DetectorElementImpl* de = (DetectorElementImpl*) fac_->create(str.Data());
                     de->setSupport(curr);
                     if (str == "Top") {
                         this->deTop_ = de;
-                        //std::cout << "assigned top DE with node " << curr->GetName() << std::endl;
                     } else {
                         de->setParent(deTop_);
                         deTop_->addChild(de);
                     }
                     de->initialize();
-                    //std::cout << "created DE <" << de->getName() << "> with support <" << de->getSupport()->GetName() << ">" << std::endl;
                 }
             }
         }
@@ -171,7 +173,7 @@ namespace ldmx {
         }
 
         /*
-         * Set the navigator by going into each daughter node.
+         * Setup the navigator by going into each daughter node.
          */
         nav_->cd();
         for (int i = nodes.size() - 1; i >= 0; i--) {
