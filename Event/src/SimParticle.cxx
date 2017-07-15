@@ -7,6 +7,23 @@ ClassImp(ldmx::SimParticle)
 
 namespace ldmx {
 
+    SimParticle::ProcessTypeMap SimParticle::createProcessTypeMap() {
+        ProcessTypeMap procMap;
+        procMap["eBrem"] = ProcessType::eBrem; /* electron brem */
+        procMap["conv"] = ProcessType::conv; /* gamma to e+e- */
+        procMap["annihil"] = ProcessType::annihil; /* positron annihilation */
+        procMap["compt"] = ProcessType::compt; /* compton scattering */
+        procMap["phot"] = ProcessType::phot; /* photoelectric */
+        procMap["eIoni"] = ProcessType::eIoni; /* electron ionization */
+        procMap["msc"] = ProcessType::msc; /* multiple coulomb scattering */
+        procMap["photonNuclear"] = ProcessType::photonNuclear; /* photonuclear */
+        procMap["electronNuclear"] = ProcessType::electronNuclear; /* electronuclear*/
+        procMap["GammaToMuPair"] = ProcessType::GammaToMuPair; /* gamma to mu+mu- */
+        return procMap;
+    }
+
+    SimParticle::ProcessTypeMap SimParticle::PROCESS_MAP = SimParticle::createProcessTypeMap();
+
     SimParticle::SimParticle()
         : TObject(), daughters_(new TRefArray()), parents_(new TRefArray()) {
     }
@@ -56,6 +73,7 @@ namespace ldmx {
                 "processType: " << processType_ <<
                 " }" << std::endl;
     }
+
 
 }
 
