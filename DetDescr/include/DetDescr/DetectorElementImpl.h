@@ -1,5 +1,5 @@
 /*
- * DetectorElementImpl.h
+ * @file DetectorElementImpl.h
  * @brief Implementation of DetectorElement interface
  * @author JeremyMcCormick, SLAC
  */
@@ -172,10 +172,18 @@ namespace ldmx {
                 return globalPosition_;
             }
 
+            /**
+             * Set the backing geometry node of the DetectorElement.
+             * @param node The backing geometry node.
+             */
             void setSupport(TGeoNode* node) {
                 support_ = node;
             }
 
+            /**
+             * Set the parent DetectorElement.
+             * @param parent The parent DetectorElement.
+             */
             void setParent(DetectorElementImpl* parent) {
                 parent_ = parent;
             }

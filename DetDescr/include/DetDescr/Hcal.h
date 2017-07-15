@@ -1,5 +1,5 @@
 /*
- * Hcal.h
+ * @file Hcal.h
  * @brief Class representing the DetectorElement for an HCal station
  * @author JeremyMcCormick, SLAC
  */

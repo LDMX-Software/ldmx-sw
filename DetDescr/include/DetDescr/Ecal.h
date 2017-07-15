@@ -1,5 +1,5 @@
 /*
- * Ecal.h
+ * @file Ecal.h
  * @brief Class providing a DetectorElement for the ECal
  * @author JeremyMcCormick, SLAC
  */
@@ -11,6 +11,34 @@
 #include "DetDescr/DetectorElementImpl.h"
 
 namespace ldmx {
+
+    /**
+     * @class Ecal
+     * @brief The top-level DetectorElement for the ECal.
+     * @note
+     * This DetectorElement is compatible with the ECal geometry
+     * from the 'v1' and 'v2' detector models.
+     */
+    class Ecal : public DetectorElementImpl {
+
+        public:
+
+            Ecal();
+
+            ~Ecal();
+
+            /**
+             * Get the EcalLayer object by its layer number.
+             * @param layerNumber The layer number.
+             * @note The layers are numbered from 1, not 0.
+             */
+            EcalStation* getEcalLayer(int layerNumber);
+
+            void initialize();
+
+        private:
+            DE_INIT(Ecal)
+    };
 
     /**
      * @class EcalLayer
@@ -33,34 +61,10 @@ namespace ldmx {
         private:
 
             /** The layer number. */
-            int layerNumber_{-1};
+            int layerNumber_ {-1};
 
     };
 
-    /**
-     * @class Ecal
-     * @brief The top-level DetectorElement for the ECal.
-     */
-    class Ecal : public DetectorElementImpl {
-
-        public:
-
-            Ecal();
-
-            ~Ecal();
-
-            /**
-             * Get the EcalLayer object by its layer number.
-             * @param layerNumber The layer number.
-             * @note The layers are numbered from 1, not 0.
-             */
-            EcalStation* getEcalLayer(int layerNumber);
-
-            void initialize();
-
-        private:
-            DE_INIT(Ecal)
-    };
 }
 
 #endif /* DETDESCR_ECALDETECTORELEMENT_H_ */

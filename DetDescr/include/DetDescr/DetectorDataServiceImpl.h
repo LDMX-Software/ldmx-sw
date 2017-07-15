@@ -1,5 +1,5 @@
 /*
- * DetectorServiceImpl.h
+ * @file DetectorServiceImpl.h
  * @brief Class implementing the DetectorDataService
  * @author JeremyMcCormick, SLAC
  */

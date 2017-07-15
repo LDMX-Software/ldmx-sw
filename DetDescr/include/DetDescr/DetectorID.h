@@ -22,7 +22,7 @@ namespace ldmx {
      * @note
      * Represents an ID in the detector with a raw, 32-bit value which can
      * be unpacked into a list of field values or packed from a list of field
-     * values.
+     * values.  Only unsigned field values values are supported.
      */
     class DetectorID {
 

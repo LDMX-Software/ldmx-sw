@@ -1,5 +1,5 @@
 /*
- * Target.h
+ * @file Target.h
  * @brief Class defining DetectorElement for the beam target
  * @author JeremyMcCormick, SLAC
  */

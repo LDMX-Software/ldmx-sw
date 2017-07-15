@@ -1,5 +1,5 @@
 /*
- * DetectorElement.h
+ * @file DetectorElement.h
  * @brief Interface defining an identifiable component in the detector hierarchy
  * @author JeremyMcCormick, SLAC
  */
@@ -124,24 +124,50 @@ namespace ldmx {
             static void walk(DetectorElement* de, DetectorElementVisitor* visitor);
     };
 
+    /**
+     * @brief
+     * Template method for creating a DetectorElement, used as a function pointer
+     * by the DetectorElementFactory.
+     */
     template<typename T> DetectorElement* createType() {
         return new T;
     }
 
+    /**
+     * @brief
+     * Factory for creating DetectorElement objects by their type name
+     * (e.g. "Ecal", "RecoilTracker", etc.)
+     */
     class DetectorElementFactory {
 
         public:
 
+            /**
+             * Type for DetectorElement creation function.
+             */
             typedef DetectorElement* (*CreatorFunc)();
+
+            /**
+             * Type for mapping DetectorElement names to creation functions.
+             */
             typedef std::map<std::string, CreatorFunc> FuncMap;
 
+            /**
+             * Map of names to creation functions.
+             */
             FuncMap map_;
 
+            /**
+             * Get a static instance of the DetectorElementFactory.
+             */
             static DetectorElementFactory* instance() {
                 static DetectorElementFactory fac;
                 return &fac;
             }
 
+            /**
+             * Create an instance of a DetectorElement by its type name.
+             */
             DetectorElement* create(std::string name) {
                 DetectorElementFactory::FuncMap::iterator it = map_.find(name);
                 if (it != map_.end()) {
@@ -154,6 +180,10 @@ namespace ldmx {
 
         public:
 
+            /**
+             * Add a new DetectorElement type by registering a function pointer
+             * for creating it.
+             */
             template<typename T>
             short add(const char* name) {
                 CreatorFunc func = &createType<T>;
@@ -162,9 +192,16 @@ namespace ldmx {
             }
     };
 
+    /**
+     * Macro for initializing a DetectorElement which is just a placeholder var to
+     * be used by statically initializing it.
+     */
     #define DE_INIT(NAME) \
     static short NAME##Init;
 
+    /**
+     * Macro for adding a DetectorElement by registering its creation function.
+     */
     #define DE_ADD(NAME) \
     static short NAME##Init = DetectorElementFactory::instance()->add<NAME>(#NAME);
 }

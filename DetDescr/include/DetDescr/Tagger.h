@@ -1,5 +1,5 @@
 /*
- * Tagger.h
+ * @file Tagger.h
  * @brief Class defining top level DetectorElement for the Tagger
  * @author JeremyMcCormick, SLAC
  */

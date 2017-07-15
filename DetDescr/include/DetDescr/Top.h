@@ -1,5 +1,5 @@
 /*
- * Top.h
+ * @file Top.h
  * @brief Top DetectorElement in the hierarchy providing access to the major subsystems
  * @author JeremyMcCormick, SLAC
  */

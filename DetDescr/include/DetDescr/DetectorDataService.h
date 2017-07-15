@@ -1,5 +1,5 @@
 /*
- * DetectorDataSerivce.h
+ * @file DetectorDataSerivce.h
  * @brief Class providing a service for loading detector data at runtime
  * @author JeremyMcCormick, SLAC
  */

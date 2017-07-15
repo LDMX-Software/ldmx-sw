@@ -1,5 +1,5 @@
 /*
- * TriggerPad.h
+ * @file TriggerPad.h
  * @brief Class defining a DetectorElement for the trigger pads
  * @author JeremyMcCormick, SLAC
  */

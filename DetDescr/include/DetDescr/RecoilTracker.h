@@ -1,5 +1,5 @@
 /*
- * Recoil.h
+ * @file Recoil.h
  * @brief Class defining top level DetectorElement for the Recoil Tracker
  * @author JeremyMcCormick, SLAC
  */
