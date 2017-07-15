@@ -87,13 +87,9 @@ namespace ldmx {
          * Set the 32-bit ID on the hit.
          */
         int cpNumber = prePoint->GetTouchableHandle()->GetCopyNumber();
-        std::cout << "Copy number: " << cpNumber << std::endl;
         detID_->setFieldValue(1, cpNumber);
-        std::cout << "field value set " << std::endl;
         hit->setID(detID_->pack());
-        std::cout << "id packed " << std::endl;
         hit->setLayerID(cpNumber);
-        std::cout << "layer id set " << std::endl;
 
         /*
          * Debug print.
