@@ -13,6 +13,7 @@
 
 // STL
 #include <vector>
+#include <map>
 
 namespace ldmx {
 
@@ -23,6 +24,26 @@ namespace ldmx {
     class SimParticle: public TObject {
 
         public:
+
+            /**
+             * Enum for interesting process types.
+             */
+            enum ProcessType {
+                unknown = 0,
+                annihil,
+                compt,
+                conv,
+                electronNuclear,
+                eBrem,
+                eIoni,
+                msc,
+                phot,
+                photonNuclear,
+                GammaToMuPair
+                /* Only add additional processes to the end of this list! */
+            };
+
+            typedef std::map<std::string, ProcessType> ProcessTypeMap;
 
             /**
              * Class constructor.
@@ -289,6 +310,22 @@ namespace ldmx {
                 return {endpx_, endpy_, endpz_};
             }
 
+            /**
+             * Get the process type enum from a G4VProcess name.
+             * @return The process type from the string.
+             */
+            static ProcessType findProcessType(const char* processName) {
+                if (PROCESS_MAP.find(processName) != PROCESS_MAP.end()) {
+                    return PROCESS_MAP[processName];
+                } else {
+                    return ProcessType::unknown;
+                }
+            }
+
+        private:
+
+            static ProcessTypeMap createProcessTypeMap();
+
         private:
 
             /** The energy of the particle. */
@@ -353,6 +390,8 @@ namespace ldmx {
 
             /** Encoding of Geant4 process type. */
             int processType_{-1};
+
+            static ProcessTypeMap PROCESS_MAP;
 
             /**
              * ROOT class definition.
