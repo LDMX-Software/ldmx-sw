@@ -3,21 +3,52 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
     <define>
+
+        <!-- Magnet dimensions -->
+        <variable name="magnet_x" value="2095.5*mm" />
+        <variable name="magnet_y" value="1460.5*mm" />
+        <variable name="magnet_z" value="914.4*mm" />
         
         <!-- Dimensions of the magnet box -->
         <variable name="magnet_box_x" value="2150*mm" />
         <variable name="magnet_box_y" value="1500*mm" />
         <variable name="magnet_box_z" value="1225*mm" />
 
-        <!-- Dimensions of Ecal box -->
-        <variable name="ecal_box_x" value="521*mm" />
-        <variable name="ecal_box_y" value="521*mm" />
-        <variable name="ecal_box_z" value="291*mm" />
-
         <!-- Magnet gap dimensions -->
         <variable name="magnet_gap_x" value="430*mm"/>
         <variable name="magnet_gap_y" value="350*mm"/>
         <variable name="magnet_gap_z" value="magnet_box_z + 1"/>
+
+        <!-- Shim dimenisions -->
+        <variable name="shim_x" value="482.6*mm"/>
+        <variable name="shim_y" value="355.6*mm"/>
+        <variable name="shim_z" value="914.4*mm"/>
+        
+        <position name="shim_left_pos" unit="mm" x="shim_x/2 - magnet_x/2 " y="0.0" z="0.0*mm" />
+        <position name="shim_right_pos" unit="mm" x="magnet_x/2 - shim_x/2" y="0.0*mm" z="0.0*mm" />
+
+        <!-- Corner iron blocks -->
+        <variable name="corner_iron_block_x" value="482.6*mm"/>
+        <variable name="corner_iron_block_y" value="552.45*mm"/>
+        <variable name="corner_iron_block_z" value="914.4*mm"/>
+
+        <position name="corner_iron_block_top_left_pos" unit="mm" x="corner_iron_block_x/2 - magnet_x/2" y="shim_y/2 + corner_iron_block_y/2" z="0.0*mm" />
+        <position name="corner_iron_block_top_right_pos" unit="mm" x="magnet_x/2 - corner_iron_block_x/2" y="shim_y/2 + corner_iron_block_y/2" z="0.0*mm" />
+        <position name="corner_iron_block_bot_left_pos" unit="mm" x="corner_iron_block_x/2 - magnet_x/2" y="-shim_y/2 - corner_iron_block_y/2" z="0.0*mm" />
+        <position name="corner_iron_block_bot_right_pos" unit="mm" x="magnet_x/2 - corner_iron_block_x/2" y="-shim_y/2 - corner_iron_block_y/2" z="0.0*mm" />
+
+        <!-- Center iron blocks -->
+        <variable name="center_iron_block_x" value="magnet_x - 2*corner_iron_block_x" />
+        <variable name="center_iron_block_y" value="476.25*mm" />
+        <variable name="center_iron_block_z" value="914.4*mm" />
+
+        <position name="center_iron_block_top_pos" unit="mm" x="0.0*mm" y="magnet_y/2 - center_iron_block_y/2" z="0.0*mm" />
+        <position name="center_iron_block_bot_pos" unit="mm" x="0.0*mm" y="-magnet_y/2 + center_iron_block_y/2" z="0.0*mm" />
+
+        <!-- Dimensions of Ecal box -->
+        <variable name="ecal_box_x" value="521*mm" />
+        <variable name="ecal_box_y" value="521*mm" />
+        <variable name="ecal_box_z" value="291*mm" />
 
         <!-- 
              Distance from target to ecal face.  The front face is defined
@@ -3461,6 +3492,14 @@
 
     <solids>
         <box aunit="radian" lunit="mm" name="magnet_box" x="magnet_box_x" y="magnet_box_y" z="magnet_box_z" />
+        <box aunit="radian" lunit="mm" name="shim_right_box" x="shim_x" y="shim_y" z="shim_z" />
+        <box aunit="radian" lunit="mm" name="shim_left_box" x="shim_x" y="shim_y" z="shim_z" />
+        <box aunit="radian" lunit="mm" name="corner_iron_block_top_left_box" x="corner_iron_block_x" y="corner_iron_block_y" z="corner_iron_block_z" />
+        <box aunit="radian" lunit="mm" name="corner_iron_block_top_right_box" x="corner_iron_block_x" y="corner_iron_block_y" z="corner_iron_block_z" />
+        <box aunit="radian" lunit="mm" name="corner_iron_block_bot_left_box" x="corner_iron_block_x" y="corner_iron_block_y" z="corner_iron_block_z" />
+        <box aunit="radian" lunit="mm" name="corner_iron_block_bot_right_box" x="corner_iron_block_x" y="corner_iron_block_y" z="corner_iron_block_z" />
+        <box aunit="radiam" lunit="mm" name="center_iron_block_top_box" x="center_iron_block_x" y="center_iron_block_y" z="center_iron_block_z" />
+        <box aunit="radiam" lunit="mm" name="center_iron_block_bot_box" x="center_iron_block_x" y="center_iron_block_y" z="center_iron_block_z" />
         <box lunit="mm" name="magnet_gap_box" x="magnet_gap_x" y="magnet_gap_y" z="magnet_gap_z"/>    
         <box aunit="radian" lunit="mm" name="ecal_box" x="ecal_box_x" y="ecal_box_y" z="ecal_box_z" />
 
@@ -3483,76 +3522,6 @@
             <rotationref ref="identity"/>
         </subtraction>
 
-        <tessellated aunit="radian" lunit="mm" name="iron_block_0" >
-            <triangular vertex1="v0"  vertex2="v1"  vertex3="v2" />
-            <triangular vertex1="v8"  vertex2="v1"  vertex3="v0" />
-            <triangular vertex1="v1"  vertex2="v3"  vertex3="v2" />
-            <triangular vertex1="v0"  vertex2="v2"  vertex3="v15" />
-            <triangular vertex1="v4"  vertex2="v1"  vertex3="v8" />
-            <triangular vertex1="v10"  vertex2="v8"  vertex3="v0" />
-            <triangular vertex1="v1"  vertex2="v5"  vertex3="v3" />
-            <triangular vertex1="v2"  vertex2="v3"  vertex3="v11" />
-            <triangular vertex1="v2"  vertex2="v11"  vertex3="v15" />
-            <triangular vertex1="v14"  vertex2="v0"  vertex3="v15" />
-            <triangular vertex1="v1"  vertex2="v4"  vertex3="v5" />
-            <triangular vertex1="v6"  vertex2="v4"  vertex3="v8" />
-            <triangular vertex1="v8"  vertex2="v10"  vertex3="v9" />
-            <triangular vertex1="v14"  vertex2="v10"  vertex3="v0" />
-            <triangular vertex1="v9"  vertex2="v3"  vertex3="v5" />
-            <triangular vertex1="v11"  vertex2="v3"  vertex3="v9" />
-            <triangular vertex1="v15"  vertex2="v11"  vertex3="v13" />
-            <triangular vertex1="v14"  vertex2="v15"  vertex3="v13" />
-            <triangular vertex1="v4"  vertex2="v7"  vertex3="v5" />
-            <triangular vertex1="v4"  vertex2="v20"  vertex3="v5" />
-            <triangular vertex1="v3395"  vertex2="v4"  vertex3="v5" />
-            <triangular vertex1="v4"  vertex2="v6"  vertex3="v7" />
-            <triangular vertex1="v6"  vertex2="v8"  vertex3="v7" />
-            <triangular vertex1="v10"  vertex2="v11"  vertex3="v9" />
-            <triangular vertex1="v8"  vertex2="v9"  vertex3="v7" />
-            <triangular vertex1="v12"  vertex2="v10"  vertex3="v14" />
-            <triangular vertex1="v9"  vertex2="v5"  vertex3="v7" />
-            <triangular vertex1="v12"  vertex2="v13"  vertex3="v11" />
-            <triangular vertex1="v12"  vertex2="v14"  vertex3="v13" />
-            <triangular vertex1="v4"  vertex2="v21"  vertex3="v20" />
-            <triangular vertex1="v5"  vertex2="v20"  vertex3="v3395" />
-            <triangular vertex1="v3395"  vertex2="v3392"  vertex3="v4" />
-            <triangular vertex1="v10"  vertex2="v12"  vertex3="v11" />
-            <triangular vertex1="v3392"  vertex2="v21"  vertex3="v4" />
-            <triangular vertex1="v20"  vertex2="v21"  vertex3="v19" />
-            <triangular vertex1="v20"  vertex2="v23"  vertex3="v21" />
-            <triangular vertex1="v20"  vertex2="v21"  vertex3="v3394" />
-            <triangular vertex1="v20"  vertex2="v3394"  vertex3="v3395" />
-            <triangular vertex1="v3395"  vertex2="v3394"  vertex3="v3392" />
-            <triangular vertex1="v3392"  vertex2="v3393"  vertex3="v21" />
-            <triangular vertex1="v25"  vertex2="v19"  vertex3="v21" />
-            <triangular vertex1="v17"  vertex2="v20"  vertex3="v19" />
-            <triangular vertex1="v20"  vertex2="v22"  vertex3="v23" />
-            <triangular vertex1="v25"  vertex2="v21"  vertex3="v23" />
-            <triangular vertex1="v21"  vertex2="v3393"  vertex3="v3394" />
-            <triangular vertex1="v3394"  vertex2="v3393"  vertex3="v3392" />
-            <triangular vertex1="v27"  vertex2="v19"  vertex3="v25" />
-            <triangular vertex1="v20"  vertex2="v17"  vertex3="v24" />
-            <triangular vertex1="v17"  vertex2="v19"  vertex3="v18" />
-            <triangular vertex1="v22"  vertex2="v20"  vertex3="v24" />
-            <triangular vertex1="v22"  vertex2="v24"  vertex3="v23" />
-            <triangular vertex1="v24"  vertex2="v25"  vertex3="v23" />
-            <triangular vertex1="v18"  vertex2="v19"  vertex3="v27" />
-            <triangular vertex1="v26"  vertex2="v27"  vertex3="v25" />
-            <triangular vertex1="v24"  vertex2="v17"  vertex3="v26" />
-            <triangular vertex1="v16"  vertex2="v17"  vertex3="v18" />
-            <triangular vertex1="v24"  vertex2="v26"  vertex3="v25" />
-            <triangular vertex1="v18"  vertex2="v27"  vertex3="v31" />
-            <triangular vertex1="v26"  vertex2="v28"  vertex3="v27" />
-            <triangular vertex1="v26"  vertex2="v17"  vertex3="v16" />
-            <triangular vertex1="v30"  vertex2="v16"  vertex3="v18" />
-            <triangular vertex1="v31"  vertex2="v27"  vertex3="v29" />
-            <triangular vertex1="v30"  vertex2="v18"  vertex3="v31" />
-            <triangular vertex1="v28"  vertex2="v26"  vertex3="v30" />
-            <triangular vertex1="v28"  vertex2="v29"  vertex3="v27" />
-            <triangular vertex1="v30"  vertex2="v26"  vertex3="v16" />
-            <triangular vertex1="v30"  vertex2="v31"  vertex3="v29" />
-            <triangular vertex1="v28"  vertex2="v30"  vertex3="v29" />
-        </tessellated>
         <tessellated aunit="radian" lunit="mm" name="coil_1" >
             <triangular vertex1="v32"  vertex2="v33"  vertex3="v34" />
             <triangular vertex1="v35"  vertex2="v33"  vertex3="v32" />
@@ -10277,27 +10246,9 @@
             <triangular vertex1="v3308"  vertex2="v3178"  vertex3="v3180" />
             <triangular vertex1="v3308"  vertex2="v3307"  vertex3="v3178" />
         </tessellated>
-        <tessellated aunit="radian" lunit="mm" name="iron_block_2" >
-            <triangular vertex1="v3396"  vertex2="v3397"  vertex3="v3398" />
-            <triangular vertex1="v3401"  vertex2="v3397"  vertex3="v3396" />
-            <triangular vertex1="v3397"  vertex2="v3399"  vertex3="v3398" />
-            <triangular vertex1="v3402"  vertex2="v3396"  vertex3="v3398" />
-            <triangular vertex1="v3399"  vertex2="v3397"  vertex3="v3401" />
-            <triangular vertex1="v3402"  vertex2="v3401"  vertex3="v3396" />
-            <triangular vertex1="v3398"  vertex2="v3399"  vertex3="v3403" />
-            <triangular vertex1="v3402"  vertex2="v3398"  vertex3="v3400" />
-            <triangular vertex1="v3403"  vertex2="v3399"  vertex3="v3401" />
-            <triangular vertex1="v3400"  vertex2="v3401"  vertex3="v3402" />
-            <triangular vertex1="v3398"  vertex2="v3403"  vertex3="v3400" />
-            <triangular vertex1="v3400"  vertex2="v3403"  vertex3="v3401" />
-        </tessellated>
     </solids>
     
     <structure>
-        <volume name="iron_block_0_vol" >
-            <materialref ref="Fe" />
-            <solidref ref="iron_block_0" />
-        </volume>
         <volume name="coil_1_vol" >
             <materialref ref="Cu" />
             <solidref ref="coil_1" />
@@ -10306,18 +10257,41 @@
             <materialref ref="Cu" />
             <solidref ref="coil_2" />
         </volume>
-        <volume name="iron_block_2_vol" >
+        <volume name="shim_right" >
             <materialref ref="Fe" />
-            <solidref ref="iron_block_2" />
+            <solidref ref="shim_right_box" />
+        </volume>
+        <volume name="shim_left" >
+            <materialref ref="Fe" />
+            <solidref ref="shim_left_box" />
+        </volume>
+        <volume name="corner_iron_block_top_left" >
+            <materialref ref="Fe" />
+            <solidref ref="corner_iron_block_top_left_box" />
+        </volume>
+        <volume name="corner_iron_block_top_right" >
+            <materialref ref="Fe" />
+            <solidref ref="corner_iron_block_top_right_box" />
+        </volume>
+        <volume name="corner_iron_block_bot_left" >
+            <materialref ref="Fe" />
+            <solidref ref="corner_iron_block_bot_left_box" />
+        </volume>
+        <volume name="corner_iron_block_bot_right" >
+            <materialref ref="Fe" />
+            <solidref ref="corner_iron_block_bot_right_box" />
+        </volume>
+        <volume name="center_iron_block_top" >
+            <materialref ref="Fe" />
+            <solidref ref="center_iron_block_top_box" />
+        </volume>
+        <volume name="center_iron_block_bot" >
+            <materialref ref="Fe" />
+            <solidref ref="center_iron_block_bot_box" />
         </volume>
         <volume name="ldmx_magnet" >
             <materialref ref="Vacuum" />
             <solidref ref="magnet_box_with_gap_ecal_sub" />
-            <physvol>
-                <volumeref ref="iron_block_0_vol" />
-                <positionref ref="center" />
-                <rotationref ref="identity" />
-            </physvol>
             <physvol>
                 <volumeref ref="coil_1_vol" />
                 <positionref ref="top_coil_pos" />
@@ -10329,8 +10303,43 @@
                 <rotationref ref="identity" />
             </physvol>
             <physvol>
-                <volumeref ref="iron_block_2_vol" />
-                <positionref ref="center" />
+                <volumeref ref="shim_right" />
+                <positionref ref="shim_right_pos" />
+                <rotationref ref="identity" />
+            </physvol>
+            <physvol>
+                <volumeref ref="shim_left" />
+                <positionref ref="shim_left_pos" />
+                <rotationref ref="identity" />
+            </physvol>
+            <physvol>
+                <volumeref ref="corner_iron_block_top_left" />
+                <positionref ref="corner_iron_block_top_left_pos" />
+                <rotationref ref="identity" />
+            </physvol>
+            <physvol>
+                <volumeref ref="corner_iron_block_top_right" />
+                <positionref ref="corner_iron_block_top_right_pos" />
+                <rotationref ref="identity" />
+            </physvol>
+            <physvol>
+                <volumeref ref="corner_iron_block_bot_left" />
+                <positionref ref="corner_iron_block_bot_left_pos" />
+                <rotationref ref="identity" />
+            </physvol>
+            <physvol>
+                <volumeref ref="corner_iron_block_bot_right" />
+                <positionref ref="corner_iron_block_bot_right_pos" />
+                <rotationref ref="identity" />
+            </physvol>
+            <physvol>
+                <volumeref ref="center_iron_block_top" />
+                <positionref ref="center_iron_block_top_pos" />
+                <rotationref ref="identity" />
+            </physvol>
+            <physvol>
+                <volumeref ref="center_iron_block_bot" />
+                <positionref ref="center_iron_block_bot_pos" />
                 <rotationref ref="identity" />
             </physvol>
         </volume>
