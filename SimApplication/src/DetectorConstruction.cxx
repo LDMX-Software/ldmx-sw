@@ -27,12 +27,21 @@ namespace ldmx {
 
             for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
                 G4String volumeName = volume->GetName();
-                if ((BiasingMessenger::getVolume().compare("ecal") == 0) && (volumeName.contains("W") || volumeName.contains("Si")) && volumeName.contains("log")) {
+                //std::cout << "[ DetectorConstruction ]: " << "Volume: " << volume->GetName() << std::endl;
+                if ((BiasingMessenger::getVolume().compare("ecal") == 0) 
+                        && (volumeName.contains("Wthick") 
+                            || volumeName.contains("Si")
+                            || volumeName.contains("W")) 
+                        && volumeName.contains("volume")) {
                     xsecBiasing->AttachTo(volume);
-                    std::cout << "[ DetectorConstruction ]: " << "Attaching biasing operator " << xsecBiasing->GetName() << " to volume " << volume->GetName() << std::endl;
+                    std::cout << "[ DetectorConstruction ]: " << "Attaching biasing operator " 
+                              << xsecBiasing->GetName() << " to volume " 
+                              << volume->GetName() << std::endl;
                 } else if (volumeName.contains(BiasingMessenger::getVolume())) {
                     xsecBiasing->AttachTo(volume);
-                    std::cout << "[ DetectorConstruction ]: " << "Attaching biasing operator " << xsecBiasing->GetName() << " to volume " << volume->GetName() << std::endl;
+                    std::cout << "[ DetectorConstruction ]: " 
+                              << "Attaching biasing operator " << xsecBiasing->GetName() 
+                              << " to volume " << volume->GetName() << std::endl;
                 }
             }
         }
