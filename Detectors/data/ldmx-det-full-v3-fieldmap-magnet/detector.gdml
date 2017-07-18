@@ -38,7 +38,7 @@
     <constant name="ecal_front_z" value="20.0*cm"/>
             
     <!-- position of calorimeter mother -->
-    <constant name="em_calorimeter_thickness" value="326.0*mm"/>
+    <constant name="em_calorimeter_thickness" value="321.0*mm"/>
     <constant name="hadron_calorimeter_thickness" value="3326.0*mm"/>
     <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2."/>
     <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2."/>
@@ -198,9 +198,9 @@
   
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v2-fieldmap"/>
-      <auxiliary auxtype="Author" auxvalue="Omar Moreno"/>
-      <auxiliary auxtype="Description" auxvalue="The v2 detector with a full 3D field map"/>
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v2-fieldmap-magnet"/>
+      <auxiliary auxtype="Author" auxvalue="Omar Moreno, Andrew Whitbeck"/>
+      <auxiliary auxtype="Description" auxvalue="The v3 detector with a full 3D field map and magnet material."/>
     </auxiliary>
     
     <!-- define sensitive detectors -->
