@@ -31,6 +31,11 @@
     <variable name="Wrap_TB_HCal_start" value="-back_hcal_dy/2.+wrap_layer_width/2."/>
     <variable name="Wrap_LR_HCal_start" value="-back_hcal_dx/2.+wrap_layer_width/2."/>
 
+    <!-- Define the size of the Ecal box.  See ecal.gdml for origin of values -->
+    <variable name="ECal_dx" value="512.0*mm"/>
+    <variable name="ECal_dy" value="512.0*mm"/>
+    <variable name="ECal_dz" value="290.0*mm"/>
+
   </define>
 
   <materials>
@@ -165,12 +170,12 @@
     <!-- - - - - - - - - Parent Volumes - - - - - - - -->  
     <box lunit="mm" name="back_hadron_calorimeter_box" x="back_hcal_dx+1." y="back_hcal_dy+1." z="back_hcal_thickness+wrap_hcal_thickness+10"/>
 
-    <box lunit="mm" name="ecal_box" x="wrap_TB_hcal_dx" y="wrap_TB_hcal_dx" z="wrap_hcal_thickness"/>
+    <box lunit="mm" name="ecal_box" x="ECal_dx+1." y="ECal_dy+1." z="ECal_dz+1."/>
 
     <subtraction name="hadron_calorimeter_box">
       <first ref="back_hadron_calorimeter_box"/>
       <second ref="ecal_box"/>
-      <position name="hadron_calorimeter_parent_box_pos" unit="mm" x="0." y="0." z="-back_hcal_thickness/2."/>
+      <position name="hadron_calorimeter_parent_box_pos" unit="mm" x="0." y="0." z="-back_hcal_thickness/2 -2.5"/> 
     </subtraction>
 
   </solids>
