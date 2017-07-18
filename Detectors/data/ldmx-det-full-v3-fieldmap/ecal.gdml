@@ -41,7 +41,7 @@
     <variable name="ECal_start_pos" value="-140."/>
     <variable name="ECal_dx" value="Hex_radius*6.+hexagon_gap*2."/>
     <variable name="ECal_dy" value="Hex_radius*6.+hexagon_gap*2."/>
-    <variable name="ECal_dz" value="160.0*2."/>
+    <variable name="ECal_dz" value="290.0*mm"/>
 
     <variable name="ecal_A_layers" value="1"/>
     <variable name="ecal_B_layers" value="1"/>
