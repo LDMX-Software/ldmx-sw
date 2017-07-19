@@ -25,6 +25,8 @@ namespace ldmx {
 
             virtual void configure(const ldmx::ParameterSet& ps) {
                 caloCol_=ps.getString("caloHitCollection");
+		keepMod_=ps.getInteger("keepEventModulus",0);
+		dropMod_=ps.getInteger("dropEventModulus",0);
             }
 
             virtual void analyze(const ldmx::Event& event) {
@@ -34,6 +36,9 @@ namespace ldmx {
                     const ldmx::CalorimeterHit* chit=(const ldmx::CalorimeterHit*)(tca->At(i));
                     h_energy->Fill(chit->getEnergy());
                 }
+		int ievent=event.getEventHeader()->getEventNumber();
+		if (keepMod_>0 && !(ievent%keepMod_)) setStorageHint(hint_shouldKeep);
+		if (dropMod_>0 && !(ievent%dropMod_)) setStorageHint(hint_shouldDrop);
             }
             virtual void onFileOpen() {
                 std::cout << "DummyAnalyzer: Opening a file!" << std::endl;
@@ -52,6 +57,8 @@ namespace ldmx {
         private:
             TH1* h_energy;
             std::string caloCol_;
+            int dropMod_;
+            int keepMod_;
     };
 }
 
