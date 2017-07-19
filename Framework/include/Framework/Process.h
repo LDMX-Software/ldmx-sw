@@ -111,7 +111,13 @@ namespace ldmx {
              */
             void run();
 
+
             /**
+             * Request that the processing finish with this event
+             */ 
+            void requestFinish() { eventLimit_=0; }
+
+           /**
              * Construct a TDirectory* for the given module
              */
             TDirectory* makeHistoDirectory(const std::string& dirName);
