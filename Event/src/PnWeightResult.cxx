@@ -20,7 +20,7 @@ namespace ldmx {
         Clear();
     }
 
-    void PnWeightResult::setResult(double ke, double theta, double w, double fitW, double weight,
+    void PnWeightResult::setResult(double ke, double theta, double w, double fitW, double weight, int pdgID,
                                    double ke_hard,  double p_hard,  double pz_hard,  double w_hard,  double theta_hard, int A_hard,
                                    double ke_heavy, double p_heavy, double pz_heavy, double w_heavy, double theta_heavy, int A_heavy,
                                    double ke_dau,   double p_dau,   double pz_dau,   double w_dau,   double theta_dau, int pdg_dau
@@ -30,6 +30,7 @@ namespace ldmx {
         w_      = w;
         fitW_   = fitW;
         weight_ = weight;
+        pdgID_  = pdgID;
 
         ke_hard_    = ke_hard;
         p_hard_     = p_hard;
@@ -61,6 +62,7 @@ namespace ldmx {
         w_      = -10.;
         fitW_   = -10.;
         weight_ = 1.;
+        pdgID_  = -1;
 
         ke_hard_    = -10.;
         p_hard_     = -10.;
@@ -92,6 +94,7 @@ namespace ldmx {
         result.w_      = w_; 
         result.fitW_   = fitW_;
         result.weight_ = weight_; 
+        result.pdgID_  = pdgID_;
 
         result.ke_hard_    = ke_hard_;
         result.p_hard_     = p_hard_;

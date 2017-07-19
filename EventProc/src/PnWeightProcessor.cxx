@@ -80,6 +80,7 @@ namespace ldmx {
         if (pnGamma == nullptr) return; // throw a runtime exception 
 
         double ke_nucleon = -10., theta_nucleon = -10., w_nucleon = -10., wfit_nucleon = -10., weight_nucleon = 1.;
+        int pdgID_nucleon = -1;
         double ke_hard = -10., p_hard = -10., pz_hard = -10., w_hard = -10., theta_hard = -10.;
         int A_hard = -1, A_heavy = -1;
         double ke_heavy = -10., p_heavy = -10., pz_heavy = -10., w_heavy = -10., theta_heavy = -10.;
@@ -110,6 +111,7 @@ namespace ldmx {
                 ke_nucleon = ke;
                 sim_nucleon = pnDaughter;
                 theta_nucleon = theta;
+                pdgID_nucleon = dauID;
             }
             // hardest nucleus
             if ((dauID > nucPrefix) && (ke > ke_hard)) {
@@ -154,7 +156,7 @@ namespace ldmx {
 
         // Set the resulting weight.
         result_.setResult(
-                           ke_nucleon, theta_nucleon, w_nucleon, wfit_nucleon, weight_nucleon,
+                           ke_nucleon, theta_nucleon, w_nucleon, wfit_nucleon, weight_nucleon, pdgID_nucleon,
                            ke_hard, p_hard, pz_hard, w_hard, theta_hard, A_hard,
                            ke_heavy, p_heavy, pz_heavy, w_heavy, theta_heavy, A_heavy,
                            ke_dau, p_dau, pz_dau, w_dau, theta_dau, pdg_dau

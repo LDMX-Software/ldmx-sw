@@ -55,7 +55,7 @@ namespace ldmx {
             double getWeight() { return weight_; }
 
             /** Set the event weight and measured/fit w */
-           void setResult(double ke, double theta, double w, double fitW, double weight,
+           void setResult(double ke, double theta, double w, double fitW, double weight, int pdgID,
                           double ke_hard,  double p_hard,  double pz_hard,  double w_hard,  double theta_hard, int A_hard,
                           double ke_heavy, double p_heavy, double pz_heavy, double w_heavy, double theta_heavy, int A_heavy,
                           double ke_dau,   double p_dau,   double pz_dau,   double w_dau,   double theta_dau, int pdg_dau
@@ -90,7 +90,7 @@ namespace ldmx {
             
             /** Calculated PN weight */
             double weight_{0.0};
-
+            int pdgID_{-1};
 
 
             // hardest nucleus
