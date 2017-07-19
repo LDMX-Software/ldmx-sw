@@ -69,8 +69,9 @@ namespace ldmx {
 
     void PrimaryGeneratorAction::smearingBeamspot(G4Event* event) {
         
-        double IPWidthX = beamspotXSize_;
-        double IPWidthY = beamspotYSize_;
+        double IPWidthX = beamspotXSize_/2.;
+        double IPWidthY = beamspotYSize_/2.;
+        double IPWidthZ = beamspotZSize_/2.;
 
         int nPV = event->GetNumberOfPrimaryVertex();
         for (int iPV = 0; iPV < nPV; ++iPV) {
@@ -80,7 +81,8 @@ namespace ldmx {
             double z0_i = curPV->GetZ0();
             double x0_f = random_->Uniform( x0_i - IPWidthX, x0_i + IPWidthX );
             double y0_f = random_->Uniform( y0_i - IPWidthY, y0_i + IPWidthY );
-            curPV->SetPosition( x0_f, y0_f, z0_i );
+            double z0_f = random_->Uniform( z0_i - IPWidthZ, z0_i + IPWidthZ );            
+            curPV->SetPosition( x0_f, y0_f, z0_f );
         }        
 
     }
