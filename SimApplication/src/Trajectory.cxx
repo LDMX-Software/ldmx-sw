@@ -2,6 +2,7 @@
 
 // LDMX
 #include "SimCore/UserTrackInformation.h"
+#include "Event/SimParticle.h"
 
 // Geant4
 #include "G4TrajectoryPoint.hh"
@@ -23,11 +24,15 @@ namespace ldmx {
         vertexPosition_ = aTrack->GetVertexPosition();
         energy_ = aTrack->GetVertexKineticEnergy() + mass_;
 
-        // Get the creator process type.  The sub-type must be used here to get
-        // the type for a specific physics process like photonuclear.
+        // Set the process type.
         const G4VProcess* process = aTrack->GetCreatorProcess();
         if (process) {
-            processType_ = process->GetProcessSubType();
+            const G4String& processName = process->GetProcessName();
+            SimParticle::ProcessType processType = SimParticle::findProcessType(processName);
+            processType_ = processType;
+            // Uncomment this to see what process types are being saved.  --JM
+            //std::cout << "Trajectory - set process type " << processType
+            //        << " from <" << processName << ">" << std::endl;
         }
 
         // Set initial momentum from track information.
