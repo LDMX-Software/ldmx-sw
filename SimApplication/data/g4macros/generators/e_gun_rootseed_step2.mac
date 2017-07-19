@@ -1,5 +1,4 @@
 /persistency/gdml/read detector.gdml
-/random/setSeeds 77777 23465 
 /run/initialize
 
 /ldmx/generators/root/open test-input.root
