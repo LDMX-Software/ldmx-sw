@@ -122,12 +122,6 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/xerces/install/dir/lib
 
 Replace the above path with the actual full path to your Xerces library directory.
 
-Finally, you may want to set the following environment variable to avoid certain memory errors when running the programs:
-
-``` bash
-export MALLOC_CHECK_=0
-```
-
 Once you have executed the above commands in your shell, you should be able to execute programs like `ldmx-sim` without any additional setup.
 
 ## Running the LDMX Simulation Application
