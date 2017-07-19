@@ -116,9 +116,9 @@ namespace ldmx {
             if (isOutputFile_) {
                 event_->beforeFill();
                 if (storeCurrentEvent) tree_->Fill(); // fill the clones...
-                event_->Clear();
             }
             if (event_) {
+	        event_->Clear();
                 event_->onEndOfEvent();
             }
         }
