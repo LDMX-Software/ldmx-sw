@@ -83,7 +83,7 @@ Static Private Attributes</h2></td></tr>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Macro messenger for event generation. </p>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00023">23</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00034">34</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a8d542f76917f540ec917c6f43d80e60a"></a><!-- doxytag: member="ldmx::PrimaryGeneratorMessenger::PrimaryGeneratorMessenger" ref="a8d542f76917f540ec917c6f43d80e60a" args="(PrimaryGeneratorAction *pga)" -->
 <div class="memitem">
@@ -107,9 +107,9 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00011">11</a> of file <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html">PrimaryGeneratorMessenger.cxx</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00013">13</a> of file <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html">PrimaryGeneratorMessenger.cxx</a>.</p>
 
-<p>References <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00062">lheDir_</a>, <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00067">lheOpenCmd_</a>, <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00072">rootDir_</a>, and <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00077">rootOpenCmd_</a>.</p>
+<p>References <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00072">lheDir_</a>, <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00077">lheOpenCmd_</a>, <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00082">rootDir_</a>, and <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00087">rootOpenCmd_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                                                          :
             <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>(thePrimaryGeneratorAction) {
 
@@ -151,7 +151,7 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Class destructor. </p>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00035">35</a> of file <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html">PrimaryGeneratorMessenger.cxx</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00037">37</a> of file <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html">PrimaryGeneratorMessenger.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">{;}
 </pre></div>
 </div>
@@ -190,18 +190,46 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00037">37</a> of file <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html">PrimaryGeneratorMessenger.cxx</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00039">39</a> of file <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html">PrimaryGeneratorMessenger.cxx</a>.</p>
 
-<p>References <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00067">lheOpenCmd_</a>, <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00050">primaryGeneratorAction_</a>, <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00077">rootOpenCmd_</a>, <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00021">ldmx::PrimaryGeneratorAction::setPrimaryGenerator()</a>, and <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00082">useRootSeed_</a>.</p>
+<p>References <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00086">ldmx::PrimaryGeneratorAction::getGenerator()</a>, <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00092">ldmx::PrimaryGeneratorAction::getIndexMPG()</a>, <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00077">lheOpenCmd_</a>, <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00060">primaryGeneratorAction_</a>, <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00087">rootOpenCmd_</a>, <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00077">ldmx::PrimaryGeneratorAction::setBeamspotXSize()</a>, <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00083">ldmx::PrimaryGeneratorAction::setBeamspotYSize()</a>, <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00020">ldmx::PrimaryGeneratorAction::setPrimaryGenerator()</a>, <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00071">ldmx::PrimaryGeneratorAction::setUseBeamspot()</a>, and <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00092">useRootSeed_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                                        {
-        <span class="keywordflow">if</span> (command == <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#aa03e7a949f9e06e2c6a65f8c61eedd81">lheOpenCmd_</a>) {
-            <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;setPrimaryGenerator(<span class="keyword">new</span> LHEPrimaryGenerator(<span class="keyword">new</span> LHEReader(newValues)));
+
+        <span class="keywordflow">if</span> (command == <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#aa03e7a949f9e06e2c6a65f8c61eedd81">lheOpenCmd_</a>) { 
+            <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;setPrimaryGenerator(<span class="keyword">new</span> LHEPrimaryGenerator(<span class="keyword">new</span> LHEReader(newValues))); 
         }
-        <span class="keywordflow">if</span> (command == <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#ac854023517a6290453d5b0e3cce54355">rootOpenCmd_</a>) {
-            <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;setPrimaryGenerator(<span class="keyword">new</span> RootPrimaryGenerator(newValues));
+    
+        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#ac854023517a6290453d5b0e3cce54355">rootOpenCmd_</a>) { 
+            <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;setPrimaryGenerator(<span class="keyword">new</span> RootPrimaryGenerator(newValues)); 
+        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == rootUseSeedCmd_) {
+            <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#aeb324e9e1cb8f29c6fec71327de2ed8a">useRootSeed_</a> = <span class="keyword">true</span>; 
         }
-        <span class="keywordflow">if</span> (command == rootUseSeedCmd_) {
-            <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#aeb324e9e1cb8f29c6fec71327de2ed8a">useRootSeed_</a> = <span class="keyword">true</span>;
+
+        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == enableMPGunCmd_) { 
+            <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;setPrimaryGenerator(<span class="keyword">new</span> MultiParticleGunPrimaryGenerator());
+        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == mpgunNParCmd_) { 
+            <span class="keywordtype">int</span> curi = <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;getIndexMPG();
+            <span class="keywordflow">if</span> (curi &gt;= 0) ( <span class="keyword">dynamic_cast&lt;</span>MultiParticleGunPrimaryGenerator*<span class="keyword">&gt;</span>(<a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;getGenerator(curi)) )-&gt;setMpgNparticles( G4UIcommand::ConvertToDouble(newValues) ); 
+        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == enableMPGunPoissonCmd_) { 
+            <span class="keywordtype">int</span> curi = <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;getIndexMPG();
+            <span class="keywordflow">if</span> (curi &gt;= 0) ( <span class="keyword">dynamic_cast&lt;</span>MultiParticleGunPrimaryGenerator*<span class="keyword">&gt;</span>(<a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;getGenerator(curi)) )-&gt;enablePoisson(); 
+        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == mpgunPIDCmd_) { 
+            <span class="keywordtype">int</span> curi = <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;getIndexMPG();
+            <span class="keywordflow">if</span> (curi &gt;= 0) ( <span class="keyword">dynamic_cast&lt;</span>MultiParticleGunPrimaryGenerator*<span class="keyword">&gt;</span>(<a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;getGenerator(curi)) )-&gt;setMpgPdgId( G4UIcommand::ConvertToInt(newValues) ); 
+        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == mpgunVtxCmd_) { 
+            <span class="keywordtype">int</span> curi = <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;getIndexMPG();
+            <span class="keywordflow">if</span> (curi &gt;= 0) ( <span class="keyword">dynamic_cast&lt;</span>MultiParticleGunPrimaryGenerator*<span class="keyword">&gt;</span>(<a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;getGenerator(curi)) )-&gt;setMpgVertex( G4UIcommand::ConvertToDimensioned3Vector(newValues) ); 
+        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == mpgunMomCmd_) { 
+            <span class="keywordtype">int</span> curi = <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;getIndexMPG();
+            <span class="keywordflow">if</span> (curi &gt;= 0) ( <span class="keyword">dynamic_cast&lt;</span>MultiParticleGunPrimaryGenerator*<span class="keyword">&gt;</span>(<a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;getGenerator(curi)) )-&gt;setMpgMomentum( G4UIcommand::ConvertToDimensioned3Vector(newValues) ); 
+        }        
+
+        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == enableBeamspotCmd_) { 
+            <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;setUseBeamspot(<span class="keyword">true</span>); 
+        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == beamspotXSizeCmd_) {
+            <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;setBeamspotXSize( G4UIcommand::ConvertToDouble(newValues) ); 
+        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == beamspotYSizeCmd_) { 
+            <a class="code" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">primaryGeneratorAction_</a>-&gt;setBeamspotYSize( G4UIcommand::ConvertToDouble(newValues) ); 
         }
     }
 </pre></div>
@@ -220,9 +248,9 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The LHE generator macro directory. </p>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00062">62</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00072">72</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
 
-<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00011">PrimaryGeneratorMessenger()</a>.</p>
+<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00013">PrimaryGeneratorMessenger()</a>.</p>
 
 </div>
 </div>
@@ -238,9 +266,9 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The command for opening LHE files. </p>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00067">67</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00077">77</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
 
-<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00011">PrimaryGeneratorMessenger()</a>, and <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00037">SetNewValue()</a>.</p>
+<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00013">PrimaryGeneratorMessenger()</a>, and <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00039">SetNewValue()</a>.</p>
 
 </div>
 </div>
@@ -256,9 +284,9 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The primary generator action. </p>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00050">50</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00060">60</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
 
-<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00037">SetNewValue()</a>.</p>
+<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00039">SetNewValue()</a>.</p>
 
 </div>
 </div>
@@ -274,9 +302,9 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The Root generator macro directory. </p>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00072">72</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00082">82</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
 
-<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00011">PrimaryGeneratorMessenger()</a>.</p>
+<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00013">PrimaryGeneratorMessenger()</a>.</p>
 
 </div>
 </div>
@@ -292,9 +320,9 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The command for opening Root files. </p>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00077">77</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00087">87</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
 
-<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00011">PrimaryGeneratorMessenger()</a>, and <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00037">SetNewValue()</a>.</p>
+<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00013">PrimaryGeneratorMessenger()</a>, and <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00039">SetNewValue()</a>.</p>
 
 </div>
 </div>
@@ -308,11 +336,11 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>The command for opening Root files. FIXME: This should not be static. </p>
+<p>The command for opening Root files. The command for using the multiparticle gun. The command for using the multiparticle gun. Command allowing a user to specify what particle type to generate. Command allowing a user to specify what particle type to generate. FIXME: This should not be static. </p>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00082">82</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorMessenger_8h_source.html#l00092">92</a> of file <a class="el" href="PrimaryGeneratorMessenger_8h_source.html">PrimaryGeneratorMessenger.h</a>.</p>
 
-<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00037">SetNewValue()</a>.</p>
+<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00039">SetNewValue()</a>.</p>
 
 </div>
 </div>

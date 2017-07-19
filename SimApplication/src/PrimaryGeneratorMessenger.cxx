@@ -77,6 +77,8 @@ namespace ldmx {
             primaryGeneratorAction_->setBeamspotXSize( G4UIcommand::ConvertToDouble(newValues) ); 
         } else if (command == beamspotYSizeCmd_) { 
             primaryGeneratorAction_->setBeamspotYSize( G4UIcommand::ConvertToDouble(newValues) ); 
+        } else if (command == beamspotZSizeCmd_) { 
+            primaryGeneratorAction_->setBeamspotZSize( G4UIcommand::ConvertToDouble(newValues) ); 
         }
     }
 }

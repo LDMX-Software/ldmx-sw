@@ -634,7 +634,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="EventFile_8cxx_source.html#l00162">162</a> of file <a class="el" href="EventFile_8cxx_source.html">EventFile.cxx</a>.</p>
 
-<p>References <a class="el" href="EventImpl_8cxx_source.html#l00203">ldmx::EventImpl::createTree()</a>, and <a class="el" href="EventFile_8h_source.html#l00147">isOutputFile_</a>.</p>
+<p>References <a class="el" href="EventImpl_8cxx_source.html#l00206">ldmx::EventImpl::createTree()</a>, and <a class="el" href="EventFile_8h_source.html#l00147">isOutputFile_</a>.</p>
 
 <p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00073">ldmx::RootPersistencyManager::Initialize()</a>.</p>
 <div class="fragment"><pre class="fragment">                                             {
@@ -649,8 +649,8 @@ Private Attributes</h2></td></tr>
             <span class="keywordflow">if</span> (parent_) {
                 event_-&gt;setInputTree(parent_-&gt;tree_);
             }
-
         } <span class="keywordflow">else</span> {
+            ientry_ = 0;
             event_-&gt;setInputTree(tree_);
         }
     }

@@ -136,7 +136,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="TrackMap_8h_source.html#l00103">trackIDMap_</a>.</p>
 
-<p>Referenced by <a class="el" href="UserTrackingAction_8cxx_source.html#l00072">ldmx::UserTrackingAction::processTrack()</a>.</p>
+<p>Referenced by <a class="el" href="UserTrackingAction_8cxx_source.html#l00081">ldmx::UserTrackingAction::processTrack()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                    {
                 <a class="code" href="classldmx_1_1TrackMap.html#a0d46b5ce93c7431900e0ff42f6954ddd">trackIDMap_</a>[trackID] = parentID;
             }
@@ -169,7 +169,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="Trajectory_8cxx_source.html#l00062">ldmx::Trajectory::GetTrackID()</a>, and <a class="el" href="TrackMap_8h_source.html#l00106">trajectoryMap_</a>.</p>
 
-<p>Referenced by <a class="el" href="UserTrackingAction_8cxx_source.html#l00053">ldmx::UserTrackingAction::storeTrajectory()</a>.</p>
+<p>Referenced by <a class="el" href="UserTrackingAction_8cxx_source.html#l00062">ldmx::UserTrackingAction::storeTrajectory()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                        {
                 <a class="code" href="classldmx_1_1TrackMap.html#afed38c6295ceb98e06e41bb9a4e60a71">trajectoryMap_</a>[traj-&gt;GetTrackID()] = traj;
             }
@@ -258,7 +258,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="TrackMap_8h_source.html#l00103">trackIDMap_</a>, and <a class="el" href="TrackMap_8h_source.html#l00106">trajectoryMap_</a>.</p>
 
-<p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00095">ldmx::SimParticleBuilder::findSimParticle()</a>.</p>
+<p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00098">ldmx::SimParticleBuilder::findSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                         {
         G4int currTrackID = trackID;
         G4VTrajectory* traj = <span class="keyword">nullptr</span>;
@@ -338,7 +338,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="TrackMap_8h_source.html#l00106">trajectoryMap_</a>.</p>
 
-<p>Referenced by <a class="el" href="TrackMap_8h_source.html#l00087">getTrajectory()</a>, <a class="el" href="UserTrackingAction_8cxx_source.html#l00040">ldmx::UserTrackingAction::PostUserTrackingAction()</a>, and <a class="el" href="UserTrackingAction_8cxx_source.html#l00021">ldmx::UserTrackingAction::PreUserTrackingAction()</a>.</p>
+<p>Referenced by <a class="el" href="TrackMap_8h_source.html#l00087">getTrajectory()</a>, <a class="el" href="UserTrackingAction_8cxx_source.html#l00039">ldmx::UserTrackingAction::PostUserTrackingAction()</a>, and <a class="el" href="UserTrackingAction_8cxx_source.html#l00021">ldmx::UserTrackingAction::PreUserTrackingAction()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                     {
                 <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1TrackMap.html#afed38c6295ceb98e06e41bb9a4e60a71">trajectoryMap_</a>.find(trackID) != <a class="code" href="classldmx_1_1TrackMap.html#afed38c6295ceb98e06e41bb9a4e60a71">trajectoryMap_</a>.end();
             }

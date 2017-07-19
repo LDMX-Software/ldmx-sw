@@ -146,7 +146,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <dl class="return"><dt><b>Returns:</b></dt><dd>Method that returns the biasing operation that will be used to bias the occurence of photonuclear events. </dd></dl>
 
-<p>Definition at line <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00046">46</a> of file <a class="el" href="XsecBiasingOperator_8cxx_source.html">XsecBiasingOperator.cxx</a>.</p>
+<p>Definition at line <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00045">45</a> of file <a class="el" href="XsecBiasingOperator_8cxx_source.html">XsecBiasingOperator.cxx</a>.</p>
 
 <p>References <a class="el" href="BiasingMessenger_8h_source.html#l00058">ldmx::BiasingMessenger::getThreshold()</a>, <a class="el" href="XsecBiasingOperator_8h_source.html#l00057">process_</a>, and <a class="el" href="XsecBiasingOperator_8h_source.html#l00063">xsecTrans_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                                   {
@@ -216,8 +216,7 @@ Private Attributes</h2></td></tr>
         }
 
         <a class="code" href="classldmx_1_1XsecBiasingOperator.html#a34458e24ad9cf767a139f8e562169ca3">process_</a> = <a class="code" href="classldmx_1_1BiasingMessenger.html#a22d81c1b0e807e2df5ef690487487b5a">BiasingMessenger::getProcess</a>(); 
-        <span class="comment">/*std::cout &lt;&lt; &quot;[ XsecBiasingOperator ]: &quot;</span>
-<span class="comment">          &lt;&lt; &quot;Process: &quot; &lt;&lt; process_ &lt;&lt; std::endl;*/</span> 
+        <span class="comment">/*std::cout &lt;&lt; &quot;[ XsecBiasingOperator ]: &quot;&lt;&lt; &quot;Process: &quot; &lt;&lt; process_ &lt;&lt; std::endl;*/</span> 
         <span class="keyword">const</span> G4BiasingProcessSharedData* sharedData = G4BiasingProcessInterface::GetSharedData(processManager);
         <span class="keywordflow">if</span> (sharedData) {
             <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> index = 0 ; index &lt; (sharedData-&gt;GetPhysicsBiasingProcessInterfaces()).size(); ++index) {
@@ -249,7 +248,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00057">57</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
 
-<p>Referenced by <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00046">ProposeOccurenceBiasingOperation()</a>, and <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00020">StartRun()</a>.</p>
+<p>Referenced by <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00045">ProposeOccurenceBiasingOperation()</a>, and <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00020">StartRun()</a>.</p>
 
 </div>
 </div>
@@ -267,7 +266,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00063">63</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
 
-<p>Referenced by <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00046">ProposeOccurenceBiasingOperation()</a>, and <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00020">StartRun()</a>.</p>
+<p>Referenced by <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00045">ProposeOccurenceBiasingOperation()</a>, and <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00020">StartRun()</a>.</p>
 
 </div>
 </div>

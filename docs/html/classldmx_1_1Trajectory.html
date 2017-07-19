@@ -88,6 +88,10 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">const G4ThreeVector &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Trajectory.html#a359a01b30e9a58719272fb3fdba8519b">getVertexPosition</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Trajectory.html#ab960fe5d151fb5b6188d61e976071a21">setGenStatus</a> (int genStatus)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Trajectory.html#a11b262929dc3deed5da00e5a860ccc75">getProcessType</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac3a7a86e7408faeb7ed6fc162cfdd146"></a><!-- doxytag: member="ldmx::Trajectory::setEndPointMomentum" ref="ac3a7a86e7408faeb7ed6fc162cfdd146" args="(const G4Track *aTrack)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setEndPointMomentum</b> (const G4Track *aTrack)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0465f2a45a70cd1fd160af0faac10e33"></a><!-- doxytag: member="ldmx::Trajectory::getEndPointMomentum" ref="a0465f2a45a70cd1fd160af0faac10e33" args="() const " -->
+const G4ThreeVector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getEndPointMomentum</b> () const </td></tr>
 <tr><td colspan="2"><h2><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classldmx_1_1Trajectory.html">Trajectory</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Trajectory.html#a5dbce05cdea0d38b9185d2765d80c71b">findByTrackID</a> (G4TrajectoryContainer *trajCont, int trackID)</td></tr>
@@ -102,6 +106,7 @@ Private Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">G4float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Trajectory.html#adecf9b7cc4172e986c2ec782591df495">globalTime_</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">G4int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Trajectory.html#ac3873da2051642557288af6d10f58d99">genStatus_</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">G4ThreeVector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Trajectory.html#af39b55812bd8a5474670aeaf7667084b">initialMomentum_</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">G4ThreeVector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Trajectory.html#ab6ee46bf64a3b3381c1d9dc677f4e7a5">endPointMomentum_</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">G4ThreeVector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Trajectory.html#aa793aeff0f414ddf6a2f369dc617affe">vertexPosition_</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1Trajectory.html#a3bee69c7a069bedc07944c358318409e">processType_</a></td></tr>
 </table>
@@ -109,7 +114,7 @@ Private Attributes</h2></td></tr>
 <div class="textblock"><p><a class="el" href="classldmx_1_1Trajectory.html" title="Trajectory implementation for storing track info for persistence and visualization.">Trajectory</a> implementation for storing track info for persistence and visualization. </p>
 <dl class="note"><dt><b>Note:</b></dt><dd>Class is based on this Geant4 tip: <a href="http://geant4.slac.stanford.edu/Tips/event/3.html">Trajectory Event Tip</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00031">31</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00032">32</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 </div><hr/><h2>Member Typedef Documentation</h2>
 <a class="anchor" id="ad2334d32c9a5236615ea1149ae4e3a95"></a><!-- doxytag: member="ldmx::Trajectory::TrajectoryMap" ref="ad2334d32c9a5236615ea1149ae4e3a95" args="" -->
 <div class="memitem">
@@ -123,7 +128,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Map of track ID to <a class="el" href="classldmx_1_1Trajectory.html" title="Trajectory implementation for storing track info for persistence and visualization.">Trajectory</a> objects. </p>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00036">36</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00037">37</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 
 </div>
 </div>
@@ -152,7 +157,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00014">14</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00206">energy_</a>, <a class="el" href="UserTrackInformation_8h_source.html#l00051">ldmx::UserTrackInformation::getInitialMomentum()</a>, <a class="el" href="Trajectory_8h_source.html#l00216">globalTime_</a>, <a class="el" href="Trajectory_8h_source.html#l00226">initialMomentum_</a>, <a class="el" href="Trajectory_8h_source.html#l00211">mass_</a>, <a class="el" href="Trajectory_8h_source.html#l00201">parentID_</a>, <a class="el" href="Trajectory_8h_source.html#l00191">particleDef_</a>, <a class="el" href="Trajectory_8h_source.html#l00236">processType_</a>, <a class="el" href="Trajectory_8h_source.html#l00196">trackID_</a>, <a class="el" href="Trajectory_8h_source.html#l00186">trajPoints_</a>, and <a class="el" href="Trajectory_8h_source.html#l00231">vertexPosition_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00212">energy_</a>, <a class="el" href="UserTrackInformation_8h_source.html#l00051">ldmx::UserTrackInformation::getInitialMomentum()</a>, <a class="el" href="Trajectory_8h_source.html#l00218">globalTime_</a>, <a class="el" href="Trajectory_8h_source.html#l00224">initialMomentum_</a>, <a class="el" href="Trajectory_8h_source.html#l00215">mass_</a>, <a class="el" href="Trajectory_8h_source.html#l00209">parentID_</a>, <a class="el" href="Trajectory_8h_source.html#l00203">particleDef_</a>, <a class="el" href="Trajectory_8h_source.html#l00233">processType_</a>, <a class="el" href="Trajectory_8h_source.html#l00206">trackID_</a>, <a class="el" href="Trajectory_8h_source.html#l00200">trajPoints_</a>, and <a class="el" href="Trajectory_8h_source.html#l00230">vertexPosition_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                :
             <a class="code" href="classldmx_1_1Trajectory.html#ac3873da2051642557288af6d10f58d99">genStatus_</a>(0) {
 
@@ -206,7 +211,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00048">48</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00186">trajPoints_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00200">trajPoints_</a>.</p>
 <div class="fragment"><pre class="fragment">                            {
         <span class="comment">// Delete trajectory points and their container.</span>
         <span class="keywordtype">size_t</span> i;
@@ -244,7 +249,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00058">58</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00186">trajPoints_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00200">trajPoints_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                   {
         <a class="code" href="classldmx_1_1Trajectory.html#aba1c4545f164697db3c4a3c061b38ec0">trajPoints_</a>-&gt;push_back(<span class="keyword">new</span> G4TrajectoryPoint(aStep-&gt;GetPostStepPoint()-&gt;GetPosition()));
     }
@@ -316,7 +321,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00074">74</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00191">particleDef_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00203">particleDef_</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                         {
@@ -370,7 +375,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00112">112</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00206">energy_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00212">energy_</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                         {
@@ -423,7 +428,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00120">120</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00216">globalTime_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00218">globalTime_</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                            {
@@ -450,7 +455,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00082">82</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00226">initialMomentum_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00224">initialMomentum_</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                       {
@@ -477,7 +482,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00116">116</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00211">mass_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00215">mass_</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                       {
@@ -504,7 +509,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00066">66</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00201">parentID_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00209">parentID_</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                        {
@@ -531,7 +536,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00070">70</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00191">particleDef_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00203">particleDef_</a>.</p>
 <div class="fragment"><pre class="fragment">                                               {
         <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1Trajectory.html#a2a659a236798c6d2aa0b773e7e73d9c4">particleDef_</a>-&gt;GetParticleName();
     }
@@ -556,7 +561,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00078">78</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00191">particleDef_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00203">particleDef_</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                           {
@@ -589,7 +594,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00090">90</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00186">trajPoints_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00200">trajPoints_</a>.</p>
 
 <p>Referenced by <a class="el" href="Trajectory_8cxx_source.html#l00108">getEndPoint()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                          {
@@ -616,7 +621,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00086">86</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00186">trajPoints_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00200">trajPoints_</a>.</p>
 
 <p>Referenced by <a class="el" href="Trajectory_8cxx_source.html#l00108">getEndPoint()</a>, and <a class="el" href="Trajectory_8cxx_source.html#l00094">MergeTrajectory()</a>.</p>
 <div class="fragment"><pre class="fragment">                                          {
@@ -641,9 +646,9 @@ Private Attributes</h2></td></tr>
 <p>Get the creator process type of this particle. This corresponds to the value returned by <em>G4VProcess::GetProcessSubType()</em> e.g. 121 for products of photonuclear reactions. </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>The creator process type of this particle. </dd></dl>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00177">177</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00178">178</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00236">processType_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00233">processType_</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                 {
@@ -670,7 +675,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00062">62</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00196">trackID_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00206">trackID_</a>.</p>
 
 <p>Referenced by <a class="el" href="TrackMap_8h_source.html#l00069">ldmx::TrackMap::addTrajectory()</a>, and <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                       {
@@ -697,7 +702,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00128">128</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8h_source.html#l00231">vertexPosition_</a>.</p>
+<p>References <a class="el" href="Trajectory_8h_source.html#l00230">vertexPosition_</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                             {
@@ -730,7 +735,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="Trajectory_8cxx_source.html#l00094">94</a> of file <a class="el" href="Trajectory_8cxx_source.html">Trajectory.cxx</a>.</p>
 
-<p>References <a class="el" href="Trajectory_8cxx_source.html#l00086">GetPointEntries()</a>, and <a class="el" href="Trajectory_8h_source.html#l00186">trajPoints_</a>.</p>
+<p>References <a class="el" href="Trajectory_8cxx_source.html#l00086">GetPointEntries()</a>, and <a class="el" href="Trajectory_8h_source.html#l00200">trajPoints_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                    {
         <span class="keywordflow">if</span> (secondTrajectory == NULL) {
             <span class="keywordflow">return</span>;
@@ -769,7 +774,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00250">250</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00247">247</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 <div class="fragment"><pre class="fragment">                                                             {
         TrajectoryAllocator.FreeSingle((<a class="code" href="classldmx_1_1Trajectory.html#acb31f9e67274e92f26a0ca8dbfe3865b">Trajectory</a>*) aTrajectory);
     }
@@ -798,7 +803,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00244">244</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00241">241</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 <div class="fragment"><pre class="fragment">                                                {
         <span class="keywordtype">void</span>* aTrajectory;
         aTrajectory = (<span class="keywordtype">void</span>*) TrajectoryAllocator.MallocSingle();
@@ -833,7 +838,7 @@ Private Attributes</h2></td></tr>
 
 <p>References <a class="el" href="Trajectory_8h_source.html#l00221">genStatus_</a>.</p>
 
-<p>Referenced by <a class="el" href="UserTrackingAction_8cxx_source.html#l00053">ldmx::UserTrackingAction::storeTrajectory()</a>.</p>
+<p>Referenced by <a class="el" href="UserTrackingAction_8cxx_source.html#l00062">ldmx::UserTrackingAction::storeTrajectory()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                  {
         <a class="code" href="classldmx_1_1Trajectory.html#ac3873da2051642557288af6d10f58d99">genStatus_</a> = theGenStatus;
     }
@@ -841,6 +846,22 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Member Data Documentation</h2>
+<a class="anchor" id="ab6ee46bf64a3b3381c1d9dc677f4e7a5"></a><!-- doxytag: member="ldmx::Trajectory::endPointMomentum_" ref="ab6ee46bf64a3b3381c1d9dc677f4e7a5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">G4ThreeVector <a class="el" href="classldmx_1_1Trajectory.html#ab6ee46bf64a3b3381c1d9dc677f4e7a5">ldmx::Trajectory::endPointMomentum_</a><code> [private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>The momentum at the particle's end point. </p>
+
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00227">227</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="aa95d91ea2d0296af347dbab67f3105a3"></a><!-- doxytag: member="ldmx::Trajectory::energy_" ref="aa95d91ea2d0296af347dbab67f3105a3" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -853,7 +874,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The particle's energy. </p>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00206">206</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00212">212</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 
 <p>Referenced by <a class="el" href="Trajectory_8cxx_source.html#l00112">getEnergy()</a>, and <a class="el" href="Trajectory_8cxx_source.html#l00014">Trajectory()</a>.</p>
 
@@ -889,7 +910,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The particle's global time. </p>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00216">216</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00218">218</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 
 <p>Referenced by <a class="el" href="Trajectory_8cxx_source.html#l00120">getGlobalTime()</a>, and <a class="el" href="Trajectory_8cxx_source.html#l00014">Trajectory()</a>.</p>
 
@@ -907,7 +928,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The particle's initial momentum. </p>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00226">226</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00224">224</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 
 <p>Referenced by <a class="el" href="Trajectory_8cxx_source.html#l00082">GetInitialMomentum()</a>, and <a class="el" href="Trajectory_8cxx_source.html#l00014">Trajectory()</a>.</p>
 
@@ -925,7 +946,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The particle's mass. </p>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00211">211</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00215">215</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 
 <p>Referenced by <a class="el" href="Trajectory_8cxx_source.html#l00116">getMass()</a>, and <a class="el" href="Trajectory_8cxx_source.html#l00014">Trajectory()</a>.</p>
 
@@ -943,7 +964,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The parent track ID. </p>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00201">201</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00209">209</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 
 <p>Referenced by <a class="el" href="Trajectory_8cxx_source.html#l00066">GetParentID()</a>, and <a class="el" href="Trajectory_8cxx_source.html#l00014">Trajectory()</a>.</p>
 
@@ -961,7 +982,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The particle definition. </p>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00191">191</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00203">203</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 
 <p>Referenced by <a class="el" href="Trajectory_8cxx_source.html#l00074">GetCharge()</a>, <a class="el" href="Trajectory_8cxx_source.html#l00070">GetParticleName()</a>, <a class="el" href="Trajectory_8cxx_source.html#l00078">GetPDGEncoding()</a>, and <a class="el" href="Trajectory_8cxx_source.html#l00014">Trajectory()</a>.</p>
 
@@ -979,9 +1000,9 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The type of the process which created the track. </p>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00236">236</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00233">233</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Trajectory_8h_source.html#l00177">getProcessType()</a>, and <a class="el" href="Trajectory_8cxx_source.html#l00014">Trajectory()</a>.</p>
+<p>Referenced by <a class="el" href="Trajectory_8h_source.html#l00178">getProcessType()</a>, and <a class="el" href="Trajectory_8cxx_source.html#l00014">Trajectory()</a>.</p>
 
 </div>
 </div>
@@ -997,7 +1018,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The track ID. </p>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00196">196</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00206">206</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 
 <p>Referenced by <a class="el" href="Trajectory_8cxx_source.html#l00062">GetTrackID()</a>, and <a class="el" href="Trajectory_8cxx_source.html#l00014">Trajectory()</a>.</p>
 
@@ -1015,7 +1036,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The list of trajectory points. </p>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00186">186</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00200">200</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 
 <p>Referenced by <a class="el" href="Trajectory_8cxx_source.html#l00058">AppendStep()</a>, <a class="el" href="Trajectory_8cxx_source.html#l00090">GetPoint()</a>, <a class="el" href="Trajectory_8cxx_source.html#l00086">GetPointEntries()</a>, <a class="el" href="Trajectory_8cxx_source.html#l00094">MergeTrajectory()</a>, <a class="el" href="Trajectory_8cxx_source.html#l00014">Trajectory()</a>, and <a class="el" href="Trajectory_8cxx_source.html#l00048">~Trajectory()</a>.</p>
 
@@ -1033,7 +1054,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The particle's vertex position. </p>
 
-<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00231">231</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
+<p>Definition at line <a class="el" href="Trajectory_8h_source.html#l00230">230</a> of file <a class="el" href="Trajectory_8h_source.html">Trajectory.h</a>.</p>
 
 <p>Referenced by <a class="el" href="Trajectory_8cxx_source.html#l00128">getVertexPosition()</a>, and <a class="el" href="Trajectory_8cxx_source.html#l00014">Trajectory()</a>.</p>
 
