@@ -59,36 +59,27 @@ namespace ldmx {
 	layerNumber = int(cpynum/7);
 	int module_position = cpynum%7;
 	
-	/*
-	  std::cout << "------- new hit -------" << std::endl;
-	  std::cout << "copynumber: " << cpynum << std::endl;
-	  std::cout << "layerNumber: " << layerNumber << std::endl;
-	  std::cout << "module_position: " << module_position << std::endl;
-	  std::cout << "hit pos: " << hitPosition[0] << " " << hitPosition[1] << " " << hitPosition[2] << std::endl;
-        */
-
 	int cellID = hitMap_->getCellId(hitPosition[0], hitPosition[1]);
         detID_->setFieldValue(1, layerNumber);
-        //detID_->setFieldValue(2, module_position);
-	detID_->setFieldValue(2, cellID);
+        detID_->setFieldValue(2, module_position);
+	detID_->setFieldValue(3, cellID);
         hit->setID(detID_->pack());
 
-	std::cout << "// Set the track ID on the hit." << std::endl;
+	// Set the track ID on the hit.
         hit->setTrackID(aStep->GetTrack()->GetTrackID());
 
-	std::cout << "// Set the PDG code from the track." << std::endl;
+	// Set the PDG code from the track.
         hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
 
         if (this->verboseLevel > 2) {
-            std::cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << subdet_ << " and layer " << layerNumber << " and cellid " << cellID << " ...";
+	    std::cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << subdet_ << " and layer " << layerNumber << " and cellid " << cellID << " module position " << module_position << " ...";
             hit->Print();
             std::cout << std::endl;
         }
 
-	std::cout << "// Insert the hit into the hits collection." << std::endl;
+	// Insert the hit into the hits collection.
         hitsCollection_->insert(hit);
 
-	std::cout << "done - " << std::endl;
         return true;
     }
 
