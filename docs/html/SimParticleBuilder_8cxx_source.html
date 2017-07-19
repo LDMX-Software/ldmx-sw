@@ -109,39 +109,42 @@
 <a name="l00069"></a>00069         <span class="keyword">const</span> G4ThreeVector&amp; momentum = traj-&gt;<a class="code" href="classldmx_1_1Trajectory.html#a70fb42322e2ce4789bb5f3347e281bd8">GetInitialMomentum</a>();
 <a name="l00070"></a>00070         simParticle-&gt;<a class="code" href="classldmx_1_1SimParticle.html#ad0a003ab921ae3356017d4f197991de6">setMomentum</a>(momentum[0], momentum[1], momentum[2]);
 <a name="l00071"></a>00071 
-<a name="l00072"></a>00072         G4ThreeVector endpoint = traj-&gt;<a class="code" href="classldmx_1_1Trajectory.html#a6ac5c7babff118014a77fad08a14204d">getEndPoint</a>();
-<a name="l00073"></a>00073         simParticle-&gt;<a class="code" href="classldmx_1_1SimParticle.html#ab2baa72cdee9e44b2149e8da102290e4">setEndPoint</a>(endpoint[0], endpoint[1], endpoint[2]);
+<a name="l00072"></a>00072         <span class="keyword">const</span> G4ThreeVector&amp; endpMomentum = traj-&gt;getEndPointMomentum();
+<a name="l00073"></a>00073         simParticle-&gt;<a class="code" href="classldmx_1_1SimParticle.html#a6db4b44f9b01554964f597d692749d48">setEndPointMomentum</a>(endpMomentum[0], endpMomentum[1], endpMomentum[2]);
 <a name="l00074"></a>00074 
-<a name="l00075"></a>00075         <span class="keywordflow">if</span> (traj-&gt;<a class="code" href="classldmx_1_1Trajectory.html#a39456cbf0a1b043335a73f829eded98f">GetParentID</a>() &gt; 0) {
-<a name="l00076"></a>00076             <a class="code" href="classldmx_1_1SimParticle.html" title="Represents MC particle information from a track in the simulation.">SimParticle</a>* parent = <a class="code" href="classldmx_1_1SimParticleBuilder.html#a186857e6055f574b6aa266daa51f308b">findSimParticle</a>(traj-&gt;<a class="code" href="classldmx_1_1Trajectory.html#a39456cbf0a1b043335a73f829eded98f">GetParentID</a>());
-<a name="l00077"></a>00077             <span class="keywordflow">if</span> (parent != <span class="keyword">nullptr</span>) {
-<a name="l00078"></a>00078                 simParticle-&gt;<a class="code" href="classldmx_1_1SimParticle.html#a22d2fb5c6f9ce71713dd58b6fbfdd561">addParent</a>(parent);
-<a name="l00079"></a>00079                 parent-&gt;<a class="code" href="classldmx_1_1SimParticle.html#ae96f2868021465f9fbe975574cce5ca2">addDaughter</a>(simParticle);
-<a name="l00080"></a>00080             } <span class="keywordflow">else</span> {
-<a name="l00081"></a>00081                 <span class="comment">// If the parent particle can not be found by its track ID, this is a fatal error!</span>
-<a name="l00082"></a>00082                 std::cerr &lt;&lt; <span class="stringliteral">&quot;[ SimParticleBuilder ] : ERROR - SimParticle with parent ID &quot;</span> &lt;&lt; traj-&gt;<a class="code" href="classldmx_1_1Trajectory.html#a39456cbf0a1b043335a73f829eded98f">GetParentID</a>() &lt;&lt; <span class="stringliteral">&quot; not found for track ID &quot;</span> &lt;&lt; traj-&gt;<a class="code" href="classldmx_1_1Trajectory.html#a2a6374f75be408029aa5ac17d19ae462">GetTrackID</a>() &lt;&lt; std::endl;
-<a name="l00083"></a>00083                 G4Exception(<span class="stringliteral">&quot;SimParticleBuilder::buildSimParticle&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, FatalException, <span class="stringliteral">&quot;SimParticle not found from parent track ID.&quot;</span>);
-<a name="l00084"></a>00084             }
-<a name="l00085"></a>00085         }
-<a name="l00086"></a>00086     }
-<a name="l00087"></a>00087 
-<a name="l00088"></a><a class="code" href="classldmx_1_1SimParticleBuilder.html#a8e953445337e7bdd06deb6923963f9dc">00088</a>     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1SimParticleBuilder.html#a8e953445337e7bdd06deb6923963f9dc">SimParticleBuilder::buildParticleMap</a>(<a class="code" href="classldmx_1_1TrajectoryContainer.html" title="Trajectory container extension that allows searching by track ID.">TrajectoryContainer</a>* trajectories, TClonesArray* simParticleColl) {
-<a name="l00089"></a>00089         <a class="code" href="classldmx_1_1SimParticleBuilder.html#ad92171c766f61df3720b1597da201e52">particleMap_</a>.clear();
-<a name="l00090"></a>00090         <span class="keywordflow">for</span> (<span class="keyword">auto</span> trajectory : *trajectories-&gt;GetVector()) {
-<a name="l00091"></a>00091             <a class="code" href="classldmx_1_1SimParticleBuilder.html#ad92171c766f61df3720b1597da201e52">particleMap_</a>[trajectory-&gt;GetTrackID()] = (<a class="code" href="classldmx_1_1SimParticle.html" title="Represents MC particle information from a track in the simulation.">SimParticle</a>*) simParticleColl-&gt;ConstructedAt(simParticleColl-&gt;GetEntries());
-<a name="l00092"></a>00092         }
-<a name="l00093"></a>00093     }
-<a name="l00094"></a>00094 
-<a name="l00095"></a><a class="code" href="classldmx_1_1SimParticleBuilder.html#a186857e6055f574b6aa266daa51f308b">00095</a>     <a class="code" href="classldmx_1_1SimParticle.html" title="Represents MC particle information from a track in the simulation.">SimParticle</a>* <a class="code" href="classldmx_1_1SimParticleBuilder.html#a186857e6055f574b6aa266daa51f308b">SimParticleBuilder::findSimParticle</a>(G4int trackID) {
-<a name="l00096"></a>00096         G4VTrajectory* traj = <a class="code" href="classldmx_1_1SimParticleBuilder.html#a97a1fa9181a3b5de7f0d1843e10c5bab">trackMap_</a>-&gt;<a class="code" href="classldmx_1_1TrackMap.html#ad54f25d0e514ca9e6dee2ecc2086df8c">findTrajectory</a>(trackID);
-<a name="l00097"></a>00097         <span class="keywordflow">if</span> (traj != <span class="keyword">nullptr</span>) {
-<a name="l00098"></a>00098             <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1SimParticleBuilder.html#ad92171c766f61df3720b1597da201e52">particleMap_</a>[traj-&gt;GetTrackID()];
-<a name="l00099"></a>00099         } <span class="keywordflow">else</span> {
-<a name="l00100"></a>00100             <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;
-<a name="l00101"></a>00101         }
-<a name="l00102"></a>00102     }
-<a name="l00103"></a>00103 
-<a name="l00104"></a>00104 }
+<a name="l00075"></a>00075         G4ThreeVector endpoint = traj-&gt;<a class="code" href="classldmx_1_1Trajectory.html#a6ac5c7babff118014a77fad08a14204d">getEndPoint</a>();
+<a name="l00076"></a>00076         simParticle-&gt;<a class="code" href="classldmx_1_1SimParticle.html#ab2baa72cdee9e44b2149e8da102290e4">setEndPoint</a>(endpoint[0], endpoint[1], endpoint[2]);
+<a name="l00077"></a>00077 
+<a name="l00078"></a>00078         <span class="keywordflow">if</span> (traj-&gt;<a class="code" href="classldmx_1_1Trajectory.html#a39456cbf0a1b043335a73f829eded98f">GetParentID</a>() &gt; 0) {
+<a name="l00079"></a>00079             <a class="code" href="classldmx_1_1SimParticle.html" title="Represents MC particle information from a track in the simulation.">SimParticle</a>* parent = <a class="code" href="classldmx_1_1SimParticleBuilder.html#a186857e6055f574b6aa266daa51f308b">findSimParticle</a>(traj-&gt;<a class="code" href="classldmx_1_1Trajectory.html#a39456cbf0a1b043335a73f829eded98f">GetParentID</a>());
+<a name="l00080"></a>00080             <span class="keywordflow">if</span> (parent != <span class="keyword">nullptr</span>) {
+<a name="l00081"></a>00081                 simParticle-&gt;<a class="code" href="classldmx_1_1SimParticle.html#a22d2fb5c6f9ce71713dd58b6fbfdd561">addParent</a>(parent);
+<a name="l00082"></a>00082                 parent-&gt;<a class="code" href="classldmx_1_1SimParticle.html#ae96f2868021465f9fbe975574cce5ca2">addDaughter</a>(simParticle);
+<a name="l00083"></a>00083             } <span class="keywordflow">else</span> {
+<a name="l00084"></a>00084                 <span class="comment">// If the parent particle can not be found by its track ID, this is a fatal error!</span>
+<a name="l00085"></a>00085                 std::cerr &lt;&lt; <span class="stringliteral">&quot;[ SimParticleBuilder ] : ERROR - SimParticle with parent ID &quot;</span> &lt;&lt; traj-&gt;<a class="code" href="classldmx_1_1Trajectory.html#a39456cbf0a1b043335a73f829eded98f">GetParentID</a>() &lt;&lt; <span class="stringliteral">&quot; not found for track ID &quot;</span> &lt;&lt; traj-&gt;<a class="code" href="classldmx_1_1Trajectory.html#a2a6374f75be408029aa5ac17d19ae462">GetTrackID</a>() &lt;&lt; std::endl;
+<a name="l00086"></a>00086                 G4Exception(<span class="stringliteral">&quot;SimParticleBuilder::buildSimParticle&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, FatalException, <span class="stringliteral">&quot;SimParticle not found from parent track ID.&quot;</span>);
+<a name="l00087"></a>00087             }
+<a name="l00088"></a>00088         }
+<a name="l00089"></a>00089     }
+<a name="l00090"></a>00090 
+<a name="l00091"></a><a class="code" href="classldmx_1_1SimParticleBuilder.html#a8e953445337e7bdd06deb6923963f9dc">00091</a>     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1SimParticleBuilder.html#a8e953445337e7bdd06deb6923963f9dc">SimParticleBuilder::buildParticleMap</a>(<a class="code" href="classldmx_1_1TrajectoryContainer.html" title="Trajectory container extension that allows searching by track ID.">TrajectoryContainer</a>* trajectories, TClonesArray* simParticleColl) {
+<a name="l00092"></a>00092         <a class="code" href="classldmx_1_1SimParticleBuilder.html#ad92171c766f61df3720b1597da201e52">particleMap_</a>.clear();
+<a name="l00093"></a>00093         <span class="keywordflow">for</span> (<span class="keyword">auto</span> trajectory : *trajectories-&gt;GetVector()) {
+<a name="l00094"></a>00094             <a class="code" href="classldmx_1_1SimParticleBuilder.html#ad92171c766f61df3720b1597da201e52">particleMap_</a>[trajectory-&gt;GetTrackID()] = (<a class="code" href="classldmx_1_1SimParticle.html" title="Represents MC particle information from a track in the simulation.">SimParticle</a>*) simParticleColl-&gt;ConstructedAt(simParticleColl-&gt;GetEntries());
+<a name="l00095"></a>00095         }
+<a name="l00096"></a>00096     }
+<a name="l00097"></a>00097 
+<a name="l00098"></a><a class="code" href="classldmx_1_1SimParticleBuilder.html#a186857e6055f574b6aa266daa51f308b">00098</a>     <a class="code" href="classldmx_1_1SimParticle.html" title="Represents MC particle information from a track in the simulation.">SimParticle</a>* <a class="code" href="classldmx_1_1SimParticleBuilder.html#a186857e6055f574b6aa266daa51f308b">SimParticleBuilder::findSimParticle</a>(G4int trackID) {
+<a name="l00099"></a>00099         G4VTrajectory* traj = <a class="code" href="classldmx_1_1SimParticleBuilder.html#a97a1fa9181a3b5de7f0d1843e10c5bab">trackMap_</a>-&gt;<a class="code" href="classldmx_1_1TrackMap.html#ad54f25d0e514ca9e6dee2ecc2086df8c">findTrajectory</a>(trackID);
+<a name="l00100"></a>00100         <span class="keywordflow">if</span> (traj != <span class="keyword">nullptr</span>) {
+<a name="l00101"></a>00101             <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1SimParticleBuilder.html#ad92171c766f61df3720b1597da201e52">particleMap_</a>[traj-&gt;GetTrackID()];
+<a name="l00102"></a>00102         } <span class="keywordflow">else</span> {
+<a name="l00103"></a>00103             <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;
+<a name="l00104"></a>00104         }
+<a name="l00105"></a>00105     }
+<a name="l00106"></a>00106 
+<a name="l00107"></a>00107 }
 </pre></div></div>
 </div>
 <hr class="footer"/><address class="footer"><small>Generated by&#160;

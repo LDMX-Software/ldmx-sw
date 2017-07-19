@@ -183,8 +183,7 @@ Private Attributes</h2></td></tr>
                         primary-&gt;SetPDGcode(particle-&gt;getIDUP());
                     }
 
-                    primary-&gt;SetMomentum(particle-&gt;getPUP(0) * GeV, particle-&gt;getPUP(1) * GeV, particle-&gt;getPUP(2) * GeV);
-                    primary-&gt;SetMass(particle-&gt;getPUP(4) * GeV);
+                    primary-&gt;Set4Momentum(particle-&gt;getPUP(0) * GeV, particle-&gt;getPUP(1) * GeV, particle-&gt;getPUP(2) * GeV, particle-&gt;getPUP(3) * GeV);
                     primary-&gt;SetProperTime(particle-&gt;getVTIMUP() * nanosecond);
 
                     UserPrimaryParticleInformation* primaryInfo = <span class="keyword">new</span> UserPrimaryParticleInformation();

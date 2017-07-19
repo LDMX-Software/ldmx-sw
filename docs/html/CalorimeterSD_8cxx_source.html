@@ -123,32 +123,35 @@
 <a name="l00083"></a>00083         <span class="comment">// Set the track ID on the hit.</span>
 <a name="l00084"></a>00084         hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#a892835c762cdb2ebc61860c7d2d3b837">setTrackID</a>(aStep-&gt;GetTrack()-&gt;GetTrackID());
 <a name="l00085"></a>00085 
-<a name="l00086"></a>00086         <span class="keywordflow">if</span> (this-&gt;verboseLevel &gt; 2) {
-<a name="l00087"></a>00087             std::cout &lt;&lt; <span class="stringliteral">&quot;Created new SimCalorimeterHit in detector &quot;</span> &lt;&lt; this-&gt;GetName() &lt;&lt; <span class="stringliteral">&quot; with subdet ID &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1CalorimeterSD.html#a0f1f237a1729bdbc0514a5df347d9f85">subdet_</a> &lt;&lt; <span class="stringliteral">&quot; and layer &quot;</span> &lt;&lt; layerNumber &lt;&lt; <span class="stringliteral">&quot; ...&quot;</span> &lt;&lt; std::endl;
-<a name="l00088"></a>00088             hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#aaeb2a65f14b0dc8342b1ceded6cae566">Print</a>();
-<a name="l00089"></a>00089             std::cout &lt;&lt; std::endl;
-<a name="l00090"></a>00090         }
-<a name="l00091"></a>00091 
-<a name="l00092"></a>00092         <a class="code" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a>-&gt;insert(hit);
-<a name="l00093"></a>00093 
-<a name="l00094"></a>00094         <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00095"></a>00095     }
+<a name="l00086"></a>00086         <span class="comment">// Set the PDG code from the track.</span>
+<a name="l00087"></a>00087         hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#ad93ad722cc2112eaeb87981f78976b61">setPdgCode</a>(aStep-&gt;GetTrack()-&gt;GetParticleDefinition()-&gt;GetPDGEncoding());
+<a name="l00088"></a>00088 
+<a name="l00089"></a>00089         <span class="keywordflow">if</span> (this-&gt;verboseLevel &gt; 2) {
+<a name="l00090"></a>00090             std::cout &lt;&lt; <span class="stringliteral">&quot;Created new SimCalorimeterHit in detector &quot;</span> &lt;&lt; this-&gt;GetName() &lt;&lt; <span class="stringliteral">&quot; with subdet ID &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1CalorimeterSD.html#a0f1f237a1729bdbc0514a5df347d9f85">subdet_</a> &lt;&lt; <span class="stringliteral">&quot; and layer &quot;</span> &lt;&lt; layerNumber &lt;&lt; <span class="stringliteral">&quot; ...&quot;</span> &lt;&lt; std::endl;
+<a name="l00091"></a>00091             hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#aaeb2a65f14b0dc8342b1ceded6cae566">Print</a>();
+<a name="l00092"></a>00092             std::cout &lt;&lt; std::endl;
+<a name="l00093"></a>00093         }
+<a name="l00094"></a>00094 
+<a name="l00095"></a>00095         <a class="code" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a>-&gt;insert(hit);
 <a name="l00096"></a>00096 
-<a name="l00097"></a><a class="code" href="classldmx_1_1CalorimeterSD.html#a092759a236250ec789c440e83b1b3e43">00097</a>     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1CalorimeterSD.html#a092759a236250ec789c440e83b1b3e43">CalorimeterSD::EndOfEvent</a>(G4HCofThisEvent*) {
-<a name="l00098"></a>00098         <span class="comment">// Print number of hits.</span>
-<a name="l00099"></a>00099         <span class="keywordflow">if</span> (this-&gt;verboseLevel &gt; 0) {
-<a name="l00100"></a>00100             std::cout &lt;&lt; GetName() &lt;&lt; <span class="stringliteral">&quot; had &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a>-&gt;entries() &lt;&lt; <span class="stringliteral">&quot; hits in event&quot;</span> &lt;&lt; std::endl;
-<a name="l00101"></a>00101         }
-<a name="l00102"></a>00102 
-<a name="l00103"></a>00103         <span class="comment">// Print each hit in hits collection.</span>
-<a name="l00104"></a>00104         <span class="keywordflow">if</span> (this-&gt;verboseLevel &gt; 1) {
-<a name="l00105"></a>00105             <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> iHit = 0; iHit &lt; <a class="code" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a>-&gt;GetSize(); iHit++) {
-<a name="l00106"></a>00106                 (*hitsCollection_)[iHit]-&gt;Print();
-<a name="l00107"></a>00107             }
-<a name="l00108"></a>00108         }
-<a name="l00109"></a>00109     }
-<a name="l00110"></a>00110 
-<a name="l00111"></a>00111 }
+<a name="l00097"></a>00097         <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00098"></a>00098     }
+<a name="l00099"></a>00099 
+<a name="l00100"></a><a class="code" href="classldmx_1_1CalorimeterSD.html#a092759a236250ec789c440e83b1b3e43">00100</a>     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1CalorimeterSD.html#a092759a236250ec789c440e83b1b3e43">CalorimeterSD::EndOfEvent</a>(G4HCofThisEvent*) {
+<a name="l00101"></a>00101         <span class="comment">// Print number of hits.</span>
+<a name="l00102"></a>00102         <span class="keywordflow">if</span> (this-&gt;verboseLevel &gt; 0) {
+<a name="l00103"></a>00103             std::cout &lt;&lt; GetName() &lt;&lt; <span class="stringliteral">&quot; had &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a>-&gt;entries() &lt;&lt; <span class="stringliteral">&quot; hits in event&quot;</span> &lt;&lt; std::endl;
+<a name="l00104"></a>00104         }
+<a name="l00105"></a>00105 
+<a name="l00106"></a>00106         <span class="comment">// Print each hit in hits collection.</span>
+<a name="l00107"></a>00107         <span class="keywordflow">if</span> (this-&gt;verboseLevel &gt; 1) {
+<a name="l00108"></a>00108             <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> iHit = 0; iHit &lt; <a class="code" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a>-&gt;GetSize(); iHit++) {
+<a name="l00109"></a>00109                 (*hitsCollection_)[iHit]-&gt;Print();
+<a name="l00110"></a>00110             }
+<a name="l00111"></a>00111         }
+<a name="l00112"></a>00112     }
+<a name="l00113"></a>00113 
+<a name="l00114"></a>00114 }
 </pre></div></div>
 </div>
 <hr class="footer"/><address class="footer"><small>Generated by&#160;

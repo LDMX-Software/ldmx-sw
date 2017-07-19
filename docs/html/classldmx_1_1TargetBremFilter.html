@@ -65,6 +65,10 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TargetBremFilter.html#a9f51d409c62e392b6c92a4a04243e9ef">stepping</a> (const G4Step *step)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TargetBremFilter.html#ad872724b0c794dc271455268ad74c612">endEvent</a> (const G4Event *)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">G4ClassificationOfNewTrack&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TargetBremFilter.html#a66db05a6d7e2290af92c1b042c7544fb">stackingClassifyNewTrack</a> (const G4Track *aTrack, const G4ClassificationOfNewTrack &amp;currentTrackClass)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TargetBremFilter.html#a7b28acb94f8120a1ea64254d10ed6f50">setKillRecoilElectron</a> (bool killRecoilElectron)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TargetBremFilter.html#a4066a9610c112beedfcf8b2b76a45b70">setVolume</a> (std::string volumeName)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TargetBremFilter.html#a87f576f9c734d0d44ba35c1eba702328">setRecoilEnergyThreshold</a> (double recoilEnergyThreshold)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TargetBremFilter.html#ab26951fcf0dc14a2e2689a75635a8c34">setBremEnergyThreshold</a> (double bremEnergyThreshold)</td></tr>
 <tr><td colspan="2"><h2><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a93d23c71492d44f2d05f8b267e5820c4"></a><!-- doxytag: member="ldmx::TargetBremFilter::getBremGammaList" ref="a93d23c71492d44f2d05f8b267e5820c4" args="()" -->
@@ -73,12 +77,11 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>removeBremFromList</b> (G4Track *track)</td></tr>
 <tr><td colspan="2"><h2><a name="pri-static-attribs"></a>
 Static Private Attributes</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4196a9356ef841a664a5a4bc61e4420b"></a><!-- doxytag: member="ldmx::TargetBremFilter::bremGammaTracks_" ref="a4196a9356ef841a664a5a4bc61e4420b" args="" -->
-static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>bremGammaTracks_</b> = {}</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1TargetBremFilter.html#a4196a9356ef841a664a5a4bc61e4420b">bremGammaTracks_</a> = {}</td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00026">26</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
+<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00033">33</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ade77df476b2d7fd5287c1df4b6349d78"></a><!-- doxytag: member="ldmx::TargetBremFilter::TargetBremFilter" ref="ade77df476b2d7fd5287c1df4b6349d78" args="()" -->
 <div class="memitem">
@@ -97,6 +100,7 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
 
 <p>Definition at line <a class="el" href="TargetBremFilter_8cxx_source.html#l00023">23</a> of file <a class="el" href="TargetBremFilter_8cxx_source.html">TargetBremFilter.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                       {
+        messenger_ = <span class="keyword">new</span> TargetBremFilterMessenger(<span class="keyword">this</span>);
     }
 </pre></div>
 </div>
@@ -116,7 +120,7 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
 <div class="memdoc">
 <p>Class destructor. </p>
 
-<p>Definition at line <a class="el" href="TargetBremFilter_8cxx_source.html#l00026">26</a> of file <a class="el" href="TargetBremFilter_8cxx_source.html">TargetBremFilter.cxx</a>.</p>
+<p>Definition at line <a class="el" href="TargetBremFilter_8cxx_source.html#l00027">27</a> of file <a class="el" href="TargetBremFilter_8cxx_source.html">TargetBremFilter.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                        {
     }
 </pre></div>
@@ -141,9 +145,11 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
 
 <p>Reimplemented from <a class="el" href="classldmx_1_1UserActionPlugin.html#abc519b12358dc6620cd4b42245770275">ldmx::UserActionPlugin</a>.</p>
 
-<p>Definition at line <a class="el" href="TargetBremFilter_8cxx_source.html#l00182">182</a> of file <a class="el" href="TargetBremFilter_8cxx_source.html">TargetBremFilter.cxx</a>.</p>
+<p>Definition at line <a class="el" href="TargetBremFilter_8cxx_source.html#l00187">187</a> of file <a class="el" href="TargetBremFilter_8cxx_source.html">TargetBremFilter.cxx</a>.</p>
+
+<p>References <a class="el" href="TargetBremFilter_8h_source.html#l00139">bremGammaTracks_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                  {
-        bremGammaTracks_.clear();
+        <a class="code" href="classldmx_1_1TargetBremFilter.html#a4196a9356ef841a664a5a4bc61e4420b">bremGammaTracks_</a>.clear();
     }
 </pre></div>
 </div>
@@ -166,7 +172,7 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
 
 <p>Implements <a class="el" href="classldmx_1_1UserActionPlugin.html#a918d79cfc55afb068562d71f3cd5d6ff">ldmx::UserActionPlugin</a>.</p>
 
-<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00044">44</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
+<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00051">51</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
 <div class="fragment"><pre class="fragment">                                        {
                 <span class="keywordflow">return</span> <span class="stringliteral">&quot;TargetBremFilter&quot;</span>;
             }
@@ -191,7 +197,7 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
 
 <p>Reimplemented from <a class="el" href="classldmx_1_1UserActionPlugin.html#afa9f96357bf65b2d4a2922cf1b5b136b">ldmx::UserActionPlugin</a>.</p>
 
-<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00052">52</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
+<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00059">59</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
 <div class="fragment"><pre class="fragment">                                          { 
                 <span class="keywordflow">return</span> <span class="keyword">true</span>;
             }
@@ -216,7 +222,7 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
 
 <p>Reimplemented from <a class="el" href="classldmx_1_1UserActionPlugin.html#a861ec3a227a55ac4b7bcdd7580c0039f">ldmx::UserActionPlugin</a>.</p>
 
-<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00068">68</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
+<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00075">75</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
 <div class="fragment"><pre class="fragment">                                     { 
                 <span class="keywordflow">return</span> <span class="keyword">true</span>;
             }
@@ -241,10 +247,105 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
 
 <p>Reimplemented from <a class="el" href="classldmx_1_1UserActionPlugin.html#a4cea2cbb6bf7987eee10b4b9287cf4c1">ldmx::UserActionPlugin</a>.</p>
 
-<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00060">60</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
+<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00067">67</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
 <div class="fragment"><pre class="fragment">                                     {
                 <span class="keywordflow">return</span> <span class="keyword">true</span>;
             }
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="ab26951fcf0dc14a2e2689a75635a8c34"></a><!-- doxytag: member="ldmx::TargetBremFilter::setBremEnergyThreshold" ref="ab26951fcf0dc14a2e2689a75635a8c34" args="(double bremEnergyThreshold)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::TargetBremFilter::setBremEnergyThreshold </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>bremEnergyThreshold</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Set the minimum energy that the brem gamma must have. </p>
+
+<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00127">127</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
+<div class="fragment"><pre class="fragment">                                                                    { 
+                bremEnergyThreshold_ = bremEnergyThreshold; 
+            }
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="a7b28acb94f8120a1ea64254d10ed6f50"></a><!-- doxytag: member="ldmx::TargetBremFilter::setKillRecoilElectron" ref="a7b28acb94f8120a1ea64254d10ed6f50" args="(bool killRecoilElectron)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::TargetBremFilter::setKillRecoilElectron </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>killRecoilElectron</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Enable/disable killing of the recoil electron track. If the recoil track is killed, only the brem gamma is propagated. </p>
+
+<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00108">108</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
+<div class="fragment"><pre class="fragment">                                                                { 
+                killRecoilElectron_ = killRecoilElectron; 
+            }
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="a87f576f9c734d0d44ba35c1eba702328"></a><!-- doxytag: member="ldmx::TargetBremFilter::setRecoilEnergyThreshold" ref="a87f576f9c734d0d44ba35c1eba702328" args="(double recoilEnergyThreshold)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::TargetBremFilter::setRecoilEnergyThreshold </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>recoilEnergyThreshold</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Set the energy threshold that the recoil electron must exceed. </p>
+
+<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00120">120</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
+<div class="fragment"><pre class="fragment">                                                                        { 
+                recoilEnergyThreshold_ = recoilEnergyThreshold; 
+            }
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="a4066a9610c112beedfcf8b2b76a45b70"></a><!-- doxytag: member="ldmx::TargetBremFilter::setVolume" ref="a4066a9610c112beedfcf8b2b76a45b70" args="(std::string volumeName)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::TargetBremFilter::setVolume </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>volumeName</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">volume</td><td>Set the volume that the filter will be applied to. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00115">115</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
+<div class="fragment"><pre class="fragment">{ volumeName_ = volumeName; }; 
 </pre></div>
 </div>
 </div>
@@ -281,14 +382,17 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
   </dd>
 </dl>
 
+<p><p>*std::cout &lt;&lt; "[ TargetBremFilter ]: Pushing track to waiting stack." &lt;&lt; std::endl;*/ </p>
+</p>
+
 <p>Reimplemented from <a class="el" href="classldmx_1_1UserActionPlugin.html#a09ebf94cc464f4069f7526479ef455d4">ldmx::UserActionPlugin</a>.</p>
 
-<p>Definition at line <a class="el" href="TargetBremFilter_8cxx_source.html#l00029">29</a> of file <a class="el" href="TargetBremFilter_8cxx_source.html">TargetBremFilter.cxx</a>.</p>
+<p>Definition at line <a class="el" href="TargetBremFilter_8cxx_source.html#l00030">30</a> of file <a class="el" href="TargetBremFilter_8cxx_source.html">TargetBremFilter.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                 {
 
-        <span class="comment">/*std::cout &lt;&lt; &quot;********************************&quot; &lt;&lt; std::endl; </span>
-<span class="comment">        std::cout &lt;&lt; &quot;*   Track pushed to the stack  *&quot; &lt;&lt; std::endl;</span>
-<span class="comment">        std::cout &lt;&lt; &quot;********************************&quot; &lt;&lt; std::endl;*/</span>
+        <span class="comment">/*std::cout &lt;&lt; &quot;********************************&quot; &lt;&lt; std::endl;*/</span> 
+        <span class="comment">/*std::cout &lt;&lt; &quot;*   Track pushed to the stack  *&quot; &lt;&lt; std::endl;*/</span>
+        <span class="comment">/*std::cout &lt;&lt; &quot;********************************&quot; &lt;&lt; std::endl;*/</span>
 
         <span class="comment">// get the PDGID of the track.</span>
         G4int pdgID = track-&gt;GetParticleDefinition()-&gt;GetPDGEncoding();
@@ -306,7 +410,6 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
         G4ClassificationOfNewTrack classification = currentTrackClass;
 
         <span class="keywordflow">if</span> (track-&gt;GetTrackID() == 1 &amp;&amp; pdgID == 11) {
-            <span class="comment">//std::cout &lt;&lt; &quot;[ TargetBremFilter ]: Pushing track to waiting stack.&quot; &lt;&lt; std::endl;</span>
             <span class="keywordflow">return</span> fWaiting; 
         }
 
@@ -339,9 +442,9 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
 
 <p>Reimplemented from <a class="el" href="classldmx_1_1UserActionPlugin.html#acffe3ccbcb1a409c8bfc5e1d5e2d5d04">ldmx::UserActionPlugin</a>.</p>
 
-<p>Definition at line <a class="el" href="TargetBremFilter_8cxx_source.html#l00060">60</a> of file <a class="el" href="TargetBremFilter_8cxx_source.html">TargetBremFilter.cxx</a>.</p>
+<p>Definition at line <a class="el" href="TargetBremFilter_8cxx_source.html#l00061">61</a> of file <a class="el" href="TargetBremFilter_8cxx_source.html">TargetBremFilter.cxx</a>.</p>
 
-<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00058">ldmx::BiasingMessenger::getThreshold()</a>.</p>
+<p>References <a class="el" href="TargetBremFilter_8h_source.html#l00139">bremGammaTracks_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                      { 
 
         <span class="comment">// Get the track associated with this step.</span>
@@ -356,22 +459,18 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
         <span class="comment">// Make sure that the particle being processed is an electron.</span>
         <span class="keywordflow">if</span> (pdgID != 11) <span class="keywordflow">return</span>; <span class="comment">// Throw an exception</span>
 
-        <span class="comment">/*std::cout &lt;&lt; &quot;*******************************&quot; &lt;&lt; std::endl;*/</span> 
-        <span class="comment">/*std::cout &lt;&lt; &quot;*   Step &quot; &lt;&lt; track-&gt;GetCurrentStepNumber() &lt;&lt; std::endl;*/</span>
-        <span class="comment">/*std::cout &lt;&lt; &quot;********************************&quot; &lt;&lt; std::endl;*/</span>
-
         <span class="comment">// Get the volume the particle is in.</span>
         G4VPhysicalVolume* volume = track-&gt;GetVolume();
         G4String volumeName = volume-&gt;GetName();
-       
-        <span class="comment">// If the particle isn&#39;t in the target, don&#39;t continue with the processing.</span>
-        <span class="keywordflow">if</span> (volumeName.compareTo(volumeName_) != 0) <span class="keywordflow">return</span>;
 
         <span class="comment">// Get the particle type.</span>
         G4String particleName = track-&gt;GetParticleDefinition()-&gt;GetParticleName();
 
         <span class="comment">// Get the kinetic energy of the particle.</span>
         <span class="comment">//double incidentParticleEnergy = step-&gt;GetPostStepPoint()-&gt;GetTotalEnergy();</span>
+        <span class="comment">/*std::cout &lt;&lt; &quot;*******************************&quot; &lt;&lt; std::endl;*/</span> 
+        <span class="comment">/*std::cout &lt;&lt; &quot;*   Step &quot; &lt;&lt; track-&gt;GetCurrentStepNumber() &lt;&lt; std::endl;*/</span>
+        <span class="comment">/*std::cout &lt;&lt; &quot;********************************&quot; &lt;&lt; std::endl;*/</span>
 
         <span class="comment">/*std::cout &lt;&lt; &quot;[ TargetBremFilter ]: &quot; &lt;&lt; &quot;\n&quot; </span>
 <span class="comment">                    &lt;&lt; &quot;\tTotal energy of &quot; &lt;&lt; particleName      &lt;&lt; &quot; ( PDG ID: &quot; &lt;&lt; pdgID</span>
@@ -381,22 +480,25 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
 <span class="comment">                    &lt;&lt; &quot;\tParticle currently in &quot; &lt;&lt; volumeName  </span>
 <span class="comment">                    &lt;&lt; &quot;\tPost step process: &quot; &lt;&lt; step-&gt;GetPostStepPoint()-&gt;GetStepStatus() </span>
 <span class="comment">                    &lt;&lt; std::endl;*/</span>
+ 
+        <span class="comment">// If the particle isn&#39;t in the target, don&#39;t continue with the processing.</span>
+        <span class="keywordflow">if</span> (volumeName.compareTo(volumeName_) != 0) <span class="keywordflow">return</span>;
 
         <span class="comment">// Check if the particle is exiting the volume.</span>
         <span class="keywordflow">if</span> (step-&gt;GetPostStepPoint()-&gt;GetStepStatus() == fGeomBoundary) { 
            
             <span class="comment">// Clear all of the gamma tracks remaining from the previous event.</span>
-            TargetBremFilter::bremGammaTracks_.clear();
+            <a class="code" href="classldmx_1_1TargetBremFilter.html#a4196a9356ef841a664a5a4bc61e4420b">TargetBremFilter::bremGammaTracks_</a>.clear();
 
             <span class="comment">/*std::cout &lt;&lt; &quot;[ TargetBremFilter ]: &quot;</span>
-<span class="comment">                      &lt;&lt; &quot;Particle &quot; &lt;&lt; particleName &lt;&lt; &quot;is leaving the &quot;</span>
-<span class="comment">                      &lt;&lt; volumeName &lt;&lt; &quot; volume with momentum &quot;</span>
-<span class="comment">                      &lt;&lt; track-&gt;GetMomentum().mag() &lt;&lt; std::endl;*/</span>
+<span class="comment">                        &lt;&lt; &quot;Particle &quot; &lt;&lt; particleName &lt;&lt; &quot;is leaving the &quot;</span>
+<span class="comment">                        &lt;&lt; volumeName &lt;&lt; &quot; volume with momentum &quot;</span>
+<span class="comment">                        &lt;&lt; track-&gt;GetMomentum().mag() &lt;&lt; std::endl;*/</span>
             
-            <span class="keywordflow">if</span> (track-&gt;GetMomentum().mag() &gt;= recoilElectronThreshold_) { 
+            <span class="keywordflow">if</span> (track-&gt;GetMomentum().mag() &gt;= recoilEnergyThreshold_) { 
                 <span class="comment">/*std::cout &lt;&lt; &quot;[ TargetBremFilter ]: &quot;</span>
-<span class="comment">                          &lt;&lt; &quot;Electron energy is above threshold --&gt; Aborting event.&quot;</span>
-<span class="comment">                          &lt;&lt; std::endl;*/</span>
+<span class="comment">                            &lt;&lt; &quot;Electron energy is above threshold --&gt; Aborting event.&quot;</span>
+<span class="comment">                            &lt;&lt; std::endl;*/</span>
                 
                 track-&gt;SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()-&gt;AbortEvent();
@@ -408,16 +510,16 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
             <span class="keyword">const</span> G4TrackVector* secondaries = step-&gt;GetSecondary();
            
             <span class="comment">/*std::cout &lt;&lt; &quot;[ TargetBremFilter ]: &quot;</span>
-<span class="comment">                      &lt;&lt; &quot;Incident &quot; &lt;&lt; particleName  &lt;&lt; &quot; produced &quot; &lt;&lt; secondaries-&gt;size() </span>
-<span class="comment">                      &lt;&lt; &quot; secondaries.&quot; &lt;&lt; std::endl;*/</span>
+<span class="comment">                        &lt;&lt; &quot;Incident &quot; &lt;&lt; particleName  &lt;&lt; &quot; produced &quot; &lt;&lt; secondaries-&gt;size() </span>
+<span class="comment">                        &lt;&lt; &quot; secondaries.&quot; &lt;&lt; std::endl;*/</span>
            
           
             <span class="comment">// If the particle didn&#39;t produce any secondaries, stop processing</span>
             <span class="comment">// the event.</span>
             <span class="keywordflow">if</span> (secondaries-&gt;size() == 0) { 
                 <span class="comment">/*std::cout &lt;&lt; &quot;[ TargetBremFilter ]: &quot;</span>
-<span class="comment">                          &lt;&lt; &quot;Primary did not produce secondaries --&gt; Killing primary track!&quot; </span>
-<span class="comment">                          &lt;&lt; std::endl;*/</span>
+<span class="comment">                            &lt;&lt; &quot;Primary did not produce secondaries --&gt; Killing primary track!&quot; </span>
+<span class="comment">                            &lt;&lt; std::endl;*/</span>
                 
                 track-&gt;SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()-&gt;AbortEvent();
@@ -428,35 +530,40 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
             <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; secondary_track : *secondaries) {
                 G4String processName = secondary_track-&gt;GetCreatorProcess()-&gt;GetProcessName();
                 <span class="comment">/*std::cout &lt;&lt; &quot;[ TargetBremFilter ]: &quot;</span>
-<span class="comment">                          &lt;&lt; &quot;Secondary produced via process &quot; &lt;&lt; processName </span>
-<span class="comment">                          &lt;&lt; std::endl;*/</span>
+<span class="comment">                            &lt;&lt; &quot;Secondary produced via process &quot; &lt;&lt; processName </span>
+<span class="comment">                            &lt;&lt; std::endl;*/</span>
                 <span class="keywordflow">if</span> (processName.compareTo(<span class="stringliteral">&quot;eBrem&quot;</span>) == 0 
-                        &amp;&amp; secondary_track-&gt;GetKineticEnergy() &gt; <a class="code" href="classldmx_1_1BiasingMessenger.html#af45ef502850e1eea8767a5b322307a0e">BiasingMessenger::getThreshold</a>()) {
+                        &amp;&amp; secondary_track-&gt;GetKineticEnergy() &gt; bremEnergyThreshold_) {
                     <span class="comment">/*std::cout &lt;&lt; &quot;[ TargetBremFilter ]: &quot; </span>
-<span class="comment">                              &lt;&lt; &quot;Adding secondary to brem list.&quot; &lt;&lt; std::endl;*/</span>
-                    TargetBremFilter::bremGammaTracks_.push_back(secondary_track); 
+<span class="comment">                                &lt;&lt; &quot;Adding secondary to brem list.&quot; &lt;&lt; std::endl;*/</span>
+                    <a class="code" href="classldmx_1_1TargetBremFilter.html#a4196a9356ef841a664a5a4bc61e4420b">TargetBremFilter::bremGammaTracks_</a>.push_back(secondary_track); 
                     hasBremCandidate = <span class="keyword">true</span>;
                 } 
             }
 
             <span class="keywordflow">if</span> (!hasBremCandidate) { 
                 <span class="comment">/*std::cout &lt;&lt; &quot;[ TargetBremFilter ]: &quot;</span>
-<span class="comment">                          &lt;&lt; &quot;The secondaries are not a result of Brem. --&gt; Killing all tracks!&quot;</span>
-<span class="comment">                          &lt;&lt; std::endl;*/</span>
+<span class="comment">                            &lt;&lt; &quot;The secondaries are not a result of Brem. --&gt; Killing all tracks!&quot;</span>
+<span class="comment">                            &lt;&lt; std::endl;*/</span>
 
                 track-&gt;SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()-&gt;AbortEvent();
                 <span class="keywordflow">return</span>;
             }
 
-            <span class="comment">/*std::cout &lt;&lt; &quot;[ TargetBremFilter ]: &quot;</span>
-<span class="comment">                      &lt;&lt; bremGammaTracks_.size() &lt;&lt; &quot; candidates were produced in the target --&gt; Suspending primary track!&quot;</span>
-<span class="comment">                      &lt;&lt; std::endl;*/</span>
-            track-&gt;SetTrackStatus(fSuspend);   
+            <span class="comment">// Check if the recoil electron should be killed.  If not, postpone </span>
+            <span class="comment">// its processing until the brem gamma has been processed.</span>
+            <span class="keywordflow">if</span> (killRecoilElectron_) { 
+                <span class="comment">/*std::cout &lt;&lt; &quot;[ TargetBremFilter ]: Killing electron track.&quot;</span>
+<span class="comment">                            &lt;&lt; std::endl;*/</span> 
+
+                track-&gt;SetTrackStatus(fStopAndKill);
+            } <span class="keywordflow">else</span> track-&gt;SetTrackStatus(fSuspend);  
+
         } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (step-&gt;GetPostStepPoint()-&gt;GetKineticEnergy() == 0) { 
             <span class="comment">/*std::cout &lt;&lt; &quot;[ TargetBremFilter ]: &quot;</span>
-<span class="comment">                      &lt;&lt; &quot;Electron never made it out of the target --&gt; Killing all tracks!&quot;</span>
-<span class="comment">                      &lt;&lt; std::endl;*/</span>
+<span class="comment">                        &lt;&lt; &quot;Electron never made it out of the target --&gt; Killing all tracks!&quot;</span>
+<span class="comment">                        &lt;&lt; std::endl;*/</span>
 
             track-&gt;SetTrackStatus(fKillTrackAndSecondaries);
             G4RunManager::GetRunManager()-&gt;AbortEvent();
@@ -464,6 +571,25 @@ static std::vector&lt; G4Track * &gt;&#160;</td><td class="memItemRight" valign=
         }
     }
 </pre></div>
+</div>
+</div>
+<hr/><h2>Member Data Documentation</h2>
+<a class="anchor" id="a4196a9356ef841a664a5a4bc61e4420b"></a><!-- doxytag: member="ldmx::TargetBremFilter::bremGammaTracks_" ref="a4196a9356ef841a664a5a4bc61e4420b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; G4Track * &gt; <a class="el" href="classldmx_1_1TargetBremFilter.html#a4196a9356ef841a664a5a4bc61e4420b">TargetBremFilter::bremGammaTracks_</a> = {}<code> [static, private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Messenger used to pass arguments to this class. </p>
+
+<p>Definition at line <a class="el" href="TargetBremFilter_8h_source.html#l00139">139</a> of file <a class="el" href="TargetBremFilter_8h_source.html">TargetBremFilter.h</a>.</p>
+
+<p>Referenced by <a class="el" href="TargetBremFilter_8cxx_source.html#l00187">endEvent()</a>, and <a class="el" href="TargetBremFilter_8cxx_source.html#l00061">stepping()</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>

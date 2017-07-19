@@ -86,6 +86,15 @@
 <li>setAppend()
 : <a class="el" href="classldmx_1_1EventPrintPlugin.html#a50a0b5cb840e7dfd536e943e3275ab8f">ldmx::EventPrintPlugin</a>
 </li>
+<li>setBeamspotXSize()
+: <a class="el" href="classldmx_1_1PrimaryGeneratorAction.html#a6dd9e514d7fb02ca397ce4f2e933ad88">ldmx::PrimaryGeneratorAction</a>
+</li>
+<li>setBeamspotYSize()
+: <a class="el" href="classldmx_1_1PrimaryGeneratorAction.html#a6b75ac29adc327b0f5b1e742ecb18416">ldmx::PrimaryGeneratorAction</a>
+</li>
+<li>setBremEnergyThreshold()
+: <a class="el" href="classldmx_1_1TargetBremFilter.html#ab26951fcf0dc14a2e2689a75635a8c34">ldmx::TargetBremFilter</a>
+</li>
 <li>setCharge()
 : <a class="el" href="classldmx_1_1SimParticle.html#a76fe30d8950ec0b412cf368a9a0b1f24">ldmx::SimParticle</a>
 </li>
@@ -100,10 +109,10 @@
 : <a class="el" href="classldmx_1_1TrackerSD.html#a6fe35af2bb04a64fa8345cdbb0f9710f">ldmx::TrackerSD</a>
 </li>
 <li>setEdep()
-: <a class="el" href="classldmx_1_1SimCalorimeterHit.html#a4ab851fd3f7b7664da01c845b1de78b3">ldmx::SimCalorimeterHit</a>
+: <a class="el" href="classldmx_1_1G4TrackerHit.html#a0edd711366a59e48e4de69662528de80">ldmx::G4TrackerHit</a>
+, <a class="el" href="classldmx_1_1SimCalorimeterHit.html#a4ab851fd3f7b7664da01c845b1de78b3">ldmx::SimCalorimeterHit</a>
 , <a class="el" href="classldmx_1_1SimTrackerHit.html#a007a15befbe02ec190b4e6ef2cebe25d">ldmx::SimTrackerHit</a>
 , <a class="el" href="classldmx_1_1G4CalorimeterHit.html#a88a92833c2d8af4666ac54bfb8be8af7">ldmx::G4CalorimeterHit</a>
-, <a class="el" href="classldmx_1_1G4TrackerHit.html#a0edd711366a59e48e4de69662528de80">ldmx::G4TrackerHit</a>
 </li>
 <li>setEnableEndEvent()
 : <a class="el" href="classldmx_1_1EventPrintPlugin.html#a295de1d1c755cb2fe084446b06da2103">ldmx::EventPrintPlugin</a>
@@ -124,6 +133,9 @@
 <li>setEndPoint()
 : <a class="el" href="classldmx_1_1SimParticle.html#ab2baa72cdee9e44b2149e8da102290e4">ldmx::SimParticle</a>
 </li>
+<li>setEndPointMomentum()
+: <a class="el" href="classldmx_1_1SimParticle.html#a6db4b44f9b01554964f597d692749d48">ldmx::SimParticle</a>
+</li>
 <li>setEnergy()
 : <a class="el" href="classldmx_1_1CalorimeterHit.html#a63067db3972e32ed26f2b3a5ea8e46f8">ldmx::CalorimeterHit</a>
 , <a class="el" href="classldmx_1_1SimParticle.html#ac882536cad7f42a7143aa5e2638ec6e4">ldmx::SimParticle</a>
@@ -141,7 +153,7 @@
 : <a class="el" href="classldmx_1_1DetectorID.html#a8fe85d2a13f0e7ee1c6cca5d2543aa7d">ldmx::DetectorID</a>
 </li>
 <li>setFieldValue()
-: <a class="el" href="classldmx_1_1DetectorID.html#a85f7b28fce48a9f692fc5dc1723c2cad">ldmx::DetectorID</a>
+: <a class="el" href="classldmx_1_1DetectorID.html#a1b9607515fe81251e6edc3451aeb1185">ldmx::DetectorID</a>
 </li>
 <li>setFileName()
 : <a class="el" href="classldmx_1_1RootPersistencyManager.html#a59ba1a0cd4d5fb41b46c79d5bbc8757e">ldmx::RootPersistencyManager</a>
@@ -177,6 +189,9 @@
 : <a class="el" href="classldmx_1_1EventHeader.html#a849ea55319466b5a352a3e8e31729ad6">ldmx::EventHeader</a>
 , <a class="el" href="classldmx_1_1RunHeader.html#af018cc3e5c3bf3645dbeb22796d355df">ldmx::RunHeader</a>
 </li>
+<li>setKillRecoilElectron()
+: <a class="el" href="classldmx_1_1TargetBremFilter.html#a7b28acb94f8120a1ea64254d10ed6f50">ldmx::TargetBremFilter</a>
+</li>
 <li>setLayerDepth()
 : <a class="el" href="classldmx_1_1CalorimeterSD.html#a496c35af7cc18d9b50c75c6004d86fdd">ldmx::CalorimeterSD</a>
 </li>
@@ -198,12 +213,25 @@
 <li>setMother()
 : <a class="el" href="classldmx_1_1LHEParticle.html#a454703db581151fe78b460e133907381">ldmx::LHEParticle</a>
 </li>
+<li>setMpgMomentum()
+: <a class="el" href="classldmx_1_1MultiParticleGunPrimaryGenerator.html#a706135ebc2814bfb940134e19587b836">ldmx::MultiParticleGunPrimaryGenerator</a>
+</li>
+<li>setMpgNparticles()
+: <a class="el" href="classldmx_1_1MultiParticleGunPrimaryGenerator.html#ae19ca70c0d77bfac0ae2c04e615724b6">ldmx::MultiParticleGunPrimaryGenerator</a>
+</li>
+<li>setMpgPdgId()
+: <a class="el" href="classldmx_1_1MultiParticleGunPrimaryGenerator.html#a879afc1bdfc65a540f04aa2a0ceda4d7">ldmx::MultiParticleGunPrimaryGenerator</a>
+</li>
+<li>setMpgVertex()
+: <a class="el" href="classldmx_1_1MultiParticleGunPrimaryGenerator.html#a76445de54aeed35a597584b3a3c86234">ldmx::MultiParticleGunPrimaryGenerator</a>
+</li>
 <li>setName()
 : <a class="el" href="classldmx_1_1TrackFilterChain.html#a8013ce2eaf60f6f684d0a7483f4a0bc1">ldmx::TrackFilterChain</a>
 </li>
 <li>SetNewValue()
-: <a class="el" href="classldmx_1_1UserActionPluginMessenger.html#a50fd0a40e3110bcfa0bb2a96b95b0326">ldmx::UserActionPluginMessenger</a>
-, <a class="el" href="classldmx_1_1BiasingMessenger.html#a905713faf6bbf0ae20b52a9bb26a745d">ldmx::BiasingMessenger</a>
+: <a class="el" href="classldmx_1_1BiasingMessenger.html#a905713faf6bbf0ae20b52a9bb26a745d">ldmx::BiasingMessenger</a>
+, <a class="el" href="classldmx_1_1EcalProcessFilterMessenger.html#a656f7bed2b60c0d799877661a35af291">ldmx::EcalProcessFilterMessenger</a>
+, <a class="el" href="classldmx_1_1TargetBremFilterMessenger.html#a2b50b412599f59bcab86d53ce89f5027">ldmx::TargetBremFilterMessenger</a>
 , <a class="el" href="classldmx_1_1PrimaryGeneratorMessenger.html#a5644c90010cbfd62e447efde128e16ca">ldmx::PrimaryGeneratorMessenger</a>
 , <a class="el" href="classldmx_1_1RootPersistencyMessenger.html#aa696160702c28d556bcd632062a69e4e">ldmx::RootPersistencyMessenger</a>
 , <a class="el" href="classldmx_1_1SimApplicationMessenger.html#a73dd45fbe6cf9eb7300578c3d18ceb04">ldmx::SimApplicationMessenger</a>
@@ -212,6 +240,7 @@
 , <a class="el" href="classldmx_1_1PluginMessenger.html#a7d6ad32cc1afe83d611feac2a40cded7">ldmx::PluginMessenger</a>
 , <a class="el" href="classldmx_1_1TrackFilterMessenger.html#afd02c9319b321b4183a9e7f1df7fd848">ldmx::TrackFilterMessenger</a>
 , <a class="el" href="classldmx_1_1TrackProcessSaverMessenger.html#ac1ea424fd336175043b4c377aad4f16b">ldmx::TrackProcessSaverMessenger</a>
+, <a class="el" href="classldmx_1_1UserActionPluginMessenger.html#a50fd0a40e3110bcfa0bb2a96b95b0326">ldmx::UserActionPluginMessenger</a>
 </li>
 <li>setOutputFileName()
 : <a class="el" href="classldmx_1_1Process.html#a420f84024e9f1db4f8ff3e440d6853ab">ldmx::Process</a>
@@ -220,8 +249,8 @@
 : <a class="el" href="classldmx_1_1EventImpl.html#a242064e84381eb6aa90a06f79404bb92">ldmx::EventImpl</a>
 </li>
 <li>setPathLength()
-: <a class="el" href="classldmx_1_1SimTrackerHit.html#a8b8f72e6d6094e56ddabc1548a071503">ldmx::SimTrackerHit</a>
-, <a class="el" href="classldmx_1_1G4TrackerHit.html#a7145855f47c1b5fa391bb18181ab3f88">ldmx::G4TrackerHit</a>
+: <a class="el" href="classldmx_1_1G4TrackerHit.html#a7145855f47c1b5fa391bb18181ab3f88">ldmx::G4TrackerHit</a>
+, <a class="el" href="classldmx_1_1SimTrackerHit.html#a8b8f72e6d6094e56ddabc1548a071503">ldmx::SimTrackerHit</a>
 </li>
 <li>setPdgCode()
 : <a class="el" href="classldmx_1_1G4CalorimeterHit.html#ad93ad722cc2112eaeb87981f78976b61">ldmx::G4CalorimeterHit</a>
@@ -236,9 +265,9 @@
 : <a class="el" href="classldmx_1_1PluginManagerAccessor.html#a071a8cf813b19677851cb89120282903">ldmx::PluginManagerAccessor</a>
 </li>
 <li>setPosition()
-: <a class="el" href="classldmx_1_1SimCalorimeterHit.html#a59e6d97f1f20152bd0d80420d63c1003">ldmx::SimCalorimeterHit</a>
+: <a class="el" href="classldmx_1_1G4TrackerHit.html#a6a6a7ee29b9fe06314e14a61b824c6d8">ldmx::G4TrackerHit</a>
+, <a class="el" href="classldmx_1_1SimCalorimeterHit.html#a59e6d97f1f20152bd0d80420d63c1003">ldmx::SimCalorimeterHit</a>
 , <a class="el" href="classldmx_1_1SimTrackerHit.html#a662fc20bd8c86ae209c0b1efdf76a889">ldmx::SimTrackerHit</a>
-, <a class="el" href="classldmx_1_1G4TrackerHit.html#a6a6a7ee29b9fe06314e14a61b824c6d8">ldmx::G4TrackerHit</a>
 , <a class="el" href="classldmx_1_1G4CalorimeterHit.html#a45dd1e14d8784c8bf0d40101d607ff42">ldmx::G4CalorimeterHit</a>
 </li>
 <li>setPrepend()
@@ -253,9 +282,13 @@
 <li>setRawValue()
 : <a class="el" href="classldmx_1_1DetectorID.html#a0ab7435051b257d4974ce87c0a1772cd">ldmx::DetectorID</a>
 </li>
+<li>setRecoilEnergyThreshold()
+: <a class="el" href="classldmx_1_1TargetBremFilter.html#a87f576f9c734d0d44ba35c1eba702328">ldmx::TargetBremFilter</a>
+</li>
 <li>setResult()
 : <a class="el" href="classldmx_1_1FindableTrackResult.html#ac90239553f88d393c542ace4f006f4a7">ldmx::FindableTrackResult</a>
 , <a class="el" href="classldmx_1_1HcalVetoResult.html#aab6e0cdb5976dcd1a87662ac8f39108b">ldmx::HcalVetoResult</a>
+, <a class="el" href="classldmx_1_1PnWeightResult.html#a5a199f3eedc0e49b3fbce4a34d8e6e52">ldmx::PnWeightResult</a>
 </li>
 <li>setRun()
 : <a class="el" href="classldmx_1_1EventHeader.html#a71465aa9df92ce5322c6c1f41c321b0c">ldmx::EventHeader</a>
@@ -276,24 +309,27 @@
 </li>
 <li>setTime()
 : <a class="el" href="classldmx_1_1G4CalorimeterHit.html#a10a5a6824f94fd48f5fc04d8550eb6c8">ldmx::G4CalorimeterHit</a>
+, <a class="el" href="classldmx_1_1SimTrackerHit.html#a4fdf3b470c1b624568c126b7ed3ad7ca">ldmx::SimTrackerHit</a>
 , <a class="el" href="classldmx_1_1G4TrackerHit.html#abafc436b005383cc97e14489346a1027">ldmx::G4TrackerHit</a>
 , <a class="el" href="classldmx_1_1CalorimeterHit.html#a590256945dbfaa97d2528b9f260b6760">ldmx::CalorimeterHit</a>
-, <a class="el" href="classldmx_1_1SimTrackerHit.html#a4fdf3b470c1b624568c126b7ed3ad7ca">ldmx::SimTrackerHit</a>
-, <a class="el" href="classldmx_1_1SimParticle.html#a11a94766cd5b2ca40fe691d10825c032">ldmx::SimParticle</a>
 , <a class="el" href="classldmx_1_1SimCalorimeterHit.html#abe88e7032f2dd55511b22eb45df83993">ldmx::SimCalorimeterHit</a>
+, <a class="el" href="classldmx_1_1SimParticle.html#a11a94766cd5b2ca40fe691d10825c032">ldmx::SimParticle</a>
 </li>
 <li>setTimestamp()
 : <a class="el" href="classldmx_1_1EventHeader.html#a9ca1cf604267d7c5d3fd74d59d252f4c">ldmx::EventHeader</a>
 </li>
 <li>setTrackID()
-: <a class="el" href="classldmx_1_1G4CalorimeterHit.html#a892835c762cdb2ebc61860c7d2d3b837">ldmx::G4CalorimeterHit</a>
-, <a class="el" href="classldmx_1_1G4TrackerHit.html#a414f6ec294555538f2dd7f69d298af3f">ldmx::G4TrackerHit</a>
+: <a class="el" href="classldmx_1_1G4TrackerHit.html#a414f6ec294555538f2dd7f69d298af3f">ldmx::G4TrackerHit</a>
+, <a class="el" href="classldmx_1_1G4CalorimeterHit.html#a892835c762cdb2ebc61860c7d2d3b837">ldmx::G4CalorimeterHit</a>
 </li>
 <li>setupEvent()
 : <a class="el" href="classldmx_1_1EventFile.html#a49f2dabee0b17f32b89731825d0f12ca">ldmx::EventFile</a>
 </li>
 <li>setupHitsCollectionMap()
 : <a class="el" href="classldmx_1_1RootPersistencyManager.html#a77364c333447141311c9a2c300d1f554">ldmx::RootPersistencyManager</a>
+</li>
+<li>setUseBeamspot()
+: <a class="el" href="classldmx_1_1PrimaryGeneratorAction.html#a6a5421cbeca63b3d925423006e86e801">ldmx::PrimaryGeneratorAction</a>
 </li>
 <li>setVariables()
 : <a class="el" href="classldmx_1_1EcalVetoResult.html#a3dd1f77e37c1453afe46ffff9f287145">ldmx::EcalVetoResult</a>
@@ -303,6 +339,9 @@
 </li>
 <li>setVertex()
 : <a class="el" href="classldmx_1_1SimParticle.html#acb469700f20368f4dfa816d75fe1c299">ldmx::SimParticle</a>
+</li>
+<li>setVolume()
+: <a class="el" href="classldmx_1_1TargetBremFilter.html#a4066a9610c112beedfcf8b2b76a45b70">ldmx::TargetBremFilter</a>
 </li>
 <li>setWeight()
 : <a class="el" href="classldmx_1_1EventHeader.html#aa8f6573736b28832a40832ab096d2b04">ldmx::EventHeader</a>
@@ -328,35 +367,38 @@
 <li>SimTrackerHit()
 : <a class="el" href="classldmx_1_1SimTrackerHit.html#a22338a161d20fe2ef3b13128e0936781">ldmx::SimTrackerHit</a>
 </li>
+<li>smearingBeamspot()
+: <a class="el" href="classldmx_1_1PrimaryGeneratorAction.html#ae0e21d26b6a50692a5a4c17c8ab485ff">ldmx::PrimaryGeneratorAction</a>
+</li>
 <li>stackingClassifyNewTrack()
-: <a class="el" href="classldmx_1_1TargetProcessFilter.html#a555a9ba60795808e9107821a371bd018">ldmx::TargetProcessFilter</a>
+: <a class="el" href="classldmx_1_1EcalProcessFilter.html#a0093066d6d89de7ff6a871af4671f0fa">ldmx::EcalProcessFilter</a>
 , <a class="el" href="classldmx_1_1DummySimPlugin.html#a374565896c3504e2c9a0711195a734a4">ldmx::DummySimPlugin</a>
-, <a class="el" href="classldmx_1_1EcalProcessFilter.html#a0093066d6d89de7ff6a871af4671f0fa">ldmx::EcalProcessFilter</a>
 , <a class="el" href="classldmx_1_1UserActionPlugin.html#a09ebf94cc464f4069f7526479ef455d4">ldmx::UserActionPlugin</a>
 , <a class="el" href="classldmx_1_1PluginManager.html#a9addecb392131765cb87f2c62a4cc161">ldmx::PluginManager</a>
 , <a class="el" href="classldmx_1_1TargetBremFilter.html#a66db05a6d7e2290af92c1b042c7544fb">ldmx::TargetBremFilter</a>
+, <a class="el" href="classldmx_1_1TargetProcessFilter.html#a555a9ba60795808e9107821a371bd018">ldmx::TargetProcessFilter</a>
 </li>
 <li>stackingNewStage()
-: <a class="el" href="classldmx_1_1PluginManager.html#a753e24028a84cb3d478555d49ebf73c9">ldmx::PluginManager</a>
-, <a class="el" href="classldmx_1_1DummySimPlugin.html#a384dd905ab78f1684c76125c15f6e438">ldmx::DummySimPlugin</a>
+: <a class="el" href="classldmx_1_1DummySimPlugin.html#a384dd905ab78f1684c76125c15f6e438">ldmx::DummySimPlugin</a>
+, <a class="el" href="classldmx_1_1PluginManager.html#a753e24028a84cb3d478555d49ebf73c9">ldmx::PluginManager</a>
 , <a class="el" href="classldmx_1_1UserActionPlugin.html#a7acc3fb893033a8c7455389d130149c3">ldmx::UserActionPlugin</a>
 </li>
 <li>stackingPrepareNewEvent()
-: <a class="el" href="classldmx_1_1UserActionPlugin.html#a8a6315c31183bad6809f8b1f24f95a98">ldmx::UserActionPlugin</a>
+: <a class="el" href="classldmx_1_1PluginManager.html#a93f68b9941d9b782e109622b7d546f8b">ldmx::PluginManager</a>
 , <a class="el" href="classldmx_1_1DummySimPlugin.html#a2adb64ce13d0a30f3eaa6d92e03e3b1e">ldmx::DummySimPlugin</a>
-, <a class="el" href="classldmx_1_1PluginManager.html#a93f68b9941d9b782e109622b7d546f8b">ldmx::PluginManager</a>
+, <a class="el" href="classldmx_1_1UserActionPlugin.html#a8a6315c31183bad6809f8b1f24f95a98">ldmx::UserActionPlugin</a>
 </li>
 <li>StartRun()
 : <a class="el" href="classldmx_1_1XsecBiasingOperator.html#a14451e0d127a6905dc30c8fc0968d68f">ldmx::XsecBiasingOperator</a>
 </li>
 <li>stepping()
-: <a class="el" href="classldmx_1_1EcalProcessFilter.html#af2b9326f0fa961c6638ef3a77b28ef1e">ldmx::EcalProcessFilter</a>
+: <a class="el" href="classldmx_1_1UserActionPlugin.html#acffe3ccbcb1a409c8bfc5e1d5e2d5d04">ldmx::UserActionPlugin</a>
 , <a class="el" href="classldmx_1_1TargetProcessFilter.html#ab7c281885d28d8d3b192ce2e46686279">ldmx::TargetProcessFilter</a>
-, <a class="el" href="classldmx_1_1TrackKiller.html#a817c259f44f260358c6b9e16e8cd8340">ldmx::TrackKiller</a>
+, <a class="el" href="classldmx_1_1EcalProcessFilter.html#af2b9326f0fa961c6638ef3a77b28ef1e">ldmx::EcalProcessFilter</a>
 , <a class="el" href="classldmx_1_1DummySimPlugin.html#aadc52b77b9f90d9c02690003e6b5ccfa">ldmx::DummySimPlugin</a>
-, <a class="el" href="classldmx_1_1PluginManager.html#ab6b55f30d78722a8904cefad4fb1d430">ldmx::PluginManager</a>
 , <a class="el" href="classldmx_1_1TargetBremFilter.html#a9f51d409c62e392b6c92a4a04243e9ef">ldmx::TargetBremFilter</a>
-, <a class="el" href="classldmx_1_1UserActionPlugin.html#acffe3ccbcb1a409c8bfc5e1d5e2d5d04">ldmx::UserActionPlugin</a>
+, <a class="el" href="classldmx_1_1PluginManager.html#ab6b55f30d78722a8904cefad4fb1d430">ldmx::PluginManager</a>
+, <a class="el" href="classldmx_1_1TrackKiller.html#a817c259f44f260358c6b9e16e8cd8340">ldmx::TrackKiller</a>
 </li>
 <li>Store()
 : <a class="el" href="classldmx_1_1RootPersistencyManager.html#a069197da4dc51557b506bb9792b71447">ldmx::RootPersistencyManager</a>

@@ -376,7 +376,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 <div class="memdoc">
 <p>Action to be executed before the tree is filled. </p>
 
-<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00233">233</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
+<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00237">237</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                               {
         <span class="keywordflow">if</span> (inputTree_==0 &amp;&amp; <a class="code" href="classldmx_1_1EventImpl.html#a014ff80a168d22e5d017c893b0a0a08b">branchesFilled_</a>.find(EventConstants::EVENT_HEADER)==<a class="code" href="classldmx_1_1EventImpl.html#a014ff80a168d22e5d017c893b0a0a08b">branchesFilled_</a>.end()) {
             <a class="code" href="classldmx_1_1EventImpl.html#a233c96879bfb1cfa587044074f382657">add</a>(EventConstants::EVENT_HEADER, eventHeader_);
@@ -400,7 +400,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 <div class="memdoc">
 <p>Clear this object's data. </p>
 
-<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00239">239</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
+<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00243">243</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                          {
         <span class="comment">// clear the event objects</span>
         <span class="keywordflow">for</span> (<span class="keyword">auto</span> obj : <a class="code" href="classldmx_1_1EventImpl.html#a3fce3d6d953cc2eab6ec3a3a6c7f6654">objects_</a>)
@@ -427,7 +427,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 <p>Create the output data tree. </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>The output data tree. </dd></dl>
 
-<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00203">203</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
+<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00206">206</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 
 <p>Referenced by <a class="el" href="EventFile_8cxx_source.html#l00162">ldmx::EventFile::setupEvent()</a>.</p>
 <div class="fragment"><pre class="fragment">                                 {
@@ -593,16 +593,19 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
         }
 
 
+        std::map&lt;std::string, TBranch*&gt;::const_iterator itb = <a class="code" href="classldmx_1_1EventImpl.html#abca186bc4f2af71cae867d45b4936dbd">branches_</a>.find(branchName);
+
         <span class="comment">// check the objects map</span>
         std::map&lt;std::string, TObject*&gt;::const_iterator ito = <a class="code" href="classldmx_1_1EventImpl.html#a3fce3d6d953cc2eab6ec3a3a6c7f6654">objects_</a>.find(branchName);
         <span class="keywordflow">if</span> (ito != <a class="code" href="classldmx_1_1EventImpl.html#a3fce3d6d953cc2eab6ec3a3a6c7f6654">objects_</a>.end()) {
-            <span class="keywordflow">return</span> ito-&gt;second;
+           <span class="keywordflow">if</span> (itb!=<a class="code" href="classldmx_1_1EventImpl.html#abca186bc4f2af71cae867d45b4936dbd">branches_</a>.end())
+              itb-&gt;second-&gt;GetEntry(ientry_);
+           <span class="keywordflow">return</span> ito-&gt;second;
         } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (inputTree_ == 0) {
             <a class="code" href="Exception_8h.html#a6d45ac49a0cb250fe3cabf8cf3fae7e8" title="Utility macro for throwing exceptions, automatically including the necessary file, line, and function information. The user need only supply the exception name and error message.">EXCEPTION_RAISE</a>(<span class="stringliteral">&quot;ProductNotFound&quot;</span>, <span class="stringliteral">&quot;No product found for name &#39;&quot;</span> + collectionName + <span class="stringliteral">&quot;&#39; and pass &#39;&quot;</span> + <a class="code" href="classldmx_1_1EventImpl.html#ab4df13f077cecf5f94b95f543eef3e50">passName_</a> + <span class="stringliteral">&quot;&#39;&quot;</span>);
         }
 
         <span class="comment">// find the active branch and update if necessary</span>
-        std::map&lt;std::string, TBranch*&gt;::const_iterator itb = <a class="code" href="classldmx_1_1EventImpl.html#abca186bc4f2af71cae867d45b4936dbd">branches_</a>.find(branchName);
         <span class="keywordflow">if</span> (itb != <a class="code" href="classldmx_1_1EventImpl.html#abca186bc4f2af71cae867d45b4936dbd">branches_</a>.end()) {
 
             std::map&lt;std::string, TObject*&gt;::iterator ito = <a class="code" href="classldmx_1_1EventImpl.html#a3fce3d6d953cc2eab6ec3a3a6c7f6654">objects_</a>.find(branchName);
@@ -635,7 +638,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
             TObject* top(0);
             branch-&gt;SetAutoDelete(<span class="keyword">false</span>);
             branch-&gt;SetStatus(1);
-            branch-&gt;GetEntry(ientry_);
+            branch-&gt;GetEntry((ientry_&lt;0)?(0):(ientry_));
             TBranchElement* tbe = <span class="keyword">dynamic_cast&lt;</span>TBranchElement*<span class="keyword">&gt;</span>(branch);
             <span class="keywordflow">if</span> (tbe) {
                 top = (TObject*) tbe-&gt;GetObject();
@@ -741,9 +744,10 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 <p>Go to the next event by incrementing the entry index. </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>Hard-coded to return true. </dd></dl>
 
-<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00228">228</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
+<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00231">231</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                              {
         ientry_++;
+        eventHeader_=get&lt;EventHeader*&gt;(EventConstants::EVENT_HEADER);
         <span class="keywordflow">return</span> <span class="keyword">true</span>;
     }
 </pre></div>
@@ -764,7 +768,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 <div class="memdoc">
 <p>Perform end of event action (clears the owned objects). </p>
 
-<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00246">246</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
+<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00250">250</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                 {
         <a class="code" href="classldmx_1_1EventImpl.html#a014ff80a168d22e5d017c893b0a0a08b">branchesFilled_</a>.clear();
     }
@@ -786,7 +790,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 <div class="memdoc">
 <p>Perform end of file action (doesn't do anything right now). </p>
 
-<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00250">250</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
+<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00254">254</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                {
     }
 </pre></div>
@@ -814,12 +818,12 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00215">215</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
+<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00218">218</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                            {
         inputTree_ = tree;
         entries_ = inputTree_-&gt;GetEntriesFast();
         <a class="code" href="classldmx_1_1EventImpl.html#a396a55cadee5be28915ceae4baa01c17">branchNames_</a>.clear();
-        eventHeader_ = get&lt;EventHeader*&gt;(EventConstants::EVENT_HEADER);
+
 
         <span class="comment">// find the names of all the existing branches</span>
         TObjArray* branches = inputTree_-&gt;GetListOfBranches();
@@ -852,7 +856,7 @@ std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00211">211</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
+<p>Definition at line <a class="el" href="EventImpl_8cxx_source.html#l00214">214</a> of file <a class="el" href="EventImpl_8cxx_source.html">EventImpl.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                             {
         outputTree_ = tree;
     }
