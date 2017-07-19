@@ -15,6 +15,15 @@ namespace ldmx {
     typedef enum enum_StorageControlHint { hint_Undefined=0, hint_NoOpinion, hint_shouldKeep=10, hint_mustKeep=11, hint_shouldDrop=20, hint_mustDrop=21 } StorageControlHint;
 
     /** @brief Class which encapsulates storage control functionality, used by the Process class
+     *
+     * Any EventProcessor can provide a hint as to whether a given
+     * event should be kept or dropped.  The hint is cached in the
+     * StorageControl object until the end of the event.  At that
+     * point, the process queries the StorageControl to determine if
+     * the event should be stored in the output file.
+     *
+     *
+     *
      */
     class StorageControl {
 	public:
@@ -35,6 +44,12 @@ namespace ldmx {
 	 */
 	void addHint(const std::string& processor_name, ldmx::StorageControlHint hint, const std::string& purposeString);
 
+      	/** 
+	 * Add a rule
+	 * @param processor_pattern Regex pattern to compare with event processor
+	 * @param purpose_pattern Regex pattern to compare with the purpose string
+	 */
+	void addRule(const std::string& processor_pat, const std::string& purpose_pat);
 
 	/** Determine if the current event should be kept, based on the defined rules */
 	bool keepEvent() const;
@@ -72,20 +87,29 @@ namespace ldmx {
 
 	/** 
 	 * Structure to hold rules
+	 *
+	 * Eventually need a cleanup function to remove the compiled regex buffers, but only in the _StorageControl_ destructor, not during regular vector operations.
 	 */
 	struct Rule {
+
+	    bool matches(const Hint& h);
+	    
 	    /** 
-	     * Event Processor name
+	     * Event Processor Regex
 	     */
-	    std::string evpName_;
+	    std::string evpNamePattern_;
 	    /**
-	     * Hint level
+	     * Purpose string Regex
 	     */
-	    StorageControlHint hint_;
-	    /**
-	     * Purpose string, if used
+	    std::string purposePattern_;
+	    /** 
+	     * Compiled event processor regex
 	     */
-	    std::string purpose_;
+	    void* evpNameRegex_{0};
+	    /** 
+	     * Compiled event processor regex
+	     */
+	    void* purposeRegex_{0};	    
 	};
 	
 	/** 
