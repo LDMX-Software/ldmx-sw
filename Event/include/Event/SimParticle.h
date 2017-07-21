@@ -14,7 +14,7 @@
 // STL
 #include <vector>
 #include <map>
-
+#include <iostream> //DEBUG
 namespace ldmx {
 
     /**
@@ -315,8 +315,29 @@ namespace ldmx {
              * @return The process type from the string.
              */
             static ProcessType findProcessType(const char* processName) {
-                if (PROCESS_MAP.find(processName) != PROCESS_MAP.end()) {
-                    return PROCESS_MAP[processName];
+                // strip off any "biasWrapper()" extra text
+                unsigned int lenPrefix = 12;
+                unsigned int lenName = strlen(processName);
+                unsigned int startCopy = 0, lenCopy = lenName;
+
+                if(strlen(processName) > lenPrefix+1 && // +1 for trailing ")"
+                   processName[0] == 'b' &&
+                   processName[1] == 'i' &&
+                   processName[2] == 'a' &&
+                   processName[3] == 's'){
+                  startCopy = lenPrefix; lenCopy = lenName-lenPrefix-1;
+                }
+                std::string newProcessName(processName+startCopy, lenCopy);
+
+                /* ALTERNATIVE BLOCK */
+                /* std::string newProcessName(processName); */
+                /* if(newProcessName.find("biasWrapper") == 0){ */
+                /*   newProcessName.erase(0,lenPrefix); */
+                /*   newProcessName.erase(newProcessName.length()-1,1); // trailing ")" */
+                /* } */
+
+                if (PROCESS_MAP.find(newProcessName) != PROCESS_MAP.end()) {
+                    return PROCESS_MAP[newProcessName];
                 } else {
                     return ProcessType::unknown;
                 }
