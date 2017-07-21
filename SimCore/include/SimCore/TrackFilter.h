@@ -256,23 +256,14 @@ namespace ldmx {
                 const G4VProcess* process = aTrack->GetCreatorProcess();
                 if (process) {
                     // during comparison, ignore any "biasWrapper()" extra text
-                    const G4String& pName = process->GetProcessName();
-                    unsigned int lenPrefix = 12;
-                    unsigned int lenName = pName.length();
-                    size_t startCompare = 0, lenCompare = std::string::npos;
-                    if(pName.find("biasWrapper") == 0){
-                      startCompare = lenPrefix; lenCompare = lenName-lenPrefix-1;
-                    }
+                    std::string currentProcessName = process->GetProcessName();
+                    if (currentProcessName.find("biasWrapper") != std::string::npos) { 
+                        std::size_t pos = currentProcessName.find_first_of("(") + 1;
+                        currentProcessName = currentProcessName.substr(pos, currentProcessName.size() - pos - 1); 
+                    }  
+                    
                     for (const auto& processName : processNames_) {
-                        if (exactMatch_[processName]) {
-                            if (!processName.compare(0, std::string::npos, pName, startCompare, lenCompare)) {
-                                return true;
-                            }
-                        } else {
-                            if (process->GetProcessName().find(processName) != std::string::npos) {
-                                return true;
-                            }
-                        }
+                        if (!currentProcessName.compare(processName)) return true;
                     }
                 }
                 return false;
@@ -280,7 +271,6 @@ namespace ldmx {
 
             void addProcess(std::string processName, bool exactMatch) {
                 processNames_.push_back(processName);
-                exactMatch_[processName] = exactMatch;
             }
 
             std::ostream& print(std::ostream& os) {
