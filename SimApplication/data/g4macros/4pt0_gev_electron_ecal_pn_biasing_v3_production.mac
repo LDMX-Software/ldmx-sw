@@ -48,9 +48,9 @@
 /ldmx/plugins/EventPrintPlugin/modulus 1000
 
 /ldmx/plugins/load TrackFilterPlugin
-/ldmx/plugins/TrackFilterPlugin/verbose 10
+/ldmx/plugins/TrackFilterPlugin/verbose 0
 
-/ldmx/plugins/TrackFilterPlugin/process biasWrapper(photonNuclear) true
+/ldmx/plugins/TrackFilterPlugin/process photonNuclear true
 /ldmx/plugins/TrackFilterPlugin/region CalorimeterRegion true
 /ldmx/plugins/TrackFilterPlugin/create pnFilter
 
