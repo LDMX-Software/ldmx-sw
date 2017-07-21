@@ -74,6 +74,19 @@ namespace ldmx {
                 " }" << std::endl;
     }
 
+    SimParticle::ProcessType SimParticle::findProcessType(std::string processName) {
+
+        if (processName.find("biasWrapper") != std::string::npos) { 
+            std::size_t pos = processName.find_first_of("(") + 1;
+            processName = processName.substr(pos, processName.size() - pos - 1); 
+        }  
+                
+        if (PROCESS_MAP.find(processName) != PROCESS_MAP.end()) {
+            return PROCESS_MAP[processName];
+        } else {
+            return ProcessType::unknown;
+        }
+    }
 
 }
 
