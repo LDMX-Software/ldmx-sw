@@ -128,7 +128,7 @@ namespace ldmx {
         double z = point[2] - zOffset_;
 
         // Check that the point is within the defined region 
-        if (x >= minx_ && x <= maxx_ && y >= miny_ && y <= maxy_ && z >= minz_ && z <= maxz_) {
+        if (x >= minx_ && x < maxx_ && y >= miny_ && y < maxy_ && z >= minz_ && z < maxz_) {
 
             // Position of given point within region, normalized to the range
             // [0,1]
