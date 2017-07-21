@@ -10342,6 +10342,7 @@
                 <positionref ref="center_iron_block_bot_pos" />
                 <rotationref ref="identity" />
             </physvol>
+            <auxiliary auxtype="Region" auxvalue="MagnetRegion"/>
         </volume>
     </structure>
     <setup name="Default" version="1.0" >

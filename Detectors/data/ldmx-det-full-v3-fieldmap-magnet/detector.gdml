@@ -256,7 +256,10 @@
     <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">
       <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
     </auxiliary>   
-    
+    <auxiliary auxtype="Region" auxvalue="MagnetRegion">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
+    </auxiliary>   
+
     <!-- define vis attributes -->
     <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau">
       <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
