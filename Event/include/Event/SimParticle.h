@@ -1,19 +1,26 @@
 /**
  * @file SimParticle.h
- * @brief Class which implements an MC particle that stores information about tracks from the simulation
+ * @brief Class which implements an MC particle that stores information about 
+ *        tracks from the simulation
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
 #ifndef EVENT_SIMPARTICLE_H_
 #define EVENT_SIMPARTICLE_H_
 
-// ROOT
+//----------//
+//   ROOT   //
+//----------//
 #include "TObject.h"
 #include "TRefArray.h"
 
-// STL
-#include <vector>
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <iostream>
 #include <map>
+#include <string>
+#include <vector>
 
 namespace ldmx {
 
@@ -314,34 +321,7 @@ namespace ldmx {
              * Get the process type enum from a G4VProcess name.
              * @return The process type from the string.
              */
-            static ProcessType findProcessType(const char* processName) {
-                // strip off any "biasWrapper()" extra text
-                unsigned int lenPrefix = 12;
-                unsigned int lenName = strlen(processName);
-                unsigned int startCopy = 0, lenCopy = lenName;
-
-                if(strlen(processName) > lenPrefix+1 && // +1 for trailing ")"
-                   processName[0] == 'b' &&
-                   processName[1] == 'i' &&
-                   processName[2] == 'a' &&
-                   processName[3] == 's'){
-                  startCopy = lenPrefix; lenCopy = lenName-lenPrefix-1;
-                }
-                std::string newProcessName(processName+startCopy, lenCopy);
-
-                /* ALTERNATIVE BLOCK */
-                /* std::string newProcessName(processName); */
-                /* if(newProcessName.find("biasWrapper") == 0){ */
-                /*   newProcessName.erase(0,lenPrefix); */
-                /*   newProcessName.erase(newProcessName.length()-1,1); // trailing ")" */
-                /* } */
-
-                if (PROCESS_MAP.find(newProcessName) != PROCESS_MAP.end()) {
-                    return PROCESS_MAP[newProcessName];
-                } else {
-                    return ProcessType::unknown;
-                }
-            }
+            static ProcessType findProcessType(std::string processName); 
 
         private:
 
