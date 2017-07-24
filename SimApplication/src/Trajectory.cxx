@@ -33,8 +33,8 @@ namespace ldmx {
             // Uncomment this to see what process types are being saved.  --JM
             //std::cout << "Trajectory - set process type " << processType
             //        << " from <" << processName << ">" << std::endl;
-        }else{
-          processType_ = SimParticle::ProcessType::unknown;
+        } else {
+            processType_ = SimParticle::ProcessType::unknown;
         }
 
         // Set initial momentum from track information.
