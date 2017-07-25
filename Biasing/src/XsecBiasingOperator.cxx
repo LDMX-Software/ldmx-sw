@@ -22,7 +22,11 @@ namespace ldmx {
         G4ProcessManager* processManager{nullptr}; 
         if (BiasingMessenger::getParticleType() == "gamma") { 
             processManager = G4Gamma::GammaDefinition()->GetProcessManager();
-        } else { 
+        }
+	else if (BiasingMessenger::getParticleType() == "e-") { 
+            processManager = G4Electron::ElectronDefinition()->GetProcessManager();
+        } 
+	else { 
             // Throw an exception
         }
 

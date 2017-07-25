@@ -16,6 +16,7 @@
 #include "G4BiasingProcessSharedData.hh"
 #include "G4BOptnChangeCrossSection.hh"
 #include "G4Gamma.hh"
+#include "G4Electron.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTable.hh"
 #include "G4ProcessManager.hh"
