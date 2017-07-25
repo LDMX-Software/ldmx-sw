@@ -1,19 +1,26 @@
 /**
  * @file SimParticle.h
- * @brief Class which implements an MC particle that stores information about tracks from the simulation
+ * @brief Class which implements an MC particle that stores information about 
+ *        tracks from the simulation
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
 #ifndef EVENT_SIMPARTICLE_H_
 #define EVENT_SIMPARTICLE_H_
 
-// ROOT
+//----------//
+//   ROOT   //
+//----------//
 #include "TObject.h"
 #include "TRefArray.h"
 
-// STL
-#include <vector>
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <iostream>
 #include <map>
+#include <string>
+#include <vector>
 
 namespace ldmx {
 
@@ -314,13 +321,7 @@ namespace ldmx {
              * Get the process type enum from a G4VProcess name.
              * @return The process type from the string.
              */
-            static ProcessType findProcessType(const char* processName) {
-                if (PROCESS_MAP.find(processName) != PROCESS_MAP.end()) {
-                    return PROCESS_MAP[processName];
-                } else {
-                    return ProcessType::unknown;
-                }
-            }
+            static ProcessType findProcessType(std::string processName); 
 
         private:
 
