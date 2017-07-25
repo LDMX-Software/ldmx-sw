@@ -29,24 +29,9 @@ namespace ldmx {
 
     G4bool ScoringPlaneSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
 
-        // Determine if current particle of this step is a Geantino.
-        G4ParticleDefinition* pdef = step->GetTrack()->GetDefinition();
-        bool isGeantino = false;
-        if (pdef == G4Geantino::Definition() || pdef == G4ChargedGeantino::Definition()) {
-            isGeantino = true;
-        }
-
         // Get the edep from the step.
         G4double edep = step->GetTotalEnergyDeposit();
-
-        // Skip steps with no energy dep which come from non-Geantino particles.
-        if (edep == 0.0 && !isGeantino) {
-            if (verboseLevel > 2) {
-                std::cout << "ScoringPlaneSD skipping step with zero edep" << std::endl << std::endl;
-            }
-            return false;
-        }
-
+        
         // Create a new hit object.
         G4TrackerHit* hit = new G4TrackerHit();
 
