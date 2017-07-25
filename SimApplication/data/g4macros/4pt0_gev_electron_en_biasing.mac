@@ -1,0 +1,50 @@
+
+# Parse the detector description using the GDML reader.  This assumes that
+# there is a local soft link that points to the detector of interest.
+/persistency/gdml/read detector.gdml
+
+# Enable biasing and set parameters.  This configuration specifies that 
+# the biasing operator is applied to electrons that enter the target, with no energy threshold.
+# Also, the electronuclear xsec is increased by a factor
+# of 100000 within the target.
+/ldmx/biasing/enable
+/ldmx/biasing/particle e-
+/ldmx/biasing/process electronNuclear
+/ldmx/biasing/volume target
+/ldmx/biasing/xsec 1000000
+/ldmx/biasing/threshold 0
+
+# Initialize the run
+/run/initialize
+
+# Position the electron gun upstream of the target.  The initial energy
+# of the electron will be 4 GeV.
+/gun/particle e-
+/gun/energy 4.0 GeV
+/gun/position 0 0 -.55 mm
+/gun/direction 0 0 4 GeV
+
+# Plugin used to print an event status.
+/ldmx/plugins/load EventPrintPlugin
+
+# Plugin used to filter events with a hard brem.  In this case, the filter
+# is being applied to the target.  Only events where the recoil electron
+# has an energy below 1500 MeV are considered.  Also, only events that
+# contain at least a single brem gamma above 2500 MeV are considered.
+#/ldmx/plugins/load TargetBremFilter libBiasing.so
+#/ldmx/plugins/TargetBremFilter/volume target_PV
+#/ldmx/plugins/TargetBremFilter/recoil_threshold 1500
+#/ldmx/plugins/TargetBremFilter/brem_threshold 2500
+
+# Plugin used to filter events where an electron undergoes an electro-nuclear 
+# reaction in the target.
+/ldmx/plugins/load electroNuclearTargetProcessFilter libBiasing.so
+
+# Print a status every 1000 events.
+/ldmx/plugins/EventPrintPlugin/modulus 1
+
+# Write the events that pass the filter to en_output.root.
+/ldmx/persistency/root/verbose 0
+/ldmx/persistency/root/file en_output.root
+
+/run/beamOn 1000
