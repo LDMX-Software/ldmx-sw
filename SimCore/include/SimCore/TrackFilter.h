@@ -255,16 +255,15 @@ namespace ldmx {
             virtual bool passes(const G4Track* aTrack) {
                 const G4VProcess* process = aTrack->GetCreatorProcess();
                 if (process) {
+                    // during comparison, ignore any "biasWrapper()" extra text
+                    std::string currentProcessName = process->GetProcessName();
+                    if (currentProcessName.find("biasWrapper") != std::string::npos) { 
+                        std::size_t pos = currentProcessName.find_first_of("(") + 1;
+                        currentProcessName = currentProcessName.substr(pos, currentProcessName.size() - pos - 1); 
+                    }  
+                    
                     for (const auto& processName : processNames_) {
-                        if (exactMatch_[processName]) {
-                            if (!processName.compare(process->GetProcessName())) {
-                                return true;
-                            }
-                        } else {
-                            if (process->GetProcessName().find(processName) != std::string::npos) {
-                                return true;
-                            }
-                        }
+                        if (!currentProcessName.compare(processName)) return true;
                     }
                 }
                 return false;
@@ -272,7 +271,6 @@ namespace ldmx {
 
             void addProcess(std::string processName, bool exactMatch) {
                 processNames_.push_back(processName);
-                exactMatch_[processName] = exactMatch;
             }
 
             std::ostream& print(std::ostream& os) {

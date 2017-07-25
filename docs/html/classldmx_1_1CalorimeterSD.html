@@ -189,7 +189,7 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="CalorimeterSD_8cxx_source.html#l00097">97</a> of file <a class="el" href="CalorimeterSD_8cxx_source.html">CalorimeterSD.cxx</a>.</p>
+<p>Definition at line <a class="el" href="CalorimeterSD_8cxx_source.html#l00100">100</a> of file <a class="el" href="CalorimeterSD_8cxx_source.html">CalorimeterSD.cxx</a>.</p>
 
 <p>References <a class="el" href="CalorimeterSD_8h_source.html#l00077">hitsCollection_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                   {
@@ -280,7 +280,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="CalorimeterSD_8cxx_source.html#l00040">40</a> of file <a class="el" href="CalorimeterSD_8cxx_source.html">CalorimeterSD.cxx</a>.</p>
 
-<p>References <a class="el" href="CalorimeterSD_8h_source.html#l00087">detID_</a>, <a class="el" href="CalorimeterSD_8h_source.html#l00077">hitsCollection_</a>, <a class="el" href="DetectorID_8cxx_source.html#l00040">ldmx::DetectorID::pack()</a>, <a class="el" href="G4CalorimeterHit_8cxx_source.html#l00030">ldmx::G4CalorimeterHit::Print()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00118">ldmx::G4CalorimeterHit::setEdep()</a>, <a class="el" href="DetectorID_8cxx_source.html#l00055">ldmx::DetectorID::setFieldValue()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00102">ldmx::G4CalorimeterHit::setID()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00136">ldmx::G4CalorimeterHit::setPosition()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00152">ldmx::G4CalorimeterHit::setTime()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00086">ldmx::G4CalorimeterHit::setTrackID()</a>, and <a class="el" href="CalorimeterSD_8h_source.html#l00082">subdet_</a>.</p>
+<p>References <a class="el" href="CalorimeterSD_8h_source.html#l00087">detID_</a>, <a class="el" href="CalorimeterSD_8h_source.html#l00077">hitsCollection_</a>, <a class="el" href="DetectorID_8cxx_source.html#l00040">ldmx::DetectorID::pack()</a>, <a class="el" href="G4CalorimeterHit_8cxx_source.html#l00030">ldmx::G4CalorimeterHit::Print()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00118">ldmx::G4CalorimeterHit::setEdep()</a>, <a class="el" href="DetectorID_8cxx_source.html#l00055">ldmx::DetectorID::setFieldValue()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00102">ldmx::G4CalorimeterHit::setID()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00168">ldmx::G4CalorimeterHit::setPdgCode()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00136">ldmx::G4CalorimeterHit::setPosition()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00152">ldmx::G4CalorimeterHit::setTime()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00086">ldmx::G4CalorimeterHit::setTrackID()</a>, and <a class="el" href="CalorimeterSD_8h_source.html#l00082">subdet_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                        {
 
         <span class="comment">// Determine if current particle of this step is a Geantino.</span>
@@ -326,6 +326,9 @@ Protected Attributes</h2></td></tr>
 
         <span class="comment">// Set the track ID on the hit.</span>
         hit-&gt;setTrackID(aStep-&gt;GetTrack()-&gt;GetTrackID());
+
+        <span class="comment">// Set the PDG code from the track.</span>
+        hit-&gt;setPdgCode(aStep-&gt;GetTrack()-&gt;GetParticleDefinition()-&gt;GetPDGEncoding());
 
         <span class="keywordflow">if</span> (this-&gt;verboseLevel &gt; 2) {
             std::cout &lt;&lt; <span class="stringliteral">&quot;Created new SimCalorimeterHit in detector &quot;</span> &lt;&lt; this-&gt;GetName() &lt;&lt; <span class="stringliteral">&quot; with subdet ID &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1CalorimeterSD.html#a0f1f237a1729bdbc0514a5df347d9f85">subdet_</a> &lt;&lt; <span class="stringliteral">&quot; and layer &quot;</span> &lt;&lt; layerNumber &lt;&lt; <span class="stringliteral">&quot; ...&quot;</span> &lt;&lt; std::endl;
@@ -402,7 +405,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="CalorimeterSD_8h_source.html#l00077">77</a> of file <a class="el" href="CalorimeterSD_8h_source.html">CalorimeterSD.h</a>.</p>
 
-<p>Referenced by <a class="el" href="CalorimeterSD_8cxx_source.html#l00097">EndOfEvent()</a>, <a class="el" href="CalorimeterSD_8cxx_source.html#l00032">Initialize()</a>, <a class="el" href="EcalSD_8cxx_source.html#l00023">ldmx::EcalSD::ProcessHits()</a>, and <a class="el" href="CalorimeterSD_8cxx_source.html#l00040">ProcessHits()</a>.</p>
+<p>Referenced by <a class="el" href="CalorimeterSD_8cxx_source.html#l00100">EndOfEvent()</a>, <a class="el" href="CalorimeterSD_8cxx_source.html#l00032">Initialize()</a>, <a class="el" href="EcalSD_8cxx_source.html#l00023">ldmx::EcalSD::ProcessHits()</a>, and <a class="el" href="CalorimeterSD_8cxx_source.html#l00040">ProcessHits()</a>.</p>
 
 </div>
 </div>

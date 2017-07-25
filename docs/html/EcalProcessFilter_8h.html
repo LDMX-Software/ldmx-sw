@@ -45,9 +45,12 @@
 <p>User action plugin that biases Geant4 to only process events which involve a photonuclear reaction in the ECal.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;algorithm&gt;</code><br/>
+<code>#include &quot;G4VPhysicalVolume.hh&quot;</code><br/>
+<code>#include &quot;G4PhysicalVolumeStore.hh&quot;</code><br/>
 <code>#include &quot;G4RunManager.hh&quot;</code><br/>
 <code>#include &quot;<a class="el" href="UserActionPlugin_8h_source.html">SimPlugins/UserActionPlugin.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="BiasingMessenger_8h_source.html">Biasing/BiasingMessenger.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="EcalProcessFilterMessenger_8h_source.html">Biasing/EcalProcessFilterMessenger.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="TargetBremFilter_8h_source.html">Biasing/TargetBremFilter.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="UserTrackInformation_8h_source.html">SimCore/UserTrackInformation.h</a>&quot;</code><br/>
 </div>

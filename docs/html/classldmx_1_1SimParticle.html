@@ -91,9 +91,11 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1SimParticle.html#a22d2fb5c6f9ce71713dd58b6fbfdd561">addParent</a> (<a class="el" href="classldmx_1_1SimParticle.html">SimParticle</a> *parent)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1SimParticle.html#a3d8a97d45ce4f9048b8a82fb6f218b0e">getProcessType</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1SimParticle.html#a521409cef631bea2f3d54e23f1c4e206">setProcessType</a> (int processType)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1SimParticle.html#a6db4b44f9b01554964f597d692749d48">setEndPointMomentum</a> (const double endpx, const double endpy, const double endpz)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1SimParticle.html#a09a99182c6898dad0689bd35967225f4">getEndPointMomentum</a> ()</td></tr>
 <tr><td colspan="2"><h2><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1SimParticle.html#a1a90cac1c8975122bf683e1500141cc7">ClassDef</a> (<a class="el" href="classldmx_1_1SimParticle.html">SimParticle</a>, 3)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1SimParticle.html#a16c411eb547bf9e447428414c1591c5c">ClassDef</a> (<a class="el" href="classldmx_1_1SimParticle.html">SimParticle</a>, 4)</td></tr>
 <tr><td colspan="2"><h2><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">TRefArray *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1SimParticle.html#aac5338748d0bee8437f3881562fbc54c">daughters_</a></td></tr>
@@ -163,7 +165,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00241">241</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
 
-<p>References <a class="el" href="SimParticle_8h_source.html#l00275">daughters_</a>.</p>
+<p>References <a class="el" href="SimParticle_8h_source.html#l00295">daughters_</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                    {
@@ -196,7 +198,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00249">249</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
 
-<p>References <a class="el" href="SimParticle_8h_source.html#l00323">parents_</a>.</p>
+<p>References <a class="el" href="SimParticle_8h_source.html#l00352">parents_</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                {
@@ -205,7 +207,7 @@ Private Attributes</h2></td></tr>
 </pre></div>
 </div>
 </div>
-<a class="anchor" id="a1a90cac1c8975122bf683e1500141cc7"></a><!-- doxytag: member="ldmx::SimParticle::ClassDef" ref="a1a90cac1c8975122bf683e1500141cc7" args="(SimParticle, 3)" -->
+<a class="anchor" id="a16c411eb547bf9e447428414c1591c5c"></a><!-- doxytag: member="ldmx::SimParticle::ClassDef" ref="a16c411eb547bf9e447428414c1591c5c" args="(SimParticle, 4)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -218,7 +220,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">3&#160;</td>
+          <td class="paramtype">4&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -300,7 +302,9 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00133">133</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
 
-<p>References <a class="el" href="SimParticle_8h_source.html#l00275">daughters_</a>.</p>
+<p>References <a class="el" href="SimParticle_8h_source.html#l00295">daughters_</a>.</p>
+
+<p>Referenced by <a class="el" href="PnWeightProcessor_8cxx_source.html#l00027">ldmx::PnWeightProcessor::produce()</a>.</p>
 <div class="fragment"><pre class="fragment">                                               {
                 <span class="keywordflow">return</span> (<a class="code" href="classldmx_1_1SimParticle.html#a209f83f0008f7d3dd6483aa688e21f74">SimParticle</a>*) <a class="code" href="classldmx_1_1SimParticle.html#aac5338748d0bee8437f3881562fbc54c">daughters_</a>-&gt;At(iDau);
             }
@@ -324,7 +328,9 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00125">125</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
 
-<p>References <a class="el" href="SimParticle_8h_source.html#l00275">daughters_</a>.</p>
+<p>References <a class="el" href="SimParticle_8h_source.html#l00295">daughters_</a>.</p>
+
+<p>Referenced by <a class="el" href="PnWeightProcessor_8cxx_source.html#l00027">ldmx::PnWeightProcessor::produce()</a>.</p>
 <div class="fragment"><pre class="fragment">                                   {
                 <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1SimParticle.html#aac5338748d0bee8437f3881562fbc54c">daughters_</a>-&gt;GetEntriesFast();
             }
@@ -354,6 +360,29 @@ Private Attributes</h2></td></tr>
 </pre></div>
 </div>
 </div>
+<a class="anchor" id="a09a99182c6898dad0689bd35967225f4"></a><!-- doxytag: member="ldmx::SimParticle::getEndPointMomentum" ref="a09a99182c6898dad0689bd35967225f4" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; ldmx::SimParticle::getEndPointMomentum </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Get the momentum at the particle's end point. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>The momentum at the particle's end point as a vector. </dd></dl>
+
+<p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00288">288</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
+<div class="fragment"><pre class="fragment">                                                    {
+                <span class="keywordflow">return</span> {endpx_, endpy_, endpz_};
+            }
+</pre></div>
+</div>
+</div>
 <a class="anchor" id="ac9c9b6863271e37a04324e29b9490f42"></a><!-- doxytag: member="ldmx::SimParticle::getEnergy" ref="ac9c9b6863271e37a04324e29b9490f42" args="()" -->
 <div class="memitem">
 <div class="memproto">
@@ -372,7 +401,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00051">51</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
 
-<p>Referenced by <a class="el" href="DummyProducer_8cxx_source.html#l00041">ldmx::DummyProducer::produce()</a>.</p>
+<p>Referenced by <a class="el" href="PnWeightProcessor_8cxx_source.html#l00113">ldmx::PnWeightProcessor::calculateWp()</a>, <a class="el" href="DummyProducer_8cxx_source.html#l00041">ldmx::DummyProducer::produce()</a>, and <a class="el" href="PnWeightProcessor_8cxx_source.html#l00027">ldmx::PnWeightProcessor::produce()</a>.</p>
 <div class="fragment"><pre class="fragment">                               {
                 <span class="keywordflow">return</span> energy_;
             }
@@ -422,7 +451,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00110">110</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPrimaryGenerator_8cxx_source.html#l00035">ldmx::RootPrimaryGenerator::GeneratePrimaryVertex()</a>.</p>
+<p>Referenced by <a class="el" href="PnWeightProcessor_8cxx_source.html#l00113">ldmx::PnWeightProcessor::calculateWp()</a>, <a class="el" href="RootPrimaryGenerator_8cxx_source.html#l00035">ldmx::RootPrimaryGenerator::GeneratePrimaryVertex()</a>, and <a class="el" href="PnWeightProcessor_8cxx_source.html#l00027">ldmx::PnWeightProcessor::produce()</a>.</p>
 <div class="fragment"><pre class="fragment">                             {
                 <span class="keywordflow">return</span> mass_;
             }
@@ -447,7 +476,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00102">102</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPrimaryGenerator_8cxx_source.html#l00035">ldmx::RootPrimaryGenerator::GeneratePrimaryVertex()</a>.</p>
+<p>Referenced by <a class="el" href="PnWeightProcessor_8cxx_source.html#l00113">ldmx::PnWeightProcessor::calculateWp()</a>, <a class="el" href="RootPrimaryGenerator_8cxx_source.html#l00035">ldmx::RootPrimaryGenerator::GeneratePrimaryVertex()</a>, and <a class="el" href="PnWeightProcessor_8cxx_source.html#l00027">ldmx::PnWeightProcessor::produce()</a>.</p>
 <div class="fragment"><pre class="fragment">                                            {
                 <span class="keywordflow">return</span> {px_, py_, pz_};
             }
@@ -478,7 +507,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00149">149</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
 
-<p>References <a class="el" href="SimParticle_8h_source.html#l00323">parents_</a>.</p>
+<p>References <a class="el" href="SimParticle_8h_source.html#l00352">parents_</a>.</p>
 <div class="fragment"><pre class="fragment">                                             {
                 <span class="keywordflow">return</span> (<a class="code" href="classldmx_1_1SimParticle.html#a209f83f0008f7d3dd6483aa688e21f74">SimParticle</a>*) <a class="code" href="classldmx_1_1SimParticle.html#ab6ffc53b2c58030ea0c77c4a0899a086">parents_</a>-&gt;At(iPar);
             }
@@ -503,7 +532,9 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00141">141</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
 
-<p>References <a class="el" href="SimParticle_8h_source.html#l00323">parents_</a>.</p>
+<p>References <a class="el" href="SimParticle_8h_source.html#l00352">parents_</a>.</p>
+
+<p>Referenced by <a class="el" href="PnWeightProcessor_8cxx_source.html#l00027">ldmx::PnWeightProcessor::produce()</a>.</p>
 <div class="fragment"><pre class="fragment">                                 {
                 <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1SimParticle.html#ab6ffc53b2c58030ea0c77c4a0899a086">parents_</a>-&gt;GetEntriesFast();
             }
@@ -528,7 +559,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00059">59</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPrimaryGenerator_8cxx_source.html#l00035">ldmx::RootPrimaryGenerator::GeneratePrimaryVertex()</a>.</p>
+<p>Referenced by <a class="el" href="RootPrimaryGenerator_8cxx_source.html#l00035">ldmx::RootPrimaryGenerator::GeneratePrimaryVertex()</a>, and <a class="el" href="PnWeightProcessor_8cxx_source.html#l00027">ldmx::PnWeightProcessor::produce()</a>.</p>
 <div class="fragment"><pre class="fragment">                           {
                 <span class="keywordflow">return</span> pdgID_;
             }
@@ -552,6 +583,8 @@ Private Attributes</h2></td></tr>
 <dl class="return"><dt><b>Returns:</b></dt><dd>The creator process type of this particle. </dd></dl>
 
 <p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00259">259</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
+
+<p>Referenced by <a class="el" href="PnWeightProcessor_8cxx_source.html#l00027">ldmx::PnWeightProcessor::produce()</a>.</p>
 <div class="fragment"><pre class="fragment">                                 {
                 <span class="keywordflow">return</span> processType_;
             }
@@ -702,6 +735,57 @@ Private Attributes</h2></td></tr>
                 this-&gt;endX_ = endX;
                 this-&gt;endY_ = endY;
                 this-&gt;endZ_ = endZ;
+            }
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="a6db4b44f9b01554964f597d692749d48"></a><!-- doxytag: member="ldmx::SimParticle::setEndPointMomentum" ref="a6db4b44f9b01554964f597d692749d48" args="(const double endpx, const double endpy, const double endpz)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::SimParticle::setEndPointMomentum </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>endpx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>endpy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>endpz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Set the momentum at the particle's end point. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">endpx</td><td>The X momentum. </td></tr>
+    <tr><td class="paramname">endpy</td><td>The Y momentum. </td></tr>
+    <tr><td class="paramname">endpz</td><td>The Z momentum. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00278">278</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
+
+<p>Referenced by <a class="el" href="SimParticleBuilder_8cxx_source.html#l00049">ldmx::SimParticleBuilder::buildSimParticle()</a>.</p>
+<div class="fragment"><pre class="fragment">                                                                                                 {
+                endpx_ = endpx;
+                endpy_ = endpy;
+                endpz_ = endpz;
             }
 </pre></div>
 </div>
@@ -1005,9 +1089,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>The energy of the particle. The PDG code of the particle. The generator status. The global creation time. The X vertex. The Y vertex. The Z vertex. The X end point. The Y end point. The Z end point. The X momentum. The Y momentum. The Z momentum. The particle's mass. The particle's charge. The list of daughter particles. </p>
+<p>The energy of the particle. The PDG code of the particle. The generator status. The global creation time. The X vertex. The Y vertex. The Z vertex. The X end point. The Y end point. The Z end point. The X momentum. The Y momentum. The Z momentum. The X momentum. The Y momentum. The Z momentum. The particle's mass. The particle's charge. The list of daughter particles. </p>
 
-<p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00275">275</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
+<p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00295">295</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticle_8h_source.html#l00241">addDaughter()</a>, <a class="el" href="SimParticle_8h_source.html#l00133">getDaughter()</a>, and <a class="el" href="SimParticle_8h_source.html#l00125">getDaughterCount()</a>.</p>
 
@@ -1025,7 +1109,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The list of parent particles. </p>
 
-<p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00323">323</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
+<p>Definition at line <a class="el" href="SimParticle_8h_source.html#l00352">352</a> of file <a class="el" href="SimParticle_8h_source.html">SimParticle.h</a>.</p>
 
 <p>Referenced by <a class="el" href="SimParticle_8h_source.html#l00249">addParent()</a>, <a class="el" href="SimParticle_8h_source.html#l00149">getParent()</a>, and <a class="el" href="SimParticle_8h_source.html#l00141">getParentCount()</a>.</p>
 
