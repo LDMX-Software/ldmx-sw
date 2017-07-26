@@ -10,7 +10,7 @@
     <variable name="h_b" value="1"/>  
     <variable name="h_c" value="1"/>  
     <variable name="h_d" value="1"/>  
-    <variable name="hexagon_gap" value="0.0"/>
+    <variable name="hexagon_gap" value="0.1"/>
 
     <!-- longitudinal definitions -->
 
