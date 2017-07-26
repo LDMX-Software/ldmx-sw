@@ -24,8 +24,8 @@ namespace ldmx {
         //   a cell will be centered at (0,0)
 
         // imagine a flat-side-down hexagon. start at lower-left point, which is at ( -s/2, -r )
-        unsigned ncellwide = TMath::Ceil(width / (1.5 * side));
-        unsigned ncelltall = TMath::Ceil(width / (2. * side));
+        unsigned ncellwide = ceil(width / (1.5 * side));
+        unsigned ncelltall = ceil(width / (2. * side));
         unsigned ny = ncellwide + 1;
         unsigned nx = ncellwide + 4;
         double xstart = -((double) ncellwide + 0.5) * side;
