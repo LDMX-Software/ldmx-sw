@@ -15,6 +15,7 @@
 // LDMX
 #include "DetDescr/EcalDetectorID.h"
 #include "Event/EcalVetoResult.h"
+#include "Event/SimTrackerHit.h"
 #include "Framework/EventProcessor.h"
 
 //C++
@@ -128,6 +129,21 @@ namespace ldmx {
             double maxCellDep_{0};
             double showerRMS_{0};
             double bdtCutVal_{0};
+
+            /** px of recoil electron at the Ecal face. */
+            double recoilPx_{0};
+            
+            /** py of recoil electron at the Ecal face. */
+            double recoilPy_{0};
+            
+            /** py of recoil electron at the Ecal face. */
+            double recoilPz_{0};
+            
+            /** x position of recoil electron at the Ecal face. */
+            float recoilX_{0}; 
+            
+            /** y position of recoil electron at the Ecal face. */
+            float recoilY_{0}; 
 
             EcalVetoResult result_;
             EcalDetectorID detID_;
