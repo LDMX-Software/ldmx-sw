@@ -6,9 +6,26 @@ namespace ldmx {
     EcalHexReadout::EcalHexReadout(double width, double side) {
         ecalMap = new TH2Poly();
 
-        // Center a cell at (x,y)=(0,0) and ensure coverage up to/past width/2 in all 4 directions,
-        // assuming each cell is lying on a side.
-        unsigned ncellwide = width / (1.5 * side);
+        // key assumptions about orientation:
+        //   cells are etched flat side down, on modules which are flat side down.
+        // geometry:
+        //   hexagons have two radii: r (half of flat-to-flat) and R (half of corner-to-corner).
+        //     r = (sqrt(3)/2)R = s, where s is length of a flat side.
+        //   therefore column-to-column distance in a flat-side-down hex grid is 1.5*R,
+        //     and row-to-row distance is 2r = sqrt(3)R.
+        //   for seven ecal modules with this orientation, total x and y extents are:
+        //     deltaY = 6r' + 2g = 3sqrt(3)R' + 2g
+        //     deltaX = 4R' + s' + 2g/cos(30 deg) = (4+sqrt(3)/2)R' + 4g/sqrt(3)
+        //     where g is uniform gap width between modules, and primed variables correspond to modules.
+        // this ID grid:
+        //   input was side length s and total grid width w.
+        //   a grid of cells will be constructed and cover at least the areas -w/2 to w/2 in x and y.
+        //   therefore USER MUST GUARANTEE THAT w > max(deltaX, deltaY) as defined above.
+        //   a cell will be centered at (0,0)
+
+        // imagine a flat-side-down hexagon. start at lower-left point, which is at ( -s/2, -r )
+        unsigned ncellwide = TMath::Ceil(width / (1.5 * side));
+        unsigned ncelltall = TMath::Ceil(width / (2. * side));
         unsigned ny = ncellwide + 1;
         unsigned nx = ncellwide + 4;
         double xstart = -((double) ncellwide + 0.5) * side;
