@@ -273,7 +273,7 @@ namespace ldmx {
 
                 // We only care about the recoil electron
                 if ((particle->getPdgID() == 11) && (particle->getParentCount() == 0)) { 
-                    recoilElectron = particle; 
+                    recoilElectron = particle;
                     break;
                 } 
             }
@@ -287,6 +287,7 @@ namespace ldmx {
                 if (spParticle == recoilElectron) { 
                     recoilP = spHit->getMomentum();
                     recoilPos = spHit->getPosition();
+                    if (recoilP[2] <= 0) continue; 
                     /*std::cout << "[ EcalVetoProcessor ]: " 
                               << "Recoil momentum: [ " 
                               << recoilP[0] 
