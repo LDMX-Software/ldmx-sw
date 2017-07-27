@@ -27,6 +27,12 @@ namespace ldmx {
                       << particleType_ 
                       << std::endl; 
             processManager = G4Gamma::GammaDefinition()->GetProcessManager();
+        } else if (particleType_.compare("e-") == 0) { 
+            std::cout << "[ XsecBiasingOperator ]: "
+                      << "Applying biasing to particle type " 
+                      << particleType_ 
+                      << std::endl; 
+            processManager = G4Electron::ElectronDefinition()->GetProcessManager();
         } else { 
             // Throw an exception
         }
@@ -58,9 +64,9 @@ namespace ldmx {
                     << " Created within " << track->GetLogicalVolumeAtVertex()->GetName() 
                     << std::endl;*/
         
-        if (biasIncident_ && track->GetParentID() != 0) {
+        if (biasIncident_ && (track->GetParentID() != 0)) {
             return 0;
-        } else if (!biasAll_ && track->GetParentID() != 1) {
+        } else if (!biasAll_ && !biasIncident_ && track->GetParentID() != 1) {
             return 0;
         }
 
