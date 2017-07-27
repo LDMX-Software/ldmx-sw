@@ -183,19 +183,19 @@ namespace ldmx {
             float discValue_{0};
 
             /** px of recoil electron at the Ecal face. */
-            double recoilPx_{0};
+            double recoilPx_{-9999};
             
             /** py of recoil electron at the Ecal face. */
-            double recoilPy_{0};
+            double recoilPy_{-9999};
             
             /** py of recoil electron at the Ecal face. */
-            double recoilPz_{0};
+            double recoilPz_{-9999};
             
             /** x position of recoil electron at the Ecal face. */
-            float recoilX_{0}; 
+            float recoilX_{-9999}; 
             
             /** y position of recoil electron at the Ecal face. */
-            float recoilY_{0}; 
+            float recoilY_{-9999}; 
 
             std::vector<float> ecalLayerEdepReadout_;
             std::vector<std::pair<int, float>> looseMipTracks_;
