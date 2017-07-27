@@ -13,11 +13,15 @@
 /ldmx/biasing/particle gamma
 /ldmx/biasing/process photonNuclear
 /ldmx/biasing/volume ecal
-/ldmx/biasing/xsec 1000
 /ldmx/biasing/threshold 2500
 
 # Initialize the run
 /run/initialize
+
+/ldmx/biasing/xsec/particle gamma
+/ldmx/biasing/xsec/process photonNuclear
+/ldmx/biasing/xsec/threshold 2500
+/ldmx/biasing/xsec/factor 1000
 
 # Position the electron gun upstream of the target.  The initial energy
 # of the electron will be 4 GeV.
