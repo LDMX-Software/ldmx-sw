@@ -37,11 +37,11 @@ namespace ldmx {
         nLooseMipTracks_ = 0;
         nMediumMipTracks_ = 0;
         nTightMipTracks_ = 0;
-        recoilPx_ = 0;
-        recoilPy_ = 0;
-        recoilPz_ = 0;
-        recoilX_ = 0; 
-        recoilY_ = 0;
+        recoilPx_ = -9999;
+        recoilPy_ = -9999;
+        recoilPz_ = -9999;
+        recoilX_ = -9999; 
+        recoilY_ = -9999;
 
         ecalLayerEdepReadout_.clear();
         looseMipTracks_.clear();
