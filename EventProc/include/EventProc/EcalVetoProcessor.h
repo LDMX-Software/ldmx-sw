@@ -130,21 +130,6 @@ namespace ldmx {
             double showerRMS_{0};
             double bdtCutVal_{0};
 
-            /** px of recoil electron at the Ecal face. */
-            double recoilPx_{0};
-            
-            /** py of recoil electron at the Ecal face. */
-            double recoilPy_{0};
-            
-            /** py of recoil electron at the Ecal face. */
-            double recoilPz_{0};
-            
-            /** x position of recoil electron at the Ecal face. */
-            float recoilX_{0}; 
-            
-            /** y position of recoil electron at the Ecal face. */
-            float recoilY_{0}; 
-
             EcalVetoResult result_;
             EcalDetectorID detID_;
             bool verbose_{false};
