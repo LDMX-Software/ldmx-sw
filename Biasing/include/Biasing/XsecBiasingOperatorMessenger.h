@@ -57,6 +57,12 @@ namespace ldmx {
             G4UIcmdWithoutParameter* biasAllCmd_{nullptr}; 
 
             /** 
+             * Command dictating whether only the incident particle of 
+             * the given type should be biased. 
+             */
+            G4UIcmdWithoutParameter* biasIncidentCmd_{nullptr}; 
+
+            /** 
              * Command allowing a user to specify what particle type to 
              * bias.
              */
