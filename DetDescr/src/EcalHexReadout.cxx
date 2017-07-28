@@ -1,5 +1,6 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "TList.h"
+#include "TMath.h"
 
 namespace ldmx {
 
