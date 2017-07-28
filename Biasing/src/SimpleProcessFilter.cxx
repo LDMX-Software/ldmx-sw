@@ -62,12 +62,12 @@ namespace ldmx {
         // Get the kinetic energy of the particle.
         double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
 
-        std::cout << "[ SimpleProcessFilter ]: " << "\n" 
+        /*std::cout << "[ SimpleProcessFilter ]: " << "\n" 
                     << "\tTotal energy of " << particleName      << " ( PDG ID: " << pdgID
                     << " ) : " << incidentParticleEnergy       << "\n"
                     << "\tTrack ID: " << track->GetTrackID()     << "\n" 
                     << "\tStep #: " << track->GetCurrentStepNumber() << "\n"
-                    << "\tParticle currently in " << volumeName  << std::endl;
+                    << "\tParticle currently in " << volumeName  << std::endl;*/
         
         // Get the particles daughters.
         const G4TrackVector* secondaries = step->GetSecondary();
@@ -76,10 +76,10 @@ namespace ldmx {
         // processing the rest of the event. 
         if (secondaries->size() == 0) {
 
-            std::cout << "[ SimpleProcessFilter ]: "
+            /*std::cout << "[ SimpleProcessFilter ]: "
                       << particleName << " did not interact in " << volumeName_ 
                       << " --> Postponing tracks."
-                      << std::endl;
+                      << std::endl;*/
 
             track->SetTrackStatus(fKillTrackAndSecondaries);
             G4RunManager::GetRunManager()->AbortEvent();
@@ -89,10 +89,10 @@ namespace ldmx {
        
             G4String processName = secondaries->at(0)->GetCreatorProcess()->GetProcessName(); 
             
-            std::cout << "[ SimpleProcessFilter ]: "
+            /*std::cout << "[ SimpleProcessFilter ]: "
                       << particleName << " produced " << secondaries->size() 
                       << " secondaries via " << processName << " process." 
-                      << std::endl;
+                      << std::endl;*/
             if (processName.find("biasWrapper") != std::string::npos) { 
                 std::size_t pos = processName.find_first_of("(") + 1;
                 processName = processName.substr(pos, processName.size() - pos - 1); 
@@ -101,10 +101,10 @@ namespace ldmx {
             // Only record the process that is being biased
             if (!processName.empty() && (processName.compare(processName_) != 0)) {
 
-                std::cout << "[ SimpleProcessFilter ]: "
+                /*std::cout << "[ SimpleProcessFilter ]: "
                           << "Secondaries were not produced via " 
                           << processName_ << " --> Killing all tracks!" 
-                          << std::endl;
+                          << std::endl;*/
                 track->SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()->AbortEvent();
                 return;
