@@ -74,6 +74,9 @@ namespace ldmx {
             /** Set the PDG ID of the particle to which the filter will be applied to. */
             void setPdgID(int pdgID) { pdgID_ = pdgID; };
 
+            /** Set the process name to filter on. */
+            void setProcess(std::string processName) { processName_ = processName; }; 
+
             /** Set the volume to which the filter will be applied to. */
             void setVolume(std::string volumeName) { volumeName_ = volumeName; };
 
