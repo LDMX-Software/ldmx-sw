@@ -8,7 +8,6 @@
 #define DETDESCR_ECALHEXREADOUT_H_
 
 // STL
-#include <cmath>
 #include <map>
 #include <iostream>
 
