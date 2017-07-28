@@ -99,7 +99,7 @@ namespace ldmx {
             }  
 
             // Only record the process that is being biased
-            if (!processName.contains(processName_)) {
+            if (!processName.empty() && (processName.compare(processName_) != 0)) {
 
                 std::cout << "[ SimpleProcessFilter ]: "
                           << "Secondaries were not produced via " 
@@ -111,8 +111,8 @@ namespace ldmx {
             }
 
             std::cout << "[ SimpleProcessFilter ]: "
-                      << "Brem photon produced " << secondaries->size() 
-                      << " particle via " << processName << " process." 
+                      << particleName << " produced " << secondaries->size() 
+                      << " secondaries via " << processName << " process." 
                       << std::endl;
             BiasingMessenger::setEventWeight(track->GetWeight());
         }

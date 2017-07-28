@@ -65,6 +65,11 @@ namespace ldmx {
             G4UIcmdWithAString* pdgIDCmd_{nullptr};
 
             /** 
+             * Command allowing a user to specify the process to filter on. 
+             */
+            G4UIcmdWithAString* processCmd_{nullptr};
+
+            /** 
              * Command allowing a user to specify what volume the filter 
              * should be applied to.
              */
