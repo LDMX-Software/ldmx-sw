@@ -152,7 +152,7 @@
       <materialref ref="Vacuum"/>
       <solidref ref="world_box"/>                      
       <physvol>
-        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/ldmx-sw-install/data/detectors/ldmx-det-full-v3-fieldmap-magnet/tagger.gdml"/>
+        <file name="tagger.gdml"/>
         <positionref ref="tagger_pos"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -172,22 +172,22 @@
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/ldmx-sw-install/data/detectors/ldmx-det-full-v3-fieldmap-magnet/recoil.gdml"/>
+        <file name="recoil.gdml"/>
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/ldmx-sw-install/data/detectors/ldmx-det-full-v3-fieldmap-magnet/ecal.gdml"/>
+        <file name="ecal.gdml"/>
         <positionref ref="em_calorimeter_pos"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/ldmx-sw-install/data/detectors/ldmx-det-full-v3-fieldmap-magnet/hcal.gdml"/>
+        <file name="hcal.gdml"/>
         <positionref ref="hadron_calorimeter_pos"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/ldmx-sw-install/data/detectors/ldmx-det-full-v3-fieldmap-magnet/magnet.gdml"/>
+        <file name="magnet.gdml"/>
         <positionref ref="magnet_pos"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -310,7 +310,7 @@
       <auxiliary auxtype="A" auxvalue="1.0"/>
       <auxiliary auxtype="Style" auxvalue="wireframe"/>
       <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
     <auxiliary auxtype="VisAttributes" auxvalue="TaggerVis">
