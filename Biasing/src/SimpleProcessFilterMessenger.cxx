@@ -12,6 +12,11 @@ namespace ldmx {
     SimpleProcessFilterMessenger::SimpleProcessFilterMessenger(SimpleProcessFilter* filter) :
         UserActionPluginMessenger(filter), filter_(filter) {
 
+            processCmd_ = new G4UIcmdWithAString{std::string(getPath() + "process").c_str(), this};
+            processCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit,
+                                              G4ApplicationState::G4State_Idle);
+            processCmd_->SetGuidance("The process to filter on."); 
+
             parentIDCmd_ = new G4UIcmdWithAString{std::string(getPath() + "parent_id").c_str(), this};
             parentIDCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit,
                                               G4ApplicationState::G4State_Idle);
@@ -34,6 +39,7 @@ namespace ldmx {
     }
 
     SimpleProcessFilterMessenger::~SimpleProcessFilterMessenger() {
+        delete processCmd_; 
         delete parentIDCmd_;
         delete trackIDCmd_;
         delete pdgIDCmd_;
@@ -44,6 +50,8 @@ namespace ldmx {
         
         if (command == volumeCmd_) {
             filter_->setVolume(newValue);
+        } else if (command == processCmd_) { 
+            filter_->setProcess(newValue);   
         } else if (command == parentIDCmd_)  {
             filter_->setParentID(G4UIcommand::ConvertToInt(newValue));
         } else if (command == trackIDCmd_)  {
