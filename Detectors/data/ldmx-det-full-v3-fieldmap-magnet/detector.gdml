@@ -152,7 +152,7 @@
       <materialref ref="Vacuum"/>
       <solidref ref="world_box"/>                      
       <physvol>
-        <file name="tagger.gdml"/>
+        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/ldmx-sw-install/data/detectors/ldmx-det-full-v3-fieldmap-magnet/tagger.gdml"/>
         <positionref ref="tagger_pos"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -172,22 +172,22 @@
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <file name="recoil.gdml"/>
+        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/ldmx-sw-install/data/detectors/ldmx-det-full-v3-fieldmap-magnet/recoil.gdml"/>
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <file name="ecal.gdml"/>
+        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/ldmx-sw-install/data/detectors/ldmx-det-full-v3-fieldmap-magnet/ecal.gdml"/>
         <positionref ref="em_calorimeter_pos"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <file name="hcal.gdml"/>
+        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/ldmx-sw-install/data/detectors/ldmx-det-full-v3-fieldmap-magnet/hcal.gdml"/>
         <positionref ref="hadron_calorimeter_pos"/>
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-        <file name="magnet.gdml"/>
+        <file name="/uscms/home/awhitbe1/workArea/LDMX/ldmx-sw/ldmx-sw-install/data/detectors/ldmx-det-full-v3-fieldmap-magnet/magnet.gdml"/>
         <positionref ref="magnet_pos"/>
         <rotationref ref="identity"/>
       </physvol>
@@ -273,6 +273,16 @@
       <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
       <auxiliary auxtype="Visible" auxvalue="true"/>
     </auxiliary>    
+    <auxiliary auxtype="VisAttributes" auxvalue="MagnetVis">
+      <auxiliary auxtype="R" auxvalue="0.75"/>
+      <auxiliary auxtype="G" auxvalue="0.75"/>
+      <auxiliary auxtype="B" auxvalue="0.75"/>
+      <auxiliary auxtype="A" auxvalue="0.8"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="false"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
     <auxiliary auxtype="VisAttributes" auxvalue="TargetVis">
       <auxiliary auxtype="R" auxvalue="0.75"/>
       <auxiliary auxtype="G" auxvalue="0.75"/>
@@ -300,7 +310,7 @@
       <auxiliary auxtype="A" auxvalue="1.0"/>
       <auxiliary auxtype="Style" auxvalue="wireframe"/>
       <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="false"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
     <auxiliary auxtype="VisAttributes" auxvalue="TaggerVis">
