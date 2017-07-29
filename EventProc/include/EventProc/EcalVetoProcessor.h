@@ -13,6 +13,7 @@
 #include "TTree.h"
 
 // LDMX
+#include "DetDescr/EcalHexReadout.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "Event/EcalVetoResult.h"
 #include "Framework/EventProcessor.h"
@@ -75,6 +76,27 @@ namespace ldmx {
             void produce(Event& event);
 
         private:
+
+            /** Wrappers for ecalHexReadout functions. See hitToPair().
+             *  Necessary to easily combine cellID with moduleID to get unique ID of
+             *  hit in layer. In future: combine celID+moduleID+layerID.
+             */
+            bool isInShowerInnerRing(int centroidID, int probeID){
+                return hexReadout_->isNN(centroidID, probeID);
+            }
+            bool isInShowerOuterRing(int centroidID, int probeID){
+                return hexReadout_->isNNN(centroidID, probeID);
+            }
+            XYCoords getCellCentroidXYPair(int centroidID){
+                return hexReadout_->getCellCenterAbsolute(centroidID);
+            }
+            std::vector<int> getInnerRingCellIds(int cellModuleID){
+                return hexReadout_->getNN(cellModuleID);
+            }
+            std::vector<int> getOuterRingCellIds(int cellModuleID){
+                return hexReadout_->getNNN(cellModuleID);
+            }
+
 
             LayerCellPair hitToPair(EcalHit* hit);
 

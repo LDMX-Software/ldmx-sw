@@ -198,7 +198,7 @@
   
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v2-fieldmap-magnet"/>
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v3-fieldmap-magnet"/>
       <auxiliary auxtype="Author" auxvalue="Omar Moreno, Andrew Whitbeck"/>
       <auxiliary auxtype="Description" auxvalue="The v3 detector with a full 3D field map and magnet material."/>
     </auxiliary>
@@ -273,6 +273,16 @@
       <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
       <auxiliary auxtype="Visible" auxvalue="true"/>
     </auxiliary>    
+    <auxiliary auxtype="VisAttributes" auxvalue="MagnetVis">
+      <auxiliary auxtype="R" auxvalue="0.75"/>
+      <auxiliary auxtype="G" auxvalue="0.75"/>
+      <auxiliary auxtype="B" auxvalue="0.75"/>
+      <auxiliary auxtype="A" auxvalue="0.8"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="false"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
     <auxiliary auxtype="VisAttributes" auxvalue="TargetVis">
       <auxiliary auxtype="R" auxvalue="0.75"/>
       <auxiliary auxtype="G" auxvalue="0.75"/>
