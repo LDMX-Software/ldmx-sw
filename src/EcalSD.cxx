@@ -58,8 +58,9 @@ namespace ldmx {
 	int layerNumber;
 	layerNumber = int(cpynum/7);
 	int module_position = cpynum%7;
-	
-	int cellID = hitMap_->getCellId(hitPosition[0], hitPosition[1]);
+
+        int cellModuleID = hitMap_->getCellModuleID(hitPosition[0], hitPosition[1]);
+	int cellID = (hitMap_->separateID(cellModuleID)).first;
         detID_->setFieldValue(1, layerNumber);
         detID_->setFieldValue(2, module_position);
 	detID_->setFieldValue(3, cellID);
