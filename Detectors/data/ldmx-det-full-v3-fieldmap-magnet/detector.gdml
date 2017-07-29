@@ -273,6 +273,16 @@
       <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
       <auxiliary auxtype="Visible" auxvalue="true"/>
     </auxiliary>    
+    <auxiliary auxtype="VisAttributes" auxvalue="MagnetVis">
+      <auxiliary auxtype="R" auxvalue="0.75"/>
+      <auxiliary auxtype="G" auxvalue="0.75"/>
+      <auxiliary auxtype="B" auxvalue="0.75"/>
+      <auxiliary auxtype="A" auxvalue="0.8"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="false"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
     <auxiliary auxtype="VisAttributes" auxvalue="TargetVis">
       <auxiliary auxtype="R" auxvalue="0.75"/>
       <auxiliary auxtype="G" auxvalue="0.75"/>
