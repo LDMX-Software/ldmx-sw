@@ -96,7 +96,7 @@ namespace ldmx {
                 if(bin < 0) {
                     TString error_msg = TString("[EcalHexReadout::getCellIDRelative] Relative coordinates are outside module hexagon!") + 
                                         TString::Format(" Is the gap used by EcalHexReadout (%.2f mm) and the minimum module radius (%.2f mm)",gap_,moduler_) +
-                                        TString(" the same as hexagon_gap and Hex_radius in ecal.gdml?");
+                                        TString::Format(" the same as hexagon_gap and Hex_radius in ecal.gdml? Received (x,y) = (%.2f,%.2f).",x,y);
                     throw std::invalid_argument(error_msg.Data());
                 }
                 return bin;
