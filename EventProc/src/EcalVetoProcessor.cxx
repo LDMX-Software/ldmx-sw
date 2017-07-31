@@ -397,7 +397,7 @@ namespace ldmx {
                     for (auto matchCell : cellMapIso_[seedCellPair.first + 1]) {
                         matchCellDep = matchCell.second;
                         LayerCellPair tempMatchCellPair = std::make_pair(seedCellPair.first + 1, matchCell.first);
-                        if (tempMatchCellPair.second == seedCellPair.second || isInShowerInnerRing(tempMatchCellPair.first, seedCellPair.second)) {
+                        if (tempMatchCellPair.second == seedCellPair.second || isInShowerInnerRing(tempMatchCellPair.second, seedCellPair.second)) {
                             matchCellPair = tempMatchCellPair;
                             break;
                         }
