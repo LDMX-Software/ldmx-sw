@@ -21,8 +21,6 @@ namespace ldmx {
 
     std::string BiasingMessenger::volume_{"target"};
 
-    double BiasingMessenger::xsecTrans_{1.0};
-
     BiasingMessenger::BiasingMessenger() { 
 
         biasingDir_->SetGuidance("LDMX physics biasing commands.");
@@ -47,7 +45,6 @@ namespace ldmx {
         else if (command == processCmd_) process_ = newValues;
         else if (command == thresholdCmd_)threshold_ = G4UIcommand::ConvertToDouble(newValues);
         else if (command == volumeCmd_) volume_ = newValues;
-        else if (command == xsecTransCmd_) xsecTrans_ = G4UIcommand::ConvertToDouble(newValues);
     }
 
 }
