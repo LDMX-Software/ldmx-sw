@@ -8,7 +8,6 @@
 #include "TPython.h"
 
 // LDMX
-#include "DetDescr/EcalHexReadout.h"
 #include "Event/EcalHit.h"
 #include "Event/EventConstants.h"
 
@@ -199,8 +198,8 @@ namespace ldmx {
                 ecalLayerTime_[hit_pair.first] += (hit->getEnergy()) * hit->getTime();
             }
             //Check Outer
-            if (!(hexReadout_->isInShowerInnerRing(globalCentroid, hit_pair.second))
-                    && !(hexReadout_->isInShowerOuterRing(globalCentroid, hit_pair.second))
+            if (!(isInShowerInnerRing(globalCentroid, hit_pair.second))
+                    && !(isInShowerOuterRing(globalCentroid, hit_pair.second))
                     && !(hit_pair.second == globalCentroid)) {
 
                 ecalLayerOuterRaw_[hit_pair.first] += hit->getEnergy();
@@ -317,7 +316,9 @@ namespace ldmx {
         detID_.unpack();
         int layer = detID_.getFieldValue("layer");
         int cellid = detID_.getFieldValue("cell");
-        return (std::make_pair(layer, cellid));
+        int moduleid = detID_.getFieldValue("module_position");
+        int combinedid = cellid*10+moduleid;
+        return (std::make_pair(layer, combinedid));
     }
 
     /* Function to calculate the energy weighted shower centroid */
@@ -331,7 +332,7 @@ namespace ldmx {
             EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
             LayerCellPair hit_pair = hitToPair(hit);
             CellEnergyPair cell_energy_pair = std::make_pair(hit_pair.second, hit->getEnergy());
-            XYCoords centroidCoords = hexReadout_->getCellCentroidXYPair(hit_pair.second);
+            XYCoords centroidCoords = getCellCentroidXYPair(hit_pair.second);
             wgtCentroidCoords.first = wgtCentroidCoords.first + centroidCoords.first * cell_energy_pair.second;
             wgtCentroidCoords.second = wgtCentroidCoords.second + centroidCoords.second * cell_energy_pair.second;
             sumEdep += cell_energy_pair.second;
@@ -343,7 +344,7 @@ namespace ldmx {
         for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
             EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
             LayerCellPair hit_pair = hitToPair(hit);
-            XYCoords centroidCoords = hexReadout_->getCellCentroidXYPair(hit_pair.second);
+            XYCoords centroidCoords = getCellCentroidXYPair(hit_pair.second);
 
             float deltaR = pow(pow((centroidCoords.first - wgtCentroidCoords.first), 2) + pow((centroidCoords.second - wgtCentroidCoords.second), 2), .5);
             showerRMS += deltaR * hit->getEnergy();
@@ -385,13 +386,13 @@ namespace ldmx {
                     continue;
 
                 //Skip hits that are on centroid inner ring
-                if (hexReadout_->isInShowerInnerRing(globalCentroid, hit_pair.second)) {
+                if (isInShowerInnerRing(globalCentroid, hit_pair.second)) {
                     continue;
                 }
             }
 
             //Skip hits that have a readout neighbor
-            std::vector<int> cellNbrIds = hexReadout_->getInnerRingCellIds(hit_pair.second);
+            std::vector<int> cellNbrIds = getInnerRingCellIds(hit_pair.second);
 
             //Get neighboring cell id's and try to look them up in the full cell map (constant speed algo.)
             for (int k = 0; k < 6; k++) {
@@ -438,7 +439,7 @@ namespace ldmx {
                     for (auto matchCell : cellMapIso_[seedCellPair.first + 1]) {
                         matchCellDep = matchCell.second;
                         LayerCellPair tempMatchCellPair = std::make_pair(seedCellPair.first + 1, matchCell.first);
-                        if (tempMatchCellPair.second == seedCellPair.second || hexReadout_->isInShowerInnerRing(tempMatchCellPair.first, seedCellPair.second)) {
+                        if (tempMatchCellPair.second == seedCellPair.second || isInShowerInnerRing(tempMatchCellPair.second, seedCellPair.second)) {
                             matchCellPair = tempMatchCellPair;
                             break;
                         }
@@ -490,7 +491,7 @@ namespace ldmx {
                 int nextStartId = trackTuple[jTrack][1];
                 if (prevEndLayer + prevLen != nextStartLayer - 1)
                     break;
-                if (hexReadout_->isInShowerOuterRing(prevEndId, nextStartId)) {
+                if (isInShowerOuterRing(prevEndId, nextStartId)) {
                     trackVector[iTrack].second = trackVector[iTrack].second + trackVector[jTrack].second;
                     trackVector[iTrack].first = trackVector[iTrack].first + trackVector[jTrack].first;
                     trackTuple[iTrack][2] = trackTuple[jTrack][2];

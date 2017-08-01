@@ -10343,6 +10343,7 @@
                 <rotationref ref="identity" />
             </physvol>
             <auxiliary auxtype="Region" auxvalue="MagnetRegion"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="MagnetVis"/>
         </volume>
     </structure>
     <setup name="Default" version="1.0" >

@@ -271,7 +271,10 @@ namespace ldmx {
             detID.setRawValue(hit->getID());
             detID.unpack();
             int layer = detID.getFieldValue("layer");
-            std::pair<float, float> xyPos = hex.getCellCentroidXYPair(detID.getFieldValue("cell"));
+            int cellID = detID.getFieldValue("cell");
+            int moduleID = detID.getFieldValue("module_position");
+            int cellModuleID = hex.combineID(cellID,moduleID);
+            std::pair<double, double> xyPos = hex.getCellCenterAbsolute(cellModuleID);
 
             ecalHitSet->AddBox(xyPos.first, xyPos.second, layerZPos[layer-1]+ECAL_Z_OFFSET, 3, 3, 3);
             ecalHitSet->DigitValue(energy);
