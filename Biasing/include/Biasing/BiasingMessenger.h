@@ -60,9 +60,6 @@ namespace ldmx {
             /** Get the volume to which the biasing operation is attached to. */
             static std::string getVolume() { return volume_; };
 
-            /** Get the factor by which the xsec is being multiplied by. */
-            static double getXsecTrans() { return xsecTrans_; }; 
-
         private: 
 
             /** Directory containing all biasing commands. */
@@ -83,9 +80,6 @@ namespace ldmx {
             /** Command allowing a user to specify what volume the biasing should be attached to. */
             G4UIcmdWithAString* volumeCmd_{new G4UIcmdWithAString{"/ldmx/biasing/volume", this}};
 
-            /** Command allowing a user to specify by what factor the xsec of the process will be increased. */
-            G4UIcmdWithAString* xsecTransCmd_{new G4UIcmdWithAString{"/ldmx/biasing/xsec", this}};
-
             /** Flag indicating if biasing is enabled */
             static bool biasingEnabled_;
 
@@ -103,9 +97,6 @@ namespace ldmx {
 
             /** Volume to attach biasing to. */
             static std::string volume_;
-
-            /** Factor to multiple the xsec by. */
-            static double xsecTrans_;
 
     }; // BiasingMessenger
 }
