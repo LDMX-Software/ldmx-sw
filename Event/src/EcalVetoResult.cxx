@@ -37,6 +37,11 @@ namespace ldmx {
         nLooseMipTracks_ = 0;
         nMediumMipTracks_ = 0;
         nTightMipTracks_ = 0;
+        recoilPx_ = -9999;
+        recoilPy_ = -9999;
+        recoilPz_ = -9999;
+        recoilX_ = -9999; 
+        recoilY_ = -9999;
 
         ecalLayerEdepReadout_.clear();
         looseMipTracks_.clear();
@@ -68,13 +73,33 @@ namespace ldmx {
         result.nLooseMipTracks_ = nLooseMipTracks_;
         result.nMediumMipTracks_ = nMediumMipTracks_;
         result.nTightMipTracks_ = nTightMipTracks_;
+        result.recoilPx_ = recoilPx_;
+        result.recoilPy_ = recoilPy_;
+        result.recoilPz_ = recoilPz_;
+        result.recoilX_ = recoilX_; 
+        result.recoilY_ = recoilY_;
     }
 
-    void EcalVetoResult::setVariables(int nReadoutHits, int nLooseIsoHits, int nTightIsoHits, float summedDet,
-            int summedOuter, float backSummedDet, float summedLooseIso, float maxLooseIsoDep, float summedTightIso,
-            float maxTightIsoDep, float maxCellDep, float showerRMS, std::vector<float> EcalLayerEdepReadout,
-            std::vector<std::pair<int, float>> looseMipTracks, std::vector<std::pair<int, float>> mediumMipTracks,
-            std::vector<std::pair<int, float>> tightMipTracks) {
+    void EcalVetoResult::setVariables(
+            int nReadoutHits, 
+            int nLooseIsoHits, 
+            int nTightIsoHits, 
+            float summedDet, 
+            int summedOuter, 
+            float backSummedDet, 
+            float summedLooseIso, 
+            float maxLooseIsoDep,
+            float summedTightIso, 
+            float maxTightIsoDep,
+            float maxCellDep, 
+            float showerRMS, 
+            std::vector<float> EcalLayerEdepReadout, 
+            std::vector<std::pair<int, float>> looseMipTracks,
+            std::vector<std::pair<int, float>> mediumMipTracks, 
+            std::vector<std::pair<int, float>> tightMipTracks, 
+            std::vector<double> recoilP, 
+            std::vector<float> recoilPos
+    ) { 
 
         nReadoutHits_ = nReadoutHits;
         nLooseIsoHits_ = nLooseIsoHits;
@@ -97,6 +122,15 @@ namespace ldmx {
         nLooseMipTracks_ = looseMipTracks.size();
         nMediumMipTracks_ = mediumMipTracks.size();
         nTightMipTracks_ = tightMipTracks.size();
+
+        if (recoilP.empty()) return; 
+        recoilPx_ = recoilP[0]; 
+        recoilPy_ = recoilP[1]; 
+        recoilPz_ = recoilP[2];
+
+        recoilX_ = recoilPos[0]; 
+        recoilY_ = recoilPos[1]; 
+
     }
 
     void EcalVetoResult::Print(Option_t *option) const {
