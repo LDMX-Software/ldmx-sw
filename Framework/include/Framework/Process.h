@@ -111,7 +111,6 @@ namespace ldmx {
              */
             void run();
 
-
             /**
              * Request that the processing finish with this event
              */ 

@@ -123,10 +123,12 @@ namespace ldmx {
                         }
                         n_events_processed++;
                     }
+
                     if (eventLimit_ > 0 && n_events_processed == eventLimit_) {
                         std::cout << "[ Process ] : Reached event limit of " << eventLimit_ << " events\n";
                     }
-		    if (eventLimit_ == 0 && n_events_processed > eventLimit_) {
+
+                    if (eventLimit_ == 0 && n_events_processed > eventLimit_) {
                         std::cout << "[ Process ] : Processing interrupted\n";
                     }
 
