@@ -10,6 +10,7 @@
 #include "SimApplication/G4TrackerHit.h"
 #include "SimApplication/RunManager.h"
 #include "SimApplication/TrackerSD.h"
+#include "SimApplication/ScoringPlaneSD.h"
 
 // Geant4
 #include "G4SDManager.hh"
@@ -300,6 +301,11 @@ namespace ldmx {
                 outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_TRACKER_HIT.c_str(), 50);
                 if (m_verbose > 1) {
                     std::cout << "[ RootPersistencyManager ] - Created SimTrackerHit HC " << hcName << std::endl;
+                }
+            } else if (dynamic_cast<ScoringPlaneSD*>(sd)) { 
+                outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_TRACKER_HIT.c_str(), 500);
+                if (m_verbose > 1) {
+                    std::cout << "[ RootPersistencyManager ] - Created ScoringPlaneHit HC " << hcName << std::endl;
                 }
             }
         }
