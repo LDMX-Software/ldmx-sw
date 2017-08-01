@@ -15,8 +15,7 @@ using namespace ldmx;
 
 static Process* p { 0 };
 
-static void softFinish (int sig, siginfo_t *siginfo, void *context)
-{
+static void softFinish (int sig, siginfo_t *siginfo, void *context) {
   if (p) p->requestFinish();
 }
  
