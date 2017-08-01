@@ -2124,7 +2124,7 @@
             <position name="CFMix_d_ring3_physvol1_pos" unit="mm" x="sin(pi/3*(2))*(2.0*Hex_radius+hexagon_gap)" y="cos(pi/3*(2))*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz"/>
           </physvol>
 
-          <physvol name="Si_d_ring3_physvol1" copynumber="(d-1)*24+2*ecal_A_layers*7+2*ecal_B_layers*7+2*ecal_C_layers*7+17">
+          <physvol name="Si_d_ring3_physvol1" copynumber="(d-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+2*ecal_C_layers*7+17">
             <volumeref ref="Si_volume"/>
             <position name="Si_d_ring3_physvol1_pos" unit="mm" x="sin(pi/3*(2))*(2.0*Hex_radius+hexagon_gap)" y="cos(pi/3*(2))*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMix_dz"/>
           </physvol>
