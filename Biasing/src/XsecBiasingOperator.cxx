@@ -11,7 +11,8 @@
 namespace ldmx { 
 
     XsecBiasingOperator::XsecBiasingOperator(std::string name) :
-        G4VBiasingOperator(name) { 
+        G4VBiasingOperator(name) {
+           messenger_ = new XsecBiasingOperatorMessenger(this);  
     }
 
     XsecBiasingOperator::~XsecBiasingOperator() {
@@ -20,13 +21,22 @@ namespace ldmx {
     void XsecBiasingOperator::StartRun() { 
 
         G4ProcessManager* processManager{nullptr}; 
-        if (BiasingMessenger::getParticleType() == "gamma") { 
+        if (particleType_.compare("gamma") == 0) {
+            std::cout << "[ XsecBiasingOperator ]: "
+                      << "Applying biasing to particle type " 
+                      << particleType_ 
+                      << std::endl; 
             processManager = G4Gamma::GammaDefinition()->GetProcessManager();
+        } else if (particleType_.compare("e-") == 0) { 
+            std::cout << "[ XsecBiasingOperator ]: "
+                      << "Applying biasing to particle type " 
+                      << particleType_ 
+                      << std::endl; 
+            processManager = G4Electron::ElectronDefinition()->GetProcessManager();
         } else { 
             // Throw an exception
         }
 
-        process_ = BiasingMessenger::getProcess(); 
         /*std::cout << "[ XsecBiasingOperator ]: "<< "Process: " << process_ << std::endl;*/ 
         const G4BiasingProcessSharedData* sharedData = G4BiasingProcessInterface::GetSharedData(processManager);
         if (sharedData) {
@@ -38,8 +48,6 @@ namespace ldmx {
                 } 
             }
         }
-
-        xsecTrans_ = BiasingMessenger::getXsecTrans();
     }
 
     G4VBiasingOperation* XsecBiasingOperator::ProposeOccurenceBiasingOperation(
@@ -55,10 +63,14 @@ namespace ldmx {
                     << "Parent ID: " << track->GetParentID() 
                     << " Created within " << track->GetLogicalVolumeAtVertex()->GetName() 
                     << std::endl;*/
+        
+        if (biasIncident_ && (track->GetParentID() != 0)) {
+            return 0;
+        } else if (!biasAll_ && !biasIncident_ && track->GetParentID() != 1) {
+            return 0;
+        }
 
-        if (track->GetParentID() != 1) return 0;
-
-        if (track->GetKineticEnergy() < BiasingMessenger::getThreshold()) return 0; 
+        if (track->GetKineticEnergy() < threshold_) return 0; 
 
         G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
         /*std::cout << "[ XsecBiasingOperator ]: "
@@ -72,12 +84,11 @@ namespace ldmx {
 
         /*std::cout << "[ XsecBiasingOperator ]: "
                     << "Cross-section x transformation factor: " 
-                    << xsec*xsecTrans_ << std::endl;*/
+                    << xsec*xsecFactor_ << std::endl;*/
 
-        xsecOperation->SetBiasedCrossSection(xsec*xsecTrans_);
+        xsecOperation->SetBiasedCrossSection(xsec*xsecFactor_);
         xsecOperation->Sample();
 
         return xsecOperation;
     }
-
 }
