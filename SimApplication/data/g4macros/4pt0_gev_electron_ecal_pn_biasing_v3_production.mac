@@ -61,5 +61,10 @@
 # Write the events that pass the filter to pn_output.root.
 /ldmx/persistency/root/verbose 0
 /ldmx/persistency/root/file v3_production_test.root
+/ldmx/persistency/root/dropCol MagnetScoringPlaneHits
+/ldmx/persistency/root/dropCol TrackerScoringPlaneHits
+/ldmx/persistency/root/dropCol HcalScoringPlaneHits
+/ldmx/persistency/root/dropCol TargetScoringPlaneHits
+
 
 /run/beamOn 10000
