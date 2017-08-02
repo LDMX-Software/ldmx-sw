@@ -10,6 +10,7 @@
 #include "SimApplication/G4TrackerHit.h"
 #include "SimApplication/RunManager.h"
 #include "SimApplication/TrackerSD.h"
+#include "SimApplication/ScoringPlaneSD.h"
 
 // Geant4
 #include "G4SDManager.hh"
@@ -184,6 +185,14 @@ namespace ldmx {
             G4VHitsCollection* hc = hce->GetHC(iColl);
             std::string collName = hc->GetName();
 
+            if (std::find(dropCollectionNames_.begin(), dropCollectionNames_.end(), collName) 
+                    != dropCollectionNames_.end()) {
+                if (m_verbose > 1) {  
+                    std::cout << "[ RootPersistencyManager ]: Dropping Collection: " << collName << std::endl;
+                }
+                continue;
+            }
+
             // Get the target output collection.
             TClonesArray* outputHitsColl = outputHitsCollections_[collName];
 
@@ -294,12 +303,17 @@ namespace ldmx {
             if (dynamic_cast<CalorimeterSD*>(sd)) {
                 outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_CALORIMETER_HIT.c_str(), 500);
                 if (m_verbose > 1) {
-                    std::cout << "[ RootPersistencyManager ] - Created SimCalorimeterHit HC " << hcName << std::endl;
+                    std::cout << "[ RootPersistencyManager ]: Created SimCalorimeterHit HC " << hcName << std::endl;
                 }
             } else if (dynamic_cast<TrackerSD*>(sd)) {
                 outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_TRACKER_HIT.c_str(), 50);
                 if (m_verbose > 1) {
-                    std::cout << "[ RootPersistencyManager ] - Created SimTrackerHit HC " << hcName << std::endl;
+                    std::cout << "[ RootPersistencyManager ]: Created SimTrackerHit HC " << hcName << std::endl;
+                }
+            } else if (dynamic_cast<ScoringPlaneSD*>(sd)) { 
+                outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_TRACKER_HIT.c_str(), 500);
+                if (m_verbose > 1) {
+                    std::cout << "[ RootPersistencyManager ]: Created ScoringPlaneHit HC " << hcName << std::endl;
                 }
             }
         }

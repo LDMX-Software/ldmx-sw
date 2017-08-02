@@ -39,9 +39,12 @@
             
     <!-- position of calorimeter mother -->
     <constant name="em_calorimeter_thickness" value="321.0*mm"/>
-    <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2."/>
     <constant name="hadron_calorimeter_thickness" value="3326.0*mm"/>
     <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2."/>
+    <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2."/>
+    
+    <!-- magnet position -->
+    <constant name="magnet_pos_z" value="-40*cm" />
 
     <!-- define all subdetector positions using above Z values -->
     <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
@@ -51,6 +54,8 @@
     <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
     <position name="em_calorimeter_pos" x="0.0" y="0.0" z="em_calorimeter_pos_z"/>
     <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="hadron_calorimeter_pos_z"/>
+    <position name="magnet_pos" x="0.0" y="0.0" z="magnet_pos_z" />
+
   </define>
 
   <materials>
@@ -181,6 +186,11 @@
         <positionref ref="hadron_calorimeter_pos"/>
         <rotationref ref="identity"/>
       </physvol>
+      <physvol>
+        <file name="magnet.gdml"/>
+        <positionref ref="magnet_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
     </volume>
   </structure>
   
@@ -188,9 +198,9 @@
   
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v3-fieldmap"/>
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v3-fieldmap-magnet"/>
       <auxiliary auxtype="Author" auxvalue="Omar Moreno, Andrew Whitbeck"/>
-      <auxiliary auxtype="Description" auxvalue="The v3 detector with a full 3D field map"/>
+      <auxiliary auxtype="Description" auxvalue="The v3 detector with a full 3D field map and magnet material."/>
     </auxiliary>
     
     <!-- define sensitive detectors -->
@@ -246,7 +256,10 @@
     <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">
       <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
     </auxiliary>   
-    
+    <auxiliary auxtype="Region" auxvalue="MagnetRegion">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
+    </auxiliary>   
+
     <!-- define vis attributes -->
     <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau">
       <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
@@ -260,6 +273,16 @@
       <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
       <auxiliary auxtype="Visible" auxvalue="true"/>
     </auxiliary>    
+    <auxiliary auxtype="VisAttributes" auxvalue="MagnetVis">
+      <auxiliary auxtype="R" auxvalue="0.75"/>
+      <auxiliary auxtype="G" auxvalue="0.75"/>
+      <auxiliary auxtype="B" auxvalue="0.75"/>
+      <auxiliary auxtype="A" auxvalue="0.8"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="false"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
     <auxiliary auxtype="VisAttributes" auxvalue="TargetVis">
       <auxiliary auxtype="R" auxvalue="0.75"/>
       <auxiliary auxtype="G" auxvalue="0.75"/>
