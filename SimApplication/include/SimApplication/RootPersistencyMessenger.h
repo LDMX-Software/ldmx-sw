@@ -44,27 +44,38 @@ namespace ldmx {
 
         private:
 
-            /**
-             * ROOT persistency macro directory.
-             */
-            G4UIdirectory* rootDir_;
+            /** ROOT persistency macro directory. */
+            G4UIdirectory* rootDir_{nullptr};
 
-            /*
-             * Command definitions.
-             */
-            G4UIcommand* rootFileCmd_;
-            G4UIcommand* verboseCmd_;
-            G4UIcommand* disableCmd_;
-            G4UIcommand* enableCmd_;
-            G4UIcommand* comprCmd_;
-            //G4UIcommand* modeCmd_;
-            G4UIcmdWithABool* hitContribsCmd_;
-            G4UIcmdWithABool* compressContribsCmd_;
+            /** Command used to specify the name of the output file. */
+            G4UIcommand* rootFileCmd_{nullptr};
 
-            /**
-             * Pointer to ROOT persistency manager.
+            /** Command used to set the verbosity level. */
+            G4UIcommand* verboseCmd_{nullptr};
+
+            /** Command to disable the ROOT IO. */
+            G4UIcommand* disableCmd_{nullptr};
+
+            /** Command used to re-enable the ROOT IO after being disabled. */
+            G4UIcommand* enableCmd_{nullptr};
+
+            /** Command used to specify the ROOT file compression level. */
+            G4UIcommand* comprCmd_{nullptr};
+            
+            /** 
+             * Command used to enable/disable saving of the hit contributions
+             * to an Ecal hit.
              */
-            RootPersistencyManager* rootIO_;
+            G4UIcmdWithABool* hitContribsCmd_{nullptr};
+
+            /** Command used to compress the Ecal hit contributions. */
+            G4UIcmdWithABool* compressContribsCmd_{nullptr};
+
+            /** Command allowing a user to specify a collection name to drop. */
+            G4UIcmdWithAString* dropCmd_{nullptr}; 
+
+            /** Pointer to ROOT persistency manager. */
+            RootPersistencyManager* rootIO_{nullptr};
     };
 
 }
