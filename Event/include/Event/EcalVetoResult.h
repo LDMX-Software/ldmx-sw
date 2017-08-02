@@ -166,7 +166,7 @@ namespace ldmx {
             /** Return the x position of the recoil at the Ecal face. */
             double getRecoilX() { return recoilX_; }; 
 
-            /** Return the x position of the recoil at the Ecal face. */
+            /** Return the y position of the recoil at the Ecal face. */
             double getRecoilY() { return recoilY_; };
 
         private:
