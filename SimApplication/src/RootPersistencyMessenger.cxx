@@ -37,14 +37,6 @@ namespace ldmx {
         comprCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
         comprCmd_->SetGuidance("Set the output file compression level (1-9).");
 
-        /*
-         modeCmd_ = new G4UIcommand("/ldmx/persistency/root/mode", this);
-         G4UIparameter* mode = new G4UIparameter("mode", 's', false);
-         modeCmd_->SetParameter(mode);
-         modeCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
-         modeCmd_->SetGuidance("Set the file mode: new update recreate");
-         */
-
         hitContribsCmd_ = new G4UIcmdWithABool("/ldmx/persistency/root/enableHitContribs", this);
         G4UIparameter* enable = new G4UIparameter("enable", 'b', true);
         hitContribsCmd_->SetParameter(enable);
@@ -56,6 +48,10 @@ namespace ldmx {
         compressContribsCmd_->SetParameter(compress);
         compressContribsCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
         compressContribsCmd_->SetGuidance("Compress hit contributions by matching SimParticle and PDG code");
+    
+        dropCmd_ = new G4UIcmdWithAString{"/ldmx/persistency/root/dropCol", this}; 
+        dropCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
+        dropCmd_->SetGuidance("Drop the hits associated with the specified collection."); 
     }
 
     RootPersistencyMessenger::~RootPersistencyMessenger() {
@@ -66,6 +62,7 @@ namespace ldmx {
         delete comprCmd_;
         //delete modeCmd_;
         delete rootDir_;
+        delete dropCmd_; 
     }
 
     void RootPersistencyMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
@@ -94,6 +91,8 @@ namespace ldmx {
                 rootIO_->setEnableHitContribs(hitContribsCmd_->GetNewBoolValue(newValues.c_str()));
             } else if (command == compressContribsCmd_) {
                 rootIO_->setCompressHitContribs(compressContribsCmd_->GetNewBoolValue(newValues.c_str()));
+            } else if (command == dropCmd_) { 
+                rootIO_->dropCollection(newValues); 
             }
         } else {
             // Re-enable ROOT IO.
