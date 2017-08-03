@@ -159,6 +159,16 @@ namespace ldmx {
             void setDiscValue(float discValue) {
                 discValue_ = discValue;
             }
+
+            /** Return the momentum of the recoil at the Ecal face. */
+            std::vector<double> getRecoilMomentum() { return { recoilPx_, recoilPy_, recoilPz_ }; }; 
+
+            /** Return the x position of the recoil at the Ecal face. */
+            double getRecoilX() { return recoilX_; }; 
+
+            /** Return the y position of the recoil at the Ecal face. */
+            double getRecoilY() { return recoilY_; };
+
         private:
 
             /** Flag indicating whether the event is vetoed by the Ecal. */
