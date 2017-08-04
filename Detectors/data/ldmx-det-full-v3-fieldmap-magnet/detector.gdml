@@ -294,9 +294,9 @@
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
     <auxiliary auxtype="VisAttributes" auxvalue="EcalVis">
-      <auxiliary auxtype="R" auxvalue="0.6"/>
-      <auxiliary auxtype="G" auxvalue="0.6"/>
-      <auxiliary auxtype="B" auxvalue="0.6"/>
+      <auxiliary auxtype="R" auxvalue="1.0"/>
+      <auxiliary auxtype="G" auxvalue="0.0"/>
+      <auxiliary auxtype="B" auxvalue="0.0"/>
       <auxiliary auxtype="A" auxvalue="1.0"/>
       <auxiliary auxtype="Style" auxvalue="wireframe"/>
       <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
