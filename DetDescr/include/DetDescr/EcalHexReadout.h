@@ -13,6 +13,7 @@
 
 // STL
 #include <map>
+#include <iostream>
 
 // ROOT
 #include "TH2Poly.h"
@@ -92,6 +93,7 @@ namespace ldmx {
              * @param y Any Y position [mm]
              */
             int getCellIDRelative(double x, double y) const {
+                if(!isInside(x/moduleR_, y/moduleR_)) return -1; // protection for (REAL) cases where ecalMap_ may have parts of bins outside technical geometry
                 int bin = ecalMap_->FindBin(x,y)-1; // NB FindBin indices starts from 1, our maps start from 0
                 if(bin < 0) {
                     TString error_msg = TString("[EcalHexReadout::getCellIDRelative] Relative coordinates are outside module hexagon!") + 
@@ -114,6 +116,10 @@ namespace ldmx {
                 double relX = x - getModuleCenter(moduleID).first;
                 double relY = y - getModuleCenter(moduleID).second;
                 int cellID = getCellIDRelative(relX,relY);
+                if(cellID < 0){
+                    std::cout << TString::Format("[EcalHexReadout::getCellModuleID] Someone gave me an out-of-bounds point (%f,%f)",x,y) << std::endl;
+                    return -1;
+                }
                 int cellModuleID = combineID(cellID,moduleID);
                 return cellModuleID;
             }

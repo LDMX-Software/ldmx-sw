@@ -59,7 +59,13 @@ namespace ldmx {
 	layerNumber = int(cpynum/7);
 	int module_position = cpynum%7;
 
-        int cellModuleID = hitMap_->getCellModuleID(hitPosition[0], hitPosition[1]);
+        int cellModuleID = hitMap_->getCellModuleID(hitPosition.x(), hitPosition.y());
+        if(cellModuleID < 0) {
+          //hitPosition is outside technical geometry. attempt prestep position.
+          G4ThreeVector prePosition = aStep->GetPreStepPoint()->GetPosition();
+          cellModuleID = hitMap_->getCellModuleID(prePosition.x(), prePosition.y());
+          if(cellModuleID < 0) { delete hit; return true; } //abort
+        }
 	int cellID = (hitMap_->separateID(cellModuleID)).first;
         detID_->setFieldValue(1, layerNumber);
         detID_->setFieldValue(2, module_position);
