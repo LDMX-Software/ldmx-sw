@@ -1,5 +1,6 @@
 # declare SimApplication module
 module(
   NAME SimCore
-  EXTERNAL_DEPENDENCIES Geant4
+  DEPENDENCIES Event
+  EXTERNAL_DEPENDENCIES Geant4 ROOT
 )
