@@ -79,11 +79,6 @@ namespace ldmx {
         public:
 
             /**
-             * Map of detector names to their physical resources on disk.
-             */
-            typedef std::map<std::string, std::string> DetectorAliasMap;
-
-            /**
              * Class destructor.
              *
              * @note
@@ -186,6 +181,14 @@ namespace ldmx {
              */
             DetectorElement* locateDetectorElement(std::vector<double>& globalPosition);
 
+            /**
+             * Get the detector aliases mapping names to files.
+             * @return The detector alias map.
+             */
+            const DetectorAliasMap& getDetectorAliases() {
+                return aliasMap_;
+            }
+
         private:
 
             void buildDetectorElements();
@@ -203,7 +206,7 @@ namespace ldmx {
             std::string detectorName_;
 
             /** Map of names to detector locations (GDML files). */
-            DetectorAliasMap aliasMap_;
+            DetectorDataService::DetectorAliasMap aliasMap_;
 
             /** The currently active geometry manager. */
             TGeoManager* geoManager_{nullptr};

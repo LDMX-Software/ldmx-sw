@@ -27,6 +27,11 @@ namespace ldmx {
         public:
 
             /**
+             * Map of detector names to their files on disk.
+             */
+            typedef std::map<std::string, std::string> DetectorAliasMap;
+
+            /**
              * Class destructor.
              */
             virtual ~DetectorDataService() {;}
@@ -76,7 +81,12 @@ namespace ldmx {
              * @return The DetectorElement containing the position.
              */            
             virtual DetectorElement* locateDetectorElement(std::vector<double>& globalPosition) = 0;
-           
+
+            /**
+             * Get the detector aliases mapping names to files.
+             * @return The detector alias map.
+             */
+            virtual const DetectorAliasMap& getDetectorAliases() = 0;
     };
 }
 
