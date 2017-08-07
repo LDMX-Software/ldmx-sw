@@ -54,18 +54,4 @@ namespace ldmx {
        return noiseHits;  
     }
 
-    std::vector<EcalHit*> NoiseGenerator::generateEcalNoiseHits(int emptyChannels) {
-
-        std::vector<double> noiseHits = this->generateNoiseHits(emptyChannels);
-        
-        std::vector<EcalHit*> ecalNoiseHits;
-        for (double noiseHit : noiseHits) { 
-            EcalHit* hit = new EcalHit();
-            hit->setEnergy(noiseHit);
-            hit->setAmplitude(noiseHit);
-            ecalNoiseHits.push_back(hit); 
-        } 
-
-        return ecalNoiseHits; 
-    }
-}
+} // ldmx

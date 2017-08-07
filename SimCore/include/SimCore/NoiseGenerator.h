@@ -46,15 +46,6 @@ namespace ldmx {
              */
             std::vector<double> generateNoiseHits(int emptyChannels); 
 
-            /**
-             * Generate Ecal noise hits.
-             *
-             * @param emptyChannels The total number of channels without a hit 
-             *                      on them.
-             * @return A vector containing EcalHits.
-             */
-            std::vector<EcalHit*> generateEcalNoiseHits(int emptyChannels);
-
             /** Set the noise threshold. */
             void setNoiseThreshold(double noiseThreshold) { noiseThreshold_ = noiseThreshold; }
 
