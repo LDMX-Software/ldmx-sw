@@ -13,6 +13,31 @@
 namespace ldmx {
 
     /**
+     * @class EcalLayer
+     * @brief DetectorElement for ECal layers
+     */
+    class EcalStation : public DetectorElementImpl {
+
+        public:
+
+            EcalStation(DetectorElementImpl* parent, TGeoNode* support);
+
+            /**
+             * Get the layer number.
+             * @return The layer number.
+             */
+            int getLayerNumber() {
+                return layerNumber_;
+            }
+
+        private:
+
+            /** The layer number. */
+            int layerNumber_ {-1};
+
+    };
+
+    /**
      * @class Ecal
      * @brief The top-level DetectorElement for the ECal.
      * @note
@@ -39,32 +64,6 @@ namespace ldmx {
         private:
             DE_INIT(Ecal)
     };
-
-    /**
-     * @class EcalLayer
-     * @brief DetectorElement for ECal layers
-     */
-    class EcalStation : public DetectorElementImpl {
-
-        public:
-
-            EcalStation(DetectorElementImpl* parent, TGeoNode* support);
-
-            /**
-             * Get the layer number.
-             * @return The layer number.
-             */
-            int getLayerNumber() {
-                return layerNumber_;
-            }
-
-        private:
-
-            /** The layer number. */
-            int layerNumber_ {-1};
-
-    };
-
 }
 
 #endif /* DETDESCR_ECALDETECTORELEMENT_H_ */
