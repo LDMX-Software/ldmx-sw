@@ -129,21 +129,12 @@ namespace ldmx {
         cellMapTightIso_.resize(nEcalLayers_, std::map<int, float>());
     }
 
-    void EcalVetoProcessor::produce(Event& event) {
+    void EcalVetoProcessor::clearProcessor(){
         for (int i = 0; i < nEcalLayers_; i++) {
             cellMap_[i].clear();
             cellMapLooseIso_[i].clear();
             cellMapTightIso_[i].clear();
         }
-
-        // FIXME: These commands should go above the corresponding variables.
-        /* New expanded variable collection to help with background veto */
-        /* Loose isolated hits -- Any hit with no readout in nearest neighbors */
-        /* Any isolated hit that does have the event centroid as a nearest neighbor */
-        /* Loose tracks -- two consecutive layers w/ projected nearest neighbor loose isolated hits */
-        /* Medium tracks -- three consecutive layers w/ projected nearest neighbor loose isolated hits */
-        /* Tight tracks -- three consecutive layers w/ projected nearest neighbor tight isolated hits */
-
         looseMipTracks_.clear();
         mediumMipTracks_.clear();
         tightMipTracks_.clear();
@@ -167,6 +158,19 @@ namespace ldmx {
         std::fill(ecalLayerOuterRaw_.begin(), ecalLayerOuterRaw_.end(), 0);
         std::fill(ecalLayerOuterReadout_.begin(), ecalLayerOuterReadout_.end(), 0);
         std::fill(ecalLayerTime_.begin(), ecalLayerTime_.end(), 0);
+    }
+
+    void EcalVetoProcessor::produce(Event& event) {
+        result_.Clear();
+        clearProcessor();
+
+        // FIXME: These commands should go above the corresponding variables.
+        /* New expanded variable collection to help with background veto */
+        /* Loose isolated hits -- Any hit with no readout in nearest neighbors */
+        /* Any isolated hit that does have the event centroid as a nearest neighbor */
+        /* Loose tracks -- two consecutive layers w/ projected nearest neighbor loose isolated hits */
+        /* Medium tracks -- three consecutive layers w/ projected nearest neighbor loose isolated hits */
+        /* Tight tracks -- three consecutive layers w/ projected nearest neighbor tight isolated hits */
 
         // Get the collection of digitized Ecal hits from the event. 
         const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
@@ -337,8 +341,8 @@ namespace ldmx {
             wgtCentroidCoords.second = wgtCentroidCoords.second + centroidCoords.second * cell_energy_pair.second;
             sumEdep += cell_energy_pair.second;
         }
-        wgtCentroidCoords.first = wgtCentroidCoords.first / sumEdep;
-        wgtCentroidCoords.second = wgtCentroidCoords.second / sumEdep;
+        wgtCentroidCoords.first = (sumEdep > 1E-6) ? wgtCentroidCoords.first / sumEdep : wgtCentroidCoords.first;
+        wgtCentroidCoords.second = (sumEdep > 1E-6) ? wgtCentroidCoords.second / sumEdep : wgtCentroidCoords.second;
         //Find Nearest Cell to Centroid
         float maxDist = 1e6;
         for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {

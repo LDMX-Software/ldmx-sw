@@ -59,7 +59,17 @@ namespace ldmx {
 	layerNumber = int(cpynum/7);
 	int module_position = cpynum%7;
 
-        int cellModuleID = hitMap_->getCellModuleID(hitPosition[0], hitPosition[1]);
+        int cellModuleID = hitMap_->getCellModuleID(hitPosition.x(), hitPosition.y());
+        if(cellModuleID < 0){
+            //hitPosition is outside of ecal geometry. try to recover pre-step position.
+            G4StepPoint* prePoint = aStep->GetPreStepPoint();
+            G4ThreeVector prePosition = prePoint->GetPosition();
+            G4String preName = prePoint->GetPhysicalVolume()->GetLogicalVolume()->GetName();
+            std::cout << TString::Format("[EcalSD::ProcessHits] Hit step position (%f,%f) is outside Ecal Si volume. Trying prePoint position (%f,%f) with volume name %s",
+                hitPosition.x(),hitPosition.y(),prePosition.x(),prePosition.y(),preName.data()) << std::endl;
+            cellModuleID = hitMap_->getCellModuleID(prePosition.x(), prePosition.y());
+            if(preName.compareTo("Si_volume") != 0 || cellModuleID < 0){ std::cout << "    prestep also outside. aborting hit." << std::endl; delete hit; return true; }
+        }
 	int cellID = (hitMap_->separateID(cellModuleID)).first;
         detID_->setFieldValue(1, layerNumber);
         detID_->setFieldValue(2, module_position);
