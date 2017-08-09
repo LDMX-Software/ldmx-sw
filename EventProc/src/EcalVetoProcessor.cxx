@@ -129,21 +129,12 @@ namespace ldmx {
         cellMapTightIso_.resize(nEcalLayers_, std::map<int, float>());
     }
 
-    void EcalVetoProcessor::produce(Event& event) {
+    void EcalVetoProcessor::clearProcessor(){
         for (int i = 0; i < nEcalLayers_; i++) {
             cellMap_[i].clear();
             cellMapLooseIso_[i].clear();
             cellMapTightIso_[i].clear();
         }
-
-        // FIXME: These commands should go above the corresponding variables.
-        /* New expanded variable collection to help with background veto */
-        /* Loose isolated hits -- Any hit with no readout in nearest neighbors */
-        /* Any isolated hit that does have the event centroid as a nearest neighbor */
-        /* Loose tracks -- two consecutive layers w/ projected nearest neighbor loose isolated hits */
-        /* Medium tracks -- three consecutive layers w/ projected nearest neighbor loose isolated hits */
-        /* Tight tracks -- three consecutive layers w/ projected nearest neighbor tight isolated hits */
-
         looseMipTracks_.clear();
         mediumMipTracks_.clear();
         tightMipTracks_.clear();
@@ -167,6 +158,19 @@ namespace ldmx {
         std::fill(ecalLayerOuterRaw_.begin(), ecalLayerOuterRaw_.end(), 0);
         std::fill(ecalLayerOuterReadout_.begin(), ecalLayerOuterReadout_.end(), 0);
         std::fill(ecalLayerTime_.begin(), ecalLayerTime_.end(), 0);
+    }
+
+    void EcalVetoProcessor::produce(Event& event) {
+        result_.Clear();
+        clearProcessor();
+
+        // FIXME: These commands should go above the corresponding variables.
+        /* New expanded variable collection to help with background veto */
+        /* Loose isolated hits -- Any hit with no readout in nearest neighbors */
+        /* Any isolated hit that does have the event centroid as a nearest neighbor */
+        /* Loose tracks -- two consecutive layers w/ projected nearest neighbor loose isolated hits */
+        /* Medium tracks -- three consecutive layers w/ projected nearest neighbor loose isolated hits */
+        /* Tight tracks -- three consecutive layers w/ projected nearest neighbor tight isolated hits */
 
         // Get the collection of digitized Ecal hits from the event. 
         const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
