@@ -98,6 +98,7 @@ namespace ldmx {
                 return hexReadout_->getNNN(cellModuleID);
             }
 
+            void clearProcessor();
 
             LayerCellPair hitToPair(EcalHit* hit);
 
