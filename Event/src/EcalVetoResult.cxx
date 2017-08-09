@@ -20,11 +20,16 @@ namespace ldmx {
 
     void EcalVetoResult::Clear(Option_t *option) {
         TObject::Clear();
+
         passesVeto_ = false;
-        discValue_ = 0;
+
         nReadoutHits_ = 0;
         nLooseIsoHits_ = 0;
         nTightIsoHits_ = 0;
+        nLooseMipTracks_ = 0;
+        nMediumMipTracks_ = 0;
+        nTightMipTracks_ = 0;
+
         summedDet_ = 0;
         summedOuter_ = 0;
         backSummedDet_ = 0;
@@ -34,9 +39,8 @@ namespace ldmx {
         maxTightIsoDep_ = 0;
         maxCellDep_ = 0;
         showerRMS_ = 0;
-        nLooseMipTracks_ = 0;
-        nMediumMipTracks_ = 0;
-        nTightMipTracks_ = 0;
+        discValue_ = 0;
+
         recoilPx_ = -9999;
         recoilPy_ = -9999;
         recoilPz_ = -9999;
@@ -52,11 +56,16 @@ namespace ldmx {
     void EcalVetoResult::Copy(TObject& object) const {
 
         EcalVetoResult& result = (EcalVetoResult&) object;
+
         result.passesVeto_ = passesVeto_;
-        result.discValue_ = discValue_;
+
         result.nReadoutHits_ = nReadoutHits_;
         result.nLooseIsoHits_ = nLooseIsoHits_;
         result.nTightIsoHits_ = nTightIsoHits_;
+        result.nLooseMipTracks_ = nLooseMipTracks_;
+        result.nMediumMipTracks_ = nMediumMipTracks_;
+        result.nTightMipTracks_ = nTightMipTracks_;
+
         result.summedDet_ = summedDet_;
         result.summedOuter_ = summedOuter_;
         result.backSummedDet_ = backSummedDet_;
@@ -66,18 +75,19 @@ namespace ldmx {
         result.maxTightIsoDep_ = maxTightIsoDep_;
         result.maxCellDep_ = maxCellDep_;
         result.showerRMS_ = showerRMS_;
-        result.ecalLayerEdepReadout_ = ecalLayerEdepReadout_;
-        result.looseMipTracks_ = looseMipTracks_;
-        result.mediumMipTracks_ = mediumMipTracks_;
-        result.tightMipTracks_ = tightMipTracks_;
-        result.nLooseMipTracks_ = nLooseMipTracks_;
-        result.nMediumMipTracks_ = nMediumMipTracks_;
-        result.nTightMipTracks_ = nTightMipTracks_;
+        result.discValue_ = discValue_;
+
         result.recoilPx_ = recoilPx_;
         result.recoilPy_ = recoilPy_;
         result.recoilPz_ = recoilPz_;
         result.recoilX_ = recoilX_; 
         result.recoilY_ = recoilY_;
+
+        // vector copy
+        result.ecalLayerEdepReadout_ = ecalLayerEdepReadout_;
+        result.looseMipTracks_ = looseMipTracks_;
+        result.mediumMipTracks_ = mediumMipTracks_;
+        result.tightMipTracks_ = tightMipTracks_;
     }
 
     void EcalVetoResult::setVariables(
@@ -104,6 +114,10 @@ namespace ldmx {
         nReadoutHits_ = nReadoutHits;
         nLooseIsoHits_ = nLooseIsoHits;
         nTightIsoHits_ = nTightIsoHits;
+        nLooseMipTracks_ = looseMipTracks.size();
+        nMediumMipTracks_ = mediumMipTracks.size();
+        nTightMipTracks_ = tightMipTracks.size();
+
         summedDet_ = summedDet;
         summedOuter_ = summedOuter;
         backSummedDet_ = backSummedDet;
@@ -113,24 +127,20 @@ namespace ldmx {
         maxTightIsoDep_ = maxTightIsoDep;
         maxCellDep_ = maxCellDep;
         showerRMS_ = showerRMS;
+        // discvalue not set here
+
+        if(!recoilP.empty()){
+            recoilPx_ = recoilP[0]; 
+            recoilPy_ = recoilP[1]; 
+            recoilPz_ = recoilP[2];
+            recoilX_ = recoilPos[0]; 
+            recoilY_ = recoilPos[1]; 
+        }
 
         ecalLayerEdepReadout_ = EcalLayerEdepReadout;
         looseMipTracks_ = looseMipTracks;
         mediumMipTracks_ = mediumMipTracks;
         tightMipTracks_ = tightMipTracks;
-
-        nLooseMipTracks_ = looseMipTracks.size();
-        nMediumMipTracks_ = mediumMipTracks.size();
-        nTightMipTracks_ = tightMipTracks.size();
-
-        if (recoilP.empty()) return; 
-        recoilPx_ = recoilP[0]; 
-        recoilPy_ = recoilP[1]; 
-        recoilPz_ = recoilP[2];
-
-        recoilX_ = recoilPos[0]; 
-        recoilY_ = recoilPos[1]; 
-
     }
 
     void EcalVetoResult::Print(Option_t *option) const {
