@@ -90,6 +90,8 @@ namespace ldmx {
              * The command for opening Root files.
              */
             G4UIcmdWithoutParameter* rootUseSeedCmd_ {new G4UIcmdWithoutParameter {"/ldmx/generators/root/useSeed", this}};
+            G4UIcmdWithoutParameter* rootEcalSPCmd_ {new G4UIcmdWithoutParameter {"/ldmx/generators/root/mode/fromEcalSP", this}};
+            G4UIcmdWithoutParameter* rootRegenCmd_ {new G4UIcmdWithoutParameter {"/ldmx/generators/root/mode/regenerate", this}};
 
             /** The command for using the multiparticle gun. */
             G4UIcmdWithoutParameter* enableMPGunCmd_ {new G4UIcmdWithoutParameter {"/ldmx/generators/mpgun/enable", this}};

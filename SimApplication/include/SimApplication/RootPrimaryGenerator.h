@@ -40,6 +40,12 @@ namespace ldmx {
             virtual ~RootPrimaryGenerator();
 
             /**
+             * Specify the run mode
+             * @param the mode index.
+             */
+            void setRunMode(int curmode) { runMode_ = curmode; };
+
+            /**
              * Generate vertices in the Geant4 event.
              * @param anEvent The Geant4 event.
              */
@@ -66,6 +72,7 @@ namespace ldmx {
              * The sim particles
              */
             TClonesArray* simParticles_;
+            TClonesArray* ecalSPParticles_;
 
             /**
              * The event header
@@ -81,6 +88,12 @@ namespace ldmx {
              * Events in the tree...
              */
             int nEvts_;
+
+            /**
+             * Run mode...
+             */
+            int runMode_;
+
     };
 
 }
