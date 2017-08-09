@@ -337,8 +337,8 @@ namespace ldmx {
             wgtCentroidCoords.second = wgtCentroidCoords.second + centroidCoords.second * cell_energy_pair.second;
             sumEdep += cell_energy_pair.second;
         }
-        wgtCentroidCoords.first = wgtCentroidCoords.first / sumEdep;
-        wgtCentroidCoords.second = wgtCentroidCoords.second / sumEdep;
+        wgtCentroidCoords.first = (sumEdep > 1E-6) ? wgtCentroidCoords.first / sumEdep : wgtCentroidCoords.first;
+        wgtCentroidCoords.second = (sumEdep > 1E-6) ? wgtCentroidCoords.second / sumEdep : wgtCentroidCoords.second;
         //Find Nearest Cell to Centroid
         float maxDist = 1e6;
         for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
