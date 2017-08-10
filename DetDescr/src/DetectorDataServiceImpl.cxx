@@ -88,6 +88,7 @@ namespace ldmx {
 
         // Cache maps of ID and nodes to DetectorElements.
         DetectorElementCacheBuilder cacheBuilder(&deCache_);
+        cacheBuilder.setLeafOnly(true);
         DetectorElementVisitor::walk(deTop_, &cacheBuilder);
     }
 
