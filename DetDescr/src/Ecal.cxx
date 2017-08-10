@@ -17,17 +17,28 @@
 namespace ldmx {
 
     EcalStation::EcalStation(DetectorElementImpl* parent, TGeoNode* support) : DetectorElementImpl(parent, support) {
-        layerNumber_ = support_->GetNumber();
 
+        int copynum = support_->GetNumber();
+
+        // Follows v3 convention where layer number is copynum divided by 7. --JMc
+        layerNumber_ = copynum / 7;
+
+        // Follows v3 convention where module number is copynum modulo 7. --JMc
+        module_ = copynum % 7;
+
+        // Ecal stations are named using the copynum.
         std::stringstream ss;
-        ss << std::setfill('0') << std::setw(2) << layerNumber_;
+        ss << std::setfill('0') << std::setw(3) << copynum;
         name_ = "EcalStation" + ss.str();
 
-        getDetectorID()->setFieldValue(1, support_->GetNumber());
+        // Create the bit-packed ID for the detector component.
+        auto detID = getDetectorID();
+        detID->setFieldValue(1, layerNumber_);
+        detID->setFieldValue(2, module_);
         id_ = getDetectorID()->pack();
     }
 
-    EcalStation* Ecal::getEcalLayer(int num) {
+    EcalStation* Ecal::getEcalStation(int num) {
         return static_cast<EcalStation*>(children_[num - 1]);
     }
 
@@ -57,7 +68,8 @@ namespace ldmx {
         TGeoNode* dau = nullptr;
         for (int iDau = 0; iDau < nDau; iDau++) {
             auto dau = support_->GetDaughter(iDau);
-            static std::string prefix = "Si";
+            // Sensor names must start with "Si_" in the GDML!
+            static std::string prefix = "Si_";
             if (!std::string(dau->GetName()).compare(0, prefix.size(), prefix)) {
                 new EcalStation(this, dau);
             }

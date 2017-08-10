@@ -32,8 +32,11 @@ namespace ldmx {
 
         private:
 
-            /** The layer number. */
-            int layerNumber_ {-1};
+            /** The layer number (0-33 in v3 geometry). */
+            int layerNumber_{-1};
+
+            /** The module number (0-7). */
+            int module_{-1};
 
     };
 
@@ -57,7 +60,7 @@ namespace ldmx {
              * @param layerNumber The layer number.
              * @note The layers are numbered from 1, not 0.
              */
-            EcalStation* getEcalLayer(int layerNumber);
+            EcalStation* getEcalStation(int layerNumber);
 
             void initialize();
 
