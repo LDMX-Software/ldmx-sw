@@ -28,6 +28,7 @@ namespace ldmx {
             void set(int id, DetectorElement* de) {
                 if (get(id)) {
                     // FIXME: Should use base Exception class here.
+                    std::cerr << "ERROR: The id for '" << de->getName() << "' is already assigned to '" << this->get(id)->getName() << "'." << std::endl;
                     throw std::runtime_error("The id is already used in the DE cache.");
                 }
                 idMap_[id] = de;
@@ -270,8 +271,19 @@ namespace ldmx {
                     cache_->set(de->getSupport(), de);
                 }
                 if (de->getID()) {
-                    cache_->set(de->getID(), de);
+                    if (!leafOnly_ || de->getChildren().size() == 0) {
+                        std::cout << "Caching ID <" << de->getID() << "> for '" << de->getName() << "'." << std::endl;
+                        cache_->set(de->getID(), de);
+                    }
                 }
+            }
+
+            /**
+             * Set flag for caching IDs only for leaf volumes (e.g. to avoid duplication).
+             * @param leafOnly True to cache only leaf nodes in the geometry.
+             */
+            void setLeafOnly(bool leafOnly) {
+                leafOnly_ = leafOnly;
             }
 
         private:
@@ -279,6 +291,8 @@ namespace ldmx {
             /** Pointer to cache that will be updated. */
             DetectorElementCache* cache_;
 
+            /** Flag for caching IDs only for leaf nodes. */
+            bool leafOnly_{false};
     };
 }
 
