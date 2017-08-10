@@ -2376,6 +2376,7 @@
 
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
       <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="Ecal"/>
     </volume>
   </structure>
 

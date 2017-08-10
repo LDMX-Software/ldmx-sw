@@ -128,59 +128,63 @@
     <volume name="target">
       <materialref ref="LYSO"/>
       <solidref ref="target_box"/>
-      <auxiliary auxtype="SensDet" auxvalue="TargetSD1"/>
+      <auxiliary auxtype="SensDet" auxvalue="TargetSD"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="Target"/>
     </volume>
     <volume name="trigger_pad_down">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_pad_down_box"/>
-      <auxiliary auxtype="SensDet" auxvalue="TriggerPadSD1"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>             
+      <auxiliary auxtype="SensDet" auxvalue="TriggerPadDownSD"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>           
     </volume> 
     <volume name="trigger_pad_up">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_pad_up_box"/>
-      <auxiliary auxtype="SensDet" auxvalue="TriggerPadSD1"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>             
-    </volume> 
+      <auxiliary auxtype="SensDet" auxvalue="TriggerPadUpSD"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
+    </volume>
     <volume name="World">
       <materialref ref="Vacuum"/>
-      <solidref ref="world_box"/>                      
-      <physvol>
+      <solidref ref="world_box"/>
+      <physvol copynumber="1">
         <file name="tagger.gdml"/>
         <positionref ref="tagger_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <physvol>
+      <physvol copynumber="2">
         <volumeref ref="trigger_pad_up"/>
         <positionref ref="trigger_pad_up_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <physvol>
+      <physvol copynumber="3">
         <volumeref ref="target"/>
         <positionref ref="target_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <physvol>
+      <physvol copynumber="4">
         <volumeref ref="trigger_pad_down"/>
         <positionref ref="trigger_pad_down_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <physvol>
+      <physvol copynumber="5">
         <file name="recoil.gdml"/>
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <physvol>
+      <physvol copynumber="6">
         <file name="ecal.gdml"/>
         <positionref ref="em_calorimeter_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <physvol>
+      <physvol copynumber="7">
         <file name="hcal.gdml"/>
         <positionref ref="hadron_calorimeter_pos"/>
         <rotationref ref="identity"/>
       </physvol>
+      <auxiliary auxtype="DetElem" auxvalue="Top"/>
     </volume>
   </structure>
   
@@ -194,42 +198,49 @@
     </auxiliary>
     
     <!-- define sensitive detectors -->
-    <auxiliary auxtype="SensDet" auxvalue="TaggerSD1">
+    <auxiliary auxtype="SensDet" auxvalue="TaggerSD">
       <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="TaggerSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="1"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
-    <auxiliary auxtype="SensDet" auxvalue="TriggerPadSD1">
+    <auxiliary auxtype="SensDet" auxvalue="TriggerPadUpSD">
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
-      <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadSimHits"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadUpSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="2"/>
       <auxiliary auxtype="LayerDepth" auxvalue="1"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>    
-    <auxiliary auxtype="SensDet" auxvalue="TargetSD1">
+    <auxiliary auxtype="SensDet" auxvalue="TargetSD">
       <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="TargetSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="3"/>
       <auxiliary auxtype="LayerDepth" auxvalue="1"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>    
-    <auxiliary auxtype="SensDet" auxvalue="RecoilSD1">
-      <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
-      <auxiliary auxtype="HitsCollection" auxvalue="RecoilSimHits"/>
+    <auxiliary auxtype="SensDet" auxvalue="TriggerPadDownSD">
+      <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadDownSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="4"/>
+      <auxiliary auxtype="LayerDepth" auxvalue="1"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
-    <auxiliary auxtype="SensDet" auxvalue="EcalSD1">
-      <auxiliary auxtype="SensDetType" auxvalue="EcalSD"/>
-      <auxiliary auxtype="HitsCollection" auxvalue="EcalSimHits"/>
+    <auxiliary auxtype="SensDet" auxvalue="RecoilSD">
+      <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="RecoilSimHits"/>
       <auxiliary auxtype="SubdetID" auxvalue="5"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>
-    <auxiliary auxtype="SensDet" auxvalue="HcalSD1">
+    <auxiliary auxtype="SensDet" auxvalue="EcalSD">
+      <auxiliary auxtype="SensDetType" auxvalue="EcalSD"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="EcalSimHits"/>
+      <auxiliary auxtype="SubdetID" auxvalue="6"/>
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
+    </auxiliary>
+    <auxiliary auxtype="SensDet" auxvalue="HcalSD">
       <auxiliary auxtype="SensDetType" auxvalue="HcalSD"/>
       <auxiliary auxtype="HitsCollection" auxvalue="HcalSimHits"/>
-      <auxiliary auxtype="SubdetID" auxvalue="6"/>
+      <auxiliary auxtype="SubdetID" auxvalue="7"/>
       <auxiliary auxtype="Verbose" auxvalue="0"/>
     </auxiliary>    
     
