@@ -75,7 +75,7 @@ int main(int argc, const char* argv[])  {
 
     // Initialize a test detector.
     DetectorDataServiceImpl* svc = new DetectorDataServiceImpl();
-    svc->setDetectorName("ldmx-det-full-v2-test");
+    svc->setDetectorName("ldmx-det-full-v3-fieldmap");
     svc->initialize();
 
     // Get the top DE.
@@ -93,16 +93,16 @@ int main(int argc, const char* argv[])  {
     values = decoder->unpack();
     std::cout << "Got 'Ecal' DE with support <" << ecal->getSupport()->GetName() << ">"
             << ecal->getGlobalPosition() << values << std::endl;
-    for (auto ecalLayer : ecal->getChildren()) {
-        decoder->setRawValue(ecalLayer->getID());
+    for (auto ecalStation : ecal->getChildren()) {
+        decoder->setRawValue(ecalStation->getID());
         values = decoder->unpack();
-        std::cout << "  " << ecalLayer->getName() << " with support <"
-                << ecalLayer->getSupport()->GetName() << "> and layer num "
-                << ((EcalStation*)ecalLayer)->getLayerNumber()
-                << ecalLayer->getGlobalPosition()
+        std::cout << "  " << ecalStation->getName() << " with support <"
+                << ecalStation->getSupport()->GetName() << "> and layer num "
+                << ((EcalStation*)ecalStation)->getLayerNumber()
+                << ecalStation->getGlobalPosition()
                 << values
                 << std::endl;
-        find(svc, ecalLayer);
+        find(svc, ecalStation);
     }
     std::cout << std::endl;
 
@@ -191,6 +191,7 @@ int main(int argc, const char* argv[])  {
     std::cout << std::endl;
 
     // Print trigger pad info.
+    /*
     DetectorElement* triggerPad = top->findChild("TriggerPadUp");
     decoder = triggerPad->getDetectorID();
     decoder->setRawValue(triggerPad->getID());
@@ -204,6 +205,7 @@ int main(int argc, const char* argv[])  {
     values = decoder->unpack();
     std::cout << "Got 'TriggerPadDown' with support " << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << values << std::endl;
     find(svc, triggerPad, "  ");
+    */
 
     // Delete the service object, which will delete the DetectorElement tree and the ROOT geometry manager.
     delete svc;
