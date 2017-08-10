@@ -52,6 +52,14 @@ namespace ldmx {
             }
 
             /**
+             * Get whether this plugin implements the event action.
+             * @return True if the plugin implements the event action.
+             */
+            virtual bool hasEventAction() { 
+                return true;
+            }
+
+            /**
              * Get whether this plugin implements the stepping action.
              * @return True to indicate this plugin implements the stepping action.
              */
@@ -59,6 +67,12 @@ namespace ldmx {
                 return true;
             }
 
+            
+            /**
+             * End of event action.
+             */
+            virtual void endEvent(const G4Event*);
+            
             /**
              * Implementmthe stepping action which performs the target volume biasing.
              * @param step The Geant4 step.
@@ -108,6 +122,9 @@ namespace ldmx {
 
             /** The volume name of the LDMX target. */
             G4String volumeName_{""};
+
+            /** Flag indicating if the reaction has occurred. */
+            bool reactionOccurred_{false}; 
     };
 }
 
