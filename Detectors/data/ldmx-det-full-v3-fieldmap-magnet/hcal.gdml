@@ -32,8 +32,8 @@
     <variable name="Wrap_LR_HCal_start" value="-back_hcal_dx/2.+wrap_layer_width/2."/>
 
     <!-- Define the size of the Ecal box.  See ecal.gdml for origin of values -->
-    <variable name="ECal_dx" value="512.0*mm"/>
-    <variable name="ECal_dy" value="512.0*mm"/>
+    <variable name="ECal_dx" value="520.0*mm"/>
+    <variable name="ECal_dy" value="520.0*mm"/>
     <variable name="ECal_dz" value="290.0*mm"/>
 
   </define>
