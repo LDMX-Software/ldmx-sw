@@ -42,7 +42,7 @@
 <a name="l00002"></a>00002 <span class="preprocessor">#include &quot;<a class="code" href="EcalHit_8h.html" title="Class that stores reconstructed hit information from the ECAL.">Event/EcalHit.h</a>&quot;</span>
 <a name="l00003"></a>00003 <span class="preprocessor">#include &quot;<a class="code" href="SimTrackerHit_8h.html" title="Class which encapsulates information from a hit in a simulated tracking detector.">Event/SimTrackerHit.h</a>&quot;</span>
 <a name="l00004"></a>00004 <span class="preprocessor">#include &quot;EventDisplay/EventDisplay.h&quot;</span>
-<a name="l00005"></a>00005 <span class="preprocessor">#include &quot;<a class="code" href="EcalHexReadout_8h.html" title="Class that translates raw positions of ECal hits into cells in a hexagonal readout.">DetDescr/EcalHexReadout.h</a>&quot;</span>
+<a name="l00005"></a>00005 <span class="preprocessor">#include &quot;<a class="code" href="EcalHexReadout_8h.html" title="Class that translates raw positions of ECal module hits into cells in a hexagonal readout...">DetDescr/EcalHexReadout.h</a>&quot;</span>
 <a name="l00006"></a>00006 <span class="preprocessor">#include &quot;<a class="code" href="EcalDetectorID_8h.html" title="Class that defines an ECal detector ID with a cell number.">DetDescr/EcalDetectorID.h</a>&quot;</span>
 <a name="l00007"></a>00007 
 <a name="l00008"></a>00008 <span class="preprocessor">#include &quot;EventDisplay/EventDisplay.h&quot;</span>
@@ -311,144 +311,147 @@
 <a name="l00271"></a>00271             detID.<a class="code" href="classldmx_1_1DetectorID.html#a0ab7435051b257d4974ce87c0a1772cd">setRawValue</a>(hit-&gt;<a class="code" href="classldmx_1_1CalorimeterHit.html#a4605061d072279c9bf478e98e72566cc">getID</a>());
 <a name="l00272"></a>00272             detID.<a class="code" href="classldmx_1_1DetectorID.html#aed9bd3abdb7038a7a43ca4d9eed91b85">unpack</a>();
 <a name="l00273"></a>00273             <span class="keywordtype">int</span> layer = detID.<a class="code" href="classldmx_1_1DetectorID.html#ae95e1cc6a9bbb0ba8e0961f3a4b02841">getFieldValue</a>(<span class="stringliteral">&quot;layer&quot;</span>);
-<a name="l00274"></a>00274             std::pair&lt;float, float&gt; xyPos = hex.<a class="code" href="classldmx_1_1EcalHexReadout.html#a97a4fd396db26d47ea43f14d7c8d3bb0">getCellCentroidXYPair</a>(detID.<a class="code" href="classldmx_1_1DetectorID.html#ae95e1cc6a9bbb0ba8e0961f3a4b02841">getFieldValue</a>(<span class="stringliteral">&quot;cell&quot;</span>));
-<a name="l00275"></a>00275 
-<a name="l00276"></a>00276             ecalHitSet-&gt;AddBox(xyPos.first, xyPos.second, layerZPos[layer-1]+ECAL_Z_OFFSET, 3, 3, 3);
-<a name="l00277"></a>00277             ecalHitSet-&gt;DigitValue(energy);
-<a name="l00278"></a>00278         }
-<a name="l00279"></a>00279 
-<a name="l00280"></a>00280         ecalHitSet-&gt;SetPickable(1);
-<a name="l00281"></a>00281         ecalHitSet-&gt;SetAlwaysSecSelect(1);
-<a name="l00282"></a>00282         <span class="keywordflow">return</span> ecalHitSet;
-<a name="l00283"></a>00283     }
-<a name="l00284"></a>00284 
-<a name="l00285"></a>00285     TEveElement* EventDisplay::drawRecoilHits(TClonesArray* hits) {
-<a name="l00286"></a>00286 
-<a name="l00287"></a>00287         <span class="comment">// In mm</span>
-<a name="l00288"></a>00288         <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> stereo_strip_length = 98; <span class="comment">// 2 mm deadspace</span>
-<a name="l00289"></a>00289         <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> mono_strip_length = 78; <span class="comment">// 2 mm deadspace</span>
-<a name="l00290"></a>00290 
-<a name="l00291"></a>00291         <a class="code" href="classldmx_1_1SimTrackerHit.html" title="Represents a simulated tracker hit in the simulation.">ldmx::SimTrackerHit</a>* hit;
-<a name="l00292"></a>00292         TEveElement* recoilHitSet = <span class="keyword">new</span> TEveElementList(<span class="stringliteral">&quot;Recoil Hits&quot;</span>);
+<a name="l00274"></a>00274             <span class="keywordtype">int</span> cellID = detID.<a class="code" href="classldmx_1_1DetectorID.html#ae95e1cc6a9bbb0ba8e0961f3a4b02841">getFieldValue</a>(<span class="stringliteral">&quot;cell&quot;</span>);
+<a name="l00275"></a>00275             <span class="keywordtype">int</span> moduleID = detID.<a class="code" href="classldmx_1_1DetectorID.html#ae95e1cc6a9bbb0ba8e0961f3a4b02841">getFieldValue</a>(<span class="stringliteral">&quot;module_position&quot;</span>);
+<a name="l00276"></a>00276             <span class="keywordtype">int</span> cellModuleID = hex.<a class="code" href="classldmx_1_1EcalHexReadout.html#a9c315f04f880d8c151c2963d05b3cf6b">combineID</a>(cellID,moduleID);
+<a name="l00277"></a>00277             std::pair&lt;double, double&gt; xyPos = hex.<a class="code" href="classldmx_1_1EcalHexReadout.html#a065a5d0288f1ef3fc64c542e6dfe492f">getCellCenterAbsolute</a>(cellModuleID);
+<a name="l00278"></a>00278 
+<a name="l00279"></a>00279             ecalHitSet-&gt;AddBox(xyPos.first, xyPos.second, layerZPos[layer-1]+ECAL_Z_OFFSET, 3, 3, 3);
+<a name="l00280"></a>00280             ecalHitSet-&gt;DigitValue(energy);
+<a name="l00281"></a>00281         }
+<a name="l00282"></a>00282 
+<a name="l00283"></a>00283         ecalHitSet-&gt;SetPickable(1);
+<a name="l00284"></a>00284         ecalHitSet-&gt;SetAlwaysSecSelect(1);
+<a name="l00285"></a>00285         <span class="keywordflow">return</span> ecalHitSet;
+<a name="l00286"></a>00286     }
+<a name="l00287"></a>00287 
+<a name="l00288"></a>00288     TEveElement* EventDisplay::drawRecoilHits(TClonesArray* hits) {
+<a name="l00289"></a>00289 
+<a name="l00290"></a>00290         <span class="comment">// In mm</span>
+<a name="l00291"></a>00291         <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> stereo_strip_length = 98; <span class="comment">// 2 mm deadspace</span>
+<a name="l00292"></a>00292         <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> mono_strip_length = 78; <span class="comment">// 2 mm deadspace</span>
 <a name="l00293"></a>00293 
-<a name="l00294"></a>00294         <span class="keywordflow">for</span> (TIter next(hits); hit = (<a class="code" href="classldmx_1_1SimTrackerHit.html" title="Represents a simulated tracker hit in the simulation.">ldmx::SimTrackerHit</a>*)next();) {
-<a name="l00295"></a>00295 
-<a name="l00296"></a>00296             std::vector&lt;float&gt; xyzPos = hit-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a014e9d9d2e733262024889d299140f19">getPosition</a>();
-<a name="l00297"></a>00297 
-<a name="l00298"></a>00298             <span class="keywordflow">if</span> ((xyzPos[2] &gt; 4 &amp;&amp; xyzPos[2] &lt; 5) || (xyzPos[2] &gt; 19 &amp;&amp; xyzPos[2] &lt; 20) || (xyzPos[2] &gt; 34 &amp;&amp; xyzPos[2] &lt; 35) || (xyzPos[2] &gt; 49 &amp;&amp; xyzPos[2] &lt; 50)) {
-<a name="l00299"></a>00299 
-<a name="l00300"></a>00300                 TEveBox *recoilHit = drawBox(xyzPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kYellow, 0, <span class="stringliteral">&quot;Recoil Hit&quot;</span>);
-<a name="l00301"></a>00301                 recoilHitSet-&gt;AddElement(recoilHit);
+<a name="l00294"></a>00294         <a class="code" href="classldmx_1_1SimTrackerHit.html" title="Represents a simulated tracker hit in the simulation.">ldmx::SimTrackerHit</a>* hit;
+<a name="l00295"></a>00295         TEveElement* recoilHitSet = <span class="keyword">new</span> TEveElementList(<span class="stringliteral">&quot;Recoil Hits&quot;</span>);
+<a name="l00296"></a>00296 
+<a name="l00297"></a>00297         <span class="keywordflow">for</span> (TIter next(hits); hit = (<a class="code" href="classldmx_1_1SimTrackerHit.html" title="Represents a simulated tracker hit in the simulation.">ldmx::SimTrackerHit</a>*)next();) {
+<a name="l00298"></a>00298 
+<a name="l00299"></a>00299             std::vector&lt;float&gt; xyzPos = hit-&gt;<a class="code" href="classldmx_1_1SimTrackerHit.html#a014e9d9d2e733262024889d299140f19">getPosition</a>();
+<a name="l00300"></a>00300 
+<a name="l00301"></a>00301             <span class="keywordflow">if</span> ((xyzPos[2] &gt; 4 &amp;&amp; xyzPos[2] &lt; 5) || (xyzPos[2] &gt; 19 &amp;&amp; xyzPos[2] &lt; 20) || (xyzPos[2] &gt; 34 &amp;&amp; xyzPos[2] &lt; 35) || (xyzPos[2] &gt; 49 &amp;&amp; xyzPos[2] &lt; 50)) {
 <a name="l00302"></a>00302 
-<a name="l00303"></a>00303             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((xyzPos[2] &gt; 10 &amp;&amp; xyzPos[2] &lt; 11) || (xyzPos[2] &gt; 40 &amp;&amp; xyzPos[2] &lt; 41)) {
-<a name="l00304"></a>00304 
-<a name="l00305"></a>00305                 TVector3 rotPos = {xyzPos[0], xyzPos[1], xyzPos[2]};
-<a name="l00306"></a>00306                 rotPos.RotateZ(-STEREO_ANGLE);
+<a name="l00303"></a>00303                 TEveBox *recoilHit = drawBox(xyzPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kYellow, 0, <span class="stringliteral">&quot;Recoil Hit&quot;</span>);
+<a name="l00304"></a>00304                 recoilHitSet-&gt;AddElement(recoilHit);
+<a name="l00305"></a>00305 
+<a name="l00306"></a>00306             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((xyzPos[2] &gt; 10 &amp;&amp; xyzPos[2] &lt; 11) || (xyzPos[2] &gt; 40 &amp;&amp; xyzPos[2] &lt; 41)) {
 <a name="l00307"></a>00307 
-<a name="l00308"></a>00308                 TEveBox *recoilHit = drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, STEREO_ANGLE, kYellow, 0, <span class="stringliteral">&quot;Recoil Hit&quot;</span>);
-<a name="l00309"></a>00309                 recoilHitSet-&gt;AddElement(recoilHit);
+<a name="l00308"></a>00308                 TVector3 rotPos = {xyzPos[0], xyzPos[1], xyzPos[2]};
+<a name="l00309"></a>00309                 rotPos.RotateZ(-STEREO_ANGLE);
 <a name="l00310"></a>00310 
-<a name="l00311"></a>00311             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((xyzPos[2] &gt; 25 &amp;&amp; xyzPos[2] &lt; 26) || (xyzPos[2] &gt; 55 &amp;&amp; xyzPos[2] &lt; 56)) {
-<a name="l00312"></a>00312 
-<a name="l00313"></a>00313                 TVector3 rotPos = {xyzPos[0], xyzPos[1], xyzPos[2]};
-<a name="l00314"></a>00314                 rotPos.RotateZ(STEREO_ANGLE);
+<a name="l00311"></a>00311                 TEveBox *recoilHit = drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, STEREO_ANGLE, kYellow, 0, <span class="stringliteral">&quot;Recoil Hit&quot;</span>);
+<a name="l00312"></a>00312                 recoilHitSet-&gt;AddElement(recoilHit);
+<a name="l00313"></a>00313 
+<a name="l00314"></a>00314             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((xyzPos[2] &gt; 25 &amp;&amp; xyzPos[2] &lt; 26) || (xyzPos[2] &gt; 55 &amp;&amp; xyzPos[2] &lt; 56)) {
 <a name="l00315"></a>00315 
-<a name="l00316"></a>00316                 TEveBox *recoilHit = drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, -STEREO_ANGLE, kYellow, 0, <span class="stringliteral">&quot;Recoil Hit&quot;</span>);
-<a name="l00317"></a>00317                 recoilHitSet-&gt;AddElement(recoilHit);
+<a name="l00316"></a>00316                 TVector3 rotPos = {xyzPos[0], xyzPos[1], xyzPos[2]};
+<a name="l00317"></a>00317                 rotPos.RotateZ(STEREO_ANGLE);
 <a name="l00318"></a>00318 
-<a name="l00319"></a>00319             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (xyzPos[2] &gt; 65) {
-<a name="l00320"></a>00320                 <span class="keywordflow">if</span> (fabs(xyzPos[1]) &gt; 1.0) { <span class="comment">// dead region</span>
+<a name="l00319"></a>00319                 TEveBox *recoilHit = drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, -STEREO_ANGLE, kYellow, 0, <span class="stringliteral">&quot;Recoil Hit&quot;</span>);
+<a name="l00320"></a>00320                 recoilHitSet-&gt;AddElement(recoilHit);
 <a name="l00321"></a>00321 
-<a name="l00322"></a>00322                     <span class="keywordflow">if</span> (xyzPos[1] &gt; 0) {
-<a name="l00323"></a>00323 
-<a name="l00324"></a>00324                         TEveBox *recoilHit = drawBox(xyzPos[0], mono_strip_length/2+1, xyzPos[2], 1, mono_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kYellow, 0, <span class="stringliteral">&quot;Recoil Hit&quot;</span>);
-<a name="l00325"></a>00325                         recoilHitSet-&gt;AddElement(recoilHit);
-<a name="l00326"></a>00326                     } <span class="keywordflow">else</span> {
-<a name="l00327"></a>00327 
-<a name="l00328"></a>00328                         TEveBox *recoilHit = drawBox(xyzPos[0], -mono_strip_length/2-1, xyzPos[2], 1, mono_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kYellow, 0, <span class="stringliteral">&quot;Recoil Hit&quot;</span>);
-<a name="l00329"></a>00329                         recoilHitSet-&gt;AddElement(recoilHit);
-<a name="l00330"></a>00330                     }
-<a name="l00331"></a>00331                 }
-<a name="l00332"></a>00332             }
-<a name="l00333"></a>00333         }
-<a name="l00334"></a>00334 
-<a name="l00335"></a>00335         <span class="keywordflow">return</span> recoilHitSet;
-<a name="l00336"></a>00336     }
+<a name="l00322"></a>00322             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (xyzPos[2] &gt; 65) {
+<a name="l00323"></a>00323                 <span class="keywordflow">if</span> (fabs(xyzPos[1]) &gt; 1.0) { <span class="comment">// dead region</span>
+<a name="l00324"></a>00324 
+<a name="l00325"></a>00325                     <span class="keywordflow">if</span> (xyzPos[1] &gt; 0) {
+<a name="l00326"></a>00326 
+<a name="l00327"></a>00327                         TEveBox *recoilHit = drawBox(xyzPos[0], mono_strip_length/2+1, xyzPos[2], 1, mono_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kYellow, 0, <span class="stringliteral">&quot;Recoil Hit&quot;</span>);
+<a name="l00328"></a>00328                         recoilHitSet-&gt;AddElement(recoilHit);
+<a name="l00329"></a>00329                     } <span class="keywordflow">else</span> {
+<a name="l00330"></a>00330 
+<a name="l00331"></a>00331                         TEveBox *recoilHit = drawBox(xyzPos[0], -mono_strip_length/2-1, xyzPos[2], 1, mono_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kYellow, 0, <span class="stringliteral">&quot;Recoil Hit&quot;</span>);
+<a name="l00332"></a>00332                         recoilHitSet-&gt;AddElement(recoilHit);
+<a name="l00333"></a>00333                     }
+<a name="l00334"></a>00334                 }
+<a name="l00335"></a>00335             }
+<a name="l00336"></a>00336         }
 <a name="l00337"></a>00337 
-<a name="l00338"></a>00338     TEveElement* EventDisplay::drawRecoilTracker() {
-<a name="l00339"></a>00339 
-<a name="l00340"></a>00340         <span class="comment">// In mm</span>
-<a name="l00341"></a>00341         <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> stereo_x_width = 40.34;
-<a name="l00342"></a>00342         <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> stereo_y_width = 100;
-<a name="l00343"></a>00343         <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> mono_x_width = 50;
-<a name="l00344"></a>00344         <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> mono_y_width = 80;
-<a name="l00345"></a>00345 
-<a name="l00346"></a>00346         <span class="keyword">const</span> std::vector&lt;double&gt; xPos = {-2*mono_x_width, -mono_x_width, 0, mono_x_width, 2*mono_x_width};
-<a name="l00347"></a>00347         <span class="keyword">const</span> std::vector&lt;double&gt; yPos = {-mono_y_width/2, mono_y_width/2};
-<a name="l00348"></a>00348         <span class="keyword">const</span> std::vector&lt;double&gt; zPos = {7.5, 22.5, 37.5, 52.5, 90.0, 180.0};
-<a name="l00349"></a>00349 
-<a name="l00350"></a>00350         TEveElement* recoilTracker = <span class="keyword">new</span> TEveElementList(<span class="stringliteral">&quot;Recoil Tracker&quot;</span>);
-<a name="l00351"></a>00351         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 4; ++j) {
+<a name="l00338"></a>00338         <span class="keywordflow">return</span> recoilHitSet;
+<a name="l00339"></a>00339     }
+<a name="l00340"></a>00340 
+<a name="l00341"></a>00341     TEveElement* EventDisplay::drawRecoilTracker() {
+<a name="l00342"></a>00342 
+<a name="l00343"></a>00343         <span class="comment">// In mm</span>
+<a name="l00344"></a>00344         <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> stereo_x_width = 40.34;
+<a name="l00345"></a>00345         <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> stereo_y_width = 100;
+<a name="l00346"></a>00346         <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> mono_x_width = 50;
+<a name="l00347"></a>00347         <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> mono_y_width = 80;
+<a name="l00348"></a>00348 
+<a name="l00349"></a>00349         <span class="keyword">const</span> std::vector&lt;double&gt; xPos = {-2*mono_x_width, -mono_x_width, 0, mono_x_width, 2*mono_x_width};
+<a name="l00350"></a>00350         <span class="keyword">const</span> std::vector&lt;double&gt; yPos = {-mono_y_width/2, mono_y_width/2};
+<a name="l00351"></a>00351         <span class="keyword">const</span> std::vector&lt;double&gt; zPos = {7.5, 22.5, 37.5, 52.5, 90.0, 180.0};
 <a name="l00352"></a>00352 
-<a name="l00353"></a>00353             <span class="keywordtype">char</span> nfront[50];
-<a name="l00354"></a>00354             sprintf(nfront, <span class="stringliteral">&quot;Stereo%d_front&quot;</span>, j+1);
+<a name="l00353"></a>00353         TEveElement* recoilTracker = <span class="keyword">new</span> TEveElementList(<span class="stringliteral">&quot;Recoil Tracker&quot;</span>);
+<a name="l00354"></a>00354         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 4; ++j) {
 <a name="l00355"></a>00355 
-<a name="l00356"></a>00356             <span class="keywordtype">char</span> nback[50];
-<a name="l00357"></a>00357             sprintf(nback, <span class="stringliteral">&quot;Stereo%d_back&quot;</span>, j+1);
+<a name="l00356"></a>00356             <span class="keywordtype">char</span> nfront[50];
+<a name="l00357"></a>00357             sprintf(nfront, <span class="stringliteral">&quot;Stereo%d_front&quot;</span>, j+1);
 <a name="l00358"></a>00358 
-<a name="l00359"></a>00359             TEveBox *front = drawBox(0, 0, zPos[j]-STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]-STEREO_SEP+RECOIL_SENSOR_THICKNESS, 0, kCyan, 100, nfront);
-<a name="l00360"></a>00360 
-<a name="l00361"></a>00361             <span class="keywordflow">if</span> (j % 2 == 0) { <span class="comment">// Alternate angle for back layer of a stereo pair.</span>
-<a name="l00362"></a>00362                 TEveBox *back = drawBox(0, 0, zPos[j]+STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]+STEREO_SEP+RECOIL_SENSOR_THICKNESS, STEREO_ANGLE, kCyan, 100, nback);
-<a name="l00363"></a>00363                 recoilTracker-&gt;AddElement(back);
-<a name="l00364"></a>00364             } <span class="keywordflow">else</span> {
-<a name="l00365"></a>00365                 TEveBox *back = drawBox(0, 0, zPos[j]+STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]+STEREO_SEP+RECOIL_SENSOR_THICKNESS, -STEREO_ANGLE, kCyan, 100, nback);
+<a name="l00359"></a>00359             <span class="keywordtype">char</span> nback[50];
+<a name="l00360"></a>00360             sprintf(nback, <span class="stringliteral">&quot;Stereo%d_back&quot;</span>, j+1);
+<a name="l00361"></a>00361 
+<a name="l00362"></a>00362             TEveBox *front = drawBox(0, 0, zPos[j]-STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]-STEREO_SEP+RECOIL_SENSOR_THICKNESS, 0, kCyan, 100, nfront);
+<a name="l00363"></a>00363 
+<a name="l00364"></a>00364             <span class="keywordflow">if</span> (j % 2 == 0) { <span class="comment">// Alternate angle for back layer of a stereo pair.</span>
+<a name="l00365"></a>00365                 TEveBox *back = drawBox(0, 0, zPos[j]+STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]+STEREO_SEP+RECOIL_SENSOR_THICKNESS, STEREO_ANGLE, kCyan, 100, nback);
 <a name="l00366"></a>00366                 recoilTracker-&gt;AddElement(back);
-<a name="l00367"></a>00367             }
-<a name="l00368"></a>00368 
-<a name="l00369"></a>00369             recoilTracker-&gt;AddElement(front);
-<a name="l00370"></a>00370         }
+<a name="l00367"></a>00367             } <span class="keywordflow">else</span> {
+<a name="l00368"></a>00368                 TEveBox *back = drawBox(0, 0, zPos[j]+STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]+STEREO_SEP+RECOIL_SENSOR_THICKNESS, -STEREO_ANGLE, kCyan, 100, nback);
+<a name="l00369"></a>00369                 recoilTracker-&gt;AddElement(back);
+<a name="l00370"></a>00370             }
 <a name="l00371"></a>00371 
-<a name="l00372"></a>00372         <span class="keywordtype">int</span> module1 = 1;
-<a name="l00373"></a>00373         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; 5; ++x) {
-<a name="l00374"></a>00374             <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; 2; ++y) {
-<a name="l00375"></a>00375 
-<a name="l00376"></a>00376                 <span class="keywordtype">char</span> name[50];
-<a name="l00377"></a>00377                 sprintf(name,<span class="stringliteral">&quot;Mono1_%d&quot;</span>,module1);
-<a name="l00378"></a>00378                 ++module1;
-<a name="l00379"></a>00379 
-<a name="l00380"></a>00380                 <span class="keywordflow">if</span> (x % 2 != 0) { <span class="comment">// Alternate mono layer z by defined separation.</span>
-<a name="l00381"></a>00381                     TEveBox *front = drawBox(xPos[x], yPos[y], zPos[4]-MONO_SEP, mono_x_width, mono_y_width, zPos[4]-MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kCyan, 100, name);
-<a name="l00382"></a>00382                     recoilTracker-&gt;AddElement(front);
-<a name="l00383"></a>00383                 } <span class="keywordflow">else</span> {
-<a name="l00384"></a>00384                     TEveBox *back = drawBox(xPos[x], yPos[y], zPos[4]+MONO_SEP, mono_x_width, mono_y_width, zPos[4]+MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kCyan, 100, name);
-<a name="l00385"></a>00385                     recoilTracker-&gt;AddElement(back);
-<a name="l00386"></a>00386                 }
-<a name="l00387"></a>00387             }
-<a name="l00388"></a>00388         }
-<a name="l00389"></a>00389 
-<a name="l00390"></a>00390         <span class="keywordtype">int</span> module2 = 1;
-<a name="l00391"></a>00391         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; 5; ++x) {
-<a name="l00392"></a>00392             <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; 2; ++y) {
-<a name="l00393"></a>00393 
-<a name="l00394"></a>00394                 <span class="keywordtype">char</span> name[50];
-<a name="l00395"></a>00395                 sprintf(name,<span class="stringliteral">&quot;Mono2_%d&quot;</span>,module2);
-<a name="l00396"></a>00396                 module2++;
-<a name="l00397"></a>00397 
-<a name="l00398"></a>00398                 <span class="keywordflow">if</span> (x % 2 != 0) { <span class="comment">// Alternate mono layer z by defined separation.</span>
-<a name="l00399"></a>00399                     TEveBox *front = drawBox(xPos[x], yPos[y], zPos[5]-MONO_SEP, mono_x_width, mono_y_width, zPos[5]-MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kCyan, 100, name);
-<a name="l00400"></a>00400                     recoilTracker-&gt;AddElement(front);
-<a name="l00401"></a>00401                 } <span class="keywordflow">else</span> {
-<a name="l00402"></a>00402                     TEveBox *back = drawBox(xPos[x], yPos[y], zPos[5]+MONO_SEP, mono_x_width, mono_y_width, zPos[5]+MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kCyan, 100, name);
-<a name="l00403"></a>00403                     recoilTracker-&gt;AddElement(back);
-<a name="l00404"></a>00404                 }
-<a name="l00405"></a>00405             }
-<a name="l00406"></a>00406         }
-<a name="l00407"></a>00407 
-<a name="l00408"></a>00408         <span class="keywordflow">return</span> recoilTracker;
-<a name="l00409"></a>00409     }
+<a name="l00372"></a>00372             recoilTracker-&gt;AddElement(front);
+<a name="l00373"></a>00373         }
+<a name="l00374"></a>00374 
+<a name="l00375"></a>00375         <span class="keywordtype">int</span> module1 = 1;
+<a name="l00376"></a>00376         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; 5; ++x) {
+<a name="l00377"></a>00377             <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; 2; ++y) {
+<a name="l00378"></a>00378 
+<a name="l00379"></a>00379                 <span class="keywordtype">char</span> name[50];
+<a name="l00380"></a>00380                 sprintf(name,<span class="stringliteral">&quot;Mono1_%d&quot;</span>,module1);
+<a name="l00381"></a>00381                 ++module1;
+<a name="l00382"></a>00382 
+<a name="l00383"></a>00383                 <span class="keywordflow">if</span> (x % 2 != 0) { <span class="comment">// Alternate mono layer z by defined separation.</span>
+<a name="l00384"></a>00384                     TEveBox *front = drawBox(xPos[x], yPos[y], zPos[4]-MONO_SEP, mono_x_width, mono_y_width, zPos[4]-MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kCyan, 100, name);
+<a name="l00385"></a>00385                     recoilTracker-&gt;AddElement(front);
+<a name="l00386"></a>00386                 } <span class="keywordflow">else</span> {
+<a name="l00387"></a>00387                     TEveBox *back = drawBox(xPos[x], yPos[y], zPos[4]+MONO_SEP, mono_x_width, mono_y_width, zPos[4]+MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kCyan, 100, name);
+<a name="l00388"></a>00388                     recoilTracker-&gt;AddElement(back);
+<a name="l00389"></a>00389                 }
+<a name="l00390"></a>00390             }
+<a name="l00391"></a>00391         }
+<a name="l00392"></a>00392 
+<a name="l00393"></a>00393         <span class="keywordtype">int</span> module2 = 1;
+<a name="l00394"></a>00394         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> x = 0; x &lt; 5; ++x) {
+<a name="l00395"></a>00395             <span class="keywordflow">for</span> (<span class="keywordtype">int</span> y = 0; y &lt; 2; ++y) {
+<a name="l00396"></a>00396 
+<a name="l00397"></a>00397                 <span class="keywordtype">char</span> name[50];
+<a name="l00398"></a>00398                 sprintf(name,<span class="stringliteral">&quot;Mono2_%d&quot;</span>,module2);
+<a name="l00399"></a>00399                 module2++;
+<a name="l00400"></a>00400 
+<a name="l00401"></a>00401                 <span class="keywordflow">if</span> (x % 2 != 0) { <span class="comment">// Alternate mono layer z by defined separation.</span>
+<a name="l00402"></a>00402                     TEveBox *front = drawBox(xPos[x], yPos[y], zPos[5]-MONO_SEP, mono_x_width, mono_y_width, zPos[5]-MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kCyan, 100, name);
+<a name="l00403"></a>00403                     recoilTracker-&gt;AddElement(front);
+<a name="l00404"></a>00404                 } <span class="keywordflow">else</span> {
+<a name="l00405"></a>00405                     TEveBox *back = drawBox(xPos[x], yPos[y], zPos[5]+MONO_SEP, mono_x_width, mono_y_width, zPos[5]+MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kCyan, 100, name);
+<a name="l00406"></a>00406                     recoilTracker-&gt;AddElement(back);
+<a name="l00407"></a>00407                 }
+<a name="l00408"></a>00408             }
+<a name="l00409"></a>00409         }
 <a name="l00410"></a>00410 
-<a name="l00411"></a>00411 }
+<a name="l00411"></a>00411         <span class="keywordflow">return</span> recoilTracker;
+<a name="l00412"></a>00412     }
+<a name="l00413"></a>00413 
+<a name="l00414"></a>00414 }
 </pre></div></div>
 </div>
 <hr class="footer"/><address class="footer"><small>Generated by&#160;
