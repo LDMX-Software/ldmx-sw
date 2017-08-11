@@ -401,7 +401,7 @@
     <volume name="Si_volume">
       <materialref ref="G4_Si0x271c1c0"/>
       <solidref ref="Si_hexagon"/>
-      <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="SensDet" auxvalue="EcalSD"/>
     </volume>
 
     <volume name="em_calorimeters">
@@ -2376,6 +2376,7 @@
 
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
       <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="Ecal"/>
     </volume>
   </structure>
 
