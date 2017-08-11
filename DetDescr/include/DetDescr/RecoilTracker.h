@@ -4,8 +4,8 @@
  * @author JeremyMcCormick, SLAC
  */
 
-#ifndef DETDESCR_RECOILTRACK_H_
-#define DETDESCR_RECOILTRACK_H_
+#ifndef DETDESCR_RECOILTRACKER_H_
+#define DETDESCR_RECOILTRACKER_H_
 
 // LDMX
 #include "DetDescr/DetectorElementImpl.h"
