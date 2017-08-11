@@ -189,7 +189,7 @@
     <volume name="back_hcal_Scintillator_volume">
       <materialref ref="Scintillator"/>
       <solidref ref="back_hcal_Scintillatorbox"/>
-      <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="SensDet" auxvalue="HcalSD"/>
     </volume>
 
     <!--Top/Bottom Wrap Structures -->
@@ -200,7 +200,7 @@
     <volume name="wrap_TB_hcal_Scintillator_volume">
       <materialref ref="Scintillator"/>
       <solidref ref="wrap_TB_hcal_Scintillatorbox"/>
-      <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="SensDet" auxvalue="HcalSD"/>
     </volume>
 
     <!--Left/Right Wrap Structures -->
@@ -211,7 +211,7 @@
     <volume name="wrap_LR_hcal_Scintillator_volume">
       <materialref ref="Scintillator"/>
       <solidref ref="wrap_LR_hcal_Scintillatorbox"/>
-      <auxiliary auxtype="SensDet" auxvalue="HcalSD1"/>
+      <auxiliary auxtype="SensDet" auxvalue="HcalSD"/>
     </volume>
 
     <volume name="hadronic_calorimeter">
@@ -281,6 +281,7 @@
 
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
       <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="Hcal"/>
     </volume>
   </structure>
 
