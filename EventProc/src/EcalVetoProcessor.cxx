@@ -322,7 +322,7 @@ namespace ldmx {
         detID_.unpack();
         int layer = detID_.getFieldValue("layer");
         int cellid = detID_.getFieldValue("cell");
-        int moduleid = detID_.getFieldValue("module");
+        int moduleid = detID_.getFieldValue("module_position");
         int combinedid = cellid*10+moduleid;
         return (std::make_pair(layer, combinedid));
     }
