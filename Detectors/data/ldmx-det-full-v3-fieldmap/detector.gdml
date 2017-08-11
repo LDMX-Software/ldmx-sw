@@ -188,9 +188,9 @@
   
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v3-fieldmap-magnet"/>
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v3-fieldmap"/>
       <auxiliary auxtype="Author" auxvalue="Omar Moreno, Andrew Whitbeck"/>
-      <auxiliary auxtype="Description" auxvalue="The v3 detector with a full 3D field map and magnet material."/>
+      <auxiliary auxtype="Description" auxvalue="The v3 detector with a full 3D field map."/>
     </auxiliary>
     
     <!-- define sensitive detectors -->
