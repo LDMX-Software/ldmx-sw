@@ -48,8 +48,8 @@
 <a name="l00008"></a><a class="code" href="classldmx_1_1RootPersistencyMessenger.html#aadc74c4859c40ab669c9575c49aad193">00008</a>     <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#aadc74c4859c40ab669c9575c49aad193">RootPersistencyMessenger::RootPersistencyMessenger</a>(<a class="code" href="classldmx_1_1RootPersistencyManager.html" title="Provides a G4PersistencyManager implemention with SimEvent output.">RootPersistencyManager</a>* rootIO) :
 <a name="l00009"></a>00009             rootIO_(rootIO) {
 <a name="l00010"></a>00010 
-<a name="l00011"></a>00011         <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#a647803d62bea67d97f64e667840c0226">rootDir_</a> = <span class="keyword">new</span> G4UIdirectory(<span class="stringliteral">&quot;/ldmx/persistency/root/&quot;</span>);
-<a name="l00012"></a>00012         <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#a647803d62bea67d97f64e667840c0226">rootDir_</a>-&gt;SetGuidance(<span class="stringliteral">&quot;ROOT persistency commands for writing events&quot;</span>);
+<a name="l00011"></a>00011         rootDir_ = <span class="keyword">new</span> G4UIdirectory(<span class="stringliteral">&quot;/ldmx/persistency/root/&quot;</span>);
+<a name="l00012"></a>00012         rootDir_-&gt;SetGuidance(<span class="stringliteral">&quot;ROOT persistency commands for writing events&quot;</span>);
 <a name="l00013"></a>00013 
 <a name="l00014"></a>00014         rootFileCmd_ = <span class="keyword">new</span> G4UIcommand(<span class="stringliteral">&quot;/ldmx/persistency/root/file&quot;</span>, <span class="keyword">this</span>);
 <a name="l00015"></a>00015         G4UIparameter* filename = <span class="keyword">new</span> G4UIparameter(<span class="stringliteral">&quot;filename&quot;</span>, <span class="charliteral">&#39;s&#39;</span>, <span class="keyword">false</span>);
@@ -77,76 +77,75 @@
 <a name="l00037"></a>00037         comprCmd_-&gt;AvailableForStates(G4ApplicationState::G4State_Idle);
 <a name="l00038"></a>00038         comprCmd_-&gt;SetGuidance(<span class="stringliteral">&quot;Set the output file compression level (1-9).&quot;</span>);
 <a name="l00039"></a>00039 
-<a name="l00040"></a>00040         <span class="comment">/*</span>
-<a name="l00041"></a>00041 <span class="comment">         modeCmd_ = new G4UIcommand(&quot;/ldmx/persistency/root/mode&quot;, this);</span>
-<a name="l00042"></a>00042 <span class="comment">         G4UIparameter* mode = new G4UIparameter(&quot;mode&quot;, &#39;s&#39;, false);</span>
-<a name="l00043"></a>00043 <span class="comment">         modeCmd_-&gt;SetParameter(mode);</span>
-<a name="l00044"></a>00044 <span class="comment">         modeCmd_-&gt;AvailableForStates(G4ApplicationState::G4State_Idle);</span>
-<a name="l00045"></a>00045 <span class="comment">         modeCmd_-&gt;SetGuidance(&quot;Set the file mode: new update recreate&quot;);</span>
-<a name="l00046"></a>00046 <span class="comment">         */</span>
-<a name="l00047"></a>00047 
-<a name="l00048"></a>00048         hitContribsCmd_ = <span class="keyword">new</span> G4UIcmdWithABool(<span class="stringliteral">&quot;/ldmx/persistency/root/enableHitContribs&quot;</span>, <span class="keyword">this</span>);
-<a name="l00049"></a>00049         G4UIparameter* enable = <span class="keyword">new</span> G4UIparameter(<span class="stringliteral">&quot;enable&quot;</span>, <span class="charliteral">&#39;b&#39;</span>, <span class="keyword">true</span>);
-<a name="l00050"></a>00050         hitContribsCmd_-&gt;SetParameter(enable);
-<a name="l00051"></a>00051         hitContribsCmd_-&gt;AvailableForStates(G4ApplicationState::G4State_Idle);
-<a name="l00052"></a>00052         hitContribsCmd_-&gt;SetGuidance(<span class="stringliteral">&quot;Enable hit contributions for SimCalorimeterHits (on by default)&quot;</span>);
-<a name="l00053"></a>00053 
-<a name="l00054"></a>00054         compressContribsCmd_ = <span class="keyword">new</span> G4UIcmdWithABool(<span class="stringliteral">&quot;/ldmx/persistency/root/compressHitContribs&quot;</span>, <span class="keyword">this</span>);
-<a name="l00055"></a>00055         G4UIparameter* compress = <span class="keyword">new</span> G4UIparameter(<span class="stringliteral">&quot;enable&quot;</span>, <span class="charliteral">&#39;b&#39;</span>, <span class="keyword">true</span>);
-<a name="l00056"></a>00056         compressContribsCmd_-&gt;SetParameter(compress);
-<a name="l00057"></a>00057         compressContribsCmd_-&gt;AvailableForStates(G4ApplicationState::G4State_Idle);
-<a name="l00058"></a>00058         compressContribsCmd_-&gt;SetGuidance(<span class="stringliteral">&quot;Compress hit contributions by matching SimParticle and PDG code&quot;</span>);
-<a name="l00059"></a>00059     }
-<a name="l00060"></a>00060 
-<a name="l00061"></a><a class="code" href="classldmx_1_1RootPersistencyMessenger.html#aaeb5f066b31925fdac15887a1783c75b">00061</a>     <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#aaeb5f066b31925fdac15887a1783c75b">RootPersistencyMessenger::~RootPersistencyMessenger</a>() {
-<a name="l00062"></a>00062         <span class="keyword">delete</span> rootFileCmd_;
-<a name="l00063"></a>00063         <span class="keyword">delete</span> verboseCmd_;
-<a name="l00064"></a>00064         <span class="keyword">delete</span> enableCmd_;
-<a name="l00065"></a>00065         <span class="keyword">delete</span> disableCmd_;
-<a name="l00066"></a>00066         <span class="keyword">delete</span> comprCmd_;
-<a name="l00067"></a>00067         <span class="comment">//delete modeCmd_;</span>
-<a name="l00068"></a>00068         <span class="keyword">delete</span> <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#a647803d62bea67d97f64e667840c0226">rootDir_</a>;
-<a name="l00069"></a>00069     }
-<a name="l00070"></a>00070 
-<a name="l00071"></a><a class="code" href="classldmx_1_1RootPersistencyMessenger.html#aa696160702c28d556bcd632062a69e4e">00071</a>     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#aa696160702c28d556bcd632062a69e4e">RootPersistencyMessenger::SetNewValue</a>(G4UIcommand* command, G4String newValues) {
-<a name="l00072"></a>00072 
-<a name="l00073"></a>00073         <span class="comment">// Is ROOT IO enabled?</span>
-<a name="l00074"></a>00074         <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1RootPersistencyManager.html#af3516eda2c73f7a241130658e63516d6">RootPersistencyManager::getInstance</a>()) {
-<a name="l00075"></a>00075             <span class="keywordflow">if</span> (command == rootFileCmd_) {
-<a name="l00076"></a>00076                 <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#a8a9d382265624e4a4a4e305a48c02cb5">rootIO_</a>-&gt;<a class="code" href="classldmx_1_1RootPersistencyManager.html#a59ba1a0cd4d5fb41b46c79d5bbc8757e">setFileName</a>(newValues);
-<a name="l00077"></a>00077             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == verboseCmd_) {
-<a name="l00078"></a>00078                 <span class="keywordtype">int</span> verboseLevel = std::stoi(newValues);
-<a name="l00079"></a>00079                 <span class="keywordflow">if</span> (verboseLevel &gt; 4) {
-<a name="l00080"></a>00080                     verboseLevel = 4;
-<a name="l00081"></a>00081                 } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (verboseLevel &lt; 1) {
-<a name="l00082"></a>00082                     verboseLevel = 1;
-<a name="l00083"></a>00083                 }
-<a name="l00084"></a>00084                 <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#a8a9d382265624e4a4a4e305a48c02cb5">rootIO_</a>-&gt;SetVerboseLevel(verboseLevel);
-<a name="l00085"></a>00085             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == disableCmd_) {
-<a name="l00086"></a>00086                 G4PersistencyCenter::GetPersistencyCenter()-&gt;DeletePersistencyManager();
-<a name="l00087"></a>00087                 <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#a8a9d382265624e4a4a4e305a48c02cb5">rootIO_</a> = <span class="keyword">nullptr</span>;
-<a name="l00088"></a>00088             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == comprCmd_) {
-<a name="l00089"></a>00089                 <span class="keywordtype">int</span> compr = std::stoi(newValues);
-<a name="l00090"></a>00090                 <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#a8a9d382265624e4a4a4e305a48c02cb5">rootIO_</a>-&gt;setCompressionLevel(compr);
-<a name="l00091"></a>00091             } <span class="comment">/*else if (command == modeCmd_) {</span>
-<a name="l00092"></a>00092 <span class="comment">             rootIO_-&gt;getWriter()-&gt;setMode(newValues);</span>
-<a name="l00093"></a>00093 <span class="comment">             }*/</span><span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == hitContribsCmd_) {
-<a name="l00094"></a>00094                 <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#a8a9d382265624e4a4a4e305a48c02cb5">rootIO_</a>-&gt;<a class="code" href="classldmx_1_1RootPersistencyManager.html#a66dd3f6fd0009430a50f36b1e87f6ddf">setEnableHitContribs</a>(hitContribsCmd_-&gt;GetNewBoolValue(newValues.c_str()));
-<a name="l00095"></a>00095             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == compressContribsCmd_) {
-<a name="l00096"></a>00096                 <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#a8a9d382265624e4a4a4e305a48c02cb5">rootIO_</a>-&gt;<a class="code" href="classldmx_1_1RootPersistencyManager.html#a0de59e28c39f19273e5004f904656396">setCompressHitContribs</a>(compressContribsCmd_-&gt;GetNewBoolValue(newValues.c_str()));
-<a name="l00097"></a>00097             }
-<a name="l00098"></a>00098         } <span class="keywordflow">else</span> {
-<a name="l00099"></a>00099             <span class="comment">// Re-enable ROOT IO.</span>
-<a name="l00100"></a>00100             <span class="keywordflow">if</span> (command == enableCmd_) {
-<a name="l00101"></a>00101                 <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#a8a9d382265624e4a4a4e305a48c02cb5">rootIO_</a> = <span class="keyword">new</span> <a class="code" href="classldmx_1_1RootPersistencyManager.html" title="Provides a G4PersistencyManager implemention with SimEvent output.">RootPersistencyManager</a>();
-<a name="l00102"></a>00102             } <span class="keywordflow">else</span> {
-<a name="l00103"></a>00103                 <span class="comment">// Print a warning if user tries to send commands when IO is disabled.</span>
-<a name="l00104"></a>00104                 std::cout &lt;&lt; <span class="stringliteral">&quot;WARNING: Command was ignored.  ROOT IO is disabled!&quot;</span> &lt;&lt; std::endl;
-<a name="l00105"></a>00105             }
-<a name="l00106"></a>00106         }
-<a name="l00107"></a>00107     }
-<a name="l00108"></a>00108 
-<a name="l00109"></a>00109 } <span class="comment">// namespace sim</span>
+<a name="l00040"></a>00040         hitContribsCmd_ = <span class="keyword">new</span> G4UIcmdWithABool(<span class="stringliteral">&quot;/ldmx/persistency/root/enableHitContribs&quot;</span>, <span class="keyword">this</span>);
+<a name="l00041"></a>00041         G4UIparameter* enable = <span class="keyword">new</span> G4UIparameter(<span class="stringliteral">&quot;enable&quot;</span>, <span class="charliteral">&#39;b&#39;</span>, <span class="keyword">true</span>);
+<a name="l00042"></a>00042         hitContribsCmd_-&gt;SetParameter(enable);
+<a name="l00043"></a>00043         hitContribsCmd_-&gt;AvailableForStates(G4ApplicationState::G4State_Idle);
+<a name="l00044"></a>00044         hitContribsCmd_-&gt;SetGuidance(<span class="stringliteral">&quot;Enable hit contributions for SimCalorimeterHits (on by default)&quot;</span>);
+<a name="l00045"></a>00045 
+<a name="l00046"></a>00046         compressContribsCmd_ = <span class="keyword">new</span> G4UIcmdWithABool(<span class="stringliteral">&quot;/ldmx/persistency/root/compressHitContribs&quot;</span>, <span class="keyword">this</span>);
+<a name="l00047"></a>00047         G4UIparameter* compress = <span class="keyword">new</span> G4UIparameter(<span class="stringliteral">&quot;enable&quot;</span>, <span class="charliteral">&#39;b&#39;</span>, <span class="keyword">true</span>);
+<a name="l00048"></a>00048         compressContribsCmd_-&gt;SetParameter(compress);
+<a name="l00049"></a>00049         compressContribsCmd_-&gt;AvailableForStates(G4ApplicationState::G4State_Idle);
+<a name="l00050"></a>00050         compressContribsCmd_-&gt;SetGuidance(<span class="stringliteral">&quot;Compress hit contributions by matching SimParticle and PDG code&quot;</span>);
+<a name="l00051"></a>00051     
+<a name="l00052"></a>00052         dropCmd_ = <span class="keyword">new</span> G4UIcmdWithAString{<span class="stringliteral">&quot;/ldmx/persistency/root/dropCol&quot;</span>, <span class="keyword">this</span>}; 
+<a name="l00053"></a>00053         dropCmd_-&gt;AvailableForStates(G4ApplicationState::G4State_Idle);
+<a name="l00054"></a>00054         dropCmd_-&gt;SetGuidance(<span class="stringliteral">&quot;Drop the hits associated with the specified collection.&quot;</span>); 
+<a name="l00055"></a>00055     }
+<a name="l00056"></a>00056 
+<a name="l00057"></a><a class="code" href="classldmx_1_1RootPersistencyMessenger.html#aaeb5f066b31925fdac15887a1783c75b">00057</a>     <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#aaeb5f066b31925fdac15887a1783c75b">RootPersistencyMessenger::~RootPersistencyMessenger</a>() {
+<a name="l00058"></a>00058         <span class="keyword">delete</span> rootFileCmd_;
+<a name="l00059"></a>00059         <span class="keyword">delete</span> verboseCmd_;
+<a name="l00060"></a>00060         <span class="keyword">delete</span> enableCmd_;
+<a name="l00061"></a>00061         <span class="keyword">delete</span> disableCmd_;
+<a name="l00062"></a>00062         <span class="keyword">delete</span> comprCmd_;
+<a name="l00063"></a>00063         <span class="comment">//delete modeCmd_;</span>
+<a name="l00064"></a>00064         <span class="keyword">delete</span> rootDir_;
+<a name="l00065"></a>00065         <span class="keyword">delete</span> dropCmd_; 
+<a name="l00066"></a>00066     }
+<a name="l00067"></a>00067 
+<a name="l00068"></a><a class="code" href="classldmx_1_1RootPersistencyMessenger.html#aa696160702c28d556bcd632062a69e4e">00068</a>     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1RootPersistencyMessenger.html#aa696160702c28d556bcd632062a69e4e">RootPersistencyMessenger::SetNewValue</a>(G4UIcommand* command, G4String newValues) {
+<a name="l00069"></a>00069 
+<a name="l00070"></a>00070         <span class="comment">// Is ROOT IO enabled?</span>
+<a name="l00071"></a>00071         <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1RootPersistencyManager.html#af3516eda2c73f7a241130658e63516d6">RootPersistencyManager::getInstance</a>()) {
+<a name="l00072"></a>00072             <span class="keywordflow">if</span> (command == rootFileCmd_) {
+<a name="l00073"></a>00073                 rootIO_-&gt;setFileName(newValues);
+<a name="l00074"></a>00074             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == verboseCmd_) {
+<a name="l00075"></a>00075                 <span class="keywordtype">int</span> verboseLevel = std::stoi(newValues);
+<a name="l00076"></a>00076                 <span class="keywordflow">if</span> (verboseLevel &gt; 4) {
+<a name="l00077"></a>00077                     verboseLevel = 4;
+<a name="l00078"></a>00078                 } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (verboseLevel &lt; 1) {
+<a name="l00079"></a>00079                     verboseLevel = 1;
+<a name="l00080"></a>00080                 }
+<a name="l00081"></a>00081                 rootIO_-&gt;SetVerboseLevel(verboseLevel);
+<a name="l00082"></a>00082             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == disableCmd_) {
+<a name="l00083"></a>00083                 G4PersistencyCenter::GetPersistencyCenter()-&gt;DeletePersistencyManager();
+<a name="l00084"></a>00084                 rootIO_ = <span class="keyword">nullptr</span>;
+<a name="l00085"></a>00085             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == comprCmd_) {
+<a name="l00086"></a>00086                 <span class="keywordtype">int</span> compr = std::stoi(newValues);
+<a name="l00087"></a>00087                 rootIO_-&gt;setCompressionLevel(compr);
+<a name="l00088"></a>00088             } <span class="comment">/*else if (command == modeCmd_) {</span>
+<a name="l00089"></a>00089 <span class="comment">             rootIO_-&gt;getWriter()-&gt;setMode(newValues);</span>
+<a name="l00090"></a>00090 <span class="comment">             }*/</span><span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == hitContribsCmd_) {
+<a name="l00091"></a>00091                 rootIO_-&gt;setEnableHitContribs(hitContribsCmd_-&gt;GetNewBoolValue(newValues.c_str()));
+<a name="l00092"></a>00092             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == compressContribsCmd_) {
+<a name="l00093"></a>00093                 rootIO_-&gt;setCompressHitContribs(compressContribsCmd_-&gt;GetNewBoolValue(newValues.c_str()));
+<a name="l00094"></a>00094             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == dropCmd_) { 
+<a name="l00095"></a>00095                 rootIO_-&gt;dropCollection(newValues); 
+<a name="l00096"></a>00096             }
+<a name="l00097"></a>00097         } <span class="keywordflow">else</span> {
+<a name="l00098"></a>00098             <span class="comment">// Re-enable ROOT IO.</span>
+<a name="l00099"></a>00099             <span class="keywordflow">if</span> (command == enableCmd_) {
+<a name="l00100"></a>00100                 rootIO_ = <span class="keyword">new</span> <a class="code" href="classldmx_1_1RootPersistencyManager.html" title="Provides a G4PersistencyManager implemention with SimEvent output.">RootPersistencyManager</a>();
+<a name="l00101"></a>00101             } <span class="keywordflow">else</span> {
+<a name="l00102"></a>00102                 <span class="comment">// Print a warning if user tries to send commands when IO is disabled.</span>
+<a name="l00103"></a>00103                 std::cout &lt;&lt; <span class="stringliteral">&quot;WARNING: Command was ignored.  ROOT IO is disabled!&quot;</span> &lt;&lt; std::endl;
+<a name="l00104"></a>00104             }
+<a name="l00105"></a>00105         }
+<a name="l00106"></a>00106     }
+<a name="l00107"></a>00107 
+<a name="l00108"></a>00108 } <span class="comment">// namespace sim</span>
 </pre></div></div>
 </div>
 <hr class="footer"/><address class="footer"><small>Generated by&#160;

@@ -68,6 +68,7 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1PrimaryGeneratorAction.html#a6a5421cbeca63b3d925423006e86e801">setUseBeamspot</a> (bool usebs)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1PrimaryGeneratorAction.html#a6dd9e514d7fb02ca397ce4f2e933ad88">setBeamspotXSize</a> (double bssize)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1PrimaryGeneratorAction.html#a6b75ac29adc327b0f5b1e742ecb18416">setBeamspotYSize</a> (double bssize)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1PrimaryGeneratorAction.html#a6b8c88487781a3f0e9b5cbf2da016e4d">setBeamspotZSize</a> (double bssize)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">G4VPrimaryGenerator *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1PrimaryGeneratorAction.html#a849134d292a0846a69d9601be1d1281b">getGenerator</a> (int i)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1PrimaryGeneratorAction.html#afd0651bbc5f210d441ae8ac58bd67b8b">getIndexMPG</a> ()</td></tr>
 <tr><td colspan="2"><h2><a name="pri-methods"></a>
@@ -101,7 +102,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00011">11</a> of file <a class="el" href="PrimaryGeneratorAction_8cxx_source.html">PrimaryGeneratorAction.cxx</a>.</p>
 
-<p>References <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00105">generator_</a>.</p>
+<p>References <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00111">generator_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                   :
         G4VUserPrimaryGeneratorAction(), 
         <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a74f702538cc20aa7ffbc060460a85bcb">random_</a>(<span class="keyword">new</span> TRandom) {
@@ -156,7 +157,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00041">41</a> of file <a class="el" href="PrimaryGeneratorAction_8cxx_source.html">PrimaryGeneratorAction.cxx</a>.</p>
 
-<p>References <a class="el" href="PluginManager_8cxx_source.html#l00065">ldmx::PluginManager::generatePrimary()</a>, <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00105">generator_</a>, <a class="el" href="UserPrimaryParticleInformation_8h_source.html#l00037">ldmx::UserPrimaryParticleInformation::setHepEvtStatus()</a>, and <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00070">smearingBeamspot()</a>.</p>
+<p>References <a class="el" href="PluginManager_8cxx_source.html#l00065">ldmx::PluginManager::generatePrimary()</a>, <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00111">generator_</a>, <a class="el" href="UserPrimaryParticleInformation_8h_source.html#l00037">ldmx::UserPrimaryParticleInformation::setHepEvtStatus()</a>, and <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00070">smearingBeamspot()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                 {
         
         <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> ngens = <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a389608e8ab6ebbd650fe676c97ac620d">generator_</a>.size();
@@ -204,9 +205,9 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Return the ith generator. </p>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00086">86</a> of file <a class="el" href="PrimaryGeneratorAction_8h_source.html">PrimaryGeneratorAction.h</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00092">92</a> of file <a class="el" href="PrimaryGeneratorAction_8h_source.html">PrimaryGeneratorAction.h</a>.</p>
 
-<p>References <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00105">generator_</a>.</p>
+<p>References <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00111">generator_</a>.</p>
 
 <p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00039">ldmx::PrimaryGeneratorMessenger::SetNewValue()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a389608e8ab6ebbd650fe676c97ac620d">generator_</a>.at(i); }
@@ -228,7 +229,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Get the index of the last generator in the list of generators. </p>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00092">92</a> of file <a class="el" href="PrimaryGeneratorAction_8h_source.html">PrimaryGeneratorAction.h</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00098">98</a> of file <a class="el" href="PrimaryGeneratorAction_8h_source.html">PrimaryGeneratorAction.h</a>.</p>
 
 <p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00039">ldmx::PrimaryGeneratorMessenger::SetNewValue()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> indexMpg_; }
@@ -293,6 +294,35 @@ Private Attributes</h2></td></tr>
 </pre></div>
 </div>
 </div>
+<a class="anchor" id="a6b8c88487781a3f0e9b5cbf2da016e4d"></a><!-- doxytag: member="ldmx::PrimaryGeneratorAction::setBeamspotZSize" ref="a6b8c88487781a3f0e9b5cbf2da016e4d" args="(double bssize)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::PrimaryGeneratorAction::setBeamspotZSize </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>bssize</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Set beamspot size in z. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">beamspot</td><td>size </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00089">89</a> of file <a class="el" href="PrimaryGeneratorAction_8h_source.html">PrimaryGeneratorAction.h</a>.</p>
+
+<p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00039">ldmx::PrimaryGeneratorMessenger::SetNewValue()</a>.</p>
+<div class="fragment"><pre class="fragment">{ beamspotZSize_ = bssize; };
+</pre></div>
+</div>
+</div>
 <a class="anchor" id="a49395520e29ea4628eee67dddc01e782"></a><!-- doxytag: member="ldmx::PrimaryGeneratorAction::setPrimaryGenerator" ref="a49395520e29ea4628eee67dddc01e782" args="(G4VPrimaryGenerator *primaryGenerator)" -->
 <div class="memitem">
 <div class="memproto">
@@ -317,7 +347,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00020">20</a> of file <a class="el" href="PrimaryGeneratorAction_8cxx_source.html">PrimaryGeneratorAction.cxx</a>.</p>
 
-<p>References <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00105">generator_</a>.</p>
+<p>References <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00111">generator_</a>.</p>
 
 <p>Referenced by <a class="el" href="PrimaryGeneratorMessenger_8cxx_source.html#l00039">ldmx::PrimaryGeneratorMessenger::SetNewValue()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                                    {
@@ -396,13 +426,14 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00070">70</a> of file <a class="el" href="PrimaryGeneratorAction_8cxx_source.html">PrimaryGeneratorAction.cxx</a>.</p>
 
-<p>References <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00108">random_</a>.</p>
+<p>References <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00114">random_</a>.</p>
 
 <p>Referenced by <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00041">GeneratePrimaries()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                {
         
-        <span class="keywordtype">double</span> IPWidthX = beamspotXSize_;
-        <span class="keywordtype">double</span> IPWidthY = beamspotYSize_;
+        <span class="keywordtype">double</span> IPWidthX = beamspotXSize_/2.;
+        <span class="keywordtype">double</span> IPWidthY = beamspotYSize_/2.;
+        <span class="keywordtype">double</span> IPWidthZ = beamspotZSize_/2.;
 
         <span class="keywordtype">int</span> nPV = <span class="keyword">event</span>-&gt;GetNumberOfPrimaryVertex();
         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> iPV = 0; iPV &lt; nPV; ++iPV) {
@@ -412,7 +443,8 @@ Private Attributes</h2></td></tr>
             <span class="keywordtype">double</span> z0_i = curPV-&gt;GetZ0();
             <span class="keywordtype">double</span> x0_f = <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a74f702538cc20aa7ffbc060460a85bcb">random_</a>-&gt;Uniform( x0_i - IPWidthX, x0_i + IPWidthX );
             <span class="keywordtype">double</span> y0_f = <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a74f702538cc20aa7ffbc060460a85bcb">random_</a>-&gt;Uniform( y0_i - IPWidthY, y0_i + IPWidthY );
-            curPV-&gt;SetPosition( x0_f, y0_f, z0_i );
+            <span class="keywordtype">double</span> z0_f = <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a74f702538cc20aa7ffbc060460a85bcb">random_</a>-&gt;Uniform( z0_i - IPWidthZ, z0_i + IPWidthZ );            
+            curPV-&gt;SetPosition( x0_f, y0_f, z0_f );
         }        
 
     }
@@ -432,9 +464,9 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>The primary generator. </p>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00105">105</a> of file <a class="el" href="PrimaryGeneratorAction_8h_source.html">PrimaryGeneratorAction.h</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00111">111</a> of file <a class="el" href="PrimaryGeneratorAction_8h_source.html">PrimaryGeneratorAction.h</a>.</p>
 
-<p>Referenced by <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00041">GeneratePrimaries()</a>, <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00086">getGenerator()</a>, <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00011">PrimaryGeneratorAction()</a>, and <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00020">setPrimaryGenerator()</a>.</p>
+<p>Referenced by <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00041">GeneratePrimaries()</a>, <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00092">getGenerator()</a>, <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00011">PrimaryGeneratorAction()</a>, and <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00020">setPrimaryGenerator()</a>.</p>
 
 </div>
 </div>
@@ -450,7 +482,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Random number generator. </p>
 
-<p>Definition at line <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00108">108</a> of file <a class="el" href="PrimaryGeneratorAction_8h_source.html">PrimaryGeneratorAction.h</a>.</p>
+<p>Definition at line <a class="el" href="PrimaryGeneratorAction_8h_source.html#l00114">114</a> of file <a class="el" href="PrimaryGeneratorAction_8h_source.html">PrimaryGeneratorAction.h</a>.</p>
 
 <p>Referenced by <a class="el" href="PrimaryGeneratorAction_8cxx_source.html#l00070">smearingBeamspot()</a>.</p>
 
