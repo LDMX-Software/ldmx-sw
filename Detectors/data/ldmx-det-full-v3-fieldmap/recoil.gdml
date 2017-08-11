@@ -87,7 +87,7 @@
     <volume name="LDMXRecoilL14ModuleVolume_component0Sensor0">
       <materialref ref="Silicon"/>
       <solidref ref="LDMXRecoilL14ModuleVolume_component0Sensor0Box"/>
-      <auxiliary auxtype="SensDet" auxvalue="RecoilSD1"/>
+      <auxiliary auxtype="SensDet" auxvalue="RecoilSD"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
     </volume>
     <volume name="LDMXRecoilL14ModuleVolume_component0">
@@ -119,7 +119,7 @@
     <volume name="LDMXRecoilL56ModuleVolume_component0Sensor0">
       <materialref ref="Silicon"/>
       <solidref ref="LDMXRecoilL56ModuleVolume_component0Sensor0Box"/>
-      <auxiliary auxtype="SensDet" auxvalue="RecoilSD1"/>
+      <auxiliary auxtype="SensDet" auxvalue="RecoilSD"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
     </volume>
     <volume name="LDMXRecoilL56ModuleVolume_component0">
@@ -275,6 +275,7 @@
       </physvol>
       
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+      <auxiliary auxtype="DetElem" auxvalue="RecoilTracker"/>
       
     </volume>    
   </structure>
