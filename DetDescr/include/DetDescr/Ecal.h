@@ -14,7 +14,7 @@ namespace ldmx {
 
     /**
      * @class EcalLayer
-     * @brief DetectorElement for ECal layers
+     * @brief DetectorElement definition for each ECal Si sensor station
      */
     class EcalStation : public DetectorElementImpl {
 
@@ -30,22 +30,28 @@ namespace ldmx {
                 return layerNumber_;
             }
 
+            /**
+             * Get the module number.
+             * @return The module number.
+             */
+            int getModuleNumber() {
+                return moduleNumber_;
+            }
+
         private:
 
             /** The layer number (0-33 in v3 geometry). */
             int layerNumber_{-1};
 
             /** The module number (0-7). */
-            int module_{-1};
+            int moduleNumber_{-1};
 
     };
 
     /**
      * @class Ecal
-     * @brief The top-level DetectorElement for the ECal.
-     * @note
-     * This DetectorElement is compatible with the ECal geometry
-     * from the 'v1' and 'v2' detector models.
+     * @brief The top-level DetectorElement for the ECal
+     * @note Compatible with the v3 GDML detector definition.
      */
     class Ecal : public DetectorElementImpl {
 
@@ -60,7 +66,7 @@ namespace ldmx {
              * @param layerNumber The layer number.
              * @note The layers are numbered from 1, not 0.
              */
-            EcalStation* getEcalStation(int layerNumber);
+            EcalStation* getEcalStation(int stationNumber);
 
             void initialize();
 

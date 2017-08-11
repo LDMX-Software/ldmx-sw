@@ -20,13 +20,13 @@ namespace ldmx {
 
         int copynum = support_->GetNumber();
 
-        // Follows v3 convention where layer number is copynum divided by 7. --JMc
+        // Follows convention where layer number is copynum divided by 7. --JMc
         layerNumber_ = copynum / 7;
 
-        // Follows v3 convention where module number is copynum modulo 7. --JMc
-        module_ = copynum % 7;
+        // Follows convention where module number is copynum modulo 7. --JMc
+        moduleNumber_ = copynum % 7;
 
-        // Ecal stations are named using the copynum.
+        // Ecal stations are named using their node copynum.
         std::stringstream ss;
         ss << std::setfill('0') << std::setw(3) << copynum;
         name_ = "EcalStation" + ss.str();
@@ -34,12 +34,12 @@ namespace ldmx {
         // Create the bit-packed ID for the detector component.
         auto detID = getDetectorID();
         detID->setFieldValue(1, layerNumber_);
-        detID->setFieldValue(2, module_);
+        detID->setFieldValue(2, moduleNumber_);
         id_ = getDetectorID()->pack();
     }
 
-    EcalStation* Ecal::getEcalStation(int num) {
-        return static_cast<EcalStation*>(children_[num - 1]);
+    EcalStation* Ecal::getEcalStation(int stationNumber) {
+        return static_cast<EcalStation*>(children_[stationNumber]);
     }
 
     Ecal::Ecal() {

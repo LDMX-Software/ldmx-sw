@@ -22,7 +22,6 @@ namespace ldmx {
     Hcal::Hcal() {
 
         name_ = "Hcal";
-
         //detID_ = new HcalDetectorID();
     }
 
