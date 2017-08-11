@@ -41,6 +41,7 @@
       <li><a href="functions_func.html"><span>Functions</span></a></li>
       <li class="current"><a href="functions_vars.html"><span>Variables</span></a></li>
       <li><a href="functions_type.html"><span>Typedefs</span></a></li>
+      <li><a href="functions_enum.html"><span>Enumerations</span></a></li>
       <li><a href="functions_rela.html"><span>Related&#160;Functions</span></a></li>
     </ul>
   </div>
@@ -155,9 +156,12 @@
 : <a class="el" href="classldmx_1_1PluginMessenger.html#aca33915f555d2ec549cedd1d949fbb72">ldmx::PluginMessenger</a>
 </li>
 <li>detID_
-: <a class="el" href="classldmx_1_1EcalHitIO.html#a86496eb808fd28c195136a61f578ad0d">ldmx::EcalHitIO</a>
-, <a class="el" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">ldmx::CalorimeterSD</a>
+: <a class="el" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">ldmx::CalorimeterSD</a>
+, <a class="el" href="classldmx_1_1EcalHitIO.html#a86496eb808fd28c195136a61f578ad0d">ldmx::EcalHitIO</a>
 , <a class="el" href="classldmx_1_1TrackerSD.html#ac1dee56bfea9dc5f8a5b10b8e604c213">ldmx::TrackerSD</a>
+</li>
+<li>dropCollectionNames_
+: <a class="el" href="classldmx_1_1RootPersistencyManager.html#ab21c4101d1986fad54aa0c2862ebe21c">ldmx::RootPersistencyManager</a>
 </li>
 <li>dropKeepRules_
 : <a class="el" href="classldmx_1_1Process.html#a57a85917c44cebead62755504021e101">ldmx::Process</a>
@@ -171,6 +175,9 @@
 </li>
 <li>ecalLayerEdepReadout_
 : <a class="el" href="classldmx_1_1EcalVetoResult.html#ab6c31b926d9897fbfe6dd31e787545b8">ldmx::EcalVetoResult</a>
+</li>
+<li>ecalMap_
+: <a class="el" href="classldmx_1_1EcalHexReadout.html#affdf0e47ee886fb03aac6fbd6af6b641">ldmx::EcalHexReadout</a>
 </li>
 <li>edepContribs_
 : <a class="el" href="classldmx_1_1SimCalorimeterHit.html#ac6677684c8d32695dac38c9827b0d9da">ldmx::SimCalorimeterHit</a>
@@ -203,8 +210,8 @@
 : <a class="el" href="classldmx_1_1EventConstants.html#adef82b0410adf3e5908baf4554949726">ldmx::EventConstants</a>
 </li>
 <li>eventHeader_
-: <a class="el" href="classldmx_1_1RootPrimaryGenerator.html#a78a3081fb3df7ae6a7254c3a0300a36b">ldmx::RootPrimaryGenerator</a>
-, <a class="el" href="classldmx_1_1RootPersistencyManager.html#afe6d70a67f72ec09b516c5f56e86e25d">ldmx::RootPersistencyManager</a>
+: <a class="el" href="classldmx_1_1RootPersistencyManager.html#afe6d70a67f72ec09b516c5f56e86e25d">ldmx::RootPersistencyManager</a>
+, <a class="el" href="classldmx_1_1RootPrimaryGenerator.html#a78a3081fb3df7ae6a7254c3a0300a36b">ldmx::RootPrimaryGenerator</a>
 </li>
 <li>eventPrintPlugin_
 : <a class="el" href="classldmx_1_1EventPrintPluginMessenger.html#ae02479c5d50681976aa415600e4f1e76">ldmx::EventPrintPluginMessenger</a>
@@ -234,11 +241,11 @@
 <li>fieldValues_
 : <a class="el" href="classldmx_1_1DetectorID.html#aeee33f86c1bd1a0b088fbcf3b8e4a345">ldmx::DetectorID</a>
 </li>
-<li>fileName_
-: <a class="el" href="classldmx_1_1EventFile.html#ab5d511f6982e89b1bc7607e71c2113ff">ldmx::EventFile</a>
-</li>
 <li>filename_
 : <a class="el" href="classldmx_1_1RootPrimaryGenerator.html#a66dc9274807f56b350a7b1ec6ac5a5c2">ldmx::RootPrimaryGenerator</a>
+</li>
+<li>fileName_
+: <a class="el" href="classldmx_1_1EventFile.html#ab5d511f6982e89b1bc7607e71c2113ff">ldmx::EventFile</a>
 </li>
 <li>floatParameters_
 : <a class="el" href="classldmx_1_1RunHeader.html#a8eb967192842a53c6f841f9de9ab38ba">ldmx::RunHeader</a>
@@ -462,12 +469,12 @@
 <li>particleType_
 : <a class="el" href="classldmx_1_1BiasingMessenger.html#a93c8cfdbc115515f657e2c2c5ddc896b">ldmx::BiasingMessenger</a>
 </li>
-<li>passName_
-: <a class="el" href="classldmx_1_1EventImpl.html#ab4df13f077cecf5f94b95f543eef3e50">ldmx::EventImpl</a>
-</li>
 <li>passname_
 : <a class="el" href="classldmx_1_1ConfigurePython.html#acc7e183a3417d290890d47476ab50aa8">ldmx::ConfigurePython</a>
 , <a class="el" href="classldmx_1_1Process.html#a70b5aec21b2817ac15ddcef867b0efd5">ldmx::Process</a>
+</li>
+<li>passName_
+: <a class="el" href="classldmx_1_1EventImpl.html#ab4df13f077cecf5f94b95f543eef3e50">ldmx::EventImpl</a>
 </li>
 <li>pdgCodeContribs_
 : <a class="el" href="classldmx_1_1SimCalorimeterHit.html#abfe10cadd46ca92a107d998daa6aa682">ldmx::SimCalorimeterHit</a>
@@ -486,8 +493,7 @@
 : <a class="el" href="classldmx_1_1PluginManager.html#afafcc382ac0df414e9638539328a8fb2">ldmx::PluginManager</a>
 </li>
 <li>pluginManager_
-: <a class="el" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">ldmx::RunManager</a>
-, <a class="el" href="classldmx_1_1PluginMessenger.html#a6c59f38dbed77150dc8e027b4b40f515">ldmx::PluginMessenger</a>
+: <a class="el" href="classldmx_1_1PluginMessenger.html#a6c59f38dbed77150dc8e027b4b40f515">ldmx::PluginMessenger</a>
 </li>
 <li>pluginMessenger_
 : <a class="el" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">ldmx::RunManager</a>
@@ -509,9 +515,11 @@
 : <a class="el" href="classldmx_1_1PrimaryGeneratorMessenger.html#afaa5f41c718192eb91075c6fe96e2fa0">ldmx::PrimaryGeneratorMessenger</a>
 </li>
 <li>process_
-: <a class="el" href="classldmx_1_1XsecBiasingOperator.html#a34458e24ad9cf767a139f8e562169ca3">ldmx::XsecBiasingOperator</a>
-, <a class="el" href="classldmx_1_1BiasingMessenger.html#abbfc37b6f6090b4d5a48a1e2029c55a0">ldmx::BiasingMessenger</a>
+: <a class="el" href="classldmx_1_1BiasingMessenger.html#abbfc37b6f6090b4d5a48a1e2029c55a0">ldmx::BiasingMessenger</a>
 , <a class="el" href="classldmx_1_1EventProcessor.html#ae4d5efe10b50e887f4e71a8c00b0eac0">ldmx::EventProcessor</a>
+</li>
+<li>PROCESS_MAP
+: <a class="el" href="classldmx_1_1SimParticle.html#ab724e64e477568c04f88cbb10c1b1baa">ldmx::SimParticle</a>
 </li>
 <li>processNames_
 : <a class="el" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">ldmx::TrackProcessFilter</a>
@@ -540,15 +548,11 @@
 : <a class="el" href="classldmx_1_1EventPrintPluginMessenger.html#aab6a6fad2401ff3be8f929df63304d05">ldmx::EventPrintPluginMessenger</a>
 </li>
 <li>result_
-: <a class="el" href="classldmx_1_1HcalVetoProcessor.html#a6077cae52f9c3e25d27556f7260348a9">ldmx::HcalVetoProcessor</a>
-, <a class="el" href="classldmx_1_1TriggerProcessor.html#ac9e0a5057a2a1412b364e86c1bf3abe6">ldmx::TriggerProcessor</a>
+: <a class="el" href="classldmx_1_1TriggerProcessor.html#ac9e0a5057a2a1412b364e86c1bf3abe6">ldmx::TriggerProcessor</a>
+, <a class="el" href="classldmx_1_1HcalVetoProcessor.html#a6077cae52f9c3e25d27556f7260348a9">ldmx::HcalVetoProcessor</a>
 </li>
 <li>rootDir_
-: <a class="el" href="classldmx_1_1RootPersistencyMessenger.html#a647803d62bea67d97f64e667840c0226">ldmx::RootPersistencyMessenger</a>
-, <a class="el" href="classldmx_1_1PrimaryGeneratorMessenger.html#a4564eed99329f2b539fe763b22f1c8a5">ldmx::PrimaryGeneratorMessenger</a>
-</li>
-<li>rootIO_
-: <a class="el" href="classldmx_1_1RootPersistencyMessenger.html#a8a9d382265624e4a4a4e305a48c02cb5">ldmx::RootPersistencyMessenger</a>
+: <a class="el" href="classldmx_1_1PrimaryGeneratorMessenger.html#a4564eed99329f2b539fe763b22f1c8a5">ldmx::PrimaryGeneratorMessenger</a>
 </li>
 <li>rootOpenCmd_
 : <a class="el" href="classldmx_1_1PrimaryGeneratorMessenger.html#ac854023517a6290453d5b0e3cce54355">ldmx::PrimaryGeneratorMessenger</a>
@@ -666,10 +670,6 @@
 <h3><a class="anchor" id="index_x"></a>- x -</h3><ul>
 <li>xsecFactorCmd_
 : <a class="el" href="classldmx_1_1PhotonuclearXsecBiasingMessenger.html#a45dca9ee4ab17d37dd4bbfa4e3128f22">ldmx::PhotonuclearXsecBiasingMessenger</a>
-</li>
-<li>xsecTrans_
-: <a class="el" href="classldmx_1_1BiasingMessenger.html#aff31490ecc7a88fe8dcaa672ac24caf0">ldmx::BiasingMessenger</a>
-, <a class="el" href="classldmx_1_1XsecBiasingOperator.html#a740420d0f84ebce545e89cb86be89d2e">ldmx::XsecBiasingOperator</a>
 </li>
 <li>xwgtup_
 : <a class="el" href="classldmx_1_1LHEEvent.html#a5ec0d22bbc4fa17594060d908921fde5">ldmx::LHEEvent</a>

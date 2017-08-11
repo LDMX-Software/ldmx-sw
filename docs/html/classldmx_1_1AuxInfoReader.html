@@ -107,7 +107,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00034">34</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
+<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00035">35</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                                        :
             <a class="code" href="classldmx_1_1AuxInfoReader.html#ae5859c46ebfdc353f8074343ab1631c7">parser_</a>(theParser), <a class="code" href="classldmx_1_1AuxInfoReader.html#ab509aa742e7a949816cd749f8801afc4">eval_</a>(<span class="keyword">new</span> G4GDMLEvaluator) {
     }
@@ -129,7 +129,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Class destructor. </p>
 
-<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00038">38</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
+<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00039">39</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
 
 <p>References <a class="el" href="AuxInfoReader_8h_source.html#l00116">eval_</a>.</p>
 <div class="fragment"><pre class="fragment">                                  {
@@ -155,7 +155,7 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Assign auxiliary info to volumes such as sensitive detectors. </p>
 
-<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00157">157</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
+<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00160">160</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
 
 <p>References <a class="el" href="VisAttributesStore_8h_source.html#l00032">ldmx::VisAttributesStore::getInstance()</a>, <a class="el" href="MagneticFieldStore_8h_source.html#l00032">ldmx::MagneticFieldStore::getInstance()</a>, <a class="el" href="MagneticFieldStore_8h_source.html#l00041">ldmx::MagneticFieldStore::getMagneticField()</a>, <a class="el" href="VisAttributesStore_8h_source.html#l00042">ldmx::VisAttributesStore::getVisAttributes()</a>, and <a class="el" href="AuxInfoReader_8h_source.html#l00111">parser_</a>.</p>
 
@@ -257,9 +257,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00463">463</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
+<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00466">466</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
 
-<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00043">readGlobalAuxInfo()</a>.</p>
+<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00044">readGlobalAuxInfo()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                                                    {
 
         <span class="keywordtype">int</span> detectorVersion = atoi(auxValue.c_str());
@@ -330,11 +330,11 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00219">219</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
+<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00222">222</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
 
 <p>References <a class="el" href="DetectorIDStore_8h_source.html#l00050">ldmx::DetectorIDStore::addID()</a>, and <a class="el" href="DetectorIDStore_8h_source.html#l00032">ldmx::DetectorIDStore::getInstance()</a>.</p>
 
-<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00043">readGlobalAuxInfo()</a>.</p>
+<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00044">readGlobalAuxInfo()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                                              {
 
         std::cout &lt;&lt; <span class="stringliteral">&quot;Creating DetectorID &quot;</span> &lt;&lt; idName &lt;&lt; std::endl;
@@ -427,11 +427,11 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00276">276</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
+<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00279">279</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
 
 <p>References <a class="el" href="MagneticFieldStore_8h_source.html#l00050">ldmx::MagneticFieldStore::addMagneticField()</a>, <a class="el" href="AuxInfoReader_8h_source.html#l00116">eval_</a>, and <a class="el" href="MagneticFieldStore_8h_source.html#l00032">ldmx::MagneticFieldStore::getInstance()</a>.</p>
 
-<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00043">readGlobalAuxInfo()</a>.</p>
+<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00044">readGlobalAuxInfo()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                                                       {
 
         <span class="comment">// Find type of the mag field.</span>
@@ -561,9 +561,9 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00370">370</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
+<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00373">373</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
 
-<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00043">readGlobalAuxInfo()</a>.</p>
+<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00044">readGlobalAuxInfo()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                                        {
 
         <span class="keywordtype">bool</span> storeTrajectories = <span class="keyword">true</span>;
@@ -624,11 +624,11 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00069">69</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
+<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00070">70</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
 
 <p>References <a class="el" href="DetectorIDStore_8h_source.html#l00041">ldmx::DetectorIDStore::getID()</a>, and <a class="el" href="DetectorIDStore_8h_source.html#l00032">ldmx::DetectorIDStore::getInstance()</a>.</p>
 
-<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00043">readGlobalAuxInfo()</a>.</p>
+<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00044">readGlobalAuxInfo()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                                                             {
 
         std::cout &lt;&lt; <span class="stringliteral">&quot;Creating SensitiveDetector &quot;</span> &lt;&lt; theSensDetName &lt;&lt; std::endl;
@@ -700,6 +700,8 @@ Private Attributes</h2></td></tr>
             sd = <span class="keyword">new</span> HcalSD(theSensDetName, hcName, subdetID, detID);
         } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (sdType == <span class="stringliteral">&quot;CalorimeterSD&quot;</span>) {
             sd = <span class="keyword">new</span> CalorimeterSD(theSensDetName, hcName, subdetID, detID);
+        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (sdType == <span class="stringliteral">&quot;ScoringPlaneSD&quot;</span>) { 
+            sd = <span class="keyword">new</span> ScoringPlaneSD(theSensDetName, hcName, subdetID, detID); 
         } <span class="keywordflow">else</span> {
             std::cerr &lt;&lt; <span class="stringliteral">&quot;Unknown SensitiveDetector type: &quot;</span> &lt;&lt; sdType &lt;&lt; std::endl;
             G4Exception(<span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, FatalException, <span class="stringliteral">&quot;Unknown SensitiveDetector type in aux info.&quot;</span>);
@@ -752,11 +754,11 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00395">395</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
+<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00398">398</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
 
 <p>References <a class="el" href="VisAttributesStore_8h_source.html#l00051">ldmx::VisAttributesStore::addVisAttributes()</a>, and <a class="el" href="VisAttributesStore_8h_source.html#l00032">ldmx::VisAttributesStore::getInstance()</a>.</p>
 
-<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00043">readGlobalAuxInfo()</a>.</p>
+<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00044">readGlobalAuxInfo()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                                               {
 
         G4double rgba[4] = {1., 1., 1., 1.};
@@ -867,9 +869,9 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Read the global auxiliary information from the auxinfo block. </p>
 
-<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00043">43</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
+<p>Definition at line <a class="el" href="AuxInfoReader_8cxx_source.html#l00044">44</a> of file <a class="el" href="AuxInfoReader_8cxx_source.html">AuxInfoReader.cxx</a>.</p>
 
-<p>References <a class="el" href="AuxInfoReader_8cxx_source.html#l00463">createDetectorHeader()</a>, <a class="el" href="AuxInfoReader_8cxx_source.html#l00219">createDetectorID()</a>, <a class="el" href="AuxInfoReader_8cxx_source.html#l00276">createMagneticField()</a>, <a class="el" href="AuxInfoReader_8cxx_source.html#l00370">createRegion()</a>, <a class="el" href="AuxInfoReader_8cxx_source.html#l00069">createSensitiveDetector()</a>, <a class="el" href="AuxInfoReader_8cxx_source.html#l00395">createVisAttributes()</a>, and <a class="el" href="AuxInfoReader_8h_source.html#l00111">parser_</a>.</p>
+<p>References <a class="el" href="AuxInfoReader_8cxx_source.html#l00466">createDetectorHeader()</a>, <a class="el" href="AuxInfoReader_8cxx_source.html#l00222">createDetectorID()</a>, <a class="el" href="AuxInfoReader_8cxx_source.html#l00279">createMagneticField()</a>, <a class="el" href="AuxInfoReader_8cxx_source.html#l00373">createRegion()</a>, <a class="el" href="AuxInfoReader_8cxx_source.html#l00070">createSensitiveDetector()</a>, <a class="el" href="AuxInfoReader_8cxx_source.html#l00398">createVisAttributes()</a>, and <a class="el" href="AuxInfoReader_8h_source.html#l00111">parser_</a>.</p>
 
 <p>Referenced by <a class="el" href="DetectorConstruction_8cxx_source.html#l00013">ldmx::DetectorConstruction::Construct()</a>.</p>
 <div class="fragment"><pre class="fragment">                                          {
@@ -915,7 +917,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="AuxInfoReader_8h_source.html#l00116">116</a> of file <a class="el" href="AuxInfoReader_8h_source.html">AuxInfoReader.h</a>.</p>
 
-<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00276">createMagneticField()</a>, and <a class="el" href="AuxInfoReader_8cxx_source.html#l00038">~AuxInfoReader()</a>.</p>
+<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00279">createMagneticField()</a>, and <a class="el" href="AuxInfoReader_8cxx_source.html#l00039">~AuxInfoReader()</a>.</p>
 
 </div>
 </div>
@@ -933,7 +935,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="AuxInfoReader_8h_source.html#l00111">111</a> of file <a class="el" href="AuxInfoReader_8h_source.html">AuxInfoReader.h</a>.</p>
 
-<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00157">assignAuxInfoToVolumes()</a>, and <a class="el" href="AuxInfoReader_8cxx_source.html#l00043">readGlobalAuxInfo()</a>.</p>
+<p>Referenced by <a class="el" href="AuxInfoReader_8cxx_source.html#l00160">assignAuxInfoToVolumes()</a>, and <a class="el" href="AuxInfoReader_8cxx_source.html#l00044">readGlobalAuxInfo()</a>.</p>
 
 </div>
 </div>

@@ -55,36 +55,33 @@
 <a name="l00021"></a>00021 
 <a name="l00022"></a>00022     std::string <a class="code" href="classldmx_1_1BiasingMessenger.html#a34837db202ffe38eefba504f8756b752">BiasingMessenger::volume_</a>{<span class="stringliteral">&quot;target&quot;</span>};
 <a name="l00023"></a>00023 
-<a name="l00024"></a>00024     <span class="keywordtype">double</span> <a class="code" href="classldmx_1_1BiasingMessenger.html#aff31490ecc7a88fe8dcaa672ac24caf0">BiasingMessenger::xsecTrans_</a>{1.0};
+<a name="l00024"></a><a class="code" href="classldmx_1_1BiasingMessenger.html#af467d914ad203d123d9cf684b5a03885">00024</a>     <a class="code" href="classldmx_1_1BiasingMessenger.html#af467d914ad203d123d9cf684b5a03885">BiasingMessenger::BiasingMessenger</a>() { 
 <a name="l00025"></a>00025 
-<a name="l00026"></a><a class="code" href="classldmx_1_1BiasingMessenger.html#af467d914ad203d123d9cf684b5a03885">00026</a>     <a class="code" href="classldmx_1_1BiasingMessenger.html#af467d914ad203d123d9cf684b5a03885">BiasingMessenger::BiasingMessenger</a>() { 
+<a name="l00026"></a>00026         biasingDir_-&gt;SetGuidance(<span class="stringliteral">&quot;LDMX physics biasing commands.&quot;</span>);
 <a name="l00027"></a>00027 
-<a name="l00028"></a>00028         biasingDir_-&gt;SetGuidance(<span class="stringliteral">&quot;LDMX physics biasing commands.&quot;</span>);
-<a name="l00029"></a>00029 
-<a name="l00030"></a>00030         enableBiasingCmd_-&gt;AvailableForStates(G4ApplicationState::G4State_PreInit);
-<a name="l00031"></a>00031         enableBiasingCmd_-&gt;SetGuidance(<span class="stringliteral">&quot;Enable physics biasing.&quot;</span>);
-<a name="l00032"></a>00032 
-<a name="l00033"></a>00033         particleTypeCmd_-&gt;SetParameterName(<span class="stringliteral">&quot;type&quot;</span>, <span class="keyword">true</span>); 
-<a name="l00034"></a>00034         particleTypeCmd_-&gt;AvailableForStates(G4ApplicationState::G4State_PreInit); 
-<a name="l00035"></a>00035         particleTypeCmd_-&gt;SetGuidance(<span class="stringliteral">&quot;The particle type to bias.&quot;</span>);
-<a name="l00036"></a>00036     }
-<a name="l00037"></a>00037 
-<a name="l00038"></a><a class="code" href="classldmx_1_1BiasingMessenger.html#a7dd06fa6a3eabaf632ee0af63cf81693">00038</a>     <a class="code" href="classldmx_1_1BiasingMessenger.html#a7dd06fa6a3eabaf632ee0af63cf81693">BiasingMessenger::~BiasingMessenger</a>() {
-<a name="l00039"></a>00039         <span class="keyword">delete</span> enableBiasingCmd_;
-<a name="l00040"></a>00040         <span class="keyword">delete</span> biasingDir_; 
-<a name="l00041"></a>00041     }
+<a name="l00028"></a>00028         enableBiasingCmd_-&gt;AvailableForStates(G4ApplicationState::G4State_PreInit);
+<a name="l00029"></a>00029         enableBiasingCmd_-&gt;SetGuidance(<span class="stringliteral">&quot;Enable physics biasing.&quot;</span>);
+<a name="l00030"></a>00030 
+<a name="l00031"></a>00031         particleTypeCmd_-&gt;SetParameterName(<span class="stringliteral">&quot;type&quot;</span>, <span class="keyword">true</span>); 
+<a name="l00032"></a>00032         particleTypeCmd_-&gt;AvailableForStates(G4ApplicationState::G4State_PreInit); 
+<a name="l00033"></a>00033         particleTypeCmd_-&gt;SetGuidance(<span class="stringliteral">&quot;The particle type to bias.&quot;</span>);
+<a name="l00034"></a>00034     }
+<a name="l00035"></a>00035 
+<a name="l00036"></a><a class="code" href="classldmx_1_1BiasingMessenger.html#a7dd06fa6a3eabaf632ee0af63cf81693">00036</a>     <a class="code" href="classldmx_1_1BiasingMessenger.html#a7dd06fa6a3eabaf632ee0af63cf81693">BiasingMessenger::~BiasingMessenger</a>() {
+<a name="l00037"></a>00037         <span class="keyword">delete</span> enableBiasingCmd_;
+<a name="l00038"></a>00038         <span class="keyword">delete</span> biasingDir_; 
+<a name="l00039"></a>00039     }
+<a name="l00040"></a>00040 
+<a name="l00041"></a><a class="code" href="classldmx_1_1BiasingMessenger.html#a905713faf6bbf0ae20b52a9bb26a745d">00041</a>     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1BiasingMessenger.html#a905713faf6bbf0ae20b52a9bb26a745d">BiasingMessenger::SetNewValue</a>(G4UIcommand* command, G4String newValues) { 
 <a name="l00042"></a>00042 
-<a name="l00043"></a><a class="code" href="classldmx_1_1BiasingMessenger.html#a905713faf6bbf0ae20b52a9bb26a745d">00043</a>     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1BiasingMessenger.html#a905713faf6bbf0ae20b52a9bb26a745d">BiasingMessenger::SetNewValue</a>(G4UIcommand* command, G4String newValues) { 
-<a name="l00044"></a>00044 
-<a name="l00045"></a>00045         <span class="keywordflow">if</span> (command == enableBiasingCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#a2fa4fd74cbb74b9fbb03e7de3251d3ba">biasingEnabled_</a> = <span class="keyword">true</span>; 
-<a name="l00046"></a>00046         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == particleTypeCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#a93c8cfdbc115515f657e2c2c5ddc896b">particleType_</a> = newValues;  
-<a name="l00047"></a>00047         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == processCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#abbfc37b6f6090b4d5a48a1e2029c55a0">process_</a> = newValues;
-<a name="l00048"></a>00048         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == thresholdCmd_)<a class="code" href="classldmx_1_1BiasingMessenger.html#a5e83b6f7b1b5f4d2a581467c72f13f89">threshold_</a> = G4UIcommand::ConvertToDouble(newValues);
-<a name="l00049"></a>00049         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == volumeCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#a34837db202ffe38eefba504f8756b752">volume_</a> = newValues;
-<a name="l00050"></a>00050         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == xsecTransCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#aff31490ecc7a88fe8dcaa672ac24caf0">xsecTrans_</a> = G4UIcommand::ConvertToDouble(newValues);
-<a name="l00051"></a>00051     }
-<a name="l00052"></a>00052 
-<a name="l00053"></a>00053 }
+<a name="l00043"></a>00043         <span class="keywordflow">if</span> (command == enableBiasingCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#a2fa4fd74cbb74b9fbb03e7de3251d3ba">biasingEnabled_</a> = <span class="keyword">true</span>; 
+<a name="l00044"></a>00044         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == particleTypeCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#a93c8cfdbc115515f657e2c2c5ddc896b">particleType_</a> = newValues;  
+<a name="l00045"></a>00045         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == processCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#abbfc37b6f6090b4d5a48a1e2029c55a0">process_</a> = newValues;
+<a name="l00046"></a>00046         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == thresholdCmd_)<a class="code" href="classldmx_1_1BiasingMessenger.html#a5e83b6f7b1b5f4d2a581467c72f13f89">threshold_</a> = G4UIcommand::ConvertToDouble(newValues);
+<a name="l00047"></a>00047         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == volumeCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#a34837db202ffe38eefba504f8756b752">volume_</a> = newValues;
+<a name="l00048"></a>00048     }
+<a name="l00049"></a>00049 
+<a name="l00050"></a>00050 }
 </pre></div></div>
 </div>
 <hr class="footer"/><address class="footer"><small>Generated by&#160;
