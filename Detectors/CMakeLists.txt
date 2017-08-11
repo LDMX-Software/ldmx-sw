@@ -1,31 +1,14 @@
-# install mojo to make sure GDML module names are absolute paths pointing to installed files
 set(detector_data ${CMAKE_CURRENT_SOURCE_DIR}/data)
 file(GLOB detector_dirs RELATIVE ${detector_data} ${detector_data}/*) 
 foreach(detector_dir ${detector_dirs})
   set(detector_path ${detector_data}/${detector_dir})
   if(IS_DIRECTORY ${detector_path})
     set(detector_file ${detector_path}/detector.gdml)
-    file(READ ${detector_file} detector_contents)
-    string(REGEX MATCHALL \"[A-Za-z_]*.gdml\" gdml_module_matches ${detector_contents})
-    foreach (gdml_module_match ${gdml_module_matches}) 
-      string(REPLACE "\"" "" gdml_module ${gdml_module_match})
-      set(gdml_module_path ${CMAKE_INSTALL_PREFIX}/data/detectors/${detector_dir}/${gdml_module})
-      string(REPLACE ${gdml_module} ${gdml_module_path} detector_contents ${detector_contents})
-    endforeach()
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/data/${detector_dir}/detector.gdml ${detector_contents})
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/data/${detector_dir}/detector.gdml DESTINATION data/detectors/${detector_dir} 
-        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE WORLD_READ)
     file(GLOB detector_files ${detector_path}/*.gdml)
     foreach(detector_file ${detector_files})
       get_filename_component(detector_file_name ${detector_file} NAME)  
-      if(NOT ${detector_file_name} MATCHES "detector.gdml") 
-        install(FILES ${detector_file} DESTINATION data/detectors/${detector_dir} 
-            PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE WORLD_READ)
-      endif()
+      install(FILES ${detector_file} DESTINATION data/detectors/${detector_dir} 
+              PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE WORLD_READ)
     endforeach()
-    if(EXISTS "${detector_path}/detector.root")
-        install(FILES ${detector_path}/detector.root DESTINATION data/detectors/${detector_dir}
-                PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE WORLD_READ)
-    endif()
   endif()
 endforeach()
