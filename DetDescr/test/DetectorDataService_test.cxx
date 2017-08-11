@@ -23,17 +23,6 @@ ostream& operator<<(ostream& stream, const vector<double>& pos) {
     return stream;
 }
 
-ostream& operator<<(ostream& stream, DetectorID::FieldValueList& id) {
-    stream << " with id [";
-    for (int i = 0; i < id.size(); i++) {
-        stream << id[i];
-        if (i != id.size() - 1)
-            stream << "/";    
-    }
-    stream << "]";
-    return stream;
-}
-
 void find(DetectorDataService* svc, DetectorElement* de, const char* indent = "    ") {
     DetectorElement* srch = nullptr;
 
@@ -84,7 +73,7 @@ int main(int argc, const char* argv[])  {
     std::cout << std::endl;
 
     DetectorID* decoder = nullptr;
-    DetectorID::FieldValueList values;
+    FieldValueList values;
 
     // Print ECal info.
     DetectorElement* ecal = top->findChild("Ecal");
@@ -100,6 +89,7 @@ int main(int argc, const char* argv[])  {
                 << ecalStation->getSupport()->GetName() << "> and layer num "
                 << ((EcalStation*)ecalStation)->getLayerNumber()
                 << ecalStation->getGlobalPosition()
+                << " and ID "
                 << values
                 << std::endl;
         find(svc, ecalStation);
@@ -120,6 +110,7 @@ int main(int argc, const char* argv[])  {
                 << hcalStation->getSupport()->GetName() << "> and station num "
                 << ((HcalStation*)hcalStation)->getStationNumber()
                 << hcalStation->getGlobalPosition()
+                << " and ID "
                 << values
                 << std::endl;
         find(svc, hcalStation);
@@ -141,6 +132,7 @@ int main(int argc, const char* argv[])  {
                         << taggerLayer->getSupport()->GetName() << " and layer num "
                         << ((TaggerStation*)taggerLayer)->getLayerNumber()
                         << taggerLayer->getGlobalPosition()
+                        << " and ID "
                         << values
                         << std::endl;
         find(svc, taggerLayer);
@@ -162,6 +154,7 @@ int main(int argc, const char* argv[])  {
                     << recoilTrackerLayer->getSupport()->GetName() << "> and layer num "
                     << ((TaggerStation*)recoilTrackerLayer)->getLayerNumber()
                     << recoilTrackerLayer->getGlobalPosition()
+                    << " and ID "
                     << values
                     << std::endl;
             find(svc, recoilTrackerLayer);
@@ -191,7 +184,6 @@ int main(int argc, const char* argv[])  {
     std::cout << std::endl;
 
     // Print trigger pad info.
-    /*
     DetectorElement* triggerPad = top->findChild("TriggerPadUp");
     decoder = triggerPad->getDetectorID();
     decoder->setRawValue(triggerPad->getID());
@@ -205,7 +197,6 @@ int main(int argc, const char* argv[])  {
     values = decoder->unpack();
     std::cout << "Got 'TriggerPadDown' with support " << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << values << std::endl;
     find(svc, triggerPad, "  ");
-    */
 
     // Delete the service object, which will delete the DetectorElement tree and the ROOT geometry manager.
     delete svc;
