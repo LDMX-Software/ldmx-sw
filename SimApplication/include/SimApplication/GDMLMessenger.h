@@ -7,11 +7,14 @@
 
 namespace ldmx {
 
+    class GDMLReadStructure;
+
     class GDMLMessenger : public G4UImessenger {
 
         public:
 
-            GDMLMessenger(G4GDMLParser*);
+            GDMLMessenger(G4GDMLParser*, GDMLReadStructure*);
+
             ~GDMLMessenger();
 
             void SetNewValue(G4UIcommand*, G4String);
@@ -19,8 +22,11 @@ namespace ldmx {
         private:
 
             G4GDMLParser* parser_;
+            GDMLReadStructure* gdmlRead_;
             G4UIdirectory* gdmlDir_ {new G4UIdirectory {"/ldmx/persistency/gdml/"}};
             G4UIcmdWithAString* writeCmd_ {new G4UIcmdWithAString {"/ldmx/persistency/gdml/write", this}};
+            G4UIcmdWithAString* readCmd_ {new G4UIcmdWithAString {"/ldmx/persistency/gdml/read", this}};
+            G4UIcmdWithAString* removeModuleCmd_ {new G4UIcmdWithAString {"/ldmx/persistency/gdml/removeModule", this}};
     };
 
 }

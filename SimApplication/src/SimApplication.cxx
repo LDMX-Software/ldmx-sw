@@ -5,6 +5,7 @@
 #include "SimApplication/RunManager.h"
 #include "SimApplication/SimApplicationMessenger.h"
 #include "SimApplication/GDMLMessenger.h"
+#include "SimApplication/GDMLReadStructure.h"
 
 // STL
 #include <vector>
@@ -41,13 +42,13 @@ namespace ldmx {
         G4RunManager* runManager = new RunManager;
 
         // Setup GDML parser and messenger.
-        G4GDMLParser* parser = new G4GDMLParser();
+        GDMLReadStructure* gdmlRead = new GDMLReadStructure;
+        G4GDMLParser* parser = new G4GDMLParser(gdmlRead);
         parser->SetAddPointerToName(false);
         parser->SetStripFlag(true);
         G4UImessenger* g4gdmlMessenger = new G4GDMLMessenger(parser);
-
         // Custom GDML messenger for exporting without pointers appended to names.
-        G4UImessenger* gdmlMessenger = new GDMLMessenger(parser);
+        G4UImessenger* gdmlMessenger = new GDMLMessenger(parser, gdmlRead);
 
         // Create application messenger.
         new SimApplicationMessenger();
