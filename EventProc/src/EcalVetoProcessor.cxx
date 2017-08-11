@@ -261,11 +261,13 @@ namespace ldmx {
 
         // Get the collection of Ecal scoring plane hits. If it doesn't exist,
         // don't bother adding any truth tracking information.
-        const TClonesArray* ecalSpHits{event.getCollection("EcalScoringPlaneHits")};
+
         std::vector<double> recoilP;
-        std::vector<float> recoilPos; 
-        if (ecalSpHits != nullptr) { 
-            
+        std::vector<float> recoilPos;
+
+        if (event.exists("EcalScoringPlaneHits")) {
+            const TClonesArray* ecalSpHits{event.getCollection("EcalScoringPlaneHits")};
+
             // Loop through all of the sim particles and find the recoil 
             // electron.
             const TClonesArray* simParticles{event.getCollection("SimParticles")};
@@ -299,7 +301,7 @@ namespace ldmx {
                     break;
                 } 
             }
-        } 
+        }
 
         result_.setVariables(nReadoutHits_, nLooseIsoHits_, nTightIsoHits_, summedDet_, summedOuter_, backSummedDet_,
                 summedLooseIso_, maxLooseIsoDep_, summedTightIso_, maxTightIsoDep_, maxCellDep_, showerRMS_,
