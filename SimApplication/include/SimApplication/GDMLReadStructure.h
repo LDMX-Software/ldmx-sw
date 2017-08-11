@@ -25,7 +25,7 @@ namespace ldmx {
                 removeModules_.push_back(moduleName);
             }
 
-            virtual void StructureRead(const xercesc::DOMElement* const structure) {
+            void StructureRead(const xercesc::DOMElement* const structure) {
 
                 if (removeModules_.size()) {
                     removeModules(const_cast<xercesc::DOMElement*>(structure), removeModules_);
@@ -37,6 +37,8 @@ namespace ldmx {
 
                 G4GDMLReadStructure::StructureRead(structure);
             }
+
+        private:
 
             void removeModules(xercesc::DOMElement* structure, const std::vector<std::string> moduleNames) {
                 static XMLCh* name_attr = xercesc::XMLString::transcode("name");
@@ -60,6 +62,7 @@ namespace ldmx {
                                                 if (std::find(moduleNames.begin(), moduleNames.end(), filename) != moduleNames.end()) {
                                                     try {
                                                         iterVol->getParentNode()->removeChild(iterVol);
+                                                        std::cout << "GDMLReadStructure: Module '" << filename << "' was removed!" << std::endl;
                                                     } catch (const xercesc::DOMException& err) {
                                                         throw new std::runtime_error(xercesc::XMLString::transcode(err.msg));
                                                     }
@@ -103,8 +106,8 @@ namespace ldmx {
                                                             const XMLCh* file_val = xercesc::XMLString::transcode(newFilename.c_str()); 
                                                             const_cast<xercesc::DOMElement*>(elem)->setAttribute(xercesc::XMLString::transcode("name"), file_val);
                                                         }
-                                                    }    
-                                                }                          
+                                                    }
+                                                }                   
                                             }
                                         }
                                     }
@@ -146,8 +149,7 @@ namespace ldmx {
             }
 
             // TODO: entity resolving
-            // - add directory from read path to GDML file for modules
-            // - for mag field use $LDMXSW_DIR/share/fieldmap
+            // - for mag field use $LDMXSW_DIR/data/fieldmap/$FILENAME 
 
         private:
 
