@@ -11,7 +11,8 @@ det_in = sys.argv[1]
 det_out = sys.argv[2]
                 
 p = Popen(['ldmx-sim'], stdin=PIPE)
-p.stdin.write("/persistency/gdml/read %s\n" % det_in)
+p.stdin.write("/ldmx/persistency/gdml/removeModule magnet.gdml\n")
+p.stdin.write("/ldmx/persistency/gdml/read %s\n" % det_in)
 p.stdin.write("/run/initialize\n")
 p.stdin.write("/ldmx/persistency/gdml/write %s\n" % det_out)
 p.stdin.write("exit\n")
