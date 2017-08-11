@@ -74,7 +74,7 @@ std::map&lt; std::string, bool &gt;&#160;</td><td class="memItemRight" valign="b
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Filters tracks based on name of detector region. </p>
 
-<p>Definition at line <a class="el" href="TrackFilter_8h_source.html#l00345">345</a> of file <a class="el" href="TrackFilter_8h_source.html">TrackFilter.h</a>.</p>
+<p>Definition at line <a class="el" href="TrackFilter_8h_source.html#l00343">343</a> of file <a class="el" href="TrackFilter_8h_source.html">TrackFilter.h</a>.</p>
 </div><hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="ac26d64ee128d0aee49a618526b8354ab"></a><!-- doxytag: member="ldmx::TrackRegionFilter::passes" ref="ac26d64ee128d0aee49a618526b8354ab" args="(const G4Track *aTrack)" -->
 <div class="memitem">
@@ -95,7 +95,7 @@ std::map&lt; std::string, bool &gt;&#160;</td><td class="memItemRight" valign="b
 
 <p>Implements <a class="el" href="classldmx_1_1TrackFilter.html#a8e381671a8a4670f8aa96bb23f3c902b">ldmx::TrackFilter</a>.</p>
 
-<p>Definition at line <a class="el" href="TrackFilter_8h_source.html#l00357">357</a> of file <a class="el" href="TrackFilter_8h_source.html">TrackFilter.h</a>.</p>
+<p>Definition at line <a class="el" href="TrackFilter_8h_source.html#l00355">355</a> of file <a class="el" href="TrackFilter_8h_source.html">TrackFilter.h</a>.</p>
 <div class="fragment"><pre class="fragment">                                               {
                 G4Region* region = aTrack-&gt;GetLogicalVolumeAtVertex()-&gt;GetRegion();
                 <span class="keywordflow">if</span> (regions_.find(region-&gt;GetName()) != regions_.end()) {
@@ -132,7 +132,7 @@ std::map&lt; std::string, bool &gt;&#160;</td><td class="memItemRight" valign="b
 
 <p>Reimplemented from <a class="el" href="classldmx_1_1TrackFilter.html#a0d5422eebc3cd5b000e24ac13dd1452f">ldmx::TrackFilter</a>.</p>
 
-<p>Definition at line <a class="el" href="TrackFilter_8h_source.html#l00366">366</a> of file <a class="el" href="TrackFilter_8h_source.html">TrackFilter.h</a>.</p>
+<p>Definition at line <a class="el" href="TrackFilter_8h_source.html#l00364">364</a> of file <a class="el" href="TrackFilter_8h_source.html">TrackFilter.h</a>.</p>
 <div class="fragment"><pre class="fragment">                                              {
                 os &lt;&lt; <span class="stringliteral">&quot;regions:&quot;</span>;
                 <span class="keywordflow">for</span> (<span class="keyword">auto</span> region : regions_) {
