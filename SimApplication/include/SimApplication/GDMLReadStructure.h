@@ -27,14 +27,21 @@ namespace ldmx {
 
             void StructureRead(const xercesc::DOMElement* const structure) {
 
+                // Remove modules that should not be loaded.
                 if (removeModules_.size()) {
                     removeModules(const_cast<xercesc::DOMElement*>(structure), removeModules_);
                 }
 
+                // Resolve module file relative paths using the detector data dir.
                 std::string detectorName = readDetectorName(structure->getParentNode());
                 std::string detectorDir = std::getenv("LDMXSW_DIR") + std::string("/data/detectors/") + detectorName;
                 resolveModules(structure, detectorDir);
+ 
+                // Resolve field map relative file path using the fieldmap data dir.
+                std::string fieldMapDir = std::getenv("LDMXSW_DIR") + std::string("/data/fieldmap");
+                resolveFieldMap(structure->getParentNode(), fieldMapDir);
 
+                // Activate the parser to read the modified document.
                 G4GDMLReadStructure::StructureRead(structure);
             }
 
@@ -148,8 +155,33 @@ namespace ldmx {
                 return detectorName;
             }
 
-            // TODO: entity resolving
-            // - for mag field use $LDMXSW_DIR/data/fieldmap/$FILENAME 
+            void resolveFieldMap(const xercesc::DOMNode* const gdml, const std::string& fieldMapDir) {
+                for (xercesc::DOMNode* iter = gdml->getFirstChild(); iter != 0; iter = iter->getNextSibling()) {
+                    const xercesc::DOMElement* const elem = dynamic_cast<xercesc::DOMElement*>(iter);
+                    static std::string userinfo_tagname = "userinfo";
+                    if (elem != 0 && xercesc::XMLString::transcode(elem->getTagName()) == userinfo_tagname) {
+                        const xercesc::DOMElement* const userinfo = dynamic_cast<xercesc::DOMElement*>(iter);  
+                        for (xercesc::DOMNode* infoIter = userinfo->getFirstChild(); infoIter != 0; infoIter = infoIter->getNextSibling()) {
+                            const xercesc::DOMElement* const aux1 = dynamic_cast<xercesc::DOMElement*>(infoIter);
+                            static XMLCh* auxtype_attrib = xercesc::XMLString::transcode("auxtype");
+                            if (aux1 && !xercesc::XMLString::compareString(aux1->getAttribute(auxtype_attrib), xercesc::XMLString::transcode("MagneticField"))) {
+                                for (xercesc::DOMNode* auxIter = aux1->getFirstChild(); auxIter != 0; auxIter = auxIter->getNextSibling()) {
+                                    const xercesc::DOMElement* const aux2 = dynamic_cast<xercesc::DOMElement*>(auxIter);
+                                    static XMLCh* auxvalue_attrib = xercesc::XMLString::transcode("auxvalue");
+                                    if (aux2 != 0 && !xercesc::XMLString::compareString(aux2->getAttribute(auxtype_attrib), xercesc::XMLString::transcode("File"))) {
+                                        std::string filename = xercesc::XMLString::transcode(aux2->getAttribute(auxvalue_attrib));
+                                        if (!std::fstream(filename).good()) {
+                                            std::string newFilename = fieldMapDir + "/" + filename;
+                                            const_cast<xercesc::DOMElement*>(aux2)->setAttribute(auxvalue_attrib, xercesc::XMLString::transcode(newFilename.c_str()));
+                                            std::cout << "GDMLReadStructure: Mag field file '" << filename << "' resolved to '" << newFilename << "'." << std::endl;
+                                        }
+                                    }
+                                } 
+                            }
+                        }
+                    }
+                }
+            }
 
         private:
 
