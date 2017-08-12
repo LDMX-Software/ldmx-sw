@@ -6,7 +6,6 @@ foreach(detector_dir ${detector_dirs})
     set(detector_file ${detector_path}/detector.gdml)
     file(GLOB detector_files ${detector_path}/*.gdml)
     foreach(detector_file ${detector_files})
-      get_filename_component(detector_file_name ${detector_file} NAME)  
       install(FILES ${detector_file} DESTINATION data/detectors/${detector_dir} 
               PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE WORLD_READ)
     endforeach()
