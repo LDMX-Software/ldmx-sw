@@ -59,43 +59,32 @@
       <fraction n="0.914708353747852" ref="C"/>
       <fraction n="0.0852916462521483" ref="H"/>
     </material>
-    <isotope N="175" Z="71" name="Lu175">
-      <atom unit="g/mole" value="174.941"/>
+    <isotope N="180" Z="74" name="W180">
+      <atom unit="g/mole" value="179.947"/>
     </isotope>
-    <isotope N="176" Z="71" name="Lu176">
-      <atom unit="g/mole" value="175.943"/>
+    <isotope N="182" Z="74" name="W182">
+      <atom unit="g/mole" value="181.948"/>
     </isotope>
-    <element name="Lu">
-      <fraction n="0.9741" ref="Lu175"/>
-      <fraction n="0.0259" ref="Lu176"/>
+    <isotope N="183" Z="74" name="W183">
+      <atom unit="g/mole" value="182.95"/>
+    </isotope>
+    <isotope N="184" Z="74" name="W184">
+      <atom unit="g/mole" value="183.951"/>
+    </isotope>
+    <isotope N="186" Z="74" name="W186">
+      <atom unit="g/mole" value="185.954"/>
+    </isotope>
+    <element name="W">
+      <fraction n="0.0012" ref="W180"/>
+      <fraction n="0.265" ref="W182"/>
+      <fraction n="0.1431" ref="W183"/>
+      <fraction n="0.3064" ref="W184"/>
+      <fraction n="0.2843" ref="W186"/>
     </element>
-    <isotope N="89" Z="39" name="Y89">
-      <atom unit="g/mole" value="88.9058"/>
-    </isotope>
-    <element name="Y">
-      <fraction n="1" ref="Y89"/>
-    </element>
-    <isotope N="16" Z="8" name="O16">
-      <atom unit="g/mole" value="15.9949"/>
-    </isotope>
-    <isotope N="17" Z="8" name="O17">
-      <atom unit="g/mole" value="16.9991"/>
-    </isotope>
-    <isotope N="18" Z="8" name="O18">
-      <atom unit="g/mole" value="17.9992"/>
-    </isotope>
-    <element name="O">
-      <fraction n="0.99757" ref="O16"/>
-      <fraction n="0.00038" ref="O17"/>
-      <fraction n="0.00205" ref="O18"/>
-    </element>
-    <material name="LYSO" state="solid">
-      <MEE unit="eV" value="406.779581595404"/>
-      <D unit="g/cm3" value="7.4"/>
-      <fraction n="0.7297" ref="Lu"/>
-      <fraction n="0.0279" ref="Y"/>
-      <fraction n="0.063" ref="Si"/>
-      <fraction n="0.1794" ref="O"/>
+    <material name="Tungsten" state="solid">
+      <MEE unit="eV" value="727"/>
+      <D unit="g/cm3" value="19.2999898451316"/>
+      <fraction n="1" ref="W"/>
     </material>
     <material Z="13" name="G4_Al" state="solid">
       <T unit="K" value="293.15"/>
@@ -112,6 +101,20 @@
     <element name="Cu">
       <fraction n="0.6917" ref="Cu63"/>
       <fraction n="0.3083" ref="Cu65"/>
+    </element>
+    <isotope N="16" Z="8" name="O16">
+      <atom unit="g/mole" value="15.9949"/>
+    </isotope>
+    <isotope N="17" Z="8" name="O17">
+      <atom unit="g/mole" value="16.9991"/>
+    </isotope>
+    <isotope N="18" Z="8" name="O18">
+      <atom unit="g/mole" value="17.9992"/>
+    </isotope>
+    <element name="O">
+      <fraction n="0.99757" ref="O16"/>
+      <fraction n="0.00038" ref="O17"/>
+      <fraction n="0.00205" ref="O18"/>
     </element>
     <isotope N="23" Z="11" name="Na23">
       <atom unit="g/mole" value="22.9898"/>
@@ -175,28 +178,6 @@
       <D unit="g/cm3" value="2"/>
       <fraction n="1" ref="C"/>
     </material>
-    <isotope N="180" Z="74" name="W180">
-      <atom unit="g/mole" value="179.947"/>
-    </isotope>
-    <isotope N="182" Z="74" name="W182">
-      <atom unit="g/mole" value="181.948"/>
-    </isotope>
-    <isotope N="183" Z="74" name="W183">
-      <atom unit="g/mole" value="182.95"/>
-    </isotope>
-    <isotope N="184" Z="74" name="W184">
-      <atom unit="g/mole" value="183.951"/>
-    </isotope>
-    <isotope N="186" Z="74" name="W186">
-      <atom unit="g/mole" value="185.954"/>
-    </isotope>
-    <element name="W">
-      <fraction n="0.0012" ref="W180"/>
-      <fraction n="0.265" ref="W182"/>
-      <fraction n="0.1431" ref="W183"/>
-      <fraction n="0.3064" ref="W184"/>
-      <fraction n="0.2843" ref="W186"/>
-    </element>
     <material name="G4_W" state="solid">
       <T unit="K" value="293.15"/>
       <MEE unit="eV" value="727"/>
@@ -284,7 +265,7 @@
     <box lunit="mm" name="LDMXTaggerModuleBox" x="40.34" y="100" z="0.52"/>
     <box lunit="mm" name="tagger_box" x="425" y="345" z="854.2"/>
     <box lunit="mm" name="trigger_pad_up_box" x="35" y="95" z="1"/>
-    <box lunit="mm" name="target_box" x="35" y="95" z="1.1"/>
+    <box lunit="mm" name="target_box" x="35" y="95" z="0.3504"/>
     <box lunit="mm" name="trigger_pad_down_box" x="35" y="95" z="1"/>
     <box lunit="mm" name="LDMXRecoilL14ModuleVolume_component0Sensor0Box" x="38.3399" y="98.33" z="0.32"/>
     <box lunit="mm" name="LDMXRecoilL14ModuleVolume_component0Box" x="40.34" y="100" z="0.32"/>
@@ -478,7 +459,7 @@
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
     <volume name="target">
-      <materialref ref="LYSO"/>
+      <materialref ref="Tungsten"/>
       <solidref ref="target_box"/>
       <auxiliary auxtype="SensDet" auxvalue="TargetSD"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
@@ -10132,14 +10113,14 @@
       </physvol>
       <physvol copynumber="2" name="TriggerPadUp_PV">
         <volumeref ref="TriggerPadUp"/>
-        <position name="TriggerPadUp_PV_pos" unit="mm" x="0" y="0" z="-1.051"/>
+        <position name="TriggerPadUp_PV_pos" unit="mm" x="0" y="0" z="-0.6762"/>
       </physvol>
       <physvol copynumber="3" name="target_PV">
         <volumeref ref="target"/>
       </physvol>
       <physvol copynumber="4" name="TriggerPadDown_PV">
         <volumeref ref="TriggerPadDown"/>
-        <position name="TriggerPadDown_PV_pos" unit="mm" x="0" y="0" z="1.051"/>
+        <position name="TriggerPadDown_PV_pos" unit="mm" x="0" y="0" z="0.6762"/>
       </physvol>
       <physvol copynumber="5" name="recoil_PV">
         <volumeref ref="recoil"/>
@@ -10210,7 +10191,7 @@
     </auxiliary>
     <auxiliary auxtype="MagneticField" auxvalue="AnalyzingDipole">
       <auxiliary auxtype="MagneticFieldType" auxvalue="MagneticFieldMap3D"/>
-      <auxiliary auxtype="File" auxvalue="BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"/>
+      <auxiliary auxtype="File" auxvalue="/u/ey/jeremym/ldmx-dev/ldmx-sw/install/data/fieldmap/BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"/>
       <auxiliary auxtype="OffsetX" auxunit="mm" auxvalue="0.0"/>
       <auxiliary auxtype="OffsetY" auxunit="mm" auxvalue="0.0"/>
       <auxiliary auxtype="OffsetZ" auxunit="mm" auxvalue="-400.0"/>
