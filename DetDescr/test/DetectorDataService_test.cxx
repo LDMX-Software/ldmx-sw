@@ -34,7 +34,7 @@ void find(DetectorDataService* svc, DetectorElement* de, const char* indent = " 
             decoder->setRawValue(srch->getID());
             auto values = decoder->unpack();
             if (srch) {
-                std::cout << indent << "Found " << srch->getName() << values << std::endl;
+                std::cout << indent << "Found " << srch->getName() << ": " << values << std::endl;
             }
         }
     } else {
@@ -149,27 +149,14 @@ int main(int argc, const char* argv[])  {
     for (auto recoilTrackerLayer : recoilTracker->getChildren()) {
         decoder->setRawValue(recoilTrackerLayer->getID());
         values = decoder->unpack();
-        if (recoilTrackerLayer->getSupport()) {
-            std::cout << "  " << recoilTrackerLayer->getName() << " with support <"
-                    << recoilTrackerLayer->getSupport()->GetName() << "> and layer num "
-                    << ((TaggerStation*)recoilTrackerLayer)->getLayerNumber()
-                    << recoilTrackerLayer->getGlobalPosition()
-                    << " and ID "
-                    << values
-                    << std::endl;
-            find(svc, recoilTrackerLayer);
-        } else {
-            std::cout << "  " << recoilTrackerLayer->getName() << " with layer num "
-                    << ((TaggerStation*)recoilTrackerLayer)->getLayerNumber() << values << std::endl;
-            for (auto recoilSensor : recoilTrackerLayer->getChildren()) {
-                std::cout << "    " << recoilSensor->getName() << " with support <"
-                        << recoilSensor->getSupport()->GetName() << "> and sensor num "
-                        << ((RecoilTrackerSensor*)recoilSensor)->getSensorNumber()
-                        << recoilSensor->getGlobalPosition()
-                        << std::endl;
-                find(svc, recoilSensor, "        ");
-            }
-        }
+        std::cout << "  " << recoilTrackerLayer->getName() << " with support <"
+                  << recoilTrackerLayer->getSupport()->GetName() << "> and layer num "
+                  << ((TaggerStation*)recoilTrackerLayer)->getLayerNumber()
+                  << recoilTrackerLayer->getGlobalPosition()
+                  << " and ID "
+                  << values
+                  << std::endl;
+        find(svc, recoilTrackerLayer);
     }
     std::cout << std::endl;
 

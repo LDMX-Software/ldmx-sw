@@ -2,6 +2,7 @@
 
 // LDMX
 #include "DetDescr/GeometryUtil.h"
+#include "DetDescr/TrackerID.h"
 
 // STL
 #include <iostream>
@@ -12,6 +13,7 @@ namespace ldmx {
 
     Tagger::Tagger() {
         name_ = "Tagger";
+        detectorID_ = new TrackerID;
     }
 
     void Tagger::initialize() {
@@ -37,13 +39,14 @@ namespace ldmx {
 
     TaggerStation::TaggerStation(DetectorElementImpl* tagger, TGeoNode* support) : DetectorElementImpl(tagger, support) {
 
-        layerNumber_ = support->GetNumber();
+        layerNumber_ = support->GetNumber() / 10;
 
         std::stringstream ss;
-        ss << std::setfill('0') << std::setw(2) << layerNumber_;
-        name_ = "TaggerLayer" + ss.str();
+        ss << std::setfill('0') << std::setw(3) << support->GetNumber();
+        name_ = "TaggerStation" + ss.str();
 
-        getDetectorID()->setFieldValue(1, support_->GetNumber());
+        getDetectorID()->setFieldValue(1, layerNumber_);
+        
         id_ = getDetectorID()->pack();
     }
 

@@ -45,7 +45,7 @@ namespace ldmx {
              * @note If the support is non-null, then the layer number is read from the
              * node's copy number if not provided explicitly.
              */
-            RecoilTrackerStation(DetectorElementImpl* parent, TGeoNode* support, int layerNum = -1);
+            RecoilTrackerStation(DetectorElementImpl* parent, TGeoNode* support);
 
             /**
              * Get the layer number.
@@ -55,42 +55,17 @@ namespace ldmx {
                 return layerNumber_;
             }
 
-        private:
-
-            /** The layer number. */
-            int layerNumber_{-1};
-    };
-
-    /**
-     * @class RecoilTrackerSensor
-     * @brief DetectorElement representing a sensor in the Recoil Tracker
-     */
-    class RecoilTrackerSensor : public DetectorElementImpl {
-
-        public:
-
-            /**
-             * Class constructor.
-             * @param layer The parent RecoilTrackerLayer DetectorElement.
-             * @param support The geometric support.
-             */
-            RecoilTrackerSensor(RecoilTrackerStation* layer, TGeoNode* support);
-
-            /**
-             * Get the sensor number.
-             * @return The sensor number.
-             * @note The sensor numbers are numbered from 1, not 0.
-             */
-            int getSensorNumber() {
-                return sensorNumber_;
+            int getModuleNumber() {
+                return moduleNumber_;
             }
 
         private:
 
-            /** The sensor number. */
-            int sensorNumber_{-1};
-    };
+            /** The layer number. */
+            int layerNumber_{-1};
 
+            int moduleNumber_{-1};
+    };
 }
 
 #endif /* DETDESCR_RECOILTRACKERDETECTORELEMENT_H_ */

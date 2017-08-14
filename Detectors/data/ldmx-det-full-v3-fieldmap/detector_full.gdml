@@ -275,7 +275,7 @@
     <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component0Box" x="50" y="80" z="0.32"/>
     <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component1Box" x="50" y="80" z="0.2"/>
     <box lunit="mm" name="LDMXRecoilL56ModuleBox" x="50" y="80" z="0.52"/>
-    <box lunit="mm" name="recoil_box" x="425" y="345" z="197"/>
+    <box lunit="mm" name="recoil_box" x="457.2" y="457.2" z="197"/>
     <polyhedra aunit="deg" deltaphi="360" lunit="mm" name="Al_hexagon" numsides="6" startphi="0">
       <zplane rmax="85" rmin="0" z="0"/>
       <zplane rmax="85" rmin="0" z="2"/>
@@ -385,65 +385,65 @@
     <volume name="tagger">
       <materialref ref="Vacuum"/>
       <solidref ref="tagger_box"/>
-      <physvol copynumber="1" name="LDMXTaggerModuleVolume_physvol1">
+      <physvol copynumber="10" name="LDMXTaggerModuleVolume_physvol1">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol1_pos" unit="mm" x="-20.874" y="0" z="-180.4"/>
       </physvol>
-      <physvol copynumber="2" name="LDMXTaggerModuleVolume_physvol2">
+      <physvol copynumber="20" name="LDMXTaggerModuleVolume_physvol2">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol2_pos" unit="mm" x="-20.874" y="0" z="-174.4"/>
         <rotation name="LDMXTaggerModuleVolume_physvol2_rot" unit="deg" x="0" y="0" z="5.72957795130826"/>
       </physvol>
-      <physvol copynumber="3" name="LDMXTaggerModuleVolume_physvol3">
+      <physvol copynumber="30" name="LDMXTaggerModuleVolume_physvol3">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol3_pos" unit="mm" x="-14.758" y="0" z="-80.4"/>
       </physvol>
-      <physvol copynumber="4" name="LDMXTaggerModuleVolume_physvol4">
+      <physvol copynumber="40" name="LDMXTaggerModuleVolume_physvol4">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol4_pos" unit="mm" x="-14.758" y="0" z="-74.4"/>
         <rotation name="LDMXTaggerModuleVolume_physvol4_rot" unit="deg" x="0" y="0" z="-5.72957795130826"/>
       </physvol>
-      <physvol copynumber="5" name="LDMXTaggerModuleVolume_physvol5">
+      <physvol copynumber="50" name="LDMXTaggerModuleVolume_physvol5">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol5_pos" unit="mm" x="-9.657" y="0" z="19.6"/>
       </physvol>
-      <physvol copynumber="6" name="LDMXTaggerModuleVolume_physvol6">
+      <physvol copynumber="60" name="LDMXTaggerModuleVolume_physvol6">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol6_pos" unit="mm" x="-9.657" y="0" z="25.6"/>
         <rotation name="LDMXTaggerModuleVolume_physvol6_rot" unit="deg" x="0" y="0" z="5.72957795130826"/>
       </physvol>
-      <physvol copynumber="7" name="LDMXTaggerModuleVolume_physvol7">
+      <physvol copynumber="70" name="LDMXTaggerModuleVolume_physvol7">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol7_pos" unit="mm" x="-5.342" y="0" z="119.6"/>
       </physvol>
-      <physvol copynumber="8" name="LDMXTaggerModuleVolume_physvol8">
+      <physvol copynumber="80" name="LDMXTaggerModuleVolume_physvol8">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol8_pos" unit="mm" x="-5.342" y="0" z="125.6"/>
         <rotation name="LDMXTaggerModuleVolume_physvol8_rot" unit="deg" x="0" y="0" z="-5.72957795130826"/>
       </physvol>
-      <physvol copynumber="9" name="LDMXTaggerModuleVolume_physvol9">
+      <physvol copynumber="90" name="LDMXTaggerModuleVolume_physvol9">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol9_pos" unit="mm" x="-2.723" y="0" z="219.6"/>
       </physvol>
-      <physvol copynumber="10" name="LDMXTaggerModuleVolume_physvol10">
+      <physvol copynumber="100" name="LDMXTaggerModuleVolume_physvol10">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol10_pos" unit="mm" x="-2.723" y="0" z="225.6"/>
         <rotation name="LDMXTaggerModuleVolume_physvol10_rot" unit="deg" x="0" y="0" z="5.72957795130826"/>
       </physvol>
-      <physvol copynumber="11" name="LDMXTaggerModuleVolume_physvol11">
+      <physvol copynumber="110" name="LDMXTaggerModuleVolume_physvol11">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol11_pos" unit="mm" x="-0.938" y="0" z="319.6"/>
       </physvol>
-      <physvol copynumber="12" name="LDMXTaggerModuleVolume_physvol12">
+      <physvol copynumber="120" name="LDMXTaggerModuleVolume_physvol12">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol12_pos" unit="mm" x="-0.938" y="0" z="325.6"/>
         <rotation name="LDMXTaggerModuleVolume_physvol12_rot" unit="deg" x="0" y="0" z="-5.72957795130826"/>
       </physvol>
-      <physvol copynumber="13" name="LDMXTaggerModuleVolume_physvol13">
+      <physvol copynumber="130" name="LDMXTaggerModuleVolume_physvol13">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol13_pos" unit="mm" x="-0.065" y="0" z="419.6"/>
       </physvol>
-      <physvol copynumber="14" name="LDMXTaggerModuleVolume_physvol14">
+      <physvol copynumber="140" name="LDMXTaggerModuleVolume_physvol14">
         <volumeref ref="LDMXTaggerModuleVolume"/>
         <position name="LDMXTaggerModuleVolume_physvol14_pos" unit="mm" x="-0.065" y="0" z="425.6"/>
         <rotation name="LDMXTaggerModuleVolume_physvol14_rot" unit="deg" x="0" y="0" z="5.72957795130826"/>
@@ -539,119 +539,119 @@
     <volume name="recoil">
       <materialref ref="Vacuum"/>
       <solidref ref="recoil_box"/>
-      <physvol copynumber="1" name="recoil_L1_axial">
+      <physvol copynumber="10" name="recoil_L1_axial">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="recoil_L1_axial_pos" unit="mm" x="0" y="0" z="-97"/>
       </physvol>
-      <physvol copynumber="2" name="recoil_L1_stereo">
+      <physvol copynumber="20" name="recoil_L1_stereo">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="recoil_L1_stereo_pos" unit="mm" x="0" y="0" z="-91"/>
         <rotation name="recoil_L1_stereo_rot" unit="deg" x="0" y="0" z="0.1000000000002"/>
       </physvol>
-      <physvol copynumber="3" name="recoil_L2_axial">
+      <physvol copynumber="30" name="recoil_L2_axial">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="recoil_L2_axial_pos" unit="mm" x="0" y="0" z="-82"/>
       </physvol>
-      <physvol copynumber="4" name="recoil_L2_stereo">
+      <physvol copynumber="40" name="recoil_L2_stereo">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="recoil_L2_stereo_pos" unit="mm" x="0" y="0" z="-76"/>
         <rotation name="recoil_L2_stereo_rot" unit="deg" x="0" y="0" z="-0.1000000000002"/>
       </physvol>
-      <physvol copynumber="5" name="recoil_L3_axial">
+      <physvol copynumber="50" name="recoil_L3_axial">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="recoil_L3_axial_pos" unit="mm" x="0" y="0" z="-67"/>
       </physvol>
-      <physvol copynumber="6" name="recoil_L3_stereo">
+      <physvol copynumber="60" name="recoil_L3_stereo">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="recoil_L3_stereo_pos" unit="mm" x="0" y="0" z="-61"/>
         <rotation name="recoil_L3_stereo_rot" unit="deg" x="0" y="0" z="0.1000000000002"/>
       </physvol>
-      <physvol copynumber="7" name="recoil_L4_axial">
+      <physvol copynumber="70" name="recoil_L4_axial">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="recoil_L4_axial_pos" unit="mm" x="0" y="0" z="-52"/>
       </physvol>
-      <physvol copynumber="8" name="recoil_L4_stereo">
+      <physvol copynumber="80" name="recoil_L4_stereo">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="recoil_L4_stereo_pos" unit="mm" x="0" y="0" z="-46"/>
         <rotation name="recoil_L4_stereo_rot" unit="deg" x="0" y="0" z="-0.1000000000002"/>
       </physvol>
-      <physvol copynumber="9" name="recoil_L5_sensor1">
+      <physvol copynumber="90" name="recoil_L5_sensor1">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L5_sensor1_pos" unit="mm" x="96" y="40" z="-10.5"/>
       </physvol>
-      <physvol copynumber="9" name="recoil_L5_sensor2">
+      <physvol copynumber="91" name="recoil_L5_sensor2">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L5_sensor2_pos" unit="mm" x="48" y="40" z="-12.5"/>
       </physvol>
-      <physvol copynumber="9" name="recoil_L5_sensor3">
+      <physvol copynumber="92" name="recoil_L5_sensor3">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L5_sensor3_pos" unit="mm" x="0" y="40" z="-10.5"/>
       </physvol>
-      <physvol copynumber="9" name="recoil_L5_sensor4">
+      <physvol copynumber="93" name="recoil_L5_sensor4">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L5_sensor4_pos" unit="mm" x="-48" y="40" z="-12.5"/>
       </physvol>
-      <physvol copynumber="9" name="recoil_L5_sensor5">
+      <physvol copynumber="94" name="recoil_L5_sensor5">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L5_sensor5_pos" unit="mm" x="-96" y="40" z="-10.5"/>
       </physvol>
-      <physvol copynumber="9" name="recoil_L5_sensor6">
+      <physvol copynumber="95" name="recoil_L5_sensor6">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L5_sensor6_pos" unit="mm" x="96" y="-40" z="-10.5"/>
       </physvol>
-      <physvol copynumber="9" name="recoil_L5_sensor7">
+      <physvol copynumber="96" name="recoil_L5_sensor7">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L5_sensor7_pos" unit="mm" x="48" y="-40" z="-12.5"/>
       </physvol>
-      <physvol copynumber="9" name="recoil_L5_sensor8">
+      <physvol copynumber="97" name="recoil_L5_sensor8">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L5_sensor8_pos" unit="mm" x="0" y="-40" z="-10.5"/>
       </physvol>
-      <physvol copynumber="9" name="recoil_L5_sensor9">
+      <physvol copynumber="98" name="recoil_L5_sensor9">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L5_sensor9_pos" unit="mm" x="-48" y="-40" z="-12.5"/>
       </physvol>
-      <physvol copynumber="9" name="recoil_L5_sensor10">
+      <physvol copynumber="99" name="recoil_L5_sensor10">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L5_sensor10_pos" unit="mm" x="-96" y="-40" z="-10.5"/>
       </physvol>
-      <physvol copynumber="10" name="recoil_L6_sensor1">
+      <physvol copynumber="100" name="recoil_L6_sensor1">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L6_sensor1_pos" unit="mm" x="96" y="40" z="79.5"/>
       </physvol>
-      <physvol copynumber="10" name="recoil_L6_sensor2">
+      <physvol copynumber="101" name="recoil_L6_sensor2">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L6_sensor2_pos" unit="mm" x="48" y="40" z="77.5"/>
       </physvol>
-      <physvol copynumber="10" name="recoil_L6_sensor3">
+      <physvol copynumber="102" name="recoil_L6_sensor3">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L6_sensor3_pos" unit="mm" x="0" y="40" z="79.5"/>
       </physvol>
-      <physvol copynumber="10" name="recoil_L6_sensor4">
+      <physvol copynumber="103" name="recoil_L6_sensor4">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L6_sensor4_pos" unit="mm" x="-48" y="40" z="77.5"/>
       </physvol>
-      <physvol copynumber="10" name="recoil_L6_sensor5">
+      <physvol copynumber="104" name="recoil_L6_sensor5">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L6_sensor5_pos" unit="mm" x="-96" y="40" z="79.5"/>
       </physvol>
-      <physvol copynumber="10" name="recoil_L6_sensor6">
+      <physvol copynumber="105" name="recoil_L6_sensor6">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L6_sensor6_pos" unit="mm" x="96" y="-40" z="79.5"/>
       </physvol>
-      <physvol copynumber="10" name="recoil_L6_sensor7">
+      <physvol copynumber="106" name="recoil_L6_sensor7">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L6_sensor7_pos" unit="mm" x="48" y="-40" z="77.5"/>
       </physvol>
-      <physvol copynumber="10" name="recoil_L6_sensor8">
+      <physvol copynumber="107" name="recoil_L6_sensor8">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L6_sensor8_pos" unit="mm" x="0" y="-40" z="79.5"/>
       </physvol>
-      <physvol copynumber="10" name="recoil_L6_sensor9">
+      <physvol copynumber="108" name="recoil_L6_sensor9">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L6_sensor9_pos" unit="mm" x="-48" y="-40" z="77.5"/>
       </physvol>
-      <physvol copynumber="10" name="recoil_L6_sensor10">
+      <physvol copynumber="109" name="recoil_L6_sensor10">
         <volumeref ref="LDMXRecoilL56ModuleVolume"/>
         <position name="recoil_L6_sensor10_pos" unit="mm" x="-96" y="-40" z="79.5"/>
       </physvol>
