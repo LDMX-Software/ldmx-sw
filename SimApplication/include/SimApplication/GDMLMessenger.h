@@ -23,10 +23,10 @@ namespace ldmx {
 
             G4GDMLParser* parser_;
             GDMLReadStructure* gdmlRead_;
-            G4UIdirectory* gdmlDir_ {new G4UIdirectory {"/ldmx/persistency/gdml/"}};
-            G4UIcmdWithAString* writeCmd_ {new G4UIcmdWithAString {"/ldmx/persistency/gdml/write", this}};
-            G4UIcmdWithAString* readCmd_ {new G4UIcmdWithAString {"/ldmx/persistency/gdml/read", this}};
-            G4UIcmdWithAString* removeModuleCmd_ {new G4UIcmdWithAString {"/ldmx/persistency/gdml/removeModule", this}};
+            G4UIdirectory* gdmlDir_ {new G4UIdirectory {"/ldmx/gdml/"}};
+            G4UIcmdWithAString* writeCmd_ {new G4UIcmdWithAString {"/ldmx/gdml/write", this}};
+            G4UIcmdWithAString* readCmd_ {new G4UIcmdWithAString {"/ldmx/gdml/read", this}};
+            G4UIcmdWithAString* removeModuleCmd_ {new G4UIcmdWithAString {"/ldmx/gdml/removeModule", this}};
     };
 
 }
