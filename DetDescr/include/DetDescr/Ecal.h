@@ -13,7 +13,7 @@
 namespace ldmx {
 
     /**
-     * @class EcalLayer
+     * @class EcalStation
      * @brief DetectorElement definition for each ECal Si sensor station
      */
     class EcalStation : public DetectorElementImpl {
