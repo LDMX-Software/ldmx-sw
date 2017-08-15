@@ -12,7 +12,7 @@
 
 // LDMX
 #include "Event/Event.h"
-#include "DetDescr/DetectorID.h"
+#include "DetDescr/TrackerID.h"
 #include "SimApplication/G4TrackerHit.h"
 
 namespace ldmx {
@@ -84,7 +84,7 @@ namespace ldmx {
             /**
              * The detector ID.
              */
-            DetectorID* detID_;
+            DetectorID* detID_{new TrackerID};
     };
 
 }
