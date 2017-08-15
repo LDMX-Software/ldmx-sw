@@ -106,6 +106,7 @@ namespace ldmx {
         detID_->setFieldValue(2, module);
         hit->setID(detID_->pack());
         hit->setLayerID(layer);
+        hit->setModuleID(module); 
 
         /*
          * Debug print.
