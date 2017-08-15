@@ -1,6 +1,6 @@
 /**
- * @file EcalDetectorID.h
- * @brief Class that defines an ECal detector ID with a cell number
+ * @file TrackerID.h
+ * @brief Class that defines a Tracker detector ID with a module number
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
@@ -13,15 +13,15 @@
 namespace ldmx {
 
     /**
-     * @class EcalDetectorID
-     * @brief Extension of DefaultDetectorID providing access to ECal cell number in a hex grid
+     * @class TrackerID
+     * @brief Extension of DefaultDetectorID providing access to module number for tracker IDs
      */
     class TrackerID : public DefaultDetectorID {
 
         public:
 
             /**
-             * Adds a cell field and re-initializes the ID.
+             * Add a module field and reinitialize the ID.
              */
             TrackerID() {
                 this->getFieldList()->push_back(new IDField("module", 2, 12, 16));
@@ -29,8 +29,8 @@ namespace ldmx {
             }
 
             /**
-             * Get the value of the cell field from the ID.
-             * @return The value of the cell field.
+             * Get the value of the module field from the ID.
+             * @return The value of the module field.
              */
             int getModule() {
                 return this->getFieldValue(2);
