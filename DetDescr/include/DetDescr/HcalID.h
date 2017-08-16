@@ -42,7 +42,7 @@ namespace ldmx {
              * @return The value of the 'strip' field.
              */
             int getSection() {
-                return this->getFieldValue(3);
+                return this->getFieldValue(2);
             }
 
             /**
@@ -50,7 +50,7 @@ namespace ldmx {
              * @return The value of 'strip' field.
              */
             int getStrip() {
-                return this->getFieldValue(4);
+                return this->getFieldValue(3);
             }
     };
 }
