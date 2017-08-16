@@ -1,11 +1,11 @@
 /**
- * @file EcalDetectorID.h
- * @brief Class that defines an ECal detector ID with a cell number
+ * @file HcalID.h
+ * @brief Class that defines an HCal sensitive detector
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef DETDESCR_HCALDETECTORID_H_
-#define DETDESCR_HCALDETECTORID_H_
+#ifndef DETDESCR_HCALID_H_
+#define DETDESCR_HCALID_H_
 
 // LDMX
 #include "DetDescr/DefaultDetectorID.h"
@@ -13,16 +13,13 @@
 namespace ldmx {
 
     /**
-     * @class EcalDetectorID
-     * @brief Extension of DefaultDetectorID providing access to ECal cell number in a hex grid
+     * @class HcalID
+     * @brief Implements sensitive detector for HCal subdetector
      */
     class HcalID : public DefaultDetectorID {
 
         public:
 
-            /**
-             * Adds a cell field and re-initializes the ID.
-             */
             HcalID() {
                 this->getFieldList()->push_back(new IDField("section", 2, 12, 14));
                 this->getFieldList()->push_back(new IDField("strip", 3, 15, 20));
