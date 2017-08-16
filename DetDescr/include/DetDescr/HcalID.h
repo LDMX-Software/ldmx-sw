@@ -13,6 +13,17 @@
 namespace ldmx {
 
     /**
+     * Encodes the section of the HCal based on the 'section' field value.
+     */
+    enum HcalSection {
+        BACK = 0,
+        TOP,
+        BOTTOM,
+        LEFT,
+        RIGHT
+    };
+
+    /**
      * @class HcalID
      * @brief Implements sensitive detector for HCal subdetector
      */
