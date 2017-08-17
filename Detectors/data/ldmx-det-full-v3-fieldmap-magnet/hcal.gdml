@@ -234,7 +234,7 @@
 
       <loop for="xx" to="wrap_hcal_layers" step="1">
         <!-- top  -->
-        <physvol name="wrap_top_hcal_Scintillator_physvol" copynumber="(xx-1)*4+64">
+        <physvol name="wrap_top_hcal_Scintillator_physvol" copynumber="1000+xx">
           <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
           <position name="wrap_top_hcal_Scintillator_pos" unit="mm" x="0" y="-back_hcal_dy/2.+wrap_layer_width/2.+(xx-1)*wrap_layer_width" z="-back_hcal_thickness/2."/>
           <rotation name="wrap_top_hcal_Scintillator_rot" unit="deg" x="0" y="0." z="0."/>
@@ -245,7 +245,7 @@
           <rotation name="wrap_top_hcal_Steel_rot" unit="deg" x="0" y="0." z="0."/>
         </physvol>
          <!-- bottom  -->
-        <physvol name="wrap_bot_hcal_Scintillator_physvol" copynumber="(xx-1)*4+65">
+        <physvol name="wrap_bot_hcal_Scintillator_physvol" copynumber="2000+xx">
           <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
           <position name="wrap_bot_hcal_Scintillator_pos" unit="mm" x="0" y="back_hcal_dy/2.-wrap_layer_width/2.-(xx-1)*wrap_layer_width" z="-back_hcal_thickness/2."/>
           <rotation name="wrap_bot_hcal_Scintillator_rot" unit="deg" x="0" y="0." z="0."/>
@@ -256,7 +256,7 @@
           <rotation name="wrap_bot_hcal_Steel_rot" unit="deg" x="0" y="0." z="0."/>
         </physvol>
         <!-- left  -->
-        <physvol name="wrap_left_hcal_Scintillator_physvol" copynumber="(xx-1)*4+66">
+        <physvol name="wrap_left_hcal_Scintillator_physvol" copynumber="3000+xx">
           <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
           <position name="wrap_left_hcal_Scintillator_pos" unit="mm" x="-back_hcal_dx/2.+wrap_layer_width/2.+(xx-1)*wrap_layer_width" y="0." z="-back_hcal_thickness/2."/>
           <rotation name="wrap_left_hcal_Scintillator_rot" unit="deg" x="0" y="0." z="0."/>
@@ -267,7 +267,7 @@
           <rotation name="wrap_left_hcal_Steel_rot" unit="deg" x="0" y="0." z="0."/>
         </physvol>
         <!-- right  -->
-        <physvol name="wrap_right_hcal_Scintillator_physvol" copynumber="(xx-1)*4+67">
+        <physvol name="wrap_right_hcal_Scintillator_physvol" copynumber="4000+xx">
           <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
           <position name="wrap_right_hcal_Scintillator_pos" unit="mm" x="back_hcal_dx/2.-wrap_layer_width/2.-(xx-1)*wrap_layer_width" y="0." z="-back_hcal_thickness/2."/>
           <rotation name="wrap_right_hcal_Scintillator_rot" unit="deg" x="0" y="0." z="0."/>
