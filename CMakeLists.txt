@@ -51,7 +51,13 @@ include(MacroModule)
 include(MacroExtDeps)
 
 # declare list of modules with correct dependency order
-set(MODULES Event Framework DetDescr EventProc SimCore SimPlugins Biasing SimApplication Configuration Detectors EventDisplay)
+option(BUILD_ANALYSIS "Set to ON to build the Analysis module." OFF)
+message(STATUS "Build Analysis Module: ${BUILD_ANALYSIS}")
+if(BUILD_ANALYSIS)
+    set(MODULES Event Framework DetDescr EventProc Analysis SimCore SimPlugins Biasing SimApplication Configuration Detectors EventDisplay)
+else()
+    set(MODULES Event Framework DetDescr EventProc SimCore SimPlugins Biasing SimApplication Configuration Detectors EventDisplay)
+endif()
 
 # build each module in the list
 foreach(module ${MODULES})
