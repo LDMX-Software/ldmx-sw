@@ -9,6 +9,7 @@
 
 // LDMX
 #include "SimApplication/CalorimeterSD.h"
+#include "DetDescr/HcalID.h"
 
 namespace ldmx {
 
@@ -25,9 +26,11 @@ namespace ldmx {
 
         public:
 
-            HcalSD(G4String name, G4String theCollectionName, int subdet, DetectorID* detID);
+            HcalSD(G4String name, G4String theCollectionName, int subdet, DetectorID* detID = new HcalID);
 
             virtual ~HcalSD();
+
+            G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
     };
 
 }
