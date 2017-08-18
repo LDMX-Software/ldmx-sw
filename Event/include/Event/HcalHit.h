@@ -54,6 +54,16 @@ namespace ldmx {
                 return pe_;
             }
 
+            /** Decode the section associated with the hit from the ID. */
+            int getSection() const {
+                return (getID() & 0x7000) >> 12;
+            }
+
+            /** Decode the strip associated with the hit from the ID. */
+            int getStrip() const {
+                return (getID() & 0x7F8000) >> 15;
+            }
+
             /**
              * Set the number of photoelectrons estimated for this hit.
              * @param pe Number of photoelectrons, including noise which affects the estimate.
