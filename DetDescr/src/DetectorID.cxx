@@ -60,7 +60,9 @@ namespace ldmx {
     }
 
     DetectorID::FieldValue DetectorID::getFieldValue(int i) {
-        return fieldValues_[i];
+        IDField* field = fieldList_->at(i);
+        unsigned result = (field->getBitMask() & rawValue_) >> field->getStartBit();
+        return result;
     }
 
     void DetectorID::setFieldValue(int i, FieldValue val) {
@@ -80,7 +82,7 @@ namespace ldmx {
     }
 
     DetectorID::FieldValue DetectorID::getFieldValue(const std::string& fieldName) {
-        return fieldValues_[fieldMap_[fieldName]->getIndex()];
+        return getFieldValue(fieldMap_[fieldName]->getIndex());
     }
 
     void DetectorID::setFieldList(IDField::IDFieldList* fieldList) {
