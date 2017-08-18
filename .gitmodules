@@ -1,3 +1,6 @@
 [submodule "MagFieldMap"]
 	path = MagFieldMap
 	url = https://github.com/LDMXAnalysis/MagFieldMap
+[submodule "Analysis"]
+	path = Analysis
+	url = https://github.com/LDMXAnalysis/ldmx-analysis
