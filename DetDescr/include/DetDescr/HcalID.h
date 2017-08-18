@@ -33,7 +33,7 @@ namespace ldmx {
 
             HcalID() {
                 this->getFieldList()->push_back(new IDField("section", 2, 12, 14));
-                this->getFieldList()->push_back(new IDField("strip", 3, 15, 20));
+                this->getFieldList()->push_back(new IDField("strip", 3, 15, 22));
                 init();
             }
 
