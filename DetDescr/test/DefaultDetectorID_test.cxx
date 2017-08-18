@@ -30,18 +30,53 @@ int main(int, const char* argv[])  {
     detID->setRawValue(rawVal);
     const DetectorID::FieldValueList& fieldValues = detID->unpack();
 
-    std::cout << "subdet: " << fieldValues[0] << std::endl;
-    std::cout << "layer: " << fieldValues[1] << std::endl;
+    std::cout << "subdet from field values: " << fieldValues[0] << std::endl;
+    std::cout << "layer from field values: " << fieldValues[1] << std::endl;
 
+    /*
+     * Check values from decoded list.
+     */
     if (fieldValues[0] != subdet) {
-        throw std::runtime_error("Wrong value for subdet: " + subdet);
+        throw std::runtime_error("Wrong value for subdet: " + fieldValues[0]);
+    } else {
+        std::cout << "subdet field value okay" << std::endl;
     }
 
     if (fieldValues[1] != layer) {
-        throw std::runtime_error("Wrong value for layer: " + layer);
+        throw std::runtime_error("Wrong value for layer: " + fieldValues[1]);
+    } else {
+        std::cout << "layer field value okay" << std::endl;
     }
 
-    delete detID;
+    /*
+     * Check individually decoded values from indices.
+     */
+    if (detID->getFieldValue(0) != subdet) {
+        throw std::runtime_error("Wrong value for subdet: " + detID->getFieldValue(0));
+    } else {
+        std::cout << "subdet from getFieldValue(i) okay" << std::endl;
+    }
+
+    if (detID->getFieldValue(1) != layer) {
+        throw std::runtime_error("Wrong field value for layer: " + detID->getFieldValue(1));
+    } else {
+        std::cout << "layer from getFieldValue(i) okay" << std::endl;
+    }
+
+    /*
+     * Check individually decoded values from field names.
+     */
+    if (detID->getFieldValue("subdet") != subdet) {
+        throw std::runtime_error("Wrong field value for subdet: " + detID->getFieldValue("subdet"));
+    } else {
+        std::cout << "subdet from getFieldValue(name) okay" << std::endl;
+    }
+
+    if (detID->getFieldValue("layer") != layer) {
+        throw std::runtime_error("Wrong field value for layer: " + detID->getFieldValue("layer"));
+    } else {
+        std::cout << "layer from getFieldValue(name) okay" << std::endl;
+    }
 
     std::cout << "Bye DefaultDetectorID test!" << std::endl;
 }
