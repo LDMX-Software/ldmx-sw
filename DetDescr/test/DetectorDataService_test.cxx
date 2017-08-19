@@ -85,9 +85,9 @@ int main(int argc, const char* argv[])  {
     for (auto ecalStation : ecal->getChildren()) {
         decoder->setRawValue(ecalStation->getID());
         values = decoder->unpack();
-        std::cout << "Station '" << ecalStation->getName() << "' with support '"
+        std::cout << "  Station '" << ecalStation->getName() << "' with support '"
                 << ecalStation->getSupport()->GetName() << "' and layer num "
-                << ((EcalStation*)ecalStation)->getLayerNumber()
+                << ((EcalStation*)ecalStation)->getLayerNum()
                 << ecalStation->getGlobalPosition()
                 << " and ID "
                 << values
@@ -108,7 +108,7 @@ int main(int argc, const char* argv[])  {
         values = decoder->unpack();
         std::cout << "  Station '" << hcalStation->getName() << "' with support '"
                 << hcalStation->getSupport()->GetName() << "' and station num "
-                << ((HcalStation*)hcalStation)->getStationNumber()
+                << ((HcalStation*)hcalStation)->getStationNum()
                 << hcalStation->getGlobalPosition()
                 << " and ID "
                 << values
@@ -130,7 +130,7 @@ int main(int argc, const char* argv[])  {
         values = decoder->unpack();
         std::cout << "  Station '" << taggerLayer->getName() << "' with support '"
                         << taggerLayer->getSupport()->GetName() << "' and layer num "
-                        << ((TaggerStation*)taggerLayer)->getLayerNumber()
+                        << ((TaggerStation*)taggerLayer)->getLayerNum()
                         << taggerLayer->getGlobalPosition()
                         << " and ID "
                         << values
@@ -151,7 +151,7 @@ int main(int argc, const char* argv[])  {
         values = decoder->unpack();
         std::cout << "  Station '" << recoilTrackerLayer->getName() << "' with support '"
                   << recoilTrackerLayer->getSupport()->GetName() << "' and layer num "
-                  << ((TaggerStation*)recoilTrackerLayer)->getLayerNumber()
+                  << ((TaggerStation*)recoilTrackerLayer)->getLayerNum()
                   << recoilTrackerLayer->getGlobalPosition()
                   << " and ID "
                   << values
