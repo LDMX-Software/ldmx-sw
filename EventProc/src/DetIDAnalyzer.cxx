@@ -13,6 +13,8 @@
 #include "Event/SimTrackerHit.h"
 
 #include "DetDescr/EcalDetectorID.h"
+#include "DetDescr/HcalID.h"
+#include "DetDescr/TrackerID.h"
 
 #include <iostream>
 
@@ -36,7 +38,7 @@ namespace ldmx {
             virtual void analyze(const ldmx::Event& event) {
                 std::cout << "DetIDAnalyzer: analyzing event <" << event.getEventHeader()->getEventNumber() << ">" << std::endl;
 
-                // Check hit IDs for cal hits.
+                // Check hit IDs for ecal hits.
                 const TClonesArray* ecalSimHits = event.getCollection(EventConstants::ECAL_SIM_HITS);
                 for (size_t i=0; i<ecalSimHits->GetEntriesFast(); i++) {
                     const ldmx::CalorimeterHit* chit=(const ldmx::CalorimeterHit*)(ecalSimHits->At(i));
@@ -63,13 +65,40 @@ namespace ldmx {
                     std::cout << std::endl;
                 }
 
+                // Check hit IDs for hcal hits.
+                const TClonesArray* hcalSimHits = event.getCollection(EventConstants::HCAL_SIM_HITS);
+                for (size_t i=0; i<hcalSimHits->GetEntriesFast(); i++) {
+                    const ldmx::CalorimeterHit* chit=(const ldmx::CalorimeterHit*)(hcalSimHits->At(i));
+
+                    hcalID_->setRawValue(chit->getID());
+                    auto hitID = hcalID_->unpack();
+                    std::cout << "Hcal hit: " << hitID << std::endl;
+
+                    // Remove strip ID so the lookup will work.
+                    hcalID_->clear();
+                    hcalID_->setFieldValue(0, hitID[0]);
+                    hcalID_->setFieldValue(1, hitID[1]);
+                    ecalID_->setFieldValue(2, hitID[2]);
+                    int id = hcalID_->pack();
+                    auto values = hcalID_->unpack();
+                    std::cout << "Module ID: " << values << std::endl;
+
+                    DetectorElement* de = detSvc_->getDetectorElement(id);
+                    if (de) {
+                        std::cout << "Found DE for hcal hit: " << de->getName() << std::endl;
+                    } else {
+                        EXCEPTION_RAISE("DetIDAnalyzer", "Failed to find DetectorElement for CalorimeterHit!");
+                    }
+                    std::cout << std::endl;
+                }
+
                 // Check hit IDs for Recoil det tracker hits.
                 const TClonesArray* recoilSimHits = event.getCollection(EventConstants::RECOIL_SIM_HITS);
                 for (size_t i=0; i<recoilSimHits->GetEntriesFast(); i++) {
                     const ldmx::SimTrackerHit* thit = (const ldmx::SimTrackerHit*)(recoilSimHits->At(i));
                  
-                    detID_->setRawValue(thit->getID());
-                    auto hitID = detID_->unpack();   
+                    recoilID_->setRawValue(thit->getID());
+                    auto hitID = recoilID_->unpack();
                     std::cout << "Recoil hit: " << hitID << std::endl; 
 
                     DetectorElement* de = detSvc_->getDetectorElement(thit->getID());
@@ -81,13 +110,13 @@ namespace ldmx {
                     std::cout << std::endl;
                 } 
 
-                // Check hit IDs for Recoil det tracker hits.
+                // Check hit IDs for tagger hits.
                 const TClonesArray* taggerSimHits = event.getCollection(EventConstants::TAGGER_SIM_HITS);
                 for (size_t i=0; i<taggerSimHits->GetEntriesFast(); i++) {
                     const ldmx::SimTrackerHit* thit = (const ldmx::SimTrackerHit*)(taggerSimHits->At(i));
                  
-                    detID_->setRawValue(thit->getID());
-                    auto hitID = detID_->unpack();   
+                    taggerID_->setRawValue(thit->getID());
+                    auto hitID = taggerID_->unpack();
                     std::cout << "Tagger hit: " << hitID << std::endl; 
 
                     DetectorElement* de = detSvc_->getDetectorElement(thit->getID());
@@ -102,19 +131,47 @@ namespace ldmx {
             }
 
             void onNewDetector(DetectorDataService* detSvc) {
+
+                std::cout << "[DetIDAnalyzer] got new detector - " << detSvc->getDetectorName() << std::endl;
+
                 if (detSvc) {
                     detSvc_ = detSvc;
                     top_ = detSvc->getTopDetectorElement();
+
+                    ecalID_ = top_->findChild("Ecal")->getDetectorID();
+                    if (!ecalID_) {
+                        EXCEPTION_RAISE("DetIDAnalyzer", "EcalID not found.");
+                    }
+
+                    hcalID_ = top_->findChild("Hcal")->getDetectorID();
+                    if (!hcalID_) {
+                        EXCEPTION_RAISE("DetIDAnalyzer", "HcalID not found.");
+                    }
+
+                    recoilID_ = top_->findChild("RecoilTracker")->getDetectorID();
+                    if (!recoilID_) {
+                        EXCEPTION_RAISE("DetIDAnalyzer", "RecoilTracker ID not found.");
+                    }
+
+                    taggerID_ = top_->findChild("Tagger")->getDetectorID();
+                    if (!taggerID_) {
+                        EXCEPTION_RAISE("DetIDAnalyzer", "Tagger ID not found.");
+                    }
+
                 } else {
-                    EXCEPTION_RAISE("DetIDAnalyzer", "The detector service is null!");
+                    EXCEPTION_RAISE("DetIDAnalyzer", "The detector service is not setup!");
                 }
             }
 
         private:
+
             DetectorDataService* detSvc_{nullptr};
             DetectorElement* top_{nullptr};
-            EcalDetectorID* ecalID_{new EcalDetectorID};
-            DetectorID* detID_{new DefaultDetectorID};
+
+            DetectorID* ecalID_{nullptr};
+            DetectorID* hcalID_{nullptr};
+            DetectorID* recoilID_{nullptr};
+            DetectorID* taggerID_{nullptr};
     };
 }
 
