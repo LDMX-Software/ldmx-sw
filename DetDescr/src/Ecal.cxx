@@ -21,10 +21,10 @@ namespace ldmx {
         int copynum = support_->GetNumber();
 
         // Follows convention where layer number is copynum divided by 7. --JMc
-        layerNumber_ = copynum / 7;
+        layerNum_ = copynum / 7;
 
         // Follows convention where module number is copynum modulo 7. --JMc
-        moduleNumber_ = copynum % 7;
+        moduleNum_ = copynum % 7;
 
         // Ecal stations are named using their node copynum.
         std::stringstream ss;
@@ -33,13 +33,9 @@ namespace ldmx {
 
         // Create the bit-packed ID for the detector component.
         auto detID = getDetectorID();
-        detID->setFieldValue(1, layerNumber_);
-        detID->setFieldValue(2, moduleNumber_);
+        detID->setFieldValue(1, layerNum_);
+        detID->setFieldValue(2, moduleNum_);
         id_ = getDetectorID()->pack();
-    }
-
-    EcalStation* Ecal::getEcalStation(int stationNumber) {
-        return static_cast<EcalStation*>(children_[stationNumber]);
     }
 
     Ecal::Ecal() {
@@ -53,11 +49,11 @@ namespace ldmx {
     void Ecal::initialize() {
 
         if (!support_) {
-            throw std::runtime_error("The Ecal support is not set.");
+            throw std::runtime_error("The support is not set.");
         }
 
         if (!parent_) {
-            throw std::runtime_error("The Ecal parent is not set.");
+            throw std::runtime_error("The parent is not set.");
         }
 
         detectorID_->clear();

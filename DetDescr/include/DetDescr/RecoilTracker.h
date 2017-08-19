@@ -51,20 +51,25 @@ namespace ldmx {
              * Get the layer number.
              * @return The layer number.
              */
-            int getLayerNumber() {
-                return layerNumber_;
+            int getLayerNum() {
+                return layerNum_;
             }
 
-            int getModuleNumber() {
-                return moduleNumber_;
+            /**
+             * Get the module number.
+             * @return The module number.
+             */
+            int getModuleNum() {
+                return moduleNum_;
             }
 
         private:
 
             /** The layer number. */
-            int layerNumber_{-1};
+            int layerNum_{-1};
 
-            int moduleNumber_{-1};
+            /** The module number. */
+            int moduleNum_{-1};
     };
 }
 

@@ -49,14 +49,14 @@ namespace ldmx {
              * @return The layer number.
              * @note The layer numbers are numbered from 1, not 0.
              */
-            int getLayerNumber() {
-                return layerNumber_;
+            int getLayerNum() {
+                return layerNum_;
             }
 
         private:
 
             /** The layer number. */
-            int layerNumber_{-1};
+            int layerNum_{-1};
     };
 }
 

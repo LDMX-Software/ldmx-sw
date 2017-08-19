@@ -56,9 +56,5 @@ namespace ldmx {
         }
     }
 
-    HcalStation* Hcal::getHcalStation(int num) {
-        return static_cast<HcalStation*>(children_[num - 1]);
-    }
-
     DE_ADD(Hcal)
 }

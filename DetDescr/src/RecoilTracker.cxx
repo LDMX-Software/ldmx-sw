@@ -17,15 +17,15 @@ namespace ldmx {
 
     RecoilTrackerStation::RecoilTrackerStation(DetectorElementImpl* tagger, TGeoNode* support) : DetectorElementImpl(tagger, support) {
 
-        layerNumber_ = support->GetNumber() / 10;
-        moduleNumber_ = support->GetNumber() % 10;
+        layerNum_ = support->GetNumber() / 10;
+        moduleNum_ = support->GetNumber() % 10;
         
         stringstream ss;
         ss << std::setfill('0') << std::setw(3) << support->GetNumber();
         name_ = "RecoilTrackerStation" + ss.str();
 
-        getDetectorID()->setFieldValue(1, layerNumber_);
-        getDetectorID()->setFieldValue(2, moduleNumber_);
+        getDetectorID()->setFieldValue(1, layerNum_);
+        getDetectorID()->setFieldValue(2, moduleNum_);
         id_ = getDetectorID()->pack();
     }
 

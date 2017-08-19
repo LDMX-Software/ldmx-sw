@@ -26,25 +26,25 @@ namespace ldmx {
              * Get the layer number.
              * @return The layer number.
              */
-            int getLayerNumber() {
-                return layerNumber_;
+            int getLayerNum() {
+                return layerNum_;
             }
 
             /**
              * Get the module number.
              * @return The module number.
              */
-            int getModuleNumber() {
-                return moduleNumber_;
+            int getModuleNum() {
+                return moduleNum_;
             }
 
         private:
 
             /** The layer number (0-33 in v3 geometry). */
-            int layerNumber_{-1};
+            int layerNum_{-1};
 
             /** The module number (0-7). */
-            int moduleNumber_{-1};
+            int moduleNum_{-1};
 
     };
 
@@ -60,13 +60,6 @@ namespace ldmx {
             Ecal();
 
             ~Ecal();
-
-            /**
-             * Get the EcalLayer object by its layer number.
-             * @param layerNumber The layer number.
-             * @note The layers are numbered from 1, not 0.
-             */
-            EcalStation* getEcalStation(int stationNumber);
 
             void initialize();
 

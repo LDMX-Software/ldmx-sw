@@ -16,9 +16,8 @@ namespace ldmx {
      * @brief Represents the DetectorElement for an HCal station
      *
      * @note A station may be a member of any layer in the HCal.
-     * Stations are numbered sequentially according to the copy numbers
-     * read from the geometry supports.  A DetectorID should be used to
-     * decode its number into a layer number.
+     * Stations are numbered according to the copy numbers read from the
+     * geometric support volumes.
      */
     class HcalStation : public DetectorElementImpl {
 
@@ -33,17 +32,25 @@ namespace ldmx {
             HcalStation(DetectorElementImpl* parent, TGeoNode* support);
 
             /**
-             * Get the station number.
+             * Get the station number which is the support's volume copy num.
              * @return The station number.
              */
-            int getStationNumber() {
+            int getStationNum() {
                 return stationNumber_;
             }
 
+            /**
+             * Get the logical layer number.
+             * @return The layer number.
+             */
             int getLayerNum() {
                 return layerNum_;
             }
 
+            /**
+             * Get the section number (0-4) corresponding to HcalSection enum.
+             * @return The section number.
+             */
             int getSectionNum() {
                 return sectionNum_;
             }
@@ -75,14 +82,6 @@ namespace ldmx {
             Hcal();
 
             void initialize();
-
-            /**
-             * Get the DetectorElement for an Hcal station.
-             * These are numbered from 1, not 0.
-             * @param num The number of the HcalStation.
-             * @return The HcalStation with the matching number.
-             */
-            HcalStation* getHcalStation(int num);
 
         private:
             DE_INIT(Hcal)
