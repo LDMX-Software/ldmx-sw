@@ -40,10 +40,24 @@ namespace ldmx {
                 return stationNumber_;
             }
 
+            int getLayerNum() {
+                return layerNum_;
+            }
+
+            int getSectionNum() {
+                return sectionNum_;
+            }
+
         private:
 
             /** The HCal station number. */
             int stationNumber_;
+
+            /** The logical layer number of the station. */
+            int layerNum_;
+
+            /** The section of the station (0-4). */
+            int sectionNum_;
     };
 
     /**

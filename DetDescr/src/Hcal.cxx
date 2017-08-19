@@ -2,6 +2,7 @@
 
 // LDMX
 #include "DetDescr/GeometryUtil.h"
+#include "DetDescr/HcalID.h"
 
 // C++
 #include <iostream>
@@ -10,19 +11,26 @@
 namespace ldmx {
 
     HcalStation::HcalStation(DetectorElementImpl* parent, TGeoNode* support) : DetectorElementImpl(parent, support) {
-        stationNumber_ = support->GetNumber();
+
+        int copyNum = support->GetNumber();
+        int layerNum_ = copyNum % 1000;
+        int sectionNum_ = copyNum / 1000;
+
+        auto detID = parent->getDetectorID();
+        detID->setFieldValue(1, layerNum_);
+        detID->setFieldValue(2, sectionNum_);
+        this->id_ = detID->pack();
+
+        this->stationNumber_ = copyNum;
 
         std::stringstream ss;
-        ss << std::setfill('0') << std::setw(3) << stationNumber_;
+        ss << std::setfill('0') << std::setw(4) << stationNumber_;
         name_ = "HcalStation" + ss.str();
-
-        // TODO: Set detector ID value.
     }
 
     Hcal::Hcal() {
-
         name_ = "Hcal";
-        //detID_ = new HcalDetectorID();
+        detectorID_ = new HcalID();
     }
 
     void Hcal::initialize() {
