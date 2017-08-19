@@ -275,7 +275,7 @@
     <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component0Box" x="50" y="80" z="0.32"/>
     <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component1Box" x="50" y="80" z="0.2"/>
     <box lunit="mm" name="LDMXRecoilL56ModuleBox" x="50" y="80" z="0.52"/>
-    <box lunit="mm" name="recoil_box" x="457.2" y="457.2" z="197"/>
+    <box lunit="mm" name="recoil_box" x="425" y="345" z="197"/>
     <polyhedra aunit="deg" deltaphi="360" lunit="mm" name="Al_hexagon" numsides="6" startphi="0">
       <zplane rmax="85" rmin="0" z="0"/>
       <zplane rmax="85" rmin="0" z="2"/>
@@ -8084,7 +8084,7 @@
         <volumeref ref="back_hcal_Scintillator_volume"/>
         <position name="back_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="0" z="1645"/>
       </physvol>
-      <physvol copynumber="64" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1001" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1540" z="-1500"/>
       </physvol>
@@ -8092,7 +8092,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1530" z="-1500"/>
       </physvol>
-      <physvol copynumber="65" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2001" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1540" z="-1500"/>
       </physvol>
@@ -8100,7 +8100,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1530" z="-1500"/>
       </physvol>
-      <physvol copynumber="66" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3001" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1540" y="0" z="-1500"/>
       </physvol>
@@ -8108,7 +8108,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1530" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="67" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4001" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1540" y="0" z="-1500"/>
       </physvol>
@@ -8116,7 +8116,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1530" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="68" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1002" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1520" z="-1500"/>
       </physvol>
@@ -8124,7 +8124,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1510" z="-1500"/>
       </physvol>
-      <physvol copynumber="69" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2002" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1520" z="-1500"/>
       </physvol>
@@ -8132,7 +8132,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1510" z="-1500"/>
       </physvol>
-      <physvol copynumber="70" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3002" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1520" y="0" z="-1500"/>
       </physvol>
@@ -8140,7 +8140,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1510" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="71" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4002" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1520" y="0" z="-1500"/>
       </physvol>
@@ -8148,7 +8148,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1510" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="72" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1003" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1500" z="-1500"/>
       </physvol>
@@ -8156,7 +8156,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1490" z="-1500"/>
       </physvol>
-      <physvol copynumber="73" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2003" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1500" z="-1500"/>
       </physvol>
@@ -8164,7 +8164,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1490" z="-1500"/>
       </physvol>
-      <physvol copynumber="74" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3003" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1500" y="0" z="-1500"/>
       </physvol>
@@ -8172,7 +8172,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1490" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="75" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4003" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1500" y="0" z="-1500"/>
       </physvol>
@@ -8180,7 +8180,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1490" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="76" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1004" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1480" z="-1500"/>
       </physvol>
@@ -8188,7 +8188,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1470" z="-1500"/>
       </physvol>
-      <physvol copynumber="77" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2004" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1480" z="-1500"/>
       </physvol>
@@ -8196,7 +8196,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1470" z="-1500"/>
       </physvol>
-      <physvol copynumber="78" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3004" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1480" y="0" z="-1500"/>
       </physvol>
@@ -8204,7 +8204,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1470" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="79" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4004" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1480" y="0" z="-1500"/>
       </physvol>
@@ -8212,7 +8212,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1470" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="80" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1005" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1460" z="-1500"/>
       </physvol>
@@ -8220,7 +8220,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1450" z="-1500"/>
       </physvol>
-      <physvol copynumber="81" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2005" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1460" z="-1500"/>
       </physvol>
@@ -8228,7 +8228,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1450" z="-1500"/>
       </physvol>
-      <physvol copynumber="82" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3005" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1460" y="0" z="-1500"/>
       </physvol>
@@ -8236,7 +8236,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1450" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="83" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4005" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1460" y="0" z="-1500"/>
       </physvol>
@@ -8244,7 +8244,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1450" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="84" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1006" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1440" z="-1500"/>
       </physvol>
@@ -8252,7 +8252,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1430" z="-1500"/>
       </physvol>
-      <physvol copynumber="85" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2006" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1440" z="-1500"/>
       </physvol>
@@ -8260,7 +8260,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1430" z="-1500"/>
       </physvol>
-      <physvol copynumber="86" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3006" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1440" y="0" z="-1500"/>
       </physvol>
@@ -8268,7 +8268,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1430" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="87" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4006" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1440" y="0" z="-1500"/>
       </physvol>
@@ -8276,7 +8276,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1430" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="88" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1007" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1420" z="-1500"/>
       </physvol>
@@ -8284,7 +8284,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1410" z="-1500"/>
       </physvol>
-      <physvol copynumber="89" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2007" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1420" z="-1500"/>
       </physvol>
@@ -8292,7 +8292,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1410" z="-1500"/>
       </physvol>
-      <physvol copynumber="90" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3007" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1420" y="0" z="-1500"/>
       </physvol>
@@ -8300,7 +8300,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1410" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="91" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4007" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1420" y="0" z="-1500"/>
       </physvol>
@@ -8308,7 +8308,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1410" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="92" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1008" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1400" z="-1500"/>
       </physvol>
@@ -8316,7 +8316,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1390" z="-1500"/>
       </physvol>
-      <physvol copynumber="93" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2008" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1400" z="-1500"/>
       </physvol>
@@ -8324,7 +8324,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1390" z="-1500"/>
       </physvol>
-      <physvol copynumber="94" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3008" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1400" y="0" z="-1500"/>
       </physvol>
@@ -8332,7 +8332,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1390" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="95" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4008" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1400" y="0" z="-1500"/>
       </physvol>
@@ -8340,7 +8340,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1390" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="96" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1009" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1380" z="-1500"/>
       </physvol>
@@ -8348,7 +8348,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1370" z="-1500"/>
       </physvol>
-      <physvol copynumber="97" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2009" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1380" z="-1500"/>
       </physvol>
@@ -8356,7 +8356,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1370" z="-1500"/>
       </physvol>
-      <physvol copynumber="98" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3009" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1380" y="0" z="-1500"/>
       </physvol>
@@ -8364,7 +8364,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1370" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="99" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4009" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1380" y="0" z="-1500"/>
       </physvol>
@@ -8372,7 +8372,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1370" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="100" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1010" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1360" z="-1500"/>
       </physvol>
@@ -8380,7 +8380,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1350" z="-1500"/>
       </physvol>
-      <physvol copynumber="101" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2010" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1360" z="-1500"/>
       </physvol>
@@ -8388,7 +8388,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1350" z="-1500"/>
       </physvol>
-      <physvol copynumber="102" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3010" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1360" y="0" z="-1500"/>
       </physvol>
@@ -8396,7 +8396,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1350" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="103" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4010" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1360" y="0" z="-1500"/>
       </physvol>
@@ -8404,7 +8404,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1350" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="104" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1011" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1340" z="-1500"/>
       </physvol>
@@ -8412,7 +8412,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1330" z="-1500"/>
       </physvol>
-      <physvol copynumber="105" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2011" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1340" z="-1500"/>
       </physvol>
@@ -8420,7 +8420,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1330" z="-1500"/>
       </physvol>
-      <physvol copynumber="106" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3011" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1340" y="0" z="-1500"/>
       </physvol>
@@ -8428,7 +8428,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1330" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="107" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4011" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1340" y="0" z="-1500"/>
       </physvol>
@@ -8436,7 +8436,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1330" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="108" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1012" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1320" z="-1500"/>
       </physvol>
@@ -8444,7 +8444,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1310" z="-1500"/>
       </physvol>
-      <physvol copynumber="109" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2012" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1320" z="-1500"/>
       </physvol>
@@ -8452,7 +8452,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1310" z="-1500"/>
       </physvol>
-      <physvol copynumber="110" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3012" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1320" y="0" z="-1500"/>
       </physvol>
@@ -8460,7 +8460,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1310" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="111" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4012" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1320" y="0" z="-1500"/>
       </physvol>
@@ -8468,7 +8468,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1310" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="112" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1013" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1300" z="-1500"/>
       </physvol>
@@ -8476,7 +8476,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1290" z="-1500"/>
       </physvol>
-      <physvol copynumber="113" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2013" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1300" z="-1500"/>
       </physvol>
@@ -8484,7 +8484,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1290" z="-1500"/>
       </physvol>
-      <physvol copynumber="114" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3013" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1300" y="0" z="-1500"/>
       </physvol>
@@ -8492,7 +8492,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1290" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="115" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4013" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1300" y="0" z="-1500"/>
       </physvol>
@@ -8500,7 +8500,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1290" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="116" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1014" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1280" z="-1500"/>
       </physvol>
@@ -8508,7 +8508,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1270" z="-1500"/>
       </physvol>
-      <physvol copynumber="117" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2014" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1280" z="-1500"/>
       </physvol>
@@ -8516,7 +8516,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1270" z="-1500"/>
       </physvol>
-      <physvol copynumber="118" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3014" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1280" y="0" z="-1500"/>
       </physvol>
@@ -8524,7 +8524,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1270" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="119" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4014" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1280" y="0" z="-1500"/>
       </physvol>
@@ -8532,7 +8532,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1270" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="120" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1015" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1260" z="-1500"/>
       </physvol>
@@ -8540,7 +8540,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1250" z="-1500"/>
       </physvol>
-      <physvol copynumber="121" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2015" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1260" z="-1500"/>
       </physvol>
@@ -8548,7 +8548,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1250" z="-1500"/>
       </physvol>
-      <physvol copynumber="122" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3015" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1260" y="0" z="-1500"/>
       </physvol>
@@ -8556,7 +8556,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1250" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="123" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4015" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1260" y="0" z="-1500"/>
       </physvol>
@@ -8564,7 +8564,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1250" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="124" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1016" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1240" z="-1500"/>
       </physvol>
@@ -8572,7 +8572,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1230" z="-1500"/>
       </physvol>
-      <physvol copynumber="125" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2016" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1240" z="-1500"/>
       </physvol>
@@ -8580,7 +8580,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1230" z="-1500"/>
       </physvol>
-      <physvol copynumber="126" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3016" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1240" y="0" z="-1500"/>
       </physvol>
@@ -8588,7 +8588,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1230" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="127" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4016" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1240" y="0" z="-1500"/>
       </physvol>
@@ -8596,7 +8596,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1230" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="128" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1017" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1220" z="-1500"/>
       </physvol>
@@ -8604,7 +8604,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1210" z="-1500"/>
       </physvol>
-      <physvol copynumber="129" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2017" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1220" z="-1500"/>
       </physvol>
@@ -8612,7 +8612,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1210" z="-1500"/>
       </physvol>
-      <physvol copynumber="130" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3017" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1220" y="0" z="-1500"/>
       </physvol>
@@ -8620,7 +8620,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1210" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="131" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4017" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1220" y="0" z="-1500"/>
       </physvol>
@@ -8628,7 +8628,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1210" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="132" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1018" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1200" z="-1500"/>
       </physvol>
@@ -8636,7 +8636,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1190" z="-1500"/>
       </physvol>
-      <physvol copynumber="133" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2018" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1200" z="-1500"/>
       </physvol>
@@ -8644,7 +8644,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1190" z="-1500"/>
       </physvol>
-      <physvol copynumber="134" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3018" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1200" y="0" z="-1500"/>
       </physvol>
@@ -8652,7 +8652,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1190" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="135" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4018" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1200" y="0" z="-1500"/>
       </physvol>
@@ -8660,7 +8660,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1190" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="136" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1019" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1180" z="-1500"/>
       </physvol>
@@ -8668,7 +8668,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1170" z="-1500"/>
       </physvol>
-      <physvol copynumber="137" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2019" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1180" z="-1500"/>
       </physvol>
@@ -8676,7 +8676,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1170" z="-1500"/>
       </physvol>
-      <physvol copynumber="138" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3019" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1180" y="0" z="-1500"/>
       </physvol>
@@ -8684,7 +8684,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1170" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="139" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4019" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1180" y="0" z="-1500"/>
       </physvol>
@@ -8692,7 +8692,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1170" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="140" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1020" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1160" z="-1500"/>
       </physvol>
@@ -8700,7 +8700,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1150" z="-1500"/>
       </physvol>
-      <physvol copynumber="141" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2020" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1160" z="-1500"/>
       </physvol>
@@ -8708,7 +8708,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1150" z="-1500"/>
       </physvol>
-      <physvol copynumber="142" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3020" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1160" y="0" z="-1500"/>
       </physvol>
@@ -8716,7 +8716,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1150" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="143" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4020" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1160" y="0" z="-1500"/>
       </physvol>
@@ -8724,7 +8724,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1150" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="144" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1021" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1140" z="-1500"/>
       </physvol>
@@ -8732,7 +8732,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1130" z="-1500"/>
       </physvol>
-      <physvol copynumber="145" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2021" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1140" z="-1500"/>
       </physvol>
@@ -8740,7 +8740,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1130" z="-1500"/>
       </physvol>
-      <physvol copynumber="146" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3021" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1140" y="0" z="-1500"/>
       </physvol>
@@ -8748,7 +8748,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1130" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="147" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4021" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1140" y="0" z="-1500"/>
       </physvol>
@@ -8756,7 +8756,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1130" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="148" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1022" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1120" z="-1500"/>
       </physvol>
@@ -8764,7 +8764,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1110" z="-1500"/>
       </physvol>
-      <physvol copynumber="149" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2022" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1120" z="-1500"/>
       </physvol>
@@ -8772,7 +8772,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1110" z="-1500"/>
       </physvol>
-      <physvol copynumber="150" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3022" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1120" y="0" z="-1500"/>
       </physvol>
@@ -8780,7 +8780,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1110" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="151" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4022" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1120" y="0" z="-1500"/>
       </physvol>
@@ -8788,7 +8788,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1110" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="152" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1023" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1100" z="-1500"/>
       </physvol>
@@ -8796,7 +8796,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1090" z="-1500"/>
       </physvol>
-      <physvol copynumber="153" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2023" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1100" z="-1500"/>
       </physvol>
@@ -8804,7 +8804,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1090" z="-1500"/>
       </physvol>
-      <physvol copynumber="154" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3023" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1100" y="0" z="-1500"/>
       </physvol>
@@ -8812,7 +8812,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1090" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="155" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4023" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1100" y="0" z="-1500"/>
       </physvol>
@@ -8820,7 +8820,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1090" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="156" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1024" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1080" z="-1500"/>
       </physvol>
@@ -8828,7 +8828,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1070" z="-1500"/>
       </physvol>
-      <physvol copynumber="157" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2024" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1080" z="-1500"/>
       </physvol>
@@ -8836,7 +8836,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1070" z="-1500"/>
       </physvol>
-      <physvol copynumber="158" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3024" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1080" y="0" z="-1500"/>
       </physvol>
@@ -8844,7 +8844,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1070" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="159" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4024" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1080" y="0" z="-1500"/>
       </physvol>
@@ -8852,7 +8852,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1070" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="160" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1025" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1060" z="-1500"/>
       </physvol>
@@ -8860,7 +8860,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1050" z="-1500"/>
       </physvol>
-      <physvol copynumber="161" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2025" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1060" z="-1500"/>
       </physvol>
@@ -8868,7 +8868,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1050" z="-1500"/>
       </physvol>
-      <physvol copynumber="162" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3025" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1060" y="0" z="-1500"/>
       </physvol>
@@ -8876,7 +8876,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1050" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="163" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4025" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1060" y="0" z="-1500"/>
       </physvol>
@@ -8884,7 +8884,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1050" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="164" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1026" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1040" z="-1500"/>
       </physvol>
@@ -8892,7 +8892,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1030" z="-1500"/>
       </physvol>
-      <physvol copynumber="165" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2026" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1040" z="-1500"/>
       </physvol>
@@ -8900,7 +8900,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1030" z="-1500"/>
       </physvol>
-      <physvol copynumber="166" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3026" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1040" y="0" z="-1500"/>
       </physvol>
@@ -8908,7 +8908,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1030" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="167" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4026" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1040" y="0" z="-1500"/>
       </physvol>
@@ -8916,7 +8916,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1030" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="168" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1027" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1020" z="-1500"/>
       </physvol>
@@ -8924,7 +8924,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-1010" z="-1500"/>
       </physvol>
-      <physvol copynumber="169" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2027" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1020" z="-1500"/>
       </physvol>
@@ -8932,7 +8932,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="1010" z="-1500"/>
       </physvol>
-      <physvol copynumber="170" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3027" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1020" y="0" z="-1500"/>
       </physvol>
@@ -8940,7 +8940,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-1010" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="171" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4027" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1020" y="0" z="-1500"/>
       </physvol>
@@ -8948,7 +8948,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="1010" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="172" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1028" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-1000" z="-1500"/>
       </physvol>
@@ -8956,7 +8956,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-990" z="-1500"/>
       </physvol>
-      <physvol copynumber="173" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2028" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="1000" z="-1500"/>
       </physvol>
@@ -8964,7 +8964,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="990" z="-1500"/>
       </physvol>
-      <physvol copynumber="174" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3028" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-1000" y="0" z="-1500"/>
       </physvol>
@@ -8972,7 +8972,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-990" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="175" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4028" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="1000" y="0" z="-1500"/>
       </physvol>
@@ -8980,7 +8980,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="990" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="176" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1029" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-980" z="-1500"/>
       </physvol>
@@ -8988,7 +8988,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-970" z="-1500"/>
       </physvol>
-      <physvol copynumber="177" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2029" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="980" z="-1500"/>
       </physvol>
@@ -8996,7 +8996,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="970" z="-1500"/>
       </physvol>
-      <physvol copynumber="178" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3029" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-980" y="0" z="-1500"/>
       </physvol>
@@ -9004,7 +9004,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-970" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="179" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4029" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="980" y="0" z="-1500"/>
       </physvol>
@@ -9012,7 +9012,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="970" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="180" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1030" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-960" z="-1500"/>
       </physvol>
@@ -9020,7 +9020,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-950" z="-1500"/>
       </physvol>
-      <physvol copynumber="181" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2030" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="960" z="-1500"/>
       </physvol>
@@ -9028,7 +9028,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="950" z="-1500"/>
       </physvol>
-      <physvol copynumber="182" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3030" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-960" y="0" z="-1500"/>
       </physvol>
@@ -9036,7 +9036,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-950" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="183" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4030" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="960" y="0" z="-1500"/>
       </physvol>
@@ -9044,7 +9044,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="950" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="184" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1031" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-940" z="-1500"/>
       </physvol>
@@ -9052,7 +9052,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-930" z="-1500"/>
       </physvol>
-      <physvol copynumber="185" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2031" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="940" z="-1500"/>
       </physvol>
@@ -9060,7 +9060,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="930" z="-1500"/>
       </physvol>
-      <physvol copynumber="186" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3031" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-940" y="0" z="-1500"/>
       </physvol>
@@ -9068,7 +9068,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-930" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="187" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4031" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="940" y="0" z="-1500"/>
       </physvol>
@@ -9076,7 +9076,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="930" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="188" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1032" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-920" z="-1500"/>
       </physvol>
@@ -9084,7 +9084,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-910" z="-1500"/>
       </physvol>
-      <physvol copynumber="189" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2032" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="920" z="-1500"/>
       </physvol>
@@ -9092,7 +9092,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="910" z="-1500"/>
       </physvol>
-      <physvol copynumber="190" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3032" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-920" y="0" z="-1500"/>
       </physvol>
@@ -9100,7 +9100,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-910" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="191" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4032" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="920" y="0" z="-1500"/>
       </physvol>
@@ -9108,7 +9108,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="910" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="192" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1033" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-900" z="-1500"/>
       </physvol>
@@ -9116,7 +9116,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-890" z="-1500"/>
       </physvol>
-      <physvol copynumber="193" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2033" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="900" z="-1500"/>
       </physvol>
@@ -9124,7 +9124,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="890" z="-1500"/>
       </physvol>
-      <physvol copynumber="194" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3033" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-900" y="0" z="-1500"/>
       </physvol>
@@ -9132,7 +9132,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-890" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="195" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4033" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="900" y="0" z="-1500"/>
       </physvol>
@@ -9140,7 +9140,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="890" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="196" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1034" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-880" z="-1500"/>
       </physvol>
@@ -9148,7 +9148,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-870" z="-1500"/>
       </physvol>
-      <physvol copynumber="197" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2034" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="880" z="-1500"/>
       </physvol>
@@ -9156,7 +9156,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="870" z="-1500"/>
       </physvol>
-      <physvol copynumber="198" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3034" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-880" y="0" z="-1500"/>
       </physvol>
@@ -9164,7 +9164,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-870" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="199" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4034" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="880" y="0" z="-1500"/>
       </physvol>
@@ -9172,7 +9172,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="870" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="200" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1035" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-860" z="-1500"/>
       </physvol>
@@ -9180,7 +9180,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-850" z="-1500"/>
       </physvol>
-      <physvol copynumber="201" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2035" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="860" z="-1500"/>
       </physvol>
@@ -9188,7 +9188,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="850" z="-1500"/>
       </physvol>
-      <physvol copynumber="202" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3035" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-860" y="0" z="-1500"/>
       </physvol>
@@ -9196,7 +9196,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-850" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="203" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4035" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="860" y="0" z="-1500"/>
       </physvol>
@@ -9204,7 +9204,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="850" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="204" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1036" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-840" z="-1500"/>
       </physvol>
@@ -9212,7 +9212,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-830" z="-1500"/>
       </physvol>
-      <physvol copynumber="205" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2036" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="840" z="-1500"/>
       </physvol>
@@ -9220,7 +9220,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="830" z="-1500"/>
       </physvol>
-      <physvol copynumber="206" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3036" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-840" y="0" z="-1500"/>
       </physvol>
@@ -9228,7 +9228,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-830" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="207" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4036" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="840" y="0" z="-1500"/>
       </physvol>
@@ -9236,7 +9236,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="830" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="208" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1037" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-820" z="-1500"/>
       </physvol>
@@ -9244,7 +9244,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-810" z="-1500"/>
       </physvol>
-      <physvol copynumber="209" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2037" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="820" z="-1500"/>
       </physvol>
@@ -9252,7 +9252,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="810" z="-1500"/>
       </physvol>
-      <physvol copynumber="210" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3037" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-820" y="0" z="-1500"/>
       </physvol>
@@ -9260,7 +9260,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-810" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="211" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4037" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="820" y="0" z="-1500"/>
       </physvol>
@@ -9268,7 +9268,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="810" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="212" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1038" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-800" z="-1500"/>
       </physvol>
@@ -9276,7 +9276,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-790" z="-1500"/>
       </physvol>
-      <physvol copynumber="213" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2038" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="800" z="-1500"/>
       </physvol>
@@ -9284,7 +9284,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="790" z="-1500"/>
       </physvol>
-      <physvol copynumber="214" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3038" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-800" y="0" z="-1500"/>
       </physvol>
@@ -9292,7 +9292,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-790" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="215" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4038" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="800" y="0" z="-1500"/>
       </physvol>
@@ -9300,7 +9300,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="790" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="216" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1039" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-780" z="-1500"/>
       </physvol>
@@ -9308,7 +9308,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-770" z="-1500"/>
       </physvol>
-      <physvol copynumber="217" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2039" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="780" z="-1500"/>
       </physvol>
@@ -9316,7 +9316,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="770" z="-1500"/>
       </physvol>
-      <physvol copynumber="218" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3039" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-780" y="0" z="-1500"/>
       </physvol>
@@ -9324,7 +9324,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-770" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="219" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4039" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="780" y="0" z="-1500"/>
       </physvol>
@@ -9332,7 +9332,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="770" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="220" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1040" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-760" z="-1500"/>
       </physvol>
@@ -9340,7 +9340,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-750" z="-1500"/>
       </physvol>
-      <physvol copynumber="221" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2040" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="760" z="-1500"/>
       </physvol>
@@ -9348,7 +9348,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="750" z="-1500"/>
       </physvol>
-      <physvol copynumber="222" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3040" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-760" y="0" z="-1500"/>
       </physvol>
@@ -9356,7 +9356,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-750" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="223" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4040" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="760" y="0" z="-1500"/>
       </physvol>
@@ -9364,7 +9364,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="750" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="224" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1041" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-740" z="-1500"/>
       </physvol>
@@ -9372,7 +9372,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-730" z="-1500"/>
       </physvol>
-      <physvol copynumber="225" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2041" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="740" z="-1500"/>
       </physvol>
@@ -9380,7 +9380,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="730" z="-1500"/>
       </physvol>
-      <physvol copynumber="226" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3041" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-740" y="0" z="-1500"/>
       </physvol>
@@ -9388,7 +9388,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-730" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="227" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4041" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="740" y="0" z="-1500"/>
       </physvol>
@@ -9396,7 +9396,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="730" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="228" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1042" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-720" z="-1500"/>
       </physvol>
@@ -9404,7 +9404,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-710" z="-1500"/>
       </physvol>
-      <physvol copynumber="229" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2042" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="720" z="-1500"/>
       </physvol>
@@ -9412,7 +9412,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="710" z="-1500"/>
       </physvol>
-      <physvol copynumber="230" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3042" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-720" y="0" z="-1500"/>
       </physvol>
@@ -9420,7 +9420,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-710" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="231" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4042" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="720" y="0" z="-1500"/>
       </physvol>
@@ -9428,7 +9428,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="710" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="232" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1043" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-700" z="-1500"/>
       </physvol>
@@ -9436,7 +9436,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-690" z="-1500"/>
       </physvol>
-      <physvol copynumber="233" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2043" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="700" z="-1500"/>
       </physvol>
@@ -9444,7 +9444,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="690" z="-1500"/>
       </physvol>
-      <physvol copynumber="234" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3043" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-700" y="0" z="-1500"/>
       </physvol>
@@ -9452,7 +9452,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-690" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="235" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4043" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="700" y="0" z="-1500"/>
       </physvol>
@@ -9460,7 +9460,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="690" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="236" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1044" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-680" z="-1500"/>
       </physvol>
@@ -9468,7 +9468,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-670" z="-1500"/>
       </physvol>
-      <physvol copynumber="237" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2044" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="680" z="-1500"/>
       </physvol>
@@ -9476,7 +9476,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="670" z="-1500"/>
       </physvol>
-      <physvol copynumber="238" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3044" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-680" y="0" z="-1500"/>
       </physvol>
@@ -9484,7 +9484,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-670" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="239" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4044" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="680" y="0" z="-1500"/>
       </physvol>
@@ -9492,7 +9492,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="670" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="240" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1045" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-660" z="-1500"/>
       </physvol>
@@ -9500,7 +9500,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-650" z="-1500"/>
       </physvol>
-      <physvol copynumber="241" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2045" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="660" z="-1500"/>
       </physvol>
@@ -9508,7 +9508,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="650" z="-1500"/>
       </physvol>
-      <physvol copynumber="242" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3045" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-660" y="0" z="-1500"/>
       </physvol>
@@ -9516,7 +9516,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-650" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="243" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4045" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="660" y="0" z="-1500"/>
       </physvol>
@@ -9524,7 +9524,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="650" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="244" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1046" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-640" z="-1500"/>
       </physvol>
@@ -9532,7 +9532,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-630" z="-1500"/>
       </physvol>
-      <physvol copynumber="245" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2046" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="640" z="-1500"/>
       </physvol>
@@ -9540,7 +9540,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="630" z="-1500"/>
       </physvol>
-      <physvol copynumber="246" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3046" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-640" y="0" z="-1500"/>
       </physvol>
@@ -9548,7 +9548,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-630" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="247" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4046" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="640" y="0" z="-1500"/>
       </physvol>
@@ -9556,7 +9556,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="630" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="248" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1047" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-620" z="-1500"/>
       </physvol>
@@ -9564,7 +9564,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-610" z="-1500"/>
       </physvol>
-      <physvol copynumber="249" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2047" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="620" z="-1500"/>
       </physvol>
@@ -9572,7 +9572,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="610" z="-1500"/>
       </physvol>
-      <physvol copynumber="250" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3047" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-620" y="0" z="-1500"/>
       </physvol>
@@ -9580,7 +9580,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-610" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="251" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4047" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="620" y="0" z="-1500"/>
       </physvol>
@@ -9588,7 +9588,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="610" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="252" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1048" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-600" z="-1500"/>
       </physvol>
@@ -9596,7 +9596,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-590" z="-1500"/>
       </physvol>
-      <physvol copynumber="253" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2048" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="600" z="-1500"/>
       </physvol>
@@ -9604,7 +9604,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="590" z="-1500"/>
       </physvol>
-      <physvol copynumber="254" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3048" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-600" y="0" z="-1500"/>
       </physvol>
@@ -9612,7 +9612,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-590" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="255" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4048" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="600" y="0" z="-1500"/>
       </physvol>
@@ -9620,7 +9620,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="590" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="256" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1049" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-580" z="-1500"/>
       </physvol>
@@ -9628,7 +9628,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-570" z="-1500"/>
       </physvol>
-      <physvol copynumber="257" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2049" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="580" z="-1500"/>
       </physvol>
@@ -9636,7 +9636,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="570" z="-1500"/>
       </physvol>
-      <physvol copynumber="258" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3049" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-580" y="0" z="-1500"/>
       </physvol>
@@ -9644,7 +9644,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-570" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="259" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4049" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="580" y="0" z="-1500"/>
       </physvol>
@@ -9652,7 +9652,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="570" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="260" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1050" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-560" z="-1500"/>
       </physvol>
@@ -9660,7 +9660,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-550" z="-1500"/>
       </physvol>
-      <physvol copynumber="261" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2050" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="560" z="-1500"/>
       </physvol>
@@ -9668,7 +9668,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="550" z="-1500"/>
       </physvol>
-      <physvol copynumber="262" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3050" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-560" y="0" z="-1500"/>
       </physvol>
@@ -9676,7 +9676,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-550" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="263" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4050" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="560" y="0" z="-1500"/>
       </physvol>
@@ -9684,7 +9684,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="550" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="264" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1051" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-540" z="-1500"/>
       </physvol>
@@ -9692,7 +9692,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-530" z="-1500"/>
       </physvol>
-      <physvol copynumber="265" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2051" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="540" z="-1500"/>
       </physvol>
@@ -9700,7 +9700,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="530" z="-1500"/>
       </physvol>
-      <physvol copynumber="266" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3051" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-540" y="0" z="-1500"/>
       </physvol>
@@ -9708,7 +9708,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-530" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="267" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4051" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="540" y="0" z="-1500"/>
       </physvol>
@@ -9716,7 +9716,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="530" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="268" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1052" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-520" z="-1500"/>
       </physvol>
@@ -9724,7 +9724,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-510" z="-1500"/>
       </physvol>
-      <physvol copynumber="269" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2052" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="520" z="-1500"/>
       </physvol>
@@ -9732,7 +9732,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="510" z="-1500"/>
       </physvol>
-      <physvol copynumber="270" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3052" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-520" y="0" z="-1500"/>
       </physvol>
@@ -9740,7 +9740,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-510" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="271" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4052" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="520" y="0" z="-1500"/>
       </physvol>
@@ -9748,7 +9748,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="510" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="272" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1053" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-500" z="-1500"/>
       </physvol>
@@ -9756,7 +9756,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-490" z="-1500"/>
       </physvol>
-      <physvol copynumber="273" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2053" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="500" z="-1500"/>
       </physvol>
@@ -9764,7 +9764,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="490" z="-1500"/>
       </physvol>
-      <physvol copynumber="274" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3053" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-500" y="0" z="-1500"/>
       </physvol>
@@ -9772,7 +9772,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-490" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="275" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4053" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="500" y="0" z="-1500"/>
       </physvol>
@@ -9780,7 +9780,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="490" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="276" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1054" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-480" z="-1500"/>
       </physvol>
@@ -9788,7 +9788,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-470" z="-1500"/>
       </physvol>
-      <physvol copynumber="277" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2054" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="480" z="-1500"/>
       </physvol>
@@ -9796,7 +9796,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="470" z="-1500"/>
       </physvol>
-      <physvol copynumber="278" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3054" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-480" y="0" z="-1500"/>
       </physvol>
@@ -9804,7 +9804,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-470" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="279" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4054" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="480" y="0" z="-1500"/>
       </physvol>
@@ -9812,7 +9812,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="470" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="280" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1055" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-460" z="-1500"/>
       </physvol>
@@ -9820,7 +9820,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-450" z="-1500"/>
       </physvol>
-      <physvol copynumber="281" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2055" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="460" z="-1500"/>
       </physvol>
@@ -9828,7 +9828,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="450" z="-1500"/>
       </physvol>
-      <physvol copynumber="282" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3055" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-460" y="0" z="-1500"/>
       </physvol>
@@ -9836,7 +9836,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-450" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="283" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4055" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="460" y="0" z="-1500"/>
       </physvol>
@@ -9844,7 +9844,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="450" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="284" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1056" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-440" z="-1500"/>
       </physvol>
@@ -9852,7 +9852,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-430" z="-1500"/>
       </physvol>
-      <physvol copynumber="285" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2056" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="440" z="-1500"/>
       </physvol>
@@ -9860,7 +9860,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="430" z="-1500"/>
       </physvol>
-      <physvol copynumber="286" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3056" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-440" y="0" z="-1500"/>
       </physvol>
@@ -9868,7 +9868,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-430" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="287" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4056" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="440" y="0" z="-1500"/>
       </physvol>
@@ -9876,7 +9876,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="430" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="288" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1057" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-420" z="-1500"/>
       </physvol>
@@ -9884,7 +9884,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-410" z="-1500"/>
       </physvol>
-      <physvol copynumber="289" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2057" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="420" z="-1500"/>
       </physvol>
@@ -9892,7 +9892,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="410" z="-1500"/>
       </physvol>
-      <physvol copynumber="290" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3057" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-420" y="0" z="-1500"/>
       </physvol>
@@ -9900,7 +9900,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-410" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="291" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4057" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="420" y="0" z="-1500"/>
       </physvol>
@@ -9908,7 +9908,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="410" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="292" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1058" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-400" z="-1500"/>
       </physvol>
@@ -9916,7 +9916,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-390" z="-1500"/>
       </physvol>
-      <physvol copynumber="293" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2058" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="400" z="-1500"/>
       </physvol>
@@ -9924,7 +9924,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="390" z="-1500"/>
       </physvol>
-      <physvol copynumber="294" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3058" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-400" y="0" z="-1500"/>
       </physvol>
@@ -9932,7 +9932,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-390" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="295" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4058" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="400" y="0" z="-1500"/>
       </physvol>
@@ -9940,7 +9940,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="390" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="296" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1059" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-380" z="-1500"/>
       </physvol>
@@ -9948,7 +9948,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-370" z="-1500"/>
       </physvol>
-      <physvol copynumber="297" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2059" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="380" z="-1500"/>
       </physvol>
@@ -9956,7 +9956,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="370" z="-1500"/>
       </physvol>
-      <physvol copynumber="298" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3059" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-380" y="0" z="-1500"/>
       </physvol>
@@ -9964,7 +9964,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-370" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="299" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4059" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="380" y="0" z="-1500"/>
       </physvol>
@@ -9972,7 +9972,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="370" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="300" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1060" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-360" z="-1500"/>
       </physvol>
@@ -9980,7 +9980,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-350" z="-1500"/>
       </physvol>
-      <physvol copynumber="301" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2060" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="360" z="-1500"/>
       </physvol>
@@ -9988,7 +9988,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="350" z="-1500"/>
       </physvol>
-      <physvol copynumber="302" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3060" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-360" y="0" z="-1500"/>
       </physvol>
@@ -9996,7 +9996,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-350" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="303" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4060" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="360" y="0" z="-1500"/>
       </physvol>
@@ -10004,7 +10004,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="350" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="304" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1061" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-340" z="-1500"/>
       </physvol>
@@ -10012,7 +10012,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-330" z="-1500"/>
       </physvol>
-      <physvol copynumber="305" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2061" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="340" z="-1500"/>
       </physvol>
@@ -10020,7 +10020,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="330" z="-1500"/>
       </physvol>
-      <physvol copynumber="306" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3061" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-340" y="0" z="-1500"/>
       </physvol>
@@ -10028,7 +10028,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-330" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="307" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4061" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="340" y="0" z="-1500"/>
       </physvol>
@@ -10036,7 +10036,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="330" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="308" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1062" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-320" z="-1500"/>
       </physvol>
@@ -10044,7 +10044,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-310" z="-1500"/>
       </physvol>
-      <physvol copynumber="309" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2062" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="320" z="-1500"/>
       </physvol>
@@ -10052,7 +10052,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="310" z="-1500"/>
       </physvol>
-      <physvol copynumber="310" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3062" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-320" y="0" z="-1500"/>
       </physvol>
@@ -10060,7 +10060,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-310" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="311" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4062" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="320" y="0" z="-1500"/>
       </physvol>
@@ -10068,7 +10068,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_right_hcal_Steel_physvol_pos" unit="mm" x="310" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="312" name="wrap_top_hcal_Scintillator_physvol">
+      <physvol copynumber="1063" name="wrap_top_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_top_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="-300" z="-1500"/>
       </physvol>
@@ -10076,7 +10076,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_top_hcal_Steel_physvol_pos" unit="mm" x="0" y="-290" z="-1500"/>
       </physvol>
-      <physvol copynumber="313" name="wrap_bot_hcal_Scintillator_physvol">
+      <physvol copynumber="2063" name="wrap_bot_hcal_Scintillator_physvol">
         <volumeref ref="wrap_TB_hcal_Scintillator_volume"/>
         <position name="wrap_bot_hcal_Scintillator_physvol_pos" unit="mm" x="0" y="300" z="-1500"/>
       </physvol>
@@ -10084,7 +10084,7 @@
         <volumeref ref="wrap_TB_hcal_Steel_volume"/>
         <position name="wrap_bot_hcal_Steel_physvol_pos" unit="mm" x="0" y="290" z="-1500"/>
       </physvol>
-      <physvol copynumber="314" name="wrap_left_hcal_Scintillator_physvol">
+      <physvol copynumber="3063" name="wrap_left_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_left_hcal_Scintillator_physvol_pos" unit="mm" x="-300" y="0" z="-1500"/>
       </physvol>
@@ -10092,7 +10092,7 @@
         <volumeref ref="wrap_LR_hcal_Steel_volume"/>
         <position name="wrap_left_hcal_Steel_physvol_pos" unit="mm" x="-290" y="0" z="-1500"/>
       </physvol>
-      <physvol copynumber="315" name="wrap_right_hcal_Scintillator_physvol">
+      <physvol copynumber="4063" name="wrap_right_hcal_Scintillator_physvol">
         <volumeref ref="wrap_LR_hcal_Scintillator_volume"/>
         <position name="wrap_right_hcal_Scintillator_physvol_pos" unit="mm" x="300" y="0" z="-1500"/>
       </physvol>
