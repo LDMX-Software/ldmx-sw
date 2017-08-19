@@ -34,18 +34,18 @@ void find(DetectorDataService* svc, DetectorElement* de, const char* indent = " 
             decoder->setRawValue(srch->getID());
             auto values = decoder->unpack();
             if (srch) {
-                std::cout << indent << "Found " << srch->getName() << ": " << values << std::endl;
+                std::cout << indent << "ID lookup found '" << srch->getName() << "' with ID " << values << std::endl;
             }
         }
     } else {
-        std::cout << indent << "Skipping lookup of " << de->getName() << " with ID = 0" << std::endl;
+        std::cout << indent << "Skipping lookup of '" << de->getName() << "' with ID = 0" << std::endl;
     }
 
     // Check global pos lookup for leaf nodes.
     vector<double> pos = de->getGlobalPosition();
     srch = svc->locateDetectorElement(pos);
     if (srch) {
-        std::cout << indent << "Found " << srch->getName() << de->getGlobalPosition() << std::endl;
+        std::cout << indent << "Global position lookup found '" << srch->getName() << "'" << de->getGlobalPosition() << std::endl;
     }
 
     // Check node lookup.
@@ -53,7 +53,7 @@ void find(DetectorDataService* svc, DetectorElement* de, const char* indent = " 
         TGeoNode* node = de->getSupport();
         srch = svc->findDetectorElement(node);
         if (srch) {
-            std::cout << indent << "Found " << srch->getName() << " with support '" << node->GetName() << "'" << std::endl;
+            std::cout << indent << "Node lookup found '" << srch->getName() << "' with support '" << node->GetName() << "'" << std::endl;
         }
     }
 }
@@ -80,13 +80,13 @@ int main(int argc, const char* argv[])  {
     decoder = ecal->getDetectorID();
     decoder->setRawValue(ecal->getID());
     values = decoder->unpack();
-    std::cout << "Got 'Ecal' DE with support <" << ecal->getSupport()->GetName() << ">"
-            << ecal->getGlobalPosition() << values << std::endl;
+    std::cout << "Got '" << ecal->getName() << "' with support '" << ecal->getSupport()->GetName() << "'"
+            << ecal->getGlobalPosition() << "and ID " << values << std::endl;
     for (auto ecalStation : ecal->getChildren()) {
         decoder->setRawValue(ecalStation->getID());
         values = decoder->unpack();
-        std::cout << "  " << ecalStation->getName() << " with support <"
-                << ecalStation->getSupport()->GetName() << "> and layer num "
+        std::cout << "Station '" << ecalStation->getName() << "' with support '"
+                << ecalStation->getSupport()->GetName() << "' and layer num "
                 << ((EcalStation*)ecalStation)->getLayerNumber()
                 << ecalStation->getGlobalPosition()
                 << " and ID "
@@ -101,13 +101,13 @@ int main(int argc, const char* argv[])  {
     decoder = hcal->getDetectorID();
     decoder->setRawValue(hcal->getID());
     values = decoder->unpack();
-    std::cout << "Got 'Hcal' DE with support '" << hcal->getSupport()->GetName() << "'"
+    std::cout << "Got '" << hcal->getName() << "' with support '" << hcal->getSupport()->GetName() << "'"
             << hcal->getGlobalPosition() << values << std::endl;
     for (auto hcalStation : hcal->getChildren()) {
         decoder->setRawValue(hcalStation->getID());
         values = decoder->unpack();
-        std::cout << "  " << hcalStation->getName() << " with support <"
-                << hcalStation->getSupport()->GetName() << "> and station num "
+        std::cout << "  Station '" << hcalStation->getName() << "' with support '"
+                << hcalStation->getSupport()->GetName() << "' and station num "
                 << ((HcalStation*)hcalStation)->getStationNumber()
                 << hcalStation->getGlobalPosition()
                 << " and ID "
@@ -122,14 +122,14 @@ int main(int argc, const char* argv[])  {
     decoder = tagger->getDetectorID();
     decoder->setRawValue(tagger->getID());
     values = decoder->unpack();
-    std::cout << "Got 'Tagger' DE with support '" << tagger->getSupport()->GetName() << "'"
+    std::cout << "Got '" << tagger->getName() << "' with support '" << tagger->getSupport()->GetName() << "'"
             << tagger->getGlobalPosition() << values << std::endl;
     decoder = tagger->getDetectorID();
     for (auto taggerLayer : tagger->getChildren()) {
         decoder->setRawValue(taggerLayer->getID());
         values = decoder->unpack();
-        std::cout << "  " << taggerLayer->getName() << " with support "
-                        << taggerLayer->getSupport()->GetName() << " and layer num "
+        std::cout << "  Station '" << taggerLayer->getName() << "' with support '"
+                        << taggerLayer->getSupport()->GetName() << "' and layer num "
                         << ((TaggerStation*)taggerLayer)->getLayerNumber()
                         << taggerLayer->getGlobalPosition()
                         << " and ID "
@@ -144,13 +144,13 @@ int main(int argc, const char* argv[])  {
     decoder = recoilTracker->getDetectorID();
     decoder->setRawValue(recoilTracker->getID());
     values = decoder->unpack();
-    std::cout << "Got 'RecoilTracker' DE with support <" << recoilTracker->getSupport()->GetName() << ">"
+    std::cout << "Got '" << recoilTracker->getName() << "' with support '" << recoilTracker->getSupport()->GetName() << "'"
             << recoilTracker->getGlobalPosition() << values << std::endl;
     for (auto recoilTrackerLayer : recoilTracker->getChildren()) {
         decoder->setRawValue(recoilTrackerLayer->getID());
         values = decoder->unpack();
-        std::cout << "  " << recoilTrackerLayer->getName() << " with support <"
-                  << recoilTrackerLayer->getSupport()->GetName() << "> and layer num "
+        std::cout << "  Station '" << recoilTrackerLayer->getName() << "' with support '"
+                  << recoilTrackerLayer->getSupport()->GetName() << "' and layer num "
                   << ((TaggerStation*)recoilTrackerLayer)->getLayerNumber()
                   << recoilTrackerLayer->getGlobalPosition()
                   << " and ID "
@@ -165,7 +165,7 @@ int main(int argc, const char* argv[])  {
     decoder = target->getDetectorID();
     decoder->setRawValue(target->getID());
     values = decoder->unpack();
-    std::cout << "Got 'Target' DE with support " << target->getSupport()->GetName() << "'" << target->getGlobalPosition() << values << std::endl;
+    std::cout << "Got '" << target->getName() << "' with support '" << target->getSupport()->GetName() << "'" << target->getGlobalPosition() << values << std::endl;
     std::cout << "  targetThickness = " << ((Target*)target)->getTargetThickness() << std::endl;
     find(svc, target, "  ");
     std::cout << std::endl;
@@ -175,14 +175,14 @@ int main(int argc, const char* argv[])  {
     decoder = triggerPad->getDetectorID();
     decoder->setRawValue(triggerPad->getID());
     values = decoder->unpack();
-    std::cout << "Got 'TriggerPadUp' with support '" << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << values << std::endl;
+    std::cout << "Got '" << triggerPad->getName() << "' with support '" << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << values << std::endl;
     find(svc, triggerPad, "  ");
     std::cout << std::endl;
     triggerPad = top->findChild("TriggerPadDown");
     decoder = triggerPad->getDetectorID();
     decoder->setRawValue(triggerPad->getID());
     values = decoder->unpack();
-    std::cout << "Got 'TriggerPadDown' with support " << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << values << std::endl;
+    std::cout << "Got '" << triggerPad->getName() << "' with support '" << triggerPad->getSupport()->GetName() << "'" << triggerPad->getGlobalPosition() << values << std::endl;
     find(svc, triggerPad, "  ");
 
     // Delete the service object, which will delete the DetectorElement tree and the ROOT geometry manager.
