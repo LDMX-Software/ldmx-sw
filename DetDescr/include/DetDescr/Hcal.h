@@ -13,11 +13,12 @@ namespace ldmx {
 
     /**
      * @class HcalStation
-     * @brief Represents the DetectorElement for an HCal station
+     * @brief DetectorElement for an HCal station
      *
      * @note A station may be a member of any layer in the HCal.
-     * Stations are numbered according to the copy numbers read from the
-     * geometric support volumes.
+     * The station number is the copy number of the support volume.
+     * The layer is the copy number modulo 1000.
+     * The section is the copy number divided by 1000 using integer division.
      */
     class HcalStation : public DetectorElementImpl {
 

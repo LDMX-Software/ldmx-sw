@@ -16,6 +16,7 @@ namespace ldmx {
     /**
      * @class RecoilTracker
      * @brief Top level DetectorElement for the Recoil Tracker
+     * @note
      */
     class RecoilTracker : public DetectorElementImpl {
 
@@ -32,6 +33,9 @@ namespace ldmx {
     /**
      * @class RecoilTrackerStation
      * @brief DetectorElement representing a readout station in the Recoil Tracker
+     * @note The station number is the support volume copy number.
+     * The module number is the copy number modulo 10.
+     * The layer number is the copy number divided by 10 using integer division.
      */
     class RecoilTrackerStation : public DetectorElementImpl {
 
@@ -64,6 +68,9 @@ namespace ldmx {
             }
 
         private:
+
+            /** The station number. */
+            int stationNum_{-1};
 
             /** The layer number. */
             int layerNum_{-1};

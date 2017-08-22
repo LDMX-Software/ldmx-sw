@@ -30,7 +30,7 @@ namespace ldmx {
 
     /**
      * @class TaggerLayer
-     * @brief DetectorElement representing a layer in the Tagger
+     * @brief DetectorElement representing a station in the Tagger Tracker
      */
     class TaggerStation : public DetectorElementImpl {
 

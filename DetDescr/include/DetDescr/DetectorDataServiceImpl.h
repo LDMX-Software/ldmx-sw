@@ -154,6 +154,8 @@ namespace ldmx {
                 std::ifstream f(alias.c_str());
                 if (f.good()) {
                     aliasMap_[detectorName] = alias;
+                } else {
+                    throw std::runtime_error("The alias is not a valid file: " + alias);
                 }
                 //std::cout << "[ DetectorDataServiceImpl ] : Added alias " << detectorName << " => " << alias << std::endl;
             }
@@ -192,6 +194,9 @@ namespace ldmx {
 
         private:
 
+            /**
+             * Build the DetectorElement hierarchy.
+             */
             void buildDetectorElements();
 
             /**

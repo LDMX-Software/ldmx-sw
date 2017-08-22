@@ -17,6 +17,7 @@ namespace ldmx {
 
     RecoilTrackerStation::RecoilTrackerStation(DetectorElementImpl* tagger, TGeoNode* support) : DetectorElementImpl(tagger, support) {
 
+        stationNum_ = support->GetNumber();
         layerNum_ = support->GetNumber() / 10;
         moduleNum_ = support->GetNumber() % 10;
         

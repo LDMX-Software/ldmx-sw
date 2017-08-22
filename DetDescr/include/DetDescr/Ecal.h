@@ -14,7 +14,7 @@ namespace ldmx {
 
     /**
      * @class EcalStation
-     * @brief DetectorElement definition for each ECal Si sensor station
+     * @brief DetectorElement for each ECal sensor station
      */
     class EcalStation : public DetectorElementImpl {
 
