@@ -1,0 +1,15 @@
+/persistency/gdml/read detector.gdml
+/run/initialize
+
+# plugins from SimPlugins module
+/ldmx/plugins/load DummySimPlugin
+/ldmx/plugins/load EventPrintPlugin
+/ldmx/plugins/load PhotonuclearXsecBiasingPlugin
+/ldmx/plugins/load TrackFilterPlugin
+/ldmx/plugins/load TrackKiller
+
+# plugins from Biasing module
+/ldmx/plugins/load EcalProcessFilter libBiasing.so
+/ldmx/plugins/load SimpleProcessFilter libBiasing.so
+/ldmx/plugins/load TargetBremFilter libBiasing.so
+/ldmx/plugins/load TargetProcessFilter libBiasing.so
