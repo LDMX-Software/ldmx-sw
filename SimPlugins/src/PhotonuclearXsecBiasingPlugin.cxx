@@ -8,13 +8,7 @@
 
 #include "SimPlugins/PhotonuclearXsecBiasingPlugin.h"
 
-extern "C" ldmx::PhotonuclearXsecBiasingPlugin* createPhotonuclearXsecBiasingPlugin() {
-    return new ldmx::PhotonuclearXsecBiasingPlugin;
-}
-
-extern "C" void destroyPhotonuclearXsecBiasingPlugin(ldmx::PhotonuclearXsecBiasingPlugin* object) {
-    delete object;
-}
+SIM_PLUGIN(ldmx, PhotonuclearXsecBiasingPlugin)
 
 ldmx::PhotonuclearXsecBiasingPlugin::PhotonuclearXsecBiasingPlugin() {
 }

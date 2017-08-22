@@ -7,15 +7,9 @@
 
 #include "Biasing/SimpleProcessFilter.h"
 
+SIM_PLUGIN(ldmx, SimpleProcessFilter)
+
 namespace ldmx { 
-
-    extern "C" SimpleProcessFilter* createSimpleProcessFilter() {
-        return new SimpleProcessFilter;
-    }
-
-    extern "C" void destroySimpleProcessFilter(SimpleProcessFilter* object) {
-        delete object;
-    }
 
     SimpleProcessFilter::SimpleProcessFilter() {
         messenger_ = new SimpleProcessFilterMessenger(this);
