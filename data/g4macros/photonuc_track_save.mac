@@ -1,3 +1,0 @@
-/ldmx/plugins/load TrackProcessSaver
-/ldmx/plugins/TrackProcessSaver/verbose 2
-/ldmx/plugins/TrackProcessSaver/addProcess photonNuclear false
