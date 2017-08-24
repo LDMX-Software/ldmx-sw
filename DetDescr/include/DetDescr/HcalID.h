@@ -17,10 +17,10 @@ namespace ldmx {
      */
     enum HcalSection {
         BACK = 0,
-        TOP,
-        BOTTOM,
-        LEFT,
-        RIGHT
+        TOP = 1,
+        BOTTOM = 2,
+        LEFT = 3,
+        RIGHT = 4
     };
 
     /**
