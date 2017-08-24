@@ -58,7 +58,7 @@
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoResult.html#a2a7e01f71c56cff4fb94a5233bf26d54">EcalVetoResult</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoResult.html#ad86fec26b565deef61bf2536d1353b51">~EcalVetoResult</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoResult.html#a3dd1f77e37c1453afe46ffff9f287145">setVariables</a> (int nReadoutHits, int nLooseIsoHits, int nTightIsoHits, float summedDet, int summedOuter, float backSummedDet, float summedLooseIso, float maxLooseIsoDep, float summedTightIso, float maxTightIsoDep, float maxCellDep, float showerRMS, std::vector&lt; float &gt; EcalLayerEdepReadout, std::vector&lt; std::pair&lt; int, float &gt;&gt; looseMipTracks, std::vector&lt; std::pair&lt; int, float &gt;&gt; mediumMipTracks, std::vector&lt; std::pair&lt; int, float &gt;&gt; tightMipTracks)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoResult.html#a01c193ab9da6add9c8d71681da580660">setVariables</a> (int nReadoutHits, int nLooseIsoHits, int nTightIsoHits, float summedDet, int summedOuter, float backSummedDet, float summedLooseIso, float maxLooseIsoDep, float summedTightIso, float maxTightIsoDep, float maxCellDep, float showerRMS, std::vector&lt; float &gt; EcalLayerEdepReadout, std::vector&lt; std::pair&lt; int, float &gt;&gt; looseMipTracks, std::vector&lt; std::pair&lt; int, float &gt;&gt; mediumMipTracks, std::vector&lt; std::pair&lt; int, float &gt;&gt; tightMipTracks, std::vector&lt; double &gt; recoilP, std::vector&lt; float &gt; recoilPos)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoResult.html#a9f5f2c969b588f78a56233d5980493b1">Clear</a> (Option_t *option=&quot;&quot;)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoResult.html#a274449e9f7c0d88a5a0d19cd9cd00808">Copy</a> (TObject &amp;object) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoResult.html#ad02fe9354c24c979e273c70cbecd2902">Print</a> (Option_t *option=&quot;&quot;) const </td></tr>
@@ -110,10 +110,13 @@ float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getTightMi
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setVetoResult</b> (bool passesVeto)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab3ca7ce2a2c0d61b21a3094060406dc2"></a><!-- doxytag: member="ldmx::EcalVetoResult::setDiscValue" ref="ab3ca7ce2a2c0d61b21a3094060406dc2" args="(float discValue)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setDiscValue</b> (float discValue)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoResult.html#a5e5d32d1367f6b7b186df1dce04eeeca">getRecoilMomentum</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoResult.html#a95f11811674ea8e987f8ff6d9fb44a07">getRecoilX</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoResult.html#ac0a5034542db7716badc635ee1b3565d">getRecoilY</a> ()</td></tr>
 <tr><td colspan="2"><h2><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac17e6b0eb2b09e4ed133d4ab43574ea1"></a><!-- doxytag: member="ldmx::EcalVetoResult::ClassDef" ref="ac17e6b0eb2b09e4ed133d4ab43574ea1" args="(EcalVetoResult, 2)" -->
-&#160;</td><td class="memItemRight" valign="bottom"><b>ClassDef</b> (<a class="el" href="classldmx_1_1EcalVetoResult.html">EcalVetoResult</a>, 2)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8201c3b9c0bf3a8e5c6759448cd44078"></a><!-- doxytag: member="ldmx::EcalVetoResult::ClassDef" ref="a8201c3b9c0bf3a8e5c6759448cd44078" args="(EcalVetoResult, 3)" -->
+&#160;</td><td class="memItemRight" valign="bottom"><b>ClassDef</b> (<a class="el" href="classldmx_1_1EcalVetoResult.html">EcalVetoResult</a>, 3)</td></tr>
 <tr><td colspan="2"><h2><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoResult.html#ab6c31b926d9897fbfe6dd31e787545b8">ecalLayerEdepReadout_</a></td></tr>
@@ -182,6 +185,8 @@ float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tightMipTr
 <div class="memdoc">
 <p>Reset the object. </p>
 
+<p>Referenced by <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00163">ldmx::EcalVetoProcessor::produce()</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="a274449e9f7c0d88a5a0d19cd9cd00808"></a><!-- doxytag: member="ldmx::EcalVetoResult::Copy" ref="a274449e9f7c0d88a5a0d19cd9cd00808" args="(TObject &amp;object) const " -->
@@ -208,6 +213,66 @@ float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tightMipTr
 
 </div>
 </div>
+<a class="anchor" id="a5e5d32d1367f6b7b186df1dce04eeeca"></a><!-- doxytag: member="ldmx::EcalVetoResult::getRecoilMomentum" ref="a5e5d32d1367f6b7b186df1dce04eeeca" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; ldmx::EcalVetoResult::getRecoilMomentum </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Return the momentum of the recoil at the Ecal face. </p>
+
+<p>Definition at line <a class="el" href="EcalVetoResult_8h_source.html#l00164">164</a> of file <a class="el" href="EcalVetoResult_8h_source.html">EcalVetoResult.h</a>.</p>
+<div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> { recoilPx_, recoilPy_, recoilPz_ }; }; 
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="a95f11811674ea8e987f8ff6d9fb44a07"></a><!-- doxytag: member="ldmx::EcalVetoResult::getRecoilX" ref="a95f11811674ea8e987f8ff6d9fb44a07" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double ldmx::EcalVetoResult::getRecoilX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Return the x position of the recoil at the Ecal face. </p>
+
+<p>Definition at line <a class="el" href="EcalVetoResult_8h_source.html#l00167">167</a> of file <a class="el" href="EcalVetoResult_8h_source.html">EcalVetoResult.h</a>.</p>
+<div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> recoilX_; }; 
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="ac0a5034542db7716badc635ee1b3565d"></a><!-- doxytag: member="ldmx::EcalVetoResult::getRecoilY" ref="ac0a5034542db7716badc635ee1b3565d" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double ldmx::EcalVetoResult::getRecoilY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Return the y position of the recoil at the Ecal face. </p>
+
+<p>Definition at line <a class="el" href="EcalVetoResult_8h_source.html#l00170">170</a> of file <a class="el" href="EcalVetoResult_8h_source.html">EcalVetoResult.h</a>.</p>
+<div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> recoilY_; };
+</pre></div>
+</div>
+</div>
 <a class="anchor" id="a33672149d0743a4dca02f27528f1dd51"></a><!-- doxytag: member="ldmx::EcalVetoResult::passesVeto" ref="a33672149d0743a4dca02f27528f1dd51" args="()" -->
 <div class="memitem">
 <div class="memproto">
@@ -223,7 +288,7 @@ float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tightMipTr
 <div class="memdoc">
 <p>Checks if the event passes the Ecal veto. </p>
 
-<p>Definition at line <a class="el" href="EcalVetoResult_8h_source.html#l00061">61</a> of file <a class="el" href="EcalVetoResult_8h_source.html">EcalVetoResult.h</a>.</p>
+<p>Definition at line <a class="el" href="EcalVetoResult_8h_source.html#l00077">77</a> of file <a class="el" href="EcalVetoResult_8h_source.html">EcalVetoResult.h</a>.</p>
 <div class="fragment"><pre class="fragment">                              {
                 <span class="keywordflow">return</span> passesVeto_;
             }
@@ -248,7 +313,7 @@ float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tightMipTr
 
 </div>
 </div>
-<a class="anchor" id="a3dd1f77e37c1453afe46ffff9f287145"></a><!-- doxytag: member="ldmx::EcalVetoResult::setVariables" ref="a3dd1f77e37c1453afe46ffff9f287145" args="(int nReadoutHits, int nLooseIsoHits, int nTightIsoHits, float summedDet, int summedOuter, float backSummedDet, float summedLooseIso, float maxLooseIsoDep, float summedTightIso, float maxTightIsoDep, float maxCellDep, float showerRMS, std::vector&lt; float &gt; EcalLayerEdepReadout, std::vector&lt; std::pair&lt; int, float &gt;&gt; looseMipTracks, std::vector&lt; std::pair&lt; int, float &gt;&gt; mediumMipTracks, std::vector&lt; std::pair&lt; int, float &gt;&gt; tightMipTracks)" -->
+<a class="anchor" id="a01c193ab9da6add9c8d71681da580660"></a><!-- doxytag: member="ldmx::EcalVetoResult::setVariables" ref="a01c193ab9da6add9c8d71681da580660" args="(int nReadoutHits, int nLooseIsoHits, int nTightIsoHits, float summedDet, int summedOuter, float backSummedDet, float summedLooseIso, float maxLooseIsoDep, float summedTightIso, float maxTightIsoDep, float maxCellDep, float showerRMS, std::vector&lt; float &gt; EcalLayerEdepReadout, std::vector&lt; std::pair&lt; int, float &gt;&gt; looseMipTracks, std::vector&lt; std::pair&lt; int, float &gt;&gt; mediumMipTracks, std::vector&lt; std::pair&lt; int, float &gt;&gt; tightMipTracks, std::vector&lt; double &gt; recoilP, std::vector&lt; float &gt; recoilPos)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -346,7 +411,19 @@ float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tightMipTr
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::vector&lt; std::pair&lt; int, float &gt;&gt;&#160;</td>
-          <td class="paramname"><em>tightMipTracks</em>&#160;</td>
+          <td class="paramname"><em>tightMipTracks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
+          <td class="paramname"><em>recoilP</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; float &gt;&#160;</td>
+          <td class="paramname"><em>recoilPos</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -358,7 +435,7 @@ float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tightMipTr
 <div class="memdoc">
 <p>Set the sim particle and 'is findable' flag. </p>
 
-<p>Referenced by <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00133">ldmx::EcalVetoProcessor::produce()</a>.</p>
+<p>Referenced by <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00163">ldmx::EcalVetoProcessor::produce()</a>.</p>
 
 </div>
 </div>
@@ -373,9 +450,9 @@ float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tightMipTr
       </table>
 </div>
 <div class="memdoc">
-<p>Flag indicating whether the event is vetoed by the Ecal. </p>
+<p>Flag indicating whether the event is vetoed by the Ecal. px of recoil electron at the Ecal face. py of recoil electron at the Ecal face. py of recoil electron at the Ecal face. x position of recoil electron at the Ecal face. y position of recoil electron at the Ecal face. </p>
 
-<p>Definition at line <a class="el" href="EcalVetoResult_8h_source.html#l00149">149</a> of file <a class="el" href="EcalVetoResult_8h_source.html">EcalVetoResult.h</a>.</p>
+<p>Definition at line <a class="el" href="EcalVetoResult_8h_source.html#l00170">170</a> of file <a class="el" href="EcalVetoResult_8h_source.html">EcalVetoResult.h</a>.</p>
 
 </div>
 </div>

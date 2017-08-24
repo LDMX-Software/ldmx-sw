@@ -175,7 +175,7 @@ Private Attributes</h2></td></tr>
 <p>Use facet info of the solid for setting Z to the sensor midpoint.</p>
 </p>
 
-<p>Definition at line <a class="el" href="EcalSD_8cxx_source.html#l00081">81</a> of file <a class="el" href="EcalSD_8cxx_source.html">EcalSD.cxx</a>.</p>
+<p>Definition at line <a class="el" href="EcalSD_8cxx_source.html#l00087">87</a> of file <a class="el" href="EcalSD_8cxx_source.html">EcalSD.cxx</a>.</p>
 
 <p>References <a class="el" href="EcalSD_8h_source.html#l00075">polyMap_</a>.</p>
 
@@ -253,7 +253,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="EcalSD_8cxx_source.html#l00023">23</a> of file <a class="el" href="EcalSD_8cxx_source.html">EcalSD.cxx</a>.</p>
 
-<p>References <a class="el" href="CalorimeterSD_8h_source.html#l00087">ldmx::CalorimeterSD::detID_</a>, <a class="el" href="EcalHexReadout_8h_source.html#l00051">ldmx::EcalHexReadout::getCellId()</a>, <a class="el" href="EcalSD_8cxx_source.html#l00081">getHitPosition()</a>, <a class="el" href="EcalSD_8h_source.html#l00070">hitMap_</a>, <a class="el" href="CalorimeterSD_8h_source.html#l00077">ldmx::CalorimeterSD::hitsCollection_</a>, <a class="el" href="DetectorID_8cxx_source.html#l00040">ldmx::DetectorID::pack()</a>, <a class="el" href="G4CalorimeterHit_8cxx_source.html#l00030">ldmx::G4CalorimeterHit::Print()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00118">ldmx::G4CalorimeterHit::setEdep()</a>, <a class="el" href="DetectorID_8cxx_source.html#l00055">ldmx::DetectorID::setFieldValue()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00102">ldmx::G4CalorimeterHit::setID()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00168">ldmx::G4CalorimeterHit::setPdgCode()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00136">ldmx::G4CalorimeterHit::setPosition()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00152">ldmx::G4CalorimeterHit::setTime()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00086">ldmx::G4CalorimeterHit::setTrackID()</a>, and <a class="el" href="CalorimeterSD_8h_source.html#l00082">ldmx::CalorimeterSD::subdet_</a>.</p>
+<p>References <a class="el" href="CalorimeterSD_8h_source.html#l00087">ldmx::CalorimeterSD::detID_</a>, <a class="el" href="EcalHexReadout_8h_source.html#l00112">ldmx::EcalHexReadout::getCellModuleID()</a>, <a class="el" href="EcalSD_8cxx_source.html#l00087">getHitPosition()</a>, <a class="el" href="EcalSD_8h_source.html#l00070">hitMap_</a>, <a class="el" href="CalorimeterSD_8h_source.html#l00077">ldmx::CalorimeterSD::hitsCollection_</a>, <a class="el" href="DetectorID_8cxx_source.html#l00040">ldmx::DetectorID::pack()</a>, <a class="el" href="G4CalorimeterHit_8cxx_source.html#l00030">ldmx::G4CalorimeterHit::Print()</a>, <a class="el" href="EcalHexReadout_8h_source.html#l00060">ldmx::EcalHexReadout::separateID()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00118">ldmx::G4CalorimeterHit::setEdep()</a>, <a class="el" href="DetectorID_8cxx_source.html#l00055">ldmx::DetectorID::setFieldValue()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00102">ldmx::G4CalorimeterHit::setID()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00168">ldmx::G4CalorimeterHit::setPdgCode()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00136">ldmx::G4CalorimeterHit::setPosition()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00152">ldmx::G4CalorimeterHit::setTime()</a>, <a class="el" href="G4CalorimeterHit_8h_source.html#l00086">ldmx::G4CalorimeterHit::setTrackID()</a>, and <a class="el" href="CalorimeterSD_8h_source.html#l00082">ldmx::CalorimeterSD::subdet_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                 {
 
         <span class="comment">// Determine if current particle of this step is a Geantino.</span>
@@ -288,25 +288,31 @@ Private Attributes</h2></td></tr>
         hit-&gt;setTime(aStep-&gt;GetTrack()-&gt;GetGlobalTime());
 
         <span class="comment">// Create the ID for the hit.</span>
-        <span class="keywordtype">int</span> layerNumber = aStep-&gt;GetPreStepPoint()-&gt;GetTouchableHandle()-&gt;GetHistory()-&gt;GetVolume(layerDepth_)-&gt;GetCopyNo();
-        <span class="keywordtype">int</span> cellID = <a class="code" href="classldmx_1_1EcalSD.html#ab6940c33b9f33d9b19314930d2a7e5b5">hitMap_</a>-&gt;getCellId(hitPosition[0], hitPosition[1]);
+    <span class="keywordtype">int</span> cpynum = aStep-&gt;GetPreStepPoint()-&gt;GetTouchableHandle()-&gt;GetHistory()-&gt;GetVolume(layerDepth_)-&gt;GetCopyNo();
+    <span class="keywordtype">int</span> layerNumber;
+    layerNumber = int(cpynum/7);
+    <span class="keywordtype">int</span> module_position = cpynum%7;
+
+        <span class="keywordtype">int</span> cellModuleID = <a class="code" href="classldmx_1_1EcalSD.html#ab6940c33b9f33d9b19314930d2a7e5b5">hitMap_</a>-&gt;getCellModuleID(hitPosition[0], hitPosition[1]);
+    <span class="keywordtype">int</span> cellID = (<a class="code" href="classldmx_1_1EcalSD.html#ab6940c33b9f33d9b19314930d2a7e5b5">hitMap_</a>-&gt;separateID(cellModuleID)).first;
         <a class="code" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">detID_</a>-&gt;<a class="code" href="classldmx_1_1DetectorID.html#a85f7b28fce48a9f692fc5dc1723c2cad">setFieldValue</a>(1, layerNumber);
-        <a class="code" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">detID_</a>-&gt;<a class="code" href="classldmx_1_1DetectorID.html#a85f7b28fce48a9f692fc5dc1723c2cad">setFieldValue</a>(2, cellID);
+        <a class="code" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">detID_</a>-&gt;<a class="code" href="classldmx_1_1DetectorID.html#a85f7b28fce48a9f692fc5dc1723c2cad">setFieldValue</a>(2, module_position);
+    <a class="code" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">detID_</a>-&gt;<a class="code" href="classldmx_1_1DetectorID.html#a85f7b28fce48a9f692fc5dc1723c2cad">setFieldValue</a>(3, cellID);
         hit-&gt;setID(<a class="code" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">detID_</a>-&gt;<a class="code" href="classldmx_1_1DetectorID.html#abb59fb4b7024033aac9a36512b1f78e6">pack</a>());
 
-        <span class="comment">// Set the track ID on the hit.</span>
+    <span class="comment">// Set the track ID on the hit.</span>
         hit-&gt;setTrackID(aStep-&gt;GetTrack()-&gt;GetTrackID());
 
-        <span class="comment">// Set the PDG code from the track.</span>
+    <span class="comment">// Set the PDG code from the track.</span>
         hit-&gt;setPdgCode(aStep-&gt;GetTrack()-&gt;GetParticleDefinition()-&gt;GetPDGEncoding());
 
         <span class="keywordflow">if</span> (this-&gt;verboseLevel &gt; 2) {
-            std::cout &lt;&lt; <span class="stringliteral">&quot;Created new SimCalorimeterHit in detector &quot;</span> &lt;&lt; this-&gt;GetName() &lt;&lt; <span class="stringliteral">&quot; with subdet ID &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1CalorimeterSD.html#a0f1f237a1729bdbc0514a5df347d9f85">subdet_</a> &lt;&lt; <span class="stringliteral">&quot; and layer &quot;</span> &lt;&lt; layerNumber &lt;&lt; <span class="stringliteral">&quot; and cellid &quot;</span> &lt;&lt; cellID &lt;&lt; <span class="stringliteral">&quot; ...&quot;</span>;
+        std::cout &lt;&lt; <span class="stringliteral">&quot;Created new SimCalorimeterHit in detector &quot;</span> &lt;&lt; this-&gt;GetName() &lt;&lt; <span class="stringliteral">&quot; with subdet ID &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1CalorimeterSD.html#a0f1f237a1729bdbc0514a5df347d9f85">subdet_</a> &lt;&lt; <span class="stringliteral">&quot; and layer &quot;</span> &lt;&lt; layerNumber &lt;&lt; <span class="stringliteral">&quot; and cellid &quot;</span> &lt;&lt; cellID &lt;&lt; <span class="stringliteral">&quot; module position &quot;</span> &lt;&lt; module_position &lt;&lt; <span class="stringliteral">&quot; ...&quot;</span>;
             hit-&gt;Print();
             std::cout &lt;&lt; std::endl;
         }
 
-        <span class="comment">// Insert the hit into the hits collection.</span>
+    <span class="comment">// Insert the hit into the hits collection.</span>
         <a class="code" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a>-&gt;insert(hit);
 
         <span class="keywordflow">return</span> <span class="keyword">true</span>;
@@ -347,7 +353,7 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="EcalSD_8h_source.html#l00075">75</a> of file <a class="el" href="EcalSD_8h_source.html">EcalSD.h</a>.</p>
 
-<p>Referenced by <a class="el" href="EcalSD_8cxx_source.html#l00081">getHitPosition()</a>.</p>
+<p>Referenced by <a class="el" href="EcalSD_8cxx_source.html#l00087">getHitPosition()</a>.</p>
 
 </div>
 </div>
