@@ -52,9 +52,14 @@ namespace ldmx {
         G4StepPoint* prePoint = aStep->GetPreStepPoint();
         G4StepPoint* postPoint = aStep->GetPostStepPoint();
         G4ThreeVector position = 0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
-        G4ThreeVector volumePosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
-        G4ThreeVector localPosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().TransformPoint(position);
-        hit->setPosition(position[0], position[1], volumePosition.z());
+        G4ThreeVector localPosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().TransformPoint(position);        
+        hit->setPosition(position[0], position[1], position[2]);
+        
+        //to be copied after section definition
+        // G4ThreeVector volumePosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
+        // if (section==HcalSection::BACK) hit->setPosition(position[0], position[1], volumePosition.z());
+        // elseif (section==HcalSection::TOP || section==HcalSection::BOTTOM) hit->setPosition(position[0], volumePosition.y(), position[2]);
+        // elseif (section==HcalSection::LEFT || section==HcalSection::RIGHT) hit->setPosition(volumePosition.x(),position[1] , position[2]);        
 
         // Set the global time.
         hit->setTime(aStep->GetTrack()->GetGlobalTime());
