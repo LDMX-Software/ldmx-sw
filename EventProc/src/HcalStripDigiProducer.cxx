@@ -46,7 +46,10 @@ namespace ldmx {
         for (int iHit = 0; iHit < numHCalSimHits; iHit++) {
             SimCalorimeterHit* simHit = (SimCalorimeterHit*) hcalHits->At(iHit);
             int detIDraw = simHit->getID();
-                
+            std::vector<float> position = simHit->getPosition();
+            
+            if (position[2] < 200) std::cout<<"crap"<<std::endl;
+
             if (verbose_) {
                 std::cout << "detIDraw: " << detIDraw << std::endl;
                 detID_->setRawValue(detIDraw);
@@ -56,10 +59,10 @@ namespace ldmx {
                 int strip = detID_->getFieldValue("strip");                
                 std::cout << "section: " << subsection << "  layer: " << layer <<  "  strip: " << strip <<std::endl;
             }           
-
+            // for now, we take am energy weighted average of the hit in each stip to simulate the hit position. 
+            // will use strip TOF and light yield between strips to estimate position.
             if (hcalLayerEdep.find(simHit->getID()) == hcalLayerEdep.end()) {
                 // first hit, initialize
-                std::vector<float> position = simHit->getPosition();
                 hcalLayerEdep[detIDraw] = simHit->getEdep();
                 hcalLayerTime[detIDraw] = simHit->getTime() * simHit->getEdep();
                 hcalDetId[detIDraw] = detIDraw;
@@ -68,10 +71,9 @@ namespace ldmx {
                 hcalZpos[detIDraw]  = position[2]* simHit->getEdep();
             } else {
                 // not first hit, aggregate, and store the largest radius hit
-                std::vector<float> position = simHit->getPosition();
-                hcalXpos[detIDraw]  = position[0]* simHit->getEdep();
-                hcalYpos[detIDraw]  = position[1]* simHit->getEdep();
-                hcalZpos[detIDraw]  = position[2]* simHit->getEdep();
+                hcalXpos[detIDraw]  += position[0]* simHit->getEdep();
+                hcalYpos[detIDraw]  += position[1]* simHit->getEdep();
+                hcalZpos[detIDraw]  += position[2]* simHit->getEdep();
                 hcalLayerEdep[detIDraw] += simHit->getEdep();
                 hcalLayerTime[detIDraw] += simHit->getTime() * simHit->getEdep();
             }
