@@ -60,6 +60,13 @@ namespace ldmx {
              */
             int getLayerID() const { return layerID_; };
 
+            /** 
+             * Get the module ID associated with a hit.  This is used to 
+             * uniquely identify a sensor within a layer.
+             * @return The module ID associated with a hit.
+             */
+            int getModuleID() const { return moduleID_; };
+
             /**
              * Get the XYZ position of the hit [mm].
              * @return The position of the hit.
@@ -105,6 +112,19 @@ namespace ldmx {
             void setID(const long id) { this->id_ = id; };
 
             /**
+             * Set the geometric layer ID of the hit.
+             * @param layerID The layer ID of the hit.
+             */
+            void setLayerID(const int layerID) { this->layerID_ = layerID; };
+            
+            /** 
+             * Set the module ID associated with a hit.  This is used to 
+             * uniquely identify a sensor within a layer.
+             * @return moduleID The module ID associated with a hit.
+             */
+            void setModuleID(const int moduleID) { this->moduleID_ = moduleID; };
+            
+            /**
              * Set the position of the hit [mm].
              * @param x The X position.
              * @param y The Y position.
@@ -140,12 +160,6 @@ namespace ldmx {
             void setMomentum(const float px, const float py, const float pz);
 
             /**
-             * Set the geometric layer ID of the hit.
-             * @param layerID The layer ID of the hit.
-             */
-            void setLayerID(const int layerID) { this->layerID_ = layerID; };
-
-            /**
              * Set the Monte Carlo particle that created the hit.
              * @param simParticle The particle that created the hit.
              */
@@ -162,6 +176,9 @@ namespace ldmx {
              * The layer ID.
              */
             int layerID_{0};
+
+            /** The module ID. */
+            int moduleID_{0}; 
 
             /**
              * The energy deposited on the hit.
@@ -216,9 +233,10 @@ namespace ldmx {
             /**
              * The ROOT class definition.
              */
-            ClassDef(SimTrackerHit, 1);
+            ClassDef(SimTrackerHit, 2);
 
     }; // SimTrackerHit
-}
 
-#endif
+} // ldmx
+
+#endif // EVENT_SIMTRACKERHIT_H_
