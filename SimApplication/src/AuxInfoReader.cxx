@@ -5,6 +5,7 @@
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/EcalSD.h"
 #include "SimApplication/HcalSD.h"
+#include "SimApplication/ScoringPlaneSD.h"
 #include "SimApplication/MagneticFieldStore.h"
 #include "SimApplication/MagneticFieldMap3D.h"
 #include "SimApplication/UserRegionInformation.h"
@@ -134,9 +135,12 @@ namespace ldmx {
             detID = new EcalDetectorID();
             sd = new EcalSD(theSensDetName, hcName, subdetID, detID);
         } else if (sdType == "HcalSD") {
+            detID = new HcalID();
             sd = new HcalSD(theSensDetName, hcName, subdetID, detID);
         } else if (sdType == "CalorimeterSD") {
             sd = new CalorimeterSD(theSensDetName, hcName, subdetID, detID);
+        } else if (sdType == "ScoringPlaneSD") { 
+            sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID, detID); 
         } else {
             std::cerr << "Unknown SensitiveDetector type: " << sdType << std::endl;
             G4Exception("", "", FatalException, "Unknown SensitiveDetector type in aux info.");
