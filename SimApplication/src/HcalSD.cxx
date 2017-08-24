@@ -4,6 +4,7 @@
 #include <iostream>
 
 // Geant4
+#include "G4Box.hh"
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 #include "G4SDManager.hh"
@@ -43,12 +44,16 @@ namespace ldmx {
 
         // Set the edep.
         hit->setEdep(edep);
+ 
+        // Get the scintillator solid box
+        G4Box* scint = static_cast<G4Box*>(aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetSolid());
 
         // Set the step mid-point as the hit position.
         G4StepPoint* prePoint = aStep->GetPreStepPoint();
         G4StepPoint* postPoint = aStep->GetPostStepPoint();
         G4ThreeVector position = 0.5 * (prePoint->GetPosition() + postPoint->GetPosition());
         G4ThreeVector volumePosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
+        G4ThreeVector localPosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().TransformPoint(position);
         hit->setPosition(position[0], position[1], volumePosition.z());
 
         // Set the global time.
@@ -56,10 +61,21 @@ namespace ldmx {
 
         // Create the ID for the hit.
         int copyNum = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth_)->GetCopyNo();
-        int layer = copyNum % 1000;
         int section = copyNum / 1000;
+        int layer = copyNum % 1000;
+
+        //stripID: back Hcal, segmented along y direction for now every 10 cm -- alternate x-y in the future?
+        //         left/right side hcal: segmented along x direction every 10 cm
+        //         top/bottom side hcal: segmented along y direction every 10 cm
+        int stripID = -1;        
+        if (section==HcalSection::BACK) stripID = int( (localPosition.y()+scint->GetYHalfLength())/100.0);
+        else if (section==HcalSection::TOP || section==HcalSection::BOTTOM) stripID = int( (localPosition.x()+scint->GetXHalfLength())/100.0);
+        else if (section==HcalSection::LEFT || section==HcalSection::RIGHT) stripID = int( (localPosition.y()+scint->GetYHalfLength())/100.0);
+
+
         detID_->setFieldValue(1, layer);
         detID_->setFieldValue(2, section);
+        detID_->setFieldValue(3, stripID);
         hit->setID(detID_->pack());
 
         // Set the track ID on the hit.
