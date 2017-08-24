@@ -13,12 +13,13 @@ dummy=ldmxcfg.Analyzer("dummy", "ldmx::DummyAnalyzer")
 
 # drop every other event
 dummy.parameters["keepEventModulus"]=2
+dummy.parameters["caloHitCollection"]="hcalDigis"
 
 # Define the sequence of event processors to be run
 p.sequence=[dummy]
 
 # Provide the list of input files to run on
-p.inputFiles=["ldmx_sim_events.root"]
+p.inputFiles=["ldmx_digi_events.root"]
 
 # Provide the list of output files to produce, either one to contain the results of all input files or one output file name per input file name
 p.outputFiles=["ldmx_skim_events.root"]
