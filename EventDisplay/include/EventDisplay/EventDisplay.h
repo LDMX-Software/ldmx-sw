@@ -45,11 +45,17 @@ namespace ldmx {
 
             TEveBox* drawBox(Float_t xPos, Float_t yPos, Float_t frontZ, Float_t xWidth, Float_t yWidth, Float_t backZ, Float_t zRotateAngle, Int_t lineColor, Int_t transparency, const char* name);
 
+            TEveBox* drawBoxII(Float_t xPos, Float_t yPos, Float_t frontZ, Float_t xWidth, Float_t yWidth, Float_t backZ, Float_t zRotateAngle, Int_t lineColor, Int_t transparency, const char* name);
+            
             TEveElement* drawECAL();
 
+            TEveElement* drawHCAL();
+            
             TEveElement* drawRecoilTracker();
 
             TEveElement* drawECALHits(TClonesArray* hits);
+
+            TEveElement* drawHCALHits(TClonesArray* hits);
 
             TEveElement* drawRecoilHits(TClonesArray* hits);
 
@@ -58,6 +64,7 @@ namespace ldmx {
             TFile* file_;
             TTree* tree_;
             TClonesArray* ecalDigis_;
+            TClonesArray* hcalDigis_;
             TClonesArray* recoilHits_;
 
             int eventNum_ = 0;
