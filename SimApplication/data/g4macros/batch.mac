@@ -1,3 +1,0 @@
-/control/execute det.mac
-/control/execute electron.mac
-/run/beamOn 2
