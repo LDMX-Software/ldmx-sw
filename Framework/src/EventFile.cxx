@@ -42,7 +42,6 @@ namespace ldmx {
     }
 
     EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :
-
                 fileName_(filename), isOutputFile_(true), parent_(cloneParent) {
 
         file_ = new TFile(filename.c_str(), "RECREATE");
@@ -100,7 +99,7 @@ namespace ldmx {
         parent_->tree_->SetBranchStatus(srule.c_str(), (iskeep) ? (1) : (0));
     }
 
-    bool EventFile::nextEvent() {
+    bool EventFile::nextEvent(bool storeCurrentEvent) {
 
         if (ientry_ < 0 && parent_) {
             if (!parent_->tree_) {
@@ -115,10 +114,10 @@ namespace ldmx {
         if (ientry_ >= 0) {
             if (isOutputFile_) {
                 event_->beforeFill();
-                tree_->Fill(); // fill the clones...
-                event_->Clear();
+                if (storeCurrentEvent) tree_->Fill(); // fill the clones...
             }
             if (event_) {
+                event_->Clear();
                 event_->onEndOfEvent();
             }
         }
@@ -138,7 +137,7 @@ namespace ldmx {
             // if we are reading, move the pointer
             if (!isOutputFile_) {
 
-                if (ientry_ + 1 >= entries_) {
+                if (ientry_ + 1 > entries_) {
                     return false;
                 }
 
