@@ -13,3 +13,11 @@
 /ldmx/plugins/load SimpleProcessFilter libBiasing.so
 /ldmx/plugins/load TargetBremFilter libBiasing.so
 /ldmx/plugins/load TargetProcessFilter libBiasing.so
+
+# set verbose on plugins with messengers to test macro command
+/ldmx/plugins/EventPrintPlugin/verbose 2
+/ldmx/plugins/PhotonuclearXsecBiasingPlugin/verbose 2
+/ldmx/plugins/TrackFilterPlugin/verbose 2
+/ldmx/plugins/EcalProcessFilter/verbose 2
+/ldmx/plugins/SimpleProcessFilter/verbose 2
+/ldmx/plugins/TargetBremFilter/verbose 2
