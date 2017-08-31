@@ -41,6 +41,8 @@ namespace ldmx {
         // Activate user plugins.
         pluginManager_->postTracking(aTrack);
 
+        // std::cout << "tracking acition: zpos = " << aTrack->GetPosition().z() << ", pdgid = " << aTrack->GetDefinition()->GetPDGEncoding() << ", volname = " << aTrack->GetVolume()->GetLogicalVolume()->GetName().c_str() << std::endl;
+
         // Save extra trajectories on tracks that were flagged for saving during event processing.
         if (dynamic_cast<UserTrackInformation*>(aTrack->GetUserInformation())->getSaveFlag()) {
             if (!trackMap_.hasTrajectory(aTrack->GetTrackID())) {
@@ -89,11 +91,23 @@ namespace ldmx {
 
         // Check if trajectory storage should be turned on or off from the region info.
         UserRegionInformation* regionInfo = (UserRegionInformation*) aTrack->GetLogicalVolumeAtVertex()->GetRegion()->GetUserInformation();
+        
+        // Check if trajectory storage should be turned on or off from the gen status info
+        int curGenStatus = -1;
+        if (aTrack->GetDynamicParticle()->GetPrimaryParticle() != NULL){
+            G4VUserPrimaryParticleInformation* primaryInfo = aTrack->GetDynamicParticle()->GetPrimaryParticle()->GetUserInformation();
+            curGenStatus = ((UserPrimaryParticleInformation*) primaryInfo)->getHepEvtStatus();
+        }
 
-        if (regionInfo && !regionInfo->getStoreSecondaries()) {
+        // Always save a particle if it has gen status == 1
+        if (curGenStatus == 1){
+            storeTrajectory(aTrack);
+        }
+        else if (regionInfo && !regionInfo->getStoreSecondaries()) {
             // Turn off trajectory storage for this track from region flag.
             fpTrackingManager->SetStoreTrajectory(false);
-        } else {
+        } 
+        else {
             // Store a new trajectory for this track.
             storeTrajectory(aTrack);
         }
