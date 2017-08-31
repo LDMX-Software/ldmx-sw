@@ -48,6 +48,12 @@ namespace ldmx {
             primaryGeneratorAction_->setPrimaryGenerator(new RootPrimaryGenerator(newValues)); 
         } else if (command == rootUseSeedCmd_) {
             useRootSeed_ = true; 
+        } else if (command == rootEcalSPCmd_) {
+            int curi = primaryGeneratorAction_->getIndexRPG();
+            if (curi >= 0) ( dynamic_cast<RootPrimaryGenerator*>(primaryGeneratorAction_->getGenerator(curi)) )->setRunMode( 1 ); 
+        } else if (command == rootRegenCmd_) {
+            int curi = primaryGeneratorAction_->getIndexRPG();
+            if (curi >= 0) ( dynamic_cast<RootPrimaryGenerator*>(primaryGeneratorAction_->getGenerator(curi)) )->setRunMode( 0 ); 
         }
 
         //////// MPGun commands
