@@ -42,7 +42,6 @@ namespace ldmx {
     }
 
     EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :
-
                 fileName_(filename), isOutputFile_(true), parent_(cloneParent) {
 
         file_ = new TFile(filename.c_str(), "RECREATE");
@@ -118,7 +117,7 @@ namespace ldmx {
                 if (storeCurrentEvent) tree_->Fill(); // fill the clones...
             }
             if (event_) {
-	        event_->Clear();
+            event_->Clear();
                 event_->onEndOfEvent();
             }
         }

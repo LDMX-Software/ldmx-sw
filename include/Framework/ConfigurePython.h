@@ -65,8 +65,9 @@ namespace ldmx {
             /** List of rules for keeping and dropping data products, if provided in python file. */
             std::vector<std::string> keepRules_;
 
-	    /** Default sense for keeping events (keep or drop */
-	    bool skimDefaultIsKeep_;
+            /** Default sense for keeping events (keep or drop */
+            bool skimDefaultIsKeep_;
+
             /** List of rules for keeping and dropping events, if provided in python file. */
             std::vector<std::string> skimRules_;
 
