@@ -13,6 +13,7 @@
 #include "Event/RunHeader.h"
 #include "Framework/ParameterSet.h"
 #include "DetDescr/DetectorDataService.h"
+#include "Framework/StorageControl.h"
 
 // STL
 #include <map>
@@ -117,13 +118,27 @@ namespace ldmx {
              */
             TDirectory* getHistoDirectory();
 
+
+            /** Mark the current event as having the given storage control hint from this module
+             * @param controlhint The storage control hint to apply for the given event
+             */
+            void setStorageHint(ldmx::StorageControlHint hint) {
+                setStorageHint(hint,"");
+            }
+
+            /** Mark the current event as having the given storage control hint from this module and the given purpose string
+             * @param controlhint The storage control hint to apply for the given event
+             * @param purposeString A purpose string which can be used in the skim control configuration
+             */
+            void setStorageHint(ldmx::StorageControlHint hint, const std::string& purposeString);
+    
             /**
              * Internal function which is part of the EventProcessorFactory machinery.
              * @param classname The class name of the processor.
              * @param classtype The class type of the processor (1 for Producer, 2 for Analyzer).
              */
             static void declare(const std::string& classname, int classtype, EventProcessorMaker*);
-
+      
         protected:
 
             /** Handle to the Process. */
