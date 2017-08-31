@@ -79,13 +79,15 @@ namespace ldmx {
             void setOutputFileName(const std::string& filenameOut);
 
             /**
-             * Add an output file name to the list.  There should either be the same number of output file names as input file names or just one output file name.
+             * Add an output file name to the list.  There should either be the same number 
+             * of output file names as input file names or just one output file name.
              * @param filenameOut Output ROOT event file name
              */
             void addOutputFileName(const std::string& filenameOut);
 
             /**
-             * Set the name for a histogram file to contain histograms created by EventProcessor objects.  If this name is not set, any such histograms will be created in memory.
+             * Set the name for a histogram file to contain histograms created by EventProcessor 
+             * objects.  If this name is not set, any such histograms will be created in memory.
              * @param filenameHisto Output histogram ROOT file name
              */
             void setHistogramFileName(const std::string& filenameOut);
@@ -100,7 +102,8 @@ namespace ldmx {
             }
 
             /**
-             * Set the maximum number of events to process.  Processing will stop when either there are no more input events or when this number of events have been processed.
+             * Set the maximum number of events to process.  Processing will stop 
+             * when either there are no more input events or when this number of events have been processed.
              * @param limit Maximum number of events to process.  -1 indicates no limit.
              */
             void setEventLimit(int limit=-1) {
@@ -117,18 +120,16 @@ namespace ldmx {
              */ 
             void requestFinish() { eventLimit_=0; }
 
-           /**
+            /**
              * Construct a TDirectory* for the given module
              */
             TDirectory* makeHistoDirectory(const std::string& dirName);
 
-
-	    /**  
+            /**  
              * Access the storage control unit for this process
              */
-	    StorageControl& getStorageController() { return m_storageController; }
-
-	
+            StorageControl& getStorageController() { return m_storageController; }
+    
         private:
 
             /** Processing pass name. */
@@ -137,8 +138,8 @@ namespace ldmx {
             /** Limit on events to process. */
             int eventLimit_{-1};
 
-	    /** Storage controller */
-	    StorageControl m_storageController;
+            /** Storage controller */
+            StorageControl m_storageController;
 
             /** Ordered list of EventProcessors to execute. */
             std::vector<EventProcessor*> sequence_;
@@ -161,8 +162,6 @@ namespace ldmx {
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};
     };
-
-
 }
 
 #endif

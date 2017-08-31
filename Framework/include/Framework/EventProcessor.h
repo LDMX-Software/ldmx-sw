@@ -110,19 +110,19 @@ namespace ldmx {
             TDirectory* getHistoDirectory();
 
 
-	    /** Mark the current event as having the given storage control hint from this module
-	     * @param controlhint The storage control hint to apply for the given event
-	     */
- 	    void setStorageHint(ldmx::StorageControlHint hint) {
-	        setStorageHint(hint,"");
-	    }
+            /** Mark the current event as having the given storage control hint from this module
+             * @param controlhint The storage control hint to apply for the given event
+             */
+            void setStorageHint(ldmx::StorageControlHint hint) {
+                setStorageHint(hint,"");
+            }
 
-	    /** Mark the current event as having the given storage control hint from this module and the given purpose string
-	     * @param controlhint The storage control hint to apply for the given event
+            /** Mark the current event as having the given storage control hint from this module and the given purpose string
+             * @param controlhint The storage control hint to apply for the given event
              * @param purposeString A purpose string which can be used in the skim control configuration
-	     */
-	    void setStorageHint(ldmx::StorageControlHint hint, const std::string& purposeString);
-	
+             */
+            void setStorageHint(ldmx::StorageControlHint hint, const std::string& purposeString);
+    
             /**
              * Internal function which is part of the EventProcessorFactory machinery.
              * @param classname The class name of the processor.

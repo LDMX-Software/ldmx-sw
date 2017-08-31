@@ -66,11 +66,12 @@ namespace ldmx {
 
         event.addToCollection("Trigger", result_);
 
-	// mark the event
-	if (pass) setStorageHint(hint_shouldKeep);
-	else  setStorageHint(hint_shouldDrop);
+        // mark the event
+        if (pass) 
+            setStorageHint(hint_shouldKeep);
+        else 
+            setStorageHint(hint_shouldDrop);
     }
-
 }
 
 DECLARE_PRODUCER_NS(ldmx, TriggerProcessor)

@@ -41,8 +41,9 @@ namespace ldmx {
                     eh.setTimestamp(TTimeStamp());
 
                     theEvent.getEventHeader()->Print();
-		    // reset the storage controller state
-		    m_storageController.resetEventState();
+
+                    // reset the storage controller state
+                    m_storageController.resetEventState();
 
                     for (auto module : sequence_) {
                         if (dynamic_cast<Producer*>(module)) {
@@ -98,9 +99,9 @@ namespace ldmx {
 
                     while (masterFile->nextEvent(m_storageController.keepEvent()) && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
 
-			// clean up for storage control calculation
-			m_storageController.resetEventState();
-			
+                        // clean up for storage control calculation
+                        m_storageController.resetEventState();
+            
                         // notify for new run if necessary
                         if (theEvent.getEventHeader()->getRun() != wasRun) {
                             wasRun = theEvent.getEventHeader()->getRun();
@@ -117,7 +118,8 @@ namespace ldmx {
                         }
 
                         TTimeStamp t;
-                        std::cout << "[ Process ] :  Processing " << n_events_processed + 1 << " Run " << theEvent.getEventHeader()->getRun() << " Event " << theEvent.getEventHeader()->getEventNumber() << "  (" << t.AsString("lc") << ")" << std::endl;
+                        std::cout << "[ Process ] :  Processing " << n_events_processed + 1 << " Run " << theEvent.getEventHeader()->getRun() 
+                                  << " Event " << theEvent.getEventHeader()->getEventNumber() << "  (" << t.AsString("lc") << ")" << std::endl;
 
                         for (auto module : sequence_) {
                             if (dynamic_cast<Producer*>(module)) {
@@ -167,12 +169,15 @@ namespace ldmx {
     void Process::addToSequence(EventProcessor* mod) {
         sequence_.push_back(mod);
     }
+
     void Process::addFileToProcess(const std::string& filename) {
         inputFiles_.push_back(filename);
     }
+
     void Process::addDropKeepRule(const std::string& rule) {
         dropKeepRules_.push_back(rule);
     }
+
     void Process::setOutputFileName(const std::string& filenameOut) {
         outputFiles_.clear();
         outputFiles_.push_back(filenameOut);
@@ -181,6 +186,7 @@ namespace ldmx {
     void Process::setHistogramFileName(const std::string& filenameOut) {
         histoFilename_ = filenameOut;
     }
+
     void Process::addOutputFileName(const std::string& filenameOut) {
         outputFiles_.push_back(filenameOut);
     }

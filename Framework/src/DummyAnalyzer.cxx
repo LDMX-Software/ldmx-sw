@@ -25,8 +25,8 @@ namespace ldmx {
 
             virtual void configure(const ldmx::ParameterSet& ps) {
                 caloCol_=ps.getString("caloHitCollection");
-		keepMod_=ps.getInteger("keepEventModulus",0);
-		dropMod_=ps.getInteger("dropEventModulus",0);
+                keepMod_=ps.getInteger("keepEventModulus",0);
+                dropMod_=ps.getInteger("dropEventModulus",0);
             }
 
             virtual void analyze(const ldmx::Event& event) {
@@ -36,24 +36,29 @@ namespace ldmx {
                     const ldmx::CalorimeterHit* chit=(const ldmx::CalorimeterHit*)(tca->At(i));
                     h_energy->Fill(chit->getEnergy());
                 }
-		int ievent=event.getEventHeader()->getEventNumber();
-		if (keepMod_>0 && !(ievent%keepMod_)) setStorageHint(hint_shouldKeep);
-		if (dropMod_>0 && !(ievent%dropMod_)) setStorageHint(hint_shouldDrop);
+                int ievent=event.getEventHeader()->getEventNumber();
+                if (keepMod_>0 && !(ievent%keepMod_)) setStorageHint(hint_shouldKeep);
+                if (dropMod_>0 && !(ievent%dropMod_)) setStorageHint(hint_shouldDrop);
             }
+
             virtual void onFileOpen() {
                 std::cout << "DummyAnalyzer: Opening a file!" << std::endl;
             }
+
             virtual void onFileClose() {
                 std::cout << "DummyAnalyzer: Closing a file!" << std::endl;
             }
+
             virtual void onProcessStart() {
                 std::cout << "DummyAnalyzer: Starting processing!" << std::endl;
                 getHistoDirectory();
                 h_energy=new TH1F("Energy","Energy",500,0.0,1.0);
             }
+
             virtual void onProcessEnd() {
                 std::cout << "DummyAnalyzer: Finishing processing!" << std::endl;
             }
+
         private:
             TH1* h_energy;
             std::string caloCol_;
