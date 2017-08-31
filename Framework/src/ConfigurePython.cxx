@@ -154,7 +154,7 @@ namespace ldmx {
         }
         Py_DECREF(pylist);
 
-	skimDefaultIsKeep_=intMember(pProcess, "skimDefaultIsKeep");
+        skimDefaultIsKeep_=intMember(pProcess, "skimDefaultIsKeep");
         pylist = PyObject_GetAttrString(pProcess, "skimRules");
         if (!PyList_Check(pylist)) {
             std::cerr << "skimRules is not a python list as expected.\n";
@@ -228,18 +228,16 @@ namespace ldmx {
         for (auto rule : keepRules_) {
             p->addDropKeepRule(rule);
         }
-	p->getStorageController().setDefaultKeep(skimDefaultIsKeep_);
-	for (size_t i=0; i<skimRules_.size(); i+=2) {
-	  p->getStorageController().addRule(skimRules_[i],skimRules_[i+1]);
-	}
+        p->getStorageController().setDefaultKeep(skimDefaultIsKeep_);
+        for (size_t i=0; i<skimRules_.size(); i+=2) {
+            p->getStorageController().addRule(skimRules_[i],skimRules_[i+1]);
+        }
         if (run_ > 0)
             p->setRunNumber(run_);
         p->setEventLimit(eventLimit_);
         p->setHistogramFileName(histoOutFile_);
 
         return p;
-
     }
-
 }
 
