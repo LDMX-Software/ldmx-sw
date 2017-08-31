@@ -2,6 +2,7 @@
 /run/initialize
 
 /ldmx/generators/root/open test-input.root
+/ldmx/generators/root/mode/regenerate
 /ldmx/generators/root/useSeed
 
 /ldmx/persistency/root/file test-output-rootinput.root
