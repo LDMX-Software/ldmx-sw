@@ -48,6 +48,9 @@ namespace ldmx {
 
     void SimpleProcessFilterMessenger::SetNewValue(G4UIcommand* command, G4String newValue) {
         
+        // Handles verbose command.
+        UserActionPluginMessenger::SetNewValue(command, newValue);
+
         if (command == volumeCmd_) {
             filter_->setVolume(newValue);
         } else if (command == processCmd_) { 
