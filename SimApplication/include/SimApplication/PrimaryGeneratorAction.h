@@ -29,6 +29,7 @@
 //-------------//
 #include "SimPlugins/PluginManagerAccessor.h"
 #include "SimApplication/MultiParticleGunPrimaryGenerator.h"
+#include "SimApplication/RootPrimaryGenerator.h"
 #include "SimApplication/PrimaryGeneratorMessenger.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
 
@@ -96,6 +97,7 @@ namespace ldmx {
              * generators.
              */
             int getIndexMPG(){ return indexMpg_; }
+            int getIndexRPG(){ return indexRpg_; }
 
         private:
 
@@ -130,6 +132,7 @@ namespace ldmx {
 
             /** The index of the last generator in the list of generators. */ 
             int indexMpg_{-1};          
+            int indexRpg_{-1};          
 
     };  // PrimaryGeneratorAction
 }
