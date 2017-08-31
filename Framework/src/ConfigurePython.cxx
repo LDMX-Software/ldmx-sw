@@ -30,7 +30,7 @@ namespace ldmx {
         }
         return retval;
     }
-
+  
     ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[], int nargs) {
         std::string path(".");
         std::string cmd = pythonScript;
@@ -154,6 +154,18 @@ namespace ldmx {
         }
         Py_DECREF(pylist);
 
+        skimDefaultIsKeep_=intMember(pProcess, "skimDefaultIsKeep");
+        pylist = PyObject_GetAttrString(pProcess, "skimRules");
+        if (!PyList_Check(pylist)) {
+            std::cerr << "skimRules is not a python list as expected.\n";
+            return;
+        }
+        for (Py_ssize_t i = 0; i < PyList_Size(pylist); i++) {
+            PyObject* elem = PyList_GetItem(pylist, i);
+            skimRules_.push_back(PyString_AsString(elem));
+        }
+        Py_DECREF(pylist);
+
         pylist = PyObject_GetAttrString(pProcess, "inputFiles");
         if (!PyList_Check(pylist)) {
             std::cerr << "inputFiles is not a python list as expected.\n";
@@ -216,14 +228,16 @@ namespace ldmx {
         for (auto rule : keepRules_) {
             p->addDropKeepRule(rule);
         }
+        p->getStorageController().setDefaultKeep(skimDefaultIsKeep_);
+        for (size_t i=0; i<skimRules_.size(); i+=2) {
+            p->getStorageController().addRule(skimRules_[i],skimRules_[i+1]);
+        }
         if (run_ > 0)
             p->setRunNumber(run_);
         p->setEventLimit(eventLimit_);
         p->setHistogramFileName(histoOutFile_);
 
         return p;
-
     }
-
 }
 
