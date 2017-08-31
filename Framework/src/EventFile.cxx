@@ -117,7 +117,7 @@ namespace ldmx {
                 if (storeCurrentEvent) tree_->Fill(); // fill the clones...
             }
             if (event_) {
-            event_->Clear();
+                event_->Clear();
                 event_->onEndOfEvent();
             }
         }
