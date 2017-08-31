@@ -18,7 +18,7 @@ namespace ldmx {
     }
 
     void EventProcessor::setStorageHint(ldmx::StorageControlHint hint, const std::string& purposeString) {
-    process_.getStorageController().addHint(name_,hint,purposeString);
+        process_.getStorageController().addHint(name_,hint,purposeString);
     }
   
     TDirectory* EventProcessor::getHistoDirectory() {
