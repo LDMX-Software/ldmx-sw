@@ -69,6 +69,7 @@ namespace ldmx {
                 // next, loop through the files
                 int ifile = 0;
                 int wasRun = -1;
+                std::string detectorName;
                 for (auto infilename : inputFiles_) {
                     EventFile inFile(infilename);
 
