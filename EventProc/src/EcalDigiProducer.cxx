@@ -11,15 +11,17 @@
 
 namespace ldmx {
 
-    const int EcalDigiProducer::NUM_ECAL_LAYERS = 33;
-    const int EcalDigiProducer::BACK_ECAL_STARTING_LAYER = 20;
-    const int EcalDigiProducer::NUM_LAYERS_FOR_MED_CAL = 10;
-    //const float EcalDigiProducer::meanNoise           = .015;
-    //const float EcalDigiProducer::readoutThreshold    = 3*meanNoise;
+const int EcalDigiProducer::NUM_ECAL_LAYERS = 33;
+const int EcalDigiProducer::BACK_ECAL_STARTING_LAYER = 20;
+const int EcalDigiProducer::NUM_LAYERS_FOR_MED_CAL = 10;
+const std::vector<double> LAYER_WEIGHTS = {1.641, 3.526, 5.184, 6.841, 8.222, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 12.642, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 8.45}; 
+const double MIP_SI_RESPONSE = 0.130; // MeV
+//const float EcalDigiProducer::meanNoise           = .015;
+//const float EcalDigiProducer::readoutThreshold    = 3*meanNoise;
 
-    EcalDigiProducer::EcalDigiProducer(const std::string& name, Process& process) :
-            Producer(name, process) {
-    }
+EcalDigiProducer::EcalDigiProducer(const std::string& name, Process& process) :
+        Producer(name, process) {
+}
 
     void EcalDigiProducer::configure(const ParameterSet& ps) {
 
@@ -53,14 +55,14 @@ namespace ldmx {
             digiHit->setAmplitude(simHit->getEdep());
             double energy = simHit->getEdep() + hitNoise;
             if (energy > readoutThreshold_) {
-                digiHit->setEnergy(energy);
+            
+                digiHit->setEnergy(((energy/MIP_SI_RESPONSE)*LAYER_WEIGHTS[hit_pair.first]+energy)*0.948);
                 digiHit->setTime(simHit->getTime());
             } else {
                 digiHit->setEnergy(0);
                 digiHit->setTime(-1000);
             }
         }
-
         event.add("ecalDigis", ecalDigis_);
     }
 
