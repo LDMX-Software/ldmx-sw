@@ -137,7 +137,7 @@ namespace ldmx {
             // if we are reading, move the pointer
             if (!isOutputFile_) {
 
-                if (ientry_ + 1 > entries_) {
+                if (ientry_ + 1 >= entries_) {
                     return false;
                 }
 
