@@ -2,6 +2,17 @@
 
 namespace ldmx {
 
+    std::ostream& operator<<(std::ostream& stream, FieldValueList& id) {
+        stream << "[";
+        for (int iField = 0; iField < id.size(); iField++) {
+            stream << id[iField];
+            if (iField != id.size() - 1)
+                stream << "/";
+        }
+        stream << "]";
+        return stream;
+    }
+
     DetectorID::~DetectorID() {
         // Delete the field list and its objects as we assume this class owns it.
         for (IDField::IDFieldList::iterator it = fieldList_->begin(); it != fieldList_->end(); it++) {
@@ -26,7 +37,7 @@ namespace ldmx {
         this->rawValue_ = rawValue;
     }
 
-    const DetectorID::FieldValueList& DetectorID::unpack() {
+    const FieldValueList& DetectorID::unpack() {
         std::fill(fieldValues_.begin(), fieldValues_.end(), 0);
         for (IDField::IDFieldList::iterator it = fieldList_->begin();
                 it != fieldList_->end(); it++) {
@@ -94,4 +105,8 @@ namespace ldmx {
         this->fieldValues_.resize(fieldList_->size());
     }
 
+    void DetectorID::clear() {
+        std::fill(fieldValues_.begin(), fieldValues_.end(), 0);
+        rawValue_ = 0;
+    }
 }

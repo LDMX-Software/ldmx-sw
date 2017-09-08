@@ -1,6 +1,6 @@
 /**
  * @file HcalID.h
- * @brief Class that defines an HCal sensitive detector
+ * @brief Class that defines an HCal detector ID
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
