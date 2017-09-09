@@ -215,6 +215,7 @@ namespace ldmx {
             EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(proc.classname_, proc.instancename_, *p);
             if (ep == 0) {
                 EXCEPTION_RAISE("UnableToCreate", "Unable to create instance '" + proc.instancename_ + "' of class '" + proc.classname_ + "'");
+                return p;
             }
             ep->configure(proc.params_);
             p->addToSequence(ep);
