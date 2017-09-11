@@ -13,30 +13,7 @@ namespace ldmx {
     G4VPhysicalVolume* DetectorConstruction::Construct() {
         auxInfoReader_->readGlobalAuxInfo();
         auxInfoReader_->assignAuxInfoToVolumes();
-        addParserAuxInfo();
         return parser_->GetWorldVolume();
-    }
-
-    void DetectorConstruction::addParserAuxInfo() {
-        // Add user info to writer output.
-        const G4GDMLAuxListType* auxList = parser_->GetAuxList();
-        for (G4GDMLAuxListType::const_iterator it = auxList->begin();
-                it != auxList->end();
-                it++) {
-            parser_->AddAuxiliary(*it);
-        }
-
-        // Add volume auxiliary tags to writer output.
-        const G4GDMLAuxMapType* auxMap = parser_->GetAuxMap();
-        for (G4GDMLAuxMapType::const_iterator it = auxMap->begin();
-                it != auxMap->end();
-                it++) {
-            for (std::vector<G4GDMLAuxStructType>::const_iterator auxIt = it->second.begin();
-                    auxIt != it->second.end();
-                    auxIt++) {
-                parser_->AddVolumeAuxiliary(*auxIt, it->first);
-            }
-        }
     }
 
     void DetectorConstruction::ConstructSDandField() {

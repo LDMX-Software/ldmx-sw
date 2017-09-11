@@ -69,15 +69,6 @@ namespace ldmx {
         private:
 
             /**
-             * Adds the parser's user info and auxiliary volume map
-             * for the writer so exported GDML files include these
-             * tags.
-             */
-            void addParserAuxInfo();
-
-        private:
-
-            /**
              * The GDML parser defining the detector.
              */
             G4GDMLParser* parser_;

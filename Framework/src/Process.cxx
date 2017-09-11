@@ -69,7 +69,6 @@ namespace ldmx {
                 // next, loop through the files
                 int ifile = 0;
                 int wasRun = -1;
-                std::string detectorName;
                 for (auto infilename : inputFiles_) {
                     EventFile inFile(infilename);
 
@@ -113,22 +112,6 @@ namespace ldmx {
                                 for (auto module : sequence_) {
                                     module->onNewRun(runHeader);
                                 }
-
-                                // Check if detector data needs to be loaded.
-                                if (detectorName.empty() || runHeader.getDetectorName() != detectorName) {
-                                    detectorName = runHeader.getDetectorName();
-                                    if (detectorService_) {
-                                        delete detectorService_;
-                                    }
-                                    detectorService_ = new DetectorDataServiceImpl();
-                                    detectorService_->setDetectorName(detectorName);
-                                    detectorService_->initialize();
-
-                                    for (auto module : sequence_) {
-                                        module->onNewDetector(detectorService_);
-                                    }
-                                }
-
                             } catch (const Exception&) {
                                 std::cout << "[Process] [WARNING] Run header for run " << wasRun << " was not found!" << std::endl;
                             }
