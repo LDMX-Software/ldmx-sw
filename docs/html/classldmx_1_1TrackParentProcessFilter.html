@@ -66,7 +66,7 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><p>Filters tracks based on matching process type of secondaries. </p>
 <p><a class="el" href="classldmx_1_1TrackParentProcessFilter.html" title="Filters tracks based on matching process type of secondaries.">TrackParentProcessFilter</a> </p>
 
-<p>Definition at line <a class="el" href="TrackFilter_8h_source.html#l00300">300</a> of file <a class="el" href="TrackFilter_8h_source.html">TrackFilter.h</a>.</p>
+<p>Definition at line <a class="el" href="TrackFilter_8h_source.html#l00298">298</a> of file <a class="el" href="TrackFilter_8h_source.html">TrackFilter.h</a>.</p>
 </div><hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="a386ef3f1a8b979ae5591c2996d05dcdd"></a><!-- doxytag: member="ldmx::TrackParentProcessFilter::passes" ref="a386ef3f1a8b979ae5591c2996d05dcdd" args="(const G4Track *aTrack)" -->
 <div class="memitem">
@@ -87,9 +87,9 @@ Public Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classldmx_1_1TrackProcessFilter.html#a6324d9b79c4430a734664cfd46cb86f4">ldmx::TrackProcessFilter</a>.</p>
 
-<p>Definition at line <a class="el" href="TrackFilter_8h_source.html#l00307">307</a> of file <a class="el" href="TrackFilter_8h_source.html">TrackFilter.h</a>.</p>
+<p>Definition at line <a class="el" href="TrackFilter_8h_source.html#l00305">305</a> of file <a class="el" href="TrackFilter_8h_source.html">TrackFilter.h</a>.</p>
 
-<p>References <a class="el" href="TrackFilter_8h_source.html#l00292">ldmx::TrackProcessFilter::exactMatch_</a>, and <a class="el" href="TrackFilter_8h_source.html#l00289">ldmx::TrackProcessFilter::processNames_</a>.</p>
+<p>References <a class="el" href="TrackFilter_8h_source.html#l00290">ldmx::TrackProcessFilter::exactMatch_</a>, and <a class="el" href="TrackFilter_8h_source.html#l00287">ldmx::TrackProcessFilter::processNames_</a>.</p>
 <div class="fragment"><pre class="fragment">                                               {
                 <span class="keyword">static</span> G4TrackingManager* mgr = G4RunManagerKernel::GetRunManagerKernel()-&gt;GetTrackingManager();
                 <span class="keywordflow">if</span> (aTrack != mgr-&gt;GetTrack()) {
@@ -142,9 +142,9 @@ Public Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classldmx_1_1TrackProcessFilter.html#a0e4b86810a7d154f8ea62b1990dfaa34">ldmx::TrackProcessFilter</a>.</p>
 
-<p>Definition at line <a class="el" href="TrackFilter_8h_source.html#l00332">332</a> of file <a class="el" href="TrackFilter_8h_source.html">TrackFilter.h</a>.</p>
+<p>Definition at line <a class="el" href="TrackFilter_8h_source.html#l00330">330</a> of file <a class="el" href="TrackFilter_8h_source.html">TrackFilter.h</a>.</p>
 
-<p>References <a class="el" href="TrackFilter_8h_source.html#l00289">ldmx::TrackProcessFilter::processNames_</a>.</p>
+<p>References <a class="el" href="TrackFilter_8h_source.html#l00287">ldmx::TrackProcessFilter::processNames_</a>.</p>
 <div class="fragment"><pre class="fragment">                                              {
                 os &lt;&lt; <span class="stringliteral">&quot;daughter processes:&quot;</span>;
                 <span class="keywordflow">for</span> (<span class="keyword">auto</span> processName : <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>) {

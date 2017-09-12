@@ -1,17 +1,25 @@
 /**
  * @file SimParticle.h
- * @brief Class which implements an MC particle that stores information about tracks from the simulation
+ * @brief Class which implements an MC particle that stores information about 
+ *        tracks from the simulation
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
 #ifndef EVENT_SIMPARTICLE_H_
 #define EVENT_SIMPARTICLE_H_
 
-// ROOT
+//----------//
+//   ROOT   //
+//----------//
 #include "TObject.h"
 #include "TRefArray.h"
 
-// STL
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <iostream>
+#include <map>
+#include <string>
 #include <vector>
 
 namespace ldmx {
@@ -23,6 +31,26 @@ namespace ldmx {
     class SimParticle: public TObject {
 
         public:
+
+            /**
+             * Enum for interesting process types.
+             */
+            enum ProcessType {
+                unknown = 0,
+                annihil,
+                compt,
+                conv,
+                electronNuclear,
+                eBrem,
+                eIoni,
+                msc,
+                phot,
+                photonNuclear,
+                GammaToMuPair
+                /* Only add additional processes to the end of this list! */
+            };
+
+            typedef std::map<std::string, ProcessType> ProcessTypeMap;
 
             /**
              * Class constructor.
@@ -289,6 +317,16 @@ namespace ldmx {
                 return {endpx_, endpy_, endpz_};
             }
 
+            /**
+             * Get the process type enum from a G4VProcess name.
+             * @return The process type from the string.
+             */
+            static ProcessType findProcessType(std::string processName); 
+
+        private:
+
+            static ProcessTypeMap createProcessTypeMap();
+
         private:
 
             /** The energy of the particle. */
@@ -353,6 +391,8 @@ namespace ldmx {
 
             /** Encoding of Geant4 process type. */
             int processType_{-1};
+
+            static ProcessTypeMap PROCESS_MAP;
 
             /**
              * ROOT class definition.

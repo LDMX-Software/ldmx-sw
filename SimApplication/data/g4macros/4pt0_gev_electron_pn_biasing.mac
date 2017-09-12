@@ -1,4 +1,3 @@
-
 # Parse the detector description using the GDML reader.  This assumes that
 # there is a local soft link that points to the detector of interest.
 /persistency/gdml/read detectors/ldmx-det-full-v2-fieldmap/detector.gdml

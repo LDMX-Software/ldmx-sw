@@ -35,7 +35,9 @@ namespace ldmx {
         if ((dynamic_cast<MultiParticleGunPrimaryGenerator*>(aGenerator)) != NULL){
             indexMpg_ = ((int) generator_.size()) - 1;
         }
-        
+        if ((dynamic_cast<RootPrimaryGenerator*>(aGenerator)) != NULL){
+            indexRpg_ = ((int) generator_.size()) - 1;
+        }        
     }
 
     void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
@@ -43,10 +45,9 @@ namespace ldmx {
         unsigned int ngens = generator_.size();
         for (unsigned int i = 0; i < ngens; ++i) {
             generator_[i]->GeneratePrimaryVertex(event);
-
+            
             // automatically setting genStatus to 1 for particle gun primaries
             if (dynamic_cast<G4ParticleGun*>(generator_[i]) !=  NULL) {
-
                 int nPV = event->GetNumberOfPrimaryVertex();
                 for (int iPV = 0; iPV < nPV; ++iPV) {
                     G4PrimaryVertex* curPV = event->GetPrimaryVertex(iPV);
@@ -60,17 +61,19 @@ namespace ldmx {
             }
         }
             
-        // Activate the plugin manager hook.        
+        // Activate the plugin manager hook.  
         if (event->GetNumberOfPrimaryVertex() > 0) {
-            if (useBeamspot_) smearingBeamspot(event);
+            if (useBeamspot_) smearingBeamspot(event);        
             pluginManager_->generatePrimary(event);
         }
+
     }
 
     void PrimaryGeneratorAction::smearingBeamspot(G4Event* event) {
         
-        double IPWidthX = beamspotXSize_;
-        double IPWidthY = beamspotYSize_;
+        double IPWidthX = beamspotXSize_/2.;
+        double IPWidthY = beamspotYSize_/2.;
+        double IPWidthZ = beamspotZSize_/2.;
 
         int nPV = event->GetNumberOfPrimaryVertex();
         for (int iPV = 0; iPV < nPV; ++iPV) {
@@ -80,7 +83,8 @@ namespace ldmx {
             double z0_i = curPV->GetZ0();
             double x0_f = random_->Uniform( x0_i - IPWidthX, x0_i + IPWidthX );
             double y0_f = random_->Uniform( y0_i - IPWidthY, y0_i + IPWidthY );
-            curPV->SetPosition( x0_f, y0_f, z0_i );
+            double z0_f = random_->Uniform( z0_i - IPWidthZ, z0_i + IPWidthZ );            
+            curPV->SetPosition( x0_f, y0_f, z0_f );
         }        
 
     }

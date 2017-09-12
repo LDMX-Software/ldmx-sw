@@ -8,15 +8,9 @@
 
 #include "Biasing/TargetProcessFilter.h"
 
+SIM_PLUGIN(ldmx, TargetProcessFilter)
+
 namespace ldmx { 
-
-    extern "C" TargetProcessFilter* createTargetProcessFilter() {
-        return new TargetProcessFilter;
-    }
-
-    extern "C" void destroyTargetProcessFilter(TargetProcessFilter* object) {
-        delete object;
-    }
 
     TargetProcessFilter::TargetProcessFilter() {
     }

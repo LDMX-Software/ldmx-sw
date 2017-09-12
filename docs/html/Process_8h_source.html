@@ -91,33 +91,35 @@
 <a name="l00108"></a>00108 
 <a name="l00112"></a>00112             <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#add34e96ca05e260359837419eacac0b5">run</a>();
 <a name="l00113"></a>00113 
-<a name="l00117"></a>00117             TDirectory* <a class="code" href="classldmx_1_1Process.html#a3bffa89c5fc2d91ce8368ffc37cfea3b">makeHistoDirectory</a>(<span class="keyword">const</span> std::string&amp; dirName);
+<a name="l00117"></a><a class="code" href="classldmx_1_1Process.html#a4b38db3ecf47e8ebe8073cbcfb424fc7">00117</a>             <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#a4b38db3ecf47e8ebe8073cbcfb424fc7">requestFinish</a>() { eventLimit_=0; }
 <a name="l00118"></a>00118 
-<a name="l00119"></a>00119         <span class="keyword">private</span>:
-<a name="l00120"></a>00120 
-<a name="l00122"></a><a class="code" href="classldmx_1_1Process.html#a70b5aec21b2817ac15ddcef867b0efd5">00122</a>             std::string <a class="code" href="classldmx_1_1Process.html#a70b5aec21b2817ac15ddcef867b0efd5">passname_</a>;
+<a name="l00122"></a>00122             TDirectory* <a class="code" href="classldmx_1_1Process.html#a3bffa89c5fc2d91ce8368ffc37cfea3b">makeHistoDirectory</a>(<span class="keyword">const</span> std::string&amp; dirName);
 <a name="l00123"></a>00123 
-<a name="l00125"></a><a class="code" href="classldmx_1_1Process.html#a59ad004b38cba380ec346d7b4be58821">00125</a>             <span class="keywordtype">int</span> eventLimit_{-1};
-<a name="l00126"></a>00126 
-<a name="l00128"></a>00128             std::vector&lt;EventProcessor*&gt; <a class="code" href="classldmx_1_1Process.html#a59ad004b38cba380ec346d7b4be58821">sequence_</a>;
-<a name="l00129"></a>00129 
-<a name="l00131"></a><a class="code" href="classldmx_1_1Process.html#aa6d46de696a2539b333a5b505e72cd39">00131</a>             std::vector&lt;std::string&gt; <a class="code" href="classldmx_1_1Process.html#aa6d46de696a2539b333a5b505e72cd39">inputFiles_</a>;
-<a name="l00132"></a>00132 
-<a name="l00134"></a><a class="code" href="classldmx_1_1Process.html#a4e23de00ebcd5953c8d80f084bf8fb0e">00134</a>             std::vector&lt;std::string&gt; <a class="code" href="classldmx_1_1Process.html#a4e23de00ebcd5953c8d80f084bf8fb0e">outputFiles_</a>;
-<a name="l00135"></a>00135 
-<a name="l00137"></a><a class="code" href="classldmx_1_1Process.html#a57a85917c44cebead62755504021e101">00137</a>             std::vector&lt;std::string&gt; <a class="code" href="classldmx_1_1Process.html#a57a85917c44cebead62755504021e101">dropKeepRules_</a>;
-<a name="l00138"></a>00138 
-<a name="l00140"></a><a class="code" href="classldmx_1_1Process.html#ad5872420ac62fcbbd99d404ae4ec0020">00140</a>             <span class="keywordtype">int</span> runForGeneration_{1};
-<a name="l00141"></a>00141 
-<a name="l00143"></a>00143             std::string <a class="code" href="classldmx_1_1Process.html#ad5872420ac62fcbbd99d404ae4ec0020">histoFilename_</a>;
-<a name="l00144"></a>00144 
-<a name="l00146"></a>00146             TFile* histoTFile_{0};
-<a name="l00147"></a>00147     };
-<a name="l00148"></a>00148 
+<a name="l00124"></a>00124         <span class="keyword">private</span>:
+<a name="l00125"></a>00125 
+<a name="l00127"></a><a class="code" href="classldmx_1_1Process.html#a70b5aec21b2817ac15ddcef867b0efd5">00127</a>             std::string <a class="code" href="classldmx_1_1Process.html#a70b5aec21b2817ac15ddcef867b0efd5">passname_</a>;
+<a name="l00128"></a>00128 
+<a name="l00130"></a><a class="code" href="classldmx_1_1Process.html#a59ad004b38cba380ec346d7b4be58821">00130</a>             <span class="keywordtype">int</span> eventLimit_{-1};
+<a name="l00131"></a>00131 
+<a name="l00133"></a>00133             std::vector&lt;EventProcessor*&gt; <a class="code" href="classldmx_1_1Process.html#a59ad004b38cba380ec346d7b4be58821">sequence_</a>;
+<a name="l00134"></a>00134 
+<a name="l00136"></a><a class="code" href="classldmx_1_1Process.html#aa6d46de696a2539b333a5b505e72cd39">00136</a>             std::vector&lt;std::string&gt; <a class="code" href="classldmx_1_1Process.html#aa6d46de696a2539b333a5b505e72cd39">inputFiles_</a>;
+<a name="l00137"></a>00137 
+<a name="l00139"></a><a class="code" href="classldmx_1_1Process.html#a4e23de00ebcd5953c8d80f084bf8fb0e">00139</a>             std::vector&lt;std::string&gt; <a class="code" href="classldmx_1_1Process.html#a4e23de00ebcd5953c8d80f084bf8fb0e">outputFiles_</a>;
+<a name="l00140"></a>00140 
+<a name="l00142"></a><a class="code" href="classldmx_1_1Process.html#a57a85917c44cebead62755504021e101">00142</a>             std::vector&lt;std::string&gt; <a class="code" href="classldmx_1_1Process.html#a57a85917c44cebead62755504021e101">dropKeepRules_</a>;
+<a name="l00143"></a>00143 
+<a name="l00145"></a><a class="code" href="classldmx_1_1Process.html#ad5872420ac62fcbbd99d404ae4ec0020">00145</a>             <span class="keywordtype">int</span> runForGeneration_{1};
+<a name="l00146"></a>00146 
+<a name="l00148"></a>00148             std::string <a class="code" href="classldmx_1_1Process.html#ad5872420ac62fcbbd99d404ae4ec0020">histoFilename_</a>;
 <a name="l00149"></a>00149 
-<a name="l00150"></a>00150 }
-<a name="l00151"></a>00151 
-<a name="l00152"></a>00152 <span class="preprocessor">#endif</span>
+<a name="l00151"></a>00151             TFile* histoTFile_{0};
+<a name="l00152"></a>00152     };
+<a name="l00153"></a>00153 
+<a name="l00154"></a>00154 
+<a name="l00155"></a>00155 }
+<a name="l00156"></a>00156 
+<a name="l00157"></a>00157 <span class="preprocessor">#endif</span>
 </pre></div></div>
 </div>
 <hr class="footer"/><address class="footer"><small>Generated by&#160;

@@ -124,6 +124,20 @@ namespace ldmx {
             void setLayerID(int layerID) {
                 this->layerID_ = layerID;
             }
+            
+            /** 
+             * Get the module ID associated with a hit.  This is used to 
+             * uniquely identify a sensor within a layer.
+             * @return The module ID associated with a hit.
+             */
+            int getModuleID() const { return moduleID_; };
+            
+            /** 
+             * Set the module ID associated with a hit.  This is used to 
+             * uniquely identify a sensor within a layer.
+             * @return moduleID The module ID associated with a hit.
+             */
+            void setModuleID(const int moduleID) { this->moduleID_ = moduleID; };
 
             /**
              * Get the energy deposition.
@@ -230,6 +244,9 @@ namespace ldmx {
              */
             int layerID_ {0};
 
+            /** The module ID. */
+            int moduleID_{0}; 
+            
             /**
              * The energy deposition.
              */

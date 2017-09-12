@@ -94,65 +94,71 @@
 <a name="l00054"></a>00054         hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#a10a5a6824f94fd48f5fc04d8550eb6c8">setTime</a>(aStep-&gt;GetTrack()-&gt;GetGlobalTime());
 <a name="l00055"></a>00055 
 <a name="l00056"></a>00056         <span class="comment">// Create the ID for the hit.</span>
-<a name="l00057"></a>00057         <span class="keywordtype">int</span> layerNumber = aStep-&gt;GetPreStepPoint()-&gt;GetTouchableHandle()-&gt;GetHistory()-&gt;GetVolume(layerDepth_)-&gt;GetCopyNo();
-<a name="l00058"></a>00058         <span class="keywordtype">int</span> cellID = <a class="code" href="classldmx_1_1EcalSD.html#ab6940c33b9f33d9b19314930d2a7e5b5">hitMap_</a>-&gt;<a class="code" href="classldmx_1_1EcalHexReadout.html#a1c8c123bd0dabf04032c60e72e93bdd1">getCellId</a>(hitPosition[0], hitPosition[1]);
-<a name="l00059"></a>00059         <a class="code" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">detID_</a>-&gt;<a class="code" href="classldmx_1_1DetectorID.html#a85f7b28fce48a9f692fc5dc1723c2cad">setFieldValue</a>(1, layerNumber);
-<a name="l00060"></a>00060         <a class="code" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">detID_</a>-&gt;<a class="code" href="classldmx_1_1DetectorID.html#a85f7b28fce48a9f692fc5dc1723c2cad">setFieldValue</a>(2, cellID);
-<a name="l00061"></a>00061         hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#ace8b4ecfc220ee037b523c86d0cf7071">setID</a>(<a class="code" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">detID_</a>-&gt;<a class="code" href="classldmx_1_1DetectorID.html#abb59fb4b7024033aac9a36512b1f78e6">pack</a>());
-<a name="l00062"></a>00062 
-<a name="l00063"></a>00063         <span class="comment">// Set the track ID on the hit.</span>
-<a name="l00064"></a>00064         hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#a892835c762cdb2ebc61860c7d2d3b837">setTrackID</a>(aStep-&gt;GetTrack()-&gt;GetTrackID());
-<a name="l00065"></a>00065 
-<a name="l00066"></a>00066         <span class="comment">// Set the PDG code from the track.</span>
-<a name="l00067"></a>00067         hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#ad93ad722cc2112eaeb87981f78976b61">setPdgCode</a>(aStep-&gt;GetTrack()-&gt;GetParticleDefinition()-&gt;GetPDGEncoding());
+<a name="l00057"></a>00057     <span class="keywordtype">int</span> cpynum = aStep-&gt;GetPreStepPoint()-&gt;GetTouchableHandle()-&gt;GetHistory()-&gt;GetVolume(layerDepth_)-&gt;GetCopyNo();
+<a name="l00058"></a>00058     <span class="keywordtype">int</span> layerNumber;
+<a name="l00059"></a>00059     layerNumber = int(cpynum/7);
+<a name="l00060"></a>00060     <span class="keywordtype">int</span> module_position = cpynum%7;
+<a name="l00061"></a>00061 
+<a name="l00062"></a>00062         <span class="keywordtype">int</span> cellModuleID = <a class="code" href="classldmx_1_1EcalSD.html#ab6940c33b9f33d9b19314930d2a7e5b5">hitMap_</a>-&gt;<a class="code" href="classldmx_1_1EcalHexReadout.html#add519442377223789025ea1d7a02d4ec">getCellModuleID</a>(hitPosition[0], hitPosition[1]);
+<a name="l00063"></a>00063     <span class="keywordtype">int</span> cellID = (<a class="code" href="classldmx_1_1EcalSD.html#ab6940c33b9f33d9b19314930d2a7e5b5">hitMap_</a>-&gt;<a class="code" href="classldmx_1_1EcalHexReadout.html#a9c8a3cde93d9d68fbec7321174da73e8">separateID</a>(cellModuleID)).first;
+<a name="l00064"></a>00064         <a class="code" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">detID_</a>-&gt;<a class="code" href="classldmx_1_1DetectorID.html#a85f7b28fce48a9f692fc5dc1723c2cad">setFieldValue</a>(1, layerNumber);
+<a name="l00065"></a>00065         <a class="code" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">detID_</a>-&gt;<a class="code" href="classldmx_1_1DetectorID.html#a85f7b28fce48a9f692fc5dc1723c2cad">setFieldValue</a>(2, module_position);
+<a name="l00066"></a>00066     <a class="code" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">detID_</a>-&gt;<a class="code" href="classldmx_1_1DetectorID.html#a85f7b28fce48a9f692fc5dc1723c2cad">setFieldValue</a>(3, cellID);
+<a name="l00067"></a>00067         hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#ace8b4ecfc220ee037b523c86d0cf7071">setID</a>(<a class="code" href="classldmx_1_1CalorimeterSD.html#a2f5f27d1ac5025ea13c7c2bbbfd6bba8">detID_</a>-&gt;<a class="code" href="classldmx_1_1DetectorID.html#abb59fb4b7024033aac9a36512b1f78e6">pack</a>());
 <a name="l00068"></a>00068 
-<a name="l00069"></a>00069         <span class="keywordflow">if</span> (this-&gt;verboseLevel &gt; 2) {
-<a name="l00070"></a>00070             std::cout &lt;&lt; <span class="stringliteral">&quot;Created new SimCalorimeterHit in detector &quot;</span> &lt;&lt; this-&gt;GetName() &lt;&lt; <span class="stringliteral">&quot; with subdet ID &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1CalorimeterSD.html#a0f1f237a1729bdbc0514a5df347d9f85">subdet_</a> &lt;&lt; <span class="stringliteral">&quot; and layer &quot;</span> &lt;&lt; layerNumber &lt;&lt; <span class="stringliteral">&quot; and cellid &quot;</span> &lt;&lt; cellID &lt;&lt; <span class="stringliteral">&quot; ...&quot;</span>;
-<a name="l00071"></a>00071             hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#aaeb2a65f14b0dc8342b1ceded6cae566">Print</a>();
-<a name="l00072"></a>00072             std::cout &lt;&lt; std::endl;
-<a name="l00073"></a>00073         }
+<a name="l00069"></a>00069     <span class="comment">// Set the track ID on the hit.</span>
+<a name="l00070"></a>00070         hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#a892835c762cdb2ebc61860c7d2d3b837">setTrackID</a>(aStep-&gt;GetTrack()-&gt;GetTrackID());
+<a name="l00071"></a>00071 
+<a name="l00072"></a>00072     <span class="comment">// Set the PDG code from the track.</span>
+<a name="l00073"></a>00073         hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#ad93ad722cc2112eaeb87981f78976b61">setPdgCode</a>(aStep-&gt;GetTrack()-&gt;GetParticleDefinition()-&gt;GetPDGEncoding());
 <a name="l00074"></a>00074 
-<a name="l00075"></a>00075         <span class="comment">// Insert the hit into the hits collection.</span>
-<a name="l00076"></a>00076         <a class="code" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a>-&gt;insert(hit);
-<a name="l00077"></a>00077 
-<a name="l00078"></a>00078         <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00079"></a>00079     }
+<a name="l00075"></a>00075         <span class="keywordflow">if</span> (this-&gt;verboseLevel &gt; 2) {
+<a name="l00076"></a>00076         std::cout &lt;&lt; <span class="stringliteral">&quot;Created new SimCalorimeterHit in detector &quot;</span> &lt;&lt; this-&gt;GetName() &lt;&lt; <span class="stringliteral">&quot; with subdet ID &quot;</span> &lt;&lt; <a class="code" href="classldmx_1_1CalorimeterSD.html#a0f1f237a1729bdbc0514a5df347d9f85">subdet_</a> &lt;&lt; <span class="stringliteral">&quot; and layer &quot;</span> &lt;&lt; layerNumber &lt;&lt; <span class="stringliteral">&quot; and cellid &quot;</span> &lt;&lt; cellID &lt;&lt; <span class="stringliteral">&quot; module position &quot;</span> &lt;&lt; module_position &lt;&lt; <span class="stringliteral">&quot; ...&quot;</span>;
+<a name="l00077"></a>00077             hit-&gt;<a class="code" href="classldmx_1_1G4CalorimeterHit.html#aaeb2a65f14b0dc8342b1ceded6cae566">Print</a>();
+<a name="l00078"></a>00078             std::cout &lt;&lt; std::endl;
+<a name="l00079"></a>00079         }
 <a name="l00080"></a>00080 
-<a name="l00081"></a><a class="code" href="classldmx_1_1EcalSD.html#adccc9d198b2a5e1683dd09feda054aad">00081</a>     G4ThreeVector <a class="code" href="classldmx_1_1EcalSD.html#adccc9d198b2a5e1683dd09feda054aad">EcalSD::getHitPosition</a>(G4Step* aStep) {
-<a name="l00082"></a>00082 
-<a name="l00086"></a>00086         G4StepPoint* prePoint = aStep-&gt;GetPreStepPoint();
-<a name="l00087"></a>00087         G4StepPoint* postPoint = aStep-&gt;GetPostStepPoint();
-<a name="l00088"></a>00088         G4ThreeVector position = 0.5 * (prePoint-&gt;GetPosition() + postPoint-&gt;GetPosition());
-<a name="l00089"></a>00089 
-<a name="l00090"></a>00090         <span class="comment">/*</span>
-<a name="l00091"></a>00091 <span class="comment">         * Get the volume position in global coordinates, which for the ECal is the center of</span>
-<a name="l00092"></a>00092 <span class="comment">         * the front face of the sensor.</span>
-<a name="l00093"></a>00093 <span class="comment">         */</span>
-<a name="l00094"></a>00094         G4ThreeVector volumePosition = aStep-&gt;GetPreStepPoint()-&gt;GetTouchableHandle()-&gt;GetHistory()-&gt;GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
+<a name="l00081"></a>00081     <span class="comment">// Insert the hit into the hits collection.</span>
+<a name="l00082"></a>00082         <a class="code" href="classldmx_1_1CalorimeterSD.html#a75a547454505bf2e0fe84b1f45e508cd">hitsCollection_</a>-&gt;insert(hit);
+<a name="l00083"></a>00083 
+<a name="l00084"></a>00084         <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00085"></a>00085     }
+<a name="l00086"></a>00086 
+<a name="l00087"></a><a class="code" href="classldmx_1_1EcalSD.html#adccc9d198b2a5e1683dd09feda054aad">00087</a>     G4ThreeVector <a class="code" href="classldmx_1_1EcalSD.html#adccc9d198b2a5e1683dd09feda054aad">EcalSD::getHitPosition</a>(G4Step* aStep) {
+<a name="l00088"></a>00088 
+<a name="l00092"></a>00092         G4StepPoint* prePoint = aStep-&gt;GetPreStepPoint();
+<a name="l00093"></a>00093         G4StepPoint* postPoint = aStep-&gt;GetPostStepPoint();
+<a name="l00094"></a>00094         G4ThreeVector position = 0.5 * (prePoint-&gt;GetPosition() + postPoint-&gt;GetPosition());
 <a name="l00095"></a>00095 
-<a name="l00096"></a>00096         <span class="comment">// Get the solid from this step.</span>
-<a name="l00097"></a>00097         G4VSolid* solid = prePoint-&gt;GetTouchableHandle()-&gt;GetVolume()-&gt;GetLogicalVolume()-&gt;GetSolid();
-<a name="l00098"></a>00098         <span class="keyword">auto</span> it = <a class="code" href="classldmx_1_1EcalSD.html#af7bb0609806d288b758b06099476ff52">polyMap_</a>.find(solid);
-<a name="l00099"></a>00099         G4Polyhedron* poly;
-<a name="l00100"></a>00100         <span class="keywordflow">if</span> (it == <a class="code" href="classldmx_1_1EcalSD.html#af7bb0609806d288b758b06099476ff52">polyMap_</a>.end()) {
-<a name="l00101"></a>00101             poly = solid-&gt;CreatePolyhedron();
-<a name="l00102"></a>00102             <a class="code" href="classldmx_1_1EcalSD.html#af7bb0609806d288b758b06099476ff52">polyMap_</a>[solid] = poly;
-<a name="l00103"></a>00103         } <span class="keywordflow">else</span> {
-<a name="l00104"></a>00104             poly = <a class="code" href="classldmx_1_1EcalSD.html#af7bb0609806d288b758b06099476ff52">polyMap_</a>[solid];
-<a name="l00105"></a>00105         }
-<a name="l00106"></a>00106 
-<a name="l00110"></a>00110         G4Point3D iNodes[4];
-<a name="l00111"></a>00111         G4int n;
-<a name="l00112"></a>00112         poly-&gt;GetFacet(1, n, iNodes);
-<a name="l00113"></a>00113         G4double zstart = iNodes[1][2];
-<a name="l00114"></a>00114         G4double zend = iNodes[0][2];
-<a name="l00115"></a>00115         G4double zmid = (zstart - zend) / 2;
-<a name="l00116"></a>00116         position.setZ(volumePosition.z() + zmid);
-<a name="l00117"></a>00117 
-<a name="l00118"></a>00118         <span class="keywordflow">return</span> position;
-<a name="l00119"></a>00119     }
-<a name="l00120"></a>00120 
-<a name="l00121"></a>00121 }
+<a name="l00096"></a>00096         <span class="comment">/*</span>
+<a name="l00097"></a>00097 <span class="comment">         * Get the volume position in global coordinates, which for the ECal is the center of</span>
+<a name="l00098"></a>00098 <span class="comment">         * the front face of the sensor.</span>
+<a name="l00099"></a>00099 <span class="comment">         */</span>
+<a name="l00100"></a>00100         G4ThreeVector volumePosition = aStep-&gt;GetPreStepPoint()-&gt;GetTouchableHandle()-&gt;GetHistory()-&gt;GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
+<a name="l00101"></a>00101 
+<a name="l00102"></a>00102         <span class="comment">// Get the solid from this step.</span>
+<a name="l00103"></a>00103         G4VSolid* solid = prePoint-&gt;GetTouchableHandle()-&gt;GetVolume()-&gt;GetLogicalVolume()-&gt;GetSolid();
+<a name="l00104"></a>00104         <span class="keyword">auto</span> it = <a class="code" href="classldmx_1_1EcalSD.html#af7bb0609806d288b758b06099476ff52">polyMap_</a>.find(solid);
+<a name="l00105"></a>00105         G4Polyhedron* poly;
+<a name="l00106"></a>00106         <span class="keywordflow">if</span> (it == <a class="code" href="classldmx_1_1EcalSD.html#af7bb0609806d288b758b06099476ff52">polyMap_</a>.end()) {
+<a name="l00107"></a>00107             poly = solid-&gt;CreatePolyhedron();
+<a name="l00108"></a>00108             <a class="code" href="classldmx_1_1EcalSD.html#af7bb0609806d288b758b06099476ff52">polyMap_</a>[solid] = poly;
+<a name="l00109"></a>00109         } <span class="keywordflow">else</span> {
+<a name="l00110"></a>00110             poly = <a class="code" href="classldmx_1_1EcalSD.html#af7bb0609806d288b758b06099476ff52">polyMap_</a>[solid];
+<a name="l00111"></a>00111         }
+<a name="l00112"></a>00112 
+<a name="l00116"></a>00116         G4Point3D iNodes[4];
+<a name="l00117"></a>00117         G4int n;
+<a name="l00118"></a>00118         poly-&gt;GetFacet(1, n, iNodes);
+<a name="l00119"></a>00119         G4double zstart = iNodes[1][2];
+<a name="l00120"></a>00120         G4double zend = iNodes[0][2];
+<a name="l00121"></a>00121         G4double zmid = (zstart - zend) / 2;
+<a name="l00122"></a>00122         position.setZ(volumePosition.z() + zmid);
+<a name="l00123"></a>00123 
+<a name="l00124"></a>00124         <span class="keywordflow">return</span> position;
+<a name="l00125"></a>00125     }
+<a name="l00126"></a>00126 
+<a name="l00127"></a>00127 }
 </pre></div></div>
 </div>
 <hr class="footer"/><address class="footer"><small>Generated by&#160;

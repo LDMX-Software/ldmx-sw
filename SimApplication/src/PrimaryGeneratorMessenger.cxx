@@ -48,6 +48,12 @@ namespace ldmx {
             primaryGeneratorAction_->setPrimaryGenerator(new RootPrimaryGenerator(newValues)); 
         } else if (command == rootUseSeedCmd_) {
             useRootSeed_ = true; 
+        } else if (command == rootEcalSPCmd_) {
+            int curi = primaryGeneratorAction_->getIndexRPG();
+            if (curi >= 0) ( dynamic_cast<RootPrimaryGenerator*>(primaryGeneratorAction_->getGenerator(curi)) )->setRunMode( 1 ); 
+        } else if (command == rootRegenCmd_) {
+            int curi = primaryGeneratorAction_->getIndexRPG();
+            if (curi >= 0) ( dynamic_cast<RootPrimaryGenerator*>(primaryGeneratorAction_->getGenerator(curi)) )->setRunMode( 0 ); 
         }
 
         //////// MPGun commands
@@ -77,6 +83,8 @@ namespace ldmx {
             primaryGeneratorAction_->setBeamspotXSize( G4UIcommand::ConvertToDouble(newValues) ); 
         } else if (command == beamspotYSizeCmd_) { 
             primaryGeneratorAction_->setBeamspotYSize( G4UIcommand::ConvertToDouble(newValues) ); 
+        } else if (command == beamspotZSizeCmd_) { 
+            primaryGeneratorAction_->setBeamspotZSize( G4UIcommand::ConvertToDouble(newValues) ); 
         }
     }
 }
