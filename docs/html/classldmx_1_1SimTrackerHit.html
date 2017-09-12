@@ -230,7 +230,7 @@ Private Member Functions</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimTrackerHit_8h_source.html#l00061">61</a> of file <a class="el" href="SimTrackerHit_8h_source.html">SimTrackerHit.h</a>.</p>
 
-<p>Referenced by <a class="el" href="FindableTrackProcessor_8cxx_source.html#l00068">ldmx::FindableTrackProcessor::createHitMap()</a>.</p>
+<p>Referenced by <a class="el" href="FindableTrackProcessor_8cxx_source.html#l00068">ldmx::FindableTrackProcessor::createHitMap()</a>, and <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00163">ldmx::EcalVetoProcessor::produce()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> layerID_; };
 </pre></div>
 </div>
@@ -252,6 +252,8 @@ Private Member Functions</h2></td></tr>
 <dl class="return"><dt><b>Returns:</b></dt><dd>The momentum of the particle. </dd></dl>
 
 <p>Definition at line <a class="el" href="SimTrackerHit_8h_source.html#l00093">93</a> of file <a class="el" href="SimTrackerHit_8h_source.html">SimTrackerHit.h</a>.</p>
+
+<p>Referenced by <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00163">ldmx::EcalVetoProcessor::produce()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> {px_, py_, pz_}; };
 </pre></div>
 </div>
@@ -294,6 +296,8 @@ Private Member Functions</h2></td></tr>
 <dl class="return"><dt><b>Returns:</b></dt><dd>The position of the hit. </dd></dl>
 
 <p>Definition at line <a class="el" href="SimTrackerHit_8h_source.html#l00067">67</a> of file <a class="el" href="SimTrackerHit_8h_source.html">SimTrackerHit.h</a>.</p>
+
+<p>Referenced by <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00163">ldmx::EcalVetoProcessor::produce()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> {x_, y_, z_}; };
 </pre></div>
 </div>
@@ -314,7 +318,7 @@ Private Member Functions</h2></td></tr>
 <p>Get the Monte Carlo particle that created the hit. </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>The particle that created the hit. </dd></dl>
 
-<p>Referenced by <a class="el" href="FindableTrackProcessor_8cxx_source.html#l00068">ldmx::FindableTrackProcessor::createHitMap()</a>.</p>
+<p>Referenced by <a class="el" href="FindableTrackProcessor_8cxx_source.html#l00068">ldmx::FindableTrackProcessor::createHitMap()</a>, and <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00163">ldmx::EcalVetoProcessor::produce()</a>.</p>
 
 </div>
 </div>
@@ -381,7 +385,7 @@ Private Member Functions</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimTrackerHit_8h_source.html#l00119">119</a> of file <a class="el" href="SimTrackerHit_8h_source.html">SimTrackerHit.h</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00219">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00228">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
 <div class="fragment"><pre class="fragment">{ this-&gt;edep_ = edep; };
 </pre></div>
 </div>
@@ -410,7 +414,7 @@ Private Member Functions</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimTrackerHit_8h_source.html#l00105">105</a> of file <a class="el" href="SimTrackerHit_8h_source.html">SimTrackerHit.h</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00219">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00228">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
 <div class="fragment"><pre class="fragment">{ this-&gt;id_ = id; };
 </pre></div>
 </div>
@@ -439,7 +443,7 @@ Private Member Functions</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimTrackerHit_8h_source.html#l00146">146</a> of file <a class="el" href="SimTrackerHit_8h_source.html">SimTrackerHit.h</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00219">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00228">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
 <div class="fragment"><pre class="fragment">{ this-&gt;layerID_ = layerID; };
 </pre></div>
 </div>
@@ -484,7 +488,7 @@ Private Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00219">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00228">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
 
 </div>
 </div>
@@ -512,7 +516,7 @@ Private Member Functions</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimTrackerHit_8h_source.html#l00131">131</a> of file <a class="el" href="SimTrackerHit_8h_source.html">SimTrackerHit.h</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00219">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00228">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
 <div class="fragment"><pre class="fragment">{ this-&gt;pathLength_ = pathLength; };
 </pre></div>
 </div>
@@ -557,7 +561,7 @@ Private Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00219">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00228">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
 
 </div>
 </div>
@@ -585,7 +589,7 @@ Private Member Functions</h2></td></tr>
 
 <p>Definition at line <a class="el" href="SimTrackerHit_8h_source.html#l00152">152</a> of file <a class="el" href="SimTrackerHit_8h_source.html">SimTrackerHit.h</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00219">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00228">ldmx::RootPersistencyManager::writeTrackerHitsCollection()</a>.</p>
 <div class="fragment"><pre class="fragment">{ this-&gt;simParticle_ = (TObject*) simParticle; };
 </pre></div>
 </div>

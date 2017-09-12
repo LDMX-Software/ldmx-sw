@@ -76,6 +76,17 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoProcessor.html#a01303b39a72377821debefbc96d81be6">produce</a> (<a class="el" href="classldmx_1_1Event.html">Event</a> &amp;event)</td></tr>
 <tr><td colspan="2"><h2><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1EcalVetoProcessor.html#a5392d18f81ed7c5367c77f36d7cdd40c">isInShowerInnerRing</a> (int centroidID, int probeID)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2c1f398e2a0fba9ba249f30b50e8d57a"></a><!-- doxytag: member="ldmx::EcalVetoProcessor::isInShowerOuterRing" ref="a2c1f398e2a0fba9ba249f30b50e8d57a" args="(int centroidID, int probeID)" -->
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInShowerOuterRing</b> (int centroidID, int probeID)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aec33dae51a1768d2d7728016a46e5966"></a><!-- doxytag: member="ldmx::EcalVetoProcessor::getCellCentroidXYPair" ref="aec33dae51a1768d2d7728016a46e5966" args="(int centroidID)" -->
+XYCoords&#160;</td><td class="memItemRight" valign="bottom"><b>getCellCentroidXYPair</b> (int centroidID)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8d1255f2c2392a5f91a6681637c6b425"></a><!-- doxytag: member="ldmx::EcalVetoProcessor::getInnerRingCellIds" ref="a8d1255f2c2392a5f91a6681637c6b425" args="(int cellModuleID)" -->
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getInnerRingCellIds</b> (int cellModuleID)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac16cf4e04bea55df744c86c34298d582"></a><!-- doxytag: member="ldmx::EcalVetoProcessor::getOuterRingCellIds" ref="ac16cf4e04bea55df744c86c34298d582" args="(int cellModuleID)" -->
+std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getOuterRingCellIds</b> (int cellModuleID)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a41c358158079f8a4fb32601742a8dea6"></a><!-- doxytag: member="ldmx::EcalVetoProcessor::clearProcessor" ref="a41c358158079f8a4fb32601742a8dea6" args="()" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clearProcessor</b> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a42466fbdf4ff76dee06441949bbaa2ee"></a><!-- doxytag: member="ldmx::EcalVetoProcessor::hitToPair" ref="a42466fbdf4ff76dee06441949bbaa2ee" args="(EcalHit *hit)" -->
 LayerCellPair&#160;</td><td class="memItemRight" valign="bottom"><b>hitToPair</b> (<a class="el" href="classldmx_1_1EcalHit.html">EcalHit</a> *hit)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a952dee14019f6c17a3417d7cec0c31c8"></a><!-- doxytag: member="ldmx::EcalVetoProcessor::GetShowerCentroidIDAndRMS" ref="a952dee14019f6c17a3417d7cec0c31c8" args="(const TClonesArray *ecalDigis, double &amp;showerRMS)" -->
@@ -128,7 +139,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><b
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Determines if event is vetoable using ECAL hit information. </p>
 
-<p>Definition at line <a class="el" href="EcalVetoProcessor_8h_source.html#l00055">55</a> of file <a class="el" href="EcalVetoProcessor_8h_source.html">EcalVetoProcessor.h</a>.</p>
+<p>Definition at line <a class="el" href="EcalVetoProcessor_8h_source.html#l00057">57</a> of file <a class="el" href="EcalVetoProcessor_8h_source.html">EcalVetoProcessor.h</a>.</p>
 </div><hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="adf77848fdc2823659191f63d8427b274"></a><!-- doxytag: member="ldmx::EcalVetoProcessor::configure" ref="adf77848fdc2823659191f63d8427b274" args="(const ParameterSet &amp;)" -->
 <div class="memitem">
@@ -154,7 +165,7 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><b
 
 <p>Reimplemented from <a class="el" href="classldmx_1_1EventProcessor.html#a6a5ada71abe64354bfbbf5481843e955">ldmx::EventProcessor</a>.</p>
 
-<p>Definition at line <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00105">105</a> of file <a class="el" href="EcalVetoProcessor_8cxx_source.html">EcalVetoProcessor.cxx</a>.</p>
+<p>Definition at line <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00104">104</a> of file <a class="el" href="EcalVetoProcessor_8cxx_source.html">EcalVetoProcessor.cxx</a>.</p>
 
 <p>References <a class="el" href="Exception_8h_source.html#l00127">EXCEPTION_RAISE</a>, <a class="el" href="ParameterSet_8cxx_source.html#l00036">ldmx::ParameterSet::getDouble()</a>, <a class="el" href="ParameterSet_8cxx_source.html#l00010">ldmx::ParameterSet::getInteger()</a>, and <a class="el" href="ParameterSet_8cxx_source.html#l00062">ldmx::ParameterSet::getString()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                            {
@@ -187,6 +198,41 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><b
 </pre></div>
 </div>
 </div>
+<a class="anchor" id="a5392d18f81ed7c5367c77f36d7cdd40c"></a><!-- doxytag: member="ldmx::EcalVetoProcessor::isInShowerInnerRing" ref="a5392d18f81ed7c5367c77f36d7cdd40c" args="(int centroidID, int probeID)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ldmx::EcalVetoProcessor::isInShowerInnerRing </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>centroidID</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>probeID</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline, private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Wrappers for ecalHexReadout functions. See hitToPair(). Necessary to easily combine cellID with moduleID to get unique ID of hit in layer. In future: combine celID+moduleID+layerID. </p>
+
+<p>Definition at line <a class="el" href="EcalVetoProcessor_8h_source.html#l00085">85</a> of file <a class="el" href="EcalVetoProcessor_8h_source.html">EcalVetoProcessor.h</a>.</p>
+
+<p>Referenced by <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00163">produce()</a>.</p>
+<div class="fragment"><pre class="fragment">                                                                 {
+                <span class="keywordflow">return</span> hexReadout_-&gt;isNN(centroidID, probeID);
+            }
+</pre></div>
+</div>
+</div>
 <a class="anchor" id="a01303b39a72377821debefbc96d81be6"></a><!-- doxytag: member="ldmx::EcalVetoProcessor::produce" ref="a01303b39a72377821debefbc96d81be6" args="(Event &amp;event)" -->
 <div class="memitem">
 <div class="memproto">
@@ -211,15 +257,12 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><b
 
 <p>Implements <a class="el" href="classldmx_1_1Producer.html#a7ac942786d11a4768ad430d52ba6a427">ldmx::Producer</a>.</p>
 
-<p>Definition at line <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00133">133</a> of file <a class="el" href="EcalVetoProcessor_8cxx_source.html">EcalVetoProcessor.cxx</a>.</p>
+<p>Definition at line <a class="el" href="EcalVetoProcessor_8cxx_source.html#l00163">163</a> of file <a class="el" href="EcalVetoProcessor_8cxx_source.html">EcalVetoProcessor.cxx</a>.</p>
 
-<p>References <a class="el" href="CalorimeterHit_8h_source.html#l00090">ldmx::CalorimeterHit::getEnergy()</a>, <a class="el" href="CalorimeterHit_8h_source.html#l00107">ldmx::CalorimeterHit::getTime()</a>, and <a class="el" href="classldmx_1_1EcalVetoResult.html#a3dd1f77e37c1453afe46ffff9f287145">ldmx::EcalVetoResult::setVariables()</a>.</p>
+<p>References <a class="el" href="classldmx_1_1EcalVetoResult.html#a9f5f2c969b588f78a56233d5980493b1">ldmx::EcalVetoResult::Clear()</a>, <a class="el" href="Event_8h_source.html#l00059">ldmx::Event::exists()</a>, <a class="el" href="CalorimeterHit_8h_source.html#l00090">ldmx::CalorimeterHit::getEnergy()</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00061">ldmx::SimTrackerHit::getLayerID()</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00093">ldmx::SimTrackerHit::getMomentum()</a>, <a class="el" href="SimParticle_8h_source.html#l00169">ldmx::SimParticle::getParentCount()</a>, <a class="el" href="SimParticle_8h_source.html#l00087">ldmx::SimParticle::getPdgID()</a>, <a class="el" href="SimTrackerHit_8h_source.html#l00067">ldmx::SimTrackerHit::getPosition()</a>, <a class="el" href="classldmx_1_1SimTrackerHit.html#ab34e49182785dd3bdabca6338ec5c05e">ldmx::SimTrackerHit::getSimParticle()</a>, <a class="el" href="CalorimeterHit_8h_source.html#l00107">ldmx::CalorimeterHit::getTime()</a>, <a class="el" href="EcalVetoProcessor_8h_source.html#l00085">isInShowerInnerRing()</a>, and <a class="el" href="classldmx_1_1EcalVetoResult.html#a01c193ab9da6add9c8d71681da580660">ldmx::EcalVetoResult::setVariables()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                {
-        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nEcalLayers_; i++) {
-            cellMap_[i].clear();
-            cellMapLooseIso_[i].clear();
-            cellMapTightIso_[i].clear();
-        }
+        result_.Clear();
+        clearProcessor();
 
         <span class="comment">// FIXME: These commands should go above the corresponding variables.</span>
         <span class="comment">/* New expanded variable collection to help with background veto */</span>
@@ -228,30 +271,6 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><b
         <span class="comment">/* Loose tracks -- two consecutive layers w/ projected nearest neighbor loose isolated hits */</span>
         <span class="comment">/* Medium tracks -- three consecutive layers w/ projected nearest neighbor loose isolated hits */</span>
         <span class="comment">/* Tight tracks -- three consecutive layers w/ projected nearest neighbor tight isolated hits */</span>
-
-        looseMipTracks_.clear();
-        mediumMipTracks_.clear();
-        tightMipTracks_.clear();
-        bdtFeatures_.clear();
-
-        nReadoutHits_ = 0;
-        nLooseIsoHits_ = 0;
-        nTightIsoHits_ = 0;
-        summedDet_ = 0;
-        summedOuter_ = 0;
-        backSummedDet_ = 0;
-        summedLooseIso_ = 0;
-        maxLooseIsoDep_ = 0;
-        summedTightIso_ = 0;
-        maxTightIsoDep_ = 0;
-        maxCellDep_ = 0;
-        showerRMS_ = 0;
-
-        std::fill(ecalLayerEdepRaw_.begin(), ecalLayerEdepRaw_.end(), 0);
-        std::fill(ecalLayerEdepReadout_.begin(), ecalLayerEdepReadout_.end(), 0);
-        std::fill(ecalLayerOuterRaw_.begin(), ecalLayerOuterRaw_.end(), 0);
-        std::fill(ecalLayerOuterReadout_.begin(), ecalLayerOuterReadout_.end(), 0);
-        std::fill(ecalLayerTime_.begin(), ecalLayerTime_.end(), 0);
 
         <span class="comment">// Get the collection of digitized Ecal hits from the event. </span>
         <span class="keyword">const</span> TClonesArray* ecalDigis = <span class="keyword">event</span>.getCollection(<span class="stringliteral">&quot;ecalDigis&quot;</span>);
@@ -283,8 +302,8 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><b
                 ecalLayerTime_[hit_pair.first] += (hit-&gt;getEnergy()) * hit-&gt;getTime();
             }
             <span class="comment">//Check Outer</span>
-            <span class="keywordflow">if</span> (!(hexReadout_-&gt;isInShowerInnerRing(globalCentroid, hit_pair.second))
-                    &amp;&amp; !(hexReadout_-&gt;isInShowerOuterRing(globalCentroid, hit_pair.second))
+            <span class="keywordflow">if</span> (!(<a class="code" href="classldmx_1_1EcalVetoProcessor.html#a5392d18f81ed7c5367c77f36d7cdd40c">isInShowerInnerRing</a>(globalCentroid, hit_pair.second))
+                    &amp;&amp; !(isInShowerOuterRing(globalCentroid, hit_pair.second))
                     &amp;&amp; !(hit_pair.second == globalCentroid)) {
 
                 ecalLayerOuterRaw_[hit_pair.first] += hit-&gt;getEnergy();
@@ -340,9 +359,53 @@ std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><b
         fillMipTracks(looseIsoCopy, mediumMipTracks_, trackLen);
         fillMipTracks(cellMapTightIso_, tightMipTracks_, trackLen);
 
+        <span class="comment">// Get the collection of Ecal scoring plane hits. If it doesn&#39;t exist,</span>
+        <span class="comment">// don&#39;t bother adding any truth tracking information.</span>
+
+        std::vector&lt;double&gt; recoilP;
+        std::vector&lt;float&gt; recoilPos;
+
+        <span class="keywordflow">if</span> (event.exists(<span class="stringliteral">&quot;EcalScoringPlaneHits&quot;</span>)) {
+            <span class="keyword">const</span> TClonesArray* ecalSpHits{<span class="keyword">event</span>.getCollection(<span class="stringliteral">&quot;EcalScoringPlaneHits&quot;</span>)};
+
+            <span class="comment">// Loop through all of the sim particles and find the recoil </span>
+            <span class="comment">// electron.</span>
+            <span class="keyword">const</span> TClonesArray* simParticles{<span class="keyword">event</span>.getCollection(<span class="stringliteral">&quot;SimParticles&quot;</span>)};
+            SimParticle* recoilElectron{<span class="keyword">nullptr</span>}; 
+            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> simParticleIndex = 0; simParticleIndex &lt; simParticles-&gt;GetEntriesFast();
+                    ++simParticleIndex) { 
+                SimParticle* particle = <span class="keyword">static_cast&lt;</span>SimParticle*<span class="keyword">&gt;</span>(simParticles-&gt;At(simParticleIndex)); 
+
+                <span class="comment">// We only care about the recoil electron</span>
+                <span class="keywordflow">if</span> ((particle-&gt;getPdgID() == 11) &amp;&amp; (particle-&gt;getParentCount() == 0)) { 
+                    recoilElectron = particle;
+                    <span class="keywordflow">break</span>;
+                } 
+            }
+
+            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ecalSpIndex = 0; ecalSpIndex &lt; ecalSpHits-&gt;GetEntriesFast(); ++ecalSpIndex) {
+                SimTrackerHit* spHit =  <span class="keyword">static_cast&lt;</span>SimTrackerHit*<span class="keyword">&gt;</span>(ecalSpHits-&gt;At(ecalSpIndex)); 
+                
+                <span class="keywordflow">if</span> (spHit-&gt;getLayerID() != 1) <span class="keywordflow">continue</span>;
+                
+                SimParticle* spParticle = spHit-&gt;getSimParticle();
+                <span class="keywordflow">if</span> (spParticle == recoilElectron) { 
+                    recoilP = spHit-&gt;getMomentum();
+                    recoilPos = spHit-&gt;getPosition();
+                    <span class="keywordflow">if</span> (recoilP[2] &lt;= 0) <span class="keywordflow">continue</span>; 
+                    <span class="comment">/*std::cout &lt;&lt; &quot;[ EcalVetoProcessor ]: &quot; </span>
+<span class="comment">                              &lt;&lt; &quot;Recoil momentum: [ &quot; </span>
+<span class="comment">                              &lt;&lt; recoilP[0] </span>
+<span class="comment">                              &lt;&lt; &quot;, &quot; &lt;&lt; recoilP[1]  </span>
+<span class="comment">                              &lt;&lt; &quot;, &quot; &lt;&lt; recoilP[2] &lt;&lt; &quot; ]&quot; &lt;&lt; std::endl;*/</span>
+                    <span class="keywordflow">break</span>;
+                } 
+            }
+        }
+
         result_.setVariables(nReadoutHits_, nLooseIsoHits_, nTightIsoHits_, summedDet_, summedOuter_, backSummedDet_,
                 summedLooseIso_, maxLooseIsoDep_, summedTightIso_, maxTightIsoDep_, maxCellDep_, showerRMS_,
-                ecalLayerEdepReadout_, looseMipTracks_, mediumMipTracks_, tightMipTracks_);
+                ecalLayerEdepReadout_, looseMipTracks_, mediumMipTracks_, tightMipTracks_, recoilP, recoilPos);
         <span class="keywordflow">if</span> (doBdt_) {
             BDTHelper_-&gt;buildFeatureVector(bdtFeatures_, result_);
             <span class="keywordtype">float</span> pred = BDTHelper_-&gt;getSinglePred(bdtFeatures_);
