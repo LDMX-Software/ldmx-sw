@@ -39,10 +39,26 @@ namespace ldmx {
             /**
              * Set the sim particle and 'is findable' flag.
              */
-            void setVariables(int nReadoutHits, int nLooseIsoHits, int nTightIsoHits, float summedDet, int summedOuter,
-                    float backSummedDet, float summedLooseIso, float maxLooseIsoDep, float summedTightIso, float maxTightIsoDep,
-                    float maxCellDep, float showerRMS, std::vector<float> EcalLayerEdepReadout, std::vector<std::pair<int, float>> looseMipTracks,
-                    std::vector<std::pair<int, float>> mediumMipTracks, std::vector<std::pair<int, float>> tightMipTracks);
+            void setVariables(
+                    int nReadoutHits, 
+                    int nLooseIsoHits, 
+                    int nTightIsoHits, 
+                    float summedDet, 
+                    int summedOuter, 
+                    float backSummedDet, 
+                    float summedLooseIso, 
+                    float maxLooseIsoDep,
+                    float summedTightIso, 
+                    float maxTightIsoDep,
+                    float maxCellDep, 
+                    float showerRMS, 
+                    std::vector<float> EcalLayerEdepReadout, 
+                    std::vector<std::pair<int, float>> looseMipTracks,
+                    std::vector<std::pair<int, float>> mediumMipTracks, 
+                    std::vector<std::pair<int, float>> tightMipTracks, 
+                    std::vector<double> recoilP, 
+                    std::vector<float> recoilPos
+            );
 
             /** Reset the object. */
             void Clear(Option_t *option = "");
@@ -143,6 +159,16 @@ namespace ldmx {
             void setDiscValue(float discValue) {
                 discValue_ = discValue;
             }
+
+            /** Return the momentum of the recoil at the Ecal face. */
+            std::vector<double> getRecoilMomentum() { return { recoilPx_, recoilPy_, recoilPz_ }; }; 
+
+            /** Return the x position of the recoil at the Ecal face. */
+            double getRecoilX() { return recoilX_; }; 
+
+            /** Return the y position of the recoil at the Ecal face. */
+            double getRecoilY() { return recoilY_; };
+
         private:
 
             /** Flag indicating whether the event is vetoed by the Ecal. */
@@ -166,12 +192,27 @@ namespace ldmx {
             float showerRMS_{0};
             float discValue_{0};
 
+            /** px of recoil electron at the Ecal face. */
+            double recoilPx_{-9999};
+            
+            /** py of recoil electron at the Ecal face. */
+            double recoilPy_{-9999};
+            
+            /** py of recoil electron at the Ecal face. */
+            double recoilPz_{-9999};
+            
+            /** x position of recoil electron at the Ecal face. */
+            float recoilX_{-9999}; 
+            
+            /** y position of recoil electron at the Ecal face. */
+            float recoilY_{-9999}; 
+
             std::vector<float> ecalLayerEdepReadout_;
             std::vector<std::pair<int, float>> looseMipTracks_;
             std::vector<std::pair<int, float>> mediumMipTracks_;
             std::vector<std::pair<int, float>> tightMipTracks_;
 
-            ClassDef(EcalVetoResult, 2);
+            ClassDef(EcalVetoResult, 3);
     };
 }
 
