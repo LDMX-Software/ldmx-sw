@@ -1,3 +1,6 @@
+/persistency/gdml/read detector.gdml
+/run/initialize
+
 # OpenGL viewer
 /vis/open OGL 900x900-0+0
 
@@ -24,3 +27,5 @@
 
 # refresh the scene
 /vis/viewer/refresh
+
+/run/beamOn 1

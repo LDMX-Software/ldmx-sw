@@ -65,8 +65,13 @@ namespace ldmx {
         result_.setAlgoVar(2, endLayer_ - startLayer_);
 
         event.addToCollection("Trigger", result_);
-    }
 
+        // mark the event
+        if (pass) 
+            setStorageHint(hint_shouldKeep);
+        else 
+            setStorageHint(hint_shouldDrop);
+    }
 }
 
 DECLARE_PRODUCER_NS(ldmx, TriggerProcessor)

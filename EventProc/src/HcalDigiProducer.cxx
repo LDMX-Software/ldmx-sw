@@ -11,7 +11,7 @@
 
 #include <iostream>
 
-#include "DetDescr/DefaultDetectorID.h"
+#include "DetDescr/HcalID.h"
 #include "Event/SimCalorimeterHit.h"
 
 namespace ldmx {
@@ -28,7 +28,7 @@ namespace ldmx {
     }
 
     void HcalDigiProducer::configure(const ParameterSet& ps) {
-        detID_ = new DefaultDetectorID();
+        detID_ = new HcalID();
         random_ = new TRandom(ps.getInteger("randomSeed", 1000));
         meanNoise_ = ps.getDouble("meanNoise");
     }
@@ -50,7 +50,14 @@ namespace ldmx {
             if (verbose_)
                 std::cout << "detIDraw: " << detIDraw << std::endl;
             detID_->setRawValue(detIDraw);
-            detID_->unpack();
+            /*
+            auto values = detID_->unpack();
+            auto pos = simHit->getPosition();
+            std::cout << "hcal hit: [" << values[0] << "/" << values[1] << "/"
+                    << values[2] << "/" << values[3] << "] at ("
+                    << pos[0] << "," << pos[1] << "," << pos[2] << ")"
+                    << std::endl;
+            */
             int layer = detID_->getFieldValue("layer");
             if (verbose_)
                 std::cout << "layer: " << layer << std::endl;
