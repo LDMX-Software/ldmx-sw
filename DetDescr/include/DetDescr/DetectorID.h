@@ -86,7 +86,7 @@ namespace ldmx {
             RawValue pack();
 
             /**
-             * Get a field value by index.
+             * Decode and return a field's value from the raw ID.
              * @param i The index of the field value.
              */
             FieldValue getFieldValue(int i);
@@ -119,7 +119,7 @@ namespace ldmx {
             IDField* getField(const std::string& fieldName);
 
             /**
-             * Get a field's value by name.
+             * Decode and return a field's value by name (e.g. "layer").
              * @return The value of the field.
              */
             FieldValue getFieldValue(const std::string& fieldName);

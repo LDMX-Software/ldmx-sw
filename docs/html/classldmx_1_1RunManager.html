@@ -65,15 +65,16 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RunManager.html#a000bc6076164c98b4dbe10927623f557">InitializePhysics</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RunManager.html#aed6d5fb1fb8e98a94c488044608e023e">Initialize</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1DetectorConstruction.html">DetectorConstruction</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RunManager.html#a63555447878dccc848963ec510dee6d7">getDetectorConstruction</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RunManager.html#a332e153366d61be5104bfe7f892f775d">enableParallelWorld</a> (bool isPWEnabled)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RunManager.html#a177c3f461643c8744c1fb83d97c063c2">setParallelWorldPath</a> (std::string parallelWorldPath)</td></tr>
 <tr><td colspan="2"><h2><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1PluginMessenger.html">PluginMessenger</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">pluginMessenger_</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="classldmx_1_1PluginManager.html">PluginManager</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Extension of Geant4 run manager. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00028">28</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00032">32</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a3e0d4dcdeee9764132cdb4cc0a413fde"></a><!-- doxytag: member="ldmx::RunManager::RunManager" ref="a3e0d4dcdeee9764132cdb4cc0a413fde" args="()" -->
 <div class="memitem">
@@ -90,12 +91,13 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Class constructor. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00022">22</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00023">23</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
 
-<p>References <a class="el" href="RunManager_8h_source.html#l00070">pluginManager_</a>, and <a class="el" href="RunManager_8h_source.html#l00065">pluginMessenger_</a>.</p>
+<p>References <a class="el" href="RunManager_8h_source.html#l00075">pluginMessenger_</a>.</p>
 <div class="fragment"><pre class="fragment">                           {
-        <a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a> = <span class="keyword">new</span> PluginManager();
-        <a class="code" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">pluginMessenger_</a> = <span class="keyword">new</span> PluginMessenger(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);
+        pluginManager_ = <span class="keyword">new</span> PluginManager();
+        <a class="code" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">pluginMessenger_</a> = <span class="keyword">new</span> PluginMessenger(pluginManager_);
+        pwMessenger_ = <span class="keyword">new</span> ParallelWorldMessenger(<span class="keyword">this</span>);
     }
 </pre></div>
 </div>
@@ -115,17 +117,38 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Class destructor. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00027">27</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00029">29</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
 
-<p>References <a class="el" href="RunManager_8h_source.html#l00070">pluginManager_</a>, and <a class="el" href="RunManager_8h_source.html#l00065">pluginMessenger_</a>.</p>
+<p>References <a class="el" href="RunManager_8h_source.html#l00075">pluginMessenger_</a>.</p>
 <div class="fragment"><pre class="fragment">                            {
-        <span class="keyword">delete</span> <a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>;
+        <span class="keyword">delete</span> pluginManager_;
         <span class="keyword">delete</span> <a class="code" href="classldmx_1_1RunManager.html#a5c4e0754560b0bb9c30f3332459d6cc3">pluginMessenger_</a>;
     }
 </pre></div>
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a332e153366d61be5104bfe7f892f775d"></a><!-- doxytag: member="ldmx::RunManager::enableParallelWorld" ref="a332e153366d61be5104bfe7f892f775d" args="(bool isPWEnabled)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::RunManager::enableParallelWorld </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isPWEnabled</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Enable a parallel world. </p>
+
+<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00065">65</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
+<div class="fragment"><pre class="fragment">{ isPWEnabled_ = isPWEnabled; }
+</pre></div>
+</div>
+</div>
 <a class="anchor" id="a63555447878dccc848963ec510dee6d7"></a><!-- doxytag: member="ldmx::RunManager::getDetectorConstruction" ref="a63555447878dccc848963ec510dee6d7" args="()" -->
 <div class="memitem">
 <div class="memproto">
@@ -142,7 +165,9 @@ Private Attributes</h2></td></tr>
 <p>Get the user detector construction cast to a specific type. </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>The user detector construction. </dd></dl>
 
-<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00056">56</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00060">60</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
+
+<p>Referenced by <a class="el" href="RunManager_8cxx_source.html#l00067">Initialize()</a>.</p>
 <div class="fragment"><pre class="fragment">                                                            {
                 <span class="keywordflow">return</span> (DetectorConstruction*) this-&gt;userDetector;
             }
@@ -164,10 +189,21 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Perform application initialization. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00060">60</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00067">67</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
 
-<p>References <a class="el" href="RunManager_8h_source.html#l00070">pluginManager_</a>, and <a class="el" href="PluginManagerAccessor_8h_source.html#l00030">ldmx::PluginManagerAccessor::setPluginManager()</a>.</p>
+<p>References <a class="el" href="RunManager_8h_source.html#l00060">getDetectorConstruction()</a>, and <a class="el" href="PluginManagerAccessor_8h_source.html#l00030">ldmx::PluginManagerAccessor::setPluginManager()</a>.</p>
 <div class="fragment"><pre class="fragment">                                {
+        
+        
+        <span class="comment">// The parallel world needs to be registered before the mass world is</span>
+        <span class="comment">// constructed i.e. before G4RunManager::Initialize() is called. </span>
+        <span class="keywordflow">if</span> (isPWEnabled_) {
+            std::cout &lt;&lt; <span class="stringliteral">&quot;[ RunManager ]: Parallel worlds have been enabled.&quot;</span> &lt;&lt; std::endl;
+
+            G4GDMLParser* pwParser = <span class="keyword">new</span> G4GDMLParser();
+            pwParser-&gt;Read(parallelWorldPath_);
+            this-&gt;<a class="code" href="classldmx_1_1RunManager.html#a63555447878dccc848963ec510dee6d7">getDetectorConstruction</a>()-&gt;RegisterParallelWorld(<span class="keyword">new</span> ParallelWorld(pwParser, <span class="stringliteral">&quot;ldmxParallelWorld&quot;</span>));
+        }
 
         <a class="code" href="classldmx_1_1RunManager.html#aed6d5fb1fb8e98a94c488044608e023e">G4RunManager::Initialize</a>();
 
@@ -181,12 +217,12 @@ Private Attributes</h2></td></tr>
         SteppingAction* steppingAction = <span class="keyword">new</span> SteppingAction;
         UserStackingAction* stackingAction = <span class="keyword">new</span> UserStackingAction;
 
-        runAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);
-        eventAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);
-        trackingAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);
-        steppingAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);
-        stackingAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);
-        primaryGeneratorAction-&gt;setPluginManager(<a class="code" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">pluginManager_</a>);
+        runAction-&gt;setPluginManager(pluginManager_);
+        eventAction-&gt;setPluginManager(pluginManager_);
+        trackingAction-&gt;setPluginManager(pluginManager_);
+        steppingAction-&gt;setPluginManager(pluginManager_);
+        stackingAction-&gt;setPluginManager(pluginManager_);
+        primaryGeneratorAction-&gt;setPluginManager(pluginManager_);
 
         SetUserAction(runAction);
         SetUserAction(eventAction);
@@ -215,13 +251,18 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Initialize physics. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00032">32</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8cxx_source.html#l00034">34</a> of file <a class="el" href="RunManager_8cxx_source.html">RunManager.cxx</a>.</p>
 
 <p>References <a class="el" href="BiasingMessenger_8h_source.html#l00049">ldmx::BiasingMessenger::getParticleType()</a>, and <a class="el" href="BiasingMessenger_8h_source.html#l00037">ldmx::BiasingMessenger::isBiasingEnabled()</a>.</p>
 <div class="fragment"><pre class="fragment">                                       {
 
         G4VUserPhysicsList* thePhysicsList = <span class="keyword">new</span> FTFP_BERT;
         G4VModularPhysicsList* modularPhysicsList = <span class="keyword">dynamic_cast&lt;</span>G4VModularPhysicsList*<span class="keyword">&gt;</span>(thePhysicsList);
+
+        <span class="keywordflow">if</span> (isPWEnabled_) {
+            std::cout &lt;&lt; <span class="stringliteral">&quot;[ RunManager ]: Parallel worlds physics list has been registered.&quot;</span> &lt;&lt; std::endl;
+            modularPhysicsList-&gt;RegisterPhysics(<span class="keyword">new</span> G4ParallelWorldPhysics(<span class="stringliteral">&quot;ldmxParallelWorld&quot;</span>));
+        }
 
         modularPhysicsList-&gt;RegisterPhysics(<span class="keyword">new</span> APrimePhysics);
         modularPhysicsList-&gt;RegisterPhysics(<span class="keyword">new</span> GammaPhysics);
@@ -248,25 +289,30 @@ Private Attributes</h2></td></tr>
 </pre></div>
 </div>
 </div>
-<hr/><h2>Member Data Documentation</h2>
-<a class="anchor" id="a930c4b11c4eea416a011eeed2d978eef"></a><!-- doxytag: member="ldmx::RunManager::pluginManager_" ref="a930c4b11c4eea416a011eeed2d978eef" args="" -->
+<a class="anchor" id="a177c3f461643c8744c1fb83d97c063c2"></a><!-- doxytag: member="ldmx::RunManager::setParallelWorldPath" ref="a177c3f461643c8744c1fb83d97c063c2" args="(std::string parallelWorldPath)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classldmx_1_1PluginManager.html">PluginManager</a>* <a class="el" href="classldmx_1_1RunManager.html#a930c4b11c4eea416a011eeed2d978eef">ldmx::RunManager::pluginManager_</a><code> [private]</code></td>
+          <td class="memname">void ldmx::RunManager::setParallelWorldPath </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>parallelWorldPath</em></td><td>)</td>
+          <td><code> [inline]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Biasing messenger. Manager of sim plugins. </p>
+<p>Set the path to the GDML description of the parallel world. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00070">70</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
-
-<p>Referenced by <a class="el" href="RunManager_8cxx_source.html#l00060">Initialize()</a>, <a class="el" href="RunManager_8cxx_source.html#l00022">RunManager()</a>, and <a class="el" href="RunManager_8cxx_source.html#l00027">~RunManager()</a>.</p>
-
+<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00068">68</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
+<div class="fragment"><pre class="fragment">                                                                   {
+                parallelWorldPath_ = parallelWorldPath; 
+            }
+</pre></div>
 </div>
 </div>
+<hr/><h2>Member Data Documentation</h2>
 <a class="anchor" id="a5c4e0754560b0bb9c30f3332459d6cc3"></a><!-- doxytag: member="ldmx::RunManager::pluginMessenger_" ref="a5c4e0754560b0bb9c30f3332459d6cc3" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -277,11 +323,11 @@ Private Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>The plugin messenger. </p>
+<p>Plugin messenger. </p>
 
-<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00065">65</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
+<p>Definition at line <a class="el" href="RunManager_8h_source.html#l00075">75</a> of file <a class="el" href="RunManager_8h_source.html">RunManager.h</a>.</p>
 
-<p>Referenced by <a class="el" href="RunManager_8cxx_source.html#l00022">RunManager()</a>, and <a class="el" href="RunManager_8cxx_source.html#l00027">~RunManager()</a>.</p>
+<p>Referenced by <a class="el" href="RunManager_8cxx_source.html#l00023">RunManager()</a>, and <a class="el" href="RunManager_8cxx_source.html#l00029">~RunManager()</a>.</p>
 
 </div>
 </div>

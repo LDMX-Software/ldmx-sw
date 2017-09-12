@@ -45,8 +45,7 @@
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pri-methods">Private Member Functions</a> &#124;
-<a href="#pri-attribs">Private Attributes</a>  </div>
+<a href="#pri-methods">Private Member Functions</a>  </div>
   <div class="headertitle">
 <div class="title">ldmx::XsecBiasingOperator Class Reference</div>  </div>
 </div>
@@ -60,20 +59,21 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1XsecBiasingOperator.html#a9cc52bc54a1d566f1c1a424b083f8c3b">~XsecBiasingOperator</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1XsecBiasingOperator.html#a14451e0d127a6905dc30c8fc0968d68f">StartRun</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">G4VBiasingOperation *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1XsecBiasingOperator.html#ab4d5734cf7b657ff53b8bf6d94cd7749">ProposeOccurenceBiasingOperation</a> (const G4Track *track, const G4BiasingProcessInterface *callingProcess)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1XsecBiasingOperator.html#a22573609547a2f9c937229d9dfd6a060">biasAll</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1XsecBiasingOperator.html#a6658b6bdc462b6fcebd9998d9753d96e">biasIncident</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1XsecBiasingOperator.html#a0bab742aac84b0e453d4b688b8313fb0">setParticleType</a> (std::string particleType)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1XsecBiasingOperator.html#a7e97ac0924d8c6afd388bb0fb696d4ac">setProcess</a> (std::string process)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1XsecBiasingOperator.html#af29fd337c42c61060ddfc10e81d35dd2">setThreshold</a> (double threshold)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1XsecBiasingOperator.html#a24996c66de1fa9e0a1c87757d2575b93">setXsecFactor</a> (double xsecFactor)</td></tr>
 <tr><td colspan="2"><h2><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abd23de39239245cff6d60e14e38a7d5b"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::ProposeFinalStateBiasingOperation" ref="abd23de39239245cff6d60e14e38a7d5b" args="(const G4Track *, const G4BiasingProcessInterface *)" -->
-G4VBiasingOperation *&#160;</td><td class="memItemRight" valign="bottom"><b>ProposeFinalStateBiasingOperation</b> (const G4Track *, const G4BiasingProcessInterface *)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">G4VBiasingOperation *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1XsecBiasingOperator.html#abd23de39239245cff6d60e14e38a7d5b">ProposeFinalStateBiasingOperation</a> (const G4Track *, const G4BiasingProcessInterface *)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aabefdcd9ab7d299b7bc50c0c311c0720"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::ProposeNonPhysicsBiasingOperation" ref="aabefdcd9ab7d299b7bc50c0c311c0720" args="(const G4Track *, const G4BiasingProcessInterface *)" -->
 G4VBiasingOperation *&#160;</td><td class="memItemRight" valign="bottom"><b>ProposeNonPhysicsBiasingOperation</b> (const G4Track *, const G4BiasingProcessInterface *)</td></tr>
-<tr><td colspan="2"><h2><a name="pri-attribs"></a>
-Private Attributes</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1XsecBiasingOperator.html#a34458e24ad9cf767a139f8e562169ca3">process_</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1XsecBiasingOperator.html#a740420d0f84ebce545e89cb86be89d2e">xsecTrans_</a></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00033">33</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
+<p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00036">36</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="aecd6a970941ba77e681ae1326507afad"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::XsecBiasingOperator" ref="aecd6a970941ba77e681ae1326507afad" args="(std::string name)" -->
 <div class="memitem">
@@ -93,7 +93,8 @@ Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00013">13</a> of file <a class="el" href="XsecBiasingOperator_8cxx_source.html">XsecBiasingOperator.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                                           :
-        G4VBiasingOperator(name) { 
+        G4VBiasingOperator(name) {
+           messenger_ = <span class="keyword">new</span> XsecBiasingOperatorMessenger(<span class="keyword">this</span>);  
     }
 </pre></div>
 </div>
@@ -113,13 +114,84 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Destructor </p>
 
-<p>Definition at line <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00017">17</a> of file <a class="el" href="XsecBiasingOperator_8cxx_source.html">XsecBiasingOperator.cxx</a>.</p>
+<p>Definition at line <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00018">18</a> of file <a class="el" href="XsecBiasingOperator_8cxx_source.html">XsecBiasingOperator.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                              {
     }
 </pre></div>
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a22573609547a2f9c937229d9dfd6a060"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::biasAll" ref="a22573609547a2f9c937229d9dfd6a060" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::XsecBiasingOperator::biasAll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Bias all particles of the given type. </p>
+
+<p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00058">58</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
+<div class="fragment"><pre class="fragment">{ biasAll_ = <span class="keyword">true</span>; };
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="a6658b6bdc462b6fcebd9998d9753d96e"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::biasIncident" ref="a6658b6bdc462b6fcebd9998d9753d96e" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::XsecBiasingOperator::biasIncident </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Bias only the incident particle. </p>
+
+<p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00061">61</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
+<div class="fragment"><pre class="fragment">{ biasIncident_ = <span class="keyword">true</span>; };
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="abd23de39239245cff6d60e14e38a7d5b"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::ProposeFinalStateBiasingOperation" ref="abd23de39239245cff6d60e14e38a7d5b" args="(const G4Track *, const G4BiasingProcessInterface *)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">G4VBiasingOperation* ldmx::XsecBiasingOperator::ProposeFinalStateBiasingOperation </td>
+          <td>(</td>
+          <td class="paramtype">const G4Track *&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const G4BiasingProcessInterface *&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline, private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Cross-section biasing operation Messenger used to pass arguments to this operator. Flag indicating whether all particles should be biased. Flag indicating whether to bias only the incident particle. The particle type to bias. The process that the biasing will be applied to. The minimum energy required to apply the biasing operation. Factor to multiply the xsec by. </p>
+
+<p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00104">104</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
+<div class="fragment"><pre class="fragment">                                                      { <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }
+</pre></div>
+</div>
+</div>
 <a class="anchor" id="ab4d5734cf7b657ff53b8bf6d94cd7749"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::ProposeOccurenceBiasingOperation" ref="ab4d5734cf7b657ff53b8bf6d94cd7749" args="(const G4Track *track, const G4BiasingProcessInterface *callingProcess)" -->
 <div class="memitem">
 <div class="memproto">
@@ -146,25 +218,27 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <dl class="return"><dt><b>Returns:</b></dt><dd>Method that returns the biasing operation that will be used to bias the occurence of photonuclear events. </dd></dl>
 
-<p>Definition at line <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00045">45</a> of file <a class="el" href="XsecBiasingOperator_8cxx_source.html">XsecBiasingOperator.cxx</a>.</p>
-
-<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00058">ldmx::BiasingMessenger::getThreshold()</a>, <a class="el" href="XsecBiasingOperator_8h_source.html#l00057">process_</a>, and <a class="el" href="XsecBiasingOperator_8h_source.html#l00063">xsecTrans_</a>.</p>
+<p>Definition at line <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00053">53</a> of file <a class="el" href="XsecBiasingOperator_8cxx_source.html">XsecBiasingOperator.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                                   {
         <span class="comment">/*std::cout &lt;&lt; &quot;[ XsecBiasingOperator ]: &quot; </span>
 <span class="comment">                    &lt;&lt; &quot;Calling process: &quot; </span>
 <span class="comment">                    &lt;&lt; callingProcess-&gt;GetWrappedProcess()-&gt;GetProcessName() </span>
 <span class="comment">                    &lt;&lt; std::endl;*/</span>
 
-        <span class="keywordflow">if</span> (callingProcess-&gt;GetWrappedProcess()-&gt;GetProcessName().compareTo(<a class="code" href="classldmx_1_1XsecBiasingOperator.html#a34458e24ad9cf767a139f8e562169ca3">process_</a>) != 0) <span class="keywordflow">return</span> 0; 
+        <span class="keywordflow">if</span> (callingProcess-&gt;GetWrappedProcess()-&gt;GetProcessName().compareTo(process_) != 0) <span class="keywordflow">return</span> 0; 
 
         <span class="comment">/*std::cout &lt;&lt; &quot;[ XsecBiasingOperator ]: &quot;</span>
 <span class="comment">                    &lt;&lt; &quot;Parent ID: &quot; &lt;&lt; track-&gt;GetParentID() </span>
 <span class="comment">                    &lt;&lt; &quot; Created within &quot; &lt;&lt; track-&gt;GetLogicalVolumeAtVertex()-&gt;GetName() </span>
 <span class="comment">                    &lt;&lt; std::endl;*/</span>
+        
+        <span class="keywordflow">if</span> (biasIncident_ &amp;&amp; (track-&gt;GetParentID() != 0)) {
+            <span class="keywordflow">return</span> 0;
+        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!biasAll_ &amp;&amp; !biasIncident_ &amp;&amp; track-&gt;GetParentID() != 1) {
+            <span class="keywordflow">return</span> 0;
+        }
 
-        <span class="keywordflow">if</span> (track-&gt;GetParentID() != 1) <span class="keywordflow">return</span> 0;
-
-        <span class="keywordflow">if</span> (track-&gt;GetKineticEnergy() &lt; <a class="code" href="classldmx_1_1BiasingMessenger.html#af45ef502850e1eea8767a5b322307a0e">BiasingMessenger::getThreshold</a>()) <span class="keywordflow">return</span> 0; 
+        <span class="keywordflow">if</span> (track-&gt;GetKineticEnergy() &lt; threshold_) <span class="keywordflow">return</span> 0; 
 
         G4double interactionLength = callingProcess-&gt;GetWrappedProcess()-&gt;GetCurrentInteractionLength();
         <span class="comment">/*std::cout &lt;&lt; &quot;[ XsecBiasingOperator ]: &quot;</span>
@@ -178,13 +252,97 @@ Private Attributes</h2></td></tr>
 
         <span class="comment">/*std::cout &lt;&lt; &quot;[ XsecBiasingOperator ]: &quot;</span>
 <span class="comment">                    &lt;&lt; &quot;Cross-section x transformation factor: &quot; </span>
-<span class="comment">                    &lt;&lt; xsec*xsecTrans_ &lt;&lt; std::endl;*/</span>
+<span class="comment">                    &lt;&lt; xsec*xsecFactor_ &lt;&lt; std::endl;*/</span>
 
-        xsecOperation-&gt;SetBiasedCrossSection(xsec*<a class="code" href="classldmx_1_1XsecBiasingOperator.html#a740420d0f84ebce545e89cb86be89d2e">xsecTrans_</a>);
+        xsecOperation-&gt;SetBiasedCrossSection(xsec*xsecFactor_);
         xsecOperation-&gt;Sample();
 
         <span class="keywordflow">return</span> xsecOperation;
     }
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="a0bab742aac84b0e453d4b688b8313fb0"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::setParticleType" ref="a0bab742aac84b0e453d4b688b8313fb0" args="(std::string particleType)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::XsecBiasingOperator::setParticleType </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>particleType</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Set the particle type to bias. </p>
+
+<p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00064">64</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
+<div class="fragment"><pre class="fragment">{ particleType_ = particleType; };
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="a7e97ac0924d8c6afd388bb0fb696d4ac"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::setProcess" ref="a7e97ac0924d8c6afd388bb0fb696d4ac" args="(std::string process)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::XsecBiasingOperator::setProcess </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>process</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Set the process to bias. </p>
+
+<p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00067">67</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
+<div class="fragment"><pre class="fragment">{ process_ = process; };
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="af29fd337c42c61060ddfc10e81d35dd2"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::setThreshold" ref="af29fd337c42c61060ddfc10e81d35dd2" args="(double threshold)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::XsecBiasingOperator::setThreshold </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>threshold</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Set the minimum energy required to bias the particle. </p>
+
+<p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00070">70</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
+<div class="fragment"><pre class="fragment">{ threshold_ = threshold; };
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="a24996c66de1fa9e0a1c87757d2575b93"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::setXsecFactor" ref="a24996c66de1fa9e0a1c87757d2575b93" args="(double xsecFactor)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ldmx::XsecBiasingOperator::setXsecFactor </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xsecFactor</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Set the factor by which the xsec will be enhanced. </p>
+
+<p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00073">73</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
+<div class="fragment"><pre class="fragment">{ xsecFactor_ = xsecFactor; };
 </pre></div>
 </div>
 </div>
@@ -203,71 +361,39 @@ Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Method called at the beginning of a run. </p>
 
-<p>Definition at line <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00020">20</a> of file <a class="el" href="XsecBiasingOperator_8cxx_source.html">XsecBiasingOperator.cxx</a>.</p>
-
-<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00049">ldmx::BiasingMessenger::getParticleType()</a>, <a class="el" href="BiasingMessenger_8h_source.html#l00052">ldmx::BiasingMessenger::getProcess()</a>, <a class="el" href="BiasingMessenger_8h_source.html#l00064">ldmx::BiasingMessenger::getXsecTrans()</a>, <a class="el" href="XsecBiasingOperator_8h_source.html#l00057">process_</a>, and <a class="el" href="XsecBiasingOperator_8h_source.html#l00063">xsecTrans_</a>.</p>
+<p>Definition at line <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00021">21</a> of file <a class="el" href="XsecBiasingOperator_8cxx_source.html">XsecBiasingOperator.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                       { 
 
         G4ProcessManager* processManager{<span class="keyword">nullptr</span>}; 
-        <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1BiasingMessenger.html#a189d8ed75d9871054a26c1aec370f10f">BiasingMessenger::getParticleType</a>() == <span class="stringliteral">&quot;gamma&quot;</span>) { 
+        <span class="keywordflow">if</span> (particleType_.compare(<span class="stringliteral">&quot;gamma&quot;</span>) == 0) {
+            std::cout &lt;&lt; <span class="stringliteral">&quot;[ XsecBiasingOperator ]: &quot;</span>
+                      &lt;&lt; <span class="stringliteral">&quot;Applying biasing to particle type &quot;</span> 
+                      &lt;&lt; particleType_ 
+                      &lt;&lt; std::endl; 
             processManager = G4Gamma::GammaDefinition()-&gt;GetProcessManager();
+        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (particleType_.compare(<span class="stringliteral">&quot;e-&quot;</span>) == 0) { 
+            std::cout &lt;&lt; <span class="stringliteral">&quot;[ XsecBiasingOperator ]: &quot;</span>
+                      &lt;&lt; <span class="stringliteral">&quot;Applying biasing to particle type &quot;</span> 
+                      &lt;&lt; particleType_ 
+                      &lt;&lt; std::endl; 
+            processManager = G4Electron::ElectronDefinition()-&gt;GetProcessManager();
         } <span class="keywordflow">else</span> { 
             <span class="comment">// Throw an exception</span>
         }
 
-        <a class="code" href="classldmx_1_1XsecBiasingOperator.html#a34458e24ad9cf767a139f8e562169ca3">process_</a> = <a class="code" href="classldmx_1_1BiasingMessenger.html#a22d81c1b0e807e2df5ef690487487b5a">BiasingMessenger::getProcess</a>(); 
         <span class="comment">/*std::cout &lt;&lt; &quot;[ XsecBiasingOperator ]: &quot;&lt;&lt; &quot;Process: &quot; &lt;&lt; process_ &lt;&lt; std::endl;*/</span> 
         <span class="keyword">const</span> G4BiasingProcessSharedData* sharedData = G4BiasingProcessInterface::GetSharedData(processManager);
         <span class="keywordflow">if</span> (sharedData) {
             <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> index = 0 ; index &lt; (sharedData-&gt;GetPhysicsBiasingProcessInterfaces()).size(); ++index) {
                 <span class="keyword">const</span> G4BiasingProcessInterface* wrapperProcess = (sharedData-&gt;GetPhysicsBiasingProcessInterfaces())[index];
-                <span class="keywordflow">if</span> (wrapperProcess-&gt;GetWrappedProcess()-&gt;GetProcessName().compareTo(<a class="code" href="classldmx_1_1XsecBiasingOperator.html#a34458e24ad9cf767a139f8e562169ca3">process_</a>) == 0) { 
-                    xsecOperation = <span class="keyword">new</span> G4BOptnChangeCrossSection(<span class="stringliteral">&quot;changeXsec-&quot;</span> + <a class="code" href="classldmx_1_1XsecBiasingOperator.html#a34458e24ad9cf767a139f8e562169ca3">process_</a>);
+                <span class="keywordflow">if</span> (wrapperProcess-&gt;GetWrappedProcess()-&gt;GetProcessName().compareTo(process_) == 0) { 
+                    xsecOperation = <span class="keyword">new</span> G4BOptnChangeCrossSection(<span class="stringliteral">&quot;changeXsec-&quot;</span> + process_);
                     <span class="keywordflow">break</span>;
                 } 
             }
         }
-
-        <a class="code" href="classldmx_1_1XsecBiasingOperator.html#a740420d0f84ebce545e89cb86be89d2e">xsecTrans_</a> = <a class="code" href="classldmx_1_1BiasingMessenger.html#a2366df1a79f0526e60a5e38748bae2d2">BiasingMessenger::getXsecTrans</a>();
     }
 </pre></div>
-</div>
-</div>
-<hr/><h2>Member Data Documentation</h2>
-<a class="anchor" id="a34458e24ad9cf767a139f8e562169ca3"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::process_" ref="a34458e24ad9cf767a139f8e562169ca3" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string <a class="el" href="classldmx_1_1XsecBiasingOperator.html#a34458e24ad9cf767a139f8e562169ca3">ldmx::XsecBiasingOperator::process_</a><code> [private]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>Cross-section biasing operation The process that the biasing will be applied to. </p>
-
-<p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00057">57</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
-
-<p>Referenced by <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00045">ProposeOccurenceBiasingOperation()</a>, and <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00020">StartRun()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a740420d0f84ebce545e89cb86be89d2e"></a><!-- doxytag: member="ldmx::XsecBiasingOperator::xsecTrans_" ref="a740420d0f84ebce545e89cb86be89d2e" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double <a class="el" href="classldmx_1_1XsecBiasingOperator.html#a740420d0f84ebce545e89cb86be89d2e">ldmx::XsecBiasingOperator::xsecTrans_</a><code> [private]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>Factor to multiply the xsec by. </p>
-
-<p>Definition at line <a class="el" href="XsecBiasingOperator_8h_source.html#l00063">63</a> of file <a class="el" href="XsecBiasingOperator_8h_source.html">XsecBiasingOperator.h</a>.</p>
-
-<p>Referenced by <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00045">ProposeOccurenceBiasingOperation()</a>, and <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00020">StartRun()</a>.</p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>

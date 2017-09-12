@@ -68,7 +68,6 @@ Static Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1BiasingMessenger.html#a22d81c1b0e807e2df5ef690487487b5a">getProcess</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1BiasingMessenger.html#af45ef502850e1eea8767a5b322307a0e">getThreshold</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1BiasingMessenger.html#a51cf292ff1b90d687642564d68f70515">getVolume</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1BiasingMessenger.html#a2366df1a79f0526e60a5e38748bae2d2">getXsecTrans</a> ()</td></tr>
 <tr><td colspan="2"><h2><a name="pri-static-attribs"></a>
 Static Private Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1BiasingMessenger.html#a2fa4fd74cbb74b9fbb03e7de3251d3ba">biasingEnabled_</a></td></tr>
@@ -77,7 +76,6 @@ Static Private Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1BiasingMessenger.html#abbfc37b6f6090b4d5a48a1e2029c55a0">process_</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1BiasingMessenger.html#a5e83b6f7b1b5f4d2a581467c72f13f89">threshold_</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1BiasingMessenger.html#a34837db202ffe38eefba504f8756b752">volume_</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classldmx_1_1BiasingMessenger.html#aff31490ecc7a88fe8dcaa672ac24caf0">xsecTrans_</a></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock">
@@ -98,7 +96,7 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Constructor </p>
 
-<p>Definition at line <a class="el" href="BiasingMessenger_8cxx_source.html#l00026">26</a> of file <a class="el" href="BiasingMessenger_8cxx_source.html">BiasingMessenger.cxx</a>.</p>
+<p>Definition at line <a class="el" href="BiasingMessenger_8cxx_source.html#l00024">24</a> of file <a class="el" href="BiasingMessenger_8cxx_source.html">BiasingMessenger.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                       { 
 
         biasingDir_-&gt;SetGuidance(<span class="stringliteral">&quot;LDMX physics biasing commands.&quot;</span>);
@@ -128,7 +126,7 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Destructor </p>
 
-<p>Definition at line <a class="el" href="BiasingMessenger_8cxx_source.html#l00038">38</a> of file <a class="el" href="BiasingMessenger_8cxx_source.html">BiasingMessenger.cxx</a>.</p>
+<p>Definition at line <a class="el" href="BiasingMessenger_8cxx_source.html#l00036">36</a> of file <a class="el" href="BiasingMessenger_8cxx_source.html">BiasingMessenger.cxx</a>.</p>
 <div class="fragment"><pre class="fragment">                                        {
         <span class="keyword">delete</span> enableBiasingCmd_;
         <span class="keyword">delete</span> biasingDir_; 
@@ -154,9 +152,9 @@ Static Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00043">43</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
-<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00093">eventWeight_</a>.</p>
+<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00087">eventWeight_</a>.</p>
 
-<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00136">ldmx::RootPersistencyManager::writeHeader()</a>.</p>
+<p>Referenced by <a class="el" href="RootPersistencyManager_8cxx_source.html#l00137">ldmx::RootPersistencyManager::writeHeader()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1BiasingMessenger.html#a887e3dd4f4f140733a6890827f6c9a05">eventWeight_</a>; }; 
 </pre></div>
 </div>
@@ -178,9 +176,9 @@ Static Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00049">49</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
-<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00096">particleType_</a>.</p>
+<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00090">particleType_</a>.</p>
 
-<p>Referenced by <a class="el" href="RunManager_8cxx_source.html#l00032">ldmx::RunManager::InitializePhysics()</a>, and <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00020">ldmx::XsecBiasingOperator::StartRun()</a>.</p>
+<p>Referenced by <a class="el" href="RunManager_8cxx_source.html#l00034">ldmx::RunManager::InitializePhysics()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1BiasingMessenger.html#a93c8cfdbc115515f657e2c2c5ddc896b">particleType_</a>; };
 </pre></div>
 </div>
@@ -202,9 +200,9 @@ Static Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00052">52</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
-<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00099">process_</a>.</p>
+<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00093">process_</a>.</p>
 
-<p>Referenced by <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00020">ldmx::XsecBiasingOperator::StartRun()</a>, <a class="el" href="TargetProcessFilter_8cxx_source.html#l00058">ldmx::TargetProcessFilter::stepping()</a>, and <a class="el" href="EcalProcessFilter_8cxx_source.html#l00058">ldmx::EcalProcessFilter::stepping()</a>.</p>
+<p>Referenced by <a class="el" href="TargetProcessFilter_8cxx_source.html#l00058">ldmx::TargetProcessFilter::stepping()</a>, and <a class="el" href="EcalProcessFilter_8cxx_source.html#l00058">ldmx::EcalProcessFilter::stepping()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1BiasingMessenger.html#abbfc37b6f6090b4d5a48a1e2029c55a0">process_</a>; }; 
 </pre></div>
 </div>
@@ -226,9 +224,7 @@ Static Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00058">58</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
-<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00102">threshold_</a>.</p>
-
-<p>Referenced by <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00045">ldmx::XsecBiasingOperator::ProposeOccurenceBiasingOperation()</a>.</p>
+<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00096">threshold_</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1BiasingMessenger.html#a5e83b6f7b1b5f4d2a581467c72f13f89">threshold_</a>; }; 
 </pre></div>
 </div>
@@ -250,32 +246,8 @@ Static Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00061">61</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
-<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00105">volume_</a>.</p>
+<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00099">volume_</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1BiasingMessenger.html#a34837db202ffe38eefba504f8756b752">volume_</a>; };
-</pre></div>
-</div>
-</div>
-<a class="anchor" id="a2366df1a79f0526e60a5e38748bae2d2"></a><!-- doxytag: member="ldmx::BiasingMessenger::getXsecTrans" ref="a2366df1a79f0526e60a5e38748bae2d2" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">static double ldmx::BiasingMessenger::getXsecTrans </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td><code> [inline, static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>Get the factor by which the xsec is being multiplied by. </p>
-
-<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00064">64</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
-
-<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00108">xsecTrans_</a>.</p>
-
-<p>Referenced by <a class="el" href="XsecBiasingOperator_8cxx_source.html#l00020">ldmx::XsecBiasingOperator::StartRun()</a>.</p>
-<div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1BiasingMessenger.html#aff31490ecc7a88fe8dcaa672ac24caf0">xsecTrans_</a>; }; 
 </pre></div>
 </div>
 </div>
@@ -296,9 +268,9 @@ Static Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00037">37</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
-<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00064">biasingEnabled_</a>.</p>
+<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00061">biasingEnabled_</a>.</p>
 
-<p>Referenced by <a class="el" href="RunManager_8cxx_source.html#l00032">ldmx::RunManager::InitializePhysics()</a>, and <a class="el" href="RootPersistencyManager_8cxx_source.html#l00136">ldmx::RootPersistencyManager::writeHeader()</a>.</p>
+<p>Referenced by <a class="el" href="RunManager_8cxx_source.html#l00034">ldmx::RunManager::InitializePhysics()</a>, and <a class="el" href="RootPersistencyManager_8cxx_source.html#l00137">ldmx::RootPersistencyManager::writeHeader()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1BiasingMessenger.html#a2fa4fd74cbb74b9fbb03e7de3251d3ba">biasingEnabled_</a>; };
 </pre></div>
 </div>
@@ -321,9 +293,9 @@ Static Private Attributes</h2></td></tr>
 
 <p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00031">31</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
-<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00093">eventWeight_</a>.</p>
+<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00087">eventWeight_</a>.</p>
 
-<p>Referenced by <a class="el" href="TargetProcessFilter_8cxx_source.html#l00058">ldmx::TargetProcessFilter::stepping()</a>, and <a class="el" href="EcalProcessFilter_8cxx_source.html#l00058">ldmx::EcalProcessFilter::stepping()</a>.</p>
+<p>Referenced by <a class="el" href="TargetProcessFilter_8cxx_source.html#l00058">ldmx::TargetProcessFilter::stepping()</a>, <a class="el" href="SimpleProcessFilter_8cxx_source.html#l00027">ldmx::SimpleProcessFilter::stepping()</a>, and <a class="el" href="EcalProcessFilter_8cxx_source.html#l00058">ldmx::EcalProcessFilter::stepping()</a>.</p>
 <div class="fragment"><pre class="fragment">{ <a class="code" href="classldmx_1_1BiasingMessenger.html#a887e3dd4f4f140733a6890827f6c9a05">eventWeight_</a> = eventWeight; };
 </pre></div>
 </div>
@@ -353,9 +325,9 @@ Static Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="BiasingMessenger_8cxx_source.html#l00043">43</a> of file <a class="el" href="BiasingMessenger_8cxx_source.html">BiasingMessenger.cxx</a>.</p>
+<p>Definition at line <a class="el" href="BiasingMessenger_8cxx_source.html#l00041">41</a> of file <a class="el" href="BiasingMessenger_8cxx_source.html">BiasingMessenger.cxx</a>.</p>
 
-<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00064">biasingEnabled_</a>, <a class="el" href="BiasingMessenger_8h_source.html#l00096">particleType_</a>, <a class="el" href="BiasingMessenger_8h_source.html#l00099">process_</a>, <a class="el" href="BiasingMessenger_8h_source.html#l00102">threshold_</a>, <a class="el" href="BiasingMessenger_8h_source.html#l00105">volume_</a>, and <a class="el" href="BiasingMessenger_8h_source.html#l00108">xsecTrans_</a>.</p>
+<p>References <a class="el" href="BiasingMessenger_8h_source.html#l00061">biasingEnabled_</a>, <a class="el" href="BiasingMessenger_8h_source.html#l00090">particleType_</a>, <a class="el" href="BiasingMessenger_8h_source.html#l00093">process_</a>, <a class="el" href="BiasingMessenger_8h_source.html#l00096">threshold_</a>, and <a class="el" href="BiasingMessenger_8h_source.html#l00099">volume_</a>.</p>
 <div class="fragment"><pre class="fragment">                                                                               { 
 
         <span class="keywordflow">if</span> (command == enableBiasingCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#a2fa4fd74cbb74b9fbb03e7de3251d3ba">biasingEnabled_</a> = <span class="keyword">true</span>; 
@@ -363,7 +335,6 @@ Static Private Attributes</h2></td></tr>
         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == processCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#abbfc37b6f6090b4d5a48a1e2029c55a0">process_</a> = newValues;
         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == thresholdCmd_)<a class="code" href="classldmx_1_1BiasingMessenger.html#a5e83b6f7b1b5f4d2a581467c72f13f89">threshold_</a> = G4UIcommand::ConvertToDouble(newValues);
         <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == volumeCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#a34837db202ffe38eefba504f8756b752">volume_</a> = newValues;
-        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (command == xsecTransCmd_) <a class="code" href="classldmx_1_1BiasingMessenger.html#aff31490ecc7a88fe8dcaa672ac24caf0">xsecTrans_</a> = G4UIcommand::ConvertToDouble(newValues);
     }
 </pre></div>
 </div>
@@ -379,11 +350,11 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Directory containing all biasing commands. Command enabling biasing. Command allowing a user to specify what particle type to bias. Command allowing a user to specify what process to bias. Command allowing a user to specify an energy threshold. Command allowing a user to specify what volume the biasing should be attached to. Command allowing a user to specify by what factor the xsec of the process will be increased. Flag indicating if biasing is enabled </p>
+<p>Directory containing all biasing commands. Command enabling biasing. Command allowing a user to specify what particle type to bias. Command allowing a user to specify what process to bias. Command allowing a user to specify an energy threshold. Command allowing a user to specify what volume the biasing should be attached to. Flag indicating if biasing is enabled </p>
 
-<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00064">64</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00061">61</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
-<p>Referenced by <a class="el" href="BiasingMessenger_8h_source.html#l00037">isBiasingEnabled()</a>, and <a class="el" href="BiasingMessenger_8cxx_source.html#l00043">SetNewValue()</a>.</p>
+<p>Referenced by <a class="el" href="BiasingMessenger_8h_source.html#l00037">isBiasingEnabled()</a>, and <a class="el" href="BiasingMessenger_8cxx_source.html#l00041">SetNewValue()</a>.</p>
 
 </div>
 </div>
@@ -399,7 +370,7 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p><a class="el" href="classldmx_1_1Event.html" title="Defines an interface for accessing event data.">Event</a> weight corrected to account for biased cross-section. </p>
 
-<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00093">93</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00087">87</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
 <p>Referenced by <a class="el" href="BiasingMessenger_8h_source.html#l00043">getEventWeight()</a>, and <a class="el" href="BiasingMessenger_8h_source.html#l00031">setEventWeight()</a>.</p>
 
@@ -417,9 +388,9 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Particle specifies to bias. </p>
 
-<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00096">96</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00090">90</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
-<p>Referenced by <a class="el" href="BiasingMessenger_8h_source.html#l00049">getParticleType()</a>, and <a class="el" href="BiasingMessenger_8cxx_source.html#l00043">SetNewValue()</a>.</p>
+<p>Referenced by <a class="el" href="BiasingMessenger_8h_source.html#l00049">getParticleType()</a>, and <a class="el" href="BiasingMessenger_8cxx_source.html#l00041">SetNewValue()</a>.</p>
 
 </div>
 </div>
@@ -435,9 +406,9 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p><a class="el" href="classldmx_1_1Process.html" title="Class which represents the process under execution.">Process</a> to bias. </p>
 
-<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00099">99</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00093">93</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
-<p>Referenced by <a class="el" href="BiasingMessenger_8h_source.html#l00052">getProcess()</a>, and <a class="el" href="BiasingMessenger_8cxx_source.html#l00043">SetNewValue()</a>.</p>
+<p>Referenced by <a class="el" href="BiasingMessenger_8h_source.html#l00052">getProcess()</a>, and <a class="el" href="BiasingMessenger_8cxx_source.html#l00041">SetNewValue()</a>.</p>
 
 </div>
 </div>
@@ -453,9 +424,9 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Particle energy threshold. </p>
 
-<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00102">102</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00096">96</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
-<p>Referenced by <a class="el" href="BiasingMessenger_8h_source.html#l00058">getThreshold()</a>, and <a class="el" href="BiasingMessenger_8cxx_source.html#l00043">SetNewValue()</a>.</p>
+<p>Referenced by <a class="el" href="BiasingMessenger_8h_source.html#l00058">getThreshold()</a>, and <a class="el" href="BiasingMessenger_8cxx_source.html#l00041">SetNewValue()</a>.</p>
 
 </div>
 </div>
@@ -471,27 +442,9 @@ Static Private Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Volume to attach biasing to. </p>
 
-<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00105">105</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
+<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00099">99</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
 
-<p>Referenced by <a class="el" href="BiasingMessenger_8h_source.html#l00061">getVolume()</a>, and <a class="el" href="BiasingMessenger_8cxx_source.html#l00043">SetNewValue()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="aff31490ecc7a88fe8dcaa672ac24caf0"></a><!-- doxytag: member="ldmx::BiasingMessenger::xsecTrans_" ref="aff31490ecc7a88fe8dcaa672ac24caf0" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double <a class="el" href="classldmx_1_1BiasingMessenger.html#aff31490ecc7a88fe8dcaa672ac24caf0">ldmx::BiasingMessenger::xsecTrans_</a><code> [static, private]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>Factor to multiple the xsec by. </p>
-
-<p>Definition at line <a class="el" href="BiasingMessenger_8h_source.html#l00108">108</a> of file <a class="el" href="BiasingMessenger_8h_source.html">BiasingMessenger.h</a>.</p>
-
-<p>Referenced by <a class="el" href="BiasingMessenger_8h_source.html#l00064">getXsecTrans()</a>, and <a class="el" href="BiasingMessenger_8cxx_source.html#l00043">SetNewValue()</a>.</p>
+<p>Referenced by <a class="el" href="BiasingMessenger_8h_source.html#l00061">getVolume()</a>, and <a class="el" href="BiasingMessenger_8cxx_source.html#l00041">SetNewValue()</a>.</p>
 
 </div>
 </div>
