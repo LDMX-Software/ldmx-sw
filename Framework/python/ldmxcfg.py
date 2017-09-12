@@ -40,7 +40,23 @@ class Process:
         self.sequence=[]
         self.keep=[]
         self.libraries=[]
+        self.skimDefaultIsKeep=True
+        self.skimRules=[]
         Process.lastProcess=self
+
+    def skimDefaultIsSave(self):
+        self.skimDefaultIsKeep=True
+        
+    def skimDefaultIsDrop(self):
+        self.skimDefaultIsKeep=False
+
+    def skimConsider(self,namePat):
+        self.skimRules.append(namePat)
+        self.skimRules.append("")
+
+    def skimConsiderLabelled(self,namePat,labelPat):
+        self.skimRules.append(namePat)
+        self.skimRules.append(labelPat)
 
     def printMe(self):
         print "Process with pass name '%s'"%(self.passName)
@@ -63,6 +79,14 @@ class Process:
                     print "Output file:", self.outputFiles[0]
         elif len(self.outputFiles) > 0:
             print "Output file:", self.outputFiles[0]
+        print "Skim rules:"
+        if self.skimDefaultIsKeep: print " Default: keep the event"
+        else: print " Default: drop the event"
+        for i in range(0,len(self.skimRules)-1,2):
+            if self.skimRules[i+1]=="": 
+                print " Listen to hints from processors with names matching '%s'"%(self.skimRules[i])
+            else:
+                print " Listen to hints with labels matching '%s' from processors with names matching '%s'"%(self.skimRules[i+1],self.skimRules[i])
         if len(self.keep) > 0:
             print "Rules for keeping previous products:"
             for arule in self.keep:

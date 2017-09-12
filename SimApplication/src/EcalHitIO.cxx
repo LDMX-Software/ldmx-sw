@@ -43,7 +43,9 @@ namespace ldmx {
                 detID_.setRawValue(hitID);
                 detID_.unpack();
                 int cellID = detID_.getFieldValue("cell");
-                std::pair<float, float> XYPair = hexReadout_.getCellCentroidXYPair(cellID);
+                int moduleID = detID_.getFieldValue("module_position");
+                int cellModuleID = hexReadout_.combineID(cellID,moduleID);
+                std::pair<double,double> XYPair = hexReadout_.getCellCenterAbsolute(cellModuleID);
                 simHit->setPosition(XYPair.first, XYPair.second, g4hit->getPosition().z());
 
                 hitMap[hitID] = simHit;

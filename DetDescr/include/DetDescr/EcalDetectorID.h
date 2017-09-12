@@ -24,8 +24,9 @@ namespace ldmx {
              * Adds a cell field and re-initializes the ID.
              */
             EcalDetectorID() {
-                this->getFieldList()->push_back(new IDField("cell", 2, 12, 31));
-                init();
+	      this->getFieldList()->push_back(new IDField("module_position", 2, 12, 14)); 
+	      this->getFieldList()->push_back(new IDField("cell", 3, 15, 31));
+	      init();
             }
 
             /**
@@ -33,7 +34,7 @@ namespace ldmx {
              * @return The value of the cell field.
              */
             int getCellID() {
-                return this->getFieldValue(2);
+	      return this->getFieldValue(3);
             }
     };
 

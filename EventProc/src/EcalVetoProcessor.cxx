@@ -8,7 +8,6 @@
 #include "TPython.h"
 
 // LDMX
-#include "DetDescr/EcalHexReadout.h"
 #include "Event/EcalHit.h"
 #include "Event/EventConstants.h"
 
@@ -130,21 +129,12 @@ namespace ldmx {
         cellMapTightIso_.resize(nEcalLayers_, std::map<int, float>());
     }
 
-    void EcalVetoProcessor::produce(Event& event) {
+    void EcalVetoProcessor::clearProcessor(){
         for (int i = 0; i < nEcalLayers_; i++) {
             cellMap_[i].clear();
             cellMapLooseIso_[i].clear();
             cellMapTightIso_[i].clear();
         }
-
-        // FIXME: These commands should go above the corresponding variables.
-        /* New expanded variable collection to help with background veto */
-        /* Loose isolated hits -- Any hit with no readout in nearest neighbors */
-        /* Any isolated hit that does have the event centroid as a nearest neighbor */
-        /* Loose tracks -- two consecutive layers w/ projected nearest neighbor loose isolated hits */
-        /* Medium tracks -- three consecutive layers w/ projected nearest neighbor loose isolated hits */
-        /* Tight tracks -- three consecutive layers w/ projected nearest neighbor tight isolated hits */
-
         looseMipTracks_.clear();
         mediumMipTracks_.clear();
         tightMipTracks_.clear();
@@ -168,6 +158,19 @@ namespace ldmx {
         std::fill(ecalLayerOuterRaw_.begin(), ecalLayerOuterRaw_.end(), 0);
         std::fill(ecalLayerOuterReadout_.begin(), ecalLayerOuterReadout_.end(), 0);
         std::fill(ecalLayerTime_.begin(), ecalLayerTime_.end(), 0);
+    }
+
+    void EcalVetoProcessor::produce(Event& event) {
+        result_.Clear();
+        clearProcessor();
+
+        // FIXME: These commands should go above the corresponding variables.
+        /* New expanded variable collection to help with background veto */
+        /* Loose isolated hits -- Any hit with no readout in nearest neighbors */
+        /* Any isolated hit that does have the event centroid as a nearest neighbor */
+        /* Loose tracks -- two consecutive layers w/ projected nearest neighbor loose isolated hits */
+        /* Medium tracks -- three consecutive layers w/ projected nearest neighbor loose isolated hits */
+        /* Tight tracks -- three consecutive layers w/ projected nearest neighbor tight isolated hits */
 
         // Get the collection of digitized Ecal hits from the event. 
         const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
@@ -199,8 +202,8 @@ namespace ldmx {
                 ecalLayerTime_[hit_pair.first] += (hit->getEnergy()) * hit->getTime();
             }
             //Check Outer
-            if (!(hexReadout_->isInShowerInnerRing(globalCentroid, hit_pair.second))
-                    && !(hexReadout_->isInShowerOuterRing(globalCentroid, hit_pair.second))
+            if (!(isInShowerInnerRing(globalCentroid, hit_pair.second))
+                    && !(isInShowerOuterRing(globalCentroid, hit_pair.second))
                     && !(hit_pair.second == globalCentroid)) {
 
                 ecalLayerOuterRaw_[hit_pair.first] += hit->getEnergy();
@@ -256,9 +259,53 @@ namespace ldmx {
         fillMipTracks(looseIsoCopy, mediumMipTracks_, trackLen);
         fillMipTracks(cellMapTightIso_, tightMipTracks_, trackLen);
 
+        // Get the collection of Ecal scoring plane hits. If it doesn't exist,
+        // don't bother adding any truth tracking information.
+
+        std::vector<double> recoilP;
+        std::vector<float> recoilPos;
+
+        if (event.exists("EcalScoringPlaneHits")) {
+            const TClonesArray* ecalSpHits{event.getCollection("EcalScoringPlaneHits")};
+
+            // Loop through all of the sim particles and find the recoil 
+            // electron.
+            const TClonesArray* simParticles{event.getCollection("SimParticles")};
+            SimParticle* recoilElectron{nullptr}; 
+            for (int simParticleIndex = 0; simParticleIndex < simParticles->GetEntriesFast();
+                    ++simParticleIndex) { 
+                SimParticle* particle = static_cast<SimParticle*>(simParticles->At(simParticleIndex)); 
+
+                // We only care about the recoil electron
+                if ((particle->getPdgID() == 11) && (particle->getParentCount() == 0)) { 
+                    recoilElectron = particle;
+                    break;
+                } 
+            }
+
+            for (int ecalSpIndex = 0; ecalSpIndex < ecalSpHits->GetEntriesFast(); ++ecalSpIndex) {
+                SimTrackerHit* spHit =  static_cast<SimTrackerHit*>(ecalSpHits->At(ecalSpIndex)); 
+                
+                if (spHit->getLayerID() != 1) continue;
+                
+                SimParticle* spParticle = spHit->getSimParticle();
+                if (spParticle == recoilElectron) { 
+                    recoilP = spHit->getMomentum();
+                    recoilPos = spHit->getPosition();
+                    if (recoilP[2] <= 0) continue; 
+                    /*std::cout << "[ EcalVetoProcessor ]: " 
+                              << "Recoil momentum: [ " 
+                              << recoilP[0] 
+                              << ", " << recoilP[1]  
+                              << ", " << recoilP[2] << " ]" << std::endl;*/
+                    break;
+                } 
+            }
+        }
+
         result_.setVariables(nReadoutHits_, nLooseIsoHits_, nTightIsoHits_, summedDet_, summedOuter_, backSummedDet_,
                 summedLooseIso_, maxLooseIsoDep_, summedTightIso_, maxTightIsoDep_, maxCellDep_, showerRMS_,
-                ecalLayerEdepReadout_, looseMipTracks_, mediumMipTracks_, tightMipTracks_);
+                ecalLayerEdepReadout_, looseMipTracks_, mediumMipTracks_, tightMipTracks_, recoilP, recoilPos);
         if (doBdt_) {
             BDTHelper_->buildFeatureVector(bdtFeatures_, result_);
             float pred = BDTHelper_->getSinglePred(bdtFeatures_);
@@ -275,7 +322,9 @@ namespace ldmx {
         detID_.unpack();
         int layer = detID_.getFieldValue("layer");
         int cellid = detID_.getFieldValue("cell");
-        return (std::make_pair(layer, cellid));
+        int moduleid = detID_.getFieldValue("module_position");
+        int combinedid = cellid*10+moduleid;
+        return (std::make_pair(layer, combinedid));
     }
 
     /* Function to calculate the energy weighted shower centroid */
@@ -289,19 +338,19 @@ namespace ldmx {
             EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
             LayerCellPair hit_pair = hitToPair(hit);
             CellEnergyPair cell_energy_pair = std::make_pair(hit_pair.second, hit->getEnergy());
-            XYCoords centroidCoords = hexReadout_->getCellCentroidXYPair(hit_pair.second);
+            XYCoords centroidCoords = getCellCentroidXYPair(hit_pair.second);
             wgtCentroidCoords.first = wgtCentroidCoords.first + centroidCoords.first * cell_energy_pair.second;
             wgtCentroidCoords.second = wgtCentroidCoords.second + centroidCoords.second * cell_energy_pair.second;
             sumEdep += cell_energy_pair.second;
         }
-        wgtCentroidCoords.first = wgtCentroidCoords.first / sumEdep;
-        wgtCentroidCoords.second = wgtCentroidCoords.second / sumEdep;
+        wgtCentroidCoords.first = (sumEdep > 1E-6) ? wgtCentroidCoords.first / sumEdep : wgtCentroidCoords.first;
+        wgtCentroidCoords.second = (sumEdep > 1E-6) ? wgtCentroidCoords.second / sumEdep : wgtCentroidCoords.second;
         //Find Nearest Cell to Centroid
         float maxDist = 1e6;
         for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
             EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
             LayerCellPair hit_pair = hitToPair(hit);
-            XYCoords centroidCoords = hexReadout_->getCellCentroidXYPair(hit_pair.second);
+            XYCoords centroidCoords = getCellCentroidXYPair(hit_pair.second);
 
             float deltaR = pow(pow((centroidCoords.first - wgtCentroidCoords.first), 2) + pow((centroidCoords.second - wgtCentroidCoords.second), 2), .5);
             showerRMS += deltaR * hit->getEnergy();
@@ -343,13 +392,13 @@ namespace ldmx {
                     continue;
 
                 //Skip hits that are on centroid inner ring
-                if (hexReadout_->isInShowerInnerRing(globalCentroid, hit_pair.second)) {
+                if (isInShowerInnerRing(globalCentroid, hit_pair.second)) {
                     continue;
                 }
             }
 
             //Skip hits that have a readout neighbor
-            std::vector<int> cellNbrIds = hexReadout_->getInnerRingCellIds(hit_pair.second);
+            std::vector<int> cellNbrIds = getInnerRingCellIds(hit_pair.second);
 
             //Get neighboring cell id's and try to look them up in the full cell map (constant speed algo.)
             for (int k = 0; k < 6; k++) {
@@ -396,7 +445,7 @@ namespace ldmx {
                     for (auto matchCell : cellMapIso_[seedCellPair.first + 1]) {
                         matchCellDep = matchCell.second;
                         LayerCellPair tempMatchCellPair = std::make_pair(seedCellPair.first + 1, matchCell.first);
-                        if (tempMatchCellPair.second == seedCellPair.second || hexReadout_->isInShowerInnerRing(tempMatchCellPair.first, seedCellPair.second)) {
+                        if (tempMatchCellPair.second == seedCellPair.second || isInShowerInnerRing(tempMatchCellPair.second, seedCellPair.second)) {
                             matchCellPair = tempMatchCellPair;
                             break;
                         }
@@ -448,7 +497,7 @@ namespace ldmx {
                 int nextStartId = trackTuple[jTrack][1];
                 if (prevEndLayer + prevLen != nextStartLayer - 1)
                     break;
-                if (hexReadout_->isInShowerOuterRing(prevEndId, nextStartId)) {
+                if (isInShowerOuterRing(prevEndId, nextStartId)) {
                     trackVector[iTrack].second = trackVector[iTrack].second + trackVector[jTrack].second;
                     trackVector[iTrack].first = trackVector[iTrack].first + trackVector[jTrack].first;
                     trackTuple[iTrack][2] = trackTuple[jTrack][2];

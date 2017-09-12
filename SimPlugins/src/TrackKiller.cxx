@@ -8,15 +8,9 @@
 
 #include "SimPlugins/TrackKiller.h"
 
+SIM_PLUGIN(ldmx, TrackKiller)
+
 namespace ldmx {
-
-    extern "C" TrackKiller* createTrackKiller() {
-        return new TrackKiller;
-    }
-
-    extern "C" void destroyTrackKiller(TrackKiller* object) {
-        delete object;
-    }
 
     TrackKiller::TrackKiller() {
     }

@@ -99,16 +99,22 @@ namespace ldmx {
         /*
          * Set the 32-bit ID on the hit.
          */
-        int layerNumber = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
-        detID_->setFieldValue(1, layerNumber);
+        int copyNum = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
+        int layer = copyNum / 10;
+        int module = copyNum % 10;
+        detID_->setFieldValue(1, layer);
+        detID_->setFieldValue(2, module);
         hit->setID(detID_->pack());
-        hit->setLayerID(layerNumber);
+        hit->setLayerID(layer);
+        hit->setModuleID(module); 
 
         /*
          * Debug print.
          */
         if (this->verboseLevel > 2) {
-            std::cout << "Created new SimTrackerHit in detector " << this->GetName() << " with subdet ID " << subdetID_ << " and layer " << layerNumber << " ..." << std::endl;
+            std::cout << "Created SimTrackerHit in '" << this->GetName() << "' with subdet <" << subdetID_ 
+                      << ">, copyNum <" << copyNum << ">, layer <" << layer << ">, module <" << module << ">" 
+                      << std::endl;
             hit->Print();
             std::cout << std::endl;
         }

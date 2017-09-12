@@ -8,17 +8,11 @@
 
 #include "Biasing/TargetBremFilter.h"
 
+SIM_PLUGIN(ldmx, TargetBremFilter)
+
 namespace ldmx { 
 
     std::vector<G4Track*> TargetBremFilter::bremGammaTracks_ = {};
-
-    extern "C" TargetBremFilter* createTargetBremFilter() {
-        return new TargetBremFilter;
-    }
-
-    extern "C" void destroyTargetBremFilter(TargetBremFilter* object) {
-        delete object;
-    }
 
     TargetBremFilter::TargetBremFilter() {
         messenger_ = new TargetBremFilterMessenger(this);

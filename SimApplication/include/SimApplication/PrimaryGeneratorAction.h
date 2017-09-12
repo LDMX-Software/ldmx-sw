@@ -29,6 +29,7 @@
 //-------------//
 #include "SimPlugins/PluginManagerAccessor.h"
 #include "SimApplication/MultiParticleGunPrimaryGenerator.h"
+#include "SimApplication/RootPrimaryGenerator.h"
 #include "SimApplication/PrimaryGeneratorMessenger.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
 
@@ -82,6 +83,12 @@ namespace ldmx {
              */
             void setBeamspotYSize(double bssize){ beamspotYSize_ = bssize; };
 
+            /**
+             * Set beamspot size in z.
+             * @param beamspot size
+             */
+            void setBeamspotZSize(double bssize){ beamspotZSize_ = bssize; };
+
             /** Return the ith generator. */ 
             G4VPrimaryGenerator* getGenerator(int i){ return generator_.at(i); }
 
@@ -90,6 +97,7 @@ namespace ldmx {
              * generators.
              */
             int getIndexMPG(){ return indexMpg_; }
+            int getIndexRPG(){ return indexRpg_; }
 
         private:
 
@@ -119,8 +127,12 @@ namespace ldmx {
             /** Extent of the beamspot in y. */
             double beamspotYSize_{10.};   
 
+            /** Extent of the beamspot in y. */
+            double beamspotZSize_{1.};   
+
             /** The index of the last generator in the list of generators. */ 
             int indexMpg_{-1};          
+            int indexRpg_{-1};          
 
     };  // PrimaryGeneratorAction
 }
