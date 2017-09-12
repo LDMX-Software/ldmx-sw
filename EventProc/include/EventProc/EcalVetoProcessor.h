@@ -16,6 +16,7 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "Event/EcalVetoResult.h"
+#include "Event/SimTrackerHit.h"
 #include "Framework/EventProcessor.h"
 
 //C++
@@ -97,6 +98,7 @@ namespace ldmx {
                 return hexReadout_->getNNN(cellModuleID);
             }
 
+            void clearProcessor();
 
             LayerCellPair hitToPair(EcalHit* hit);
 

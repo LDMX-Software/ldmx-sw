@@ -14,6 +14,7 @@ namespace ldmx {
     void SimTrackerHit::Print(Option_t *option) const {
         std::cout << "SimTrackerHit { " << "id: " << id_ << ", " <<
                 "layerID: " << layerID_ << ", " <<
+                "moduleID: " << moduleID_ << ", " <<
                 "position: ( " << x_ << ", " << y_ << ", " << z_ << " ), " <<
                 "edep: " << edep_ << ", " <<
                 "time: " << time_ << ", " <<
@@ -26,6 +27,7 @@ namespace ldmx {
 
         id_ = 0;
         layerID_ = 0;
+        moduleID_ = 0;
         edep_ = 0;
         time_ = 0;
         px_ = 0;

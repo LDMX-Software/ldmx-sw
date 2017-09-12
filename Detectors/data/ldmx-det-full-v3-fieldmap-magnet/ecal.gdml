@@ -13,7 +13,7 @@
     <variable name="h_b" value="1"/>  
     <variable name="h_c" value="1"/>  
     <variable name="h_d" value="1"/>  
-    <variable name="hexagon_gap" value="0.01"/>
+    <variable name="hexagon_gap" value="0."/>
 
     <!-- longitudinal definitions -->
 
@@ -401,7 +401,7 @@
     <volume name="Si_volume">
       <materialref ref="G4_Si0x271c1c0"/>
       <solidref ref="Si_hexagon"/>
-      <auxiliary auxtype="SensDet" auxvalue="EcalSD1"/>
+      <auxiliary auxtype="SensDet" auxvalue="EcalSD"/>
     </volume>
 
     <volume name="em_calorimeters">
@@ -1334,7 +1334,7 @@
             <position name="CFMix_b_ring5_physvol1_pos" unit="mm" x="sin(pi/3*(4))*(2.0*Hex_radius+hexagon_gap)" y="cos(pi/3*(4))*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz"/>
           </physvol>
 
-          <physvol name="Si_b_ring5_physvol1" copynumber="(b-1)*14+2*ecal_A_layers*7+21">
+          <physvol name="Si_b_ring5_physvol1" copynumber="(b-1)*14+2*ecal_A_layers*7+19">
             <volumeref ref="Si_volume"/>
             <position name="Si_b_ring5_physvol1_pos" unit="mm" x="sin(pi/3*(4))*(2.0*Hex_radius+hexagon_gap)" y="cos(pi/3*(4))*(2.0*Hex_radius+hexagon_gap)" z="(b-1)*layer_B_Thickness+layer_B_Start_pos+Air_dz+Wthick_B_dz+Air_dz+PCB_dz+CFMix_dz"/>
           </physvol>
@@ -2124,7 +2124,7 @@
             <position name="CFMix_d_ring3_physvol1_pos" unit="mm" x="sin(pi/3*(2))*(2.0*Hex_radius+hexagon_gap)" y="cos(pi/3*(2))*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz"/>
           </physvol>
 
-          <physvol name="Si_d_ring3_physvol1" copynumber="(d-1)*24+2*ecal_A_layers*7+2*ecal_B_layers*7+2*ecal_C_layers*7+17">
+          <physvol name="Si_d_ring3_physvol1" copynumber="(d-1)*14+2*ecal_A_layers*7+2*ecal_B_layers*7+2*ecal_C_layers*7+17">
             <volumeref ref="Si_volume"/>
             <position name="Si_d_ring3_physvol1_pos" unit="mm" x="sin(pi/3*(2))*(2.0*Hex_radius+hexagon_gap)" y="cos(pi/3*(2))*(2.0*Hex_radius+hexagon_gap)" z="(d-1)*layer_D_Thickness+layer_D_Start_pos+Air_dz+Wthick_D_dz+Air_dz+PCB_dz+CFMix_dz"/>
           </physvol>
@@ -2376,6 +2376,7 @@
 
       <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
       <auxiliary auxtype="VisAttributes" auxvalue="EcalVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="Ecal"/>
     </volume>
   </structure>
 

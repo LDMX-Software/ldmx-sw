@@ -7,12 +7,21 @@
 #ifndef SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 #define SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 
-// Geant4
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <algorithm>
+
+//------------//
+//   Geant4   //
+//------------//
 #include "G4PersistencyManager.hh"
 #include "G4PersistencyCenter.hh"
 #include "G4Run.hh"
 
-// LDMX
+//----------//
+//   LDMX   //
+//----------//
 #include "Event/Event.h"
 #include "Biasing/BiasingMessenger.h"
 #include "Framework/EventFile.h"
@@ -123,6 +132,16 @@ namespace ldmx {
                 compressionLevel_ = compressionLevel;
             }
 
+            /** 
+             * Drop the hits associated with the specified collection.
+             *
+             * @param collectionName The name of the collection whose hits
+             *                       should be dropped.
+             */
+            void dropCollection(std::string collectionName) { 
+                dropCollectionNames_.push_back(collectionName);  
+            }  
+
         private:
 
             /**
@@ -192,6 +211,9 @@ namespace ldmx {
             void writeRunHeader(const G4Run* aRun);
 
         private:
+
+            /** List of collections whose hits should be droppped. */
+            std::vector<std::string> dropCollectionNames_; 
 
             /**
              * The output file name.

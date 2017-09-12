@@ -42,6 +42,7 @@ namespace ldmx {
              */
             static const std::string ECAL_HIT;
             static const std::string HCAL_HIT;
+            static const std::string HCAL_STRIP_HIT;
             static const std::string SIM_PARTICLE;
             static const std::string SIM_CALORIMETER_HIT;
             static const std::string SIM_TRACKER_HIT;
