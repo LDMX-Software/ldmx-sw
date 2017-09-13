@@ -20,6 +20,13 @@
 
 namespace ldmx {
 
+    PnWeightProcessor::PnWeightProcessor(const std::string &name, Process &process) :
+        Producer(name, process) { 
+    }
+
+    PnWeightProcessor::~PnWeightProcessor() { 
+    }
+
     void PnWeightProcessor::configure(const ParameterSet& pSet) {
         wThreshold_ = pSet.getDouble("w_threshold");
         wTheta_ = pSet.getDouble("w_theta");
@@ -37,8 +44,8 @@ namespace ldmx {
     }
 
     void PnWeightProcessor::produce(Event& event) {
+        
         result_.Clear();
-        bool verb = false;
 
         // Get the collection of sim particles from the event.  If the 
         // collection of sim particles is empty, don't process the
@@ -57,19 +64,26 @@ namespace ldmx {
             // If the particle doesn't correspond to the recoil electron, 
             // continue to the next particle.
             if ((simParticle->getPdgID() == 11) && (simParticle->getParentCount() == 0)) {
-                if(verb) std::cout << "[ pnWeightProcessor ]: Recoil electron found." << std::endl;
+                //std::cout << "[ pnWeightProcessor ]: Recoil electron found." << std::endl;
                 recoilElectron = simParticle; 
                 break;
             }
         }
+        /*std::cout << "[ PnWeightProcessor ]: Recoil electron total daughters: " 
+                  << recoilElectron->getDaughterCount() 
+                  << std::endl;*/
 
         // Search for the PN gamma and use it to get the PN daughters.
-        // TODO: Improve 121 (hadronInelastic) check with processType=="photonNuclear" check
         SimParticle* pnGamma{nullptr};
         for (int daughterCount = 0; daughterCount < recoilElectron->getDaughterCount(); ++daughterCount) {
             SimParticle* daughter = recoilElectron->getDaughter(daughterCount);
-            if ((daughter->getDaughterCount() > 0) 
-                &&(daughter->getDaughter(0)->getProcessType() == 121)) {
+            /*std::cout << "[ PnWeightProcessor ]: Total daughters: "
+                      << daughter->getDaughterCount() 
+                      << std::endl;*/
+            if ((daughter->getDaughterCount() > 0) && 
+                    (daughter->getDaughter(0)->getProcessType() == SimParticle::ProcessType::photonNuclear)) {
+                /*std::cout << "[ PnWeightProcessor ]: Found PN gamma!"
+                          << std::endl;*/
                 pnGamma = daughter; 
                 break;
             }
@@ -78,7 +92,7 @@ namespace ldmx {
         // For PN biased events, there should always be a gamma that
         // underwent a PN reaction.
         if (pnGamma == nullptr) return; // throw a runtime exception 
-
+        
         double ke_nucleon = -10., theta_nucleon = -10., w_nucleon = -10., wfit_nucleon = -10., weight_nucleon = 1.;
         double ke_hard = -10., p_hard = -10., pz_hard = -10., w_hard = -10., theta_hard = -10.;
         int A_hard = -1, A_heavy = -1;
@@ -103,7 +117,7 @@ namespace ldmx {
             int nucA = (dauID > nucPrefix) ? 
                        (dauID % 10000) / 10 :
                        -1;
-            if(verb) std::cout << "Found daughter with nucleus weight: " << dauID << " " << nucA << std::endl;
+            //std::cout << "Found daughter with nucleus weight: " << dauID << " " << nucA << std::endl;
 
             // hardest proton or neutron
             if ((dauID == 2212 || dauID == 2112) && (ke > ke_nucleon)) {
@@ -160,16 +174,17 @@ namespace ldmx {
                            ke_dau, p_dau, pz_dau, w_dau, theta_dau, pdg_dau
                          );
 
+        /*
         if(verb) std::cout<<TString::Format(
                          "ke_nucleon %0.3f, theta_nucleon %0.3f, w_nucleon %0.3f, wfit_nucleon %0.3f, weight_nucleon %0.3f, ke_hard %0.3f, p_hard %0.3f, pz_hard %0.3f, w_hard %0.3f, theta_hard %0.3f, A_hard %d, ke_heavy %0.3f, p_heavy %0.3f, pz_heavy %0.3f, w_heavy %0.3f, theta_heavy %0.3f, A_heavy %d, ke_dau %0.3f, p_dau %0.3f, pz_dau %0.3f, w_dau %0.3f, theta_dau %0.3f, pdg_dau %d",
                           ke_nucleon, theta_nucleon, w_nucleon, wfit_nucleon, weight_nucleon,
                           ke_hard, p_hard, pz_hard, w_hard, theta_hard, A_hard,
                           ke_heavy, p_heavy, pz_heavy, w_heavy, theta_heavy, A_heavy,
                           ke_dau, p_dau, pz_dau, w_dau, theta_dau, pdg_dau
-                        ) << std::endl;
+                        ) << std::endl;*/
 
-        // Add the result to the collection     
-        event.addToCollection("pnWeight", result_);
+        // Add the result to the collection    
+        event.addToCollection("PNweight", result_);
     }
 
     double PnWeightProcessor::calculateFitW(double w) {
