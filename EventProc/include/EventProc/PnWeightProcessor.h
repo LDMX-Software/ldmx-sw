@@ -44,21 +44,22 @@ namespace ldmx {
 
     class PnWeightProcessor : public Producer {
         public:
-            PnWeightProcessor(const std::string& name, Process& process) :
-                Producer(name, process) {
-            }
+            
+            /** Constructor */
+            PnWeightProcessor(const std::string& name, Process& process);
 
-            virtual ~PnWeightProcessor() {}
+            /** Destructor */
+            ~PnWeightProcessor();
 
             /**
              *  Read in user-specified parameters
              */
-            virtual void configure(const ParameterSet& pSet);
+            void configure(const ParameterSet& pSet);
 
             /**
              *  Run the weight calculation and create a pnWeightResult
              */
-            virtual void produce(Event& event);
+            void produce(Event& event);
 
             /**
              * Calculate the fitted W
@@ -84,8 +85,6 @@ namespace ldmx {
 
         private:
         
-            bool verbose_{false}; 
-
             /**
              * File and histogram of W from unweighted PN events
              */
