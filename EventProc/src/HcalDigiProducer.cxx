@@ -135,7 +135,7 @@ namespace ldmx {
         } 
         
         
-        event.add("HcalDigis", hits_);
+        event.add("hcalDigis", hits_);
     }
 
 }
