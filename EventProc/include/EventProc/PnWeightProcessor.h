@@ -24,6 +24,8 @@
 //   C++ StdLib   //
 //----------------//
 #include <iostream>
+#include <cmath>
+#include <algorithm>
 
 //----------//
 //   LDMX   //
@@ -43,8 +45,19 @@
 namespace ldmx {
 
     class PnWeightProcessor : public Producer {
+
         public:
             
+            //---------------//
+            //   Constants   //
+            //---------------//
+
+            /** Proton PDG ID */
+            static const int PROTON_PDGID; 
+
+            /** Neutron PDG ID */
+            static const int NEUTRON_PDGID; 
+
             /** Constructor */
             PnWeightProcessor(const std::string& name, Process& process);
 
@@ -61,13 +74,7 @@ namespace ldmx {
              */
             void produce(Event& event);
 
-            /**
-             * Calculate the fitted W
-             *     W(fit) = exp(a+b*x)
-             * @param w Measured W.
-             * @return W(fit)
-             */
-            double calculateFitW(double w);
+            double calculateWeight(double w); 
 
             /**
              * Calculate the measured W defined as
@@ -81,20 +88,18 @@ namespace ldmx {
              * @param particle SimParticle used to calculate W.
              * @return W
              */
-            double calculateW(SimParticle* particle);
+            double calculateW(SimParticle* particle, double delta = 0.5);
 
         private:
         
             /**
              * File and histogram of W from unweighted PN events
              */
-            TFile * wFile;
-            TH1F * wHist;
+            //TFile * wFile;
+            //TH1F * wHist;
 
-            /**
-             * Threshold after which to apply W reweighting
-             */
-            double wThreshold_;
+            /** Threshold after which to apply W reweighting. */
+            double wThreshold_{1400 /* MeV */};
 
             /**
              * Use proton or neutron hists/fits for reweighting
@@ -104,7 +109,7 @@ namespace ldmx {
             /**
              * Minimum angle for backwards-going hadron
              */
-            double wTheta_;
+            double thetaThreshold_{100 /* degrees */};
 
             PnWeightResult result_;
     };
