@@ -35,31 +35,30 @@ namespace ldmx {
 
             /** Destructor */
             ~PnWeightResult();
-            
-            /** Return the fit W_p. */
-            double getFitW() { return fitW_; }
-
-            /** 
-             * Return the kinetic energy of the nucleon used to calculate W
-             *
-             */ 
-            double getKineticEnergy() { return ke_; }
-
-            /** Return the measured W */
-            double getMeasuredW() { return w_; }
            
-            /** Return the polar angle of the nucleon used to calculate W */
-            double getTheta() { return theta_; }
+            /** Get the kinetic energy of the hardest nucleon. */
+            double getHardestNucleonKe() const { return hardestNucleonKe_; }
+
+            /** Get the polar angle of the hardest nucleon. */
+            double getHardestNucleonTheta() const { return hardestNucleonTheta_; }
+
+            /** Get the W of the hardest nucleon. */
+            double getHardestNucleonW() const { return hardestNucleonW_; }
 
             /** Return the calcualted PN weight associated with this event. */
-            double getWeight() { return weight_; }
+            double getWeight() const { return weight_; }
 
-            /** Set the event weight and measured/fit w */
-           void setResult(double ke, double theta, double w, double fitW, double weight,
-                          double ke_hard,  double p_hard,  double pz_hard,  double w_hard,  double theta_hard, int A_hard,
-                          double ke_heavy, double p_heavy, double pz_heavy, double w_heavy, double theta_heavy, int A_heavy,
-                          double ke_dau,   double p_dau,   double pz_dau,   double w_dau,   double theta_dau, int pdg_dau
-                         );
+            /** Set the kinetic energy of the hardest nucleon. */
+            void setHardestNucleonKe(const double hardestNucleonKe) { hardestNucleonKe_ = hardestNucleonKe; } 
+            
+            /** Set the polar angle of the hardest nucleon. */
+            void setHardestNucleonTheta(const double hardestNucleonTheta) { hardestNucleonTheta_ = hardestNucleonTheta; }
+
+            /** Set the W of the hardest nucleon. */
+            void setHardestNucleonW(const double hardestNucleonW) { hardestNucleonW_ = hardestNucleonW; }
+
+            /** Set the PN weight associated with this event. */
+            void setWeight(const double weight) { weight_ = weight; }
 
             /** Reset the object. */
             void Clear(Option_t *option = "");
@@ -73,26 +72,25 @@ namespace ldmx {
 
             /** Print the object */
             void Print(Option_t *option = "") const;
-        
+
         private:
  
             /** Fit W */
             double fitW_{0.0};
 
-            /** Kinetic energy of nucleon used to calculate W */
-            double ke_{0.0};
-            
-            /** Measured W */
-            double w_{0.0}; 
+            /** Kinetic energy of the hardest nucleon. */
+            double hardestNucleonKe_{-9999};
+           
+            /** Polar angle of the hardest nucleon. */
+            double hardestNucleonTheta_{-9999}; 
 
-            /** Polar angle of nucleon used to calculate W */
-            double theta_{0.0}; 
+            /** W of the hardest nucleon. */
+            double hardestNucleonW_{-9999}; 
             
             /** Calculated PN weight */
-            double weight_{0.0};
+            double weight_{1.0};
 
-
-
+            /*
             // hardest nucleus
             double ke_hard_{0.};
             double p_hard_{0.};
@@ -116,8 +114,9 @@ namespace ldmx {
             double w_dau_{0.};
             double theta_dau_{0.};
             int pdg_dau_{0};
+            */
 
-            ClassDef(PnWeightResult, 3);
+            ClassDef(PnWeightResult, 1);
     };
 }
 
