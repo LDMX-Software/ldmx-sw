@@ -20,6 +20,10 @@
 
 namespace ldmx {
 
+    const int PnWeightProcessor::PROTON_PDGID = 2212;
+
+    const int PnWeightProcessor::NEUTRON_PDGID = 2112; 
+
     PnWeightProcessor::PnWeightProcessor(const std::string &name, Process &process) :
         Producer(name, process) { 
     }
@@ -29,18 +33,7 @@ namespace ldmx {
 
     void PnWeightProcessor::configure(const ParameterSet& pSet) {
         wThreshold_ = pSet.getDouble("w_threshold");
-        wTheta_ = pSet.getDouble("w_theta");
-        wPdgId_ = 2212; // demoted from pSet. use proton or neutron hists and fit curve.
-
-        // open data files
-        TString fName = "$LDMXSW_DIR/data/config/W_hists_Owen_Omar.root";
-        TString hName = "W_Omar_5GeV_Pb_";
-        hName += (wPdgId_ == 2212) ? "Protons" : "Neutrons";
-        wFile = TFile::Open(fName);
-        if(!wFile) throw std::invalid_argument(TString::Format("[PnWeightProcessor::configure] Cannot find data file %s",fName.Data()).Data());
-        wHist = (TH1F*)wFile->Get(hName);
-        if(!wHist) throw std::invalid_argument(TString::Format("[PnWeightProcessor::configure] Cannot hist %s in data file %s",hName.Data(),fName.Data()).Data());
-        std::cout << TString::Format("[PnWeightProcessor::configure] Hist %s from data file %s opened successfully",hName.Data(),fName.Data()) << std::endl;
+        thetaThreshold_ = pSet.getDouble("theta_threshold");
     }
 
     void PnWeightProcessor::produce(Event& event) {
@@ -50,7 +43,7 @@ namespace ldmx {
         // Get the collection of sim particles from the event.  If the 
         // collection of sim particles is empty, don't process the
         // event.
-        const TClonesArray *simParticles = event.getCollection("SimParticles");
+        const TClonesArray* simParticles = event.getCollection("SimParticles");
         if (simParticles->GetEntriesFast() == 0) return; 
 
         // Loop through all of the particles and search for the recoil electron
@@ -91,8 +84,64 @@ namespace ldmx {
 
         // For PN biased events, there should always be a gamma that
         // underwent a PN reaction.
-        if (pnGamma == nullptr) return; // throw a runtime exception 
+        if (pnGamma == nullptr) {
+            throw std::runtime_error("[ PnWeightProcessor ]: Event doesn't contain a PN Gamma."); 
+        }
+
+        double hardestNucleonKe = -9999;
+        double hardestNucleonTheta = -9999;
+        double hardestNucleonW = -9999; 
+        for (int pnDaughterCount = 0; pnDaughterCount < pnGamma->getDaughterCount(); ++pnDaughterCount) { 
+           
+            // Get a daughter of the PN gamma 
+            SimParticle* pnDaughter = pnGamma->getDaughter(pnDaughterCount);
+
+            // Calculate the kinetic energy
+            double ke = (pnDaughter->getEnergy() - pnDaughter->getMass());
+
+            // Calculate the momentum
+            double px = pnDaughter->getMomentum()[0];
+            double py = pnDaughter->getMomentum()[1];
+            double pz = pnDaughter->getMomentum()[2];
+            double p = sqrt(px*px + py*py + pz*pz); 
+
+            // Calculate the polar angle
+            double theta = acos(pz/p)*180.0/3.14159;
+
+            // Get the PDG ID of the daughter
+            long int pdgID = std::abs(pnDaughter->getPdgID());
+
+            double w = this->calculateW(pnDaughter); 
+
+            // Check if the daughter particle is a proton or neutron
+            if ((pdgID == PROTON_PDGID) || (pdgID == NEUTRON_PDGID)) { 
+                
+                // Find the nucleon with the greatest kinetic energy   
+                if (ke > hardestNucleonKe) { 
+                    hardestNucleonKe = ke;
+                    hardestNucleonTheta = theta;
+                    hardestNucleonW = w;  
+                }
+            }
+        }
         
+        // If the W of the hardest nucleon is above the threshold and the
+        // polar angle is above the angle threshold, reweight the event. 
+        // Otherwise, set the event weight to 1. 
+        double eventWeight = 1; 
+        if ((hardestNucleonW > wThreshold_) && (hardestNucleonTheta > thetaThreshold_)) {
+            eventWeight = 0;   
+        }
+
+        result_.setHardestNucleonKe(hardestNucleonKe); 
+        result_.setHardestNucleonTheta(hardestNucleonTheta); 
+        result_.setHardestNucleonW(hardestNucleonW); 
+        result_.setWeight(eventWeight); 
+
+        // Add the result to the collection    
+        event.addToCollection("PNweight", result_);
+
+        /* 
         double ke_nucleon = -10., theta_nucleon = -10., w_nucleon = -10., wfit_nucleon = -10., weight_nucleon = 1.;
         double ke_hard = -10., p_hard = -10., pz_hard = -10., w_hard = -10., theta_hard = -10.;
         int A_hard = -1, A_heavy = -1;
@@ -102,14 +151,6 @@ namespace ldmx {
 
        	SimParticle * sim_nucleon{nullptr}, * sim_hard{0}, * sim_heavy{0}, * sim_dau{0};
         for (int pnDaughterCount = 0; pnDaughterCount < pnGamma->getDaughterCount(); ++pnDaughterCount) { 
-            SimParticle* pnDaughter = pnGamma->getDaughter(pnDaughterCount);
-            double ke = (pnDaughter->getEnergy() - pnDaughter->getMass());
-            double px = pnDaughter->getMomentum()[0];
-            double py = pnDaughter->getMomentum()[1];
-            double pz = pnDaughter->getMomentum()[2];
-            double p = sqrt(px*px + py*py + pz*pz); 
-            double theta = acos(pz/p)*180.0/3.14159;
-            long int dauID = TMath::Abs(pnDaughter->getPdgID());
 
             long int nucPrefix = 1000000000;
 
@@ -119,12 +160,6 @@ namespace ldmx {
                        -1;
             //std::cout << "Found daughter with nucleus weight: " << dauID << " " << nucA << std::endl;
 
-            // hardest proton or neutron
-            if ((dauID == 2212 || dauID == 2112) && (ke > ke_nucleon)) {
-                ke_nucleon = ke;
-                sim_nucleon = pnDaughter;
-                theta_nucleon = theta;
-            }
             // hardest nucleus
             if ((dauID > nucPrefix) && (ke > ke_hard)) {
                 p_hard = p;
@@ -173,38 +208,22 @@ namespace ldmx {
                            ke_heavy, p_heavy, pz_heavy, w_heavy, theta_heavy, A_heavy,
                            ke_dau, p_dau, pz_dau, w_dau, theta_dau, pdg_dau
                          );
+        */
 
-        /*
-        if(verb) std::cout<<TString::Format(
-                         "ke_nucleon %0.3f, theta_nucleon %0.3f, w_nucleon %0.3f, wfit_nucleon %0.3f, weight_nucleon %0.3f, ke_hard %0.3f, p_hard %0.3f, pz_hard %0.3f, w_hard %0.3f, theta_hard %0.3f, A_hard %d, ke_heavy %0.3f, p_heavy %0.3f, pz_heavy %0.3f, w_heavy %0.3f, theta_heavy %0.3f, A_heavy %d, ke_dau %0.3f, p_dau %0.3f, pz_dau %0.3f, w_dau %0.3f, theta_dau %0.3f, pdg_dau %d",
-                          ke_nucleon, theta_nucleon, w_nucleon, wfit_nucleon, weight_nucleon,
-                          ke_hard, p_hard, pz_hard, w_hard, theta_hard, A_hard,
-                          ke_heavy, p_heavy, pz_heavy, w_heavy, theta_heavy, A_heavy,
-                          ke_dau, p_dau, pz_dau, w_dau, theta_dau, pdg_dau
-                        ) << std::endl;*/
-
-        // Add the result to the collection    
-        event.addToCollection("PNweight", result_);
     }
 
-    double PnWeightProcessor::calculateFitW(double w) {
-        if(wPdgId_ == 2212){
-          return exp(3.66141e+00+-8.14167e-03*w); // proton curve
-        }else if(wPdgId_ == 2112){
-          return exp(3.79133e+00+-8.33342e-03*w); // neutron curve
-        }else{
-          throw std::invalid_argument(TString::Format("[PnWeightProcessor::calculateFitW] invalid wPdgId_ value of %d, expected 2212 or 2112",wPdgId_).Data());
-        }
+    double PnWeightProcessor::calculateWeight(double w) {
+        return exp(8.281 - 0.01092*w)/exp(-1.296-0.001613*w); 
     }
 
-    double PnWeightProcessor::calculateW(SimParticle* particle) {
+    double PnWeightProcessor::calculateW(SimParticle* particle, double delta) {
         double px = particle->getMomentum()[0];
         double py = particle->getMomentum()[1];
         double pz = particle->getMomentum()[2];
         double p = sqrt(px*px + py*py + pz*pz); 
         double ke = particle->getEnergy() - particle->getMass();
 
-        return 0.5*(p + ke)*(1.12 - 0.5*(pz/p));
+        return 0.5*(p + ke)*(sqrt(1 + (delta*delta)) - delta*(pz/p));
     }
 }
 
