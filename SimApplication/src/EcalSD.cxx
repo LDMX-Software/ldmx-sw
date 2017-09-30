@@ -54,31 +54,31 @@ namespace ldmx {
         hit->setTime(aStep->GetTrack()->GetGlobalTime());
 
         // Create the ID for the hit.
-	int cpynum = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth_)->GetCopyNo();
-	int layerNumber;
-	layerNumber = int(cpynum/7);
-	int module_position = cpynum%7;
+        int cpynum = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetVolume(layerDepth_)->GetCopyNo();
+        int layerNumber;
+        layerNumber = int(cpynum/7);
+        int modulePosition = cpynum%7;
 
         int cellModuleID = hitMap_->getCellModuleID(hitPosition[0], hitPosition[1]);
-	int cellID = (hitMap_->separateID(cellModuleID)).first;
+        int cellID = (hitMap_->separateID(cellModuleID)).first;
         detID_->setFieldValue(1, layerNumber);
-        detID_->setFieldValue(2, module_position);
-	detID_->setFieldValue(3, cellID);
+        detID_->setFieldValue(2, modulePosition);
+        detID_->setFieldValue(3, cellID);
         hit->setID(detID_->pack());
 
-	// Set the track ID on the hit.
+        // Set the track ID on the hit.
         hit->setTrackID(aStep->GetTrack()->GetTrackID());
 
-	// Set the PDG code from the track.
+        // Set the PDG code from the track.
         hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
 
         if (this->verboseLevel > 2) {
-	    std::cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << subdet_ << " and layer " << layerNumber << " and cellid " << cellID << " module position " << module_position << " ...";
+            std::cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << subdet_ << " and layer " << layerNumber << " and cellid " << cellID << " module position " << modulePosition << " ...";
             hit->Print();
             std::cout << std::endl;
         }
 
-	// Insert the hit into the hits collection.
+        // Insert the hit into the hits collection.
         hitsCollection_->insert(hit);
 
         return true;

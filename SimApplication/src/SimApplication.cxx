@@ -4,6 +4,8 @@
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RunManager.h"
 #include "SimApplication/SimApplicationMessenger.h"
+#include "SimApplication/GDMLMessenger.h"
+#include "SimApplication/GDMLReadStructure.h"
 
 // STL
 #include <vector>
@@ -40,8 +42,13 @@ namespace ldmx {
         G4RunManager* runManager = new RunManager;
 
         // Setup GDML parser and messenger.
-        G4GDMLParser* parser = new G4GDMLParser();
-        G4UImessenger* gdmlMessenger = new G4GDMLMessenger(parser);
+        GDMLReadStructure* gdmlRead = new GDMLReadStructure;
+        G4GDMLParser* parser = new G4GDMLParser(gdmlRead);
+        parser->SetAddPointerToName(false);
+        parser->SetStripFlag(true);
+        G4UImessenger* g4gdmlMessenger = new G4GDMLMessenger(parser);
+        // Custom GDML messenger for exporting without pointers appended to names.
+        G4UImessenger* gdmlMessenger = new GDMLMessenger(parser, gdmlRead);
 
         // Create application messenger.
         new SimApplicationMessenger();
@@ -70,6 +77,7 @@ namespace ldmx {
             delete ui;
         }
 
+        delete g4gdmlMessenger;
         delete gdmlMessenger;
         delete parser;
         delete runManager;

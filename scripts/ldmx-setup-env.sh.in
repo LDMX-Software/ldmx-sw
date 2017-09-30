@@ -17,6 +17,9 @@ export LDMXSW_DIR=@CMAKE_INSTALL_PREFIX@
 # setup ROOT env
 . @ROOT_DIR@/bin/thisroot.sh
 
+# set variable pointing to installation dir
+export LDMXSW_DIR=@CMAKE_INSTALL_PREFIX@
+
 # set load library path for module libs
 export LD_LIBRARY_PATH=$LDMXSW_DIR/lib:@PYTHON_LIBRARY_DIR@:@XercesC_LIBRARY_DIR@:$LD_LIBRARY_PATH
 
