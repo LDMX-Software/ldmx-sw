@@ -92,19 +92,8 @@ namespace ldmx {
 
         private:
         
-            /**
-             * File and histogram of W from unweighted PN events
-             */
-            //TFile * wFile;
-            //TH1F * wHist;
-
             /** Threshold after which to apply W reweighting. */
             double wThreshold_{1400 /* MeV */};
-
-            /**
-             * Use proton or neutron hists/fits for reweighting
-             */
-            int wPdgId_;
 
             /**
              * Minimum angle for backwards-going hadron
