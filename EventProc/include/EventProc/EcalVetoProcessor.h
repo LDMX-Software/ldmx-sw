@@ -116,41 +116,32 @@ namespace ldmx {
                     std::vector<std::map<int, float>>& cellMapIso_,
                     bool doTight = false);
 
-            void fillMipTracks(std::vector<std::map<int, float>>& cellMapIso_,
-                    std::vector<std::pair<int, float>>& trackVector, int minTrackLen = 2);
-
         private:
 
             std::vector<std::map<int, float>> cellMap_;
-            std::vector<std::map<int, float>> cellMapLooseIso_;
             std::vector<std::map<int, float>> cellMapTightIso_;
 
             std::vector<float> ecalLayerEdepRaw_;
             std::vector<float> ecalLayerEdepReadout_;
-            std::vector<float> ecalLayerOuterRaw_;
-            std::vector<float> ecalLayerOuterReadout_;
             std::vector<float> ecalLayerTime_;
-
-            std::vector<std::pair<int, float>> looseMipTracks_;
-            std::vector<std::pair<int, float>> mediumMipTracks_;
-            std::vector<std::pair<int, float>> tightMipTracks_;
 
             int nEcalLayers_{0};
             int backEcalStartingLayer_{0};
             int nReadoutHits_{0};
-            int nLooseIsoHits_{0};
-            int nTightIsoHits_{0};
+            int deepestLayerHit_{0};
             int doBdt_{0};
 
             double summedDet_{0};
-            double summedOuter_{0};
-            double backSummedDet_{0};
-            double summedLooseIso_{0};
-            double maxLooseIsoDep_{0};
             double summedTightIso_{0};
-            double maxTightIsoDep_{0};
             double maxCellDep_{0};
             double showerRMS_{0};
+            double xStd_{0};
+            double yStd_{0};
+            double xMean_{0};
+            double yMean_{0};
+            double avgLayerHit_{0};
+            double stdLayerHit_{0};
+        
             double bdtCutVal_{0};
 
             EcalVetoResult result_;
