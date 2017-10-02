@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
+#include <stdlib.h>
 
 //-------------//
 //   ldmx-sw   //
@@ -96,6 +97,7 @@ int main(int argc, char* argv[]) {
     } catch (Exception& e) {
         std::cerr << "Framework Error [" << e.name() << "] : " << e.message() << std::endl;
         std::cerr << "  at " << e.module() << ":" << e.line() << " in " << e.function() << std::endl;
+        exit(EXIT_FAILURE);
     }
 
     return 0;

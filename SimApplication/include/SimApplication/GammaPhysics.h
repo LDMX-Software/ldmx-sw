@@ -5,7 +5,7 @@
  */
 
 #ifndef SIMAPPLICATION_GAMMAPHYSICS_H_
-#define SIMAPPLICATION_GAMMAPHYSICS_H 1_
+#define SIMAPPLICATION_GAMMAPHYSICS_H_
 
 // Geant4
 #include "G4VPhysicsConstructor.hh"

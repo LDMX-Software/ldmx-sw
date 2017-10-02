@@ -8,6 +8,7 @@
 
 using ldmx::IDField;
 using ldmx::DetectorID;
+using ldmx::FieldValueList;
 
 int main(int, const char* argv[])  {
 
@@ -30,7 +31,7 @@ int main(int, const char* argv[])  {
     std::cout << "rawValBits: " << rawValBits << std::endl;
 
     detID->setRawValue(rawVal);
-    const DetectorID::FieldValueList& fieldValues = detID->unpack();
+    const FieldValueList& fieldValues = detID->unpack();
 
     std::cout << "subdet: " << fieldValues[0] << std::endl;
     std::cout << "layer: " << fieldValues[1] << std::endl;
