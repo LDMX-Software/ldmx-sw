@@ -19,6 +19,10 @@ namespace ldmx {
     }
 
     void PhotonuclearXsecBiasingMessenger::SetNewValue(G4UIcommand *command, G4String newValue) {
+
+        // Handles verbose command.
+        UserActionPluginMessenger::SetNewValue(command, newValue);
+
         if (command == xsecFactorCmd_) {
             biasingPlugin_->setXsecBiasingFactor(std::stod(newValue));
         }
