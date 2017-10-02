@@ -30,6 +30,10 @@ namespace ldmx {
     }
 
     void EcalProcessFilterMessenger::SetNewValue(G4UIcommand* command, G4String newValue) {
+
+        // Handles verbose command.
+        UserActionPluginMessenger::SetNewValue(command, newValue);
+
         if (command == volumeCmd_) filter_->addVolume(newValue);
         else if (command == boundCmd_) filter_->addBoundingVolume(newValue); 
     }
