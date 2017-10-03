@@ -42,13 +42,8 @@ namespace ldmx {
 
             virtual void produce(Event& event);
 
-        private:
 
-            static const float FIRST_LAYER_ZPOS;
-            static const float LAYER_ZWIDTH;
-            static const int NUM_HCAL_LAYERS;
-            static const float MEV_PER_MIP;
-            static const float PE_PER_MIP;
+        private:
 
             TClonesArray* hits_{nullptr};
             TRandom* random_{0};
@@ -56,8 +51,11 @@ namespace ldmx {
             bool verbose_{false};
             DetectorID* detID_{nullptr};
 
-            float meanNoise_{0};
-            int nProcessed_{0};
+            double meanNoise_{0};
+            int    nProcessed_{0};
+            double mev_per_mip_{1.40};
+            double pe_per_mip_{13.5};
+            int    doStrip_{true};
     };
 
 }
