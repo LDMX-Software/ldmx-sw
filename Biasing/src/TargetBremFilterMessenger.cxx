@@ -44,6 +44,9 @@ namespace ldmx {
 
     void TargetBremFilterMessenger::SetNewValue(G4UIcommand* command, G4String newValue) {
         
+        // Handles verbose command.
+        UserActionPluginMessenger::SetNewValue(command, newValue);
+
         if (command == killRecoilCmd_) { 
             filter_->setKillRecoilElectron(true); 
         } else if (command == volumeCmd_) {
