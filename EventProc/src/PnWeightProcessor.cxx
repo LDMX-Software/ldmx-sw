@@ -213,7 +213,9 @@ namespace ldmx {
     }
 
     double PnWeightProcessor::calculateWeight(double w) {
-        return exp(8.281 - 0.01092*w)/exp(-1.296-0.001613*w); 
+        //return exp(8.281 - 0.01092*w)/exp(-1.296-0.001613*w); 
+        return exp(8.281 - 0.01092*w)/exp(-1.627-0.001732*w); 
+        //return (exp(4.063 - 0.003118*w)*(0.06282 (-4.937e-5)*w + (6.727e-9)*pow(w,2) + 6.078e/exp(-1.296-0.001613*w); 
     }
 
     double PnWeightProcessor::calculateW(SimParticle* particle, double delta) {
