@@ -39,6 +39,7 @@
 //----------//
 #include "TTree.h"
 #include "TFile.h"
+#include "TF1.h"
 #include "TH1F.h"
 #include "TClonesArray.h"
 
@@ -64,16 +65,13 @@ namespace ldmx {
             /** Destructor */
             ~PnWeightProcessor();
 
-            /**
-             *  Read in user-specified parameters
-             */
+            /** Read in user-specified parameters. */
             void configure(const ParameterSet& pSet);
 
-            /**
-             *  Run the weight calculation and create a pnWeightResult
-             */
+            /** Run the weight calculation and create a pnWeightResult. */
             void produce(Event& event);
 
+            /** Calculate the event weight. */
             double calculateWeight(double w); 
 
             /**
@@ -91,16 +89,22 @@ namespace ldmx {
             double calculateW(SimParticle* particle, double delta = 0.5);
 
         private:
-        
+    
+            /** Object used to persit weights. */
+            PnWeightResult result_;
+
             /** Threshold after which to apply W reweighting. */
             double wThreshold_{1400 /* MeV */};
 
-            /**
-             * Minimum angle for backwards-going hadron
-             */
+            /** Minimum angle for backwards-going hadron. */
             double thetaThreshold_{100 /* degrees */};
+            
+            /** Fit to lower slope of inclusive W (theta > 100) plot. */
+            TF1* lFit{new TF1{"lfit","exp([1]-[0]*x)", 950, 1150}};  
 
-            PnWeightResult result_;
+            /** Fit to high tail of inclusive W (theta > 100) plot. */
+            TF1* hFit{nullptr}; 
+                
     };
 }
 
