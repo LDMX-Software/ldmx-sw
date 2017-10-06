@@ -25,7 +25,15 @@ namespace ldmx {
     const int PnWeightProcessor::NEUTRON_PDGID = 2112; 
 
     PnWeightProcessor::PnWeightProcessor(const std::string &name, Process &process) :
-        Producer(name, process) { 
+        Producer(name, process) {
+
+            lFit->SetParameters(0.01093, 2.767); 
+
+            std::string func = "exp([1]-[0]*x)*([2]+[3]*x + [4]*pow(x,2)"; 
+            func += " + [5]*pow(x,3) + [6]*pow(x,4) + [7]*pow(x,5) + [8]*pow(x,6))"; 
+            hFit = new TF1("hfit", func.c_str(), 1150, 3700);
+            hFit->SetParameters(0.004134, 14.27, 6.478e-8, -9.464e-11, 
+                    2.676e-14, 1.633e-17, -6.301e-21, -1.616e-24, 7.393e-28);
     }
 
     PnWeightProcessor::~PnWeightProcessor() { 
@@ -115,7 +123,10 @@ namespace ldmx {
 
             // Check if the daughter particle is a proton or neutron
             if ((pdgID == PROTON_PDGID) || (pdgID == NEUTRON_PDGID)) { 
-                
+
+                // Add the W of the current nucleon the to inclusive collection.
+                result_.addW(w); 
+                            
                 // Find the nucleon with the greatest kinetic energy   
                 if (ke > hardestNucleonKe) { 
                     hardestNucleonKe = ke;
@@ -140,81 +151,12 @@ namespace ldmx {
 
         // Add the result to the collection    
         event.addToCollection("PNweight", result_);
-
-        /* 
-        double ke_nucleon = -10., theta_nucleon = -10., w_nucleon = -10., wfit_nucleon = -10., weight_nucleon = 1.;
-        double ke_hard = -10., p_hard = -10., pz_hard = -10., w_hard = -10., theta_hard = -10.;
-        int A_hard = -1, A_heavy = -1;
-        double ke_heavy = -10., p_heavy = -10., pz_heavy = -10., w_heavy = -10., theta_heavy = -10.;
-        double ke_dau = -10., p_dau = -10., pz_dau = -10., w_dau = -10., theta_dau = -10.;
-        int pdg_dau = -10;
-
-       	SimParticle * sim_nucleon{nullptr}, * sim_hard{0}, * sim_heavy{0}, * sim_dau{0};
-        for (int pnDaughterCount = 0; pnDaughterCount < pnGamma->getDaughterCount(); ++pnDaughterCount) { 
-
-            long int nucPrefix = 1000000000;
-
-            // if daughter is nucleus, extract A from pdgID=10LZZZAAAI
-            int nucA = (dauID > nucPrefix) ? 
-                       (dauID % 10000) / 10 :
-                       -1;
-            //std::cout << "Found daughter with nucleus weight: " << dauID << " " << nucA << std::endl;
-
-            // hardest nucleus
-            if ((dauID > nucPrefix) && (ke > ke_hard)) {
-                p_hard = p;
-                pz_hard = TMath::Abs(pz);
-                ke_hard = ke;
-                sim_hard = pnDaughter;
-                theta_hard = theta;
-                A_hard = nucA;
-            }
-            // heaviest nucleus
-            if ((dauID > nucPrefix) && (nucA > A_heavy)) {
-                p_heavy = p;
-                pz_heavy = TMath::Abs(pz);
-                ke_heavy = ke;
-                sim_heavy = pnDaughter;
-                theta_heavy = theta;
-                A_heavy = nucA;
-            }
-            // hardest daughter which is not a nucleus
-            if ((dauID < nucPrefix) && (ke > ke_dau)) {
-                p_dau = p;
-                pz_dau = TMath::Abs(pz);
-                ke_dau = ke;
-                sim_dau = pnDaughter;
-                theta_dau = theta;
-                pdg_dau = dauID;
-            }
-        }
-
-        // calculate W, fit value at W, hist value at W, weight value at W...
-        if(sim_nucleon) {
-          w_nucleon = this->calculateW(sim_nucleon);
-          if ((w_nucleon >= wThreshold_ ) && (theta_nucleon > wTheta_)) {
-              wfit_nucleon = this->calculateFitW(w_nucleon);
-              weight_nucleon = wfit_nucleon/wHist->Interpolate(w_nucleon);
-          }
-        }
-        if(sim_hard){ w_hard = this->calculateW(sim_hard); }
-        if(sim_heavy){ w_heavy = this->calculateW(sim_heavy); }
-        if(sim_dau){ w_dau = this->calculateW(sim_dau); }
-
-        // Set the resulting weight.
-        result_.setResult(
-                           ke_nucleon, theta_nucleon, w_nucleon, wfit_nucleon, weight_nucleon,
-                           ke_hard, p_hard, pz_hard, w_hard, theta_hard, A_hard,
-                           ke_heavy, p_heavy, pz_heavy, w_heavy, theta_heavy, A_heavy,
-                           ke_dau, p_dau, pz_dau, w_dau, theta_dau, pdg_dau
-                         );
-        */
-
     }
 
     double PnWeightProcessor::calculateWeight(double w) {
+        return lFit->Eval(w)/hFit->Eval(w); 
         //return exp(8.281 - 0.01092*w)/exp(-1.296-0.001613*w); 
-        return exp(8.281 - 0.01092*w)/exp(-1.627-0.001732*w); 
+        //return exp(8.281 - 0.01092*w)/exp(-1.627-0.001732*w); 
         //return (exp(4.063 - 0.003118*w)*(0.06282 (-4.937e-5)*w + (6.727e-9)*pow(w,2) + 6.078e/exp(-1.296-0.001613*w); 
     }
 
