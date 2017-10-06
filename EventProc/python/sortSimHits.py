@@ -14,7 +14,7 @@ hcalSimHitSort.parameters["outputCollection"]="SortedHcalSimHits"
 p = ldmxcfg.Process("sort")
 p.libraries.append("ldmx-sw-install/lib/libEventProc.so")
 
-p.sequence = [ecalSimHitSort,hcalSimHitSort,hcalSimHitFilter]
+p.sequence = [ecalSimHitSort,hcalSimHitSort]
 
 p.inputFiles = ["/nfs/slac/g/ldmx/data/mc/v2/4pt0_gev_electrons_ecal_photonuc_v2_fieldmap/4pt0_gev_electrons_ecal_photonuc_v2_fieldmap_10to6_04752.root"]
 p.outputFiles = ["recon_test.root"]
