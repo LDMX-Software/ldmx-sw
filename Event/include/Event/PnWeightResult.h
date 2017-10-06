@@ -48,6 +48,12 @@ namespace ldmx {
             /** Return the calcualted PN weight associated with this event. */
             double getWeight() const { return weight_; }
 
+            /** Return the collection of inclusive W values for the event. */
+            std::vector<double> getInclusiveW() { return w_; }
+
+            /** Add W to the inclusive collection of W's. */
+            void addW(double w) { w_.push_back(w); }
+
             /** Set the kinetic energy of the hardest nucleon. */
             void setHardestNucleonKe(const double hardestNucleonKe) { hardestNucleonKe_ = hardestNucleonKe; } 
             
@@ -74,9 +80,9 @@ namespace ldmx {
             void Print(Option_t *option = "") const;
 
         private:
- 
-            /** Fit W */
-            double fitW_{0.0};
+
+            /** W of all nucleons. */
+            std::vector<double> w_; 
 
             /** Kinetic energy of the hardest nucleon. */
             double hardestNucleonKe_{-9999};
@@ -89,32 +95,6 @@ namespace ldmx {
             
             /** Calculated PN weight */
             double weight_{1.0};
-
-            /*
-            // hardest nucleus
-            double ke_hard_{0.};
-            double p_hard_{0.};
-            double pz_hard_{0.};
-            double w_hard_{0.};
-            double theta_hard_{0.};
-            int A_hard_{0};
-
-            // heaviest nucleus
-            double ke_heavy_{0.};
-            double p_heavy_{0.};
-            double pz_heavy_{0.};
-            double w_heavy_{0.};
-            double theta_heavy_{0.};
-            int A_heavy_{0};
-
-            // hardest of any daughter except nucleus
-            double ke_dau_{0.};
-            double p_dau_{0.};
-            double pz_dau_{0.};
-            double w_dau_{0.};
-            double theta_dau_{0.};
-            int pdg_dau_{0};
-            */
 
             ClassDef(PnWeightResult, 1);
     };
