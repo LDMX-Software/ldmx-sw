@@ -1,20 +1,21 @@
 /**
- * @file pnWeightProcessor.h
- * @brief Processor that calculates pnWeight based on photonNuclear track 
- *        properties.
+ * @file PnWeightProcessor.cxx
+ * @brief Processor that calculates an event weight based on the kinematics of 
+ *        Photonuclear event.
  * @author Alex Patterson, UCSB
  * @author Omar Moreno, SLAC National Accelerator Laboratory
- *
  * @note
- * pnWeightProcessor calculates an event weight which is added to the 
- * collection as a pnWeight object. This weight is based on simParticles
- * arising from photonNuclear reactions, and is intended to correct
- * the simulation in the case of high-momentum, backwards-going nucleons
- * arising from those reactions.
- *   fit variable W_p = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p))
- *   where p_tot = sqrt(K^2 + 2*K*m)
- *           K = kinetic energy of nucleon at PN vertex
- *           p, p_z = momentum, z-component of nucleon at PN vertex
+ * PnWeightProcessor calculates an event weight which is persisted as a PnWeight
+ * object. This weight is based on the kinematics of a photonuclear reaction and 
+ * is intended to correct for the overproduction of events with high-momentum,
+ * backwards-going nucleons.  A weight is assigned to the event if the variable
+ *      W = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p))
+ *          p_tot = sqrt(K^2 + 2*K*m),
+ *          K = kinetic energy of nucleon at PN vertex
+ *          p, p_z = momentum, z-component of nucleon at PN vertex
+ * is above some threshold and the hardest nucleon in the event has a polar 
+ * angle > 100 degrees.  The W variable is calculated using the hardest 
+ * nucleon in the event.
  */
 
 #ifndef EVENTPROC_PNWEIGHTPROCESSOR_H_
