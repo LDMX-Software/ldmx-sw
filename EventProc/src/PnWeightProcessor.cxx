@@ -141,8 +141,9 @@ namespace ldmx {
         // Otherwise, set the event weight to 1. 
         double eventWeight = 1; 
         if ((hardestNucleonW > wThreshold_) && (hardestNucleonTheta > thetaThreshold_)) {
-            eventWeight = 0;   
+            eventWeight = calculateWeight(hardestNucleonW);   
         }
+        std::cout << "[ PnWeightProcessor ]: Event weight: " << eventWeight << std::endl;
 
         result_.setHardestNucleonKe(hardestNucleonKe); 
         result_.setHardestNucleonTheta(hardestNucleonTheta); 

@@ -94,7 +94,7 @@ namespace ldmx {
             PnWeightResult result_;
 
             /** Threshold after which to apply W reweighting. */
-            double wThreshold_{1400 /* MeV */};
+            double wThreshold_{1200 /* MeV */};
 
             /** Minimum angle for backwards-going hadron. */
             double thetaThreshold_{100 /* degrees */};
