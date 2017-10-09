@@ -261,6 +261,14 @@ namespace ldmx {
             result_.setVetoResult(pred > bdtCutVal_);
             result_.setDiscValue(pred);
             std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
+        
+            // If the event passes the veto, keep it. Otherwise, 
+            // drop the event.
+            if (result_.passesVeto()) { 
+                setStorageHint(hint_shouldKeep); 
+            } else { 
+                setStorageHint(hint_shouldDrop);
+            }
         }
         event.addToCollection("EcalVeto", result_);
     }
