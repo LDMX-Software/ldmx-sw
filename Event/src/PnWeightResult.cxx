@@ -20,41 +20,34 @@ namespace ldmx {
         Clear();
     }
 
-    void PnWeightResult::setResult(double fitWp, double ke, 
-                                   double measuredWp, double theta, 
-                                   double weight) {
-        
-        fitWp_ = fitWp;
-        ke_ = ke;  
-        measuredWp_ = measuredWp;
-        theta_ = theta; 
-        weight_ = weight;
-    }
-
     void PnWeightResult::Clear(Option_t *option) {
         TObject::Clear();
-        fitWp_ = 0.0;
-        ke_ = 0; 
-        measuredWp_ = 0.0;
-        theta_ = 0.0;
-        weight_ = 0.0;
+
+        w_.clear(); 
+
+        hardestNucleonKe_ = -9999;
+        hardestNucleonTheta_ = -9999;
+        hardestNucleonW_ = -9999; 
+        weight_ = 1.0; 
     }
 
     void PnWeightResult::Copy(TObject& object) const { 
         PnWeightResult& result = (PnWeightResult&) object; 
-        result.fitWp_ = fitWp_;
-        result.ke_ = ke_; 
-        result.theta_ = theta_;  
-        result.measuredWp_ = measuredWp_; 
+
+        result.w_ = w_; 
+
+        result.hardestNucleonKe_ = hardestNucleonKe_;
+        result.hardestNucleonTheta_ = hardestNucleonTheta_;
+        result.hardestNucleonW_ = hardestNucleonW_; 
         result.weight_ = weight_; 
+
     }
 
     void PnWeightResult::Print(Option_t *option) const {
-        std::cout << "[ PnWeightResult ]:\n" 
-                  << "\t W_p fit : "      << fitWp_ << "\n"
-                  << "\t PN daughter kinetic energy: " << ke_ << "\n"
-                  << "\t W_p measured : " << measuredWp_ << "\n"
-                  << "\t PN daughter polar angle: " << theta_ << "\n"
+        std::cout << "[ PnWeightResult ]:\n"
+                  << "\t Hardest nucleon KE: " << hardestNucleonKe_ << "\n"
+                  << "\t Hardest nucleon theta: " << hardestNucleonTheta_ << "\n"
+                  << "\t Hardest nucleon W: " << hardestNucleonW_ << "\n"
                   << "\t PN Weight : "    << weight_ << "\n" 
                   << std::endl;
     }
