@@ -1,20 +1,21 @@
 /**
- * @file pnWeightProcessor.h
- * @brief Processor that calculates pnWeight based on photonNuclear track 
- *        properties.
+ * @file PnWeightProcessor.cxx
+ * @brief Processor that calculates an event weight based on the kinematics of 
+ *        Photonuclear event.
  * @author Alex Patterson, UCSB
  * @author Omar Moreno, SLAC National Accelerator Laboratory
- *
  * @note
- * pnWeightProcessor calculates an event weight which is added to the 
- * collection as a pnWeight object. This weight is based on simParticles
- * arising from photonNuclear reactions, and is intended to correct
- * the simulation in the case of high-momentum, backwards-going nucleons
- * arising from those reactions.
- *   fit variable W_p = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p))
- *   where p_tot = sqrt(K^2 + 2*K*m)
- *           K = kinetic energy of nucleon at PN vertex
- *           p, p_z = momentum, z-component of nucleon at PN vertex
+ * PnWeightProcessor calculates an event weight which is persisted as a PnWeight
+ * object. This weight is based on the kinematics of a photonuclear reaction and 
+ * is intended to correct for the overproduction of events with high-momentum,
+ * backwards-going nucleons.  A weight is assigned to the event if the variable
+ *      W = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p))
+ *          p_tot = sqrt(K^2 + 2*K*m),
+ *          K = kinetic energy of nucleon at PN vertex
+ *          p, p_z = momentum, z-component of nucleon at PN vertex
+ * is above some threshold and the hardest nucleon in the event has a polar 
+ * angle > 100 degrees.  The W variable is calculated using the hardest 
+ * nucleon in the event.
  */
 
 #ifndef EVENTPROC_PNWEIGHTPROCESSOR_H_
@@ -24,6 +25,8 @@
 //   C++ StdLib   //
 //----------------//
 #include <iostream>
+#include <cmath>
+#include <algorithm>
 
 //----------//
 //   LDMX   //
@@ -35,62 +38,74 @@
 //----------//
 //   ROOT   //
 //----------//
+#include "TTree.h"
+#include "TFile.h"
+#include "TF1.h"
+#include "TH1F.h"
 #include "TClonesArray.h"
 
 namespace ldmx {
 
     class PnWeightProcessor : public Producer {
+
         public:
-            PnWeightProcessor(const std::string& name, Process& process) :
-                Producer(name, process) {
-            }
+            
+            //---------------//
+            //   Constants   //
+            //---------------//
 
-            virtual ~PnWeightProcessor() {}
+            /** Proton PDG ID */
+            static const int PROTON_PDGID; 
 
-            /**
-             *  Read in user-specified parameters
-             */
-            virtual void configure(const ParameterSet& pSet);
+            /** Neutron PDG ID */
+            static const int NEUTRON_PDGID; 
 
-            /**
-             *  Run the weight calculation and create a pnWeightResult
-             */
-            virtual void produce(Event& event);
+            /** Constructor */
+            PnWeightProcessor(const std::string& name, Process& process);
 
-            /**
-             * Calculate the fitted W_p defined as
-             *     W_p(fit) = c1*exp(c2*(W_p(measured) - c3))
-             * where
-             *     c1 = 1.78032e+04
-             *     c2 = -8.07561e-03
-             *     c3 = 7.91244e+02
-             * 
-             * @param wp Measured W_p.
-             * @return W_p(fit)
-             */
-            double calculateFitWp(double wp); 
+            /** Destructor */
+            ~PnWeightProcessor();
+
+            /** Read in user-specified parameters. */
+            void configure(const ParameterSet& pSet);
+
+            /** Run the weight calculation and create a pnWeightResult. */
+            void produce(Event& event);
+
+            /** Calculate the event weight. */
+            double calculateWeight(double w); 
 
             /**
-             * Calculate the measured W_p defined as
-             *     W_p(measured) = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p)) 
+             * Calculate the measured W defined as
+             *     W(measured) = 0.5*(p_tot + K)*(1.12-0.5*(p_z/p)) 
              * where 
              *     p is the total momentum of the particle
              *     K is its kinetic energy
              *     p_z is the z component of the momentum
-             * all defined at the vertex.
+             * all defined at the hardest PN vertex.
              *
-             * @param particle SimParticle used to calculate W_p.
-             * @return W_p 
+             * @param particle SimParticle used to calculate W.
+             * @return W
              */
-            double calculateWp(SimParticle* particle);
+            double calculateW(SimParticle* particle, double delta = 0.5);
 
         private:
-        
-            bool verbose_{false}; 
-
-            double wpThreshold_;
-
+    
+            /** Object used to persit weights. */
             PnWeightResult result_;
+
+            /** Threshold after which to apply W reweighting. */
+            double wThreshold_{1200 /* MeV */};
+
+            /** Minimum angle for backwards-going hadron. */
+            double thetaThreshold_{100 /* degrees */};
+            
+            /** Fit to lower slope of inclusive W (theta > 100) plot. */
+            TF1* lFit{new TF1{"lfit","exp([1]-[0]*x)", 950, 1150}};  
+
+            /** Fit to high tail of inclusive W (theta > 100) plot. */
+            TF1* hFit{nullptr}; 
+                
     };
 }
 
