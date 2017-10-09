@@ -157,14 +157,15 @@ namespace ldmx {
         }
         
         if (nReadoutHits_ > 0) {
-        avgLayerHit_ /= nReadoutHits_;
-        xMean_ /= nReadoutHits_;
-        yMean_ /= nReadoutHits_;
+            avgLayerHit_ /= nReadoutHits_;
+            xMean_ /= nReadoutHits_;
+            yMean_ /= nReadoutHits_;
         } else {
-        avgLayerHit_ = 0;
-        xMean_ = 0;
-        yMean_ = 0;
+            avgLayerHit_ = 0;
+            xMean_ = 0;
+            yMean_ = 0;
         }
+
         // Loop over hits a second time to find the standard deviations.
         for (int iHit = 0; iHit < nEcalHits; iHit++) {
             EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
@@ -177,13 +178,13 @@ namespace ldmx {
         }
         
         if (nReadoutHits_ > 0) {
-        xStd_ = sqrt (xStd_ / nReadoutHits_);
-        yStd_ = sqrt (yStd_ / nReadoutHits_);
-        stdLayerHit_ = sqrt (stdLayerHit_ / nReadoutHits_);
+            xStd_ = sqrt (xStd_ / nReadoutHits_);
+            yStd_ = sqrt (yStd_ / nReadoutHits_);
+            stdLayerHit_ = sqrt (stdLayerHit_ / nReadoutHits_);
         } else {
-        xStd_ = 0;
-        yStd_ = 0;
-        stdLayerHit_ = 0;
+            xStd_ = 0;
+            yStd_ = 0;
+            stdLayerHit_ = 0;
         }
         
         // end loop over sim hits
