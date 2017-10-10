@@ -51,6 +51,9 @@ namespace ldmx {
             /** Return the collection of inclusive W values for the event. */
             std::vector<double> getInclusiveW() { return w_; }
 
+            /** Add theta to the collection of theta's. */
+            void addTheta(double theta) { theta_.push_back(theta); }
+
             /** Add W to the inclusive collection of W's. */
             void addW(double w) { w_.push_back(w); }
 
@@ -80,6 +83,9 @@ namespace ldmx {
             void Print(Option_t *option = "") const;
 
         private:
+
+            /** Theta of all nucleons. */
+            std::vector<double> theta_; 
 
             /** W of all nucleons. */
             std::vector<double> w_; 
