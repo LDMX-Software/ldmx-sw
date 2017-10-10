@@ -126,9 +126,12 @@ namespace ldmx {
             // Check if the daughter particle is a proton or neutron
             if ((pdgID == PROTON_PDGID) || (pdgID == NEUTRON_PDGID)) { 
 
-                // Add the W of the current nucleon the to inclusive collection.
-                result_.addW(w); 
-                            
+                // Add the W of the current nucleon to the inclusive collection.
+                result_.addW(w);
+                
+                // Add the theta of the current nucleon to the inclusive collection. 
+                result_.addTheta(theta); 
+
                 // Find the nucleon with the greatest kinetic energy   
                 if (ke > hardestNucleonKe) { 
                     hardestNucleonKe = ke;
