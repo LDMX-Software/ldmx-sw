@@ -23,7 +23,7 @@ namespace ldmx {
     void PnWeightResult::Clear(Option_t *option) {
         TObject::Clear();
 
-        theta_clear(); 
+        theta_.clear(); 
         w_.clear(); 
 
         hardestNucleonKe_ = -9999;
