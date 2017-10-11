@@ -81,6 +81,12 @@ namespace ldmx {
              */
             void buildParticleMap(TrajectoryContainer* trajectories, TClonesArray* simParticleColl);
 
+            /**
+             * Add a SimParticle for each generated particle if no generated particle has been saved 
+             * @param simParticleColl The output SimParticle collection.
+             */
+            void saveGeneratedParticle(TClonesArray* simParticleColl);
+
         private:
 
             /** The map of track IDs to SimParticles. */

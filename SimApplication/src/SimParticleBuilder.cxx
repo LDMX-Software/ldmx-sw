@@ -13,6 +13,8 @@
 #include "G4Event.hh"
 #include "G4HCofThisEvent.hh"
 #include "G4VTrajectoryPoint.hh"
+#include "G4PrimaryVertex.hh"
+#include "G4PrimaryParticle.hh"
 
 namespace ldmx {
 
@@ -30,17 +32,24 @@ namespace ldmx {
 
         // Clear the output particle collection.
         outputParticleColl_->Clear("C");
-
-        // Get the trajectory container for the event.
+	
+	// Get the trajectory container for the event.
         TrajectoryContainer* trajectories = (TrajectoryContainer*) (const_cast<G4Event*>(currentEvent_))->GetTrajectoryContainer();
 
         // Create empty SimParticle objects and create the map of track ID to particles.
         buildParticleMap(trajectories, outputParticleColl_);
 
         // Fill information into the particles.
-        for (auto trajectory : *trajectories->GetVector()) {
-            buildSimParticle(static_cast<Trajectory*>(trajectory));
-        }
+        if (trajectories) {
+	   for (auto trajectory : *trajectories->GetVector()) {
+              buildSimParticle(static_cast<Trajectory*>(trajectory));
+           }
+	}
+
+	// Start by saving the generated particles into SimParticles
+	saveGeneratedParticle(outputParticleColl_);
+
+std::cout<<outputParticleColl_->GetEntries()<<std::endl;
 
         // Add the collection data to the output event.
         outputEvent->add("SimParticles", outputParticleColl_);
@@ -87,10 +96,43 @@ namespace ldmx {
             }
         }
     }
+    
+    void SimParticleBuilder::saveGeneratedParticle(TClonesArray* simParticleColl) {
+        
+        for (int iSim = 0; iSim < simParticleColl->GetEntries(); iSim++)
+	{ 
+            SimParticle* sim = (SimParticle*) simParticleColl->At(iSim);
+	    if (sim->getGenStatus()==1) return;	
+	}    
+	
+	for (int iv=0; iv<currentEvent_->GetNumberOfPrimaryVertex();++iv) { 	
+
+	   G4PrimaryVertex* primaryVertex = currentEvent_->GetPrimaryVertex(iv);
+	   for (int i=0; i<primaryVertex->GetNumberOfParticle();++i) { 	
+
+	      G4PrimaryParticle* primaryParticle = primaryVertex->GetPrimary(i);       
+
+	      SimParticle* simParticle = (SimParticle*) simParticleColl->ConstructedAt(simParticleColl->GetEntries());
+	      simParticle->setGenStatus(1);
+	      simParticle->setPdgID(primaryParticle->GetPDGcode());
+              simParticle->setCharge(primaryParticle->GetCharge());
+              simParticle->setMass(primaryParticle->GetMass());
+              simParticle->setEnergy(primaryParticle->GetTotalEnergy());
+	      simParticle->setTime(primaryVertex->GetT0());
+              simParticle->setProcessType(0); //set process to unknown for now
+              simParticle->setVertex(primaryVertex->GetX0(), primaryVertex->GetY0(), primaryVertex->GetZ0());
+              simParticle->setMomentum(primaryParticle->GetPx(),primaryParticle->GetPy(),primaryParticle->GetPz());
+              //not sure what to set those to
+              simParticle->setEndPointMomentum(0,0,0); 
+              simParticle->setEndPoint(0,0,0);           
+	   }
+	}
+    }
 
     void SimParticleBuilder::buildParticleMap(TrajectoryContainer* trajectories, TClonesArray* simParticleColl) {
         particleMap_.clear();
-        for (auto trajectory : *trajectories->GetVector()) {
+        if (trajectories==nullptr) return;
+	for (auto trajectory : *trajectories->GetVector()) {
             particleMap_[trajectory->GetTrackID()] = (SimParticle*) simParticleColl->ConstructedAt(simParticleColl->GetEntries());
         }
     }
