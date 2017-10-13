@@ -101,6 +101,9 @@ namespace ldmx {
         double hardestNucleonKe = -9999;
         double hardestNucleonTheta = -9999;
         double hardestNucleonW = -9999; 
+        double highestWNucleonKe = -9999;
+        double highestWNucleonTheta = -9999;
+        double highestWNucleonW = -9999; 
         for (int pnDaughterCount = 0; pnDaughterCount < pnGamma->getDaughterCount(); ++pnDaughterCount) { 
            
             // Get a daughter of the PN gamma 
@@ -138,20 +141,30 @@ namespace ldmx {
                     hardestNucleonTheta = theta;
                     hardestNucleonW = w;  
                 }
+                
+                // Find the nucleon with the highest W 
+                if (w > highestWNucleonW) { 
+                    highestWNucleonKe = ke;
+                    highestWNucleonTheta = theta;
+                    highestWNucleonW = w;  
+                }
             }
         }
-        
-        // If the W of the hardest nucleon is above the threshold and the
+       
+        // If the W of the highest W nucleon is above the threshold and the
         // polar angle is above the angle threshold, reweight the event. 
         // Otherwise, set the event weight to 1. 
         double eventWeight = 1; 
-        if ((hardestNucleonW > wThreshold_) && (hardestNucleonTheta > thetaThreshold_)) {
-            eventWeight = calculateWeight(hardestNucleonW);   
+        if ((highestWNucleonW > wThreshold_) && (highestWNucleonTheta > thetaThreshold_)) {
+            eventWeight = calculateWeight(highestWNucleonW);   
         }
 
         result_.setHardestNucleonKe(hardestNucleonKe); 
         result_.setHardestNucleonTheta(hardestNucleonTheta); 
         result_.setHardestNucleonW(hardestNucleonW); 
+        result_.setHighestWNucleonKe(highestWNucleonKe); 
+        result_.setHighestWNucleonTheta(highestWNucleonTheta); 
+        result_.setHighestWNucleonW(highestWNucleonW); 
         result_.setWeight(eventWeight); 
 
         // Add the result to the collection    
