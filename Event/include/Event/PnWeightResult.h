@@ -45,6 +45,15 @@ namespace ldmx {
             /** Get the W of the hardest nucleon. */
             double getHardestNucleonW() const { return hardestNucleonW_; }
 
+            /** Get the kinetic energy of the hardest nucleon. */
+            double getHighestWNucleonKe() const { return highestWNucleonKe_; }
+
+            /** Get the polar angle of the hardest nucleon. */
+            double getHighestWNucleonTheta() const { return highestWNucleonTheta_; }
+
+            /** Get the W of the hardest nucleon. */
+            double getHighestWNucleonW() const { return highestWNucleonW_; }
+
             /** Return the calcualted PN weight associated with this event. */
             double getWeight() const { return weight_; }
 
@@ -65,6 +74,15 @@ namespace ldmx {
 
             /** Set the W of the hardest nucleon. */
             void setHardestNucleonW(const double hardestNucleonW) { hardestNucleonW_ = hardestNucleonW; }
+
+            /** Set the kinetic energy of the hardest nucleon. */
+            void setHighestWNucleonKe(const double highestWNucleonKe) { highestWNucleonKe_ = highestWNucleonKe; } 
+            
+            /** Set the polar angle of the hardest nucleon. */
+            void setHighestWNucleonTheta(const double highestWNucleonTheta) { highestWNucleonTheta_ = highestWNucleonTheta; }
+
+            /** Set the W of the hardest nucleon. */
+            void setHighestWNucleonW(const double highestWNucleonW) { highestWNucleonW_ = highestWNucleonW; }
 
             /** Set the PN weight associated with this event. */
             void setWeight(const double weight) { weight_ = weight; }
@@ -98,7 +116,16 @@ namespace ldmx {
 
             /** W of the hardest nucleon. */
             double hardestNucleonW_{-9999}; 
-            
+
+            /** Kinetic energy of the nucleon with the highest W. */
+            double highestWNucleonKe_{-9999};
+           
+            /** Polar angle of the nucleon with the highest W. */
+            double highestWNucleonTheta_{-9999}; 
+
+            /** W of the nucleon with the highest W. */
+            double highestWNucleonW_{-9999}; 
+
             /** Calculated PN weight */
             double weight_{1.0};
 
