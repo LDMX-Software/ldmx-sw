@@ -29,6 +29,9 @@ namespace ldmx {
         hardestNucleonKe_ = -9999;
         hardestNucleonTheta_ = -9999;
         hardestNucleonW_ = -9999; 
+        highestWNucleonKe_ = -9999;
+        highestWNucleonTheta_ = -9999;
+        highestWNucleonW_ = -9999; 
         weight_ = 1.0; 
     }
 
@@ -41,6 +44,9 @@ namespace ldmx {
         result.hardestNucleonKe_ = hardestNucleonKe_;
         result.hardestNucleonTheta_ = hardestNucleonTheta_;
         result.hardestNucleonW_ = hardestNucleonW_; 
+        result.highestWNucleonKe_ = highestWNucleonKe_;
+        result.highestWNucleonTheta_ = highestWNucleonTheta_;
+        result.highestWNucleonW_ = highestWNucleonW_; 
         result.weight_ = weight_; 
 
     }
