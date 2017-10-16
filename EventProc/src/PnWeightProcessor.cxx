@@ -29,13 +29,13 @@ namespace ldmx {
     PnWeightProcessor::PnWeightProcessor(const std::string &name, Process &process) :
         Producer(name, process) {
 
-            lFit->SetParameters(0.01093, 2.767); 
+            lFit->SetParameters(0.01093, 2.766); 
 
             std::string func = "exp([1]-[0]*x)*([2]+[3]*x + [4]*pow(x,2)"; 
             func += " + [5]*pow(x,3) + [6]*pow(x,4) + [7]*pow(x,5) + [8]*pow(x,6))"; 
             hFit = new TF1("hfit", func.c_str(), 1150, 3700);
-            hFit->SetParameters(0.004134, 14.27, 6.478e-8, -9.464e-11, 
-                    2.676e-14, 1.633e-17, -6.301e-21, -1.616e-24, 7.393e-28);
+            hFit->SetParameters(0.004008, 11.23, 1.242e-6, -1.964e-9, 
+                    8.243e-13, 9.333e-17, -7.584e-20, -1.991e-23, 9.757e-27);
     }
 
     PnWeightProcessor::~PnWeightProcessor() { 
@@ -101,6 +101,9 @@ namespace ldmx {
         double hardestNucleonKe = -9999;
         double hardestNucleonTheta = -9999;
         double hardestNucleonW = -9999; 
+        double highestWNucleonKe = -9999;
+        double highestWNucleonTheta = -9999;
+        double highestWNucleonW = -9999; 
         for (int pnDaughterCount = 0; pnDaughterCount < pnGamma->getDaughterCount(); ++pnDaughterCount) { 
            
             // Get a daughter of the PN gamma 
@@ -126,29 +129,42 @@ namespace ldmx {
             // Check if the daughter particle is a proton or neutron
             if ((pdgID == PROTON_PDGID) || (pdgID == NEUTRON_PDGID)) { 
 
-                // Add the W of the current nucleon the to inclusive collection.
-                result_.addW(w); 
-                            
+                // Add the W of the current nucleon to the inclusive collection.
+                result_.addW(w);
+                
+                // Add the theta of the current nucleon to the inclusive collection. 
+                result_.addTheta(theta); 
+
                 // Find the nucleon with the greatest kinetic energy   
                 if (ke > hardestNucleonKe) { 
                     hardestNucleonKe = ke;
                     hardestNucleonTheta = theta;
                     hardestNucleonW = w;  
                 }
+                
+                // Find the nucleon with the highest W 
+                if (w > highestWNucleonW) { 
+                    highestWNucleonKe = ke;
+                    highestWNucleonTheta = theta;
+                    highestWNucleonW = w;  
+                }
             }
         }
-        
-        // If the W of the hardest nucleon is above the threshold and the
+       
+        // If the W of the highest W nucleon is above the threshold and the
         // polar angle is above the angle threshold, reweight the event. 
         // Otherwise, set the event weight to 1. 
         double eventWeight = 1; 
-        if ((hardestNucleonW > wThreshold_) && (hardestNucleonTheta > thetaThreshold_)) {
-            eventWeight = calculateWeight(hardestNucleonW);   
+        if ((highestWNucleonW > wThreshold_) && (highestWNucleonTheta > thetaThreshold_)) {
+            eventWeight = calculateWeight(highestWNucleonW);   
         }
 
         result_.setHardestNucleonKe(hardestNucleonKe); 
         result_.setHardestNucleonTheta(hardestNucleonTheta); 
         result_.setHardestNucleonW(hardestNucleonW); 
+        result_.setHighestWNucleonKe(highestWNucleonKe); 
+        result_.setHighestWNucleonTheta(highestWNucleonTheta); 
+        result_.setHighestWNucleonW(highestWNucleonW); 
         result_.setWeight(eventWeight); 
 
         // Add the result to the collection    
