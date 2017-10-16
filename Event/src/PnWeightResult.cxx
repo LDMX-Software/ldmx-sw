@@ -23,22 +23,30 @@ namespace ldmx {
     void PnWeightResult::Clear(Option_t *option) {
         TObject::Clear();
 
+        theta_.clear(); 
         w_.clear(); 
 
         hardestNucleonKe_ = -9999;
         hardestNucleonTheta_ = -9999;
         hardestNucleonW_ = -9999; 
+        highestWNucleonKe_ = -9999;
+        highestWNucleonTheta_ = -9999;
+        highestWNucleonW_ = -9999; 
         weight_ = 1.0; 
     }
 
     void PnWeightResult::Copy(TObject& object) const { 
         PnWeightResult& result = (PnWeightResult&) object; 
-
+            
+        result.theta_ = theta_;
         result.w_ = w_; 
 
         result.hardestNucleonKe_ = hardestNucleonKe_;
         result.hardestNucleonTheta_ = hardestNucleonTheta_;
         result.hardestNucleonW_ = hardestNucleonW_; 
+        result.highestWNucleonKe_ = highestWNucleonKe_;
+        result.highestWNucleonTheta_ = highestWNucleonTheta_;
+        result.highestWNucleonW_ = highestWNucleonW_; 
         result.weight_ = weight_; 
 
     }
