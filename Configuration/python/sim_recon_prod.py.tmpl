@@ -6,12 +6,32 @@ p=ldmxcfg.Process("recon")
 
 p.libraries.append("libEventProc.so")
 
+ecalSimHitSort = ldmxcfg.Producer("ecalSimHitSort", "ldmx::SimHitSortProcessor")
+ecalSimHitSort.parameters["simHitCollection"]="EcalSimHits"
+ecalSimHitSort.parameters["outputCollection"]="SortedEcalSimHits"
+
+hcalSimHitSort = ldmxcfg.Producer("hcalSimHitSort", "ldmx::SimHitSortProcessor")
+hcalSimHitSort.parameters["simHitCollection"]="HcalSimHits"
+hcalSimHitSort.parameters["outputCollection"]="SortedHcalSimHits"
+
+ecalSimHitSort = ldmxcfg.Producer("ecalSimHitSort", "ldmx::SimHitSortProcessor")
+ecalSimHitSort.parameters["simHitCollection"]="EcalSimHits"
+ecalSimHitSort.parameters["outputCollection"]="SortedEcalSimHits"
+hcalSimHitSort = ldmxcfg.Producer("hcalSimHitSort", "ldmx::SimHitSortProcessor")
+hcalSimHitSort.parameters["simHitCollection"]="HcalSimHits"
+hcalSimHitSort.parameters["outputCollection"]="SortedHcalSimHits"
+
 ecalDigis = ldmxcfg.Producer("ecalDigis","ldmx::EcalDigiProducer")
 ecalDigis.parameters["meanNoise"] = 0.015
 ecalDigis.parameters["readoutThreshold"] = ecalDigis.parameters["meanNoise"]*3
+ecalDigis.parameters["simHitCollection"] = "SortedEcalSimHits"
 
 hcalDigis = ldmxcfg.Producer("hcalDigis", "ldmx::HcalDigiProducer")
 hcalDigis.parameters["meanNoise"] = 1.5
+hcalDigis.parameters["mev_per_mip"] = 1.4 
+hcalDigis.parameters["pe_per_mip"] = 13.5
+hcalDigis.parameters["doStrip"] = True
+hcalDigis.parameters["simHitCollection"] = "SortedHcalSimHits"
 
 ecalVeto = ldmxcfg.Producer("ecalVeto", "ldmx::EcalVetoProcessor")
 ecalVeto.parameters["num_ecal_layers"] = 34
@@ -32,7 +52,7 @@ findable_track = ldmxcfg.Producer("findable", "ldmx::FindableTrackProcessor")
 
 p.histogramFile = "histo.root"
 
-p.sequence=[ecalDigis, hcalDigis, ecalVeto, hcalVeto, trigger, findable_track]
+p.sequence=[ecalSimHitSort, ecalDigis, hcalSimHitSort, hcalDigis, ecalVeto, hcalVeto, trigger, findable_track]
 
 p.inputFiles=["$input_file"]
 p.outputFiles=["$output_file"]

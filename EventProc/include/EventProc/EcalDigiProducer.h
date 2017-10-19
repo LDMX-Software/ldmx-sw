@@ -68,6 +68,7 @@ namespace ldmx {
             EcalHexReadout* hexReadout_{nullptr};
             float meanNoise_{0};
             float readoutThreshold_{0};
+            std::string simHitCollection_{0};
     };
 
 }

@@ -40,13 +40,20 @@ namespace ldmx {
         noiseInjector_ = new TRandom2(ps.getInteger("randomSeed", 0));
         meanNoise_ = ps.getDouble("meanNoise");
         readoutThreshold_ = ps.getDouble("readoutThreshold");
+        simHitCollection_ = ps.getString("simHitCollection",EventConstants::ECAL_SIM_HITS);
 
         ecalDigis_ = new TClonesArray(EventConstants::ECAL_HIT.c_str(), 10000);
+        
     }
 
     void EcalDigiProducer::produce(Event& event) {
 
-        TClonesArray* ecalSimHits = (TClonesArray*) event.getCollection(EventConstants::ECAL_SIM_HITS);
+        TClonesArray* ecalSimHits;
+        //if( simHitCollection_ == "" )
+        //    ecalSimHits = (TClonesArray*) event.getCollection(EventConstants::ECAL_SIM_HITS);
+        //else
+            ecalSimHits = (TClonesArray*) event.getCollection(simHitCollection_);
+
         int numEcalSimHits = ecalSimHits->GetEntries();
 
         std::cout << "[ EcalDigiProducer ] : Got " << numEcalSimHits 
