@@ -54,6 +54,9 @@ p.skimDefaultIsDrop()
 # Use output of trigger module to decide what to keep
 p.skimConsider("simpleTrigger")
 
+p.keep.append('drop EcalSimHits_sim')
+p.keep.append('drop HcalSimHits_sim')
+
 p.inputFiles = [sys.argv[1]]
 p.outputFiles = ["ldmx_skim_digi_events.root"]
 
