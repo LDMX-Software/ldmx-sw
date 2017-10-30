@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMCORE_ECALNOISEGENERATOR_H
-#define SIMCORE_ECALNOISEGENERATOR_H
+#ifndef TOOLS_ECALNOISEGENERATOR_H
+#define TOOLS_ECALNOISEGENERATOR_H
 
 //----------------//
 //   C++ StdLib   //
@@ -18,7 +18,7 @@
 //   LDMX   //
 //----------//
 #include "Event/EcalHit.h"
-#include "SimCore/NoiseGenerator.h"
+#include "Tools/NoiseGenerator.h"
 
 namespace ldmx { 
 
@@ -45,4 +45,4 @@ namespace ldmx {
 
 } // ldmx
 
-#endif // SIMCORE_ECALNOISEGENERATOR_H
+#endif // TOOLS_ECALNOISEGENERATOR_H
