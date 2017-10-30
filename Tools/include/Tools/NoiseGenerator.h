@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMCORE_NOISEGENERATOR_H
-#define SIMCORE_NOISEGENERATOR_H
+#ifndef TOOLS_NOISEGENERATOR_H
+#define TOOLS_NOISEGENERATOR_H
 
 //----------------//
 //   C++ StdLib   //
@@ -19,11 +19,6 @@
 //----------//
 #include "Math/DistFunc.h"
 #include "TRandom3.h"
-
-//----------//
-//   LDMX   //
-//----------//
-#include "Event/EcalHit.h"
 
 namespace ldmx { 
 
@@ -70,6 +65,7 @@ namespace ldmx {
             double pedestal_{0};  
 
     }; // NoiseGenerator
+
 } // ldmx
 
-#endif // SIMCORE_NOISEGENERATOR_H
+#endif // TOOLS_NOISEGENERATOR_H
