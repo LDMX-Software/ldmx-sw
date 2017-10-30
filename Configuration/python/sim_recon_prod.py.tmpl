@@ -14,11 +14,10 @@ hcalDigis = ldmxcfg.Producer("hcalDigis", "ldmx::HcalDigiProducer")
 hcalDigis.parameters["meanNoise"] = 1.5
 
 ecalVeto = ldmxcfg.Producer("ecalVeto", "ldmx::EcalVetoProcessor")
-ecalVeto.parameters["num_ecal_layers"] = 50
-ecalVeto.parameters["back_ecal_starting_layer"] = 22
+ecalVeto.parameters["num_ecal_layers"] = 34
 ecalVeto.parameters["do_bdt"] = 1
-ecalVeto.parameters["bdt_file"] = "bdt_data_train_FALSE.pkl"
-ecalVeto.parameters["disc_cut"] = 0.995
+ecalVeto.parameters["bdt_file"] = "cal_bdt.pkl"
+ecalVeto.parameters["disc_cut"] = 0.999672
 
 hcalVeto = ldmxcfg.Producer("hcalVeto", "ldmx::HcalVetoProcessor")
 hcalVeto.parameters["pe_threshold"] = 8.0

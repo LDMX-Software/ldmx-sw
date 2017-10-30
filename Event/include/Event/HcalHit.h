@@ -55,6 +55,39 @@ namespace ldmx {
             }
 
             /**
+             * Get the x coordinate of the hit.
+             * @return the x coordinate of the hit.
+             */
+            float getX() const {
+                return xpos_;
+            }
+
+            /**
+             * Get the y coordinate of the hit.
+             * @return the y coordinate of the hit.
+             */
+            float getY() const {
+                return ypos_;
+            }
+            /**
+             * Get the z coordinate of the hit.
+             * @return the z coordinate of the hit.
+             */
+            float getZ() const {
+                return zpos_;
+            }
+
+            /** Decode the section associated with the hit from the ID. */
+            int getSection() const {
+                return (getID() & 0x7000) >> 12;
+            }
+
+            /** Decode the strip associated with the hit from the ID. */
+            int getStrip() const {
+                return (getID() & 0x7F8000) >> 15;
+            }
+
+            /**
              * Set the number of photoelectrons estimated for this hit.
              * @param pe Number of photoelectrons, including noise which affects the estimate.
              */
@@ -62,10 +95,43 @@ namespace ldmx {
                 pe_ = pe;
             }
 
+            /**
+             * Set the x position this hit.
+             * @param x  x-position of centroid hit
+             */
+            void setXpos(float x) {
+                xpos_ = x;
+            }
+            
+            /**
+             * Set the y position this hit.
+             * @param y  y-position of centroid hit
+             */
+            void setYpos(float y) {
+                ypos_ = y;
+            }
+
+            /**
+             * Set the z position this hit.
+             * @param z  z-position of centroid hit
+             */
+            void setZpos(float z) {
+                zpos_ = z;
+            }
+
         private:
 
             /** The number of PE estimated for this hit. */
             float pe_{0};
+
+            /** The x position of this hit. */
+            float xpos_{0};
+
+            /** The x position of this hit. */
+            float ypos_{0};
+            
+            /** The z position of this hit. */
+            float zpos_{0};
 
             /**
              * The ROOT class definition.
