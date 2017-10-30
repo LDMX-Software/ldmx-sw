@@ -163,74 +163,79 @@
 <a name="l00123"></a>00123                         }
 <a name="l00124"></a>00124                         n_events_processed++;
 <a name="l00125"></a>00125                     }
-<a name="l00126"></a>00126                     <span class="keywordflow">if</span> (eventLimit_ &gt; 0 &amp;&amp; n_events_processed == eventLimit_) {
-<a name="l00127"></a>00127                         std::cout &lt;&lt; <span class="stringliteral">&quot;[ Process ] : Reached event limit of &quot;</span> &lt;&lt; eventLimit_ &lt;&lt; <span class="stringliteral">&quot; events\n&quot;</span>;
-<a name="l00128"></a>00128                     }
-<a name="l00129"></a>00129 
-<a name="l00130"></a>00130                     <span class="keywordflow">if</span> (outFile) {
-<a name="l00131"></a>00131                         outFile-&gt;close();
-<a name="l00132"></a>00132                     }
-<a name="l00133"></a>00133                     inFile.close();
-<a name="l00134"></a>00134                     std::cout &lt;&lt; <span class="stringliteral">&quot;Process: Closing file &quot;</span> &lt;&lt; infilename &lt;&lt; std::endl;
-<a name="l00135"></a>00135                     <span class="keywordflow">for</span> (<span class="keyword">auto</span> module : sequence_) {
-<a name="l00136"></a>00136                         module-&gt;onFileClose(infilename);
+<a name="l00126"></a>00126 
+<a name="l00127"></a>00127                     <span class="keywordflow">if</span> (eventLimit_ &gt; 0 &amp;&amp; n_events_processed == eventLimit_) {
+<a name="l00128"></a>00128                         std::cout &lt;&lt; <span class="stringliteral">&quot;[ Process ] : Reached event limit of &quot;</span> &lt;&lt; eventLimit_ &lt;&lt; <span class="stringliteral">&quot; events\n&quot;</span>;
+<a name="l00129"></a>00129                     }
+<a name="l00130"></a>00130 
+<a name="l00131"></a>00131                     <span class="keywordflow">if</span> (eventLimit_ == 0 &amp;&amp; n_events_processed &gt; eventLimit_) {
+<a name="l00132"></a>00132                         std::cout &lt;&lt; <span class="stringliteral">&quot;[ Process ] : Processing interrupted\n&quot;</span>;
+<a name="l00133"></a>00133                     }
+<a name="l00134"></a>00134 
+<a name="l00135"></a>00135                     <span class="keywordflow">if</span> (outFile) {
+<a name="l00136"></a>00136                         outFile-&gt;close();
 <a name="l00137"></a>00137                     }
-<a name="l00138"></a>00138                 }
-<a name="l00139"></a>00139 
-<a name="l00140"></a>00140                 <span class="keywordflow">if</span> (histoTFile_) {
-<a name="l00141"></a>00141                     histoTFile_-&gt;Write();
-<a name="l00142"></a>00142                     <span class="keyword">delete</span> histoTFile_;
-<a name="l00143"></a>00143                     histoTFile_ = 0;
-<a name="l00144"></a>00144                 }
-<a name="l00145"></a>00145             }
-<a name="l00146"></a>00146 
-<a name="l00147"></a>00147             <span class="comment">// finally, notify everyone that we are stopping</span>
-<a name="l00148"></a>00148             <span class="keywordflow">for</span> (<span class="keyword">auto</span> module : sequence_) {
-<a name="l00149"></a>00149                 module-&gt;onProcessEnd();
+<a name="l00138"></a>00138                     inFile.close();
+<a name="l00139"></a>00139                     std::cout &lt;&lt; <span class="stringliteral">&quot;Process: Closing file &quot;</span> &lt;&lt; infilename &lt;&lt; std::endl;
+<a name="l00140"></a>00140                     <span class="keywordflow">for</span> (<span class="keyword">auto</span> module : sequence_) {
+<a name="l00141"></a>00141                         module-&gt;onFileClose(infilename);
+<a name="l00142"></a>00142                     }
+<a name="l00143"></a>00143                 }
+<a name="l00144"></a>00144 
+<a name="l00145"></a>00145                 <span class="keywordflow">if</span> (histoTFile_) {
+<a name="l00146"></a>00146                     histoTFile_-&gt;Write();
+<a name="l00147"></a>00147                     <span class="keyword">delete</span> histoTFile_;
+<a name="l00148"></a>00148                     histoTFile_ = 0;
+<a name="l00149"></a>00149                 }
 <a name="l00150"></a>00150             }
-<a name="l00151"></a>00151         } <span class="keywordflow">catch</span> (Exception&amp; e) {
-<a name="l00152"></a>00152             std::cerr &lt;&lt; <span class="stringliteral">&quot;Framework Error [&quot;</span> &lt;&lt; e.name() &lt;&lt; <span class="stringliteral">&quot;] : &quot;</span> &lt;&lt; e.message() &lt;&lt; std::endl;
-<a name="l00153"></a>00153             std::cerr &lt;&lt; <span class="stringliteral">&quot;  at &quot;</span> &lt;&lt; e.module() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; e.line() &lt;&lt; <span class="stringliteral">&quot; in &quot;</span> &lt;&lt; e.function() &lt;&lt; std::endl;
-<a name="l00154"></a>00154         }
-<a name="l00155"></a>00155     }
-<a name="l00156"></a>00156 
-<a name="l00157"></a>00157     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#a9e4a3a7bcff60999ba666b23fb53d38e">Process::addToSequence</a>(EventProcessor* mod) {
-<a name="l00158"></a>00158         sequence_.push_back(mod);
-<a name="l00159"></a>00159     }
-<a name="l00160"></a>00160     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#acad5781b242d2eabf3b6af1ae3107d21">Process::addFileToProcess</a>(<span class="keyword">const</span> std::string&amp; filename) {
-<a name="l00161"></a>00161         inputFiles_.push_back(filename);
-<a name="l00162"></a>00162     }
-<a name="l00163"></a>00163     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#a0ccf966625e23c3a630c34e86bcd674d">Process::addDropKeepRule</a>(<span class="keyword">const</span> std::string&amp; rule) {
-<a name="l00164"></a>00164         dropKeepRules_.push_back(rule);
-<a name="l00165"></a>00165     }
-<a name="l00166"></a>00166     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#a420f84024e9f1db4f8ff3e440d6853ab">Process::setOutputFileName</a>(<span class="keyword">const</span> std::string&amp; filenameOut) {
-<a name="l00167"></a>00167         <a class="code" href="classldmx_1_1Process.html#a4e23de00ebcd5953c8d80f084bf8fb0e">outputFiles_</a>.clear();
-<a name="l00168"></a>00168         <a class="code" href="classldmx_1_1Process.html#a4e23de00ebcd5953c8d80f084bf8fb0e">outputFiles_</a>.push_back(filenameOut);
-<a name="l00169"></a>00169     }
-<a name="l00170"></a>00170 
-<a name="l00171"></a>00171     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#a9469359cefcd738a9d14c0791a20fbb2">Process::setHistogramFileName</a>(<span class="keyword">const</span> std::string&amp; filenameOut) {
-<a name="l00172"></a>00172         <a class="code" href="classldmx_1_1Process.html#ad5872420ac62fcbbd99d404ae4ec0020">histoFilename_</a> = filenameOut;
-<a name="l00173"></a>00173     }
-<a name="l00174"></a>00174     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#a5b1d6cba024c0ff342857ba3cc250e9c">Process::addOutputFileName</a>(<span class="keyword">const</span> std::string&amp; filenameOut) {
-<a name="l00175"></a>00175         <a class="code" href="classldmx_1_1Process.html#a4e23de00ebcd5953c8d80f084bf8fb0e">outputFiles_</a>.push_back(filenameOut);
-<a name="l00176"></a>00176     }
-<a name="l00177"></a>00177 
-<a name="l00178"></a>00178     TDirectory* <a class="code" href="classldmx_1_1Process.html#a3bffa89c5fc2d91ce8368ffc37cfea3b">Process::makeHistoDirectory</a>(<span class="keyword">const</span> std::string&amp; dirName) {
-<a name="l00179"></a>00179         TDirectory* owner;
-<a name="l00180"></a>00180         <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1Process.html#ad5872420ac62fcbbd99d404ae4ec0020">histoFilename_</a>.empty()) {
-<a name="l00181"></a>00181             owner = gROOT;
-<a name="l00182"></a>00182         } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (histoTFile_ == 0) {
-<a name="l00183"></a>00183             histoTFile_ = <span class="keyword">new</span> TFile(<a class="code" href="classldmx_1_1Process.html#ad5872420ac62fcbbd99d404ae4ec0020">histoFilename_</a>.c_str(), <span class="stringliteral">&quot;RECREATE&quot;</span>);
-<a name="l00184"></a>00184             owner = histoTFile_;
-<a name="l00185"></a>00185         } <span class="keywordflow">else</span>
-<a name="l00186"></a>00186             owner = histoTFile_;
-<a name="l00187"></a>00187         owner-&gt;cd();
-<a name="l00188"></a>00188         TDirectory* child = owner-&gt;mkdir((<span class="keywordtype">char</span>*) dirName.c_str());
-<a name="l00189"></a>00189         <span class="keywordflow">if</span> (child)
-<a name="l00190"></a>00190             child-&gt;cd();
-<a name="l00191"></a>00191         <span class="keywordflow">return</span> child;
-<a name="l00192"></a>00192     }
-<a name="l00193"></a>00193 }
+<a name="l00151"></a>00151 
+<a name="l00152"></a>00152             <span class="comment">// finally, notify everyone that we are stopping</span>
+<a name="l00153"></a>00153             <span class="keywordflow">for</span> (<span class="keyword">auto</span> module : sequence_) {
+<a name="l00154"></a>00154                 module-&gt;onProcessEnd();
+<a name="l00155"></a>00155             }
+<a name="l00156"></a>00156         } <span class="keywordflow">catch</span> (Exception&amp; e) {
+<a name="l00157"></a>00157             std::cerr &lt;&lt; <span class="stringliteral">&quot;Framework Error [&quot;</span> &lt;&lt; e.name() &lt;&lt; <span class="stringliteral">&quot;] : &quot;</span> &lt;&lt; e.message() &lt;&lt; std::endl;
+<a name="l00158"></a>00158             std::cerr &lt;&lt; <span class="stringliteral">&quot;  at &quot;</span> &lt;&lt; e.module() &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; e.line() &lt;&lt; <span class="stringliteral">&quot; in &quot;</span> &lt;&lt; e.function() &lt;&lt; std::endl;
+<a name="l00159"></a>00159         }
+<a name="l00160"></a>00160     }
+<a name="l00161"></a>00161 
+<a name="l00162"></a>00162     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#a9e4a3a7bcff60999ba666b23fb53d38e">Process::addToSequence</a>(EventProcessor* mod) {
+<a name="l00163"></a>00163         sequence_.push_back(mod);
+<a name="l00164"></a>00164     }
+<a name="l00165"></a>00165     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#acad5781b242d2eabf3b6af1ae3107d21">Process::addFileToProcess</a>(<span class="keyword">const</span> std::string&amp; filename) {
+<a name="l00166"></a>00166         inputFiles_.push_back(filename);
+<a name="l00167"></a>00167     }
+<a name="l00168"></a>00168     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#a0ccf966625e23c3a630c34e86bcd674d">Process::addDropKeepRule</a>(<span class="keyword">const</span> std::string&amp; rule) {
+<a name="l00169"></a>00169         dropKeepRules_.push_back(rule);
+<a name="l00170"></a>00170     }
+<a name="l00171"></a>00171     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#a420f84024e9f1db4f8ff3e440d6853ab">Process::setOutputFileName</a>(<span class="keyword">const</span> std::string&amp; filenameOut) {
+<a name="l00172"></a>00172         <a class="code" href="classldmx_1_1Process.html#a4e23de00ebcd5953c8d80f084bf8fb0e">outputFiles_</a>.clear();
+<a name="l00173"></a>00173         <a class="code" href="classldmx_1_1Process.html#a4e23de00ebcd5953c8d80f084bf8fb0e">outputFiles_</a>.push_back(filenameOut);
+<a name="l00174"></a>00174     }
+<a name="l00175"></a>00175 
+<a name="l00176"></a>00176     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#a9469359cefcd738a9d14c0791a20fbb2">Process::setHistogramFileName</a>(<span class="keyword">const</span> std::string&amp; filenameOut) {
+<a name="l00177"></a>00177         <a class="code" href="classldmx_1_1Process.html#ad5872420ac62fcbbd99d404ae4ec0020">histoFilename_</a> = filenameOut;
+<a name="l00178"></a>00178     }
+<a name="l00179"></a>00179     <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1Process.html#a5b1d6cba024c0ff342857ba3cc250e9c">Process::addOutputFileName</a>(<span class="keyword">const</span> std::string&amp; filenameOut) {
+<a name="l00180"></a>00180         <a class="code" href="classldmx_1_1Process.html#a4e23de00ebcd5953c8d80f084bf8fb0e">outputFiles_</a>.push_back(filenameOut);
+<a name="l00181"></a>00181     }
+<a name="l00182"></a>00182 
+<a name="l00183"></a>00183     TDirectory* <a class="code" href="classldmx_1_1Process.html#a3bffa89c5fc2d91ce8368ffc37cfea3b">Process::makeHistoDirectory</a>(<span class="keyword">const</span> std::string&amp; dirName) {
+<a name="l00184"></a>00184         TDirectory* owner;
+<a name="l00185"></a>00185         <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1Process.html#ad5872420ac62fcbbd99d404ae4ec0020">histoFilename_</a>.empty()) {
+<a name="l00186"></a>00186             owner = gROOT;
+<a name="l00187"></a>00187         } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (histoTFile_ == 0) {
+<a name="l00188"></a>00188             histoTFile_ = <span class="keyword">new</span> TFile(<a class="code" href="classldmx_1_1Process.html#ad5872420ac62fcbbd99d404ae4ec0020">histoFilename_</a>.c_str(), <span class="stringliteral">&quot;RECREATE&quot;</span>);
+<a name="l00189"></a>00189             owner = histoTFile_;
+<a name="l00190"></a>00190         } <span class="keywordflow">else</span>
+<a name="l00191"></a>00191             owner = histoTFile_;
+<a name="l00192"></a>00192         owner-&gt;cd();
+<a name="l00193"></a>00193         TDirectory* child = owner-&gt;mkdir((<span class="keywordtype">char</span>*) dirName.c_str());
+<a name="l00194"></a>00194         <span class="keywordflow">if</span> (child)
+<a name="l00195"></a>00195             child-&gt;cd();
+<a name="l00196"></a>00196         <span class="keywordflow">return</span> child;
+<a name="l00197"></a>00197     }
+<a name="l00198"></a>00198 }
 </pre></div></div>
 </div>
 <hr class="footer"/><address class="footer"><small>Generated by&#160;

@@ -87,29 +87,33 @@
 <a name="l00078"></a>00078             
 <a name="l00083"></a><a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a6b75ac29adc327b0f5b1e742ecb18416">00083</a>             <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a6b75ac29adc327b0f5b1e742ecb18416">setBeamspotYSize</a>(<span class="keywordtype">double</span> bssize){ beamspotYSize_ = bssize; };
 <a name="l00084"></a>00084 
-<a name="l00086"></a><a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a849134d292a0846a69d9601be1d1281b">00086</a>             G4VPrimaryGenerator* <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a849134d292a0846a69d9601be1d1281b">getGenerator</a>(<span class="keywordtype">int</span> i){ <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a389608e8ab6ebbd650fe676c97ac620d">generator_</a>.at(i); }
-<a name="l00087"></a>00087 
-<a name="l00092"></a><a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#afd0651bbc5f210d441ae8ac58bd67b8b">00092</a>             <span class="keywordtype">int</span> <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#afd0651bbc5f210d441ae8ac58bd67b8b">getIndexMPG</a>(){ <span class="keywordflow">return</span> indexMpg_; }
+<a name="l00089"></a><a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a6b8c88487781a3f0e9b5cbf2da016e4d">00089</a>             <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a6b8c88487781a3f0e9b5cbf2da016e4d">setBeamspotZSize</a>(<span class="keywordtype">double</span> bssize){ beamspotZSize_ = bssize; };
+<a name="l00090"></a>00090 
+<a name="l00092"></a><a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a849134d292a0846a69d9601be1d1281b">00092</a>             G4VPrimaryGenerator* <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a849134d292a0846a69d9601be1d1281b">getGenerator</a>(<span class="keywordtype">int</span> i){ <span class="keywordflow">return</span> <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a389608e8ab6ebbd650fe676c97ac620d">generator_</a>.at(i); }
 <a name="l00093"></a>00093 
-<a name="l00094"></a>00094         <span class="keyword">private</span>:
-<a name="l00095"></a>00095 
-<a name="l00100"></a>00100             <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#ae0e21d26b6a50692a5a4c17c8ab485ff">smearingBeamspot</a>(G4Event* anEvent);
+<a name="l00098"></a><a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#afd0651bbc5f210d441ae8ac58bd67b8b">00098</a>             <span class="keywordtype">int</span> <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#afd0651bbc5f210d441ae8ac58bd67b8b">getIndexMPG</a>(){ <span class="keywordflow">return</span> indexMpg_; }
+<a name="l00099"></a>00099 
+<a name="l00100"></a>00100         <span class="keyword">private</span>:
 <a name="l00101"></a>00101 
-<a name="l00105"></a><a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a389608e8ab6ebbd650fe676c97ac620d">00105</a>             std::vector&lt; G4VPrimaryGenerator* &gt; <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a389608e8ab6ebbd650fe676c97ac620d">generator_</a>;
-<a name="l00106"></a>00106 
-<a name="l00108"></a><a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a74f702538cc20aa7ffbc060460a85bcb">00108</a>             TRandom* <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a74f702538cc20aa7ffbc060460a85bcb">random_</a>;
-<a name="l00109"></a>00109 
-<a name="l00114"></a>00114             <span class="keywordtype">bool</span> useBeamspot_{<span class="keyword">false</span>};
-<a name="l00115"></a>00115             
-<a name="l00117"></a>00117             <span class="keywordtype">double</span> beamspotXSize_{20.};            
-<a name="l00118"></a>00118             
-<a name="l00120"></a>00120             <span class="keywordtype">double</span> beamspotYSize_{10.};   
-<a name="l00121"></a>00121 
-<a name="l00123"></a>00123             <span class="keywordtype">int</span> indexMpg_{-1};          
-<a name="l00124"></a>00124 
-<a name="l00125"></a>00125     };  <span class="comment">// PrimaryGeneratorAction</span>
-<a name="l00126"></a>00126 }
-<a name="l00127"></a>00127 <span class="preprocessor">#endif // SIMAPPLICATION_PRIMARYGENERATORACTION_H_</span>
+<a name="l00106"></a>00106             <span class="keywordtype">void</span> <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#ae0e21d26b6a50692a5a4c17c8ab485ff">smearingBeamspot</a>(G4Event* anEvent);
+<a name="l00107"></a>00107 
+<a name="l00111"></a><a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a389608e8ab6ebbd650fe676c97ac620d">00111</a>             std::vector&lt; G4VPrimaryGenerator* &gt; <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a389608e8ab6ebbd650fe676c97ac620d">generator_</a>;
+<a name="l00112"></a>00112 
+<a name="l00114"></a><a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a74f702538cc20aa7ffbc060460a85bcb">00114</a>             TRandom* <a class="code" href="classldmx_1_1PrimaryGeneratorAction.html#a74f702538cc20aa7ffbc060460a85bcb">random_</a>;
+<a name="l00115"></a>00115 
+<a name="l00120"></a>00120             <span class="keywordtype">bool</span> useBeamspot_{<span class="keyword">false</span>};
+<a name="l00121"></a>00121             
+<a name="l00123"></a>00123             <span class="keywordtype">double</span> beamspotXSize_{20.};            
+<a name="l00124"></a>00124             
+<a name="l00126"></a>00126             <span class="keywordtype">double</span> beamspotYSize_{10.};   
+<a name="l00127"></a>00127 
+<a name="l00129"></a>00129             <span class="keywordtype">double</span> beamspotZSize_{1.};   
+<a name="l00130"></a>00130 
+<a name="l00132"></a>00132             <span class="keywordtype">int</span> indexMpg_{-1};          
+<a name="l00133"></a>00133 
+<a name="l00134"></a>00134     };  <span class="comment">// PrimaryGeneratorAction</span>
+<a name="l00135"></a>00135 }
+<a name="l00136"></a>00136 <span class="preprocessor">#endif // SIMAPPLICATION_PRIMARYGENERATORACTION_H_</span>
 </pre></div></div>
 </div>
 <hr class="footer"/><address class="footer"><small>Generated by&#160;

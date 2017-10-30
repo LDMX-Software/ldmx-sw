@@ -17,6 +17,10 @@ namespace ldmx {
         EventProcessorFactory::getInstance().registerEventProcessor(classname, classtype, maker);
     }
 
+    void EventProcessor::setStorageHint(ldmx::StorageControlHint hint, const std::string& purposeString) {
+        process_.getStorageController().addHint(name_,hint,purposeString);
+    }
+  
     TDirectory* EventProcessor::getHistoDirectory() {
         if (!histoDir_) {
             histoDir_=process_.makeHistoDirectory(name_);
