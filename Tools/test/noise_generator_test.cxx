@@ -13,7 +13,7 @@
 //   LDMX   //
 //----------//
 #include "Event/EcalHit.h"
-#include "SimCore/EcalNoiseGenerator.h"
+#include "Tools/EcalNoiseGenerator.h"
 
 using namespace ldmx; 
 

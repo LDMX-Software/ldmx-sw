@@ -1,10 +1,10 @@
 /**
- * @file NoiseGenerator.h
+ * @file NoiseGenerator.cxx
  * @brief Utility used to generate noise hits.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimCore/NoiseGenerator.h"
+#include "Tools/NoiseGenerator.h"
 
 namespace ldmx { 
 
