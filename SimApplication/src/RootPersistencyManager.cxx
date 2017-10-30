@@ -232,6 +232,7 @@ namespace ldmx {
             SimTrackerHit* simTrackerHit = (SimTrackerHit*) outputColl->ConstructedAt(outputColl->GetEntries());
             simTrackerHit->setID(g4hit->getID());
             simTrackerHit->setLayerID(g4hit->getLayerID());
+            simTrackerHit->setModuleID(g4hit->getModuleID());
             simTrackerHit->setEdep(g4hit->getEdep());
             const G4ThreeVector& momentum = g4hit->getMomentum();
             simTrackerHit->setMomentum(momentum.x(), momentum.y(), momentum.z());

@@ -17,7 +17,7 @@
         <variable name="ecal_box_y" value="521*mm" />
         <variable name="ecal_box_z" value="291*mm" />
 
-        <constant name="ecal_front_z" value="200*mm"/>
+        <constant name="ecal_front_z" value="220*mm"/>
         <constant name="ecal_thickness" value="291*mm"/>
         <constant name="ecal_back_z" value="ecal_front_z + ecal_thickness" />
 
@@ -61,9 +61,9 @@
 
         <!-- Surround the target with scoring planes. -->
         <constant name="target_z" value="0.0*mm"/>
-        <constant name="target_thickness" value="1.1*mm"/>
+        <constant name="target_thickness" value="0.3504*mm"/>
         <variable name="trigger_pad_thickness" value="1.0*mm"/>
-        <variable name="trigger_pad_zclear" value="0.001*mm"/>
+        <variable name="trigger_pad_zclear" value="0.002*mm"/>
         <variable name="sp_target_up_z" value="target_z - (target_thickness/2) - trigger_pad_thickness - trigger_pad_zclear" /> 
         <variable name="sp_target_down_z" value="target_z + (target_thickness/2) + trigger_pad_thickness + trigger_pad_zclear" /> 
 
@@ -137,125 +137,149 @@
             <materialref ref="Vacuum" />
             <solidref ref="sp_magnet_gap_top_bot_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD0" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_magnet_gap_bot">
             <materialref ref="Vacuum" />
             <solidref ref="sp_magnet_gap_top_bot_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD0" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_magnet_gap_left">
             <materialref ref="Vacuum" />
             <solidref ref="sp_magnet_gap_left_right_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD0" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_magnet_gap_right">
             <materialref ref="Vacuum" />
             <solidref ref="sp_magnet_gap_left_right_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD0" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
 
         <volume name="sp_target_up">
             <materialref ref="Vacuum" />
             <solidref ref="sp_target_up_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume> 
         <volume name="sp_target_down">
             <materialref ref="Vacuum" />
             <solidref ref="sp_target_down_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
 
         <volume name="sp_recoil_l1">
             <materialref ref="Vacuum" />
             <solidref ref="sp_recoil_l1_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_recoil_l2">
             <materialref ref="Vacuum" />
             <solidref ref="sp_recoil_l2_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_recoil_l3">
             <materialref ref="Vacuum" />
             <solidref ref="sp_recoil_l3_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_recoil_l4">
             <materialref ref="Vacuum" />
             <solidref ref="sp_recoil_l4_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_recoil_l5">
             <materialref ref="Vacuum" />
             <solidref ref="sp_recoil_l5_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_recoil_l6">
             <materialref ref="Vacuum" />
             <solidref ref="sp_recoil_l6_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
 
         <volume name="sp_ecal_front">
             <materialref ref="Vacuum" />
             <solidref ref="sp_ecal_front_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_ecal_back">
             <materialref ref="Vacuum" />
             <solidref ref="sp_ecal_back_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_ecal_top">
             <materialref ref="Vacuum" />
             <solidref ref="sp_ecal_top_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_ecal_bot">
             <materialref ref="Vacuum" />
             <solidref ref="sp_ecal_bot_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_ecal_left">
             <materialref ref="Vacuum" />
             <solidref ref="sp_ecal_left_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_ecal_right">
             <materialref ref="Vacuum" />
             <solidref ref="sp_ecal_right_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
 
         <volume name="sp_hcal_front">
             <materialref ref="Vacuum" />
             <solidref ref="sp_hcal_front_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_hcal_back">
             <materialref ref="Vacuum" />
             <solidref ref="sp_hcal_back_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_hcal_top">
             <materialref ref="Vacuum" />
             <solidref ref="sp_hcal_top_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_hcal_bot">
             <materialref ref="Vacuum" />
             <solidref ref="sp_hcal_bot_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_hcal_left">
             <materialref ref="Vacuum" />
             <solidref ref="sp_hcal_left_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         <volume name="sp_hcal_right">
             <materialref ref="Vacuum" />
             <solidref ref="sp_hcal_right_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" />
+            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
         
         <volume name="SP_World">
@@ -381,6 +405,7 @@
                 <positionref ref="sp_recoil_l6_pos" />
                 <rotationref ref="identity" />
             </physvol> 
+            
         </volume>
     </structure>
 
@@ -414,6 +439,17 @@
             <auxiliary auxtype="HitsCollection" auxvalue="HcalScoringPlaneHits" />
             <auxiliary auxtype="SubdetID"       auxvalue="11" />
             <auxiliary auxtype="Verbose"        auxvalue="0" />
+        </auxiliary>
+        
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis">
+            <auxiliary auxtype="R" auxvalue="0.0"/>
+            <auxiliary auxtype="G" auxvalue="0.0"/>
+            <auxiliary auxtype="B" auxvalue="1.0"/>
+            <auxiliary auxtype="A" auxvalue="1.0"/>
+            <auxiliary auxtype="Style" auxvalue="wireframe"/>
+            <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+            <auxiliary auxtype="Visible" auxvalue="true"/>
+            <auxiliary auxtype="LineWidth" auxvalue="2.0"/>
         </auxiliary>
     </userinfo>
 

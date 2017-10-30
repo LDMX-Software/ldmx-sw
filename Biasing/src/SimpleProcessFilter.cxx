@@ -7,15 +7,9 @@
 
 #include "Biasing/SimpleProcessFilter.h"
 
+SIM_PLUGIN(ldmx, SimpleProcessFilter)
+
 namespace ldmx { 
-
-    extern "C" SimpleProcessFilter* createSimpleProcessFilter() {
-        return new SimpleProcessFilter;
-    }
-
-    extern "C" void destroySimpleProcessFilter(SimpleProcessFilter* object) {
-        delete object;
-    }
 
     SimpleProcessFilter::SimpleProcessFilter() {
         messenger_ = new SimpleProcessFilterMessenger(this);
@@ -25,6 +19,11 @@ namespace ldmx {
     }
 
     void SimpleProcessFilter::stepping(const G4Step* step) { 
+
+        if (reactionOccurred_) { 
+            return;
+        } 
+        std::cout << "reaction occurred: " << reactionOccurred_ << std::endl;
 
         // Get the track associated with this step.
         G4Track* track = step->GetTrack();
@@ -115,7 +114,12 @@ namespace ldmx {
                       << " secondaries via " << processName << " process." 
                       << std::endl;
             BiasingMessenger::setEventWeight(track->GetWeight());
+            reactionOccurred_ = true;
         }
     }    
+    
+    void SimpleProcessFilter::endEvent(const G4Event*) {
+        reactionOccurred_ = false; 
+    }
 }
 
