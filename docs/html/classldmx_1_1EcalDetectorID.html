@@ -86,8 +86,9 @@ Public Member Functions</h2></td></tr>
 
 <p>References <a class="el" href="DetectorID_8cxx_source.html#l00063">ldmx::DetectorID::getFieldList()</a>, and <a class="el" href="DetectorID_8cxx_source.html#l00083">ldmx::DetectorID::init()</a>.</p>
 <div class="fragment"><pre class="fragment">                             {
-                this-&gt;<a class="code" href="classldmx_1_1DetectorID.html#a295a124605efcc04f53c706caca6d920">getFieldList</a>()-&gt;push_back(<span class="keyword">new</span> IDField(<span class="stringliteral">&quot;cell&quot;</span>, 2, 12, 31));
-                <a class="code" href="classldmx_1_1DetectorID.html#ad438b4c86ed3ecbe0425729376b6a25a">init</a>();
+          this-&gt;<a class="code" href="classldmx_1_1DetectorID.html#a295a124605efcc04f53c706caca6d920">getFieldList</a>()-&gt;push_back(<span class="keyword">new</span> IDField(<span class="stringliteral">&quot;module_position&quot;</span>, 2, 12, 14)); 
+          this-&gt;<a class="code" href="classldmx_1_1DetectorID.html#a295a124605efcc04f53c706caca6d920">getFieldList</a>()-&gt;push_back(<span class="keyword">new</span> IDField(<span class="stringliteral">&quot;cell&quot;</span>, 3, 15, 31));
+          <a class="code" href="classldmx_1_1DetectorID.html#ad438b4c86ed3ecbe0425729376b6a25a">init</a>();
             }
 </pre></div>
 </div>
@@ -109,11 +110,11 @@ Public Member Functions</h2></td></tr>
 <p>Get the value of the cell field from the ID. </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>The value of the cell field. </dd></dl>
 
-<p>Definition at line <a class="el" href="EcalDetectorID_8h_source.html#l00035">35</a> of file <a class="el" href="EcalDetectorID_8h_source.html">EcalDetectorID.h</a>.</p>
+<p>Definition at line <a class="el" href="EcalDetectorID_8h_source.html#l00036">36</a> of file <a class="el" href="EcalDetectorID_8h_source.html">EcalDetectorID.h</a>.</p>
 
 <p>References <a class="el" href="DetectorID_8cxx_source.html#l00051">ldmx::DetectorID::getFieldValue()</a>.</p>
 <div class="fragment"><pre class="fragment">                            {
-                <span class="keywordflow">return</span> this-&gt;<a class="code" href="classldmx_1_1DetectorID.html#ae95e1cc6a9bbb0ba8e0961f3a4b02841">getFieldValue</a>(2);
+          <span class="keywordflow">return</span> this-&gt;<a class="code" href="classldmx_1_1DetectorID.html#ae95e1cc6a9bbb0ba8e0961f3a4b02841">getFieldValue</a>(3);
             }
 </pre></div>
 </div>

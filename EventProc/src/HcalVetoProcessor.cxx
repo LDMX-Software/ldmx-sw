@@ -27,16 +27,19 @@ namespace ldmx {
        
         // Loop over all of the Hcal hits and calculate to total photoelectrons
         // in the event.
-        double totalPe{0}; 
+        float totalPe{0};
+        float maxPE{0}; 
         for (int iHit = 0; iHit < hcalHits->GetEntriesFast(); ++iHit) { 
             HcalHit* hcalHit = (HcalHit*) hcalHits->At(iHit);
             //std::cout << "[ HcalVeto ]: Hit PE: " << hcalHit->getPE() << std::endl;
             totalPe += hcalHit->getPE(); 
+            maxPE = std::max(maxPE,hcalHit->getPE());
         }
 
         bool passesVeto{true}; 
         //std::cout << "[ HcalVeto ]: total PE: " << totalPe << std::endl;
         if (totalPe >= totalPEThreshold_) passesVeto = false;
+        //if (maxPE >= totalPEThreshold_) passesVeto = false;
         
         result_.setResult(passesVeto); 
         event.addToCollection("HcalVeto", result_);

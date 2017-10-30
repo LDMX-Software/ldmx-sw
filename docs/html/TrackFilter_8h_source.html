@@ -230,175 +230,173 @@
 <a name="l00255"></a><a class="code" href="classldmx_1_1TrackProcessFilter.html#a6324d9b79c4430a734664cfd46cb86f4">00255</a>             <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classldmx_1_1TrackProcessFilter.html#a6324d9b79c4430a734664cfd46cb86f4">passes</a>(<span class="keyword">const</span> G4Track* aTrack) {
 <a name="l00256"></a>00256                 <span class="keyword">const</span> G4VProcess* process = aTrack-&gt;GetCreatorProcess();
 <a name="l00257"></a>00257                 <span class="keywordflow">if</span> (process) {
-<a name="l00258"></a>00258                     <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; processName : <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>) {
-<a name="l00259"></a>00259                         <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1TrackProcessFilter.html#a2c0c5466e622aac9064cd39b9704cc32">exactMatch_</a>[processName]) {
-<a name="l00260"></a>00260                             <span class="keywordflow">if</span> (!processName.compare(process-&gt;GetProcessName())) {
-<a name="l00261"></a>00261                                 <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00262"></a>00262                             }
-<a name="l00263"></a>00263                         } <span class="keywordflow">else</span> {
-<a name="l00264"></a>00264                             <span class="keywordflow">if</span> (process-&gt;GetProcessName().find(processName) != std::string::npos) {
-<a name="l00265"></a>00265                                 <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00266"></a>00266                             }
-<a name="l00267"></a>00267                         }
-<a name="l00268"></a>00268                     }
-<a name="l00269"></a>00269                 }
-<a name="l00270"></a>00270                 <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00271"></a>00271             }
-<a name="l00272"></a>00272 
-<a name="l00273"></a>00273             <span class="keywordtype">void</span> addProcess(std::string processName, <span class="keywordtype">bool</span> exactMatch) {
-<a name="l00274"></a>00274                 <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>.push_back(processName);
-<a name="l00275"></a>00275                 <a class="code" href="classldmx_1_1TrackProcessFilter.html#a2c0c5466e622aac9064cd39b9704cc32">exactMatch_</a>[processName] = exactMatch;
-<a name="l00276"></a>00276             }
-<a name="l00277"></a>00277 
-<a name="l00278"></a><a class="code" href="classldmx_1_1TrackProcessFilter.html#a0e4b86810a7d154f8ea62b1990dfaa34">00278</a>             std::ostream&amp; <a class="code" href="classldmx_1_1TrackProcessFilter.html#a0e4b86810a7d154f8ea62b1990dfaa34">print</a>(std::ostream&amp; os) {
-<a name="l00279"></a>00279                 os &lt;&lt; <span class="stringliteral">&quot;processes:&quot;</span>;
-<a name="l00280"></a>00280                 <span class="keywordflow">for</span> (<span class="keyword">auto</span> processName : <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>) {
-<a name="l00281"></a>00281                     os &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; processName;
-<a name="l00282"></a>00282                 }
-<a name="l00283"></a>00283                 <span class="keywordflow">return</span> os;
-<a name="l00284"></a>00284             }
+<a name="l00258"></a>00258                     <span class="comment">// during comparison, ignore any &quot;biasWrapper()&quot; extra text</span>
+<a name="l00259"></a>00259                     std::string currentProcessName = process-&gt;GetProcessName();
+<a name="l00260"></a>00260                     <span class="keywordflow">if</span> (currentProcessName.find(<span class="stringliteral">&quot;biasWrapper&quot;</span>) != std::string::npos) { 
+<a name="l00261"></a>00261                         std::size_t pos = currentProcessName.find_first_of(<span class="stringliteral">&quot;(&quot;</span>) + 1;
+<a name="l00262"></a>00262                         currentProcessName = currentProcessName.substr(pos, currentProcessName.size() - pos - 1); 
+<a name="l00263"></a>00263                     }  
+<a name="l00264"></a>00264                     
+<a name="l00265"></a>00265                     <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; processName : <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>) {
+<a name="l00266"></a>00266                         <span class="keywordflow">if</span> (!currentProcessName.compare(processName)) <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00267"></a>00267                     }
+<a name="l00268"></a>00268                 }
+<a name="l00269"></a>00269                 <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00270"></a>00270             }
+<a name="l00271"></a>00271 
+<a name="l00272"></a>00272             <span class="keywordtype">void</span> addProcess(std::string processName, <span class="keywordtype">bool</span> exactMatch) {
+<a name="l00273"></a>00273                 <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>.push_back(processName);
+<a name="l00274"></a>00274             }
+<a name="l00275"></a>00275 
+<a name="l00276"></a><a class="code" href="classldmx_1_1TrackProcessFilter.html#a0e4b86810a7d154f8ea62b1990dfaa34">00276</a>             std::ostream&amp; <a class="code" href="classldmx_1_1TrackProcessFilter.html#a0e4b86810a7d154f8ea62b1990dfaa34">print</a>(std::ostream&amp; os) {
+<a name="l00277"></a>00277                 os &lt;&lt; <span class="stringliteral">&quot;processes:&quot;</span>;
+<a name="l00278"></a>00278                 <span class="keywordflow">for</span> (<span class="keyword">auto</span> processName : <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>) {
+<a name="l00279"></a>00279                     os &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; processName;
+<a name="l00280"></a>00280                 }
+<a name="l00281"></a>00281                 <span class="keywordflow">return</span> os;
+<a name="l00282"></a>00282             }
+<a name="l00283"></a>00283 
+<a name="l00284"></a>00284         <span class="keyword">protected</span>:
 <a name="l00285"></a>00285 
-<a name="l00286"></a>00286         <span class="keyword">protected</span>:
-<a name="l00287"></a>00287 
-<a name="l00289"></a><a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">00289</a>             std::vector&lt;std::string&gt; <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>;
-<a name="l00290"></a>00290 
-<a name="l00292"></a><a class="code" href="classldmx_1_1TrackProcessFilter.html#a2c0c5466e622aac9064cd39b9704cc32">00292</a>             std::map&lt;std::string, bool&gt; <a class="code" href="classldmx_1_1TrackProcessFilter.html#a2c0c5466e622aac9064cd39b9704cc32">exactMatch_</a>;
+<a name="l00287"></a><a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">00287</a>             std::vector&lt;std::string&gt; <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>;
+<a name="l00288"></a>00288 
+<a name="l00290"></a><a class="code" href="classldmx_1_1TrackProcessFilter.html#a2c0c5466e622aac9064cd39b9704cc32">00290</a>             std::map&lt;std::string, bool&gt; <a class="code" href="classldmx_1_1TrackProcessFilter.html#a2c0c5466e622aac9064cd39b9704cc32">exactMatch_</a>;
+<a name="l00291"></a>00291 
+<a name="l00292"></a>00292     };
 <a name="l00293"></a>00293 
-<a name="l00294"></a>00294     };
-<a name="l00295"></a>00295 
-<a name="l00300"></a><a class="code" href="classldmx_1_1TrackParentProcessFilter.html">00300</a>     <span class="keyword">class </span><a class="code" href="classldmx_1_1TrackParentProcessFilter.html" title="Filters tracks based on matching process type of secondaries.">TrackParentProcessFilter</a> : <span class="keyword">public</span> <a class="code" href="classldmx_1_1TrackProcessFilter.html" title="Filters tracks based on creator physics process type.">TrackProcessFilter</a> {
+<a name="l00298"></a><a class="code" href="classldmx_1_1TrackParentProcessFilter.html">00298</a>     <span class="keyword">class </span><a class="code" href="classldmx_1_1TrackParentProcessFilter.html" title="Filters tracks based on matching process type of secondaries.">TrackParentProcessFilter</a> : <span class="keyword">public</span> <a class="code" href="classldmx_1_1TrackProcessFilter.html" title="Filters tracks based on creator physics process type.">TrackProcessFilter</a> {
+<a name="l00299"></a>00299 
+<a name="l00300"></a>00300         <span class="keyword">public</span>:
 <a name="l00301"></a>00301 
-<a name="l00302"></a>00302         <span class="keyword">public</span>:
-<a name="l00303"></a>00303 
-<a name="l00304"></a>00304             <a class="code" href="classldmx_1_1TrackParentProcessFilter.html" title="Filters tracks based on matching process type of secondaries.">TrackParentProcessFilter</a>() {
-<a name="l00305"></a>00305             }
-<a name="l00306"></a>00306 
-<a name="l00307"></a><a class="code" href="classldmx_1_1TrackParentProcessFilter.html#a386ef3f1a8b979ae5591c2996d05dcdd">00307</a>             <span class="keywordtype">bool</span> <a class="code" href="classldmx_1_1TrackParentProcessFilter.html#a386ef3f1a8b979ae5591c2996d05dcdd">passes</a>(<span class="keyword">const</span> G4Track* aTrack) {
-<a name="l00308"></a>00308                 <span class="keyword">static</span> G4TrackingManager* mgr = G4RunManagerKernel::GetRunManagerKernel()-&gt;GetTrackingManager();
-<a name="l00309"></a>00309                 <span class="keywordflow">if</span> (aTrack != mgr-&gt;GetTrack()) {
-<a name="l00310"></a>00310                     <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00311"></a>00311                 }
-<a name="l00312"></a>00312                 G4TrackVector* tracks = mgr-&gt;GimmeSecondaries();
-<a name="l00313"></a>00313                 <span class="keywordflow">for</span> (<span class="keyword">auto</span> track : *tracks) {
-<a name="l00314"></a>00314                     <span class="keyword">const</span> G4VProcess* process = track-&gt;GetCreatorProcess();
-<a name="l00315"></a>00315                     <span class="keywordflow">if</span> (process) {
-<a name="l00316"></a>00316                         <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; processName : <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>) {
-<a name="l00317"></a>00317                             <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1TrackProcessFilter.html#a2c0c5466e622aac9064cd39b9704cc32">exactMatch_</a>[processName]) {
-<a name="l00318"></a>00318                                 <span class="keywordflow">if</span> (!processName.compare(process-&gt;GetProcessName())) {
-<a name="l00319"></a>00319                                     <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00320"></a>00320                                 }
-<a name="l00321"></a>00321                             } <span class="keywordflow">else</span> {
-<a name="l00322"></a>00322                                 <span class="keywordflow">if</span> (process-&gt;GetProcessName().find(processName) != std::string::npos) {
-<a name="l00323"></a>00323                                     <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00324"></a>00324                                 }
-<a name="l00325"></a>00325                             }
-<a name="l00326"></a>00326                         }
-<a name="l00327"></a>00327                     }
-<a name="l00328"></a>00328                 }
-<a name="l00329"></a>00329                 <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00330"></a>00330             }
-<a name="l00331"></a>00331 
-<a name="l00332"></a><a class="code" href="classldmx_1_1TrackParentProcessFilter.html#adc2d581f49587141655062757929a622">00332</a>             std::ostream&amp; <a class="code" href="classldmx_1_1TrackParentProcessFilter.html#adc2d581f49587141655062757929a622">print</a>(std::ostream&amp; os) {
-<a name="l00333"></a>00333                 os &lt;&lt; <span class="stringliteral">&quot;daughter processes:&quot;</span>;
-<a name="l00334"></a>00334                 <span class="keywordflow">for</span> (<span class="keyword">auto</span> processName : <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>) {
-<a name="l00335"></a>00335                     os &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; processName;
-<a name="l00336"></a>00336                 }
-<a name="l00337"></a>00337                 <span class="keywordflow">return</span> os;
-<a name="l00338"></a>00338             }
-<a name="l00339"></a>00339     };
-<a name="l00340"></a>00340 
-<a name="l00345"></a><a class="code" href="classldmx_1_1TrackRegionFilter.html">00345</a>     <span class="keyword">class </span><a class="code" href="classldmx_1_1TrackRegionFilter.html" title="Filters tracks based on name of detector region.">TrackRegionFilter</a> : <span class="keyword">public</span> <a class="code" href="classldmx_1_1TrackFilter.html" title="Abstract class for creating user track filters.">TrackFilter</a> {
+<a name="l00302"></a>00302             <a class="code" href="classldmx_1_1TrackParentProcessFilter.html" title="Filters tracks based on matching process type of secondaries.">TrackParentProcessFilter</a>() {
+<a name="l00303"></a>00303             }
+<a name="l00304"></a>00304 
+<a name="l00305"></a><a class="code" href="classldmx_1_1TrackParentProcessFilter.html#a386ef3f1a8b979ae5591c2996d05dcdd">00305</a>             <span class="keywordtype">bool</span> <a class="code" href="classldmx_1_1TrackParentProcessFilter.html#a386ef3f1a8b979ae5591c2996d05dcdd">passes</a>(<span class="keyword">const</span> G4Track* aTrack) {
+<a name="l00306"></a>00306                 <span class="keyword">static</span> G4TrackingManager* mgr = G4RunManagerKernel::GetRunManagerKernel()-&gt;GetTrackingManager();
+<a name="l00307"></a>00307                 <span class="keywordflow">if</span> (aTrack != mgr-&gt;GetTrack()) {
+<a name="l00308"></a>00308                     <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00309"></a>00309                 }
+<a name="l00310"></a>00310                 G4TrackVector* tracks = mgr-&gt;GimmeSecondaries();
+<a name="l00311"></a>00311                 <span class="keywordflow">for</span> (<span class="keyword">auto</span> track : *tracks) {
+<a name="l00312"></a>00312                     <span class="keyword">const</span> G4VProcess* process = track-&gt;GetCreatorProcess();
+<a name="l00313"></a>00313                     <span class="keywordflow">if</span> (process) {
+<a name="l00314"></a>00314                         <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; processName : <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>) {
+<a name="l00315"></a>00315                             <span class="keywordflow">if</span> (<a class="code" href="classldmx_1_1TrackProcessFilter.html#a2c0c5466e622aac9064cd39b9704cc32">exactMatch_</a>[processName]) {
+<a name="l00316"></a>00316                                 <span class="keywordflow">if</span> (!processName.compare(process-&gt;GetProcessName())) {
+<a name="l00317"></a>00317                                     <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00318"></a>00318                                 }
+<a name="l00319"></a>00319                             } <span class="keywordflow">else</span> {
+<a name="l00320"></a>00320                                 <span class="keywordflow">if</span> (process-&gt;GetProcessName().find(processName) != std::string::npos) {
+<a name="l00321"></a>00321                                     <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00322"></a>00322                                 }
+<a name="l00323"></a>00323                             }
+<a name="l00324"></a>00324                         }
+<a name="l00325"></a>00325                     }
+<a name="l00326"></a>00326                 }
+<a name="l00327"></a>00327                 <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00328"></a>00328             }
+<a name="l00329"></a>00329 
+<a name="l00330"></a><a class="code" href="classldmx_1_1TrackParentProcessFilter.html#adc2d581f49587141655062757929a622">00330</a>             std::ostream&amp; <a class="code" href="classldmx_1_1TrackParentProcessFilter.html#adc2d581f49587141655062757929a622">print</a>(std::ostream&amp; os) {
+<a name="l00331"></a>00331                 os &lt;&lt; <span class="stringliteral">&quot;daughter processes:&quot;</span>;
+<a name="l00332"></a>00332                 <span class="keywordflow">for</span> (<span class="keyword">auto</span> processName : <a class="code" href="classldmx_1_1TrackProcessFilter.html#a4ee90712676b73ab8fb69da5b00643cc">processNames_</a>) {
+<a name="l00333"></a>00333                     os &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; processName;
+<a name="l00334"></a>00334                 }
+<a name="l00335"></a>00335                 <span class="keywordflow">return</span> os;
+<a name="l00336"></a>00336             }
+<a name="l00337"></a>00337     };
+<a name="l00338"></a>00338 
+<a name="l00343"></a><a class="code" href="classldmx_1_1TrackRegionFilter.html">00343</a>     <span class="keyword">class </span><a class="code" href="classldmx_1_1TrackRegionFilter.html" title="Filters tracks based on name of detector region.">TrackRegionFilter</a> : <span class="keyword">public</span> <a class="code" href="classldmx_1_1TrackFilter.html" title="Abstract class for creating user track filters.">TrackFilter</a> {
+<a name="l00344"></a>00344 
+<a name="l00345"></a>00345         <span class="keyword">public</span>:
 <a name="l00346"></a>00346 
-<a name="l00347"></a>00347         <span class="keyword">public</span>:
-<a name="l00348"></a>00348 
-<a name="l00349"></a>00349             <a class="code" href="classldmx_1_1TrackRegionFilter.html" title="Filters tracks based on name of detector region.">TrackRegionFilter</a>() {
-<a name="l00350"></a>00350             }
-<a name="l00351"></a>00351 
-<a name="l00352"></a>00352             <span class="keywordtype">void</span> addRegion(std::string regionName, <span class="keywordtype">bool</span> regionSave) {
-<a name="l00353"></a>00353                 regions_.insert(regionName);
-<a name="l00354"></a>00354                 regionSave_[regionName] = regionSave;
-<a name="l00355"></a>00355             }
-<a name="l00356"></a>00356 
-<a name="l00357"></a><a class="code" href="classldmx_1_1TrackRegionFilter.html#ac26d64ee128d0aee49a618526b8354ab">00357</a>             <span class="keywordtype">bool</span> <a class="code" href="classldmx_1_1TrackRegionFilter.html#ac26d64ee128d0aee49a618526b8354ab">passes</a>(<span class="keyword">const</span> G4Track* aTrack) {
-<a name="l00358"></a>00358                 G4Region* region = aTrack-&gt;GetLogicalVolumeAtVertex()-&gt;GetRegion();
-<a name="l00359"></a>00359                 <span class="keywordflow">if</span> (regions_.find(region-&gt;GetName()) != regions_.end()) {
-<a name="l00360"></a>00360                     <span class="keywordflow">return</span> regionSave_[region-&gt;GetName()];
-<a name="l00361"></a>00361                 } <span class="keywordflow">else</span> {
-<a name="l00362"></a>00362                     <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00363"></a>00363                 }
-<a name="l00364"></a>00364             }
-<a name="l00365"></a>00365 
-<a name="l00366"></a><a class="code" href="classldmx_1_1TrackRegionFilter.html#a255f8404ae352cb2926b695141d5b594">00366</a>             std::ostream&amp; <a class="code" href="classldmx_1_1TrackRegionFilter.html#a255f8404ae352cb2926b695141d5b594">print</a>(std::ostream&amp; os) {
-<a name="l00367"></a>00367                 os &lt;&lt; <span class="stringliteral">&quot;regions:&quot;</span>;
-<a name="l00368"></a>00368                 <span class="keywordflow">for</span> (<span class="keyword">auto</span> region : regions_) {
-<a name="l00369"></a>00369                     os &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; region;
-<a name="l00370"></a>00370                 }
-<a name="l00371"></a>00371                 <span class="keywordflow">return</span> os;
-<a name="l00372"></a>00372             }
+<a name="l00347"></a>00347             <a class="code" href="classldmx_1_1TrackRegionFilter.html" title="Filters tracks based on name of detector region.">TrackRegionFilter</a>() {
+<a name="l00348"></a>00348             }
+<a name="l00349"></a>00349 
+<a name="l00350"></a>00350             <span class="keywordtype">void</span> addRegion(std::string regionName, <span class="keywordtype">bool</span> regionSave) {
+<a name="l00351"></a>00351                 regions_.insert(regionName);
+<a name="l00352"></a>00352                 regionSave_[regionName] = regionSave;
+<a name="l00353"></a>00353             }
+<a name="l00354"></a>00354 
+<a name="l00355"></a><a class="code" href="classldmx_1_1TrackRegionFilter.html#ac26d64ee128d0aee49a618526b8354ab">00355</a>             <span class="keywordtype">bool</span> <a class="code" href="classldmx_1_1TrackRegionFilter.html#ac26d64ee128d0aee49a618526b8354ab">passes</a>(<span class="keyword">const</span> G4Track* aTrack) {
+<a name="l00356"></a>00356                 G4Region* region = aTrack-&gt;GetLogicalVolumeAtVertex()-&gt;GetRegion();
+<a name="l00357"></a>00357                 <span class="keywordflow">if</span> (regions_.find(region-&gt;GetName()) != regions_.end()) {
+<a name="l00358"></a>00358                     <span class="keywordflow">return</span> regionSave_[region-&gt;GetName()];
+<a name="l00359"></a>00359                 } <span class="keywordflow">else</span> {
+<a name="l00360"></a>00360                     <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00361"></a>00361                 }
+<a name="l00362"></a>00362             }
+<a name="l00363"></a>00363 
+<a name="l00364"></a><a class="code" href="classldmx_1_1TrackRegionFilter.html#a255f8404ae352cb2926b695141d5b594">00364</a>             std::ostream&amp; <a class="code" href="classldmx_1_1TrackRegionFilter.html#a255f8404ae352cb2926b695141d5b594">print</a>(std::ostream&amp; os) {
+<a name="l00365"></a>00365                 os &lt;&lt; <span class="stringliteral">&quot;regions:&quot;</span>;
+<a name="l00366"></a>00366                 <span class="keywordflow">for</span> (<span class="keyword">auto</span> region : regions_) {
+<a name="l00367"></a>00367                     os &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; region;
+<a name="l00368"></a>00368                 }
+<a name="l00369"></a>00369                 <span class="keywordflow">return</span> os;
+<a name="l00370"></a>00370             }
+<a name="l00371"></a>00371 
+<a name="l00372"></a>00372         <span class="keyword">private</span>:
 <a name="l00373"></a>00373 
-<a name="l00374"></a>00374         <span class="keyword">private</span>:
-<a name="l00375"></a>00375 
-<a name="l00376"></a>00376             std::unordered_set&lt;std::string&gt; regions_;
-<a name="l00377"></a>00377             std::map&lt;std::string, bool&gt; regionSave_;
-<a name="l00378"></a>00378     };
-<a name="l00379"></a>00379 
-<a name="l00384"></a><a class="code" href="classldmx_1_1TrackVolumeFilter.html">00384</a>     <span class="keyword">class </span><a class="code" href="classldmx_1_1TrackVolumeFilter.html" title="Filters tracks based on name of logical volume.">TrackVolumeFilter</a> : <span class="keyword">public</span> <a class="code" href="classldmx_1_1TrackFilter.html" title="Abstract class for creating user track filters.">TrackFilter</a> {
+<a name="l00374"></a>00374             std::unordered_set&lt;std::string&gt; regions_;
+<a name="l00375"></a>00375             std::map&lt;std::string, bool&gt; regionSave_;
+<a name="l00376"></a>00376     };
+<a name="l00377"></a>00377 
+<a name="l00382"></a><a class="code" href="classldmx_1_1TrackVolumeFilter.html">00382</a>     <span class="keyword">class </span><a class="code" href="classldmx_1_1TrackVolumeFilter.html" title="Filters tracks based on name of logical volume.">TrackVolumeFilter</a> : <span class="keyword">public</span> <a class="code" href="classldmx_1_1TrackFilter.html" title="Abstract class for creating user track filters.">TrackFilter</a> {
+<a name="l00383"></a>00383 
+<a name="l00384"></a>00384         <span class="keyword">public</span>:
 <a name="l00385"></a>00385 
-<a name="l00386"></a>00386         <span class="keyword">public</span>:
-<a name="l00387"></a>00387 
-<a name="l00388"></a>00388             <a class="code" href="classldmx_1_1TrackVolumeFilter.html" title="Filters tracks based on name of logical volume.">TrackVolumeFilter</a>() {
-<a name="l00389"></a>00389             }
-<a name="l00390"></a>00390 
-<a name="l00391"></a>00391             <span class="keywordtype">void</span> addVolume(std::string volumeName, <span class="keywordtype">bool</span> volumeSave) {
-<a name="l00392"></a>00392                 volumes_.insert(volumeName);
-<a name="l00393"></a>00393                 volumeSave_[volumeName] = volumeSave;
-<a name="l00394"></a>00394             }
-<a name="l00395"></a>00395 
-<a name="l00396"></a><a class="code" href="classldmx_1_1TrackVolumeFilter.html#a44b03bb4da392792460ca0b891d641bd">00396</a>             <span class="keywordtype">bool</span> <a class="code" href="classldmx_1_1TrackVolumeFilter.html#a44b03bb4da392792460ca0b891d641bd">passes</a>(<span class="keyword">const</span> G4Track* aTrack) {
-<a name="l00397"></a>00397                 <span class="keyword">const</span> G4LogicalVolume* vol = aTrack-&gt;GetLogicalVolumeAtVertex();
-<a name="l00398"></a>00398                 <span class="keywordflow">if</span> (volumes_.find(vol-&gt;GetName()) != volumes_.end()) {
-<a name="l00399"></a>00399                     <span class="keywordflow">return</span> volumeSave_[vol-&gt;GetName()];
-<a name="l00400"></a>00400                 } <span class="keywordflow">else</span> {
-<a name="l00401"></a>00401                     <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00402"></a>00402                 }
-<a name="l00403"></a>00403             }
-<a name="l00404"></a>00404 
-<a name="l00405"></a><a class="code" href="classldmx_1_1TrackVolumeFilter.html#ae84998451157a4879496e4bf861ff1f6">00405</a>             std::ostream&amp; <a class="code" href="classldmx_1_1TrackVolumeFilter.html#ae84998451157a4879496e4bf861ff1f6">print</a>(std::ostream&amp; os) {
-<a name="l00406"></a>00406                 os &lt;&lt; <span class="stringliteral">&quot;volumes:&quot;</span>;
-<a name="l00407"></a>00407                 <span class="keywordflow">for</span> (<span class="keyword">auto</span> volume : volumes_) {
-<a name="l00408"></a>00408                     os &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; volume;
-<a name="l00409"></a>00409                 }
-<a name="l00410"></a>00410                 <span class="keywordflow">return</span> os;
-<a name="l00411"></a>00411             }
+<a name="l00386"></a>00386             <a class="code" href="classldmx_1_1TrackVolumeFilter.html" title="Filters tracks based on name of logical volume.">TrackVolumeFilter</a>() {
+<a name="l00387"></a>00387             }
+<a name="l00388"></a>00388 
+<a name="l00389"></a>00389             <span class="keywordtype">void</span> addVolume(std::string volumeName, <span class="keywordtype">bool</span> volumeSave) {
+<a name="l00390"></a>00390                 volumes_.insert(volumeName);
+<a name="l00391"></a>00391                 volumeSave_[volumeName] = volumeSave;
+<a name="l00392"></a>00392             }
+<a name="l00393"></a>00393 
+<a name="l00394"></a><a class="code" href="classldmx_1_1TrackVolumeFilter.html#a44b03bb4da392792460ca0b891d641bd">00394</a>             <span class="keywordtype">bool</span> <a class="code" href="classldmx_1_1TrackVolumeFilter.html#a44b03bb4da392792460ca0b891d641bd">passes</a>(<span class="keyword">const</span> G4Track* aTrack) {
+<a name="l00395"></a>00395                 <span class="keyword">const</span> G4LogicalVolume* vol = aTrack-&gt;GetLogicalVolumeAtVertex();
+<a name="l00396"></a>00396                 <span class="keywordflow">if</span> (volumes_.find(vol-&gt;GetName()) != volumes_.end()) {
+<a name="l00397"></a>00397                     <span class="keywordflow">return</span> volumeSave_[vol-&gt;GetName()];
+<a name="l00398"></a>00398                 } <span class="keywordflow">else</span> {
+<a name="l00399"></a>00399                     <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00400"></a>00400                 }
+<a name="l00401"></a>00401             }
+<a name="l00402"></a>00402 
+<a name="l00403"></a><a class="code" href="classldmx_1_1TrackVolumeFilter.html#ae84998451157a4879496e4bf861ff1f6">00403</a>             std::ostream&amp; <a class="code" href="classldmx_1_1TrackVolumeFilter.html#ae84998451157a4879496e4bf861ff1f6">print</a>(std::ostream&amp; os) {
+<a name="l00404"></a>00404                 os &lt;&lt; <span class="stringliteral">&quot;volumes:&quot;</span>;
+<a name="l00405"></a>00405                 <span class="keywordflow">for</span> (<span class="keyword">auto</span> volume : volumes_) {
+<a name="l00406"></a>00406                     os &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; volume;
+<a name="l00407"></a>00407                 }
+<a name="l00408"></a>00408                 <span class="keywordflow">return</span> os;
+<a name="l00409"></a>00409             }
+<a name="l00410"></a>00410 
+<a name="l00411"></a>00411         <span class="keyword">private</span>:
 <a name="l00412"></a>00412 
-<a name="l00413"></a>00413         <span class="keyword">private</span>:
-<a name="l00414"></a>00414 
-<a name="l00415"></a>00415             std::unordered_set&lt;std::string&gt; volumes_;
-<a name="l00416"></a>00416             std::map&lt;std::string, bool&gt; volumeSave_;
-<a name="l00417"></a>00417     };
-<a name="l00418"></a>00418 
-<a name="l00423"></a><a class="code" href="classldmx_1_1TrackIDFilter.html">00423</a>     <span class="keyword">class </span><a class="code" href="classldmx_1_1TrackIDFilter.html" title="Filters tracks based on track ID.">TrackIDFilter</a> : <span class="keyword">public</span> <a class="code" href="classldmx_1_1TrackFilter.html" title="Abstract class for creating user track filters.">TrackFilter</a> {
+<a name="l00413"></a>00413             std::unordered_set&lt;std::string&gt; volumes_;
+<a name="l00414"></a>00414             std::map&lt;std::string, bool&gt; volumeSave_;
+<a name="l00415"></a>00415     };
+<a name="l00416"></a>00416 
+<a name="l00421"></a><a class="code" href="classldmx_1_1TrackIDFilter.html">00421</a>     <span class="keyword">class </span><a class="code" href="classldmx_1_1TrackIDFilter.html" title="Filters tracks based on track ID.">TrackIDFilter</a> : <span class="keyword">public</span> <a class="code" href="classldmx_1_1TrackFilter.html" title="Abstract class for creating user track filters.">TrackFilter</a> {
+<a name="l00422"></a>00422 
+<a name="l00423"></a>00423         <span class="keyword">public</span>:
 <a name="l00424"></a>00424 
-<a name="l00425"></a>00425         <span class="keyword">public</span>:
-<a name="l00426"></a>00426 
-<a name="l00427"></a>00427             <a class="code" href="classldmx_1_1TrackIDFilter.html" title="Filters tracks based on track ID.">TrackIDFilter</a>() {
-<a name="l00428"></a>00428             }
-<a name="l00429"></a>00429 
-<a name="l00430"></a>00430             <span class="keywordtype">void</span> addTrackID(<span class="keywordtype">int</span> trackID) {
-<a name="l00431"></a>00431                 trackIDs_.insert(trackID);
-<a name="l00432"></a>00432             }
-<a name="l00433"></a>00433 
-<a name="l00434"></a><a class="code" href="classldmx_1_1TrackIDFilter.html#a69c776951d8b4b749934550dc1305ef1">00434</a>             <span class="keywordtype">bool</span> <a class="code" href="classldmx_1_1TrackIDFilter.html#a69c776951d8b4b749934550dc1305ef1">passes</a>(<span class="keyword">const</span> G4Track* aTrack) {
-<a name="l00435"></a>00435                 <span class="keywordflow">return</span> trackIDs_.find(aTrack-&gt;GetTrackID()) != trackIDs_.end();
-<a name="l00436"></a>00436             }
+<a name="l00425"></a>00425             <a class="code" href="classldmx_1_1TrackIDFilter.html" title="Filters tracks based on track ID.">TrackIDFilter</a>() {
+<a name="l00426"></a>00426             }
+<a name="l00427"></a>00427 
+<a name="l00428"></a>00428             <span class="keywordtype">void</span> addTrackID(<span class="keywordtype">int</span> trackID) {
+<a name="l00429"></a>00429                 trackIDs_.insert(trackID);
+<a name="l00430"></a>00430             }
+<a name="l00431"></a>00431 
+<a name="l00432"></a><a class="code" href="classldmx_1_1TrackIDFilter.html#a69c776951d8b4b749934550dc1305ef1">00432</a>             <span class="keywordtype">bool</span> <a class="code" href="classldmx_1_1TrackIDFilter.html#a69c776951d8b4b749934550dc1305ef1">passes</a>(<span class="keyword">const</span> G4Track* aTrack) {
+<a name="l00433"></a>00433                 <span class="keywordflow">return</span> trackIDs_.find(aTrack-&gt;GetTrackID()) != trackIDs_.end();
+<a name="l00434"></a>00434             }
+<a name="l00435"></a>00435 
+<a name="l00436"></a>00436         <span class="keyword">private</span>:
 <a name="l00437"></a>00437 
-<a name="l00438"></a>00438         <span class="keyword">private</span>:
-<a name="l00439"></a>00439 
-<a name="l00440"></a>00440             std::unordered_set&lt;int&gt; trackIDs_;
-<a name="l00441"></a>00441     };
-<a name="l00442"></a>00442 }
-<a name="l00443"></a>00443 
-<a name="l00444"></a>00444 <span class="preprocessor">#endif </span><span class="comment">/* SIMCORE_TRACKFILTER_H_ */</span>
+<a name="l00438"></a>00438             std::unordered_set&lt;int&gt; trackIDs_;
+<a name="l00439"></a>00439     };
+<a name="l00440"></a>00440 }
+<a name="l00441"></a>00441 
+<a name="l00442"></a>00442 <span class="preprocessor">#endif </span><span class="comment">/* SIMCORE_TRACKFILTER_H_ */</span>
 </pre></div></div>
 </div>
 <hr class="footer"/><address class="footer"><small>Generated by&#160;
