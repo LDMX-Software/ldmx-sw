@@ -4,7 +4,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimCore/EcalNoiseGenerator.h"
+#include "Tools/EcalNoiseGenerator.h"
 
 namespace ldmx { 
 
