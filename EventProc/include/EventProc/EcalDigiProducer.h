@@ -58,9 +58,24 @@ namespace ldmx {
 
         private:
 
-            static const int NUM_ECAL_LAYERS;
-            static const int NUM_LAYERS_FOR_MED_CAL;
-            static const int BACK_ECAL_STARTING_LAYER;
+            /** Electrons per MIP. */
+            static const double ELECTRONS_PER_MIP; 
+
+            /** MIP response in MeV. */
+            static const double MIP_SI_RESPONSE;
+
+            /** Total number of Ecal layers. */
+            static const int NUM_ECAL_LAYERS{33};
+
+            /** Total number of hex modules per layer. */
+            static const int HEX_MODULES_PER_LAYER{7}; 
+
+            /** Total number of cells (channels) per hex module. */
+            static const int CELLS_PER_HEX_MODULE{397};
+
+            /** Total number of cells across all modules. */
+            static const int TOTAL_CELLS{NUM_ECAL_LAYERS*HEX_MODULES_PER_LAYER*CELLS_PER_HEX_MODULE};
+
 
             TRandom2 *noiseInjector_{nullptr};
             TClonesArray* ecalDigis_{nullptr};
@@ -68,8 +83,11 @@ namespace ldmx {
             EcalHexReadout* hexReadout_{nullptr};
             float meanNoise_{0};
             float readoutThreshold_{0};
-    };
+            
+            /** Capacitance per cell pad. */
+            double padCapacitance_{28.5}; // pF 
 
+    };
 }
 
 #endif

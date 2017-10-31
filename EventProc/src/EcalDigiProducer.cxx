@@ -17,14 +17,14 @@
 
 namespace ldmx {
 
-    const int EcalDigiProducer::NUM_ECAL_LAYERS = 33;
-    const int EcalDigiProducer::BACK_ECAL_STARTING_LAYER = 20;
-    const int EcalDigiProducer::NUM_LAYERS_FOR_MED_CAL = 10;
     const std::vector<double> LAYER_WEIGHTS 
         = {1.641, 3.526, 5.184, 6.841,
         8.222, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775,
         8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 12.642, 16.51,
         16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 8.45}; 
+   
+    const double ELECTRONS_PER_MIP = 33000.0; // e-
+
     const double MIP_SI_RESPONSE = 0.130; // MeV
 
     //const float EcalDigiProducer::meanNoise           = .015;
@@ -40,6 +40,7 @@ namespace ldmx {
         noiseInjector_ = new TRandom2(ps.getInteger("randomSeed", 0));
         meanNoise_ = ps.getDouble("meanNoise");
         readoutThreshold_ = ps.getDouble("readoutThreshold");
+        padCapacitance_ = ps.getDouble("padCapacitance");  
 
         ecalDigis_ = new TClonesArray(EventConstants::ECAL_HIT.c_str(), 10000);
     }
@@ -54,7 +55,6 @@ namespace ldmx {
                   << std::endl;
 
         //First we simulate noise injection into each hit and store layer-wise max cell ids
-        int iHitOut = 0;
         for (int iHit = 0; iHit < numEcalSimHits; iHit++) {
             SimCalorimeterHit* simHit = (SimCalorimeterHit*) ecalSimHits->At(iHit);
 
