@@ -55,6 +55,10 @@ namespace ldmx {
         readoutThreshold_ = ps.getDouble("readoutThreshold")*noiseRMS_;
         //std::cout << "[ EcalDigiProducer ]: Readout threshold: " << readoutThreshold_ << " MeV" << std::endl;
 
+        noiseGenerator_->setNoise(noiseRMS_); 
+        noiseGenerator_->setPedestal(0); 
+        noiseGenerator_->setNoiseThreshold(ps.getDouble("readoutThreshold")*noiseRMS_); 
+
         ecalDigis_ = new TClonesArray(EventConstants::ECAL_HIT.c_str(), 10000);
     }
 
@@ -63,11 +67,12 @@ namespace ldmx {
         TClonesArray* ecalSimHits = (TClonesArray*) event.getCollection(EventConstants::ECAL_SIM_HITS);
         int numEcalSimHits = ecalSimHits->GetEntries();
 
-        std::cout << "[ EcalDigiProducer ] : Got " << numEcalSimHits 
-                  << " ECal hits in event " << event.getEventHeader()->getEventNumber()
-                  << std::endl;
+        //std::cout << "[ EcalDigiProducer ] : Got " << numEcalSimHits 
+        //          << " ECal hits in event " << event.getEventHeader()->getEventNumber()
+        //          << std::endl;
 
-        //First we simulate noise injection into each hit and store layer-wise max cell ids
+        //First we simulate noise injection into each hit and store layer-wise 
+        // max cell ids
         for (int iHit = 0; iHit < numEcalSimHits; iHit++) {
             
             SimCalorimeterHit* simHit = (SimCalorimeterHit*) ecalSimHits->At(iHit);
@@ -90,6 +95,41 @@ namespace ldmx {
                 digiHit->setTime(-1000);
             }
         }
+
+        // Given the number of channels without a hit, calculate the expected 
+        // number of noise hits above the readout threshold and randomly 
+        // assign them to Ecal cells
+        int emptyChannels = TOTAL_CELLS - numEcalSimHits;
+        //std::cout << "[ EcalDigiProducer ]: Total number of empty channels: " << emptyChannels << std::endl;
+        std::vector<double> noiseHits = noiseGenerator_->generateNoiseHits(emptyChannels);
+        //std::cout << "[ EcalDigiProducer ]: Total number of noise hits: " << noiseHits.size() << std::endl; 
+        int iHit = numEcalSimHits; 
+        for (double noiseHit : noiseHits) { 
+            //std::cout << "[ EcalDigiProducer ]: Noise hit amplitude: " << noiseHit << std::endl;
+
+            // Construct a hit in the ith position
+            EcalHit* digiHit = (EcalHit*) (ecalDigis_->ConstructedAt(iHit));
+            
+            // Set the raw energy of the hit
+            digiHit->setAmplitude(noiseHit);
+
+            // Generate a random ID and pack it
+            int layerID = noiseInjector_->Integer(NUM_ECAL_LAYERS); 
+            //std::cout << "[ EcalDigiProducer ]: Random layer ID: " << layerID << std::endl;
+            int moduleID = noiseInjector_->Integer(HEX_MODULES_PER_LAYER); 
+            //std::cout << "[ EcalDigiProducer ]: Random module ID: " << moduleID << std::endl;
+            int cellID = noiseInjector_->Integer(CELLS_PER_HEX_MODULE); 
+            //std::cout << "[ EcalDigiProducer ]: Random cell ID: " << cellID << std::endl;
+            detID_.setFieldValue(1, layerID); 
+            detID_.setFieldValue(2, moduleID); 
+            detID_.setFieldValue(3, cellID); 
+            digiHit->setID(detID_.pack()); 
+
+            // Set the calibrated energy of the hit
+            digiHit->setEnergy(((noiseHit/MIP_SI_RESPONSE)*LAYER_WEIGHTS[layerID]+noiseHit)*0.948);
+            ++iHit; 
+        } 
+
         event.add("ecalDigis", ecalDigis_);
     }
 }
