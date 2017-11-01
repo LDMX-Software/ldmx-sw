@@ -21,6 +21,7 @@
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
+#include "Tools/NoiseGenerator.h"
 
 namespace ldmx {
 
@@ -91,7 +92,9 @@ namespace ldmx {
             TClonesArray* ecalDigis_{nullptr};
             EcalDetectorID detID_;
             EcalHexReadout* hexReadout_{nullptr};
-            
+          
+            /** Generator of noise hits. */ 
+            NoiseGenerator* noiseGenerator_{new NoiseGenerator{}}; 
            
             /** Set the noise (in electrons) when the capacitance is 0. */
             double noiseIntercept_{900.};
