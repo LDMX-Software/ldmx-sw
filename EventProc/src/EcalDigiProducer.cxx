@@ -23,9 +23,9 @@ namespace ldmx {
         8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 12.642, 16.51,
         16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 8.45}; 
    
-    const double ELECTRONS_PER_MIP = 33000.0; // e-
+    const double EcalDigiProducer::ELECTRONS_PER_MIP = 33000.0; // e-
 
-    const double MIP_SI_RESPONSE = 0.130; // MeV
+    const double EcalDigiProducer::MIP_SI_RESPONSE = 0.130; // MeV
 
     //const float EcalDigiProducer::meanNoise           = .015;
     //const float EcalDigiProducer::readoutThreshold    = 3*meanNoise;
@@ -38,9 +38,22 @@ namespace ldmx {
 
         hexReadout_ = new EcalHexReadout();
         noiseInjector_ = new TRandom2(ps.getInteger("randomSeed", 0));
-        meanNoise_ = ps.getDouble("meanNoise");
-        readoutThreshold_ = ps.getDouble("readoutThreshold");
-        padCapacitance_ = ps.getDouble("padCapacitance");  
+
+        noiseIntercept_ = ps.getDouble("noiseIntercept"); 
+        noiseSlope_     = ps.getDouble("noiseSlope");
+        padCapacitance_ = ps.getDouble("padCapacitance"); 
+
+        // Calculate the noise RMS based on the properties of the readout pad
+        noiseRMS_ = this->calculateNoise(padCapacitance_, noiseIntercept_, noiseSlope_);  
+        //std::cout << "[ EcalDigiProducer ]: Noise RMS: " << noiseRMS_ << " e-" << std::endl;
+
+        // Convert the noise RMS in electrons to energy
+        noiseRMS_ = noiseRMS_*(MIP_SI_RESPONSE/ELECTRONS_PER_MIP); 
+        //std::cout << "[ EcalDigiProducer ]: Noise RMS: " << noiseRMS_ << " MeV" << std::endl;
+
+        // Calculate the readout threhsold
+        readoutThreshold_ = ps.getDouble("readoutThreshold")*noiseRMS_;
+        //std::cout << "[ EcalDigiProducer ]: Readout threshold: " << readoutThreshold_ << " MeV" << std::endl;
 
         ecalDigis_ = new TClonesArray(EventConstants::ECAL_HIT.c_str(), 10000);
     }
@@ -56,9 +69,10 @@ namespace ldmx {
 
         //First we simulate noise injection into each hit and store layer-wise max cell ids
         for (int iHit = 0; iHit < numEcalSimHits; iHit++) {
+            
             SimCalorimeterHit* simHit = (SimCalorimeterHit*) ecalSimHits->At(iHit);
 
-            double hitNoise = noiseInjector_->Gaus(0, meanNoise_);
+            double hitNoise = noiseInjector_->Gaus(0, noiseRMS_);
             layer_cell_pair hit_pair = hitToPair(simHit);
 
             EcalHit* digiHit = (EcalHit*) (ecalDigis_->ConstructedAt(iHit));
