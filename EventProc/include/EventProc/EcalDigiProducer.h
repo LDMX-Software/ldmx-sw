@@ -46,7 +46,17 @@ namespace ldmx {
             virtual void produce(Event& event);
 
         private:
-
+            
+            /** 
+             * Calculate the noise in electrons given the pad capacitance. 
+             *
+             * @param capacitance capacitance in pF
+             * @return noise in electrons
+             */
+            double calculateNoise(const double capacitance, const double noiseIntercept, const double noiseSlope) { 
+                return noiseIntercept + noiseSlope*capacitance;
+            } 
+            
             inline layer_cell_pair hitToPair(SimCalorimeterHit* hit) {
                 int detIDraw = hit->getID();
                 detID_.setRawValue(detIDraw);
@@ -81,12 +91,25 @@ namespace ldmx {
             TClonesArray* ecalDigis_{nullptr};
             EcalDetectorID detID_;
             EcalHexReadout* hexReadout_{nullptr};
-            float meanNoise_{0};
-            float readoutThreshold_{0};
             
+           
+            /** Set the noise (in electrons) when the capacitance is 0. */
+            double noiseIntercept_{900.};
+
+            /** Noise RMS in units of electrons. */
+            double noiseRMS_{0}; 
+
+            /** Set the capacitative noise slope (electrons/pF). */
+            double noiseSlope_{22.}; 
+
             /** Capacitance per cell pad. */
             double padCapacitance_{28.5}; // pF 
-
+            
+            /** 
+             * Set the threshold for reading out a channel. Units are 
+             * multiples of RMS noise. 
+             */
+            double readoutThreshold_{3.};
     };
 }
 
