@@ -68,9 +68,6 @@ namespace ldmx {
              */
             G4UIcmdWithAString* particleTypeCmd_{nullptr};
 
-            /** Command allowing a user to specify what process to bias. */
-            G4UIcmdWithAString* processCmd_{nullptr};
-
             /** Command allowing a user to specify an energy threshold. */
             G4UIcmdWithAString* thresholdCmd_{nullptr};
 
