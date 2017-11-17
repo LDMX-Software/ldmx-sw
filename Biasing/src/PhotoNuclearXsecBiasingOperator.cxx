@@ -31,32 +31,32 @@ namespace ldmx {
 
         if (track->GetParentID() != 1) return 0; 
 
-        /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: " 
+        std::cout << "[ PhotoNuclearXsecBiasingOperator ]: " 
                   << "Kinetic energy: " << track->GetKineticEnergy() 
-                  << " MeV" << std::endl;*/
+                  << " MeV" << std::endl;
 
         if (track->GetKineticEnergy() < XsecBiasingOperator::threshold_) return 0; 
 
-        /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: " 
+        std::cout << "[ PhotoNuclearXsecBiasingOperator ]: " 
                   << "Calling process: " 
                   << callingProcess->GetWrappedProcess()->GetProcessName() 
-                  << std::endl;*/
+                  << std::endl;
 
         std::string currentProcess = callingProcess->GetWrappedProcess()->GetProcessName(); 
-        if (currentProcess.compare(PHOTONUCLEAR_PROCESS) == 0) { 
+        if (currentProcess.compare(this->getProcessToBias()) == 0) { 
             
             G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
-            /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
+            std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
                       << "PN Interaction length: " 
-                      << interactionLength << std::endl;*/
+                      << interactionLength << std::endl;
 
             pnXsecUnbiased_ = 1./interactionLength;
-            /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: Unbiased PN xsec: "
-                      << pnXsecUnbiased_ << std::endl;*/
+            std::cout << "[ PhotoNuclearXsecBiasingOperator ]: Unbiased PN xsec: "
+                      << pnXsecUnbiased_ << std::endl;
 
             pnXsecBiased_ = pnXsecUnbiased_*xsecFactor_; 
-            /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: Biased PN xsec: "
-                      << pnXsecBiased_ << std::endl;*/
+            std::cout << "[ PhotoNuclearXsecBiasingOperator ]: Biased PN xsec: "
+                      << pnXsecBiased_ << std::endl;
 
             xsecOperation->SetBiasedCrossSection(pnXsecBiased_);
             xsecOperation->Sample();
