@@ -36,8 +36,8 @@ namespace ldmx {
         if (sharedData) {
             for (size_t index = 0 ; index < (sharedData->GetPhysicsBiasingProcessInterfaces()).size(); ++index) {
                 const G4BiasingProcessInterface* wrapperProcess = (sharedData->GetPhysicsBiasingProcessInterfaces())[index];
-                if (wrapperProcess->GetWrappedProcess()->GetProcessName().compareTo(process_) == 0) { 
-                    xsecOperation = new G4BOptnChangeCrossSection("changeXsec-" + process_);
+                if (wrapperProcess->GetWrappedProcess()->GetProcessName().compareTo(this->getProcessToBias()) == 0) { 
+                    xsecOperation = new G4BOptnChangeCrossSection("changeXsec-" + this->getProcessToBias());
                     break;
                 } 
             }

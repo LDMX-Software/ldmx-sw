@@ -63,9 +63,6 @@ namespace ldmx {
             /** Set the particle type to bias. */
             void setParticleType(std::string particleType) { particleType_ = particleType; };
 
-            /** Set the process to bias. */
-            void setProcess(std::string process) { process_ = process; };
-
             /** Set the minimum energy required to bias the particle. */
             void setThreshold(double threshold) { threshold_ = threshold; };
 
@@ -73,6 +70,8 @@ namespace ldmx {
             void setXsecFactor(double xsecFactor) { xsecFactor_ = xsecFactor; };
 
         protected: 
+
+            virtual std::string getProcessToBias() = 0;
 
             /** Cross-section biasing operation */
             G4BOptnChangeCrossSection* xsecOperation{nullptr};
@@ -88,9 +87,6 @@ namespace ldmx {
 
             /** The particle type to bias. */
             std::string particleType_{""}; 
-
-            /** The process that the biasing will be applied to. */
-            std::string process_{""}; 
 
             /** The minimum energy required to apply the biasing operation. */
             double threshold_{0};
