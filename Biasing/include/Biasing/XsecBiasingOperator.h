@@ -41,7 +41,7 @@ namespace ldmx {
             XsecBiasingOperator(std::string name);
 
             /** Destructor */
-            ~XsecBiasingOperator();
+            virtual ~XsecBiasingOperator();
 
             /** Method called at the beginning of a run. */
             void StartRun();
@@ -50,9 +50,9 @@ namespace ldmx {
              * @return Method that returns the biasing operation that will be used
              *         to bias the occurence of photonuclear events.
              */
-            G4VBiasingOperation* ProposeOccurenceBiasingOperation(const G4Track* track,
-                    const G4BiasingProcessInterface* callingProcess);
-
+            virtual G4VBiasingOperation* ProposeOccurenceBiasingOperation(
+                    const G4Track* track,
+                    const G4BiasingProcessInterface* callingProcess) = 0;
 
             /** Bias all particles of the given type. */
             void biasAll() { biasAll_ = true; };
@@ -72,7 +72,7 @@ namespace ldmx {
             /** Set the factor by which the xsec will be enhanced. */
             void setXsecFactor(double xsecFactor) { xsecFactor_ = xsecFactor; };
 
-        private: 
+        protected: 
 
             /** Cross-section biasing operation */
             G4BOptnChangeCrossSection* xsecOperation{nullptr};
