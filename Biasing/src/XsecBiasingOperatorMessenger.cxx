@@ -28,11 +28,6 @@ namespace ldmx {
                                              G4ApplicationState::G4State_Idle);
         particleTypeCmd_->SetGuidance("Set the particle type to bias."); 
 
-        processCmd_ = new G4UIcmdWithAString{"/ldmx/biasing/xsec/process", this};
-        processCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit,
-                                        G4ApplicationState::G4State_Idle);
-        processCmd_->SetGuidance("Set the process to bias."); 
-        
         thresholdCmd_ = new G4UIcmdWithAString{"/ldmx/biasing/xsec/threshold", this};
         thresholdCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit,
                                           G4ApplicationState::G4State_Idle);
@@ -49,7 +44,6 @@ namespace ldmx {
         delete biasAllCmd_;
         delete biasIncidentCmd_;  
         delete particleTypeCmd_;
-        delete processCmd_;
         delete thresholdCmd_;
         delete xsecTransCmd_;
     }
@@ -62,8 +56,6 @@ namespace ldmx {
             operator_->biasIncident(); 
         } else if (command == particleTypeCmd_)  {
             operator_->setParticleType(newValue); 
-        } else if (command == processCmd_) {
-            operator_->setProcess(newValue); 
         } else if (command == thresholdCmd_) { 
             operator_->setThreshold(G4UIcommand::ConvertToDouble(newValue)); 
         } else if (command == xsecTransCmd_) { 
