@@ -52,7 +52,12 @@ namespace ldmx {
              */
             G4VBiasingOperation* ProposeOccurenceBiasingOperation(const G4Track* track,
                     const G4BiasingProcessInterface* callingProcess);
+
         
+        protected:
+
+            virtual std::string getProcessToBias() { return PHOTONUCLEAR_PROCESS; }
+
         private: 
 
             /** Geant4 photonuclear process name. */
