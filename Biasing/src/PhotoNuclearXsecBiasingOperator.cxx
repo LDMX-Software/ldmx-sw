@@ -74,7 +74,11 @@ namespace ldmx {
             /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: Unbiased EM xsec: "
                       << emXsecUnbiased << std::endl;*/
 
-            double emXsecBiased = std::max(emXsecUnbiased + pnXsecUnbiased_ - pnXsecBiased_, pnXsecUnbiased_);  
+            double emXsecBiased = std::max(emXsecUnbiased + pnXsecUnbiased_ - pnXsecBiased_, pnXsecUnbiased_); 
+            if (emXsecBiased == pnXsecUnbiased_) { 
+                G4cout << "[ PhotoNuclearXsecBiasingOperator ]: [ WARNING ]: "
+                       << "Biasing factor is too large." << std::endl; 
+            } 
             /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: Biased EM xsec: "
                       << emXsecBiased << std::endl;*/
 
