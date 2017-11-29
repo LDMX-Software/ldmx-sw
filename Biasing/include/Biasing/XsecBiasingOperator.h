@@ -71,10 +71,22 @@ namespace ldmx {
 
         protected: 
 
+            /**
+             * Check if the given processed is being biased. 
+             * 
+             * @param process Process of interest
+             * @return true if the process is being biased, false otherwise
+             */
+            bool processIsBiased(std::string process); 
+
+            /** Return the process whose cross-section will be biased. */
             virtual std::string getProcessToBias() = 0;
 
-            /** Cross-section biasing operation */
+            /** Cross-section biasing operation. */
             G4BOptnChangeCrossSection* xsecOperation{nullptr};
+
+            /** Process manager associated with the particle of interest. */
+            G4ProcessManager* processManager_{nullptr}; 
 
             /** Messenger used to pass arguments to this operator. */
             XsecBiasingOperatorMessenger* messenger_{nullptr}; 
