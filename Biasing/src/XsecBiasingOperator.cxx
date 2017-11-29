@@ -20,27 +20,42 @@ namespace ldmx {
 
     void XsecBiasingOperator::StartRun() { 
 
-        G4ProcessManager* processManager{nullptr}; 
         if (particleType_.compare("gamma") == 0) {
-            processManager = G4Gamma::GammaDefinition()->GetProcessManager();
+            processManager_ = G4Gamma::GammaDefinition()->GetProcessManager();
         } else if (particleType_.compare("e-") == 0) { 
-            processManager = G4Electron::ElectronDefinition()->GetProcessManager();
+            processManager_ = G4Electron::ElectronDefinition()->GetProcessManager();
         } else { 
             // Throw an exception
         }
 
-        std::cout << "[ XsecBiasingOperator ]: " << "Biasing particles of type " 
+        std::cout << "[ XsecBiasingOperator ]: Biasing particles of type " 
                   << particleType_ << std::endl; 
 
-        const G4BiasingProcessSharedData* sharedData = G4BiasingProcessInterface::GetSharedData(processManager);
+        if (processIsBiased(this->getProcessToBias())) { 
+            xsecOperation = new G4BOptnChangeCrossSection("changeXsec-" + this->getProcessToBias());
+        } else { 
+            // Throw an exception
+        }
+    }
+
+    bool XsecBiasingOperator::processIsBiased(std::string process) { 
+        
+        // Loop over all processes and check if the given process is being 
+        // biased.
+        const G4BiasingProcessSharedData* sharedData 
+            = G4BiasingProcessInterface::GetSharedData(processManager_);
         if (sharedData) {
-            for (size_t index = 0 ; index < (sharedData->GetPhysicsBiasingProcessInterfaces()).size(); ++index) {
-                const G4BiasingProcessInterface* wrapperProcess = (sharedData->GetPhysicsBiasingProcessInterfaces())[index];
-                if (wrapperProcess->GetWrappedProcess()->GetProcessName().compareTo(this->getProcessToBias()) == 0) { 
-                    xsecOperation = new G4BOptnChangeCrossSection("changeXsec-" + this->getProcessToBias());
-                    break;
+            for (size_t iprocess = 0 ; 
+                    iprocess < (sharedData->GetPhysicsBiasingProcessInterfaces()).size(); ++iprocess) {
+                
+                const G4BiasingProcessInterface* wrapperProcess
+                    = (sharedData->GetPhysicsBiasingProcessInterfaces())[iprocess];
+
+                if (wrapperProcess->GetWrappedProcess()->GetProcessName().compareTo(process) == 0) {
+                    return true; 
                 } 
             }
         }
+        return false;
     }
 }
