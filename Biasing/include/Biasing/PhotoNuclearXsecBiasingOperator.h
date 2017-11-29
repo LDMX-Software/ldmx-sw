@@ -46,6 +46,9 @@ namespace ldmx {
             /** Destructor */
             ~PhotoNuclearXsecBiasingOperator();
 
+            /** Method called at the beginning of a run. */
+            void StartRun();
+
             /** 
              * @return Method that returns the biasing operation that will be used
              *         to bias the occurence of photonuclear events.
@@ -65,6 +68,9 @@ namespace ldmx {
 
             /** Geant4 gamma conversion process name. */
             static const std::string CONVERSION_PROCESS;
+
+            /** Cross-section biasing operation */
+            G4BOptnChangeCrossSection* emXsecOperation{nullptr};
 
             /** Unbiased photonuclear xsec. */
             double pnXsecUnbiased_{0};
