@@ -21,6 +21,17 @@ namespace ldmx {
     PhotoNuclearXsecBiasingOperator::~PhotoNuclearXsecBiasingOperator() {
     }
 
+    void PhotoNuclearXsecBiasingOperator::StartRun() { 
+     
+        XsecBiasingOperator::StartRun(); 
+
+        if (processIsBiased(CONVERSION_PROCESS)) { 
+            emXsecOperation = new G4BOptnChangeCrossSection("changeXsec-conv");
+        } else { 
+            // Throw an exception
+        }
+    }
+
     G4VBiasingOperation* PhotoNuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
             const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
     
@@ -31,9 +42,9 @@ namespace ldmx {
 
         if (track->GetParentID() != 1) return 0; 
 
-        std::cout << "[ PhotoNuclearXsecBiasingOperator ]: " 
+        /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: " 
                   << "Kinetic energy: " << track->GetKineticEnergy() 
-                  << " MeV" << std::endl;
+                  << " MeV" << std::endl;*/
 
         if (track->GetKineticEnergy() < XsecBiasingOperator::threshold_) return 0; 
 
@@ -66,26 +77,26 @@ namespace ldmx {
         } else if (currentProcess.compare(CONVERSION_PROCESS) == 0) { 
             
             G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
-            /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
+            std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
                       << "EM Interaction length: " 
-                      << interactionLength << std::endl;*/
+                      << interactionLength << std::endl;
 
             double emXsecUnbiased = 1./interactionLength; 
-            /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: Unbiased EM xsec: "
-                      << emXsecUnbiased << std::endl;*/
+            std::cout << "[ PhotoNuclearXsecBiasingOperator ]: Unbiased EM xsec: "
+                      << emXsecUnbiased << std::endl;
 
             double emXsecBiased = std::max(emXsecUnbiased + pnXsecUnbiased_ - pnXsecBiased_, pnXsecUnbiased_); 
             if (emXsecBiased == pnXsecUnbiased_) { 
                 G4cout << "[ PhotoNuclearXsecBiasingOperator ]: [ WARNING ]: "
                        << "Biasing factor is too large." << std::endl; 
             } 
-            /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: Biased EM xsec: "
-                      << emXsecBiased << std::endl;*/
+            std::cout << "[ PhotoNuclearXsecBiasingOperator ]: Biased EM xsec: "
+                      << emXsecBiased << std::endl;
 
-            xsecOperation->SetBiasedCrossSection(emXsecBiased);
-            xsecOperation->Sample();
+            emXsecOperation->SetBiasedCrossSection(emXsecBiased);
+            emXsecOperation->Sample();
 
-            return xsecOperation;
+            return emXsecOperation;
         
         } else return 0; 
 
@@ -95,7 +106,5 @@ namespace ldmx {
         } else if (!XsecBiasingOperator::biasAll_ && !XsecBiasingOperator::biasIncident_ && track->GetParentID() != 1) {
             return 0;
         }*/
-
-
     }
 }
