@@ -112,7 +112,7 @@ namespace ldmx {
         seco->trajPoints_->clear();
     }
 
-    const G4ThreeVector& Trajectory::getEndPoint() const {
+    G4ThreeVector Trajectory::getEndPoint() const {
         return GetPoint(GetPointEntries() - 1)->GetPosition();
     }
 
