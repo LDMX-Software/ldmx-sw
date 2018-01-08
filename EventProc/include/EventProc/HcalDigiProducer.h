@@ -56,6 +56,7 @@ namespace ldmx {
             double mev_per_mip_{1.40};
             double pe_per_mip_{13.5};
             int    doStrip_{true};
+            std::string simHitCollection_;
     };
 
 }

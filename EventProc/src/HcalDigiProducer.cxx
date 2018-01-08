@@ -28,6 +28,7 @@ namespace ldmx {
         mev_per_mip_ = ps.getDouble("mev_per_mip");
         pe_per_mip_  = ps.getDouble("pe_per_mip");
         doStrip_     = ps.getInteger("doStrip");
+        simHitCollection_ = ps.getString("simHitCollection","");
     }
 
     void HcalDigiProducer::produce(Event& event) {
@@ -36,7 +37,11 @@ namespace ldmx {
         std::map<int, float> hcalXpos,hcalYpos,hcalZpos,hcaldetIDEdep, hcaldetIDTime;
 
         // looper over sim hits and aggregate energy depositions for each detID
-        TClonesArray* hcalHits = (TClonesArray*) event.getCollection(EventConstants::HCAL_SIM_HITS, "sim");
+        TClonesArray* hcalHits;
+        if( simHitCollection_ == "" )
+            hcalHits = (TClonesArray*) event.getCollection(EventConstants::HCAL_SIM_HITS, "sim");
+        else
+            hcalHits = (TClonesArray*) event.getCollection(simHitCollection_);
 
         int numHCalSimHits = hcalHits->GetEntries();
         for (int iHit = 0; iHit < numHCalSimHits; iHit++) {

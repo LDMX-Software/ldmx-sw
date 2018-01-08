@@ -8,11 +8,21 @@ from LDMX.Framework import ldmxcfg
 
 # Setup producers with default templates
 from LDMX.EventProc.ecalDigis import ecalDigis
+ecalDigis.parameters["simHitCollection"] = "SortedEcalSimHits"
 from LDMX.EventProc.hcalDigis import hcalDigis
+hcalDigis.parameters["simHitCollection"] = "SortedHcalSimHits"
 from LDMX.EventProc.simpleTrigger import simpleTrigger 
 
 p = ldmxcfg.Process("skim")
 p.libraries.append("libEventProc.so")
+
+ecalSimHitSort = ldmxcfg.Producer("ecalSimHitSort", "ldmx::SimHitSortProcessor")
+ecalSimHitSort.parameters["simHitCollection"]="EcalSimHits"
+ecalSimHitSort.parameters["outputCollection"]="SortedEcalSimHits"
+
+hcalSimHitSort = ldmxcfg.Producer("hcalSimHitSort", "ldmx::SimHitSortProcessor")
+hcalSimHitSort.parameters["simHitCollection"]="HcalSimHits"
+hcalSimHitSort.parameters["outputCollection"]="SortedHcalSimHits"
 
 # Load the PN re-weighting processor
 pnWeight = ldmxcfg.Producer("pn_reweight", "ldmx::PnWeightProcessor")
@@ -36,13 +46,16 @@ simpleTrigger.parameters["end_layer"]   = 20
 
 findable_track = ldmxcfg.Producer("findable", "ldmx::FindableTrackProcessor")
 
-p.sequence=[ecalDigis, hcalDigis, simpleTrigger, ecalVeto, hcalVeto, findable_track, pnWeight]
+p.sequence=[ecalSimHitSort, hcalSimHitSort, ecalDigis, hcalDigis, simpleTrigger, ecalVeto, hcalVeto, findable_track, pnWeight]
 
 # Default to dropping all events
 p.skimDefaultIsDrop()
 
 # Use output of trigger module to decide what to keep
 p.skimConsider("simpleTrigger")
+
+p.keep.append('drop EcalSimHits_sim')
+p.keep.append('drop HcalSimHits_sim')
 
 p.inputFiles = [sys.argv[1]]
 p.outputFiles = ["ldmx_skim_digi_events.root"]
