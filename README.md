@@ -217,7 +217,7 @@ Finally, [submit a pull request](https://github.com/LDMXAnalysis/ldmx-sw/compare
 
 ## Help
 
-Comments, suggestions or cries for help can be sent to [Jeremy McCormick](mailto:jeremym@slac.stanford.edu) or posted in the [#simulation channel](https://ldmxsoftware.slack.com/messages/simulation/) of the [LDMX Software Slack](https://ldmxsoftware.slack.com/).  
+Comments, suggestions or cries for help can be sent to [Omar Moreno](mailto:omoreno@slac.stanford.edu) or posted in the [#simulation channel](https://ldmxsoftware.slack.com/messages/simulation/) of the [LDMX Software Slack](https://ldmxsoftware.slack.com/).  
 
 If you plan on starting a major (sub)project within the repository like adding a new code module, you should give advance notice and explain your plains beforehand.  :)
 
