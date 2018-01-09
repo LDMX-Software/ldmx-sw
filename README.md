@@ -47,16 +47,21 @@ The *XercesC_DIR* environment variable is optional and for convenience.  Where y
 
 You need to have a local Geant4 installation available with GDML enabled.  You can check for this by looking for the header files in the Geant4 include dir, e.g. by doing `ls G4GDML*.hh` from that directory.  If no files are found, then it is not enabled in your installation.
 
-Assuming you have [downloaded a Geant4 tarball](http://geant4.web.cern.ch/geant4/support/download.shtml), the installation procedure is like the following (see cmake dependencies below):
+LDMX uses a custom version of Geant4 10.02.p03 that includes modifications to the range in which the Bertini Cascade model is used and fixes to the calculation of the Gamma to mu+mu- matrix element.  This version of geant4 can be cloned from github as follows: 
 
 ``` bash
-tar -zxvf geant4.10.02.p02.tar.gz
-cd geant4.10.02.p02
+git clone https://github.com/LDMXAnalysis/geant4.git geant4.10.02.p03
+```
+
+Geant4 is then built by issuing the following commands:
+
+``` bash
+cd geant4.10.02.p03
 mkdir build; cd build
 cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DXERCESC_ROOT_DIR=$XercesC_DIR \
-    -DGEANT4_USE_OPENGL_X11=ON -DCMAKE_INSTALL_PREFIX=../../geant4.10.02.p02-install ..
+    -DGEANT4_USE_OPENGL_X11=ON -DCMAKE_INSTALL_PREFIX=../../install ..
 make install
-cd ../../geant4.10.02.p02-install
+cd ../../install
 export G4DIR=$PWD
 ```
 
