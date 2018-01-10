@@ -60,6 +60,14 @@ namespace ldmx {
             /** Bias only the incident particle. */
             void biasIncident() { biasIncident_ = true; };
 
+            /** 
+             * Disable the biasing down of EM when either the 
+             * photonuclear or gamma->mu+mu- xsections are biased up. This was
+             * added to remain backwards compatible with the old biasing 
+             * scheme.
+             */
+            void disableBiasDownEM() { biasDownEM_ = false; }; 
+
             /** Set the particle type to bias. */
             void setParticleType(std::string particleType) { particleType_ = particleType; };
 
@@ -90,6 +98,14 @@ namespace ldmx {
 
             /** Messenger used to pass arguments to this operator. */
             XsecBiasingOperatorMessenger* messenger_{nullptr}; 
+
+            /** 
+             * Flag indicating whether EM should be biased down when either
+             * photonuclear or gammatomumu is biased up.  This flag is only
+             * valid when either PhotoNuclearXsecBiasingOperator or 
+             * GammaToMuMuXsecBiasingOperator is used.
+             */
+            bool biasDownEM_{true};
 
             /** Flag indicating whether all particles should be biased. */
             bool biasAll_{false};
