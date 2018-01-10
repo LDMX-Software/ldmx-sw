@@ -33,9 +33,9 @@ The [Xerces C++](http://xerces.apache.org/xerces-c/download.cgi) framework is re
 You can install it from scratch using a series of commands such as the following:
 
 ``` bash
-wget http://download.nextag.com/apache/xerces/c/3/sources/xerces-c-3.1.4.tar.gz
-tar -zxvf xerces-c-3.1.4.tar.gz
-cd xerces-c-3.1.4
+wget http://apache.mirrors.hoobly.com//xerces/c/3/sources/xerces-c-3.2.0.tar.gz
+tar -zxvf xerces-c-3.2.0.tar.gz
+cd xerces-c-3.2.0
 ./configure --prefix=$PWD
 make install
 export XercesC_DIR=$PWD
@@ -47,16 +47,21 @@ The *XercesC_DIR* environment variable is optional and for convenience.  Where y
 
 You need to have a local Geant4 installation available with GDML enabled.  You can check for this by looking for the header files in the Geant4 include dir, e.g. by doing `ls G4GDML*.hh` from that directory.  If no files are found, then it is not enabled in your installation.
 
-Assuming you have [downloaded a Geant4 tarball](http://geant4.web.cern.ch/geant4/support/download.shtml), the installation procedure is like the following (see cmake dependencies below):
+LDMX uses a custom version of Geant4 10.02.p03 that includes modifications to the range in which the Bertini Cascade model is used and fixes to the calculation of the Gamma to mu+mu- matrix element.  This version of geant4 can be cloned from github as follows: 
 
 ``` bash
-tar -zxvf geant4.10.02.p02.tar.gz
-cd geant4.10.02.p02
+git clone https://github.com/LDMXAnalysis/geant4.git geant4.10.02.p03
+```
+
+Geant4 is then built by issuing the following commands:
+
+``` bash
+cd geant4.10.02.p03
 mkdir build; cd build
 cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DXERCESC_ROOT_DIR=$XercesC_DIR \
-    -DGEANT4_USE_OPENGL_X11=ON -DCMAKE_INSTALL_PREFIX=../../geant4.10.02.p02-install ..
+    -DGEANT4_USE_OPENGL_X11=ON -DCMAKE_INSTALL_PREFIX=../../install ..
 make install
-cd ../../geant4.10.02.p02-install
+cd ../../install
 export G4DIR=$PWD
 ```
 
@@ -212,7 +217,7 @@ Finally, [submit a pull request](https://github.com/LDMXAnalysis/ldmx-sw/compare
 
 ## Help
 
-Comments, suggestions or cries for help can be sent to [Jeremy McCormick](mailto:jeremym@slac.stanford.edu) or posted in the [#simulation channel](https://ldmxsoftware.slack.com/messages/simulation/) of the [LDMX Software Slack](https://ldmxsoftware.slack.com/).  
+Comments, suggestions or cries for help can be sent to [Omar Moreno](mailto:omoreno@slac.stanford.edu) or posted in the [#simulation channel](https://ldmxsoftware.slack.com/messages/simulation/) of the [LDMX Software Slack](https://ldmxsoftware.slack.com/).  
 
 If you plan on starting a major (sub)project within the repository like adding a new code module, you should give advance notice and explain your plains beforehand.  :)
 
