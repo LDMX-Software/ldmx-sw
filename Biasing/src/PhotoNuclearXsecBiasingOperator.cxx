@@ -74,7 +74,7 @@ namespace ldmx {
 
             return xsecOperation;
     
-        } else if (currentProcess.compare(CONVERSION_PROCESS) == 0) { 
+        } else if ((currentProcess.compare(CONVERSION_PROCESS) == 0) && biasDownEM_) { 
             
             G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
             /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
