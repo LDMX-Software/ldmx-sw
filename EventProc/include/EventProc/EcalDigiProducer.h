@@ -21,6 +21,7 @@
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
+#include "Tools/NoiseGenerator.h"
 
 namespace ldmx {
 
@@ -46,7 +47,17 @@ namespace ldmx {
             virtual void produce(Event& event);
 
         private:
-
+            
+            /** 
+             * Calculate the noise in electrons given the pad capacitance. 
+             *
+             * @param capacitance capacitance in pF
+             * @return noise in electrons
+             */
+            double calculateNoise(const double capacitance, const double noiseIntercept, const double noiseSlope) { 
+                return noiseIntercept + noiseSlope*capacitance;
+            } 
+            
             inline layer_cell_pair hitToPair(SimCalorimeterHit* hit) {
                 int detIDraw = hit->getID();
                 detID_.setRawValue(detIDraw);
@@ -58,18 +69,51 @@ namespace ldmx {
 
         private:
 
-            static const int NUM_ECAL_LAYERS;
-            static const int NUM_LAYERS_FOR_MED_CAL;
-            static const int BACK_ECAL_STARTING_LAYER;
+            /** Electrons per MIP. */
+            static const double ELECTRONS_PER_MIP; 
+
+            /** MIP response in MeV. */
+            static const double MIP_SI_RESPONSE;
+
+            /** Total number of Ecal layers. */
+            static const int NUM_ECAL_LAYERS{33};
+
+            /** Total number of hex modules per layer. */
+            static const int HEX_MODULES_PER_LAYER{7}; 
+
+            /** Total number of cells (channels) per hex module. */
+            static const int CELLS_PER_HEX_MODULE{397};
+
+            /** Total number of cells across all modules. */
+            static const int TOTAL_CELLS{NUM_ECAL_LAYERS*HEX_MODULES_PER_LAYER*CELLS_PER_HEX_MODULE};
+
 
             TRandom2 *noiseInjector_{nullptr};
             TClonesArray* ecalDigis_{nullptr};
             EcalDetectorID detID_;
             EcalHexReadout* hexReadout_{nullptr};
-            float meanNoise_{0};
-            float readoutThreshold_{0};
-    };
+          
+            /** Generator of noise hits. */ 
+            NoiseGenerator* noiseGenerator_{new NoiseGenerator{}}; 
+           
+            /** Set the noise (in electrons) when the capacitance is 0. */
+            double noiseIntercept_{900.};
 
+            /** Noise RMS in units of electrons. */
+            double noiseRMS_{0}; 
+
+            /** Set the capacitative noise slope (electrons/pF). */
+            double noiseSlope_{22.}; 
+
+            /** Capacitance per cell pad. */
+            double padCapacitance_{28.5}; // pF 
+            
+            /** 
+             * Set the threshold for reading out a channel. Units are 
+             * multiples of RMS noise. 
+             */
+            double readoutThreshold_{3.};
+    };
 }
 
 #endif
