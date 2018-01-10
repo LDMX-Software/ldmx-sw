@@ -17,6 +17,11 @@ namespace ldmx {
         biasAllCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit,
                                         G4ApplicationState::G4State_Idle);
         biasAllCmd_->SetGuidance("Bias all particles of the given type."); 
+        
+        biasDownEMCmd_ = new G4UIcmdWithoutParameter{"/ldmx/biasing/xsec/disable_bias_down_em", this};
+        biasDownEMCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit,
+                                        G4ApplicationState::G4State_Idle);
+        biasDownEMCmd_->SetGuidance("Disable biasing down of the EM cross-section."); 
 
         biasIncidentCmd_ = new G4UIcmdWithoutParameter{"/ldmx/biasing/xsec/bias_incident", this};
         biasIncidentCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit,
@@ -40,6 +45,7 @@ namespace ldmx {
     }
 
     XsecBiasingOperatorMessenger::~XsecBiasingOperatorMessenger() {
+        delete biasDownEMCmd_;
         delete biasingDir_;
         delete biasAllCmd_;
         delete biasIncidentCmd_;  
@@ -50,7 +56,9 @@ namespace ldmx {
 
     void XsecBiasingOperatorMessenger::SetNewValue(G4UIcommand* command, G4String newValue) {
         
-        if (command == biasAllCmd_) { 
+        if (command == biasDownEMCmd_) { 
+            operator_->disableBiasDownEM();
+        } else if (command == biasAllCmd_) { 
             operator_->biasAll(); 
         } else if (command == biasIncidentCmd_) { 
             operator_->biasIncident(); 
