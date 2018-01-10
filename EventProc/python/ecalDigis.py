@@ -10,8 +10,8 @@ ecalDigis.parameters["noiseIntercept"] = 900.
 # Set the capacitative noise slope (electrons/pF)
 ecalDigis.parameters["noiseSlope"] = 22.
 
-# Set the capacitance per cell pad
-ecalDigis.parameters["padCapacitance"] = 28.5
+# Set the capacitance per cell pad (pF)
+ecalDigis.parameters["padCapacitance"] = 27.56
 
 # set the readout threshold in multiples of RMS noise
-ecalDigis.parameters["readoutThreshold"] = 3.
+ecalDigis.parameters["readoutThreshold"] = 4.
