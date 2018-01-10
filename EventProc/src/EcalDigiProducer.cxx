@@ -1,19 +1,11 @@
+/**
+ * @file EcalDigiProducer.cxx
+ * @brief Class that performs basic ECal digitization
+ * @author Owen Colegrove, UCSB
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
+
 #include "EventProc/EcalDigiProducer.h"
-
-//----------//
-//   ROOT   //
-//----------//
-#include "TString.h"
-#include "TRandom.h"
-#include "TFile.h"
-#include "TTree.h"
-#include "TClonesArray.h"
-
-//-------------//
-//   ldmx-sw   //
-//-------------//
-#include "Event/EventConstants.h"
-#include "Event/EcalHit.h"
 
 namespace ldmx {
 
@@ -27,9 +19,6 @@ namespace ldmx {
 
     const double EcalDigiProducer::MIP_SI_RESPONSE = 0.130; // MeV
 
-    //const float EcalDigiProducer::meanNoise           = .015;
-    //const float EcalDigiProducer::readoutThreshold    = 3*meanNoise;
-
     EcalDigiProducer::EcalDigiProducer(const std::string& name, Process& process) :
         Producer(name, process) {
     }
@@ -37,7 +26,6 @@ namespace ldmx {
     void EcalDigiProducer::configure(const ParameterSet& ps) {
 
         hexReadout_ = new EcalHexReadout();
-        noiseInjector_ = new TRandom2(ps.getInteger("randomSeed", 0));
 
         noiseIntercept_ = ps.getDouble("noiseIntercept"); 
         noiseSlope_     = ps.getDouble("noiseSlope");
