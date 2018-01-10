@@ -82,12 +82,10 @@ namespace ldmx {
 
             EcalHit* digiHit = (EcalHit*) (ecalDigis_->ConstructedAt(iHit));
 
-            //  hit->setLayer(hit_pair.first);
             digiHit->setID(simHit->getID());
-            digiHit->setAmplitude(simHit->getEdep());
             double energy = simHit->getEdep() + hitNoise;
+            digiHit->setAmplitude(energy);
             if (energy > readoutThreshold_) {
-            
                 digiHit->setEnergy(((energy/MIP_SI_RESPONSE)*LAYER_WEIGHTS[hit_pair.first]+energy)*0.948);
                 digiHit->setTime(simHit->getTime());
             } else {
