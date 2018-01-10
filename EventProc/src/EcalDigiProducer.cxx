@@ -1,3 +1,10 @@
+/**
+ * @file EcalDigiProducer.cxx
+ * @brief Class that performs basic ECal digitization
+ * @author Owen Colegrove, UCSB
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
+
 #include "EventProc/EcalDigiProducer.h"
 
 namespace ldmx {
