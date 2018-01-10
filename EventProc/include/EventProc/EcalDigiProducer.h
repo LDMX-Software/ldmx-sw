@@ -2,20 +2,28 @@
  * @file EcalDigiProducer.h
  * @brief Class that performs basic ECal digitization
  * @author Owen Colegrove, UCSB
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
 #ifndef EVENTPROC_ECALDIGIPRODUCER_H_
 #define EVENTPROC_ECALDIGIPRODUCER_H_
 
-// ROOT
-#include "TString.h"
-#include "TRandom.h"
-#include "TFile.h"
-#include "TTree.h"
-#include "TRandom2.h"
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <time.h>
+
+//----------//
+//   ROOT   //
+//----------//
+#include "TRandom3.h"
 #include "TClonesArray.h"
 
-// LDMX
+//----------//
+//   LDMX   //
+//----------//
+#include "Event/EcalHit.h"
+#include "Event/EventConstants.h"
 #include "Event/SimCalorimeterHit.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
@@ -88,7 +96,7 @@ namespace ldmx {
             static const int TOTAL_CELLS{NUM_ECAL_LAYERS*HEX_MODULES_PER_LAYER*CELLS_PER_HEX_MODULE};
 
 
-            TRandom2 *noiseInjector_{nullptr};
+            TRandom3* noiseInjector_{new TRandom3(time(nullptr))};
             TClonesArray* ecalDigis_{nullptr};
             EcalDetectorID detID_;
             EcalHexReadout* hexReadout_{nullptr};
@@ -106,13 +114,13 @@ namespace ldmx {
             double noiseSlope_{22.}; 
 
             /** Capacitance per cell pad. */
-            double padCapacitance_{28.5}; // pF 
+            double padCapacitance_{27.56}; // pF 
             
             /** 
              * Set the threshold for reading out a channel. Units are 
              * multiples of RMS noise. 
              */
-            double readoutThreshold_{3.};
+            double readoutThreshold_{4.};
     };
 }
 
