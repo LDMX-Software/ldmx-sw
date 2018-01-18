@@ -1,6 +1,7 @@
 /**
  * @file RecoilMissesEcalSkimmer.cxx
- * @brief Processor used to select events where the recoil misses the Ecal. 
+ * @brief Processor used to select events where the recoil electron misses the
+ *        Ecal. 
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
