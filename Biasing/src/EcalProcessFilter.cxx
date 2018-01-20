@@ -8,15 +8,9 @@
 
 #include "Biasing/EcalProcessFilter.h"
 
+SIM_PLUGIN(ldmx, EcalProcessFilter)
+
 namespace ldmx { 
-
-    extern "C" EcalProcessFilter* createEcalProcessFilter() {
-        return new EcalProcessFilter;
-    }
-
-    extern "C" void destroyEcalProcessFilter(EcalProcessFilter* object) {
-        delete object;
-    }
 
     EcalProcessFilter::EcalProcessFilter() {
         messenger_ = new EcalProcessFilterMessenger(this);

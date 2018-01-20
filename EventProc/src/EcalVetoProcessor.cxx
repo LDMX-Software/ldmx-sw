@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <fstream>
+#include <cmath>
 
 namespace ldmx {
 
@@ -32,53 +33,19 @@ namespace ldmx {
     }
 
     void BDTHelper::buildFeatureVector(std::vector<float>& bdtFeatures, ldmx::EcalVetoResult& result) {
-        /*for (int i = 0; i < 33; i++) {
-            bdtFeatures.push_back(result.getEcalLayerEdepReadout()[i]);
-        }*/
         bdtFeatures.push_back(result.getNReadoutHits());
-        bdtFeatures.push_back(result.getNLooseIsoHits());
-        bdtFeatures.push_back(result.getNTightIsoHits());
-        bdtFeatures.push_back(result.nLooseMipTracks());
-        bdtFeatures.push_back(result.nMediumMipTracks());
-        bdtFeatures.push_back(result.nTightMipTracks());
         bdtFeatures.push_back(result.getSummedDet());
-        bdtFeatures.push_back(result.getSummedOuter());
-        bdtFeatures.push_back(result.getBackSummedDep());
-        bdtFeatures.push_back(result.getSummedLooseIso());
-        bdtFeatures.push_back(result.getMaxLooseIsoDep());
         bdtFeatures.push_back(result.getSummedTightIso());
-        bdtFeatures.push_back(result.getMaxTightIsoDep());
         bdtFeatures.push_back(result.getMaxCellDep());
         bdtFeatures.push_back(result.getShowerRMS());
-        double maxLen = 0, summedDep = 0;
-        for (auto track : result.getLooseMipTracks()) {
-            if (track.first > maxLen)
-                maxLen = track.first;
-            summedDep += track.second;
-        }
-        bdtFeatures.push_back(maxLen);
-        bdtFeatures.push_back(summedDep);
-
-        maxLen = 0, summedDep = 0;
-        for (auto track : result.getMediumMipTracks()) {
-            if (track.first > maxLen)
-                maxLen = track.first;
-            summedDep += track.second;
-        }
-        bdtFeatures.push_back(maxLen);
-        bdtFeatures.push_back(summedDep);
-
-        maxLen = 0, summedDep = 0;
-        for (auto track : result.getTightMipTracks()) {
-            if (track.first > maxLen)
-                maxLen = track.first;
-            summedDep += track.second;
-        }
-        bdtFeatures.push_back(maxLen);
-        bdtFeatures.push_back(summedDep);
+        bdtFeatures.push_back(result.getXStd());
+        bdtFeatures.push_back(result.getYStd());
+        bdtFeatures.push_back(result.getXMean());
+        bdtFeatures.push_back(result.getYMean());
+        bdtFeatures.push_back(result.getAvgLayerHit());
+        bdtFeatures.push_back(result.getDeepestLayerHit());
+        bdtFeatures.push_back(result.getStdLayerHit());
     }
-
-
     float BDTHelper::getSinglePred(std::vector<float> bdtFeatures) {
         TString cmd = vectorToPredCMD(bdtFeatures);
         TPython::Exec("pred = " + cmd);
@@ -102,7 +69,6 @@ namespace ldmx {
     }
 
     void EcalVetoProcessor::configure(const ParameterSet& ps) {
-
         doBdt_ = ps.getInteger("do_bdt");
         if (doBdt_){
             // Config and init the BDT.
@@ -116,61 +82,43 @@ namespace ldmx {
         }
         hexReadout_ = new EcalHexReadout();
         nEcalLayers_ = ps.getInteger("num_ecal_layers");
-        backEcalStartingLayer_ = ps.getInteger("back_ecal_starting_layer");
 
         bdtCutVal_ = ps.getDouble("disc_cut");
         ecalLayerEdepRaw_.resize(nEcalLayers_, 0);
         ecalLayerEdepReadout_.resize(nEcalLayers_, 0);
-        ecalLayerOuterRaw_.resize(nEcalLayers_, 0);
-        ecalLayerOuterReadout_.resize(nEcalLayers_, 0);
         ecalLayerTime_.resize(nEcalLayers_, 0);
         cellMap_.resize(nEcalLayers_, std::map<int, float>());
-        cellMapLooseIso_.resize(nEcalLayers_, std::map<int, float>());
         cellMapTightIso_.resize(nEcalLayers_, std::map<int, float>());
     }
 
     void EcalVetoProcessor::clearProcessor(){
         for (int i = 0; i < nEcalLayers_; i++) {
             cellMap_[i].clear();
-            cellMapLooseIso_[i].clear();
             cellMapTightIso_[i].clear();
         }
-        looseMipTracks_.clear();
-        mediumMipTracks_.clear();
-        tightMipTracks_.clear();
         bdtFeatures_.clear();
 
         nReadoutHits_ = 0;
-        nLooseIsoHits_ = 0;
-        nTightIsoHits_ = 0;
         summedDet_ = 0;
-        summedOuter_ = 0;
-        backSummedDet_ = 0;
-        summedLooseIso_ = 0;
-        maxLooseIsoDep_ = 0;
         summedTightIso_ = 0;
-        maxTightIsoDep_ = 0;
         maxCellDep_ = 0;
         showerRMS_ = 0;
+        xStd_ = 0;
+        yStd_ = 0;
+        xMean_ = 0;
+        yMean_ = 0;
+        avgLayerHit_ = 0;
+        stdLayerHit_ = 0;
+        deepestLayerHit_ = 0;
 
         std::fill(ecalLayerEdepRaw_.begin(), ecalLayerEdepRaw_.end(), 0);
         std::fill(ecalLayerEdepReadout_.begin(), ecalLayerEdepReadout_.end(), 0);
-        std::fill(ecalLayerOuterRaw_.begin(), ecalLayerOuterRaw_.end(), 0);
-        std::fill(ecalLayerOuterReadout_.begin(), ecalLayerOuterReadout_.end(), 0);
         std::fill(ecalLayerTime_.begin(), ecalLayerTime_.end(), 0);
     }
 
     void EcalVetoProcessor::produce(Event& event) {
         result_.Clear();
         clearProcessor();
-
-        // FIXME: These commands should go above the corresponding variables.
-        /* New expanded variable collection to help with background veto */
-        /* Loose isolated hits -- Any hit with no readout in nearest neighbors */
-        /* Any isolated hit that does have the event centroid as a nearest neighbor */
-        /* Loose tracks -- two consecutive layers w/ projected nearest neighbor loose isolated hits */
-        /* Medium tracks -- three consecutive layers w/ projected nearest neighbor loose isolated hits */
-        /* Tight tracks -- three consecutive layers w/ projected nearest neighbor tight isolated hits */
 
         // Get the collection of digitized Ecal hits from the event. 
         const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
@@ -185,10 +133,9 @@ namespace ldmx {
         bool doTight = true;
         /* ~~ Fill the isolated hit maps ~~ O(n)  */
         fillIsolatedHitMap(ecalDigis, globalCentroid, cellMap_, cellMapTightIso_, doTight);
-        fillIsolatedHitMap(ecalDigis, globalCentroid, cellMap_, cellMapLooseIso_, !doTight);
-        int trackLen = 2;
 
         //Loop over the hits from the event to calculate the rest of the important quantities
+        
         for (int iHit = 0; iHit < nEcalHits; iHit++) {
             //Layer-wise quantities
             EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
@@ -200,47 +147,56 @@ namespace ldmx {
                 nReadoutHits_++;
                 ecalLayerEdepReadout_[hit_pair.first] += hit->getEnergy();
                 ecalLayerTime_[hit_pair.first] += (hit->getEnergy()) * hit->getTime();
-            }
-            //Check Outer
-            if (!(isInShowerInnerRing(globalCentroid, hit_pair.second))
-                    && !(isInShowerOuterRing(globalCentroid, hit_pair.second))
-                    && !(hit_pair.second == globalCentroid)) {
-
-                ecalLayerOuterRaw_[hit_pair.first] += hit->getEnergy();
-
-                if (hit->getEnergy() > 0)
-                    ecalLayerOuterReadout_[hit_pair.first] += hit->getEnergy();
+                xMean_ += getCellCentroidXYPair(hit_pair.second).first;
+                yMean_ += getCellCentroidXYPair(hit_pair.second).second;
+                avgLayerHit_ += hit->getLayer();
+                if (deepestLayerHit_ < hit->getLayer()) {
+                    deepestLayerHit_ = hit->getLayer();
+                }
             }
         }
+        
+        if (nReadoutHits_ > 0) {
+            avgLayerHit_ /= nReadoutHits_;
+            xMean_ /= nReadoutHits_;
+            yMean_ /= nReadoutHits_;
+        } else {
+            avgLayerHit_ = 0;
+            xMean_ = 0;
+            yMean_ = 0;
+        }
 
+        // Loop over hits a second time to find the standard deviations.
+        for (int iHit = 0; iHit < nEcalHits; iHit++) {
+            EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
+            LayerCellPair hit_pair = hitToPair(hit);
+            if (hit->getEnergy() > 0) {
+                xStd_ += pow((getCellCentroidXYPair(hit_pair.second).first - xMean_), 2);
+                yStd_ += pow((getCellCentroidXYPair(hit_pair.second).second - yMean_), 2);
+                stdLayerHit_ += pow((hit->getLayer() - avgLayerHit_), 2);
+            }
+        }
+        
+        if (nReadoutHits_ > 0) {
+            xStd_ = sqrt (xStd_ / nReadoutHits_);
+            yStd_ = sqrt (yStd_ / nReadoutHits_);
+            stdLayerHit_ = sqrt (stdLayerHit_ / nReadoutHits_);
+        } else {
+            xStd_ = 0;
+            yStd_ = 0;
+            stdLayerHit_ = 0;
+        }
+        
         // end loop over sim hits
 
         for (int iLayer = 0; iLayer < ecalLayerEdepReadout_.size(); iLayer++) {
-            for (auto cell : cellMapLooseIso_[iLayer]) {
-                if (cell.second > 0) {
-                    nLooseIsoHits_++;
-                    summedLooseIso_ += cell.second;
-                }
-
-                if (cell.second > maxLooseIsoDep_) {
-                    maxLooseIsoDep_ = cell.second;
-                }
-            }
             for (auto cell : cellMapTightIso_[iLayer]) {
                 if (cell.second > 0) {
-                    nTightIsoHits_++;
                     summedTightIso_ += cell.second;
-                }
-
-                if (cell.second > maxTightIsoDep_) {
-                    maxTightIsoDep_ = cell.second;
                 }
             }
             ecalLayerTime_[iLayer] = ecalLayerTime_[iLayer] / ecalLayerEdepReadout_[iLayer];
             summedDet_ += ecalLayerEdepReadout_[iLayer];
-            summedOuter_ += ecalLayerOuterReadout_[iLayer];
-            if (iLayer > backEcalStartingLayer_)
-                backSummedDet_ += ecalLayerEdepReadout_[iLayer];
         }
 
         /*std::cout << "[ EcalVetoProcessor ]:\n" 
@@ -252,12 +208,6 @@ namespace ldmx {
          << "\t Shower Median: " << showerMedianCellId
          << std::endl;*/
 
-        /* ~~ Fill the mip tracks ~~ O(n_iso^2)  */
-        std::vector<std::map<int, float>> looseIsoCopy(cellMapLooseIso_);
-        fillMipTracks(cellMapLooseIso_, looseMipTracks_, trackLen);
-        trackLen = 3;
-        fillMipTracks(looseIsoCopy, mediumMipTracks_, trackLen);
-        fillMipTracks(cellMapTightIso_, tightMipTracks_, trackLen);
 
         // Get the collection of Ecal scoring plane hits. If it doesn't exist,
         // don't bother adding any truth tracking information.
@@ -303,15 +253,23 @@ namespace ldmx {
             }
         }
 
-        result_.setVariables(nReadoutHits_, nLooseIsoHits_, nTightIsoHits_, summedDet_, summedOuter_, backSummedDet_,
-                summedLooseIso_, maxLooseIsoDep_, summedTightIso_, maxTightIsoDep_, maxCellDep_, showerRMS_,
-                ecalLayerEdepReadout_, looseMipTracks_, mediumMipTracks_, tightMipTracks_, recoilP, recoilPos);
+        result_.setVariables(nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
+            showerRMS_, xStd_, yStd_, xMean_, yMean_, avgLayerHit_, stdLayerHit_, ecalLayerEdepReadout_, recoilP, recoilPos);
+        
         if (doBdt_) {
             BDTHelper_->buildFeatureVector(bdtFeatures_, result_);
             float pred = BDTHelper_->getSinglePred(bdtFeatures_);
             result_.setVetoResult(pred > bdtCutVal_);
             result_.setDiscValue(pred);
             std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
+        
+            // If the event passes the veto, keep it. Otherwise, 
+            // drop the event.
+            if (result_.passesVeto()) { 
+                setStorageHint(hint_shouldKeep); 
+            } else { 
+                setStorageHint(hint_shouldDrop);
+            }
         }
         event.addToCollection("EcalVeto", result_);
     }
@@ -414,99 +372,6 @@ namespace ldmx {
             //Insert isolated hit
             CellEnergyPair cell_energy_pair = std::make_pair(hit_pair.second, hit->getEnergy());
             cellMapIso_[hit_pair.first].insert(cell_energy_pair);
-        }
-    }
-
-    void EcalVetoProcessor::fillMipTracks(std::vector<std::map<int, float>>& cellMapIso_, std::vector<std::pair<int, float>>& trackVector, int minTrackLen) {
-
-        std::vector<std::vector<int>> trackTuple;
-        for (int iLayer = 0; iLayer < cellMapIso_.size() - 1; iLayer++) {
-            float trackEdep = 0;
-            //for (auto && seedCell : cellMapIso_[iLayer]){
-            auto itEnd = cellMapIso_[iLayer].cend();
-            for (auto it = cellMapIso_[iLayer].cbegin(); it != cellMapIso_[iLayer].cend();) {
-
-                auto seedCell = (*it);              //.second;
-
-                std::pair<int, int> trackEndPoints;
-                std::vector<LayerCellPair> trackCellPairs;
-                LayerCellPair seedCellPair = std::make_pair(iLayer, seedCell.first);
-                trackEdep += seedCell.second;
-                trackCellPairs.clear();
-                trackCellPairs.push_back(seedCellPair);
-                trackEndPoints.first = seedCell.first;
-
-                while (true) {
-                    if (seedCellPair.first + 1 >= cellMapIso_.size() - 1) {
-                        break;
-                    }
-                    float matchCellDep;
-                    LayerCellPair matchCellPair = std::make_pair(-1, 1e6);
-                    for (auto matchCell : cellMapIso_[seedCellPair.first + 1]) {
-                        matchCellDep = matchCell.second;
-                        LayerCellPair tempMatchCellPair = std::make_pair(seedCellPair.first + 1, matchCell.first);
-                        if (tempMatchCellPair.second == seedCellPair.second || isInShowerInnerRing(tempMatchCellPair.second, seedCellPair.second)) {
-                            matchCellPair = tempMatchCellPair;
-                            break;
-                        }
-                    }
-
-                    if (matchCellPair.first != -1) {
-                        trackCellPairs.push_back(matchCellPair);
-                        trackEdep += matchCellDep;
-                        seedCellPair = matchCellPair;
-                        trackEndPoints.second = matchCellPair.first;
-                    }
-
-                    else {
-                        break;
-                    }
-                }
-
-                if (trackCellPairs.size() >= minTrackLen) {
-                    trackVector.push_back(std::make_pair(trackCellPairs.size(), trackEdep));
-                    std::vector<int> trackInfo = {iLayer, trackEndPoints.first, trackEndPoints.second};
-                    trackTuple.push_back(trackInfo);
-                    int counter = 0;
-                    cellMapIso_[iLayer].erase(it++);
-                    for (auto cell : trackCellPairs) {
-                        if (counter == 0) {
-                            counter = counter + 1;
-                            continue;
-                        }
-                        std::map<int, float>::iterator it_2 = cellMapIso_[cell.first].find(cell.second);
-                        cellMapIso_[cell.first].erase(it_2);
-
-                    }
-                } else {
-                    it++;
-                }
-            }
-        }
-
-        for (int iTrack = 0; iTrack < trackVector.size(); iTrack++) {
-            if (iTrack >= trackVector.size() - 1)
-                break;
-            int prevEndLayer = trackTuple[iTrack][0];
-            int prevEndId = trackTuple[iTrack][2];
-            int prevLen = trackVector[iTrack].first;
-            for (int jTrack = 0; jTrack < trackVector.size(); jTrack++) {
-                if (jTrack >= trackVector.size() - 1)
-                    break;
-                int nextStartLayer = trackTuple[jTrack][0];
-                int nextStartId = trackTuple[jTrack][1];
-                if (prevEndLayer + prevLen != nextStartLayer - 1)
-                    break;
-                if (isInShowerOuterRing(prevEndId, nextStartId)) {
-                    trackVector[iTrack].second = trackVector[iTrack].second + trackVector[jTrack].second;
-                    trackVector[iTrack].first = trackVector[iTrack].first + trackVector[jTrack].first;
-                    trackTuple[iTrack][2] = trackTuple[jTrack][2];
-
-                    trackVector.erase(trackVector.begin() + jTrack);
-                    trackTuple.erase(trackTuple.begin() + jTrack);
-                    jTrack--;
-                }
-            }
         }
     }
 }

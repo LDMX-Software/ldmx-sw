@@ -202,7 +202,17 @@ namespace ldmx {
             /** Protected access to verbose level for convenience of sub-classes. */
             int verbose_ {1};
     };
+}
 
+/*
+ * Macro for defining the create and destroy methods for a sim plugin.
+ */
+#define SIM_PLUGIN(NS, NAME) \
+extern "C" NS::NAME* create ## NAME() { \
+    return new NS::NAME; \
+} \
+extern "C" void destroy ## NAME(NS::NAME* object) { \
+    delete object; \
 }
 
 #endif
