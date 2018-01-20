@@ -55,12 +55,6 @@ namespace ldmx {
         G4ThreeVector localPosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().TransformPoint(position);        
         hit->setPosition(position[0], position[1], position[2]);
         
-        //to be copied after section definition
-        // G4ThreeVector volumePosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
-        // if (section==HcalSection::BACK) hit->setPosition(position[0], position[1], volumePosition.z());
-        // elseif (section==HcalSection::TOP || section==HcalSection::BOTTOM) hit->setPosition(position[0], volumePosition.y(), position[2]);
-        // elseif (section==HcalSection::LEFT || section==HcalSection::RIGHT) hit->setPosition(volumePosition.x(),position[1] , position[2]);        
-
         // Set the global time.
         hit->setTime(aStep->GetTrack()->GetGlobalTime());
 
@@ -88,6 +82,13 @@ namespace ldmx {
 
         // Set the PDG code from the track.
         hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
+
+        //do we want to set the hit coordinate in the middle of the absorber?
+        // G4ThreeVector volumePosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
+        // if (section==HcalSection::BACK) hit->setPosition(position[0], position[1], volumePosition.z());
+        // elseif (section==HcalSection::TOP || section==HcalSection::BOTTOM) hit->setPosition(position[0], volumePosition.y(), position[2]);
+        // elseif (section==HcalSection::LEFT || section==HcalSection::RIGHT) hit->setPosition(volumePosition.x(),position[1] , position[2]);        
+
 
         if (this->verboseLevel > 2) {
             std::cout << "Created new SimCalorimeterHit in detector " << this->GetName()
