@@ -4,8 +4,8 @@
  * @author Jeremy Mans, University of Minnesota
  */
 
-#ifndef EVENT_EVENTIMPL_H_
-#define EVENT_EVENTIMPL_H_
+#ifndef FRAMEWORK_EVENTIMPL_H_
+#define FRAMEWORK_EVENTIMPL_H_
 
 // ROOT
 #include "TObject.h"
