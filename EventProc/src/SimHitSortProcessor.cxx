@@ -36,7 +36,7 @@ namespace ldmx {
             SimCalorimeterHit* simHit = (SimCalorimeterHit*) (sortedHits->ConstructedAt(iHit));
             simHit->setID( vecSimCaloHit[iHit]->getID() );
             simHit->setEdep( vecSimCaloHit[iHit]->getEdep() );
-            simHit->setPosition( vecSimCaloHit[iHit]->getPosition()[0] , vecSimCaloHit[iHit]->getPosition()[0] , vecSimCaloHit[iHit]->getPosition()[0] );
+            simHit->setPosition( vecSimCaloHit[iHit]->getPosition()[0] , vecSimCaloHit[iHit]->getPosition()[1] , vecSimCaloHit[iHit]->getPosition()[2] );
             simHit->setTime( vecSimCaloHit[iHit]->getTime() );
         }
 
