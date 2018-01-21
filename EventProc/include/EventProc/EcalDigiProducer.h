@@ -102,7 +102,7 @@ namespace ldmx {
             EcalHexReadout* hexReadout_{nullptr};
           
             /** Generator of noise hits. */ 
-            NoiseGenerator* noiseGenerator_{new NoiseGenerator{}}; 
+            NoiseGenerator* noiseGenerator_; 
            
             /** Set the noise (in electrons) when the capacitance is 0. */
             double noiseIntercept_{900.};
