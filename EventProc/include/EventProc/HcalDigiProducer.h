@@ -7,14 +7,18 @@
 #ifndef EVENTPROC_HCALDIGIPRODUCER_H_
 #define EVENTPROC_HCALDIGIPRODUCER_H_
 
+// C++/STL
+#include <time.h>
+
 // ROOT
 #include "TString.h"
-#include "TRandom.h"
+#include "TRandom3.h"
 
 // LDMX
 #include "DetDescr/DetectorID.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Framework/EventProcessor.h"
+#include "Tools/NoiseGenerator.h"
 
 namespace ldmx {
 
@@ -46,16 +50,23 @@ namespace ldmx {
         private:
 
             TClonesArray* hits_{nullptr};
-            TRandom* random_{0};
+            TRandom3* random_{new TRandom3(time(nullptr))};
             std::map<layer, zboundaries> hcalLayers_;
             bool verbose_{false};
             DetectorID* detID_{nullptr};
+            
+            /** Generator for simulating noise hits. */
+            NoiseGenerator* noiseGenerator_;
 
             double meanNoise_{0};
             int    nProcessed_{0};
             double mev_per_mip_{1.40};
             double pe_per_mip_{13.5};
+            double readoutThreshold_{3.};
             int    doStrip_{true};
+            int    STRIPS_PER_LAYER_{20};
+            int    NUM_HCAL_LAYERS_{100};
+            int    MAX_CHANNELS_{STRIPS_PER_LAYER_*NUM_HCAL_LAYERS_};
     };
 
 }
