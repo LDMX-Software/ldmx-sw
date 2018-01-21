@@ -1,5 +1,4 @@
 #include "TString.h"
-#include "TRandom.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TClonesArray.h"
@@ -19,15 +18,21 @@ namespace ldmx {
     HcalDigiProducer::HcalDigiProducer(const std::string& name, Process& process) :
             Producer(name, process) {
         hits_ = new TClonesArray(EventConstants::HCAL_HIT.c_str());
+        noiseGenerator_ = new NoiseGenerator();
     }
 
     void HcalDigiProducer::configure(const ParameterSet& ps) {
         detID_       = new HcalID();
-        random_      = new TRandom(ps.getInteger("randomSeed", 1000));
+        random_      = new TRandom3(ps.getInteger("randomSeed", 1000));
+        STRIPS_PER_LAYER_ = ps.getInteger("strips_per_layer");
+        NUM_HCAL_LAYERS_ = ps.getInteger("num_hcal_layers");
+        readoutThreshold_ = ps.getDouble("readoutThreshold");
         meanNoise_   = ps.getDouble("meanNoise");
         mev_per_mip_ = ps.getDouble("mev_per_mip");
         pe_per_mip_  = ps.getDouble("pe_per_mip");
         doStrip_     = ps.getInteger("doStrip");
+        noiseGenerator_ = new NoiseGenerator(meanNoise_,false);
+        noiseGenerator_->setNoiseThreshold(readoutThreshold_);
     }
 
     void HcalDigiProducer::produce(Event& event) {
@@ -44,7 +49,7 @@ namespace ldmx {
             int detIDraw = simHit->getID();
             std::vector<float> position = simHit->getPosition();
 	    
-	    //if we aggregate by layer, set all strip to zero and rcalculate the detIDraw
+        //if we aggregate by layer, set all strip to zero and rcalculate the detIDraw
 	    if (doStrip_ == 0){
                 detID_->setRawValue(detIDraw);
 	        detID_->unpack();
@@ -85,7 +90,7 @@ namespace ldmx {
 
 
         // loop over detIDs and simulate number of PEs
-        int ihit = 0;
+        int ihit = 0;        
         for (std::map<int, float>::iterator it = hcaldetIDEdep.begin(); it != hcaldetIDEdep.end(); ++it) {
             int detIDraw = it->first;
             double depEnergy = hcaldetIDEdep[detIDraw];
@@ -121,20 +126,42 @@ namespace ldmx {
 	    // we don't forget about it
             double energy = depEnergy; 
 
-            HcalHit *hit = (HcalHit*) (hits_->ConstructedAt(ihit));
-
-            hit->setID(detIDraw);
-            hit->setPE(hcalLayerPEs[detIDraw]);
-            hit->setAmplitude(hcalLayerPEs[detIDraw]);
-            hit->setEnergy(energy);
-            hit->setTime(hcaldetIDTime[detIDraw]);
-            hit->setXpos(hcalXpos[detIDraw]);
-            hit->setYpos(hcalYpos[detIDraw]);
-            hit->setZpos(hcalZpos[detIDraw]);
-            ihit++;
+            if( hcalLayerPEs[detIDraw] > readoutThreshold_ ){
+                HcalHit *hit = (HcalHit*) (hits_->ConstructedAt(ihit));
+                
+                hit->setID(detIDraw);
+                hit->setPE(hcalLayerPEs[detIDraw]);
+                hit->setAmplitude(hcalLayerPEs[detIDraw]);
+                hit->setEnergy(energy);
+                hit->setTime(hcaldetIDTime[detIDraw]);
+                hit->setXpos(hcalXpos[detIDraw]);
+                hit->setYpos(hcalYpos[detIDraw]);
+                hit->setZpos(hcalZpos[detIDraw]);
+                ihit++;
+                
+            }
         } 
         
-        
+        // simulate noise hits
+        int numNoiseHits = MAX_CHANNELS_-ihit-1;
+        std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits(numNoiseHits);
+        for( auto noise : noiseHits_PE ){
+            HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
+            noiseHit->setPE(noise);
+            noiseHit->setAmplitude(noise);
+            noiseHit->setXpos(0.);
+            noiseHit->setYpos(0.);
+            noiseHit->setZpos(0.);
+            noiseHit->setTime(-999.);
+            noiseHit->setEnergy(noise*mev_per_mip_/pe_per_mip_);
+            detID_->setFieldValue(1,random_->Integer(NUM_HCAL_LAYERS_));
+            detID_->setFieldValue(2,random_->Integer(5));
+            detID_->setFieldValue(3,random_->Integer(STRIPS_PER_LAYER_));
+            noiseHit->setID(detID_->pack());
+
+            ihit++;
+        }
+
         event.add("hcalDigis", hits_);
     }
 
