@@ -41,7 +41,7 @@ namespace ldmx {
             XsecBiasingOperator(std::string name);
 
             /** Destructor */
-            ~XsecBiasingOperator();
+            virtual ~XsecBiasingOperator();
 
             /** Method called at the beginning of a run. */
             void StartRun();
@@ -50,9 +50,9 @@ namespace ldmx {
              * @return Method that returns the biasing operation that will be used
              *         to bias the occurence of photonuclear events.
              */
-            G4VBiasingOperation* ProposeOccurenceBiasingOperation(const G4Track* track,
-                    const G4BiasingProcessInterface* callingProcess);
-
+            virtual G4VBiasingOperation* ProposeOccurenceBiasingOperation(
+                    const G4Track* track,
+                    const G4BiasingProcessInterface* callingProcess) = 0;
 
             /** Bias all particles of the given type. */
             void biasAll() { biasAll_ = true; };
@@ -60,11 +60,16 @@ namespace ldmx {
             /** Bias only the incident particle. */
             void biasIncident() { biasIncident_ = true; };
 
+            /** 
+             * Disable the biasing down of EM when either the 
+             * photonuclear or gamma->mu+mu- xsections are biased up. This was
+             * added to remain backwards compatible with the old biasing 
+             * scheme.
+             */
+            void disableBiasDownEM() { biasDownEM_ = false; }; 
+
             /** Set the particle type to bias. */
             void setParticleType(std::string particleType) { particleType_ = particleType; };
-
-            /** Set the process to bias. */
-            void setProcess(std::string process) { process_ = process; };
 
             /** Set the minimum energy required to bias the particle. */
             void setThreshold(double threshold) { threshold_ = threshold; };
@@ -72,13 +77,35 @@ namespace ldmx {
             /** Set the factor by which the xsec will be enhanced. */
             void setXsecFactor(double xsecFactor) { xsecFactor_ = xsecFactor; };
 
-        private: 
+        protected: 
 
-            /** Cross-section biasing operation */
+            /**
+             * Check if the given processed is being biased. 
+             * 
+             * @param process Process of interest
+             * @return true if the process is being biased, false otherwise
+             */
+            bool processIsBiased(std::string process); 
+
+            /** Return the process whose cross-section will be biased. */
+            virtual std::string getProcessToBias() = 0;
+
+            /** Cross-section biasing operation. */
             G4BOptnChangeCrossSection* xsecOperation{nullptr};
+
+            /** Process manager associated with the particle of interest. */
+            G4ProcessManager* processManager_{nullptr}; 
 
             /** Messenger used to pass arguments to this operator. */
             XsecBiasingOperatorMessenger* messenger_{nullptr}; 
+
+            /** 
+             * Flag indicating whether EM should be biased down when either
+             * photonuclear or gammatomumu is biased up.  This flag is only
+             * valid when either PhotoNuclearXsecBiasingOperator or 
+             * GammaToMuMuXsecBiasingOperator is used.
+             */
+            bool biasDownEM_{true};
 
             /** Flag indicating whether all particles should be biased. */
             bool biasAll_{false};
@@ -88,9 +115,6 @@ namespace ldmx {
 
             /** The particle type to bias. */
             std::string particleType_{""}; 
-
-            /** The process that the biasing will be applied to. */
-            std::string process_{""}; 
 
             /** The minimum energy required to apply the biasing operation. */
             double threshold_{0};
