@@ -19,7 +19,6 @@
 /run/initialize
 
 /ldmx/biasing/xsec/particle gamma
-/ldmx/biasing/xsec/process photonNuclear
 /ldmx/biasing/xsec/threshold 2500
 /ldmx/biasing/xsec/factor 1000
 
@@ -49,7 +48,7 @@
 /ldmx/plugins/EcalProcessFilter/volume ecal
 
 # Print a status every 1000 events.
-/ldmx/plugins/EventPrintPlugin/modulus 1000
+/ldmx/plugins/EventPrintPlugin/modulus 1
 
 /ldmx/plugins/load TrackFilterPlugin
 /ldmx/plugins/TrackFilterPlugin/verbose 0

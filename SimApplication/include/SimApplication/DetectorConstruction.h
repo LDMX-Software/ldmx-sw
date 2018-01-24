@@ -12,7 +12,8 @@
 
 // Biasing
 #include "Biasing/BiasingMessenger.h"
-#include "Biasing/XsecBiasingOperator.h"
+#include "Biasing/PhotoNuclearXsecBiasingOperator.h"
+#include "Biasing/GammaToMuPairXsecBiasingOperator.h"
 
 // Geant4
 #include "G4VUserDetectorConstruction.hh"
