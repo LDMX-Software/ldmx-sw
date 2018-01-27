@@ -46,6 +46,7 @@ namespace ldmx {
 
             virtual void produce(Event& event);
 
+            unsigned int generateRandomID(bool isBackSection);
 
         private:
 
@@ -64,9 +65,10 @@ namespace ldmx {
             double pe_per_mip_{13.5};
             double readoutThreshold_{3.};
             int    doStrip_{true};
-            int    STRIPS_PER_LAYER_{20};
-            int    NUM_HCAL_LAYERS_{100};
-            int    MAX_CHANNELS_{STRIPS_PER_LAYER_*NUM_HCAL_LAYERS_};
+            int    STRIPS_BACK_PER_LAYER_{20};
+            int    NUM_BACK_HCAL_LAYERS_{100};
+            int    STRIPS_SIDE_PER_LAYER_{20};
+            int    NUM_SIDE_HCAL_LAYERS_{100};
     };
 
 }
