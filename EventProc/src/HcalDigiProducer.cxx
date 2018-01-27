@@ -24,8 +24,10 @@ namespace ldmx {
     void HcalDigiProducer::configure(const ParameterSet& ps) {
         detID_       = new HcalID();
         random_      = new TRandom3(ps.getInteger("randomSeed", 1000));
-        STRIPS_PER_LAYER_ = ps.getInteger("strips_per_layer");
-        NUM_HCAL_LAYERS_ = ps.getInteger("num_hcal_layers");
+        STRIPS_BACK_PER_LAYER_ = ps.getInteger("strips_back_per_layer");
+        NUM_BACK_HCAL_LAYERS_ = ps.getInteger("num_back_hcal_layers");
+        STRIPS_SIDE_PER_LAYER_ = ps.getInteger("strips_side_per_layer");
+        NUM_SIDE_HCAL_LAYERS_ = ps.getInteger("num_side_hcal_layers");
         readoutThreshold_ = ps.getDouble("readoutThreshold");
         meanNoise_   = ps.getDouble("meanNoise");
         mev_per_mip_ = ps.getDouble("mev_per_mip");
@@ -35,11 +37,25 @@ namespace ldmx {
         noiseGenerator_->setNoiseThreshold(readoutThreshold_);
     }
 
+    unsigned int HcalDigiProducer::generateRandomID(bool isBackSection){
+        HcalID tempID;
+        if( isBackSection ){
+            tempID.setFieldValue(1,random_->Integer(NUM_BACK_HCAL_LAYERS_));
+            tempID.setFieldValue(2,0);
+            tempID.setFieldValue(3,random_->Integer(STRIPS_BACK_PER_LAYER_));
+        }else{
+            tempID.setFieldValue(1,random_->Integer(NUM_SIDE_HCAL_LAYERS_));
+            tempID.setFieldValue(2,random_->Integer(4)+1);
+            tempID.setFieldValue(3,random_->Integer(STRIPS_SIDE_PER_LAYER_));            
+        }
+        return tempID.pack();
+    }
+
     void HcalDigiProducer::produce(Event& event) {
 
-        std::map<int, int>   hcalLayerPEs;
-        std::map<int, float> hcalXpos,hcalYpos,hcalZpos,hcaldetIDEdep, hcaldetIDTime;
-
+        std::map<unsigned int, int>   hcalLayerPEs;
+        std::map<unsigned int, float> hcalXpos,hcalYpos,hcalZpos,hcaldetIDEdep, hcaldetIDTime;
+        int numSigHits_back=0,numSigHits_side=0;
         // looper over sim hits and aggregate energy depositions for each detID
         TClonesArray* hcalHits = (TClonesArray*) event.getCollection(EventConstants::HCAL_SIM_HITS, "sim");
 
@@ -88,10 +104,9 @@ namespace ldmx {
 	    
         } 
 
-
         // loop over detIDs and simulate number of PEs
         int ihit = 0;        
-        for (std::map<int, float>::iterator it = hcaldetIDEdep.begin(); it != hcaldetIDEdep.end(); ++it) {
+        for (std::map<unsigned int, float>::iterator it = hcaldetIDEdep.begin(); it != hcaldetIDEdep.end(); ++it) {
             int detIDraw = it->first;
             double depEnergy = hcaldetIDEdep[detIDraw];
             hcaldetIDTime[detIDraw] = hcaldetIDTime[detIDraw] / hcaldetIDEdep[detIDraw];
@@ -100,10 +115,16 @@ namespace ldmx {
             hcalZpos[detIDraw]      = hcalZpos[detIDraw] / hcaldetIDEdep[detIDraw];
             double meanPE           = depEnergy / mev_per_mip_ * pe_per_mip_;
 
-            //std::default_random_engine generator;
-            //std::poisson_distribution<int> distribution(meanPE);
-            hcalLayerPEs[detIDraw] = random_->Poisson(meanPE);
-            hcalLayerPEs[detIDraw] += random_->Gaus(meanNoise_);
+            HcalID tempID;
+            tempID.setRawValue(detIDraw);
+            tempID.unpack();
+            if( tempID.getSection() == HcalSection::BACK )
+                numSigHits_back++;
+            else
+                numSigHits_side++;
+
+            hcalLayerPEs[detIDraw] = random_->Poisson(meanPE+meanNoise_);
+            //hcalLayerPEs[detIDraw] += random_->Gaus(meanNoise_);
 
             if (verbose_) {
                 detID_->setRawValue(detIDraw);
@@ -142,9 +163,8 @@ namespace ldmx {
             }
         } 
         
-        // simulate noise hits
-        int numNoiseHits = MAX_CHANNELS_-ihit-1;
-        std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits(numNoiseHits);
+        // simulate noise hits in back hcal
+        std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits(STRIPS_BACK_PER_LAYER_*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
         for( auto noise : noiseHits_PE ){
             HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
             noiseHit->setPE(noise);
@@ -154,11 +174,32 @@ namespace ldmx {
             noiseHit->setZpos(0.);
             noiseHit->setTime(-999.);
             noiseHit->setEnergy(noise*mev_per_mip_/pe_per_mip_);
-            detID_->setFieldValue(1,random_->Integer(NUM_HCAL_LAYERS_));
-            detID_->setFieldValue(2,random_->Integer(5));
-            detID_->setFieldValue(3,random_->Integer(STRIPS_PER_LAYER_));
-            noiseHit->setID(detID_->pack());
+            unsigned int rawID;
+            do{
+                rawID = generateRandomID(true);
+            }while( hcaldetIDEdep.find(rawID) != hcaldetIDEdep.end() );
+            noiseHit->setID(rawID);
+            noiseHit->setNoise(true);
+            ihit++;
+        }
 
+        // simulate noise hits in side hcal
+        noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_PER_LAYER_*NUM_SIDE_HCAL_LAYERS_)*4-numSigHits_side);
+        for( auto noise : noiseHits_PE ){
+            HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
+            noiseHit->setPE(noise);
+            noiseHit->setAmplitude(noise);
+            noiseHit->setXpos(0.);
+            noiseHit->setYpos(0.);
+            noiseHit->setZpos(0.);
+            noiseHit->setTime(-999.);
+            noiseHit->setEnergy(noise*mev_per_mip_/pe_per_mip_);
+            unsigned int rawID;
+            do{
+                rawID = generateRandomID(false);
+            }while( hcaldetIDEdep.find(rawID) != hcaldetIDEdep.end() );
+            noiseHit->setID(rawID);
+            noiseHit->setNoise(true);
             ihit++;
         }
 
