@@ -78,15 +78,28 @@ namespace ldmx {
         if (parent_ == 0)
             return;
 
+        int offset;
+        bool isKeep=false,isDrop=false,isIgnore=false;
         size_t i = rule.find("keep");
-        bool iskeep = i != std::string::npos;
-        if (!iskeep)
-            i = rule.find("drop");
+        if( i != std::string::npos ){
+            offset = i+4 ;
+            isKeep = true;
+        }
+        i = rule.find("drop");
+        if( i != std::string::npos ){
+            offset = i+4 ;
+            isDrop = true;
+        }
+        i = rule.find("ignore");
+        if( i != std::string::npos ){
+            offset = i+5 ;
+            isIgnore = true;
+        }
 
-        if (i == std::string::npos)
+        if( int(isKeep) + int(isDrop) + int(isIgnore) != 1 )
             return;
 
-        std::string srule = rule.substr(i + 4);
+        std::string srule = rule.substr(offset);
         for (i = srule.find_first_of(" \t\n\r"); i != std::string::npos; i = srule.find_first_of(" \t\n\r"))
             srule.erase(i, 1);
 
@@ -96,7 +109,15 @@ namespace ldmx {
         if (srule.back() != '*')
             srule += '*';
 
-        parent_->tree_->SetBranchStatus(srule.c_str(), (iskeep) ? (1) : (0));
+        if( isKeep ){
+            parent_->tree_->SetBranchStatus(srule.c_str(),1);
+            tree_->SetBranchStatus(srule.c_str(),1);
+        }else if( isDrop ){
+            tree_->SetBranchStatus(srule.c_str(),0);
+        }else if( isIgnore ){
+            parent_->tree_->SetBranchAddress(srule.c_str(),0);
+        }else 
+            return;
     }
 
     bool EventFile::nextEvent(bool storeCurrentEvent) {
