@@ -49,7 +49,13 @@ namespace ldmx {
 
             /** Directory containing all biasing commands. */
             G4UIdirectory* biasingDir_{nullptr}; 
-            
+           
+            /** 
+             * Command used to disable the biasing down of the EM cross-section
+             * when either the photonuclear or gamma->mu+mu- is biased up.
+             */
+            G4UIcmdWithoutParameter* biasDownEMCmd_{nullptr};
+
             /** 
              * Command dictating whether all particles of the given type
              * should be biased. 
@@ -67,9 +73,6 @@ namespace ldmx {
              * bias.
              */
             G4UIcmdWithAString* particleTypeCmd_{nullptr};
-
-            /** Command allowing a user to specify what process to bias. */
-            G4UIcmdWithAString* processCmd_{nullptr};
 
             /** Command allowing a user to specify an energy threshold. */
             G4UIcmdWithAString* thresholdCmd_{nullptr};
