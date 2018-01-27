@@ -119,6 +119,13 @@ namespace ldmx {
                 zpos_ = z;
             }
 
+            /** 
+             * Set noise flag.
+             */
+            void setNoise(bool is_noise_=true){
+                isNoise_ = is_noise_;
+            }
+
         private:
 
             /** The number of PE estimated for this hit. */
@@ -132,6 +139,9 @@ namespace ldmx {
             
             /** The z position of this hit. */
             float zpos_{0};
+
+            /** Flag specifying whether hit is purely from noise. */
+            bool isNoise_{false};
 
             /**
              * The ROOT class definition.
