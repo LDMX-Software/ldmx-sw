@@ -169,11 +169,7 @@ namespace ldmx {
         // simulate noise hits in back hcal
         std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits(STRIPS_BACK_PER_LAYER_*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
         for( auto noise : noiseHits_PE ){
-            if( noise > 10. ) 
-                std::cout << "AHHHHHHH" << std::endl;
             HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
-            if( noiseHit->getPE() > 0 )
-                std::cout << "hit is not defaulting to PE=0" << std::endl;
             noiseHit->setPE(noise);
             noiseHit->setAmplitude(noise);
             noiseHit->setXpos(0.);
@@ -194,11 +190,7 @@ namespace ldmx {
         // simulate noise hits in side hcal
         noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_PER_LAYER_*NUM_SIDE_HCAL_LAYERS_)*4-numSigHits_side);
         for( auto noise : noiseHits_PE ){
-            if( noise > 10. ) 
-                std::cout << "AHHHHHHH" << std::endl;
             HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
-            if( noiseHit->getPE() > 0 )
-                std::cout << "hit is not defaulting to PE=0" << std::endl;
             noiseHit->setPE(noise);
             noiseHit->setAmplitude(noise);
             noiseHit->setXpos(0.);
