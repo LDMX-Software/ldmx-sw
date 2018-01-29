@@ -63,7 +63,7 @@ namespace ldmx {
             int    nProcessed_{0};
             double mev_per_mip_{1.40};
             double pe_per_mip_{13.5};
-            double readoutThreshold_{3.};
+            int    readoutThreshold_{3};
             int    doStrip_{true};
             int    STRIPS_BACK_PER_LAYER_{20};
             int    NUM_BACK_HCAL_LAYERS_{100};
