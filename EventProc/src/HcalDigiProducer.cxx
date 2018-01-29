@@ -16,7 +16,7 @@
 namespace ldmx {
 
     HcalDigiProducer::HcalDigiProducer(const std::string& name, Process& process) :
-            Producer(name, process) {
+        Producer(name, process) {
         hits_ = new TClonesArray(EventConstants::HCAL_HIT.c_str());
         noiseGenerator_ = new NoiseGenerator();
     }
@@ -28,7 +28,7 @@ namespace ldmx {
         NUM_BACK_HCAL_LAYERS_ = ps.getInteger("num_back_hcal_layers");
         STRIPS_SIDE_PER_LAYER_ = ps.getInteger("strips_side_per_layer");
         NUM_SIDE_HCAL_LAYERS_ = ps.getInteger("num_side_hcal_layers");
-        readoutThreshold_ = ps.getDouble("readoutThreshold");
+        readoutThreshold_ = ps.getInteger("readoutThreshold");
         meanNoise_   = ps.getDouble("meanNoise");
         mev_per_mip_ = ps.getDouble("mev_per_mip");
         pe_per_mip_  = ps.getDouble("pe_per_mip");
@@ -56,6 +56,8 @@ namespace ldmx {
         std::map<unsigned int, int>   hcalLayerPEs;
         std::map<unsigned int, float> hcalXpos,hcalYpos,hcalZpos,hcaldetIDEdep, hcaldetIDTime;
         int numSigHits_back=0,numSigHits_side=0;
+        std::unordered_set<unsigned int> noiseHitIDs;
+
         // looper over sim hits and aggregate energy depositions for each detID
         TClonesArray* hcalHits = (TClonesArray*) event.getCollection(EventConstants::HCAL_SIM_HITS, "sim");
 
@@ -65,13 +67,13 @@ namespace ldmx {
             int detIDraw = simHit->getID();
             std::vector<float> position = simHit->getPosition();
 	    
-        //if we aggregate by layer, set all strip to zero and rcalculate the detIDraw
-	    if (doStrip_ == 0){
+            //if we aggregate by layer, set all strip to zero and rcalculate the detIDraw
+            if (doStrip_ == 0){
                 detID_->setRawValue(detIDraw);
-	        detID_->unpack();
-	        detID_->setFieldValue(3,0);
+                detID_->unpack();
+                detID_->setFieldValue(3,0);
                 detIDraw = detID_->pack();
-	    }           
+            }           
 
             if (verbose_) {
                 std::cout << "detIDraw: " << detIDraw << std::endl;
@@ -83,9 +85,9 @@ namespace ldmx {
                 std::cout << "section: " << subsection << "  layer: " << layer <<  "  strip: " << strip <<std::endl;
             }           
             
-	    // for now, we take am energy weighted average of the hit in each stip to simulate the hit position. 
+            // for now, we take am energy weighted average of the hit in each stip to simulate the hit position. 
             // will use strip TOF and light yield between strips to estimate position.            
-	    if (hcaldetIDEdep.find(detIDraw) == hcaldetIDEdep.end()) {
+            if (hcaldetIDEdep.find(detIDraw) == hcaldetIDEdep.end()) {
                 // first hit, initialize
                 hcaldetIDEdep[detIDraw] = simHit->getEdep();
                 hcaldetIDTime[detIDraw] = simHit->getTime() * simHit->getEdep();
@@ -100,9 +102,9 @@ namespace ldmx {
                 hcaldetIDEdep[detIDraw] += simHit->getEdep();
                 hcaldetIDTime[detIDraw] += simHit->getTime() * simHit->getEdep();
             
-	    }
+            }
 	    
-        } 
+        }
 
         // loop over detIDs and simulate number of PEs
         int ihit = 0;        
@@ -143,8 +145,8 @@ namespace ldmx {
                 std::cout << "z: " << hcalZpos[detIDraw] << std::endl;
             }        // end verbose
 
-	    // need to add in a weighting factor eventually, so keep it that way to make sure
-	    // we don't forget about it
+            // need to add in a weighting factor eventually, so keep it that way to make sure
+            // we don't forget about it
             double energy = depEnergy; 
 
             if( hcalLayerPEs[detIDraw] > readoutThreshold_ ){
@@ -158,6 +160,7 @@ namespace ldmx {
                 hit->setXpos(hcalXpos[detIDraw]);
                 hit->setYpos(hcalYpos[detIDraw]);
                 hit->setZpos(hcalZpos[detIDraw]);
+                hit->setNoise(false);
                 ihit++;
                 
             }
@@ -166,7 +169,11 @@ namespace ldmx {
         // simulate noise hits in back hcal
         std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits(STRIPS_BACK_PER_LAYER_*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
         for( auto noise : noiseHits_PE ){
+            if( noise > 10. ) 
+                std::cout << "AHHHHHHH" << std::endl;
             HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
+            if( noiseHit->getPE() > 0 )
+                std::cout << "hit is not defaulting to PE=0" << std::endl;
             noiseHit->setPE(noise);
             noiseHit->setAmplitude(noise);
             noiseHit->setXpos(0.);
@@ -177,8 +184,9 @@ namespace ldmx {
             unsigned int rawID;
             do{
                 rawID = generateRandomID(true);
-            }while( hcaldetIDEdep.find(rawID) != hcaldetIDEdep.end() );
+            }while( hcaldetIDEdep.find(rawID) != hcaldetIDEdep.end() || noiseHitIDs.find(rawID) != noiseHitIDs.end() );
             noiseHit->setID(rawID);
+            noiseHitIDs.insert(rawID);
             noiseHit->setNoise(true);
             ihit++;
         }
@@ -186,7 +194,11 @@ namespace ldmx {
         // simulate noise hits in side hcal
         noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_PER_LAYER_*NUM_SIDE_HCAL_LAYERS_)*4-numSigHits_side);
         for( auto noise : noiseHits_PE ){
+            if( noise > 10. ) 
+                std::cout << "AHHHHHHH" << std::endl;
             HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
+            if( noiseHit->getPE() > 0 )
+                std::cout << "hit is not defaulting to PE=0" << std::endl;
             noiseHit->setPE(noise);
             noiseHit->setAmplitude(noise);
             noiseHit->setXpos(0.);
@@ -197,8 +209,9 @@ namespace ldmx {
             unsigned int rawID;
             do{
                 rawID = generateRandomID(false);
-            }while( hcaldetIDEdep.find(rawID) != hcaldetIDEdep.end() );
+            }while( hcaldetIDEdep.find(rawID) != hcaldetIDEdep.end() || noiseHitIDs.find(rawID) != noiseHitIDs.end() );
             noiseHit->setID(rawID);
+            noiseHitIDs.insert(rawID);
             noiseHit->setNoise(true);
             ihit++;
         }
