@@ -20,16 +20,16 @@ namespace ldmx {
     
     std::vector<double> NoiseGenerator::generateNoiseHits(int emptyChannels) { 
         
-        //std::cout << "[ Noise Generator ]: Empty channels: " 
-        //          << emptyChannels << std::endl;
-        //std::cout << "[ Noise Generator ]: Normalized integration limit: " 
+        // std::cout << "[ Noise Generator ]: Empty channels: " 
+        //           << emptyChannels << std::endl;
+        // std::cout << "[ Noise Generator ]: Normalized integration limit: " 
         //          << noiseThreshold_ << std::endl;
         
         double integral;
         if( useGaussianModel_ ) 
             integral = ROOT::Math::normal_cdf_c(noiseThreshold_, noise_, pedestal_);
         else 
-            integral = boost::math::cdf(complement(*poisson_dist_,noiseThreshold_));
+            integral = boost::math::cdf(complement(*poisson_dist_,noiseThreshold_-1));
         //std::cout << "[ Noise Generator ]: Integral: " 
         //          << integral << std::endl;
 
