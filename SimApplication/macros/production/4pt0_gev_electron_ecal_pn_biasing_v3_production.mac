@@ -20,13 +20,13 @@
 
 /ldmx/biasing/xsec/particle gamma
 /ldmx/biasing/xsec/threshold 2500
-/ldmx/biasing/xsec/factor 1000
+/ldmx/biasing/xsec/factor 450
 
 # Position the electron gun upstream of the target.  The initial energy
 # of the electron will be 4 GeV.
 /gun/particle e-
 /gun/energy 4.0 GeV
-/gun/position 0 0 -.55 mm
+/gun/position 0 0 -.175 mm
 /gun/direction 0 0 4 GeV
 
 # Plugin used to print an event status.
