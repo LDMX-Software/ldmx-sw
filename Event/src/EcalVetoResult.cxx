@@ -30,8 +30,6 @@ namespace ldmx {
         showerRMS_ = 0;
         xStd_ = 0;
         yStd_ = 0;
-        xMean_ = 0;
-        yMean_ = 0;
         avgLayerHit_ = 0;
         stdLayerHit_ = 0;
         deepestLayerHit_ = 0;
@@ -60,14 +58,12 @@ namespace ldmx {
         result.showerRMS_ = showerRMS_;
         result.xStd_ = xStd_;
         result.yStd_ = yStd_;
-        result.xMean_ = xMean_;
-        result.yMean_ = yMean_;
         result.avgLayerHit_ = avgLayerHit_;
         result.stdLayerHit_ = stdLayerHit_;
         result.deepestLayerHit_ = deepestLayerHit_;
         
         result.discValue_ = discValue_;
-
+        
         result.recoilPx_ = recoilPx_;
         result.recoilPy_ = recoilPy_;
         result.recoilPz_ = recoilPz_;
@@ -87,8 +83,6 @@ namespace ldmx {
             float showerRMS,
             float xStd,
             float yStd,
-            float xMean,
-            float yMean,
             float avgLayerHit,
             float stdLayerHit,
             
@@ -104,8 +98,6 @@ namespace ldmx {
         showerRMS_ = showerRMS;
         xStd_ = xStd;
         yStd_ = yStd;
-        xMean_ = xMean;
-        yMean_ = yMean;
         avgLayerHit_ = avgLayerHit;
         stdLayerHit_ = stdLayerHit;
         deepestLayerHit_ = deepestLayerHit;
