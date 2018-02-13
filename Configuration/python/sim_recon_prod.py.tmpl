@@ -7,26 +7,31 @@ p=ldmxcfg.Process("recon")
 p.libraries.append("libEventProc.so")
 
 ecalDigis = ldmxcfg.Producer("ecalDigis","ldmx::EcalDigiProducer")
-ecalDigis.parameters["meanNoise"] = 0.015
-ecalDigis.parameters["readoutThreshold"] = ecalDigis.parameters["meanNoise"]*3
+ecalDigis.parameters["noiseIntercept"] = 900.
+ecalDigis.parameters["noiseSlope"] = 22.
+ecalDigis.parameters["padCapacitance"] = 27.56
+ecalDigis.parameters["readoutThreshold"] = 4.
 
 hcalDigis = ldmxcfg.Producer("hcalDigis", "ldmx::HcalDigiProducer")
 hcalDigis.parameters["meanNoise"] = 1.5
+hcalDigis.parameters["mev_per_mip"] = 1.4
+hcalDigis.parameters["pe_per_mip"] = 13.5
+hcalDigis.parameters["doStrip"] = 0
 
 ecalVeto = ldmxcfg.Producer("ecalVeto", "ldmx::EcalVetoProcessor")
 ecalVeto.parameters["num_ecal_layers"] = 34
 ecalVeto.parameters["do_bdt"] = 1
 ecalVeto.parameters["bdt_file"] = "cal_bdt.pkl"
-ecalVeto.parameters["disc_cut"] = 0.999672
+ecalVeto.parameters["disc_cut"] = 0.94
 
 hcalVeto = ldmxcfg.Producer("hcalVeto", "ldmx::HcalVetoProcessor")
 hcalVeto.parameters["pe_threshold"] = 8.0
 
 trigger = ldmxcfg.Producer("trigger", "ldmx::TriggerProcessor")
-trigger.parameters["threshold"] = 12.0
+trigger.parameters["threshold"] = 1500.0
 trigger.parameters["mode"] = 0
 trigger.parameters["start_layer"] = 1
-trigger.parameters["end_layer"] = 16
+trigger.parameters["end_layer"] = 20
 
 findable_track = ldmxcfg.Producer("findable", "ldmx::FindableTrackProcessor")
 
