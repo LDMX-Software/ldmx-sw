@@ -48,8 +48,6 @@ namespace ldmx {
                     float showerRMS,
                     float xStd,
                     float yStd,
-                    float xMean,
-                    float yMean,
                     float avgLayerHit,
                     float stdLayerHit,
                     
@@ -111,14 +109,6 @@ namespace ldmx {
                 return yStd_;
             }
         
-            float getXMean() {
-                return xMean_;
-            }
-        
-            float getYMean() {
-                return yMean_;
-            }
-        
             float getAvgLayerHit() {
                 return avgLayerHit_;
             }
@@ -161,14 +151,12 @@ namespace ldmx {
             float showerRMS_{0};
             float xStd_{0};
             float yStd_{0};
-            float xMean_{0};
-            float yMean_{0};
             float avgLayerHit_{0};
             float stdLayerHit_{0};
 
         
             float discValue_{0};
-
+            
             /** px of recoil electron at the Ecal face. */
             double recoilPx_{-9999};
             
