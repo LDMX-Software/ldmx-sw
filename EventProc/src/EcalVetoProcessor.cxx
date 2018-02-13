@@ -40,8 +40,6 @@ namespace ldmx {
         bdtFeatures.push_back(result.getShowerRMS());
         bdtFeatures.push_back(result.getXStd());
         bdtFeatures.push_back(result.getYStd());
-        bdtFeatures.push_back(result.getXMean());
-        bdtFeatures.push_back(result.getYMean());
         bdtFeatures.push_back(result.getAvgLayerHit());
         bdtFeatures.push_back(result.getDeepestLayerHit());
         bdtFeatures.push_back(result.getStdLayerHit());
@@ -105,8 +103,6 @@ namespace ldmx {
         showerRMS_ = 0;
         xStd_ = 0;
         yStd_ = 0;
-        xMean_ = 0;
-        yMean_ = 0;
         avgLayerHit_ = 0;
         stdLayerHit_ = 0;
         deepestLayerHit_ = 0;
@@ -135,6 +131,10 @@ namespace ldmx {
         fillIsolatedHitMap(ecalDigis, globalCentroid, cellMap_, cellMapTightIso_, doTight);
 
         //Loop over the hits from the event to calculate the rest of the important quantities
+
+        float wavgLayerHit = 0;
+        float xMean = 0;
+        float yMean = 0;
         
         for (int iHit = 0; iHit < nEcalHits; iHit++) {
             //Layer-wise quantities
@@ -147,48 +147,16 @@ namespace ldmx {
                 nReadoutHits_++;
                 ecalLayerEdepReadout_[hit_pair.first] += hit->getEnergy();
                 ecalLayerTime_[hit_pair.first] += (hit->getEnergy()) * hit->getTime();
-                xMean_ += getCellCentroidXYPair(hit_pair.second).first;
-                yMean_ += getCellCentroidXYPair(hit_pair.second).second;
+                xMean += getCellCentroidXYPair(hit_pair.second).first * hit->getEnergy();
+                yMean += getCellCentroidXYPair(hit_pair.second).second * hit->getEnergy();
                 avgLayerHit_ += hit->getLayer();
+                wavgLayerHit += hit->getLayer() * hit->getEnergy();
                 if (deepestLayerHit_ < hit->getLayer()) {
                     deepestLayerHit_ = hit->getLayer();
                 }
             }
         }
         
-        if (nReadoutHits_ > 0) {
-            avgLayerHit_ /= nReadoutHits_;
-            xMean_ /= nReadoutHits_;
-            yMean_ /= nReadoutHits_;
-        } else {
-            avgLayerHit_ = 0;
-            xMean_ = 0;
-            yMean_ = 0;
-        }
-
-        // Loop over hits a second time to find the standard deviations.
-        for (int iHit = 0; iHit < nEcalHits; iHit++) {
-            EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
-            LayerCellPair hit_pair = hitToPair(hit);
-            if (hit->getEnergy() > 0) {
-                xStd_ += pow((getCellCentroidXYPair(hit_pair.second).first - xMean_), 2);
-                yStd_ += pow((getCellCentroidXYPair(hit_pair.second).second - yMean_), 2);
-                stdLayerHit_ += pow((hit->getLayer() - avgLayerHit_), 2);
-            }
-        }
-        
-        if (nReadoutHits_ > 0) {
-            xStd_ = sqrt (xStd_ / nReadoutHits_);
-            yStd_ = sqrt (yStd_ / nReadoutHits_);
-            stdLayerHit_ = sqrt (stdLayerHit_ / nReadoutHits_);
-        } else {
-            xStd_ = 0;
-            yStd_ = 0;
-            stdLayerHit_ = 0;
-        }
-        
-        // end loop over sim hits
-
         for (int iLayer = 0; iLayer < ecalLayerEdepReadout_.size(); iLayer++) {
             for (auto cell : cellMapTightIso_[iLayer]) {
                 if (cell.second > 0) {
@@ -198,6 +166,41 @@ namespace ldmx {
             ecalLayerTime_[iLayer] = ecalLayerTime_[iLayer] / ecalLayerEdepReadout_[iLayer];
             summedDet_ += ecalLayerEdepReadout_[iLayer];
         }
+        
+        if (nReadoutHits_ > 0) {
+            avgLayerHit_ /= nReadoutHits_;
+            wavgLayerHit /= summedDet_;
+            xMean /= summedDet_;
+            yMean /= summedDet_;
+        } else {
+            wavgLayerHit = 0;
+            avgLayerHit_ = 0;
+            xMean = 0;
+            yMean = 0;
+        }
+
+        // Loop over hits a second time to find the standard deviations.
+        for (int iHit = 0; iHit < nEcalHits; iHit++) {
+            EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
+            LayerCellPair hit_pair = hitToPair(hit);
+            if (hit->getEnergy() > 0) {
+                xStd_ += pow((getCellCentroidXYPair(hit_pair.second).first - xMean), 2) * hit->getEnergy();
+                yStd_ += pow((getCellCentroidXYPair(hit_pair.second).second - yMean), 2) * hit->getEnergy();
+                stdLayerHit_ += pow((hit->getLayer() - wavgLayerHit), 2) * hit->getEnergy();
+            }
+        }
+        
+        if (nReadoutHits_ > 0) {
+            xStd_ = sqrt (xStd_ / summedDet_);
+            yStd_ = sqrt (yStd_ / summedDet_);
+            stdLayerHit_ = sqrt (stdLayerHit_ / summedDet_);
+        } else {
+            xStd_ = 0;
+            yStd_ = 0;
+            stdLayerHit_ = 0;
+        }
+        
+        // end loop over sim hits
 
         /*std::cout << "[ EcalVetoProcessor ]:\n" 
          << "\t EdepRaw[0] : " << EcalLayerEdepRaw_[0] << "\n"
@@ -254,7 +257,7 @@ namespace ldmx {
         }
 
         result_.setVariables(nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
-            showerRMS_, xStd_, yStd_, xMean_, yMean_, avgLayerHit_, stdLayerHit_, ecalLayerEdepReadout_, recoilP, recoilPos);
+            showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalLayerEdepReadout_, recoilP, recoilPos);
         
         if (doBdt_) {
             BDTHelper_->buildFeatureVector(bdtFeatures_, result_);
