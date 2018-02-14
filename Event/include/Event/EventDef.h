@@ -19,3 +19,5 @@
 #include "Event/HcalHit.h"
 #include "Event/HcalVetoResult.h"
 #include "Event/PnWeightResult.h"
+#include "Event/SiStripHit.h"
+#include "Event/RawHit.h"
