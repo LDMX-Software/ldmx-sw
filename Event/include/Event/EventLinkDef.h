@@ -30,6 +30,8 @@
 #pragma link C++ class ldmx::SimParticle+;
 #pragma link C++ class ldmx::TriggerResult+;
 #pragma link C++ class ldmx::PnWeightResult+;
+#pragma link C++ class ldmx::SiStripHit+; 
+#pragma link C++ class ldmx::RawHit+; 
 
 #endif
 

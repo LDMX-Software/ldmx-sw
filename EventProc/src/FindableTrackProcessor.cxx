@@ -30,10 +30,12 @@ namespace ldmx {
         if (simParticles->GetEntriesFast() == 0) return; 
 
         // Get the collection of Recoil sim hits from the event
-        const TClonesArray *recoilSimHits = event.getCollection("RecoilSimHits");  
+        // const TClonesArray *recoilSimHits = event.getCollection("RecoilSimHits");  
+        const TClonesArray *siStripHits = event.getCollection("SiStripHits");  
 
         // Create the hit map
-        this->createHitMap(recoilSimHits); 
+        //this->createHitMap(recoilSimHits); 
+        this->createHitMap(siStripHits); 
         
         // Loop through all sim particles and check which are findable 
         int resultCount = 0;
@@ -65,7 +67,7 @@ namespace ldmx {
         event.add("FindableTracks", findableTrackResults_);
     }
 
-    void FindableTrackProcessor::createHitMap(const TClonesArray* recoilSimHits) { 
+    void FindableTrackProcessor::createHitMap(const TClonesArray* siStripHits) { 
        
         // Clear the hit map to remove any previous relations 
         hitMap_.clear();
@@ -73,14 +75,19 @@ namespace ldmx {
         // Loop over all recoil tracker sim hits and check which layers, if any,
         // the sim particle deposited energy in.
         std::vector<int> recoilHitCount(10, 0);
-        for (int hitCount = 0; hitCount < recoilSimHits->GetEntriesFast(); ++hitCount) {
+        for (int hitCount = 0; hitCount < siStripHits->GetEntriesFast(); ++hitCount) {
 
             // Get the SimTrackerHit from the collection of recoil sim hits.
-            SimTrackerHit* recoilSimHit 
-                = static_cast<SimTrackerHit*>(recoilSimHits->At(hitCount));
-            
+            //SimTrackerHit* recoilSimHit 
+            //    = static_cast<SimTrackerHit*>(recoilSimHits->At(hitCount));
+            SiStripHit* siStripHit 
+                = static_cast<SiStripHit*>(siStripHits->At(hitCount));
+           
+            // Get the SimTrackerHit associated with this strip hit
+            SimTrackerHit* simTrackerHit = static_cast<SimTrackerHit*>(siStripHit->getSimTrackerHits()->At(0));  
+
             // Get the MC particle associated with this hit
-            SimParticle* simParticle = recoilSimHit->getSimParticle();
+            SimParticle* simParticle = simTrackerHit->getSimParticle();
 
             // If the particle ins't in the hit map, add it.
             if (hitMap_.count(simParticle) == 0) {
@@ -88,7 +95,7 @@ namespace ldmx {
             }
             
             // Increment the hit count for the layer
-            hitMap_[simParticle][recoilSimHit->getLayerID() - 1]++;
+            hitMap_[simParticle][simTrackerHit->getLayerID() - 1]++;
         }
     }
 
