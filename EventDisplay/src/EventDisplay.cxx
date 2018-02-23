@@ -1,9 +1,11 @@
 #include "Event/TriggerResult.h"
 #include "Event/EcalHit.h"
+#include "Event/HcalHit.h"
 #include "Event/SimTrackerHit.h"
 #include "EventDisplay/EventDisplay.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "DetDescr/EcalDetectorID.h"
+#include "DetDescr/HcalID.h"
 
 #include "EventDisplay/EventDisplay.h"
 
@@ -14,6 +16,8 @@ ClassImp(ldmx::EventDisplay);
 
 // All lengths are in mm
 static const double ECAL_Z_OFFSET = 200+510.0/2;
+static const double HCAL_Z_OFFSET = 710.0;
+static const double HCAL_ZHIT_OFFSET = 200.0;
 static const double RECOIL_SENSOR_THICKNESS = 0.52;
 static const double STEREO_SEP = 3;
 static const double MONO_SEP = 1;
@@ -26,9 +30,11 @@ namespace ldmx {
     EventDisplay::EventDisplay() : TGMainFrame(gClient->GetRoot(), 1000, 600) {
 
         TEveElement* ecal = drawECAL();
+        TEveElement* hcal = drawHCAL();
         TEveElement* recoilTracker = drawRecoilTracker();
 
         detector_->AddElement(ecal);
+        detector_->AddElement(hcal);
         detector_->AddElement(recoilTracker);
 
         gEve->AddElement(detector_);
@@ -93,6 +99,7 @@ namespace ldmx {
         eventNumMax_ = tree_->GetEntriesFast();
 
         ecalDigis_ = new TClonesArray("ldmx::EcalHit");
+        hcalDigis_ = new TClonesArray("ldmx::HcalHit");
         recoilHits_ = new TClonesArray("ldmx::SimTrackerHit");
 
         return true;
@@ -126,12 +133,15 @@ namespace ldmx {
             hits_->DestroyElements();
         }
         tree_->GetEntry(eventNum_);
-        tree_->SetBranchAddress("ecalDigis_recon", &ecalDigis_);
+        tree_->SetBranchAddress("ecalDigis_digi", &ecalDigis_);
+        tree_->SetBranchAddress("hcalDigis_digi", &hcalDigis_);
         tree_->SetBranchAddress("RecoilSimHits_sim", &recoilHits_);
         TEveElement* ecalHitSet = drawECALHits(ecalDigis_);
+        TEveElement* hcalHitSet = drawHCALHits(hcalDigis_);
         TEveElement* recoilHitSet = drawRecoilHits(recoilHits_);
 
         hits_->AddElement(ecalHitSet);
+        hits_->AddElement(hcalHitSet);
         hits_->AddElement(recoilHitSet);
         gEve->AddElement(hits_);
 
@@ -200,10 +210,10 @@ namespace ldmx {
                 {xPos+xWidth/2,  yPos-yWidth/2,  frontZ},
                 {xPos+xWidth/2,  yPos+yWidth/2,  frontZ},
                 {xPos-xWidth/2,  yPos+yWidth/2,  frontZ},
-                {xPos-xWidth/2,  yPos+yWidth/2,  backZ},
-                {xPos+xWidth/2,  yPos+yWidth/2,  backZ},
+                {xPos-xWidth/2,  yPos-yWidth/2,  backZ},
                 {xPos+xWidth/2,  yPos-yWidth/2,  backZ},
-                {xPos-xWidth/2,  yPos-yWidth/2,  backZ}
+                {xPos+xWidth/2,  yPos+yWidth/2,  backZ},
+                {xPos-xWidth/2,  yPos+yWidth/2,  backZ}
         };
 
         Float_t rotatedvs[8][3];
@@ -241,6 +251,39 @@ namespace ldmx {
         }
 
         return ecal;
+    }
+
+    TEveElement* EventDisplay::drawHCAL() {
+
+	TEveElement* hcal = new TEveElementList("HCAL");
+
+        float hcal_x_width(3100);
+        float hcal_y_width(3100);
+        float hcal_z_length(3000);
+        float hcal_side_z(290);
+        float hcal_top_x(525);
+        float hcal_ecal_xy(512);
+        
+        TEveBox *backHcal = drawBox(0, 0, HCAL_Z_OFFSET, hcal_x_width, hcal_y_width, HCAL_Z_OFFSET+hcal_z_length, 0, kCyan, 100, "back_hcal");
+        hcal->AddElement(backHcal);
+        TEveBox *sideTopHcal = drawBox(0, hcal_y_width/4.0+hcal_ecal_xy/4.0, HCAL_Z_OFFSET-hcal_side_z-1, hcal_top_x, (hcal_y_width-hcal_ecal_xy)/2.0, HCAL_Z_OFFSET-1, 0, kCyan, 100, "side_top_hcal");
+        hcal->AddElement(sideTopHcal);
+        TEveBox *sideBottomHcal = drawBox(0, -hcal_y_width/4.0 - hcal_ecal_xy/4.0, HCAL_Z_OFFSET-hcal_side_z-1, hcal_top_x, (hcal_y_width-hcal_ecal_xy)/2.0, HCAL_Z_OFFSET-1, 0, kCyan, 100, "side_bottom_hcal");
+        hcal->AddElement(sideBottomHcal);
+        TEveBox *sideLeftHcal = drawBox(hcal_x_width/4.0+hcal_ecal_xy/4.0,0, HCAL_Z_OFFSET-hcal_side_z-1, (hcal_y_width-hcal_ecal_xy)/2.0,hcal_y_width  , HCAL_Z_OFFSET-1, 0, kCyan, 100, "side_left_hcal");
+        hcal->AddElement(sideLeftHcal);
+        TEveBox *sideRightHcal = drawBox(-hcal_x_width/4.0-hcal_ecal_xy/4.0,0, HCAL_Z_OFFSET-hcal_side_z-1, (hcal_y_width-hcal_ecal_xy)/2.0,hcal_y_width  , HCAL_Z_OFFSET-1, 0, kCyan, 100, "side_right_hcal");
+        hcal->AddElement(sideRightHcal);
+
+	//turn off HCAL by default
+        hcal->SetRnrSelf(0);
+        backHcal->SetRnrSelf(0);
+	sideTopHcal->SetRnrSelf(0);
+	sideBottomHcal->SetRnrSelf(0);
+	sideLeftHcal->SetRnrSelf(0);
+	sideRightHcal->SetRnrSelf(0);
+        	      
+        return hcal;
     }
 
     TEveElement* EventDisplay::drawECALHits(TClonesArray* hits) {
@@ -285,7 +328,36 @@ namespace ldmx {
         return ecalHitSet;
     }
 
-    TEveElement* EventDisplay::drawRecoilHits(TClonesArray* hits) {
+    TEveElement* EventDisplay::drawHCALHits(TClonesArray* hits) {
+
+       ldmx::HcalID detID;
+
+       double peMax = 0.0;
+       ldmx::HcalHit* hit;
+
+       for (TIter next(hits); hit = (ldmx::HcalHit*)next();) 
+           if (hit->getEnergy() > peMax) peMax = hit->getPE();
+
+       TEveRGBAPalette* palette = new TEveRGBAPalette(0,peMax);
+       TEveBoxSet* hcalHitSet = new TEveBoxSet("HCAL Hits");
+       hcalHitSet->SetPalette(palette);
+       hcalHitSet->Reset(TEveBoxSet::kBT_AABox, kFALSE, 64);
+
+       for (TIter next(hits); hit = (ldmx::HcalHit*)next();) {
+           double pe = hit->getPE();
+           detID.setRawValue(hit->getID());
+           detID.unpack();
+
+           hcalHitSet->AddBox(hit->getX(), hit->getY(), hit->getZ()+HCAL_ZHIT_OFFSET, 50, 50, 50);
+           hcalHitSet->DigitValue(pe);
+       }
+
+       hcalHitSet->SetPickable(1);
+       hcalHitSet->SetAlwaysSecSelect(1);
+       return hcalHitSet;
+   }
+
+   TEveElement* EventDisplay::drawRecoilHits(TClonesArray* hits) {
 
         // In mm
         static const double stereo_strip_length = 98; // 2 mm deadspace

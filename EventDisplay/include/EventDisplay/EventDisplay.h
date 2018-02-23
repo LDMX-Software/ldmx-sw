@@ -47,9 +47,13 @@ namespace ldmx {
 
             TEveElement* drawECAL();
 
+            TEveElement* drawHCAL();
+
             TEveElement* drawRecoilTracker();
 
             TEveElement* drawECALHits(TClonesArray* hits);
+
+            TEveElement* drawHCALHits(TClonesArray* hits);
 
             TEveElement* drawRecoilHits(TClonesArray* hits);
 
@@ -58,6 +62,7 @@ namespace ldmx {
             TFile* file_;
             TTree* tree_;
             TClonesArray* ecalDigis_;
+            TClonesArray* hcalDigis_;
             TClonesArray* recoilHits_;
 
             int eventNum_ = 0;
