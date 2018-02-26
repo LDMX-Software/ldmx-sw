@@ -27,4 +27,6 @@ export LD_LIBRARY_PATH=$LDMXSW_DIR/lib:@PYTHON_LIBRARY_DIR@:@XercesC_LIBRARY_DIR
 export PYTHONPATH=$LDMXSW_DIR/lib/python:$PYTHONPATH
 
 # add bin dir to PATH
-export PATH=$LDMXSW_DIR/bin:$(dirname @PYTHON_EXECUTABLE@):$PATH
+#export PATH=$LDMXSW_DIR/bin:$(dirname @PYTHON_EXECUTABLE@):$PATH
+export PATH=$LDMXSW_DIR/bin:$PATH
+
