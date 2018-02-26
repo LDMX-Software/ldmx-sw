@@ -1,15 +1,20 @@
 /**
  * @file GammaPhysics.h
- * @brief Class adding extra gamma particle physics for simulation
+ * @brief Class used to enhanced the gamma physics list.
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
 #ifndef SIMAPPLICATION_GAMMAPHYSICS_H_
 #define SIMAPPLICATION_GAMMAPHYSICS_H_
 
-// Geant4
-#include "G4VPhysicsConstructor.hh"
+//------------//
+//   Geant4   //
+//------------//
 #include "G4GammaConversionToMuons.hh"
+#include "G4VPhysicsConstructor.hh"
+#include "G4VProcess.hh"
+#include "G4ProcessManager.hh"
 
 namespace ldmx {
 
@@ -19,7 +24,8 @@ namespace ldmx {
      *
      * @note
      * Currently adds gamma -> mumu reaction using the
-     * <i>G4GammaConversionToMuons</i> process.
+     * <i>G4GammaConversionToMuons</i> process. Also changes ordering of 
+     * gamma processes such that photonNuclear and GammaToMuMu are called first.
      */
     class GammaPhysics : public G4VPhysicsConstructor {
 

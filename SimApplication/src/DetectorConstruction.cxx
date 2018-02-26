@@ -46,7 +46,12 @@ namespace ldmx {
             // Instantiate the biasing operator
             // TODO: At some point, this should be more generic i.e. operators should be
             //       similar to plugins.
-            XsecBiasingOperator* xsecBiasing = new XsecBiasingOperator("XsecBiasingOperator");
+            XsecBiasingOperator* xsecBiasing = nullptr; 
+            if (BiasingMessenger::getProcess().compare("photonNuclear") == 0) { 
+                xsecBiasing = new PhotoNuclearXsecBiasingOperator("PhotoNuclearXsecBiasingOperator");
+            } else if (BiasingMessenger::getProcess().compare("GammaToMuPair") == 0) { 
+                xsecBiasing = new GammaToMuPairXsecBiasingOperator("GammaToMuPairXsecBiasingOperator");
+            }
 
             for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
                 G4String volumeName = volume->GetName();

@@ -7,7 +7,9 @@
 #ifndef EVENT_ECALHIT_H_
 #define EVENT_ECALHIT_H_
 
-// LDMX
+//----------//
+//   LDMX   //
+//----------//
 #include "Event/CalorimeterHit.h"
 
 namespace ldmx {
@@ -24,37 +26,39 @@ namespace ldmx {
 
         public:
 
-            /**
-             * Class constructor.
-             */
-            EcalHit() {
-            }
+            /** Constructor. */
+            EcalHit() {}
 
-            /**
-             * Class destructor.
-             */
-            virtual ~EcalHit() {
-            }
+            /** Destructor. */
+            virtual ~EcalHit() {}
+            
+            /** Clear the data in the object. */
+            void Clear(Option_t *option = "");
 
-            /**
-             * Print out the object.
-             */
+            /** Print a text representation of this object. */
             void Print(Option_t *option = "") const;
 
             /**
              * Get the cell of the hit from the ID.
+             *
              * @return The cell of the hit from the ID.
              */
             int getCell() const;
 
+            /** Denote this hit as a noise hit. */
+            void setNoiseHit(bool isNoise = true) { isNoise_ = isNoise; }
+
+            /** Check whether this hit is due to noise. */
+            bool isNoise() { return isNoise_; }
+
         private:
 
-            /**
-             * The ROOT class definition.
-             */
-            ClassDef(EcalHit, 1);
-    };
+            /** Flag denoting whether a hit was due to noise. */
+            bool isNoise_{false}; 
 
+            /** The ROOT class definition. */
+            ClassDef(EcalHit, 2);
+    };
 }
 
 #endif /* EVENT_ECALHIT_H_ */
