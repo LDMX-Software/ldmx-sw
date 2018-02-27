@@ -13,6 +13,42 @@ namespace ldmx {
             passname_ {passname} {
     }
 
+    void Process::handleNewRun(const EventImpl& theEvent, int wasRun, std::string detectorName, EventFile* masterFile) {
+        // notify for new run if necessary
+        if (theEvent.getEventHeader()->getRun() != wasRun) {
+            wasRun = theEvent.getEventHeader()->getRun();
+            try {
+                const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
+                std::cout << "[Process] got new run header from '" << masterFile->getFileName() << "' ..." << std::endl;
+                runHeader.Print();
+                for (auto module : sequence_) {
+                    module->onNewRun(runHeader);
+                }
+                // Check if detector data needs to be loaded.
+                if (detectorName.empty() || runHeader.getDetectorName() != detectorName) {
+                    detectorName = runHeader.getDetectorName();
+
+                    // Reset the detector service.
+                    if (detectorService_) {
+                        delete detectorService_;
+                    }
+
+                    // Create new detector service with detector from run header.
+                    detectorService_ = new DetectorDataServiceImpl();
+                    detectorService_->setDetectorName(detectorName);
+                    detectorService_->initialize();
+
+                    // Activate new detector hook on processors.
+                    for (auto module : sequence_) {
+                        module->onNewDetector(detectorService_);
+                    }
+                }
+            } catch (const Exception&) {
+                std::cout << "[Process] [WARNING] Run header for run " << wasRun << " was not found!" << std::endl;
+            }
+        }
+    }
+
     void Process::run() {
 
         try {
@@ -104,35 +140,7 @@ namespace ldmx {
                         m_storageController.resetEventState();
             
                         // notify for new run if necessary
-                        if (theEvent.getEventHeader()->getRun() != wasRun) {
-                            wasRun = theEvent.getEventHeader()->getRun();
-                            try {
-                                const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
-                                std::cout << "[Process] got new run header from '" << masterFile->getFileName() << "' ..." << std::endl;
-                                runHeader.Print();
-                                for (auto module : sequence_) {
-                                    module->onNewRun(runHeader);
-                                }
-
-                                // Check if detector data needs to be loaded.
-                                if (detectorName.empty() || runHeader.getDetectorName() != detectorName) {
-                                    detectorName = runHeader.getDetectorName();
-                                    if (detectorService_) {
-                                        delete detectorService_;
-                                    }
-                                    detectorService_ = new DetectorDataServiceImpl();
-                                    detectorService_->setDetectorName(detectorName);
-                                    detectorService_->initialize();
-
-                                    for (auto module : sequence_) {
-                                        module->onNewDetector(detectorService_);
-                                    }
-                                }
-
-                            } catch (const Exception&) {
-                                std::cout << "[Process] [WARNING] Run header for run " << wasRun << " was not found!" << std::endl;
-                            }
-                        }
+                        handleNewRun(theEvent, wasRun, detectorName, masterFile);
 
                         TTimeStamp t;
                         std::cout << "[ Process ] :  Processing " << n_events_processed + 1 << " Run " << theEvent.getEventHeader()->getRun() 

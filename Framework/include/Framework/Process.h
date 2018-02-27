@@ -129,6 +129,13 @@ namespace ldmx {
              * Access the storage control unit for this process
              */
             StorageControl& getStorageController() { return m_storageController; }
+
+        private:
+
+            /**
+             * Handle a new run number and detector configuration, if necessary.
+             */
+            void handleNewRun(const EventImpl& theEvent, int wasRun, std::string detectorName, EventFile* masterFile);
     
         private:
 
