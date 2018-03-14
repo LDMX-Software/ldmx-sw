@@ -43,7 +43,13 @@ namespace ldmx {
         /*std::cout << "*******************************" << std::endl; 
         std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;
         std::cout << "********************************" << std::endl;*/
-        
+
+        if (track->GetMomentum().mag() > recoilEnergyThreshold_) { 
+            track->SetTrackStatus(fKillTrackAndSecondaries);
+            G4RunManager::GetRunManager()->AbortEvent();
+            return;
+        }
+
         // Get the particles daughters.
         const G4TrackVector* secondaries = step->GetSecondary();
 

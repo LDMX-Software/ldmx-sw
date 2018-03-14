@@ -84,24 +84,16 @@ namespace ldmx {
              */
             virtual void endEvent(const G4Event*);
 
-            /**
-             * Classify a new track which postpones track processing.
-             * Track processing resumes normally if a target PN interaction occurred.
-             * @param aTrack The Geant4 track.
-             * @param currentTrackClass The current track classification.
-             */
-            //G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& currentTrackClass);
-
         private:
-
-            /** Pointer to the current track being processed. */
-            G4Track* currentTrack_{nullptr};
 
             /** The volume name of the LDMX target. */
             G4String volumeName_{"target_PV"};
 
             /** Flag indicating if the reaction of intereset occurred. */
             bool reactionOccurred_{false};
+
+            /** Energy that the recoil electron must not surpass. */
+            double recoilEnergyThreshold_{1500}; 
 
     };
 }
