@@ -1,6 +1,6 @@
 /**
  * @file ElectroNuclearXsecBiasingOperator.cxx
- * @brief Geant4 Biasing Operator used to bias the occurence of electronuclear 
+ * @brief Geant4 Biasing Operator used to bias the occurrence of electronuclear 
  *        events by modifying the cross-section.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
