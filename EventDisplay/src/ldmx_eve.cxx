@@ -35,10 +35,19 @@ int main(int argc, char** argv) {
     browser->StopEmbedding();
     browser->SetTabTitle("Event Control", 0);
 
-    display->SetFile(file);
+    if (!display->SetFile(file)) { 
+        app->Terminate(0);
+        delete browser;
+        delete display;
+
+        return -1;
+    }
 
     app->Run(kFALSE);
     app->Terminate(0);
+
+    delete browser;
+    delete display;
 
     return 0;
 } 
