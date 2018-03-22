@@ -118,7 +118,5 @@ if(DUMP_CMAKE_VARIABLES)
   endforeach()
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow" )
-
 # info message about install prefix
 message(STATUS "ldmx-sw will be installed to: ${CMAKE_INSTALL_PREFIX}")
