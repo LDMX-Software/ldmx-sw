@@ -137,8 +137,6 @@ namespace ldmx {
             double showerRMS_{0};
             double xStd_{0};
             double yStd_{0};
-            double xMean_{0};
-            double yMean_{0};
             double avgLayerHit_{0};
             double stdLayerHit_{0};
         
