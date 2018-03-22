@@ -7,12 +7,22 @@
 #include "TTree.h"
 #include "TClonesArray.h"
 #include "TFile.h"
+#include "TColor.h"
+#include "TString.h"
+#include "TRandom.h"
 
 #include "TEveBox.h"
 #include "TEveStraightLineSet.h"
 #include "TEveElement.h"
 #include "TEveManager.h"
 #include "TEveEventManager.h"
+
+#include "DetDescr/EcalHexReadout.h"
+#include "Event/TriggerResult.h"
+#include "Event/EcalHit.h"
+#include "Event/SimTrackerHit.h"
+#include "Event/EcalCluster.h"
+#include "EventDisplay/EventDisplay.h"
 
 #include <iostream>
 
@@ -25,15 +35,21 @@ namespace ldmx {
             EventDisplay();
 
             ~EventDisplay() {
-                gEve->GetCurrentEvent()->DestroyElements();
                 file_->Close();
-                delete detector_;
                 Cleanup();
             }
 
             void NextEvent();
 
             void PreviousEvent();
+
+            bool GetClustersColl(const char* clustersCollName);
+
+            void GetClustersCollInput();
+
+            bool GetECALDigisColl(const char* ecalDigisCollName);
+
+            bool GetTrackerHitsColl(const char* trackerHitsCollName);
 
             bool GotoEvent(int event);
 
@@ -53,18 +69,36 @@ namespace ldmx {
 
             TEveElement* drawRecoilHits(TClonesArray* hits);
 
+            TEveElement* drawECALClusters(TClonesArray* clusters);
+
+            void ColorClusters();
+
         private:
 
             TFile* file_;
             TTree* tree_;
-            TClonesArray* ecalDigis_;
+            TClonesArray* ecalDigiHits_;
             TClonesArray* recoilHits_;
+            TClonesArray* ecalClusters_;
 
+            bool foundECALDigis_ = false;
+            bool foundClusters_ = false;
+            bool foundTrackerHits_ = false;
+
+            TRandom r_;
             int eventNum_ = 0;
             int eventNumMax_;
+            int nclusters_;
+            const char* clustersCollName_ = "ecalClusters_recon";
             TEveElementList* hits_;
-            TEveElementList* detector_ = new TEveElementList("Detector");
+            TEveElementList* recoObjs_;
+            TEveElementList* detector_ = new TEveElementList("LDMX Detector");
             TGTextEntry* textBox_;
+            TGTextEntry* textBox2_;
+
+            std::vector<Color_t> colors_ = {kRed, kBlue, kGreen, kYellow, kMagenta, kBlack, kOrange, kPink};
+
+            EcalHexReadout* hexReadout_{nullptr};
 
             ClassDef(EventDisplay, 1);
     };
