@@ -90,7 +90,7 @@ class Process:
         if len(self.keep) > 0:
             print "Rules for keeping previous products:"
             for arule in self.keep:
-                print "   %s"%(afile)
+                print "   %s"%(arule)
         if len(self.libraries) > 0:
             print "Shared libraries to load:"
             for afile in self.libraries:
