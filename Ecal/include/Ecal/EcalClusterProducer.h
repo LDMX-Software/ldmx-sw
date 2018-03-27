@@ -4,8 +4,8 @@
  * @author Josh Hiltbrand, University of Minnesota 
  */
 
-#ifndef EVENTPROC_ECALCLUSTERPRODUCER_H_
-#define EVENTPROC_ECALCLUSTERPRODUCER_H_
+#ifndef ECAL_ECALCLUSTERPRODUCER_H_
+#define ECAL_ECALCLUSTERPRODUCER_H_
 
 //----------//
 //   ROOT   //

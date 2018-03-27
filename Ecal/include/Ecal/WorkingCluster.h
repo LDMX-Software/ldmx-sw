@@ -1,8 +1,8 @@
 /*
    WorkingCluster -- In-memory tool for working on clusters
    */
-#ifndef CLUSTER_WORKINGCLUSTER_H_
-#define CLUSTER_WORKINGCLUSTER_H_
+#ifndef ECAL_WORKINGCLUSTER_H_
+#define ECAL_WORKINGCLUSTER_H_
 
 #include "Event/EcalHit.h"
 #include <vector>
