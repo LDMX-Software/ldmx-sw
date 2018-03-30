@@ -32,6 +32,8 @@
 # Plugin used to filter events where an electron undergoes an electronuclear 
 # reaction in the target.  
 /ldmx/plugins/load TargetENProcessFilter libBiasing.so
+/ldmx/plugins/TargetENProcessFilter/volume target_PV
+/ldmx/plugins/TargetENProcessFilter/recoil_threshold 1500
 
 # Print a status every 1000 events.
 #/ldmx/plugins/EventPrintPlugin/modulus 10000
