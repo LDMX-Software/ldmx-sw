@@ -71,6 +71,13 @@ namespace ldmx {
             void addDrop(const std::string& rule);
 
             /**
+             * Add a rule for ignoring collections from the input.
+             * @param rule The rule for ignoring collections.
+             *
+             */
+            void addIgnore(const std::string& rule);
+            
+            /**
              * Set an EventImpl object containing the event data to work with this file.
              * @param evt The EventImpl object with event data.
              */
@@ -116,6 +123,9 @@ namespace ldmx {
                 return runMap_;
             }
 
+            /** The tree with event data. */
+            TTree* tree_{nullptr};
+
         private:
 
             /**
@@ -148,9 +158,6 @@ namespace ldmx {
 
             /** The backing TFile for this EventFile. */
             TFile* file_{nullptr};
-
-            /** The tree with event data. */
-            TTree* tree_{nullptr};
 
             /** A parent file containing event data. */
             EventFile* parent_{nullptr};

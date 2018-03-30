@@ -73,8 +73,28 @@ namespace ldmx {
         runMap_.clear();
     }
 
-    void EventFile::addDrop(const std::string& rule) {
+    void EventFile::addIgnore(const std::string& rule) {
+        if (parent_ == 0)
+            return;
 
+        size_t i = rule.find("ignore");
+        if (i == std::string::npos)
+            return;
+
+        std::string srule = rule.substr(i + 6);
+        for (i = srule.find_first_of(" \t\n\r"); i != std::string::npos; i = srule.find_first_of(" \t\n\r"))
+            srule.erase(i, 1);
+
+        if (srule.length() == 0)
+            return;
+
+        if (srule.back() != '*')
+            srule += '*';
+        
+        parent_->tree_->SetBranchStatus(srule.c_str(),0);
+    }
+
+    void EventFile::addDrop(const std::string& rule) {
         if (parent_ == 0)
             return;
 
@@ -96,7 +116,7 @@ namespace ldmx {
         if (srule.back() != '*')
             srule += '*';
 
-        parent_->tree_->SetBranchStatus(srule.c_str(), (iskeep) ? (1) : (0));
+        tree_->SetBranchStatus(srule.c_str(), (iskeep) ? (1) : (0));
     }
 
     bool EventFile::nextEvent(bool storeCurrentEvent) {

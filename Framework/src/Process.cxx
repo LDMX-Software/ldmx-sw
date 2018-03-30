@@ -80,7 +80,7 @@ namespace ldmx {
                         ifile++;
 
                         for (auto rule : dropKeepRules_) {
-                            outFile->addDrop(rule);
+                            outFile->addIgnore(rule);
                         }
                     }
 
@@ -91,7 +91,6 @@ namespace ldmx {
                     EventImpl theEvent(passname_);
                     if (outFile) {
                         outFile->setupEvent(&theEvent);
-
                     } else {
                         inFile.setupEvent(&theEvent);
                     }
@@ -137,6 +136,10 @@ namespace ldmx {
 
                     if (eventLimit_ == 0 && n_events_processed > eventLimit_) {
                         std::cout << "[ Process ] : Processing interrupted\n";
+                    }
+
+                    for (auto rule : dropKeepRules_) {
+                        outFile->addDrop(rule);
                     }
 
                     if (outFile) {
