@@ -8,25 +8,22 @@
 #ifndef BIASING_TARGETENPROCESSFILTER_H_
 #define BIASING_TARGETENPROCESSFILTER_H_
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-//#include <algorithm>
-
-// Geant4
+//------------//
+//   Geant4   //
+//------------//
 #include "G4RunManager.hh"
 
-// LDMX
+//----------//
+//   LDMX   //
+//----------//
 #include "SimPlugins/UserActionPlugin.h"
 #include "Biasing/BiasingMessenger.h"
-//#include "Biasing/TargetBremFilter.h"
+#include "Biasing/TargetENProcessFilterMessenger.h"
 
 namespace ldmx {
 
-    /**
-     * @class TargetProcessFilter
-     * @brief Biases Geant4 to only process events where PN reaction occurred in the target
-     */
+    class TargetENProcessFilterMessenger; 
+
     class TargetENProcessFilter : public UserActionPlugin {
 
         public:
@@ -84,7 +81,23 @@ namespace ldmx {
              */
             virtual void endEvent(const G4Event*);
 
+            /** 
+             * @param volume Set the volume that the filter will be applied to. 
+             */
+            void setVolume(std::string volumeName) { volumeName_ = volumeName; }; 
+
+            /**
+             * Set the energy threshold that the recoil electron must exceed.
+             */
+            void setRecoilEnergyThreshold(double recoilEnergyThreshold) { 
+                recoilEnergyThreshold_ = recoilEnergyThreshold; 
+            }
+
+
         private:
+
+            /** Messenger used to pass arguments to this class. */
+            TargetENProcessFilterMessenger* messenger_{nullptr}; 
 
             /** The volume name of the LDMX target. */
             G4String volumeName_{"target_PV"};
