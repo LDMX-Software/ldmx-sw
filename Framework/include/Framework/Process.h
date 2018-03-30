@@ -9,11 +9,11 @@
 
 // LDMX
 #include "Framework/Exception.h"
+#include "DetDescr/DetectorDataServiceImpl.h"
 #include "Framework/StorageControl.h"
 
 // STL
 #include <vector>
-
 
 class TFile;
 class TDirectory;
@@ -129,6 +129,13 @@ namespace ldmx {
              * Access the storage control unit for this process
              */
             StorageControl& getStorageController() { return m_storageController; }
+
+        private:
+
+            /**
+             * Handle a new run number and detector configuration, if necessary.
+             */
+            void handleNewRun(const EventImpl& theEvent, int wasRun, std::string detectorName, EventFile* masterFile);
     
         private:
 
@@ -161,6 +168,9 @@ namespace ldmx {
 
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};
+
+            /** Service providing access to detector data. */
+            DetectorDataServiceImpl* detectorService_{nullptr};
     };
 }
 

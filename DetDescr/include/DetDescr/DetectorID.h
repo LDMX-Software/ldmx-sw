@@ -9,11 +9,25 @@
 
 // STL
 #include <vector>
+#include <iostream>
 
 // LDMX
 #include "DetDescr/IDField.h"
 
 namespace ldmx {
+
+    /**
+     * @class FieldValueList
+     * @brief Defines a list of field values
+     * @note This is a class instead of a typedef so operator overloading works.
+     */
+    class FieldValueList : public std::vector<unsigned> {
+    };
+
+    /**
+     * Overload stream operator to print out unpacked IDs.
+     */
+    std::ostream& operator<<(std::ostream& stream, FieldValueList& id);
 
     /**
      * @class DetectorID
@@ -22,7 +36,7 @@ namespace ldmx {
      * @note
      * Represents an ID in the detector with a raw, 32-bit value which can
      * be unpacked into a list of field values or packed from a list of field
-     * values.
+     * values.  Only unsigned field values values are supported.
      */
     class DetectorID {
 
@@ -44,11 +58,6 @@ namespace ldmx {
              * Definition of the field value type.
              */
             typedef unsigned FieldValue;
-
-            /**
-             * A list of field values.
-             */
-            typedef std::vector<FieldValue> FieldValueList;
 
             /**
              * Define a new detector ID from a list of field information.
@@ -124,6 +133,11 @@ namespace ldmx {
              */
             FieldValue getFieldValue(const std::string& fieldName);
 
+            /**
+             * Clear the current raw ID and field value vector.
+             */
+            void clear();
+
         protected:
 
             /**
@@ -163,7 +177,6 @@ namespace ldmx {
              */
             IDField::IDFieldList* fieldList_;
     };
-
 }
 
 #endif
