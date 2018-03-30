@@ -12,6 +12,7 @@ SIM_PLUGIN(ldmx, TargetENProcessFilter)
 namespace ldmx { 
 
     TargetENProcessFilter::TargetENProcessFilter() {
+        messenger_ = new TargetENProcessFilterMessenger(this);
     }
 
     TargetENProcessFilter::~TargetENProcessFilter() {
