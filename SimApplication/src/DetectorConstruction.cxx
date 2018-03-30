@@ -28,6 +28,8 @@ namespace ldmx {
                 xsecBiasing = new PhotoNuclearXsecBiasingOperator("PhotoNuclearXsecBiasingOperator");
             } else if (BiasingMessenger::getProcess().compare("GammaToMuPair") == 0) { 
                 xsecBiasing = new GammaToMuPairXsecBiasingOperator("GammaToMuPairXsecBiasingOperator");
+            } else if (BiasingMessenger::getProcess().compare("electronNuclear") == 0) { 
+                xsecBiasing = new ElectroNuclearXsecBiasingOperator("ElectroNuclearXsecBiasingOperator");
             }
 
             for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
