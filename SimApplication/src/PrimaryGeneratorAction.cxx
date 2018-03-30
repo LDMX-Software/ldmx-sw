@@ -11,6 +11,7 @@ namespace ldmx {
     PrimaryGeneratorAction::PrimaryGeneratorAction() :
         G4VUserPrimaryGeneratorAction(), 
         random_(new TRandom) {
+        random_->SetSeed( CLHEP::HepRandom::getTheSeed() ); 
         generator_.push_back(new G4ParticleGun());
     }
 
