@@ -31,6 +31,10 @@ namespace ldmx {
             virtual ~HcalSD();
 
             G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
+            
+        private:
+          double birksc1_;
+          double birksc2_;    
     };
 
 }
