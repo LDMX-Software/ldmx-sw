@@ -137,7 +137,7 @@ namespace ldmx {
             // if we are reading, move the pointer
             if (!isOutputFile_) {
 
-                if (ientry_ >= entries_) {
+                if (ientry_ + 1 >= entries_) {
                     return false;
                 }
 
@@ -171,7 +171,6 @@ namespace ldmx {
                 event_->setInputTree(parent_->tree_);
             }
         } else {
-            ientry_ = 0;
             event_->setInputTree(tree_);
         }
     }
