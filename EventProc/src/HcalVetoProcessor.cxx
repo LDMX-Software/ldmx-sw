@@ -23,7 +23,6 @@ namespace ldmx {
 
         // Get the collection of sim particles from the event 
         const TClonesArray *hcalHits = event.getCollection("hcalDigis");
-        //if (hcalHits->GetEntriesFast() == 0) return; 
        
         // Loop over all of the Hcal hits and calculate to total photoelectrons
         // in the event.
@@ -39,9 +38,14 @@ namespace ldmx {
         bool passesVeto{true}; 
         //std::cout << "[ HcalVeto ]: total PE: " << totalPe << std::endl;
         if (totalPe >= totalPEThreshold_) passesVeto = false;
-        //if (maxPE >= totalPEThreshold_) passesVeto = false;
-        
         result_.setResult(passesVeto); 
+
+        if (passesVeto) { 
+            setStorageHint(hint_shouldKeep); 
+        } else { 
+            setStorageHint(hint_shouldDrop); 
+        } 
+
         event.addToCollection("HcalVeto", result_);
     }
 }
