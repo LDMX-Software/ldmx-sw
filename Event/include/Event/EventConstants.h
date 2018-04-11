@@ -36,11 +36,13 @@ namespace ldmx {
             static const std::string TARGET_SIM_HITS;
             static const std::string TRIGGER_PAD_SIM_HITS;
             static const std::string TRIGGER_RESULT;
+            static const std::string CLUSTER_ALGO_RESULT;
 
             /*
              * Type names, mostly for initializing clones arrays.
              */
             static const std::string ECAL_HIT;
+            static const std::string ECAL_CLUSTER;
             static const std::string HCAL_HIT;
             static const std::string SIM_PARTICLE;
             static const std::string SIM_CALORIMETER_HIT;
