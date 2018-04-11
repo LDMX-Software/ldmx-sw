@@ -19,11 +19,13 @@ namespace ldmx {
     const std::string EventConstants::TARGET_SIM_HITS = "TargetSimHits";
     const std::string EventConstants::TRIGGER_PAD_SIM_HITS = "TriggerPadSimHits";
     const std::string EventConstants::TRIGGER_RESULT = "TriggerResult";
+    const std::string EventConstants::CLUSTER_ALGO_RESULT = "ClusterAlgoResult";
 
     /*
      * Type names.
      */
     const std::string EventConstants::ECAL_HIT = "ldmx::EcalHit";
+    const std::string EventConstants::ECAL_CLUSTER = "ldmx::EcalCluster";
     const std::string EventConstants::HCAL_HIT = "ldmx::HcalHit";
     const std::string EventConstants::SIM_PARTICLE = "ldmx::SimParticle";
     const std::string EventConstants::SIM_CALORIMETER_HIT = "ldmx::SimCalorimeterHit";
