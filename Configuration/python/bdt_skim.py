@@ -16,7 +16,7 @@ ecalVeto = ldmxcfg.Producer("ecalVeto", "ldmx::EcalVetoProcessor")
 ecalVeto.parameters["num_ecal_layers"] = 34
 ecalVeto.parameters["do_bdt"] = 1
 ecalVeto.parameters["bdt_file"] = "cal_bdt.pkl"
-ecalVeto.parameters["disc_cut"] = 0.999672
+ecalVeto.parameters["disc_cut"] = 0.94
 
 # Add the processor to the processing chain
 p.sequence=[ecalVeto]
