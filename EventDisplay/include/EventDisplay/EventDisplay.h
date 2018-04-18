@@ -16,12 +16,14 @@
 #include "TEveElement.h"
 #include "TEveManager.h"
 #include "TEveEventManager.h"
+#include "TEveArrow.h"
 
 #include "DetDescr/EcalHexReadout.h"
 #include "Event/TriggerResult.h"
 #include "Event/EcalHit.h"
 #include "Event/SimTrackerHit.h"
 #include "Event/EcalCluster.h"
+#include "Event/SimParticle.h"
 #include "EventDisplay/EventDisplay.h"
 
 #include <iostream>
@@ -51,6 +53,8 @@ namespace ldmx {
 
             bool GetTrackerHitsColl(const char* trackerHitsCollName);
 
+            bool GetEcalSPHitsColl(const char* ecalSPHitsCollName);
+
             bool GotoEvent(int event);
 
             bool GotoEvent();
@@ -71,6 +75,8 @@ namespace ldmx {
 
             TEveElement* drawECALClusters(TClonesArray* clusters);
 
+            TEveElement* drawECALSPHits(TClonesArray* ecalSPHits);
+
             void ColorClusters();
 
         private:
@@ -80,10 +86,12 @@ namespace ldmx {
             TClonesArray* ecalDigiHits_;
             TClonesArray* recoilHits_;
             TClonesArray* ecalClusters_;
+            TClonesArray* ecalSPHits_;
 
             bool foundECALDigis_ = false;
             bool foundClusters_ = false;
             bool foundTrackerHits_ = false;
+            bool foundEcalSPHits_ = false;
 
             TRandom r_;
             int eventNum_ = 0;
@@ -92,6 +100,7 @@ namespace ldmx {
             const char* clustersCollName_ = "ecalClusters_recon";
             TEveElementList* hits_;
             TEveElementList* recoObjs_;
+            TEveElementList* simHits_;
             TEveElementList* detector_ = new TEveElementList("LDMX Detector");
             TGTextEntry* textBox_;
             TGTextEntry* textBox2_;
