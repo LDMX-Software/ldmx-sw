@@ -132,6 +132,16 @@ namespace ldmx {
         }
     }
 
+    bool EventDisplay::GetEcalSPHitsColl(const char* ecalSPHitsCollName = "EcalScoringPlaneHits_sim") {
+        if (tree_->GetListOfBranches()->FindObject(ecalSPHitsCollName)) {
+            tree_->SetBranchAddress(ecalSPHitsCollName, &ecalSPHits_);
+            return true;
+        } else {
+            std::cout << "No branch with name \"" << ecalSPHitsCollName << "\"" << std::endl;
+            return false;
+        }
+    }
+
     bool EventDisplay::SetFile(const char* file) {
 
         file_ = TFile::Open(file);
@@ -154,10 +164,12 @@ namespace ldmx {
         ecalDigiHits_ = new TClonesArray("ldmx::EcalHit");
         recoilHits_ = new TClonesArray("ldmx::SimTrackerHit");
         ecalClusters_ = new TClonesArray("ldmx::EcalCluster");
+        ecalSPHits_ = new TClonesArray("ldmx::SimTrackerHit");
 
         foundECALDigis_ = GetECALDigisColl();
         foundClusters_ = GetClustersColl(clustersCollName_);
         foundTrackerHits_ = GetTrackerHitsColl();
+        foundEcalSPHits_ = GetEcalSPHitsColl();
 
         return true;
     }
@@ -176,6 +188,7 @@ namespace ldmx {
 
         hits_ = new TEveElementList("Reco Hits");
         recoObjs_ = new TEveElementList("Reco Objects");
+        simHits_ = new TEveElementList("Sim Particles");
 
         tree_->GetEntry(eventNum_);
 
@@ -192,6 +205,11 @@ namespace ldmx {
         if (foundTrackerHits_) {
             TEveElement* recoilHitSet = drawRecoilHits(recoilHits_);
             hits_->AddElement(recoilHitSet);
+        }
+
+        if (foundEcalSPHits_) {
+            TEveElement* ecalSPHitSet = drawECALSPHits(ecalSPHits_);
+            hits_->AddElement(ecalSPHitSet);
         }
 
         gEve->AddElement(hits_);
@@ -445,22 +463,12 @@ namespace ldmx {
     TEveElement* EventDisplay::drawECALClusters(TClonesArray* clusters) {
         static const double layerZPos[] = {-137.2, -134.3, -127.95, -123.55, -115.7, -109.8, -100.7, -94.3, -85.2, -78.8, -69.7, -63.3, -54.2, -47.8, -38.7, -32.3, -23.2, -16.8, -7.7, -1.3, 7.8, 14.2, 23.3, 29.7, 42.3, 52.2, 64.8, 74.7, 87.3, 97.2, 109.8, 119.7, 132.3, 142.2};
 
-        double edepMax = 0.0;
-        ldmx::EcalCluster* cluster;
-
-        for (TIter next(clusters); cluster = (ldmx::EcalCluster*)next();) {
-
-            if (cluster->getEnergy() > edepMax) {
-
-                edepMax = cluster->getEnergy();
-            }
-        }
-
-        TEveRGBAPalette* palette = new TEveRGBAPalette(0,edepMax);
+        TEveRGBAPalette* palette = new TEveRGBAPalette(0,4000.0);
         TEveElement* ecalClusterSet = new TEveElementList("ECAL Clusters");
 
         int iC = 0;
         int numC = 0;
+        EcalCluster* cluster;
         for (TIter next(clusters); cluster = (ldmx::EcalCluster*)next();) {
 
             char clusterName[50];
@@ -476,7 +484,7 @@ namespace ldmx {
             int numHits = clusterHitIDs.size();
 
             // Use sketchy TEveBoxSet method to set property of one-hit clusters
-            // that is to be used when coloring clusters
+            // that is to be used when coloring clusters later on.
             if (numHits < 2) { 
                 ecalCluster->SetDefDepth(-1); 
             } else {
@@ -578,5 +586,36 @@ namespace ldmx {
 
         return recoilTracker;
     }
+    
+    TEveElement* EventDisplay::drawECALSPHits(TClonesArray* ecalSPHits) {
 
+        TEveElement* ecalSPHitSet = new TEveElementList("ECAL Scoring Plane Hits");
+
+        ldmx::SimTrackerHit* ecalSPP;
+        for (TIter next(ecalSPHits); ecalSPP = (ldmx::SimTrackerHit*)next();) {
+
+            std::vector<float> rVec = ecalSPP->getPosition();
+            // For now skip hits not on front scoring plane
+            if (rVec[2] > 220) { continue; }
+
+            std::vector<double> pVec = ecalSPP->getMomentum();
+            double p = pow(pow(pVec[0],2)+pow(pVec[1],2)+pow(pVec[2],2),0.5);
+
+            SimParticle* sP = ecalSPP->getSimParticle();
+            signed int pdgID = sP->getPdgID();
+
+            //Do some interesting stuff here
+            TEveArrow* track = new TEveArrow(25*pVec[0]/p,25*pVec[1]/p,25*pVec[2]/p,rVec[0],rVec[1],rVec[2]);
+            track->SetMainColor(kBlack);
+            track->SetTubeR(0.02);
+            track->SetPickable(kTRUE);
+
+            char name[50];
+            sprintf(name, "PDG = %d, P = %1.5g MeV", pdgID,p);
+            track->SetElementName(name);
+            ecalSPHitSet->AddElement(track);
+        }
+
+        return ecalSPHitSet;
+    }
 }
