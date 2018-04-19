@@ -114,8 +114,7 @@ namespace ldmx {
         //         top/bottom side hcal: segmented along y direction every 10 cm
         int stripID = -1;        
         if (section==HcalSection::BACK) stripID = int( (localPosition.y()+scint->GetYHalfLength())/100.0);
-        else if (section==HcalSection::TOP || section==HcalSection::BOTTOM) stripID = int( (localPosition.x()+scint->GetXHalfLength())/100.0);
-        else if (section==HcalSection::LEFT || section==HcalSection::RIGHT) stripID = int( (localPosition.y()+scint->GetYHalfLength())/100.0);
+        else stripID = int( (localPosition.z()+scint->GetZHalfLength())/100.0);
 
 
         detID_->setFieldValue(1, layer);
