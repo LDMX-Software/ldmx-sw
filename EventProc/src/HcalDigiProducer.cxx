@@ -48,7 +48,7 @@ namespace ldmx {
             tempID.setFieldValue(2,random_->Integer(2)+3);
             tempID.setFieldValue(3,random_->Integer(STRIPS_SIDE_LR_PER_LAYER_));            
 	}else
-	    assert(false);
+	    std::cout << "WARNING [HcalDigiProducer::generateRandomID]: HcalSection is not known" << std::endl;
 
         return tempID.pack();
     }
@@ -129,7 +129,7 @@ namespace ldmx {
             else if( tempID.getSection() == HcalSection::LEFT || tempID.getSection() == HcalSection::RIGHT )
                 numSigHits_side_lr++;
 	    else 
-	        assert(false);
+	        std::cout << "WARNING [HcalDigiProducer::produce]: HcalSection is not known" << std::endl;
 	    
             hcalLayerPEs[detIDraw] = random_->Poisson(meanPE+meanNoise_);
             //hcalLayerPEs[detIDraw] += random_->Gaus(meanNoise_);
