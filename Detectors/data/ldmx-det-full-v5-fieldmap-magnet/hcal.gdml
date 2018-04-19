@@ -26,7 +26,7 @@
 
     <!-- Back HCal Layer component widths -->
     <variable name="back_numLayers1"   value="0"/>        
-    <variable name="back_numLayers2"   value="81"/>        
+    <variable name="back_numLayers2"   value="40"/>        
     <variable name="back_numLayers3"   value="0"/>        
     <variable name="back_abso2_thick"  value="50"/>
     <variable name="back_abso3_thick"  value="50"/>
