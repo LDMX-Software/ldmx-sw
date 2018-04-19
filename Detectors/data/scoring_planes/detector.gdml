@@ -44,7 +44,7 @@
         <!-- Dimensions of Ecal box -->
         <variable name="hcal_box_x" value="3500*mm" />
         <variable name="hcal_box_y" value="3500*mm" />
-        <variable name="hcal_box_z" value="6500*mm" />
+        <variable name="hcal_box_z" value="3500*mm" />
         <constant name="hcal_back_z" value="ecal_front_z + hcal_box_z" />
 
         <!-- Surround the Hcal with scoring planes -->
