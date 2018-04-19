@@ -37,7 +37,7 @@ namespace ldmx {
 
         bool passesVeto{true}; 
         //std::cout << "[ HcalVeto ]: total PE: " << totalPe << std::endl;
-        if (totalPe >= totalPEThreshold_) passesVeto = false;
+        if (maxPE >= totalPEThreshold_) passesVeto = false;
         result_.setResult(passesVeto); 
 
         if (passesVeto) { 
