@@ -194,7 +194,7 @@ namespace ldmx {
         }
 
         // simulate noise hits in side, top/bottom hcal
-        noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_TB_PER_LAYER_*NUM_SIDE_TB_HCAL_LAYERS_)*4-numSigHits_side_tb);
+        noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_TB_PER_LAYER_*NUM_SIDE_TB_HCAL_LAYERS_)*2-numSigHits_side_tb);
         for( auto noise : noiseHits_PE ){
             HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
             noiseHit->setPE(noise);
@@ -215,7 +215,7 @@ namespace ldmx {
         }
 
         // simulate noise hits in side, left/right hcal
-        noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_LR_PER_LAYER_*NUM_SIDE_LR_HCAL_LAYERS_)*4-numSigHits_side_lr);
+        noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_LR_PER_LAYER_*NUM_SIDE_LR_HCAL_LAYERS_)*2-numSigHits_side_lr);
         for( auto noise : noiseHits_PE ){
             HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
             noiseHit->setPE(noise);
