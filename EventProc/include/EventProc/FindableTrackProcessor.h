@@ -14,6 +14,7 @@
 #include "Event/FindableTrackResult.h"
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
+#include "Event/SiStripHit.h"
 #include "Framework/EventProcessor.h"
 
 //----------//
@@ -56,7 +57,7 @@ namespace ldmx {
              *
              * @param recoilSimHit collection of simulated recoil tracker hits.
              */
-            void createHitMap(const TClonesArray* recoilSimHits);
+            void createHitMap(const TClonesArray* siStripHits);
           
             /** 
              * Given a set of hits, check if a sim particle is expected to fall
