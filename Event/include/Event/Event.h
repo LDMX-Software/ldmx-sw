@@ -115,7 +115,7 @@ namespace ldmx {
              * @param passName The process pass label which was in use when this object was put into the event, such as "sim" or "rerecov2".
              * @return A named TClonesArray from the event.
              */
-            const TClonesArray* getCollection(const std::string& collectionName, std::string passName) {
+            const TClonesArray* getCollection(const std::string& collectionName, std::string passName) const {
                 return (TClonesArray*) getReal(collectionName, passName, true);
             }
 

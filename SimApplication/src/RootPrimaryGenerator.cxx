@@ -38,9 +38,7 @@ namespace ldmx {
 
     void RootPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
-        std::cout << "Reading next Root event ..." << std::endl;
-        if (evtCtr_ > nEvts_)
-            G4RunManager::GetRunManager()->AbortEvent();
+        if (evtCtr_ > nEvts_) G4RunManager::GetRunManager()->AbortRun();
 
         itree_->GetEntry(evtCtr_);
 

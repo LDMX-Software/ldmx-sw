@@ -6,27 +6,26 @@
 /ldmx/pw/read detectors/scoring_planes/detector.gdml
 
 # Enable biasing and set parameters.  This configuration specifies that 
-# the biasing operator is applied to gammas with energy above 2500 MeV 
-# that enter the Ecal.  Also, the photonuclear xsec is increased by a factor
-# of 1000 within the Ecal only.
+# the biasing operator is applied to gammas with energy above 2500 MeV.
 /ldmx/biasing/enable
 /ldmx/biasing/particle gamma
 /ldmx/biasing/process photonNuclear
-/ldmx/biasing/volume ecal
+/ldmx/biasing/volume target
 /ldmx/biasing/threshold 2500
 
 # Initialize the run
 /run/initialize
 
+# Increase the photonuclear xsec in the target by a factor of 10000
 /ldmx/biasing/xsec/particle gamma
 /ldmx/biasing/xsec/threshold 2500
-/ldmx/biasing/xsec/factor 1000
+/ldmx/biasing/xsec/factor 450
 
 # Position the electron gun upstream of the target.  The initial energy
 # of the electron will be 4 GeV.
 /gun/particle e-
 /gun/energy 4.0 GeV
-/gun/position 0 0 -.55 mm
+/gun/position 0 0 -.68 mm
 /gun/direction 0 0 4 GeV
 
 # Plugin used to print an event status.
@@ -44,26 +43,15 @@
 # Plugin used to filter events where a gamma undergoes a photo-nuclear 
 # reaction in the target.  In this case, the filter is being applied
 # to the Ecal.
-/ldmx/plugins/load EcalProcessFilter libBiasing.so
-/ldmx/plugins/EcalProcessFilter/volume ecal
+/ldmx/plugins/load TargetProcessFilter libBiasing.so
 
 # Print a status every 1000 events.
-/ldmx/plugins/EventPrintPlugin/modulus 1
-
-/ldmx/plugins/load TrackFilterPlugin
-/ldmx/plugins/TrackFilterPlugin/verbose 0
-
-/ldmx/plugins/TrackFilterPlugin/process photonNuclear true
-/ldmx/plugins/TrackFilterPlugin/region CalorimeterRegion true
-/ldmx/plugins/TrackFilterPlugin/create pnFilter
+/ldmx/plugins/EventPrintPlugin/modulus 10000
 
 # Write the events that pass the filter to pn_output.root.
 /ldmx/persistency/root/verbose 0
-/ldmx/persistency/root/file v3_production_test.root
-/ldmx/persistency/root/dropCol MagnetScoringPlaneHits
-/ldmx/persistency/root/dropCol TrackerScoringPlaneHits
+/ldmx/persistency/root/file v3_target_production_test.root
 /ldmx/persistency/root/dropCol HcalScoringPlaneHits
-/ldmx/persistency/root/dropCol TargetScoringPlaneHits
 
 
-/run/beamOn 10000
+/run/beamOn 1000000
