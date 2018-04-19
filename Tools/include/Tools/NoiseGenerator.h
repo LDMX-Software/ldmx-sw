@@ -14,6 +14,11 @@
 #include <time.h>
 #include <vector>
 
+//--------------//
+//  boost::math // 
+//--------------//
+#include <boost/math/distributions/poisson.hpp>
+
 //----------//
 //   ROOT   //
 //----------//
@@ -27,7 +32,7 @@ namespace ldmx {
         public: 
 
             /** Constructor */
-            NoiseGenerator();
+            NoiseGenerator(double noiseValue=0.0001, bool gauss=true);
 
             /** Destructor */
             ~NoiseGenerator(); 
@@ -64,6 +69,11 @@ namespace ldmx {
             /** Pedestal or baseline. */
             double pedestal_{0};  
 
+            /** Gaussian flag */
+            bool useGaussianModel_{true};
+
+            /** pdf for poisson errors */
+            boost::math::poisson_distribution<>* poisson_dist_;
     }; // NoiseGenerator
 
 } // ldmx
