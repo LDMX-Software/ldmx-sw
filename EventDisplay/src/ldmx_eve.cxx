@@ -6,6 +6,7 @@
 
 // TEVE
 #include "TEveBrowser.h"
+#include "TGLViewer.h"
 
 #include <string>
 

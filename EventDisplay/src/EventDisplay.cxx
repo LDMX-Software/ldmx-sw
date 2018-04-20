@@ -24,25 +24,21 @@ namespace ldmx {
 
         detector_->AddElement(ecal);
         detector_->AddElement(recoilTracker);
-        //detector_->IncDenyDestroy();
 
         gEve->AddElement(detector_);
 
         SetCleanup(kDeepCleanup);
 
-        TGVerticalFrame* contents = new TGVerticalFrame(this, 100,200);
-        TGHorizontalFrame* commandFrame1 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame2 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame3 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame4 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame5 = new TGHorizontalFrame(contents, 100,0);
+        TGVerticalFrame* contents = new TGVerticalFrame(this, 150,200);
+        TGHorizontalFrame* commandFrame1 = new TGHorizontalFrame(contents, 150,0);
+        TGHorizontalFrame* commandFrame2 = new TGHorizontalFrame(contents, 150,0);
+        TGHorizontalFrame* commandFrame3 = new TGHorizontalFrame(contents, 150,0);
+        TGHorizontalFrame* commandFrame5 = new TGHorizontalFrame(contents, 150,0);
+        TGHorizontalFrame* commandFrame6 = new TGHorizontalFrame(contents, 150,0);
 
         TGButton* buttonColor = new TGTextButton(commandFrame3, "Color Clusters");
         commandFrame3->AddFrame(buttonColor, new TGLayoutHints(kLHintsExpandX));
         buttonColor->Connect("Pressed()", "ldmx::EventDisplay", this, "ColorClusters()");
-
-        TGButton* buttonClose = new TGTextButton(commandFrame4, "&Exit", "gApplication->Terminate(0)");
-        commandFrame4->AddFrame(buttonClose, new TGLayoutHints(kLHintsExpandX));
 
         TGButton* buttonPrevious = new TGTextButton(commandFrame2, "Previous Event");
         commandFrame2->AddFrame(buttonPrevious, new TGLayoutHints(kLHintsExpandX));
@@ -66,11 +62,18 @@ namespace ldmx {
         commandFrame5->AddFrame(buttonClusterName, new TGLayoutHints(kLHintsExpandX));
         buttonClusterName->Connect("Pressed()", "ldmx::EventDisplay", this, "GetClustersCollInput()");
 
+        textBox3_ = new TGTextEntry(commandFrame6, new TGTextBuffer(100));
+        commandFrame6->AddFrame(textBox3_, new TGLayoutHints(kLHintsExpandX));
+
+        TGButton* buttonDrawThresh = new TGTextButton(commandFrame6, "Sim Threshold");
+        commandFrame6->AddFrame(buttonDrawThresh, new TGLayoutHints(kLHintsExpandX));
+        buttonDrawThresh->Connect("Pressed()", "ldmx::EventDisplay", this, "SetSimThresh()");
+
         contents->AddFrame(commandFrame1, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame2, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame3, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame5, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
-        contents->AddFrame(commandFrame4, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrame6, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
 
         AddFrame(contents, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
 
@@ -132,12 +135,12 @@ namespace ldmx {
         }
     }
 
-    bool EventDisplay::GetEcalSPHitsColl(const char* ecalSPHitsCollName = "EcalScoringPlaneHits_sim") {
-        if (tree_->GetListOfBranches()->FindObject(ecalSPHitsCollName)) {
-            tree_->SetBranchAddress(ecalSPHitsCollName, &ecalSPHits_);
+    bool EventDisplay::GetEcalSimParticlesColl(const char* ecalSimParticlesCollName = "EcalScoringPlaneHits_sim") {
+        if (tree_->GetListOfBranches()->FindObject(ecalSimParticlesCollName)) {
+            tree_->SetBranchAddress(ecalSimParticlesCollName, &ecalSimParticles_);
             return true;
         } else {
-            std::cout << "No branch with name \"" << ecalSPHitsCollName << "\"" << std::endl;
+            std::cout << "No branch with name \"" << ecalSimParticlesCollName << "\"" << std::endl;
             return false;
         }
     }
@@ -164,12 +167,12 @@ namespace ldmx {
         ecalDigiHits_ = new TClonesArray("ldmx::EcalHit");
         recoilHits_ = new TClonesArray("ldmx::SimTrackerHit");
         ecalClusters_ = new TClonesArray("ldmx::EcalCluster");
-        ecalSPHits_ = new TClonesArray("ldmx::SimTrackerHit");
+        ecalSimParticles_ = new TClonesArray("ldmx::SimTrackerHit");
 
         foundECALDigis_ = GetECALDigisColl();
         foundClusters_ = GetClustersColl(clustersCollName_);
         foundTrackerHits_ = GetTrackerHitsColl();
-        foundEcalSPHits_ = GetEcalSPHitsColl();
+        foundEcalSPHits_ = GetEcalSimParticlesColl();
 
         return true;
     }
@@ -188,7 +191,6 @@ namespace ldmx {
 
         hits_ = new TEveElementList("Reco Hits");
         recoObjs_ = new TEveElementList("Reco Objects");
-        simHits_ = new TEveElementList("Sim Particles");
 
         tree_->GetEntry(eventNum_);
 
@@ -208,8 +210,8 @@ namespace ldmx {
         }
 
         if (foundEcalSPHits_) {
-            TEveElement* ecalSPHitSet = drawECALSPHits(ecalSPHits_);
-            hits_->AddElement(ecalSPHitSet);
+            TEveElement* ecalSimParticleHitSet = drawECALSimParticles(ecalSimParticles_);
+            hits_->AddElement(ecalSimParticleHitSet);
         }
 
         gEve->AddElement(hits_);
@@ -238,6 +240,42 @@ namespace ldmx {
         GotoEvent(eventNum_);
     }
 
+    bool EventDisplay::SetSimThresh() {
+
+        double thresh = atof(textBox3_->GetText());
+        if (thresh == 0) {
+            std::cout << "Invalid sim energy threshold entered!" << std::endl;
+            return false;
+        }
+        simThresh_ = thresh;
+        TEveElement* spHits = 0;
+        spHits = hits_->FindChild("ECAL Scoring Plane Hits");
+        TEveElement::List_i sim;
+
+        if (spHits == 0) {
+            std::cout << "YOU SUCK!" << std::endl;
+            return false;
+        }
+
+        for (sim = spHits->BeginChildren(); sim != spHits->EndChildren(); sim++) {
+            
+            TEveElement* el = *sim;
+            SimParticle* sp = (ldmx::SimParticle*)el->GetSourceObject();
+            double E = sp->getEnergy();
+            if (E < simThresh_) { 
+                el->SetRnrSelf(kFALSE); 
+            } else {
+                el->SetRnrSelf(kTRUE);
+            }
+        }
+
+        gEve->RegisterRedraw3D();
+        gEve->FullRedraw3D(kFALSE, kTRUE);
+
+        return true;
+    }
+
+
     void EventDisplay::ColorClusters() {
 
         std::cout << "Making pretty clusters!" << std::endl;
@@ -256,7 +294,7 @@ namespace ldmx {
             TEveBoxSet* aCluster = (TEveBoxSet*)clusters->FindChild(clusterName);
             aCluster->UseSingleColor();
 
-            if (aCluster->GetDefDepth() == -1) {
+            if (!aCluster->IsPickable()) {
                 aCluster->SetMainColor(19);
             } else if (theColor < 9) {
                 aCluster->SetMainColor(colors_[theColor]);
@@ -270,6 +308,14 @@ namespace ldmx {
 
         gEve->RegisterRedraw3D();
         gEve->FullRedraw3D(kFALSE, kTRUE);
+    }
+
+    static bool compHits(const EcalHit* a, const EcalHit* b) {
+        return a->getEnergy() > b->getEnergy();
+    }
+
+    static bool compSims(const SimTrackerHit* a, const SimTrackerHit* b) {
+        return a->getSimParticle()->getEnergy() > b->getSimParticle()->getEnergy();
     }
 
     TEveStraightLineSet* EventDisplay::drawHexColumn(Double_t xCenter, Double_t yCenter, Double_t frontZ, Double_t backZ, Double_t h, Int_t color, const char* colName) {
@@ -318,13 +364,13 @@ namespace ldmx {
 
         Float_t vs[8][3] = {
                 {xPos-xWidth/2,  yPos-yWidth/2,  frontZ},
-                {xPos+xWidth/2,  yPos-yWidth/2,  frontZ},
-                {xPos+xWidth/2,  yPos+yWidth/2,  frontZ},
                 {xPos-xWidth/2,  yPos+yWidth/2,  frontZ},
+                {xPos+xWidth/2,  yPos+yWidth/2,  frontZ},
+                {xPos+xWidth/2,  yPos-yWidth/2,  frontZ},
+                {xPos-xWidth/2,  yPos-yWidth/2,  backZ},
                 {xPos-xWidth/2,  yPos+yWidth/2,  backZ},
                 {xPos+xWidth/2,  yPos+yWidth/2,  backZ},
-                {xPos+xWidth/2,  yPos-yWidth/2,  backZ},
-                {xPos-xWidth/2,  yPos-yWidth/2,  backZ}
+                {xPos+xWidth/2,  yPos-yWidth/2,  backZ}
         };
 
         Float_t rotatedvs[8][3];
@@ -363,155 +409,6 @@ namespace ldmx {
         }
 
         return ecal;
-    }
-
-    TEveElement* EventDisplay::drawECALHits(TClonesArray* hits) {
-        static const double layerZPos[] = {-137.2, -134.3, -127.95, -123.55, -115.7, -109.8, -100.7, -94.3, -85.2, -78.8, -69.7, -63.3, -54.2, -47.8, -38.7, -32.3, -23.2, -16.8, -7.7, -1.3, 7.8, 14.2, 23.3, 29.7, 42.3, 52.2, 64.8, 74.7, 87.3, 97.2, 109.8, 119.7, 132.3, 142.2};
-
-        double edepMax = 0.0;
-        ldmx::EcalHit* hit;
-
-        for (TIter next(hits); hit = (ldmx::EcalHit*)next();) {
-
-            if (hit->getEnergy() > edepMax) {
-
-                edepMax = hit->getEnergy();
-            }
-        }
-
-        TEveRGBAPalette* palette = new TEveRGBAPalette(0,edepMax);
-        TEveBoxSet* ecalHitSet = new TEveBoxSet("ECAL Hits");
-        ecalHitSet->SetPalette(palette);
-        ecalHitSet->Reset(TEveBoxSet::kBT_AABox, kFALSE, 64);
-
-        int i = 0;
-        for (TIter next(hits); hit = (ldmx::EcalHit*)next();) {
-
-            double energy = hit->getEnergy();
-            if (energy == 0) { continue; }
-
-            unsigned int hitID = hit->getID();
-            unsigned int cellID = hitID>>15;
-            unsigned int moduleID = (hitID<<17)>>29;
-            int layer = hit->getLayer();
-            unsigned int combinedID = 10*cellID + moduleID;
-            std::pair<double, double> xyPos = hexReadout_->getCellCenterAbsolute(combinedID);
-
-            ecalHitSet->AddBox(xyPos.first, xyPos.second, layerZPos[layer]+ECAL_Z_OFFSET, 3, 3, 3);
-            ecalHitSet->DigitValue(energy);
-            i++;
-        }
-
-        ecalHitSet->SetPickable(1);
-        ecalHitSet->SetAlwaysSecSelect(1);
-        return ecalHitSet;
-    }
-
-    TEveElement* EventDisplay::drawRecoilHits(TClonesArray* hits) {
-
-        // In mm
-        static const double stereo_strip_length = 98; // 2 mm deadspace
-        static const double mono_strip_length = 78; // 2 mm deadspace
-
-        ldmx::SimTrackerHit* hit;
-        TEveElement* recoilHitSet = new TEveElementList("Recoil Hits");
-
-        for (TIter next(hits); hit = (ldmx::SimTrackerHit*)next();) {
-
-            std::vector<float> xyzPos = hit->getPosition();
-
-            if ((xyzPos[2] > 4 && xyzPos[2] < 5) || (xyzPos[2] > 19 && xyzPos[2] < 20) || (xyzPos[2] > 34 && xyzPos[2] < 35) || (xyzPos[2] > 49 && xyzPos[2] < 50)) {
-
-                TEveBox *recoilHit = drawBox(xyzPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kRed+1, 0, "Recoil Hit");
-                recoilHitSet->AddElement(recoilHit);
-
-            } else if ((xyzPos[2] > 10 && xyzPos[2] < 11) || (xyzPos[2] > 40 && xyzPos[2] < 41)) {
-
-                TVector3 rotPos = {xyzPos[0], xyzPos[1], xyzPos[2]};
-                rotPos.RotateZ(-STEREO_ANGLE);
-
-                TEveBox *recoilHit = drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, STEREO_ANGLE, kRed+1, 0, "Recoil Hit");
-                recoilHitSet->AddElement(recoilHit);
-
-            } else if ((xyzPos[2] > 25 && xyzPos[2] < 26) || (xyzPos[2] > 55 && xyzPos[2] < 56)) {
-
-                TVector3 rotPos = {xyzPos[0], xyzPos[1], xyzPos[2]};
-                rotPos.RotateZ(STEREO_ANGLE);
-
-                TEveBox *recoilHit = drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, -STEREO_ANGLE, kRed+1, 0, "Recoil Hit");
-                recoilHitSet->AddElement(recoilHit);
-
-            } else if (xyzPos[2] > 65) {
-                if (fabs(xyzPos[1]) > 1.0) { // dead region
-
-                    if (xyzPos[1] > 0) {
-
-                        TEveBox *recoilHit = drawBox(xyzPos[0], mono_strip_length/2+1, xyzPos[2], 1, mono_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS+1, 0, kRed, 0, "Recoil Hit");
-                        recoilHitSet->AddElement(recoilHit);
-                    } else {
-
-                        TEveBox *recoilHit = drawBox(xyzPos[0], -mono_strip_length/2-1, xyzPos[2], 1, mono_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS+1, 0, kRed, 0, "Recoil Hit");
-                        recoilHitSet->AddElement(recoilHit);
-                    }
-                }
-            }
-        }
-
-        return recoilHitSet;
-    }
-
-    TEveElement* EventDisplay::drawECALClusters(TClonesArray* clusters) {
-        static const double layerZPos[] = {-137.2, -134.3, -127.95, -123.55, -115.7, -109.8, -100.7, -94.3, -85.2, -78.8, -69.7, -63.3, -54.2, -47.8, -38.7, -32.3, -23.2, -16.8, -7.7, -1.3, 7.8, 14.2, 23.3, 29.7, 42.3, 52.2, 64.8, 74.7, 87.3, 97.2, 109.8, 119.7, 132.3, 142.2};
-
-        TEveRGBAPalette* palette = new TEveRGBAPalette(0,4000.0);
-        TEveElement* ecalClusterSet = new TEveElementList("ECAL Clusters");
-
-        int iC = 0;
-        int numC = 0;
-        EcalCluster* cluster;
-        for (TIter next(clusters); cluster = (ldmx::EcalCluster*)next();) {
-
-            char clusterName[50];
-            sprintf(clusterName, "ECAL Cluster %d", iC);
-
-            TEveBoxSet* ecalCluster = new TEveBoxSet(clusterName);
-            ecalCluster->SetPalette(palette);
-            ecalCluster->Reset(TEveBoxSet::kBT_AABox, kFALSE, 64);
-
-            double energy = cluster->getEnergy();
-            std::vector<unsigned int> clusterHitIDs = cluster->getHitIDs();
-
-            int numHits = clusterHitIDs.size();
-
-            // Use sketchy TEveBoxSet method to set property of one-hit clusters
-            // that is to be used when coloring clusters later on.
-            if (numHits < 2) { 
-                ecalCluster->SetDefDepth(-1); 
-            } else {
-                numC++;
-            }
-            for (int iHit = 0; iHit < clusterHitIDs.size(); iHit++) {
-                unsigned int cellID = clusterHitIDs[iHit]>>15;
-                unsigned int moduleID = (clusterHitIDs[iHit]<<17)>>29;
-                int layer = (clusterHitIDs[iHit]<<20)>>24;
-                unsigned int combinedID = 10*cellID + moduleID;
-
-                std::pair<double, double> xyPos = hexReadout_->getCellCenterAbsolute(combinedID);
-
-                ecalCluster->AddBox(xyPos.first, xyPos.second, layerZPos[layer]+ECAL_Z_OFFSET, 3, 3, 3);
-                ecalCluster->DigitValue(energy);
-
-                ecalCluster->SetAlwaysSecSelect(1);
-
-            }
-            ecalClusterSet->AddElement(ecalCluster);
-            iC++;
-        }
-        nclusters_ = iC;
-        std::cout << "Total number of clusters: " << numC << std::endl;
-
-        ecalClusterSet->SetPickable(1);
-        return ecalClusterSet;
     }
 
     TEveElement* EventDisplay::drawRecoilTracker() {
@@ -586,32 +483,208 @@ namespace ldmx {
 
         return recoilTracker;
     }
+
+    TEveElement* EventDisplay::drawECALHits(TClonesArray* hits) {
+        static const double layerZPos[] = {-137.2, -134.3, -127.95, -123.55, -115.7, -109.8, -100.7, -94.3, -85.2, -78.8, -69.7, -63.3, -54.2, -47.8, -38.7, -32.3, -23.2, -16.8, -7.7, -1.3, 7.8, 14.2, 23.3, 29.7, 42.3, 52.2, 64.8, 74.7, 87.3, 97.2, 109.8, 119.7, 132.3, 142.2};
+
+        ldmx::EcalHit* hit;
+
+        TEveRGBAPalette* palette = new TEveRGBAPalette(0,500.0);
+        TEveElement* ecalHitSet = new TEveElementList("ECAL Hits");
+
+        std::vector<EcalHit*> hitVec;
+        for (TIter next(hits); hit = (ldmx::EcalHit*)next();) {
+            hitVec.push_back(hit);
+        }
+
+        std::sort(hitVec.begin(), hitVec.end(), compHits);
+
+        for (int i = 0; i < hitVec.size(); i++) {
+            double energy = hitVec[i]->getEnergy();
+            if (energy == 0) { continue; }
+
+            unsigned int hitID = hitVec[i]->getID();
+            unsigned int cellID = hitID>>15;
+            unsigned int moduleID = (hitID<<17)>>29;
+            int layer = hitVec[i]->getLayer();
+            unsigned int combinedID = 10*cellID + moduleID;
+            std::pair<double, double> xyPos = hexReadout_->getCellCenterAbsolute(combinedID);
+
+            char digiName[50];
+            sprintf(digiName, "%1.5g MeV", energy);
+
+            const UChar_t* rgb = palette->ColorFromValue(energy);
+            TColor* aColor = new TColor();
+            Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
+
+            TEveBox *ecalDigiHit = drawBox(xyPos.first, xyPos.second, layerZPos[layer]+ECAL_Z_OFFSET-1.5, 3, 3, layerZPos[layer]+ECAL_Z_OFFSET+1.5, 0, color, 0, digiName);
+            ecalHitSet->AddElement(ecalDigiHit);
+        }
+
+        ecalHitSet->SetPickableRecursively(1);
+
+        return ecalHitSet;
+    }
+
+    TEveElement* EventDisplay::drawRecoilHits(TClonesArray* hits) {
+
+        // In mm
+        static const double stereo_strip_length = 98; // 2 mm deadspace
+        static const double mono_strip_length = 78; // 2 mm deadspace
+
+        ldmx::SimTrackerHit* hit;
+        TEveElement* recoilHitSet = new TEveElementList("Recoil Hits");
+
+        for (TIter next(hits); hit = (ldmx::SimTrackerHit*)next();) {
+
+            std::vector<float> xyzPos = hit->getPosition();
+
+            if ((xyzPos[2] > 4 && xyzPos[2] < 5) || (xyzPos[2] > 19 && xyzPos[2] < 20) || (xyzPos[2] > 34 && xyzPos[2] < 35) || (xyzPos[2] > 49 && xyzPos[2] < 50)) {
+
+                TEveBox *recoilHit = drawBox(xyzPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kRed+1, 0, "Recoil Hit");
+                recoilHitSet->AddElement(recoilHit);
+
+            } else if ((xyzPos[2] > 10 && xyzPos[2] < 11) || (xyzPos[2] > 40 && xyzPos[2] < 41)) {
+
+                TVector3 rotPos = {xyzPos[0], xyzPos[1], xyzPos[2]};
+                rotPos.RotateZ(-STEREO_ANGLE);
+
+                TEveBox *recoilHit = drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, STEREO_ANGLE, kRed+1, 0, "Recoil Hit");
+                recoilHitSet->AddElement(recoilHit);
+
+            } else if ((xyzPos[2] > 25 && xyzPos[2] < 26) || (xyzPos[2] > 55 && xyzPos[2] < 56)) {
+
+                TVector3 rotPos = {xyzPos[0], xyzPos[1], xyzPos[2]};
+                rotPos.RotateZ(STEREO_ANGLE);
+
+                TEveBox *recoilHit = drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, -STEREO_ANGLE, kRed+1, 0, "Recoil Hit");
+                recoilHitSet->AddElement(recoilHit);
+
+            } else if (xyzPos[2] > 65) {
+                if (fabs(xyzPos[1]) > 1.0) { // dead region
+
+                    if (xyzPos[1] > 0) {
+
+                        TEveBox *recoilHit = drawBox(xyzPos[0], mono_strip_length/2+1, xyzPos[2], 1, mono_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kRed, 0, "Recoil Hit");
+                        recoilHitSet->AddElement(recoilHit);
+                    } else {
+
+                        TEveBox *recoilHit = drawBox(xyzPos[0], -mono_strip_length/2-1, xyzPos[2], 1, mono_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kRed, 0, "Recoil Hit");
+                        recoilHitSet->AddElement(recoilHit);
+                    }
+                }
+            }
+        }
+
+        return recoilHitSet;
+    }
+
+    TEveElement* EventDisplay::drawECALClusters(TClonesArray* clusters) {
+        static const double layerZPos[] = {-137.2, -134.3, -127.95, -123.55, -115.7, -109.8, -100.7, -94.3, -85.2, -78.8, -69.7, -63.3, -54.2, -47.8, -38.7, -32.3, -23.2, -16.8, -7.7, -1.3, 7.8, 14.2, 23.3, 29.7, 42.3, 52.2, 64.8, 74.7, 87.3, 97.2, 109.8, 119.7, 132.3, 142.2};
+
+        TEveRGBAPalette* palette = new TEveRGBAPalette(0,4000.0);
+        TEveElement* ecalClusterSet = new TEveElementList("ECAL Clusters");
+
+        int iC = 0;
+        EcalCluster* cluster;
+        for (TIter next(clusters); cluster = (ldmx::EcalCluster*)next();) {
+
+            char clusterName[50];
+            sprintf(clusterName, "ECAL Cluster %d", iC);
+
+            TEveElement* ecalCluster = new TEveElementList(clusterName);
+
+            double energy = cluster->getEnergy();
+            std::vector<unsigned int> clusterHitIDs = cluster->getHitIDs();
+
+            int numHits = clusterHitIDs.size();
+
+            for (int iHit = 0; iHit < numHits; iHit++) {
+                unsigned int cellID = clusterHitIDs[iHit]>>15;
+                unsigned int moduleID = (clusterHitIDs[iHit]<<17)>>29;
+                int layer = (clusterHitIDs[iHit]<<20)>>24;
+                unsigned int combinedID = 10*cellID + moduleID;
+
+                std::pair<double, double> xyPos = hexReadout_->getCellCenterAbsolute(combinedID);
     
-    TEveElement* EventDisplay::drawECALSPHits(TClonesArray* ecalSPHits) {
+                const UChar_t* rgb = palette->ColorFromValue(energy);
+                TColor* aColor = new TColor();
+                Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
+    
+                TEveBox *ecalDigiHit = drawBox(xyPos.first, xyPos.second, layerZPos[layer]+ECAL_Z_OFFSET-1.5, 3, 3, layerZPos[layer]+ECAL_Z_OFFSET+1.5, 0, color, 0, "RecHit");
+                ecalCluster->AddElement(ecalDigiHit);
+
+                if (numHits < 2) { 
+                    ecalCluster->SetPickable(0);
+                } else {
+                    ecalCluster->SetPickable(1);
+                }
+            }
+            ecalClusterSet->AddElement(ecalCluster);
+            iC++;
+        }
+        nclusters_ = iC;
+
+        ecalClusterSet->SetPickable(1);
+        return ecalClusterSet;
+    }
+
+    
+    TEveElement* EventDisplay::drawECALSimParticles(TClonesArray* ecalSimParticles) {
 
         TEveElement* ecalSPHitSet = new TEveElementList("ECAL Scoring Plane Hits");
 
         ldmx::SimTrackerHit* ecalSPP;
-        for (TIter next(ecalSPHits); ecalSPP = (ldmx::SimTrackerHit*)next();) {
+        std::vector<SimTrackerHit*> simVec;
+        for (TIter next(ecalSimParticles); ecalSPP = (ldmx::SimTrackerHit*)next();) {
+            simVec.push_back(ecalSPP);
+        }
 
-            std::vector<float> rVec = ecalSPP->getPosition();
-            // For now skip hits not on front scoring plane
-            if (rVec[2] > 220) { continue; }
+        //std::sort(simVec.begin(), simVec.end(), compSims);
+           
+        SimParticle* lastP=0; // sometimes multiple SP hits from same particle
 
-            std::vector<double> pVec = ecalSPP->getMomentum();
+        for (int j = 0; j < simVec.size(); j++) {
+
+            std::vector<double> pVec = simVec[j]->getMomentum();
+            std::vector<float> rVec = simVec[j]->getPosition();
+            float time = simVec[j]->getTime();
             double p = pow(pow(pVec[0],2)+pow(pVec[1],2)+pow(pVec[2],2),0.5);
 
-            SimParticle* sP = ecalSPP->getSimParticle();
-            signed int pdgID = sP->getPdgID();
+            SimParticle* sP = simVec[j]->getSimParticle();
+            //if (sP==lastP) continue;
+            lastP=sP;
 
-            //Do some interesting stuff here
-            TEveArrow* track = new TEveArrow(25*pVec[0]/p,25*pVec[1]/p,25*pVec[2]/p,rVec[0],rVec[1],rVec[2]);
+            double E = sP->getEnergy();
+
+            std::vector<double> simStart = sP->getVertex();
+            std::vector<double> simEnd = sP->getEndPoint();
+
+            double scale = 1;
+            if (abs(simEnd[2]-simStart[2]) > 400.0) {
+                 scale = 400.0/abs(simEnd[2]-simStart[2]);
+            }
+
+            double r = pow(pow(scale*(simEnd[0]-simStart[0]),2) + pow(scale*(simEnd[1]-simStart[1]),2) + pow(scale*(simEnd[2]-simStart[2]),2),0.5);
+            signed int pdgID = sP->getPdgID();
+            std::cout << "PDG ID " << pdgID << " ENERGY " << E << " TIME " << time << " PX " << pVec[0] << " PY " << pVec[1] << " PZ " << pVec[2] << std::endl;
+
+//            TEveArrow* track = new TEveArrow(scale*(simEnd[0]-simStart[0]),scale*(simEnd[1]-simStart[1]),scale*(simEnd[2]-simStart[2]),simStart[0],simStart[1],simStart[2]);
+            TEveArrow* track = new TEveArrow(20*pVec[0]/p,20*pVec[1]/p,20*pVec[2]/p,rVec[0],rVec[1],rVec[2]);
+
+            track->SetSourceObject(sP);
             track->SetMainColor(kBlack);
+            //track->SetTubeR(20*0.02/r);
+            //track->SetConeL(100*0.02/r);
+            //track->SetConeR(50*0.02/r);
             track->SetTubeR(0.02);
+            //track->SetConeL(0.02);
+            //track->SetConeR(0.02);
             track->SetPickable(kTRUE);
+            if (E < simThresh_) { track->SetRnrSelf(kFALSE); }
 
             char name[50];
-            sprintf(name, "PDG = %d, P = %1.5g MeV", pdgID,p);
+            sprintf(name, "PDG = %d, p = %1.5g MeV/c, E = %1.5g MeV", pdgID,p,E);
             track->SetElementName(name);
             ecalSPHitSet->AddElement(track);
         }
