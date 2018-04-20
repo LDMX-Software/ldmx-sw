@@ -53,11 +53,13 @@ namespace ldmx {
 
             bool GetTrackerHitsColl(const char* trackerHitsCollName);
 
-            bool GetEcalSPHitsColl(const char* ecalSPHitsCollName);
+            bool GetEcalSimParticlesColl(const char* ecalSimParticlesCollName);
 
             bool GotoEvent(int event);
 
             bool GotoEvent();
+            
+            bool SetSimThresh();
 
             bool SetFile(const char* file);
 
@@ -75,7 +77,7 @@ namespace ldmx {
 
             TEveElement* drawECALClusters(TClonesArray* clusters);
 
-            TEveElement* drawECALSPHits(TClonesArray* ecalSPHits);
+            TEveElement* drawECALSimParticles(TClonesArray* ecalSimParticles);
 
             void ColorClusters();
 
@@ -86,7 +88,7 @@ namespace ldmx {
             TClonesArray* ecalDigiHits_;
             TClonesArray* recoilHits_;
             TClonesArray* ecalClusters_;
-            TClonesArray* ecalSPHits_;
+            TClonesArray* ecalSimParticles_;
 
             bool foundECALDigis_ = false;
             bool foundClusters_ = false;
@@ -97,13 +99,14 @@ namespace ldmx {
             int eventNum_ = 0;
             int eventNumMax_;
             int nclusters_;
+            double simThresh_ = 0;
             const char* clustersCollName_ = "ecalClusters_recon";
             TEveElementList* hits_;
             TEveElementList* recoObjs_;
-            TEveElementList* simHits_;
             TEveElementList* detector_ = new TEveElementList("LDMX Detector");
             TGTextEntry* textBox_;
             TGTextEntry* textBox2_;
+            TGTextEntry* textBox3_;
 
             std::vector<Color_t> colors_ = {kRed, kBlue, kGreen, kYellow, kMagenta, kBlack, kOrange, kPink};
 
