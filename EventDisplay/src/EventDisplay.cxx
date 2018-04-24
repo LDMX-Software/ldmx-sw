@@ -311,15 +311,21 @@ namespace ldmx {
         return a->getEnergy() > b->getEnergy();
     }
 
-    static bool compSims(const SimTrackerHit* a, const SimTrackerHit* b) {
+    static bool compSimsP(const SimTrackerHit* a, const SimTrackerHit* b) {
 
         std::vector<double> paVec = a->getMomentum();
         std::vector<double> pbVec = b->getMomentum();
 
         double pa2 = pow(paVec[0],2)+pow(paVec[1],2)+pow(paVec[2],2);
         double pb2 = pow(pbVec[0],2)+pow(pbVec[1],2)+pow(pbVec[2],2);
+
+        return pa2 > pb2;
+    }
+
+    static bool compSims(const SimTrackerHit* a, const SimTrackerHit* b) {
+
         if (a->getSimParticle() == b->getSimParticle()) {
-            return pa2 > pb2;
+            return compSimsP(a,b);
         } else {
             return a->getSimParticle() < b->getSimParticle();
         }
@@ -642,54 +648,59 @@ namespace ldmx {
 
         ldmx::SimTrackerHit* ecalSPP;
         std::vector<SimTrackerHit*> simVec;
+        std::vector<SimTrackerHit*> filteredSimVec;
         for (TIter next(ecalSimParticles); ecalSPP = (ldmx::SimTrackerHit*)next();) {
             simVec.push_back(ecalSPP);
         }
 
         std::sort(simVec.begin(), simVec.end(), compSims);
            
-        SimParticle* lastP=0; // sometimes multiple SP hits from same particle
-
+        SimParticle* lastP = 0; // sometimes multiple SP hits from same particle
         for (int j = 0; j < simVec.size(); j++) {
-
-            std::vector<double> pVec = simVec[j]->getMomentum();
-            std::vector<float> rVec = simVec[j]->getPosition();
-            float time = simVec[j]->getTime();
-            double p = pow(pow(pVec[0],2)+pow(pVec[1],2)+pow(pVec[2],2),0.5);
-
             SimParticle* sP = simVec[j]->getSimParticle();
             if (sP == lastP) continue;
             lastP = sP;
+            filteredSimVec.push_back(simVec[j]);
+        }
+
+        std::sort(filteredSimVec.begin(), filteredSimVec.end(), compSimsP);
+
+        for (int j = 0; j < filteredSimVec.size(); j++) {
+
+            SimParticle* sP = filteredSimVec[j]->getSimParticle();
+
+            std::vector<double> pVec = filteredSimVec[j]->getMomentum();
+            std::vector<float> rVec = filteredSimVec[j]->getPosition();
+            double p = pow(pow(pVec[0],2)+pow(pVec[1],2)+pow(pVec[2],2),0.5);
 
             double E = sP->getEnergy();
 
             std::vector<double> simStart = sP->getVertex();
             std::vector<double> simEnd = sP->getEndPoint();
+            double rCheck = pow(pow(simEnd[0],2)+pow(simEnd[1],2)+pow(simEnd[2],2),0.5);
 
             double scale = 1;
-            if (abs(simEnd[2]-simStart[2]) > 400.0) {
-                 scale = 400.0/abs(simEnd[2]-simStart[2]);
+            if (rCheck > 400.0) {
+                 scale = 400.0/rCheck;
             }
 
             double r = pow(pow(scale*(simEnd[0]-simStart[0]),2) + pow(scale*(simEnd[1]-simStart[1]),2) + pow(scale*(simEnd[2]-simStart[2]),2),0.5);
             signed int pdgID = sP->getPdgID();
-            //std::cout << "PDG ID " << pdgID << " ENERGY " << E << " TIME " << time << " PX " << pVec[0] << " PY " << pVec[1] << " PZ " << pVec[2] << std::endl;
 
-            TEveArrow* track = new TEveArrow(scale*(simEnd[0]-simStart[0]),scale*(simEnd[1]-simStart[1]),scale*(simEnd[2]-simStart[2]),simStart[0],simStart[1],simStart[2]);
+            TEveArrow* simArr = new TEveArrow(scale*(simEnd[0]-simStart[0]),scale*(simEnd[1]-simStart[1]),scale*(simEnd[2]-simStart[2]),simStart[0],simStart[1],simStart[2]);
 
-            track->SetSourceObject(sP);
-            track->SetMainColor(kBlack);
-            track->SetTubeR(20*0.02/r);
-            track->SetConeL(100*0.02/r);
-            track->SetConeR(50*0.02/r);
-            //track->SetTubeR(0.02);
-            track->SetPickable(kTRUE);
-            if (E < simThresh_) { track->SetRnrSelf(kFALSE); }
+            simArr->SetSourceObject(sP);
+            simArr->SetMainColor(kBlack);
+            simArr->SetTubeR(20*0.02/r);
+            simArr->SetConeL(100*0.02/r);
+            simArr->SetConeR(50*0.02/r);
+            simArr->SetPickable(kTRUE);
+            if (p < simThresh_) { simArr->SetRnrSelf(kFALSE); }
 
             char name[50];
-            sprintf(name, "PDG = %d, p = %1.5g MeV/c", pdgID,p);
-            track->SetElementName(name);
-            ecalSPHitSet->AddElement(track);
+            sprintf(name, "PDG = %d, p = %1.5g MeV/c", pdgID, p);
+            simArr->SetElementName(name);
+            ecalSPHitSet->AddElement(simArr);
         }
 
         return ecalSPHitSet;
