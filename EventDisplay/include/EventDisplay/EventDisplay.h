@@ -98,7 +98,6 @@ namespace ldmx {
             TRandom r_;
             int eventNum_ = 0;
             int eventNumMax_;
-            int nclusters_;
             double simThresh_ = 0;
             const char* clustersCollName_ = "ecalClusters_recon";
             TEveElementList* hits_;

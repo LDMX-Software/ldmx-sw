@@ -65,7 +65,7 @@ namespace ldmx {
         textBox3_ = new TGTextEntry(commandFrame6, new TGTextBuffer(100));
         commandFrame6->AddFrame(textBox3_, new TGLayoutHints(kLHintsExpandX));
 
-        TGButton* buttonDrawThresh = new TGTextButton(commandFrame6, "Sim Threshold");
+        TGButton* buttonDrawThresh = new TGTextButton(commandFrame6, "Sim P [MeV] Threshold");
         commandFrame6->AddFrame(buttonDrawThresh, new TGLayoutHints(kLHintsExpandX));
         buttonDrawThresh->Connect("Pressed()", "ldmx::EventDisplay", this, "SetSimThresh()");
 
@@ -243,26 +243,23 @@ namespace ldmx {
     bool EventDisplay::SetSimThresh() {
 
         double thresh = atof(textBox3_->GetText());
-        if (thresh == 0) {
+        if (thresh == 0 && std::string(textBox_->GetText()) != "0") {
             std::cout << "Invalid sim energy threshold entered!" << std::endl;
             return false;
         }
+
         simThresh_ = thresh;
         TEveElement* spHits = 0;
-        spHits = hits_->FindChild("ECAL Scoring Plane Hits");
+        spHits = hits_->FindChild("ECAL SP Sim Particles");
         TEveElement::List_i sim;
-
-        if (spHits == 0) {
-            std::cout << "YOU SUCK!" << std::endl;
-            return false;
-        }
 
         for (sim = spHits->BeginChildren(); sim != spHits->EndChildren(); sim++) {
             
             TEveElement* el = *sim;
             SimParticle* sp = (ldmx::SimParticle*)el->GetSourceObject();
-            double E = sp->getEnergy();
-            if (E < simThresh_) { 
+            std::vector<double> pVec = sp->getMomentum();
+            double p = pow(pow(pVec[0],2) + pow(pVec[1],2) + pow(pVec[2],2),0.5);
+            if (p < simThresh_) { 
                 el->SetRnrSelf(kFALSE); 
             } else {
                 el->SetRnrSelf(kTRUE);
@@ -275,10 +272,7 @@ namespace ldmx {
         return true;
     }
 
-
     void EventDisplay::ColorClusters() {
-
-        std::cout << "Making pretty clusters!" << std::endl;
 
         TEveElement* clusters = recoObjs_->FindChild("ECAL Clusters");
         if (clusters == 0) { 
@@ -287,23 +281,26 @@ namespace ldmx {
         }
 
         int theColor = 0;
-        for (int iC = 0; iC < nclusters_; iC++) {
+        TEveElement::List_i cluster;
+        for (cluster = clusters->BeginChildren(); cluster != clusters->EndChildren(); cluster++) {
             
-            char clusterName[50];
-            sprintf(clusterName, "ECAL Cluster %d", iC);
-            TEveBoxSet* aCluster = (TEveBoxSet*)clusters->FindChild(clusterName);
-            aCluster->UseSingleColor();
-
-            if (!aCluster->IsPickable()) {
-                aCluster->SetMainColor(19);
+            TEveElement* el = *cluster;
+            TEveElement::List_i hit;
+            Int_t color = 0;
+            if (!el->IsPickable()) {
+                color = 19;
             } else if (theColor < 9) {
-                aCluster->SetMainColor(colors_[theColor]);
+                color = colors_[theColor];
                 theColor++;
             } else {
                 Int_t ci = 200*r_.Rndm();
-                aCluster->SetMainColor(ci);
+                color = ci;
             }
 
+            for (hit = el->BeginChildren(); hit != el->EndChildren(); hit++) { 
+                TEveElement* elChild = *hit;
+                elChild->SetMainColor(color);
+            }
         }
 
         gEve->RegisterRedraw3D();
@@ -315,7 +312,17 @@ namespace ldmx {
     }
 
     static bool compSims(const SimTrackerHit* a, const SimTrackerHit* b) {
-        return a->getSimParticle()->getEnergy() > b->getSimParticle()->getEnergy();
+
+        std::vector<double> paVec = a->getMomentum();
+        std::vector<double> pbVec = b->getMomentum();
+
+        double pa2 = pow(paVec[0],2)+pow(paVec[1],2)+pow(paVec[2],2);
+        double pb2 = pow(pbVec[0],2)+pow(pbVec[1],2)+pow(pbVec[2],2);
+        if (a->getSimParticle() == b->getSimParticle()) {
+            return pa2 > pb2;
+        } else {
+            return a->getSimParticle() < b->getSimParticle();
+        }
     }
 
     TEveStraightLineSet* EventDisplay::drawHexColumn(Double_t xCenter, Double_t yCenter, Double_t frontZ, Double_t backZ, Double_t h, Int_t color, const char* colName) {
@@ -490,7 +497,7 @@ namespace ldmx {
         ldmx::EcalHit* hit;
 
         TEveRGBAPalette* palette = new TEveRGBAPalette(0,500.0);
-        TEveElement* ecalHitSet = new TEveElementList("ECAL Hits");
+        TEveElement* ecalHitSet = new TEveElementList("ECAL RecHits");
 
         std::vector<EcalHit*> hitVec;
         for (TIter next(hits); hit = (ldmx::EcalHit*)next();) {
@@ -533,7 +540,7 @@ namespace ldmx {
         static const double mono_strip_length = 78; // 2 mm deadspace
 
         ldmx::SimTrackerHit* hit;
-        TEveElement* recoilHitSet = new TEveElementList("Recoil Hits");
+        TEveElement* recoilHitSet = new TEveElementList("Recoil Sim Hits");
 
         for (TIter next(hits); hit = (ldmx::SimTrackerHit*)next();) {
 
@@ -615,15 +622,14 @@ namespace ldmx {
                 ecalCluster->AddElement(ecalDigiHit);
 
                 if (numHits < 2) { 
-                    ecalCluster->SetPickable(0);
+                    ecalCluster->SetPickableRecursively(0);
                 } else {
-                    ecalCluster->SetPickable(1);
+                    ecalCluster->SetPickableRecursively(1);
                 }
             }
             ecalClusterSet->AddElement(ecalCluster);
             iC++;
         }
-        nclusters_ = iC;
 
         ecalClusterSet->SetPickable(1);
         return ecalClusterSet;
@@ -632,7 +638,7 @@ namespace ldmx {
     
     TEveElement* EventDisplay::drawECALSimParticles(TClonesArray* ecalSimParticles) {
 
-        TEveElement* ecalSPHitSet = new TEveElementList("ECAL Scoring Plane Hits");
+        TEveElement* ecalSPHitSet = new TEveElementList("ECAL SP Sim Particles");
 
         ldmx::SimTrackerHit* ecalSPP;
         std::vector<SimTrackerHit*> simVec;
@@ -640,7 +646,7 @@ namespace ldmx {
             simVec.push_back(ecalSPP);
         }
 
-        //std::sort(simVec.begin(), simVec.end(), compSims);
+        std::sort(simVec.begin(), simVec.end(), compSims);
            
         SimParticle* lastP=0; // sometimes multiple SP hits from same particle
 
@@ -652,8 +658,8 @@ namespace ldmx {
             double p = pow(pow(pVec[0],2)+pow(pVec[1],2)+pow(pVec[2],2),0.5);
 
             SimParticle* sP = simVec[j]->getSimParticle();
-            //if (sP==lastP) continue;
-            lastP=sP;
+            if (sP == lastP) continue;
+            lastP = sP;
 
             double E = sP->getEnergy();
 
@@ -667,24 +673,21 @@ namespace ldmx {
 
             double r = pow(pow(scale*(simEnd[0]-simStart[0]),2) + pow(scale*(simEnd[1]-simStart[1]),2) + pow(scale*(simEnd[2]-simStart[2]),2),0.5);
             signed int pdgID = sP->getPdgID();
-            std::cout << "PDG ID " << pdgID << " ENERGY " << E << " TIME " << time << " PX " << pVec[0] << " PY " << pVec[1] << " PZ " << pVec[2] << std::endl;
+            //std::cout << "PDG ID " << pdgID << " ENERGY " << E << " TIME " << time << " PX " << pVec[0] << " PY " << pVec[1] << " PZ " << pVec[2] << std::endl;
 
-//            TEveArrow* track = new TEveArrow(scale*(simEnd[0]-simStart[0]),scale*(simEnd[1]-simStart[1]),scale*(simEnd[2]-simStart[2]),simStart[0],simStart[1],simStart[2]);
-            TEveArrow* track = new TEveArrow(20*pVec[0]/p,20*pVec[1]/p,20*pVec[2]/p,rVec[0],rVec[1],rVec[2]);
+            TEveArrow* track = new TEveArrow(scale*(simEnd[0]-simStart[0]),scale*(simEnd[1]-simStart[1]),scale*(simEnd[2]-simStart[2]),simStart[0],simStart[1],simStart[2]);
 
             track->SetSourceObject(sP);
             track->SetMainColor(kBlack);
-            //track->SetTubeR(20*0.02/r);
-            //track->SetConeL(100*0.02/r);
-            //track->SetConeR(50*0.02/r);
-            track->SetTubeR(0.02);
-            //track->SetConeL(0.02);
-            //track->SetConeR(0.02);
+            track->SetTubeR(20*0.02/r);
+            track->SetConeL(100*0.02/r);
+            track->SetConeR(50*0.02/r);
+            //track->SetTubeR(0.02);
             track->SetPickable(kTRUE);
             if (E < simThresh_) { track->SetRnrSelf(kFALSE); }
 
             char name[50];
-            sprintf(name, "PDG = %d, p = %1.5g MeV/c, E = %1.5g MeV", pdgID,p,E);
+            sprintf(name, "PDG = %d, p = %1.5g MeV/c", pdgID,p);
             track->SetElementName(name);
             ecalSPHitSet->AddElement(track);
         }
