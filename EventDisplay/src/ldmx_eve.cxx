@@ -1,13 +1,6 @@
 // LDMX
 #include "EventDisplay/EventDisplay.h"
 
-// ROOT
-#include "TRint.h"
-
-// TEVE
-#include "TEveBrowser.h"
-#include "TGLViewer.h"
-
 #include <string>
 
 using ldmx::EventDisplay;
@@ -24,31 +17,35 @@ int main(int argc, char** argv) {
 
     TRint *app = new TRint("App", &argc, argv);
 
-    TEveManager::Create();
+    TEveManager* manager = new TEveManager(1600, 1200, kTRUE, "FIV");
+    TEveUtil::SetupEnvironment();
+    TEveUtil::SetupGUI();
 
-    TEveBrowser* browser = gEve->GetBrowser();
+    TEveBrowser* browser = manager->GetBrowser();
     browser->StartEmbedding(TRootBrowser::kLeft);
+    manager->AddEvent(new TEveEventManager("LDMX Detector", ""));
 
-    gEve->AddEvent(new TEveEventManager("LDMX Detector", ""));
-    EventDisplay *display = new EventDisplay();
-    gEve->AddEvent(new TEveEventManager("LDMX Event", ""));
-
-    browser->StopEmbedding();
-    browser->SetTabTitle("Event Control", 0);
-
+    EventDisplay *display = new EventDisplay(manager);
     if (!display->SetFile(file)) { 
         app->Terminate(0);
         delete browser;
         delete display;
+        delete manager;
 
         return -1;
     }
+
+    manager->AddEvent(new TEveEventManager("LDMX Event", ""));
+
+    browser->SetTabTitle("Event Control", 0);
+    browser->StopEmbedding();
 
     app->Run(kFALSE);
     app->Terminate(0);
 
     delete browser;
     delete display;
+    delete manager;
 
     return 0;
 } 
