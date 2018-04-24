@@ -4,22 +4,27 @@
 #include "TGTextEntry.h"
 #include "TGFrame.h"
 #include "TGButton.h"
+#include "TGLViewer.h"
+#include "TGLViewer.h"
 #include "TTree.h"
 #include "TClonesArray.h"
 #include "TFile.h"
 #include "TColor.h"
 #include "TString.h"
 #include "TRandom.h"
+#include "TRint.h"
 
 #include "TEveBox.h"
+#include "TEveBrowser.h"
 #include "TEveStraightLineSet.h"
 #include "TEveElement.h"
 #include "TEveManager.h"
 #include "TEveEventManager.h"
 #include "TEveArrow.h"
+#include "TEveRGBAPalette.h"
+#include "TEveViewer.h"
 
 #include "DetDescr/EcalHexReadout.h"
-#include "Event/TriggerResult.h"
 #include "Event/EcalHit.h"
 #include "Event/SimTrackerHit.h"
 #include "Event/EcalCluster.h"
@@ -34,7 +39,7 @@ namespace ldmx {
 
         public:
 
-            EventDisplay();
+            EventDisplay(TEveManager* manager);
 
             ~EventDisplay() {
                 file_->Close();
@@ -107,6 +112,7 @@ namespace ldmx {
             TGTextEntry* textBox2_;
             TGTextEntry* textBox3_;
 
+            TEveManager* manager_{nullptr};
             std::vector<Color_t> colors_ = {kRed, kBlue, kGreen, kYellow, kMagenta, kBlack, kOrange, kPink};
 
             EcalHexReadout* hexReadout_{nullptr};

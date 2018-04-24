@@ -1,6 +1,3 @@
-#include "TEveBoxSet.h"
-#include "TEveRGBAPalette.h"
-
 #include "EventDisplay/EventDisplay.h"
 
 ClassImp(ldmx::EventDisplay);
@@ -16,7 +13,11 @@ static const double STEREO_ANGLE = 0.1;
 
 namespace ldmx {
 
-    EventDisplay::EventDisplay() : TGMainFrame(gClient->GetRoot(), 1600, 1200) {
+    EventDisplay::EventDisplay(TEveManager* manager) : TGMainFrame(gClient->GetRoot(), 1600, 1600) {
+
+        manager_ = manager;
+        TGLViewer* viewer = manager_->GetDefaultGLViewer();
+        viewer->UseLightColorSet();
 
         hexReadout_ = new EcalHexReadout();
         TEveElement* ecal = drawECAL();
@@ -25,16 +26,16 @@ namespace ldmx {
         detector_->AddElement(ecal);
         detector_->AddElement(recoilTracker);
 
-        gEve->AddElement(detector_);
+        manager_->AddElement(detector_);
 
         SetCleanup(kDeepCleanup);
 
-        TGVerticalFrame* contents = new TGVerticalFrame(this, 150,200);
-        TGHorizontalFrame* commandFrame1 = new TGHorizontalFrame(contents, 150,0);
-        TGHorizontalFrame* commandFrame2 = new TGHorizontalFrame(contents, 150,0);
-        TGHorizontalFrame* commandFrame3 = new TGHorizontalFrame(contents, 150,0);
-        TGHorizontalFrame* commandFrame5 = new TGHorizontalFrame(contents, 150,0);
-        TGHorizontalFrame* commandFrame6 = new TGHorizontalFrame(contents, 150,0);
+        TGVerticalFrame* contents = new TGVerticalFrame(this, 400, 400);
+        TGHorizontalFrame* commandFrame1 = new TGHorizontalFrame(contents, 400,0);
+        TGHorizontalFrame* commandFrame2 = new TGHorizontalFrame(contents, 400,0);
+        TGHorizontalFrame* commandFrame3 = new TGHorizontalFrame(contents, 400,0);
+        TGHorizontalFrame* commandFrame5 = new TGHorizontalFrame(contents, 400,0);
+        TGHorizontalFrame* commandFrame6 = new TGHorizontalFrame(contents, 400,0);
 
         TGButton* buttonColor = new TGTextButton(commandFrame3, "Color Clusters");
         commandFrame3->AddFrame(buttonColor, new TGLayoutHints(kLHintsExpandX));
@@ -84,7 +85,7 @@ namespace ldmx {
         MapRaised();
         MapWindow();
 
-        gEve->FullRedraw3D(kTRUE);
+        manager_->FullRedraw3D(kTRUE);
 
     }
 
@@ -179,7 +180,7 @@ namespace ldmx {
 
     bool EventDisplay::GotoEvent(int event) {
 
-        gEve->GetCurrentEvent()->DestroyElements();
+        manager_->GetCurrentEvent()->DestroyElements();
 
         if (event > eventNumMax_ || event < 0) {
             std::cout << "Event number out of range." << std::endl;
@@ -214,9 +215,9 @@ namespace ldmx {
             hits_->AddElement(ecalSimParticleHitSet);
         }
 
-        gEve->AddElement(hits_);
-        gEve->AddElement(recoObjs_);
-        gEve->Redraw3D(kFALSE);
+        manager_->AddElement(hits_);
+        manager_->AddElement(recoObjs_);
+        manager_->Redraw3D(kFALSE);
 
         return true;
     }
@@ -266,8 +267,8 @@ namespace ldmx {
             }
         }
 
-        gEve->RegisterRedraw3D();
-        gEve->FullRedraw3D(kFALSE, kTRUE);
+        manager_->RegisterRedraw3D();
+        manager_->FullRedraw3D(kFALSE, kTRUE);
 
         return true;
     }
@@ -303,8 +304,8 @@ namespace ldmx {
             }
         }
 
-        gEve->RegisterRedraw3D();
-        gEve->FullRedraw3D(kFALSE, kTRUE);
+        manager_->RegisterRedraw3D();
+        manager_->FullRedraw3D(kFALSE, kTRUE);
     }
 
     static bool compHits(const EcalHit* a, const EcalHit* b) {
