@@ -680,8 +680,8 @@ namespace ldmx {
             double rCheck = pow(pow(simEnd[0],2)+pow(simEnd[1],2)+pow(simEnd[2],2),0.5);
 
             double scale = 1;
-            if (rCheck > 400.0) {
-                 scale = 400.0/rCheck;
+            if (abs(simEnd[2]) > 1000.0) {
+                 scale = 400.0/abs(simEnd[2]-simStart[2]);
             }
 
             double r = pow(pow(scale*(simEnd[0]-simStart[0]),2) + pow(scale*(simEnd[1]-simStart[1]),2) + pow(scale*(simEnd[2]-simStart[2]),2),0.5);
