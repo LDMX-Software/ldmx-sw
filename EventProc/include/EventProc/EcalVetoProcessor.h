@@ -43,11 +43,11 @@ namespace ldmx {
             void buildFeatureVector(std::vector<float>& bdtFeatures,
                     ldmx::EcalVetoResult& result);
 
-            float getSinglePred(std::vector<float> bdtFeatures);
+            float getSinglePred(std::vector<float> bdtFeatures, TString model_name);
 
         private:
 
-            TString vectorToPredCMD(std::vector<float> bdtFeatures);
+            TString vectorToPredCMD(std::vector<float> bdtFeatures, TString model_name);
     };
 
     /**
@@ -69,7 +69,11 @@ namespace ldmx {
             }
 
             virtual ~EcalVetoProcessor() {
-                delete BDTHelper_;
+                delete fidBDTHelper_;
+                delete p001BDTHelper_;
+                delete p01BDTHelper_;
+                delete p1BDTHelper_;
+                delete p0BDTHelper_;
             }
 
             void configure(const ParameterSet&);
@@ -124,12 +128,16 @@ namespace ldmx {
             std::vector<float> ecalLayerEdepRaw_;
             std::vector<float> ecalLayerEdepReadout_;
             std::vector<float> ecalLayerTime_;
+            std::vector<float> mapsx;
+            std::vector<float> mapsy;
+
 
             int nEcalLayers_{0};
             int backEcalStartingLayer_{0};
             int nReadoutHits_{0};
             int deepestLayerHit_{0};
             int doBdt_{0};
+
 
             double summedDet_{0};
             double summedTightIso_{0};
@@ -139,8 +147,8 @@ namespace ldmx {
             double yStd_{0};
             double avgLayerHit_{0};
             double stdLayerHit_{0};
-        
-            double bdtCutVal_{0};
+
+            std::vector<double> bdtCutVal_{0};
 
             EcalVetoResult result_;
             EcalDetectorID detID_;
@@ -149,8 +157,15 @@ namespace ldmx {
 
             EcalHexReadout* hexReadout_{nullptr};
 
-            std::string bdtFileName_;
-            BDTHelper* BDTHelper_{nullptr};
+            std::vector<std::basic_string<char>> nfbdtFileNames_;
+            std::vector<int> bdtdrop_;
+            std::string fidbdtFileName_;
+            std::string cellFileNamexy_;
+            BDTHelper* fidBDTHelper_{nullptr};
+            BDTHelper* p001BDTHelper_{nullptr};
+            BDTHelper* p01BDTHelper_{nullptr};
+            BDTHelper* p1BDTHelper_{nullptr};
+            BDTHelper* p0BDTHelper_{nullptr};
             std::vector<float> bdtFeatures_;
     };
 
