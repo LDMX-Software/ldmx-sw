@@ -23,8 +23,12 @@ pnWeight.parameters["theta_threshold"] = 100.
 ecalVeto = ldmxcfg.Producer("ecalVeto", "ldmx::EcalVetoProcessor")
 ecalVeto.parameters["num_ecal_layers"] = 34
 ecalVeto.parameters["do_bdt"] = 1
-ecalVeto.parameters["bdt_file"] = "cal_bdt.pkl"
-ecalVeto.parameters["disc_cut"] = 0.94
+ecalVeto.parameters["fid_bdt_file"] = "fid_bdt.pkl"
+ecalVeto.parameters["nf_bdt_files"] = ["p001_nf_bdt.pkl", "p01_nf_bdt.pkl", "p1_nf_bdt.pkl", "p0_nf_bdt.pkl"]
+ecalVeto.parameters["cellxy_file"] = "cellxy.txt"
+ecalVeto.parameters["disc_cut"] = [0.96, 0.95, 0.95, 0.95, 0.95]
+#Set to 1 to drop fid or non-fid events respectively (Must listen and drop by default).
+ecalVeto.parameters["drop_fid_nf"] = [0, 0]
 
 hcalVeto = ldmxcfg.Producer("hcalVeto", "ldmx::HcalVetoProcessor")
 hcalVeto.parameters["pe_threshold"] = 8.0
