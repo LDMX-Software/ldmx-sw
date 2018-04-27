@@ -128,8 +128,8 @@ namespace ldmx {
 
         ecalLayerEdepReadout_ = EcalLayerEdepReadout;
 
-	FaceX_ = faceXY[0];
-	FaceY_ = faceXY[1];
+        FaceX_ = faceXY[0];
+        FaceY_ = faceXY[1];
     }
     void EcalVetoResult::Print(Option_t *option) const {
         std::cout << "[ EcalVetoResult ]:\n" << "\t Passes veto : " << passesVeto_[0] << "," << passesVeto_[1]
