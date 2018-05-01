@@ -1,12 +1,12 @@
 /**
- * @file EcalVetoResult.h
- * @brief Class used to encapsulate the results obtained from 
- *        EcalVetoProcessor.
+ * @file NonFidEcalVetoResult.h
+ * @brief Class used to encapsulate the results obtained from
+ *        NonFidEcalVetoProcessor.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENT_ECALVETORESULT_H_
-#define EVENT_ECALVETORESULT_H_
+#ifndef EVENT_NONFIDECALVETORESULT_H_
+#define EVENT_NONFIDECALVETORESULT_H_
 
 //----------------//
 //   C++ StdLib   //
@@ -26,15 +26,15 @@
 
 namespace ldmx {
 
-    class EcalVetoResult : public TObject {
+    class NonFidEcalVetoResult : public TObject {
 
         public:
 
             /** Constructor */
-            EcalVetoResult();
+            NonFidEcalVetoResult();
 
             /** Destructor */
-            ~EcalVetoResult();
+            ~NonFidEcalVetoResult();
 
             /**
              * Set the sim particle and 'is findable' flag.
@@ -42,29 +42,29 @@ namespace ldmx {
             void setVariables(
                     int nReadoutHits,
                     int deepestLayerHit,
-		    int inside,
+                    int inside,
                     float summedDet,
                     float summedTightIso,
-                    float maxCellDep, 
+                    float maxCellDep,
                     float showerRMS,
                     float xStd,
                     float yStd,
                     float avgLayerHit,
                     float stdLayerHit,
-                    
+
                     std::vector<float> EcalLayerEdepReadout,
-                    std::vector<double> recoilP, 
+                    std::vector<double> recoilP,
                     std::vector<float> recoilPos,
-		    std::vector<float> faceXY
+                    std::vector<float> faceXY
             );
 
             /** Reset the object. */
             void Clear(Option_t *option = "");
 
             /**
-             * Copy this object. 
+             * Copy this object.
              *
-             * @param object The target object. 
+             * @param object The target object.
              */
             void Copy(TObject& object) const;
 
@@ -72,17 +72,17 @@ namespace ldmx {
             void Print(Option_t *option = "") const;
 
             /** Checks if the event passes the Ecal veto. */
-            bool passesVeto() {
+            std::vector<int> passesVeto() {
                 return passesVeto_;
             }
-            float getDisc() {
+            std::vector<float> getDisc() {
                 return discValue_;
             }
-        
+
             int getDeepestLayerHit() {
                 return deepestLayerHit_;
             }
-        
+
             int getNReadoutHits() {
                 return nReadoutHits_;
             }
@@ -94,66 +94,66 @@ namespace ldmx {
             float getSummedTightIso() {
                 return summedTightIso_;
             }
-        
+
             float getMaxCellDep() {
                 return maxCellDep_;
             }
-        
+
             float getShowerRMS() {
                 return showerRMS_;
             }
-        
+
             float getXStd() {
                 return xStd_;
             }
-        
+
             float getYStd() {
                 return yStd_;
             }
-        
+
             float getAvgLayerHit() {
                 return avgLayerHit_;
             }
-        
+
             float getStdLayerHit() {
                 return stdLayerHit_;
             }
-        
+
             std::vector<float> getEcalLayerEdepReadout() {
                 return ecalLayerEdepReadout_;
             }
 
-            void setVetoResult(bool passesVeto) {
+            void setVetoResult(std::vector<int> passesVeto) {
                 passesVeto_ = passesVeto;
             }
-            void setDiscValue(float discValue) {
+            void setDiscValue(std::vector<float> discValue) {
                 discValue_ = discValue;
             }
 
             /** Return the momentum of the recoil at the front scoring plane. */
-            std::vector<double> getRecoilMomentum() { return { recoilPx_, recoilPy_, recoilPz_ }; }; 
+            std::vector<double> getRecoilMomentum() { return { recoilPx_, recoilPy_, recoilPz_ }; };
 
             /** Return the x position of the recoil at the front scoring plane. */
-            double getRecoilX() { return recoilX_; }; 
+            double getRecoilX() { return recoilX_; };
 
             /** Return the y position of the recoil at the front scoring plane. */
             double getRecoilY() { return recoilY_; };
 
-	    double getFaceX() { return FaceX_; };
-	    
-	    double getFaceY() { return FaceY_; };
+            double getFaceX() { return FaceX_; };
 
-	    int getInside() { return Inside_; };
+            double getFaceY() { return FaceY_; };
+
+            int getInside() { return Inside_; };
 
         private:
 
             /** Flag indicating whether the event is vetoed by the Ecal. */
-            bool passesVeto_{false};
+            std::vector<int> passesVeto_;
 
             int nReadoutHits_{0};
             int deepestLayerHit_{0};
-	    int Inside_{0};
-        
+            int Inside_{0};
+
             float summedDet_{0};
             float summedTightIso_{0};
             float maxCellDep_{0};
@@ -163,31 +163,31 @@ namespace ldmx {
             float avgLayerHit_{0};
             float stdLayerHit_{0};
 
-        
-            float discValue_{0};
-            
+
+            std::vector<float> discValue_;
+
             /** px of recoil electron at the front scoring plane. */
             double recoilPx_{-9999};
-            
+
             /** py of recoil electron at the front scoring plane. */
             double recoilPy_{-9999};
-            
+
             /** py of recoil electron at the front scoring plane. */
             double recoilPz_{-9999};
-            
+
             /** x position of recoil electron at the front scoring plane. */
-            float recoilX_{-9999}; 
-            
+            float recoilX_{-9999};
+
             /** y position of recoil electron at the front scoring plane. */
-            float recoilY_{-9999}; 
+            float recoilY_{-9999};
 
-	    float FaceX_{-9999};
+            float FaceX_{-9999};
 
-	    float FaceY_{-9999};
+            float FaceY_{-9999};
 
             std::vector<float> ecalLayerEdepReadout_;
 
-            ClassDef(EcalVetoResult, 3);
+            ClassDef(NonFidEcalVetoResult, 3);
     };
 }
 

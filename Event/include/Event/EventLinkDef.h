@@ -21,6 +21,7 @@
 #pragma link C++ class ldmx::HcalVetoResult+;
 #pragma link C++ class ldmx::EcalHit+;
 #pragma link C++ class ldmx::EcalVetoResult+;
+#pragma link C++ class ldmx::NonFidEcalVetoResult+;
 #pragma link C++ class ldmx::EcalCluster+;
 #pragma link C++ class ldmx::EventConstants+;
 #pragma link C++ class ldmx::EventHeader+;
