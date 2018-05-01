@@ -1,11 +1,11 @@
 /**
- * @file EcalVetoProcessor.h
- * @brief Class that determines if event is vetoable using ECAL hit information
+ * @file NonFidEcalVetoProcessor.h
+ * @brief Class that determines if events outside fiducial region are vetoable
  * @author Owen Colegrove, UCSB
  */
 
-#ifndef EVENTPROC_ECALVETOPROCESSOR_H_
-#define EVENTPROC_ECALVETOPROCESSOR_H_
+#ifndef EVENTPROC_NONFIDECALVETOPROCESSOR_H_
+#define EVENTPROC_NONFIDECALVETOPROCESSOR_H_
 
 // ROOT
 #include "TString.h"
@@ -15,7 +15,7 @@
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
 #include "DetDescr/EcalDetectorID.h"
-#include "Event/EcalVetoResult.h"
+#include "Event/NonFidEcalVetoResult.h"
 #include "Event/SimTrackerHit.h"
 #include "Framework/EventProcessor.h"
 
@@ -28,33 +28,33 @@ namespace ldmx {
     class EcalHexReadout;
 
     /**
-     * @class BDTHelper
-     * @brief Runs the Boost Decision Tree (BDT) on EcalVetoResult objects using TPython
+     * @class NonFidBDTHelper
+     * @brief Runs the Boost Decision Tree (BDT) on NonFidEcalVetoResult objects using TPython
      */
-    class BDTHelper {
+    class NonFidBDTHelper {
 
         public:
 
-            BDTHelper(TString importBDTFile);
+            NonFidBDTHelper(TString importBDTFile);
 
-            virtual ~BDTHelper() {
+            virtual ~NonFidBDTHelper() {
             }
 
             void buildFeatureVector(std::vector<float>& bdtFeatures,
-                    ldmx::EcalVetoResult& result);
+                    ldmx::NonFidEcalVetoResult& result);
 
-            float getSinglePred(std::vector<float> bdtFeatures);
+            float getSinglePred(std::vector<float> bdtFeatures, TString model_name);
 
         private:
 
-            TString vectorToPredCMD(std::vector<float> bdtFeatures);
+            TString vectorToPredCMD(std::vector<float> bdtFeatures, TString model_name);
     };
 
     /**
-     * @class EcalVetoProcessor
+     * @class NonFidEcalVetoProcessor
      * @brief Determines if event is vetoable using ECAL hit information
      */
-    class EcalVetoProcessor: public Producer {
+    class NonFidEcalVetoProcessor: public Producer {
 
         public:
 
@@ -64,12 +64,15 @@ namespace ldmx {
 
             typedef std::pair<float, float> XYCoords;
 
-            EcalVetoProcessor(const std::string& name, Process& process) :
+            NonFidEcalVetoProcessor(const std::string& name, Process& process) :
                     Producer(name, process) {
             }
 
-            virtual ~EcalVetoProcessor() {
-                delete BDTHelper_;
+            virtual ~NonFidEcalVetoProcessor() {
+                delete p001BDTHelper_;
+                delete p01BDTHelper_;
+                delete p1BDTHelper_;
+                delete p0BDTHelper_;
             }
 
             void configure(const ParameterSet&);
@@ -133,7 +136,7 @@ namespace ldmx {
             int nReadoutHits_{0};
             int deepestLayerHit_{0};
             int doBdt_{0};
-	    
+
 
             double summedDet_{0};
             double summedTightIso_{0};
@@ -143,19 +146,23 @@ namespace ldmx {
             double yStd_{0};
             double avgLayerHit_{0};
             double stdLayerHit_{0};
-        
-            double bdtCutVal_{0};
 
-            EcalVetoResult result_;
+            std::vector<double> bdtCutVal_{0};
+
+            NonFidEcalVetoResult result_;
             EcalDetectorID detID_;
             bool verbose_{false};
             bool doesPassVeto_{false};
 
             EcalHexReadout* hexReadout_{nullptr};
 
-            std::string bdtFileName_;
+            std::vector<std::basic_string<char>> nfbdtFileNames_;
+            std::vector<int> bdtdrop_;
             std::string cellFileNamexy_;
-            BDTHelper* BDTHelper_{nullptr};
+            NonFidBDTHelper* p001BDTHelper_{nullptr};
+            NonFidBDTHelper* p01BDTHelper_{nullptr};
+            NonFidBDTHelper* p1BDTHelper_{nullptr};
+            NonFidBDTHelper* p0BDTHelper_{nullptr};
             std::vector<float> bdtFeatures_;
     };
 
