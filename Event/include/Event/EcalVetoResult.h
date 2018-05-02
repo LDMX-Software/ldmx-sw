@@ -42,7 +42,7 @@ namespace ldmx {
             void setVariables(
                     int nReadoutHits,
                     int deepestLayerHit,
-		    int inside,
+                    int inside,
                     float summedDet,
                     float summedTightIso,
                     float maxCellDep, 
@@ -55,7 +55,7 @@ namespace ldmx {
                     std::vector<float> EcalLayerEdepReadout,
                     std::vector<double> recoilP, 
                     std::vector<float> recoilPos,
-		    std::vector<float> faceXY
+                    std::vector<float> faceXY
             );
 
             /** Reset the object. */
@@ -139,11 +139,11 @@ namespace ldmx {
             /** Return the y position of the recoil at the front scoring plane. */
             double getRecoilY() { return recoilY_; };
 
-	    double getFaceX() { return FaceX_; };
+            double getFaceX() { return FaceX_; };
 	    
-	    double getFaceY() { return FaceY_; };
+            double getFaceY() { return FaceY_; };
 
-	    int getInside() { return Inside_; };
+            int getInside() { return Inside_; };
 
         private:
 
@@ -152,7 +152,7 @@ namespace ldmx {
 
             int nReadoutHits_{0};
             int deepestLayerHit_{0};
-	    int Inside_{0};
+            int Inside_{0};
         
             float summedDet_{0};
             float summedTightIso_{0};
@@ -181,9 +181,9 @@ namespace ldmx {
             /** y position of recoil electron at the front scoring plane. */
             float recoilY_{-9999}; 
 
-	    float FaceX_{-9999};
+            float FaceX_{-9999};
 
-	    float FaceY_{-9999};
+            float FaceY_{-9999};
 
             std::vector<float> ecalLayerEdepReadout_;
 

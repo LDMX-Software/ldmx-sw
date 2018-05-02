@@ -42,9 +42,9 @@ namespace ldmx {
         recoilX_ = -9999; 
         recoilY_ = -9999;
 
-	Inside_ = 0;
-	FaceX_ = -9999;
-	FaceY_ = -9999;
+        Inside_ = 0;
+        FaceX_ = -9999;
+        FaceY_ = -9999;
 
         ecalLayerEdepReadout_.clear();
     }
@@ -74,9 +74,9 @@ namespace ldmx {
         result.recoilX_ = recoilX_; 
         result.recoilY_ = recoilY_;
 
-	result.Inside_ = Inside_;
-	result.FaceX_ = FaceX_;
-	result.FaceY_ = FaceY_;
+        result.Inside_ = Inside_;
+        result.FaceX_ = FaceX_;
+        result.FaceY_ = FaceY_;
 
         // vector copy
         result.ecalLayerEdepReadout_ = ecalLayerEdepReadout_;
@@ -85,7 +85,7 @@ namespace ldmx {
     void EcalVetoResult::setVariables(
             int nReadoutHits,
             int deepestLayerHit,
-	    int inside,
+            int inside,
 
             float summedDet,
             float summedTightIso,
@@ -99,14 +99,14 @@ namespace ldmx {
             std::vector<float> EcalLayerEdepReadout,
             std::vector<double> recoilP, 
             std::vector<float> recoilPos,
-	    std::vector<float> faceXY
+            std::vector<float> faceXY
 
     ) { 
 
         nReadoutHits_ = nReadoutHits;
         summedDet_ = summedDet;
         summedTightIso_ = summedTightIso;
-	Inside_ = inside;
+        Inside_ = inside;
 
         maxCellDep_ = maxCellDep;
         showerRMS_ = showerRMS;
@@ -128,8 +128,8 @@ namespace ldmx {
 
         ecalLayerEdepReadout_ = EcalLayerEdepReadout;
 
-	FaceX_ = faceXY[0];
-	FaceY_ = faceXY[1];
+        FaceX_ = faceXY[0];
+        FaceY_ = faceXY[1];
     }
 
     void EcalVetoResult::Print(Option_t *option) const {
