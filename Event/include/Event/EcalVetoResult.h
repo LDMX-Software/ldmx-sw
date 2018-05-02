@@ -42,7 +42,6 @@ namespace ldmx {
             void setVariables(
                     int nReadoutHits,
                     int deepestLayerHit,
-                    int inside,
                     float summedDet,
                     float summedTightIso,
                     float maxCellDep, 
@@ -54,8 +53,7 @@ namespace ldmx {
                     
                     std::vector<float> EcalLayerEdepReadout,
                     std::vector<double> recoilP, 
-                    std::vector<float> recoilPos,
-                    std::vector<float> faceXY
+                    std::vector<float> recoilPos
             );
 
             /** Reset the object. */
@@ -130,20 +128,14 @@ namespace ldmx {
                 discValue_ = discValue;
             }
 
-            /** Return the momentum of the recoil at the front scoring plane. */
+            /** Return the momentum of the recoil at the Ecal face. */
             std::vector<double> getRecoilMomentum() { return { recoilPx_, recoilPy_, recoilPz_ }; }; 
 
-            /** Return the x position of the recoil at the front scoring plane. */
+            /** Return the x position of the recoil at the Ecal face. */
             double getRecoilX() { return recoilX_; }; 
 
-            /** Return the y position of the recoil at the front scoring plane. */
+            /** Return the y position of the recoil at the Ecal face. */
             double getRecoilY() { return recoilY_; };
-
-            double getFaceX() { return FaceX_; };
-	    
-            double getFaceY() { return FaceY_; };
-
-            int getInside() { return Inside_; };
 
         private:
 
@@ -152,7 +144,6 @@ namespace ldmx {
 
             int nReadoutHits_{0};
             int deepestLayerHit_{0};
-            int Inside_{0};
         
             float summedDet_{0};
             float summedTightIso_{0};
@@ -166,24 +157,20 @@ namespace ldmx {
         
             float discValue_{0};
             
-            /** px of recoil electron at the front scoring plane. */
+            /** px of recoil electron at the Ecal face. */
             double recoilPx_{-9999};
             
-            /** py of recoil electron at the front scoring plane. */
+            /** py of recoil electron at the Ecal face. */
             double recoilPy_{-9999};
             
-            /** py of recoil electron at the front scoring plane. */
+            /** py of recoil electron at the Ecal face. */
             double recoilPz_{-9999};
             
-            /** x position of recoil electron at the front scoring plane. */
+            /** x position of recoil electron at the Ecal face. */
             float recoilX_{-9999}; 
             
-            /** y position of recoil electron at the front scoring plane. */
+            /** y position of recoil electron at the Ecal face. */
             float recoilY_{-9999}; 
-
-            float FaceX_{-9999};
-
-            float FaceY_{-9999};
 
             std::vector<float> ecalLayerEdepReadout_;
 
