@@ -23,8 +23,18 @@ pnWeight.parameters["theta_threshold"] = 100.
 ecalVeto = ldmxcfg.Producer("ecalVeto", "ldmx::EcalVetoProcessor")
 ecalVeto.parameters["num_ecal_layers"] = 34
 ecalVeto.parameters["do_bdt"] = 1
-ecalVeto.parameters["bdt_file"] = "cal_bdt.pkl"
-ecalVeto.parameters["disc_cut"] = 0.94
+ecalVeto.parameters["bdt_file"] = "fid_bdt.pkl"
+ecalVeto.parameters["cellxy_file"] = "cellxy.txt"
+ecalVeto.parameters["disc_cut"] = 0.95
+
+NonFidecalVeto = ldmxcfg.Producer("NonFidecalVeto", "ldmx::NonFidEcalVetoProcessor")
+NonFidecalVeto.parameters["num_ecal_layers"] = 34
+NonFidecalVeto.parameters["do_bdt"] = 1
+#Files in order of increasing mass
+NonFidecalVeto.parameters["nf_bdt_files"] = ["p001_nf_bdt.pkl", "p01_nf_bdt.pkl", "p1_nf_bdt.pkl", "p0_nf_bdt.pkl"]
+NonFidecalVeto.parameters["cellxy_file"] = "cellxy.txt"
+#Disc cuts in order of increasing mass
+NonFidecalVeto.parameters["disc_cut"] = [0.99, 0.95, 0.94, 0.94]
 
 hcalVeto = ldmxcfg.Producer("hcalVeto", "ldmx::HcalVetoProcessor")
 hcalVeto.parameters["pe_threshold"] = 8.0
@@ -41,7 +51,7 @@ hcalSimHitSort = ldmxcfg.Producer("hcalSimHitSort", "ldmx::SimHitSortProcessor")
 hcalSimHitSort.parameters["simHitCollection"]="HcalSimHits"
 hcalSimHitSort.parameters["outputCollection"]="SortedHcalSimHits"
 
-p.sequence=[ecalDigis, hcalDigis, simpleTrigger, ecalVeto, hcalVeto, trackerHitKiller, findable_track, pnWeight, ecalSimHitSort, hcalSimHitSort]
+p.sequence=[ecalDigis, hcalDigis, simpleTrigger, ecalVeto, NonFidecalVeto, hcalVeto, trackerHitKiller, findable_track, pnWeight, ecalSimHitSort, hcalSimHitSort]
 
 # Default to dropping all events
 p.skimDefaultIsDrop()
