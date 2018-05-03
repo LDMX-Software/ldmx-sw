@@ -4,9 +4,18 @@ ClassImp(ldmx::EventDisplay);
 
 // All lengths are in mm
 static const double ECAL_Z_OFFSET = 214.5+290.0/2; //First number is distance from target to ECAL front face, second is half ECAL extent in z
+static const double HCAL_Z_OFFSET = 504.5;
+static const double HCAL_ZHIT_OFFSET = 4.5;
 static const double RECOIL_SENSOR_THICKNESS = 0.52;
 static const double STEREO_SEP = 3;
 static const double MONO_SEP = 1;
+
+static const double hcal_x_width = 3100.0;
+static const double hcal_y_width = 3100.0;
+static const double hcal_z_length = 3000.0;
+static const double hcal_side_z = 290.0;
+static const double hcal_top_x = 525.0;
+static const double hcal_ecal_xy = 512.0;
 
 // In radians
 static const double STEREO_ANGLE = 0.1; 
@@ -21,21 +30,27 @@ namespace ldmx {
 
         hexReadout_ = new EcalHexReadout();
         TEveElement* ecal = drawECAL();
+        TEveElement* hcal = drawHCAL();
         TEveElement* recoilTracker = drawRecoilTracker();
 
         detector_->AddElement(ecal);
+        detector_->AddElement(hcal);
         detector_->AddElement(recoilTracker);
 
         manager_->AddElement(detector_);
 
         SetCleanup(kDeepCleanup);
 
-        TGVerticalFrame* contents = new TGVerticalFrame(this, 400, 400);
-        TGHorizontalFrame* commandFrame1 = new TGHorizontalFrame(contents, 400,0);
-        TGHorizontalFrame* commandFrame2 = new TGHorizontalFrame(contents, 400,0);
-        TGHorizontalFrame* commandFrame3 = new TGHorizontalFrame(contents, 400,0);
-        TGHorizontalFrame* commandFrame5 = new TGHorizontalFrame(contents, 400,0);
-        TGHorizontalFrame* commandFrame6 = new TGHorizontalFrame(contents, 400,0);
+        TGVerticalFrame* contents = new TGVerticalFrame(this, 500, 1200);
+        TGHorizontalFrame* commandFrame1 = new TGHorizontalFrame(contents, 500,0);
+        TGHorizontalFrame* commandFrame2 = new TGHorizontalFrame(contents, 500,0);
+        TGHorizontalFrame* commandFrame3 = new TGHorizontalFrame(contents, 500,0);
+        TGHorizontalFrame* commandFrame5 = new TGHorizontalFrame(contents, 500,0);
+        TGHorizontalFrame* commandFrame6 = new TGHorizontalFrame(contents, 500,0);
+        TGHorizontalFrame* commandFrame7 = new TGHorizontalFrame(contents, 500,0);
+        TGHorizontalFrame* commandFrame8 = new TGHorizontalFrame(contents, 500,0);
+        TGHorizontalFrame* commandFrame9 = new TGHorizontalFrame(contents, 500,0);
+        TGHorizontalFrame* commandFrame10 = new TGHorizontalFrame(contents, 500,0);
 
         TGButton* buttonColor = new TGTextButton(commandFrame3, "Color Clusters");
         commandFrame3->AddFrame(buttonColor, new TGLayoutHints(kLHintsExpandX));
@@ -59,7 +74,7 @@ namespace ldmx {
         textBox2_ = new TGTextEntry(commandFrame5, new TGTextBuffer(100));
         commandFrame5->AddFrame(textBox2_, new TGLayoutHints(kLHintsExpandX));
 
-        TGButton* buttonClusterName = new TGTextButton(commandFrame5, "Cluster Collection Name");
+        TGButton* buttonClusterName = new TGTextButton(commandFrame5, "Set Clusters Branch");
         commandFrame5->AddFrame(buttonClusterName, new TGLayoutHints(kLHintsExpandX));
         buttonClusterName->Connect("Pressed()", "ldmx::EventDisplay", this, "GetClustersCollInput()");
 
@@ -70,10 +85,42 @@ namespace ldmx {
         commandFrame6->AddFrame(buttonDrawThresh, new TGLayoutHints(kLHintsExpandX));
         buttonDrawThresh->Connect("Pressed()", "ldmx::EventDisplay", this, "SetSimThresh()");
 
+        textBox4_ = new TGTextEntry(commandFrame7, new TGTextBuffer(100));
+        commandFrame7->AddFrame(textBox4_, new TGLayoutHints(kLHintsExpandX));
+
+        TGButton* buttonSetTree = new TGTextButton(commandFrame7, "Set Event TTree");
+        commandFrame7->AddFrame(buttonSetTree, new TGLayoutHints(kLHintsExpandX));
+        buttonSetTree->Connect("Pressed()", "ldmx::EventDisplay", this, "GetEventTree()");
+
+        textBox5_ = new TGTextEntry(commandFrame8, new TGTextBuffer(100));
+        commandFrame8->AddFrame(textBox5_, new TGLayoutHints(kLHintsExpandX));
+
+        TGButton* buttonSetECALBranch = new TGTextButton(commandFrame8, "Set ECAL Digis Branch");
+        commandFrame8->AddFrame(buttonSetECALBranch, new TGLayoutHints(kLHintsExpandX));
+        buttonSetECALBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetECALDigisCollInput()");
+
+        textBox6_ = new TGTextEntry(commandFrame9, new TGTextBuffer(100));
+        commandFrame9->AddFrame(textBox6_, new TGLayoutHints(kLHintsExpandX));
+
+        TGButton* buttonSetHCALBranch = new TGTextButton(commandFrame9, "Set HCAL Digis Branch");
+        commandFrame9->AddFrame(buttonSetHCALBranch, new TGLayoutHints(kLHintsExpandX));
+        buttonSetHCALBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetHCALDigisCollInput()");
+
+        textBox7_ = new TGTextEntry(commandFrame10, new TGTextBuffer(100));
+        commandFrame10->AddFrame(textBox7_, new TGLayoutHints(kLHintsExpandX));
+
+        TGButton* buttonSetRecoilBranch = new TGTextButton(commandFrame10, "Set Recoil Sims Branch");
+        commandFrame10->AddFrame(buttonSetRecoilBranch, new TGLayoutHints(kLHintsExpandX));
+        buttonSetRecoilBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetTrackerHitsCollInput()");
+
+        contents->AddFrame(commandFrame7, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrame8, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrame9, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrame10, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrame5, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame1, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame2, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame3, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
-        contents->AddFrame(commandFrame5, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame6, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
 
         AddFrame(contents, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
@@ -90,7 +137,7 @@ namespace ldmx {
     }
 
     void EventDisplay::PreviousEvent() {
-        if (eventNum_ == 0) {
+        if (eventNum_ <= 0) {
             return;
         }
 
@@ -112,6 +159,17 @@ namespace ldmx {
             return true;
         } else {
             std::cout << "No branch with name \"" << ecalDigisCollName <<"\"" << std::endl;
+            return false;
+        }
+    }
+
+    bool EventDisplay::GetHCALDigisColl(const char* hcalDigisCollName = "hcalDigis_recon") {
+
+        if (tree_->GetListOfBranches()->FindObject(hcalDigisCollName)) {
+            tree_->SetBranchAddress(hcalDigisCollName, &hcalDigiHits_);
+            return true;
+        } else {
+            std::cout << "No branch with name \"" << hcalDigisCollName <<"\"" << std::endl;
             return false;
         }
     }
@@ -156,7 +214,7 @@ namespace ldmx {
             return false;
         }
 
-        tree_ = (TTree*) file_->Get("LDMX_Events");
+        tree_ = (TTree*) file_->Get(eventTreeName_);
 
         if (!tree_) {
             std::cout << std::endl;
@@ -166,13 +224,15 @@ namespace ldmx {
         eventNumMax_ = tree_->GetEntriesFast()-1;
 
         ecalDigiHits_ = new TClonesArray("ldmx::EcalHit");
+        hcalDigiHits_ = new TClonesArray("ldmx::HcalHit");
         recoilHits_ = new TClonesArray("ldmx::SimTrackerHit");
         ecalClusters_ = new TClonesArray("ldmx::EcalCluster");
         ecalSimParticles_ = new TClonesArray("ldmx::SimTrackerHit");
 
-        foundECALDigis_ = GetECALDigisColl();
+        foundECALDigis_ = GetECALDigisColl(ecalDigisCollName_);
+        foundHCALDigis_ = GetHCALDigisColl(hcalDigisCollName_);
         foundClusters_ = GetClustersColl(clustersCollName_);
-        foundTrackerHits_ = GetTrackerHitsColl();
+        foundTrackerHits_ = GetTrackerHitsColl(trackerHitsCollName_);
         foundEcalSPHits_ = GetEcalSimParticlesColl();
 
         return true;
@@ -198,6 +258,11 @@ namespace ldmx {
         if (foundECALDigis_) {
             TEveElement* ecalHitSet = drawECALHits(ecalDigiHits_);
             hits_->AddElement(ecalHitSet);
+        }
+
+        if (foundHCALDigis_) {
+            TEveElement* hcalHitSet = drawHCALHits(hcalDigiHits_);
+            hits_->AddElement(hcalHitSet);
         }
 
         if (foundClusters_) {
@@ -236,9 +301,69 @@ namespace ldmx {
     void EventDisplay::GetClustersCollInput() {
 
         const char* clustersCollName = textBox2_->GetText();
-        clustersCollName_ = clustersCollName;
         foundClusters_ = GetClustersColl(clustersCollName_);
+
+        if (foundClusters_) {
+            clustersCollName_ = clustersCollName;
+            GotoEvent(eventNum_);
+        }
+    }
+
+    void EventDisplay::GetECALDigisCollInput() {
+
+        const char* ecalDigisCollName = textBox5_->GetText();
+        foundECALDigis_ = GetECALDigisColl(ecalDigisCollName_);
+
+        if (foundECALDigis_) {
+            ecalDigisCollName_ = ecalDigisCollName;
+            GotoEvent(eventNum_);
+        }
+    }
+
+    void EventDisplay::GetHCALDigisCollInput() {
+
+        const char* hcalDigisCollName = textBox6_->GetText();
+        foundHCALDigis_ = GetHCALDigisColl(hcalDigisCollName_);
+
+        if (foundHCALDigis_) {
+            hcalDigisCollName_ = hcalDigisCollName;
+            GotoEvent(eventNum_);
+        }
+    }
+
+    void EventDisplay::GetTrackerHitsCollInput() {
+
+        const char* trackerHitsCollName = textBox7_->GetText();
+        trackerHitsCollName_ = trackerHitsCollName;
+        foundTrackerHits_ = GetTrackerHitsColl(trackerHitsCollName_);
+
+        if (foundTrackerHits_) {
+            trackerHitsCollName_ = trackerHitsCollName;
+            GotoEvent(eventNum_);
+        }
+    }
+
+    bool EventDisplay::GetEventTree() {
+
+        const char* treeName = textBox4_->GetText();
+        TTree* tree = (TTree*) file_->Get(treeName);
+        if (!tree) {
+            std::cout << std::endl;
+            std::cout << "Input file contains no tree \"" << treeName << "\"" << std::endl;
+            return false;
+        }
+
+        tree_ = tree;
+        eventTreeName_ = treeName;
+
+        foundECALDigis_ = GetECALDigisColl(ecalDigisCollName_);
+        foundHCALDigis_ = GetHCALDigisColl(hcalDigisCollName_);
+        foundClusters_ = GetClustersColl(clustersCollName_);
+        foundTrackerHits_ = GetTrackerHitsColl(trackerHitsCollName_);
+        foundEcalSPHits_ = GetEcalSimParticlesColl();
+
         GotoEvent(eventNum_);
+        return true;
     }
 
     bool EventDisplay::SetSimThresh() {
@@ -308,8 +433,12 @@ namespace ldmx {
         manager_->FullRedraw3D(kFALSE, kTRUE);
     }
 
-    static bool compHits(const EcalHit* a, const EcalHit* b) {
+    static bool compEcalHits(const EcalHit* a, const EcalHit* b) {
         return a->getEnergy() > b->getEnergy();
+    }
+
+    static bool compHcalHits(const HcalHit* a, const HcalHit* b) {
+        return a->getPE() > b->getPE();
     }
 
     static bool compSimsP(const SimTrackerHit* a, const SimTrackerHit* b) {
@@ -425,6 +554,33 @@ namespace ldmx {
         return ecal;
     }
 
+    TEveElement* EventDisplay::drawHCAL() {
+
+        TEveElement* hcal = new TEveElementList("HCAL");
+        TEveElement* sidehcal = new TEveElementList("Side HCAL");
+
+        TEveBox *backHcal = drawBox(0, 0, HCAL_Z_OFFSET, hcal_x_width, hcal_y_width, HCAL_Z_OFFSET+hcal_z_length, 0, kCyan, 100, "Back HCAL");
+        hcal->AddElement(backHcal);
+
+        TEveBox *sideTopHcal = drawBox(hcal_y_width/4-hcal_ecal_xy/4, -hcal_y_width/4-hcal_ecal_xy/4, HCAL_Z_OFFSET-hcal_side_z, (hcal_y_width+hcal_ecal_xy)/2, (hcal_y_width-hcal_ecal_xy)/2, HCAL_Z_OFFSET, 0, kCyan, 100, "Module 1");
+        sidehcal->AddElement(sideTopHcal);
+
+        TEveBox *sideBottomHcal = drawBox(hcal_y_width/4+hcal_ecal_xy/4, hcal_y_width/4-hcal_ecal_xy/4, HCAL_Z_OFFSET-hcal_side_z, (hcal_y_width-hcal_ecal_xy)/2, (hcal_y_width+hcal_ecal_xy)/2, HCAL_Z_OFFSET, 0, kCyan, 100, "Module 4");
+        sidehcal->AddElement(sideBottomHcal);
+
+        TEveBox *sideLeftHcal = drawBox(-hcal_y_width/4+hcal_ecal_xy/4, hcal_y_width/4+hcal_ecal_xy/4, HCAL_Z_OFFSET-hcal_side_z, (hcal_y_width+hcal_ecal_xy)/2, (hcal_y_width-hcal_ecal_xy)/2, HCAL_Z_OFFSET, 0, kCyan, 100, "Module 2");
+        sidehcal->AddElement(sideLeftHcal);
+
+        TEveBox *sideRightHcal = drawBox(-hcal_y_width/4-hcal_ecal_xy/4, -hcal_y_width/4+hcal_ecal_xy/4, HCAL_Z_OFFSET-hcal_side_z, (hcal_y_width-hcal_ecal_xy)/2, (hcal_y_width+hcal_ecal_xy)/2, HCAL_Z_OFFSET, 0, kCyan, 100, "Module 3");
+        sidehcal->AddElement(sideRightHcal);
+        hcal->AddElement(sidehcal);
+
+        //turn off HCAL by default
+        hcal->SetRnrSelf(0);
+
+        return hcal;
+    }
+
     TEveElement* EventDisplay::drawRecoilTracker() {
 
         // In mm
@@ -511,7 +667,7 @@ namespace ldmx {
             hitVec.push_back(hit);
         }
 
-        std::sort(hitVec.begin(), hitVec.end(), compHits);
+        std::sort(hitVec.begin(), hitVec.end(), compEcalHits);
 
         for (int i = 0; i < hitVec.size(); i++) {
             double energy = hitVec[i]->getEnergy();
@@ -538,6 +694,60 @@ namespace ldmx {
         ecalHitSet->SetPickableRecursively(1);
 
         return ecalHitSet;
+    }
+
+    TEveElement* EventDisplay::drawHCALHits(TClonesArray* hits) {
+
+        ldmx::HcalID detID;
+        ldmx::HcalHit* hit;
+
+        TEveRGBAPalette* palette = new TEveRGBAPalette(0,100.0);
+        TEveElement* hcalHitSet = new TEveElementList("HCAL RecHits");
+
+        std::vector<HcalHit*> hitVec;
+        for (TIter next(hits); hit = (ldmx::HcalHit*)next();) {
+            hitVec.push_back(hit);
+        }
+
+        std::sort(hitVec.begin(), hitVec.end(), compHcalHits);
+
+        for (int i = 0; i < hitVec.size(); i++) {
+            double pe = hitVec[i]->getPE();
+            if (pe == 0) { continue; }
+
+            detID.setRawValue(hitVec[i]->getID());
+            detID.unpack();
+
+            char digiName[50];
+            sprintf(digiName, "%1.5g PEs, %i, %i", pe, hitVec[i]->getSection());
+
+            const UChar_t* rgb = palette->ColorFromValue(pe);
+            TColor* aColor = new TColor();
+            Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
+
+            TEveBox* hcalDigiHit = 0;
+            //TEveBox* hcalDigiHittest = drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-25, 50, 50, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+25, 0, color, 0, digiName);
+            if (hitVec[i]->getSection() == 0) {
+                hcalDigiHit = drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-5, 150, 50, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+5, 0, color, 0, digiName);
+            } else if (hitVec[i]->getSection() == 1) {
+                hcalDigiHit = drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-25, 150, 20, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+25, 0, color, 0, digiName);
+            } else if (hitVec[i]->getSection() == 3) {
+                hcalDigiHit = drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-25, 20, 150, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+25, 0, color, 0, digiName);
+            } else if (hitVec[i]->getSection() == 2) {
+                hcalDigiHit = drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-25, 150, 20, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+25, 0, color, 0, digiName);
+            } else if (hitVec[i]->getSection() == 4) {
+                hcalDigiHit = drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-25, 20, 150, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+25, 0, color, 0, digiName);
+            }
+
+            if (hcalDigiHit != 0) {
+                hcalHitSet->AddElement(hcalDigiHit);
+            }
+        }
+
+        hcalHitSet->SetPickableRecursively(1);
+
+        return hcalHitSet;
+
     }
 
     TEveElement* EventDisplay::drawRecoilHits(TClonesArray* hits) {
@@ -681,8 +891,17 @@ namespace ldmx {
             double rCheck = pow(pow(simEnd[0],2)+pow(simEnd[1],2)+pow(simEnd[2],2),0.5);
 
             double scale = 1;
-            if (abs(simEnd[2]) > 1000.0) {
-                 scale = 400.0/abs(simEnd[2]-simStart[2]);
+            double largest = 0;
+            if (abs(simEnd[0]) > 3500.0) {
+                 scale = 500.0/abs(simEnd[0]-simStart[0]);
+                 largest = simEnd[0];
+            }
+            if (abs(simEnd[1]) > 3500.0 && abs(simEnd[1]) > largest) {
+                 scale = 500.0/abs(simEnd[1]-simStart[1]);
+                 largest = simEnd[1];
+            }
+            if (abs(simEnd[2]) > 3500.0 && abs(simEnd[2]) > 3500) {
+                 scale = 500.0/abs(simEnd[2]-simStart[2]);
             }
 
             double r = pow(pow(scale*(simEnd[0]-simStart[0]),2) + pow(scale*(simEnd[1]-simStart[1]),2) + pow(scale*(simEnd[2]-simStart[2]),2),0.5);
@@ -692,9 +911,9 @@ namespace ldmx {
 
             simArr->SetSourceObject(sP);
             simArr->SetMainColor(kBlack);
-            simArr->SetTubeR(20*0.02/r);
+            simArr->SetTubeR(60*0.02/r);
             simArr->SetConeL(100*0.02/r);
-            simArr->SetConeR(50*0.02/r);
+            simArr->SetConeR(150*0.02/r);
             simArr->SetPickable(kTRUE);
             if (p < simThresh_) { simArr->SetRnrSelf(kFALSE); }
 
