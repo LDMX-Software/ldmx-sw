@@ -124,12 +124,16 @@ namespace ldmx {
             std::vector<float> ecalLayerEdepRaw_;
             std::vector<float> ecalLayerEdepReadout_;
             std::vector<float> ecalLayerTime_;
+            std::vector<float> mapsx;
+            std::vector<float> mapsy;
+
 
             int nEcalLayers_{0};
             int backEcalStartingLayer_{0};
             int nReadoutHits_{0};
             int deepestLayerHit_{0};
             int doBdt_{0};
+	    
 
             double summedDet_{0};
             double summedTightIso_{0};
@@ -150,6 +154,7 @@ namespace ldmx {
             EcalHexReadout* hexReadout_{nullptr};
 
             std::string bdtFileName_;
+            std::string cellFileNamexy_;
             BDTHelper* BDTHelper_{nullptr};
             std::vector<float> bdtFeatures_;
     };
