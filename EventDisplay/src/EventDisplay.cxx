@@ -719,16 +719,16 @@ namespace ldmx {
             detID.unpack();
 
             char digiName[50];
-            sprintf(digiName, "%1.5g PEs, %i, %i", pe, hitVec[i]->getSection());
+            sprintf(digiName, "%1.5g PEs", pe);
 
             const UChar_t* rgb = palette->ColorFromValue(pe);
             TColor* aColor = new TColor();
             Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
 
+            int strip = hitVec[i]->getStrip();
             TEveBox* hcalDigiHit = 0;
-            //TEveBox* hcalDigiHittest = drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-25, 50, 50, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+25, 0, color, 0, digiName);
             if (hitVec[i]->getSection() == 0) {
-                hcalDigiHit = drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-5, 150, 50, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+5, 0, color, 0, digiName);
+                hcalDigiHit = drawBox(hitVec[i]->getX(), 25.0+strip*50.0-750, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-5, 150, 50, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+5, 0, color, 0, digiName);
             } else if (hitVec[i]->getSection() == 1) {
                 hcalDigiHit = drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-25, 150, 20, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+25, 0, color, 0, digiName);
             } else if (hitVec[i]->getSection() == 3) {
