@@ -4,7 +4,7 @@ ClassImp(ldmx::EventDisplay);
 
 namespace ldmx {
 
-    EventDisplay::EventDisplay(TEveManager* manager) : TGMainFrame(gClient->GetRoot(), 1600, 1600) {
+    EventDisplay::EventDisplay(TEveManager* manager) : TGMainFrame(gClient->GetRoot(), 1200, 1200) {
 
         manager_ = manager;
         TGLViewer* viewer = manager_->GetDefaultGLViewer();
@@ -16,26 +16,27 @@ namespace ldmx {
 
         SetCleanup(kDeepCleanup);
 
-        TGVerticalFrame* contents = new TGVerticalFrame(this, 500, 1200);
-        TGHorizontalFrame* commandFrame1 = new TGHorizontalFrame(contents, 500,0);
-        TGHorizontalFrame* commandFrame2 = new TGHorizontalFrame(contents, 500,0);
-        TGHorizontalFrame* commandFrame3 = new TGHorizontalFrame(contents, 500,0);
-        TGHorizontalFrame* commandFrame5 = new TGHorizontalFrame(contents, 500,0);
-        TGHorizontalFrame* commandFrame6 = new TGHorizontalFrame(contents, 500,0);
-        TGHorizontalFrame* commandFrame7 = new TGHorizontalFrame(contents, 500,0);
-        TGHorizontalFrame* commandFrame8 = new TGHorizontalFrame(contents, 500,0);
-        TGHorizontalFrame* commandFrame9 = new TGHorizontalFrame(contents, 500,0);
-        TGHorizontalFrame* commandFrame10 = new TGHorizontalFrame(contents, 500,0);
+        TGVerticalFrame* contents = new TGVerticalFrame(this, 800, 1200);
+        TGHorizontalFrame* commandFrame1 = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrame2 = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrame3 = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrame5 = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrame6 = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrame7 = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrame8 = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrame9 = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrame10 = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrame11 = new TGHorizontalFrame(contents, 100,0);
 
         TGButton* buttonColor = new TGTextButton(commandFrame3, "Color Clusters");
         commandFrame3->AddFrame(buttonColor, new TGLayoutHints(kLHintsExpandX));
         buttonColor->Connect("Pressed()", "ldmx::EventDisplay", this, "ColorClusters()");
 
-        TGButton* buttonPrevious = new TGTextButton(commandFrame2, "Previous Event");
+        TGButton* buttonPrevious = new TGTextButton(commandFrame2, "<<< Previous Event");
         commandFrame2->AddFrame(buttonPrevious, new TGLayoutHints(kLHintsExpandX));
         buttonPrevious->Connect("Pressed()", "ldmx::EventDisplay", this, "PreviousEvent()");
 
-        TGButton* buttonNext = new TGTextButton(commandFrame2, "Next Event");
+        TGButton* buttonNext = new TGTextButton(commandFrame2, "Next Event >>>");
         commandFrame2->AddFrame(buttonNext, new TGLayoutHints(kLHintsExpandX));
         buttonNext->Connect("Pressed()", "ldmx::EventDisplay", this, "NextEvent()");
 
@@ -65,7 +66,7 @@ namespace ldmx {
 
         TGButton* buttonSetTree = new TGTextButton(commandFrame7, "Set Event TTree");
         commandFrame7->AddFrame(buttonSetTree, new TGLayoutHints(kLHintsExpandX));
-        buttonSetTree->Connect("Pressed()", "ldmx::EventDisplay", this, "GetEventTree()");
+        buttonSetTree->Connect("Pressed()", "ldmx::EventDisplay", this, "SetEventTree()");
 
         textBox5_ = new TGTextEntry(commandFrame8, new TGTextBuffer(100));
         commandFrame8->AddFrame(textBox5_, new TGLayoutHints(kLHintsExpandX));
@@ -88,10 +89,18 @@ namespace ldmx {
         commandFrame10->AddFrame(buttonSetRecoilBranch, new TGLayoutHints(kLHintsExpandX));
         buttonSetRecoilBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetTrackerHitsCollInput()");
 
+        textBox11_ = new TGTextEntry(commandFrame11, new TGTextBuffer(100));
+        commandFrame11->AddFrame(textBox11_, new TGLayoutHints(kLHintsExpandX));
+
+        TGButton* buttonSetSimParticlesBranch = new TGTextButton(commandFrame11, "Set Sim Particles Branch");
+        commandFrame11->AddFrame(buttonSetSimParticlesBranch, new TGLayoutHints(kLHintsExpandX));
+        buttonSetSimParticlesBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetEcalSimParticlesCollInput()");
+
         contents->AddFrame(commandFrame7, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame8, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame9, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame10, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrame11, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame5, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame1, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame2, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
@@ -260,6 +269,19 @@ namespace ldmx {
         }
     }
 
+    void EventDisplay::GetEcalSimParticlesCollInput() {
+
+        const char* clustersCollName = textBox2_->GetText();
+        foundClusters_ = GetClustersColl(clustersCollName);
+
+        if (foundClusters_) {
+            clustersCollName_ = clustersCollName;
+            if (eventNum_ != -1) {
+                GotoEvent(eventNum_);
+            }
+        }
+    }
+
     bool EventDisplay::GetEcalSimParticlesColl(const char* ecalSimParticlesCollName) {
         if (tree_->GetListOfBranches()->FindObject(ecalSimParticlesCollName)) {
             tree_->ResetBranchAddress(tree_->GetBranch(ecalSimParticlesCollName_));
@@ -324,7 +346,7 @@ namespace ldmx {
         return true;
     }
 
-    bool EventDisplay::GetEventTree() {
+    bool EventDisplay::SetEventTree() {
 
         const char* treeName = textBox4_->GetText();
         TTree* tree = (TTree*) file_->Get(treeName);

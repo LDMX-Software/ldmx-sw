@@ -4,16 +4,21 @@
 #include "TEveElement.h"
 #include "EventDisplay/EveShapeDrawer.h"
 
-// All lengths are in mm
+// Calorimeters, In mm
 static const double ECAL_Z_OFFSET = 214.5+290.0/2; //First number is distance from target to ECAL front face, second is half ECAL extent in z
 static const double HCAL_Z_OFFSET = 504.5;
 static const double HCAL_ZHIT_OFFSET = 4.5;
 static const double RECOIL_SENSOR_THICKNESS = 0.52;
 static const double STEREO_SEP = 3;
 static const double MONO_SEP = 1;
-// In mm
+
+// Recoil Tracker, In mm
 static const double stereo_strip_length = 98; // 2 mm deadspace
 static const double mono_strip_length = 78; // 2 mm deadspace
+static const double stereo_x_width = 40.34;
+static const double stereo_y_width = 100;
+static const double mono_x_width = 50;
+static const double mono_y_width = 80;
 
 static const double layerZPos[] = {-137.2, -134.3, -127.95, -123.55, -115.7, -109.8, -100.7, -94.3, -85.2, -78.8, -69.7, -63.3, -54.2, -47.8, -38.7, -32.3, -23.2, -16.8, -7.7, -1.3, 7.8, 14.2, 23.3, 29.7, 42.3, 52.2, 64.8, 74.7, 87.3, 97.2, 109.8, 119.7, 132.3, 142.2};
 

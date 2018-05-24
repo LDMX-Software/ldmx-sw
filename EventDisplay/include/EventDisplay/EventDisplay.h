@@ -55,6 +55,8 @@ namespace ldmx {
 
             bool GetEcalSimParticlesColl(const char* ecalSimParticlesCollName);
 
+            void GetEcalSimParticlesCollInput();
+
             bool GetHCALDigisColl(const char* hcalDigisCollName);
 
             void GetHCALDigisCollInput();
@@ -67,7 +69,7 @@ namespace ldmx {
 
             bool SetFile(const char* file);
 
-            bool GetEventTree();
+            bool SetEventTree();
 
             void ColorClusters();
 
@@ -93,7 +95,7 @@ namespace ldmx {
 
             TString clustersCollName_ = "ecalClusters_recon";
             TString ecalDigisCollName_ = "ecalDigis_recon";
-            TString hcalDigisCollName_ = "hcalDigis_recon_resim";
+            TString hcalDigisCollName_ = "hcalDigis_recon";
             TString trackerHitsCollName_ = "RecoilSimHits_sim";
             TString ecalSimParticlesCollName_ = "EcalScoringPlaneHits_sim";
             TString eventTreeName_ = "LDMX_Events";
@@ -111,12 +113,12 @@ namespace ldmx {
             TGTextEntry* textBox8_;
             TGTextEntry* textBox9_;
             TGTextEntry* textBox10_;
+            TGTextEntry* textBox11_;
 
             TEveManager* manager_{nullptr};
 
             ClassDef(EventDisplay, 1);
     };
-
 }
 
 #endif
