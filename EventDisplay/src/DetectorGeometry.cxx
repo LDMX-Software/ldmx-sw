@@ -71,13 +71,13 @@ namespace ldmx {
             char nback[50];
             sprintf(nback, "Stereo%d_back", j+1);
     
-            TEveBox *front = shapeDrawer_->drawBox(0, 0, zPos[j]-STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]-STEREO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 75, nfront);
+            TEveBox *front = shapeDrawer_->drawBox(0, 0, zPos[j]-STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]-STEREO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 100, nfront);
     
             if (j % 2 == 0) { // Alternate angle for back layer of a stereo pair.
-                TEveBox *back = shapeDrawer_->drawBox(0, 0, zPos[j]+STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]+STEREO_SEP+RECOIL_SENSOR_THICKNESS, STEREO_ANGLE, kRed-10, 75, nback);
+                TEveBox *back = shapeDrawer_->drawBox(0, 0, zPos[j]+STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]+STEREO_SEP+RECOIL_SENSOR_THICKNESS, STEREO_ANGLE, kRed-10, 100, nback);
                 recoilTracker_->AddElement(back);
             } else {
-                TEveBox *back = shapeDrawer_->drawBox(0, 0, zPos[j]+STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]+STEREO_SEP+RECOIL_SENSOR_THICKNESS, -STEREO_ANGLE, kRed-10, 75, nback);
+                TEveBox *back = shapeDrawer_->drawBox(0, 0, zPos[j]+STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]+STEREO_SEP+RECOIL_SENSOR_THICKNESS, -STEREO_ANGLE, kRed-10, 100, nback);
                 recoilTracker_->AddElement(back);
             }
     
@@ -93,10 +93,10 @@ namespace ldmx {
                 ++module1;
     
                 if (x % 2 != 0) { // Alternate mono layer z by defined separation.
-                    TEveBox *front = shapeDrawer_->drawBox(xPos[x], yPos[y], zPos[4]-MONO_SEP, mono_x_width, mono_y_width, zPos[4]-MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 75, name);
+                    TEveBox *front = shapeDrawer_->drawBox(xPos[x], yPos[y], zPos[4]-MONO_SEP, mono_x_width, mono_y_width, zPos[4]-MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 100, name);
                     recoilTracker_->AddElement(front);
                 } else {
-                    TEveBox *back = shapeDrawer_->drawBox(xPos[x], yPos[y], zPos[4]+MONO_SEP, mono_x_width, mono_y_width, zPos[4]+MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 75, name);
+                    TEveBox *back = shapeDrawer_->drawBox(xPos[x], yPos[y], zPos[4]+MONO_SEP, mono_x_width, mono_y_width, zPos[4]+MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 100, name);
                     recoilTracker_->AddElement(back);
                 }
             }
@@ -111,10 +111,10 @@ namespace ldmx {
                 module2++;
     
                 if (x % 2 != 0) { // Alternate mono layer z by defined separation.
-                    TEveBox *front = shapeDrawer_->drawBox(xPos[x], yPos[y], zPos[5]-MONO_SEP, mono_x_width, mono_y_width, zPos[5]-MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 75, name);
+                    TEveBox *front = shapeDrawer_->drawBox(xPos[x], yPos[y], zPos[5]-MONO_SEP, mono_x_width, mono_y_width, zPos[5]-MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 100, name);
                     recoilTracker_->AddElement(front);
                 } else {
-                    TEveBox *back = shapeDrawer_->drawBox(xPos[x], yPos[y], zPos[5]+MONO_SEP, mono_x_width, mono_y_width, zPos[5]+MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 75, name);
+                    TEveBox *back = shapeDrawer_->drawBox(xPos[x], yPos[y], zPos[5]+MONO_SEP, mono_x_width, mono_y_width, zPos[5]+MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 100, name);
                     recoilTracker_->AddElement(back);
                 }
             }
