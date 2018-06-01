@@ -18,15 +18,12 @@ namespace ldmx {
 
     void DetectorGeometry::drawECAL() {
     
-        static const std::vector<double> xPos = {0, 0, 0, 170*sqrt(3)/2, -170*sqrt(3)/2, -170*sqrt(3)/2, 170*sqrt(3)/2};
-        static const std::vector<double> yPos = {0, 170, -170, 85, 85, -85, -85};
-        static const std::vector<double> zPos = {-140, 150};
-    
-        for (int col = 0; col < xPos.size(); ++col) {
+        for (int col = 0; col < towerXPos.size(); ++col) {
+            
     
             char colName[50];
             sprintf(colName, "Tower %d", col);
-            TEveStraightLineSet* hexCol = shapeDrawer_->drawHexColumn(xPos[col], yPos[col], zPos[0]+ECAL_Z_OFFSET, zPos[1]+ECAL_Z_OFFSET, 170, kBlue, colName);
+            TEveStraightLineSet* hexCol = shapeDrawer_->drawHexColumn(towerXPos[col], towerYPos[col], ecal_front_z, ecal_front_z+ecal_z_length, 170, kBlue, colName);
             ecal_->AddElement(hexCol);
         }
     
@@ -35,33 +32,26 @@ namespace ldmx {
     
     void DetectorGeometry::drawHCAL() {
     
-        TEveBox *backHcal = shapeDrawer_->drawBox(0, 0, HCAL_Z_OFFSET, hcal_x_width, hcal_y_width, HCAL_Z_OFFSET+hcal_z_length, 0, kCyan, 100, "Back HCAL");
+        TEveBox *backHcal = shapeDrawer_->drawBox(0, 0, hcal_front_z, hcal_x_width, hcal_y_width, hcal_front_z+hcal_z_length, 0, kCyan, 100, "Back HCAL");
         hcal_->AddElement(backHcal);
     
-        TEveBox *sideTopHcal = shapeDrawer_->drawBox(hcal_y_width/4-hcal_ecal_xy/4, -hcal_y_width/4-hcal_ecal_xy/4, HCAL_Z_OFFSET-hcal_side_z, (hcal_y_width+hcal_ecal_xy)/2, (hcal_y_width-hcal_ecal_xy)/2, HCAL_Z_OFFSET, 0, kCyan, 100, "Module 1");
+        TEveBox *sideTopHcal = shapeDrawer_->drawBox(-hcal_y_width/4+hcal_ecal_xy/4, -hcal_y_width/4-hcal_ecal_xy/4, hcal_front_z-hcal_side_z, (hcal_y_width+hcal_ecal_xy)/2, (hcal_y_width-hcal_ecal_xy)/2, hcal_front_z, 0, kCyan, 100, "Module 1");
         sidehcal_->AddElement(sideTopHcal);
     
-        TEveBox *sideBottomHcal = shapeDrawer_->drawBox(hcal_y_width/4+hcal_ecal_xy/4, hcal_y_width/4-hcal_ecal_xy/4, HCAL_Z_OFFSET-hcal_side_z, (hcal_y_width-hcal_ecal_xy)/2, (hcal_y_width+hcal_ecal_xy)/2, HCAL_Z_OFFSET, 0, kCyan, 100, "Module 4");
+        TEveBox *sideBottomHcal = shapeDrawer_->drawBox(-hcal_y_width/4-hcal_ecal_xy/4, hcal_y_width/4-hcal_ecal_xy/4, hcal_front_z-hcal_side_z, (hcal_y_width-hcal_ecal_xy)/2, (hcal_y_width+hcal_ecal_xy)/2, hcal_front_z, 0, kCyan, 100, "Module 4");
         sidehcal_->AddElement(sideBottomHcal);
     
-        TEveBox *sideLeftHcal = shapeDrawer_->drawBox(-hcal_y_width/4+hcal_ecal_xy/4, hcal_y_width/4+hcal_ecal_xy/4, HCAL_Z_OFFSET-hcal_side_z, (hcal_y_width+hcal_ecal_xy)/2, (hcal_y_width-hcal_ecal_xy)/2, HCAL_Z_OFFSET, 0, kCyan, 100, "Module 2");
+        TEveBox *sideLeftHcal = shapeDrawer_->drawBox(hcal_y_width/4-hcal_ecal_xy/4, hcal_y_width/4+hcal_ecal_xy/4, hcal_front_z-hcal_side_z, (hcal_y_width+hcal_ecal_xy)/2, (hcal_y_width-hcal_ecal_xy)/2, hcal_front_z, 0, kCyan, 100, "Module 2");
         sidehcal_->AddElement(sideLeftHcal);
     
-        TEveBox *sideRightHcal = shapeDrawer_->drawBox(-hcal_y_width/4-hcal_ecal_xy/4, -hcal_y_width/4+hcal_ecal_xy/4, HCAL_Z_OFFSET-hcal_side_z, (hcal_y_width-hcal_ecal_xy)/2, (hcal_y_width+hcal_ecal_xy)/2, HCAL_Z_OFFSET, 0, kCyan, 100, "Module 3");
+        TEveBox *sideRightHcal = shapeDrawer_->drawBox(hcal_y_width/4+hcal_ecal_xy/4, -hcal_y_width/4+hcal_ecal_xy/4, hcal_front_z-hcal_side_z, (hcal_y_width-hcal_ecal_xy)/2, (hcal_y_width+hcal_ecal_xy)/2, hcal_front_z, 0, kCyan, 100, "Module 3");
         sidehcal_->AddElement(sideRightHcal);
         hcal_->AddElement(sidehcal_);
-    
-        //turn off HCAL by default
-        hcal_->SetRnrSelf(0);
     
         detector_->AddElement(hcal_);
     }
     
     void DetectorGeometry::drawRecoilTracker() {
-    
-        const std::vector<double> xPos = {-2*mono_x_width, -mono_x_width, 0, mono_x_width, 2*mono_x_width};
-        const std::vector<double> yPos = {-mono_y_width/2, mono_y_width/2};
-        const std::vector<double> zPos = {7.5, 22.5, 37.5, 52.5, 90.0, 180.0};
     
         for (int j = 0; j < 4; ++j) {
     
@@ -71,13 +61,13 @@ namespace ldmx {
             char nback[50];
             sprintf(nback, "Stereo%d_back", j+1);
     
-            TEveBox *front = shapeDrawer_->drawBox(0, 0, zPos[j]-STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]-STEREO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 100, nfront);
+            TEveBox *front = shapeDrawer_->drawBox(0, 0, recoilLayerZPos[j]-stereo_sep, stereo_x_width, stereo_y_width, recoilLayerZPos[j]-stereo_sep+recoil_sensor_thick, 0, kRed-10, 100, nfront);
     
             if (j % 2 == 0) { // Alternate angle for back layer of a stereo pair.
-                TEveBox *back = shapeDrawer_->drawBox(0, 0, zPos[j]+STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]+STEREO_SEP+RECOIL_SENSOR_THICKNESS, STEREO_ANGLE, kRed-10, 100, nback);
+                TEveBox *back = shapeDrawer_->drawBox(0, 0, recoilLayerZPos[j]+stereo_sep, stereo_x_width, stereo_y_width, recoilLayerZPos[j]+stereo_sep+recoil_sensor_thick, stereo_angle, kRed-10, 100, nback);
                 recoilTracker_->AddElement(back);
             } else {
-                TEveBox *back = shapeDrawer_->drawBox(0, 0, zPos[j]+STEREO_SEP, stereo_x_width, stereo_y_width, zPos[j]+STEREO_SEP+RECOIL_SENSOR_THICKNESS, -STEREO_ANGLE, kRed-10, 100, nback);
+                TEveBox *back = shapeDrawer_->drawBox(0, 0, recoilLayerZPos[j]+stereo_sep, stereo_x_width, stereo_y_width, recoilLayerZPos[j]+stereo_sep+recoil_sensor_thick, -stereo_angle, kRed-10, 100, nback);
                 recoilTracker_->AddElement(back);
             }
     
@@ -93,10 +83,10 @@ namespace ldmx {
                 ++module1;
     
                 if (x % 2 != 0) { // Alternate mono layer z by defined separation.
-                    TEveBox *front = shapeDrawer_->drawBox(xPos[x], yPos[y], zPos[4]-MONO_SEP, mono_x_width, mono_y_width, zPos[4]-MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 100, name);
+                    TEveBox *front = shapeDrawer_->drawBox(monoSensorXPos[x], monoSensorYPos[y], recoilLayerZPos[4]-mono_sep, mono_x_width, mono_y_width, recoilLayerZPos[4]-mono_sep+recoil_sensor_thick, 0, kRed-10, 100, name);
                     recoilTracker_->AddElement(front);
                 } else {
-                    TEveBox *back = shapeDrawer_->drawBox(xPos[x], yPos[y], zPos[4]+MONO_SEP, mono_x_width, mono_y_width, zPos[4]+MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 100, name);
+                    TEveBox *back = shapeDrawer_->drawBox(monoSensorXPos[x], monoSensorYPos[y], recoilLayerZPos[4]+mono_sep, mono_x_width, mono_y_width, recoilLayerZPos[4]+mono_sep+recoil_sensor_thick, 0, kRed-10, 100, name);
                     recoilTracker_->AddElement(back);
                 }
             }
@@ -111,10 +101,10 @@ namespace ldmx {
                 module2++;
     
                 if (x % 2 != 0) { // Alternate mono layer z by defined separation.
-                    TEveBox *front = shapeDrawer_->drawBox(xPos[x], yPos[y], zPos[5]-MONO_SEP, mono_x_width, mono_y_width, zPos[5]-MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 100, name);
+                    TEveBox *front = shapeDrawer_->drawBox(monoSensorXPos[x], monoSensorYPos[y], recoilLayerZPos[5]-mono_sep, mono_x_width, mono_y_width, recoilLayerZPos[5]-mono_sep+recoil_sensor_thick, 0, kRed-10, 100, name);
                     recoilTracker_->AddElement(front);
                 } else {
-                    TEveBox *back = shapeDrawer_->drawBox(xPos[x], yPos[y], zPos[5]+MONO_SEP, mono_x_width, mono_y_width, zPos[5]+MONO_SEP+RECOIL_SENSOR_THICKNESS, 0, kRed-10, 100, name);
+                    TEveBox *back = shapeDrawer_->drawBox(monoSensorXPos[x], monoSensorYPos[y], recoilLayerZPos[5]+mono_sep, mono_x_width, mono_y_width, recoilLayerZPos[5]+mono_sep+recoil_sensor_thick, 0, kRed-10, 100, name);
                     recoilTracker_->AddElement(back);
                 }
             }

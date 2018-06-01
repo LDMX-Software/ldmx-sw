@@ -133,7 +133,7 @@ namespace ldmx {
             TColor* aColor = new TColor();
             Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
 
-            TEveBox *ecalDigiHit = drawer_->drawBox(xyPos.first, xyPos.second, layerZPos[layer]+ECAL_Z_OFFSET-1.5, 3, 3, layerZPos[layer]+ECAL_Z_OFFSET+1.5, 0, color, 0, digiName);
+            TEveBox *ecalDigiHit = drawer_->drawBox(xyPos.first, xyPos.second, layerZPos[layer]+ecal_front_z-1.5, 3, 3, layerZPos[layer]+ecal_front_z+1.5, 0, color, 0, digiName);
             ecalHits_->AddElement(ecalDigiHit);
         }
 
@@ -157,37 +157,41 @@ namespace ldmx {
         std::sort(hitVec.begin(), hitVec.end(), compHcalHits);
 
         for (int i = 0; i < hitVec.size(); i++) {
-            double pe = hitVec[i]->getPE();
+            int pe = hitVec[i]->getPE();
             if (pe == 0) { continue; }
 
-            //bool isNoise = hitVec[i]->getNoise();
+            bool isNoise = hitVec[i]->getZ() == 0;
 
             detID.setRawValue(hitVec[i]->getID());
             detID.unpack();
-
-            char digiName[50];
-            sprintf(digiName, "%1.5g PEs", pe);
 
             const UChar_t* rgb = palette->ColorFromValue(pe);
             TColor* aColor = new TColor();
             Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
 
-            int strip = hitVec[i]->getStrip();
+            int bar = hitVec[i]->getStrip();
+            int layer = hitVec[i]->getLayer();
+            int section = hitVec[i]->getSection();
+            char digiName[50];
+            sprintf(digiName, "%d PEs, Section %d, Layer %d, Bar %d, Z %1.5g", pe, section, layer, bar, hitVec[i]->getZ());
+
             TEveBox* hcalDigiHit = 0;
-            if (hitVec[i]->getSection() == 0) {
-                hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), 25.0+strip*50.0-750, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-5, 150, 50, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+5, 0, color, 0, digiName);
-            } else if (hitVec[i]->getSection() == 1) {
-                hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-25, 150, 20, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+25, 0, color, 0, digiName);
-            } else if (hitVec[i]->getSection() == 3) {
-                hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-25, 20, 150, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+25, 0, color, 0, digiName);
-            } else if (hitVec[i]->getSection() == 2) {
-                hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-25, 150, 20, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+25, 0, color, 0, digiName);
-            } else if (hitVec[i]->getSection() == 4) {
-                hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()+HCAL_ZHIT_OFFSET-25, 20, 150, hitVec[i]->getZ()+HCAL_ZHIT_OFFSET+25, 0, color, 0, digiName);
+            if (section == 0) {
+                if (layer % 2 == 0) {
+                    hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), bar_width*(0.5+bar)-hcal_y_width/2, (layer-1)*hcal_layer_thick+hcal_front_z+abso_thick, 150, bar_width, (layer-1)*hcal_layer_thick+hcal_front_z+scint_thick+abso_thick, 0, color, 0, digiName);
+                } else {
+                    // vertical, uncomment when alternating bar orientation the back is a thing
+                    //hcalDigiHit = drawer_->drawBox((bar_width*(0.5-bar)-hcal_y_width/2), hitVec[i]->getY(), (layer-1)*hcal_layer_thick+hcal_front_z+abso_thick, bar_width, 150, (layer-1)*hcal_layer_thick+hcal_front_z+scint_thick+abso_thick, 0, color, 0, digiName);
+                    hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), bar_width*(0.5+bar)-hcal_y_width/2, (layer-1)*hcal_layer_thick+hcal_front_z+abso_thick, 150, bar_width, (layer-1)*hcal_layer_thick+hcal_front_z+scint_thick+abso_thick, 0, color, 0, digiName);
+                }
+            } else if (section == 1) {hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), hcal_ecal_xy/2+hcal_layer_thick*layer, ecal_front_z+bar*bar_width, 150, scint_thick, ecal_front_z+(bar+1)*bar_width, 0, color, 0, digiName);
+            } else if (section == 3) {hcalDigiHit = drawer_->drawBox((hcal_ecal_xy/2+hcal_layer_thick*layer), hitVec[i]->getY(), ecal_front_z+bar*bar_width, scint_thick, 150, ecal_front_z+(bar+1)*bar_width, 0, color, 0, digiName);
+            } else if (section == 2) {hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), -(hcal_ecal_xy/2+hcal_layer_thick*layer), ecal_front_z+bar*bar_width, 150, scint_thick, ecal_front_z+(bar+1)*bar_width, 0, color, 0, digiName);
+            } else if (section == 4) {hcalDigiHit = drawer_->drawBox(-(hcal_ecal_xy/2+hcal_layer_thick*layer), hitVec[i]->getY(), ecal_front_z+bar*bar_width, scint_thick, 150, ecal_front_z+(bar+1)*bar_width, 0, color, 0, digiName);
             }
 
             if (hcalDigiHit != 0) {
-                //if (isNoise) { hcalDigiHit->SetRnrSelf(0); }
+                if (isNoise) { hcalDigiHit->SetRnrSelf(0); }
                 hcalHits_->AddElement(hcalDigiHit);
             }
         }
@@ -207,23 +211,23 @@ namespace ldmx {
 
             if ((xyzPos[2] > 4 && xyzPos[2] < 5) || (xyzPos[2] > 19 && xyzPos[2] < 20) || (xyzPos[2] > 34 && xyzPos[2] < 35) || (xyzPos[2] > 49 && xyzPos[2] < 50)) {
 
-                TEveBox *recoilHit = drawer_->drawBox(xyzPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kRed+1, 0, "Recoil Hit");
+                TEveBox *recoilHit = drawer_->drawBox(xyzPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+recoil_sensor_thick, 0, kRed+1, 0, "Recoil Hit");
                 recoilTrackerHits_->AddElement(recoilHit);
 
             } else if ((xyzPos[2] > 10 && xyzPos[2] < 11) || (xyzPos[2] > 40 && xyzPos[2] < 41)) {
 
                 TVector3 rotPos = {xyzPos[0], xyzPos[1], xyzPos[2]};
-                rotPos.RotateZ(-STEREO_ANGLE);
+                rotPos.RotateZ(-stereo_angle);
 
-                TEveBox *recoilHit = drawer_->drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, STEREO_ANGLE, kRed+1, 0, "Recoil Hit");
+                TEveBox *recoilHit = drawer_->drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+recoil_sensor_thick, stereo_angle, kRed+1, 0, "Recoil Hit");
                 recoilTrackerHits_->AddElement(recoilHit);
 
             } else if ((xyzPos[2] > 25 && xyzPos[2] < 26) || (xyzPos[2] > 55 && xyzPos[2] < 56)) {
 
                 TVector3 rotPos = {xyzPos[0], xyzPos[1], xyzPos[2]};
-                rotPos.RotateZ(STEREO_ANGLE);
+                rotPos.RotateZ(stereo_angle);
 
-                TEveBox *recoilHit = drawer_->drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, -STEREO_ANGLE, kRed+1, 0, "Recoil Hit");
+                TEveBox *recoilHit = drawer_->drawBox(rotPos[0], 0, xyzPos[2], 1, stereo_strip_length, xyzPos[2]+recoil_sensor_thick, -stereo_angle, kRed+1, 0, "Recoil Hit");
                 recoilTrackerHits_->AddElement(recoilHit);
 
             } else if (xyzPos[2] > 65) {
@@ -231,11 +235,11 @@ namespace ldmx {
 
                     if (xyzPos[1] > 0) {
 
-                        TEveBox *recoilHit = drawer_->drawBox(xyzPos[0], mono_strip_length/2+1, xyzPos[2], 1, mono_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kRed, 0, "Recoil Hit");
+                        TEveBox *recoilHit = drawer_->drawBox(xyzPos[0], mono_strip_length/2+1, xyzPos[2], 1, mono_strip_length, xyzPos[2]+recoil_sensor_thick, 0, kRed, 0, "Recoil Hit");
                         recoilTrackerHits_->AddElement(recoilHit);
                     } else {
 
-                        TEveBox *recoilHit = drawer_->drawBox(xyzPos[0], -mono_strip_length/2-1, xyzPos[2], 1, mono_strip_length, xyzPos[2]+RECOIL_SENSOR_THICKNESS, 0, kRed, 0, "Recoil Hit");
+                        TEveBox *recoilHit = drawer_->drawBox(xyzPos[0], -mono_strip_length/2-1, xyzPos[2], 1, mono_strip_length, xyzPos[2]+recoil_sensor_thick, 0, kRed, 0, "Recoil Hit");
                         recoilTrackerHits_->AddElement(recoilHit);
                     }
                 }
@@ -275,11 +279,11 @@ namespace ldmx {
                 TColor* aColor = new TColor();
                 Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
     
-                TEveBox *ecalDigiHit = drawer_->drawBox(xyPos.first, xyPos.second, layerZPos[layer]+ECAL_Z_OFFSET-1.5, 3, 3, layerZPos[layer]+ECAL_Z_OFFSET+1.5, 0, color, 0, "RecHit");
+                TEveBox *ecalDigiHit = drawer_->drawBox(xyPos.first, xyPos.second, layerZPos[layer]+ecal_front_z-1.5, 3, 3, layerZPos[layer]+ecal_front_z+1.5, 0, color, 0, "RecHit");
                 ecalCluster->AddElement(ecalDigiHit);
 
                 if (numHits < 2) { 
-                    ecalCluster->SetPickableRecursively(0);
+
                 } else {
                     ecalCluster->SetPickableRecursively(1);
                 }
