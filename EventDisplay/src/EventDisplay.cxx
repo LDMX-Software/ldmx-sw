@@ -16,7 +16,7 @@ namespace ldmx {
 
         SetCleanup(kDeepCleanup);
 
-        TGVerticalFrame* contents = new TGVerticalFrame(this, 800, 1200);
+        TGVerticalFrame* contents = new TGVerticalFrame(this, 800,1200);
         TGHorizontalFrame* commandFrame1 = new TGHorizontalFrame(contents, 100,0);
         TGHorizontalFrame* commandFrame2 = new TGHorizontalFrame(contents, 100,0);
         TGHorizontalFrame* commandFrame3 = new TGHorizontalFrame(contents, 100,0);
@@ -106,13 +106,14 @@ namespace ldmx {
         contents->AddFrame(commandFrame2, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame3, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
         contents->AddFrame(commandFrame6, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->Resize(800, 1200);
 
         AddFrame(contents, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
 
         SetWindowName("LDMX Event Display");
 
         MapSubwindows();
-        Resize();
+        Resize(GetDefaultSize());
         MapRaised();
         MapWindow();
 
@@ -120,7 +121,7 @@ namespace ldmx {
 
     }
 
-    bool EventDisplay::SetFile(const char* file) {
+    bool EventDisplay::SetFile(const TString file) {
 
         file_ = TFile::Open(file);
 
@@ -172,7 +173,7 @@ namespace ldmx {
 
     void EventDisplay::GetECALDigisCollInput() {
 
-        const char* ecalDigisCollName = textBox5_->GetText();
+        const TString ecalDigisCollName = textBox5_->GetText();
         foundECALDigis_ = GetECALDigisColl(ecalDigisCollName);
 
         if (foundECALDigis_) {
@@ -183,7 +184,7 @@ namespace ldmx {
         }
     }
 
-    bool EventDisplay::GetECALDigisColl(const char* ecalDigisCollName) {
+    bool EventDisplay::GetECALDigisColl(const TString ecalDigisCollName) {
 
         if (tree_->GetListOfBranches()->FindObject(ecalDigisCollName)) {
             tree_->ResetBranchAddress(tree_->GetBranch(ecalDigisCollName_));
@@ -197,7 +198,7 @@ namespace ldmx {
 
     void EventDisplay::GetHCALDigisCollInput() {
 
-        const char* hcalDigisCollName = textBox6_->GetText();
+        const TString hcalDigisCollName = textBox6_->GetText();
         foundHCALDigis_ = GetHCALDigisColl(hcalDigisCollName);
 
         if (foundHCALDigis_) {
@@ -208,7 +209,7 @@ namespace ldmx {
         }
     }
 
-    bool EventDisplay::GetHCALDigisColl(const char* hcalDigisCollName) {
+    bool EventDisplay::GetHCALDigisColl(const TString hcalDigisCollName) {
 
         if (tree_->GetListOfBranches()->FindObject(hcalDigisCollName)) {
             tree_->ResetBranchAddress(tree_->GetBranch(hcalDigisCollName_));
@@ -222,7 +223,7 @@ namespace ldmx {
 
     void EventDisplay::GetTrackerHitsCollInput() {
 
-        const char* trackerHitsCollName = textBox7_->GetText();
+        const TString trackerHitsCollName = textBox7_->GetText();
         trackerHitsCollName_ = trackerHitsCollName;
         foundTrackerHits_ = GetTrackerHitsColl(trackerHitsCollName);
 
@@ -234,7 +235,7 @@ namespace ldmx {
         }
     }
 
-    bool EventDisplay::GetTrackerHitsColl(const char* trackerHitsCollName) {
+    bool EventDisplay::GetTrackerHitsColl(const TString trackerHitsCollName) {
         if (tree_->GetListOfBranches()->FindObject(trackerHitsCollName)) {
             tree_->ResetBranchAddress(tree_->GetBranch(trackerHitsCollName_));
             tree_->SetBranchAddress(trackerHitsCollName, &recoilHits_);
@@ -247,7 +248,7 @@ namespace ldmx {
 
     void EventDisplay::GetClustersCollInput() {
 
-        const char* clustersCollName = textBox2_->GetText();
+        const TString clustersCollName = textBox2_->GetText();
         foundClusters_ = GetClustersColl(clustersCollName);
 
         if (foundClusters_) {
@@ -258,7 +259,7 @@ namespace ldmx {
         }
     }
 
-    bool EventDisplay::GetClustersColl(const char* clustersCollName) {
+    bool EventDisplay::GetClustersColl(const TString clustersCollName) {
         if (tree_->GetListOfBranches()->FindObject(clustersCollName)) {
             tree_->ResetBranchAddress(tree_->GetBranch(clustersCollName_));
             tree_->SetBranchAddress(clustersCollName, &ecalClusters_);
@@ -271,7 +272,7 @@ namespace ldmx {
 
     void EventDisplay::GetEcalSimParticlesCollInput() {
 
-        const char* clustersCollName = textBox2_->GetText();
+        const TString clustersCollName = textBox2_->GetText();
         foundClusters_ = GetClustersColl(clustersCollName);
 
         if (foundClusters_) {
@@ -282,7 +283,7 @@ namespace ldmx {
         }
     }
 
-    bool EventDisplay::GetEcalSimParticlesColl(const char* ecalSimParticlesCollName) {
+    bool EventDisplay::GetEcalSimParticlesColl(const TString ecalSimParticlesCollName) {
         if (tree_->GetListOfBranches()->FindObject(ecalSimParticlesCollName)) {
             tree_->ResetBranchAddress(tree_->GetBranch(ecalSimParticlesCollName_));
             tree_->SetBranchAddress(ecalSimParticlesCollName, &ecalSimParticles_);
@@ -348,7 +349,7 @@ namespace ldmx {
 
     bool EventDisplay::SetEventTree() {
 
-        const char* treeName = textBox4_->GetText();
+        const TString treeName = textBox4_->GetText();
         TTree* tree = (TTree*) file_->Get(treeName);
         if (!tree) {
             std::cout << std::endl;

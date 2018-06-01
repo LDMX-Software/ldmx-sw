@@ -126,8 +126,8 @@ namespace ldmx {
             unsigned int combinedID = 10*cellID + moduleID;
             std::pair<double, double> xyPos = hexReadout_->getCellCenterAbsolute(combinedID);
 
-            char digiName[50];
-            sprintf(digiName, "%1.5g MeV", energy);
+            TString digiName;
+            digiName.Form("%1.5g MeV", energy);
 
             const UChar_t* rgb = palette->ColorFromValue(energy);
             TColor* aColor = new TColor();
@@ -172,15 +172,18 @@ namespace ldmx {
             int bar = hitVec[i]->getStrip();
             int layer = hitVec[i]->getLayer();
             int section = hitVec[i]->getSection();
-            char digiName[50];
-            sprintf(digiName, "%d PEs, Section %d, Layer %d, Bar %d, Z %1.5g", pe, section, layer, bar, hitVec[i]->getZ());
+            TString digiName;
+            digiName.Form("%d PEs, Section %d, Layer %d, Bar %d, Z %1.5g", pe, section, layer, bar, hitVec[i]->getZ());
 
             TEveBox* hcalDigiHit = 0;
+            //TEveBox* hcalDigiHit2 = 0;
+            //hcalDigiHit2 = drawer_->drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()-15, 30, 30, hitVec[i]->getZ()+15, 0, color, 0, digiName);
             if (section == 0) {
                 if (layer % 2 == 0) {
+                    //horizontal
                     hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), bar_width*(0.5+bar)-hcal_y_width/2, (layer-1)*hcal_layer_thick+hcal_front_z+abso_thick, 150, bar_width, (layer-1)*hcal_layer_thick+hcal_front_z+scint_thick+abso_thick, 0, color, 0, digiName);
                 } else {
-                    // vertical, uncomment when alternating bar orientation the back is a thing
+                    //vertical, once alternating bar orientation in the back is implemented, uncomment
                     //hcalDigiHit = drawer_->drawBox((bar_width*(0.5-bar)-hcal_y_width/2), hitVec[i]->getY(), (layer-1)*hcal_layer_thick+hcal_front_z+abso_thick, bar_width, 150, (layer-1)*hcal_layer_thick+hcal_front_z+scint_thick+abso_thick, 0, color, 0, digiName);
                     hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), bar_width*(0.5+bar)-hcal_y_width/2, (layer-1)*hcal_layer_thick+hcal_front_z+abso_thick, 150, bar_width, (layer-1)*hcal_layer_thick+hcal_front_z+scint_thick+abso_thick, 0, color, 0, digiName);
                 }
@@ -194,6 +197,10 @@ namespace ldmx {
                 if (isNoise) { hcalDigiHit->SetRnrSelf(0); }
                 hcalHits_->AddElement(hcalDigiHit);
             }
+            //if (hcalDigiHit2 != 0) {
+            //    hcalHits_->AddElement(hcalDigiHit2);
+            //}
+
         }
 
         hcalHits_->SetPickableRecursively(1);
@@ -204,7 +211,6 @@ namespace ldmx {
     void EventObjects::drawRecoilHits(TClonesArray* hits) {
 
         ldmx::SimTrackerHit* hit;
-
         for (TIter next(hits); hit = (ldmx::SimTrackerHit*)next();) {
 
             std::vector<float> xyzPos = hit->getPosition();
@@ -257,8 +263,8 @@ namespace ldmx {
         EcalCluster* cluster;
         for (TIter next(clusters); cluster = (ldmx::EcalCluster*)next();) {
 
-            char clusterName[50];
-            sprintf(clusterName, "ECAL Cluster %d", iC);
+            TString clusterName;
+            clusterName.Form("ECAL Cluster %d", iC);
 
             TEveElement* ecalCluster = new TEveElementList(clusterName);
 
@@ -283,7 +289,7 @@ namespace ldmx {
                 ecalCluster->AddElement(ecalDigiHit);
 
                 if (numHits < 2) { 
-
+                    ecalCluster->SetPickableRecursively(0);
                 } else {
                     ecalCluster->SetPickableRecursively(1);
                 }
@@ -359,8 +365,8 @@ namespace ldmx {
             simArr->SetPickable(kTRUE);
             if (p < simThresh_) { simArr->SetRnrSelf(kFALSE); }
 
-            char name[50];
-            sprintf(name, "PDG = %d, p = %1.5g MeV/c", pdgID, p);
+            TString name;
+            name.Form("PDG = %d, p = %1.5g MeV/c", pdgID, p);
             simArr->SetElementName(name);
             ecalSimParticles_->AddElement(simArr);
         }

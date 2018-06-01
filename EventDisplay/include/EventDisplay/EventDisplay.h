@@ -41,23 +41,23 @@ namespace ldmx {
 
             void PreviousEvent();
 
-            bool GetClustersColl(const char* clustersCollName);
+            bool GetClustersColl(const TString clustersCollName);
 
             void GetClustersCollInput();
 
-            bool GetECALDigisColl(const char* ecalDigisCollName);
+            bool GetECALDigisColl(const TString ecalDigisCollName);
 
             void GetECALDigisCollInput();
 
-            bool GetTrackerHitsColl(const char* trackerHitsCollName);
+            bool GetTrackerHitsColl(const TString trackerHitsCollName);
 
             void GetTrackerHitsCollInput();
 
-            bool GetEcalSimParticlesColl(const char* ecalSimParticlesCollName);
+            bool GetEcalSimParticlesColl(const TString ecalSimParticlesCollName);
 
             void GetEcalSimParticlesCollInput();
 
-            bool GetHCALDigisColl(const char* hcalDigisCollName);
+            bool GetHCALDigisColl(const TString hcalDigisCollName);
 
             void GetHCALDigisCollInput();
 
@@ -67,7 +67,7 @@ namespace ldmx {
             
             bool SetSimThresh();
 
-            bool SetFile(const char* file);
+            bool SetFile(const TString file);
 
             bool SetEventTree();
 

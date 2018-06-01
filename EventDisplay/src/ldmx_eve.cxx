@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 
     TRint *app = new TRint("App", &argc, argv);
 
-    TEveManager* manager = new TEveManager(1600, 1200, kTRUE, "FIV");
+    TEveManager* manager = new TEveManager(1600, 1200, kTRUE, "FV");
     TEveUtil::SetupEnvironment();
     TEveUtil::SetupGUI();
 

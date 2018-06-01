@@ -19,10 +19,9 @@ namespace ldmx {
     void DetectorGeometry::drawECAL() {
     
         for (int col = 0; col < towerXPos.size(); ++col) {
-            
     
-            char colName[50];
-            sprintf(colName, "Tower %d", col);
+            TString colName;
+            colName.Form("Tower %d", col);
             TEveStraightLineSet* hexCol = shapeDrawer_->drawHexColumn(towerXPos[col], towerYPos[col], ecal_front_z, ecal_front_z+ecal_z_length, 170, kBlue, colName);
             ecal_->AddElement(hexCol);
         }
@@ -55,11 +54,11 @@ namespace ldmx {
     
         for (int j = 0; j < 4; ++j) {
     
-            char nfront[50];
-            sprintf(nfront, "Stereo%d_front", j+1);
+            TString nfront;
+            nfront.Form("Stereo%d_front", j+1);
     
-            char nback[50];
-            sprintf(nback, "Stereo%d_back", j+1);
+            TString nback;
+            nback.Form("Stereo%d_back", j+1);
     
             TEveBox *front = shapeDrawer_->drawBox(0, 0, recoilLayerZPos[j]-stereo_sep, stereo_x_width, stereo_y_width, recoilLayerZPos[j]-stereo_sep+recoil_sensor_thick, 0, kRed-10, 100, nfront);
     
@@ -78,8 +77,8 @@ namespace ldmx {
         for (int x = 0; x < 5; ++x) {
             for (int y = 0; y < 2; ++y) {
     
-                char name[50];
-                sprintf(name,"Mono1_%d",module1);
+                TString name;
+                name.Form("Mono1_%d",module1);
                 ++module1;
     
                 if (x % 2 != 0) { // Alternate mono layer z by defined separation.
@@ -96,8 +95,8 @@ namespace ldmx {
         for (int x = 0; x < 5; ++x) {
             for (int y = 0; y < 2; ++y) {
     
-                char name[50];
-                sprintf(name,"Mono2_%d",module2);
+                TString name;
+                name.Form("Mono2_%d",module2);
                 module2++;
     
                 if (x % 2 != 0) { // Alternate mono layer z by defined separation.
