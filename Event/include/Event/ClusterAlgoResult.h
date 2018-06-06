@@ -115,14 +115,11 @@ namespace ldmx {
             }
 
             /**
-             * Return algorithm variable 4 (see algorithm code for details).
-             * @note Provided for interactive ROOT use.
-             * @return Algorithm variable 4.
+             * Return the weight reached when cluster count reached n. 
+             * @return The weight from the cluster algorithm.
              */
             double getWeight(int nCluster) const {
-                if (nCluster < weights_.GetSize()) {
-                    return weights_[nCluster];
-                }
+                return (nCluster < weights_.GetSize()) ? (0) : (weights_[nCluster]); 
             }
 
             /**
