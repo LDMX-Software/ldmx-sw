@@ -4,7 +4,7 @@ ClassImp(ldmx::EventDisplay);
 
 namespace ldmx {
 
-    EventDisplay::EventDisplay(TEveManager* manager) : TGMainFrame(gClient->GetRoot(), 1200, 1200) {
+    EventDisplay::EventDisplay(TEveManager* manager) : TGMainFrame(gClient->GetRoot(), 320, 320) {
 
         manager_ = manager;
         TGLViewer* viewer = manager_->GetDefaultGLViewer();
