@@ -12,7 +12,9 @@ namespace ldmx {
 
         theDetector_ = new DetectorGeometry();
         eventObjects_ = new EventObjects();
-        manager_->AddElement(theDetector_->getDetector());
+        manager_->AddElement(theDetector_->getECAL());
+        manager_->AddElement(theDetector_->getHCAL());
+        manager_->AddElement(theDetector_->getRecoilTracker());
 
         SetCleanup(kDeepCleanup);
 
