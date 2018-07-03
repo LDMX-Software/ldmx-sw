@@ -74,6 +74,7 @@ namespace ldmx {
             int    NUM_SIDE_TB_HCAL_LAYERS_{31};
             int    STRIPS_SIDE_LR_PER_LAYER_{31};
             int    NUM_SIDE_LR_HCAL_LAYERS_{63};
+            int    SUPER_STRIP_SIZE_{1};
     };
 
 }
