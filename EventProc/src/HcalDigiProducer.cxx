@@ -24,6 +24,7 @@ namespace ldmx {
         NUM_SIDE_TB_HCAL_LAYERS_ = ps.getInteger("num_side_tb_hcal_layers");
         STRIPS_SIDE_LR_PER_LAYER_ = ps.getInteger("strips_side_lr_per_layer");
         NUM_SIDE_LR_HCAL_LAYERS_ = ps.getInteger("num_side_lr_hcal_layers");
+        SUPER_STRIP_SIZE_ = ps.getInteger("super_strip_size");
         readoutThreshold_ = ps.getInteger("readoutThreshold");
         meanNoise_   = ps.getDouble("meanNoise");
         mev_per_mip_ = ps.getDouble("mev_per_mip");
@@ -78,14 +79,32 @@ namespace ldmx {
             }           
 
             if (verbose_) {
-                std::cout << "detIDraw: " << detIDraw << std::endl;
+                std::cout << "----" << std::endl;
+                std::cout << "before detIDraw: " << detIDraw << std::endl;
                 detID_->setRawValue(detIDraw);
                 detID_->unpack();
                 int layer = detID_->getFieldValue("layer");
                 int subsection = detID_->getFieldValue("section");
                 int strip = detID_->getFieldValue("strip");                
                 std::cout << "section: " << subsection << "  layer: " << layer <<  "  strip: " << strip <<std::endl;
-            }           
+                detID_->setFieldValue("strip",33);
+                detID_->pack();
+                std::cout << "after, detIDraw: " << detID_->getRawValue() << std::endl;
+                detID_->unpack();
+                std::cout << "section: " << detID_->getFieldValue("section") << "  layer: " << detID_->getFieldValue("layer") <<  "  strip: " << detID_->getFieldValue("strip") <<std::endl;
+            }        
+
+            // re-assign the strip number based on super strip size
+            if (SUPER_STRIP_SIZE_ != 1){
+                detID_->setRawValue(detIDraw);
+                detID_->unpack();
+                int strip = detID_->getFieldValue("strip");                
+                int newstrip = strip/SUPER_STRIP_SIZE_;
+                detID_->setFieldValue("strip",newstrip);
+                detID_->pack();
+                // get the new raw value
+                detIDraw = detID_->getRawValue();
+            }
             
             // for now, we take am energy weighted average of the hit in each stip to simulate the hit position. 
             // will use strip TOF and light yield between strips to estimate position.            
@@ -103,7 +122,6 @@ namespace ldmx {
                 hcalZpos[detIDraw]      += position[2]* simHit->getEdep();
                 hcaldetIDEdep[detIDraw] += simHit->getEdep();
                 hcaldetIDTime[detIDraw] += simHit->getTime() * simHit->getEdep();
-            
             }
 	    
         }
@@ -128,8 +146,7 @@ namespace ldmx {
                 numSigHits_side_tb++;
             else if( tempID.getSection() == HcalSection::LEFT || tempID.getSection() == HcalSection::RIGHT )
                 numSigHits_side_lr++;
-	    else 
-	        std::cout << "WARNING [HcalDigiProducer::produce]: HcalSection is not known" << std::endl;
+	        else std::cout << "WARNING [HcalDigiProducer::produce]: HcalSection is not known" << std::endl;
 	    
             hcalLayerPEs[detIDraw] = random_->Poisson(meanPE+meanNoise_);
             //hcalLayerPEs[detIDraw] += random_->Gaus(meanNoise_);
@@ -149,13 +166,40 @@ namespace ldmx {
                 std::cout << "numPEs: " << hcalLayerPEs[detIDraw] << std::endl;
                 std::cout << "time: " << hcaldetIDTime[detIDraw] << std::endl;
                 std::cout << "z: " << hcalZpos[detIDraw] << std::endl;
+                std::cout << "Layer: " << layer << "\t Strip: " << strip << "\t X: " << hcalXpos[detIDraw] <<  "\t Y: " << hcalYpos[detIDraw] <<  "\t Z: " << hcalZpos[detIDraw] << std::endl;
             }        // end verbose
 
             // need to add in a weighting factor eventually, so keep it that way to make sure
             // we don't forget about it
             double energy = depEnergy; 
 
-            if( hcalLayerPEs[detIDraw] > readoutThreshold_ ){
+            // quantize/smear the position
+            detID_->setRawValue(detIDraw);
+            detID_->unpack();
+            int cur_subsection = detID_->getFieldValue("section");            
+            int cur_layer      = detID_->getFieldValue("layer");
+            int cur_strip      = detID_->getFieldValue("strip");
+            float cur_xpos, cur_ypos; 
+            if (cur_subsection == 0){
+                float super_strip_width = SUPER_STRIP_SIZE_*50.0;
+                float total_super_strips = STRIPS_BACK_PER_LAYER_/SUPER_STRIP_SIZE_;
+                float total_width = super_strip_width*total_super_strips;
+                if (cur_layer % 2 == 0){ // even layers
+                    cur_xpos = (super_strip_width * (float(cur_strip)+0.5)) - total_width/2.; 
+                    cur_ypos = hcalYpos[detIDraw] + random_->Gaus(150.); 
+                }
+                if (cur_layer % 2 == 1){ // odd layers
+                    cur_ypos = (super_strip_width * (float(cur_strip)+0.5)) - total_width/2.; 
+                    cur_xpos = hcalXpos[detIDraw] + random_->Gaus(150.); 
+                }
+                if (cur_xpos > total_width/2.) cur_xpos = total_width/2.;
+                if (cur_xpos < -1.*total_width/2.) cur_xpos = -1.*total_width/2.;
+                if (cur_ypos > total_width/2.) cur_ypos = total_width/2.;
+                if (cur_ypos < -1.*total_width/2.) cur_ypos = -1.*total_width/2.;
+            }
+            std::cout << "Layer = " << cur_layer << "\t Section = " << cur_subsection << "\t Strip = " << cur_strip << "\t Xpos = " << cur_xpos << "\t Ypos = " << cur_ypos << "\t X weighted position = " << hcalXpos[detIDraw] << "\t Y weighted position = " << hcalYpos[detIDraw] << std::endl;
+
+            if( hcalLayerPEs[detIDraw] >= readoutThreshold_ ){ // > or >= ?
                 HcalHit *hit = (HcalHit*) (hits_->ConstructedAt(ihit));
                 
                 hit->setID(detIDraw);
@@ -172,6 +216,7 @@ namespace ldmx {
             }
         } 
         
+        // ------------------------------- Noise simulation -------------------------------
         // simulate noise hits in back hcal
         std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits(STRIPS_BACK_PER_LAYER_*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
         for( auto noise : noiseHits_PE ){
