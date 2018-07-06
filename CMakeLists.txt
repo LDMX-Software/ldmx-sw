@@ -56,14 +56,12 @@ Biasing SimApplication Configuration Detectors Ecal EventDisplay)
 
 # get modules that arent listed explicitly
 # these modules can ONLY depend on the previously listed ones
-file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-${CMAKE_CURRENT_SOURCE_CIR}/* )
+file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/* ${CMAKE_CURRENT_SOURCE_DIR}/* )
 foreach( child ${children} )
-  if ( (IS_DIRECTORY ${child}) AND (EXISTS
-  "${CMAKE_CURRENT_SOURCE_DIR}/${child}/include") AND (EXISTS
-  "${CMAKE_CURRENT_SOURCE_DIR}/${child}/src") AND (EXISTS
-  "${CMAKE_CURRENT_SOURCE_DIR}/${child}/CMakeLists.txt") )
-    message( STATUS "Checking if ${child} is already listed" )
+  if ( (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${child}")
+    AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/include")
+    AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/src")
+    AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/CMakeLists.txt" ) )
     #child is correct format to be a module
     list( FIND MODULES ${child} index )
     if ( NOT (index GREATER -1) )
@@ -78,7 +76,7 @@ foreach(module ${MODULES})
   message(STATUS "Adding module: ${module}")
   add_subdirectory(${module})
 endforeach()
-
+message( FATAL_ERROR "DONE" )
 # configure scripts and copy to installation dir 
 file(GLOB config_scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.in)
 foreach(config_script ${config_scripts})
