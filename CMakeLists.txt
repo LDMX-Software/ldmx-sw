@@ -64,6 +64,22 @@ include(MacroExtDeps)
 # declare list of modules with correct dependency order
 set(MODULES Event Framework DetDescr Tools EventProc SimCore SimPlugins Biasing SimApplication Configuration Detectors Ecal EventDisplay DQM)
 
+# get modules that arent listed explicitly
+# these modules can ONLY depend on the previously listed ones
+file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/* )
+foreach( child ${children} )
+  if ( (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/include")
+   AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/src")
+   AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/CMakeLists.txt" ) )
+    #child is correct format to be a module
+    list( FIND MODULES ${child} index )
+    if ( NOT (index GREATER -1) )
+      #child is already listed
+      list( APPEND MODULES ${child} )
+    endif()
+  endif()
+endforeach()
+
 # build each module in the list
 foreach(module ${MODULES})
   message(STATUS "Adding module: ${module}")
@@ -74,7 +90,7 @@ foreach(module ${MODULES})
       unset(EXTRA_INC)
   endif()
 endforeach()
-
+message( FATAL_ERROR "DONE" )
 # configure scripts and copy to installation dir 
 file(GLOB config_scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.in)
 foreach(config_script ${config_scripts})
