@@ -91,7 +91,7 @@ foreach(module ${MODULES})
       unset(EXTRA_INC)
   endif()
 endforeach()
-message( FATAL_ERROR "DONE" )
+
 # configure scripts and copy to installation dir 
 file(GLOB config_scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.in)
 foreach(config_script ${config_scripts})
