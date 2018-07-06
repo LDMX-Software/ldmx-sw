@@ -5,9 +5,10 @@
 import os #checking for and making directories
 import argparse #cli inputs
 
+ldmxpath_d = os.getcwd()
 #get cli inputs
 parser = argparse.ArgumentParser("usage: %prog [options]")
-parser.add_argument( "--ldmxPath" , dest="ldmxPath" , help = "Full path to ldmx directory up to and including ldmx-sw (default = \"\")" , default = "" , type = str )
+parser.add_argument( "--ldmxPath" , dest="ldmxPath" , help = "Full path to ldmx directory up to and including ldmx-sw (default = \"$PWD\")" , default = ldmxpath_d , type = str )
 parser.add_argument( "--moduleName" , dest="moduleName" , help = "Name of new or existing module (default = \"NewModule\")" , default = "NewModule" , type = str )
 parser.add_argument( "--processorName" , dest="processorName" , help = "Name of new processor to be added to module (default = \"NewProcessor\")" , default = "NewProcessor" , type = str )
 parser.add_argument( "--isProducer" , dest="isProducer" , help = "Declares new processor as producer, without this, it is an analyzer" , default = False , action = "store_true" )
@@ -30,18 +31,18 @@ else:
     os.makedirs( moduledir )
     os.makedirs( incdir )
     os.makedirs( srcdir )
-    if not os.path.exists( moduledir )
+    if not os.path.exists( moduledir ):
         print "\nUnable to create module directory "+moduledir+".\nExiting."
         quit()
-    if not os.path.exists( incdir )
+    if not os.path.exists( incdir ):
         print "\nUnable to create include directory "+incdir+".\nExiting."
         quit()
-    if not os.path.exists( srcdir )
+    if not os.path.exists( srcdir ):
         print "\nUnable to create source directory "+srcdir+".\nExiting."
         quit()
     #write CMakeLists.txt file template
     cmakelistsfile = open( "%s/CMakeLists.txt"%(moduledir) , "w" )
-    cmakelistsfile.write( "\# declare "+arg.moduleName+" module\n" )
+    cmakelistsfile.write( "# declare "+arg.moduleName+" module\n" )
     cmakelistsfile.write( "module(\n" )
     cmakelistsfile.write( "  NAME "+arg.moduleName+"\n" )
     cmakelistsfile.write( "  DEPENDENCIES "+arg.moduleDeps+"\n" )
@@ -60,7 +61,7 @@ if arg.isProducer :
 #write header file template
 ifndeftxt = arg.moduleName.upper()+"_"+arg.processorName.upper()+"_H"
 
-headerfile = open( "%s/%s.h"%(incdir,processorname) , "w" )
+headerfile = open( "%s/%s.h"%(incdir,arg.processorName) , "w" )
 
 headerfile.write( "/**\n" )
 headerfile.write( " * @file "+arg.processorName+".h\n" )
@@ -79,7 +80,7 @@ headerfile.write( "\n" )
 headerfile.write( "namespace ldmx {\n" )
 headerfile.write( "    \n" )
 headerfile.write( "    /**\n" )
-headerfile.write( "     * @class \n" )
+headerfile.write( "     * @class "+arg.processorName+"\n" )
 headerfile.write( "     * @brief \n" )
 headerfile.write( "     */\n" )
 headerfile.write( "    class "+arg.processorName+" : public ldmx::"+processortype+" {\n" )
@@ -109,7 +110,7 @@ headerfile.write( "#endif /* "+ifndeftxt+" */\n" )
 headerfile.close()
 
 #write src file template
-srcfile = open( "%s/%s.cxx"%(srcdir,processorname) , "w" )
+srcfile = open( "%s/%s.cxx"%(srcdir,arg.processorName) , "w" )
 
 srcfile.write( "/**\n" )
 srcfile.write( " * @file "+arg.processorName+".cxx\n" )
