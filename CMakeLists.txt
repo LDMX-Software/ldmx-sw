@@ -69,9 +69,9 @@ set(MODULES Event Framework DetDescr Tools EventProc SimCore SimPlugins Biasing 
 file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/* ${CMAKE_CURRENT_SOURCE_DIR}/* )
 foreach( child ${children} )
   if ( (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${child}")
-    AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/include")
-    AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/src")
-    AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/CMakeLists.txt" ) )
+   AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/include")
+   AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/src")
+   AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/CMakeLists.txt" ) )
     #child is correct format to be a module
     list( FIND MODULES ${child} index )
     if ( NOT (index GREATER -1) )
