@@ -51,24 +51,51 @@ include(MacroModule)
 include(MacroExtDeps)
 
 # declare list of modules with correct dependency order
-set(MODULES Event Framework DetDescr Tools EventProc SimCore SimPlugins
-Biasing SimApplication Configuration Detectors Ecal EventDisplay)
+#set(MODULES Event Framework DetDescr Tools EventProc SimCore SimPlugins
+#Biasing SimApplication Configuration Detectors Ecal EventDisplay)
 
 # get modules that arent listed explicitly
 # these modules can ONLY depend on the previously listed ones
+set( UNSORTED "" )
 file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/* )
 foreach( child ${children} )
   if ( (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/include")
    AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/src")
    AND (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${child}/CMakeLists.txt" ) )
     #child is correct format to be a module
-    list( FIND MODULES ${child} index )
-    if ( NOT (index GREATER -1) )
-      #child is already listed
-      list( APPEND MODULES ${child} )
-    endif()
+    list( APPEND UNSORTED ${child} )
   endif()
 endforeach()
+
+# obtain internal dependencies for all ldmx modules
+set( DEPENDENCIES "" )
+foreach( module ${UNSORTED} )
+  file( STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/${module}/CMakeLists.txt" deps REGEX ".* DEPENDENCIES.*" )
+  if( NOT( deps STREQUAL "") )
+    string( REPLACE " " ";" deps ${deps} )
+    foreach( dep ${deps} )
+      list( FIND DEPENDENCIES ${dep} index )
+      if( NOT(index GREATER -1) )
+        list( APPEND DEPENDENCIES ${dep} )
+      endif()
+    endforeach()
+  endif()
+  message( STATUS "${DEPS}" )
+endforeach()
+
+foreach( dep ${DEPENDENCIES} )
+  message( STATUS "DEP: ${dep}" )
+endforeach()
+message( STATUS "SORTED NEXT" )
+foreach( module ${SORTED} )
+  message( STATUS "${module}" )
+endforeach()
+message( STATUS "UNSORTED NEXT" )
+foreach( module ${UNSORTED} )
+  message( STATUS "${module}" )
+endforeach()
+
+message( FATAL_ERRROR "DONE" )
 
 # build each module in the list
 foreach(module ${MODULES})
