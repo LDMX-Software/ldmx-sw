@@ -50,12 +50,7 @@ include(MacroModule)
 # import macro for declaring external dependencies
 include(MacroExtDeps)
 
-# declare list of modules with correct dependency order
-#set(MODULES Event Framework DetDescr Tools EventProc SimCore SimPlugins
-#Biasing SimApplication Configuration Detectors Ecal EventDisplay)
-
-# get modules that arent listed explicitly
-# these modules can ONLY depend on the previously listed ones
+# get list module names 
 set( UNSORTED "" )
 file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/* )
 foreach( child ${children} )
@@ -67,42 +62,45 @@ foreach( child ${children} )
   endif()
 endforeach()
 
-# obtain internal dependencies for all ldmx modules
-set( DEPENDENCIES "" )
-foreach( module ${UNSORTED} )
-  file( STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/${module}/CMakeLists.txt" deps REGEX ".* DEPENDENCIES.*" )
-  if( NOT( deps STREQUAL "") )
-    string( REPLACE " " ";" deps ${deps} )
-    foreach( dep ${deps} )
-      list( FIND DEPENDENCIES ${dep} index )
-      if( NOT(index GREATER -1) )
-        list( APPEND DEPENDENCIES ${dep} )
-      endif()
-    endforeach()
-  endif()
-  message( STATUS "${DEPS}" )
-endforeach()
+# sort modules so that each item has its dependencies listed before it
+set( MODULES "" )
+list( LENGTH UNSORTED nleft )
+while( nleft GREATER 0 )
+  foreach( module ${UNSORTED} )
+    # get dependency list
+    file( STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/${module}/CMakeLists.txt" deps REGEX ".* DEPENDENCIES.*" )
+    
+    set( nodeps TRUE )
+    if( NOT( deps STREQUAL "") )
+      string( REPLACE " " ";" deps ${deps} )
+      #look for dependencies that haven't been sorted yet
+      foreach( dep ${deps} )
+        list( FIND UNSORTED ${dep} index )
+        if( index GREATER -1 )
+          #module has dependency that hasn't been listed before it
+          set( nodeps FALSE )
+          break()
+        endif()
+      endforeach()
+    endif() 
+    
+    #if module had no dependencies
+    if( nodeps )
+      list( APPEND MODULES ${module} )
+      list( REMOVE_ITEM UNSORTED ${module} )
+    endif()
 
-foreach( dep ${DEPENDENCIES} )
-  message( STATUS "DEP: ${dep}" )
-endforeach()
-message( STATUS "SORTED NEXT" )
-foreach( module ${SORTED} )
-  message( STATUS "${module}" )
-endforeach()
-message( STATUS "UNSORTED NEXT" )
-foreach( module ${UNSORTED} )
-  message( STATUS "${module}" )
-endforeach()
+  endforeach()
 
-message( FATAL_ERRROR "DONE" )
+  list( LENGTH UNSORTED nleft )
+endwhile()
 
 # build each module in the list
 foreach(module ${MODULES})
   message(STATUS "Adding module: ${module}")
   add_subdirectory(${module})
 endforeach()
-message( FATAL_ERROR "DONE" )
+
 # configure scripts and copy to installation dir 
 file(GLOB config_scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.in)
 foreach(config_script ${config_scripts})
