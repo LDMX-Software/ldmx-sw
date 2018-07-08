@@ -51,6 +51,8 @@ include(MacroModule)
 include(MacroExtDeps)
 
 # get list module names 
+# a directory in the CMAKE_CURRENT_SOURCE_DIR is considered a module if
+#  something named "include", "src", and "CMakeLists.txt" all exists within it
 set( UNSORTED "" )
 file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/* )
 foreach( child ${children} )
@@ -63,8 +65,13 @@ foreach( child ${children} )
 endforeach()
 
 # sort modules so that each item has its dependencies listed before it
+# a modules internal dependencies are parsed from its CMakeLists.txt file
+# this will turn in to an infinite loop if there are ANY circular dependencies
+#  listed in the CMakeLists.txt files (even if they wouldn't cause a
+#  compilation error)
 set( MODULES "" )
 list( LENGTH UNSORTED nleft )
+set( nloops 0 )
 while( nleft GREATER 0 )
   foreach( module ${UNSORTED} )
     # get dependency list
@@ -93,6 +100,13 @@ while( nleft GREATER 0 )
   endforeach()
 
   list( LENGTH UNSORTED nleft )
+  math( EXPR nloops "${nloops}+1" )
+
+  # infinite loop prevention
+  if ( nloops GREATER 1000 )
+    message( FATAL_ERROR "Infinite loop when creating module list. Check for circular dependencies in modules' CMakeLists.txt" )
+  endif()
+
 endwhile()
 
 # build each module in the list
