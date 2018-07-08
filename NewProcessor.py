@@ -1,6 +1,15 @@
 #!/usr/bin/python
 
+## 
+# @file NewProcessor.py
+# @brief Python script to generate template new processor header and source files.
 # @author Tom Eichlersmith, University of Minnesota
+#
+# A Module is a directory that has several processors grouped together (e.g. Event or Framework).
+# A Processor is one analyzer or producer.
+# This script generates the template for one processor in the input module name. If the input module already
+# exists, then the processor is inserted into that module's directory structure.
+# This script will exit if processor with the input name already exists in the input module. 
 
 import os #checking for and making directories
 import argparse #cli inputs
@@ -32,13 +41,13 @@ else:
     os.makedirs( incdir )
     os.makedirs( srcdir )
     if not os.path.exists( moduledir ):
-        print "\nUnable to create module directory "+moduledir+".\nExiting."
+        print "Unable to create module directory "+moduledir+".\nExiting."
         quit()
     if not os.path.exists( incdir ):
-        print "\nUnable to create include directory "+incdir+".\nExiting."
+        print "Unable to create include directory "+incdir+".\nExiting."
         quit()
     if not os.path.exists( srcdir ):
-        print "\nUnable to create source directory "+srcdir+".\nExiting."
+        print "Unable to create source directory "+srcdir+".\nExiting."
         quit()
     #write CMakeLists.txt file template
     cmakelistsfile = open( "%s/CMakeLists.txt"%(moduledir) , "w" )
@@ -58,10 +67,17 @@ if arg.isProducer :
     processortype = "Producer"
     processoraction = "produce"
 
+srcfilepath = "%s/%s.cxx"%(srcdir,arg.processorName)
+headerfilepath = "%s/%s.h"%(incdir,arg.processorName)
+if( os.path.isfile(headerfilepath) or os.path.isfile(srcfilepath) ) :
+    #header or src file already exists
+    print "Processor with name "+arg.processorName+" already exists in "+arg.moduleName+".\nExiting."
+    quit()
+
 #write header file template
 ifndeftxt = arg.moduleName.upper()+"_"+arg.processorName.upper()+"_H"
 
-headerfile = open( "%s/%s.h"%(incdir,arg.processorName) , "w" )
+headerfile = open( headerfilepath , "w" )
 
 headerfile.write( "/**\n" )
 headerfile.write( " * @file "+arg.processorName+".h\n" )
@@ -110,7 +126,7 @@ headerfile.write( "#endif /* "+ifndeftxt+" */\n" )
 headerfile.close()
 
 #write src file template
-srcfile = open( "%s/%s.cxx"%(srcdir,arg.processorName) , "w" )
+srcfile = open( srcfilepath , "w" )
 
 srcfile.write( "/**\n" )
 srcfile.write( " * @file "+arg.processorName+".cxx\n" )
