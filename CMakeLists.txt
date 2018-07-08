@@ -71,8 +71,9 @@ endforeach()
 #  compilation error)
 set( MODULES "" )
 list( LENGTH UNSORTED nleft )
-set( nloops 0 )
 while( nleft GREATER 0 )
+  
+  set( addedmodule FALSE )
   foreach( module ${UNSORTED} )
     # get dependency list
     file( STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/${module}/CMakeLists.txt" deps REGEX ".* DEPENDENCIES.*" )
@@ -95,16 +96,18 @@ while( nleft GREATER 0 )
     if( nodeps )
       list( APPEND MODULES ${module} )
       list( REMOVE_ITEM UNSORTED ${module} )
+      set( addedmodule TRUE )
     endif()
 
   endforeach()
 
   list( LENGTH UNSORTED nleft )
-  math( EXPR nloops "${nloops}+1" )
 
   # infinite loop prevention
-  if ( nloops GREATER 1000 )
-    message( FATAL_ERROR "Infinite loop when creating module list. Check for circular dependencies in modules' CMakeLists.txt" )
+  #  if nothing was added on this loop, then nothing will be added on next
+  #  loop because conditions didn't change
+  if ( NOT(addedmodule) )
+    message( FATAL_ERROR "Infinite loop when creating module list. Check for circular dependencies in module CMakeLists.txt" )
   endif()
 
 endwhile()
