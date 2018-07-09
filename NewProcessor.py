@@ -23,11 +23,13 @@ parser.add_argument( "--processorName" , dest="processorName" , help = "Name of 
 parser.add_argument( "--isProducer" , dest="isProducer" , help = "Declares new processor as producer, without this, it is an analyzer" , default = False , action = "store_true" )
 parser.add_argument( "--moduleDeps" , dest="moduleDeps" , help = "Space-separated list of module dependencies withing ldmx framework (default = \"Framework Event\")" , default = "Framework Event" , type = str )
 parser.add_argument( "--externalDeps" , dest="externalDeps" , help = "Space-separated list of dependencies outside of ldmx framewokr (default = \"ROOT\")" , default = "ROOT" , type = str )
+parser.add_argument( "--makeConfig" , dest="makeConfig" , help = "Tells script to make template config.py file in python subdirectory" , default = False , action = "store_true" )
 arg = parser.parse_args()
 
 moduledir = arg.ldmxPath+"/"+arg.moduleName
 incdir = moduledir+"/include/"+arg.moduleName
 srcdir = moduledir+"/src"
+pythondir = moduledir+"/python"
 
 #check if module exists
 # if does -> do nothing
@@ -40,6 +42,7 @@ else:
     os.makedirs( moduledir )
     os.makedirs( incdir )
     os.makedirs( srcdir )
+    os.makedirs( pythondir )
     if not os.path.exists( moduledir ):
         print "Unable to create module directory "+moduledir+".\nExiting."
         quit()
@@ -48,6 +51,9 @@ else:
         quit()
     if not os.path.exists( srcdir ):
         print "Unable to create source directory "+srcdir+".\nExiting."
+        quit()
+    if not os.path.exists( pythondir ) :
+        print "Unable to create python directory "+pythondir+".\nExiting."
         quit()
     #write CMakeLists.txt file template
     cmakelistsfile = open( "%s/CMakeLists.txt"%(moduledir) , "w" )
@@ -174,3 +180,26 @@ srcfile.write( "DECLARE_"+processortype.upper()+"_NS(ldmx, "+arg.processorName+"
 
 srcfile.close()
 
+#write config script template
+if arg.makeConfig :
+    pythonfilepath = "%s/%sDEFAULT.py"%(pythondir,arg.processorName)
+    if( os.path.isfile(pythonfilepath) ) :
+        #python file already exits
+        print "Config file "+pythonfilepath+" already exists.\nExiting."
+        quit()
+    
+    pyfile = open( pythonfilepath , "w" )
+
+    pyfile.write( "#!/usr/bin/python\n" )
+    pyfile.write( "\n" )
+    pyfile.write( "# we need the ldmx configuration package to construct the object\n" )
+    pyfile.write( "from LDMX.Framework import ldmxcfg\n" )
+    pyfile.write( "\n" )
+    pyfile.write( arg.processorName+"DEFAULT = ldmxcfg."+processortype+"(\""+arg.processorName+"DEFAULT\", \"ldmx::"+arg.processorName+"\")\n" )
+    pyfile.write( "\n" )
+    pyfile.write( "#Put parameters for "+arg.processorName+" below\n" )
+    pyfile.write( "\n" )
+
+
+    pyfile.close()
+    
