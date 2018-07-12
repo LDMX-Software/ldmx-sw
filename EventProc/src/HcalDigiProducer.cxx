@@ -57,6 +57,7 @@ namespace ldmx {
     void HcalDigiProducer::produce(Event& event) {
 
         std::map<unsigned int, int>   hcalLayerPEs;
+        std::map<unsigned int, int>   hcalLayerMinPEs;
         std::map<unsigned int, float> hcalXpos,hcalYpos,hcalZpos,hcaldetIDEdep, hcaldetIDTime;
         int numSigHits_back=0,numSigHits_side_tb=0,numSigHits_side_lr=0;
         std::unordered_set<unsigned int> noiseHitIDs;
@@ -79,23 +80,24 @@ namespace ldmx {
             }           
 
             if (verbose_) {
-                std::cout << "----" << std::endl;
-                std::cout << "before detIDraw: " << detIDraw << std::endl;
+                // std::cout << "----" << std::endl;
+                // std::cout << "before detIDraw: " << detIDraw << std::endl;
                 detID_->setRawValue(detIDraw);
                 detID_->unpack();
                 int layer = detID_->getFieldValue("layer");
                 int subsection = detID_->getFieldValue("section");
                 int strip = detID_->getFieldValue("strip");                
-                std::cout << "section: " << subsection << "  layer: " << layer <<  "  strip: " << strip <<std::endl;
-                detID_->setFieldValue("strip",33);
-                detID_->pack();
-                std::cout << "after, detIDraw: " << detID_->getRawValue() << std::endl;
-                detID_->unpack();
+                // std::cout << "section: " << subsection << "  layer: " << layer <<  "  strip: " << strip <<std::endl;
+                // detID_->setFieldValue("strip",33);
+                // detID_->pack();
+                // std::cout << "after, detIDraw: " << detID_->getRawValue() << std::endl;
+                // detID_->unpack();
                 std::cout << "section: " << detID_->getFieldValue("section") << "  layer: " << detID_->getFieldValue("layer") <<  "  strip: " << detID_->getFieldValue("strip") <<std::endl;
             }        
 
-            // re-assign the strip number based on super strip size
-            if (SUPER_STRIP_SIZE_ != 1){
+            // re-assign the strip number based on super strip size -- ONLY FOR Back Hcal
+            int subsection = detID_->getFieldValue("section");
+            if (SUPER_STRIP_SIZE_ != 1 && subsection == 0){
                 detID_->setRawValue(detIDraw);
                 detID_->unpack();
                 int strip = detID_->getFieldValue("strip");                
@@ -147,9 +149,81 @@ namespace ldmx {
             else if( tempID.getSection() == HcalSection::LEFT || tempID.getSection() == HcalSection::RIGHT )
                 numSigHits_side_lr++;
 	        else std::cout << "WARNING [HcalDigiProducer::produce]: HcalSection is not known" << std::endl;
-	    
-            hcalLayerPEs[detIDraw] = random_->Poisson(meanPE+meanNoise_);
-            //hcalLayerPEs[detIDraw] += random_->Gaus(meanNoise_);
+
+            // need to add in a weighting factor eventually, so keep it that way to make sure
+            // we don't forget about it
+            double energy = depEnergy; 
+
+            // quantize/smear the position
+            detID_->setRawValue(detIDraw);
+            detID_->unpack();
+            int cur_subsection = detID_->getFieldValue("section");            
+            int cur_layer      = detID_->getFieldValue("layer");
+            int cur_strip      = detID_->getFieldValue("strip");
+            float cur_xpos, cur_ypos; 
+
+            if (cur_subsection != 0){ // for sidecal don't worry about attenuation because it's single readout
+                hcalLayerPEs[detIDraw] = random_->Poisson(meanPE+meanNoise_);
+                hcalLayerMinPEs[detIDraw] = hcalLayerPEs[detIDraw];
+            }
+            if (cur_subsection == 0){// get PEs with attentuation
+                meanPE *= 100./80.; // increase the PE count to the case with no attentuation (assuming 80% attenuation on the pe_per_mip number)
+                float total_width = STRIPS_BACK_PER_LAYER_*50.0;
+                float distance_along_bar = 0;
+                if (cur_layer % 2 == 0){
+                    distance_along_bar = fabs(cur_ypos);
+                }
+                if (cur_layer % 2 == 1){
+                    distance_along_bar = fabs(cur_xpos);
+                }
+                float meanPE_close = meanPE * 0.8 * ((total_width/2. - distance_along_bar) / 1000.);
+                float meanPE_far   = meanPE * 0.8 * ((total_width/2. + distance_along_bar) / 1000.);
+                float PE_close     = random_->Poisson(meanPE_close+meanNoise_);
+                float PE_far       = random_->Poisson(meanPE_far+meanNoise_);
+                hcalLayerPEs[detIDraw] = PE_close + PE_far;
+                hcalLayerMinPEs[detIDraw] = std::min(PE_close,PE_far);
+            }
+            std::cout << "depEnergy = " << depEnergy << "\t hcalLayerPEs[detIDraw] = " << hcalLayerPEs[detIDraw] << "\t hcalLayerMinPEs[detIDraw] = " << hcalLayerMinPEs[detIDraw] << std::endl;
+
+
+            if (cur_subsection == 0){
+                float super_strip_width = SUPER_STRIP_SIZE_*50.0;
+                float total_super_strips = (STRIPS_BACK_PER_LAYER_ + SUPER_STRIP_SIZE_ - 1)/SUPER_STRIP_SIZE_; // to help the integer round up
+                float total_width = STRIPS_BACK_PER_LAYER_*50.0;
+                if (cur_layer % 2 == 0){ // even layers, vertical
+                    cur_xpos = (super_strip_width * (float(cur_strip)+0.5)) - total_width/2.; 
+                    cur_ypos = hcalYpos[detIDraw] + random_->Gaus(150.); 
+                }
+                if (cur_layer % 2 == 1){ // odd layers, horizontal
+                    cur_ypos = (super_strip_width * (float(cur_strip)+0.5)) - total_width/2.; 
+                    cur_xpos = hcalXpos[detIDraw] + random_->Gaus(150.); 
+                }
+                if (cur_xpos > total_width/2.) cur_xpos = total_width/2.;
+                if (cur_xpos < -1.*total_width/2.) cur_xpos = -1.*total_width/2.;
+                if (cur_ypos > total_width/2.) cur_ypos = total_width/2.;
+                if (cur_ypos < -1.*total_width/2.) cur_ypos = -1.*total_width/2.;
+                // std::cout << "super_strip_width = " << super_strip_width << "\t total_super_strips = " << total_super_strips << "\t total_width = " << total_width << std::endl;
+            }
+            std::cout << "Layer = " << cur_layer << "\t Section = " << cur_subsection << "\t Strip = " << cur_strip << "\t Xpos = " << cur_xpos << "\t Ypos = " << cur_ypos << "\t X weighted position = " << hcalXpos[detIDraw] << "\t Y weighted position = " << hcalYpos[detIDraw] << std::endl;
+
+            if( hcalLayerPEs[detIDraw] >= readoutThreshold_ ){ // > or >= ?
+                
+                HcalHit *hit = (HcalHit*) (hits_->ConstructedAt(ihit));
+                
+                hit->setID(detIDraw);
+                hit->setPE(hcalLayerPEs[detIDraw]);
+                hit->setAmplitude(hcalLayerPEs[detIDraw]);
+                hit->setEnergy(energy);
+                hit->setTime(hcaldetIDTime[detIDraw]);
+                // hit->setXpos(hcalXpos[detIDraw]);
+                // hit->setYpos(hcalYpos[detIDraw]);
+                hit->setXpos(cur_xpos); // quantized and smeared positions
+                hit->setYpos(cur_ypos); // quantized and smeared positions
+                hit->setZpos(hcalZpos[detIDraw]);
+                hit->setNoise(false);
+                ihit++;
+                
+            }
 
             if (verbose_) {
                 detID_->setRawValue(detIDraw);
@@ -167,53 +241,7 @@ namespace ldmx {
                 std::cout << "time: " << hcaldetIDTime[detIDraw] << std::endl;
                 std::cout << "z: " << hcalZpos[detIDraw] << std::endl;
                 std::cout << "Layer: " << layer << "\t Strip: " << strip << "\t X: " << hcalXpos[detIDraw] <<  "\t Y: " << hcalYpos[detIDraw] <<  "\t Z: " << hcalZpos[detIDraw] << std::endl;
-            }        // end verbose
-
-            // need to add in a weighting factor eventually, so keep it that way to make sure
-            // we don't forget about it
-            double energy = depEnergy; 
-
-            // quantize/smear the position
-            detID_->setRawValue(detIDraw);
-            detID_->unpack();
-            int cur_subsection = detID_->getFieldValue("section");            
-            int cur_layer      = detID_->getFieldValue("layer");
-            int cur_strip      = detID_->getFieldValue("strip");
-            float cur_xpos, cur_ypos; 
-            if (cur_subsection == 0){
-                float super_strip_width = SUPER_STRIP_SIZE_*50.0;
-                float total_super_strips = STRIPS_BACK_PER_LAYER_/SUPER_STRIP_SIZE_;
-                float total_width = super_strip_width*total_super_strips;
-                if (cur_layer % 2 == 0){ // even layers
-                    cur_xpos = (super_strip_width * (float(cur_strip)+0.5)) - total_width/2.; 
-                    cur_ypos = hcalYpos[detIDraw] + random_->Gaus(150.); 
-                }
-                if (cur_layer % 2 == 1){ // odd layers
-                    cur_ypos = (super_strip_width * (float(cur_strip)+0.5)) - total_width/2.; 
-                    cur_xpos = hcalXpos[detIDraw] + random_->Gaus(150.); 
-                }
-                if (cur_xpos > total_width/2.) cur_xpos = total_width/2.;
-                if (cur_xpos < -1.*total_width/2.) cur_xpos = -1.*total_width/2.;
-                if (cur_ypos > total_width/2.) cur_ypos = total_width/2.;
-                if (cur_ypos < -1.*total_width/2.) cur_ypos = -1.*total_width/2.;
-            }
-            std::cout << "Layer = " << cur_layer << "\t Section = " << cur_subsection << "\t Strip = " << cur_strip << "\t Xpos = " << cur_xpos << "\t Ypos = " << cur_ypos << "\t X weighted position = " << hcalXpos[detIDraw] << "\t Y weighted position = " << hcalYpos[detIDraw] << std::endl;
-
-            if( hcalLayerPEs[detIDraw] >= readoutThreshold_ ){ // > or >= ?
-                HcalHit *hit = (HcalHit*) (hits_->ConstructedAt(ihit));
-                
-                hit->setID(detIDraw);
-                hit->setPE(hcalLayerPEs[detIDraw]);
-                hit->setAmplitude(hcalLayerPEs[detIDraw]);
-                hit->setEnergy(energy);
-                hit->setTime(hcaldetIDTime[detIDraw]);
-                hit->setXpos(hcalXpos[detIDraw]);
-                hit->setYpos(hcalYpos[detIDraw]);
-                hit->setZpos(hcalZpos[detIDraw]);
-                hit->setNoise(false);
-                ihit++;
-                
-            }
+            }        // end verbose            
         } 
         
         // ------------------------------- Noise simulation -------------------------------
@@ -230,8 +258,8 @@ namespace ldmx {
             noiseHit->setEnergy(noise*mev_per_mip_/pe_per_mip_);
             unsigned int rawID;
             do{
-	      rawID = generateRandomID(HcalSection::BACK);
-            }while( hcaldetIDEdep.find(rawID) != hcaldetIDEdep.end() || noiseHitIDs.find(rawID) != noiseHitIDs.end() );
+	           rawID = generateRandomID(HcalSection::BACK);
+            } while( hcaldetIDEdep.find(rawID) != hcaldetIDEdep.end() || noiseHitIDs.find(rawID) != noiseHitIDs.end() );
             noiseHit->setID(rawID);
             noiseHitIDs.insert(rawID);
             noiseHit->setNoise(true);
