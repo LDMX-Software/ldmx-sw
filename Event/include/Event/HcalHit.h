@@ -115,7 +115,7 @@ namespace ldmx {
              * Set the minimum number of photoelectrons estimated for this hit.
              * @param pe Minimum number of photoelectrons, including noise which affects the estimate.
              */
-            void setMINPE(float minpe) {
+            void setMinPE(float minpe) {
                 minpe_ = minpe;
             }            
 
