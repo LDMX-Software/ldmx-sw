@@ -39,7 +39,8 @@ namespace ldmx {
         if( sec == HcalSection::BACK ){
             tempID.setFieldValue(1,random_->Integer(NUM_BACK_HCAL_LAYERS_));
             tempID.setFieldValue(2,0);
-            tempID.setFieldValue(3,random_->Integer(STRIPS_BACK_PER_LAYER_));
+            //tempID.setFieldValue(3,random_->Integer(STRIPS_BACK_PER_LAYER_));
+            tempID.setFieldValue(3,random_->Integer((STRIPS_BACK_PER_LAYER_ + SUPER_STRIP_SIZE_ - 1)/SUPER_STRIP_SIZE_));
         }else if( sec == HcalSection::TOP || sec == HcalSection::BOTTOM ){
             tempID.setFieldValue(1,random_->Integer(NUM_SIDE_TB_HCAL_LAYERS_));
             tempID.setFieldValue(2,random_->Integer(2)+1);
@@ -212,6 +213,7 @@ namespace ldmx {
                 
                 hit->setID(detIDraw);
                 hit->setPE(hcalLayerPEs[detIDraw]);
+                hit->setMinPE(hcalLayerMinPEs[detIDraw]);
                 hit->setAmplitude(hcalLayerPEs[detIDraw]);
                 hit->setEnergy(energy);
                 hit->setTime(hcaldetIDTime[detIDraw]);
@@ -246,16 +248,24 @@ namespace ldmx {
         
         // ------------------------------- Noise simulation -------------------------------
         // simulate noise hits in back hcal
-        std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits(STRIPS_BACK_PER_LAYER_*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
-        for( auto noise : noiseHits_PE ){
+        int total_super_strips_back = (STRIPS_BACK_PER_LAYER_ + SUPER_STRIP_SIZE_ - 1)/SUPER_STRIP_SIZE_;
+        std::vector<double> noiseHits_PE_1 = noiseGenerator_->generateNoiseHits(total_super_strips_back*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
+        std::vector<double> noiseHits_PE_2 = noiseGenerator_->generateNoiseHits(total_super_strips_back*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
+        int ctr_back_noise = 0;
+        //for( auto noise : noiseHits_PE ){
+        for( unsigned int i = 0; i < noiseHits_PE_1.size(); ++i){
+            double cur_noise_pe_1 = noiseHits_PE_1[i];
+            double cur_noise_pe_2 = noiseHits_PE_2[i];
             HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
-            noiseHit->setPE(noise);
-            noiseHit->setAmplitude(noise);
+            double total_noise = cur_noise_pe_1 + cur_noise_pe_2;
+            noiseHit->setPE(total_noise);
+            noiseHit->setMinPE(std::min(cur_noise_pe_1,cur_noise_pe_2));
+            noiseHit->setAmplitude(total_noise);
             noiseHit->setXpos(0.);
             noiseHit->setYpos(0.);
             noiseHit->setZpos(0.);
             noiseHit->setTime(-999.);
-            noiseHit->setEnergy(noise*mev_per_mip_/pe_per_mip_);
+            noiseHit->setEnergy(total_noise*mev_per_mip_/pe_per_mip_);
             unsigned int rawID;
             do{
 	           rawID = generateRandomID(HcalSection::BACK);
@@ -264,13 +274,15 @@ namespace ldmx {
             noiseHitIDs.insert(rawID);
             noiseHit->setNoise(true);
             ihit++;
+            ctr_back_noise++;
         }
 
         // simulate noise hits in side, top/bottom hcal
-        noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_TB_PER_LAYER_*NUM_SIDE_TB_HCAL_LAYERS_)*2-numSigHits_side_tb);
+        std::vector<double>  noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_TB_PER_LAYER_*NUM_SIDE_TB_HCAL_LAYERS_)*2-numSigHits_side_tb);
         for( auto noise : noiseHits_PE ){
             HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
             noiseHit->setPE(noise);
+            noiseHit->setMinPE(noise); // only one readout for sidecal
             noiseHit->setAmplitude(noise);
             noiseHit->setXpos(0.);
             noiseHit->setYpos(0.);
@@ -292,6 +304,7 @@ namespace ldmx {
         for( auto noise : noiseHits_PE ){
             HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
             noiseHit->setPE(noise);
+            noiseHit->setMinPE(noise); // only one readout for sidecal
             noiseHit->setAmplitude(noise);
             noiseHit->setXpos(0.);
             noiseHit->setYpos(0.);
