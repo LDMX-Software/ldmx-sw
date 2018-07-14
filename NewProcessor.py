@@ -5,21 +5,22 @@
 # @brief Python script to generate template new processor header and source files.
 # @author Tom Eichlersmith, University of Minnesota
 #
-# A Module is a directory that has several processors grouped together (e.g. Event or Framework).
+# A Module is a directory that has several processors grouped together (e.g. EventProc or Ecal).
 # A Processor is one analyzer or producer.
 # This script generates the template for one processor in the input module name. If the input module already
 # exists, then the processor is inserted into that module's directory structure.
-# This script will exit if processor with the input name already exists in the input module. 
+# This script will exit if the input processor name already exists as the name of a header file in the framework.
 
 import os #checking for and making directories
 import argparse #cli inputs
+import glob #all class header files
 
 ldmxpath_d = os.getcwd()
 #get cli inputs
 parser = argparse.ArgumentParser("usage: %prog [options]")
 parser.add_argument( "--ldmxPath" , dest="ldmxPath" , help = "Full path to ldmx directory up to and including ldmx-sw (default = \"$PWD\")" , default = ldmxpath_d , type = str )
-parser.add_argument( "--moduleName" , dest="moduleName" , help = "Name of new or existing module (default = \"NewModule\")" , default = "NewModule" , type = str )
-parser.add_argument( "--processorName" , dest="processorName" , help = "Name of new processor to be added to module (default = \"NewProcessor\")" , default = "NewProcessor" , type = str )
+parser.add_argument( "--moduleName" , dest="moduleName" , help = "Name of new or existing module (default = \"NEWMODULE\")" , default = "NEWMODULE" , type = str )
+parser.add_argument( "--processorName" , dest="processorName" , help = "Name of new processor to be added to module (default = \"NEWPROCESSOR\")" , default = "NEWPROCESSOR" , type = str )
 parser.add_argument( "--isProducer" , dest="isProducer" , help = "Declares new processor as producer, without this, it is an analyzer" , default = False , action = "store_true" )
 parser.add_argument( "--moduleDeps" , dest="moduleDeps" , help = "Space-separated list of module dependencies withing ldmx framework (default = \"Framework Event\")" , default = "Framework Event" , type = str )
 parser.add_argument( "--externalDeps" , dest="externalDeps" , help = "Space-separated list of dependencies outside of ldmx framewokr (default = \"ROOT\")" , default = "ROOT" , type = str )
@@ -31,13 +32,19 @@ incdir = moduledir+"/include/"+arg.moduleName
 srcdir = moduledir+"/src"
 pythondir = moduledir+"/python"
 
+# Obtain list of classes in ldmx-sw, compare to processorName
+headerfplist = glob.glob( arg.ldmxPath+"/*/include/*/*.h" )
+for fp in headerfplist :
+    classname = os.path.splitext( os.path.split( fp )[1] )[0]
+    modulename = os.path.split( os.path.split( fp )[0] )[1]
+    if classname == arg.processorName :
+        print "Class "+classname+" already exists in module "+modulename+".\nExiting."
+        quit()
+
 #check if module exists
 # if does -> do nothing
 # if doesn't -> create module tree, make cmakelists.txt, and add module name to module list
-if os.path.exists( moduledir ):
-    print "Inserting new processor "+arg.processorName+" into existing module "+arg.moduleName+"."
-else:
-    print "Making new module "+arg.moduleName+"."
+if not os.path.exists( moduledir ):
     #make module directory tree
     os.makedirs( moduledir )
     os.makedirs( incdir )
@@ -75,10 +82,6 @@ if arg.isProducer :
 
 srcfilepath = "%s/%s.cxx"%(srcdir,arg.processorName)
 headerfilepath = "%s/%s.h"%(incdir,arg.processorName)
-if( os.path.isfile(headerfilepath) or os.path.isfile(srcfilepath) ) :
-    #header or src file already exists
-    print "Processor with name "+arg.processorName+" already exists in "+arg.moduleName+".\nExiting."
-    quit()
 
 #write header file template
 ifndeftxt = arg.moduleName.upper()+"_"+arg.processorName.upper()+"_H"
@@ -202,4 +205,5 @@ if arg.makeConfig :
 
 
     pyfile.close()
-    
+
+print arg.processorName+" created in module "+arg.moduleName+"."
