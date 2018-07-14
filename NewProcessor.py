@@ -43,7 +43,7 @@ for fp in headerfplist :
 
 #check if module exists
 # if does -> do nothing
-# if doesn't -> create module tree, make cmakelists.txt, and add module name to module list
+# if doesn't -> create module tree and make cmakelists.txt
 if not os.path.exists( moduledir ):
     #make module directory tree
     os.makedirs( moduledir )
