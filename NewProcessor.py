@@ -35,33 +35,26 @@ pythondir = moduledir+"/python"
 # Obtain list of classes in ldmx-sw, compare to processorName
 headerfplist = glob.glob( arg.ldmxPath+"/*/include/*/*.h" )
 for fp in headerfplist :
+    # parse the class and module name from full path to header
     classname = os.path.splitext( os.path.split( fp )[1] )[0]
     modulename = os.path.split( os.path.split( fp )[0] )[1]
+    #check if input has the same name as an already defined class
     if classname == arg.processorName :
         print "Class "+classname+" already exists in module "+modulename+".\nExiting."
         quit()
+    #endif - processor name is already taken by another class
+#endfor - iterate through filepaths that match a class header file (fp)
 
 #check if module exists
-# if does -> do nothing
 # if doesn't -> create module tree and make cmakelists.txt
 if not os.path.exists( moduledir ):
     #make module directory tree
     os.makedirs( moduledir )
-    os.makedirs( incdir )
-    os.makedirs( srcdir )
-    os.makedirs( pythondir )
     if not os.path.exists( moduledir ):
         print "Unable to create module directory "+moduledir+".\nExiting."
         quit()
-    if not os.path.exists( incdir ):
-        print "Unable to create include directory "+incdir+".\nExiting."
-        quit()
-    if not os.path.exists( srcdir ):
-        print "Unable to create source directory "+srcdir+".\nExiting."
-        quit()
-    if not os.path.exists( pythondir ) :
-        print "Unable to create python directory "+pythondir+".\nExiting."
-        quit()
+    #endif - unable to make module directory
+    
     #write CMakeLists.txt file template
     cmakelistsfile = open( "%s/CMakeLists.txt"%(moduledir) , "w" )
     cmakelistsfile.write( "# declare "+arg.moduleName+" module\n" )
@@ -71,7 +64,7 @@ if not os.path.exists( moduledir ):
     cmakelistsfile.write( "  EXTERNAL_DEPENDENCIES "+arg.externalDeps+"\n" )
     cmakelistsfile.write( ")" )
     cmakelistsfile.close()
-#endif - making new module or inserting into existing
+#endif - making new module 
 
 #set processor type
 processortype = "Analyzer"
@@ -79,9 +72,27 @@ processoraction = "analyze"
 if arg.isProducer :
     processortype = "Producer"
     processoraction = "produce"
+#endif - change processor to producer
 
 srcfilepath = "%s/%s.cxx"%(srcdir,arg.processorName)
 headerfilepath = "%s/%s.h"%(incdir,arg.processorName)
+
+#make include and source directory for module if does not exist
+if not os.path.exists( incdir ) :
+    os.makedirs( incdir )
+    if not os.path.exists( incdir ):
+        print "Unable to create include directory "+incdir+".\nExiting."
+        quit()
+    #endif - unable to make directory
+#endif - directory doesn't exist
+
+if not os.path.exists( srcdir ) :
+    os.makedirs( srcdir )
+    if not os.path.exists( srcdir ):
+        print "Unable to create source directory "+srcdir+".\nExiting."
+        quit()
+    #endif - unable to make directory
+#endif - directory doesn't exist
 
 #write header file template
 ifndeftxt = arg.moduleName.upper()+"_"+arg.processorName.upper()+"_H"
@@ -185,11 +196,21 @@ srcfile.close()
 
 #write config script template
 if arg.makeConfig :
+    #make directory path if not exists
+    if not os.path.exists( pythondir ) :
+        os.makedirs( pythondir )
+        if not os.path.exists( pythondir ) :
+            print "Unable to make python directory "+pythondir+".\nExiting."
+            quit()
+        #endif - unable to make directory
+    #endif - making directory path
+    
     pythonfilepath = "%s/%sDEFAULT.py"%(pythondir,arg.processorName)
     if( os.path.isfile(pythonfilepath) ) :
         #python file already exits
         print "Config file "+pythonfilepath+" already exists.\nExiting."
         quit()
+    #endif - python config DEFAULT file already exists
     
     pyfile = open( pythonfilepath , "w" )
 
@@ -205,5 +226,6 @@ if arg.makeConfig :
 
 
     pyfile.close()
+#endif - arg.makeConfig
 
 print arg.processorName+" created in module "+arg.moduleName+"."
