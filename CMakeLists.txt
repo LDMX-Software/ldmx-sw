@@ -64,20 +64,21 @@ foreach( child ${children} )
   endif()
 endforeach()
 
-# sort modules so that each item has its dependencies listed before it
-# a modules internal dependencies are parsed from its CMakeLists.txt file
-# this will turn in to an infinite loop if there are ANY circular dependencies
+# Sort modules so that each item has its dependencies listed before it.
+# A modules internal dependencies are parsed from its CMakeLists.txt file.
+# This will turn in to an infinite loop if there are ANY circular dependencies
 #  listed in the CMakeLists.txt files (even if they wouldn't cause a
-#  compilation error)
+#  compilation error). Infinite loops are prevented by a FATAL_ERROR.
 set( MODULES "" )
 list( LENGTH UNSORTED nleft )
 while( nleft GREATER 0 )
-  
+  #loop until there are no modules left in UNSORTED
   set( addedmodule FALSE )
   foreach( module ${UNSORTED} )
     # get dependency list
     file( STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/${module}/CMakeLists.txt" deps REGEX ".* DEPENDENCIES.*" )
     
+    # check if dependencies (if they exist) have already been listed
     set( nodeps TRUE )
     if( NOT( deps STREQUAL "") )
       string( REPLACE " " ";" deps ${deps} )
@@ -92,16 +93,16 @@ while( nleft GREATER 0 )
       endforeach()
     endif() 
     
-    #if module had no dependencies
+    #if module had no dependencies already listed
     if( nodeps )
       list( APPEND MODULES ${module} )
       list( REMOVE_ITEM UNSORTED ${module} )
       set( addedmodule TRUE )
     endif()
 
-  endforeach()
+  endforeach() #loop through modules in UNSORTED
 
-  list( LENGTH UNSORTED nleft )
+  list( LENGTH UNSORTED nleft ) #reset number of UNSORTED left to sort
 
   # infinite loop prevention
   #  if nothing was added on this loop, then nothing will be added on next
@@ -110,7 +111,7 @@ while( nleft GREATER 0 )
     message( FATAL_ERROR "Infinite loop when creating module list. Check for circular dependencies in module CMakeLists.txt" )
   endif()
 
-endwhile()
+endwhile() #loop until no modules left in UNSORTED
 
 # build each module in the list
 foreach(module ${MODULES})
