@@ -34,6 +34,10 @@ namespace ldmx {
         scalup_ = atof(tokens[3].c_str());
         aqedup_ = atof(tokens[4].c_str());
         aqcdup_ = atof(tokens[5].c_str());
+
+	vtx_[0]=0;
+	vtx_[1]=0;
+	vtx_[2]=0;
     }
 
     LHEEvent::~LHEEvent() {
@@ -43,28 +47,32 @@ namespace ldmx {
         particles_.clear();
     }
 
-    int LHEEvent::getNUP() {
+    int LHEEvent::getNUP() const {
         return nup_;
     }
 
-    int LHEEvent::getIDPRUP() {
+    int LHEEvent::getIDPRUP() const {
         return idprup_;
     }
 
-    double LHEEvent::getXWGTUP() {
+    double LHEEvent::getXWGTUP() const {
         return xwgtup_;
     }
 
-    double LHEEvent::getSCALUP() {
+    double LHEEvent::getSCALUP() const {
         return scalup_;
     }
 
-    double LHEEvent::getAQEDUP() {
+    double LHEEvent::getAQEDUP() const {
         return aqedup_;
     }
 
-    double LHEEvent::getAQCDUP() {
+    double LHEEvent::getAQCDUP() const {
         return aqcdup_;
+    }
+
+    const double* LHEEvent::getVertex() const {
+        return vtx_;
     }
 
     void LHEEvent::addParticle(LHEParticle* particle) {
@@ -73,6 +81,36 @@ namespace ldmx {
 
     const std::vector<LHEParticle*>& LHEEvent::getParticles() {
         return particles_;
+    }
+
+    void LHEEvent::setVertex(double x, double y, double z) {
+        vtx_[0]=x;
+        vtx_[1]=y;
+        vtx_[2]=z;
+    }
+	
+   /**
+    * Parse the vertex from a line of the form "#vertex [x] [y] [z]"
+    */
+    void LHEEvent::setVertex(const std::string& line) {
+        std::istringstream iss(line);
+        std::vector<std::string> tokens;
+        do {
+            std::string elem;
+            iss >> elem;
+            if (elem.size() != 0) {
+                tokens.push_back(elem);
+            }
+        } while (iss);
+
+        if (tokens.size() != 4 || tokens[0]!="#vertex") {
+            std::cerr << "ERROR: Bad event vertex information record in LHE file ..." << std::endl;
+            std::cerr << "  " << line << std::endl;
+            G4Exception("LHEEvent::LHEEvent", "LHEEventError", FatalException, "Wrong number of tokens or format in LHE event vertex information record.");
+        }
+	vtx_[0]=atof(tokens[1].c_str());
+	vtx_[1]=atof(tokens[2].c_str());
+	vtx_[2]=atof(tokens[3].c_str());	
     }
 
 }

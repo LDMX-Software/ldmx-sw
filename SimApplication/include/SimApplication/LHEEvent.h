@@ -42,38 +42,55 @@ namespace ldmx {
              * Get the number of particles (NUP) in the event.
              * @return The number of particles in event.
              */
-            int getNUP();
+            int getNUP() const;
 
             /**
              * Get the ID of the physics process (IDRUP).
              * @return The ID of the physics process.
              */
-            int getIDPRUP();
+            int getIDPRUP() const;
 
             /**
              * Get the event weight (XWGTUP).
              * @return The event weight.
              */
-            double getXWGTUP();
+            double getXWGTUP() const;
 
             /**
              * Get the scale Q of parton distributions (SCALUP).
              * @return The scale Q of parton distributions.
              */
-            double getSCALUP();
+            double getSCALUP() const;
 
             /**
              * Get the value of the QED coupling (AQEDUP).
              * @return The value of the QED coupling.
              */
-            double getAQEDUP();
+            double getAQEDUP() const;
 
             /**
              * Get the value of the QED coupling (AQCDUP).
              * @return The value of the QED coupling.
              */
-            double getAQCDUP();
+            double getAQCDUP() const;
 
+
+	    /**
+	     * Set the vertex location (careful to match units as expected!)
+             */
+  	    void setVertex(double x, double y, double z);
+	
+	    /**
+	     * Parse the vertex from a line of the form "#vertex [x] [y] [z]"
+             */
+	    void setVertex(const std::string& line);
+	
+	    /**
+	     * Get the vertex location (careful to match units as expected!)
+             * @return Array double[3] with x,y,z ordering
+             */
+	    const double* getVertex() const;
+	    	
             /**
              * Add a particle to the event.
              * @particle The particle to add.
@@ -118,6 +135,12 @@ namespace ldmx {
              */
             double aqcdup_;
 
+
+	    /**
+             * Vertex location
+             */
+	    double vtx_[3];
+	
             /**
              * The list of particles.
              */
