@@ -41,8 +41,14 @@ namespace ldmx {
                 break;
             }
 
-            LHEParticle* particle = new LHEParticle(line);
-            nextEvent->addParticle(particle);
+	    if (line.find("#")==std::string::npos) {	    // not a comment line
+		LHEParticle* particle = new LHEParticle(line);
+		nextEvent->addParticle(particle);
+	    } else {
+		if (line.find("#vertex")!=std::string::npos) {
+		    nextEvent->setVertex(line);
+		}
+	    }
         }
 
         const std::vector<LHEParticle*>& particles = nextEvent->getParticles();
