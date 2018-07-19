@@ -21,15 +21,16 @@ namespace ldmx {
 
     EcalDigiProducer::EcalDigiProducer(const std::string& name, Process& process) :
         Producer(name, process) {
+        noiseGenerator_ = new NoiseGenerator();
     }
 
     void EcalDigiProducer::configure(const ParameterSet& ps) {
 
         hexReadout_ = new EcalHexReadout();
 
-        noiseIntercept_ = ps.getDouble("noiseIntercept"); 
-        noiseSlope_     = ps.getDouble("noiseSlope");
-        padCapacitance_ = ps.getDouble("padCapacitance"); 
+        noiseIntercept_ = ps.getDouble("noiseIntercept",0.); 
+        noiseSlope_     = ps.getDouble("noiseSlope",1.);
+        padCapacitance_ = ps.getDouble("padCapacitance",0.1); 
 
         // Calculate the noise RMS based on the properties of the readout pad
         noiseRMS_ = this->calculateNoise(padCapacitance_, noiseIntercept_, noiseSlope_);  
