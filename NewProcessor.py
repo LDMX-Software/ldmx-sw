@@ -18,7 +18,7 @@ import glob #all class header files
 ldmxpath_d = os.getcwd()
 #get cli inputs
 parser = argparse.ArgumentParser("usage: %prog [options]")
-parser.add_argument( "--ldmxPath" , dest="ldmxPath" , help = "Full path to ldmx directory up to and including ldmx-sw (default = \"$PWD\")" , default = ldmxpath_d , type = str )
+parser.add_argument( "--ldmxPath" , dest="ldmxPath" , help = "Full path to ldmx directory up to and including ldmx-sw (default = \"$PWD\" so run this script from the ldmx-sw/ directory so that this argument is not needed.)" , default = ldmxpath_d , type = str )
 parser.add_argument( "--moduleName" , dest="moduleName" , help = "Name of new or existing module (default = \"NEWMODULE\")" , default = "NEWMODULE" , type = str )
 parser.add_argument( "--processorName" , dest="processorName" , help = "Name of new processor to be added to module (default = \"NEWPROCESSOR\")" , default = "NEWPROCESSOR" , type = str )
 parser.add_argument( "--isProducer" , dest="isProducer" , help = "Declares new processor as producer, without this, it is an analyzer" , default = False , action = "store_true" )
