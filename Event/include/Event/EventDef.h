@@ -7,6 +7,7 @@
 #include "Event/CalorimeterHit.h"
 #include "Event/EcalHit.h"
 #include "Event/EcalVetoResult.h"
+#include "Event/NonFidEcalVetoResult.h"
 #include "Event/EcalCluster.h"
 #include "Event/Event.h"
 #include "Event/EventConstants.h"
