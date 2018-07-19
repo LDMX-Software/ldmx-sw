@@ -17,6 +17,7 @@
 #include "G4VisManager.hh"
 #include "G4VisExecutive.hh"
 #include "G4RunManager.hh"
+#include "G4CascadeParameters.hh"
 
 namespace ldmx {
 
@@ -45,6 +46,9 @@ namespace ldmx {
 
         // Create application messenger.
         new SimApplicationMessenger();
+
+        // Instantiate the class so cascade parameters can be set.
+        G4CascadeParameters::Instance();  
 
         // Supply default user initializations and actions.
         runManager->SetUserInitialization(new DetectorConstruction(parser));
