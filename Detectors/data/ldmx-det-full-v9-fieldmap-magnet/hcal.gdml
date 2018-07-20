@@ -41,7 +41,7 @@
     <variable name="back_dz"           value="back_dz1+back_dz2+back_dz3"/>
      
     <!-- side Around HCal Layer component widths -->
-    <variable name="side_layers"       value="29"/>
+    <variable name="side_layers"       value="32"/>
     <variable name="side_Ecal_dx"      value="525."/>
     <variable name="side_Ecal_dy"      value="525."/>
     <variable name="side_dz"           value="290"/>    
