@@ -184,8 +184,7 @@ namespace ldmx {
                 hcalLayerPEs[detIDraw] = PE_close + PE_far;
                 hcalLayerMinPEs[detIDraw] = std::min(PE_close,PE_far);
             }
-            std::cout << "depEnergy = " << depEnergy << "\t hcalLayerPEs[detIDraw] = " << hcalLayerPEs[detIDraw] << "\t hcalLayerMinPEs[detIDraw] = " << hcalLayerMinPEs[detIDraw] << std::endl;
-
+            // std::cout << "depEnergy = " << depEnergy << "\t hcalLayerPEs[detIDraw] = " << hcalLayerPEs[detIDraw] << "\t hcalLayerMinPEs[detIDraw] = " << hcalLayerMinPEs[detIDraw] << std::endl;
 
             if (cur_subsection == 0){
                 float super_strip_width = SUPER_STRIP_SIZE_*50.0;
@@ -205,7 +204,7 @@ namespace ldmx {
                 if (cur_ypos < -1.*total_width/2.) cur_ypos = -1.*total_width/2.;
                 // std::cout << "super_strip_width = " << super_strip_width << "\t total_super_strips = " << total_super_strips << "\t total_width = " << total_width << std::endl;
             }
-            std::cout << "Layer = " << cur_layer << "\t Section = " << cur_subsection << "\t Strip = " << cur_strip << "\t Xpos = " << cur_xpos << "\t Ypos = " << cur_ypos << "\t X weighted position = " << hcalXpos[detIDraw] << "\t Y weighted position = " << hcalYpos[detIDraw] << std::endl;
+            // std::cout << "Layer = " << cur_layer << "\t Section = " << cur_subsection << "\t Strip = " << cur_strip << "\t Xpos = " << cur_xpos << "\t Ypos = " << cur_ypos << "\t X weighted position = " << hcalXpos[detIDraw] << "\t Y weighted position = " << hcalYpos[detIDraw] << "\t Z weighted position = " << hcalZpos[detIDraw] << std::endl;
 
             if( hcalLayerPEs[detIDraw] >= readoutThreshold_ ){ // > or >= ?
                 
@@ -246,18 +245,29 @@ namespace ldmx {
             }        // end verbose            
         } 
         
+
         // ------------------------------- Noise simulation -------------------------------
         // simulate noise hits in back hcal
         int total_super_strips_back = (STRIPS_BACK_PER_LAYER_ + SUPER_STRIP_SIZE_ - 1)/SUPER_STRIP_SIZE_;
-        std::vector<double> noiseHits_PE_1 = noiseGenerator_->generateNoiseHits(total_super_strips_back*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
-        std::vector<double> noiseHits_PE_2 = noiseGenerator_->generateNoiseHits(total_super_strips_back*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
+        int total_empty_channels = 2*(total_super_strips_back*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
+        std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits( total_empty_channels ); // 2-sided readout
+        int total_zero_channels = total_empty_channels - noiseHits_PE.size();
+        std::vector<double> zeroNoiseHits_PE(total_zero_channels, 0.0);
+        noiseHits_PE.insert( noiseHits_PE.end(), zeroNoiseHits_PE.begin(), zeroNoiseHits_PE.end() );
+        std::random_shuffle ( noiseHits_PE.begin(), noiseHits_PE.end() );
+        // std::vector<double> noiseHits_PE_1 = noiseGenerator_->generateNoiseHits(total_super_strips_back*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
+        // std::vector<double> noiseHits_PE_2 = noiseGenerator_->generateNoiseHits(total_super_strips_back*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
+        // std::cout << "numSigHits_back = " << numSigHits_back << ", ihit = " << ihit << ", total_empty_channels = " << total_empty_channels << std::endl;
         int ctr_back_noise = 0;
-        //for( auto noise : noiseHits_PE ){
-        for( unsigned int i = 0; i < noiseHits_PE_1.size(); ++i){
-            double cur_noise_pe_1 = noiseHits_PE_1[i];
-            double cur_noise_pe_2 = noiseHits_PE_2[i];
-            HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
+        // //for( auto noise : noiseHits_PE ){
+        // std::cout << "total_super_strips_back*NUM_BACK_HCAL_LAYERS_-numSigHits_back = " << (total_super_strips_back*NUM_BACK_HCAL_LAYERS_-numSigHits_back) << std::endl;
+        for( unsigned int i = 0; i < noiseHits_PE.size()/2 ; ++i){
+            double cur_noise_pe_1 = noiseHits_PE[i*2];
+            double cur_noise_pe_2 = noiseHits_PE[i*2+1];
             double total_noise = cur_noise_pe_1 + cur_noise_pe_2;
+            if (total_noise == 0.) continue; // do nothing if the noise is 0
+
+            HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
             noiseHit->setPE(total_noise);
             noiseHit->setMinPE(std::min(cur_noise_pe_1,cur_noise_pe_2));
             noiseHit->setAmplitude(total_noise);
@@ -276,9 +286,10 @@ namespace ldmx {
             ihit++;
             ctr_back_noise++;
         }
+        // std::cout << "numSigHits_back = " << numSigHits_back << ", ihit = " << ihit << ", ctr_back_noise = " << ctr_back_noise << std::endl;
 
         // simulate noise hits in side, top/bottom hcal
-        std::vector<double>  noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_TB_PER_LAYER_*NUM_SIDE_TB_HCAL_LAYERS_)*2-numSigHits_side_tb);
+        noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_TB_PER_LAYER_*NUM_SIDE_TB_HCAL_LAYERS_)*2-numSigHits_side_tb);
         for( auto noise : noiseHits_PE ){
             HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
             noiseHit->setPE(noise);
