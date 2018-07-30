@@ -69,9 +69,11 @@ if not os.path.exists( moduledir ):
 #set processor type
 processortype = "Analyzer"
 processoraction = "analyze"
+constEventPrefix = "const "
 if arg.isProducer :
     processortype = "Producer"
     processoraction = "produce"
+    constEventPrefix = ""
 #endif - change processor to producer
 
 srcfilepath = "%s/%s.cxx"%(srcdir,arg.processorName)
@@ -126,7 +128,7 @@ headerfile.write( "            "+arg.processorName+"(const std::string& name, ld
 headerfile.write( "\n" )
 headerfile.write( "            virtual void configure(const ldmx::ParameterSet& ps);\n" )
 headerfile.write( "\n" )
-headerfile.write( "            virtual void "+processoraction+"(const ldmx::Event& event);\n" )
+headerfile.write( "            virtual void "+processoraction+"("+constEventPrefix+"ldmx::Event& event);\n" )
 headerfile.write( "\n" )
 headerfile.write( "            virtual void onFileOpen();\n" )
 headerfile.write( "\n" )
@@ -163,7 +165,7 @@ srcfile.write( "\n" )
 srcfile.write( "        return;\n" )
 srcfile.write( "    }\n" )
 srcfile.write( "\n" )
-srcfile.write( "    void "+arg.processorName+"::"+processoraction+"(const ldmx::Event& event) {\n" )
+srcfile.write( "    void "+arg.processorName+"::"+processoraction+"("+constEventPrefix+"ldmx::Event& event) {\n" )
 srcfile.write( "\n" )
 srcfile.write( "        return;\n" )
 srcfile.write( "    }\n" )
