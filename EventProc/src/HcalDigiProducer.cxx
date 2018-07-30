@@ -68,8 +68,14 @@ namespace ldmx {
 
         int numHCalSimHits = hcalHits->GetEntries();
         for (int iHit = 0; iHit < numHCalSimHits; iHit++) {
+            
             SimCalorimeterHit* simHit = (SimCalorimeterHit*) hcalHits->At(iHit);
             int detIDraw = simHit->getID();
+            detID_->setRawValue(detIDraw);
+            detID_->unpack();
+            int layer = detID_->getFieldValue("layer");
+            int subsection = detID_->getFieldValue("section");
+            int strip = detID_->getFieldValue("strip");                 
             std::vector<float> position = simHit->getPosition();
 	    
             //if we aggregate by layer, set all strip to zero and rcalculate the detIDraw
@@ -81,24 +87,13 @@ namespace ldmx {
             }           
 
             if (verbose_) {
-                // std::cout << "----" << std::endl;
-                // std::cout << "before detIDraw: " << detIDraw << std::endl;
-                detID_->setRawValue(detIDraw);
-                detID_->unpack();
-                int layer = detID_->getFieldValue("layer");
-                int subsection = detID_->getFieldValue("section");
-                int strip = detID_->getFieldValue("strip");                
-                // std::cout << "section: " << subsection << "  layer: " << layer <<  "  strip: " << strip <<std::endl;
-                // detID_->setFieldValue("strip",33);
-                // detID_->pack();
-                // std::cout << "after, detIDraw: " << detID_->getRawValue() << std::endl;
-                // detID_->unpack();
                 std::cout << "section: " << detID_->getFieldValue("section") << "  layer: " << detID_->getFieldValue("layer") <<  "  strip: " << detID_->getFieldValue("strip") <<std::endl;
             }        
 
             // re-assign the strip number based on super strip size -- ONLY FOR Back Hcal
-            int subsection = detID_->getFieldValue("section");
+            // int subsection = detID_->getFieldValue("section");
             if (SUPER_STRIP_SIZE_ != 1 && subsection == 0){
+                int detIDraw_orig = detIDraw;
                 detID_->setRawValue(detIDraw);
                 detID_->unpack();
                 int strip = detID_->getFieldValue("strip");                
@@ -156,11 +151,12 @@ namespace ldmx {
             double energy = depEnergy; 
 
             // quantize/smear the position
-            detID_->setRawValue(detIDraw);
-            detID_->unpack();
-            int cur_subsection = detID_->getFieldValue("section");            
-            int cur_layer      = detID_->getFieldValue("layer");
-            int cur_strip      = detID_->getFieldValue("strip");
+            HcalID *curDetId = new HcalID();
+            curDetId->setRawValue(detIDraw);
+            curDetId->unpack();
+            int cur_subsection = curDetId->getFieldValue("section");            
+            int cur_layer      = curDetId->getFieldValue("layer");
+            int cur_strip      = curDetId->getFieldValue("strip");
             float cur_xpos, cur_ypos; 
 
             if (cur_subsection != 0){ // for sidecal don't worry about attenuation because it's single readout
@@ -204,7 +200,6 @@ namespace ldmx {
                 if (cur_ypos < -1.*total_width/2.) cur_ypos = -1.*total_width/2.;
                 // std::cout << "super_strip_width = " << super_strip_width << "\t total_super_strips = " << total_super_strips << "\t total_width = " << total_width << std::endl;
             }
-            // std::cout << "Layer = " << cur_layer << "\t Section = " << cur_subsection << "\t Strip = " << cur_strip << "\t Xpos = " << cur_xpos << "\t Ypos = " << cur_ypos << "\t X weighted position = " << hcalXpos[detIDraw] << "\t Y weighted position = " << hcalYpos[detIDraw] << "\t Z weighted position = " << hcalZpos[detIDraw] << std::endl;
 
             if( hcalLayerPEs[detIDraw] >= readoutThreshold_ ){ // > or >= ?
                 

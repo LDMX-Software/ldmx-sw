@@ -4,7 +4,7 @@ from LDMX.Framework import ldmxcfg
 
 hcalDigis = ldmxcfg.Producer("hcalDigis", "ldmx::HcalDigiProducer")
 
-hcalDigis.parameters["meanNoise"] = 0.004
+hcalDigis.parameters["meanNoise"] = 0.02
 hcalDigis.parameters["readoutThreshold"]= 1
 hcalDigis.parameters["strips_side_lr_per_layer"] = 3
 hcalDigis.parameters["num_side_lr_hcal_layers"] = 17
