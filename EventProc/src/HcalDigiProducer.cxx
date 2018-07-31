@@ -31,7 +31,8 @@ namespace ldmx {
         pe_per_mip_  = ps.getDouble("pe_per_mip");
         doStrip_     = ps.getInteger("doStrip");
         noiseGenerator_ = new NoiseGenerator(meanNoise_,false);
-        noiseGenerator_->setNoiseThreshold(readoutThreshold_);
+        //noiseGenerator_->setNoiseThreshold(readoutThreshold_);
+        noiseGenerator_->setNoiseThreshold(1); // hard-code this number, create noise hits for non-zero PEs! 
     }
 
     unsigned int HcalDigiProducer::generateRandomID(HcalSection sec){
@@ -188,11 +189,11 @@ namespace ldmx {
                 float total_width = STRIPS_BACK_PER_LAYER_*50.0;
                 if (cur_layer % 2 == 0){ // even layers, vertical
                     cur_xpos = (super_strip_width * (float(cur_strip)+0.5)) - total_width/2.; 
-                    cur_ypos = hcalYpos[detIDraw] + random_->Gaus(150.); 
+                    cur_ypos = hcalYpos[detIDraw] + random_->Gaus(0.,150.); 
                 }
                 if (cur_layer % 2 == 1){ // odd layers, horizontal
                     cur_ypos = (super_strip_width * (float(cur_strip)+0.5)) - total_width/2.; 
-                    cur_xpos = hcalXpos[detIDraw] + random_->Gaus(150.); 
+                    cur_xpos = hcalXpos[detIDraw] + random_->Gaus(0.,150.); 
                 }
                 if (cur_xpos > total_width/2.) cur_xpos = total_width/2.;
                 if (cur_xpos < -1.*total_width/2.) cur_xpos = -1.*total_width/2.;
@@ -260,7 +261,7 @@ namespace ldmx {
             double cur_noise_pe_1 = noiseHits_PE[i*2];
             double cur_noise_pe_2 = noiseHits_PE[i*2+1];
             double total_noise = cur_noise_pe_1 + cur_noise_pe_2;
-            if (total_noise == 0.) continue; // do nothing if the noise is 0
+            if (total_noise < readoutThreshold_) continue; // do nothing if the noise is 0
 
             HcalHit* noiseHit = (HcalHit*) (hits_->ConstructedAt(ihit));
             noiseHit->setPE(total_noise);
