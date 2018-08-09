@@ -51,6 +51,7 @@ LDMX uses a custom version of Geant4 10.02.p03 that includes modifications to th
 
 ``` bash
 git clone https://github.com/LDMXAnalysis/geant4.git geant4.10.02.p03
+git checkout tags/LDMX.10.2.3 -b LDMX.10.2.3_dev
 ```
 
 Geant4 is then built by issuing the following commands:
