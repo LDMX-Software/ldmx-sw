@@ -16,6 +16,7 @@ namespace ldmx {
         hcalHits_ = new TEveElementList("HCAL RecHits");
         recoilTrackerHits_ = new TEveElementList("Recoil Sim Hits");
         ecalClusters_ = new TEveElementList("ECAL Clusters");
+        hcalMipTracks_ = new TEveElementList("HCAL MIP Tracks");
         ecalSimParticles_ = new TEveElementList("ECAL SP Sim Particles");
         hits_ = new TEveElementList("Reco Hits");
         recoObjs_ = new TEveElementList("Reco Objects");
@@ -41,8 +42,7 @@ namespace ldmx {
         return pa2 > pb2;
     }
 
-    static bool compSims(const SimTrackerHit* a, const SimTrackerHit* b) {
-
+    static bool compSims(const SimTrackerHit* a, const SimTrackerHit* b) { 
         if (a->getSimParticle() == b->getSimParticle()) {
             return compSimsP(a,b);
         } else {
@@ -176,30 +176,21 @@ namespace ldmx {
             digiName.Form("%d PEs, Section %d, Layer %d, Bar %d, Z %1.5g", pe, section, layer, bar, hitVec[i]->getZ());
 
             TEveBox* hcalDigiHit = 0;
-            //TEveBox* hcalDigiHit2 = 0;
-            //hcalDigiHit2 = drawer_->drawBox(hitVec[i]->getX(), hitVec[i]->getY(), hitVec[i]->getZ()-15, 30, 30, hitVec[i]->getZ()+15, 0, color, 0, digiName);
-            if (section == 0) {
-                if (layer % 2 == 0) {
-                    //horizontal
-                    hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), bar_width*(0.5+bar)-hcal_y_width/2, (layer-1)*hcal_layer_thick+hcal_front_z+abso_thick, 150, bar_width, (layer-1)*hcal_layer_thick+hcal_front_z+scint_thick+abso_thick, 0, color, 0, digiName);
-                } else {
-                    //vertical, once alternating bar orientation in the back is implemented, uncomment
-                    //hcalDigiHit = drawer_->drawBox((bar_width*(0.5-bar)-hcal_y_width/2), hitVec[i]->getY(), (layer-1)*hcal_layer_thick+hcal_front_z+abso_thick, bar_width, 150, (layer-1)*hcal_layer_thick+hcal_front_z+scint_thick+abso_thick, 0, color, 0, digiName);
-                    hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), bar_width*(0.5+bar)-hcal_y_width/2, (layer-1)*hcal_layer_thick+hcal_front_z+abso_thick, 150, bar_width, (layer-1)*hcal_layer_thick+hcal_front_z+scint_thick+abso_thick, 0, color, 0, digiName);
-                }
-            } else if (section == 1) {hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), hcal_ecal_xy/2+hcal_layer_thick*layer, ecal_front_z+bar*bar_width, 150, scint_thick, ecal_front_z+(bar+1)*bar_width, 0, color, 0, digiName);
-            } else if (section == 3) {hcalDigiHit = drawer_->drawBox((hcal_ecal_xy/2+hcal_layer_thick*layer), hitVec[i]->getY(), ecal_front_z+bar*bar_width, scint_thick, 150, ecal_front_z+(bar+1)*bar_width, 0, color, 0, digiName);
-            } else if (section == 2) {hcalDigiHit = drawer_->drawBox(hitVec[i]->getX(), -(hcal_ecal_xy/2+hcal_layer_thick*layer), ecal_front_z+bar*bar_width, 150, scint_thick, ecal_front_z+(bar+1)*bar_width, 0, color, 0, digiName);
-            } else if (section == 4) {hcalDigiHit = drawer_->drawBox(-(hcal_ecal_xy/2+hcal_layer_thick*layer), hitVec[i]->getY(), ecal_front_z+bar*bar_width, scint_thick, 150, ecal_front_z+(bar+1)*bar_width, 0, color, 0, digiName);
-            }
+            
+            std::vector<double> boxCenter, boxMin , boxMax;
+            HitBox box = HCAL_DETECTOR_GEOMETRY.transformDet2Real( hitVec[i] );
+            boxCenter = box.getOrigin();
+            boxMin = box.getMin();
+            boxMax = box.getMax();
+
+            hcalDigiHit = drawer_->drawBox( boxCenter[0] , boxCenter[1] , boxMin[2] ,
+                boxMax[0]-boxMin[0] , boxMax[1]-boxMin[1] , boxMax[2] ,
+                0 , color , 0 , digiName );
 
             if (hcalDigiHit != 0) {
                 if (isNoise) { hcalDigiHit->SetRnrSelf(0); }
                 hcalHits_->AddElement(hcalDigiHit);
             }
-            //if (hcalDigiHit2 != 0) {
-            //    hcalHits_->AddElement(hcalDigiHit2);
-            //}
 
         }
 
@@ -302,6 +293,51 @@ namespace ldmx {
         recoObjs_->AddElement(ecalClusters_);
     }
 
+    void EventObjects::drawHCALMipTracks(TClonesArray* tracks) {
+        
+        //iterate through tracks
+        int iT = 0; //current track index
+        ldmx::HcalMipTrack* track; //current track pointer
+        for (TIter next(tracks); track = (ldmx::HcalMipTrack*)next();) {
+            
+            if ( !track or track->isEmpty() ) {
+                //empty tracks list
+                break;
+            }
+            
+            printf( "N Clusters: %d\n" , track->getNClusters() );
+
+            //construct track, drawing hcal hits
+            TString trackname;
+            trackname.Form("Hcal MIP Track %d", iT);
+            
+            std::vector<double> start , end;
+            start = track->getStart();
+            end = track->getEnd();
+            
+            double r = pow(pow(end[0]-start[0],2) + pow(end[1]-start[1],2) + pow(end[2]-start[2],2),0.5);
+            
+            TEveArrow *trackray = new TEveArrow( end[0] - start[0] , end[1] - start[1] , end[2] - start[2] ,
+                                                 start[0] , start[1] , start[2] );
+            double scale = 0.5;
+            trackray->SetTubeR(60*scale/r);
+            trackray->SetConeL(200*scale/r);
+            trackray->SetConeR(150*scale/r);
+            if ( iT < hcaltrackcolors_.size() )
+                trackray->SetMainColor( hcaltrackcolors_.at(iT) );
+            else
+                trackray->SetMainColor( kBlack );
+            
+            hcalMipTracks_->SetPickableRecursively(kTRUE);
+            hcalMipTracks_->AddElement(trackray);
+            iT++;
+        
+        } //iterate through tracks in collection (track, iT)
+
+        //hcalTracks_->SetPickableRecursively(kTRUE);
+        recoObjs_->AddElement(hcalMipTracks_);
+        
+    }
     
     void EventObjects::drawECALSimParticles(TClonesArray* ecalSimParticles) {
 

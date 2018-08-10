@@ -2,7 +2,7 @@
 module(
   NAME EventDisplay
   EXTRA_SOURCES EventDisplayDict.cxx
-  DEPENDENCIES Event DetDescr Framework
+  DEPENDENCIES Event DetDescr Framework Tools 
   EXECUTABLES src/ldmx_eve.cxx
   EXTERNAL_DEPENDENCIES ROOT
 )
