@@ -8,6 +8,8 @@
 #include "Event/SimTrackerHit.h"
 #include "Event/EcalCluster.h"
 #include "Event/SimParticle.h"
+#include "Tools/HitBox.h"
+#include "Tools/HcalDetectorGeometry.h"
 
 #include "EventDisplay/DetectorGeometry.h"
 #include "EventDisplay/EveShapeDrawer.h"

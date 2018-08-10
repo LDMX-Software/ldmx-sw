@@ -16,7 +16,6 @@ namespace ldmx {
         hcalHits_ = new TEveElementList("HCAL RecHits");
         recoilTrackerHits_ = new TEveElementList("Recoil Sim Hits");
         ecalClusters_ = new TEveElementList("ECAL Clusters");
-        hcalMipTracks_ = new TEveElementList("HCAL MIP Tracks");
         ecalSimParticles_ = new TEveElementList("ECAL SP Sim Particles");
         hits_ = new TEveElementList("Reco Hits");
         recoObjs_ = new TEveElementList("Reco Objects");
@@ -293,52 +292,6 @@ namespace ldmx {
         recoObjs_->AddElement(ecalClusters_);
     }
 
-    void EventObjects::drawHCALMipTracks(TClonesArray* tracks) {
-        
-        //iterate through tracks
-        int iT = 0; //current track index
-        ldmx::HcalMipTrack* track; //current track pointer
-        for (TIter next(tracks); track = (ldmx::HcalMipTrack*)next();) {
-            
-            if ( !track or track->isEmpty() ) {
-                //empty tracks list
-                break;
-            }
-            
-            printf( "N Clusters: %d\n" , track->getNClusters() );
-
-            //construct track, drawing hcal hits
-            TString trackname;
-            trackname.Form("Hcal MIP Track %d", iT);
-            
-            std::vector<double> start , end;
-            start = track->getStart();
-            end = track->getEnd();
-            
-            double r = pow(pow(end[0]-start[0],2) + pow(end[1]-start[1],2) + pow(end[2]-start[2],2),0.5);
-            
-            TEveArrow *trackray = new TEveArrow( end[0] - start[0] , end[1] - start[1] , end[2] - start[2] ,
-                                                 start[0] , start[1] , start[2] );
-            double scale = 0.5;
-            trackray->SetTubeR(60*scale/r);
-            trackray->SetConeL(200*scale/r);
-            trackray->SetConeR(150*scale/r);
-            if ( iT < hcaltrackcolors_.size() )
-                trackray->SetMainColor( hcaltrackcolors_.at(iT) );
-            else
-                trackray->SetMainColor( kBlack );
-            
-            hcalMipTracks_->SetPickableRecursively(kTRUE);
-            hcalMipTracks_->AddElement(trackray);
-            iT++;
-        
-        } //iterate through tracks in collection (track, iT)
-
-        //hcalTracks_->SetPickableRecursively(kTRUE);
-        recoObjs_->AddElement(hcalMipTracks_);
-        
-    }
-    
     void EventObjects::drawECALSimParticles(TClonesArray* ecalSimParticles) {
 
         ldmx::SimTrackerHit* ecalSPP;
