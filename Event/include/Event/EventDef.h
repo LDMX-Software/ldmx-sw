@@ -4,6 +4,7 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
+#include "Event/MultiEleVetoResult.h"
 #include "Event/CalorimeterHit.h"
 #include "Event/EcalHit.h"
 #include "Event/EcalVetoResult.h"

@@ -3,6 +3,32 @@
 
 namespace ldmx {
 
+    void ParameterSet::insert(const std::string& name, bool value) {
+        elements_[name] = Element(value);
+    }
+
+    int ParameterSet::getBool(const std::string& name) const {
+        std::map<std::string, Element>::const_iterator ptr = elements_.find(name);
+        if (ptr == elements_.end()) {
+            EXCEPTION_RAISE("ParameterNotFound", "Bool parameter '" + name + "' not found");
+        }
+        if (ptr->second.et_ != et_Bool) {
+            EXCEPTION_RAISE("ParameterTypeError", "Parameter '" + name + "' is not a bool");
+        }
+        return ptr->second.intval_;
+    }
+
+    int ParameterSet::getBool(const std::string& name, bool defaultValue) const {
+        std::map<std::string, Element>::const_iterator ptr = elements_.find(name);
+        if (ptr == elements_.end()) {
+            return defaultValue;
+        }
+        if (ptr->second.et_ != et_Bool) {
+            EXCEPTION_RAISE("ParameterTypeError", "Parameter '" + name + "' is not a bool");
+        }
+        return ptr->second.boolval_;
+    }
+
     void ParameterSet::insert(const std::string& name, int value) {
         elements_[name] = Element(value);
     }

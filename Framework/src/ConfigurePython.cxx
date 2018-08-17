@@ -103,7 +103,10 @@ namespace ldmx {
 
                 while (PyDict_Next(params, &pos, &key, &value)) {
                     std::string skey = PyString_AsString(key);
-                    if (PyInt_Check(value)) {
+                    if (PyBool_Check(value)) {
+		        pi.params_.insert(skey, bool(PyInt_AsLong(value)));
+                        //printf("Bool Key: %s\n",skey.c_str());
+		    } else if (PyInt_Check(value)) {
                         pi.params_.insert(skey, int(PyInt_AsLong(value)));
                         //printf("Int Key: %s\n",skey.c_str());
                     } else if (PyFloat_Check(value)) {

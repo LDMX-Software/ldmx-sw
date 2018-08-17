@@ -23,6 +23,21 @@ namespace ldmx {
         public:
 
             /**
+             * Get a bool by name or throw an exception if not available, or not the right type.
+             * @param name Name of the bool.
+             */
+            int getBool(const std::string& name) const;
+
+            /**
+             * Get a bool by name or use the given default if not available.
+             * If the wrong type, throw an exception.
+             * @param name Name of the bool.
+             * @param defaultValue Default value to use if the parameter was not provided.
+             */
+            int getBool(const std::string& name, bool defaultValue) const;
+
+
+            /**
              * Get an integer by name or throw an exception if not available, or not the right type.
              * @param name Name of the integer.
              */
@@ -34,6 +49,7 @@ namespace ldmx {
              * @param name Name of the integer.
              * @param defaultValue Default value to use if the parameter was not provided.
              */
+
             int getInteger(const std::string& name, int defaultValue) const;
 
             /**
@@ -114,6 +130,13 @@ namespace ldmx {
             void insert(const std::string& name, int value);
 
             /**
+             * Add a bool to the ParameterSet.
+             * @param name Name of the bool parameter.
+             * @param value Value of the bool parameter.
+             */
+            void insert(const std::string& name, bool value);
+
+            /**
              * Add a double to the ParameterSet.
              * @param name Name of the double parameter.
              * @param value Value of the double parameter.
@@ -154,7 +177,7 @@ namespace ldmx {
              * @enum Specifies the type of a parameter in a ParameterSet.
              */
             typedef enum {
-                et_NoType, et_Integer, et_Double, et_String, et_VInteger, et_VDouble, et_VString, et_ParameterSet
+	      et_NoType, et_Bool, et_Integer, et_Double, et_String, et_VInteger, et_VDouble, et_VString, et_ParameterSet
             } ElementType;
 
             /**
@@ -167,6 +190,8 @@ namespace ldmx {
 
                     Element() : et_{et_NoType} {;}
 
+	            Element(bool inval) : et_{et_Bool}, boolval_{inval} {;}
+	      
                     Element(int inval) : et_{et_Integer}, intval_{inval} {;}
 
                     Element(double inval) : et_ {et_Double}, doubleval_{inval} {;}
@@ -180,7 +205,8 @@ namespace ldmx {
                     Element(const std::vector<std::string>& inval);
 
                     ElementType et_;
-                    int intval_{0};
+	            bool boolval_{false};
+	            int intval_{0};
                     double doubleval_{0};
                     std::string strval_;
                     std::vector<int> ivecVal_;

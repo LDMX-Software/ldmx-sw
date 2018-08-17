@@ -16,6 +16,7 @@
 #pragma link C++ namespace ldmx;
 #pragma link C++ defined_in namespace ldmx;
 
+#pragma link C++ class ldmx::MultiEleVetoResult+;
 #pragma link C++ class ldmx::CalorimeterHit+;
 #pragma link C++ class ldmx::HcalHit+;
 #pragma link C++ class ldmx::HcalVetoResult+;
