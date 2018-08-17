@@ -30,8 +30,8 @@
     <variable name="back_numLayers3"   value="0"/>        
     <variable name="back_abso2_thick"  value="25"/>
     <variable name="back_abso3_thick"  value="50"/>
-    <variable name="back_dx"           value="3100."/>
-    <variable name="back_dy"           value="3100."/>    
+    <variable name="back_dx"           value="3000."/>
+    <variable name="back_dy"           value="3000."/>    
     <variable name="back_layer1_thick" value="scint_thick + air_thick"/>
     <variable name="back_layer2_thick" value="back_abso2_thick + scint_thick + 2.0*air_thick"/>
     <variable name="back_layer3_thick" value="back_abso3_thick + scint_thick + 2.0*air_thick"/>
@@ -41,7 +41,7 @@
     <variable name="back_dz"           value="back_dz1+back_dz2+back_dz3"/>
      
     <!-- side Around HCal Layer component widths -->
-    <variable name="side_layers"       value="32"/>
+    <variable name="side_layers"       value="31"/>
     <variable name="side_Ecal_dx"      value="525."/>
     <variable name="side_Ecal_dy"      value="525."/>
     <variable name="side_dz"           value="290"/>    
