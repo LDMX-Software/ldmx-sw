@@ -6,6 +6,7 @@
 #include "EventProc/HcalDigiProducer.h"
 
 #include <iostream>
+#include <exception>
 
 namespace ldmx {
 
@@ -67,7 +68,7 @@ namespace ldmx {
 
         // first check if the super strip size divides nicely into the total number of strips
         if (STRIPS_BACK_PER_LAYER_ % SUPER_STRIP_SIZE_ != 0){
-            EXCEPTION_RAISE("HcalDigiProducer","The specified superstrip size is not compatible with total number of strips!");
+            throw std::invalid_argument( "HcalDigiProducer: the specified superstrip size is not compatible with total number of strips!" );
         }
 
         // looper over sim hits and aggregate energy depositions for each detID
