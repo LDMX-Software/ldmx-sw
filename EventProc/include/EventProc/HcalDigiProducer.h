@@ -66,6 +66,8 @@ namespace ldmx {
             int    nProcessed_{0};
             double mev_per_mip_{1.40};
             double pe_per_mip_{13.5};
+            double strip_attenuation_length_{100.};
+            double strip_position_resolution_{150.};
             int    readoutThreshold_{2};
             int    doStrip_{true};
             int    STRIPS_BACK_PER_LAYER_{31};

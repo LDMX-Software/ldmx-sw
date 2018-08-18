@@ -18,18 +18,19 @@ namespace ldmx {
     void HcalDigiProducer::configure(const ParameterSet& ps) {
         detID_       = new HcalID();
         random_      = new TRandom3(ps.getInteger("randomSeed", 1000));
-        STRIPS_BACK_PER_LAYER_ = ps.getInteger("strips_back_per_layer");
-        NUM_BACK_HCAL_LAYERS_ = ps.getInteger("num_back_hcal_layers");
-        STRIPS_SIDE_TB_PER_LAYER_ = ps.getInteger("strips_side_tb_per_layer");
-        NUM_SIDE_TB_HCAL_LAYERS_ = ps.getInteger("num_side_tb_hcal_layers");
-        STRIPS_SIDE_LR_PER_LAYER_ = ps.getInteger("strips_side_lr_per_layer");
-        NUM_SIDE_LR_HCAL_LAYERS_ = ps.getInteger("num_side_lr_hcal_layers");
-        SUPER_STRIP_SIZE_ = ps.getInteger("super_strip_size");
-        readoutThreshold_ = ps.getInteger("readoutThreshold");
-        meanNoise_   = ps.getDouble("meanNoise");
-        mev_per_mip_ = ps.getDouble("mev_per_mip");
-        pe_per_mip_  = ps.getDouble("pe_per_mip");
-        doStrip_     = ps.getInteger("doStrip");
+        STRIPS_BACK_PER_LAYER_     = ps.getInteger("strips_back_per_layer");
+        NUM_BACK_HCAL_LAYERS_      = ps.getInteger("num_back_hcal_layers");
+        STRIPS_SIDE_TB_PER_LAYER_  = ps.getInteger("strips_side_tb_per_layer");
+        NUM_SIDE_TB_HCAL_LAYERS_   = ps.getInteger("num_side_tb_hcal_layers");
+        STRIPS_SIDE_LR_PER_LAYER_  = ps.getInteger("strips_side_lr_per_layer");
+        NUM_SIDE_LR_HCAL_LAYERS_   = ps.getInteger("num_side_lr_hcal_layers");
+        SUPER_STRIP_SIZE_          = ps.getInteger("super_strip_size");
+        readoutThreshold_          = ps.getInteger("readoutThreshold");
+        meanNoise_                 = ps.getDouble("meanNoise");
+        mev_per_mip_               = ps.getDouble("mev_per_mip");
+        pe_per_mip_                = ps.getDouble("pe_per_mip");
+        strip_attenuation_length_  = ps.getDouble("strip_attenuation_length");
+        strip_position_resolution_  = ps.getDouble("strip_position_resolution");
         noiseGenerator_ = new NoiseGenerator(meanNoise_,false);
         //noiseGenerator_->setNoiseThreshold(readoutThreshold_);
         noiseGenerator_->setNoiseThreshold(1); // hard-code this number, create noise hits for non-zero PEs! 
@@ -41,7 +42,7 @@ namespace ldmx {
             tempID.setFieldValue(1,random_->Integer(NUM_BACK_HCAL_LAYERS_));
             tempID.setFieldValue(2,0);
             //tempID.setFieldValue(3,random_->Integer(STRIPS_BACK_PER_LAYER_));
-            tempID.setFieldValue(3,random_->Integer((STRIPS_BACK_PER_LAYER_ + SUPER_STRIP_SIZE_ - 1)/SUPER_STRIP_SIZE_));
+            tempID.setFieldValue(3,random_->Integer(STRIPS_BACK_PER_LAYER_/SUPER_STRIP_SIZE_));
         }else if( sec == HcalSection::TOP || sec == HcalSection::BOTTOM ){
             tempID.setFieldValue(1,random_->Integer(NUM_SIDE_TB_HCAL_LAYERS_));
             tempID.setFieldValue(2,random_->Integer(2)+1);
@@ -64,6 +65,11 @@ namespace ldmx {
         int numSigHits_back=0,numSigHits_side_tb=0,numSigHits_side_lr=0;
         std::unordered_set<unsigned int> noiseHitIDs;
 
+        // first check if the super strip size divides nicely into the total number of strips
+        if (STRIPS_BACK_PER_LAYER_ % SUPER_STRIP_SIZE_ != 0){
+            EXCEPTION_RAISE("HcalDigiProducer","The specified superstrip size is not compatible with total number of strips!");
+        }
+
         // looper over sim hits and aggregate energy depositions for each detID
         TClonesArray* hcalHits = (TClonesArray*) event.getCollection(EventConstants::HCAL_SIM_HITS, "sim");
 
@@ -77,15 +83,7 @@ namespace ldmx {
             int layer = detID_->getFieldValue("layer");
             int subsection = detID_->getFieldValue("section");
             int strip = detID_->getFieldValue("strip");                 
-            std::vector<float> position = simHit->getPosition();
-	    
-            //if we aggregate by layer, set all strip to zero and rcalculate the detIDraw
-            if (doStrip_ == 0){
-                detID_->setRawValue(detIDraw);
-                detID_->unpack();
-                detID_->setFieldValue(3,0);
-                detIDraw = detID_->pack();
-            }           
+            std::vector<float> position = simHit->getPosition();       
 
             if (verbose_) {
                 std::cout << "section: " << detID_->getFieldValue("section") << "  layer: " << detID_->getFieldValue("layer") <<  "  strip: " << detID_->getFieldValue("strip") <<std::endl;
@@ -165,7 +163,7 @@ namespace ldmx {
                 hcalLayerMinPEs[detIDraw] = hcalLayerPEs[detIDraw];
             }
             if (cur_subsection == 0){// get PEs with attentuation
-                meanPE *= 100./80.; // increase the PE count to the case with no attentuation (assuming 80% attenuation on the pe_per_mip number)
+                meanPE *= exp(1./strip_attenuation_length_); // increase the PE count to the case with no attentuation (assuming 80% attenuation on the pe_per_mip number @ 1m)
                 float total_width = STRIPS_BACK_PER_LAYER_*50.0;
                 float distance_along_bar = 0;
                 if (cur_layer % 2 == 0){
@@ -174,8 +172,8 @@ namespace ldmx {
                 if (cur_layer % 2 == 1){
                     distance_along_bar = fabs(cur_xpos);
                 }
-                float meanPE_close = meanPE * 0.8 * ((total_width/2. - distance_along_bar) / 1000.);
-                float meanPE_far   = meanPE * 0.8 * ((total_width/2. + distance_along_bar) / 1000.);
+                float meanPE_close = meanPE * exp( -1. * ((total_width/2. - distance_along_bar) / 1000.) / strip_attenuation_length_ );
+                float meanPE_far   = meanPE * exp( -1. * ((total_width/2. + distance_along_bar) / 1000.) / strip_attenuation_length_ );
                 float PE_close     = random_->Poisson(meanPE_close+meanNoise_);
                 float PE_far       = random_->Poisson(meanPE_far+meanNoise_);
                 hcalLayerPEs[detIDraw] = PE_close + PE_far;
@@ -185,15 +183,15 @@ namespace ldmx {
 
             if (cur_subsection == 0){
                 float super_strip_width = SUPER_STRIP_SIZE_*50.0;
-                float total_super_strips = (STRIPS_BACK_PER_LAYER_ + SUPER_STRIP_SIZE_ - 1)/SUPER_STRIP_SIZE_; // to help the integer round up
+                float total_super_strips = STRIPS_BACK_PER_LAYER_/SUPER_STRIP_SIZE_; // to help the integer round up
                 float total_width = STRIPS_BACK_PER_LAYER_*50.0;
                 if (cur_layer % 2 == 0){ // even layers, vertical
                     cur_xpos = (super_strip_width * (float(cur_strip)+0.5)) - total_width/2.; 
-                    cur_ypos = hcalYpos[detIDraw] + random_->Gaus(0.,150.); 
+                    cur_ypos = hcalYpos[detIDraw] + random_->Gaus(0.,strip_position_resolution_); 
                 }
                 if (cur_layer % 2 == 1){ // odd layers, horizontal
                     cur_ypos = (super_strip_width * (float(cur_strip)+0.5)) - total_width/2.; 
-                    cur_xpos = hcalXpos[detIDraw] + random_->Gaus(0.,150.); 
+                    cur_xpos = hcalXpos[detIDraw] + random_->Gaus(0.,strip_position_resolution_); 
                 }
                 if (cur_xpos > total_width/2.) cur_xpos = total_width/2.;
                 if (cur_xpos < -1.*total_width/2.) cur_xpos = -1.*total_width/2.;
@@ -244,7 +242,7 @@ namespace ldmx {
 
         // ------------------------------- Noise simulation -------------------------------
         // simulate noise hits in back hcal
-        int total_super_strips_back = (STRIPS_BACK_PER_LAYER_ + SUPER_STRIP_SIZE_ - 1)/SUPER_STRIP_SIZE_;
+        int total_super_strips_back = STRIPS_BACK_PER_LAYER_/SUPER_STRIP_SIZE_;
         int total_empty_channels = 2*(total_super_strips_back*NUM_BACK_HCAL_LAYERS_-numSigHits_back);
         std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits( total_empty_channels ); // 2-sided readout
         int total_zero_channels = total_empty_channels - noiseHits_PE.size();
