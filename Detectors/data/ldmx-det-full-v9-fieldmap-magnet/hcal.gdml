@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
-<!-- The posiiton of the ECAL is wrong on detector.gdml. If should be at 215 mm, and 
-   name="ecal_front_z" value="215*mm
-   name="em_calorimeter_thickness" value="290.0*mm
-   name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2.
-   name="hadron_calorimeter_thickness" value="3300.0*mm"
-   name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2."
-
-  then the hcal size ("hadron_calorimeter_thickness") is simply side_dz + bach_hcal_thickness
--->
-
   <define>
     
     <!-- loop variables - must be dedfined here -->
@@ -18,7 +8,6 @@
     <variable name="xb1"  value="1"/> 
     <variable name="xb2"  value="1"/> 
     <variable name="xb3"  value="1"/> 
-
     
     <!--common varibles -->
     <variable name="air_thick"         value="2."/>
@@ -30,8 +19,8 @@
     <variable name="back_numLayers3"   value="0"/>        
     <variable name="back_abso2_thick"  value="25"/>
     <variable name="back_abso3_thick"  value="50"/>
-    <variable name="back_dx"           value="3100."/>
-    <variable name="back_dy"           value="3100."/>    
+    <variable name="back_dx"           value="3000."/>
+    <variable name="back_dy"           value="3000."/>    
     <variable name="back_layer1_thick" value="scint_thick + air_thick"/>
     <variable name="back_layer2_thick" value="back_abso2_thick + scint_thick + 2.0*air_thick"/>
     <variable name="back_layer3_thick" value="back_abso3_thick + scint_thick + 2.0*air_thick"/>
@@ -41,10 +30,12 @@
     <variable name="back_dz"           value="back_dz1+back_dz2+back_dz3"/>
      
     <!-- side Around HCal Layer component widths -->
-    <variable name="side_layers"       value="32"/>
+    <!-- side_Ecal_dx and dy have to be greater than the Ecal_dx and dy values in ecal.gdml -->
+    <!-- side_dz has to be greater than the Ecal_dz values in ecal.gdml -->
+    <variable name="side_layers"       value="31"/>
     <variable name="side_Ecal_dx"      value="525."/>
     <variable name="side_Ecal_dy"      value="525."/>
-    <variable name="side_dz"           value="290"/>    
+    <variable name="side_dz"           value="300"/>    
     <variable name="side_abso_thick"   value="20."/>
     <variable name="side_layer_thick"  value="side_abso_thick + scint_thick + 2.0*air_thick"/>
     <variable name="sideTB_dx"         value="(back_dx+side_Ecal_dx)/2.0"/>
@@ -65,12 +56,6 @@
     <variable name="sideTB_hcal_scint_y0" value="side_Ecal_dy/2.0 + 2.0*air_thick + side_abso_thick + scint_thick/2.0"/>
     <variable name="sideLR_hcal_abso_x0"  value="side_Ecal_dx/2.0 + air_thick + side_abso_thick/2.0"/>
     <variable name="sideLR_hcal_scint_x0" value="side_Ecal_dx/2.0 + 2.0*air_thick + side_abso_thick + scint_thick/2.0"/>
-
-    <!-- Define the size of the Ecal Box, gdml can't access the variables of parent files.  
-         See ecal.gdml for origin of values -->
-    <variable name="ECal_dx" value="520.0*mm"/>
-    <variable name="ECal_dy" value="520.0*mm"/>
-    <variable name="ECal_dz" value="290.0*mm"/>
 
   </define>
 
@@ -210,14 +195,12 @@
     <!-- - - - - - - - - Parent Volumes - - - - - - - --> <!-- uncomment lines for fixed geometry in detector.gdml -->  
     
     <box lunit="mm" name="back_hadron_calorimeter_Box" x="back_dx" y="back_dy" z="back_dz+side_dz"/>
-    <!--  <box lunit="mm" name="ecal_Box" x="ECal_dx" y="ECal_dy" z="ECal_dz"/> -->
-    <box lunit="mm" name="ecal_Box" x="ECal_dx+1." y="ECal_dy+1." z="ECal_dz+1."/>
-
+    <box lunit="mm" name="ecal_Box" x="side_Ecal_dx" y="side_Ecal_dy" z="side_dz"/>
+    
     <subtraction name="hadron_calorimeter_Box">
        <first ref="back_hadron_calorimeter_Box"/>
        <second ref="ecal_Box"/>
-       <!-- <position name="hadron_calorimeter_parent_Box_pos" unit="mm" x="0." y="0." z="ECal_dz/2.0 -side_dz/2.0 - back_dz/2.0"/> -->
-      <position name="hadron_calorimeter_parent_box_pos" unit="mm" x="0." y="0." z="-back_dz/2 -2.5"/> 
+       <position name="hadron_calorimeter_parent_Box_pos" unit="mm" x="0." y="0." z="-back_dz/2.0"/>
     
     </subtraction>
 
