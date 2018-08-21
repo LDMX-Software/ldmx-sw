@@ -42,9 +42,9 @@
     <variable name="Hex_radius" value="85."/>
     
     <variable name="ECal_start_pos" value="-140."/>
-    <variable name="ECal_dx" value="Hex_radius*10./sqrt3+sqrt3*hexagon_gap"/>
-    <variable name="ECal_dy" value="Hex_radius*6.+hexagon_gap*2."/>
-    <variable name="ECal_dz" value="290.0*mm"/>
+    <variable name="ECal_dx" value="Hex_radius*10./sqrt3+sqrt3*hexagon_gap+1"/>
+    <variable name="ECal_dy" value="Hex_radius*6.+hexagon_gap*2.+1"/>
+    <variable name="ECal_dz" value="291.0*mm"/>
 
     <variable name="ecal_A_layers" value="1"/>
     <variable name="ecal_B_layers" value="1"/>
@@ -327,7 +327,7 @@
       <zplane rmax="Hex_radius" rmin="0" z="Al_dz"/>
     </polyhedra>
 
-    <box lunit="mm" name="ECal_box" x="ECal_dx+1." y="ECal_dy+1." z="ECal_dz+1."/>
+    <box lunit="mm" name="ECal_box" x="ECal_dx" y="ECal_dy" z="ECal_dz"/>
 
   </solids>
 

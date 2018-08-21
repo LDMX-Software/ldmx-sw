@@ -34,13 +34,11 @@
     <variable name="recoil_thickness" value="20.0*cm - recoil_z_offset"/>
     <variable name="recoil_pos_z" value="recoil_thickness/2 + recoil_z_offset"/>
 
-    <!-- distance from target to ecal face -->
-    <constant name="ecal_front_z" value="20.0*cm"/>
-            
-    <!-- position of calorimeter mother -->
-    <constant name="em_calorimeter_thickness" value="321.0*mm"/>
+    <!-- position of calorimeter mother, thicknesses taken from ecal.gdml and hcal.gdml-->
+    <constant name="ecal_front_z" value="215*mm"/>
+    <constant name="em_calorimeter_thickness" value="291.0*mm"/>
+    <constant name="hadron_calorimeter_thickness" value="4700*mm"/>
     <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2."/>
-    <constant name="hadron_calorimeter_thickness" value="4726*mm"/>
     <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2."/>
 
     <!-- magnet position -->
