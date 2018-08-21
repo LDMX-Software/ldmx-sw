@@ -40,7 +40,7 @@
     <!-- position of calorimeter mother -->
     <constant name="em_calorimeter_thickness" value="321.0*mm"/>
     <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2."/>
-    <constant name="hadron_calorimeter_thickness" value="4726*mm"/>
+    <constant name="hadron_calorimeter_thickness" value="4731*mm"/>
     <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2."/>
 
     <!-- magnet position -->
