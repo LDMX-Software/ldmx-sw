@@ -7,94 +7,136 @@
 #ifndef EVENTPROC_MULTIELECTRONVETO_H_
 #define EVENTPROC_MULTIELECTRONVETO_H_
 
-// std lib
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <algorithm>
+#include <cmath>
+#include <fstream>
 #include <string>
+#include <stdlib.h>
 
-// ROOT
-#include "TString.h"
-#include "TFile.h"
-#include "TTree.h"
-
-// LDMX
+//----------//
+//   LDMX   //
+//----------//
 #include "DetDescr/EcalHexReadout.h"
 #include "DetDescr/EcalDetectorID.h"
+#include "Event/EcalHit.h"
+#include "Event/EventConstants.h"
 #include "Event/MultiEleVetoResult.h"
+#include "Event/SimCalorimeterHit.h"
 #include "Event/SimTrackerHit.h"
 #include "Framework/EventProcessor.h"
 
+//----------//
+//   ROOT   //
+//----------//
+#include "TString.h"
+#include "TFile.h"
+#include "TTree.h"
+#include "TClonesArray.h"
+#include "TPython.h"
+
 namespace ldmx {
 
-
-    bool compareSimTrackerHits(SimTrackerHit* a, SimTrackerHit* b){
-      
-        std::vector<double> b_mom_vec = a->getMomentum();
-	std::vector<double> a_mom_vec = b->getMomentum();
-	double a_mom = sqrt(pow(a_mom_vec[0],2)+pow(a_mom_vec[1],2)+pow(a_mom_vec[2],2));
-	double b_mom = sqrt(pow(b_mom_vec[0],2)+pow(b_mom_vec[1],2)+pow(b_mom_vec[2],2));
-	return a_mom < b_mom ;
-    }
-
-    /**
-     * @class MultiElectronVeto
-     * @brief compute features for multi electron PN discrimination
-     */
     class MultiElectronVeto: public Producer {
 
         public:
 
-            typedef std::pair<float, float> XYCoords;
+            /** Constructor */
+            MultiElectronVeto(const std::string& name, Process& process);
 
-            MultiElectronVeto(const std::string& name, Process& process) :
-                    Producer(name, process) {
-            }
+            /** Destructor */
+            ~MultiElectronVeto(); 
 
-            virtual ~MultiElectronVeto() {
-	      delete hexReadout_;
-            }
-	    
- 	    std::vector<SimTrackerHit*> getRecoilElectrons(Event& event);
-	    
+            /** Read in user-specified parameters. */
             void configure(const ParameterSet&);
-
+    
+            /** Run the multi-electron veto. */
             void produce(Event& event);
 
-	    void clearProcessor();
+            std::vector<SimTrackerHit*> getRecoilElectrons(Event& event);
+            
+            typedef std::pair<float, float> XYCoords;
 
         private:
 
-	    void Debug(std::string output){ 
-	      if( verbose_ )
-		std::cout << " [ MultiElectronVeto ] : " << output << std::endl;
-	    };
+            void Debug(std::string output){ 
+                if( verbose_ )
+                    std::cout << " [ MultiElectronVeto ] : " << output << std::endl;
+            };
 
-	    template <class T> void Debug(std::string output_label,std::vector<T> output_value){ 
-	      if( verbose_ ){
-		std::cout << " [ MultiElectronVeto ] : " << output_label ;
-	        for( int i = 0 ; i < output_value.size() ; i++ ){
-		  std::cout << output_value[i] << ", " ;
-		}
-		std::cout << std::endl;
-	      }
-	    };
+            template <class T> void Debug(std::string output_label,std::vector<T> output_value){ 
+                if( verbose_ ){
+                    std::cout << " [ MultiElectronVeto ] : " << output_label ;
+                    for( int i = 0 ; i < output_value.size() ; i++ ){
+                        std::cout << output_value[i] << ", " ;
+                    }
+                    std::cout << std::endl;
+                }
+            };
 
-	    bool verbose_{false};
-	    const double moliere_r{25.};
-            EcalHexReadout* hexReadout_{nullptr};
-	    MultiEleVetoResult result_;
-	    
-	    std::vector<double> layer_z{223.8,226.7,233.05,
-		                        237.45,245.3,251.2,
-		                        260.3,266.7,275.8,
-		                        282.2,291.3,297.7,
-		                        306.8,313.2,322.3,
-		                        337.8,344.2,353.3,
-		                        359.7,368.8,375.2,
-		                        384.3,390.7,403.3,
-		                        413.2,425.8,435.7,
-    		                        448.3,458.2,470.8,
-		                        480.7,493.3,503.2};
+            /** */
+            EcalHexReadout* hexReadout_{new EcalHexReadout{}};
+
+            /** Object used to persist veto variables and results. */
+            MultiEleVetoResult result_;
+
+            /** Flag denoting whether verbose output is enabled/disabled. */
+            bool verbose_{false};
+
+            /** The Moliere radius. */
+            const double moliere_r{25./* mm */};
+
+            /** 
+             * The z position of each of the ECal layers. 
+             * TODO: These positions should eventually come from the geometry.
+             */
+            std::vector<double> layer_z{
+                223.8, // Layer 1
+                226.7, // Layer 2
+                233.05, // Layer 3
+                237.45, // Layer 4
+                245.3, // Layer 5
+                251.2, // Layer 6
+                260.3, // Layer 7
+                266.7, // Layer 8
+                275.8, // Layer 9
+                282.2, // Layer 10
+                291.3, // Layer 11
+                297.7, // Layer 12
+                306.8, // Layer 13
+                313.2, // Layer 14
+                322.3, // Layer 15
+                337.8, // Layer 16
+                344.2, // Layer 17
+                353.3, // Layer 18
+                359.7, // Layer 19
+                368.8, // Layer 20
+                375.2, // Layer 21
+                384.3, // Layer 22
+                390.7, // Layer 23
+                403.3, // Layer 24
+                413.2, // Layer 25
+                425.8, // Layer 26
+                435.7, // Layer 27
+                448.3, // Layer 28
+                458.2, // Layer 29
+                470.8, // Layer 30
+                480.7, // Layer 31
+                493.3, // Layer 32
+                503.2 // Layer 33
+            };
     };
 
+    bool compareSimTrackerHits(SimTrackerHit* a, SimTrackerHit* b){
+
+        std::vector<double> b_mom_vec = a->getMomentum();
+        std::vector<double> a_mom_vec = b->getMomentum();
+        double a_mom = sqrt(pow(a_mom_vec[0],2)+pow(a_mom_vec[1],2)+pow(a_mom_vec[2],2));
+        double b_mom = sqrt(pow(b_mom_vec[0],2)+pow(b_mom_vec[1],2)+pow(b_mom_vec[2],2));
+        return a_mom < b_mom ;
+    }
 }
 
 #endif
