@@ -33,7 +33,7 @@ namespace ldmx {
 
             // If the particle is an electron and has no parents, a recoil has 
             // been found
-            if (particle->getPdgID() && (particle->getParentCount() == 0)) { 
+            if ((particle->getPdgID() == 11) && (particle->getParentCount() == 0)) { 
                 recoils.push_back(particle);
             }
         }
@@ -49,7 +49,10 @@ namespace ldmx {
     std::vector<SimTrackerHit*> MultiElectronVeto::getRecoilElectronHcalSPHits(
             const TClonesArray* simParticles, const TClonesArray* hcalSPHits) { 
     
-    //std::vector<SimTrackerHit*> hits;
+        // Collection of recoil electron HCal hits
+        std::vector<SimTrackerHit*> hits;
+        
+
 
     
     //std::vector<SimTrackerHit*> MultiElectronVeto::getRecoilElectrons(Event& event){
