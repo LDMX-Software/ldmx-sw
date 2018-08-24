@@ -106,7 +106,7 @@ namespace ldmx {
             bool verbose_{false};
 
             /** The Moliere radius. */
-            const double moliere_r{25./* mm */};
+            const double moliereR_{25./* mm */};
 
             /** 
              * The z position of each of the ECal layers. 

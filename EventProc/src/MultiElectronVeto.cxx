@@ -89,10 +89,6 @@ namespace ldmx {
                     }
             }
 
-            if (recoilHCalSPHit == nullptr) { 
-                throw std::runtime_error("Recoil hit doesn't have associated HCal scoring plane hit.");  
-            }
-
             hits.push_back(recoilHCalSPHit); 
         }
     
@@ -134,111 +130,123 @@ namespace ldmx {
         // Clear the previous result.
         result_.Clear(); 
 
+        // Get the collection of SimParticles from the event
         const TClonesArray* simParticles = event.getCollection("SimParticles");
+
+        // Get the collection of HCal scoring planes hits from the event.
         const TClonesArray* hcalSPHits = event.getCollection("HcalScoringPlaneHits");
-        //std::vector<SimTrackerHit*> recoil_electrons = getRecoilElectrons(event);
-        std::vector<SimTrackerHit*> recoil_electrons = getRecoilElectronHcalSPHits(simParticles, hcalSPHits);
-        for( auto electron : recoil_electrons ){
-            if( electron ){
-                result_.addElectron();
-                std::vector<double> electron_mom = electron->getMomentum();
-                Debug("electron momentum: ",electron_mom);
-                std::vector<float> electron_pos = electron->getPosition();
-                Debug("electron position: ",electron_pos);
 
-                // Get the collection of digitized Ecal hits from the event. 
-                const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
-                int nEcalHits = ecalDigis->GetEntriesFast();
+        // Get the collection of digitized ECal hits from the event.
+        const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
 
-                std::vector<double> cylinder_0_1(34,0.);
-                std::vector<double> cylinder_1_3(34,0.);
-                std::vector<double> cylinder_3_5(34,0.);
-                std::vector<double> cylinder_5(34,0.);
+        // Get the HCal scoring plane hits associated with all recoil electrons 
+        // in the event.
+        std::vector<SimTrackerHit*> recoils = this->getRecoilElectronHcalSPHits(simParticles, hcalSPHits);
 
-                // loop over hits and collect them into cylinder sums
-                for (int iHit = 0; iHit < nEcalHits; iHit++) {
-                    EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
-                    //hit->Print();
-                    //int layer = hit->getLayer();
-                    int raw_id = hit->getID();
-                    EcalDetectorID detId;
-                    detId.setRawValue(raw_id);
-                    detId.unpack();
-                    int layer = detId.getFieldValue("layer");
-                    int cellid = detId.getFieldValue("cell");
-                    int moduleid = detId.getFieldValue("module_position");
-                    int combinedid = cellid*10+moduleid;
-                    //std::cout << " [ MultiElectronVeto ] : rawid " << raw_id << " layer " << layer << " cellid " << cellid << " moduleid " << moduleid << " combineid " << combinedid << std::endl;
-                    std::pair<double,double> hit_pos = hexReadout_->getCellCenterAbsolute(combinedid);
-                    //std::cout << " [ MultiElectronVeto ] : hit position: " << hit_pos.first << " " << hit_pos.second << std::endl;
+        // Loop over all of the recoil SP hits and calcualate the veto variables.
+        for(const auto& electron : recoils) {
+            
+            if (!electron) continue;
 
-                    std::vector<double> rel_pos(2,0.);
-                    std::vector<double> ray_pos(2,0.);
-                    ray_pos[0] = electron_pos[0]+electron_mom[0]/electron_mom[2]*(layer_z[layer]-electron_pos[2]);
-                    ray_pos[1] = electron_pos[1]+electron_mom[1]/electron_mom[2]*(layer_z[layer]-electron_pos[2]);
-                    Debug("ray position: ",ray_pos);
-                    rel_pos[0] = hit_pos.first - ray_pos[0];
-                    rel_pos[1] = hit_pos.second - ray_pos[1];
-                    Debug("relative position: ",rel_pos);
+            result_.addElectron();
+
+            std::vector<double> pvec = electron->getMomentum();
+            Debug("electron momentum: ",pvec);
+            
+            std::vector<float> position = electron->getPosition();    
+            Debug("electron position: ",position);
+
+            // Get the collection of digitized Ecal hits from the event. 
+            int nEcalHits = ecalDigis->GetEntriesFast();
+
+            std::vector<double> cylinder_0_1(34,0.);
+            std::vector<double> cylinder_1_3(34,0.);
+            std::vector<double> cylinder_3_5(34,0.);
+            std::vector<double> cylinder_5(34,0.);
+
+            // loop over hits and collect them into cylinder sums
+            for (int iHit = 0; iHit < nEcalHits; iHit++) {
+
+                EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
+                
+                //hit->Print();
+                //int layer = hit->getLayer();
+                int rawID = hit->getID();
+                EcalDetectorID detId;
+                detId.setRawValue(rawID);
+                detId.unpack();
+                int layer = detId.getFieldValue("layer");
+                int cellID = detId.getFieldValue("cell");
+                int moduleID = detId.getFieldValue("module_position");
+                int combinedID = cellID*10+moduleID;
+                //std::cout << " [ MultiElectronVeto ] : rawid " << rawID << " layer " << layer << " cellID " << cellID << " moduleID " << moduleID << " combineid " << combinedID << std::endl;
+                std::pair<double,double> hitPosition = hexReadout_->getCellCenterAbsolute(combinedID);
+                //std::cout << " [ MultiElectronVeto ] : hit position: " << hitPosition.first << " " << hitPosition.second << std::endl;
+
+                std::vector<double> relativePosition(2,0.);
+                std::vector<double> rayPosition(2,0.);
+                rayPosition[0] = position[0]+pvec[0]/pvec[2]*(layer_z[layer]-position[2]);
+                rayPosition[1] = position[1]+pvec[1]/pvec[2]*(layer_z[layer]-position[2]);
+                Debug("ray position: ",rayPosition);
+                relativePosition[0] = hitPosition.first - rayPosition[0];
+                relativePosition[1] = hitPosition.second - rayPosition[1];
+                Debug("relative position: ",relativePosition);
 
 
-                    double r = sqrt(pow(rel_pos[0],2)+pow(rel_pos[1],2));
+                double r = sqrt(pow(relativePosition[0],2)+pow(relativePosition[1],2));
 
-                    Debug("grouping hits by radius");
-                    if( r < moliere_r ){
-                        cylinder_0_1[layer]+=hit->getEnergy();
-                    }else if( r < 3*moliere_r ){
-                        cylinder_1_3[layer]+=hit->getEnergy();
-                    }else if( r < 5*moliere_r ){
-                        cylinder_3_5[layer]+=hit->getEnergy();
-                    }else{
-                        cylinder_5[layer]+=hit->getEnergy();
-                    }
-
-                }// end loop over hits
-
-                Debug("grouping layer 0");
-                result_.cylinder_0_1_layer_0_0.back() = cylinder_0_1[0];
-                result_.cylinder_1_3_layer_0_0.back() = cylinder_1_3[0];
-                result_.cylinder_3_5_layer_0_0.back() = cylinder_3_5[0];
-                result_.cylinder_5_layer_0_0.back()   = cylinder_5[0];
-                Debug("grouping layer 1-2");
-                for( int i = 1 ; i < 3 ; i++ ){
-                    result_.cylinder_0_1_layer_1_2.back() += cylinder_0_1[i];
-                    result_.cylinder_1_3_layer_1_2.back() += cylinder_1_3[i];
-                    result_.cylinder_3_5_layer_1_2.back() += cylinder_3_5[i];
-                    result_.cylinder_5_layer_1_2.back()   += cylinder_5[i];
+                Debug("grouping hits by radius");
+                if( r < moliereR_ ){
+                    cylinder_0_1[layer]+=hit->getEnergy();
+                }else if( r < 3*moliereR_ ){
+                    cylinder_1_3[layer]+=hit->getEnergy();
+                }else if( r < 5*moliereR_ ){
+                    cylinder_3_5[layer]+=hit->getEnergy();
+                }else{
+                    cylinder_5[layer]+=hit->getEnergy();
                 }
-                Debug("grouping layer 3-6");
-                for( int i = 3 ; i < 7 ; i++ ){
-                    result_.cylinder_0_1_layer_3_6.back() += cylinder_0_1[i];
-                    result_.cylinder_1_3_layer_3_6.back() += cylinder_1_3[i];
-                    result_.cylinder_3_5_layer_3_6.back() += cylinder_3_5[i];
-                    result_.cylinder_5_layer_3_6.back()   += cylinder_5[i];
-                }
-                Debug("grouping layer 7-14");
-                for( int i = 7 ; i < 15 ; i++ ){
-                    result_.cylinder_0_1_layer_7_14.back() += cylinder_0_1[i];
-                    result_.cylinder_1_3_layer_7_14.back() += cylinder_1_3[i];
-                    result_.cylinder_3_5_layer_7_14.back() += cylinder_3_5[i];
-                    result_.cylinder_5_layer_7_14.back()   += cylinder_5[i];
-                }
-                Debug("grouping layer 15 and beyond");
+
+            }// end loop over hits
+
+            Debug("grouping layer 0");
+            result_.cylinder_0_1_layer_0_0.back() = cylinder_0_1[0];
+            result_.cylinder_1_3_layer_0_0.back() = cylinder_1_3[0];
+            result_.cylinder_3_5_layer_0_0.back() = cylinder_3_5[0];
+            result_.cylinder_5_layer_0_0.back()   = cylinder_5[0];
+            Debug("grouping layer 1-2");
+            for( int i = 1 ; i < 3 ; i++ ){
+                result_.cylinder_0_1_layer_1_2.back() += cylinder_0_1[i];
+                result_.cylinder_1_3_layer_1_2.back() += cylinder_1_3[i];
+                result_.cylinder_3_5_layer_1_2.back() += cylinder_3_5[i];
+                result_.cylinder_5_layer_1_2.back()   += cylinder_5[i];
+            }
+            Debug("grouping layer 3-6");
+            for( int i = 3 ; i < 7 ; i++ ){
+                result_.cylinder_0_1_layer_3_6.back() += cylinder_0_1[i];
+                result_.cylinder_1_3_layer_3_6.back() += cylinder_1_3[i];
+                result_.cylinder_3_5_layer_3_6.back() += cylinder_3_5[i];
+                result_.cylinder_5_layer_3_6.back()   += cylinder_5[i];
+            }
+            Debug("grouping layer 7-14");
+             for( int i = 7 ; i < 15 ; i++ ){
+                result_.cylinder_0_1_layer_7_14.back() += cylinder_0_1[i];
+                result_.cylinder_1_3_layer_7_14.back() += cylinder_1_3[i];
+                result_.cylinder_3_5_layer_7_14.back() += cylinder_3_5[i];
+                result_.cylinder_5_layer_7_14.back()   += cylinder_5[i];
+            }
+            Debug("grouping layer 15 and beyond");
                 //std::cout << "cylinder sizes: " << cylinder_0_1.size() << " " << cylinder_1_3.size() << " " << cylinder_3_5.size() << " " << cylinder_5.size() << std::endl;
-                for( int i = 15 ; i < 33 ; i++ ){
-                    result_.cylinder_0_1_layer_15.back() += cylinder_0_1[i];
-                    result_.cylinder_1_3_layer_15.back() += cylinder_1_3[i];
-                    result_.cylinder_3_5_layer_15.back() += cylinder_3_5[i];
-                    result_.cylinder_5_layer_15.back()   += cylinder_5[i];
-                }
-                Debug("done grouping by layer");
+            for( int i = 15 ; i < 33 ; i++ ){
+                 result_.cylinder_0_1_layer_15.back() += cylinder_0_1[i];
+                result_.cylinder_1_3_layer_15.back() += cylinder_1_3[i];
+                result_.cylinder_3_5_layer_15.back() += cylinder_3_5[i];
+                result_.cylinder_5_layer_15.back()   += cylinder_5[i];
+            }
+            Debug("done grouping by layer");
+        }
 
-            }// end if block for non-NULL trackerHit
-
-        }// end for loop for recoil electrons
-
-        Debug("done, adding information to event");
-        event.addToCollection("MultiElectronVeto", result_);
+    Debug("done, adding information to event");
+     event.addToCollection("MultiElectronVeto", result_);
     }
 }
 
