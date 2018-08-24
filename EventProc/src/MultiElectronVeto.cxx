@@ -20,7 +20,7 @@ namespace ldmx {
         verbose_ = ps.getBool("verbose",false);
     }
 
-    std::vector<SimParticle*> MultiElectronVeto::getRecoilElectrons(TClonesArray* simParticles) { 
+    std::vector<SimParticle*> MultiElectronVeto::getRecoilElectrons(const TClonesArray* simParticles) { 
         
         // Loop through all the sim particles and search for the recoil electrons 
         // i.e. electrons which don't have any parents
@@ -51,14 +51,57 @@ namespace ldmx {
     
         // Collection of recoil electron HCal hits
         std::vector<SimTrackerHit*> hits;
-        
 
+        // Start by getting all recoil electrons in the event
+        std::vector<SimParticle*> recoils = this->getRecoilElectrons(simParticles); 
 
+        // Loop over the recoil electrons and find the associated HCal scoring 
+        // plane hit.
+        for (const auto& recoil : recoils) { 
+            
+            // Loop through all the HCal scoring plane hits and find the 
+            // one associated with the recoil electron.  Note: There may be 
+            // multiple hits associated with a recoil electron.  In this case,
+            // take the one that has the highest momentum and a positive pz 
+            // component.  Also, only consider hits produced in the front 
+            // HCal scoring plane.
+            double pMax = 0; 
+            SimTrackerHit* recoilHCalSPHit = nullptr; 
+            for( int iHit = 0 ; iHit < hcalSPHits->GetEntriesFast() ; iHit++ ) {
+                
+                // Get the ith hit in the collection
+                SimTrackerHit* hit = (SimTrackerHit*) hcalSPHits->At(iHit);
+               
+                    // Only consider hits associated with recoil electrons 
+                    if (hit->getSimParticle() == recoil) { 
+                        
+                        // Make sure the hit wasn't created by a backwards going 
+                        // recoil. 
+                        if (hit->getMomentum()[2] <= 0) continue;
+                        
+                        // Select the hit that has the highest momentum
+                        std::vector<double> pVec = hit->getMomentum();
+                        double p = sqrt(pVec[0]*pVec[0] + pVec[1]*pVec[1] + pVec[2]*pVec[2]); 
+                        if (pMax < p) { 
+                            pMax = p; 
+                            recoilHCalSPHit = hit;     
+                        }     
+                    }
+            }
+
+            if (recoilHCalSPHit == nullptr) { 
+                throw std::runtime_error("Recoil hit doesn't have associated HCal scoring plane hit.");  
+            }
+
+            hits.push_back(recoilHCalSPHit); 
+        }
     
+    return hits;  
     //std::vector<SimTrackerHit*> MultiElectronVeto::getRecoilElectrons(Event& event){
     //    const TClonesArray* simParticles = event.getCollection("SimParticles");
     //    const TClonesArray* hcalSPHits = event.getCollection("HcalScoringPlaneHits");
-
+        
+        /*
         std::vector<SimTrackerHit*> recoil_electrons;
         std::sort(recoil_electrons.begin(),recoil_electrons.end(),compareSimTrackerHits);
         for( int iPar = 0 ; iPar < simParticles->GetEntriesFast() ; iPar++ ){
@@ -83,7 +126,7 @@ namespace ldmx {
             recoil_electrons.push_back(recoil_electron);
         }// end loop over sim particles
 
-        return recoil_electrons;
+        return recoil_electrons;*/
     }
 
     void MultiElectronVeto::produce(Event& event) {

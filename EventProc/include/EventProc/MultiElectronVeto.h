@@ -75,7 +75,7 @@ namespace ldmx {
              *
              * @return Collection of recoil electrons in the event
              */ 
-            std::vector<SimParticle*> getRecoilElectrons(TClonesArray* simParticles);
+            std::vector<SimParticle*> getRecoilElectrons(const TClonesArray* simParticles);
             
             typedef std::pair<float, float> XYCoords;
 
