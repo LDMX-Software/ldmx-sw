@@ -245,8 +245,8 @@ namespace ldmx {
             Debug("done grouping by layer");
         }
 
-    Debug("done, adding information to event");
-     event.addToCollection("MultiElectronVeto", result_);
+        Debug("done, adding information to event");
+        event.addToCollection("MultiElectronVeto", result_);
     }
 }
 
