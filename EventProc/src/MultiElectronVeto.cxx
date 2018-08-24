@@ -20,9 +20,41 @@ namespace ldmx {
         verbose_ = ps.getBool("verbose",false);
     }
 
-    std::vector<SimTrackerHit*> MultiElectronVeto::getRecoilElectrons(Event& event){
-        const TClonesArray* simParticles = event.getCollection("SimParticles");
-        const TClonesArray* hcal_SPhits = event.getCollection("HcalScoringPlaneHits");
+    std::vector<SimParticle*> MultiElectronVeto::getRecoilElectrons(TClonesArray* simParticles) { 
+        
+        // Loop through all the sim particles and search for the recoil electrons 
+        // i.e. electrons which don't have any parents
+        std::vector<SimParticle*> recoils; 
+        for (int particleCount = 0; particleCount < simParticles->GetEntriesFast(); 
+                ++particleCount) { 
+            
+            // Get the ith particle from the collection of sim particles
+            SimParticle* particle = static_cast<SimParticle*>(simParticles->At(particleCount)); 
+
+            // If the particle is an electron and has no parents, a recoil has 
+            // been found
+            if (particle->getPdgID() && (particle->getParentCount() == 0)) { 
+                recoils.push_back(particle);
+            }
+        }
+
+        // All events should contain at least 1 recoil electron
+        if (recoils.size() == 0) { 
+            throw std::runtime_error("Event doesn't contain any recoil electrons!");  
+        }
+
+        return recoils; 
+    }
+
+    std::vector<SimTrackerHit*> MultiElectronVeto::getRecoilElectronHcalSPHits(
+            const TClonesArray* simParticles, const TClonesArray* hcal_SPhits) { 
+    
+    //std::vector<SimTrackerHit*> hits;
+
+    
+    //std::vector<SimTrackerHit*> MultiElectronVeto::getRecoilElectrons(Event& event){
+    //    const TClonesArray* simParticles = event.getCollection("SimParticles");
+    //    const TClonesArray* hcal_SPhits = event.getCollection("HcalScoringPlaneHits");
 
         std::vector<SimTrackerHit*> recoil_electrons;
         std::sort(recoil_electrons.begin(),recoil_electrons.end(),compareSimTrackerHits);
@@ -56,7 +88,10 @@ namespace ldmx {
         // Clear the previous result.
         result_.Clear(); 
 
-        std::vector<SimTrackerHit*> recoil_electrons = getRecoilElectrons(event);
+        const TClonesArray* simParticles = event.getCollection("SimParticles");
+        const TClonesArray* hcal_SPhits = event.getCollection("HcalScoringPlaneHits");
+        //std::vector<SimTrackerHit*> recoil_electrons = getRecoilElectrons(event);
+        std::vector<SimTrackerHit*> recoil_electrons = getRecoilElectronHcalSPHits(simParticles, hcal_SPhits);
         for( auto electron : recoil_electrons ){
             if( electron ){
                 result_.addElectron();

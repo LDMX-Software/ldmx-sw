@@ -55,7 +55,27 @@ namespace ldmx {
             /** Run the multi-electron veto. */
             void produce(Event& event);
 
-            std::vector<SimTrackerHit*> getRecoilElectrons(Event& event);
+            /** 
+             * Get the HCal scoring plane hits associated with all recoil
+             * electrons.
+             *
+             * @param simParticles Collection of SimParticles in the event
+             * @param hcalSPHits Collection of HCal scoring plane hits
+             *
+             * @return Collection of HCal scoring plane hits associted with 
+             *         all recoil electrons present in the event.
+             *
+             */
+            std::vector<SimTrackerHit*> getRecoilElectronHcalSPHits(const TClonesArray* simParticles, const TClonesArray* HCalSPHits); 
+           
+            /** 
+             * Get all recoil electron in the event.
+             *
+             * @param Collection of SimParticles in the event
+             *
+             * @return Collection of recoil electrons in the event
+             */ 
+            std::vector<SimParticle*> getRecoilElectrons(TClonesArray* simParticles);
             
             typedef std::pair<float, float> XYCoords;
 
