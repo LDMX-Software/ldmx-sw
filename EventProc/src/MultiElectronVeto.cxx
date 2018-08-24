@@ -47,14 +47,14 @@ namespace ldmx {
     }
 
     std::vector<SimTrackerHit*> MultiElectronVeto::getRecoilElectronHcalSPHits(
-            const TClonesArray* simParticles, const TClonesArray* hcal_SPhits) { 
+            const TClonesArray* simParticles, const TClonesArray* hcalSPHits) { 
     
     //std::vector<SimTrackerHit*> hits;
 
     
     //std::vector<SimTrackerHit*> MultiElectronVeto::getRecoilElectrons(Event& event){
     //    const TClonesArray* simParticles = event.getCollection("SimParticles");
-    //    const TClonesArray* hcal_SPhits = event.getCollection("HcalScoringPlaneHits");
+    //    const TClonesArray* hcalSPHits = event.getCollection("HcalScoringPlaneHits");
 
         std::vector<SimTrackerHit*> recoil_electrons;
         std::sort(recoil_electrons.begin(),recoil_electrons.end(),compareSimTrackerHits);
@@ -64,8 +64,8 @@ namespace ldmx {
             SimTrackerHit* recoil_electron=NULL;
             if( simPar->getGenStatus()==1 and simPar->getPdgID()==11 ){
                 float max_hit_mom = 0.;
-                for( int iHit = 0 ; iHit < hcal_SPhits->GetEntriesFast() ; iHit++ ){
-                    SimTrackerHit* hit = (SimTrackerHit*) hcal_SPhits->At(iHit);
+                for( int iHit = 0 ; iHit < hcalSPHits->GetEntriesFast() ; iHit++ ){
+                    SimTrackerHit* hit = (SimTrackerHit*) hcalSPHits->At(iHit);
                     std::vector<double> hit_mom_3vec = hit->getMomentum();
                     double hit_mom = sqrt(pow(hit_mom_3vec[0],2)+
                             pow(hit_mom_3vec[1],2)+
@@ -89,9 +89,9 @@ namespace ldmx {
         result_.Clear(); 
 
         const TClonesArray* simParticles = event.getCollection("SimParticles");
-        const TClonesArray* hcal_SPhits = event.getCollection("HcalScoringPlaneHits");
+        const TClonesArray* hcalSPHits = event.getCollection("HcalScoringPlaneHits");
         //std::vector<SimTrackerHit*> recoil_electrons = getRecoilElectrons(event);
-        std::vector<SimTrackerHit*> recoil_electrons = getRecoilElectronHcalSPHits(simParticles, hcal_SPhits);
+        std::vector<SimTrackerHit*> recoil_electrons = getRecoilElectronHcalSPHits(simParticles, hcalSPHits);
         for( auto electron : recoil_electrons ){
             if( electron ){
                 result_.addElectron();
