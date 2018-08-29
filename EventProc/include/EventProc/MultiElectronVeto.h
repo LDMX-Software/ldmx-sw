@@ -31,11 +31,7 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TString.h"
-#include "TFile.h"
-#include "TTree.h"
 #include "TClonesArray.h"
-#include "TPython.h"
 
 namespace ldmx {
 
@@ -148,15 +144,6 @@ namespace ldmx {
                 503.2 // Layer 33
             };
     };
-
-    bool compareSimTrackerHits(SimTrackerHit* a, SimTrackerHit* b){
-
-        std::vector<double> b_mom_vec = a->getMomentum();
-        std::vector<double> a_mom_vec = b->getMomentum();
-        double a_mom = sqrt(pow(a_mom_vec[0],2)+pow(a_mom_vec[1],2)+pow(a_mom_vec[2],2));
-        double b_mom = sqrt(pow(b_mom_vec[0],2)+pow(b_mom_vec[1],2)+pow(b_mom_vec[2],2));
-        return a_mom < b_mom ;
-    }
 }
 
 #endif
