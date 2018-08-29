@@ -41,7 +41,9 @@ namespace ldmx {
   void MultiEleVetoResult::Copy(TObject& object) const {
     MultiEleVetoResult& result = (MultiEleVetoResult&) object;
     
-    result.cylinder_0_1_layer_0_0       = cylinder_0_1_layer_0_0 ;
+    result.nRecoilElectrons         = nRecoilElectrons; 
+
+    result.cylinder_0_1_layer_0_0   = cylinder_0_1_layer_0_0 ;
     result.cylinder_0_1_layer_1_2 	= cylinder_0_1_layer_1_2 ;
     result.cylinder_0_1_layer_3_6 	= cylinder_0_1_layer_3_6 ;
     result.cylinder_0_1_layer_7_14	= cylinder_0_1_layer_7_14;
