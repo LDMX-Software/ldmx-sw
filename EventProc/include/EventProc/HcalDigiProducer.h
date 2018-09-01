@@ -66,6 +66,8 @@ namespace ldmx {
             int    nProcessed_{0};
             double mev_per_mip_{1.40};
             double pe_per_mip_{13.5};
+            double strip_attenuation_length_{100.};
+            double strip_position_resolution_{150.};
             int    readoutThreshold_{2};
             int    doStrip_{true};
             int    STRIPS_BACK_PER_LAYER_{31};
@@ -74,6 +76,7 @@ namespace ldmx {
             int    NUM_SIDE_TB_HCAL_LAYERS_{31};
             int    STRIPS_SIDE_LR_PER_LAYER_{31};
             int    NUM_SIDE_LR_HCAL_LAYERS_{63};
+            int    SUPER_STRIP_SIZE_{1};
     };
 
 }
