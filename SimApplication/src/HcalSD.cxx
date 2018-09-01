@@ -112,10 +112,20 @@ namespace ldmx {
         //stripID: back Hcal, segmented along y direction for now every 10 cm -- alternate x-y in the future?
         //         left/right side hcal: segmented along x direction every 10 cm
         //         top/bottom side hcal: segmented along y direction every 10 cm
-        int stripID = -1;        
-        if (section==HcalSection::BACK) stripID = int( (localPosition.y()+scint->GetYHalfLength())/100.0);
-        else stripID = int( (localPosition.z()+scint->GetZHalfLength())/100.0);
 
+        int stripID = -1;        
+        // Odd layers have bars horizontal
+        // Even layers have bars vertical
+        // 5cm wide bars are HARD-CODED
+        if      (section==HcalSection::BACK && layer % 2 == 1) stripID = int( (localPosition.y()+scint->GetYHalfLength())/50.0);
+        else if (section==HcalSection::BACK && layer % 2 == 0) stripID = int( (localPosition.x()+scint->GetXHalfLength())/50.0);
+        else stripID = int( (localPosition.z()+scint->GetZHalfLength())/50.0);
+
+        // std::cout << "---" << std::endl;
+        // std::cout << "GetXHalfLength = " << scint->GetXHalfLength() << "\t GetYHalfLength = " << scint->GetYHalfLength() << "\t GetZHalfLength = " << scint->GetZHalfLength() << std::endl;
+        // std::cout << "xpos = " << localPosition.x() << "\t ypos = " << localPosition.y() << "\t zpos = " << localPosition.z() << std::endl;
+        // std::cout << "xpos_g = " << position.x() << "\t ypos_g = " << position.y() << "\t zpos_g = " << position.z() << std::endl;
+        // std::cout << "Layer = " << layer << "\t section = " << section << "\t strip = " << stripID << std::endl;
 
         detID_->setFieldValue(1, layer);
         detID_->setFieldValue(2, section);

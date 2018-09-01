@@ -55,6 +55,14 @@ namespace ldmx {
             }
 
             /**
+             * Get the minimum number of photoelectrons estimated for this hit if two sided readout.
+             * @return Minimum number of photoelectrons, including noise which affects the estimate.
+             */
+            float getMinPE() const {
+                return minpe_;
+            }            
+
+            /**
              * Get the x coordinate of the hit.
              * @return the x coordinate of the hit.
              */
@@ -87,13 +95,14 @@ namespace ldmx {
                 return (getID() & 0x7F8000) >> 15;
             }
 
-	    /**
-	     * Get the value of isNoise_.
-	     * @return isNoise_ of hit. 
-	     */
-	    bool getNoise(){
-	        return isNoise_;
-	    }
+    	    /**
+    	     * Get the value of isNoise_.
+    	     * @return isNoise_ of hit. 
+    	     */
+    	    bool getNoise(){
+    	        return isNoise_;
+    	    }
+
             /**
              * Set the number of photoelectrons estimated for this hit.
              * @param pe Number of photoelectrons, including noise which affects the estimate.
@@ -101,6 +110,14 @@ namespace ldmx {
             void setPE(float pe) {
                 pe_ = pe;
             }
+
+            /**
+             * Set the minimum number of photoelectrons estimated for this hit.
+             * @param pe Minimum number of photoelectrons, including noise which affects the estimate.
+             */
+            void setMinPE(float minpe) {
+                minpe_ = minpe;
+            }            
 
             /**
              * Set the x position this hit.
@@ -137,6 +154,9 @@ namespace ldmx {
 
             /** The number of PE estimated for this hit. */
             float pe_{0};
+
+            /** The minimum number of PE estimated for this hit, different from pe_ when you have two ended readout */
+            float minpe_{-99};
 
             /** The x position of this hit. */
             float xpos_{0};
