@@ -84,7 +84,7 @@ namespace ldmx {
             static const double MIP_SI_RESPONSE;
 
             /** Total number of Ecal layers. */
-            static const int NUM_ECAL_LAYERS{33};
+            static const int NUM_ECAL_LAYERS{34};
 
             /** Total number of hex modules per layer. */
             static const int HEX_MODULES_PER_LAYER{7}; 
