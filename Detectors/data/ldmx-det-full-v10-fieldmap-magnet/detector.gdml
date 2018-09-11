@@ -39,7 +39,8 @@
     <constant name="em_calorimeter_thickness" value="291.0*mm"/>
     <constant name="hadron_calorimeter_thickness" value="4700*mm"/>
     <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2."/>
-    <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2."/>
+    <constant name="hadron_v9offset_z" value="0.5*mm"/>
+    <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2.+hadron_v9offset_z"/>
 
     <!-- magnet position -->
     <constant name="magnet_pos_z" value="-40*cm" />
