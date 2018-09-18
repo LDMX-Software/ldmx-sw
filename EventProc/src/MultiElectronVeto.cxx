@@ -142,7 +142,7 @@ namespace ldmx {
             // Get the collection of HCal scoring planes hits from the event.
             spHits = event.getCollection("HcalScoringPlaneHits");
         } else { 
-            spHits = event.getCollection("ECalScoringPlaneHits");  
+            spHits = event.getCollection("EcalScoringPlaneHits");  
         }
 
         // Get the collection of digitized ECal hits from the event.
