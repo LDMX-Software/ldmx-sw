@@ -47,7 +47,7 @@ namespace ldmx {
     }
 
     std::vector<SimTrackerHit*> MultiElectronVeto::getRecoilElectronHcalSPHits(
-            const TClonesArray* simParticles, const TClonesArray* hcalSPHits) { 
+            const TClonesArray* simParticles, const TClonesArray* spHits) { 
     
         // Collection of recoil electron HCal hits
         std::vector<SimTrackerHit*> hits;
@@ -67,10 +67,10 @@ namespace ldmx {
             // HCal scoring plane.
             double pMax = 0; 
             SimTrackerHit* recoilHCalSPHit = nullptr; 
-            for( int iHit = 0 ; iHit < hcalSPHits->GetEntriesFast() ; iHit++ ) {
+            for( int iHit = 0 ; iHit < spHits->GetEntriesFast() ; iHit++ ) {
                 
                 // Get the ith hit in the collection
-                SimTrackerHit* hit = (SimTrackerHit*) hcalSPHits->At(iHit);
+                SimTrackerHit* hit = (SimTrackerHit*) spHits->At(iHit);
                
                     // Only consider hits associated with recoil electrons 
                     if (hit->getSimParticle() == recoil) { 
@@ -95,7 +95,7 @@ namespace ldmx {
     return hits;  
     //std::vector<SimTrackerHit*> MultiElectronVeto::getRecoilElectrons(Event& event){
     //    const TClonesArray* simParticles = event.getCollection("SimParticles");
-    //    const TClonesArray* hcalSPHits = event.getCollection("HcalScoringPlaneHits");
+    //    const TClonesArray* spHits = event.getCollection("HcalScoringPlaneHits");
         
         /*
         std::vector<SimTrackerHit*> recoil_electrons;
@@ -106,8 +106,8 @@ namespace ldmx {
             SimTrackerHit* recoil_electron=NULL;
             if( simPar->getGenStatus()==1 and simPar->getPdgID()==11 ){
                 float max_hit_mom = 0.;
-                for( int iHit = 0 ; iHit < hcalSPHits->GetEntriesFast() ; iHit++ ){
-                    SimTrackerHit* hit = (SimTrackerHit*) hcalSPHits->At(iHit);
+                for( int iHit = 0 ; iHit < spHits->GetEntriesFast() ; iHit++ ){
+                    SimTrackerHit* hit = (SimTrackerHit*) spHits->At(iHit);
                     std::vector<double> hit_mom_3vec = hit->getMomentum();
                     double hit_mom = sqrt(pow(hit_mom_3vec[0],2)+
                             pow(hit_mom_3vec[1],2)+
@@ -133,15 +133,24 @@ namespace ldmx {
         // Get the collection of SimParticles from the event
         const TClonesArray* simParticles = event.getCollection("SimParticles");
 
-        // Get the collection of HCal scoring planes hits from the event.
-        const TClonesArray* hcalSPHits = event.getCollection("HcalScoringPlaneHits");
+        // Check for the existence of the collection of HCal scoring plane hits.
+        // If it does exist, use it to get the scoring plane position of the 
+        // recoils at the ECal/HCal face.  Otherwise, just use the ECal scoring
+        // plane hits.
+        const TClonesArray* spHits = nullptr; 
+        if (event.exists("HcalScoringPlaneHits")) { 
+            // Get the collection of HCal scoring planes hits from the event.
+            spHits = event.getCollection("HcalScoringPlaneHits");
+        } else { 
+            spHits = event.getCollection("ECalScoringPlaneHits");  
+        }
 
         // Get the collection of digitized ECal hits from the event.
         const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
 
         // Get the HCal scoring plane hits associated with all recoil electrons 
         // in the event.
-        std::vector<SimTrackerHit*> recoils = this->getRecoilElectronHcalSPHits(simParticles, hcalSPHits);
+        std::vector<SimTrackerHit*> recoils = this->getRecoilElectronHcalSPHits(simParticles, spHits);
 
         // Loop over all of the recoil SP hits and calcualate the veto variables.
         for(const auto& electron : recoils) {
