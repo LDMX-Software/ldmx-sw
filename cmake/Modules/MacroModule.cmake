@@ -85,13 +85,10 @@ macro(MODULE)
   # So, if on APPLE, and if ROOT is needed, and if libRGL.so not already in the ROOT_LIBRARIES, then add it.
   #
   if(APPLE)
-    message("MODULE_EXTERNAL_DEPENDENCIES = ${MODULE_EXTERNAL_DEPENDENCIES}")
     string(FIND "${MODULE_EXTERNAL_DEPENDENCIES}" "ROOT" _index)
     if(_index GREATER -1)
-      message("Wants ROOT")
       list (FIND ROOT_LIBRARIES "${ROOT_LIBRARY_DIR}/libRGL.so" _index)
       if( _index EQUAL -1)
-	message("ADD libRGL.so")
 	list(APPEND ROOT_LIBRARIES "${ROOT_LIBRARY_DIR}/libRGL.so")
       endif()
     endif()
