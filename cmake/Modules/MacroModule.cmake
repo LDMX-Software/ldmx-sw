@@ -32,7 +32,8 @@
 # @author Jeremy McCormick, SLAC
 ###############################################################################
 macro(MODULE)
-
+  set(MODULE_DEBUG 1)
+  
   # define options for this function
   set(options)
   set(oneValueArgs NAME)
@@ -85,27 +86,13 @@ macro(MODULE)
   if (EXT_DEP_INCLUDE_DIRS)
     include_directories(${EXT_DEP_INCLUDE_DIRS})
   endif()
-
+  
   # make list of all library dependencies
   set(MODULE_LIBRARIES ${MODULE_DEPENDENCIES} ${EXT_DEP_LIBRARIES} ${MODULE_EXTRA_LINK_LIBRARIES})
   if(MODULE_DEBUG)
     message("MODULE_LIBRARIES='${MODULE_LIBRARIES}'")
   endif()
 
-  # if there are C++ source files then build a shared library
-  if (sources)
-
-    # add library target
-    add_library(${MODULE_NAME} SHARED ${sources} ${MODULE_EXTRA_SOURCES})
-   
-    # add link libs
-    target_link_libraries(${MODULE_NAME} ${MODULE_EXTRA_LINK_LIBRARIES})
-  
-    # install the library
-    install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-
-  endif()
-  
   # make list of libraries required by executables and test programs which includes this module's lib
   if (sources)
     set(MODULE_BIN_LIBRARIES ${MODULE_LIBRARIES} ${MODULE_NAME})
@@ -116,6 +103,25 @@ macro(MODULE)
   if(MODULE_DEBUG)
     message("MODULE_BIN_LIBRARIES='${MODULE_BIN_LIBRARIES}'")
   endif()
+
+  
+  # if there are C++ source files then build a shared library
+  if (sources)
+
+    # add library target
+    add_library(${MODULE_NAME} SHARED ${sources} ${MODULE_EXTRA_SOURCES})
+   
+    # add link libs
+    if(APPLE) # A MacOS library behaves like an executable, it needs all objects resolved.
+      target_link_libraries(${MODULE_NAME} ${MODULE_LIBRARIES} ${MODULE_EXTRA_LINK_LIBRARIES})
+    else()
+      target_link_libraries(${MODULE_NAME} ${MODULE_EXTRA_LINK_LIBRARIES})
+    endif()
+    # install the library
+    install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
+  endif()
+  
  
   # find test programs
   file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cxx)
