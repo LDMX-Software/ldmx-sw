@@ -139,22 +139,26 @@
 	<materialref ref="Scintillator"/>
 	<solidref ref="trigger_bar_box"/>
 	<auxiliary auxtype="SensDet" auxValue="TriggerPadDownSD"/>
+	<auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
+	<auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
       </volume>   
       
       <volume name="TriggerPadDown">
     	<materialref ref="G4_AIR"/>
 	<solidref ref="trigger_pad_box"/>
-	
-	<loop for="x" to="number_of_bars" step="1">
-	  <physvol name="trigger_bar_layer1_physvol" copynumber="x">
-	    <volumeref ref="trigger_bar_volume"/>
-	    <position name="trigger_bar_layer1_pos" unit="mm" x="0" y="-trigger_pad_width/2+dy*(x-0.5)+gap*(x-1)" z="0"/>
-	  </physvol>
+
+	<physvol name="trigger_bar_layer1_physvol" copynumber="1">
+	  <volumeref ref="trigger_bar_volume"/>
+	  <position name="trigger_bar_layer1_pos" unit="mm" x="0" y="0" z="0"/>
+	</physvol>
+	<!-- <loop for="x" to="number_of_bars" step="1"> -->
+	<!--   <physvol name="trigger_bar_layer1_physvol" copynumber="x"> -->
+	<!--     <volumeref ref="trigger_bar_volume"/> -->
+	<!--     <position name="trigger_bar_layer1_pos" unit="mm" x="0" y="-trigger_pad_width/2+dy*(x-0.5)+gap*(x-1)" z="0"/> -->
+	<!--   </physvol> -->
 	  
-	</loop>	    
+	<!-- </loop>	     -->
 	
-	<auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
-	<auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
 	
       </volume>
   </structure>

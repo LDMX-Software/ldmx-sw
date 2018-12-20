@@ -2,6 +2,13 @@
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
       
   <define>
+    <variable name="x" value="1"/>
+    <variable name="dx" value="35"/>
+    <variable name="dy" value="2"/>		
+    <variable name="dz" value="2"/>		
+    <variable name="gap" value="0.5"/>
+    <variable name="number_of_bars" value="37"/>
+
     <!-- define center position and identity rotation -->
     <position name="center" x="0" y="0" z="0"/>
     <rotation name="identity" x="0" y="0" z="0"/>
@@ -19,18 +26,18 @@
     <!-- trigger pad parameters -->
     <variable name="trigger_pad_dim_x" value="target_dim_x"/>
     <variable name="trigger_pad_dim_y" value="target_dim_y"/>
-    <variable name="trigger_pad_thickness" value="1.0*mm"/>
+    <variable name="trigger_pad_thickness" value="4.5*mm"/>
     <variable name="trigger_pad_zclear" value="0.001*mm"/>
     <variable name="trigger_pad_down_z" value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + trigger_pad_zclear"/>
     <variable name="trigger_pad_up_z"   value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - trigger_pad_zclear"/>
        
     <!-- tagger position -->    
-    <constant name="tagger_z_offset" value="3.0*mm"/>
+    <constant name="tagger_z_offset" value="5.0*mm"/>
     <constant name="tagger_thickness" value="85.725*cm - tagger_z_offset"/>
     <variable name="tagger_pos_z" value="-(tagger_thickness/2) - tagger_z_offset"/>
     
     <!-- recoil position -->
-    <variable name="recoil_z_offset" value="3.0*mm"/>
+    <variable name="recoil_z_offset" value="5.0*mm"/>
     <variable name="recoil_thickness" value="20.0*cm - recoil_z_offset"/>
     <variable name="recoil_pos_z" value="recoil_thickness/2 + recoil_z_offset"/>
 
@@ -119,6 +126,7 @@
     <box lunit="mm" name="target_box" x="target_dim_x" y="target_dim_y" z="target_thickness"/>
     <box lunit="mm" name="trigger_pad_down_box" x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>
     <box lunit="mm" name="trigger_pad_up_box"   x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>
+    <box lunit="mm" name="trigger_bar_box" x="dx" y="dy" z="dz"/>
   </solids>
 
   <structure>
@@ -130,14 +138,15 @@
       <auxiliary auxtype="DetElem" auxvalue="Target"/>
     </volume>
     <!-- Name is passed to the DetElem. -->
-    <!-- <volume name="TriggerPadDown"> -->
-    <!--   <materialref ref="Polyvinyltoluene"/> -->
-    <!--   <solidref ref="trigger_pad_down_box"/> -->
-    <!--   <auxiliary auxtype="SensDet" auxvalue="TriggerPadDownSD"/> -->
-    <!--   <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/> -->
-    <!--   <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>            -->
-    <!-- </volume>  -->
-    <!-- Name is passed to the DetElem. -->
+    <volume name="trigger_bar_volume">
+      <materialref ref="Polyvinyltoluene"/>
+      <solidref ref="trigger_bar_box"/>
+      <auxiliary auxtype="SensDet" auxvalue="TriggerPadDownSD"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
+    </volume>
+
+    Name is passed to the DetElem.
     <volume name="TriggerPadUp">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_pad_up_box"/>
@@ -148,11 +157,11 @@
     <volume name="World">
       <materialref ref="Vacuum"/>
       <solidref ref="world_box"/>
-      <physvol copynumber="1">
-        <file name="tagger.gdml"/>
-        <positionref ref="tagger_pos"/>
-        <rotationref ref="identity"/>
-      </physvol>
+      <!-- <physvol copynumber="1"> -->
+      <!--   <file name="tagger.gdml"/> -->
+      <!--   <positionref ref="tagger_pos"/> -->
+      <!--   <rotationref ref="identity"/> -->
+      <!-- </physvol> -->
       <physvol copynumber="2">
         <volumeref ref="TriggerPadUp"/>
         <positionref ref="trigger_pad_up_pos"/>
@@ -163,32 +172,38 @@
         <positionref ref="target_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <physvol copynumber=" 4">
-	<file name="trigger_pad.gdml"/>
-        <!-- <volumeref ref="TriggerPadDown"/> -->
-        <positionref ref="trigger_pad_down_pos"/>
-        <rotationref ref="identity"/>
-      </physvol>
-      <physvol copynumber="5">
-        <file name="recoil.gdml"/>
-        <positionref ref="recoil_pos"/>
-        <rotationref ref="identity"/>
-      </physvol>
-      <physvol copynumber="6">
-        <file name="ecal.gdml"/>
-        <positionref ref="em_calorimeter_pos"/>
-        <rotationref ref="identity"/>
-      </physvol>
-      <physvol copynumber="7">
-        <file name="hcal.gdml"/>
-        <positionref ref="hadron_calorimeter_pos"/>
-        <rotationref ref="identity"/>
-      </physvol>
-      <physvol>
-        <file name="magnet.gdml"/>
-        <positionref ref="magnet_pos"/>
-        <rotationref ref="identity"/>
-      </physvol>
+      <loop for="x" to="number_of_bars" step="1">
+	<physvol copynumber="4*x">
+	  <volumeref ref="trigger_bar_volume"/>
+	  <position name="trigger_bar_layer1_pos" unit="mm" x="0" y="-target_dim_y/2+dy*(x-0.5)+gap*(x-1)" z="trigger_pad_down_z-dz/2-gap/2"/>
+          <rotationref ref="identity"/>
+	</physvol>
+	<physvol copynumber="8*x">
+	  <volumeref ref="trigger_bar_volume"/>
+	  <position name="trigger_bar_layer1_pos" unit="mm" x="0" y="-target_dim_y/2+dy*x+gap*(x-1)" z="trigger_pad_down_z+dz/2+gap/2"/>
+          <rotationref ref="identity"/>
+	</physvol>
+      </loop>
+      <!-- <physvol copynumber="5"> -->
+      <!--   <file name="recoil.gdml"/> -->
+      <!--   <positionref ref="recoil_pos"/> -->
+      <!--   <rotationref ref="identity"/> -->
+      <!-- </physvol> -->
+      <!-- <physvol copynumber="6"> -->
+      <!--   <file name="ecal.gdml"/> -->
+      <!--   <positionref ref="em_calorimeter_pos"/> -->
+      <!--   <rotationref ref="identity"/> -->
+      <!-- </physvol> -->
+      <!-- <physvol copynumber="7"> -->
+      <!--   <file name="hcal.gdml"/> -->
+      <!--   <positionref ref="hadron_calorimeter_pos"/> -->
+      <!--   <rotationref ref="identity"/> -->
+      <!-- </physvol> -->
+      <!-- <physvol> -->
+      <!--   <file name="magnet.gdml"/> -->
+      <!--   <positionref ref="magnet_pos"/> -->
+      <!--   <rotationref ref="identity"/> -->
+      <!-- </physvol> -->
       <auxiliary auxtype="DetElem" auxvalue="Top"/>
     </volume>
   </structure>
