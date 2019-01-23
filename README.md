@@ -33,7 +33,7 @@ The [Xerces C++](http://xerces.apache.org/xerces-c/download.cgi) framework is re
 You can install it from scratch using a series of commands such as the following:
 
 ``` bash
-wget http://apache.mirrors.hoobly.com//xerces/c/3/sources/xerces-c-3.2.0.tar.gz
+wget http://apache.mirrors.hoobly.com//xerces/c/3/sources/xerces-c-3.2.2.tar.gz
 tar -zxvf xerces-c-3.2.0.tar.gz
 cd xerces-c-3.2.0
 ./configure --prefix=$PWD
