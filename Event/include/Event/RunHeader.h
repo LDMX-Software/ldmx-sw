@@ -26,24 +26,23 @@ namespace ldmx {
         public:
 
             /**
-             * Fully qualified class constructor (except for parameter values).
+             * Constructor.
              *
              * @param runNumber The run number.
              * @param detectorName The name of the detector.
-             * @param detectorVersion The version of the detector.
              * @param description A short description of the run.
              */
-            RunHeader(int runNumber, std::string detectorName, 
-                      int detectorVersion, std::string description); 
+            RunHeader(int runNumber, std::string detectorName,  
+                      std::string description); 
 
             /**
-             * Constructor.
+             * Default constructor.
              *
              * @note This exists for filling the object from a ROOT branch.
              */
             RunHeader() {}
 
-            /** Class destructor. */
+            /** Destructor. */
             virtual ~RunHeader() {}
 
             /** @return The run number. */
@@ -51,11 +50,6 @@ namespace ldmx {
 
             /** @return The name of the detector used to create the events. */
             const std::string& getDetectorName() const { return detectorName_; }
-
-            /** 
-             * @return The version of the detector used to create the events. 
-             */
-            int getDetectorVersion() const { return detectorVersion_; }
 
             /** @return A short description of the run. */
             const std::string& getDescription() const { return description_; }
@@ -136,9 +130,6 @@ namespace ldmx {
 
             /** Detector name. */
             std::string detectorName_{""};
-
-            /** Detector version. */
-            int detectorVersion_{0};
 
             /** Run description. */
             std::string description_{""};

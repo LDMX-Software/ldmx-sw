@@ -9,10 +9,9 @@
 namespace ldmx {
 
     RunHeader::RunHeader(int runNumber, std::string detectorName, 
-                 int detectorVersion, std::string description) :
+                         std::string description) :
         runNumber_(runNumber), 
         detectorName_(detectorName), 
-        detectorVersion_(detectorVersion), 
         description_(description) {
     }
 
@@ -20,7 +19,6 @@ namespace ldmx {
     void RunHeader::Print(Option_t *) const {
         std::cout << "RunHeader { run: " << runNumber_
                 << ", detectorName: " << detectorName_
-                << ", detectorVersion: " << detectorVersion_
                 << ", description: " << description_
                 << std::endl;
         std::cout << "  intParameters: " << std::endl;
