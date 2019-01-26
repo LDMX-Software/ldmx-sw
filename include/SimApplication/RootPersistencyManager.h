@@ -7,6 +7,11 @@
 #ifndef SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 #define SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 
+//-----------//
+//   Boost   //
+//-----------//
+#include "boost/format.hpp"
+
 //----------------//
 //   C++ StdLib   //
 //----------------//
