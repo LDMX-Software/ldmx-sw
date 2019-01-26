@@ -264,20 +264,21 @@ namespace ldmx {
         DetectorHeader* detectorHeader = detector->getDetectorHeader();
 
         // Create the run header.
-        RunHeader* runHeader = new RunHeader(aRun->GetRunID(), detectorHeader->getName(), detectorHeader->getVersion(), "LDMX sim events");
+        RunHeader* runHeader = new RunHeader(aRun->GetRunID(), detectorHeader->getName(),
+                                             "LDMX sim events");
 
         // Set parameter value with number of events processed.
         runHeader->setIntParameter("EVENT_COUNT", aRun->GetNumberOfEvent());
 
         // Print information about run header.
         if (m_verbose > 1) {
-            std::cout << std::endl;
-            std::cout << "[ RootPersistencyManager ] - Created run header for run ID " << aRun->GetRunID() << std::endl;
-            std::cout << "  run number: " << runHeader->getRunNumber() << std::endl;
-            std::cout << "  detector name: " << runHeader->getDetectorName() << std::endl;
-            std::cout << "  detector version: " << runHeader->getDetectorVersion() << std::endl;
-            std::cout << "  description: " << runHeader->getDescription() << std::endl;
-            std::cout << std::endl;
+            std::ostringstream headerString; 
+            headerString << "\n[ RootPersistencyManager ]: Creating run header\n" 
+                         << boost::format("\t Run number: %s\n")    % runHeader->getRunNumber() 
+                         << boost::format("\t Detector name: %s\n") % runHeader->getDetectorName() 
+                         << boost::format("\t Software tag: %s\n")  % runHeader->getSoftwareTag() 
+                         << boost::format("\t Description: %s\n")   % runHeader->getDescription(); 
+            std::cout << headerString.str() << "\n";  
         }
 
         return runHeader;

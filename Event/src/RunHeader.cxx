@@ -1,14 +1,24 @@
+/**
+ * @file RunHeader.cxx
+ * @brief Class encapsulating run information such as run #, detector etc.
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
+
 #include "Event/RunHeader.h"
 
-// STL
-#include <iostream>
-
 namespace ldmx {
+
+    RunHeader::RunHeader(int runNumber, std::string detectorName, 
+                         std::string description) :
+        runNumber_(runNumber), 
+        detectorName_(detectorName), 
+        description_(description) {
+    }
+
 
     void RunHeader::Print(Option_t *) const {
         std::cout << "RunHeader { run: " << runNumber_
                 << ", detectorName: " << detectorName_
-                << ", detectorVersion: " << detectorVersion_
                 << ", description: " << description_
                 << std::endl;
         std::cout << "  intParameters: " << std::endl;

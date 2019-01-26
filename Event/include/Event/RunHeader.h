@@ -1,113 +1,92 @@
 /**
  * @file RunHeader.h
- * @brief Class defining a run header providing information about a set of events
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @brief Class encapsulating run information such as run #, detector etc.
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENT_RUNHEADER_H_
-#define EVENT_RUNHEADER_H_
+#ifndef _EVENT_RUN_HEADER_H_
+#define _EVENT_RUN_HEADER_H_
 
-// ROOT
+//----------//
+//   ROOT   //
+//----------//
 #include "TObject.h"
 
-// STL
-#include <string>
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <iostream>
 #include <map>
+#include <string>
+
+//-------------//
+//   ldmx-sw   //
+//-------------//
+#include "Event/Version.h"
 
 namespace ldmx {
 
-    /**
-     * @class RunHeader
-     * @brief Run header providing information about a set of events
-     *
-     * @note
-     * This is a run header that can be used for describing sim or data events.
-     * It provides the run number, name of the detector model used when events were created,
-     * version of the detector used, and the type of the event branch.  The header
-     * can also store named float, int or string parameters.
-     */
     class RunHeader : public TObject {
 
         public:
 
             /**
-             * Fully qualified class constructor (except for parameter values).
+             * Constructor.
+             *
              * @param runNumber The run number.
              * @param detectorName The name of the detector.
-             * @param detectorVersion The version of the detector.
              * @param description A short description of the run.
              */
-            RunHeader(int runNumber, std::string detectorName, int detectorVersion, std::string description)
-                : runNumber_(runNumber), detectorName_(detectorName), detectorVersion_(detectorVersion), description_(description) {
-            }
+            RunHeader(int runNumber, std::string detectorName,  
+                      std::string description); 
 
             /**
-             * No argument class constructor.
+             * Default constructor.
              *
-             * @note
-             * This exists for filling the object from a ROOT branch.
+             * @note This exists for filling the object from a ROOT branch.
              */
-            RunHeader() {
-            }
+            RunHeader() {}
 
-            /**
-             * Class destructor.
-             */
+            /** Destructor. */
             virtual ~RunHeader() {}
 
-            /**
-             * Get the run number.
-             * @return The run number.
-             */
-            int getRunNumber() const {
-                return runNumber_;
-            }
+            /** @return The run number. */
+            int getRunNumber() const { return runNumber_; }
 
-            /**
-             * Get the name of the detector used to create the events.
-             * @return The name of the detector used to create the events.
-             */
-            const std::string& getDetectorName() const {
-                return detectorName_;
-            }
+            /** @return The name of the detector used to create the events. */
+            const std::string& getDetectorName() const { return detectorName_; }
 
-            /**
-             * Get the version of the detector used to create the events.
-             * @return The version of the detector used to create the events.
+            /** 
+             * @return The git SHA-1 associated with the software tag used
+             * to generate this file.
              */
-            int getDetectorVersion() const {
-                return detectorVersion_;
-            }
+            const std::string& getSoftwareTag() const { return softwareTag_; }
 
-            /**
-             * Get a short description of the run.
-             * @return A short description of the run.
-             */
-            const std::string& getDescription() const {
-                return description_;
-            }
+            /** @return A short description of the run. */
+            const std::string& getDescription() const { return description_; }
 
             /**
              * Get an int parameter value.
+             *
              * @param name The name of the parameter.
              * @return The parameter value.
              */
-            int getIntParameter(const std::string& name) {
-                return intParameters_[name];
-            }
+            int getIntParameter(const std::string& name) { return intParameters_[name]; }
 
             /**
              * Set an int parameter value.
+             * 
              * @param name The name of the parameter.
              * @param value The value of the parameter.
              * @return The parameter value.
              */
-            void setIntParameter(const std::string& name, int value) {
+            void setIntParameter(const std::string& name, int value) { 
                 intParameters_[name] = value;
             }
 
             /**
              * Get a float parameter value.
+             * 
              * @param name The name of the parameter.
              * @return value The parameter value.
              */
@@ -117,6 +96,7 @@ namespace ldmx {
 
             /**
              * Set a float parameter value.
+             * 
              * @param name The name of the parameter.
              * @return value The parameter value.
              */
@@ -126,6 +106,7 @@ namespace ldmx {
 
             /**
              * Get a string parameter value.
+             * 
              * @param name The name of the parameter.
              * @return value The parameter value.
              */
@@ -135,6 +116,7 @@ namespace ldmx {
 
             /**
              * Set a string parameter value.
+             * 
              * @param name The name of the parameter.
              * @return value The parameter value.
              */
@@ -142,59 +124,46 @@ namespace ldmx {
                 stringParameters_[name] = value;
             }
 
-            /**
-             * Print information about this object.
-             */
+            /** Print a string desciption of this object. */
             void Print(Option_t *option = "") const;
 
             /**
              * Copy this object.
+             * 
              * @param o The target object.
              */
-            void Copy(TObject& o) const {
-                ((RunHeader&) o) = *this;
-            }
+            void Copy(TObject& o) const { ((RunHeader&) o) = *this; }
 
         private:
 
-            /**
-             * The run number.
-             */
+            /** Run number. */
             int runNumber_{0};
 
-            /**
-             * The detector name.
-             */
+            /** Detector name. */
             std::string detectorName_{""};
 
-            /**
-             * The detector version.
-             */
-            int detectorVersion_{0};
-
-            /**
-             * The run description.
-             */
+            /** Run description. */
             std::string description_{""};
 
-            /**
-             * The int parameters.
+            /** 
+             * git SHA-1 hash associated with the software tag used to generate
+             * this file.
              */
+            std::string softwareTag_{GIT_SHA1}; 
+
+            /** Map of int parameters. */
             std::map<std::string, int> intParameters_;
 
-            /**
-             * The float parameters.
-             */
+            /** Map of float parameters. */
             std::map<std::string, float> floatParameters_;
 
-            /**
-             * The string parameters.
-             */
+            /** Map of string parameters. */
             std::map<std::string, std::string> stringParameters_;
 
-            ClassDef(RunHeader, 1);
-    };
+            ClassDef(RunHeader, 2);
 
-}
+    }; // RunHeader
 
-#endif /* EVENT_RUNHEADER_H_ */
+} // ldmx
+
+#endif // _EVENT_RUN_HEADER_H_ 
