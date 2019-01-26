@@ -57,6 +57,11 @@ set(MODULES Event Framework DetDescr Tools EventProc SimCore SimPlugins Biasing 
 foreach(module ${MODULES})
   message(STATUS "Adding module: ${module}")
   add_subdirectory(${module})
+  if(EXTRA_INC)
+      message(STATUS "Adding include directory: ${EXTRA_INC}")
+      include_directories(${EXTRA_INC}) 
+      unset(EXTRA_INC)
+  endif()
 endforeach()
 
 # configure scripts and copy to installation dir 
