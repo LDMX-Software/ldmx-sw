@@ -160,7 +160,7 @@ namespace ldmx {
             /** Map of string parameters. */
             std::map<std::string, std::string> stringParameters_;
 
-            ClassDef(RunHeader, 1);
+            ClassDef(RunHeader, 2);
 
     }; // RunHeader
 
