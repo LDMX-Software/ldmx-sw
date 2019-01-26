@@ -19,6 +19,11 @@
 #include <map>
 #include <string>
 
+//-------------//
+//   ldmx-sw   //
+//-------------//
+#include "Event/Version.h"
+
 namespace ldmx {
 
     class RunHeader : public TObject {
@@ -50,6 +55,12 @@ namespace ldmx {
 
             /** @return The name of the detector used to create the events. */
             const std::string& getDetectorName() const { return detectorName_; }
+
+            /** 
+             * @return The git SHA-1 associated with the software tag used
+             * to generate this file.
+             */
+            const std::string& getSoftwareTag() const { return softwareTag_; }
 
             /** @return A short description of the run. */
             const std::string& getDescription() const { return description_; }
@@ -133,6 +144,12 @@ namespace ldmx {
 
             /** Run description. */
             std::string description_{""};
+
+            /** 
+             * git SHA-1 hash associated with the software tag used to generate
+             * this file.
+             */
+            std::string softwareTag_{GIT_SHA1}; 
 
             /** Map of int parameters. */
             std::map<std::string, int> intParameters_;
