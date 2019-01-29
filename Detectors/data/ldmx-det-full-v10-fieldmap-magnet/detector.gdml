@@ -3,11 +3,11 @@
       
   <define>
     <variable name="x" value="1"/>
-    <variable name="dx" value="35"/>
-    <variable name="dy" value="2"/>		
+    <variable name="dx" value="40"/>
+    <variable name="dy" value="3"/>		
     <variable name="dz" value="2"/>		
-    <variable name="gap" value="0.5"/>
-    <variable name="number_of_bars" value="37"/>
+    <variable name="gap" value="0.3"/>
+    <variable name="number_of_bars" value="25"/>
 
     <!-- define center position and identity rotation -->
     <position name="center" x="0" y="0" z="0"/>
@@ -189,21 +189,21 @@
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <physvol copynumber="6">
-        <file name="ecal.gdml"/>
-        <positionref ref="em_calorimeter_pos"/>
-        <rotationref ref="identity"/>
-      </physvol>
-      <physvol copynumber="7">
-        <file name="hcal.gdml"/>
-        <positionref ref="hadron_calorimeter_pos"/>
-        <rotationref ref="identity"/>
-      </physvol>
-      <physvol>
-        <file name="magnet.gdml"/>
-        <positionref ref="magnet_pos"/>
-        <rotationref ref="identity"/>
-      </physvol>
+      <!-- <physvol copynumber="6"> -->
+      <!--   <file name="ecal.gdml"/> -->
+      <!--   <positionref ref="em_calorimeter_pos"/> -->
+      <!--   <rotationref ref="identity"/> -->
+      <!-- </physvol> -->
+      <!-- <physvol copynumber="7"> -->
+      <!--   <file name="hcal.gdml"/> -->
+      <!--   <positionref ref="hadron_calorimeter_pos"/> -->
+      <!--   <rotationref ref="identity"/> -->
+      <!-- </physvol> -->
+      <!-- <physvol> -->
+      <!--   <file name="magnet.gdml"/> -->
+      <!--   <positionref ref="magnet_pos"/> -->
+      <!--   <rotationref ref="identity"/> -->
+      <!-- </physvol> -->
       <auxiliary auxtype="DetElem" auxvalue="Top"/>
     </volume>
   </structure>
