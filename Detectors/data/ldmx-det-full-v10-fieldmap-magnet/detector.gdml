@@ -189,21 +189,21 @@
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
       </physvol>
-      <!-- <physvol copynumber="6"> -->
-      <!--   <file name="ecal.gdml"/> -->
-      <!--   <positionref ref="em_calorimeter_pos"/> -->
-      <!--   <rotationref ref="identity"/> -->
-      <!-- </physvol> -->
-      <!-- <physvol copynumber="7"> -->
-      <!--   <file name="hcal.gdml"/> -->
-      <!--   <positionref ref="hadron_calorimeter_pos"/> -->
-      <!--   <rotationref ref="identity"/> -->
-      <!-- </physvol> -->
-      <!-- <physvol> -->
-      <!--   <file name="magnet.gdml"/> -->
-      <!--   <positionref ref="magnet_pos"/> -->
-      <!--   <rotationref ref="identity"/> -->
-      <!-- </physvol> -->
+      <physvol copynumber="6">
+        <file name="ecal.gdml"/>
+        <positionref ref="em_calorimeter_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol copynumber="7">
+        <file name="hcal.gdml"/>
+        <positionref ref="hadron_calorimeter_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <file name="magnet.gdml"/>
+        <positionref ref="magnet_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
       <auxiliary auxtype="DetElem" auxvalue="Top"/>
     </volume>
   </structure>
