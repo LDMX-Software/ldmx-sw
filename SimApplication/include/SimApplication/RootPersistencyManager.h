@@ -147,6 +147,13 @@ namespace ldmx {
                 dropCollectionNames_.push_back(collectionName);  
             }  
 
+            /** 
+             * Set the description of the run. 
+             *
+             * @param description Description of the run.
+             */
+            void setRunDescription(std::string description) { description_ = description; }
+
         private:
 
             /**
@@ -224,6 +231,9 @@ namespace ldmx {
              * The output file name.
              */
             std::string fileName_ {"ldmx_sim_events.root"};
+
+            /** Description of this run. */
+            std::string description_{"LDMX simulated events."}; 
 
             /**
              * The output file with the event tree.
