@@ -264,11 +264,11 @@ namespace ldmx {
         DetectorHeader* detectorHeader = detector->getDetectorHeader();
 
         // Create the run header.
-        RunHeader* runHeader = new RunHeader(aRun->GetRunID(), detectorHeader->getName(),
-                                             "LDMX sim events");
+        RunHeader* runHeader 
+            = new RunHeader(aRun->GetRunID(), detectorHeader->getName(), description_);
 
         // Set parameter value with number of events processed.
-        runHeader->setIntParameter("EVENT_COUNT", aRun->GetNumberOfEvent());
+        runHeader->setIntParameter("Event count", aRun->GetNumberOfEvent());
 
         // Print information about run header.
         if (m_verbose > 1) {
@@ -277,7 +277,8 @@ namespace ldmx {
                          << boost::format("\t Run number: %s\n")    % runHeader->getRunNumber() 
                          << boost::format("\t Detector name: %s\n") % runHeader->getDetectorName() 
                          << boost::format("\t Software tag: %s\n")  % runHeader->getSoftwareTag() 
-                         << boost::format("\t Description: %s\n")   % runHeader->getDescription(); 
+                         << boost::format("\t Description: %s\n")   % runHeader->getDescription()
+                         << boost::format("\t Event count: %s\n")   % runHeader->getIntParameter("Event count"); 
             std::cout << headerString.str() << "\n";  
         }
 

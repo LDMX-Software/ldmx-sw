@@ -74,6 +74,9 @@ namespace ldmx {
             /** Command allowing a user to specify a collection name to drop. */
             G4UIcmdWithAString* dropCmd_{nullptr}; 
 
+            /** Command that allows a user to provide a description of the run. */
+            G4UIcmdWithAString* descriptionCmd_{nullptr}; 
+
             /** Pointer to ROOT persistency manager. */
             RootPersistencyManager* rootIO_{nullptr};
     };
