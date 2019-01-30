@@ -16,7 +16,6 @@
 #include "DetDescr/DetectorID.h"
 
 using ldmx::DetectorID;
-using ldmx::Event;
 
 namespace ldmx {
 
