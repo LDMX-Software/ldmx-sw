@@ -36,6 +36,7 @@
 //   Geant4   //
 //------------//
 #include "G4SDManager.hh"
+#include "G4Run.hh"
 #include "G4RunManager.hh"
 
 namespace ldmx {
@@ -345,5 +346,4 @@ namespace ldmx {
             }
         }
     }
-
 } // namespace sim

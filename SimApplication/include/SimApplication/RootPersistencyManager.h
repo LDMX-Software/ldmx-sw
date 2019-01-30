@@ -13,7 +13,6 @@
 //------------//
 #include "G4PersistencyManager.hh"
 #include "G4PersistencyCenter.hh"
-#include "G4Run.hh"
 
 //-------------//
 //   ldmx-sw   //
@@ -23,9 +22,12 @@
 #include "SimApplication/G4TrackerHit.h"
 #include "SimApplication/SimParticleBuilder.h"
 
+// Forward declarations
+class G4Run; 
+
 namespace ldmx {
 
-    // Forward declarations
+    // Forward declarations within the ldmx namespace
     class EcalHitIO; 
     class Event;
     class EventFile;
@@ -69,7 +71,8 @@ namespace ldmx {
              * @return The ROOT persistency manager.
              */
             static RootPersistencyManager* getInstance() {
-                return (RootPersistencyManager*) G4PersistencyCenter::GetPersistencyCenter()->CurrentPersistencyManager();
+                return static_cast<RootPersistencyManager*>(
+                        G4PersistencyCenter::GetPersistencyCenter()->CurrentPersistencyManager());
             }
 
             /**
