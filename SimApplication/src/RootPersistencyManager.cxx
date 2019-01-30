@@ -277,7 +277,8 @@ namespace ldmx {
                          << boost::format("\t Run number: %s\n")    % runHeader->getRunNumber() 
                          << boost::format("\t Detector name: %s\n") % runHeader->getDetectorName() 
                          << boost::format("\t Software tag: %s\n")  % runHeader->getSoftwareTag() 
-                         << boost::format("\t Description: %s\n")   % runHeader->getDescription(); 
+                         << boost::format("\t Description: %s\n")   % runHeader->getDescription()
+                         << boost::format("\t Event count: %s\n")   % runHeader->getIntParameter("Event count"); 
             std::cout << headerString.str() << "\n";  
         }
 
