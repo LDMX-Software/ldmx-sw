@@ -1,25 +1,49 @@
+/**
+ * @file RootPersistencyManager.cxx
+ * @brief Class used to manage ROOT based persistency.
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
+
 #include "SimApplication/RootPersistencyManager.h"
 
-// LDMX
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <algorithm>
+
+//-----------//
+//   Boost   //
+//-----------//
+#include "boost/format.hpp"
+
+//-------------//
+//   ldmx-sw   //
+//-------------//
+#include "Event/Event.h"
 #include "Event/EventHeader.h"
+#include "Event/RunHeader.h"
+#include "Framework/EventFile.h"
 #include "Framework/EventImpl.h"
 #include "Event/EventConstants.h"
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/DetectorConstruction.h"
-#include "SimApplication/EcalHitIO.h"
-#include "SimApplication/G4TrackerHit.h"
 #include "SimApplication/RunManager.h"
 #include "SimApplication/TrackerSD.h"
 #include "SimApplication/ScoringPlaneSD.h"
 
-// Geant4
+//------------//
+//   Geant4   //
+//------------//
 #include "G4SDManager.hh"
 #include "G4RunManager.hh"
 
 namespace ldmx {
 
     RootPersistencyManager::RootPersistencyManager() :
-            G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"), ecalHitIO_(new EcalHitIO(&simParticleBuilder_)) {
+        G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"), 
+        ecalHitIO_(new EcalHitIO(&simParticleBuilder_)) 
+    {
         G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
         G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 
