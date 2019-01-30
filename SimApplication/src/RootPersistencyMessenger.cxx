@@ -52,6 +52,9 @@ namespace ldmx {
         dropCmd_ = new G4UIcmdWithAString{"/ldmx/persistency/root/dropCol", this}; 
         dropCmd_->AvailableForStates(G4ApplicationState::G4State_Idle);
         dropCmd_->SetGuidance("Drop the hits associated with the specified collection."); 
+    
+        descriptionCmd_ = new G4UIcmdWithAString{"/ldmx/persistency/root/description", this};
+        descriptionCmd_->SetGuidance("Description of this run.");  
     }
 
     RootPersistencyMessenger::~RootPersistencyMessenger() {
@@ -62,7 +65,8 @@ namespace ldmx {
         delete comprCmd_;
         //delete modeCmd_;
         delete rootDir_;
-        delete dropCmd_; 
+        delete dropCmd_;
+        delete descriptionCmd_;  
     }
 
     void RootPersistencyMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
@@ -93,6 +97,8 @@ namespace ldmx {
                 rootIO_->setCompressHitContribs(compressContribsCmd_->GetNewBoolValue(newValues.c_str()));
             } else if (command == dropCmd_) { 
                 rootIO_->dropCollection(newValues); 
+            } else if (command == descriptionCmd_) {
+                rootIO_->setRunDescription(newValues);  
             }
         } else {
             // Re-enable ROOT IO.
