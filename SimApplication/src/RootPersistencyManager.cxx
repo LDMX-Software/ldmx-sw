@@ -264,11 +264,11 @@ namespace ldmx {
         DetectorHeader* detectorHeader = detector->getDetectorHeader();
 
         // Create the run header.
-        RunHeader* runHeader = new RunHeader(aRun->GetRunID(), detectorHeader->getName(),
-                                             "LDMX sim events");
+        RunHeader* runHeader 
+            = new RunHeader(aRun->GetRunID(), detectorHeader->getName(), description_);
 
         // Set parameter value with number of events processed.
-        runHeader->setIntParameter("EVENT_COUNT", aRun->GetNumberOfEvent());
+        runHeader->setIntParameter("Event count", aRun->GetNumberOfEvent());
 
         // Print information about run header.
         if (m_verbose > 1) {
