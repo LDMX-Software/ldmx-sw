@@ -1,25 +1,51 @@
+/**
+ * @file RootPersistencyManager.cxx
+ * @brief Class used to manage ROOT based persistency.
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
+
 #include "SimApplication/RootPersistencyManager.h"
 
-// LDMX
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <algorithm>
+
+//-----------//
+//   Boost   //
+//-----------//
+#include "boost/format.hpp"
+
+//-------------//
+//   ldmx-sw   //
+//-------------//
+#include "Event/Event.h"
 #include "Event/EventHeader.h"
+#include "Event/RunHeader.h"
+#include "Framework/EventFile.h"
 #include "Framework/EventImpl.h"
 #include "Event/EventConstants.h"
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/DetectorConstruction.h"
-#include "SimApplication/EcalHitIO.h"
-#include "SimApplication/G4TrackerHit.h"
 #include "SimApplication/RunManager.h"
 #include "SimApplication/TrackerSD.h"
 #include "SimApplication/ScoringPlaneSD.h"
 
-// Geant4
-#include "G4SDManager.hh"
+//------------//
+//   Geant4   //
+//------------//
+#include "G4Run.hh"
 #include "G4RunManager.hh"
+#include "G4RunManagerKernel.hh"
+#include "G4SDManager.hh"
 
 namespace ldmx {
 
     RootPersistencyManager::RootPersistencyManager() :
-            G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"), ecalHitIO_(new EcalHitIO(&simParticleBuilder_)) {
+        G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"), 
+        ecalHitIO_(new EcalHitIO(&simParticleBuilder_)) 
+    {
         G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
         G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 
@@ -270,15 +296,22 @@ namespace ldmx {
         // Set parameter value with number of events processed.
         runHeader->setIntParameter("Event count", aRun->GetNumberOfEvent());
 
+        // Set a string parameter with the Geant4 SHA-1.
+        G4String g4Version = G4RunManagerKernel::GetRunManagerKernel()->GetGitHash();
+        runHeader->setStringParameter("Geant4 revision", g4Version); 
+
         // Print information about run header.
         if (m_verbose > 1) {
+            
+
             std::ostringstream headerString; 
             headerString << "\n[ RootPersistencyManager ]: Creating run header\n" 
                          << boost::format("\t Run number: %s\n")    % runHeader->getRunNumber() 
                          << boost::format("\t Detector name: %s\n") % runHeader->getDetectorName() 
                          << boost::format("\t Software tag: %s\n")  % runHeader->getSoftwareTag() 
                          << boost::format("\t Description: %s\n")   % runHeader->getDescription()
-                         << boost::format("\t Event count: %s\n")   % runHeader->getIntParameter("Event count"); 
+                         << boost::format("\t Event count: %s\n")   % runHeader->getIntParameter("Event count")
+                         << boost::format("\t Geant4 revision: %s\n")  % runHeader->getStringParameter("Geant4 revision"); 
             std::cout << headerString.str() << "\n";  
         }
 
@@ -321,5 +354,4 @@ namespace ldmx {
             }
         }
     }
-
 } // namespace sim

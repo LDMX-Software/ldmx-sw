@@ -1,7 +1,22 @@
 #include "SimApplication/RootPersistencyMessenger.h"
 
-// STL
+//----------------//
+//   C++ StdLib   //
+//----------------//
 #include <string>
+
+//------------//
+//   Geant4   //
+//------------//
+#include "G4UIdirectory.hh"
+#include "G4UIparameter.hh"
+#include "G4UIcmdWithABool.hh"
+#include "G4UIcmdWithAString.hh"
+
+//-------------//
+//   ldmx-sw   //
+//-------------//
+#include "SimApplication/RootPersistencyManager.h"
 
 namespace ldmx {
 
@@ -63,7 +78,6 @@ namespace ldmx {
         delete enableCmd_;
         delete disableCmd_;
         delete comprCmd_;
-        //delete modeCmd_;
         delete rootDir_;
         delete dropCmd_;
         delete descriptionCmd_;  
@@ -89,12 +103,12 @@ namespace ldmx {
             } else if (command == comprCmd_) {
                 int compr = std::stoi(newValues);
                 rootIO_->setCompressionLevel(compr);
-            } /*else if (command == modeCmd_) {
-             rootIO_->getWriter()->setMode(newValues);
-             }*/else if (command == hitContribsCmd_) {
-                rootIO_->setEnableHitContribs(hitContribsCmd_->GetNewBoolValue(newValues.c_str()));
+            } else if (command == hitContribsCmd_) {
+                rootIO_->setEnableHitContribs(
+                        static_cast<G4UIcmdWithABool*>(hitContribsCmd_)->GetNewBoolValue(newValues.c_str()));
             } else if (command == compressContribsCmd_) {
-                rootIO_->setCompressHitContribs(compressContribsCmd_->GetNewBoolValue(newValues.c_str()));
+                rootIO_->setCompressHitContribs(
+                        static_cast<G4UIcmdWithABool*>(compressContribsCmd_)->GetNewBoolValue(newValues.c_str()));
             } else if (command == dropCmd_) { 
                 rootIO_->dropCollection(newValues); 
             } else if (command == descriptionCmd_) {
