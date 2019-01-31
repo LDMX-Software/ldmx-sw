@@ -1,19 +1,37 @@
+/**
+ * @file RunManager.cxx
+ * @brief Class providing a Geant4 run manager implementation.
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
+
 #include "SimApplication/RunManager.h"
 
-// LDMX
+//-------------//
+//   ldmx-sw   //
+//-------------//
 #include "SimApplication/APrimePhysics.h"
+#include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/GammaPhysics.h"
+#include "SimApplication/ParallelWorld.h"
+#include "SimApplication/ParallelWorldMessenger.h"
 #include "SimApplication/PrimaryGeneratorAction.h"
 #include "SimApplication/PrimaryGeneratorMessenger.h"
 #include "SimApplication/RootPersistencyMessenger.h"
+#include "SimApplication/RootPersistencyManager.h" 
 #include "SimApplication/SteppingAction.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
 #include "SimApplication/UserStackingAction.h"
 #include "SimApplication/UserTrackingAction.h"
+#include "SimPlugins/PluginManager.h"
+#include "SimPlugins/PluginMessenger.h"
 
-// Geant4
+//------------//
+//   Geant4   //
+//------------//
 #include "FTFP_BERT.hh"
+#include "G4GDMLParser.hh"
 #include "G4GenericBiasingPhysics.hh"
 #include "G4VModularPhysicsList.hh"
 #include "G4ParallelWorldPhysics.hh"
@@ -106,4 +124,8 @@ namespace ldmx {
         new RootPersistencyMessenger(rootIO);
     }
 
-}
+    DetectorConstruction* RunManager::getDetectorConstruction() {
+        return static_cast<DetectorConstruction*>(this->userDetector); 
+    }
+
+} // ldmx 

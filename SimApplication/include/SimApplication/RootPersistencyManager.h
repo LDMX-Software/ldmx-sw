@@ -1,56 +1,52 @@
 /**
  * @file RootPersistencyManager.h
- * @brief Class providing persistency manager implementation with SimEvent output
+ * @brief Class used to manage ROOT based persistency.
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
-#define SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
-
-//-----------//
-//   Boost   //
-//-----------//
-#include "boost/format.hpp"
-
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <algorithm>
+#ifndef _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
+#define _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 
 //------------//
 //   Geant4   //
 //------------//
 #include "G4PersistencyManager.hh"
 #include "G4PersistencyCenter.hh"
-#include "G4Run.hh"
 
-//----------//
-//   LDMX   //
-//----------//
-#include "Event/Event.h"
-#include "Biasing/BiasingMessenger.h"
-#include "Framework/EventFile.h"
-#include "Event/EventHeader.h"
-#include "Event/RunHeader.h"
+//-------------//
+//   ldmx-sw   //
+//-------------//
 #include "SimApplication/EcalHitIO.h"
+#include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
 #include "SimApplication/SimParticleBuilder.h"
 
+// Forward declarations
+class G4Run; 
+
 namespace ldmx {
 
+    // Forward declarations within the ldmx namespace
+    class EcalHitIO; 
+    class Event;
+    class EventFile;
+    class RunHeader;
+    
     /**
      * @class RootPersistencyManager
-     * @brief Provides a <i>G4PersistencyManager</i> implemention with SimEvent output
      *
      * @note
-     * Output is written at the end of each event.  An EventFile is used to write from an
-     * Event buffer object into an output branch within a tree.  The event buffer is cleared
-     * after the event is written.  A SimParticleBuilder is used to build a set of SimParticle
-     * objects from the Trajectory objects which were created during event processing.
-     * An EcalHitIO instance provides translation of G4CalorimeterHit objects in the ECal
-     * to an output SimCalorimeterHit collection, transforming the individual steps into
-     * cell energy depositions.  The tracker hit collections of G4TrackerHit objects are
-     * translated directly into output SimTrackerHit collections.
+     * Output is written at the end of each event.  An EventFile is used to 
+     * write from an Event buffer object into an output branch within a tree.
+     * The event buffer is cleared after the event is written.  A 
+     * SimParticleBuilder is used to build a set of SimParticle objects from 
+     * the Trajectory objects which were created during event processing. An 
+     * EcalHitIO instance provides translation of G4CalorimeterHit objects in
+     * the ECal to an output SimCalorimeterHit collection, transforming the 
+     * individual steps into cell energy depositions.  The tracker hit
+     * collections of G4TrackerHit objects are translated directly into 
+     * output SimTrackerHit collections.
      */
     class RootPersistencyManager : public G4PersistencyManager {
 
@@ -75,7 +71,8 @@ namespace ldmx {
              * @return The ROOT persistency manager.
              */
             static RootPersistencyManager* getInstance() {
-                return (RootPersistencyManager*) G4PersistencyCenter::GetPersistencyCenter()->CurrentPersistencyManager();
+                return static_cast<RootPersistencyManager*>(
+                        G4PersistencyCenter::GetPersistencyCenter()->CurrentPersistencyManager());
             }
 
             /**
