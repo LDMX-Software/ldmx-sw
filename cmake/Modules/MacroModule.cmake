@@ -108,7 +108,7 @@ macro(MODULE)
   
   # make list of libraries required by executables and test programs which includes this module's lib
   if (sources)
-    set(MODULE_BIN_LIBRARIES ${MODULE_LIBRARIES} ${MODULE_NAME})
+    set(MODULE_BIN_LIBRARIES ${MODULE_NAME} ${MODULE_LIBRARIES})
   else()
     set(MODULE_BIN_LIBRARIES ${MODULE_LIBRARIES})
   endif()
