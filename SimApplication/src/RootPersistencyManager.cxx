@@ -297,7 +297,7 @@ namespace ldmx {
         runHeader->setIntParameter("Event count", aRun->GetNumberOfEvent());
 
         // Set a string parameter with the Geant4 SHA-1.
-        G4String g4Version = G4RunManagerKernel::GetRunManagerKernel()->GetGitHash();
+        G4String g4Version = G4RunManagerKernel::GetRunManagerKernel()->GetVersionString();
         runHeader->setStringParameter("Geant4 revision", g4Version); 
 
         // Print information about run header.
