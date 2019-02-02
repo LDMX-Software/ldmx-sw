@@ -22,6 +22,7 @@ namespace ldmx {
     BDTHelper::BDTHelper(TString importBDTFile) {
 
         // Import the python packages and load the features into xgboost.
+        TPython::Exec("print 'Loading xgboost BDT'"); 
         TPython::Exec("import xgboost as xgb");
         TPython::Exec("import numpy as np");
         TPython::Exec("import pickle as pkl");
