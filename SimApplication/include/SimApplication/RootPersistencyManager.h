@@ -151,6 +151,13 @@ namespace ldmx {
              */
             void setRunDescription(std::string description) { description_ = description; }
 
+            /**
+             * Set the run number. 
+             *
+             * @param runNumber The run number.
+             */
+            void setRunNumber(int runNumber) { runNumber_ = runNumber; } 
+
         private:
 
             /**
@@ -231,6 +238,9 @@ namespace ldmx {
 
             /** Description of this run. */
             std::string description_{"LDMX simulated events."}; 
+
+            /** Run number. */
+            int runNumber_{0}; 
 
             /**
              * The output file with the event tree.
