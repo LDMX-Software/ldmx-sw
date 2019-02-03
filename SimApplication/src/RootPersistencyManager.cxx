@@ -291,7 +291,7 @@ namespace ldmx {
 
         // Create the run header.
         RunHeader* runHeader 
-            = new RunHeader(aRun->GetRunID(), detectorHeader->getName(), description_);
+            = new RunHeader(runNumber_, detectorHeader->getName(), description_);
 
         // Set parameter value with number of events processed.
         runHeader->setIntParameter("Event count", aRun->GetNumberOfEvent());
