@@ -79,7 +79,10 @@ namespace ldmx {
             G4UIcommand* dropCmd_{nullptr}; 
 
             /** Command that allows a user to provide a description of the run. */
-            G4UIcommand* descriptionCmd_{nullptr}; 
+            G4UIcommand* descriptionCmd_{nullptr};
+            
+            /** Command that allows a user to set the run number. */
+            G4UIcommand* runCmd_{nullptr};  
 
             /** Pointer to ROOT persistency manager. */
             RootPersistencyManager* rootIO_{nullptr};
