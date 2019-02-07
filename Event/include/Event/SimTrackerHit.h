@@ -100,6 +100,13 @@ namespace ldmx {
             std::vector<double> getMomentum() const { return {px_, py_, pz_}; };
 
             /**
+             * Get the Sim particle track ID of the hit.
+             * @return The Sim particle track ID of the hit.
+             */
+            int getSimTrackID() const { return simTrackID_; };
+
+
+            /**
              * Get the Monte Carlo particle that created the hit.
              * @return The particle that created the hit.
              */
@@ -158,6 +165,13 @@ namespace ldmx {
              * @param pz The Z momentum.
              */
             void setMomentum(const float px, const float py, const float pz);
+
+            /**
+             * Set the Sim particle track ID of the hit.
+             * @return The Sim particle track ID of the hit.
+             */
+            void setSimTrackID(const int simTrackID) { this->simTrackID_ = simTrackID; };
+
 
             /**
              * Set the Monte Carlo particle that created the hit.
@@ -224,6 +238,11 @@ namespace ldmx {
              * The path length of the hit.
              */
             float pathLength_{0};
+
+            /**
+             * The Sim Track ID.
+             */
+            int simTrackID_{0};
 
             /**
              * The particle that caused the hit.

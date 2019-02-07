@@ -41,6 +41,7 @@ namespace ldmx {
         parents_->Delete();
 
         energy_ = 0;
+        trackID_ = -1;
         pdgID_ = 0;
         genStatus_ = -1;
         time_ = 0;
@@ -64,6 +65,7 @@ namespace ldmx {
     void SimParticle::Print(Option_t *option) const {
         std::cout << "SimParticle { " <<
                 "energy: " << energy_ << ", " <<
+                "Track ID: " << trackID_ << ", " <<
                 "PDG ID: " << pdgID_ << ", " <<
                 "genStatus: " << genStatus_ << ", " <<
                 "time: " << time_ << ", " <<
