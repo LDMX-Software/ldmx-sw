@@ -80,6 +80,12 @@ namespace ldmx {
             float getEdep() const { return edep_; };
 
             /**
+             * Get the energy
+             * @return The energy of the hit.
+             */
+            float getEnergy() const { return e_; };
+
+            /**
              * Get the global time of the hit [ns].
              * @return The global time of the hit.
              */
@@ -105,6 +111,11 @@ namespace ldmx {
              */
             int getSimTrackID() const { return simTrackID_; };
 
+            /**
+             * Get the Sim particle track ID of the hit.
+             * @return The Sim particle track ID of the hit.
+             */
+            int getSimPdgID() const { return simPdgID_; };
 
             /**
              * Get the Monte Carlo particle that created the hit.
@@ -146,6 +157,12 @@ namespace ldmx {
             void setEdep(const float edep) { this->edep_ = edep; };
 
             /**
+             * Set the energy of the hit.
+             * @param e The energy of the hit.
+             */
+            void setEnergy(const float e) { this->e_ = e; };
+
+            /**
              * Set the global time of the hit [ns].
              * @param time The global time of the hit.
              */
@@ -172,6 +189,11 @@ namespace ldmx {
              */
             void setSimTrackID(const int simTrackID) { this->simTrackID_ = simTrackID; };
 
+            /**
+             * Set the Sim particle track ID of the hit.
+             * @return The Sim particle track ID of the hit.
+             */
+            void setSimPdgID(const int simPdgID) { this->simPdgID_ = simPdgID; };
 
             /**
              * Set the Monte Carlo particle that created the hit.
@@ -220,6 +242,11 @@ namespace ldmx {
             float pz_{0};
 
             /**
+             * The total energy.
+             */
+            float e_{0};
+
+            /**
              * The X position.
              */
             float x_{0};
@@ -243,6 +270,11 @@ namespace ldmx {
              * The Sim Track ID.
              */
             int simTrackID_{0};
+
+            /**
+             * The Sim PDG ID.
+             */
+            int simPdgID_{0};
 
             /**
              * The particle that caused the hit.
