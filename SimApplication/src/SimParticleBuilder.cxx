@@ -56,6 +56,7 @@ namespace ldmx {
         }
 
         simParticle->setGenStatus(traj->getGenStatus());
+        simParticle->setTrackID(traj->GetTrackID());
         simParticle->setPdgID(traj->GetPDGEncoding());
         simParticle->setCharge(traj->GetCharge());
         simParticle->setMass(traj->getMass());

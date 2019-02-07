@@ -81,6 +81,14 @@ namespace ldmx {
             }
 
             /**
+             * Get the GEANT track ID of the particle.
+             * @return The GEANT track ID of the particle.
+             */
+            int getTrackID() {
+                return trackID_;
+            }
+
+            /**
              * Get the PDG code of the particle.
              * @return The PDG code of the particle.
              */
@@ -184,6 +192,14 @@ namespace ldmx {
              */
             void setEnergy(const double energy) {
                 this->energy_ = energy;
+            }
+
+            /**
+             * Set the GEANT track ID of the hit.
+             * @param trackID The GEANT track ID of the hit.
+             */
+            void setTrackID(const int trackID) {
+                this->trackID_ = trackID;
             }
 
             /**
@@ -331,6 +347,9 @@ namespace ldmx {
 
             /** The energy of the particle. */
             double energy_{0};
+
+            /** The GEANT track ID of the particle. */
+            int trackID_{-1};
 
             /** The PDG code of the particle. */
             int pdgID_{0};
