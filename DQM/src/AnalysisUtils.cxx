@@ -54,6 +54,13 @@ namespace ldmx {
             return searchForPNGamma(particle, index + 1);  
         }
 
+        double thetaZ(const SimParticle* particle) { 
+            
+            std::vector<double> pVec = particle->getMomentum(); 
+            double p = vectorMagnitude(pVec);
+            return acos(pVec[2]/p)*(180/3.14159);  
+        }
+
     } // Analysis    
 
 } // ldmx
