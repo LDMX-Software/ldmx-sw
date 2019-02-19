@@ -10,6 +10,7 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
+#include <cmath>
 #include <vector>
 
 // Forward declaration
@@ -52,9 +53,17 @@ namespace ldmx {
          * @return Magnitude of the given vector.
          */
         template <class T>
-        double vectorMagnitude(std::vector<T> v) { 
+        double vectorMagnitude(const std::vector<T> v) { 
                 return sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]); 
         }
+
+        /** 
+         * Calculate theta_z. 
+         *
+         * @param particle Particle whose angle will be calculated.
+         * @return theta_z
+         */
+        double thetaZ(const SimParticle* particle); 
 
     } // Analysis
 
