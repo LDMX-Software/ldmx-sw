@@ -1,6 +1,6 @@
 # declare SimApplication module
 module(
   NAME DQM
-  DEPENDENCIES Framework 
+  DEPENDENCIES Event Framework 
   EXTERNAL_DEPENDENCIES ROOT
 )
