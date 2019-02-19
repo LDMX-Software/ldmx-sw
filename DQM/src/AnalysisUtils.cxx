@@ -37,4 +37,19 @@ namespace ldmx {
         
         return searchForRecoil(particles, index + 1); 
     }
+
+    const SimParticle* searchForPNGamma(const SimParticle* particle, const int index) { 
+        
+        // Check that the index is within the bounds of the array. If not, 
+        // throw an exception.
+        if (index == particle->getDaughterCount()) 
+            throw std::out_of_range("Index is beyond the size of the TClonesArray.");
+
+        const SimParticle* daughter = particle->getDaughter(index);
+        if ((daughter->getDaughterCount() > 0) 
+                && (daughter->getDaughter(0)->getProcessType() 
+                        == SimParticle::ProcessType::photonNuclear)) return daughter;
+
+        return searchForPNGamma(particle, index + 1);  
+    }
 }
