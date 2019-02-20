@@ -10,6 +10,7 @@
 //   ROOT   //
 //----------//
 #include "TH1F.h"
+#include "TH2F.h"
 
 //----------//
 //   LDMX   //
@@ -73,6 +74,10 @@ namespace ldmx {
             .xLabel("Kinetic Energy Hardest Photo-nuclear Pion Particle (MeV)").build(); 
         h["hardest_pi_theta_z"] = Histogram1DBuilder<TH1F>("hardest_pi_theta_z", 360, 0, 180)
             .xLabel("#theta_{z} of Hardest Photo-nuclear Pion Particle (Degrees)").build();
+    
+        h["h_ke_h_theta_z"] = new TH2F("h_ke_h_theta_z", "", 400, 0, 4000, 360, 0, 180);
+        h["h_ke_h_theta_z"]->GetXaxis()->SetTitle("Kinetic Energy Hardest Photo-nuclear Pion Particle (MeV)"); 
+        h["h_ke_h_theta_z"]->GetYaxis()->SetTitle("#theta_{z} of Hardest Photo-nuclear Pion Particle (Degrees)"); 
     }
 
     void EcalPN::analyze(const Event & event) { 
@@ -147,7 +152,8 @@ namespace ldmx {
         }
 
         h["hardest_ke"]->Fill(leadKE); 
-        h["hardest_theta_z"]->Fill(leadThetaZ); 
+        h["hardest_theta_z"]->Fill(leadThetaZ);
+        h["h_ke_h_theta_z"]->Fill(leadKE, leadThetaZ); 
         h["hardest_p_ke"]->Fill(leadPKE); 
         h["hardest_p_theta_z"]->Fill(leadPThetaZ); 
         h["hardest_n_ke"]->Fill(leadNKE); 
