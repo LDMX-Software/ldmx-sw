@@ -1,6 +1,16 @@
+/**
+ * @file SimParticle.cxx
+ * @brief Class which implements an MC particle that stores information about 
+ *        tracks from the simulation
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
+
 #include "Event/SimParticle.h"
 
-// STL
+//----------------//
+//   C++ StdLib   //
+//----------------//
 #include <iostream>
 
 ClassImp(ldmx::SimParticle)
