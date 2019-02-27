@@ -40,6 +40,13 @@ namespace ldmx {
             /** Method executed before processing of events begins. */
             void onProcessStart();
 
+        private:
+
+            /** Method used to classify events. */
+            int classifyEvent(const int& neutronCount, 
+                    const int& protonCount, const int& pionCount, 
+                    const int& pi0Count);
+
             /** Container for 1 dimensional ROOT histograms. */
             std::map<std::string, TH1*> h; 
 

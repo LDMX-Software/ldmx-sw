@@ -11,6 +11,7 @@
 //----------//
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TVector3.h"
 
 //----------//
 //   LDMX   //
@@ -60,24 +61,32 @@ namespace ldmx {
     
         h["hardest_ke"] = Histogram1DBuilder<TH1F>("hardest_ke", 400, 0, 4000)
             .xLabel("Kinetic Energy Hardest Photo-nuclear Particle (MeV)").build(); 
-        h["hardest_theta_z"] = Histogram1DBuilder<TH1F>("hardest_theta_z", 360, 0, 180)
-            .xLabel("#theta_{z} of Hardest Photo-nuclear Particle (Degrees)").build();
+        h["hardest_theta"] = Histogram1DBuilder<TH1F>("hardest_theta", 360, 0, 180)
+            .xLabel("#theta of Hardest Photo-nuclear Particle (Degrees)").build();
         h["hardest_p_ke"] = Histogram1DBuilder<TH1F>("hardest_p_ke", 400, 0, 4000)
             .xLabel("Kinetic Energy Hardest Photo-nuclear Proton Particle (MeV)").build(); 
-        h["hardest_p_theta_z"] = Histogram1DBuilder<TH1F>("hardest_p_theta_z", 360, 0, 180)
-            .xLabel("#theta_{z} of Hardest Photo-nuclear Proton Particle (Degrees)").build();
+        h["hardest_p_theta"] = Histogram1DBuilder<TH1F>("hardest_p_theta", 360, 0, 180)
+            .xLabel("#theta of Hardest Photo-nuclear Proton Particle (Degrees)").build();
         h["hardest_n_ke"] = Histogram1DBuilder<TH1F>("hardest_n_ke", 400, 0, 4000)
             .xLabel("Kinetic Energy Hardest Photo-nuclear Neutron Particle (MeV)").build(); 
-        h["hardest_n_theta_z"] = Histogram1DBuilder<TH1F>("hardest_n_theta_z", 360, 0, 180)
-            .xLabel("#theta_{z} of Hardest Photo-nuclear Neutron Particle (Degrees)").build();
+        h["hardest_n_theta"] = Histogram1DBuilder<TH1F>("hardest_n_theta", 360, 0, 180)
+            .xLabel("#theta of Hardest Photo-nuclear Neutron Particle (Degrees)").build();
         h["hardest_pi_ke"] = Histogram1DBuilder<TH1F>("hardest_pi_ke", 400, 0, 4000)
             .xLabel("Kinetic Energy Hardest Photo-nuclear Pion Particle (MeV)").build(); 
-        h["hardest_pi_theta_z"] = Histogram1DBuilder<TH1F>("hardest_pi_theta_z", 360, 0, 180)
-            .xLabel("#theta_{z} of Hardest Photo-nuclear Pion Particle (Degrees)").build();
-    
-        h["h_ke_h_theta_z"] = new TH2F("h_ke_h_theta_z", "", 400, 0, 4000, 360, 0, 180);
-        h["h_ke_h_theta_z"]->GetXaxis()->SetTitle("Kinetic Energy Hardest Photo-nuclear Pion Particle (MeV)"); 
-        h["h_ke_h_theta_z"]->GetYaxis()->SetTitle("#theta_{z} of Hardest Photo-nuclear Pion Particle (Degrees)"); 
+        h["hardest_pi_theta"] = Histogram1DBuilder<TH1F>("hardest_pi_theta", 360, 0, 180)
+            .xLabel("#theta of Hardest Photo-nuclear Pion Particle (Degrees)").build();
+  
+        std::vector<std::string> labels = {"", "Nothing hard", "1n", "2n", "#geq 3n", 
+            "1 #pi", "2 #pi", "1 #pi_{0}", "1 #pi 1 N", "1p", "2N", "exotics",  "multi-body", ""}; 
+        h["event_type"] = Histogram1DBuilder<TH1F>("event_type", 14, -1, 13).build(); 
+        for (int i = 1; i < labels.size(); ++i) {
+            h["event_type"]->GetXaxis()->SetBinLabel(i, labels[i-1].c_str()); 
+        }
+
+
+        h["h_ke_h_theta"] = new TH2F("h_ke_h_theta", "", 400, 0, 4000, 360, 0, 180);
+        h["h_ke_h_theta"]->GetXaxis()->SetTitle("Kinetic Energy Hardest Photo-nuclear Pion Particle (MeV)"); 
+        h["h_ke_h_theta"]->GetYaxis()->SetTitle("#theta of Hardest Photo-nuclear Pion Particle (Degrees)"); 
     }
 
     void EcalPN::analyze(const Event & event) { 
@@ -118,48 +127,121 @@ namespace ldmx {
         h["pn_gamma_int_z"]->Fill(pnGamma->getEndPoint()[2]); 
         h["pn_gamma_vertex_z"]->Fill(pnGamma->getVertex()[2]);  
    
-        double leadKE{-9999},   leadThetaZ{-9999};
-        double leadPKE{-9999},  leadPThetaZ{-9999};
-        double leadNKE{-9999},  leadNThetaZ{-9999};
-        double leadPiKE{-9999}, leadPiThetaZ{-9999};
+        double leadKE{-9999},   leadTheta{-9999};
+        double leadPKE{-9999},  leadPTheta{-9999};
+        double leadNKE{-9999},  leadNTheta{-9999};
+        double leadPiKE{-9999}, leadPiTheta{-9999};
+        int protonCount{0}, neutronCount{0}, pionCount{0}, pi0Count{0};  
+        
+        // Loop through all of the PN daughters and extract kinematic 
+        // information.
         for (size_t idaughter = 0; idaughter < pnGamma->getDaughterCount(); ++idaughter) {
+
+            // Get the ith daughter
             const SimParticle* daughter = pnGamma->getDaughter(idaughter);
 
-            double ke = daughter->getEnergy() - daughter->getMass(); 
-            double theta_z = Analysis::thetaZ(daughter); 
-            int pdgid = daughter->getPdgID();
-            
+            // Get the PDG ID
+            int pdgID = daughter->getPdgID();
+            if (pdgID == 22 || pdgID > 10000) continue;
+
+            // Calculate the kinetic energy
+            double ke = daughter->getEnergy() - daughter->getMass();
+
+            std::vector<double> vec = daughter->getMomentum(); 
+            TVector3 pvec(vec[0], vec[1], vec[2]); 
+
+            //  Calculate the polar angle
+            double theta = pvec.Theta();
+ 
             if (leadKE < ke) { 
                 leadKE = ke;
-                leadThetaZ = theta_z; 
+                leadTheta = theta; 
             }
             
-            if ((pdgid == 2112) && (leadNKE < ke)) {
+            if ((pdgID == 2112) && (leadNKE < ke)) {
                 leadNKE = ke; 
-                leadNThetaZ = theta_z; 
+                leadNTheta = theta; 
             } 
             
-            if ((pdgid == 2212) && (leadPKE < ke)) {
+            if ((pdgID == 2212) && (leadPKE < ke)) {
                 leadPKE = ke;
-                leadPThetaZ = theta_z; 
+                leadPTheta = theta; 
             } 
             
-            if ( ( (abs(pdgid) == 211) || (pdgid == 111) ) 
+            if ( ( (abs(pdgID) == 211) || (pdgID == 111) ) 
                     && (leadPiKE < ke) ) { 
                 leadPiKE = ke; 
-                leadPiThetaZ = theta_z; 
-            } 
+                leadPiTheta = theta; 
+            }
+            
+            if (ke <= 200 /* MeV */) continue;
+            
+            if (abs(pdgID) == 2112) ++neutronCount;
+            else if (abs(pdgID) == 2212) ++protonCount; 
+            else if (abs(pdgID) == 211) ++pionCount;
+            else if (pdgID == 111) ++pi0Count; 
         }
 
+        int eventType = classifyEvent(neutronCount, protonCount, pionCount, pi0Count);
+        //std::cout << "Event type: " << eventType << std::endl; 
+        h["event_type"]->Fill(eventType); 
+
         h["hardest_ke"]->Fill(leadKE); 
-        h["hardest_theta_z"]->Fill(leadThetaZ);
-        h["h_ke_h_theta_z"]->Fill(leadKE, leadThetaZ); 
+        h["hardest_theta"]->Fill(leadTheta);
+        h["h_ke_h_theta"]->Fill(leadKE, leadTheta); 
         h["hardest_p_ke"]->Fill(leadPKE); 
-        h["hardest_p_theta_z"]->Fill(leadPThetaZ); 
+        h["hardest_p_theta"]->Fill(leadPTheta); 
         h["hardest_n_ke"]->Fill(leadNKE); 
-        h["hardest_n_theta_z"]->Fill(leadNThetaZ); 
+        h["hardest_n_theta"]->Fill(leadNTheta); 
         h["hardest_pi_ke"]->Fill(leadPiKE); 
-        h["hardest_pi_theta_z"]->Fill(leadPiThetaZ); 
+        h["hardest_pi_theta"]->Fill(leadPiTheta); 
+    }
+
+    int EcalPN::classifyEvent(const int& neutronCount, 
+                    const int& protonCount, const int& pionCount, 
+                    const int& pi0Count) {
+        
+        /*std::cout << " N: " << neutronCount 
+                  << " P: " << protonCount 
+                  << " pion: " << pionCount
+                  << " pi0: " << pi0Count << std::endl; */
+
+        int count = neutronCount + protonCount + pionCount + pi0Count; 
+        if (count == 0) return 0; 
+        if (protonCount == 0) {
+            if ((pionCount + pi0Count) == 0) {
+                if (neutronCount >= 3) return 3; 
+                else return neutronCount;
+            } else if ((neutronCount + pi0Count) == 0) { 
+                if (pionCount == 1) return 4; 
+                else if (pionCount == 2) return 5; 
+            } else if ((neutronCount + pionCount) == 0) {
+                if (pi0Count == 1) return 6;
+            }
+        } 
+        
+        if (pi0Count == 0) {
+            if ((pionCount == 1) && (protonCount == 1 || neutronCount == 1)) return 7;
+            if (pionCount == 0) {
+                if ((protonCount == 1) && (neutronCount == 0)) return 8; 
+                if (((protonCount == 1) && (neutronCount == 1)) || 
+                        (protonCount == 2) && (neutronCount == 0)) return 9;
+            }
+        } 
+    
+        if ((neutronCount > 0
+                && (protonCount > 0 || pionCount > 0 || pi0Count > 0)) ||
+            (protonCount > 0
+                && (neutronCount > 0 || pionCount > 0 || pi0Count > 0)) ||
+            (pionCount > 0
+                && (neutronCount > 0 || protonCount > 0 || pi0Count > 0)) ||
+            (pi0Count > 0
+                && (neutronCount > 0 || protonCount > 0 || pionCount > 0))) {
+             return 11;
+        }
+
+
+        return -9999;    
     }
 } // ldmx
 
