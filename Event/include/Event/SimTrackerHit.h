@@ -83,7 +83,7 @@ namespace ldmx {
              * Get the energy
              * @return The energy of the hit.
              */
-            float getEnergy() const { return e_; };
+            float getEnergy() const { return energy_; };
 
             /**
              * Get the global time of the hit [ns].
@@ -109,13 +109,13 @@ namespace ldmx {
              * Get the Sim particle track ID of the hit.
              * @return The Sim particle track ID of the hit.
              */
-            int getSimTrackID() const { return simTrackID_; };
+            int getSimTrackID() const { return trackID_; };
 
             /**
              * Get the Sim particle track ID of the hit.
              * @return The Sim particle track ID of the hit.
              */
-            int getSimPdgID() const { return simPdgID_; };
+            int getSimPdgID() const { return pdgID_; };
 
             /**
              * Get the Monte Carlo particle that created the hit.
@@ -160,7 +160,7 @@ namespace ldmx {
              * Set the energy of the hit.
              * @param e The energy of the hit.
              */
-            void setEnergy(const float e) { this->e_ = e; };
+            void setEnergy(const float energy) { energy_ = energy; };
 
             /**
              * Set the global time of the hit [ns].
@@ -187,13 +187,13 @@ namespace ldmx {
              * Set the Sim particle track ID of the hit.
              * @return The Sim particle track ID of the hit.
              */
-            void setSimTrackID(const int simTrackID) { this->simTrackID_ = simTrackID; };
+            void setSimTrackID(const int simTrackID) { this->trackID_ = simTrackID; };
 
             /**
              * Set the Sim particle track ID of the hit.
              * @return The Sim particle track ID of the hit.
              */
-            void setSimPdgID(const int simPdgID) { this->simPdgID_ = simPdgID; };
+            void setSimPdgID(const int simPdgID) { this->pdgID_ = simPdgID; };
 
             /**
              * Set the Monte Carlo particle that created the hit.
@@ -244,7 +244,7 @@ namespace ldmx {
             /**
              * The total energy.
              */
-            float e_{0};
+            float energy_{0};
 
             /**
              * The X position.
@@ -269,12 +269,12 @@ namespace ldmx {
             /**
              * The Sim Track ID.
              */
-            int simTrackID_{0};
+            int trackID_{0};
 
             /**
              * The Sim PDG ID.
              */
-            int simPdgID_{0};
+            int pdgID_{0};
 
             /**
              * The particle that caused the hit.
