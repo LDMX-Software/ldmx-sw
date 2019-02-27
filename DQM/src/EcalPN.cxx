@@ -151,7 +151,7 @@ namespace ldmx {
             TVector3 pvec(vec[0], vec[1], vec[2]); 
 
             //  Calculate the polar angle
-            double theta = pvec.Theta();
+            double theta = pvec.Theta()*(180/3.14159);
  
             if (leadKE < ke) { 
                 leadKE = ke;
