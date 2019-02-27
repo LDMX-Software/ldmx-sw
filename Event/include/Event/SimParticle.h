@@ -3,6 +3,7 @@
  * @brief Class which implements an MC particle that stores information about 
  *        tracks from the simulation
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
 #ifndef EVENT_SIMPARTICLE_H_
@@ -17,7 +18,6 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
@@ -76,9 +76,7 @@ namespace ldmx {
              * Get the energy of the particle [MeV].
              * @return The energy of the particle.
              */
-            double getEnergy() {
-                return energy_;
-            }
+            double getEnergy() const { return energy_; }
 
             /**
              * Get the GEANT track ID of the particle.
@@ -92,9 +90,7 @@ namespace ldmx {
              * Get the PDG code of the particle.
              * @return The PDG code of the particle.
              */
-            int getPdgID() {
-                return pdgID_;
-            }
+            int getPdgID() const { return pdgID_; }
 
             /**
              * Get the generator status of the particle.
@@ -102,97 +98,70 @@ namespace ldmx {
              * an event generator source like an input LHE file.
              * @return The generator status.
              */
-            int getGenStatus() {
-                return genStatus_;
-            }
+            int getGenStatus() const { return genStatus_; }
 
             /**
              * Get the global time of the particle's creation [ns].
              * @return The global time of the particle's creation.
              */
-            double getTime() {
-                return time_;
-            }
+            double getTime() const { return time_; }
 
             /**
              * Get the XYZ vertex of the particle's creation [mm].
              * @return The vertex of the particle.
              */
-            std::vector<double> getVertex() {
-                return {x_, y_, z_};
-            }
+            std::vector<double> getVertex() const { return {x_, y_, z_}; }
 
             /**
              * Get the endpoint of the particle where it was destroyed
              * or left the detector [mm].
              * @return The endpoint of the particle
              */
-            std::vector<double> getEndPoint() {
-                return {endX_, endY_, endZ_};
-            }
+            std::vector<double> getEndPoint() const { return {endX_, endY_, endZ_}; }
 
             /**
              * Get the XYZ momentum of the particle [MeV].
              * @return The momentum of the particle.
              */
-            std::vector<double> getMomentum() {
-                return {px_, py_, pz_};
-            }
+            std::vector<double> getMomentum() const { return {px_, py_, pz_}; }
 
             /**
              * Get the mass of the particle [GeV].
              * @return The mass of the particle.
              */
-            double getMass() {
-                return mass_;
-            }
+            double getMass() const { return mass_; }
 
-            /**
-             * The charge of the particle (units of electron charge).
-             * @return The charge of the particle.
-             */
-            double getCharge() {
-                return charge_;
-            }
+            /** @return The charge of the particle. */
+            double getCharge() const { return charge_; }
 
-            /**
-             * Get the number of daughter particles.
-             */
-            int getDaughterCount() {
-                return daughters_->GetEntriesFast();
-            }
+            /** @return The daughter particle multiplicity. */
+            int getDaughterCount() const { return daughters_->GetEntriesFast(); }
 
             /**
              * Get a daughter particle by index.
+             *
              * @param iDau The index of the daughter particle.
              */
-            SimParticle* getDaughter(int iDau) {
-                return (SimParticle*) daughters_->At(iDau);
+            SimParticle* getDaughter(int iDau) const { 
+                return static_cast<SimParticle*>(daughters_->At(iDau));
             }
 
-            /**
-             * Get the number of parent particles.
-             * @return The number of parent particles.
-             */
-            int getParentCount() {
-                return parents_->GetEntriesFast();
-            }
+            /** @return The number of parent particles. */
+            int getParentCount() const { return parents_->GetEntriesFast(); }
 
             /**
              * Get a parent particle by index.
              * @param iPar The index of the parent particle.
              */
-            SimParticle* getParent(int iPar) {
-                return (SimParticle*) parents_->At(iPar);
+            SimParticle* getParent(int iPar) const {
+                return static_cast<SimParticle*>(parents_->At(iPar));
             }
 
             /**
              * Set the energy of the particle [MeV].
              * @param energy The energy of the particle.
              */
-            void setEnergy(const double energy) {
-                this->energy_ = energy;
-            }
+            void setEnergy(const double& energy) { energy_ = energy; }
 
             /**
              * Set the GEANT track ID of the hit.
@@ -206,25 +175,19 @@ namespace ldmx {
              * Set the PDG code of the hit.
              * @param pdgID The PDG code of the hit.
              */
-            void setPdgID(const int pdgID) {
-                this->pdgID_ = pdgID;
-            }
+            void setPdgID(const int& pdgID) { pdgID_ = pdgID; }
 
             /**
              * Set the generator status of the hit.
              * @param genStatus The generator status of the hit.
              */
-            void setGenStatus(const int genStatus) {
-                this->genStatus_ = genStatus;
-            }
+            void setGenStatus(const int& genStatus) { genStatus_ = genStatus; }
 
             /**
              * Set the global time of the particle's creation [ns].
              * @param time The global time of the particle's creation.
              */
-            void setTime(const double time) {
-                this->time_ = time;
-            }
+            void setTime(const double& time) { time_ = time; }
 
             /**
              * Set the vertex of the particle [mm].
@@ -232,10 +195,10 @@ namespace ldmx {
              * @param y The vertex Y position.
              * @param z The vertex Z position.
              */
-            void setVertex(const double x, const double y, const double z) {
-                this->x_ = x;
-                this->y_ = y;
-                this->z_ = z;
+            void setVertex(const double& x, const double& y, const double& z) {
+                x_ = x;
+                y_ = y;
+                z_ = z;
             }
 
             /**
@@ -244,10 +207,10 @@ namespace ldmx {
              * @param endY The Y end point.
              * @param endZ The Z end point.
              */
-            void setEndPoint(const double endX, const double endY, const double endZ) {
-                this->endX_ = endX;
-                this->endY_ = endY;
-                this->endZ_ = endZ;
+            void setEndPoint(const double& endX, const double& endY, const double& endZ) {
+                endX_ = endX;
+                endY_ = endY;
+                endZ_ = endZ;
             }
 
             /**
@@ -256,43 +219,35 @@ namespace ldmx {
              * @param py The Y momentum.
              * @param pz The Z momentum.
              */
-            void setMomentum(const double px, const double py, const double pz) {
-                this->px_ = px;
-                this->py_ = py;
-                this->pz_ = pz;
+            void setMomentum(const double& px, const double& py, const double& pz) {
+                px_ = px;
+                py_ = py;
+                pz_ = pz;
             }
 
             /**
              * Set the mass of the particle [GeV].
              * @param mass The mass of the particle.
              */
-            void setMass(const double mass) {
-                this->mass_ = mass;
-            }
+            void setMass(const double& mass) { mass_ = mass; }
 
             /**
              * Set the charge of the particle.
              * @param charge The charge of the particle.
              */
-            void setCharge(const double charge) {
-                this->charge_ = charge;
-            }
+            void setCharge(const double& charge) { charge_ = charge; }
 
             /**
              * Add a daughter particle.
              * @param daughter The daughter particle.
              */
-            void addDaughter(SimParticle* daughter) {
-                daughters_->Add(daughter);
-            }
+            void addDaughter(SimParticle* daughter) { daughters_->Add(daughter); }
 
             /**
              * Add a parent particle.
              * @param parent The parent particle.
              */
-            void addParent(SimParticle* parent) {
-                parents_->Add(parent);
-            }
+            void addParent(SimParticle* parent) { parents_->Add(parent); }
 
             /**
              * Get the creator process type of this particle.
@@ -300,18 +255,14 @@ namespace ldmx {
              * e.g. 121 for products of photonuclear reactions.
              * @return The creator process type of this particle.
              */
-            int getProcessType() {
-                return processType_;
-            }
+            int getProcessType() const { return processType_; }
 
             /**
              * Set the creator process type of this particle.
              * This is set from the value of <i>G4VProcess::GetProcessSubType()</i>.
              * @param processType The creator process type of this particle.
              */
-            void setProcessType(int processType) {
-                processType_ = processType;
-            }
+            void setProcessType(const int& processType) { processType_ = processType; }
 
             /**
              * Set the momentum at the particle's end point.
@@ -319,7 +270,7 @@ namespace ldmx {
              * @param endpy The Y momentum.
              * @param endpz The Z momentum.
              */ 
-            void setEndPointMomentum(const double endpx, const double endpy, const double endpz) {
+            void setEndPointMomentum(const double& endpx, const double& endpy, const double& endpz) {
                 endpx_ = endpx;
                 endpy_ = endpy;
                 endpz_ = endpz;
@@ -329,9 +280,7 @@ namespace ldmx {
              * Get the momentum at the particle's end point.
              * @return The momentum at the particle's end point as a vector.
              */
-            std::vector<double> getEndPointMomentum() {
-                return {endpx_, endpy_, endpz_};
-            }
+            std::vector<double> getEndPointMomentum() const { return {endpx_, endpy_, endpz_}; }
 
             /**
              * Get the process type enum from a G4VProcess name.
