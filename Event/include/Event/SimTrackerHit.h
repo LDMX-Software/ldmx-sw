@@ -284,7 +284,7 @@ namespace ldmx {
             /**
              * The ROOT class definition.
              */
-            ClassDef(SimTrackerHit, 2);
+            ClassDef(SimTrackerHit, 3);
 
     }; // SimTrackerHit
 

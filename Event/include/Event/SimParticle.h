@@ -366,7 +366,7 @@ namespace ldmx {
             /**
              * ROOT class definition.
              */
-            ClassDef(SimParticle, 4);
+            ClassDef(SimParticle, 5);
     };
 
 }
