@@ -51,8 +51,8 @@ You need to have a local Geant4 installation available with GDML enabled.  You c
 LDMX uses a custom version of Geant4 10.02.p03 that includes modifications to the range in which the Bertini Cascade model is used and fixes to the calculation of the Gamma to mu+mu- matrix element.  This version of geant4 can be cloned from github as follows: 
 
 ``` bash
-git clone https://github.com/LDMXAnalysis/geant4.git geant4.10.02.p03
-git checkout tags/LDMX.10.2.3_pn -b LDMX.10.2.3_pn
+git clone https://github.com/LDMXAnalysis/geant4.git 
+git checkout tags/LDMX.10.2.3_v0.2 -b LDMX.10.2.3_v0.2
 ```
 
 Geant4 is then built by issuing the following commands:
