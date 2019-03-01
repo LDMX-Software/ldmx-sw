@@ -132,27 +132,32 @@ namespace ldmx {
             /** @return The charge of the particle. */
             double getCharge() const { return charge_; }
 
-            /** @return The daughter particle multiplicity. */
+            /** @return A reference to all daughter particles. */
+            TRefArray* getDaughters() const { return daughters_; }
+
+            /** @return The number of daughter particles. */
             int getDaughterCount() const { return daughters_->GetEntriesFast(); }
 
             /**
-             * Get a daughter particle by index.
-             *
-             * @param iDau The index of the daughter particle.
+             * Retrieve a daughter particle by index. 
+             * @param iDaughter The index of the daughter particle of interest.
              */
-            SimParticle* getDaughter(int iDau) const { 
-                return static_cast<SimParticle*>(daughters_->At(iDau));
+            SimParticle* getDaughter(const int& iDaughter) const { 
+                return static_cast<SimParticle*>(daughters_->At(iDaughter)); 
             }
 
+            /** @return A reference to all of the parent particles. */
+            TRefArray* getParents() const { return parents_; }
+            
             /** @return The number of parent particles. */
             int getParentCount() const { return parents_->GetEntriesFast(); }
 
             /**
-             * Get a parent particle by index.
-             * @param iPar The index of the parent particle.
+             * Retrieve a parent particle by index.
+             * @param iParent The index of the parent particle of interest.
              */
-            SimParticle* getParent(int iPar) const {
-                return static_cast<SimParticle*>(parents_->At(iPar));
+            SimParticle* getParent(const int& iParent) const {
+                return static_cast<SimParticle*>(parents_->At(iParent));
             }
 
             /**
