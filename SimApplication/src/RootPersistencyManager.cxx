@@ -267,8 +267,8 @@ namespace ldmx {
 
             simTrackerHit->setPosition(position.x(), position.y(), position.z());
             simTrackerHit->setPathLength(g4hit->getPathLength());
-            simTrackerHit->setSimTrackID(g4hit->getTrackID());
-            simTrackerHit->setSimPdgID(g4hit->getPdgID());
+            simTrackerHit->setTrackID(g4hit->getTrackID());
+            simTrackerHit->setPdgID(g4hit->getPdgID());
             SimParticle* simParticle = simParticleBuilder_.findSimParticle(g4hit->getTrackID());
             simTrackerHit->setSimParticle(simParticle);
         }
