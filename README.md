@@ -36,7 +36,8 @@ You can install it from scratch using a series of commands such as the following
 wget http://apache.mirrors.hoobly.com//xerces/c/3/sources/xerces-c-3.2.2.tar.gz
 tar -zxvf xerces-c-3.2.0.tar.gz
 cd xerces-c-3.2.0
-./configure --prefix=$PWD
+mkdir install
+./configure --prefix=$PWD/install
 make install
 export XercesC_DIR=$PWD
 ```
@@ -60,9 +61,9 @@ Geant4 is then built by issuing the following commands:
 cd geant4.10.02.p03
 mkdir build; cd build
 cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DXERCESC_ROOT_DIR=$XercesC_DIR \
-    -DGEANT4_USE_OPENGL_X11=ON -DCMAKE_INSTALL_PREFIX=../../install ..
+    -DGEANT4_USE_OPENGL_X11=ON -DCMAKE_INSTALL_PREFIX=../install ..
 make install
-cd ../../install
+cd ../install
 export G4DIR=$PWD
 ```
 
