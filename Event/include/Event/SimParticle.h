@@ -79,6 +79,12 @@ namespace ldmx {
             double getEnergy() const { return energy_; }
 
             /**
+             * Get the GEANT track ID of the particle.
+             * @return The GEANT track ID of the particle.
+             */
+            int getTrackID() const { return trackID_; }
+
+            /**
              * Get the PDG code of the particle.
              * @return The PDG code of the particle.
              */
@@ -126,27 +132,32 @@ namespace ldmx {
             /** @return The charge of the particle. */
             double getCharge() const { return charge_; }
 
-            /** @return The daughter particle multiplicity. */
+            /** @return A reference to all daughter particles. */
+            TRefArray* getDaughters() const { return daughters_; }
+
+            /** @return The number of daughter particles. */
             int getDaughterCount() const { return daughters_->GetEntriesFast(); }
 
             /**
-             * Get a daughter particle by index.
-             *
-             * @param iDau The index of the daughter particle.
+             * Retrieve a daughter particle by index. 
+             * @param iDaughter The index of the daughter particle of interest.
              */
-            SimParticle* getDaughter(int iDau) const { 
-                return static_cast<SimParticle*>(daughters_->At(iDau));
+            SimParticle* getDaughter(const int& iDaughter) const { 
+                return static_cast<SimParticle*>(daughters_->At(iDaughter)); 
             }
 
+            /** @return A reference to all of the parent particles. */
+            TRefArray* getParents() const { return parents_; }
+            
             /** @return The number of parent particles. */
             int getParentCount() const { return parents_->GetEntriesFast(); }
 
             /**
-             * Get a parent particle by index.
-             * @param iPar The index of the parent particle.
+             * Retrieve a parent particle by index.
+             * @param iParent The index of the parent particle of interest.
              */
-            SimParticle* getParent(int iPar) const {
-                return static_cast<SimParticle*>(parents_->At(iPar));
+            SimParticle* getParent(const int& iParent) const {
+                return static_cast<SimParticle*>(parents_->At(iParent));
             }
 
             /**
@@ -154,6 +165,12 @@ namespace ldmx {
              * @param energy The energy of the particle.
              */
             void setEnergy(const double& energy) { energy_ = energy; }
+
+            /**
+             * Set the GEANT track ID of the hit.
+             * @param trackID The GEANT track ID of the hit.
+             */
+            void setTrackID(const int&  trackID) { trackID_ = trackID; }
 
             /**
              * Set the PDG code of the hit.
@@ -281,6 +298,9 @@ namespace ldmx {
             /** The energy of the particle. */
             double energy_{0};
 
+            /** The GEANT track ID of the particle. */
+            int trackID_{-1};
+
             /** The PDG code of the particle. */
             int pdgID_{0};
 
@@ -346,7 +366,7 @@ namespace ldmx {
             /**
              * ROOT class definition.
              */
-            ClassDef(SimParticle, 4);
+            ClassDef(SimParticle, 5);
     };
 
 }

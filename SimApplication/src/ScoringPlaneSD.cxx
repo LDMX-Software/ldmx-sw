@@ -37,6 +37,7 @@ namespace ldmx {
 
         // Assign track ID for finding the SimParticle in post event processing.
         hit->setTrackID(step->GetTrack()->GetTrackID());
+        hit->setPdgID(step->GetTrack()->GetDynamicParticle()->GetPDGcode());
 
         // Set the edep.
         hit->setEdep(edep);
@@ -66,7 +67,7 @@ namespace ldmx {
         // Set the momentum
         G4ThreeVector p = postPoint->GetMomentum();
         hit->setMomentum(p.x(), p.y(), p.z());
-
+        hit->setEnergy(postPoint->GetTotalEnergy());
         
         /*
          * Set the 32-bit ID on the hit.

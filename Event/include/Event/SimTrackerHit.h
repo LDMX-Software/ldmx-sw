@@ -80,6 +80,12 @@ namespace ldmx {
             float getEdep() const { return edep_; };
 
             /**
+             * Get the energy
+             * @return The energy of the hit.
+             */
+            float getEnergy() const { return energy_; };
+
+            /**
              * Get the global time of the hit [ns].
              * @return The global time of the hit.
              */
@@ -98,6 +104,18 @@ namespace ldmx {
              * @return The momentum of the particle.
              */
             std::vector<double> getMomentum() const { return {px_, py_, pz_}; };
+
+            /**
+             * Get the Sim particle track ID of the hit.
+             * @return The Sim particle track ID of the hit.
+             */
+            int getTrackID() const { return trackID_; };
+
+            /**
+             * Get the Sim particle track ID of the hit.
+             * @return The Sim particle track ID of the hit.
+             */
+            int getPdgID() const { return pdgID_; };
 
             /**
              * Get the Monte Carlo particle that created the hit.
@@ -139,6 +157,12 @@ namespace ldmx {
             void setEdep(const float edep) { this->edep_ = edep; };
 
             /**
+             * Set the energy of the hit.
+             * @param e The energy of the hit.
+             */
+            void setEnergy(const float energy) { energy_ = energy; };
+
+            /**
              * Set the global time of the hit [ns].
              * @param time The global time of the hit.
              */
@@ -158,6 +182,18 @@ namespace ldmx {
              * @param pz The Z momentum.
              */
             void setMomentum(const float px, const float py, const float pz);
+
+            /**
+             * Set the Sim particle track ID of the hit.
+             * @return The Sim particle track ID of the hit.
+             */
+            void setTrackID(const int simTrackID) { this->trackID_ = simTrackID; };
+
+            /**
+             * Set the Sim particle track ID of the hit.
+             * @return The Sim particle track ID of the hit.
+             */
+            void setPdgID(const int simPdgID) { this->pdgID_ = simPdgID; };
 
             /**
              * Set the Monte Carlo particle that created the hit.
@@ -206,6 +242,11 @@ namespace ldmx {
             float pz_{0};
 
             /**
+             * The total energy.
+             */
+            float energy_{0};
+
+            /**
              * The X position.
              */
             float x_{0};
@@ -226,6 +267,16 @@ namespace ldmx {
             float pathLength_{0};
 
             /**
+             * The Sim Track ID.
+             */
+            int trackID_{0};
+
+            /**
+             * The Sim PDG ID.
+             */
+            int pdgID_{0};
+
+            /**
              * The particle that caused the hit.
              */
             TRef simParticle_{nullptr};
@@ -233,7 +284,7 @@ namespace ldmx {
             /**
              * The ROOT class definition.
              */
-            ClassDef(SimTrackerHit, 2);
+            ClassDef(SimTrackerHit, 3);
 
     }; // SimTrackerHit
 
