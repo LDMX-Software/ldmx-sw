@@ -109,13 +109,13 @@ namespace ldmx {
              * Get the Sim particle track ID of the hit.
              * @return The Sim particle track ID of the hit.
              */
-            int getSimTrackID() const { return trackID_; };
+            int getTrackID() const { return trackID_; };
 
             /**
              * Get the Sim particle track ID of the hit.
              * @return The Sim particle track ID of the hit.
              */
-            int getSimPdgID() const { return pdgID_; };
+            int getPdgID() const { return pdgID_; };
 
             /**
              * Get the Monte Carlo particle that created the hit.
@@ -187,13 +187,13 @@ namespace ldmx {
              * Set the Sim particle track ID of the hit.
              * @return The Sim particle track ID of the hit.
              */
-            void setSimTrackID(const int simTrackID) { this->trackID_ = simTrackID; };
+            void setTrackID(const int simTrackID) { this->trackID_ = simTrackID; };
 
             /**
              * Set the Sim particle track ID of the hit.
              * @return The Sim particle track ID of the hit.
              */
-            void setSimPdgID(const int simPdgID) { this->pdgID_ = simPdgID; };
+            void setPdgID(const int simPdgID) { this->pdgID_ = simPdgID; };
 
             /**
              * Set the Monte Carlo particle that created the hit.
