@@ -263,8 +263,12 @@ namespace ldmx {
             const G4ThreeVector& momentum = g4hit->getMomentum();
             simTrackerHit->setMomentum(momentum.x(), momentum.y(), momentum.z());
             const G4ThreeVector& position = g4hit->getPosition();
+            simTrackerHit->setEnergy( g4hit->getEnergy() );
+
             simTrackerHit->setPosition(position.x(), position.y(), position.z());
             simTrackerHit->setPathLength(g4hit->getPathLength());
+            simTrackerHit->setTrackID(g4hit->getTrackID());
+            simTrackerHit->setPdgID(g4hit->getPdgID());
             SimParticle* simParticle = simParticleBuilder_.findSimParticle(g4hit->getTrackID());
             simTrackerHit->setSimParticle(simParticle);
         }
