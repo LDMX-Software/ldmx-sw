@@ -97,7 +97,7 @@ namespace ldmx {
         // Search for the recoil electron 
         const SimParticle* recoil = Analysis::searchForRecoil(particles); 
 
-        // Persist recoil vertex position
+        // Fill the recoil vertex position histograms
         std::vector<double> recoilVertex = recoil->getVertex();
         h["recoil_vx"]->Fill(recoilVertex[0]);  
         h["recoil_vy"]->Fill(recoilVertex[1]);  
@@ -107,20 +107,20 @@ namespace ldmx {
         // photo-nuclear reaction.
         const SimParticle* pnGamma = Analysis::searchForPNGamma(recoil);
         
+        // Get the truth momentum of the gamma that underwent a photo-nuclear 
+        // reaction.
+        TVector3 pnGammaP(pnGamma->getMomentum().data()); 
+        
         // Get the truth momentum of the recoil
-        std::vector<double> recoilPGenVec{recoil->getMomentum()};
+        TVector3 recoilPGen(recoil->getMomentum().data()); 
 
-        // Get the momentum of the gamma that underwent a photonuclear reaction
-        // and calculate the recoil momentum.
-        std::vector<double> pnGammaP{pnGamma->getMomentum()}; 
-        std::vector<double> recoilPVec = {-1*pnGammaP[0], -1*pnGammaP[1],  recoilPGenVec[2] - pnGammaP[2]}; 
+        // Calculate the momentum of the recoil electron
+        TVector3 recoilP = recoilPGen - pnGammaP; 
 
-        double recoilP = Analysis::vectorMagnitude(recoilPVec); 
-
-        h["recoil_tp"]->Fill(recoilP); 
-        h["recoil_tpx"]->Fill(recoilPVec[0]); 
-        h["recoil_tpy"]->Fill(recoilPVec[1]); 
-        h["recoil_tpz"]->Fill(recoilPVec[2]); 
+        h["recoil_tp"]->Fill(recoilP.Mag()); 
+        h["recoil_tpx"]->Fill(recoilP.Px()); 
+        h["recoil_tpy"]->Fill(recoilP.Py()); 
+        h["recoil_tpz"]->Fill(recoilP.Pz()); 
     
         h["pn_particle_mult"]->Fill(pnGamma->getDaughterCount());
         h["pn_gamma_energy"]->Fill(pnGamma->getEnergy()); 
