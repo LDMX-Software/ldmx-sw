@@ -46,25 +46,6 @@ namespace ldmx {
          */
         const SimParticle* searchForPNGamma(const SimParticle* particle, const int index = 0);  
 
-        /**
-         * Calculate the magnitude of a vector.
-         *
-         * @param v C++ std::vector
-         * @return Magnitude of the given vector.
-         */
-        template <class T>
-        double vectorMagnitude(const std::vector<T> v) { 
-                return sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]); 
-        }
-
-        /** 
-         * Calculate theta_z. 
-         *
-         * @param particle Particle whose angle will be calculated.
-         * @return theta_z
-         */
-        double thetaZ(const SimParticle* particle); 
-
     } // Analysis
 
 } // ldmx
