@@ -43,12 +43,11 @@ namespace ldmx {
 
     void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
         
-        unsigned int ngens = generator_.size();
-        for (unsigned int i = 0; i < ngens; ++i) {
-            generator_[i]->GeneratePrimaryVertex(event);
+        for (const auto& generator : generator_) {
+            generator->GeneratePrimaryVertex(event);
             
             // automatically setting genStatus to 1 for particle gun primaries
-            if (dynamic_cast<G4ParticleGun*>(generator_[i]) !=  NULL) {
+            if (dynamic_cast<G4ParticleGun*>(generator) !=  NULL) {
                 int nPV = event->GetNumberOfPrimaryVertex();
                 for (int iPV = 0; iPV < nPV; ++iPV) {
                     G4PrimaryVertex* curPV = event->GetPrimaryVertex(iPV);
@@ -61,7 +60,7 @@ namespace ldmx {
                 }
             }
         }
-            
+        
         // Activate the plugin manager hook.  
         if (event->GetNumberOfPrimaryVertex() > 0) {
             if (useBeamspot_) smearingBeamspot(event);        
