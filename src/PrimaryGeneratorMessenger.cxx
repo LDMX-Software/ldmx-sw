@@ -6,6 +6,16 @@
 
 #include "SimApplication/PrimaryGeneratorMessenger.h"
 
+//-------------//
+//   ldmx-sw   //
+//-------------//
+#include "SimApplication/GeneralParticleSource.h"
+#include "SimApplication/LHEPrimaryGenerator.h"
+#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
+#include "SimApplication/PrimaryGeneratorAction.h"
+#include "SimApplication/RootPrimaryGenerator.h"
+
+
 namespace ldmx {
 
     bool PrimaryGeneratorMessenger::useRootSeed_{false};
@@ -32,7 +42,20 @@ namespace ldmx {
         rootOpenCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
 
         rootUseSeedCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
+
+        //
+        // GPS commands
+        //
+
+        // Create a macro directory for GPS commands.
+        gpsDir_ = std::make_unique<G4UIdirectory>("/ldmx/generators/gps/");
+        gpsDir_->SetGuidance("Command for GPS generation."); 
+        
+        // Command to enable the use of GPS
+        enableGPSCmd_ = std::make_unique<G4UIcommand>("/ldmx/generators/gps/enable", this);  
+        enableGPSCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
     }
+
 
     PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger() {;}
 
@@ -85,6 +108,13 @@ namespace ldmx {
             primaryGeneratorAction_->setBeamspotYSize( G4UIcommand::ConvertToDouble(newValues) ); 
         } else if (command == beamspotZSizeCmd_) { 
             primaryGeneratorAction_->setBeamspotZSize( G4UIcommand::ConvertToDouble(newValues) ); 
+        }
+
+        //
+        // GPS
+        //
+        else if (command == enableGPSCmd_.get()) { 
+            primaryGeneratorAction_->setPrimaryGenerator(new GeneralParticleSource());  
         }
     }
 }
