@@ -13,8 +13,9 @@ namespace ldmx {
     PrimaryGeneratorAction::PrimaryGeneratorAction() :
         G4VUserPrimaryGeneratorAction(), 
         random_(new TRandom) {
-        random_->SetSeed( CLHEP::HepRandom::getTheSeed() ); 
-        generator_.push_back(new ParticleGun());
+        random_->SetSeed( CLHEP::HepRandom::getTheSeed() );
+        gun = new ParticleGun();  
+        generator_.push_back(gun);
     }
 
     PrimaryGeneratorAction::~PrimaryGeneratorAction() {
@@ -22,16 +23,17 @@ namespace ldmx {
 
     void PrimaryGeneratorAction::setPrimaryGenerator(G4VPrimaryGenerator* aGenerator) {
        
-        // The other generators don't play nice with G4ParticleGun, so
-        // if there is already a generator and it's the G4ParticleGun just clear the vector 
-        bool clearGeneratorVector = false;
-        unsigned int ngens = generator_.size();
-        for (unsigned int i = 0; i < ngens; ++i){
-            if (dynamic_cast<G4ParticleGun*>(generator_[i]) !=  NULL) {
-                clearGeneratorVector = true;
-            }
-        }
-        if (clearGeneratorVector) generator_.clear();
+        // The other generators don't play nice with ParticleGun, so
+        // if there is already a generator and it's the G4ParticleGun
+        // just clear the vector
+        if (gun != nullptr) {
+            generator_.erase(
+                    std::remove_if( generator_.begin(), generator_.end(), 
+                        [&]( G4VPrimaryGenerator* const& generator ) { 
+                            return generator == gun; 
+                    }), generator_.end()); 
+           delete gun; 
+        } 
 
         generator_.push_back(aGenerator);
 
