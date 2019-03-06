@@ -40,9 +40,9 @@ namespace ldmx {
             // Loop over all particle associated with the primary vertex and
             // set the generator status to 1.
             for (int iparticle = 0; iparticle < vertex->GetNumberOfParticle(); ++iparticle) { 
-                std::shared_ptr<UserPrimaryParticleInformation> primaryInfo(new UserPrimaryParticleInformation());
+                auto primaryInfo{new UserPrimaryParticleInformation()};
                 primaryInfo->setHepEvtStatus(1); 
-                vertex->GetPrimary(iparticle)->SetUserInformation(primaryInfo.get());  
+                vertex->GetPrimary(iparticle)->SetUserInformation(primaryInfo);  
             }
         }
     }
