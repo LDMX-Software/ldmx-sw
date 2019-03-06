@@ -6,13 +6,15 @@
 
 #include "SimApplication/PrimaryGeneratorAction.h"
 
+#include "SimApplication/ParticleGun.h"
+
 namespace ldmx {
 
     PrimaryGeneratorAction::PrimaryGeneratorAction() :
         G4VUserPrimaryGeneratorAction(), 
         random_(new TRandom) {
         random_->SetSeed( CLHEP::HepRandom::getTheSeed() ); 
-        generator_.push_back(new G4ParticleGun());
+        generator_.push_back(new ParticleGun());
     }
 
     PrimaryGeneratorAction::~PrimaryGeneratorAction() {
@@ -45,20 +47,6 @@ namespace ldmx {
         
         for (const auto& generator : generator_) {
             generator->GeneratePrimaryVertex(event);
-            
-            // automatically setting genStatus to 1 for particle gun primaries
-            if (dynamic_cast<G4ParticleGun*>(generator) !=  NULL) {
-                int nPV = event->GetNumberOfPrimaryVertex();
-                for (int iPV = 0; iPV < nPV; ++iPV) {
-                    G4PrimaryVertex* curPV = event->GetPrimaryVertex(iPV);
-                    int nPar = curPV->GetNumberOfParticle();
-                    for (int iPar = 0; iPar < nPar; ++iPar) {
-                        UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
-                        primaryInfo->setHepEvtStatus(1);
-                        curPV->GetPrimary(iPar)->SetUserInformation(primaryInfo);
-                    }
-                }
-            }
         }
         
         // Activate the plugin manager hook.  
