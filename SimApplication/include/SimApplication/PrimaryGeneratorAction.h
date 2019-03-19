@@ -35,6 +35,8 @@
 
 namespace ldmx {
 
+    class ParticleGun; 
+
     /**
      * @class PrimaryGeneratorAction
      * @brief Implementation of Geant4 primary generator action
@@ -106,6 +108,9 @@ namespace ldmx {
              * @param anEvent The Geant4 event.
              */
             void smearingBeamspot(G4Event* anEvent);
+
+            /** By default, G4ParticleGun is used as the primary generator. */
+            ParticleGun* gun; 
 
             /**
              * The primary generator.
