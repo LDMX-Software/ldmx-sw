@@ -73,7 +73,7 @@ namespace ldmx {
             bool passesVeto() {
                 return passesVeto_;
             }
-            float getDisc() {
+            float getDisc() const {
                 return discValue_;
             }
         
