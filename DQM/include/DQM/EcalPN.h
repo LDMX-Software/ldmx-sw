@@ -19,6 +19,7 @@ namespace ldmx {
     // Forward declarations within the ldmx workspace
     class Process;
     class Event;
+    class SimParticle;
 
     class EcalPN : public Analyzer { 
     
@@ -43,9 +44,7 @@ namespace ldmx {
         private:
 
             /** Method used to classify events. */
-            int classifyEvent(const int& neutronCount, 
-                    const int& protonCount, const int& pionCount, 
-                    const int& pi0Count);
+            int classifyEvent(const SimParticle* particle, double threshold); 
 
             /** Container for 1 dimensional ROOT histograms. */
             std::map<std::string, TH1*> h; 
