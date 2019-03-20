@@ -110,6 +110,22 @@ namespace ldmx {
             }
 
             /**
+             * Get the PDG ID.
+             * @return The detector ID.
+             */
+            int getPdgID() {
+                return pdgid_;
+            }
+
+            /**
+             * Set the PDG ID.
+             * @param id The detector ID.
+             */
+            void setPdgID(int pdgid) {
+                this->pdgid_ = pdgid;
+            }            
+
+            /**
              * Get the layer ID.
              * @return The layer ID.
              */
@@ -146,6 +162,14 @@ namespace ldmx {
             float getEdep() {
                 return edep_;
             }
+
+            /**
+             * Get the energy .
+             * @return The energy .
+             */
+            float getEnergy() {
+                return energy_;
+            }            
 
             /**
              * Set the energy deposition.
@@ -212,6 +236,14 @@ namespace ldmx {
             }
 
             /**
+             * Set the energy.
+             * @param edep The energy.
+             */
+            void setEnergy(float energy) {
+                this->energy_ = energy;
+            }            
+
+            /**
              * Get the path length from the pre and post step points [mm].
              * @return The path length.
              */
@@ -240,6 +272,10 @@ namespace ldmx {
             int id_ {0};
 
             /**
+             * The detector ID.
+             */
+            int pdgid_ {0};
+            /**
              * The layer ID.
              */
             int layerID_ {0};
@@ -266,6 +302,11 @@ namespace ldmx {
              * The XYZ position.
              */
             G4ThreeVector position_;
+
+            /**
+             * The energy .
+             */
+            float energy_ {0};
 
             /**
              * The path length.

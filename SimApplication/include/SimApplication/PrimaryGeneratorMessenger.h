@@ -7,20 +7,17 @@
 #ifndef SIMAPPLICATION_PRIMARYGENERATORMESSENGER_H_
 #define SIMAPPLICATION_PRIMARYGENERATORMESSENGER_H_
 
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <memory>
+
 //------------//
 //   Geant4   //
 //------------//
 #include "G4UImessenger.hh"
 #include "G4UIcmdWithoutParameter.hh"
 #include "G4UIcmdWithAString.hh"
-
-//-------------//
-//   LDMX-SW   //
-//-------------//
-#include "SimApplication/LHEPrimaryGenerator.h"
-#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
-#include "SimApplication/PrimaryGeneratorAction.h"
-#include "SimApplication/RootPrimaryGenerator.h"
 
 namespace ldmx {
 
@@ -111,11 +108,19 @@ namespace ldmx {
             G4UIcmdWithAString* beamspotYSizeCmd_ {new G4UIcmdWithAString{"/ldmx/generators/beamspot/sizeY", this}};
             G4UIcmdWithAString* beamspotZSizeCmd_ {new G4UIcmdWithAString{"/ldmx/generators/beamspot/sizeZ", this}};
 
+            /** Create a GPS macro directory. */
+            std::unique_ptr<G4UIdirectory> gpsDir_; 
+
+            /** Command that enables the use of general particle source. */
+            std::unique_ptr<G4UIcommand> enableGPSCmd_;  
+
             /**
              * FIXME: This should not be static.
              */
             static bool useRootSeed_;
     
     }; // PrimaryGeneratorMessenger
+
 }  // ldmx
+
 #endif // SIMAPPLICATION_PRIMARYGENERATORMESSENGER_H_
