@@ -36,7 +36,8 @@ You can install it from scratch using a series of commands such as the following
 wget http://apache.mirrors.hoobly.com//xerces/c/3/sources/xerces-c-3.2.2.tar.gz
 tar -zxvf xerces-c-3.2.0.tar.gz
 cd xerces-c-3.2.0
-./configure --prefix=$PWD
+mkdir install
+./configure --prefix=$PWD/install
 make install
 export XercesC_DIR=$PWD
 ```
@@ -50,8 +51,8 @@ You need to have a local Geant4 installation available with GDML enabled.  You c
 LDMX uses a custom version of Geant4 10.02.p03 that includes modifications to the range in which the Bertini Cascade model is used and fixes to the calculation of the Gamma to mu+mu- matrix element.  This version of geant4 can be cloned from github as follows: 
 
 ``` bash
-git clone https://github.com/LDMXAnalysis/geant4.git geant4.10.02.p03
-git checkout tags/LDMX.10.2.3_pn -b LDMX.10.2.3_pn
+git clone https://github.com/LDMXAnalysis/geant4.git 
+git checkout tags/LDMX.10.2.3_v0.2 -b LDMX.10.2.3_v0.2
 ```
 
 Geant4 is then built by issuing the following commands:
@@ -60,9 +61,9 @@ Geant4 is then built by issuing the following commands:
 cd geant4.10.02.p03
 mkdir build; cd build
 cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DXERCESC_ROOT_DIR=$XercesC_DIR \
-    -DGEANT4_USE_OPENGL_X11=ON -DCMAKE_INSTALL_PREFIX=../../install ..
+    -DGEANT4_USE_OPENGL_X11=ON -DCMAKE_INSTALL_PREFIX=../install ..
 make install
-cd ../../install
+cd ../install
 export G4DIR=$PWD
 ```
 
