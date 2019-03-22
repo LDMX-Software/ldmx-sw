@@ -117,10 +117,13 @@ namespace ldmx {
                             }
                         }
 
-                        TTimeStamp t;
-                        std::cout << "[ Process ] :  Processing " << n_events_processed + 1 << " Run " << theEvent.getEventHeader()->getRun() 
-                                  << " Event " << theEvent.getEventHeader()->getEventNumber() << "  (" << t.AsString("lc") << ")" << std::endl;
-
+                        if ((n_events_processed + 1)%logFrequency_ == 0) { 
+                            TTimeStamp t;
+                            std::cout << "[ Process ] :  Processing " << n_events_processed + 1 
+                                      << " Run " << theEvent.getEventHeader()->getRun() 
+                                      << " Event " << theEvent.getEventHeader()->getEventNumber() 
+                                      << "  (" << t.AsString("lc") << ")" << std::endl;
+                        }
                         for (auto module : sequence_) {
                             if (dynamic_cast<Producer*>(module)) {
                                 (dynamic_cast<Producer*>(module))->produce(theEvent);
