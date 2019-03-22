@@ -86,6 +86,9 @@ namespace ldmx {
         run_ = intMember(pProcess, "run");
         histoOutFile_ = stringMember(pProcess, "histogramFile");
 
+        // Get the print frequency
+        logFrequency_ = intMember(pProcess, "logFrequency"); 
+
         PyObject* pysequence = PyObject_GetAttrString(pProcess, "sequence");
         if (!PyList_Check(pysequence)) {
             EXCEPTION_RAISE("ConfigureError", "sequence is not a python list as expected.");
@@ -234,8 +237,10 @@ namespace ldmx {
         }
         if (run_ > 0)
             p->setRunNumber(run_);
+
         p->setEventLimit(eventLimit_);
         p->setHistogramFileName(histoOutFile_);
+        p->setLogFrequency(logFrequency_); 
 
         return p;
     }
