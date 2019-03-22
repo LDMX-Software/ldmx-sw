@@ -71,6 +71,9 @@ namespace ldmx {
              */
             int run_ {-1};
 
+            /** The frequency with which event info is printed. */
+            int logFrequency_{-1}; 
+
             /** 
              * List of input ROOT files to process in the job, if provided in 
              * python file. 
