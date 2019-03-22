@@ -7,10 +7,14 @@
 #ifndef FRAMEWORK_CONFIGUREPYTHON_H_
 #define FRAMEWORK_CONFIGUREPYTHON_H_
 
-// LDMX
+//-------------//
+//   ldmx-sw   //
+//-------------//
 #include "Framework/ParameterSet.h"
 
-// STL
+//----------------//
+//   C++ StdLib   //
+//----------------//
 #include <string>
 #include <vector>
 
@@ -20,8 +24,10 @@ namespace ldmx {
 
     /**
      * @class ConfigurePython
-     * @brief Utility class which reads/executes a python script and creates a Process object based on the input.
-     * @note The configuration language is documented in the overall Framework package documentation.
+     * @brief Utility class which reads/executes a python script and creates a 
+     *        Process object based on the input.
+     * @note The configuration language is documented in the overall Framework 
+     *       package documentation.
      */
     class ConfigurePython {
 
@@ -53,30 +59,56 @@ namespace ldmx {
             /** The label for this processing pass. */
             std::string passname_;
 
-            /** The maximum number of events to process, if provided in python file. */
+            /** 
+             * The maximum number of events to process, if provided in python
+             * file. 
+             */
             int eventLimit_ {-1};
 
-            /** The run number to use when generating events (no input file), if provided in python file. */
+            /** 
+             * The run number to use when generating events (no input file), 
+             * if provided in python file. 
+             */
             int run_ {-1};
 
-            /** List of input ROOT files to process in the job, if provided in python file. */
+            /** The frequency with which event info is printed. */
+            int logFrequency_{-1}; 
+
+            /** 
+             * List of input ROOT files to process in the job, if provided in 
+             * python file. 
+             */
             std::vector<std::string> inputFiles_;
 
-            /** List of rules for keeping and dropping data products, if provided in python file. */
+            /** 
+             * List of rules for keeping and dropping data products, if 
+             * provided in python file. 
+             */
             std::vector<std::string> keepRules_;
 
-            /** Default sense for keeping events (keep or drop */
+            /** Default sense for keeping events (keep or drop) */
             bool skimDefaultIsKeep_;
 
-            /** List of rules for keeping and dropping events, if provided in python file. */
+            /** 
+             * List of rules for keeping and dropping events, if provided in 
+             * python file. 
+             */
             std::vector<std::string> skimRules_;
 
-            /** List of rules for shared libraries to load, if provided in python file. */
+            /** 
+             * List of rules for shared libraries to load, if provided in 
+             * python file. 
+             */
             std::vector<std::string> libraries_;
-            /** List of rules for output ROOT file names, if provided in python file. */
+
+            /** 
+             * List of rules for output ROOT file names, if provided in python
+             * file. 
+             */
             std::vector<std::string> outputFiles_;
+
             /** Histogram output file name */
-            std::string histoOutFile_;
+            std::string histoOutFile_{""};
 
             /**
              * @struct ProcessorInfo
