@@ -99,17 +99,27 @@ namespace ldmx {
             "1 #pi", // 4
             "2 #pi", // 5 
             "1 #pi_{0}", // 6
-            "1 #pi 1 N", // 7
-            "1p", // 8
-            "2N", // 9
-            "exotics", // 10
-            "multi-body", // 11
+            "1 #pi N", // 7
+            "1 #pi 2N", // 8
+            "2 #pi N", // 9
+            "1 #pi_{0} N", // 10
+            "1 #pi_{0} 2N", // 11
+            "#pi_{0} #pi N", // 12
+            "1p", // 13
+            "2N", // 14
+            "K^{0}_{L} X", // 15
+            "K^{+} X", // 16
+            "K^{0}_{S} X", // 17
+            "exotics", // 18
+            "multi-body", // 19
             ""};
 
-        h["event_type"] = Histogram1DBuilder<TH1F>("event_type", 14, -1, 13).build(); 
-        h["event_type - max PE"] = Histogram1DBuilder<TH1F>("event_type - max PE", 14, -1, 13).build(); 
+        h["event_type"] = Histogram1DBuilder<TH1F>("event_type", 23, -1, 22).build(); 
+        h["event_type - BDT"] = Histogram1DBuilder<TH1F>("event_type - BDT", 23, -1, 22).build(); 
+        h["event_type - max PE"] = Histogram1DBuilder<TH1F>("event_type - max PE", 23, -1, 22).build(); 
         for (int i = 1; i < labels.size(); ++i) {
             h["event_type"]->GetXaxis()->SetBinLabel(i, labels[i-1].c_str()); 
+            h["event_type - BDT"]->GetXaxis()->SetBinLabel(i, labels[i-1].c_str()); 
             h["event_type - max PE"]->GetXaxis()->SetBinLabel(i, labels[i-1].c_str()); 
         }
 
@@ -210,24 +220,52 @@ namespace ldmx {
 
         int eventType = classifyEvent(pnGamma, 200); 
         //std::cout << "Event type: " << eventType << std::endl; 
-        h["event_type"]->Fill(eventType); 
+        h["event_type"]->Fill(eventType);
+
+        /*
+        if (eventType == 19) {
+            std::cout << "New event: " << std::endl;
+            for (size_t idaughter = 0; idaughter < pnGamma->getDaughterCount(); ++idaughter) {
+                const SimParticle* daughter = pnGamma->getDaughter(idaughter);
+                // Calculate the kinetic energy
+                double ke = daughter->getEnergy() - daughter->getMass();
+                std::vector<double> vec = daughter->getMomentum(); 
+                TVector3 pvec(vec[0], vec[1], vec[2]); 
+
+                //  Calculate the polar angle
+                double theta = pvec.Theta()*(180/3.14159);
+                
+                std::cout << "PDG ID: " << daughter->getPdgID() 
+                          << " Kinetic Energy: " <<  ke 
+                          << " p: " << pvec.Mag()
+                          << " theta: " << theta 
+                          << " vertex: (" << daughter->getVertex()[0] 
+                          << ", " << daughter->getVertex()[1] << ", "
+                          << daughter->getVertex()[2] << " )"
+                          << " end point: (" << daughter->getEndPoint()[0] 
+                          << ", " << daughter->getEndPoint()[1] << ", "
+                          << daughter->getEndPoint()[2] << " )" << std::endl;
+            }
+        }*/
 
         h["hardest_ke"]->Fill(leadKE); 
         h["hardest_theta"]->Fill(leadTheta);
-        h["h_ke_h_theta"]->Fill(leadKE, leadTheta); 
+        h["h_ke_h_theta"]->Fill(leadPKE, leadPTheta); 
         h["hardest_p_ke"]->Fill(leadPKE); 
         h["hardest_p_theta"]->Fill(leadPTheta); 
         h["hardest_n_ke"]->Fill(leadNKE); 
         h["hardest_n_theta"]->Fill(leadNTheta); 
         h["hardest_pi_ke"]->Fill(leadPiKE); 
         h["hardest_pi_theta"]->Fill(leadPiTheta); 
-    
+
         // Get the collection of simulated particles from the event
         const EcalVetoResult* veto = static_cast<const EcalVetoResult*>(
                 event.getCollection("EcalVeto", "recon")->At(0));
        
         float bdtProb = veto->getDisc();
-        std::cout << "BDT Prob: " << bdtProb << std::endl; 
+        if (bdtProb > .94) {
+            h["event_type - BDT"]->Fill(eventType); 
+        }
 
         const TClonesArray* hcalHits = event.getCollection("hcalDigis", "recon");
 
@@ -236,7 +274,6 @@ namespace ldmx {
             HcalHit* hit = static_cast<HcalHit*>(hcalHits->At(ihit)); 
             maxPE = std::max(maxPE, hit->getPE()); 
         }
-        std::cout << "Max PE: " << maxPE << std::endl;
 
         h["bdt_max_pe"]->Fill(maxPE, bdtProb);
         
@@ -251,8 +288,8 @@ namespace ldmx {
     }
 
     int EcalPN::classifyEvent(const SimParticle* particle, double threshold) {
-        short neutronCount{0}, protonCount{0}, pionCount{0},
-              pi0Count{0}, exoticCount{0};
+        short n{0}, p{0}, pi{0}, pi0{0}, exotic{0}, k0l{0}, kp{0}, k0s{0}, 
+              lambda{0};
 
         // Loop through all of the PN daughters and extract kinematic 
         // information.
@@ -269,105 +306,88 @@ namespace ldmx {
             if (ke <= threshold) continue;
 
             // Get the PDG ID
-            int pdgID = daughter->getPdgID();
+            int pdgID = abs(daughter->getPdgID());
 
-            if (pdgID == 2112) neutronCount++;
-            else if (pdgID == 2212) protonCount++;
-            else if (pdgID == 211) pionCount++;
-            else if (pdgID == 111) pi0Count++;
-            else exoticCount++;
+            if (pdgID == 2112) n++;
+            else if (pdgID == 2212) p++;
+            else if (pdgID == 211) pi++;
+            else if (pdgID == 111) pi0++;
+            else if (pdgID == 130) k0l++; 
+            else if (pdgID == 321) kp++; 
+            else if (pdgID == 310) k0s++;
+            else exotic++;
         }
 
-        int count = neutronCount + protonCount + pionCount + pi0Count + exoticCount;
-        int count_a = protonCount + pionCount + pi0Count + exoticCount;
-        int count_b = pionCount + pi0Count + exoticCount;
-        int count_c = protonCount + neutronCount + pi0Count + exoticCount;
-        int count_d = neutronCount + pi0Count + exoticCount;
-        int count_e = protonCount + pi0Count + exoticCount;
-        int count_f = neutronCount + protonCount + pionCount + exoticCount;
-        int count_g = neutronCount + pionCount + pi0Count + exoticCount;
-        int count_h = neutronCount + protonCount + pionCount + pi0Count;
+        int kaons = k0l + kp + k0s; 
+        int nucleons = n + p; 
+        int pions = pi + pi0; 
+        int count = nucleons + pions + exotic + kaons ;
+        int count_a = p + pions + exotic + kaons ;
+        int count_b = pions + exotic+ kaons;
+        int count_c = nucleons + pi0 + exotic+ kaons;
+        int count_d = n + pi0 + exotic+ k0l + kp + k0s;
+        int count_e = p + pi0 + exotic+ k0l + kp + k0s;
+        int count_f = n + p + pi + exotic+ k0l + kp + k0s;
+        int count_g = n + pi + pi0 + exotic+ k0l + kp + k0s;
+        int count_h = n + p + pi + pi0 + k0l + kp + k0s;
+        int count_i = p + pi + exotic+ k0l + kp + k0s; 
+        int count_j = n + pi + exotic+ k0l + kp + k0s; 
+        int count_k = nucleons + pions + exotic + kp + k0s; 
+        int count_l = nucleons + pions + exotic + k0l + k0s; 
+        int count_m = nucleons + pions + exotic + kp + k0l; 
+        int count_n = pi0 + exotic + kaons; 
+        int count_o = pi + exotic + kaons;
+        int count_p = exotic + kaons; 
 
         if (count == 0) return 0; // Nothing hard
-        if (neutronCount == 1) {
-            if (count_a == 0) return 1; // 1 neutron
-            else if ( (protonCount == 1) && (count_b == 0) ) return 9; // 1 n 1 p
+        
+        if (n == 1) {
+            if (count_a == 0) return 1; // 1n
+            else if ( (p == 1) && (count_b == 0) ) return 14; // 2N
         }
-        if ( (neutronCount == 2) && (count_a == 0) ) return 2;
-        if ( (neutronCount >= 3) && (count_a == 0) ) return 3;
-        if (pionCount == 1) {
-                if (count_c == 0) return 4;
-                else if ( (protonCount == 1) && (count_d == 0) ) return 7;   
-                else if ( (neutronCount == 1) && (count_e == 0) ) return 7;  
+        
+        if ( (n == 2) && (count_a == 0) ) return 2; // 2 n
+
+        if ( (n >= 3) && (count_a == 0) ) return 3; // >= 3 n
+        
+        if (pi == 1) {
+                if (count_c == 0) return 4; // 1 pi
+                else if ( (p == 1) && (count_d == 0) ) return 7;   // 1 pi 1 p
+                else if ( (p == 2) && (count_d == 0) ) return 8;   // 1 pi 1 p
+                else if ( (n == 1) && (count_e == 0) ) return 7;  // 1 pi 1 n
+                else if ( (n == 2) && (count_e == 0) ) return 8;  // 1 pi 1 n
+                else if ( (n == 1) && (p == 1) &&  (count_n == 0) ) return 8; 
         }
-        if ( (pionCount == 2) && (count_c == 0) ) return 5;
-        if ( (pi0Count == 1) && (count_f == 0) ) return 6;
-        if ( (protonCount == 1) && (count_g == 0) ) return 8; 
-        if ( (protonCount == 2) && (count_g == 0) ) return 9;
-        if ( (exoticCount > 0) && (count_h == 0) ) return 10;
 
-        if ( (neutronCount > 0) 
-            && ( (protonCount > 0) || (pionCount > 0) 
-                || (pi0Count > 0) || (exoticCount > 0)) ) return 11;
-        else if ( (protonCount > 0) 
-            && ( (neutronCount > 0) || (pionCount > 0) 
-                || (pi0Count > 0) || (exoticCount > 0)) ) return 11;
-        else if ( (pionCount > 0) 
-            && ( (neutronCount > 0) || (protonCount > 0) 
-                || (pi0Count > 0) || (exoticCount > 0)) ) return 11;
-        else if ( (pi0Count > 0) 
-            && ( (neutronCount > 0) || (protonCount > 0) 
-                || (pionCount > 0) || (exoticCount > 0)) ) return 11;
-        else if ( (exoticCount > 0) 
-            && ( (neutronCount > 0) || (protonCount > 0) 
-                || (pionCount > 0) || (pi0Count > 0)) ) return 11;
+        if (pi == 2) {
+            if (count_c == 0) return 5; // 2pi
+            else if ( (p == 1) && (count_d == 0) ) return 9; // 2pi p 
+            else if ( (n == 1) && (count_e == 0) ) return 9; // 2pi n
+        }
+        
+        if ( pi0 == 1 ) {
+             if (count_f == 0) return 6; // 1 pi0
+             else if ( (n == 1) && (count_i == 0) ) return 10; // 1pi0 1 p
+             else if ( (n == 2) && (count_i == 0) ) return 11; // 1pi0 1 p
+             else if ( (p == 1) && (count_j == 0) ) return 10; // 1pi0 1 n
+             else if ( (p == 2) && (count_j == 0) ) return 11;
+             else if ( (n == 1) && (p == 1) && (count_o == 0) ) return 11;  
+             else if ( (pi == 1) && ((p == 1) || (n == 1)) && (count_p == 0)) return 12;
+        }
 
-        return -9999;
+
+        if ( (p == 1) && (count_g == 0) ) return 13; // 1 p 
+        if ( (p == 2) && (count_g == 0) ) return 14; // 2 p
+        
+        if (k0l == 1) return 15;
+        if (kp == 1) return 16;
+        if (k0s == 1) return 17;
+
+        if ( (exotic > 0) && (count_h == 0) ) return 18;
+
+        return 19;
     }
 
-    /*
-    int EcalPN::classifyEvent(const int& neutronCount, 
-                    const int& protonCount, const int& pionCount, 
-                    const int& pi0Count) {
-        
-
-        int count = neutronCount + protonCount + pionCount + pi0Count; 
-        if (count == 0) return 0; 
-        if (protonCount == 0) {
-            if ((pionCount + pi0Count) == 0) {
-                if (neutronCount >= 3) return 3; 
-                else return neutronCount;
-            } else if ((neutronCount + pi0Count) == 0) { 
-                if (pionCount == 1) return 4; 
-                else if (pionCount == 2) return 5; 
-            } else if ((neutronCount + pionCount) == 0) {
-                if (pi0Count == 1) return 6;
-            }
-        } 
-        
-        if (pi0Count == 0) {
-            if ((pionCount == 1) && (protonCount == 1 || neutronCount == 1)) return 7;
-            if (pionCount == 0) {
-                if ((protonCount == 1) && (neutronCount == 0)) return 8; 
-                if (((protonCount == 1) && (neutronCount == 1)) || 
-                        (protonCount == 2) && (neutronCount == 0)) return 9;
-            }
-        } 
-    
-        if ((neutronCount > 0
-                && (protonCount > 0 || pionCount > 0 || pi0Count > 0)) ||
-            (protonCount > 0
-                && (neutronCount > 0 || pionCount > 0 || pi0Count > 0)) ||
-            (pionCount > 0
-                && (neutronCount > 0 || protonCount > 0 || pi0Count > 0)) ||
-            (pi0Count > 0
-                && (neutronCount > 0 || protonCount > 0 || pionCount > 0))) {
-             return 11;
-        }
-
-
-        return -9999;    
-    }*/
 } // ldmx
 
 DECLARE_ANALYZER_NS(ldmx, EcalPN)
