@@ -81,37 +81,6 @@ namespace ldmx {
         }
 
         this->SetUserInitialization(pList);
-
-        /*
-        G4VUserPhysicsList* thePhysicsList = new FTFP_BERT;
-        G4VModularPhysicsList* modularPhysicsList = dynamic_cast<G4VModularPhysicsList*>(thePhysicsList);
-
-        if (isPWEnabled_) {
-            std::cout << "[ RunManager ]: Parallel worlds physics list has been registered." << std::endl;
-            modularPhysicsList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
-        }
-
-        modularPhysicsList->RegisterPhysics(new APrimePhysics);
-        modularPhysicsList->RegisterPhysics(new GammaPhysics);
-        //modularPhysicsList->RegisterPhysics(new TungstenIonPhysics);
-
-        if (BiasingMessenger::isBiasingEnabled()) {
-
-            std::cout << "[ RunManager ]: Enabling biasing of particle type " << BiasingMessenger::getParticleType() << std::endl;
-
-            // Instantiate the constructor used when biasing
-            G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
-
-            // Specify what particles are being biased
-            biasingPhysics->Bias(BiasingMessenger::getParticleType());
-
-            // Register the physics constructor to the physics list:
-            modularPhysicsList->RegisterPhysics(biasingPhysics);
-        }
-
-        SetUserInitialization(thePhysicsList);
-
-        //G4RunManager::InitializePhysics();*/
     }
 
     void RunManager::Initialize() {
