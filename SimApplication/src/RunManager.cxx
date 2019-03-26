@@ -35,6 +35,7 @@
 #include "G4GenericBiasingPhysics.hh"
 #include "G4VModularPhysicsList.hh"
 #include "G4ParallelWorldPhysics.hh"
+#include "G4PhysListFactory.hh"
 
 namespace ldmx {
 
@@ -42,15 +43,46 @@ namespace ldmx {
         pluginManager_ = new PluginManager();
         pluginMessenger_ = new PluginMessenger(pluginManager_);
         pwMessenger_ = new ParallelWorldMessenger(this);
+        
+        // Setup messenger for physics list.
+        physicsListFactory_ = new G4PhysListFactory;
     }
 
     RunManager::~RunManager() {
         delete pluginManager_;
         delete pluginMessenger_;
+        delete physicsListFactory_; 
     }
 
-    void RunManager::InitializePhysics() {
+    void RunManager::setupPhysics() {
 
+        G4VModularPhysicsList* pList = physicsListFactory_->GetReferencePhysList("FTFP_BERT");
+        
+        if (isPWEnabled_) {
+            std::cout << "[ RunManager ]: Parallel worlds physics list has been registered." << std::endl;
+            pList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
+        }
+        
+        pList->RegisterPhysics(new APrimePhysics);
+        pList->RegisterPhysics(new GammaPhysics);
+       
+        if (BiasingMessenger::isBiasingEnabled()) {
+
+            std::cout << "[ RunManager ]: Enabling biasing of particle type " << BiasingMessenger::getParticleType() << std::endl;
+
+            // Instantiate the constructor used when biasing
+            G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
+
+            // Specify what particles are being biased
+            biasingPhysics->Bias(BiasingMessenger::getParticleType());
+
+            // Register the physics constructor to the physics list:
+            pList->RegisterPhysics(biasingPhysics);
+        }
+
+        this->SetUserInitialization(pList);
+
+        /*
         G4VUserPhysicsList* thePhysicsList = new FTFP_BERT;
         G4VModularPhysicsList* modularPhysicsList = dynamic_cast<G4VModularPhysicsList*>(thePhysicsList);
 
@@ -79,12 +111,13 @@ namespace ldmx {
 
         SetUserInitialization(thePhysicsList);
 
-        G4RunManager::InitializePhysics();
+        //G4RunManager::InitializePhysics();*/
     }
 
     void RunManager::Initialize() {
         
-        
+        setupPhysics();
+
         // The parallel world needs to be registered before the mass world is
         // constructed i.e. before G4RunManager::Initialize() is called. 
         if (isPWEnabled_) {
