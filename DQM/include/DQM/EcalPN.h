@@ -17,8 +17,9 @@ class TH1;
 namespace ldmx { 
 
     // Forward declarations within the ldmx workspace
-    class Process;
     class Event;
+    class HistogramPool; 
+    class Process;
     class SimParticle;
 
     class EcalPN : public Analyzer { 
@@ -46,8 +47,8 @@ namespace ldmx {
             /** Method used to classify events. */
             int classifyEvent(const SimParticle* particle, double threshold); 
 
-            /** Container for 1 dimensional ROOT histograms. */
-            std::map<std::string, TH1*> h; 
+            /** Singleton used to access histograms. */
+            HistogramPool* histograms_{nullptr}; 
 
     };    
     
