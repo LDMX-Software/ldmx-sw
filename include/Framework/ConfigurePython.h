@@ -110,6 +110,14 @@ namespace ldmx {
             /** Histogram output file name */
             std::string histoOutFile_{""};
 
+            struct HistogramInfo { 
+                std::string name_;
+                std::string xLabel_;  
+                int bins_; 
+                int xmin_; 
+                int xmax_;
+            };
+
             /**
              * @struct ProcessorInfo
              * @brief Represents the configuration of an EventProcessor in the job.
@@ -118,6 +126,7 @@ namespace ldmx {
                     std::string classname_;
                     std::string instancename_;
                     ParameterSet params_;
+                    std::vector<HistogramInfo> histograms_; 
             };
 
             /** The sequence of EventProcessor objects to be executed in order. */
