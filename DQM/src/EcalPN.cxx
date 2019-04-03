@@ -22,6 +22,7 @@
 #include "Event/SimParticle.h"
 #include "Event/EcalVetoResult.h"
 #include "Event/HcalHit.h"
+#include "Framework/HistogramPool.h"
 
 namespace ldmx { 
 
@@ -31,110 +32,59 @@ namespace ldmx {
     EcalPN::~EcalPN() {}
 
     void EcalPN::onProcessStart() {
-        
+       
+        // Get an instance of the histogram pool  
+        histograms_ = HistogramPool::getInstance();    
 
-        // Open the file and move into the histogram directory
-        getHistoDirectory();
-
-        h["recoil_vx"]  = Histogram1DBuilder<TH1F>("recoil_vx", 120, -30, 30)
-            .xLabel("Recoil e^{-} Vertex x (mm)").build(); 
-        h["recoil_vy"]  = Histogram1DBuilder<TH1F>("recoil_vy", 200, -100, 100)
-            .xLabel("Recoil e^{-} Vertex y (mm)").build();
-        h["recoil_vz"]  = Histogram1DBuilder<TH1F>("recoil_vz", 40, -2, 0)
-            .xLabel("Recoil e^{-} Vertex z (mm)").build();
-
-        h["recoil_tp"]  = Histogram1DBuilder<TH1F>("recoil_tp", 250, 0, 2500)
-            .xLabel("Recoil e^{-} Truth p (MeV)").build();
-        h["recoil_tpt"]  = Histogram1DBuilder<TH1F>("recoil_tpt", 50, 0, 100)
-            .xLabel("Recoil e^{-} Truth p_{t} (MeV)").build();
-        h["recoil_tpx"]  = Histogram1DBuilder<TH1F>("recoil_tpx", 100, -10, 10)
-            .xLabel("Recoil e^{-} Truth p_{x} (MeV)").build();
-        h["recoil_tpy"]  = Histogram1DBuilder<TH1F>("recoil_tpy", 100, -10, 10)
-            .xLabel("Recoil e^{-} Truth p_{y} (MeV)").build();
-        h["recoil_tpz"]  = Histogram1DBuilder<TH1F>("recoil_tpz", 260, -100, 2500)
-            .xLabel("Recoil e^{-} Truth p_{z} (MeV)").build();
-
-        h["recoil_tp - Max PE"]  = Histogram1DBuilder<TH1F>("recoil_tp_max_pe", 250, 0, 2500)
-            .xLabel("Recoil e^{-} Truth p (MeV)").build();
-        h["recoil_tpt - Max PE"]  = Histogram1DBuilder<TH1F>("recoil_tpt", 50, 0, 100)
-            .xLabel("Recoil e^{-} Truth p_{t} (MeV)").build();
-        h["recoil_tpx - Max PE"]  = Histogram1DBuilder<TH1F>("recoil_tpx_max_pe", 100, -10, 10)
-            .xLabel("Recoil e^{-} Truth p_{x} (MeV)").build();
-        h["recoil_tpy - Max PE"]  = Histogram1DBuilder<TH1F>("recoil_tpy_max_pe", 100, -10, 10)
-            .xLabel("Recoil e^{-} Truth p_{y} (MeV)").build();
-        h["recoil_tpz - Max PE"]  = Histogram1DBuilder<TH1F>("recoil_tpz_max_pe", 260, -100, 2500)
-            .xLabel("Recoil e^{-} Truth p_{z} (MeV)").build();
-
-        h["pn_particle_mult"] = Histogram1DBuilder<TH1F>("pn_particle_mult", 100, 0, 200)
-            .xLabel("Photo-nuclear Multiplicity").build(); 
-        h["pn_gamma_energy"] = Histogram1DBuilder<TH1F>("pn_gamma_energy", 500, 0, 5000)
-            .xLabel("#gamma Energy (MeV)").build(); 
-        h["pn_gamma_int_z"]  = Histogram1DBuilder<TH1F>("pn_gamma_int_z", 50, 200, 400)
-            .xLabel("#gamma Interaction Vertex (mm)").build(); 
-        h["pn_gamma_vertex_z"] = Histogram1DBuilder<TH1F>("pn_gamma_vertex_z", 100, -1, 1)
-            .xLabel("#gamma Vertex (mm)").build(); 
-    
-        h["hardest_ke"] = Histogram1DBuilder<TH1F>("hardest_ke", 400, 0, 4000)
-            .xLabel("Kinetic Energy Hardest Photo-nuclear Particle (MeV)").build(); 
-        h["hardest_theta"] = Histogram1DBuilder<TH1F>("hardest_theta", 360, 0, 180)
-            .xLabel("#theta of Hardest Photo-nuclear Particle (Degrees)").build();
-        h["hardest_p_ke"] = Histogram1DBuilder<TH1F>("hardest_p_ke", 400, 0, 4000)
-            .xLabel("Kinetic Energy Hardest Photo-nuclear Proton Particle (MeV)").build(); 
-        h["hardest_p_theta"] = Histogram1DBuilder<TH1F>("hardest_p_theta", 360, 0, 180)
-            .xLabel("#theta of Hardest Photo-nuclear Proton Particle (Degrees)").build();
-        h["hardest_n_ke"] = Histogram1DBuilder<TH1F>("hardest_n_ke", 400, 0, 4000)
-            .xLabel("Kinetic Energy Hardest Photo-nuclear Neutron Particle (MeV)").build(); 
-        h["hardest_n_theta"] = Histogram1DBuilder<TH1F>("hardest_n_theta", 360, 0, 180)
-            .xLabel("#theta of Hardest Photo-nuclear Neutron Particle (Degrees)").build();
-        h["hardest_pi_ke"] = Histogram1DBuilder<TH1F>("hardest_pi_ke", 400, 0, 4000)
-            .xLabel("Kinetic Energy Hardest Photo-nuclear Pion Particle (MeV)").build(); 
-        h["hardest_pi_theta"] = Histogram1DBuilder<TH1F>("hardest_pi_theta", 360, 0, 180)
-            .xLabel("#theta of Hardest Photo-nuclear Pion Particle (Degrees)").build();
-  
         std::vector<std::string> labels = {"", 
             "Nothing hard", // 0  
-            "1n", // 1
-            "2n", // 2
-            "#geq 3n", // 3 
+            "1 n", // 1
+            "2 n", // 2
+            "#geq 3 n", // 3 
             "1 #pi", // 4
             "2 #pi", // 5 
             "1 #pi_{0}", // 6
-            "1 #pi N", // 7
-            "1 #pi 2N", // 8
-            "2 #pi N", // 9
-            "1 #pi_{0} N", // 10
-            "1 #pi_{0} 2N", // 11
-            "#pi_{0} #pi N", // 12
-            "1p", // 13
-            "2N", // 14
-            "K^{0}_{L} X", // 15
-            "K^{+} X", // 16
-            "K^{0}_{S} X", // 17
-            "exotics", // 18
-            "multi-body", // 19
-            ""};
+            "1 #pi A", // 7
+            "1 #pi 2 A", // 8
+            "2 #pi A", // 9
+            "1 #pi_{0} A", // 10
+            "1 #pi_{0} 2 A", // 11
+            "#pi_{0} #pi A", // 12
+            "1 p", // 13
+            "2 p", // 14
+            "pn", // 15
+            "K^{0}_{L} X", // 16
+            "K X", // 17
+            "K^{0}_{S} X", // 18
+            "exotics", // 19
+            "multi-body", // 20
+            ""
+        };
 
-        h["event_type"] = Histogram1DBuilder<TH1F>("event_type", 23, -1, 22).build(); 
-        h["event_type - BDT"] = Histogram1DBuilder<TH1F>("event_type - BDT", 23, -1, 22).build(); 
-        h["event_type - max PE"] = Histogram1DBuilder<TH1F>("event_type - max PE", 23, -1, 22).build(); 
-        for (int i = 1; i < labels.size(); ++i) {
-            h["event_type"]->GetXaxis()->SetBinLabel(i, labels[i-1].c_str()); 
-            h["event_type - BDT"]->GetXaxis()->SetBinLabel(i, labels[i-1].c_str()); 
-            h["event_type - max PE"]->GetXaxis()->SetBinLabel(i, labels[i-1].c_str()); 
+        TH1* hist = histograms_->get("event_type");
+        TH1* hist_bdt = histograms_->get("event_type_bdt");
+        TH1* hist_max_pe = histograms_->get("event_type_max_pe");
+        for (int ilabel{1}; ilabel < labels.size(); ++ilabel) { 
+            hist->GetXaxis()->SetBinLabel(ilabel, labels[ilabel-1].c_str());
+            hist_bdt->GetXaxis()->SetBinLabel(ilabel, labels[ilabel-1].c_str());
+            hist_max_pe->GetXaxis()->SetBinLabel(ilabel, labels[ilabel-1].c_str());
         }
 
-        h["h_ke_h_theta"] = new TH2F("h_ke_h_theta", "", 400, 0, 4000, 360, 0, 180);
-        h["h_ke_h_theta"]->GetXaxis()->SetTitle("Kinetic Energy Hardest Photo-nuclear Pion Particle (MeV)"); 
-        h["h_ke_h_theta"]->GetYaxis()->SetTitle("#theta of Hardest Photo-nuclear Pion Particle (Degrees)"); 
+        histograms_->create<TH2F>("h_ke_h_theta", 
+                            "Kinetic Energy Hardest Photo-nuclear Particle (MeV)",
+                            400, 0, 4000, 
+                            "#theta of Hardest Photo-nuclear Pion Particle (Degrees)",
+                            360, 0, 180);
+       
+        histograms_->create<TH2F>("bdt_max_pe", 
+                            "Max PE", 250, 0, 500, 
+                            "BDT Prob", 100, 0.9, 1.0);
 
-        h["bdt_max_pe"] = new TH2F("bdt_max_pe", "", 250, 0, 500, 100, 0.9, 1.0);
-        h["bdt_max_pe"]->GetXaxis()->SetTitle("Max PE"); 
-        h["bdt_max_pe"]->GetYaxis()->SetTitle("BDT Prob"); 
 
     }
 
     void EcalPN::analyze(const Event & event) { 
-    
+   
         // Get the collection of simulated particles from the event
         const TClonesArray* particles = event.getCollection("SimParticles");
       
@@ -143,38 +93,39 @@ namespace ldmx {
 
         // Fill the recoil vertex position histograms
         std::vector<double> recoilVertex = recoil->getVertex();
-        h["recoil_vx"]->Fill(recoilVertex[0]);  
-        h["recoil_vy"]->Fill(recoilVertex[1]);  
-        h["recoil_vz"]->Fill(recoilVertex[2]);  
-    
+        histograms_->get("recoil_vx")->Fill(recoilVertex[0]);  
+        histograms_->get("recoil_vy")->Fill(recoilVertex[1]);  
+        histograms_->get("recoil_vz")->Fill(recoilVertex[2]);  
+   
         // Use the recoil electron to retrieve the gamma that underwent a 
         // photo-nuclear reaction.
         const SimParticle* pnGamma = Analysis::searchForPNGamma(recoil);
-        
+
         // Get the truth momentum of the gamma that underwent a photo-nuclear 
         // reaction.
         TVector3 pnGammaP(pnGamma->getMomentum().data()); 
-        
+
         // Get the truth momentum of the recoil
         TVector3 recoilPGen(recoil->getMomentum().data()); 
-
+        
         // Calculate the momentum of the recoil electron
         TVector3 recoilP = recoilPGen - pnGammaP; 
 
-        h["recoil_tp"]->Fill(recoilP.Mag()); 
-        h["recoil_tpx"]->Fill(recoilP.Px()); 
-        h["recoil_tpy"]->Fill(recoilP.Py()); 
-        h["recoil_tpz"]->Fill(recoilP.Pz()); 
+        histograms_->get("recoil_tp")->Fill(recoilP.Mag());
+        histograms_->get("recoil_tpt")->Fill(recoilP.Pt()); 
+        histograms_->get("recoil_tpx")->Fill(recoilP.Px()); 
+        histograms_->get("recoil_tpy")->Fill(recoilP.Py()); 
+        histograms_->get("recoil_tpz")->Fill(recoilP.Pz()); 
     
-        h["pn_particle_mult"]->Fill(pnGamma->getDaughterCount());
-        h["pn_gamma_energy"]->Fill(pnGamma->getEnergy()); 
-        h["pn_gamma_int_z"]->Fill(pnGamma->getEndPoint()[2]); 
-        h["pn_gamma_vertex_z"]->Fill(pnGamma->getVertex()[2]);  
-   
-        double leadKE{-9999},   leadTheta{-9999};
-        double leadPKE{-9999},  leadPTheta{-9999};
-        double leadNKE{-9999},  leadNTheta{-9999};
-        double leadPiKE{-9999}, leadPiTheta{-9999};
+        histograms_->get("pn_particle_mult")->Fill(pnGamma->getDaughterCount());
+        histograms_->get("pn_gamma_energy")->Fill(pnGamma->getEnergy()); 
+        histograms_->get("pn_gamma_int_z")->Fill(pnGamma->getEndPoint()[2]); 
+        histograms_->get("pn_gamma_vertex_z")->Fill(pnGamma->getVertex()[2]);  
+
+        double lke{-1},   lt{-1}; 
+        double lpke{-1},  lpt{-1};
+        double lnke{-1},  lnt{-1};
+        double lpike{-1}, lpit{-1};
         
         // Loop through all of the PN daughters and extract kinematic 
         // information.
@@ -185,6 +136,8 @@ namespace ldmx {
 
             // Get the PDG ID
             int pdgID = daughter->getPdgID();
+
+            // Ignore photons and nuclei
             if (pdgID == 22 || pdgID > 10000) continue;
 
             // Calculate the kinetic energy
@@ -196,95 +149,82 @@ namespace ldmx {
             //  Calculate the polar angle
             double theta = pvec.Theta()*(180/3.14159);
  
-            if (leadKE < ke) { 
-                leadKE = ke;
-                leadTheta = theta; 
-            }
+            if (lke < ke) { lke = ke; lt = theta; }  
             
-            if ((pdgID == 2112) && (leadNKE < ke)) {
-                leadNKE = ke; 
-                leadNTheta = theta; 
-            } 
+            if ((pdgID == 2112) && (lnke < ke)) { lnke = ke; lnt = theta; }
+           
+            if ((pdgID == 2212) && (lpke < ke)) { lpke = ke; lpt = theta; }
             
-            if ((pdgID == 2212) && (leadPKE < ke)) {
-                leadPKE = ke;
-                leadPTheta = theta; 
-            } 
-            
-            if ( ( (abs(pdgID) == 211) || (pdgID == 111) ) 
-                    && (leadPiKE < ke) ) { 
-                leadPiKE = ke; 
-                leadPiTheta = theta; 
+            if ( ( (abs(pdgID) == 211) || (pdgID == 111) ) && (lpike < ke) ) {
+                lpike = ke; 
+                lpit = theta; 
             }
-        }
-
-        int eventType = classifyEvent(pnGamma, 200); 
-        //std::cout << "Event type: " << eventType << std::endl; 
-        h["event_type"]->Fill(eventType);
-
-        /*
-        if (eventType == 19) {
-            std::cout << "New event: " << std::endl;
-            for (size_t idaughter = 0; idaughter < pnGamma->getDaughterCount(); ++idaughter) {
-                const SimParticle* daughter = pnGamma->getDaughter(idaughter);
-                // Calculate the kinetic energy
-                double ke = daughter->getEnergy() - daughter->getMass();
-                std::vector<double> vec = daughter->getMomentum(); 
-                TVector3 pvec(vec[0], vec[1], vec[2]); 
-
-                //  Calculate the polar angle
-                double theta = pvec.Theta()*(180/3.14159);
-                
-                std::cout << "PDG ID: " << daughter->getPdgID() 
-                          << " Kinetic Energy: " <<  ke 
-                          << " p: " << pvec.Mag()
-                          << " theta: " << theta 
-                          << " vertex: (" << daughter->getVertex()[0] 
-                          << ", " << daughter->getVertex()[1] << ", "
-                          << daughter->getVertex()[2] << " )"
-                          << " end point: (" << daughter->getEndPoint()[0] 
-                          << ", " << daughter->getEndPoint()[1] << ", "
-                          << daughter->getEndPoint()[2] << " )" << std::endl;
-            }
-        }*/
-
-        h["hardest_ke"]->Fill(leadKE); 
-        h["hardest_theta"]->Fill(leadTheta);
-        h["h_ke_h_theta"]->Fill(leadPKE, leadPTheta); 
-        h["hardest_p_ke"]->Fill(leadPKE); 
-        h["hardest_p_theta"]->Fill(leadPTheta); 
-        h["hardest_n_ke"]->Fill(leadNKE); 
-        h["hardest_n_theta"]->Fill(leadNTheta); 
-        h["hardest_pi_ke"]->Fill(leadPiKE); 
-        h["hardest_pi_theta"]->Fill(leadPiTheta); 
-
-        // Get the collection of simulated particles from the event
-        const EcalVetoResult* veto = static_cast<const EcalVetoResult*>(
-                event.getCollection("EcalVeto", "recon")->At(0));
-       
-        float bdtProb = veto->getDisc();
-        if (bdtProb > .94) {
-            h["event_type - BDT"]->Fill(eventType); 
-        }
-
-        const TClonesArray* hcalHits = event.getCollection("hcalDigis", "recon");
-
-        float maxPE{0}; 
-        for (size_t ihit{0}; ihit < hcalHits->GetEntriesFast(); ++ihit) {
-            HcalHit* hit = static_cast<HcalHit*>(hcalHits->At(ihit)); 
-            maxPE = std::max(maxPE, hit->getPE()); 
-        }
-
-        h["bdt_max_pe"]->Fill(maxPE, bdtProb);
         
-        if (maxPE < 50) {
-            h["event_type - max PE"]->Fill(eventType); 
-            h["recoil_tp - Max PE"]->Fill(recoilP.Mag()); 
-            h["recoil_tpx - Max PE"]->Fill(recoilP.Px()); 
-            h["recoil_tpy - Max PE"]->Fill(recoilP.Py()); 
-            h["recoil_tpz - Max PE"]->Fill(recoilP.Pz()); 
+        }
 
-        } 
+        histograms_->get("hardest_ke")->Fill(lke); 
+        histograms_->get("hardest_theta")->Fill(lt);
+        histograms_->get("h_ke_h_theta")->Fill(lke, lt); 
+        histograms_->get("hardest_p_ke")->Fill(lpke); 
+        histograms_->get("hardest_p_theta")->Fill(lpt); 
+        histograms_->get("hardest_n_ke")->Fill(lnke); 
+        histograms_->get("hardest_n_theta")->Fill(lnt); 
+        histograms_->get("hardest_pi_ke")->Fill(lpike); 
+        histograms_->get("hardest_pi_theta")->Fill(lpit); 
+
+        // Classify the event
+        int eventType = classifyEvent(pnGamma, 200); 
+        histograms_->get("event_type")->Fill(eventType);
+
+        // Get the collection of ECal veto results if it exist
+        float bdtProb{-1}; 
+        if (event.exists("EcalVeto")) {
+            const EcalVetoResult* veto 
+                = static_cast<const EcalVetoResult*>(event.getCollection("EcalVeto")->At(0));
+       
+            // Get the BDT probability  
+            bdtProb = veto->getDisc();
+            
+            // Fill the histograms if the event passes the ECal veto
+            if (bdtProb >= .98) {
+                histograms_->get("event_type_bdt")->Fill(eventType);
+        
+                histograms_->get("recoil_tp_bdt")->Fill(recoilP.Mag());
+                histograms_->get("recoil_tpt_bdt")->Fill(recoilP.Pt()); 
+                histograms_->get("recoil_tpx_bdt")->Fill(recoilP.Px()); 
+                histograms_->get("recoil_tpy_bdt")->Fill(recoilP.Py()); 
+                histograms_->get("recoil_tpz_bdt")->Fill(recoilP.Pz()); 
+        
+                histograms_->get("pn_particle_mult_bdt")->Fill(pnGamma->getDaughterCount());
+                histograms_->get("pn_gamma_energy_bdt")->Fill(pnGamma->getEnergy()); 
+            }
+        }
+
+        // Get the collection of HCal digitized hits if the exists 
+        float maxPE{-1}; 
+        if (event.exists("hcalDigis")) { 
+            const TClonesArray* hcalHits = event.getCollection("hcalDigis");
+        
+            for (size_t ihit{0}; ihit < hcalHits->GetEntriesFast(); ++ihit) {
+                HcalHit* hit = static_cast<HcalHit*>(hcalHits->At(ihit)); 
+                maxPE = std::max(maxPE, hit->getPE()); 
+            }
+
+            if (maxPE < 3) { 
+                histograms_->get("event_type_max_pe")->Fill(eventType);
+                
+                histograms_->get("recoil_tp_max_pe")->Fill(recoilP.Mag());
+                histograms_->get("recoil_tpt_max_pe")->Fill(recoilP.Pt()); 
+                histograms_->get("recoil_tpx_max_pe")->Fill(recoilP.Px()); 
+                histograms_->get("recoil_tpy_max_pe")->Fill(recoilP.Py()); 
+                histograms_->get("recoil_tpz_max_pe")->Fill(recoilP.Pz()); 
+                
+                histograms_->get("pn_particle_mult_max_pe")->Fill(pnGamma->getDaughterCount());
+                histograms_->get("pn_gamma_energy_max_pe")->Fill(pnGamma->getEnergy()); 
+            }
+        }
+        
+        histograms_->get("bdt_max_pe")->Fill(maxPE, bdtProb); 
     }
 
     int EcalPN::classifyEvent(const SimParticle* particle, double threshold) {
@@ -343,7 +283,7 @@ namespace ldmx {
         
         if (n == 1) {
             if (count_a == 0) return 1; // 1n
-            else if ( (p == 1) && (count_b == 0) ) return 14; // 2N
+            else if ( (p == 1) && (count_b == 0) ) return 15; // pn
         }
         
         if ( (n == 2) && (count_a == 0) ) return 2; // 2 n
@@ -379,13 +319,13 @@ namespace ldmx {
         if ( (p == 1) && (count_g == 0) ) return 13; // 1 p 
         if ( (p == 2) && (count_g == 0) ) return 14; // 2 p
         
-        if (k0l == 1) return 15;
-        if (kp == 1) return 16;
-        if (k0s == 1) return 17;
+        if (k0l == 1) return 16;
+        if (kp == 1) return 17;
+        if (k0s == 1) return 18;
 
-        if ( (exotic > 0) && (count_h == 0) ) return 18;
+        if ( (exotic > 0) && (count_h == 0) ) return 19;
 
-        return 19;
+        return 20;
     }
 
 } // ldmx
