@@ -246,7 +246,7 @@ namespace ldmx {
             
             if (!proc.histograms_.empty()) {
                 HistogramPool* histograms = HistogramPool::getInstance(); 
-                p->makeHistoDirectory(proc.instancename_);
+                ep->getHistoDirectory();
                 for (const auto& hist : proc.histograms_) { 
                     histograms->create<TH1F>(hist.name_, hist.xLabel_, hist.bins_, hist.xmin_, hist.xmax_); 
                 } 
