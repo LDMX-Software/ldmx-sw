@@ -70,6 +70,9 @@ namespace ldmx {
             hist_max_pe->GetXaxis()->SetBinLabel(ilabel, labels[ilabel-1].c_str());
         }
 
+        // Move into the ECal PN directory
+        getHistoDirectory();
+
         histograms_->create<TH2F>("h_ke_h_theta", 
                             "Kinetic Energy Hardest Photo-nuclear Particle (MeV)",
                             400, 0, 4000, 
