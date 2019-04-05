@@ -44,7 +44,10 @@ namespace ldmx {
 
         histograms_->create<TH2F>("max_pe_time", 
                                   "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                                  "HCal max PE hit time (ms)", 500, 0, 1500);
+                                  "HCal max PE hit time (#mu s)", 500, 0, 1500);
+        histograms_->create<TH2F>("max_pe_time_bdt", 
+                                  "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                                  "HCal max PE hit time (#mu s)", 500, 0, 1500);
 
     }
 
@@ -68,13 +71,13 @@ namespace ldmx {
                 maxTime = hit->getTime();  
             }
             histograms_->get("pe")->Fill(hit->getPE());
-            histograms_->get("hit_time")->Fill(hit->getTime());
+            histograms_->get("hit_time")->Fill(hit->getTime()/1000);
             
             totalPE += hit->getPE();  
         }
 
         histograms_->get("max_pe")->Fill(maxPE);
-        histograms_->get("hit_time_max_pe")->Fill(maxTime);
+        histograms_->get("hit_time_max_pe")->Fill(maxTime/1000);
         histograms_->get("total_pe")->Fill(totalPE); 
         histograms_->get("n_hits")->Fill(hcalHits->GetEntriesFast());
 
@@ -95,7 +98,8 @@ namespace ldmx {
                 histograms_->get("max_pe_bdt")->Fill(maxPE);
                 histograms_->get("total_pe_bdt")->Fill(totalPE); 
                 histograms_->get("n_hits_bdt")->Fill(hcalHits->GetEntriesFast());
-                histograms_->get("hit_time_max_pe_bdt")->Fill(maxTime);  
+                histograms_->get("hit_time_max_pe_bdt")->Fill(maxTime/1000);  
+                histograms_->get("max_pe_time")->Fill(maxPE, maxTime/1000);  
             }
         }
     }
