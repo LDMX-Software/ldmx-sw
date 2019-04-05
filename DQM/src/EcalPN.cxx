@@ -80,8 +80,8 @@ namespace ldmx {
                             360, 0, 180);
        
         histograms_->create<TH2F>("bdt_max_pe", 
-                            "Max PE", 250, 0, 500, 
-                            "BDT Prob", 100, 0.9, 1.0);
+                            "Max PE", 500, 0, 500, 
+                            "BDT Prob", 200, 0.9, 1.0);
 
 
     }
