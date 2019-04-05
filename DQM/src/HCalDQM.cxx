@@ -48,6 +48,9 @@ namespace ldmx {
         histograms_->create<TH2F>("max_pe_time_bdt", 
                                   "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
                                   "HCal max PE hit time (#mu s)", 500, 0, 1500);
+        histograms_->create<TH2F>("max_pe_time_vetoes", 
+                                  "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                                  "HCal max PE hit time (#mu s)", 500, 0, 1500);
 
     }
 
@@ -63,6 +66,8 @@ namespace ldmx {
         // Find the maximum PE in the event 
         float maxPE{-1};
         float maxTime{-1};
+        float minTime{10000000}; 
+        float minTimeMaxPE{-1};
         double totalPE{0};  
         for (size_t ihit{0}; ihit < hcalHits->GetEntriesFast(); ++ihit) {
             HcalHit* hit = static_cast<HcalHit*>(hcalHits->At(ihit)); 
@@ -72,7 +77,7 @@ namespace ldmx {
             }
             histograms_->get("pe")->Fill(hit->getPE());
             histograms_->get("hit_time")->Fill(hit->getTime()/1000);
-            
+           
             totalPE += hit->getPE();  
         }
 
@@ -99,9 +104,18 @@ namespace ldmx {
                 histograms_->get("total_pe_bdt")->Fill(totalPE); 
                 histograms_->get("n_hits_bdt")->Fill(hcalHits->GetEntriesFast());
                 histograms_->get("hit_time_max_pe_bdt")->Fill(maxTime/1000);  
-                histograms_->get("max_pe_time")->Fill(maxPE, maxTime/1000);  
+                histograms_->get("max_pe_time_bdt")->Fill(maxPE, maxTime/1000);  
             }
         }
+
+        if ((maxPE < 3) && (bdtProb >= .98)) {
+        
+            histograms_->get("max_pe_vetoes")->Fill(maxPE);
+            histograms_->get("total_pe_vetoes")->Fill(totalPE); 
+            histograms_->get("n_hits_vetoes")->Fill(hcalHits->GetEntriesFast());
+            histograms_->get("hit_time_max_pe_vetoes")->Fill(maxTime/1000);  
+            histograms_->get("max_pe_time_vetoes")->Fill(maxPE, maxTime/1000);  
+        } 
     }
 
 } // ldmx

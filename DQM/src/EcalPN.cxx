@@ -83,7 +83,6 @@ namespace ldmx {
                             "Max PE", 500, 0, 500, 
                             "BDT Prob", 200, 0.9, 1.0);
 
-
     }
 
     void EcalPN::analyze(const Event & event) { 
@@ -119,6 +118,7 @@ namespace ldmx {
         histograms_->get("recoil_tpx")->Fill(recoilP.Px()); 
         histograms_->get("recoil_tpy")->Fill(recoilP.Py()); 
         histograms_->get("recoil_tpz")->Fill(recoilP.Pz()); 
+            
     
         histograms_->get("pn_particle_mult")->Fill(pnGamma->getDaughterCount());
         histograms_->get("pn_gamma_energy")->Fill(pnGamma->getEnergy()); 
@@ -227,7 +227,20 @@ namespace ldmx {
             }
         }
         
-        histograms_->get("bdt_max_pe")->Fill(maxPE, bdtProb); 
+        histograms_->get("bdt_max_pe")->Fill(maxPE, bdtProb);
+
+        if ((maxPE < 3) && (bdtProb >= .98)) { 
+            histograms_->get("event_type_vetoes")->Fill(eventType);
+                
+            histograms_->get("recoil_tp_vetoes")->Fill(recoilP.Mag());
+            histograms_->get("recoil_tpt_vetoes")->Fill(recoilP.Pt()); 
+            histograms_->get("recoil_tpx_vetoes")->Fill(recoilP.Px()); 
+            histograms_->get("recoil_tpy_vetoes")->Fill(recoilP.Py()); 
+            histograms_->get("recoil_tpz_vetoes")->Fill(recoilP.Pz()); 
+            histograms_->get("pn_particle_mult_vetoes")->Fill(pnGamma->getDaughterCount());
+            histograms_->get("pn_gamma_energy_vetoes")->Fill(pnGamma->getEnergy()); 
+        
+        }
     }
 
     int EcalPN::classifyEvent(const SimParticle* particle, double threshold) {
