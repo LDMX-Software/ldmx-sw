@@ -61,13 +61,21 @@ namespace ldmx {
             ""
         };
 
-        TH1* hist = histograms_->get("event_type");
-        TH1* hist_bdt = histograms_->get("event_type_bdt");
-        TH1* hist_max_pe = histograms_->get("event_type_max_pe");
+        std::vector<TH1*> hists = { histograms_->get("event_type"),
+                                   histograms_->get("event_type_bdt"),
+                                   histograms_->get("event_type_max_pe"),
+                                   histograms_->get("event_type_500mev"),
+                                   histograms_->get("event_type_500mev_bdt"),
+                                   histograms_->get("event_type_500mev_max_pe"),
+                                   histograms_->get("event_type_2000mev"),
+                                   histograms_->get("event_type_2000mev_bdt"),
+                                   histograms_->get("event_type_2000mev_max_pe")
+        };
+
         for (int ilabel{1}; ilabel < labels.size(); ++ilabel) { 
-            hist->GetXaxis()->SetBinLabel(ilabel, labels[ilabel-1].c_str());
-            hist_bdt->GetXaxis()->SetBinLabel(ilabel, labels[ilabel-1].c_str());
-            hist_max_pe->GetXaxis()->SetBinLabel(ilabel, labels[ilabel-1].c_str());
+            for (auto& hist : hists) {
+                hist->GetXaxis()->SetBinLabel(ilabel, labels[ilabel-1].c_str());
+            }
         }
 
         // Move into the ECal PN directory
@@ -86,7 +94,9 @@ namespace ldmx {
     }
 
     void EcalPN::analyze(const Event & event) { 
-   
+  
+        //std::cout << " >> Event " << " << " << std::endl;
+
         // Get the collection of simulated particles from the event
         const TClonesArray* particles = event.getCollection("SimParticles");
       
@@ -162,7 +172,14 @@ namespace ldmx {
                 lpike = ke; 
                 lpit = theta; 
             }
-        
+       
+            /* 
+            std::cout << "PDG ID: " << pdgID << " KE: " << ke << " Theta: " << theta 
+                      << " Endpoint ( " <<  daughter->getEndPoint()[0] 
+                      << " , " << daughter->getEndPoint()[1] 
+                      << " , " << daughter->getEndPoint()[2] << " ) " <<  
+                      std::endl;
+            */
         }
 
         histograms_->get("hardest_ke")->Fill(lke); 
@@ -177,7 +194,12 @@ namespace ldmx {
 
         // Classify the event
         int eventType = classifyEvent(pnGamma, 200); 
+        int eventType500MeV = classifyEvent(pnGamma, 500); 
+        int eventType2000MeV = classifyEvent(pnGamma, 2000); 
+        
         histograms_->get("event_type")->Fill(eventType);
+        histograms_->get("event_type_500mev")->Fill(eventType500MeV);
+        histograms_->get("event_type_2000mev")->Fill(eventType2000MeV);
 
         // Get the collection of ECal veto results if it exist
         float bdtProb{-1}; 
@@ -191,6 +213,8 @@ namespace ldmx {
             // Fill the histograms if the event passes the ECal veto
             if (bdtProb >= .98) {
                 histograms_->get("event_type_bdt")->Fill(eventType);
+                histograms_->get("event_type_500mev_bdt")->Fill(eventType500MeV);
+                histograms_->get("event_type_2000mev_bdt")->Fill(eventType2000MeV);
         
                 histograms_->get("recoil_tp_bdt")->Fill(recoilP.Mag());
                 histograms_->get("recoil_tpt_bdt")->Fill(recoilP.Pt()); 
@@ -215,6 +239,8 @@ namespace ldmx {
 
             if (maxPE < 3) { 
                 histograms_->get("event_type_max_pe")->Fill(eventType);
+                histograms_->get("event_type_500mev_max_pe")->Fill(eventType500MeV);
+                histograms_->get("event_type_2000mev_max_pe")->Fill(eventType2000MeV);
                 
                 histograms_->get("recoil_tp_max_pe")->Fill(recoilP.Mag());
                 histograms_->get("recoil_tpt_max_pe")->Fill(recoilP.Pt()); 
@@ -231,6 +257,8 @@ namespace ldmx {
 
         if ((maxPE < 3) && (bdtProb >= .98)) { 
             histograms_->get("event_type_vetoes")->Fill(eventType);
+            histograms_->get("event_type_500mev_vetoes")->Fill(eventType500MeV);
+            histograms_->get("event_type_2000mev_vetoes")->Fill(eventType2000MeV);
                 
             histograms_->get("recoil_tp_vetoes")->Fill(recoilP.Mag());
             histograms_->get("recoil_tpt_vetoes")->Fill(recoilP.Pt()); 
