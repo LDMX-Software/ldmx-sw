@@ -6,6 +6,8 @@
 
 #include "DQM/HCalDQM.h" 
 
+#include <algorithm>
+
 //----------//
 //   ROOT   //
 //----------//
@@ -19,9 +21,9 @@
 #include "DQM/AnalysisUtils.h"
 #include "DQM/Histogram1DBuilder.h"
 #include "Event/Event.h"
+#include "Event/HcalHit.h"
 #include "Event/SimParticle.h"
 #include "Event/EcalVetoResult.h"
-#include "Event/HcalHit.h"
 #include "Framework/HistogramPool.h"
 
 namespace ldmx { 
@@ -44,14 +46,23 @@ namespace ldmx {
 
         histograms_->create<TH2F>("max_pe_time", 
                                   "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                                  "HCal max PE hit time (#mu s)", 500, 0, 1500);
+                                  "HCal max PE hit time (ns)", 1500, 0, 1500);
         histograms_->create<TH2F>("max_pe_time_bdt", 
                                   "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                                  "HCal max PE hit time (#mu s)", 500, 0, 1500);
+                                  "HCal max PE hit time (ns)", 1500, 0, 1500);
         histograms_->create<TH2F>("max_pe_time_vetoes", 
                                   "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                                  "HCal max PE hit time (#mu s)", 500, 0, 1500);
+                                  "HCal max PE hit time (ns)", 1500, 0, 1500);
 
+        histograms_->create<TH2F>("min_time_pe", 
+                                  "Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                                  "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500);
+        histograms_->create<TH2F>("min_time_pe_bdt", 
+                                  "Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                                  "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500);
+        histograms_->create<TH2F>("min_time_pe_vetoes", 
+                                  "Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                                  "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500);
     }
 
     void HCalDQM::analyze(const Event & event) { 
@@ -63,12 +74,14 @@ namespace ldmx {
         // Get the collection of HCalDQM digitized hits if the exists 
         const TClonesArray* hcalHits = event.getCollection("hcalDigis");
        
-        // Find the maximum PE in the event 
         float maxPE{-1};
         float maxTime{-1};
-        float minTime{10000000}; 
-        float minTimeMaxPE{-1};
         double totalPE{0};  
+
+        // Vector containing all HCal hits.  This will be used for sorting.
+        std::vector<HcalHit*> hits; 
+
+        // Find the maximum PE in the event 
         for (size_t ihit{0}; ihit < hcalHits->GetEntriesFast(); ++ihit) {
             HcalHit* hit = static_cast<HcalHit*>(hcalHits->At(ihit)); 
             if (maxPE < hit->getPE()) {
@@ -76,17 +89,42 @@ namespace ldmx {
                 maxTime = hit->getTime();  
             }
             histograms_->get("pe")->Fill(hit->getPE());
-            histograms_->get("hit_time")->Fill(hit->getTime()/1000);
+            histograms_->get("hit_time")->Fill(hit->getTime());
            
-            totalPE += hit->getPE();  
+            totalPE += hit->getPE();
+
+            if (hit->getTime() != -999) hits.push_back(hit);  
         }
 
+        // Sort the array by hit time
+        std::sort (hits.begin(), hits.end(), [ ](const auto& lhs, const auto& rhs) 
+        {
+            return lhs->getTime() < rhs->getTime(); 
+        });
+        /*std::cout << "[ ";
+        for (const auto& hit : hits) {
+            std::cout << " ( " << hit->getTime() << ", " << hit->getPE() << " ),  "; 
+        }
+        std::cout << "] \n";*/
+
+        double minTime{-1}; 
+        double minTimePE{-1}; 
+        for (const auto& hit : hits) { 
+            if (hit->getPE() < 3) continue; 
+            minTime = hit->getTime(); 
+            minTimePE = hit->getPE(); 
+            break;
+        } 
+        //std::cout << "Min time: " << minTime << " PE: " << minTimePE << std::endl; 
+
         histograms_->get("max_pe")->Fill(maxPE);
-        histograms_->get("hit_time_max_pe")->Fill(maxTime/1000);
+        histograms_->get("hit_time_max_pe")->Fill(maxTime);
         histograms_->get("total_pe")->Fill(totalPE); 
         histograms_->get("n_hits")->Fill(hcalHits->GetEntriesFast());
+        histograms_->get("min_hit_time_hcal_veto")->Fill(minTime); 
 
         histograms_->get("max_pe_time")->Fill(maxPE, maxTime);  
+        histograms_->get("min_time_pe")->Fill(minTimePE, minTime);  
 
         // Get the collection of ECal veto results if it exist
         float bdtProb{-1}; 
@@ -103,8 +141,10 @@ namespace ldmx {
                 histograms_->get("max_pe_bdt")->Fill(maxPE);
                 histograms_->get("total_pe_bdt")->Fill(totalPE); 
                 histograms_->get("n_hits_bdt")->Fill(hcalHits->GetEntriesFast());
-                histograms_->get("hit_time_max_pe_bdt")->Fill(maxTime/1000);  
-                histograms_->get("max_pe_time_bdt")->Fill(maxPE, maxTime/1000);  
+                histograms_->get("hit_time_max_pe_bdt")->Fill(maxTime);  
+                histograms_->get("max_pe_time_bdt")->Fill(maxPE, maxTime);  
+                histograms_->get("min_hit_time_bdt")->Fill(minTime); 
+                histograms_->get("min_time_pe_bdt")->Fill(minTimePE, minTime);  
             }
         }
 
@@ -113,8 +153,10 @@ namespace ldmx {
             histograms_->get("max_pe_vetoes")->Fill(maxPE);
             histograms_->get("total_pe_vetoes")->Fill(totalPE); 
             histograms_->get("n_hits_vetoes")->Fill(hcalHits->GetEntriesFast());
-            histograms_->get("hit_time_max_pe_vetoes")->Fill(maxTime/1000);  
-            histograms_->get("max_pe_time_vetoes")->Fill(maxPE, maxTime/1000);  
+            histograms_->get("hit_time_max_pe_vetoes")->Fill(maxTime);  
+            histograms_->get("max_pe_time_vetoes")->Fill(maxPE, maxTime);  
+            histograms_->get("min_hit_time_vetoes")->Fill(minTime); 
+            histograms_->get("min_time_pe_vetoes")->Fill(minTimePE, minTime);  
         } 
     }
 
