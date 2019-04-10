@@ -90,7 +90,7 @@ namespace ldmx {
             /**
              * Get the sim particle associated with this result.
              */
-            SimParticle* getSimParticle() { return (SimParticle*) simParticle_.GetObject(); };
+            SimParticle* getSimParticle() const { return (SimParticle*) simParticle_.GetObject(); };
             
             /**
              * Set the sim particle associated with this result.
