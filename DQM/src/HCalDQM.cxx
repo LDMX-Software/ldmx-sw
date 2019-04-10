@@ -21,8 +21,10 @@
 #include "DQM/AnalysisUtils.h"
 #include "DQM/Histogram1DBuilder.h"
 #include "Event/Event.h"
+#include "Event/FindableTrackResult.h"
 #include "Event/HcalHit.h"
 #include "Event/SimParticle.h"
+#include "Event/SimTrackerHit.h"
 #include "Event/EcalVetoResult.h"
 #include "Framework/HistogramPool.h"
 
@@ -47,7 +49,13 @@ namespace ldmx {
         histograms_->create<TH2F>("max_pe_time", 
                                   "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
                                   "HCal max PE hit time (ns)", 1500, 0, 1500);
+        histograms_->create<TH2F>("max_pe_time_track_veto", 
+                                  "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                                  "HCal max PE hit time (ns)", 1500, 0, 1500);
         histograms_->create<TH2F>("max_pe_time_bdt", 
+                                  "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                                  "HCal max PE hit time (ns)", 1500, 0, 1500);
+        histograms_->create<TH2F>("max_pe_time_track_bdt", 
                                   "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
                                   "HCal max PE hit time (ns)", 1500, 0, 1500);
         histograms_->create<TH2F>("max_pe_time_vetoes", 
@@ -57,12 +65,26 @@ namespace ldmx {
         histograms_->create<TH2F>("min_time_pe", 
                                   "Photoelectrons in an HCal Module", 1500, 0, 1500, 
                                   "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500);
+        histograms_->create<TH2F>("min_time_pe_track_veto", 
+                                  "Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                                  "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500);
         histograms_->create<TH2F>("min_time_pe_bdt", 
+                                  "Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                                  "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500);
+        histograms_->create<TH2F>("min_time_pe_track_bdt", 
                                   "Photoelectrons in an HCal Module", 1500, 0, 1500, 
                                   "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500);
         histograms_->create<TH2F>("min_time_pe_vetoes", 
                                   "Photoelectrons in an HCal Module", 1500, 0, 1500, 
                                   "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500);
+         
+        histograms_->create<TH2F>("bdt_max_pe", 
+                            "Max PE", 500, 0, 500, 
+                            "BDT Prob", 200, 0.9, 1.0);
+        histograms_->create<TH2F>("bdt_max_pe_vetoes", 
+                            "Max PE", 500, 0, 500, 
+                            "BDT Prob", 200, 0.9, 1.0);
+    
     }
 
     void HCalDQM::analyze(const Event & event) { 
@@ -121,10 +143,63 @@ namespace ldmx {
         histograms_->get("hit_time_max_pe")->Fill(maxTime);
         histograms_->get("total_pe")->Fill(totalPE); 
         histograms_->get("n_hits")->Fill(hcalHits->GetEntriesFast());
-        histograms_->get("min_hit_time_hcal_veto")->Fill(minTime); 
+        histograms_->get("min_hit_time")->Fill(minTime); 
 
         histograms_->get("max_pe_time")->Fill(maxPE, maxTime);  
         histograms_->get("min_time_pe")->Fill(minTimePE, minTime);  
+
+        // Get the collection of simulated particles from the event
+        const TClonesArray* particles = event.getCollection("SimParticles");
+      
+        // Search for the recoil electron 
+        const SimParticle* recoil = Analysis::searchForRecoil(particles); 
+
+        // Find the target scoring plane hit associated with the recoil
+        // electron and extract the momentum
+        double p{-1}, pt{-1}, px{-9999}, py{-9999}, pz{-9999}; 
+        SimTrackerHit* spHit{nullptr}; 
+        if (event.exists("TargetScoringPlaneHits")) { 
+            
+            // Get the collection of simulated particles from the event
+            const TClonesArray* spHits = event.getCollection("TargetScoringPlaneHits");
+            
+            //
+            for (size_t iHit{0}; iHit < spHits->GetEntriesFast(); ++iHit) { 
+                SimTrackerHit* hit = static_cast<SimTrackerHit*>(spHits->At(iHit)); 
+                if ((hit->getSimParticle() == recoil) && (hit->getLayerID() == 2)
+                        && (hit->getMomentum()[2] > 0)) {
+                    spHit = hit;
+                    break; 
+                }
+            }
+
+            if (spHit != nullptr) {
+                TVector3 recoilP(spHit->getMomentum().data()); 
+        
+                p = recoilP.Mag(); 
+                pt = recoilP.Pt(); 
+                px = recoilP.Px();
+                py = recoilP.Py(); 
+                pz = recoilP.Pz();  
+            }
+        } 
+
+
+        bool recoilIsFindable{false};
+        TrackMaps map;  
+        if (event.exists("FindableTracks")) { 
+            // Get the collection of simulated particles from the event
+            const TClonesArray* tracks 
+                = event.getCollection("FindableTracks");
+
+            map = Analysis::getFindableTrackMaps(tracks);
+            
+            auto it = map.findable.find(recoil);
+            if ( it != map.findable.end()) recoilIsFindable = true; 
+        }
+
+        bool passesTrackVeto{false}; 
+        if ((map.findable.size() == 1) && recoilIsFindable && (p < 1200)) passesTrackVeto = true; 
 
         // Get the collection of ECal veto results if it exist
         float bdtProb{-1}; 
@@ -148,7 +223,32 @@ namespace ldmx {
             }
         }
 
-        if ((maxPE < 3) && (bdtProb >= .98)) {
+        double pe{-9999};
+        if (minTimePE != -1) pe = minTimePE;
+        else pe = maxPE; 
+
+        if (passesTrackVeto) {
+            histograms_->get("max_pe_track_veto")->Fill(maxPE);
+            histograms_->get("total_pe_track_veto")->Fill(totalPE); 
+            histograms_->get("n_hits_track_veto")->Fill(hcalHits->GetEntriesFast());
+            histograms_->get("hit_time_max_pe_track_veto")->Fill(maxTime);  
+            histograms_->get("max_pe_time_track_veto")->Fill(maxPE, maxTime);  
+            histograms_->get("min_hit_time_track_veto")->Fill(minTime); 
+            histograms_->get("min_time_pe_track_veto")->Fill(minTimePE, minTime);  
+            histograms_->get("bdt_max_pe")->Fill(pe, bdtProb); 
+        }
+
+        if (passesTrackVeto && (bdtProb >= .98)) { 
+            histograms_->get("max_pe_track_bdt")->Fill(maxPE);
+            histograms_->get("total_pe_track_bdt")->Fill(totalPE); 
+            histograms_->get("n_hits_track_bdt")->Fill(hcalHits->GetEntriesFast());
+            histograms_->get("hit_time_max_pe_track_bdt")->Fill(maxTime);  
+            histograms_->get("max_pe_time_track_bdt")->Fill(maxPE, maxTime);  
+            histograms_->get("min_hit_time_track_bdt")->Fill(minTime); 
+            histograms_->get("min_time_pe_track_bdt")->Fill(minTimePE, minTime);  
+        }
+
+        if (passesTrackVeto && (minTimePE == -1) && (bdtProb >= .98)) {
         
             histograms_->get("max_pe_vetoes")->Fill(maxPE);
             histograms_->get("total_pe_vetoes")->Fill(totalPE); 
@@ -157,6 +257,8 @@ namespace ldmx {
             histograms_->get("max_pe_time_vetoes")->Fill(maxPE, maxTime);  
             histograms_->get("min_hit_time_vetoes")->Fill(minTime); 
             histograms_->get("min_time_pe_vetoes")->Fill(minTimePE, minTime);  
+            
+            histograms_->get("bdt_max_pe_vetoes")->Fill(pe, bdtProb); 
         } 
     }
 
