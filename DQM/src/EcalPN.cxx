@@ -18,10 +18,11 @@
 //----------//
 #include "DQM/AnalysisUtils.h"
 #include "DQM/Histogram1DBuilder.h"
-#include "Event/Event.h"
-#include "Event/SimParticle.h"
 #include "Event/EcalVetoResult.h"
+#include "Event/Event.h"
 #include "Event/HcalHit.h"
+#include "Event/SimParticle.h"
+#include "Event/SimTrackerHit.h"
 #include "Framework/HistogramPool.h"
 
 namespace ldmx { 
@@ -61,15 +62,26 @@ namespace ldmx {
             ""
         };
 
-        std::vector<TH1*> hists = { histograms_->get("event_type"),
-                                   histograms_->get("event_type_bdt"),
-                                   histograms_->get("event_type_max_pe"),
-                                   histograms_->get("event_type_500mev"),
-                                   histograms_->get("event_type_500mev_bdt"),
-                                   histograms_->get("event_type_500mev_max_pe"),
-                                   histograms_->get("event_type_2000mev"),
-                                   histograms_->get("event_type_2000mev_bdt"),
-                                   histograms_->get("event_type_2000mev_max_pe")
+        std::vector<TH1*> hists = { 
+            histograms_->get("event_type"),
+            histograms_->get("event_type_track_veto"),
+            histograms_->get("event_type_bdt"),
+            histograms_->get("event_type_max_pe"),
+            histograms_->get("event_type_track_bdt"),
+            histograms_->get("event_type_vetoes"),
+            histograms_->get("event_type_500mev"),
+            histograms_->get("event_type_500mev_track_veto"),
+            histograms_->get("event_type_500mev_bdt"),
+            histograms_->get("event_type_500mev_max_pe"),
+            histograms_->get("event_type_500mev_track_bdt"),
+            histograms_->get("event_type_500mev_vetoes"),
+            histograms_->get("event_type_2000mev"),
+            histograms_->get("event_type_2000mev_track_veto"),
+            histograms_->get("event_type_2000mev_bdt"),
+            histograms_->get("event_type_2000mev_max_pe"),
+            histograms_->get("event_type_2000mev_track_bdt"),
+            histograms_->get("event_type_2000mev_vetoes"),
+
         };
 
         for (int ilabel{1}; ilabel < labels.size(); ++ilabel) { 
@@ -84,13 +96,9 @@ namespace ldmx {
         histograms_->create<TH2F>("h_ke_h_theta", 
                             "Kinetic Energy Hardest Photo-nuclear Particle (MeV)",
                             400, 0, 4000, 
-                            "#theta of Hardest Photo-nuclear Pion Particle (Degrees)",
+                            "#theta of Hardest Photo-nuclear Particle (Degrees)",
                             360, 0, 180);
        
-        histograms_->create<TH2F>("bdt_max_pe", 
-                            "Max PE", 500, 0, 500, 
-                            "BDT Prob", 200, 0.9, 1.0);
-
     }
 
     void EcalPN::analyze(const Event & event) { 
@@ -103,33 +111,40 @@ namespace ldmx {
         // Search for the recoil electron 
         const SimParticle* recoil = Analysis::searchForRecoil(particles); 
 
-        // Fill the recoil vertex position histograms
-        std::vector<double> recoilVertex = recoil->getVertex();
-        histograms_->get("recoil_vx")->Fill(recoilVertex[0]);  
-        histograms_->get("recoil_vy")->Fill(recoilVertex[1]);  
-        histograms_->get("recoil_vz")->Fill(recoilVertex[2]);  
-   
+        // Find the target scoring plane hit associated with the recoil
+        // electron and extract the momentum
+        double p{-1}, pt{-1}, px{-9999}, py{-9999}, pz{-9999}; 
+        SimTrackerHit* spHit{nullptr}; 
+        if (event.exists("TargetScoringPlaneHits")) { 
+            
+            // Get the collection of simulated particles from the event
+            const TClonesArray* spHits = event.getCollection("TargetScoringPlaneHits");
+            
+            //
+            for (size_t iHit{0}; iHit < spHits->GetEntriesFast(); ++iHit) { 
+                SimTrackerHit* hit = static_cast<SimTrackerHit*>(spHits->At(iHit)); 
+                if ((hit->getSimParticle() == recoil) && (hit->getLayerID() == 2)
+                        && (hit->getMomentum()[2] > 0)) {
+                    spHit = hit;
+                    break; 
+                }
+            }
+
+            if (spHit != nullptr) {
+                TVector3 recoilP(spHit->getMomentum().data()); 
+        
+                p = recoilP.Mag(); 
+                pt = recoilP.Pt(); 
+                px = recoilP.Px();
+                py = recoilP.Py(); 
+                pz = recoilP.Pz();  
+            }
+        } 
+
         // Use the recoil electron to retrieve the gamma that underwent a 
         // photo-nuclear reaction.
         const SimParticle* pnGamma = Analysis::searchForPNGamma(recoil);
 
-        // Get the truth momentum of the gamma that underwent a photo-nuclear 
-        // reaction.
-        TVector3 pnGammaP(pnGamma->getMomentum().data()); 
-
-        // Get the truth momentum of the recoil
-        TVector3 recoilPGen(recoil->getMomentum().data()); 
-        
-        // Calculate the momentum of the recoil electron
-        TVector3 recoilP = recoilPGen - pnGammaP; 
-
-        histograms_->get("recoil_tp")->Fill(recoilP.Mag());
-        histograms_->get("recoil_tpt")->Fill(recoilP.Pt()); 
-        histograms_->get("recoil_tpx")->Fill(recoilP.Px()); 
-        histograms_->get("recoil_tpy")->Fill(recoilP.Py()); 
-        histograms_->get("recoil_tpz")->Fill(recoilP.Pz()); 
-            
-    
         histograms_->get("pn_particle_mult")->Fill(pnGamma->getDaughterCount());
         histograms_->get("pn_gamma_energy")->Fill(pnGamma->getEnergy()); 
         histograms_->get("pn_gamma_int_z")->Fill(pnGamma->getEndPoint()[2]); 
@@ -216,55 +231,87 @@ namespace ldmx {
                 histograms_->get("event_type_500mev_bdt")->Fill(eventType500MeV);
                 histograms_->get("event_type_2000mev_bdt")->Fill(eventType2000MeV);
         
-                histograms_->get("recoil_tp_bdt")->Fill(recoilP.Mag());
-                histograms_->get("recoil_tpt_bdt")->Fill(recoilP.Pt()); 
-                histograms_->get("recoil_tpx_bdt")->Fill(recoilP.Px()); 
-                histograms_->get("recoil_tpy_bdt")->Fill(recoilP.Py()); 
-                histograms_->get("recoil_tpz_bdt")->Fill(recoilP.Pz()); 
-        
                 histograms_->get("pn_particle_mult_bdt")->Fill(pnGamma->getDaughterCount());
                 histograms_->get("pn_gamma_energy_bdt")->Fill(pnGamma->getEnergy()); 
             }
         }
 
         // Get the collection of HCal digitized hits if the exists 
-        float maxPE{-1}; 
+        double minTimePE{-1}; 
         if (event.exists("hcalDigis")) { 
             const TClonesArray* hcalHits = event.getCollection("hcalDigis");
-        
+       
+            // Vector containing all HCal hits.  This will be used for sorting.
+            std::vector<HcalHit*> hits; 
+
+            // Find the maximum PE in the event 
             for (size_t ihit{0}; ihit < hcalHits->GetEntriesFast(); ++ihit) {
                 HcalHit* hit = static_cast<HcalHit*>(hcalHits->At(ihit)); 
-                maxPE = std::max(maxPE, hit->getPE()); 
+           
+                if (hit->getTime() != -999) hits.push_back(hit);  
             }
 
-            if (maxPE < 3) { 
+            // Sort the array by hit time
+            std::sort (hits.begin(), hits.end(), [ ](const auto& lhs, const auto& rhs) 
+            {
+                return lhs->getTime() < rhs->getTime(); 
+            });
+        
+            for (const auto& hit : hits) { 
+                if (hit->getPE() < 3) continue; 
+                minTimePE = hit->getPE(); 
+                break;
+            } 
+
+            if (minTimePE == -1) { 
                 histograms_->get("event_type_max_pe")->Fill(eventType);
                 histograms_->get("event_type_500mev_max_pe")->Fill(eventType500MeV);
                 histograms_->get("event_type_2000mev_max_pe")->Fill(eventType2000MeV);
-                
-                histograms_->get("recoil_tp_max_pe")->Fill(recoilP.Mag());
-                histograms_->get("recoil_tpt_max_pe")->Fill(recoilP.Pt()); 
-                histograms_->get("recoil_tpx_max_pe")->Fill(recoilP.Px()); 
-                histograms_->get("recoil_tpy_max_pe")->Fill(recoilP.Py()); 
-                histograms_->get("recoil_tpz_max_pe")->Fill(recoilP.Pz()); 
                 
                 histograms_->get("pn_particle_mult_max_pe")->Fill(pnGamma->getDaughterCount());
                 histograms_->get("pn_gamma_energy_max_pe")->Fill(pnGamma->getEnergy()); 
             }
         }
         
-        histograms_->get("bdt_max_pe")->Fill(maxPE, bdtProb);
+        bool recoilIsFindable{false}; 
+        TrackMaps map;  
+        if (event.exists("FindableTracks")) { 
+            // Get the collection of simulated particles from the event
+            const TClonesArray* tracks 
+                = event.getCollection("FindableTracks");
 
-        if ((maxPE < 3) && (bdtProb >= .98)) { 
+            map = Analysis::getFindableTrackMaps(tracks);
+            
+            auto it = map.findable.find(recoil);
+            if ( it != map.findable.end()) recoilIsFindable = true; 
+        }
+
+        bool passesTrackVeto{false}; 
+        if ((map.findable.size() == 1) && recoilIsFindable && (p < 1200)) passesTrackVeto = true; 
+        
+        if (passesTrackVeto) { 
+            histograms_->get("event_type_track_veto")->Fill(eventType);
+            histograms_->get("event_type_500mev_track_veto")->Fill(eventType500MeV);
+            histograms_->get("event_type_2000mev_track_veto")->Fill(eventType2000MeV);
+                
+            histograms_->get("pn_particle_mult_track_veto")->Fill(pnGamma->getDaughterCount());    
+            histograms_->get("pn_gamma_energy_track_veto")->Fill(pnGamma->getEnergy()); 
+        }
+
+        if (passesTrackVeto && (bdtProb >= .98)) { 
+            histograms_->get("event_type_track_bdt")->Fill(eventType);
+            histograms_->get("event_type_500mev_track_bdt")->Fill(eventType500MeV);
+            histograms_->get("event_type_2000mev_track_bdt")->Fill(eventType2000MeV);
+            
+            histograms_->get("pn_particle_mult_track_bdt")->Fill(pnGamma->getDaughterCount());
+            histograms_->get("pn_gamma_energy_track_bdt")->Fill(pnGamma->getEnergy()); 
+        }
+
+        if (passesTrackVeto && (minTimePE == -1) && (bdtProb >= .98)) { 
             histograms_->get("event_type_vetoes")->Fill(eventType);
             histograms_->get("event_type_500mev_vetoes")->Fill(eventType500MeV);
             histograms_->get("event_type_2000mev_vetoes")->Fill(eventType2000MeV);
                 
-            histograms_->get("recoil_tp_vetoes")->Fill(recoilP.Mag());
-            histograms_->get("recoil_tpt_vetoes")->Fill(recoilP.Pt()); 
-            histograms_->get("recoil_tpx_vetoes")->Fill(recoilP.Px()); 
-            histograms_->get("recoil_tpy_vetoes")->Fill(recoilP.Py()); 
-            histograms_->get("recoil_tpz_vetoes")->Fill(recoilP.Pz()); 
             histograms_->get("pn_particle_mult_vetoes")->Fill(pnGamma->getDaughterCount());
             histograms_->get("pn_gamma_energy_vetoes")->Fill(pnGamma->getEnergy()); 
         
