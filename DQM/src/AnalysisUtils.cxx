@@ -14,6 +14,7 @@
 //----------//
 //   ldmx   //
 //----------//
+#include "Event/FindableTrackResult.h"
 #include "Event/SimParticle.h"
 
 //----------//
@@ -52,6 +53,24 @@ namespace ldmx {
                         == SimParticle::ProcessType::photonNuclear)) return daughter;
 
             return searchForPNGamma(particle, index + 1);  
+        }
+
+        TrackMaps getFindableTrackMaps(const TClonesArray* tracks) { 
+       
+            TrackMaps map; 
+
+            for (size_t itrk{0}; itrk < tracks->GetEntriesFast(); ++itrk) { 
+                FindableTrackResult* trk = static_cast<FindableTrackResult*>(tracks->At(itrk)); 
+                if (trk->is4sFindable() || trk->is3s1aFindable() || trk->is2s2aFindable()) { 
+                    map.findable[trk->getSimParticle()] =  trk; 
+                }
+
+                if (trk->is2sFindable()) map.loose[trk->getSimParticle()] = trk;
+            
+                if (trk->is2aFindable()) map.axial[trk->getSimParticle()] = trk;    
+            }
+
+            return map;  
         }
 
     } // Analysis    
