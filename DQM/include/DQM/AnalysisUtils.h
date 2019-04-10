@@ -12,14 +12,22 @@
 //----------------//
 #include <cmath>
 #include <vector>
+#include <unordered_map>
 
 // Forward declaration
-class TClonesArray;  
+class TClonesArray; 
 
 namespace ldmx {
 
     // Forward declaration for classes inside ldmx namespace
+    class FindableTrackResult; 
     class SimParticle;
+
+    struct TrackMaps {
+            std::unordered_map<const SimParticle*, const FindableTrackResult*> findable;        
+            std::unordered_map<const SimParticle*, const FindableTrackResult*> loose;        
+            std::unordered_map<const SimParticle*, const FindableTrackResult*> axial;        
+    };
 
     namespace Analysis {
 
@@ -45,6 +53,12 @@ namespace ldmx {
          *              beginning of the array.
          */
         const SimParticle* searchForPNGamma(const SimParticle* particle, const int index = 0);  
+
+        /**
+         * 
+         */
+        TrackMaps getFindableTrackMaps(const TClonesArray* tracks); 
+
 
     } // Analysis
 
