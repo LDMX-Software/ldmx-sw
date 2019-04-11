@@ -6,6 +6,11 @@
 
 #include "EventProc/HcalVetoProcessor.h"
 
+//----------//
+//   ROOT   //
+//----------//
+#include "TClonesArray.h"
+
 namespace ldmx {
 
     HcalVetoProcessor::HcalVetoProcessor(const std::string &name, Process &process) : 
@@ -28,16 +33,24 @@ namespace ldmx {
         // in the event.
         float totalPe{0};
         float maxPE{0}; 
-        for (int iHit = 0; iHit < hcalHits->GetEntriesFast(); ++iHit) { 
-            HcalHit* hcalHit = (HcalHit*) hcalHits->At(iHit);
-            //std::cout << "[ HcalVeto ]: Hit PE: " << hcalHit->getPE() << std::endl;
-            totalPe += hcalHit->getPE(); 
-            maxPE = std::max(maxPE,hcalHit->getPE());
+        for (size_t iHit{0}; iHit < hcalHits->GetEntriesFast(); ++iHit) { 
+            HcalHit* hcalHit = static_cast<HcalHit*>(hcalHits->At(iHit));
+
+            // If the hit time is outside the readout window, don't consider it.
+            if (hcalHit->getTime() >= maxTime_) continue;
+
+            float pe = hcalHit->getPE();
+            
+            // Keep track of the total PE
+            totalPe += pe; 
+            
+            // Find the maximum PE in the list
+            maxPE = std::max(maxPE, pe);
         }
 
-        bool passesVeto{true}; 
-        //std::cout << "[ HcalVeto ]: total PE: " << totalPe << std::endl;
-        if (maxPE >= totalPEThreshold_) passesVeto = false;
+        // If the maximum PE found is below threshold, it passes the veto.
+        bool passesVeto{false}; 
+        if (maxPE < totalPEThreshold_) passesVeto = true;
         result_.setResult(passesVeto); 
 
         if (passesVeto) { 
