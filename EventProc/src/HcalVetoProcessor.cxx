@@ -21,7 +21,8 @@ namespace ldmx {
     }
 
     void HcalVetoProcessor::configure(const ParameterSet& pSet) {
-        totalPEThreshold_  = pSet.getDouble("pe_threshold"); 
+        totalPEThreshold_  = pSet.getDouble("pe_threshold");
+        maxTime_ = pSet.getDouble("max_time");  
     }
 
     void HcalVetoProcessor::produce(Event& event) {
@@ -32,7 +33,8 @@ namespace ldmx {
         // Loop over all of the Hcal hits and calculate to total photoelectrons
         // in the event.
         float totalPe{0};
-        float maxPE{0}; 
+        float maxPE{-1000};
+        HcalHit* maxPEHit{nullptr}; 
         for (size_t iHit{0}; iHit < hcalHits->GetEntriesFast(); ++iHit) { 
             HcalHit* hcalHit = static_cast<HcalHit*>(hcalHits->At(iHit));
 
@@ -45,13 +47,19 @@ namespace ldmx {
             totalPe += pe; 
             
             // Find the maximum PE in the list
-            maxPE = std::max(maxPE, pe);
+            if (maxPE < pe) {
+                maxPE = pe;
+                maxPEHit = hcalHit; 
+            }
         }
 
         // If the maximum PE found is below threshold, it passes the veto.
         bool passesVeto{false}; 
         if (maxPE < totalPEThreshold_) passesVeto = true;
-        result_.setResult(passesVeto); 
+
+        HcalVetoResult result; 
+        result.setVetoResult(passesVeto);
+        result.setMaxPEHit(maxPEHit); 
 
         if (passesVeto) { 
             setStorageHint(hint_shouldKeep); 
@@ -59,7 +67,7 @@ namespace ldmx {
             setStorageHint(hint_shouldDrop); 
         } 
 
-        event.addToCollection("HcalVeto", result_);
+        event.addToCollection("HcalVeto", result);
     }
 }
 
