@@ -44,12 +44,9 @@ namespace ldmx {
              *
              * @param event The event to process.
              */
-            void produce(Event &event); 
-            
+            void produce(Event &event);
+ 
         private:
-
-            /** Collection of results. */
-            HcalVetoResult result_;
 
             /** Total PE threshold. */
             double totalPEThreshold_{8};
