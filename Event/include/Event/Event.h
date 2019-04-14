@@ -56,7 +56,7 @@ namespace ldmx {
              * @param name Name (label, not class name) given to the object when it was put into the event.
              * @return True if the object or collection exists in the event.
              */
-            bool exists(const std::string& name) {
+            bool exists(const std::string& name) const {
                 return getReal(name, "", false) != 0;
             }
 
@@ -67,7 +67,7 @@ namespace ldmx {
              * @param passName The process pass label which was in use when this object was put into the event, such as "sim" or "rerecov2".
              * @return True if the object or collection exists in the event.
              */
-            bool exists(const std::string& name, const std::string& passName) {
+            bool exists(const std::string& name, const std::string& passName) const {
                 return getReal(name, passName, false) != 0;
             }
 
