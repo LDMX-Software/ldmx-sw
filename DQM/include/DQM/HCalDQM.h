@@ -44,6 +44,8 @@ namespace ldmx {
             /** Singleton used to access histograms. */
             HistogramPool* histograms_{nullptr}; 
 
+            /** The maximum PE threshold used for the veto. */
+            float maxPEThreshold_{3}; 
     };    
     
 } // ldmx
