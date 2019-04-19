@@ -20,7 +20,6 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "DQM/AnalysisUtils.h"
 #include "Event/Event.h"
 #include "Event/EcalVetoResult.h"
 #include "Event/FindableTrackResult.h"
@@ -28,6 +27,7 @@
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
 #include "Framework/HistogramPool.h"
+#include "Tools/AnalysisUtils.h"
 
 namespace ldmx { 
 
