@@ -105,7 +105,7 @@ namespace ldmx {
             /** 
              * @return Retrieve the histogram named "name" from the pool. 
              */
-            inline TH1* get(const std::string& name) { return histograms_[name]; }
+            TH1* get(const std::string& name);
 
     }; // HistogramPool
 
