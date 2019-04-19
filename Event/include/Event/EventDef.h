@@ -18,6 +18,7 @@
 #include "Event/SimTrackerHit.h"
 #include "Event/SimParticle.h"
 #include "Event/TriggerResult.h"
+#include "Event/TrackerVetoResult.h"
 #include "Event/ClusterAlgoResult.h"
 #include "Event/HcalHit.h"
 #include "Event/HcalVetoResult.h"
