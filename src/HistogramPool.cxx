@@ -6,6 +6,11 @@
 
 #include "Framework/HistogramPool.h"
 
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <stdexcept>
+
 //----------//
 //   ROOT   //
 //----------//
@@ -43,5 +48,14 @@ namespace ldmx {
         if (!instance) instance = new HistogramPool; 
 
         return instance; 
+    }
+
+    TH1* HistogramPool::get(const std::string& name) { 
+        auto histo = histograms_.find(name); 
+        if (histo == histograms_.end()) { 
+            throw std::invalid_argument("Histogram " + name + " not found.");  
+        }  
+        
+        return histograms_[name];
     }
 }
