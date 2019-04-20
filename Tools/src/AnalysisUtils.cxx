@@ -4,7 +4,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "DQM/AnalysisUtils.h"
+#include "Tools/AnalysisUtils.h"
 
 //-----------------//
 //   C++  StdLib   //

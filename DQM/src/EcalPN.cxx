@@ -16,7 +16,6 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "DQM/AnalysisUtils.h"
 #include "DQM/Histogram1DBuilder.h"
 #include "Event/EcalVetoResult.h"
 #include "Event/Event.h"
@@ -24,6 +23,7 @@
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
 #include "Framework/HistogramPool.h"
+#include "Tools/AnalysisUtils.h"
 
 namespace ldmx { 
 
