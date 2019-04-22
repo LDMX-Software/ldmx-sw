@@ -112,11 +112,11 @@ namespace ldmx {
         if( isKeep ){
             parent_->tree_->SetBranchStatus(srule.c_str(),1);
             tree_->SetBranchStatus(srule.c_str(),1);
-        }else if( isDrop ){
-            tree_->SetBranchStatus(srule.c_str(),0);
-        }else if( isIgnore ){
+        } else if( isDrop ){
+            parent_->tree_->SetBranchStatus(srule.c_str(),0);
+        } else if( isIgnore ){
             parent_->tree_->SetBranchAddress(srule.c_str(),0);
-        }else 
+        } else 
             return;
     }
 
