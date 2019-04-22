@@ -61,7 +61,7 @@
     <position name="target_pos" x="0.0" y="0.0" z="target_z"/>
     <position name="trigger_pad_down_pos" x="0.0" y="0.0" z="trigger_pad_down_z"/>
     <position name="trigger_pad_up_pos"   x="0.0" y="0.0" z="trigger_pad_up_z"/>
-    <position name="trigger_pad_tag_pos" x="0.0" y="0.0" z="trigger_pad_tag_z"/>
+    <position name="trigger_pad_tag_pos" x="-42.14" y="0.0" z="trigger_pad_tag_z"/>
     <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
     <position name="em_calorimeter_pos" x="0.0" y="0.0" z="em_calorimeter_pos_z"/>
     <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="hadron_calorimeter_pos_z"/>
