@@ -26,6 +26,7 @@
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
 #include "Event/EcalVetoResult.h"
+#include "Event/TrackerVetoResult.h"
 #include "Framework/HistogramPool.h"
 #include "Tools/AnalysisUtils.h"
 
@@ -152,7 +153,6 @@ namespace ldmx {
             HcalVetoResult* veto = static_cast<HcalVetoResult*>(hcalVeto->At(0));
             HcalHit* maxPEHit = veto->getMaxPEHit();  
 
-
             // Get the max PE and it's time
             maxPE = maxPEHit->getPE();
             maxPETime = maxPEHit->getTime();
@@ -171,59 +171,6 @@ namespace ldmx {
                 passesHcalVeto = veto->passesVeto();  
             }
         }
-
-        // Get the collection of simulated particles from the event
-        const TClonesArray* particles = event.getCollection("SimParticles");
-      
-        // Search for the recoil electron 
-        const SimParticle* recoil = Analysis::searchForRecoil(particles); 
-
-        // Find the target scoring plane hit associated with the recoil
-        // electron and extract the momentum
-        double p{-1}, pt{-1}, px{-9999}, py{-9999}, pz{-9999}; 
-        SimTrackerHit* spHit{nullptr}; 
-        if (event.exists("TargetScoringPlaneHits")) { 
-            
-            // Get the collection of simulated particles from the event
-            const TClonesArray* spHits = event.getCollection("TargetScoringPlaneHits");
-            
-            //
-            for (size_t iHit{0}; iHit < spHits->GetEntriesFast(); ++iHit) { 
-                SimTrackerHit* hit = static_cast<SimTrackerHit*>(spHits->At(iHit)); 
-                if ((hit->getSimParticle() == recoil) && (hit->getLayerID() == 2)
-                        && (hit->getMomentum()[2] > 0)) {
-                    spHit = hit;
-                    break; 
-                }
-            }
-
-            if (spHit != nullptr) {
-                TVector3 recoilP(spHit->getMomentum().data()); 
-        
-                p = recoilP.Mag(); 
-                pt = recoilP.Pt(); 
-                px = recoilP.Px();
-                py = recoilP.Py(); 
-                pz = recoilP.Pz();  
-            }
-        } 
-
-
-        bool recoilIsFindable{false};
-        TrackMaps map;  
-        if (event.exists("FindableTracks")) { 
-            // Get the collection of simulated particles from the event
-            const TClonesArray* tracks 
-                = event.getCollection("FindableTracks");
-
-            map = Analysis::getFindableTrackMaps(tracks);
-            
-            auto it = map.findable.find(recoil);
-            if ( it != map.findable.end()) recoilIsFindable = true; 
-        }
-
-        bool passesTrackVeto{false}; 
-        if ((map.findable.size() == 1) && recoilIsFindable && (p < 1200)) passesTrackVeto = true; 
 
         // Get the collection of ECal veto results if it exist
         float bdtProb{-1};
@@ -249,16 +196,30 @@ namespace ldmx {
             }
         }
 
-        if (passesTrackVeto) {
-            histograms_->get("max_pe_track_veto")->Fill(maxPE);
-            histograms_->get("total_pe_track_veto")->Fill(totalPE); 
-            histograms_->get("n_hits_track_veto")->Fill(hitCount);
-            histograms_->get("hit_time_max_pe_track_veto")->Fill(maxPETime);  
-            histograms_->get("min_time_hit_above_thresh_track_veto")->Fill(minTime); 
-            histograms_->get("max_pe:time_track_veto")->Fill(maxPE, maxPETime);  
-            histograms_->get("min_time_hit_above_thresh:pe_track_veto")->Fill(minTimePE, minTime);  
-            histograms_->get("bdt_max_pe")->Fill(maxPE, bdtProb); 
+        bool passesTrackVeto{false}; 
+        // Check if the TrackerVeto result exists
+        if (event.exists("TrackerVeto")) { 
+
+            // Get the collection of trackerVeto results
+            const TClonesArray* trackerVeto = event.getCollection("TrackerVeto");
+
+            TrackerVetoResult* veto = static_cast<TrackerVetoResult*>(trackerVeto->At(0)); 
+            // Check if the event passes the tracker veto
+            if (veto->passesVeto()) { 
+                
+                passesTrackVeto = true; 
+
+                histograms_->get("max_pe_track_veto")->Fill(maxPE);
+                histograms_->get("total_pe_track_veto")->Fill(totalPE); 
+                histograms_->get("n_hits_track_veto")->Fill(hitCount);
+                histograms_->get("hit_time_max_pe_track_veto")->Fill(maxPETime);  
+                histograms_->get("min_time_hit_above_thresh_track_veto")->Fill(minTime); 
+                histograms_->get("max_pe:time_track_veto")->Fill(maxPE, maxPETime);  
+                histograms_->get("min_time_hit_above_thresh:pe_track_veto")->Fill(minTimePE, minTime);  
+                histograms_->get("bdt_max_pe")->Fill(maxPE, bdtProb);
+            }
         }
+
 
         if (passesTrackVeto && passesBDT) { 
             histograms_->get("max_pe_track_bdt")->Fill(maxPE);
