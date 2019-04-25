@@ -21,6 +21,7 @@
 //   ROOT   //
 //----------//
 #include "TClonesArray.h"
+#include "TVector3.h"
 
 namespace ldmx {
 
@@ -73,6 +74,46 @@ namespace ldmx {
             return map;  
         }
 
+        void printDaughters(const SimParticle* particle, std::string prefix) {
+
+            std::cout << prefix << ">>>>>>>>> Daughters of PDG ID: " << particle->getPdgID() 
+                      << " with energy " << particle->getEnergy() << std::endl; 
+
+            for (size_t idaughter = 0; idaughter < particle->getDaughterCount(); ++idaughter) {
+            
+                // Get the ith daughter
+                const SimParticle* daughter = particle->getDaughter(idaughter);
+
+                // Get the PDG ID
+                int pdgID = daughter->getPdgID();
+
+                // Calculate the kinetic energy
+                double ke = daughter->getEnergy() - daughter->getMass();
+
+                std::vector<double> vec = daughter->getMomentum(); 
+                TVector3 pvec(vec[0], vec[1], vec[2]); 
+
+                //  Calculate the polar angle
+                double theta = pvec.Theta()*(180/3.14159);
+
+                std::cout << prefix << "    PDG ID: " << pdgID << " KE: " << ke 
+                          << " Theta: " << theta  
+                          << " Endpoint ( " <<  daughter->getEndPoint()[0] 
+                          << " , " << daughter->getEndPoint()[1] 
+                          << " , " << daughter->getEndPoint()[2] << " ) " 
+                          << " Time: " << daughter->getTime() <<  
+                std::endl;
+
+                if ((pdgID == 2112) & (ke > 2000)) { 
+                    printDaughters(daughter, "\t"); 
+                }
+            
+            }
+            std::cout << prefix << ">>>>>>>>>>\n" << std::endl;
+
+            return;
+        }
+    
     } // Analysis    
 
 } // ldmx

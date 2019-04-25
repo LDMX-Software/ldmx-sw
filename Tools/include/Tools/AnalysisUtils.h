@@ -57,7 +57,9 @@ namespace ldmx {
         /**
          * 
          */
-        TrackMaps getFindableTrackMaps(const TClonesArray* tracks); 
+        TrackMaps getFindableTrackMaps(const TClonesArray* tracks);
+
+        void printDaughters(const SimParticle* particle, std::string prefix = ""); 
 
 
     } // Analysis
