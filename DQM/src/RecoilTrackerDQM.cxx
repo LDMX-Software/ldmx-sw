@@ -23,9 +23,10 @@
 #include "Event/Event.h"
 #include "Event/EcalVetoResult.h"
 #include "Event/FindableTrackResult.h"
-#include "Event/HcalHit.h"
+#include "Event/HcalVetoResult.h"
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
+#include "Event/TrackerVetoResult.h"
 #include "Framework/HistogramPool.h"
 #include "Tools/AnalysisUtils.h"
 
@@ -112,9 +113,21 @@ namespace ldmx {
         histograms_->get("tpx")->Fill(px); 
         histograms_->get("tpy")->Fill(py); 
         histograms_->get("tpz")->Fill(pz); 
-   
+  
         bool passesTrackVeto{false}; 
-        if ((map.findable.size() == 1) && recoilIsFindable && (p < 1200)) passesTrackVeto = true; 
+        // Check if the TrackerVeto result exists
+        if (event.exists("TrackerVeto")) { 
+
+            // Get the collection of trackerVeto results
+            const TClonesArray* trackerVeto = event.getCollection("TrackerVeto");
+
+            TrackerVetoResult* veto = static_cast<TrackerVetoResult*>(trackerVeto->At(0)); 
+            // Check if the event passes the tracker veto
+            if (veto->passesVeto()) { 
+                passesTrackVeto = true; 
+            }
+        }
+
 
         if (passesTrackVeto) { 
             histograms_->get("tp_track_veto")->Fill(p);
@@ -126,6 +139,7 @@ namespace ldmx {
 
         // Get the collection of ECal veto results if it exist
         float bdtProb{-1}; 
+        bool passesBDT{false};  
         if (event.exists("EcalVeto")) {
             const EcalVetoResult* veto 
                 = static_cast<const EcalVetoResult*>(event.getCollection("EcalVeto")->At(0));
@@ -141,55 +155,41 @@ namespace ldmx {
                 histograms_->get("tpx_bdt")->Fill(px); 
                 histograms_->get("tpy_bdt")->Fill(py); 
                 histograms_->get("tpz_bdt")->Fill(pz); 
+                passesBDT = true; 
             }
         }
 
-        if (passesTrackVeto && (bdtProb >= .98)) { 
+        if (passesTrackVeto && passesBDT) { 
             histograms_->get("tp_track_bdt")->Fill(p);
             histograms_->get("tpt_track_bdt")->Fill(pt); 
             histograms_->get("tpx_track_bdt")->Fill(px); 
             histograms_->get("tpy_track_bdt")->Fill(py); 
             histograms_->get("tpz_track_bdt")->Fill(pz); 
-        } 
+        }
 
-        double minTimePE{-1}; 
-        if (event.exists("hcalDigis")) { 
+        bool passesHcalVeto{false}; 
+        // Check if the HcalVeto result exists
+        if (event.exists("HcalVeto")) {
         
             // Get the collection of HCalDQM digitized hits if the exists 
-            const TClonesArray* hcalHits = event.getCollection("hcalDigis");
-        
-            // Vector containing all HCal hits.  This will be used for sorting.
-            std::vector<HcalHit*> hits; 
+            const TClonesArray* hcalVeto = event.getCollection("HcalVeto");
 
-            // Find the maximum PE in the event 
-            for (size_t ihit{0}; ihit < hcalHits->GetEntriesFast(); ++ihit) {
-                HcalHit* hit = static_cast<HcalHit*>(hcalHits->At(ihit)); 
-           
-                if (hit->getTime() != -999) hits.push_back(hit);  
-            }
-        
-            // Sort the array by hit time
-            std::sort (hits.begin(), hits.end(), [ ](const auto& lhs, const auto& rhs) 
-            {
-                return lhs->getTime() < rhs->getTime(); 
-            });
-        
-            for (const auto& hit : hits) { 
-                if (hit->getPE() < 3) continue; 
-                minTimePE = hit->getPE(); 
-                break;
-            } 
-       
-            if (minTimePE == -1) { 
-                histograms_->get("tp_max_pe")->Fill(p);
-                histograms_->get("tpt_max_pe")->Fill(pt); 
-                histograms_->get("tpx_max_pe")->Fill(px); 
-                histograms_->get("tpy_max_pe")->Fill(py); 
-                histograms_->get("tpz_max_pe")->Fill(pz); 
+            HcalVetoResult* veto = static_cast<HcalVetoResult*>(hcalVeto->At(0));
+
+            if (veto->passesVeto()) {
+                
+                histograms_->get("tp_hcal")->Fill(p);
+                histograms_->get("tpt_hcal")->Fill(pt); 
+                histograms_->get("tpx_hcal")->Fill(px); 
+                histograms_->get("tpy_hcal")->Fill(py); 
+                histograms_->get("tpz_hcal")->Fill(pz); 
+                passesHcalVeto = veto->passesVeto();  
             }
         }
 
-        if (passesTrackVeto && (bdtProb >= .98) && (minTimePE == -1)) { 
+
+
+        if (passesTrackVeto && passesBDT && passesHcalVeto) { 
             histograms_->get("tp_vetoes")->Fill(p);
             histograms_->get("tpt_vetoes")->Fill(pt); 
             histograms_->get("tpx_vetoes")->Fill(px); 

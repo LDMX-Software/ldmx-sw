@@ -16,12 +16,12 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "DQM/Histogram1DBuilder.h"
 #include "Event/EcalVetoResult.h"
 #include "Event/Event.h"
 #include "Event/HcalHit.h"
+#include "Event/HcalVetoResult.h"
 #include "Event/SimParticle.h"
-#include "Event/SimTrackerHit.h"
+#include "Event/TrackerVetoResult.h"
 #include "Framework/HistogramPool.h"
 #include "Tools/AnalysisUtils.h"
 
@@ -66,19 +66,19 @@ namespace ldmx {
             histograms_->get("event_type"),
             histograms_->get("event_type_track_veto"),
             histograms_->get("event_type_bdt"),
-            histograms_->get("event_type_max_pe"),
+            histograms_->get("event_type_hcal"),
             histograms_->get("event_type_track_bdt"),
             histograms_->get("event_type_vetoes"),
             histograms_->get("event_type_500mev"),
             histograms_->get("event_type_500mev_track_veto"),
             histograms_->get("event_type_500mev_bdt"),
-            histograms_->get("event_type_500mev_max_pe"),
+            histograms_->get("event_type_500mev_hcal"),
             histograms_->get("event_type_500mev_track_bdt"),
             histograms_->get("event_type_500mev_vetoes"),
             histograms_->get("event_type_2000mev"),
             histograms_->get("event_type_2000mev_track_veto"),
             histograms_->get("event_type_2000mev_bdt"),
-            histograms_->get("event_type_2000mev_max_pe"),
+            histograms_->get("event_type_2000mev_hcal"),
             histograms_->get("event_type_2000mev_track_bdt"),
             histograms_->get("event_type_2000mev_vetoes"),
 
@@ -98,6 +98,25 @@ namespace ldmx {
                             400, 0, 4000, 
                             "#theta of Hardest Photo-nuclear Particle (Degrees)",
                             360, 0, 180);
+
+        histograms_->create<TH2F>("1n_ke:2nd_h_ke", 
+                            "Kinetic Energy of Leading Neutron (MeV)",
+                            400, 0, 4000, 
+                            "Kinetic Energy of 2nd Hardest Particle",
+                            400, 0, 4000);
+
+        std::vector<std::string> n_labels = {"", "",
+            "nn", // 1
+            "pn", // 2
+            "#pi^{+}n", // 3 
+            "#pi^{0}n", // 4
+            ""
+        };
+
+        TH1* hist = histograms_->get("1n_event_type"); 
+        for (int ilabel{1}; ilabel < n_labels.size(); ++ilabel) { 
+            hist->GetXaxis()->SetBinLabel(ilabel, n_labels[ilabel-1].c_str());
+        }
        
     }
 
@@ -110,36 +129,6 @@ namespace ldmx {
       
         // Search for the recoil electron 
         const SimParticle* recoil = Analysis::searchForRecoil(particles); 
-
-        // Find the target scoring plane hit associated with the recoil
-        // electron and extract the momentum
-        double p{-1}, pt{-1}, px{-9999}, py{-9999}, pz{-9999}; 
-        SimTrackerHit* spHit{nullptr}; 
-        if (event.exists("TargetScoringPlaneHits")) { 
-            
-            // Get the collection of simulated particles from the event
-            const TClonesArray* spHits = event.getCollection("TargetScoringPlaneHits");
-            
-            //
-            for (size_t iHit{0}; iHit < spHits->GetEntriesFast(); ++iHit) { 
-                SimTrackerHit* hit = static_cast<SimTrackerHit*>(spHits->At(iHit)); 
-                if ((hit->getSimParticle() == recoil) && (hit->getLayerID() == 2)
-                        && (hit->getMomentum()[2] > 0)) {
-                    spHit = hit;
-                    break; 
-                }
-            }
-
-            if (spHit != nullptr) {
-                TVector3 recoilP(spHit->getMomentum().data()); 
-        
-                p = recoilP.Mag(); 
-                pt = recoilP.Pt(); 
-                px = recoilP.Px();
-                py = recoilP.Py(); 
-                pz = recoilP.Pz();  
-            }
-        } 
 
         // Use the recoil electron to retrieve the gamma that underwent a 
         // photo-nuclear reaction.
@@ -155,6 +144,8 @@ namespace ldmx {
         double lnke{-1},  lnt{-1};
         double lpike{-1}, lpit{-1};
         
+        std::vector<const SimParticle*> pnDaughters; 
+
         // Loop through all of the PN daughters and extract kinematic 
         // information.
         for (size_t idaughter = 0; idaughter < pnGamma->getDaughterCount(); ++idaughter) {
@@ -187,14 +178,8 @@ namespace ldmx {
                 lpike = ke; 
                 lpit = theta; 
             }
-       
-            /* 
-            std::cout << "PDG ID: " << pdgID << " KE: " << ke << " Theta: " << theta 
-                      << " Endpoint ( " <<  daughter->getEndPoint()[0] 
-                      << " , " << daughter->getEndPoint()[1] 
-                      << " , " << daughter->getEndPoint()[2] << " ) " <<  
-                      std::endl;
-            */
+            
+            pnDaughters.push_back(daughter); 
         }
 
         histograms_->get("hardest_ke")->Fill(lke); 
@@ -216,8 +201,41 @@ namespace ldmx {
         histograms_->get("event_type_500mev")->Fill(eventType500MeV);
         histograms_->get("event_type_2000mev")->Fill(eventType2000MeV);
 
+        double slke{-9999};
+        double nEnergy{-9999}, energyDiff{-9999}, energyFrac{-9999}; 
+        if (eventType == 1) {
+            //Analysis::printDaughters(pnGamma);
+            std::sort (pnDaughters.begin(), pnDaughters.end(), [] (const auto& lhs, const auto& rhs) 
+            {
+                double lhs_ke = lhs->getEnergy() - lhs->getMass(); 
+                double rhs_ke = rhs->getEnergy() - rhs->getMass(); 
+                return lhs_ke > rhs_ke; 
+            }); 
+           
+
+            nEnergy = pnDaughters[0]->getEnergy() - pnDaughters[0]->getMass(); 
+            slke = pnDaughters[1]->getEnergy() - pnDaughters[1]->getMass();
+            energyDiff = pnGamma->getEnergy() - nEnergy; 
+            energyFrac = nEnergy/pnGamma->getEnergy(); 
+
+            histograms_->get("1n_ke:2nd_h_ke")->Fill(nEnergy, slke);
+            histograms_->get("1n_neutron_energy")->Fill(nEnergy);  
+            histograms_->get("1n_energy_diff")->Fill(energyDiff);
+            histograms_->get("1n_energy_frac")->Fill(energyFrac); 
+
+            int nPdgID = abs(pnDaughters[1]->getPdgID());
+            int nEventType = -10; 
+            if (nPdgID == 2112) nEventType = 1; 
+            else if (nPdgID == 2212) nEventType = 2; 
+            else if (nPdgID == 211) nEventType = 3;
+            else if (nPdgID == 111) nEventType = 4; 
+       
+            histograms_->get("1n_event_type")->Fill(nEventType);  
+        }
+
         // Get the collection of ECal veto results if it exist
         float bdtProb{-1}; 
+        bool passesBDT{false};  
         if (event.exists("EcalVeto")) {
             const EcalVetoResult* veto 
                 = static_cast<const EcalVetoResult*>(event.getCollection("EcalVeto")->At(0));
@@ -229,91 +247,87 @@ namespace ldmx {
             if (bdtProb >= .98) {
                 histograms_->get("event_type_bdt")->Fill(eventType);
                 histograms_->get("event_type_500mev_bdt")->Fill(eventType500MeV);
-                histograms_->get("event_type_2000mev_bdt")->Fill(eventType2000MeV);
-        
+                histograms_->get("event_type_2000mev_bdt")->Fill(eventType2000MeV); 
                 histograms_->get("pn_particle_mult_bdt")->Fill(pnGamma->getDaughterCount());
-                histograms_->get("pn_gamma_energy_bdt")->Fill(pnGamma->getEnergy()); 
+                histograms_->get("pn_gamma_energy_bdt")->Fill(pnGamma->getEnergy());
+                histograms_->get("1n_neutron_energy_bdt")->Fill(nEnergy);  
+                histograms_->get("1n_energy_diff_bdt")->Fill(energyDiff);
+                histograms_->get("1n_energy_frac_bdt")->Fill(energyFrac); 
+                passesBDT = true; 
             }
         }
 
-        // Get the collection of HCal digitized hits if the exists 
-        double minTimePE{-1}; 
-        if (event.exists("hcalDigis")) { 
-            const TClonesArray* hcalHits = event.getCollection("hcalDigis");
-       
-            // Vector containing all HCal hits.  This will be used for sorting.
-            std::vector<HcalHit*> hits; 
-
-            // Find the maximum PE in the event 
-            for (size_t ihit{0}; ihit < hcalHits->GetEntriesFast(); ++ihit) {
-                HcalHit* hit = static_cast<HcalHit*>(hcalHits->At(ihit)); 
-           
-                if (hit->getTime() != -999) hits.push_back(hit);  
-            }
-
-            // Sort the array by hit time
-            std::sort (hits.begin(), hits.end(), [ ](const auto& lhs, const auto& rhs) 
-            {
-                return lhs->getTime() < rhs->getTime(); 
-            });
+        bool passesHcalVeto{false}; 
+        // Check if the HcalVeto result exists
+        if (event.exists("HcalVeto")) {
         
-            for (const auto& hit : hits) { 
-                if (hit->getPE() < 3) continue; 
-                minTimePE = hit->getPE(); 
-                break;
-            } 
+            // Get the collection of HCalDQM digitized hits if the exists 
+            const TClonesArray* hcalVeto = event.getCollection("HcalVeto");
 
-            if (minTimePE == -1) { 
-                histograms_->get("event_type_max_pe")->Fill(eventType);
-                histograms_->get("event_type_500mev_max_pe")->Fill(eventType500MeV);
-                histograms_->get("event_type_2000mev_max_pe")->Fill(eventType2000MeV);
+            HcalVetoResult* veto = static_cast<HcalVetoResult*>(hcalVeto->At(0));
+            //HcalHit* maxPEHit = veto->getMaxPEHit(); 
+
+            //std::cout << "max PE: " << maxPEHit->getPE() << std::endl; 
+    
+            if (veto->passesVeto()) {
+                histograms_->get("event_type_hcal")->Fill(eventType);
+                histograms_->get("event_type_500mev_hcal")->Fill(eventType500MeV);
+                histograms_->get("event_type_2000mev_hcal")->Fill(eventType2000MeV);
+                histograms_->get("pn_particle_mult_hcal")->Fill(pnGamma->getDaughterCount());
+                histograms_->get("pn_gamma_energy_hcal")->Fill(pnGamma->getEnergy()); 
+                histograms_->get("1n_neutron_energy_hcal")->Fill(nEnergy);  
+                histograms_->get("1n_energy_diff_hcal")->Fill(energyDiff);
+                histograms_->get("1n_energy_frac_hcal")->Fill(energyFrac); 
+                passesHcalVeto = veto->passesVeto();  
+            }
+        }
+
+        bool passesTrackVeto{false};
+        // Check if the TrackerVeto result exists
+        if (event.exists("TrackerVeto")) { 
+
+            // Get the collection of trackerVeto results
+            const TClonesArray* trackerVeto = event.getCollection("TrackerVeto");
+
+            TrackerVetoResult* veto = static_cast<TrackerVetoResult*>(trackerVeto->At(0)); 
+            // Check if the event passes the tracker veto
+            if (veto->passesVeto()) { 
                 
-                histograms_->get("pn_particle_mult_max_pe")->Fill(pnGamma->getDaughterCount());
-                histograms_->get("pn_gamma_energy_max_pe")->Fill(pnGamma->getEnergy()); 
+                passesTrackVeto = true; 
+                
+                histograms_->get("event_type_track_veto")->Fill(eventType);
+                histograms_->get("event_type_500mev_track_veto")->Fill(eventType500MeV);
+                histograms_->get("event_type_2000mev_track_veto")->Fill(eventType2000MeV); 
+                histograms_->get("pn_particle_mult_track_veto")->Fill(pnGamma->getDaughterCount());    
+                histograms_->get("pn_gamma_energy_track_veto")->Fill(pnGamma->getEnergy());
+                histograms_->get("1n_neutron_energy_track_veto")->Fill(nEnergy);  
+                histograms_->get("1n_energy_diff_track_veto")->Fill(energyDiff);
+                histograms_->get("1n_energy_frac_track_veto")->Fill(energyFrac); 
+
             }
         }
         
-        bool recoilIsFindable{false}; 
-        TrackMaps map;  
-        if (event.exists("FindableTracks")) { 
-            // Get the collection of simulated particles from the event
-            const TClonesArray* tracks 
-                = event.getCollection("FindableTracks");
-
-            map = Analysis::getFindableTrackMaps(tracks);
-            
-            auto it = map.findable.find(recoil);
-            if ( it != map.findable.end()) recoilIsFindable = true; 
-        }
-
-        bool passesTrackVeto{false}; 
-        if ((map.findable.size() == 1) && recoilIsFindable && (p < 1200)) passesTrackVeto = true; 
-        
-        if (passesTrackVeto) { 
-            histograms_->get("event_type_track_veto")->Fill(eventType);
-            histograms_->get("event_type_500mev_track_veto")->Fill(eventType500MeV);
-            histograms_->get("event_type_2000mev_track_veto")->Fill(eventType2000MeV);
-                
-            histograms_->get("pn_particle_mult_track_veto")->Fill(pnGamma->getDaughterCount());    
-            histograms_->get("pn_gamma_energy_track_veto")->Fill(pnGamma->getEnergy()); 
-        }
-
-        if (passesTrackVeto && (bdtProb >= .98)) { 
+        if (passesTrackVeto && passesBDT) { 
             histograms_->get("event_type_track_bdt")->Fill(eventType);
             histograms_->get("event_type_500mev_track_bdt")->Fill(eventType500MeV);
-            histograms_->get("event_type_2000mev_track_bdt")->Fill(eventType2000MeV);
-            
+            histograms_->get("event_type_2000mev_track_bdt")->Fill(eventType2000MeV); 
             histograms_->get("pn_particle_mult_track_bdt")->Fill(pnGamma->getDaughterCount());
-            histograms_->get("pn_gamma_energy_track_bdt")->Fill(pnGamma->getEnergy()); 
+            histograms_->get("pn_gamma_energy_track_bdt")->Fill(pnGamma->getEnergy());
+            histograms_->get("1n_neutron_energy_track_bdt")->Fill(nEnergy);  
+            histograms_->get("1n_energy_diff_track_bdt")->Fill(energyDiff);
+            histograms_->get("1n_energy_frac_track_bdt")->Fill(energyFrac); 
         }
 
-        if (passesTrackVeto && (minTimePE == -1) && (bdtProb >= .98)) { 
+        if (passesTrackVeto && passesHcalVeto && passesBDT) { 
             histograms_->get("event_type_vetoes")->Fill(eventType);
             histograms_->get("event_type_500mev_vetoes")->Fill(eventType500MeV);
             histograms_->get("event_type_2000mev_vetoes")->Fill(eventType2000MeV);
-                
             histograms_->get("pn_particle_mult_vetoes")->Fill(pnGamma->getDaughterCount());
             histograms_->get("pn_gamma_energy_vetoes")->Fill(pnGamma->getEnergy()); 
+            histograms_->get("1n_neutron_energy_vetoes")->Fill(nEnergy);  
+            histograms_->get("1n_energy_diff_vetoes")->Fill(energyDiff);
+            histograms_->get("1n_energy_frac_vetoes")->Fill(energyFrac); 
+                
         
         }
     }
