@@ -18,7 +18,6 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "DQM/Histogram1DBuilder.h"
 #include "Event/Event.h"
 #include "Event/FindableTrackResult.h"
 #include "Event/HcalHit.h"
