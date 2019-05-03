@@ -100,6 +100,9 @@ namespace ldmx {
         ecalLayerTime_.resize(nEcalLayers_, 0);
         cellMap_.resize(nEcalLayers_, std::map<int, float>());
         cellMapTightIso_.resize(nEcalLayers_, std::map<int, float>());
+
+        // Set the collection name as defined in the configuration
+        collectionName_ = ps.getString("collection_name"); 
     }
 
     void EcalVetoProcessor::clearProcessor(){
@@ -334,7 +337,7 @@ namespace ldmx {
         } else {
             setStorageHint(hint_shouldDrop);
         }
-        event.addToCollection("EcalVeto", result_);
+        event.addToCollection(collectionName_, result_);
     }
 
     EcalVetoProcessor::LayerCellPair EcalVetoProcessor::hitToPair(EcalHit* hit) {
