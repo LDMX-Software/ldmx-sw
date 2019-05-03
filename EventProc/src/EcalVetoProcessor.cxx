@@ -45,7 +45,7 @@ namespace ldmx {
         TString cmd = vectorToPredCMD(bdtFeatures);
         TPython::Exec("pred = " + cmd);
         float pred = TPython::Eval("pred");
-        std::cout << "  pred = " << pred << std::endl;
+        //std::cout << "  pred = " << pred << std::endl;
 
         return pred;
     }
@@ -133,8 +133,8 @@ namespace ldmx {
         const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
         int nEcalHits = ecalDigis->GetEntriesFast();
 
-        std::cout << "[ EcalVetoProcessor ] : Got " << nEcalHits << " ECal digis in event "
-                << event.getEventHeader()->getEventNumber() << std::endl;
+        //std::cout << "[ EcalVetoProcessor ] : Got " << nEcalHits << " ECal digis in event "
+        //        << event.getEventHeader()->getEventNumber() << std::endl;
 
         int globalCentroid = GetShowerCentroidIDAndRMS(ecalDigis, showerRMS_);
         /* ~~ Fill the hit map ~~ O(n)  */
@@ -318,7 +318,7 @@ namespace ldmx {
             float pred = BDTHelper_->getSinglePred(bdtFeatures_);
             result_.setVetoResult(pred > bdtCutVal_);
             result_.setDiscValue(pred);
-            std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
+            //std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
         
             // If the event passes the veto, keep it. Otherwise, 
             // drop the event.
