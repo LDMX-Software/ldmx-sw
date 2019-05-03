@@ -157,6 +157,10 @@ namespace ldmx {
             std::string cellFileNamexy_;
             BDTHelper* BDTHelper_{nullptr};
             std::vector<float> bdtFeatures_;
+
+            /** Name of the collection which will containt the results. */
+            std::string collectionName_{"EcalVeto"}; 
+
     };
 
 }
