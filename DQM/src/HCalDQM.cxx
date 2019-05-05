@@ -91,6 +91,10 @@ namespace ldmx {
     
     }
 
+    void HCalDQM::configure(const ParameterSet& ps) {
+        ecalVetoCollectionName_ = ps.getString("ecal_veto_collection");
+    }
+
     void HCalDQM::analyze(const Event & event) { 
 
         // Check if the collection of digitized HCal hits exist. If it doesn't 
@@ -174,9 +178,10 @@ namespace ldmx {
         // Get the collection of ECal veto results if it exist
         float bdtProb{-1};
         bool passesBDT{false};  
-        if (event.exists("EcalVeto")) {
+        if (event.exists(ecalVetoCollectionName_)) {
             const EcalVetoResult* veto 
-                = static_cast<const EcalVetoResult*>(event.getCollection("EcalVeto")->At(0));
+                = static_cast<const EcalVetoResult*>(
+                        event.getCollection(ecalVetoCollectionName_)->At(0));
        
             // Get the BDT probability  
             bdtProb = veto->getDisc();

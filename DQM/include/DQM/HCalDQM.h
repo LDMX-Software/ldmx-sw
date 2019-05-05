@@ -27,7 +27,14 @@ namespace ldmx {
             HCalDQM(const std::string &name, Process &process);
 
             /** Destructor */
-            ~HCalDQM(); 
+            ~HCalDQM();
+
+            /** 
+             * Configure the processor using the given user specified parameters.
+             * 
+             * @param pSet Set of parameters used to configure this processor.
+             */
+            void configure(const ParameterSet &pSet);
  
             /**
              * Process the event and make histograms ro summaries.
@@ -45,7 +52,10 @@ namespace ldmx {
             HistogramPool* histograms_{nullptr}; 
 
             /** The maximum PE threshold used for the veto. */
-            float maxPEThreshold_{3}; 
+            float maxPEThreshold_{5}; 
+            
+            /** Name of ECal veto collection. */
+            std::string ecalVetoCollectionName_{"EcalVeto"}; 
     };    
     
 } // ldmx
