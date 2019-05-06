@@ -40,7 +40,14 @@ namespace ldmx {
 
             /** Destructor */
             ~RecoilTrackerDQM(); 
- 
+            
+            /** 
+             * Configure the processor using the given user specified parameters.
+             * 
+             * @param pSet Set of parameters used to configure this processor.
+             */
+            void configure(const ParameterSet &pSet);
+
             /**
              * Process the event and make histograms ro summaries.
              *
@@ -57,6 +64,9 @@ namespace ldmx {
             /** Singleton used to access histograms. */
             HistogramPool* histograms_{nullptr}; 
 
+            /** Name of ECal veto collection. */
+            std::string ecalVetoCollectionName_{"EcalVeto"}; 
+    
     }; // RecoilTrackerDQM 
     
 } // ldmx
