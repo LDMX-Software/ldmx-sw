@@ -438,6 +438,20 @@ namespace ldmx {
         return 20;
     }
 
+    int EcalPN::classifyCompactEvent(int event_type) { 
+    
+        if (event_type == 0) return 0; 
+        if (event_type == 1) return 1; 
+        if ( (event_type == 2) || (event_type == 3) ) return 2;
+        if ( (event_type == 4) || (event_type == 6) ) return 3;
+        if (event_type == 13) return 4; 
+        if ( (event_type == 16) || (event_type == 18) ) return 5; 
+        if (event_type == 17) return 6; 
+        
+        return 7; 
+    
+    }
+
 } // ldmx
 
 DECLARE_ANALYZER_NS(ldmx, EcalPN)
