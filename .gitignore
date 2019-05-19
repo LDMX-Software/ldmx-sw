@@ -9,7 +9,5 @@
 /bin
 /lib
 /data
-/build
-/build.*
-/install
-/install.*
+/build*
+/install*
