@@ -84,6 +84,46 @@ namespace ldmx {
 
         };
 
+
+        for (int ilabel{1}; ilabel < labels.size(); ++ilabel) { 
+            for (auto& hist : hists) {
+                hist->GetXaxis()->SetBinLabel(ilabel, labels[ilabel-1].c_str());
+            }
+        }
+
+        labels = {"", 
+            "Nothing hard", // 0  
+            "1 n", // 1
+            "#geq 2 n", // 2
+            "1 #pi", // 3
+            "1 p", // 4
+            "1 K^{0}", // 5
+            "K X", // 6
+            "multi-body", // 7
+            ""
+        };
+
+        hists = {
+            histograms_->get("event_type_compact"),
+            histograms_->get("event_type_compact_track_veto"),
+            histograms_->get("event_type_compact_bdt"),
+            histograms_->get("event_type_compact_hcal"),
+            histograms_->get("event_type_compact_track_bdt"),
+            histograms_->get("event_type_compact_vetoes"),
+            histograms_->get("event_type_compact_500mev"),
+            histograms_->get("event_type_compact_500mev_track_veto"),
+            histograms_->get("event_type_compact_500mev_bdt"),
+            histograms_->get("event_type_compact_500mev_hcal"),
+            histograms_->get("event_type_compact_500mev_track_bdt"),
+            histograms_->get("event_type_compact_500mev_vetoes"),
+            histograms_->get("event_type_compact_2000mev"),
+            histograms_->get("event_type_compact_2000mev_track_veto"),
+            histograms_->get("event_type_compact_2000mev_bdt"),
+            histograms_->get("event_type_compact_2000mev_hcal"),
+            histograms_->get("event_type_compact_2000mev_track_bdt"),
+            histograms_->get("event_type_compact_2000mev_vetoes"),
+        };
+
         for (int ilabel{1}; ilabel < labels.size(); ++ilabel) { 
             for (auto& hist : hists) {
                 hist->GetXaxis()->SetBinLabel(ilabel, labels[ilabel-1].c_str());
@@ -126,8 +166,6 @@ namespace ldmx {
 
     void EcalPN::analyze(const Event & event) { 
   
-        //std::cout << " >> Event " << " << " << std::endl;
-
         // Get the collection of simulated particles from the event
         const TClonesArray* particles = event.getCollection("SimParticles");
       
@@ -199,11 +237,19 @@ namespace ldmx {
         // Classify the event
         int eventType = classifyEvent(pnGamma, 200); 
         int eventType500MeV = classifyEvent(pnGamma, 500); 
-        int eventType2000MeV = classifyEvent(pnGamma, 2000); 
-        
+        int eventType2000MeV = classifyEvent(pnGamma, 2000);
+
+        int eventTypeComp = classifyCompactEvent(eventType);  
+        int eventTypeComp500MeV = classifyCompactEvent(eventType500MeV);  
+        int eventTypeComp2000MeV = classifyCompactEvent(eventType2000MeV);  
+
         histograms_->get("event_type")->Fill(eventType);
         histograms_->get("event_type_500mev")->Fill(eventType500MeV);
         histograms_->get("event_type_2000mev")->Fill(eventType2000MeV);
+
+        histograms_->get("event_type_compact")->Fill(eventTypeComp);
+        histograms_->get("event_type_compact_500mev")->Fill(eventTypeComp500MeV);
+        histograms_->get("event_type_compact_2000mev")->Fill(eventTypeComp2000MeV);
 
         double slke{-9999};
         double nEnergy{-9999}, energyDiff{-9999}, energyFrac{-9999}; 
@@ -253,6 +299,9 @@ namespace ldmx {
                 histograms_->get("event_type_bdt")->Fill(eventType);
                 histograms_->get("event_type_500mev_bdt")->Fill(eventType500MeV);
                 histograms_->get("event_type_2000mev_bdt")->Fill(eventType2000MeV); 
+                histograms_->get("event_type_compact_bdt")->Fill(eventTypeComp);
+                histograms_->get("event_type_compact_500mev_bdt")->Fill(eventTypeComp500MeV);
+                histograms_->get("event_type_compact_2000mev_bdt")->Fill(eventTypeComp2000MeV);
                 histograms_->get("pn_particle_mult_bdt")->Fill(pnGamma->getDaughterCount());
                 histograms_->get("pn_gamma_energy_bdt")->Fill(pnGamma->getEnergy());
                 histograms_->get("1n_neutron_energy_bdt")->Fill(nEnergy);  
@@ -278,6 +327,9 @@ namespace ldmx {
                 histograms_->get("event_type_hcal")->Fill(eventType);
                 histograms_->get("event_type_500mev_hcal")->Fill(eventType500MeV);
                 histograms_->get("event_type_2000mev_hcal")->Fill(eventType2000MeV);
+                histograms_->get("event_type_compact_hcal")->Fill(eventTypeComp);
+                histograms_->get("event_type_compact_500mev_hcal")->Fill(eventTypeComp500MeV);
+                histograms_->get("event_type_compact_2000mev_hcal")->Fill(eventTypeComp2000MeV);
                 histograms_->get("pn_particle_mult_hcal")->Fill(pnGamma->getDaughterCount());
                 histograms_->get("pn_gamma_energy_hcal")->Fill(pnGamma->getEnergy()); 
                 histograms_->get("1n_neutron_energy_hcal")->Fill(nEnergy);  
@@ -303,6 +355,9 @@ namespace ldmx {
                 histograms_->get("event_type_track_veto")->Fill(eventType);
                 histograms_->get("event_type_500mev_track_veto")->Fill(eventType500MeV);
                 histograms_->get("event_type_2000mev_track_veto")->Fill(eventType2000MeV); 
+                histograms_->get("event_type_compact_track_veto")->Fill(eventTypeComp);
+                histograms_->get("event_type_compact_500mev_track_veto")->Fill(eventTypeComp500MeV);
+                histograms_->get("event_type_compact_2000mev_track_veto")->Fill(eventTypeComp2000MeV);
                 histograms_->get("pn_particle_mult_track_veto")->Fill(pnGamma->getDaughterCount());    
                 histograms_->get("pn_gamma_energy_track_veto")->Fill(pnGamma->getEnergy());
                 histograms_->get("1n_neutron_energy_track_veto")->Fill(nEnergy);  
@@ -316,6 +371,9 @@ namespace ldmx {
             histograms_->get("event_type_track_bdt")->Fill(eventType);
             histograms_->get("event_type_500mev_track_bdt")->Fill(eventType500MeV);
             histograms_->get("event_type_2000mev_track_bdt")->Fill(eventType2000MeV); 
+            histograms_->get("event_type_compact_track_bdt")->Fill(eventTypeComp);
+            histograms_->get("event_type_compact_500mev_track_bdt")->Fill(eventTypeComp500MeV);
+            histograms_->get("event_type_compact_2000mev_track_bdt")->Fill(eventTypeComp2000MeV);
             histograms_->get("pn_particle_mult_track_bdt")->Fill(pnGamma->getDaughterCount());
             histograms_->get("pn_gamma_energy_track_bdt")->Fill(pnGamma->getEnergy());
             histograms_->get("1n_neutron_energy_track_bdt")->Fill(nEnergy);  
@@ -327,6 +385,9 @@ namespace ldmx {
             histograms_->get("event_type_vetoes")->Fill(eventType);
             histograms_->get("event_type_500mev_vetoes")->Fill(eventType500MeV);
             histograms_->get("event_type_2000mev_vetoes")->Fill(eventType2000MeV);
+            histograms_->get("event_type_compact_vetoes")->Fill(eventTypeComp);
+            histograms_->get("event_type_compact_500mev_vetoes")->Fill(eventTypeComp500MeV);
+            histograms_->get("event_type_compact_2000mev_vetoes")->Fill(eventTypeComp2000MeV);
             histograms_->get("pn_particle_mult_vetoes")->Fill(pnGamma->getDaughterCount());
             histograms_->get("pn_gamma_energy_vetoes")->Fill(pnGamma->getEnergy()); 
             histograms_->get("1n_neutron_energy_vetoes")->Fill(nEnergy);  
