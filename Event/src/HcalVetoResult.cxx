@@ -33,7 +33,6 @@ namespace ldmx {
 
     void HcalVetoResult::Clear(Option_t *option) { 
         passesVeto_ = false;
-        maxPEHit_.GetObject()->Clear(); 
     }
 
     void HcalVetoResult::Print(Option_t *option) { 
