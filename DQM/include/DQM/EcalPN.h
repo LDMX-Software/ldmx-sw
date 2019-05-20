@@ -54,6 +54,9 @@ namespace ldmx {
             /** Method used to classify events. */
             int classifyEvent(const SimParticle* particle, double threshold); 
 
+            /** Method used to classify events in a compact manner. */
+            int classifyCompactEvent(int event_type); 
+
             /** Singleton used to access histograms. */
             HistogramPool* histograms_{nullptr}; 
 
