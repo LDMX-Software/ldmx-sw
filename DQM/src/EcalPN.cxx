@@ -175,6 +175,10 @@ namespace ldmx {
         // Use the recoil electron to retrieve the gamma that underwent a 
         // photo-nuclear reaction.
         const SimParticle* pnGamma = Analysis::searchForPNGamma(recoil);
+        if (pnGamma == nullptr) { 
+            std::cout << "[ EcalPN ]: PN Daughter is lost, skipping." << std::endl;
+            return;
+        }
 
         histograms_->get("pn_particle_mult")->Fill(pnGamma->getDaughterCount());
         histograms_->get("pn_gamma_energy")->Fill(pnGamma->getEnergy()); 
