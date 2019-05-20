@@ -45,8 +45,8 @@ namespace ldmx {
 
             // Check that the index is within the bounds of the array. If not, 
             // throw an exception.
-            if (index == particle->getDaughterCount()) 
-                throw std::out_of_range("Index is beyond the size of the TClonesArray.");
+            if (index == particle->getDaughterCount()) return nullptr; 
+                //throw std::out_of_range("Index is beyond the size of the TClonesArray.");
 
             const SimParticle* daughter = particle->getDaughter(index);
             if ((daughter->getDaughterCount() > 0) 
