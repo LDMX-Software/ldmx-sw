@@ -188,7 +188,7 @@ namespace ldmx {
             histograms_->get("bdt_n_hits")->Fill(bdtProb, hitCount); 
             
             // Fill the histograms if the event passes the ECal veto
-            if (bdtProb >= .98) {
+            if (bdtProb >= .99) {
                 histograms_->get("max_pe_bdt")->Fill(maxPE);
                 histograms_->get("total_pe_bdt")->Fill(totalPE); 
                 histograms_->get("n_hits_bdt")->Fill(hitCount);

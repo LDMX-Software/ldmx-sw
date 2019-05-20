@@ -295,7 +295,7 @@ namespace ldmx {
             bdtProb = veto->getDisc();
             
             // Fill the histograms if the event passes the ECal veto
-            if (bdtProb >= .98) {
+            if (bdtProb >= .99) {
                 histograms_->get("event_type_bdt")->Fill(eventType);
                 histograms_->get("event_type_500mev_bdt")->Fill(eventType500MeV);
                 histograms_->get("event_type_2000mev_bdt")->Fill(eventType2000MeV); 
