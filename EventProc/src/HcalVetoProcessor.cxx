@@ -22,7 +22,8 @@ namespace ldmx {
 
     void HcalVetoProcessor::configure(const ParameterSet& pSet) {
         totalPEThreshold_  = pSet.getDouble("pe_threshold");
-        maxTime_ = pSet.getDouble("max_time");  
+        maxTime_ = pSet.getDouble("max_time"); 
+        maxDepth_ = pSet.getDouble("max_depth");  
     }
 
     void HcalVetoProcessor::produce(Event& event) {
@@ -40,6 +41,9 @@ namespace ldmx {
 
             // If the hit time is outside the readout window, don't consider it.
             if (hcalHit->getTime() >= maxTime_) continue;
+
+            // If the hit z position is beyond the maximum HCal depth, skip it.
+            if (hcalHit->getZ() > maxDepth_) continue; 
 
             float pe = hcalHit->getPE();
             
