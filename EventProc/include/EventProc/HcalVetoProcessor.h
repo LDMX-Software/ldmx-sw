@@ -54,6 +54,9 @@ namespace ldmx {
             /** Maximum hit time that should be considered by the veto. */
             float maxTime_{50}; // ns
 
+            /** Maximum z depth that a hit can have. */
+            float maxDepth_{4000}; // mm 
+
     }; // HcalVetoProcessor
 }
 
