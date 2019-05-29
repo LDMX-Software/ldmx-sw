@@ -38,7 +38,11 @@ namespace ldmx {
 
     void RootPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
-        if (evtCtr_ > nEvts_) G4RunManager::GetRunManager()->AbortRun();
+        if (evtCtr_ >= nEvts_) {
+            std::cout << "[ RootPrimaryGenerator ]: End of file reached." << std::endl;
+            G4RunManager::GetRunManager()->AbortRun(true);
+            anEvent->SetEventAborted();
+        }
 
         itree_->GetEntry(evtCtr_);
 
@@ -54,12 +58,14 @@ namespace ldmx {
 
                 ldmx::SimTrackerHit* sth = (ldmx::SimTrackerHit*) ecalSPParticles_->At(iSTH);
 
-                // std::cout << iSTH << ", " << sth->getID() << ", " << sth->getLayerID() << ", " << sth->getSimParticle()->getPdgID() << std::endl;
-                // std::cout << "\t STH position: " << sth->getPosition()[0] << ", " << sth->getPosition()[1] << ", " << sth->getPosition()[2] << std::endl;
-                // std::cout << "\t STH momentum: " << sth->getMomentum()[0] << ", " << sth->getMomentum()[1] << ", " << sth->getMomentum()[2] << std::endl;
-                // std::cout << "\t SIM momentum: " << sth->getSimParticle()->getMomentum()[0] << ", " << sth->getSimParticle()->getMomentum()[1] << ", " << sth->getSimParticle()->getMomentum()[2] << std::endl;
-                // std::cout << "\t SIM energy  : " << sth->getSimParticle()->getEnergy() << std::endl;
-                    
+                /*
+                 std::cout << iSTH << ", " << sth->getID() << ", " << sth->getLayerID() << ", " << sth->getSimParticle()->getPdgID() << std::endl;
+                 std::cout << "\t STH position: " << sth->getPosition()[0] << ", " << sth->getPosition()[1] << ", " << sth->getPosition()[2] << std::endl;
+                 std::cout << "\t STH momentum: " << sth->getMomentum()[0] << ", " << sth->getMomentum()[1] << ", " << sth->getMomentum()[2] << std::endl;
+                 std::cout << "\t SIM momentum: " << sth->getSimParticle()->getMomentum()[0] << ", " << sth->getSimParticle()->getMomentum()[1] << ", " << sth->getSimParticle()->getMomentum()[2] << std::endl;
+                 std::cout << "\t SIM energy  : " << sth->getSimParticle()->getEnergy() << std::endl;
+                */   
+
                 /// let's go through the cases when the particle is entering the ECAL volume
                 if (sth->getLayerID() == 1 and sth->getMomentum()[2] > 0) continue;
                 if (sth->getLayerID() == 2 and sth->getMomentum()[2] < 0) continue; 
