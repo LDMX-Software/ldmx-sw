@@ -57,6 +57,9 @@ namespace ldmx {
             /** Maximum z depth that a hit can have. */
             float maxDepth_{4000}; // mm 
 
+            /** The minimum number of PE needed for a hit. */
+            float minPE_{1}; 
+
     }; // HcalVetoProcessor
 }
 
