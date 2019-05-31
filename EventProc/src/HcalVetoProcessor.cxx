@@ -11,6 +11,11 @@
 //----------//
 #include "TClonesArray.h"
 
+//-------------//
+//   ldmx-sw   //
+//-------------//
+#include "DetDescr/HcalID.h"
+
 namespace ldmx {
 
     HcalVetoProcessor::HcalVetoProcessor(const std::string &name, Process &process) : 
@@ -23,7 +28,8 @@ namespace ldmx {
     void HcalVetoProcessor::configure(const ParameterSet& pSet) {
         totalPEThreshold_  = pSet.getDouble("pe_threshold");
         maxTime_ = pSet.getDouble("max_time"); 
-        maxDepth_ = pSet.getDouble("max_depth");  
+        maxDepth_ = pSet.getDouble("max_depth"); 
+        minPE_ = pSet.getDouble("min_pe");  
     }
 
     void HcalVetoProcessor::produce(Event& event) {
@@ -43,13 +49,20 @@ namespace ldmx {
             if (hcalHit->getTime() >= maxTime_) continue;
 
             // If the hit z position is beyond the maximum HCal depth, skip it.
-            if (hcalHit->getZ() > maxDepth_) continue; 
+            if (hcalHit->getZ() > maxDepth_) continue;
 
-            float pe = hcalHit->getPE();
-            
+            // Get the total PE in the bar
+            float pe = hcalHit->getPE(); 
+
             // Keep track of the total PE
             totalPe += pe; 
-            
+
+            // Check that both sides of the bar have a PE value above threshold.
+            // If not, don't consider the hit.  Double sided readout is only 
+            // being used for the back HCal bars.  For the side HCal, just 
+            // use the maximum PE as before.
+            if ( (hcalHit->getSection() == HcalSection::BACK) && (hcalHit->getMinPE() < minPE_) ) continue;
+
             // Find the maximum PE in the list
             if (maxPE < pe) {
                 maxPE = pe;
@@ -58,8 +71,7 @@ namespace ldmx {
         }
 
         // If the maximum PE found is below threshold, it passes the veto.
-        bool passesVeto{false}; 
-        if (maxPE < totalPEThreshold_) passesVeto = true;
+        bool passesVeto = (maxPE < totalPEThreshold_) ? true : false;
 
         HcalVetoResult result; 
         result.setVetoResult(passesVeto);
