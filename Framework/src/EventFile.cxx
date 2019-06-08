@@ -113,7 +113,13 @@ namespace ldmx {
             parent_->tree_->SetBranchStatus(srule.c_str(),1);
             tree_->SetBranchStatus(srule.c_str(),1);
         } else if( isDrop ){
-            parent_->tree_->SetBranchStatus(srule.c_str(),0);
+	  if (! tree_) { 
+	    //this prevents creating a "ghost" branch in the output tree from the enabled branch in the input tree 
+	    parent_->tree_->SetBranchStatus(srule.c_str(),0);
+	    tree_ = parent_->tree_->CloneTree(0);
+	  }
+	  tree_->SetBranchStatus(srule.c_str(),0);
+	  parent_->tree_->SetBranchStatus(srule.c_str(),1);
         } else if( isIgnore ){
             parent_->tree_->SetBranchAddress(srule.c_str(),0);
         } else 
@@ -126,7 +132,9 @@ namespace ldmx {
             if (!parent_->tree_) {
                 EXCEPTION_RAISE("EventFile", "No event tree in the file");
             }
-            tree_ = parent_->tree_->CloneTree(0);
+	    if ( isOutputFile_ && !tree_) {
+	      tree_ = parent_->tree_->CloneTree(0);
+	    }
             event_->setInputTree(parent_->tree_);
             event_->setOutputTree(tree_);
         }
