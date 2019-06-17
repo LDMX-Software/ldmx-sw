@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+  <define>
+    <variable name="x" value="1"/>
+    
+    <variable name="dx" value="40"/>
+    <variable name="dy" value="2"/>		
+    <variable name="dz" value="2"/>		
+    <variable name="gap" value="0.5"/>	
+    <variable name="layer_gap" value="1"/>	
+    <variable name="number_of_bars" value="10"/>	
+    <variable name="trigger_pad_width" value="dy*number_of_bars+gap*(number_of_bars-1)"/>
+  </define>
+
+  <materials>
+    <isotope N="16" Z="8" name="O16">
+       <atom unit="g/mole" value="15.9949"/>
+    </isotope>
+    <isotope N="17" Z="8" name="O17">
+       <atom unit="g/mole" value="16.9991"/>
+    </isotope>
+    <isotope N="18" Z="8" name="O18">
+       <atom unit="g/mole" value="17.9992"/>
+    </isotope>
+    <element name="O">
+       <fraction n="0.99757" ref="O16"/>
+       <fraction n="0.00038" ref="O17"/>
+       <fraction n="0.00205" ref="O18"/>
+    </element>
+    <isotope N="12" Z="6" name="C12">
+       <atom unit="g/mole" value="12"/>
+    </isotope>
+    <isotope N="13" Z="6" name="C13">
+       <atom unit="g/mole" value="13.0034"/>
+    </isotope>
+    <element name="C">
+       <fraction n="0.9893" ref="C12"/>
+       <fraction n="0.0107" ref="C13"/>
+    </element>
+    <isotope N="1" Z="1" name="H1">
+       <atom unit="g/mole" value="1.00782503081372"/>
+    </isotope>
+    <isotope N="2" Z="1" name="H2">
+       <atom unit="g/mole" value="2.01410199966617"/>
+    </isotope>
+    <element name="H">
+       <fraction n="0.999885" ref="H1"/>
+       <fraction n="0.000115" ref="H2"/>
+    </element>
+    <material name="G4_C" state="solid">
+       <T unit="K" value="293.15"/>
+       <MEE unit="eV" value="81"/>
+       <D unit="g/cm3" value="2"/>
+       <fraction n="1" ref="C"/>
+    </material>
+    <isotope N="14" Z="7" name="N14">
+       <atom unit="g/mole" value="14.0031"/>
+    </isotope>
+    <isotope N="15" Z="7" name="N15">
+       <atom unit="g/mole" value="15.0001"/>
+    </isotope>
+    <element name="N">
+       <fraction n="0.99632" ref="N14"/>
+       <fraction n="0.00368" ref="N15"/>
+    </element>
+    <isotope N="36" Z="18" name="Ar36">
+       <atom unit="g/mole" value="35.9675"/>
+    </isotope>
+    <isotope N="38" Z="18" name="Ar38">
+       <atom unit="g/mole" value="37.9627"/>
+    </isotope>
+    <isotope N="40" Z="18" name="Ar40">
+       <atom unit="g/mole" value="39.9624"/>
+    </isotope>
+    <element name="Ar">
+       <fraction n="0.003365" ref="Ar36"/>
+       <fraction n="0.000632" ref="Ar38"/>
+      <fraction n="0.996003" ref="Ar40"/>
+    </element>
+    <material name="G4_AIR" state="gas">
+       <T unit="K" value="293.15"/>
+       <MEE unit="eV" value="85.7"/>
+       <D unit="g/cm3" value="0.00120479"/>
+       <fraction n="0.000124000124000124" ref="C"/>
+       <fraction n="0.755267755267755" ref="N"/>
+       <fraction n="0.231781231781232" ref="O"/>
+       <fraction n="0.0128270128270128" ref="Ar"/>
+    </material>
+    <isotope N="55" Z="25" name="Mn55">
+       <atom unit="g/mole" value="54.938"/>
+    </isotope>
+    <element name="Mn">
+       <fraction n="1" ref="Mn55"/>
+    </element>
+    <isotope N="54" Z="26" name="Fe54">
+       <atom unit="g/mole" value="53.9396"/>
+    </isotope>
+    <isotope N="56" Z="26" name="Fe56">
+       <atom unit="g/mole" value="55.9349"/>
+    </isotope>
+    <isotope N="57" Z="26" name="Fe57">
+       <atom unit="g/mole" value="56.9354"/>
+    </isotope>
+    <isotope N="58" Z="26" name="Fe58">
+       <atom unit="g/mole" value="57.9333"/>
+    </isotope>
+    <element name="Fe">
+       <fraction n="0.05845" ref="Fe54"/>
+       <fraction n="0.91754" ref="Fe56"/>
+       <fraction n="0.02119" ref="Fe57"/>
+       <fraction n="0.00282" ref="Fe58"/>
+    </element>
+    <material name="Steel" state="solid">
+       <T unit="K" value="293.15"/>
+       <D unit="g/cm3" value="7.87"/>
+       <fraction n="0.9843" ref="Fe"/>
+       <fraction n="0.014" ref="Mn"/>
+       <fraction n="0.0017" ref="C"/>
+    </material> 
+    <material name="Scintillator" state="solid">
+       <T unit="K" value="293.15"/>
+       <MEE unit="eV" value="64.7494480275643"/>
+       <D unit="g/cm3" value="1.032"/>
+       <fraction n="0.91512109" ref="C"/>
+       <fraction n="0.084878906" ref="H"/>
+    </material>
+  </materials>
+
+  <solids>
+
+    <!-- - - - - - - - - Trigger pad solids - - - - - - - -  -->
+    <box lunit="mm" name="trigger_bar_box" x="dx" y="dy" z="dz"/>
+    <box lunit="mm" name="trigger_pad_box" x="dx" y="dx" z="dz"/>
+  </solids>
+  <structure>
+      <!-- - - - - - - - - Trigger pad volumes - - - - - - - - -->
+      <volume name="trigger_bar_volume">
+	<materialref ref="Scintillator"/>
+	<solidref ref="trigger_bar_box"/>
+	<auxiliary auxtype="SensDet" auxValue="TriggerPadDownSD"/>
+	<auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
+	<auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
+      </volume>   
+      
+      <volume name="TriggerPadDown">
+    	<materialref ref="G4_AIR"/>
+	<solidref ref="trigger_pad_box"/>
+
+	<physvol name="trigger_bar_layer1_physvol" copynumber="1">
+	  <volumeref ref="trigger_bar_volume"/>
+	  <position name="trigger_bar_layer1_pos" unit="mm" x="0" y="0" z="0"/>
+	</physvol>
+	<!-- <loop for="x" to="number_of_bars" step="1"> -->
+	<!--   <physvol name="trigger_bar_layer1_physvol" copynumber="x"> -->
+	<!--     <volumeref ref="trigger_bar_volume"/> -->
+	<!--     <position name="trigger_bar_layer1_pos" unit="mm" x="0" y="-trigger_pad_width/2+dy*(x-0.5)+gap*(x-1)" z="0"/> -->
+	<!--   </physvol> -->
+	  
+	<!-- </loop>	     -->
+	
+	
+      </volume>
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="TriggerPadDown"/>
+  </setup>
+
+</gdml>
