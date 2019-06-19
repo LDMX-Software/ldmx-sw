@@ -253,6 +253,10 @@
     <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">
       <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
     </auxiliary>   
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     <!-- define vis attributes -->
     <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau">
       <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
@@ -266,6 +270,19 @@
       <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
       <auxiliary auxtype="Visible" auxvalue="true"/>
     </auxiliary>    
+<<<<<<< HEAD
+=======
+    <auxiliary auxtype="VisAttributes" auxvalue="MagnetVis">
+      <auxiliary auxtype="R" auxvalue="0.75"/>
+      <auxiliary auxtype="G" auxvalue="0.75"/>
+      <auxiliary auxtype="B" auxvalue="0.75"/>
+      <auxiliary auxtype="A" auxvalue="0.8"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="false"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     <auxiliary auxtype="VisAttributes" auxvalue="TargetVis">
       <auxiliary auxtype="R" auxvalue="0.75"/>
       <auxiliary auxtype="G" auxvalue="0.75"/>
@@ -326,6 +343,10 @@
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
   </userinfo>  
 
   <setup name="Default" version="1.0">

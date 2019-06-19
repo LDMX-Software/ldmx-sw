@@ -7,6 +7,7 @@
 #ifndef SIMAPPLICATION_ROOTPERSISTENCYMESSENGER_H_
 #define SIMAPPLICATION_ROOTPERSISTENCYMESSENGER_H_
 
+<<<<<<< HEAD
 //------------//
 //   Geant4   //
 //------------//
@@ -20,6 +21,17 @@ namespace ldmx {
     // Forward declarations within the ldmx namespace
     class RootPersistencyManager; 
 
+=======
+// Geant4
+#include "G4UImessenger.hh"
+#include "G4UIcmdWithABool.hh"
+
+// LDMX
+#include "SimApplication/RootPersistencyManager.h"
+
+namespace ldmx {
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     /**
      * @class RootPersistencyMessenger
      * @brief Provides macro commands for RootPersistencyManager
@@ -70,6 +82,7 @@ namespace ldmx {
              * Command used to enable/disable saving of the hit contributions
              * to an Ecal hit.
              */
+<<<<<<< HEAD
             G4UIcommand* hitContribsCmd_{nullptr};
 
             /** Command used to compress the Ecal hit contributions. */
@@ -83,10 +96,23 @@ namespace ldmx {
             
             /** Command that allows a user to set the run number. */
             G4UIcommand* runCmd_{nullptr};  
+=======
+            G4UIcmdWithABool* hitContribsCmd_{nullptr};
+
+            /** Command used to compress the Ecal hit contributions. */
+            G4UIcmdWithABool* compressContribsCmd_{nullptr};
+
+            /** Command allowing a user to specify a collection name to drop. */
+            G4UIcmdWithAString* dropCmd_{nullptr}; 
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
             /** Pointer to ROOT persistency manager. */
             RootPersistencyManager* rootIO_{nullptr};
     };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 }
 
 #endif

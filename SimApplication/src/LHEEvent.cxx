@@ -34,10 +34,13 @@ namespace ldmx {
         scalup_ = atof(tokens[3].c_str());
         aqedup_ = atof(tokens[4].c_str());
         aqcdup_ = atof(tokens[5].c_str());
+<<<<<<< HEAD
 
 	vtx_[0]=0;
 	vtx_[1]=0;
 	vtx_[2]=0;
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     }
 
     LHEEvent::~LHEEvent() {
@@ -47,6 +50,7 @@ namespace ldmx {
         particles_.clear();
     }
 
+<<<<<<< HEAD
     int LHEEvent::getNUP() const {
         return nup_;
     }
@@ -75,6 +79,32 @@ namespace ldmx {
         return vtx_;
     }
 
+=======
+    int LHEEvent::getNUP() {
+        return nup_;
+    }
+
+    int LHEEvent::getIDPRUP() {
+        return idprup_;
+    }
+
+    double LHEEvent::getXWGTUP() {
+        return xwgtup_;
+    }
+
+    double LHEEvent::getSCALUP() {
+        return scalup_;
+    }
+
+    double LHEEvent::getAQEDUP() {
+        return aqedup_;
+    }
+
+    double LHEEvent::getAQCDUP() {
+        return aqcdup_;
+    }
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     void LHEEvent::addParticle(LHEParticle* particle) {
         particles_.push_back(particle);
     }
@@ -83,6 +113,7 @@ namespace ldmx {
         return particles_;
     }
 
+<<<<<<< HEAD
     void LHEEvent::setVertex(double x, double y, double z) {
         vtx_[0]=x;
         vtx_[1]=y;
@@ -113,4 +144,6 @@ namespace ldmx {
 	vtx_[2]=atof(tokens[3].c_str());	
     }
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 }

@@ -4,6 +4,7 @@ from LDMX.Framework import ldmxcfg
 
 hcalDigis = ldmxcfg.Producer("hcalDigis", "ldmx::HcalDigiProducer")
 
+<<<<<<< HEAD
 hcalDigis.parameters["meanNoise"] = 0.02
 hcalDigis.parameters["readoutThreshold"]= 1
 hcalDigis.parameters["strips_side_lr_per_layer"] = 6
@@ -17,3 +18,11 @@ hcalDigis.parameters["mev_per_mip"] = 1.4*20./6.
 hcalDigis.parameters["pe_per_mip"] = 68. # PEs per MIP at 1m (assume 80% attentuation of 1m)
 hcalDigis.parameters["strip_attenuation_length"] = 5. # this is in m
 hcalDigis.parameters["strip_position_resolution"] = 150. # this is in mm
+=======
+# set the mean noise in PE units
+hcalDigis.parameters["meanNoise"] = 0.2
+hcalDigis.parameters["mev_per_mip"] = 1.4
+hcalDigis.parameters["pe_per_mip"] = 13.5
+hcalDigis.parameters["doStrip"] = 0
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8

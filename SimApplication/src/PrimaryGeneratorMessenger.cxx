@@ -6,6 +6,7 @@
 
 #include "SimApplication/PrimaryGeneratorMessenger.h"
 
+<<<<<<< HEAD
 //-------------//
 //   ldmx-sw   //
 //-------------//
@@ -16,6 +17,8 @@
 #include "SimApplication/RootPrimaryGenerator.h"
 
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 namespace ldmx {
 
     bool PrimaryGeneratorMessenger::useRootSeed_{false};
@@ -42,6 +45,7 @@ namespace ldmx {
         rootOpenCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
 
         rootUseSeedCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
+<<<<<<< HEAD
 
         //
         // GPS commands
@@ -57,6 +61,10 @@ namespace ldmx {
     }
 
 
+=======
+    }
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger() {;}
 
     void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
@@ -109,6 +117,7 @@ namespace ldmx {
         } else if (command == beamspotZSizeCmd_) { 
             primaryGeneratorAction_->setBeamspotZSize( G4UIcommand::ConvertToDouble(newValues) ); 
         }
+<<<<<<< HEAD
 
         //
         // GPS
@@ -116,5 +125,7 @@ namespace ldmx {
         else if (command == enableGPSCmd_.get()) { 
             primaryGeneratorAction_->setPrimaryGenerator(new GeneralParticleSource());  
         }
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     }
 }

@@ -42,36 +42,57 @@ namespace ldmx {
              * Get the number of particles (NUP) in the event.
              * @return The number of particles in event.
              */
+<<<<<<< HEAD
             int getNUP() const;
+=======
+            int getNUP();
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
             /**
              * Get the ID of the physics process (IDRUP).
              * @return The ID of the physics process.
              */
+<<<<<<< HEAD
             int getIDPRUP() const;
+=======
+            int getIDPRUP();
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
             /**
              * Get the event weight (XWGTUP).
              * @return The event weight.
              */
+<<<<<<< HEAD
             double getXWGTUP() const;
+=======
+            double getXWGTUP();
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
             /**
              * Get the scale Q of parton distributions (SCALUP).
              * @return The scale Q of parton distributions.
              */
+<<<<<<< HEAD
             double getSCALUP() const;
+=======
+            double getSCALUP();
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
             /**
              * Get the value of the QED coupling (AQEDUP).
              * @return The value of the QED coupling.
              */
+<<<<<<< HEAD
             double getAQEDUP() const;
+=======
+            double getAQEDUP();
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
             /**
              * Get the value of the QED coupling (AQCDUP).
              * @return The value of the QED coupling.
              */
+<<<<<<< HEAD
             double getAQCDUP() const;
 
 
@@ -91,6 +112,10 @@ namespace ldmx {
              */
 	    const double* getVertex() const;
 	    	
+=======
+            double getAQCDUP();
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             /**
              * Add a particle to the event.
              * @particle The particle to add.
@@ -135,12 +160,15 @@ namespace ldmx {
              */
             double aqcdup_;
 
+<<<<<<< HEAD
 
 	    /**
              * Vertex location
              */
 	    double vtx_[3];
 	
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             /**
              * The list of particles.
              */

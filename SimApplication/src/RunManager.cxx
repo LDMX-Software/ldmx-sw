@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * @file RunManager.cxx
  * @brief Class providing a Geant4 run manager implementation.
@@ -19,11 +20,22 @@
 #include "SimApplication/PrimaryGeneratorMessenger.h"
 #include "SimApplication/RootPersistencyMessenger.h"
 #include "SimApplication/RootPersistencyManager.h" 
+=======
+#include "SimApplication/RunManager.h"
+
+// LDMX
+#include "SimApplication/APrimePhysics.h"
+#include "SimApplication/GammaPhysics.h"
+#include "SimApplication/PrimaryGeneratorAction.h"
+#include "SimApplication/PrimaryGeneratorMessenger.h"
+#include "SimApplication/RootPersistencyMessenger.h"
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 #include "SimApplication/SteppingAction.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
 #include "SimApplication/UserStackingAction.h"
 #include "SimApplication/UserTrackingAction.h"
+<<<<<<< HEAD
 #include "SimPlugins/PluginManager.h"
 #include "SimPlugins/PluginMessenger.h"
 
@@ -32,6 +44,11 @@
 //------------//
 #include "FTFP_BERT.hh"
 #include "G4GDMLParser.hh"
+=======
+
+// Geant4
+#include "FTFP_BERT.hh"
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 #include "G4GenericBiasingPhysics.hh"
 #include "G4VModularPhysicsList.hh"
 #include "G4ParallelWorldPhysics.hh"
@@ -124,8 +141,12 @@ namespace ldmx {
         new RootPersistencyMessenger(rootIO);
     }
 
+<<<<<<< HEAD
     DetectorConstruction* RunManager::getDetectorConstruction() {
         return static_cast<DetectorConstruction*>(this->userDetector); 
     }
 
 } // ldmx 
+=======
+}
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8

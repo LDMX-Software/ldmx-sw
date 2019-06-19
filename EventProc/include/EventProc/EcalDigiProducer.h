@@ -84,7 +84,11 @@ namespace ldmx {
             static const double MIP_SI_RESPONSE;
 
             /** Total number of Ecal layers. */
+<<<<<<< HEAD
             static const int NUM_ECAL_LAYERS{34};
+=======
+            static const int NUM_ECAL_LAYERS{33};
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
             /** Total number of hex modules per layer. */
             static const int HEX_MODULES_PER_LAYER{7}; 
@@ -102,7 +106,11 @@ namespace ldmx {
             EcalHexReadout* hexReadout_{nullptr};
           
             /** Generator of noise hits. */ 
+<<<<<<< HEAD
             NoiseGenerator* noiseGenerator_; 
+=======
+            NoiseGenerator* noiseGenerator_{new NoiseGenerator{}}; 
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
            
             /** Set the noise (in electrons) when the capacitance is 0. */
             double noiseIntercept_{900.};

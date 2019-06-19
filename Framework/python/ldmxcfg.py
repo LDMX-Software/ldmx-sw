@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+<<<<<<< HEAD
 import histogram as h
 
 class Producer:
@@ -17,6 +18,15 @@ class Producer:
     def printMe(self):
         printMe(self,"")
 
+=======
+class Producer:
+    def __init__(self, instanceName, className):
+        self.instanceName=instanceName
+        self.className=className
+        self.parameters=dict()
+    def printMe(self):
+        printMe(self,"")
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     def printMe(self,prex):
         print "%sProducer(%s of class %s)"%(prex,self.instanceName,self.className)
         if len(self.parameters)>0:
@@ -24,6 +34,7 @@ class Producer:
             for k, v in self.parameters.items():
                 print prex,"  ",k," : ",v
 
+<<<<<<< HEAD
         if self.histograms:
             print "Creating the following histograms:" 
             for histo in self.histograms: 
@@ -44,17 +55,29 @@ class Analyzer:
     def printMe(self):
         printMe(self,"")
     
+=======
+class Analyzer:
+    def __init__(self, instanceName, className):
+        self.instanceName=instanceName
+        self.className=className
+        self.parameters=dict()
+    def printMe(self):
+        printMe(self,"")
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     def printMe(self,prex):
         print "%sAnalyzer(%s of class %s)"%(prex,self.instanceName,self.className)        
         if len(self.parameters)>0:
             print "%s Parameters:"%(prex)
             for k, v in self.parameters.items():
                 print prex,"  ",k," : ",v
+<<<<<<< HEAD
         
         if self.histograms:
             print "%sHistograms:" % prex
             for histo in self.histograms: 
                 histo.Print()
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
                 
 class Process:
     lastProcess=None

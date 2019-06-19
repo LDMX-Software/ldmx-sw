@@ -4,6 +4,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
+<<<<<<< HEAD
 #ifndef __EVENTPROC_HCAL_VETO_PROCESSOR_H__
 #define __EVENTPROC_HCAL_VETO_PROCESSOR_H__
 
@@ -11,6 +12,10 @@
 //   C++ StdLib   //
 //----------------//
 #include <string>
+=======
+#ifndef EVENTPROC_HCALVETOPROCESSOR_H_
+#define EVENTPROC_HCALVETOPROCESSOR_H_
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
 //----------//
 //   LDMX   //
@@ -19,6 +24,14 @@
 #include "Event/HcalHit.h"
 #include "Framework/EventProcessor.h"
 
+<<<<<<< HEAD
+=======
+//----------//
+//   ROOT   //
+//----------//
+#include <TClonesArray.h>
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 namespace ldmx { 
 
     class HcalVetoProcessor : public Producer { 
@@ -44,6 +57,7 @@ namespace ldmx {
              *
              * @param event The event to process.
              */
+<<<<<<< HEAD
             void produce(Event &event);
  
         private:
@@ -60,6 +74,18 @@ namespace ldmx {
             /** The minimum number of PE needed for a hit. */
             float minPE_{1}; 
 
+=======
+            void produce(Event &event); 
+            
+        private:
+
+            /** Collection of results. */
+            HcalVetoResult result_;
+
+            /** Total PE threshold. */
+            double totalPEThreshold_{8};
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     }; // HcalVetoProcessor
 }
 

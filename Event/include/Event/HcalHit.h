@@ -55,6 +55,7 @@ namespace ldmx {
             }
 
             /**
+<<<<<<< HEAD
              * Get the minimum number of photoelectrons estimated for this hit if two sided readout.
              * @return Minimum number of photoelectrons, including noise which affects the estimate.
              */
@@ -63,6 +64,8 @@ namespace ldmx {
             }            
 
             /**
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
              * Get the x coordinate of the hit.
              * @return the x coordinate of the hit.
              */
@@ -95,6 +98,7 @@ namespace ldmx {
                 return (getID() & 0x7F8000) >> 15;
             }
 
+<<<<<<< HEAD
     	    /**
     	     * Get the value of isNoise_.
     	     * @return isNoise_ of hit. 
@@ -103,6 +107,8 @@ namespace ldmx {
     	        return isNoise_;
     	    }
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             /**
              * Set the number of photoelectrons estimated for this hit.
              * @param pe Number of photoelectrons, including noise which affects the estimate.
@@ -112,6 +118,7 @@ namespace ldmx {
             }
 
             /**
+<<<<<<< HEAD
              * Set the minimum number of photoelectrons estimated for this hit.
              * @param pe Minimum number of photoelectrons, including noise which affects the estimate.
              */
@@ -120,6 +127,8 @@ namespace ldmx {
             }            
 
             /**
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
              * Set the x position this hit.
              * @param x  x-position of centroid hit
              */
@@ -143,6 +152,7 @@ namespace ldmx {
                 zpos_ = z;
             }
 
+<<<<<<< HEAD
             /** 
              * Set noise flag.
              */
@@ -150,14 +160,19 @@ namespace ldmx {
                 isNoise_ = is_noise_;
             }
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         private:
 
             /** The number of PE estimated for this hit. */
             float pe_{0};
 
+<<<<<<< HEAD
             /** The minimum number of PE estimated for this hit, different from pe_ when you have two ended readout */
             float minpe_{-99};
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             /** The x position of this hit. */
             float xpos_{0};
 
@@ -167,9 +182,12 @@ namespace ldmx {
             /** The z position of this hit. */
             float zpos_{0};
 
+<<<<<<< HEAD
             /** Flag specifying whether hit is purely from noise. */
             bool isNoise_{false};
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             /**
              * The ROOT class definition.
              */

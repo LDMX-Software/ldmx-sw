@@ -110,12 +110,15 @@ namespace ldmx {
                 eventLimit_=limit;
             }
 
+<<<<<<< HEAD
             /** 
              * Set the frequency with which event information is printed. 
              * @param logFrequency The frequency specied as number of events.
              */
             inline void setLogFrequency(int logFrequency) { logFrequency_ = logFrequency; }
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             /**
              * Run the process.
              */
@@ -143,9 +146,12 @@ namespace ldmx {
 
             /** Limit on events to process. */
             int eventLimit_{-1};
+<<<<<<< HEAD
             
             /** The frequency with which event info is printed. */
             int logFrequency_{-1}; 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
             /** Storage controller */
             StorageControl m_storageController;

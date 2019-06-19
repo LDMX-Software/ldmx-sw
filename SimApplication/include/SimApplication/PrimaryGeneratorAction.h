@@ -35,8 +35,11 @@
 
 namespace ldmx {
 
+<<<<<<< HEAD
     class ParticleGun; 
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     /**
      * @class PrimaryGeneratorAction
      * @brief Implementation of Geant4 primary generator action
@@ -100,6 +103,7 @@ namespace ldmx {
              */
             int getIndexMPG(){ return indexMpg_; }
             int getIndexRPG(){ return indexRpg_; }
+<<<<<<< HEAD
 
         private:
 
@@ -111,6 +115,16 @@ namespace ldmx {
 
             /** By default, G4ParticleGun is used as the primary generator. */
             ParticleGun* gun; 
+=======
+
+        private:
+
+            /**
+             * Smearing beamspot
+             * @param anEvent The Geant4 event.
+             */
+            void smearingBeamspot(G4Event* anEvent);
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
             /**
              * The primary generator.

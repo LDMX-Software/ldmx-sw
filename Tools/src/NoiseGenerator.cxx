@@ -8,10 +8,14 @@
 
 namespace ldmx { 
 
+<<<<<<< HEAD
     NoiseGenerator::NoiseGenerator(double noiseValue, bool gauss) {
         noise_ = noiseValue;
         useGaussianModel_ = gauss;
         poisson_dist_ = new boost::math::poisson_distribution<>(noiseValue);
+=======
+    NoiseGenerator::NoiseGenerator() {
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     }
 
     NoiseGenerator::~NoiseGenerator() {
@@ -20,6 +24,7 @@ namespace ldmx {
     
     std::vector<double> NoiseGenerator::generateNoiseHits(int emptyChannels) { 
         
+<<<<<<< HEAD
         // std::cout << "[ Noise Generator ]: Empty channels: " 
         //           << emptyChannels << std::endl;
         // std::cout << "[ Noise Generator ]: Normalized integration limit: " 
@@ -30,6 +35,14 @@ namespace ldmx {
             integral = ROOT::Math::normal_cdf_c(noiseThreshold_, noise_, pedestal_);
         else 
             integral = boost::math::cdf(complement(*poisson_dist_,noiseThreshold_-1));
+=======
+        //std::cout << "[ Noise Generator ]: Empty channels: " 
+        //          << emptyChannels << std::endl;
+        //std::cout << "[ Noise Generator ]: Normalized integration limit: " 
+        //          << noiseThreshold_ << std::endl;
+        
+        double integral = ROOT::Math::normal_cdf_c(noiseThreshold_, noise_, pedestal_);
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         //std::cout << "[ Noise Generator ]: Integral: " 
         //          << integral << std::endl;
 
@@ -51,6 +64,7 @@ namespace ldmx {
             //std::cout << "[ Noise Generator ]: Cumulative probability: " 
             //          << cumulativeProb << std::endl;
             
+<<<<<<< HEAD
             double valueAboveThreshold;
             if( useGaussianModel_ )
                 valueAboveThreshold = ROOT::Math::gaussian_quantile(cumulativeProb, noise_);
@@ -60,6 +74,13 @@ namespace ldmx {
             //          << gaussAboveThreshold << std::endl;
             
             noiseHits.push_back(valueAboveThreshold); 
+=======
+            double gaussAboveThreshold = ROOT::Math::gaussian_quantile(cumulativeProb, noise_);
+            //std::cout << "[ Noise Generator ]: Noise value: " 
+            //          << gaussAboveThreshold << std::endl;
+            
+            noiseHits.push_back(gaussAboveThreshold); 
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         }
 
        return noiseHits;  

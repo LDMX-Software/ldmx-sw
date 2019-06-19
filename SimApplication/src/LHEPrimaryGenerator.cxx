@@ -28,7 +28,11 @@ namespace ldmx {
         if (lheEvent != NULL) {
 
             G4PrimaryVertex* vertex = new G4PrimaryVertex();
+<<<<<<< HEAD
             vertex->SetPosition(lheEvent->getVertex()[0],lheEvent->getVertex()[1],lheEvent->getVertex()[2]);
+=======
+            vertex->SetPosition(0, 0, 0);
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             vertex->SetWeight(lheEvent->getXWGTUP());
 
             std::map<LHEParticle*, G4PrimaryParticle*> particleMap;
@@ -47,18 +51,26 @@ namespace ldmx {
                         if (tungstenIonDef != NULL) {
                             primary->SetParticleDefinition(tungstenIonDef);
                         } else {
+<<<<<<< HEAD
                             G4Exception("LHEPrimaryGenerator::GeneratePrimaryVertex", 
                                         "EventGenerationError", FatalException, 
                                         "Failed to find particle definition for W ion.");
+=======
+                            G4Exception("LHEPrimaryGenerator::GeneratePrimaryVertex", "EventGenerationError", FatalException, "Failed to find particle definition for W ion.");
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
                         }
                     } else {
                         primary->SetPDGcode(particle->getIDUP());
                     }
 
+<<<<<<< HEAD
                     primary->Set4Momentum(particle->getPUP(0) * GeV, 
                                           particle->getPUP(1) * GeV, 
                                           particle->getPUP(2) * GeV, 
                                           particle->getPUP(3) * GeV);
+=======
+                    primary->Set4Momentum(particle->getPUP(0) * GeV, particle->getPUP(1) * GeV, particle->getPUP(2) * GeV, particle->getPUP(3) * GeV);
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
                     primary->SetProperTime(particle->getVTIMUP() * nanosecond);
 
                     UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
@@ -79,7 +91,16 @@ namespace ldmx {
                         vertex->SetPrimary(primary);
                     }
 
+<<<<<<< HEAD
                 } 
+=======
+                    primary->Print();
+
+                } else {
+                }
+
+                std::cout << std::endl;
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
                 ++particleIndex;
             }

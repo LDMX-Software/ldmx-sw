@@ -13,7 +13,11 @@ namespace ldmx {
         = {1.641, 3.526, 5.184, 6.841,
         8.222, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775,
         8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 12.642, 16.51,
+<<<<<<< HEAD
         16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 8.45}; 
+=======
+        16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 8.45}; 
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
    
     const double EcalDigiProducer::ELECTRONS_PER_MIP = 33000.0; // e-
 
@@ -21,16 +25,25 @@ namespace ldmx {
 
     EcalDigiProducer::EcalDigiProducer(const std::string& name, Process& process) :
         Producer(name, process) {
+<<<<<<< HEAD
         noiseGenerator_ = new NoiseGenerator();
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     }
 
     void EcalDigiProducer::configure(const ParameterSet& ps) {
 
         hexReadout_ = new EcalHexReadout();
 
+<<<<<<< HEAD
         noiseIntercept_ = ps.getDouble("noiseIntercept",0.); 
         noiseSlope_     = ps.getDouble("noiseSlope",1.);
         padCapacitance_ = ps.getDouble("padCapacitance",0.1); 
+=======
+        noiseIntercept_ = ps.getDouble("noiseIntercept"); 
+        noiseSlope_     = ps.getDouble("noiseSlope");
+        padCapacitance_ = ps.getDouble("padCapacitance"); 
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
         // Calculate the noise RMS based on the properties of the readout pad
         noiseRMS_ = this->calculateNoise(padCapacitance_, noiseIntercept_, noiseSlope_);  

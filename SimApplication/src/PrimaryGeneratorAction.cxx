@@ -6,16 +6,24 @@
 
 #include "SimApplication/PrimaryGeneratorAction.h"
 
+<<<<<<< HEAD
 #include "SimApplication/ParticleGun.h"
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 namespace ldmx {
 
     PrimaryGeneratorAction::PrimaryGeneratorAction() :
         G4VUserPrimaryGeneratorAction(), 
         random_(new TRandom) {
+<<<<<<< HEAD
         random_->SetSeed( CLHEP::HepRandom::getTheSeed() );
         gun = new ParticleGun();  
         generator_.push_back(gun);
+=======
+        random_->SetSeed( CLHEP::HepRandom::getTheSeed() ); 
+        generator_.push_back(new G4ParticleGun());
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     }
 
     PrimaryGeneratorAction::~PrimaryGeneratorAction() {
@@ -23,6 +31,7 @@ namespace ldmx {
 
     void PrimaryGeneratorAction::setPrimaryGenerator(G4VPrimaryGenerator* aGenerator) {
        
+<<<<<<< HEAD
         // The other generators don't play nice with ParticleGun, so
         // if there is already a generator and it's the G4ParticleGun
         // just clear the vector
@@ -34,6 +43,18 @@ namespace ldmx {
                     }), generator_.end()); 
            delete gun; 
         } 
+=======
+        // The other generators don't play nice with G4ParticleGun, so
+        // if there is already a generator and it's the G4ParticleGun just clear the vector 
+        bool clearGeneratorVector = false;
+        unsigned int ngens = generator_.size();
+        for (unsigned int i = 0; i < ngens; ++i){
+            if (dynamic_cast<G4ParticleGun*>(generator_[i]) !=  NULL) {
+                clearGeneratorVector = true;
+            }
+        }
+        if (clearGeneratorVector) generator_.clear();
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
         generator_.push_back(aGenerator);
 
@@ -47,10 +68,32 @@ namespace ldmx {
 
     void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
         
+<<<<<<< HEAD
         for (const auto& generator : generator_) {
             generator->GeneratePrimaryVertex(event);
         }
         
+=======
+        unsigned int ngens = generator_.size();
+        for (unsigned int i = 0; i < ngens; ++i) {
+            generator_[i]->GeneratePrimaryVertex(event);
+            
+            // automatically setting genStatus to 1 for particle gun primaries
+            if (dynamic_cast<G4ParticleGun*>(generator_[i]) !=  NULL) {
+                int nPV = event->GetNumberOfPrimaryVertex();
+                for (int iPV = 0; iPV < nPV; ++iPV) {
+                    G4PrimaryVertex* curPV = event->GetPrimaryVertex(iPV);
+                    int nPar = curPV->GetNumberOfParticle();
+                    for (int iPar = 0; iPar < nPar; ++iPar) {
+                        UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
+                        primaryInfo->setHepEvtStatus(1);
+                        curPV->GetPrimary(iPar)->SetUserInformation(primaryInfo);
+                    }
+                }
+            }
+        }
+            
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         // Activate the plugin manager hook.  
         if (event->GetNumberOfPrimaryVertex() > 0) {
             if (useBeamspot_) smearingBeamspot(event);        

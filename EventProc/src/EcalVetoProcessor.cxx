@@ -22,7 +22,10 @@ namespace ldmx {
     BDTHelper::BDTHelper(TString importBDTFile) {
 
         // Import the python packages and load the features into xgboost.
+<<<<<<< HEAD
         TPython::Exec("print 'Loading xgboost BDT'"); 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         TPython::Exec("import xgboost as xgb");
         TPython::Exec("import numpy as np");
         TPython::Exec("import pickle as pkl");
@@ -45,7 +48,11 @@ namespace ldmx {
         TString cmd = vectorToPredCMD(bdtFeatures);
         TPython::Exec("pred = " + cmd);
         float pred = TPython::Eval("pred");
+<<<<<<< HEAD
         //std::cout << "  pred = " << pred << std::endl;
+=======
+        std::cout << "  pred = " << pred << std::endl;
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
         return pred;
     }
@@ -100,9 +107,12 @@ namespace ldmx {
         ecalLayerTime_.resize(nEcalLayers_, 0);
         cellMap_.resize(nEcalLayers_, std::map<int, float>());
         cellMapTightIso_.resize(nEcalLayers_, std::map<int, float>());
+<<<<<<< HEAD
 
         // Set the collection name as defined in the configuration
         collectionName_ = ps.getString("collection_name"); 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     }
 
     void EcalVetoProcessor::clearProcessor(){
@@ -136,8 +146,13 @@ namespace ldmx {
         const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
         int nEcalHits = ecalDigis->GetEntriesFast();
 
+<<<<<<< HEAD
         //std::cout << "[ EcalVetoProcessor ] : Got " << nEcalHits << " ECal digis in event "
         //        << event.getEventHeader()->getEventNumber() << std::endl;
+=======
+        std::cout << "[ EcalVetoProcessor ] : Got " << nEcalHits << " ECal digis in event "
+                << event.getEventHeader()->getEventNumber() << std::endl;
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
         int globalCentroid = GetShowerCentroidIDAndRMS(ecalDigis, showerRMS_);
         /* ~~ Fill the hit map ~~ O(n)  */
@@ -321,7 +336,11 @@ namespace ldmx {
             float pred = BDTHelper_->getSinglePred(bdtFeatures_);
             result_.setVetoResult(pred > bdtCutVal_);
             result_.setDiscValue(pred);
+<<<<<<< HEAD
             //std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
+=======
+            std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         
             // If the event passes the veto, keep it. Otherwise, 
             // drop the event.
@@ -337,7 +356,11 @@ namespace ldmx {
         } else {
             setStorageHint(hint_shouldDrop);
         }
+<<<<<<< HEAD
         event.addToCollection(collectionName_, result_);
+=======
+        event.addToCollection("EcalVeto", result_);
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     }
 
     EcalVetoProcessor::LayerCellPair EcalVetoProcessor::hitToPair(EcalHit* hit) {

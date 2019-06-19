@@ -3,15 +3,21 @@
 
 // LDMX
 #include "Framework/ConfigurePython.h"
+<<<<<<< HEAD
 #include "Framework/HistogramPool.h"
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 #include "Framework/Process.h"
 #include "Framework/EventProcessorFactory.h"
 
 // STL
 #include <iostream>
 
+<<<<<<< HEAD
 #include "TH1F.h"
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 namespace ldmx {
 
     static std::string stringMember(PyObject* owner, const std::string& name) {
@@ -89,20 +95,27 @@ namespace ldmx {
         run_ = intMember(pProcess, "run");
         histoOutFile_ = stringMember(pProcess, "histogramFile");
 
+<<<<<<< HEAD
         // Get the print frequency
         logFrequency_ = intMember(pProcess, "logFrequency"); 
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         PyObject* pysequence = PyObject_GetAttrString(pProcess, "sequence");
         if (!PyList_Check(pysequence)) {
             EXCEPTION_RAISE("ConfigureError", "sequence is not a python list as expected.");
         }
         for (Py_ssize_t i = 0; i < PyList_Size(pysequence); i++) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             PyObject* processor = PyList_GetItem(pysequence, i);
             ProcessorInfo pi;
             pi.classname_ = stringMember(processor, "className");
             pi.instancename_ = stringMember(processor, "instanceName");
 
+<<<<<<< HEAD
             PyObject* histos = PyObject_GetAttrString(processor, "histograms");
             
             for (Py_ssize_t ihisto{0}; ihisto < PyList_Size(histos); ++ihisto) {
@@ -119,6 +132,8 @@ namespace ldmx {
             }
             Py_DECREF(histos);
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             PyObject* params = PyObject_GetAttrString(processor, "parameters");
             if (params != 0 && PyDict_Check(params)) {
                 PyObject *key(0), *value(0);
@@ -230,10 +245,13 @@ namespace ldmx {
     Process* ConfigurePython::makeProcess() {
         Process* p = new Process(passname_);
 
+<<<<<<< HEAD
         p->setHistogramFileName(histoOutFile_);
         p->setEventLimit(eventLimit_);
         p->setLogFrequency(logFrequency_); 
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         for (auto lib : libraries_) {
             EventProcessorFactory::getInstance().loadLibrary(lib);
         }
@@ -243,6 +261,7 @@ namespace ldmx {
             if (ep == 0) {
                 EXCEPTION_RAISE("UnableToCreate", "Unable to create instance '" + proc.instancename_ + "' of class '" + proc.classname_ + "'");
             }
+<<<<<<< HEAD
             
             if (!proc.histograms_.empty()) {
                 HistogramPool* histograms = HistogramPool::getInstance(); 
@@ -251,6 +270,8 @@ namespace ldmx {
                     histograms->create<TH1F>(hist.name_, hist.xLabel_, hist.bins_, hist.xmin_, hist.xmax_); 
                 } 
             }
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             ep->configure(proc.params_);
             p->addToSequence(ep);
         }
@@ -269,6 +290,11 @@ namespace ldmx {
         }
         if (run_ > 0)
             p->setRunNumber(run_);
+<<<<<<< HEAD
+=======
+        p->setEventLimit(eventLimit_);
+        p->setHistogramFileName(histoOutFile_);
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
         return p;
     }

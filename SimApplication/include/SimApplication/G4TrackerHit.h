@@ -110,6 +110,7 @@ namespace ldmx {
             }
 
             /**
+<<<<<<< HEAD
              * Get the PDG ID.
              * @return The detector ID.
              */
@@ -180,6 +181,54 @@ namespace ldmx {
             }
 
             /**
+=======
+             * Get the layer ID.
+             * @return The layer ID.
+             */
+            int getLayerID() {
+                return layerID_;
+            }
+
+            /**
+             * Set the layer ID.
+             * @param layerID The layer ID.
+             */
+            void setLayerID(int layerID) {
+                this->layerID_ = layerID;
+            }
+            
+            /** 
+             * Get the module ID associated with a hit.  This is used to 
+             * uniquely identify a sensor within a layer.
+             * @return The module ID associated with a hit.
+             */
+            int getModuleID() const { return moduleID_; };
+            
+            /** 
+             * Set the module ID associated with a hit.  This is used to 
+             * uniquely identify a sensor within a layer.
+             * @return moduleID The module ID associated with a hit.
+             */
+            void setModuleID(const int moduleID) { this->moduleID_ = moduleID; };
+
+            /**
+             * Get the energy deposition.
+             * @return The energy deposition.
+             */
+            float getEdep() {
+                return edep_;
+            }
+
+            /**
+             * Set the energy deposition.
+             * @param edep The energy deposition.
+             */
+            void setEdep(float edep) {
+                this->edep_ = edep;
+            }
+
+            /**
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
              * Get the global time.
              * @return The global time.
              */
@@ -236,6 +285,7 @@ namespace ldmx {
             }
 
             /**
+<<<<<<< HEAD
              * Set the energy.
              * @param edep The energy.
              */
@@ -244,6 +294,8 @@ namespace ldmx {
             }            
 
             /**
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
              * Get the path length from the pre and post step points [mm].
              * @return The path length.
              */
@@ -272,10 +324,13 @@ namespace ldmx {
             int id_ {0};
 
             /**
+<<<<<<< HEAD
              * The detector ID.
              */
             int pdgid_ {0};
             /**
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
              * The layer ID.
              */
             int layerID_ {0};
@@ -304,11 +359,14 @@ namespace ldmx {
             G4ThreeVector position_;
 
             /**
+<<<<<<< HEAD
              * The energy .
              */
             float energy_ {0};
 
             /**
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
              * The path length.
              */
             float pathLength_ {0};

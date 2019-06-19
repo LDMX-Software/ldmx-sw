@@ -36,10 +36,14 @@ namespace ldmx {
         x_ = 0;
         y_ = 0;
         z_ = 0;
+<<<<<<< HEAD
         energy_ = 0;
         pathLength_ = 0;
         trackID_ = -1;
         pdgID_ = 0;
+=======
+        pathLength_ = 0;
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
         simParticle_ = nullptr;
     }

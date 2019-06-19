@@ -7,6 +7,7 @@ p=ldmxcfg.Process("recon")
 p.libraries.append("libEventProc.so")
 
 ecalDigis = ldmxcfg.Producer("ecalDigis","ldmx::EcalDigiProducer")
+<<<<<<< HEAD
 
 ecalDigis.parameters["readoutThreshold"] = 4.
 ecalDigis.parameters["noiseIntercept"] = 900.
@@ -25,6 +26,18 @@ hcalDigis.parameters["num_back_hcal_layers"] = 40
 hcalDigis.parameters["mev_per_mip"] = 1.4*20./6.
 hcalDigis.parameters["pe_per_mip"] = 50.
 hcalDigis.parameters["doStrip"] = True
+=======
+ecalDigis.parameters["noiseIntercept"] = 900.
+ecalDigis.parameters["noiseSlope"] = 22.
+ecalDigis.parameters["padCapacitance"] = 27.56
+ecalDigis.parameters["readoutThreshold"] = 4.
+
+hcalDigis = ldmxcfg.Producer("hcalDigis", "ldmx::HcalDigiProducer")
+hcalDigis.parameters["meanNoise"] = 1.5
+hcalDigis.parameters["mev_per_mip"] = 1.4
+hcalDigis.parameters["pe_per_mip"] = 13.5
+hcalDigis.parameters["doStrip"] = 0
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
 ecalVeto = ldmxcfg.Producer("ecalVeto", "ldmx::EcalVetoProcessor")
 ecalVeto.parameters["num_ecal_layers"] = 34
@@ -55,6 +68,7 @@ findable_track = ldmxcfg.Producer("findable", "ldmx::FindableTrackProcessor")
 
 p.histogramFile = "histo.root"
 
+<<<<<<< HEAD
 p.sequence=[ecalDigis, 
             hcalDigis, 
             ecalVeto, 
@@ -64,6 +78,10 @@ p.sequence=[ecalDigis,
             ]
 
 p.maxEvents=-1
+=======
+p.sequence=[ecalDigis, hcalDigis, ecalVeto, NonFidecalVeto, hcalVeto, trigger, findable_track]
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 p.inputFiles=["$input_file"]
 p.outputFiles=["$output_file"]
 

@@ -31,7 +31,10 @@
 #pragma link C++ class ldmx::SimTrackerHit+;
 #pragma link C++ class ldmx::SimParticle+;
 #pragma link C++ class ldmx::TriggerResult+;
+<<<<<<< HEAD
 #pragma link C++ class ldmx::TrackerVetoResult+; 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 #pragma link C++ class ldmx::ClusterAlgoResult+;
 #pragma link C++ class ldmx::PnWeightResult+;
 #pragma link C++ class ldmx::SiStripHit+; 

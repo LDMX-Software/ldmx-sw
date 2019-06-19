@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * @file RootPersistencyManager.cxx
  * @brief Class used to manage ROOT based persistency.
@@ -24,14 +25,26 @@
 #include "Event/EventHeader.h"
 #include "Event/RunHeader.h"
 #include "Framework/EventFile.h"
+=======
+#include "SimApplication/RootPersistencyManager.h"
+
+// LDMX
+#include "Event/EventHeader.h"
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 #include "Framework/EventImpl.h"
 #include "Event/EventConstants.h"
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/DetectorConstruction.h"
+<<<<<<< HEAD
+=======
+#include "SimApplication/EcalHitIO.h"
+#include "SimApplication/G4TrackerHit.h"
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 #include "SimApplication/RunManager.h"
 #include "SimApplication/TrackerSD.h"
 #include "SimApplication/ScoringPlaneSD.h"
 
+<<<<<<< HEAD
 //------------//
 //   Geant4   //
 //------------//
@@ -39,13 +52,22 @@
 #include "G4RunManager.hh"
 #include "G4RunManagerKernel.hh"
 #include "G4SDManager.hh"
+=======
+// Geant4
+#include "G4SDManager.hh"
+#include "G4RunManager.hh"
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
 namespace ldmx {
 
     RootPersistencyManager::RootPersistencyManager() :
+<<<<<<< HEAD
         G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"), 
         ecalHitIO_(new EcalHitIO(&simParticleBuilder_)) 
     {
+=======
+            G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"), ecalHitIO_(new EcalHitIO(&simParticleBuilder_)) {
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
         G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 
@@ -263,12 +285,17 @@ namespace ldmx {
             const G4ThreeVector& momentum = g4hit->getMomentum();
             simTrackerHit->setMomentum(momentum.x(), momentum.y(), momentum.z());
             const G4ThreeVector& position = g4hit->getPosition();
+<<<<<<< HEAD
             simTrackerHit->setEnergy( g4hit->getEnergy() );
 
             simTrackerHit->setPosition(position.x(), position.y(), position.z());
             simTrackerHit->setPathLength(g4hit->getPathLength());
             simTrackerHit->setTrackID(g4hit->getTrackID());
             simTrackerHit->setPdgID(g4hit->getPdgID());
+=======
+            simTrackerHit->setPosition(position.x(), position.y(), position.z());
+            simTrackerHit->setPathLength(g4hit->getPathLength());
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             SimParticle* simParticle = simParticleBuilder_.findSimParticle(g4hit->getTrackID());
             simTrackerHit->setSimParticle(simParticle);
         }
@@ -294,6 +321,7 @@ namespace ldmx {
         DetectorHeader* detectorHeader = detector->getDetectorHeader();
 
         // Create the run header.
+<<<<<<< HEAD
         RunHeader* runHeader 
             = new RunHeader(runNumber_, detectorHeader->getName(), description_);
 
@@ -317,6 +345,22 @@ namespace ldmx {
                          << boost::format("\t Event count: %s\n")   % runHeader->getIntParameter("Event count")
                          << boost::format("\t Geant4 revision: %s\n")  % runHeader->getStringParameter("Geant4 revision"); 
             std::cout << headerString.str() << "\n";  
+=======
+        RunHeader* runHeader = new RunHeader(aRun->GetRunID(), detectorHeader->getName(), detectorHeader->getVersion(), "LDMX sim events");
+
+        // Set parameter value with number of events processed.
+        runHeader->setIntParameter("EVENT_COUNT", aRun->GetNumberOfEvent());
+
+        // Print information about run header.
+        if (m_verbose > 1) {
+            std::cout << std::endl;
+            std::cout << "[ RootPersistencyManager ] - Created run header for run ID " << aRun->GetRunID() << std::endl;
+            std::cout << "  run number: " << runHeader->getRunNumber() << std::endl;
+            std::cout << "  detector name: " << runHeader->getDetectorName() << std::endl;
+            std::cout << "  detector version: " << runHeader->getDetectorVersion() << std::endl;
+            std::cout << "  description: " << runHeader->getDescription() << std::endl;
+            std::cout << std::endl;
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         }
 
         return runHeader;
@@ -358,4 +402,8 @@ namespace ldmx {
             }
         }
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 } // namespace sim

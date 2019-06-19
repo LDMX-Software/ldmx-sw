@@ -1,23 +1,45 @@
 #include "TString.h"
+<<<<<<< HEAD
+=======
+#include "TRandom.h"
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 #include "TFile.h"
 #include "TTree.h"
 #include "TClonesArray.h"
 
+<<<<<<< HEAD
 #include "EventProc/HcalDigiProducer.h"
 
 #include <iostream>
 #include <exception>
+=======
+#include "Event/EventConstants.h"
+#include "Event/SimCalorimeterHit.h"
+#include "Event/HcalHit.h"
+#include "EventProc/HcalDigiProducer.h"
+
+#include <iostream>
+
+#include "DetDescr/HcalID.h"
+#include "Event/HcalHit.h"
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
 namespace ldmx {
 
     HcalDigiProducer::HcalDigiProducer(const std::string& name, Process& process) :
+<<<<<<< HEAD
         Producer(name, process) {
         hits_ = new TClonesArray(EventConstants::HCAL_HIT.c_str());
         noiseGenerator_ = new NoiseGenerator();
+=======
+            Producer(name, process) {
+        hits_ = new TClonesArray(EventConstants::HCAL_HIT.c_str());
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     }
 
     void HcalDigiProducer::configure(const ParameterSet& ps) {
         detID_       = new HcalID();
+<<<<<<< HEAD
         random_      = new TRandom3(ps.getInteger("randomSeed", 1000));
         STRIPS_BACK_PER_LAYER_     = ps.getInteger("strips_back_per_layer");
         NUM_BACK_HCAL_LAYERS_      = ps.getInteger("num_back_hcal_layers");
@@ -56,10 +78,18 @@ namespace ldmx {
 	    std::cout << "WARNING [HcalDigiProducer::generateRandomID]: HcalSection is not known" << std::endl;
 
         return tempID.pack();
+=======
+        random_      = new TRandom(ps.getInteger("randomSeed", 1000));
+        meanNoise_   = ps.getDouble("meanNoise");
+        mev_per_mip_ = ps.getDouble("mev_per_mip");
+        pe_per_mip_  = ps.getDouble("pe_per_mip");
+        doStrip_     = ps.getInteger("doStrip");
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     }
 
     void HcalDigiProducer::produce(Event& event) {
 
+<<<<<<< HEAD
         std::map<unsigned int, int>   hcalLayerPEs;
         std::map<unsigned int, int>   hcalLayerMinPEs;
         std::map<unsigned int, float> hcalXpos,hcalYpos,hcalZpos,hcaldetIDEdep, hcaldetIDTime;
@@ -70,12 +100,17 @@ namespace ldmx {
         if (STRIPS_BACK_PER_LAYER_ % SUPER_STRIP_SIZE_ != 0){
             throw std::invalid_argument( "HcalDigiProducer: the specified superstrip size is not compatible with total number of strips!" );
         }
+=======
+        std::map<int, int>   hcalLayerPEs;
+        std::map<int, float> hcalXpos,hcalYpos,hcalZpos,hcaldetIDEdep, hcaldetIDTime;
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
         // looper over sim hits and aggregate energy depositions for each detID
         TClonesArray* hcalHits = (TClonesArray*) event.getCollection(EventConstants::HCAL_SIM_HITS, "sim");
 
         int numHCalSimHits = hcalHits->GetEntries();
         for (int iHit = 0; iHit < numHCalSimHits; iHit++) {
+<<<<<<< HEAD
             
             SimCalorimeterHit* simHit = (SimCalorimeterHit*) hcalHits->At(iHit);
             int detIDraw = simHit->getID();
@@ -107,6 +142,33 @@ namespace ldmx {
             // for now, we take am energy weighted average of the hit in each stip to simulate the hit position. 
             // will use strip TOF and light yield between strips to estimate position.            
             if (hcaldetIDEdep.find(detIDraw) == hcaldetIDEdep.end()) {
+=======
+            SimCalorimeterHit* simHit = (SimCalorimeterHit*) hcalHits->At(iHit);
+            int detIDraw = simHit->getID();
+            std::vector<float> position = simHit->getPosition();
+	    
+	    //if we aggregate by layer, set all strip to zero and rcalculate the detIDraw
+	    if (doStrip_ == 0){
+                detID_->setRawValue(detIDraw);
+	        detID_->unpack();
+	        detID_->setFieldValue(3,0);
+                detIDraw = detID_->pack();
+	    }           
+
+            if (verbose_) {
+                std::cout << "detIDraw: " << detIDraw << std::endl;
+                detID_->setRawValue(detIDraw);
+                detID_->unpack();
+                int layer = detID_->getFieldValue("layer");
+                int subsection = detID_->getFieldValue("section");
+                int strip = detID_->getFieldValue("strip");                
+                std::cout << "section: " << subsection << "  layer: " << layer <<  "  strip: " << strip <<std::endl;
+            }           
+            
+	    // for now, we take am energy weighted average of the hit in each stip to simulate the hit position. 
+            // will use strip TOF and light yield between strips to estimate position.            
+	    if (hcaldetIDEdep.find(detIDraw) == hcaldetIDEdep.end()) {
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
                 // first hit, initialize
                 hcaldetIDEdep[detIDraw] = simHit->getEdep();
                 hcaldetIDTime[detIDraw] = simHit->getTime() * simHit->getEdep();
@@ -120,6 +182,7 @@ namespace ldmx {
                 hcalZpos[detIDraw]      += position[2]* simHit->getEdep();
                 hcaldetIDEdep[detIDraw] += simHit->getEdep();
                 hcaldetIDTime[detIDraw] += simHit->getTime() * simHit->getEdep();
+<<<<<<< HEAD
             }
 	    
         }
@@ -127,6 +190,17 @@ namespace ldmx {
         // loop over detIDs and simulate number of PEs
         int ihit = 0;        
         for (std::map<unsigned int, float>::iterator it = hcaldetIDEdep.begin(); it != hcaldetIDEdep.end(); ++it) {
+=======
+            
+	    }
+	    
+        } 
+
+
+        // loop over detIDs and simulate number of PEs
+        int ihit = 0;
+        for (std::map<int, float>::iterator it = hcaldetIDEdep.begin(); it != hcaldetIDEdep.end(); ++it) {
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             int detIDraw = it->first;
             double depEnergy = hcaldetIDEdep[detIDraw];
             hcaldetIDTime[detIDraw] = hcaldetIDTime[detIDraw] / hcaldetIDEdep[detIDraw];
@@ -135,6 +209,7 @@ namespace ldmx {
             hcalZpos[detIDraw]      = hcalZpos[detIDraw] / hcaldetIDEdep[detIDraw];
             double meanPE           = depEnergy / mev_per_mip_ * pe_per_mip_;
 
+<<<<<<< HEAD
             HcalID tempID;
             tempID.setRawValue(detIDraw);
             tempID.unpack();
@@ -220,6 +295,12 @@ namespace ldmx {
                 ihit++;
                 
             }
+=======
+            //std::default_random_engine generator;
+            //std::poisson_distribution<int> distribution(meanPE);
+            hcalLayerPEs[detIDraw] = random_->Poisson(meanPE);
+            hcalLayerPEs[detIDraw] += random_->Gaus(meanNoise_);
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
             if (verbose_) {
                 detID_->setRawValue(detIDraw);
@@ -236,6 +317,7 @@ namespace ldmx {
                 std::cout << "numPEs: " << hcalLayerPEs[detIDraw] << std::endl;
                 std::cout << "time: " << hcaldetIDTime[detIDraw] << std::endl;
                 std::cout << "z: " << hcalZpos[detIDraw] << std::endl;
+<<<<<<< HEAD
                 std::cout << "Layer: " << layer << "\t Strip: " << strip << "\t X: " << hcalXpos[detIDraw] <<  "\t Y: " << hcalYpos[detIDraw] <<  "\t Z: " << hcalZpos[detIDraw] << std::endl;
             }        // end verbose            
         } 
@@ -327,6 +409,28 @@ namespace ldmx {
             ihit++;
         }
 
+=======
+            }        // end verbose
+
+	    // need to add in a weighting factor eventually, so keep it that way to make sure
+	    // we don't forget about it
+            double energy = depEnergy; 
+
+            HcalHit *hit = (HcalHit*) (hits_->ConstructedAt(ihit));
+
+            hit->setID(detIDraw);
+            hit->setPE(hcalLayerPEs[detIDraw]);
+            hit->setAmplitude(hcalLayerPEs[detIDraw]);
+            hit->setEnergy(energy);
+            hit->setTime(hcaldetIDTime[detIDraw]);
+            hit->setXpos(hcalXpos[detIDraw]);
+            hit->setYpos(hcalYpos[detIDraw]);
+            hit->setZpos(hcalZpos[detIDraw]);
+            ihit++;
+        } 
+        
+        
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         event.add("hcalDigis", hits_);
     }
 

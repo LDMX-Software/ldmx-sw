@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * @file SimParticle.cxx
  * @brief Class which implements an MC particle that stores information about 
@@ -11,6 +12,11 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
+=======
+#include "Event/SimParticle.h"
+
+// STL
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 #include <iostream>
 
 ClassImp(ldmx::SimParticle)
@@ -51,7 +57,10 @@ namespace ldmx {
         parents_->Delete();
 
         energy_ = 0;
+<<<<<<< HEAD
         trackID_ = -1;
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         pdgID_ = 0;
         genStatus_ = -1;
         time_ = 0;
@@ -75,7 +84,10 @@ namespace ldmx {
     void SimParticle::Print(Option_t *option) const {
         std::cout << "SimParticle { " <<
                 "energy: " << energy_ << ", " <<
+<<<<<<< HEAD
                 "Track ID: " << trackID_ << ", " <<
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
                 "PDG ID: " << pdgID_ << ", " <<
                 "genStatus: " << genStatus_ << ", " <<
                 "time: " << time_ << ", " <<

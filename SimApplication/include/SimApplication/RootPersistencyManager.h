@@ -1,5 +1,6 @@
 /**
  * @file RootPersistencyManager.h
+<<<<<<< HEAD
  * @brief Class used to manage ROOT based persistency.
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  * @author Omar Moreno, SLAC National Accelerator Laboratory
@@ -7,12 +8,26 @@
 
 #ifndef _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 #define _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
+=======
+ * @brief Class providing persistency manager implementation with SimEvent output
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ */
+
+#ifndef SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
+#define SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
+
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <algorithm>
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
 //------------//
 //   Geant4   //
 //------------//
 #include "G4PersistencyManager.hh"
 #include "G4PersistencyCenter.hh"
+<<<<<<< HEAD
 
 //-------------//
 //   ldmx-sw   //
@@ -47,6 +62,37 @@ namespace ldmx {
      * individual steps into cell energy depositions.  The tracker hit
      * collections of G4TrackerHit objects are translated directly into 
      * output SimTrackerHit collections.
+=======
+#include "G4Run.hh"
+
+//----------//
+//   LDMX   //
+//----------//
+#include "Event/Event.h"
+#include "Biasing/BiasingMessenger.h"
+#include "Framework/EventFile.h"
+#include "Event/EventHeader.h"
+#include "Event/RunHeader.h"
+#include "SimApplication/EcalHitIO.h"
+#include "SimApplication/G4TrackerHit.h"
+#include "SimApplication/SimParticleBuilder.h"
+
+namespace ldmx {
+
+    /**
+     * @class RootPersistencyManager
+     * @brief Provides a <i>G4PersistencyManager</i> implemention with SimEvent output
+     *
+     * @note
+     * Output is written at the end of each event.  An EventFile is used to write from an
+     * Event buffer object into an output branch within a tree.  The event buffer is cleared
+     * after the event is written.  A SimParticleBuilder is used to build a set of SimParticle
+     * objects from the Trajectory objects which were created during event processing.
+     * An EcalHitIO instance provides translation of G4CalorimeterHit objects in the ECal
+     * to an output SimCalorimeterHit collection, transforming the individual steps into
+     * cell energy depositions.  The tracker hit collections of G4TrackerHit objects are
+     * translated directly into output SimTrackerHit collections.
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
      */
     class RootPersistencyManager : public G4PersistencyManager {
 
@@ -71,8 +117,12 @@ namespace ldmx {
              * @return The ROOT persistency manager.
              */
             static RootPersistencyManager* getInstance() {
+<<<<<<< HEAD
                 return static_cast<RootPersistencyManager*>(
                         G4PersistencyCenter::GetPersistencyCenter()->CurrentPersistencyManager());
+=======
+                return (RootPersistencyManager*) G4PersistencyCenter::GetPersistencyCenter()->CurrentPersistencyManager();
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             }
 
             /**
@@ -144,6 +194,7 @@ namespace ldmx {
                 dropCollectionNames_.push_back(collectionName);  
             }  
 
+<<<<<<< HEAD
             /** 
              * Set the description of the run. 
              *
@@ -158,6 +209,8 @@ namespace ldmx {
              */
             void setRunNumber(int runNumber) { runNumber_ = runNumber; } 
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         private:
 
             /**
@@ -236,12 +289,15 @@ namespace ldmx {
              */
             std::string fileName_ {"ldmx_sim_events.root"};
 
+<<<<<<< HEAD
             /** Description of this run. */
             std::string description_{"LDMX simulated events."}; 
 
             /** Run number. */
             int runNumber_{0}; 
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
             /**
              * The output file with the event tree.
              */

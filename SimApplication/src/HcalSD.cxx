@@ -10,16 +10,23 @@
 #include "G4SDManager.hh"
 #include "G4Geantino.hh"
 #include "G4ChargedGeantino.hh"
+<<<<<<< HEAD
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleTypes.hh"
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
 namespace ldmx {
 
     HcalSD::HcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
+<<<<<<< HEAD
             CalorimeterSD(name, theCollectionName, subdetID, detID),
             birksc1_(1.29e-2),
             birksc2_(9.59e-6)
     {
+=======
+            CalorimeterSD(name, theCollectionName, subdetID, detID) {
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
     }
 
     HcalSD::~HcalSD() {}
@@ -44,6 +51,7 @@ namespace ldmx {
             return false;
         }
 
+<<<<<<< HEAD
         //---------------------------------------------------------------------------------------------------
         //                Birks' Law 
         //                ===========
@@ -85,11 +93,17 @@ namespace ldmx {
         }
 
 
+=======
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
         // Create a new cal hit.
         G4CalorimeterHit* hit = new G4CalorimeterHit();
 
         // Set the edep.
+<<<<<<< HEAD
         hit->setEdep(edep*birksFactor);
+=======
+        hit->setEdep(edep);
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
  
         // Get the scintillator solid box
         G4Box* scint = static_cast<G4Box*>(aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetSolid());
@@ -112,6 +126,7 @@ namespace ldmx {
         //stripID: back Hcal, segmented along y direction for now every 10 cm -- alternate x-y in the future?
         //         left/right side hcal: segmented along x direction every 10 cm
         //         top/bottom side hcal: segmented along y direction every 10 cm
+<<<<<<< HEAD
 
         int stripID = -1;        
         // Odd layers have bars horizontal
@@ -126,6 +141,13 @@ namespace ldmx {
         // std::cout << "xpos = " << localPosition.x() << "\t ypos = " << localPosition.y() << "\t zpos = " << localPosition.z() << std::endl;
         // std::cout << "xpos_g = " << position.x() << "\t ypos_g = " << position.y() << "\t zpos_g = " << position.z() << std::endl;
         // std::cout << "Layer = " << layer << "\t section = " << section << "\t strip = " << stripID << std::endl;
+=======
+        int stripID = -1;        
+        if (section==HcalSection::BACK) stripID = int( (localPosition.y()+scint->GetYHalfLength())/100.0);
+        else if (section==HcalSection::TOP || section==HcalSection::BOTTOM) stripID = int( (localPosition.x()+scint->GetXHalfLength())/100.0);
+        else if (section==HcalSection::LEFT || section==HcalSection::RIGHT) stripID = int( (localPosition.y()+scint->GetYHalfLength())/100.0);
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 
         detID_->setFieldValue(1, layer);
         detID_->setFieldValue(2, section);

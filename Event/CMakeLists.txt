@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Execute the command to extract the SHA1 hash of the current git tag. 
 # The variable GIT_SHA1 will be set to contain the hash. 
@@ -29,6 +30,15 @@ module(
   EXTERNAL_DEPENDENCIES ROOT
 )
 
+=======
+# declare Event module
+module(
+  NAME Event
+  EXTRA_SOURCES EventDict.cxx
+  EXTERNAL_DEPENDENCIES ROOT
+)
+
+>>>>>>> 8b6eac63b072f76349363b0a0ec1b1d9103c12f8
 # generate ROOT dictionary for Event classes
 root_generate_dictionary(EventDict ${Event_INCLUDE_DIR}/Event/EventDef.h MODULE ${PROJECT_NAME} LINKDEF ${Event_INCLUDE_DIR}/Event/EventLinkDef.h)
 
