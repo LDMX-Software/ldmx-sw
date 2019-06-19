@@ -42,6 +42,14 @@ get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
 find_package(ROOT REQUIRED COMPONENTS Core RIO PyROOT Geom Eve Gui)
 message(STATUS "ROOT found at: ${ROOT_DIR}")
 
+# find boost headers
+# specify location with -DBOOST_ROOT=<location-of-boost-prefix>
+find_package(Boost REQUIRED)
+message(STATUS "Boost lib found at: ${Boost_LIBRARY_DIRS}")
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+endif()
+
 # mag field map installation
 option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
 message(STATUS "MagFieldMap installation: ${INSTALL_FIELDMAP}")
