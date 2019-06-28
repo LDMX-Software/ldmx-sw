@@ -122,11 +122,15 @@ namespace ldmx {
 
     bool EventFile::nextEvent(bool storeCurrentEvent) {
 
+        std::cerr << "    " << ientry_ << std::endl;
         if (ientry_ < 0 && parent_) {
             if (!parent_->tree_) {
                 EXCEPTION_RAISE("EventFile", "No event tree in the file");
             }
-            tree_ = parent_->tree_->CloneTree(0);
+            if ( ientry_ == -1 ) {
+                std::cerr << "    CloneTree" << std::endl;
+                tree_ = parent_->tree_->CloneTree(0);
+            }
             event_->setInputTree(parent_->tree_);
             event_->setOutputTree(tree_);
         }
@@ -144,11 +148,14 @@ namespace ldmx {
         }
 
         if (parent_) {
+            std::cerr << "    !parent_->nextEvent()" << std::endl;
             if (!parent_->nextEvent()) {
                 return false;
             }
+            std::cerr << "    parent_->tree_->GetEntry( )" << std::endl;
             parent_->tree_->GetEntry(parent_->ientry_);
             ientry_ = parent_->ientry_;
+            std::cerr << "    event_->nextEvent()" << std::endl;
             event_->nextEvent();
             entries_++;
             return true;
@@ -194,6 +201,37 @@ namespace ldmx {
         } else {
             event_->setInputTree(tree_);
         }
+    }
+
+    void EventFile::updateParent(EventFile* parent) { 
+        
+        parent_ = parent; 
+        
+        TTree* parentTree = (TTree *)parent_->file_->Get("LDMX_Events");
+        if ( parentTree ) {
+
+            parentTree->SetBranchStatus("*", 1);
+            file_->cd();
+            std::cerr << "    about to merge new parent tree" << std::endl;
+//            TList *parentList = new TList();
+//            parentList->Add( parentTree );
+//            tree_->Merge( parentList );
+            tree_->CopyAddresses( parentTree );
+            //tree_->ResetBranchAddresses();
+//            std::cerr << "    merged new parent tree" << std::endl;
+//            file_->Write( "" , TObject::kOverwrite ); //write only newer (merged) version of tree
+//            std::cerr << "    wrote  new parent tree" << std::endl;
+//            file_->Flush();
+//            std::cerr << "    flushed new parent tree" << std::endl;
+
+            event_->setInputTree( parentTree );
+            std::cerr << "    re-set input tree for the event" << std::endl;
+
+        }
+
+        std::cerr << "    about to create run map" << std::endl;
+        createRunMap();
+
     }
 
     void EventFile::close() {

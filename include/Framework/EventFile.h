@@ -77,6 +77,12 @@ namespace ldmx {
             void setupEvent(EventImpl* evt);
 
             /**
+             * Change pointer to different parent file.
+             * @param parent pointer to new parent file
+             */
+            void updateParent(EventFile* parent);
+
+            /**
              * Get the EventImpl object containing the event data.
              * @return The EventImpl object containing event data.
              */
