@@ -116,6 +116,12 @@ namespace ldmx {
             void setInputTree(TTree* tree);
 
             /**
+             * Update input data tree pointer.
+             * @param tree the new input data tree.
+             */
+            void updateInputTree(TTree* tree);
+
+            /**
              * Set the output data tree.
              * @param tree The output data tree.
              */

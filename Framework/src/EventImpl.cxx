@@ -228,6 +228,17 @@ namespace ldmx {
         }
     }
 
+    void EventImpl::updateInputTree(TTree* tree) {
+        inputTree_ = tree;
+        entries_ = inputTree_->GetEntriesFast();
+
+        // find the names of all the existing branches
+        TObjArray* branches = inputTree_->GetListOfBranches();
+        for (int i = 0; i < branches->GetEntriesFast(); i++) {
+            branchNames_.push_back(branches->At(i)->GetName());
+        }
+    }
+
     bool EventImpl::nextEvent() {
         ientry_++;
         eventHeader_=get<EventHeader*>(EventConstants::EVENT_HEADER);
