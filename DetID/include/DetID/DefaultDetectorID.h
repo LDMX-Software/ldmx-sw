@@ -5,11 +5,11 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef DETDESCR_DEFAULTDETECTORID_H_
-#define DETDESCR_DEFAULTDETECTORID_H_
+#ifndef DETID_DEFAULTDETECTORID_H_
+#define DETID_DEFAULTDETECTORID_H_
 
 // LDMX
-#include "DetDescr/DetectorID.h"
+#include "DetID/DetectorID.h"
 
 namespace ldmx {
 

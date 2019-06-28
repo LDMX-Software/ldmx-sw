@@ -1,4 +1,4 @@
-#include "DetDescr/DetectorID.h"
+#include "DetID/DetectorID.h"
 
 namespace ldmx {
 

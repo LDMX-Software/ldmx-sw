@@ -11,7 +11,7 @@
 #include "G4ChargedGeantino.hh"
 
 // LDMX
-#include "DetDescr/IDField.h"
+#include "DetID/IDField.h"
 
 namespace ldmx {
 

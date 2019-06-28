@@ -4,14 +4,14 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef DETDESCR_DETECTORID_H_
-#define DETDESCR_DETECTORID_H_
+#ifndef DETID_DETECTORID_H_
+#define DETID_DETECTORID_H_
 
 // STL
 #include <vector>
 
 // LDMX
-#include "DetDescr/IDField.h"
+#include "DetID/IDField.h"
 
 namespace ldmx {
 

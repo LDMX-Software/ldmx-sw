@@ -1,5 +1,5 @@
 // LDMX
-#include "DetDescr/DetectorID.h"
+#include "DetID/DetectorID.h"
 
 // STL
 #include <bitset>

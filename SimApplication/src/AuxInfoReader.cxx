@@ -10,9 +10,9 @@
 #include "SimApplication/MagneticFieldMap3D.h"
 #include "SimApplication/UserRegionInformation.h"
 #include "SimApplication/VisAttributesStore.h"
-#include "DetDescr/DetectorIDStore.h"
-#include "DetDescr/DefaultDetectorID.h"
-#include "DetDescr/EcalDetectorID.h"
+#include "DetID/DetectorIDStore.h"
+#include "DetID/DefaultDetectorID.h"
+#include "DetID/EcalDetectorID.h"
 
 // Geant4
 #include "G4LogicalVolumeStore.hh"

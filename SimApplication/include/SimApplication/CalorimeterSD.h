@@ -13,7 +13,7 @@
 // LDMX
 #include "Event/Event.h"
 #include "SimApplication/G4CalorimeterHit.h"
-#include "DetDescr/DetectorID.h"
+#include "DetID/DetectorID.h"
 
 using ldmx::DetectorID;
 

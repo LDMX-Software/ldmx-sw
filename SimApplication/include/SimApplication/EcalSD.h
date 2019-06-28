@@ -8,7 +8,7 @@
 #define SIMAPPLICATION_ECALSD_H_
 
 // LDMX
-#include "DetDescr/EcalDetectorID.h"
+#include "DetID/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "SimApplication/CalorimeterSD.h"
 

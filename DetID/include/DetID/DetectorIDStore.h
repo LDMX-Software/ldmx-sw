@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef DETDESCR_DETECTORIDSTORE_H_
-#define DETDESCR_DETECTORIDSTORE_H_
+#ifndef DETID_DETECTORIDSTORE_H_
+#define DETID_DETECTORIDSTORE_H_
 
 // LDMX
 #include "DetectorID.h"

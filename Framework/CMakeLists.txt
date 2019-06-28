@@ -3,6 +3,6 @@
 module(
   NAME Framework  
   EXECUTABLES src/ldmx-app.cxx
-  DEPENDENCIES Event DetDescr Tools
+  DEPENDENCIES Event DetID DetDescr Tools
   EXTERNAL_DEPENDENCIES ROOT Python
 )

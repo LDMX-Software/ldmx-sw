@@ -9,7 +9,7 @@
 
 // LDMX
 #include "SimApplication/CalorimeterSD.h"
-#include "DetDescr/HcalID.h"
+#include "DetID/HcalID.h"
 
 namespace ldmx {
 

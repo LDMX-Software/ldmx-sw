@@ -1,4 +1,4 @@
-#include "DetDescr/IDField.h"
+#include "DetID/IDField.h"
 
 namespace ldmx {
 

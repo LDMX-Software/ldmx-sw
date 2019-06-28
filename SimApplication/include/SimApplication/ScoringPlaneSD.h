@@ -25,8 +25,8 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "DetDescr/DetectorID.h"
-#include "DetDescr/IDField.h"
+#include "DetID/DetectorID.h"
+#include "DetID/IDField.h"
 #include "Event/Event.h"
 #include "SimApplication/G4TrackerHit.h"
 

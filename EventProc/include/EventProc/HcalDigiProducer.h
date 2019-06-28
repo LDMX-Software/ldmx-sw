@@ -15,8 +15,8 @@
 #include "TRandom3.h"
 
 // LDMX
-#include "DetDescr/DetectorID.h"
-#include "DetDescr/HcalID.h"
+#include "DetID/DetectorID.h"
+#include "DetID/HcalID.h"
 #include "Event/EventConstants.h"
 #include "Event/HcalHit.h"
 #include "Event/SimCalorimeterHit.h"

@@ -14,7 +14,7 @@
 
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
-#include "DetDescr/EcalDetectorID.h"
+#include "DetID/EcalDetectorID.h"
 #include "Event/NonFidEcalVetoResult.h"
 #include "Event/SimTrackerHit.h"
 #include "Framework/EventProcessor.h"

@@ -12,7 +12,7 @@
 
 // LDMX
 #include "Event/Event.h"
-#include "DetDescr/TrackerID.h"
+#include "DetID/TrackerID.h"
 #include "SimApplication/G4TrackerHit.h"
 
 namespace ldmx {

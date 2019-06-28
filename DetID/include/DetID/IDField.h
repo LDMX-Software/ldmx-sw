@@ -3,8 +3,8 @@
  * @brief Class that defines a single field in a bit-packed detector ID
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
-#ifndef DETDESCR_IDFIELD_H_
-#define DETDESCR_IDFIELD_H_
+#ifndef DETID_IDFIELD_H_
+#define DETID_IDFIELD_H_
 
 // STL
 #include <string>

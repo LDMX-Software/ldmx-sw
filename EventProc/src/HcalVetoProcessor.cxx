@@ -14,7 +14,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "DetDescr/HcalID.h"
+#include "DetID/HcalID.h"
 
 namespace ldmx {
 
