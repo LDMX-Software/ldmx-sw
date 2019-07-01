@@ -218,10 +218,13 @@ namespace ldmx {
             //  that the process is adding (same as the old input file), so maybe this can just
             //  be quieted?
             tree_->CopyAddresses( parentTree );
+            parentTree->Print("toponly");
+            tree_->Print("toponly");
 
             //Set new input tree for the event
             //event_->setInputTree( parentTree );
             event_->updateInputTree( parentTree );
+            event_->setOutputTree( tree_ );
 
             //Reset the entry index with the new parent index
             ientry_ = parent_->ientry_;
