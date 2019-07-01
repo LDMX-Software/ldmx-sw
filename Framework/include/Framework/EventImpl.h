@@ -18,6 +18,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <algorithm>
 
 class TTree;
 class TBranch;

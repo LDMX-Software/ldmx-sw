@@ -235,7 +235,11 @@ namespace ldmx {
         // find the names of all the existing branches
         TObjArray* branches = inputTree_->GetListOfBranches();
         for (int i = 0; i < branches->GetEntriesFast(); i++) {
-            branchNames_.push_back(branches->At(i)->GetName());
+            std::string branchName = branches->At(i)->GetName();
+            if ( std::find( branchNames_.begin() , branchNames_.end() , branchName ) == branchNames_.end() ) {
+                //branchNames does NOT contain this branchName
+                branchNames_.push_back(branches->At(i)->GetName());
+            }
         }
     }
 

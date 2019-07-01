@@ -63,15 +63,17 @@ namespace ldmx {
                 outFile.close();
 
             } else {
-//                if (!outputFiles_.empty() && outputFiles_.size() != inputFiles_.size()) {
-//                    EXCEPTION_RAISE("Process", "Unable to handle case of different number of input and output files (other than zero output files)");
-//                }
 
                 EventFile* outFile(0);
 
                 bool singleOutput = false;
                 if ( outputFiles_.size() == 1 ) {
                     singleOutput = true;
+                } else if ( !outputFiles_.empty() and outputFiles_.size() != inputFiles_.size() ) {
+                    EXCEPTION_RAISE( 
+                            "Process" ,
+                            "Unable to handle case of different number of input and output files (other than zero/one ouput file)."
+                            );
                 }
 
                 // next, loop through the files
@@ -85,8 +87,7 @@ namespace ldmx {
                     for (auto module : sequence_) {
                         module->onFileOpen(infilename);
                     }
-                    std::cerr << "  onFileOpen ran for each module" << std::endl;
-                    
+
                     EventImpl theEvent(passname_);
                     
                     if ( !outputFiles_.empty() ) {
@@ -126,13 +127,10 @@ namespace ldmx {
                         } //check if in singleOutput mode
 
                     } //non empty output file list
-                    std::cerr << "  classification of merge or not merge setup" << std::endl;
                     EventFile* masterFile = (outFile) ? (outFile) : (&inFile);
-                    std::cerr <<"  set masterFile and constructed theEvent" << std::endl;
 
                     while (masterFile->nextEvent(m_storageController.keepEvent()) && 
                             (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
-                        std::cerr << "    new event" << std::endl; 
                         // clean up for storage control calculation
                         m_storageController.resetEventState();
             
@@ -149,7 +147,6 @@ namespace ldmx {
                             } catch (const Exception&) {
                                 std::cout << "[ Process ] : [WARNING] Run header for run " << wasRun << " was not found!" << std::endl;
                             }
-                            std::cerr << "    done with event header crap" << std::endl;
                         }
 
                         if ((n_events_processed + 1)%logFrequency_ == 0) { 
@@ -169,7 +166,6 @@ namespace ldmx {
                         }
 
                         n_events_processed++;
-                        std::cerr << "    done with event" << std::endl;
                     } //loop through events
 
                     if (eventLimit_ > 0 && n_events_processed == eventLimit_) {
