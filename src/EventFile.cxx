@@ -122,25 +122,24 @@ namespace ldmx {
 
     bool EventFile::nextEvent(bool storeCurrentEvent) {
 
-        std::cerr << "    " << ientry_ << std::endl;
         if (ientry_ < 0 && parent_) {
             if (!parent_->tree_) {
                 EXCEPTION_RAISE("EventFile", "No event tree in the file");
             }
 
+            //Only clone parent if either
+            //  1) There is no tree setup yet (first input file)
+            //  2) This is not single output (new input file --> new output file)
             if ( !tree_ or !isSingleOutput_ ) {
-                std::cerr << "    CloneTree" << std::endl;
                 tree_ = parent_->tree_->CloneTree(0);
+                event_->setInputTree(parent_->tree_);
+                event_->setOutputTree(tree_);
             }
-
-            event_->setInputTree(parent_->tree_);
-            event_->setOutputTree(tree_);
         }
 
         // close up the last event
         if (ientry_ >= 0) {
             if (isOutputFile_) {
-                std::cerr << "    Filling: " << ientry_ << std::endl;
                 event_->beforeFill();
                 if (storeCurrentEvent) tree_->Fill(); // fill the clones...
             }
@@ -151,14 +150,11 @@ namespace ldmx {
         }
 
         if (parent_) {
-            std::cerr << "    !parent_->nextEvent()" << std::endl;
             if (!parent_->nextEvent()) {
                 return false;
             }
-            std::cerr << "    parent_->tree_->GetEntry( )" << std::endl;
             parent_->tree_->GetEntry(parent_->ientry_);
             ientry_ = parent_->ientry_;
-            std::cerr << "    event_->nextEvent()" << std::endl;
             event_->nextEvent();
             entries_++;
             return true;
@@ -212,31 +208,31 @@ namespace ldmx {
         
         TTree* parentTree = (TTree *)parent_->file_->Get("LDMX_Events");
         if ( parentTree ) {
-
-            parentTree->SetBranchStatus("*", 1);
+            
+            //Enter output file
             file_->cd();
-            std::cerr << "    about to merge new parent tree" << std::endl;
-//            TList *parentList = new TList();
-//            parentList->Add( parentTree );
-//            tree_->Merge( parentList );
+
+            //Copy over addresses from the new parent
+            //FIXME*** ANY NEW BRANCHES BEING ADDED TO INPUT FILES WILL THROW A WARNING ***
+            //  This isn't a huge problem because the new input file doesn't have the branches
+            //  that the process is adding (same as the old input file), so maybe this can just
+            //  be quieted?
             tree_->CopyAddresses( parentTree );
-            //tree_->ResetBranchAddresses();
-//            std::cerr << "    merged new parent tree" << std::endl;
-//            file_->Write( "" , TObject::kOverwrite ); //write only newer (merged) version of tree
-//            std::cerr << "    wrote  new parent tree" << std::endl;
-//            file_->Flush();
-//            std::cerr << "    flushed new parent tree" << std::endl;
 
-            event_->setInputTree( parentTree );
-            std::cerr << "    re-set input tree for the event" << std::endl;
+            //Set new input tree for the event
+            //event_->setInputTree( parentTree );
+            event_->updateInputTree( parentTree );
 
+            //Reset the entry index with the new parent index
             ientry_ = parent_->ientry_;
 
         }
 
-        std::cerr << "    about to create run map" << std::endl;
+        //copy over run headers and recreate run map
+        copyRunHeaders();
         createRunMap();
 
+        return;
     }
 
     void EventFile::close() {
