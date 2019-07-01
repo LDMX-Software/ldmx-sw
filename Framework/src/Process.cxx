@@ -94,7 +94,7 @@ namespace ldmx {
 
                            if ( ifile == 0 ) {
                                 //first input file
-                                outFile = new EventFile(outputFiles_[0], &inFile);
+                                outFile = new EventFile(outputFiles_[0], &inFile, singleOutput );
                                 ifile++;
 
                                 for ( auto rule : dropKeepRules_ ) {

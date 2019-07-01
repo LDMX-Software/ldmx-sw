@@ -41,8 +41,8 @@ namespace ldmx {
                 EventFile(filename, EventConstants::EVENT_TREE_NAME, isOutputFile, compressionLevel) {
     }
 
-    EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :
-                fileName_(filename), isOutputFile_(true), parent_(cloneParent) {
+    EventFile::EventFile(const std::string& filename, EventFile* cloneParent, bool isSingleOutput, int compressionLevel) :
+                fileName_(filename), isOutputFile_(true), isSingleOutput_(isSingleOutput), parent_(cloneParent) {
 
         file_ = new TFile(filename.c_str(), "RECREATE");
         if (!file_->IsWritable()) {
@@ -127,10 +127,12 @@ namespace ldmx {
             if (!parent_->tree_) {
                 EXCEPTION_RAISE("EventFile", "No event tree in the file");
             }
-            if ( ientry_ == -1 ) {
+
+            if ( !tree_ or !isSingleOutput_ ) {
                 std::cerr << "    CloneTree" << std::endl;
                 tree_ = parent_->tree_->CloneTree(0);
             }
+
             event_->setInputTree(parent_->tree_);
             event_->setOutputTree(tree_);
         }
@@ -138,6 +140,7 @@ namespace ldmx {
         // close up the last event
         if (ientry_ >= 0) {
             if (isOutputFile_) {
+                std::cerr << "    Filling: " << ientry_ << std::endl;
                 event_->beforeFill();
                 if (storeCurrentEvent) tree_->Fill(); // fill the clones...
             }
@@ -226,6 +229,8 @@ namespace ldmx {
 
             event_->setInputTree( parentTree );
             std::cerr << "    re-set input tree for the event" << std::endl;
+
+            ientry_ = parent_->ientry_;
 
         }
 
