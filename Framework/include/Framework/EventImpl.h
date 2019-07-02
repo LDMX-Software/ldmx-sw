@@ -18,7 +18,6 @@
 #include <string>
 #include <map>
 #include <set>
-#include <algorithm>
 
 class TTree;
 class TBranch;
@@ -115,12 +114,6 @@ namespace ldmx {
              * @param tree The input data tree.
              */
             void setInputTree(TTree* tree);
-
-            /**
-             * Update input data tree pointer.
-             * @param tree the new input data tree.
-             */
-            void updateInputTree(TTree* tree);
 
             /**
              * Set the output data tree.

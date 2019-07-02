@@ -127,17 +127,14 @@ namespace ldmx {
                 EXCEPTION_RAISE("EventFile", "No event tree in the file");
             }
 
-            //Only clone parent if either
+            //Only clone parent tree if either
             //  1) There is no tree setup yet (first input file)
             //  2) This is not single output (new input file --> new output file)
             if ( !tree_ or !isSingleOutput_ ) {
                 tree_ = parent_->tree_->CloneTree(0);
-                event_->setInputTree(parent_->tree_);
-                event_->setOutputTree(tree_);
-            } else {
-                //update to new input tree on this new parent
-                event_->updateInputTree(parent_->tree_);
             }
+            event_->setInputTree( parent_->tree_ );
+            event_->setOutputTree( tree_ );
         }
         
         // close up the last event
@@ -216,11 +213,7 @@ namespace ldmx {
             file_->cd();
             
             //Copy over addresses from the new parent
-            //FIXME*** ANY NEW BRANCHES BEING ADDED TO INPUT FILES WILL THROW A WARNING ***
-            //  This isn't a huge problem because the new input file doesn't have the branches
-            //  that the process is adding (same as the old input file), so maybe this can just
-            //  be quieted?
-            tree_->CopyAddresses( parentTree );
+            parentTree->CopyAddresses( tree_ );
 
             //Reset the entry index with the new parent index
             ientry_ = parent_->ientry_;

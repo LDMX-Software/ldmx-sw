@@ -63,6 +63,7 @@ namespace ldmx {
                 outFile.close();
 
             } else {
+                //there are input files
 
                 EventFile* outFile(0);
 
@@ -92,38 +93,27 @@ namespace ldmx {
                     }
                     
                     if ( !outputFiles_.empty() ) {
-                        if ( singleOutput ) {
 
-                           if ( ifile == 0 ) {
-                                //first input file
-                                outFile = new EventFile(outputFiles_[0], &inFile, singleOutput );
-                                ifile++;
-
-                                for ( auto rule : dropKeepRules_ ) {
-                                    outFile->addDrop(rule);\
-                                }
-
-                                //setup theEvent we will iterate over
-                                if (outFile) outFile->setupEvent( &theEvent );
-                                else inFile.setupEvent( &theEvent );
-
-                           } else {
-                                //all other input files
-                                outFile->updateParent(&inFile);
-                           } //check if first input file or not 
-
-                        } else {
-
-                            outFile = new EventFile(outputFiles_[ifile], &inFile);
+                        //setup new output file if either
+                        // 1) we are not in single output mode
+                        // 2) this is the first input file
+                        if ( !singleOutput or ifile == 0 ) {
+                            //setup new output file
+                            outFile = new EventFile(outputFiles_[ifile], &inFile, singleOutput );
                             ifile++;
-    
-                            for (auto rule : dropKeepRules_) {
-                                outFile->addDrop(rule);
+
+                            for ( auto rule : dropKeepRules_ ) {
+                                outFile->addDrop(rule);\
                             }
 
                             //setup theEvent we will iterate over
                             if (outFile) outFile->setupEvent( &theEvent );
                             else inFile.setupEvent( &theEvent );
+
+                        } else {
+
+                            //all other input files
+                            outFile->updateParent( &inFile );
 
                         } //check if in singleOutput mode
 
@@ -191,7 +181,9 @@ namespace ldmx {
 
                 } //loop through input files
 
-                if ( outFile and singleOutput ) {
+                if ( outFile ) {
+                    //close outFile
+                    //  outFile would survive to here in single output mode
                     outFile->close();
                 }
 
