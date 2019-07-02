@@ -134,9 +134,12 @@ namespace ldmx {
                 tree_ = parent_->tree_->CloneTree(0);
                 event_->setInputTree(parent_->tree_);
                 event_->setOutputTree(tree_);
+            } else {
+                //update to new input tree on this new parent
+                event_->updateInputTree(parent_->tree_);
             }
         }
-
+        
         // close up the last event
         if (ientry_ >= 0) {
             if (isOutputFile_) {
@@ -211,24 +214,16 @@ namespace ldmx {
             
             //Enter output file
             file_->cd();
-
+            
             //Copy over addresses from the new parent
             //FIXME*** ANY NEW BRANCHES BEING ADDED TO INPUT FILES WILL THROW A WARNING ***
             //  This isn't a huge problem because the new input file doesn't have the branches
             //  that the process is adding (same as the old input file), so maybe this can just
             //  be quieted?
             tree_->CopyAddresses( parentTree );
-            parentTree->Print("toponly");
-            tree_->Print("toponly");
-
-            //Set new input tree for the event
-            //event_->setInputTree( parentTree );
-            event_->updateInputTree( parentTree );
-            event_->setOutputTree( tree_ );
 
             //Reset the entry index with the new parent index
             ientry_ = parent_->ientry_;
-
         }
 
         //copy over run headers and recreate run map

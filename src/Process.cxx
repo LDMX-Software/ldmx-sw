@@ -76,19 +76,20 @@ namespace ldmx {
                             );
                 }
 
+
                 // next, loop through the files
                 int ifile = 0;
                 int wasRun = -1;
                 for (auto infilename : inputFiles_) {
                     EventFile inFile(infilename);
 
+                    EventImpl theEvent(passname_);
+
                     std::cout << "[ Process ] : Opening file " << infilename << std::endl;
 
                     for (auto module : sequence_) {
                         module->onFileOpen(infilename);
                     }
-
-                    EventImpl theEvent(passname_);
                     
                     if ( !outputFiles_.empty() ) {
                         if ( singleOutput ) {

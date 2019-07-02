@@ -38,6 +38,7 @@ namespace ldmx {
 
         std::map<std::string, TObject*>::iterator ito = objects_.find(branchName);
         if (ito == objects_.end()) { // create a new branch
+            std::cout << "  Creating new branch for " << branchName << std::endl;
             ito = objects_.insert(std::pair<std::string, TObject*>(branchName, tca)).first;
             if (outputTree_ != 0) {
                 TBranch* aBranch = outputTree_->Branch(branchName.c_str(), tca, 100000, 3);
@@ -88,11 +89,13 @@ namespace ldmx {
 
         auto location = objectsOwned_.find(branchName);
         if (location == objectsOwned_.end()) {
+            std::cout << "  Creating new TCA for branch " << branchName << std::endl;
             TClonesArray* tca = new TClonesArray(obj.ClassName(), 100);
             objectsOwned_[branchName] = tca;
             add(name, tca);
             TObject* to = tca->ConstructedAt(0);
             obj.Copy(*to);
+            std::cout << "  Finished creating new TCA" << std::endl;
         } else {
             TClonesArray* ptca = dynamic_cast<TClonesArray*>(location->second);
             if (ptca == 0) {
@@ -183,7 +186,7 @@ namespace ldmx {
             if (branch == 0) {
                 EXCEPTION_RAISE("ProductNotFound", "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
             }
-
+            std::cout << "  Attaching new branch " << branchName << " found in inputTree_" << std::endl;
             // ooh, new branch!
             TObject* top(0);
             branch->SetAutoDelete(false);
@@ -231,6 +234,7 @@ namespace ldmx {
     void EventImpl::updateInputTree(TTree* tree) {
         inputTree_ = tree;
         entries_ = inputTree_->GetEntriesFast();
+        //ientry_ = -1;
 
         // find the names of all the existing branches
         TObjArray* branches = inputTree_->GetListOfBranches();
@@ -241,6 +245,30 @@ namespace ldmx {
                 branchNames_.push_back(branches->At(i)->GetName());
             }
         }
+
+//        // Reset branch pointers that were read from previous input tree
+//        std::map<std::string,TBranch*>::iterator it_branch;
+//        for ( it_branch = branches_.begin(); it_branch != branches_.end(); ++it_branch ) {
+//            TBranch* oldbranch = it_branch->second;
+//            std::string branchName = oldbranch->GetName();
+//            TBranch* newbranch = inputTree_->GetBranch( branchName.c_str() );
+//            if ( newbranch ) {
+//
+//                TObject* newtop(0);
+//                newbranch->SetAutoDelete(false);
+//                newbranch->SetStatus(1);
+//                newbranch->GetEntry((ientry_<0)?(0):(ientry_));
+//                TBranchElement* tbe = dynamic_cast<TBranchElement*>(newbranch);
+//                if (tbe) {
+//                    newtop = (TObject*) tbe->GetObject();
+//                } else {
+//                    newbranch->SetAddress(&newtop);
+//                }
+//
+//                branches_[ branchName ] = newbranch;
+//                objects_[ branchName ] = newtop;
+//            } //if new version of branch, attach new one
+//        } //loop through branches_
     }
 
     bool EventImpl::nextEvent() {
