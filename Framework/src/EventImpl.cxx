@@ -38,11 +38,17 @@ namespace ldmx {
 
         std::map<std::string, TObject*>::iterator ito = objects_.find(branchName);
         if (ito == objects_.end()) { // create a new branch
-            std::cout << "  Creating new branch for " << branchName << std::endl;
             ito = objects_.insert(std::pair<std::string, TObject*>(branchName, tca)).first;
             if (outputTree_ != 0) {
-                TBranch* aBranch = outputTree_->Branch(branchName.c_str(), tca, 100000, 3);
-                newBranches_.push_back(aBranch);
+                TBranch *outBranch = outputTree_->GetBranch( branchName.c_str() );
+                if ( outBranch ) {
+                    //branch already exists, just reset branch address
+                    outBranch->SetAddress( &tca );
+                } else {
+                    //branch doesnt exist, make new one
+                    outBranch = outputTree_->Branch(branchName.c_str(), tca, 100000, 3);
+                }
+                newBranches_.push_back(outBranch);
             }
             branchNames_.push_back(branchName);
             knownLookups_.clear(); // have to invalidate this cache
@@ -72,8 +78,16 @@ namespace ldmx {
             ito = objects_.insert(std::pair<std::string, TObject*>(branchName, myCopy)).first;
             objectsOwned_.insert(std::pair<std::string, TObject*>(branchName, myCopy));
             if (outputTree_ != 0) {
-                TBranch* aBranch = outputTree_->Branch(branchName.c_str(), myCopy);
-                newBranches_.push_back(aBranch);
+                //outputTree_ exists
+                TBranch* outBranch = outputTree_->GetBranch( branchName.c_str() );
+                if ( outBranch ) {
+                    //branch already exists on output Tree
+                    outBranch->SetAddress( &to );
+                } else {
+                    //branch doesn't exist on tree yet
+                    outBranch = outputTree_->Branch(branchName.c_str(), myCopy);
+                }
+                newBranches_.push_back(outBranch);
             }
             branchNames_.push_back(branchName);
             knownLookups_.clear(); // have to invalidate this cache
@@ -89,13 +103,13 @@ namespace ldmx {
 
         auto location = objectsOwned_.find(branchName);
         if (location == objectsOwned_.end()) {
-            std::cout << "  Creating new TCA for branch " << branchName << std::endl;
+            //TCA not found in existing objects
             TClonesArray* tca = new TClonesArray(obj.ClassName(), 100);
             objectsOwned_[branchName] = tca;
             add(name, tca);
+            //copy object into TCA
             TObject* to = tca->ConstructedAt(0);
             obj.Copy(*to);
-            std::cout << "  Finished creating new TCA" << std::endl;
         } else {
             TClonesArray* ptca = dynamic_cast<TClonesArray*>(location->second);
             if (ptca == 0) {
@@ -186,7 +200,6 @@ namespace ldmx {
             if (branch == 0) {
                 EXCEPTION_RAISE("ProductNotFound", "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
             }
-            std::cout << "  Attaching new branch " << branchName << " found in inputTree_" << std::endl;
             // ooh, new branch!
             TObject* top(0);
             branch->SetAutoDelete(false);
@@ -229,46 +242,6 @@ namespace ldmx {
         for (int i = 0; i < branches->GetEntriesFast(); i++) {
             branchNames_.push_back(branches->At(i)->GetName());
         }
-    }
-
-    void EventImpl::updateInputTree(TTree* tree) {
-        inputTree_ = tree;
-        entries_ = inputTree_->GetEntriesFast();
-        //ientry_ = -1;
-
-        // find the names of all the existing branches
-        TObjArray* branches = inputTree_->GetListOfBranches();
-        for (int i = 0; i < branches->GetEntriesFast(); i++) {
-            std::string branchName = branches->At(i)->GetName();
-            if ( std::find( branchNames_.begin() , branchNames_.end() , branchName ) == branchNames_.end() ) {
-                //branchNames does NOT contain this branchName
-                branchNames_.push_back(branches->At(i)->GetName());
-            }
-        }
-
-//        // Reset branch pointers that were read from previous input tree
-//        std::map<std::string,TBranch*>::iterator it_branch;
-//        for ( it_branch = branches_.begin(); it_branch != branches_.end(); ++it_branch ) {
-//            TBranch* oldbranch = it_branch->second;
-//            std::string branchName = oldbranch->GetName();
-//            TBranch* newbranch = inputTree_->GetBranch( branchName.c_str() );
-//            if ( newbranch ) {
-//
-//                TObject* newtop(0);
-//                newbranch->SetAutoDelete(false);
-//                newbranch->SetStatus(1);
-//                newbranch->GetEntry((ientry_<0)?(0):(ientry_));
-//                TBranchElement* tbe = dynamic_cast<TBranchElement*>(newbranch);
-//                if (tbe) {
-//                    newtop = (TObject*) tbe->GetObject();
-//                } else {
-//                    newbranch->SetAddress(&newtop);
-//                }
-//
-//                branches_[ branchName ] = newbranch;
-//                objects_[ branchName ] = newtop;
-//            } //if new version of branch, attach new one
-//        } //loop through branches_
     }
 
     bool EventImpl::nextEvent() {
