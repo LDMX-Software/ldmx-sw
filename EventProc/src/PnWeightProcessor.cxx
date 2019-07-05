@@ -39,6 +39,8 @@ namespace ldmx {
     }
 
     PnWeightProcessor::~PnWeightProcessor() { 
+        delete lFit;
+        delete hFit;
     }
 
     void PnWeightProcessor::configure(const ParameterSet& pSet) {

@@ -69,10 +69,11 @@ namespace ldmx {
             }
 
             virtual ~NonFidEcalVetoProcessor() {
-                delete p001BDTHelper_;
-                delete p01BDTHelper_;
-                delete p1BDTHelper_;
-                delete p0BDTHelper_;
+                if ( p001BDTHelper_ ) delete p001BDTHelper_;
+                if ( p01BDTHelper_ ) delete p01BDTHelper_;
+                if ( p1BDTHelper_ ) delete p1BDTHelper_;
+                if ( p0BDTHelper_ ) delete p0BDTHelper_;
+                if ( hexReadout_ ) delete hexReadout_;
             }
 
             void configure(const ParameterSet&);

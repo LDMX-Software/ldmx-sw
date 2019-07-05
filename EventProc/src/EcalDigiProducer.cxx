@@ -22,6 +22,14 @@ namespace ldmx {
     EcalDigiProducer::EcalDigiProducer(const std::string& name, Process& process) :
         Producer(name, process) {
         noiseGenerator_ = new NoiseGenerator();
+        noiseInjector_ = new TRandom3(time(nullptr));
+    }
+
+    EcalDigiProducer::~EcalDigiProducer() {
+        delete noiseGenerator_;
+        delete noiseInjector_;
+        if ( hexReadout_ ) delete hexReadout_;
+        if ( ecalDigis_ ) delete ecalDigis_;
     }
 
     void EcalDigiProducer::configure(const ParameterSet& ps) {

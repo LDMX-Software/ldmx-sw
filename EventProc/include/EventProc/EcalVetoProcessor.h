@@ -69,7 +69,8 @@ namespace ldmx {
             }
 
             virtual ~EcalVetoProcessor() {
-                delete BDTHelper_;
+                if ( BDTHelper_ ) delete BDTHelper_;
+                if ( hexReadout_ ) delete hexReadout_;
             }
 
             void configure(const ParameterSet&);

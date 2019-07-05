@@ -13,7 +13,13 @@ namespace ldmx {
     HcalDigiProducer::HcalDigiProducer(const std::string& name, Process& process) :
         Producer(name, process) {
         hits_ = new TClonesArray(EventConstants::HCAL_HIT.c_str());
-        noiseGenerator_ = new NoiseGenerator();
+    }
+
+    HcalDigiProducer::~HcalDigiProducer() {
+        delete hits_;
+        if (random_) delete random_;
+        if (detID_) delete detID_;
+        if (noiseGenerator_) delete noiseGenerator_;
     }
 
     void HcalDigiProducer::configure(const ParameterSet& ps) {
@@ -158,6 +164,7 @@ namespace ldmx {
             int cur_layer      = curDetId->getFieldValue("layer");
             int cur_strip      = curDetId->getFieldValue("strip");
             float cur_xpos, cur_ypos; 
+            delete curDetId;
 
             if (cur_subsection != 0){ // for sidecal don't worry about attenuation because it's single readout
                 hcalLayerPEs[detIDraw] = random_->Poisson(meanPE+meanNoise_);
