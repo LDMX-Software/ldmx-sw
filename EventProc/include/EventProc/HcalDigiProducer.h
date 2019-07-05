@@ -39,11 +39,7 @@ namespace ldmx {
 
             HcalDigiProducer(const std::string& name, Process& process);
 
-            virtual ~HcalDigiProducer() {
-                delete hits_;
-                if (random_)
-                    delete random_;
-            }
+            virtual ~HcalDigiProducer();
 
             virtual void configure(const ParameterSet&);
 
@@ -54,13 +50,13 @@ namespace ldmx {
         private:
 
             TClonesArray* hits_{nullptr};
-            TRandom3* random_{new TRandom3(time(nullptr))};
+            TRandom3* random_{nullptr};
             std::map<layer, zboundaries> hcalLayers_;
             bool verbose_{false};
             DetectorID* detID_{nullptr};
             
             /** Generator for simulating noise hits. */
-            NoiseGenerator* noiseGenerator_;
+            NoiseGenerator* noiseGenerator_{nullptr};
 
             double meanNoise_{0};
             int    nProcessed_{0};

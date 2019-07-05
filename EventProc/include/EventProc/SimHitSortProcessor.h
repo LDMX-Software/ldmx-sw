@@ -38,7 +38,9 @@ namespace ldmx {
             /**
              * Class destructor.
              */
-            virtual ~SimHitSortProcessor() {;}
+            virtual ~SimHitSortProcessor() {
+                if ( sortedHits ) delete sortedHits;
+            }
 
             /**
              */

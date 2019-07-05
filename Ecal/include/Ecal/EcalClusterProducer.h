@@ -48,8 +48,7 @@ namespace ldmx {
 
             EcalClusterProducer(const std::string& name, Process& process);
 
-            virtual ~EcalClusterProducer() {
-            }
+            virtual ~EcalClusterProducer();
 
             virtual void configure(const ParameterSet&);
 

@@ -11,9 +11,13 @@ namespace ldmx {
 
     TrackerHitKiller::TrackerHitKiller(const std::string& name, Process& process) :
         Producer(name, process) { 
+
+        random_ = new TRandom3(time(nullptr));
     }
     
     TrackerHitKiller::~TrackerHitKiller() { 
+        delete random_;
+        if ( siStripHits_ ) delete siStripHits_;
     }
 
     void TrackerHitKiller::configure(const ParameterSet &pSet) { 

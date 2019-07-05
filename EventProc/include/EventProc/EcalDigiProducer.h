@@ -47,8 +47,7 @@ namespace ldmx {
 
             EcalDigiProducer(const std::string& name, Process& process);
 
-            virtual ~EcalDigiProducer() {
-            }
+            virtual ~EcalDigiProducer();
 
             virtual void configure(const ParameterSet&);
 
@@ -96,7 +95,7 @@ namespace ldmx {
             static const int TOTAL_CELLS{NUM_ECAL_LAYERS*HEX_MODULES_PER_LAYER*CELLS_PER_HEX_MODULE};
 
 
-            TRandom3* noiseInjector_{new TRandom3(time(nullptr))};
+            TRandom3* noiseInjector_{nullptr};
             TClonesArray* ecalDigis_{nullptr};
             EcalDetectorID detID_;
             EcalHexReadout* hexReadout_{nullptr};
