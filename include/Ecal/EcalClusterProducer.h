@@ -35,6 +35,7 @@
 //    STL   //
 //----------//
 #include <tuple>
+#include <memory>
 
 namespace ldmx {
 
@@ -57,7 +58,7 @@ namespace ldmx {
         private:
 
             TClonesArray* ecalClusters_{nullptr};
-            EcalHexReadout* hexReadout_{nullptr};
+            std::unique_ptr<EcalHexReadout> hexReadout_;
             double seedThreshold_{0};
             double cutoff_{0};
             std::string digisPassName_;
