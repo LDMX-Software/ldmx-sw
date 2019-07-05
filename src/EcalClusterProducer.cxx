@@ -19,7 +19,7 @@ namespace ldmx {
 
     void EcalClusterProducer::configure(const ParameterSet& ps) {
 
-        hexReadout_ = std::make_unique<EcalHexReadout>();
+        hexReadout_ = std::make_shared<EcalHexReadout>();
         cutoff_ = ps.getDouble("cutoff");
         seedThreshold_ = ps.getDouble("seedThreshold"); 
         digisPassName_ = ps.getString("digisPassName");

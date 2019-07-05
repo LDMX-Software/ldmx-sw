@@ -58,7 +58,7 @@ namespace ldmx {
         private:
 
             TClonesArray* ecalClusters_{nullptr};
-            std::unique_ptr<EcalHexReadout> hexReadout_;
+            std::shared_ptr<EcalHexReadout> hexReadout_;
             double seedThreshold_{0};
             double cutoff_{0};
             std::string digisPassName_;
