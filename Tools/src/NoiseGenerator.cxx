@@ -9,14 +9,14 @@
 namespace ldmx { 
 
     NoiseGenerator::NoiseGenerator(double noiseValue, bool gauss) {
+        random_ = std::make_unique<TRandom3>( time(nullptr) );
+
         noise_ = noiseValue;
         useGaussianModel_ = gauss;
-        poisson_dist_ = new boost::math::poisson_distribution<>(noiseValue);
+        poisson_dist_ = std::make_unique< boost::math::poisson_distribution<> >(noiseValue);
     }
 
-    NoiseGenerator::~NoiseGenerator() {
-        delete random_; 
-    }
+    NoiseGenerator::~NoiseGenerator() { }
     
     std::vector<double> NoiseGenerator::generateNoiseHits(int emptyChannels) { 
         

@@ -21,6 +21,7 @@
 
 //C++
 #include <map>
+#include <memory>
 
 namespace ldmx {
 
@@ -68,10 +69,8 @@ namespace ldmx {
                     Producer(name, process) {
             }
 
-            virtual ~EcalVetoProcessor() {
-                if ( BDTHelper_ ) delete BDTHelper_;
-                if ( hexReadout_ ) delete hexReadout_;
-            }
+            virtual ~EcalVetoProcessor() { }
+            
 
             void configure(const ParameterSet&);
 
@@ -152,11 +151,11 @@ namespace ldmx {
             bool verbose_{false};
             bool doesPassVeto_{false};
 
-            EcalHexReadout* hexReadout_{nullptr};
+            std::unique_ptr<EcalHexReadout> hexReadout_;
 
             std::string bdtFileName_;
             std::string cellFileNamexy_;
-            BDTHelper* BDTHelper_{nullptr};
+            std::unique_ptr<BDTHelper> BDTHelper_;
             std::vector<float> bdtFeatures_;
 
             /** Name of the collection which will containt the results. */

@@ -9,6 +9,7 @@
 
 // C++/STL
 #include <time.h>
+#include <memory>
 
 // ROOT
 #include "TString.h"
@@ -50,13 +51,13 @@ namespace ldmx {
         private:
 
             TClonesArray* hits_{nullptr};
-            TRandom3* random_{nullptr};
+            std::unique_ptr<TRandom3> random_;
             std::map<layer, zboundaries> hcalLayers_;
             bool verbose_{false};
-            DetectorID* detID_{nullptr};
+            std::unique_ptr<DetectorID> detID_;
             
             /** Generator for simulating noise hits. */
-            NoiseGenerator* noiseGenerator_{nullptr};
+            std::unique_ptr<NoiseGenerator> noiseGenerator_;
 
             double meanNoise_{0};
             int    nProcessed_{0};
