@@ -127,13 +127,13 @@ namespace ldmx {
             bool useBeamspot_{false};
             
             /** Extent of the beamspot in x. */
-            double beamspotXSize_{20.};            
+            double beamspotXSize_{0};            
             
             /** Extent of the beamspot in y. */
-            double beamspotYSize_{10.};   
+            double beamspotYSize_{0};   
 
             /** Extent of the beamspot in y. */
-            double beamspotZSize_{1.};   
+            double beamspotZSize_{0.};   
 
             /** The index of the last generator in the list of generators. */ 
             int indexMpg_{-1};          
