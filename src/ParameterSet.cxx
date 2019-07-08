@@ -1,5 +1,5 @@
 #include "Framework/ParameterSet.h"
-#include "Framework/Exception.h"
+#include "Exception/Exception.h"
 
 namespace ldmx {
 
