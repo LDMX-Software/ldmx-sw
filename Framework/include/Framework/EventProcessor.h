@@ -8,7 +8,7 @@
 #define FRAMEWORK_EVENTPROCESSOR_H_
 
 // LDMX
-#include "Framework/Exception.h"
+#include "Exception/Exception.h"
 #include "Event/Event.h"
 #include "Event/RunHeader.h"
 #include "Framework/ParameterSet.h"

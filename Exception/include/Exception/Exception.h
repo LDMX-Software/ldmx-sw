@@ -4,8 +4,8 @@
  * @author Jeremy Mans, University of Minnesota
  */
 
-#ifndef LDMXSW_FRAMEWORK_EXCEPTION_H_
-#define LDMXSW_FRAMEWORK_EXCEPTION_H_
+#ifndef LDMXSW_EXCEPTION_EXCEPTION_H_
+#define LDMXSW_EXCEPTION_EXCEPTION_H_
 
 // STL
 #include <exception>
