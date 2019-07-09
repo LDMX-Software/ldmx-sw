@@ -125,5 +125,5 @@ namespace ldmx {
  * supply the exception name and error message
  */
 #define EXCEPTION_RAISE(EXCEPTION, MSG) \
-        throw Exception( EXCEPTION, MSG, __FILE__, __LINE__, __FUNCTION__)
+        throw ldmx::Exception( EXCEPTION, MSG, __FILE__, __LINE__, __FUNCTION__)
 #endif

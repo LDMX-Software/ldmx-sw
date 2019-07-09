@@ -11,6 +11,9 @@
 #ifndef DETDESCR_ECALHEXREADOUT_H_
 #define DETDESCR_ECALHEXREADOUT_H_
 
+// LDMX
+#include "Exception/Exception.h"
+
 // STL
 #include <map>
 
@@ -97,7 +100,7 @@ namespace ldmx {
                     TString error_msg = TString("[EcalHexReadout::getCellIDRelative] Relative coordinates are outside module hexagon!") + 
                                         TString::Format(" Is the gap used by EcalHexReadout (%.2f mm) and the minimum module radius (%.2f mm)",gap_,moduler_) +
                                         TString::Format(" the same as hexagon_gap and Hex_radius in ecal.gdml? Received (x,y) = (%.2f,%.2f).",x,y);
-                    throw std::invalid_argument(error_msg.Data());
+                    EXCEPTION_RAISE( "InvalidArg" , error_msg.Data() );
                 }
                 return bin;
             }
@@ -128,7 +131,7 @@ namespace ldmx {
                 //   wonder why TH2Poly->GetBin(ID) doesn't exist. plus the map is useful by itself.
                 auto search = cellPositionMap_.find(cellID);
                 if(search == cellPositionMap_.end()) {
-                    throw std::runtime_error("Error: cell " + std::to_string(cellID) + " is not valid");
+                    EXCEPTION_RAISE( "InvalidCellID" , "Cell " + std::to_string(cellID) + " is not valid." );
                 }
                 return search->second;
             }
