@@ -19,6 +19,7 @@
  */
 
 #include "EventProc/PnWeightProcessor.h"
+#include "Exception/Exception.h"
 
 namespace ldmx {
 
@@ -95,7 +96,7 @@ namespace ldmx {
         // For PN biased events, there should always be a gamma that
         // underwent a PN reaction.
         if (pnGamma == nullptr) {
-            throw std::runtime_error("[ PnWeightProcessor ]: Event doesn't contain a PN Gamma."); 
+            EXCEPTION_RAISE( "PnWeightProc" , "Event doesn't contain a PN Gamma." );
         }
 
         double hardestNucleonKe = -9999;

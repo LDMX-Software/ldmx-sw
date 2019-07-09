@@ -5,6 +5,7 @@
  */
 
 #include "Framework/HistogramPool.h"
+#include "Exception/Exception.h"
 
 //----------------//
 //   C++ StdLib   //
@@ -53,7 +54,7 @@ namespace ldmx {
     TH1* HistogramPool::get(const std::string& name) { 
         auto histo = histograms_.find(name); 
         if (histo == histograms_.end()) { 
-            throw std::invalid_argument("Histogram " + name + " not found.");  
+            EXCEPTION_RAISE( "InvalidArg" , "Histogram " + name + " not found in pool." );
         }  
         
         return histograms_[name];
