@@ -7,6 +7,8 @@
 #ifndef SIMCORE_TRACKFILTER_H_
 #define SIMCORE_TRACKFILTER_H_
 
+#include "Exception/Exception.h"
+
 #include "G4VProcess.hh"
 #include "G4TrackingManager.hh"
 #include "G4RunManagerKernel.hh"
@@ -223,7 +225,7 @@ namespace ldmx {
                 if (particleDef) {
                     pdgids_.insert(particleDef->GetPDGEncoding());
                 } else {
-                    G4Exception("", "", FatalException, std::string("Unknown particle name: " + particleName).c_str());
+                    EXCEPTION_RAISE( "UnknownName" , "Unknown particle name '" + particleName + "'." );
                 }
             }
 

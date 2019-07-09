@@ -1,10 +1,11 @@
 #include "SimApplication/MagneticFieldMap3D.h"
+#include "Exception/Exception.h"
 
 // STL
 #include <fstream>
 #include <iostream>
 #include <cmath>
-#include <stdexcept>
+#include <string>
 
 // Geant4
 #include "globals.hh"
@@ -21,8 +22,7 @@ namespace ldmx {
 
         // Throw an error if file does not exist.
         if (!file.good()) {
-            G4cerr << "ERROR: Field map file " << filename << " does not exist!" << std::endl;
-            throw std::runtime_error("The field map file does not exist.");
+            EXCEPTION_RAISE( "FileDNE" , "The field map file '" + std::string(filename) + "' does not exist!" );
         }
 
         G4cout << "-----------------------------------------------------------" << G4endl;
