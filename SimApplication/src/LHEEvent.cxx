@@ -1,4 +1,5 @@
 #include "SimApplication/LHEEvent.h"
+#include "Exception/Exception.h"
 
 // Geant4
 #include "globals.hh"
@@ -6,7 +7,6 @@
 // STL
 #include <iostream>
 #include <sstream>
-#include <stdexcept>
 
 namespace ldmx {
 
@@ -23,9 +23,7 @@ namespace ldmx {
         } while (iss);
 
         if (tokens.size() != 6) {
-            std::cerr << "ERROR: Bad event information record in LHE file ..." << std::endl;
-            std::cerr << "  " << line << std::endl;
-            G4Exception("LHEEvent::LHEEvent", "LHEEventError", FatalException, "Wrong number of tokens in LHE event information record.");
+            EXCEPTION_RAISE( "TokenNum" , "Wrong number of tokens in LHE event information record." );
         }
 
         nup_ = atoi(tokens[0].c_str());
@@ -104,9 +102,7 @@ namespace ldmx {
         } while (iss);
 
         if (tokens.size() != 4 || tokens[0]!="#vertex") {
-            std::cerr << "ERROR: Bad event vertex information record in LHE file ..." << std::endl;
-            std::cerr << "  " << line << std::endl;
-            G4Exception("LHEEvent::LHEEvent", "LHEEventError", FatalException, "Wrong number of tokens or format in LHE event vertex information record.");
+            EXCEPTION_RAISE( "TokenNum" , "Wrong number of tokens or format in LHE event vertex information record." );
         }
 	vtx_[0]=atof(tokens[1].c_str());
 	vtx_[1]=atof(tokens[2].c_str());
