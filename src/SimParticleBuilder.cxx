@@ -1,6 +1,9 @@
 #include "SimApplication/SimParticleBuilder.h"
 
+#include <string>
+
 // LDMX
+#include "Exception/Exception.h"
 #include "Event/Event.h"
 #include "Event/EventConstants.h"
 #include "SimApplication/G4CalorimeterHit.h"
@@ -51,8 +54,8 @@ namespace ldmx {
         SimParticle* simParticle = particleMap_[traj->GetTrackID()];
 
         if (!simParticle) {
-            std::cerr << "[ SimParticleBuilder ] : SimParticle not found for Trajectory with track ID " << traj->GetTrackID() << std::endl;
-            G4Exception("SimParticleBuilder::buildSimParticle", "", FatalException, "SimParticle not found for Trajectory.");
+            EXCEPTION_RAISE( "MissingInfo" , "SimParticle not found for Trajectory with track ID '" 
+                    + std::to_string(traj->GetTrackID()) + "'." );
         }
 
         simParticle->setGenStatus(traj->getGenStatus());
@@ -83,8 +86,8 @@ namespace ldmx {
                 parent->addDaughter(simParticle);
             } else {
                 // If the parent particle can not be found by its track ID, this is a fatal error!
-                std::cerr << "[ SimParticleBuilder ] : ERROR - SimParticle with parent ID " << traj->GetParentID() << " not found for track ID " << traj->GetTrackID() << std::endl;
-                G4Exception("SimParticleBuilder::buildSimParticle", "", FatalException, "SimParticle not found from parent track ID.");
+                EXCEPTION_RAISE( "MissingInfo" , "SimParticle with parent ID '" + std::to_string(traj->GetParentID()) 
+                        + "' not found for track ID '" + std::to_string(traj->GetTrackID()) + "'." );
             }
         }
     }
