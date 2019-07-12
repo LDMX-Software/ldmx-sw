@@ -70,7 +70,7 @@ class Process:
         self.libraries=[]
         self.skimDefaultIsKeep=True
         self.skimRules=[]
-        self.logFrequency=1
+        self.logFrequency=-1
         Process.lastProcess=self
 
     def skimDefaultIsSave(self):
