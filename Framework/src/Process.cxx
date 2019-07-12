@@ -117,7 +117,7 @@ namespace ldmx {
                             }
                         }
 
-                        if ((n_events_processed + 1)%logFrequency_ == 0) { 
+                        if ( (logFrequency_ != -1) && ((n_events_processed + 1)%logFrequency_ == 0)) { 
                             TTimeStamp t;
                             std::cout << "[ Process ] :  Processing " << n_events_processed + 1 
                                       << " Run " << theEvent.getEventHeader()->getRun() 
