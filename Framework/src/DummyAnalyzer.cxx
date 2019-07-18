@@ -25,8 +25,6 @@ namespace ldmx {
 
             virtual void configure(const ldmx::ParameterSet& ps) {
                 caloCol_=ps.getString("caloHitCollection");
-                keepMod_=ps.getInteger("keepEventModulus",0);
-                dropMod_=ps.getInteger("dropEventModulus",0);
             }
 
             virtual void analyze(const ldmx::Event& event) {
