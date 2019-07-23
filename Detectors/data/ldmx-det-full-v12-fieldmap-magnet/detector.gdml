@@ -37,8 +37,8 @@
 
     <!-- position of calorimeter mother, thicknesses taken from ecal.gdml and hcal.gdml, see correspoding files -->
     <constant name="ecal_front_z"                 value="215*mm"/>
-    <constant name="em_calorimeter_thickness"     value="291.0*mm"/>
-    <constant name="hadron_calorimeter_thickness" value="4700*mm"/>
+    <constant name="em_calorimeter_thickness"     value="445.1*mm"/>
+    <constant name="hadron_calorimeter_thickness" value="5000*mm"/>
     <constant name="em_calorimeter_pos_z"         value="ecal_front_z + em_calorimeter_thickness/2."/>
     <constant name="hadron_calorimeter_pos_z"     value="ecal_front_z + hadron_calorimeter_thickness/2."/>
 
@@ -147,7 +147,6 @@
     <volume name="World">
       <materialref ref="Vacuum"/>
       <solidref    ref="world_box"/>
-<!--
       <physvol copynumber="1">
         <file name="tagger.gdml"/>
         <positionref ref="tagger_pos"/>
@@ -173,7 +172,6 @@
         <positionref ref="recoil_pos"/>
         <rotationref ref="identity"/>
       </physvol>
--->
       <physvol copynumber="6">
         <file name="ecal.gdml"/>
         <positionref ref="em_calorimeter_pos"/>
@@ -185,11 +183,9 @@
         <rotationref ref="identity"/>
       </physvol>
       <physvol>
-<!--
         <file name="magnet.gdml"/>
         <positionref ref="magnet_pos"/>
         <rotationref ref="identity"/>
--->
       </physvol>
       <auxiliary auxtype="DetElem" auxvalue="Top"/>
     </volume>
@@ -199,9 +195,9 @@
   
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
-      <auxiliary auxtype="DetectorName"  auxvalue="ldmx-det-full-v9-fieldmap-magnet"/>
+      <auxiliary auxtype="DetectorName"  auxvalue="ldmx-det-full-v12-fieldmap-magnet"/>
       <auxiliary auxtype="Author"        auxvalue="Omar Moreno, Andrew Whitbeck"/>
-      <auxiliary auxtype="Description"   auxvalue="The v9 detector with a full 3D field map and magnet material."/>
+      <auxiliary auxtype="Description"   auxvalue="The v12 detector with a 600mm ECAL Cube and motherboards inserted in the ECAL."/>
     </auxiliary>
     
     <!-- define sensitive detectors -->
