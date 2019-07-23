@@ -23,6 +23,7 @@
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
 
+
 namespace ldmx {
 
     /**
@@ -32,36 +33,26 @@ namespace ldmx {
     class HcalDigiProducer : public Producer {
 
         public:
-
-            typedef int layer;
-
-            typedef std::pair<double, double> zboundaries;
-
+            
             HcalDigiProducer(const std::string& name, Process& process);
 
-            virtual ~HcalDigiProducer() {
-                delete hits_;
-                if (random_)
-                    delete random_;
-            }
+            virtual ~HcalDigiProducer() {delete hits_;}
 
             virtual void configure(const ParameterSet&);
-
             virtual void produce(Event& event);
 
             unsigned int generateRandomID(HcalSection sec);
+            void         constructNoiseHit(int, HcalSection, double, double, const std::map<unsigned int, float>&,std::unordered_set<unsigned int>&);
+
 
         private:
 
-            TClonesArray* hits_{nullptr};
-            TRandom3* random_{new TRandom3(time(nullptr))};
-            std::map<layer, zboundaries> hcalLayers_;
-            bool verbose_{false};
-            DetectorID* detID_{nullptr};
+            bool                            verbose_{false};
+            TClonesArray*                   hits_{nullptr};
+            std::unique_ptr<TRandom3>       random_;
+            HcalID                          detID_;
+            std::unique_ptr<NoiseGenerator> noiseGenerator_;
             
-            /** Generator for simulating noise hits. */
-            NoiseGenerator* noiseGenerator_;
-
             double meanNoise_{0};
             int    nProcessed_{0};
             double mev_per_mip_{1.40};
@@ -69,8 +60,7 @@ namespace ldmx {
             double strip_attenuation_length_{100.};
             double strip_position_resolution_{150.};
             int    readoutThreshold_{2};
-            int    doStrip_{true};
-            int    STRIPS_BACK_PER_LAYER_{31};
+            int    STRIPS_BACK_PER_LAYER_{60};    
             int    NUM_BACK_HCAL_LAYERS_{150};
             int    STRIPS_SIDE_TB_PER_LAYER_{6};
             int    NUM_SIDE_TB_HCAL_LAYERS_{31};
