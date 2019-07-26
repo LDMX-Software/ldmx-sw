@@ -227,19 +227,25 @@ namespace ldmx {
                         if(sqrt(pow(spHit->getMomentum()[0],2) + pow(spHit->getMomentum()[1],2) + pow(spHit->getMomentum()[2],2)) > pmax) {
                             recoilPAtTarget = spHit->getMomentum();
                             recoilPosAtTarget = spHit->getPosition();
-                            pmax = sqrt(pow(recoilPos[0],2) + pow(recoilPos[1],2) + pow(recoilPos[2],2));
+                            pmax = sqrt(pow(recoilPAtTarget[0],2) + pow(recoilPAtTarget[1],2) + pow(recoilPAtTarget[2],2));
                         }
                     } 
                 }
             }
         }
 
-        float recoilPMag = sqrt(pow(recoilP[0],2) + pow(recoilP[1],2) + pow(recoilP[2],2));
-        float recoilTheta = recoilPMag > 0 ? recoilP[2]/recoilPMag : 0.0;
 
         // Get projected trajectories for electron and photon
-        std::vector<XYCoords> ele_trajectory = getTrajectory(recoilP, recoilPos);
-        std::vector<XYCoords> photon_trajectory = getTrajectory({-recoilPAtTarget[0], -recoilPAtTarget[1], 4000.0-recoilPAtTarget[2]}, recoilPosAtTarget);
+        std::vector<XYCoords> ele_trajectory, photon_trajectory;
+        if(recoilP.size() > 0) { 
+            ele_trajectory = getTrajectory(recoilP, recoilPos);
+            std::vector<double> pvec = recoilPAtTarget.size() ? recoilPAtTarget : std::vector<double>{0.0, 0.0, 0.0};
+            std::vector<float>  posvec = recoilPosAtTarget.size() ? recoilPosAtTarget : std::vector<float>{0.0, 0.0, 0.0};
+            photon_trajectory = getTrajectory({-recoilPAtTarget[0], -recoilPAtTarget[1], 4000.0-recoilPAtTarget[2]}, recoilPosAtTarget);
+        }
+
+        float recoilPMag = recoilP.size() ? sqrt(pow(recoilP[0],2) + pow(recoilP[1],2) + pow(recoilP[2],2)) : -1.0;
+        float recoilTheta = recoilPMag > 0 ? recoilP[2]/recoilPMag : -1.0;
 
         std::vector<double> ele_radii = radius68_thetalt10_plt500;
         if(recoilTheta<10 && recoilPMag >= 500) ele_radii = radius68_thetalt10_pgt500;
@@ -301,8 +307,8 @@ namespace ldmx {
                     deepestLayerHit_ = hit->getLayer();
                 }
                 XYCoords xy_pair = getCellCentroidXYPair(hit_pair.second);
-                float distance_ele_trajectory = sqrt( pow((xy_pair.first - ele_trajectory[hit->getLayer()].first),2) + pow((xy_pair.second - ele_trajectory[hit->getLayer()].second),2) );
-                float distance_photon_trajectory = sqrt( pow((xy_pair.first - photon_trajectory[hit->getLayer()].first),2) + pow((xy_pair.second - photon_trajectory[hit->getLayer()].second),2) );
+                float distance_ele_trajectory = ele_trajectory.size() ? sqrt( pow((xy_pair.first - ele_trajectory[hit->getLayer()].first),2) + pow((xy_pair.second - ele_trajectory[hit->getLayer()].second),2) ) : -1.0;
+                float distance_photon_trajectory = photon_trajectory.size() ? sqrt( pow((xy_pair.first - photon_trajectory[hit->getLayer()].first),2) + pow((xy_pair.second - photon_trajectory[hit->getLayer()].second),2) ) : -1.0;
                 // Decide which region a hit goes into and add to sums
                 for(unsigned int ireg = 0; ireg < nregions; ireg++) {
                     if(distance_ele_trajectory >= ireg*ele_radii[hit->getLayer()] && distance_ele_trajectory < (ireg+1)*ele_radii[hit->getLayer()])
@@ -358,8 +364,8 @@ namespace ldmx {
                 stdLayerHit_ += pow((hit->getLayer() - wavgLayerHit), 2) * hit->getEnergy();
             }
             XYCoords xy_pair = getCellCentroidXYPair(hit_pair.second);
-            float distance_ele_trajectory = sqrt( pow((xy_pair.first - ele_trajectory[hit->getLayer()].first),2) + pow((xy_pair.second - ele_trajectory[hit->getLayer()].second),2) );
-            float distance_photon_trajectory = sqrt( pow((xy_pair.first - photon_trajectory[hit->getLayer()].first),2) + pow((xy_pair.second - photon_trajectory[hit->getLayer()].second),2) );
+            float distance_ele_trajectory = ele_trajectory.size() ? sqrt( pow((xy_pair.first - ele_trajectory[hit->getLayer()].first),2) + pow((xy_pair.second - ele_trajectory[hit->getLayer()].second),2) ) : -1.0;
+            float distance_photon_trajectory = photon_trajectory.size() ? sqrt( pow((xy_pair.first - photon_trajectory[hit->getLayer()].first),2) + pow((xy_pair.second - photon_trajectory[hit->getLayer()].second),2) ) : -1.0;
             for(unsigned int ireg = 0; ireg < nregions; ireg++) {
                 if(distance_ele_trajectory > (ireg+1)*ele_radii[hit->getLayer()] && distance_photon_trajectory > (ireg+1)*photon_radii[hit->getLayer()]) {
                     outsideContainmentXstd[ireg] += pow((xy_pair.first - outsideContainmentXmean[ireg]),2) * hit->getEnergy();
