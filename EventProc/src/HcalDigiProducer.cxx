@@ -1,9 +1,3 @@
-//LIST OF ISSUES
-// uninitialized cur_xpos, cur_ypos and cur_xpos
-// no noise in bottom / right sidecal
-// HcalSection::LEFT / HcalSection::RIGHT are inverted   --> fix code too
-// Memory leak fixed
-
 #include "TString.h"
 #include "TFile.h"
 #include "TTree.h"
@@ -231,12 +225,12 @@ namespace ldmx {
 // need to fic gdml and this part 
                                 
                 //Note the side Hcal doesn't have super strips
-                //This is the quantized position along the length of the bar - check RIGHT / LEFT
+                //This is the quantized position along the length of the bar - LEFT/RIGHT is for fixed HCAL geometry
                 // float ecal_width_(525);
                 //if (cur_subsection == HcalSection::TOP)    cur_xpos =  half_total_width/2.0 - ecal_width/4.0;
                 //if (cur_subsection == HcalSection::BOTTOM) cur_xpos = -half_total_width/2.0 + ecal_width/4.0;
-                //if (cur_subsection == HcalSection::RIGHT)  cur_ypos =  half_total_width/2.0 - ecal_width/4.0;
-                //if (cur_subsection == HcalSection::LEFT)   cur_ypos = -half_total_width/2.0 + ecal_width/4.0;
+                //if (cur_subsection == HcalSection::LEFT)   cur_ypos =  half_total_width/2.0 - ecal_width/4.0;
+                //if (cur_subsection == HcalSection::RIGHT)  cur_ypos = -half_total_width/2.0 + ecal_width/4.0;
                 
                 //This would be the quantized z position. The side_hcal_z0 value must be derived fromn the geometry!
                 //float side_hcal_z0(215.5);
@@ -247,8 +241,8 @@ namespace ldmx {
                 //float side_hcal_xy_offset(294);
                 //if (cur_subsection == HcalSection::TOP)    cur_ypos =  side_hcal_xy_offset+(cur_layer-1)*back_hcal_layer_thickness;
                 //if (cur_subsection == HcalSection::BOTTOM) cur_ypos = -side_hcal_xy_offset-(cur_layer-1)*back_hcal_layer_thickness;
-                //if (cur_subsection == HcalSection::RIGHT)  cur_xpos = -side_hcal_xy_offset-(cur_layer-1)*back_hcal_layer_thickness;
-                //if (cur_subsection == HcalSection::LEFT)   cur_xpos =  side_hcal_xy_offset+(cur_layer-1)*back_hcal_layer_thickness;               
+                //if (cur_subsection == HcalSection::LEFT)   cur_xpos = -side_hcal_xy_offset-(cur_layer-1)*back_hcal_layer_thickness;
+                //if (cur_subsection == HcalSection::RIGHT)  cur_xpos =  side_hcal_xy_offset+(cur_layer-1)*back_hcal_layer_thickness;               
             }            
 
             if (hcalLayerPEs[detIDraw] >= readoutThreshold_ )
