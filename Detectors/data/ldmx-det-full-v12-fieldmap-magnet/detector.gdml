@@ -8,7 +8,7 @@
     <rotation name="identity" x="0" y="0" z="0"/>
     
     <!-- dimension of world box side -->
-    <constant name="world_dim" value="11.0*m"/>
+    <constant name="world_dim" value="12.0*m"/>
             
     <!-- target parameters -->
     <!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
@@ -36,7 +36,7 @@
     <variable name="recoil_pos_z"     value="recoil_thickness/2 + recoil_z_offset"/>
 
     <!-- position of calorimeter mother, thicknesses taken from ecal.gdml and hcal.gdml, see correspoding files -->
-    <constant name="ecal_front_z"                 value="215*mm"/>
+    <constant name="ecal_front_z"                 value="220*mm"/>
     <constant name="em_calorimeter_thickness"     value="445.1*mm"/>
     <constant name="hadron_calorimeter_thickness" value="5000*mm"/>
     <constant name="em_calorimeter_pos_z"         value="ecal_front_z + em_calorimeter_thickness/2."/>
@@ -196,7 +196,7 @@
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
       <auxiliary auxtype="DetectorName"  auxvalue="ldmx-det-full-v12-fieldmap-magnet"/>
-      <auxiliary auxtype="Author"        auxvalue="Omar Moreno, Andrew Whitbeck"/>
+      <auxiliary auxtype="Author"        auxvalue="Omar Moreno, Tom Eichlersmith, Bertrand Echenard"/>
       <auxiliary auxtype="Description"   auxvalue="The v12 detector with a 600mm ECAL Cube and motherboards inserted in the ECAL."/>
     </auxiliary>
     
