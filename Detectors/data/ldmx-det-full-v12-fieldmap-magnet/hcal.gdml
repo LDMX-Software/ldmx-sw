@@ -324,20 +324,20 @@
 	   <!-- left  -->          
 	   <physvol     name="sideL_hcal_absoBox_physvol">
               <volumeref ref="sideLR_hcal_absoBox_volume"/>
-              <position name="sideL_hcal_abso_pos" unit="mm" x="sideLR_hcal_abso_x0 + (xs-1)*side_layer_thick" y="-sideLR_hcal_y0"  z="-back_dz/2.0 "/>
+              <position name="sideL_hcal_abso_pos" unit="mm" x="-sideLR_hcal_abso_x0 - (xs-1)*side_layer_thick" y="sideLR_hcal_y0"  z="-back_dz/2.0 "/>
            </physvol>
            <physvol     name="sideL_hcal_ScintBox_physvol" copynumber="3000+xs">
               <volumeref ref="sideLR_hcal_ScintBox_volume"/>
-              <position name="sideL_hcal_ScintBox_pos" unit="mm"  x="sideLR_hcal_scint_x0 + (xs-1)*side_layer_thick" y="-sideLR_hcal_y0"  z="-back_dz/2.0 "/>
+              <position name="sideL_hcal_ScintBox_pos" unit="mm"  x="-sideLR_hcal_scint_x0 - (xs-1)*side_layer_thick" y="sideLR_hcal_y0"  z="-back_dz/2.0 "/>
            </physvol>
 	   <!-- right  -->          
 	   <physvol     name="sideR_hcal_absoBox_physvol">
               <volumeref ref="sideLR_hcal_absoBox_volume"/>
-              <position name="sideR_hcal_abso_pos" unit="mm" x="-sideLR_hcal_abso_x0 - (xs-1)*side_layer_thick" y="sideLR_hcal_y0"  z="-back_dz/2.0 "/>
+              <position name="sideR_hcal_abso_pos" unit="mm" x="sideLR_hcal_abso_x0 + (xs-1)*side_layer_thick" y="-sideLR_hcal_y0"  z="-back_dz/2.0 "/>
            </physvol>
            <physvol     name="sideR_hcal_ScintBox_physvol" copynumber="4000+xs">
               <volumeref ref="sideLR_hcal_ScintBox_volume"/>
-              <position name="sideR_hcal_ScintBox_pos" unit="mm"  x="-sideLR_hcal_scint_x0 - (xs-1)*side_layer_thick" y="sideLR_hcal_y0"  z="-back_dz/2.0 "/>
+              <position name="sideR_hcal_ScintBox_pos" unit="mm"  x="sideLR_hcal_scint_x0 + (xs-1)*side_layer_thick" y="-sideLR_hcal_y0"  z="-back_dz/2.0 "/>
            </physvol>
 	</loop>
 

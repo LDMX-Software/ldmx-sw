@@ -7,18 +7,18 @@
         <rotation name="identity" x="0" y="0" z="0"/>
 
         <!-- Dimension of world box side -->
-        <constant name="world_dim" value="7.5*m"/>
+        <constant name="world_dim" value="12*m"/>
         
         <!-- Dimensions of the scoring planes -->
         <constant name="sp_thickness" value="0.1*mm"/>
 
         <!-- Dimensions of Ecal box -->
-        <variable name="ecal_box_x" value="521*mm" />
-        <variable name="ecal_box_y" value="521*mm" />
-        <variable name="ecal_box_z" value="291*mm" />
+        <variable name="ecal_box_x" value="600*mm" />
+        <variable name="ecal_box_y" value="600*mm" />
+        <variable name="ecal_box_z" value="600*mm" />
 
         <constant name="ecal_front_z" value="220*mm"/>
-        <constant name="ecal_thickness" value="291*mm"/>
+        <constant name="ecal_thickness" value="446*mm"/>
         <constant name="ecal_back_z" value="ecal_front_z + ecal_thickness" />
 
         <!-- Surround the ecal with scoring planes -->
@@ -44,7 +44,7 @@
         <!-- Dimensions of Ecal box -->
         <variable name="hcal_box_x" value="3500*mm" />
         <variable name="hcal_box_y" value="3500*mm" />
-        <variable name="hcal_box_z" value="3500*mm" />
+        <variable name="hcal_box_z" value="5500*mm" />
         <constant name="hcal_back_z" value="ecal_front_z + hcal_box_z" />
 
         <!-- Surround the Hcal with scoring planes -->
