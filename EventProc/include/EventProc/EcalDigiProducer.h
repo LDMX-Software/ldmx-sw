@@ -121,6 +121,15 @@ namespace ldmx {
              * multiples of RMS noise. 
              */
             double readoutThreshold_{4.};
+
+            /** Layer Weights for Digitization of Energy accounting for the effect of the absorber */
+            std::vector<double> layerWeights_;
+
+            /** Second Order Energy Correction to the accounting done by the layer weights 
+             *  SHOULD BE CLOSE TO 1.
+             */
+            double secondOrderEnergyCorrection_;
+
     };
 }
 
