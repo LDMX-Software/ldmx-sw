@@ -33,6 +33,14 @@ namespace ldmx {
         avgLayerHit_ = 0;
         stdLayerHit_ = 0;
         deepestLayerHit_ = 0;
+        ecalBackEnergy_ = 0;
+
+        electronContainmentEnergy_.clear();
+        photonContainmentEnergy_.clear();
+        outsideContainmentEnergy_.clear();
+        outsideContainmentNHits_.clear();
+        outsideContainmentXStd_.clear();
+        outsideContainmentYStd_.clear();
         
         discValue_ = 0;
 
@@ -61,6 +69,14 @@ namespace ldmx {
         result.avgLayerHit_ = avgLayerHit_;
         result.stdLayerHit_ = stdLayerHit_;
         result.deepestLayerHit_ = deepestLayerHit_;
+        result.ecalBackEnergy_ = ecalBackEnergy_;
+        
+        result.electronContainmentEnergy_ = electronContainmentEnergy_;
+        result.photonContainmentEnergy_ = photonContainmentEnergy_;
+        result.outsideContainmentEnergy_ = outsideContainmentEnergy_;
+        result.outsideContainmentNHits_ = outsideContainmentNHits_;
+        result.outsideContainmentXStd_ = outsideContainmentXStd_;
+        result.outsideContainmentYStd_ = outsideContainmentYStd_;
         
         result.discValue_ = discValue_;
         
@@ -85,6 +101,14 @@ namespace ldmx {
             float yStd,
             float avgLayerHit,
             float stdLayerHit,
+            float ecalBackEnergy,
+            
+            std::vector<float> electronContainmentEnergy,
+            std::vector<float> photonContainmentEnergy,
+            std::vector<float> outsideContainmentEnergy,
+            std::vector<int>   outsideContainmentNHits,
+            std::vector<float> outsideContainmentXStd,
+            std::vector<float> outsideContainmentYStd,
             
             std::vector<float> EcalLayerEdepReadout,
             std::vector<double> recoilP, 
@@ -101,6 +125,14 @@ namespace ldmx {
         avgLayerHit_ = avgLayerHit;
         stdLayerHit_ = stdLayerHit;
         deepestLayerHit_ = deepestLayerHit;
+        ecalBackEnergy_ = ecalBackEnergy;
+
+        electronContainmentEnergy_ = electronContainmentEnergy;
+        photonContainmentEnergy_ = photonContainmentEnergy;
+        outsideContainmentEnergy_ = outsideContainmentEnergy;
+        outsideContainmentNHits_ = outsideContainmentNHits;
+        outsideContainmentXStd_ = outsideContainmentXStd;
+        outsideContainmentYStd_ = outsideContainmentYStd;
         
         // discvalue not set here
 
