@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+      
+  <define>
+    <!-- define center position and identity rotation -->
+    <position name="center" x="0" y="0" z="0"/>
+    <rotation name="identity" x="0" y="0" z="0"/>
+    
+    <!-- dimension of world box side -->
+    <constant name="world_dim" value="10.0*m"/>
+            
+    <!-- target parameters -->
+    <constant name="target_dim_x" value="3.5*cm"/>
+    <constant name="target_dim_y" value="9.5*cm"/>
+    <!-- Titanium X0 = 3.560 cm.  Target thickeness = .1X0 -->
+    <constant name="target_thickness" value="3.560*mm"/>
+    <constant name="target_z" value="0.0*mm"/>
+
+    <!-- trigger pad parameters -->
+    <variable name="trigger_pad_dim_x" value="target_dim_x"/>
+    <variable name="trigger_pad_dim_y" value="target_dim_y"/>
+    <variable name="trigger_pad_thickness" value="1.0*mm"/>
+    <variable name="trigger_pad_zclear" value="0.001*mm"/>
+    <variable name="trigger_pad_down_z" value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + trigger_pad_zclear"/>
+    <variable name="trigger_pad_up_z"   value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - trigger_pad_zclear"/>
+       
+    <!-- tagger position -->    
+    <constant name="tagger_z_offset" value="3.0*mm"/>
+    <constant name="tagger_thickness" value="85.725*cm - tagger_z_offset"/>
+    <variable name="tagger_pos_z" value="-(tagger_thickness/2) - tagger_z_offset"/>
+    
+    <!-- recoil position -->
+    <variable name="recoil_z_offset" value="3.0*mm"/>
+    <variable name="recoil_thickness" value="20.0*cm - recoil_z_offset"/>
+    <variable name="recoil_pos_z" value="recoil_thickness/2 + recoil_z_offset"/>
+
+    <!-- distance from target to ecal face -->
+    <constant name="ecal_front_z" value="20.0*cm"/>
+            
+    <!-- position of calorimeter mother -->
+    <constant name="em_calorimeter_thickness" value="321.0*mm"/>
+    <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2."/>
+    <constant name="hadron_calorimeter_thickness" value="4731*mm"/>
+    <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2."/>
+
+    <!-- magnet position -->
+    <constant name="magnet_pos_z" value="-40*cm" />
+
+    <!-- define all subdetector positions using above Z values -->
+    <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
+    <position name="target_pos" x="0.0" y="0.0" z="target_z"/>
+    <position name="trigger_pad_down_pos" x="0.0" y="0.0" z="trigger_pad_down_z"/>
+    <position name="trigger_pad_up_pos"   x="0.0" y="0.0" z="trigger_pad_up_z"/>
+    <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
+    <position name="em_calorimeter_pos" x="0.0" y="0.0" z="em_calorimeter_pos_z"/>
+    <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="hadron_calorimeter_pos_z"/>
+    <position name="magnet_pos" x="0.0" y="0.0" z="magnet_pos_z" />         
+  </define>
+
+  <materials>
+    <element Z="7" formula="N" name="N">
+      <atom type="A" unit="g/mol" value="14.0068"/>
+    </element>
+    <element Z="8" formula="O" name="O">
+      <atom type="A" unit="g/mol" value="15.9994"/>
+    </element>
+    <element Z="18" formula="Ar" name="Ar">
+      <atom type="A" unit="g/mol" value="39.9477"/>
+    </element>
+    <material name="Air" state="gas">
+      <MEE unit="eV" value="85.643664635028"/>
+      <D unit="g/cm3" value="0.00119999936860922"/>
+      <fraction n="0.754" ref="N"/>
+      <fraction n="0.234" ref="O"/>
+      <fraction n="0.012" ref="Ar"/>
+    </material>
+    <element Z="74" formula="W" name="W">
+      <atom type="A" unit="g/mol" value="183.842"/>
+    </element>           
+    <material name="Titanium" state="solid">
+      <MEE unit="eV" value="233"/>
+      <D unit="g/cm3" value="4.506"/>
+      <fraction n="1" ref="Ti"/>
+    </material>
+    <element Z="14" formula="Si" name="Si">
+      <atom type="A" unit="g/mol" value="28.0854"/>
+    </element>
+    <material name="Silicon" state="solid">
+      <MEE unit="eV" value="173"/>
+      <D unit="g/cm3" value="2.32999877404956"/>
+      <fraction n="1" ref="Si"/>
+    </material>
+    <element Z="6" formula="C" name="C">
+      <atom type="A" unit="g/mol" value="12.0107"/>
+    </element>
+    <material name="Carbon" state="solid">
+      <MEE unit="eV" value="81"/>
+      <D unit="g/cm3" value="1.99999894768203"/>
+      <fraction n="1" ref="C"/>
+    </material>
+    <element Z="1" formula="H" name="H">
+      <atom type="A" unit="g/mol" value="1.00794"/>
+    </element>
+    <material name="Vacuum" state="gas">
+      <MEE unit="eV" value="19.2"/>
+      <D unit="g/cm3" value="9.99999473841014e-09"/>
+      <fraction n="1" ref="H"/>
+    </material>
+    <!-- trigger pad scintillator -->
+    <material name="Polyvinyltoluene">
+      <D type="density" value="1.023" unit="g/cm3"/>
+      <composite n="27" ref="C"/>
+      <composite n="30" ref="H"/>
+    </material>
+  </materials>
+
+  <solids>
+    <box lunit="mm" name="world_box" x="world_dim" y="world_dim" z="world_dim"/>
+    <box lunit="mm" name="target_box" x="target_dim_x" y="target_dim_y" z="target_thickness"/>
+    <box lunit="mm" name="trigger_pad_down_box" x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>
+    <box lunit="mm" name="trigger_pad_up_box"   x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>
+  </solids>
+
+  <structure>
+    <volume name="target">
+      <materialref ref="Titanium"/>
+      <solidref ref="target_box"/>
+      <auxiliary auxtype="SensDet" auxvalue="TargetSD"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="Target"/>
+    </volume>
+    <!-- Name is passed to the DetElem. -->
+    <volume name="TriggerPadDown">
+      <materialref ref="Polyvinyltoluene"/>
+      <solidref ref="trigger_pad_down_box"/>
+      <auxiliary auxtype="SensDet" auxvalue="TriggerPadDownSD"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>           
+    </volume> 
+    <!-- Name is passed to the DetElem. -->
+    <volume name="TriggerPadUp">
+      <materialref ref="Polyvinyltoluene"/>
+      <solidref ref="trigger_pad_up_box"/>
+      <auxiliary auxtype="SensDet" auxvalue="TriggerPadUpSD"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
+    </volume>
+    <volume name="World">
+      <materialref ref="Vacuum"/>
+      <solidref ref="world_box"/>
+      <physvol copynumber="1">
+        <file name="tagger.gdml"/>
+        <positionref ref="tagger_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol copynumber="2">
+        <volumeref ref="TriggerPadUp"/>
+        <positionref ref="trigger_pad_up_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol copynumber="3">
+        <volumeref ref="target"/>
+        <positionref ref="target_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol copynumber="4">
+        <volumeref ref="TriggerPadDown"/>
+        <positionref ref="trigger_pad_down_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol copynumber="5">
+        <file name="recoil.gdml"/>
+        <positionref ref="recoil_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol copynumber="6">
+        <file name="ecal.gdml"/>
+        <positionref ref="em_calorimeter_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol copynumber="7">
+        <file name="hcal.gdml"/>
+        <positionref ref="hadron_calorimeter_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <physvol>
+        <file name="magnet.gdml"/>
+        <positionref ref="magnet_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
+      <auxiliary auxtype="DetElem" auxvalue="Top"/>
+    </volume>
+  </structure>
+  
+  <userinfo>
+  
+    <!-- detector version -->
+    <auxiliary auxtype="DetectorVersion" auxvalue="1">
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v9-fieldmap-magnet"/>
+      <auxiliary auxtype="Author" auxvalue="Omar Moreno, Andrew Whitbeck"/>
+      <auxiliary auxtype="Description" auxvalue="The v9 detector with a full 3D field map and magnet material."/>
+    </auxiliary>
+    
+    <!-- define sensitive detectors -->
+    <auxiliary auxtype="SensDet" auxvalue="TaggerSD">
+      <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="TaggerSimHits"/>
+      <auxiliary auxtype="SubdetID" auxvalue="1"/>
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
+    </auxiliary>
+    <auxiliary auxtype="SensDet" auxvalue="TriggerPadUpSD">
+      <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadUpSimHits"/>
+      <auxiliary auxtype="SubdetID" auxvalue="2"/>
+      <auxiliary auxtype="LayerDepth" auxvalue="1"/>
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
+    </auxiliary>    
+    <auxiliary auxtype="SensDet" auxvalue="TargetSD">
+      <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="TargetSimHits"/>
+      <auxiliary auxtype="SubdetID" auxvalue="3"/>
+      <auxiliary auxtype="LayerDepth" auxvalue="1"/>
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
+    </auxiliary>    
+    <auxiliary auxtype="SensDet" auxvalue="TriggerPadDownSD">
+      <auxiliary auxtype="SensDetType" auxvalue="CalorimeterSD"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="TriggerPadDownSimHits"/>
+      <auxiliary auxtype="SubdetID" auxvalue="4"/>
+      <auxiliary auxtype="LayerDepth" auxvalue="1"/>
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
+    </auxiliary>
+    <auxiliary auxtype="SensDet" auxvalue="RecoilSD">
+      <auxiliary auxtype="SensDetType" auxvalue="TrackerSD"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="RecoilSimHits"/>
+      <auxiliary auxtype="SubdetID" auxvalue="5"/>
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
+    </auxiliary>
+    <auxiliary auxtype="SensDet" auxvalue="EcalSD">
+      <auxiliary auxtype="SensDetType" auxvalue="EcalSD"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="EcalSimHits"/>
+      <auxiliary auxtype="SubdetID" auxvalue="6"/>
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
+    </auxiliary>
+    <auxiliary auxtype="SensDet" auxvalue="HcalSD">
+      <auxiliary auxtype="SensDetType" auxvalue="HcalSD"/>
+      <auxiliary auxtype="HitsCollection" auxvalue="HcalSimHits"/>
+      <auxiliary auxtype="SubdetID" auxvalue="7"/>
+      <auxiliary auxtype="Verbose" auxvalue="0"/>
+    </auxiliary>    
+    
+    <!-- magnetic field with global field map definition -->     
+    <auxiliary auxtype="MagneticField" auxvalue="AnalyzingDipole">
+      <auxiliary auxtype="MagneticFieldType" auxvalue="MagneticFieldMap3D"/>
+      <auxiliary auxtype="File" auxvalue="BmapCorrected3D_13k_unfolded_scaled_1.15384615385.dat"/>
+      <auxiliary auxtype="OffsetX" auxvalue="0.0" auxunit="mm"/>
+      <auxiliary auxtype="OffsetY" auxvalue="0.0" auxunit="mm"/>
+      <auxiliary auxtype="OffsetZ" auxvalue="-400.0" auxunit="mm"/>
+    </auxiliary>    
+    
+    <!-- define regions -->
+    <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
+    </auxiliary>   
+    <auxiliary auxtype="Region" auxvalue="MagnetRegion">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
+    </auxiliary>
+    
+    <!-- define vis attributes -->
+    <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau">
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="false"/>
+    </auxiliary>    
+    <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau">
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="false"/>
+    </auxiliary>    
+    <auxiliary auxtype="VisAttributes" auxvalue="NoDau">
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+    </auxiliary>    
+    <auxiliary auxtype="VisAttributes" auxvalue="TargetVis">
+      <auxiliary auxtype="R" auxvalue="0.75"/>
+      <auxiliary auxtype="G" auxvalue="0.75"/>
+      <auxiliary auxtype="B" auxvalue="0.75"/>
+      <auxiliary auxtype="A" auxvalue="0.8"/>
+      <auxiliary auxtype="Style" auxvalue="solid"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="EcalVis">
+      <auxiliary auxtype="R" auxvalue="0.6"/>
+      <auxiliary auxtype="G" auxvalue="0.6"/>
+      <auxiliary auxtype="B" auxvalue="0.6"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>    
+    <auxiliary auxtype="VisAttributes" auxvalue="HcalVis">
+      <auxiliary auxtype="R" auxvalue="0.6"/>
+      <auxiliary auxtype="G" auxvalue="0.3"/>
+      <auxiliary auxtype="B" auxvalue="0.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="TaggerVis">
+      <auxiliary auxtype="R" auxvalue="0.8"/>
+      <auxiliary auxtype="G" auxvalue="0.8"/>
+      <auxiliary auxtype="B" auxvalue="0.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="RecoilVis">
+      <auxiliary auxtype="R" auxvalue="0.6"/>
+      <auxiliary auxtype="G" auxvalue="0.6"/>
+      <auxiliary auxtype="B" auxvalue="0.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis">
+      <auxiliary auxtype="R" auxvalue="0.9"/>
+      <auxiliary auxtype="G" auxvalue="0.8"/>
+      <auxiliary auxtype="B" auxvalue="1.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="MagnetVis">
+      <auxiliary auxtype="R" auxvalue="0.75"/>
+      <auxiliary auxtype="G" auxvalue="0.75"/>
+      <auxiliary auxtype="B" auxvalue="0.75"/>
+      <auxiliary auxtype="A" auxvalue="0.8"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
+      <auxiliary auxtype="Visible" auxvalue="false"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>    
+  </userinfo>  
+
+  <setup name="Default" version="1.0">
+    <world ref="World"/>
+  </setup>
+</gdml>
