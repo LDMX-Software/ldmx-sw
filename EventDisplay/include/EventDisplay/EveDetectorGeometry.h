@@ -40,7 +40,6 @@ namespace ldmx {
                 delete ecal_;
                 delete recoilTracker_;
                 delete detector_;
-                delete shapeDrawer_;
             }
 
             /**
@@ -86,7 +85,6 @@ namespace ldmx {
             TEveElement* recoilTracker_; //* Recoil Tracker Eve Element
             TEveElement* detector_; //* Entire Detector Eve Element
 
-            EveShapeDrawer* shapeDrawer_; //* Shape Drawer instance
     };
 }
 

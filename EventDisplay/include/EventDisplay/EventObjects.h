@@ -58,10 +58,6 @@ namespace ldmx {
 
                 delete hits_;
                 delete recoObjs_;
-
-                delete hexReadout_;
-                delete drawer_;
-
             }
 
             /**
@@ -153,8 +149,6 @@ namespace ldmx {
 
             TEveElement* hits_; //* Eve Element containing all hits
             TEveElement* recoObjs_; //* Eve Element containing reco objects that aren't hits
-
-            EveShapeDrawer* drawer_; //* drawer instance
 
             double simThresh_ = 0; //* threshold for sim particles to be drawn
 
