@@ -31,7 +31,7 @@ namespace ldmx {
             TString colName;
             colName.Form("Tower %d", col);
             TEveGeoShape* hexCol = EveShapeDrawer::getInstance().drawHexPrism(
-                    DETECTOR_GEOMETRY.getHexPrism( col ),
+                    DetectorGeometry::getInstance().getHexPrism( col ),
                     0, 0, 0, 
                     kBlue, 90, colName);
 
@@ -44,30 +44,30 @@ namespace ldmx {
     void EveDetectorGeometry::drawHCAL() {
     
         TEveGeoShape* backHcal = EveShapeDrawer::getInstance().drawRectPrism(
-                DETECTOR_GEOMETRY.getBoundingBox( HcalSection::BACK ),
+                DetectorGeometry::getInstance().getBoundingBox( HcalSection::BACK ),
                 0, 0, 0, kCyan, 90, "Back HCal"); 
         hcal_->AddElement(backHcal);
     
         TEveGeoShape* sideTopHcal = EveShapeDrawer::getInstance().drawRectPrism(
-                DETECTOR_GEOMETRY.getBoundingBox( HcalSection::TOP ),
+                DetectorGeometry::getInstance().getBoundingBox( HcalSection::TOP ),
                 0, 0, 0, kCyan, 90, "Module 1");
 
         sidehcal_->AddElement(sideTopHcal);
     
         TEveGeoShape* sideBottomHcal = EveShapeDrawer::getInstance().drawRectPrism(
-                DETECTOR_GEOMETRY.getBoundingBox( HcalSection::BOTTOM ),
+                DetectorGeometry::getInstance().getBoundingBox( HcalSection::BOTTOM ),
                 0, 0, 0, kCyan, 90, "Module 4");
 
         sidehcal_->AddElement(sideBottomHcal);
     
         TEveGeoShape* sideLeftHcal = EveShapeDrawer::getInstance().drawRectPrism(
-                DETECTOR_GEOMETRY.getBoundingBox( HcalSection::LEFT ),
+                DetectorGeometry::getInstance().getBoundingBox( HcalSection::LEFT ),
                 0, 0, 0, kCyan, 90, "Module 2");
 
         sidehcal_->AddElement(sideLeftHcal);
     
         TEveGeoShape* sideRightHcal = EveShapeDrawer::getInstance().drawRectPrism(
-                DETECTOR_GEOMETRY.getBoundingBox( HcalSection::RIGHT ),
+                DetectorGeometry::getInstance().getBoundingBox( HcalSection::RIGHT ),
                 0, 0, 0, kCyan, 90, "Module 3");
 
         sidehcal_->AddElement(sideRightHcal);
@@ -84,8 +84,8 @@ namespace ldmx {
             name.Form("Stereo_%d", layerID );
     
             TEveGeoShape *layer = EveShapeDrawer::getInstance().drawRectPrism(
-                    DETECTOR_GEOMETRY.getBoundingBox( layerID , 0 ),
-                    0, 0, DETECTOR_GEOMETRY.getRotAngle( layerID , 0 )*180/M_PI, 
+                    DetectorGeometry::getInstance().getBoundingBox( layerID , 0 ),
+                    0, 0, DetectorGeometry::getInstance().getRotAngle( layerID , 0 )*180/M_PI, 
                     kRed-10, 90, name );
     
             recoilTracker_->AddElement(layer);
@@ -99,8 +99,8 @@ namespace ldmx {
 
          
                 TEveGeoShape *layer = EveShapeDrawer::getInstance().drawRectPrism(
-                        DETECTOR_GEOMETRY.getBoundingBox( layerID , moduleID ),
-                        0, 0, DETECTOR_GEOMETRY.getRotAngle( layerID , moduleID )*180/M_PI, 
+                        DetectorGeometry::getInstance().getBoundingBox( layerID , moduleID ),
+                        0, 0, DetectorGeometry::getInstance().getRotAngle( layerID , moduleID )*180/M_PI, 
                         kRed-10, 90, name );
         
                 recoilTracker_->AddElement(layer);
