@@ -29,6 +29,14 @@ namespace ldmx {
         public:
 
             /**
+             * Get Instance of Drawer
+             */
+            static EveShapeDrawer &getInstance() {
+                static EveShapeDrawer esd;
+                return esd;
+            }
+
+            /**
              * Draw a hexagonal prism.
              *
              * @param xPos x coordinate for center of prism [mm]
@@ -145,6 +153,7 @@ namespace ldmx {
             UInt_t uid_ = 0; //* Unique ID counter for the drawings
 
     };
+
 }
 
 #endif

@@ -3,9 +3,6 @@
 namespace ldmx {
 
     EventObjects::EventObjects() {
-
-        drawer_ = new EveShapeDrawer();
-
         Initialize();
     }
 
@@ -127,7 +124,7 @@ namespace ldmx {
             TColor* aColor = new TColor();
             Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
 
-            TEveGeoShape* ecalDigiHit = drawer_->drawHexPrism(
+            TEveGeoShape* ecalDigiHit = EveShapeDrawer::getInstance().drawHexPrism(
                     DETECTOR_GEOMETRY.getHexPrism( hitVec[i] ),
                     0, 0, 0, 
                     color, 0, digiName);
@@ -172,7 +169,7 @@ namespace ldmx {
             digiName.Form("%d PEs, Section %d, Layer %d, Bar %d, Z %1.5g", pe, section, layer, bar, hitVec[i]->getZ());
 
             BoundingBox hcal_hit_bb = DETECTOR_GEOMETRY.getBoundingBox( hitVec[i] );
-            TEveGeoShape *hcalDigiHit = drawer_->drawRectPrism(
+            TEveGeoShape *hcalDigiHit = EveShapeDrawer::getInstance().drawRectPrism(
                     hcal_hit_bb ,
                     0, 0, 0, color, 0, digiName );
 
@@ -199,7 +196,7 @@ namespace ldmx {
             TString recoilName;
             recoilName.Form("Recoil Hit %d", iter);
 
-            TEveGeoShape *recoilHit = drawer_->drawRectPrism(
+            TEveGeoShape *recoilHit = EveShapeDrawer::getInstance().drawRectPrism(
                     DETECTOR_GEOMETRY.getBoundingBox( hit ) ,
                     0, 0, DETECTOR_GEOMETRY.getRotAngle( hit->getLayerID() , hit->getModuleID() )*180/M_PI,
                     kRed+1, 0, recoilName );
@@ -238,7 +235,7 @@ namespace ldmx {
                 TColor* aColor = new TColor();
                 Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
     
-                TEveGeoShape* ecalDigiHit = drawer_->drawHexPrism(
+                TEveGeoShape* ecalDigiHit = EveShapeDrawer::getInstance().drawHexPrism(
                         DETECTOR_GEOMETRY.getHexPrism( cellID , moduleID , layer ),
                         0, 0, 0, 
                         color, 0, "RecHit");
