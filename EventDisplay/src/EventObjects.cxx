@@ -4,7 +4,6 @@ namespace ldmx {
 
     EventObjects::EventObjects() {
 
-        hexReadout_ = new EcalHexReadout();
         drawer_ = new EveShapeDrawer();
 
         Initialize();

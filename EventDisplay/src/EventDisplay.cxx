@@ -1,3 +1,8 @@
+/**
+ * @file EventDisplay.cxx
+ * @author Josh Hiltbrand, University of Minnesota
+ */
+
 #include "EventDisplay/EventDisplay.h"
 
 ClassImp(ldmx::EventDisplay);

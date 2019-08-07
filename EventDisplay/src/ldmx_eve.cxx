@@ -1,3 +1,8 @@
+/**
+ * @file ldmx_eve.cxx
+ * @author Josh Hiltbrand, University of Minnesota
+ */
+
 // LDMX
 #include "EventDisplay/EventDisplay.h"
 
@@ -5,6 +10,12 @@
 
 using ldmx::EventDisplay;
 
+/**
+ * @app ldmx-eve
+ * @brief ldmx event display
+ *
+ * Transfers the input ROOT file to the EventDisplay class to manage and draw.
+ */
 int main(int argc, char** argv) {
 
     if (argc != 2) {

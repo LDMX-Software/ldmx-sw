@@ -1,3 +1,10 @@
+/**
+ * @file EveDetectorGeometry.cxx
+ * @author Tom Eichlersmith, University of Minnesota
+ * @author Josh Hiltbrand, University of Minnesota
+ * @brief Implementation file for EveDetectorGeometry Class
+ */
+
 #include "EventDisplay/EveDetectorGeometry.h"
 
 namespace ldmx {
