@@ -1,3 +1,9 @@
+/**
+ * @file EventObjects.h
+ * @author Josh Hiltbrand, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
+ */
+
 #ifndef EVENTDISPLAY_EVENTOBJECTS_H_
 #define EVENTDISPLAY_EVENTOBJECTS_H_
 

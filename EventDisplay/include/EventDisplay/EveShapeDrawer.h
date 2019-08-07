@@ -1,3 +1,9 @@
+/**
+ * @file EveShapeDrawer.h
+ * @author Josh Hiltbrand, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
+ */
+
 #ifndef EVENTDISPLAY_EVESHAPEDRAWER_H_
 #define EVENTDISPLAY_EVESHAPEDRAWER_H_
 
