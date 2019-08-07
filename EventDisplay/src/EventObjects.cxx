@@ -125,7 +125,7 @@ namespace ldmx {
             Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
 
             TEveGeoShape* ecalDigiHit = EveShapeDrawer::getInstance().drawHexPrism(
-                    DETECTOR_GEOMETRY.getHexPrism( hitVec[i] ),
+                    DetectorGeometry::getInstance().getHexPrism( hitVec[i] ),
                     0, 0, 0, 
                     color, 0, digiName);
 
@@ -168,7 +168,7 @@ namespace ldmx {
             TString digiName;
             digiName.Form("%d PEs, Section %d, Layer %d, Bar %d, Z %1.5g", pe, section, layer, bar, hitVec[i]->getZ());
 
-            BoundingBox hcal_hit_bb = DETECTOR_GEOMETRY.getBoundingBox( hitVec[i] );
+            BoundingBox hcal_hit_bb = DetectorGeometry::getInstance().getBoundingBox( hitVec[i] );
             TEveGeoShape *hcalDigiHit = EveShapeDrawer::getInstance().drawRectPrism(
                     hcal_hit_bb ,
                     0, 0, 0, color, 0, digiName );
@@ -197,8 +197,8 @@ namespace ldmx {
             recoilName.Form("Recoil Hit %d", iter);
 
             TEveGeoShape *recoilHit = EveShapeDrawer::getInstance().drawRectPrism(
-                    DETECTOR_GEOMETRY.getBoundingBox( hit ) ,
-                    0, 0, DETECTOR_GEOMETRY.getRotAngle( hit->getLayerID() , hit->getModuleID() )*180/M_PI,
+                    DetectorGeometry::getInstance().getBoundingBox( hit ) ,
+                    0, 0, DetectorGeometry::getInstance().getRotAngle( hit->getLayerID() , hit->getModuleID() )*180/M_PI,
                     kRed+1, 0, recoilName );
             recoilTrackerHits_->AddElement(recoilHit);
 
@@ -236,7 +236,7 @@ namespace ldmx {
                 Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
     
                 TEveGeoShape* ecalDigiHit = EveShapeDrawer::getInstance().drawHexPrism(
-                        DETECTOR_GEOMETRY.getHexPrism( cellID , moduleID , layer ),
+                        DetectorGeometry::getInstance().getHexPrism( cellID , moduleID , layer ),
                         0, 0, 0, 
                         color, 0, "RecHit");
                 ecalCluster->AddElement(ecalDigiHit);

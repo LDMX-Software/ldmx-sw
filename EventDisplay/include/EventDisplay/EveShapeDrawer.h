@@ -32,8 +32,8 @@ namespace ldmx {
              * Get Instance of Drawer
              */
             static EveShapeDrawer &getInstance() {
-                static EveShapeDrawer esd;
-                return esd;
+                static EveShapeDrawer EVE_SHAPE_DRAWER;
+                return EVE_SHAPE_DRAWER;
             }
 
             /**

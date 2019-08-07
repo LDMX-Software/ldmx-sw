@@ -50,11 +50,14 @@ namespace ldmx {
      */
     class DetectorGeometry {
         public:
+
             /**
-             * Constructor
-             * This is where all the detector constants are set.
+             * Get the single instance of this class.
              */
-            DetectorGeometry();
+            static const DetectorGeometry &getInstance() {
+                static const DetectorGeometry DETECTOR_GEOMETRY;
+                return DETECTOR_GEOMETRY;
+            }
 
             /**
              * Calculate real space coordinates from detector location.
@@ -137,6 +140,15 @@ namespace ldmx {
             BoundingBox getBoundingBox( SimTrackerHit* recoilHit ) const;
         
         private:
+
+            /**
+             * Constructor
+             * This is where all the detector constants are set.
+             *
+             * It is private so that the user is forced to use the single instance
+             * acquired from getInstance() above.
+             */
+            DetectorGeometry();
 
             /////////////////////////////////////////////////////////////
             // HCAL
@@ -235,10 +247,6 @@ namespace ldmx {
             std::map< int , double > recoilModuleAngle_;
     };
 
-    /**
-     * Namespace Wide Instance
-     */
-    const DetectorGeometry DETECTOR_GEOMETRY;
 }
 
 #endif /* DETDESCR_DETECTORGEOMETRY_H */
