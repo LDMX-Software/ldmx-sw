@@ -13,6 +13,9 @@ namespace ldmx {
         // HCAL
 
         hcalParityVertical_ = 1;
+
+        hcalUncertaintyTimingPos_ = 50.0;
+
         hcalThicknessScint_ = 15.0; 
 
         hcalWidthScint_ = 100.0;
@@ -241,7 +244,7 @@ namespace ldmx {
             if ( false ) { //( (layer ^ hcalParityVertical_) & 1) == 0 ) { //checks for same parity
                 //Vertical Layers
                 
-                x = hcalZeroStrip_.at( section ) + stripcenter;
+                x = -hcalZeroStrip_.at( section ) + stripcenter;
                 X.first  = x - estrip;
                 X.second = x + estrip;
                 
@@ -256,7 +259,7 @@ namespace ldmx {
                 X.first  = x - hcalUncertaintyTimingPos_;
                 X.second = x + hcalUncertaintyTimingPos_;
 
-                y = hcalZeroStrip_.at( section ) + stripcenter;
+                y = -hcalZeroStrip_.at( section ) + stripcenter;
                 Y.first  = y - estrip;
                 Y.second = y + estrip;
 
@@ -274,11 +277,10 @@ namespace ldmx {
                 X.first  = x - hcalUncertaintyTimingPos_;
                 X.second = x + hcalUncertaintyTimingPos_;
                 
-                if ( section == HcalSection::TOP ) {
-                    y = hcalZeroLayer_.at( section ) + layercenter;
-                } else {
-                    y = hcalZeroLayer_.at( section ) - layercenter;
-                } //top or bottom hcal
+                y = hcalZeroLayer_.at( section ) + layercenter;
+                if ( section == HcalSection::BOTTOM ) {
+                    y *= -1;
+                } 
 
                 Y.first  = y - elayer;
                 Y.second = y + elayer;
@@ -289,11 +291,10 @@ namespace ldmx {
                 Y.first  = y - hcalUncertaintyTimingPos_;
                 Y.second = y + hcalUncertaintyTimingPos_;
 
-                if ( section == HcalSection::LEFT ) {
-                    x = hcalZeroLayer_.at( section ) + layercenter;
-                } else {
-                    x = hcalZeroLayer_.at( section ) - layercenter;
-                } //left or right hcal
+                x = hcalZeroLayer_.at( section ) + layercenter;
+                if ( section == HcalSection::RIGHT ) {
+                    x *= -1;
+                }
 
                 X.first  = x - elayer;
                 X.second = x + elayer;
