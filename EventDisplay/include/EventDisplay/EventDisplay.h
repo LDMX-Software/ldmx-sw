@@ -1,3 +1,8 @@
+/**
+ * @file EventDisplay.h
+ * @author Josh Hiltbrand, University of Minnesota
+ */
+
 #ifndef EVENTDISPLAY_EVENTDISPLAY_H_
 #define EVENTDISPLAY_EVENTDISPLAY_H_
 
