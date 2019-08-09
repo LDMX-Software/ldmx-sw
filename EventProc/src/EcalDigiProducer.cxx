@@ -44,7 +44,7 @@ namespace ldmx {
         readoutThreshold_ = ps.getDouble("readoutThreshold")*noiseRMS_;
         //std::cout << "[ EcalDigiProducer ]: Readout threshold: " << readoutThreshold_ << " MeV" << std::endl;
 
-        secondOrderEnergyCorrection_ = ps.getDouble( "secondOrderEnergyCorrection" );
+        secondOrderEnergyCorrection_ = ps.getDouble( "secondOrderEnergyCorrection" , 4000./4220. );
 
         layerWeights_ = ps.getVDouble( "layerWeights" , LAYER_WEIGHTS );
 
