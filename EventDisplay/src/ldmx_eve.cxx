@@ -25,11 +25,6 @@ void printHelp();
 int main(int argc, char** argv) {
 
     //Parse command line options
-    if (argc < 2 or argc > 4 ) {
-        printHelp();
-        return -1;
-    }
-    
     bool verbose = false;
     std::string file;
     for ( int iArg = 1; iArg < argc; iArg++ ) {
@@ -43,7 +38,7 @@ int main(int argc, char** argv) {
             file = argv[iArg];
         } else {
             printHelp();
-            return -1;
+            return 1;
         }
     }
 
@@ -54,6 +49,7 @@ int main(int argc, char** argv) {
     int *dummyArgC;
     char **dummyArgV;
     TRint *app = new TRint( "app" , dummyArgC , dummyArgV, 0 , 0 , true );
+    app->SetPrompt( "" ); //no root[#] at beginning of each line
 
     TEveManager* manager = new TEveManager(1600, 1200, kTRUE, "FV");
     TEveUtil::SetupEnvironment();
@@ -62,34 +58,38 @@ int main(int argc, char** argv) {
     TEveBrowser* browser = manager->GetBrowser();
     browser->StartEmbedding(TRootBrowser::kLeft);
 
-    EventDisplay *display = new EventDisplay( manager , verbose );
+    if ( verbose ) {
+        std::cout << "[ ldmx-eve ] : Constructing Event Display window and drawing geometry." << std::endl;
+    }
+
+    EventDisplay display( manager , verbose );
 
     if ( verbose ) {
         std::cout << "[ ldmx-eve ] : Opening file " << file << std::endl;
     }
 
-    if (!display->SetFile(file)) { 
+    if (!display.SetFile(file)) { 
 
         std::cerr << "[ ldmx-eve ] : Unable to open file! Exiting..." << std::endl;
 
-        app->Terminate(0);
+        app->Terminate(1);
 
         delete browser;
-        delete display;
         delete manager;
 
-        return -1;
+        return 1;
     }
 
     browser->SetTabTitle("Event Control", 0);
     browser->StopEmbedding();
 
-    app->Run(kFALSE);
-    app->Terminate(0);
-
-    delete browser;
-    delete display;
-    delete manager;
+    if ( verbose ) {
+        std::cout << "[ ldmx-eve ] : Event display window has been opened. Enter '.q' to quit the root prompt." << std::endl;
+    }
+    
+    //TApplication::Terminate is called when quitting root
+    //  ROOT owns the hanging pointers and seems to be cleaning them up during quit
+    app->Run( kFALSE );
 
     return 0;
 } 
