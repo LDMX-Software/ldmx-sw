@@ -11,11 +11,11 @@ namespace ldmx {
 
     EveDetectorGeometry::EveDetectorGeometry() {
 
-        hcal_ = new TEveElementList("HCAL");
-        sidehcal_ = new TEveElementList("Side HCAL");
-        ecal_ = new TEveElementList("ECAL");
-        recoilTracker_ = new TEveElementList("Recoil Tracker");
-        detector_ = new TEveElementList("LDMX Detector");
+        hcal_           = new TEveElementList("HCAL");
+        sidehcal_       = new TEveElementList("Side HCAL");
+        ecal_           = new TEveElementList("ECAL");
+        recoilTracker_  = new TEveElementList("Recoil Tracker");
+        detector_       = new TEveElementList("LDMX Detector");
 
         drawECAL();
         drawHCAL();

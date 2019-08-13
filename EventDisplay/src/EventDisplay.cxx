@@ -1,6 +1,7 @@
 /**
  * @file EventDisplay.cxx
  * @author Josh Hiltbrand, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "EventDisplay/EventDisplay.h"
@@ -22,6 +23,8 @@ namespace ldmx {
             std::cout << "[ EventDisplay ] : Drawing detector geometry... " << std::flush;
         }
 
+        //when the first TGeoShape (a TGeoTube) is drawn, ROOT creates a default geometry for this drawing and
+        // prints an Info statement to std-out. Currently, I can't figure out how to turn this behavior off.
         theDetector_ = new EveDetectorGeometry();
         eventObjects_ = new EventObjects();
 
@@ -262,6 +265,20 @@ namespace ldmx {
             }
         }
     }
+
+    void EventDisplay::GetEcalSimParticlesCollInput() {
+
+        const TString ecalSimParticlesCollName = textBoxEcalScorePlaneBranch_->GetText();
+        foundEcalSPHits_ = GetCollection( ecalSimParticlesCollName , ecalSimParticles_ );
+
+        if (foundEcalSPHits_ ) {
+            ecalSimParticlesCollName_ = ecalSimParticlesCollName;
+            if (eventNum_ != -1) {
+                GotoEvent(eventNum_);
+            }
+        }
+    }
+
 
     bool EventDisplay::GotoEvent(int event) {
 
