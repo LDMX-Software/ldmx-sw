@@ -58,17 +58,14 @@ namespace ldmx {
                 delete ecalClusters_;
                 delete ecalSimParticles_;
 
-                delete textBox1_;
-                delete textBox2_;
-                delete textBox3_;
-                delete textBox4_;
-                delete textBox5_;
-                delete textBox6_;
-                delete textBox7_;
-                delete textBox8_;
-                delete textBox9_;
-                delete textBox10_;
-                delete textBox11_;
+                delete textBoxGotoEvent_;
+                delete textBoxClustersCollName_;
+                delete textBoxSimThresh_;
+                delete textBoxEventTreeName_;
+                delete textBoxEcalDigisCollName_;
+                delete textBoxHcalDigisCollName_;
+                delete textBoxTrackerHitsCollName_;
+                delete textBoxEcalScorePlaneBranch_;
 
                 delete manager_;
             }
@@ -100,12 +97,14 @@ namespace ldmx {
             void NextEvent();
 
             /**
-             * Attempts to get branch from event tree.
+             * Attempts to get branch from event tree and set the address to be
+             * the input TClonesArray.
              *
-             * @param ecalDigisCollName name of ecalDigis collection
-             * @return bool whether or not it was successful
+             * @param branchName name of branch containing TClonesArray
+             * @param collection TClonesArray that will be used in event display
+             * @return bool successful check
              */
-            bool GetECALDigisColl(const TString ecalDigisCollName);
+            bool GetCollection( const TString branchName , TClonesArray *collection );
 
             /**
              * Gets ecalDigis collection name from text box
@@ -113,51 +112,14 @@ namespace ldmx {
             void GetECALDigisCollInput();
 
             /**
-             * Attempts to get branch from event tree.
-             *
-             * @param clustersCollName name of clusters collection
-             * @return bool whether or not it was successful
-             */
-            bool GetClustersColl(const TString clustersCollName);
-
-            /**
              * Gets clusters collection name from text box
              */
             void GetClustersCollInput();
 
             /**
-             * Attempts to get branch from event tree.
-             *
-             * @param trackerHitsCollName name of trackerHits collection
-             * @return bool whether or not it was successful
-             */
-            bool GetTrackerHitsColl(const TString trackerHitsCollName);
-
-            /**
              * Gets trackerHits collection name from text box
              */
             void GetTrackerHitsCollInput();
-
-            /**
-             * Attempts to get branch from event tree.
-             *
-             * @param ecalSimParticlesCollName name of ecalSimParticles collection
-             * @return bool whether or not it was successful
-             */
-            bool GetEcalSimParticlesColl(const TString ecalSimParticlesCollName);
-
-            /**
-             * Gets ecalSimParticles collection name from text box
-             */
-            void GetEcalSimParticlesCollInput();
-
-            /**
-             * Attempts to get branch from event tree.
-             *
-             * @param hcalDigisCollName name of hcalDigis collection
-             * @return bool whether or not it was successful
-             */
-            bool GetHCALDigisColl(const TString hcalDigisCollName);
 
             /**
              * Gets hcalDigis collection name from text box
@@ -231,17 +193,14 @@ namespace ldmx {
             EveDetectorGeometry* theDetector_{nullptr}; //* detector geometry instance
             EventObjects* eventObjects_{nullptr}; //* drawing methods for event objects
 
-            TGTextEntry* textBox1_;
-            TGTextEntry* textBox2_;
-            TGTextEntry* textBox3_;
-            TGTextEntry* textBox4_;
-            TGTextEntry* textBox5_;
-            TGTextEntry* textBox6_;
-            TGTextEntry* textBox7_;
-            TGTextEntry* textBox8_;
-            TGTextEntry* textBox9_;
-            TGTextEntry* textBox10_;
-            TGTextEntry* textBox11_;
+            TGTextEntry* textBoxGotoEvent_;
+            TGTextEntry* textBoxClustersCollName_;
+            TGTextEntry* textBoxSimThresh_;
+            TGTextEntry* textBoxEventTreeName_;
+            TGTextEntry* textBoxEcalDigisCollName_;
+            TGTextEntry* textBoxHcalDigisCollName_;
+            TGTextEntry* textBoxTrackerHitsCollName_;
+            TGTextEntry* textBoxEcalScorePlaneBranch_;
 
             TEveManager* manager_{nullptr}; //* event display manager
 

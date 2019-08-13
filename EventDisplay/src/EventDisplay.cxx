@@ -51,57 +51,57 @@ namespace ldmx {
         commandFrame2->AddFrame(buttonNext, new TGLayoutHints(kLHintsExpandX));
         buttonNext->Connect("Pressed()", "ldmx::EventDisplay", this, "NextEvent()");
 
-        textBox1_ = new TGTextEntry(commandFrame1, new TGTextBuffer(100));
-        commandFrame1->AddFrame(textBox1_, new TGLayoutHints(kLHintsExpandX));
+        textBoxGotoEvent_ = new TGTextEntry(commandFrame1, new TGTextBuffer(100));
+        commandFrame1->AddFrame(textBoxGotoEvent_, new TGLayoutHints(kLHintsExpandX));
 
         TGButton* buttonGoTo = new TGTextButton(commandFrame1, "Go to Event");
         commandFrame1->AddFrame(buttonGoTo, new TGLayoutHints(kLHintsExpandX));
         buttonGoTo->Connect("Pressed()", "ldmx::EventDisplay", this, "GotoEvent()");
 
-        textBox2_ = new TGTextEntry(commandFrame5, new TGTextBuffer(100));
-        commandFrame5->AddFrame(textBox2_, new TGLayoutHints(kLHintsExpandX));
+        textBoxClustersCollName_ = new TGTextEntry(commandFrame5, new TGTextBuffer(100));
+        commandFrame5->AddFrame(textBoxClustersCollName_, new TGLayoutHints(kLHintsExpandX));
 
         TGButton* buttonClusterName = new TGTextButton(commandFrame5, "Set Clusters Branch");
         commandFrame5->AddFrame(buttonClusterName, new TGLayoutHints(kLHintsExpandX));
         buttonClusterName->Connect("Pressed()", "ldmx::EventDisplay", this, "GetClustersCollInput()");
 
-        textBox3_ = new TGTextEntry(commandFrame6, new TGTextBuffer(100));
-        commandFrame6->AddFrame(textBox3_, new TGLayoutHints(kLHintsExpandX));
+        textBoxSimThresh_ = new TGTextEntry(commandFrame6, new TGTextBuffer(100));
+        commandFrame6->AddFrame(textBoxSimThresh_, new TGLayoutHints(kLHintsExpandX));
 
         TGButton* buttonDrawThresh = new TGTextButton(commandFrame6, "Sim P [MeV] Threshold");
         commandFrame6->AddFrame(buttonDrawThresh, new TGLayoutHints(kLHintsExpandX));
         buttonDrawThresh->Connect("Pressed()", "ldmx::EventDisplay", this, "SetSimThresh()");
 
-        textBox4_ = new TGTextEntry(commandFrame7, new TGTextBuffer(100));
-        commandFrame7->AddFrame(textBox4_, new TGLayoutHints(kLHintsExpandX));
+        textBoxEventTreeName_ = new TGTextEntry(commandFrame7, new TGTextBuffer(100));
+        commandFrame7->AddFrame(textBoxEventTreeName_, new TGLayoutHints(kLHintsExpandX));
 
         TGButton* buttonSetTree = new TGTextButton(commandFrame7, "Set Event TTree");
         commandFrame7->AddFrame(buttonSetTree, new TGLayoutHints(kLHintsExpandX));
         buttonSetTree->Connect("Pressed()", "ldmx::EventDisplay", this, "SetEventTree()");
 
-        textBox5_ = new TGTextEntry(commandFrame8, new TGTextBuffer(100));
-        commandFrame8->AddFrame(textBox5_, new TGLayoutHints(kLHintsExpandX));
+        textBoxEcalDigisCollName_ = new TGTextEntry(commandFrame8, new TGTextBuffer(100));
+        commandFrame8->AddFrame(textBoxEcalDigisCollName_, new TGLayoutHints(kLHintsExpandX));
 
         TGButton* buttonSetECALBranch = new TGTextButton(commandFrame8, "Set ECAL Digis Branch");
         commandFrame8->AddFrame(buttonSetECALBranch, new TGLayoutHints(kLHintsExpandX));
         buttonSetECALBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetECALDigisCollInput()");
 
-        textBox6_ = new TGTextEntry(commandFrame9, new TGTextBuffer(100));
-        commandFrame9->AddFrame(textBox6_, new TGLayoutHints(kLHintsExpandX));
+        textBoxHcalDigisCollName_ = new TGTextEntry(commandFrame9, new TGTextBuffer(100));
+        commandFrame9->AddFrame(textBoxHcalDigisCollName_, new TGLayoutHints(kLHintsExpandX));
 
         TGButton* buttonSetHCALBranch = new TGTextButton(commandFrame9, "Set HCAL Digis Branch");
         commandFrame9->AddFrame(buttonSetHCALBranch, new TGLayoutHints(kLHintsExpandX));
         buttonSetHCALBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetHCALDigisCollInput()");
 
-        textBox7_ = new TGTextEntry(commandFrame10, new TGTextBuffer(100));
-        commandFrame10->AddFrame(textBox7_, new TGLayoutHints(kLHintsExpandX));
+        textBoxTrackerHitsCollName_ = new TGTextEntry(commandFrame10, new TGTextBuffer(100));
+        commandFrame10->AddFrame(textBoxTrackerHitsCollName_, new TGLayoutHints(kLHintsExpandX));
 
         TGButton* buttonSetRecoilBranch = new TGTextButton(commandFrame10, "Set Recoil Sims Branch");
         commandFrame10->AddFrame(buttonSetRecoilBranch, new TGLayoutHints(kLHintsExpandX));
         buttonSetRecoilBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetTrackerHitsCollInput()");
 
-        textBox11_ = new TGTextEntry(commandFrame11, new TGTextBuffer(100));
-        commandFrame11->AddFrame(textBox11_, new TGLayoutHints(kLHintsExpandX));
+        textBoxEcalScorePlaneBranch_ = new TGTextEntry(commandFrame11, new TGTextBuffer(100));
+        commandFrame11->AddFrame(textBoxEcalScorePlaneBranch_, new TGLayoutHints(kLHintsExpandX));
 
         TGButton* buttonSetSimParticlesBranch = new TGTextButton(commandFrame11, "Set Sim Particles Branch");
         commandFrame11->AddFrame(buttonSetSimParticlesBranch, new TGLayoutHints(kLHintsExpandX));
@@ -151,11 +151,11 @@ namespace ldmx {
         ecalClusters_     = new TClonesArray( EventConstants::ECAL_CLUSTER.c_str() );
         ecalSimParticles_ = new TClonesArray( EventConstants::SIM_TRACKER_HIT.c_str() );
 
-        foundECALDigis_     = GetECALDigisColl(ecalDigisCollName_);
-        foundHCALDigis_     = GetHCALDigisColl(hcalDigisCollName_);
-        foundClusters_      = GetClustersColl(clustersCollName_);
-        foundTrackerHits_   = GetTrackerHitsColl(trackerHitsCollName_);
-        foundEcalSPHits_    = GetEcalSimParticlesColl(ecalSimParticlesCollName_);
+        foundECALDigis_     = GetCollection( ecalDigisCollName_ , ecalDigiHits_ );
+        foundHCALDigis_     = GetCollection( hcalDigisCollName_ , hcalDigiHits_ );
+        foundClusters_      = GetCollection( clustersCollName_ , ecalClusters_ );
+        foundTrackerHits_   = GetCollection( trackerHitsCollName_ , recoilHits_ );
+        foundEcalSPHits_    = GetCollection( ecalSimParticlesCollName_ , ecalSimParticles_ );
 
         return true;
     }
@@ -176,10 +176,21 @@ namespace ldmx {
         GotoEvent(eventNum_ + 1);
     }
 
+    bool EventDisplay::GetCollection( const TString branchName , TClonesArray *collection ) {
+        
+        if ( tree_->GetListOfBranches()->FindObject(branchName) ) {
+            tree_->SetBranchAddress( branchName , &collection );
+            return true;
+        } else {
+            std::cout << "[ EventDisplay ] : No branch with name \"" << branchName << "\"" << std::endl;
+            return false;
+        }
+    }
+
     void EventDisplay::GetECALDigisCollInput() {
 
-        const TString ecalDigisCollName = textBox5_->GetText();
-        foundECALDigis_ = GetECALDigisColl(ecalDigisCollName);
+        const TString ecalDigisCollName = textBoxEcalDigisCollName_->GetText();
+        foundECALDigis_ = GetCollection( ecalDigisCollName , ecalDigiHits_ );
 
         if (foundECALDigis_) {
             ecalDigisCollName_ = ecalDigisCollName;
@@ -189,22 +200,10 @@ namespace ldmx {
         }
     }
 
-    bool EventDisplay::GetECALDigisColl(const TString ecalDigisCollName) {
-
-        if (tree_->GetListOfBranches()->FindObject(ecalDigisCollName)) {
-            tree_->ResetBranchAddress(tree_->GetBranch(ecalDigisCollName_));
-            tree_->SetBranchAddress(ecalDigisCollName, &ecalDigiHits_);
-            return true;
-        } else {
-            std::cout << "[ EventDisplay ] : No branch with name \"" << ecalDigisCollName <<"\"" << std::endl;
-            return false;
-        }
-    }
-
     void EventDisplay::GetHCALDigisCollInput() {
 
-        const TString hcalDigisCollName = textBox6_->GetText();
-        foundHCALDigis_ = GetHCALDigisColl(hcalDigisCollName);
+        const TString hcalDigisCollName = textBoxHcalDigisCollName_->GetText();
+        foundHCALDigis_ = GetCollection( hcalDigisCollName , hcalDigiHits_ );
 
         if (foundHCALDigis_) {
             hcalDigisCollName_ = hcalDigisCollName;
@@ -214,23 +213,10 @@ namespace ldmx {
         }
     }
 
-    bool EventDisplay::GetHCALDigisColl(const TString hcalDigisCollName) {
-
-        if (tree_->GetListOfBranches()->FindObject(hcalDigisCollName)) {
-            tree_->ResetBranchAddress(tree_->GetBranch(hcalDigisCollName_));
-            tree_->SetBranchAddress(hcalDigisCollName, &hcalDigiHits_);
-            return true;
-        } else {
-            std::cout << "[ EventDisplay ] : No branch with name \"" << hcalDigisCollName <<"\"" << std::endl;
-            return false;
-        }
-    }
-
     void EventDisplay::GetTrackerHitsCollInput() {
 
-        const TString trackerHitsCollName = textBox7_->GetText();
-        trackerHitsCollName_ = trackerHitsCollName;
-        foundTrackerHits_ = GetTrackerHitsColl(trackerHitsCollName);
+        const TString trackerHitsCollName = textBoxTrackerHitsCollName_->GetText();
+        foundTrackerHits_ = GetCollection( trackerHitsCollName , recoilHits_ );
 
         if (foundTrackerHits_) {
             trackerHitsCollName_ = trackerHitsCollName;
@@ -240,62 +226,16 @@ namespace ldmx {
         }
     }
 
-    bool EventDisplay::GetTrackerHitsColl(const TString trackerHitsCollName) {
-        if (tree_->GetListOfBranches()->FindObject(trackerHitsCollName)) {
-            tree_->ResetBranchAddress(tree_->GetBranch(trackerHitsCollName_));
-            tree_->SetBranchAddress(trackerHitsCollName, &recoilHits_);
-            return true;
-        } else {
-            std::cout << "[ EventDisplay ] : No branch with name \"" << trackerHitsCollName << "\"" << std::endl;
-            return false;
-        }
-    }
-
     void EventDisplay::GetClustersCollInput() {
 
-        const TString clustersCollName = textBox2_->GetText();
-        foundClusters_ = GetClustersColl(clustersCollName);
+        const TString clustersCollName = textBoxClustersCollName_->GetText();
+        foundClusters_ = GetCollection( clustersCollName , ecalClusters_ );
 
         if (foundClusters_) {
             clustersCollName_ = clustersCollName;
             if (eventNum_ != -1) {
                 GotoEvent(eventNum_);
             }
-        }
-    }
-
-    bool EventDisplay::GetClustersColl(const TString clustersCollName) {
-        if (tree_->GetListOfBranches()->FindObject(clustersCollName)) {
-            tree_->ResetBranchAddress(tree_->GetBranch(clustersCollName_));
-            tree_->SetBranchAddress(clustersCollName, &ecalClusters_);
-            return true;
-        } else {
-            std::cout << "[ EventDisplay ] : No branch with name \"" << clustersCollName << "\"" << std::endl;
-            return false;
-        }
-    }
-
-    void EventDisplay::GetEcalSimParticlesCollInput() {
-
-        const TString clustersCollName = textBox2_->GetText();
-        foundClusters_ = GetClustersColl(clustersCollName);
-
-        if (foundClusters_) {
-            clustersCollName_ = clustersCollName;
-            if (eventNum_ != -1) {
-                GotoEvent(eventNum_);
-            }
-        }
-    }
-
-    bool EventDisplay::GetEcalSimParticlesColl(const TString ecalSimParticlesCollName) {
-        if (tree_->GetListOfBranches()->FindObject(ecalSimParticlesCollName)) {
-            tree_->ResetBranchAddress(tree_->GetBranch(ecalSimParticlesCollName_));
-            tree_->SetBranchAddress(ecalSimParticlesCollName, &ecalSimParticles_);
-            return true;
-        } else {
-            std::cout << "[ EventDisplay ] : No branch with name \"" << ecalSimParticlesCollName << "\"" << std::endl;
-            return false;
         }
     }
 
@@ -349,10 +289,10 @@ namespace ldmx {
 
     bool EventDisplay::GotoEvent() {
 
-        int event = atoi(textBox1_->GetText());
-        if (event == 0 && std::string(textBox1_->GetText()) != "0") {
+        int event = atoi(textBoxGotoEvent_->GetText());
+        if (event == 0 && std::string(textBoxGotoEvent_->GetText()) != "0") {
             std::cout << "[ EventDisplay ] : Invalid event number entered: \"" 
-                << textBox1_->GetText() << "\"" << std::endl;
+                << textBoxGotoEvent_->GetText() << "\"" << std::endl;
             return false;
         }
         return GotoEvent(event);
@@ -360,7 +300,7 @@ namespace ldmx {
 
     bool EventDisplay::SetEventTree() {
 
-        const TString treeName = textBox4_->GetText();
+        const TString treeName = textBoxEventTreeName_->GetText();
         TTree* tree = (TTree*) file_->Get(treeName);
         if (!tree) {
             std::cout << "\n[ EventDisplay ] : Input file contains no tree \"" << treeName << "\"" << std::endl;
@@ -370,21 +310,21 @@ namespace ldmx {
         tree_ = tree;
         eventTreeName_ = treeName;
 
-        foundECALDigis_ = GetECALDigisColl(ecalDigisCollName_);
-        foundHCALDigis_ = GetHCALDigisColl(hcalDigisCollName_);
-        foundClusters_ = GetClustersColl(clustersCollName_);
-        foundTrackerHits_ = GetTrackerHitsColl(trackerHitsCollName_);
-        foundEcalSPHits_ = GetEcalSimParticlesColl(ecalSimParticlesCollName_);
+        foundECALDigis_     = GetCollection( ecalDigisCollName_ , ecalDigiHits_ );
+        foundHCALDigis_     = GetCollection( hcalDigisCollName_ , hcalDigiHits_ );
+        foundClusters_      = GetCollection( clustersCollName_ , ecalClusters_ );
+        foundTrackerHits_   = GetCollection( trackerHitsCollName_ , recoilHits_ );
+        foundEcalSPHits_    = GetCollection( ecalSimParticlesCollName_ , ecalSimParticles_ );
 
         return GotoEvent(eventNum_);
     }
 
     bool EventDisplay::SetSimThresh() {
 
-        double thresh = atof(textBox3_->GetText());
-        if (thresh == 0 && std::string(textBox3_->GetText()) != "0") {
+        double thresh = atof(textBoxSimThresh_->GetText());
+        if (thresh == 0 && std::string(textBoxSimThresh_->GetText()) != "0") {
             std::cout << "[ EventDisplay ] : Invalid sim energy threshold entered: \""
-                << textBox3_->GetText() << "\"" << std::endl;
+                << textBoxSimThresh_->GetText() << "\"" << std::endl;
             return false;
         }
 
