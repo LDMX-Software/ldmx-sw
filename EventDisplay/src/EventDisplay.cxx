@@ -133,31 +133,29 @@ namespace ldmx {
         file_ = TFile::Open(file);
 
         if (!file_) {
-            std::cout << std::endl;
-            std::cout << "Input root file cannot be opened." << std::endl;
+            std::cout << "\n[ EventDisplay ] : Input root file cannot be opened." << std::endl;
             return false;
         }
 
         tree_ = (TTree*) file_->Get(eventTreeName_);
 
         if (!tree_) {
-            std::cout << std::endl;
-            std::cout << "Input file contains no tree \"LDMX_Events\"" << std::endl;
+            std::cout << "\n[ EventDisplay ] : Input file contains no tree \"" << eventTreeName_ << "\"" << std::endl;
             return false;
         }
         eventNumMax_ = tree_->GetEntriesFast()-1;
 
-        ecalDigiHits_ = new TClonesArray("ldmx::EcalHit");
-        hcalDigiHits_ = new TClonesArray("ldmx::HcalHit");
-        recoilHits_ = new TClonesArray("ldmx::SimTrackerHit");
-        ecalClusters_ = new TClonesArray("ldmx::EcalCluster");
-        ecalSimParticles_ = new TClonesArray("ldmx::SimTrackerHit");
+        ecalDigiHits_     = new TClonesArray( EventConstants::ECAL_HIT.c_str() );
+        hcalDigiHits_     = new TClonesArray( EventConstants::HCAL_HIT.c_str() );
+        recoilHits_       = new TClonesArray( EventConstants::SIM_TRACKER_HIT.c_str() );
+        ecalClusters_     = new TClonesArray( EventConstants::ECAL_CLUSTER.c_str() );
+        ecalSimParticles_ = new TClonesArray( EventConstants::SIM_TRACKER_HIT.c_str() );
 
-        foundECALDigis_ = GetECALDigisColl(ecalDigisCollName_);
-        foundHCALDigis_ = GetHCALDigisColl(hcalDigisCollName_);
-        foundClusters_ = GetClustersColl(clustersCollName_);
-        foundTrackerHits_ = GetTrackerHitsColl(trackerHitsCollName_);
-        foundEcalSPHits_ = GetEcalSimParticlesColl(ecalSimParticlesCollName_);
+        foundECALDigis_     = GetECALDigisColl(ecalDigisCollName_);
+        foundHCALDigis_     = GetHCALDigisColl(hcalDigisCollName_);
+        foundClusters_      = GetClustersColl(clustersCollName_);
+        foundTrackerHits_   = GetTrackerHitsColl(trackerHitsCollName_);
+        foundEcalSPHits_    = GetEcalSimParticlesColl(ecalSimParticlesCollName_);
 
         return true;
     }
@@ -198,7 +196,7 @@ namespace ldmx {
             tree_->SetBranchAddress(ecalDigisCollName, &ecalDigiHits_);
             return true;
         } else {
-            std::cout << "No branch with name \"" << ecalDigisCollName <<"\"" << std::endl;
+            std::cout << "[ EventDisplay ] : No branch with name \"" << ecalDigisCollName <<"\"" << std::endl;
             return false;
         }
     }
@@ -223,7 +221,7 @@ namespace ldmx {
             tree_->SetBranchAddress(hcalDigisCollName, &hcalDigiHits_);
             return true;
         } else {
-            std::cout << "No branch with name \"" << hcalDigisCollName <<"\"" << std::endl;
+            std::cout << "[ EventDisplay ] : No branch with name \"" << hcalDigisCollName <<"\"" << std::endl;
             return false;
         }
     }
@@ -248,7 +246,7 @@ namespace ldmx {
             tree_->SetBranchAddress(trackerHitsCollName, &recoilHits_);
             return true;
         } else {
-            std::cout << "No branch with name \"" << trackerHitsCollName << "\"" << std::endl;
+            std::cout << "[ EventDisplay ] : No branch with name \"" << trackerHitsCollName << "\"" << std::endl;
             return false;
         }
     }
@@ -272,7 +270,7 @@ namespace ldmx {
             tree_->SetBranchAddress(clustersCollName, &ecalClusters_);
             return true;
         } else {
-            std::cout << "No branch with name \"" << clustersCollName << "\"" << std::endl;
+            std::cout << "[ EventDisplay ] : No branch with name \"" << clustersCollName << "\"" << std::endl;
             return false;
         }
     }
@@ -296,7 +294,7 @@ namespace ldmx {
             tree_->SetBranchAddress(ecalSimParticlesCollName, &ecalSimParticles_);
             return true;
         } else {
-            std::cout << "No branch with name \"" << ecalSimParticlesCollName << "\"" << std::endl;
+            std::cout << "[ EventDisplay ] : No branch with name \"" << ecalSimParticlesCollName << "\"" << std::endl;
             return false;
         }
     }
@@ -307,12 +305,14 @@ namespace ldmx {
         eventObjects_->Initialize();
 
         if (event > eventNumMax_ || event < 0) {
-            std::cout << "Event number out of range." << std::endl;
+            std::cout << "[ EventDisplay ] : Event number out of range." << std::endl;
             return false;
         }
         eventNum_ = event;
 
-        printf("Loading event %d.\n", eventNum_);
+        if ( verbose_ ) {
+            std::cout << "[ EventDisplay ] : Loading event " << event << "... " << std::flush;
+        }
 
         tree_->GetEntry(eventNum_);
 
@@ -340,6 +340,10 @@ namespace ldmx {
         manager_->AddElement(eventObjects_->getRecoObjects());
         manager_->Redraw3D(kFALSE);
 
+        if ( verbose_ ) {
+            std::cout << "done" << std::endl;
+        }
+
         return true;
     }
 
@@ -347,11 +351,11 @@ namespace ldmx {
 
         int event = atoi(textBox1_->GetText());
         if (event == 0 && std::string(textBox1_->GetText()) != "0") {
-            std::cout << "Invalid event number entered!" << std::endl;
+            std::cout << "[ EventDisplay ] : Invalid event number entered: \"" 
+                << textBox1_->GetText() << "\"" << std::endl;
             return false;
         }
-        GotoEvent(event);
-        return true;
+        return GotoEvent(event);
     }
 
     bool EventDisplay::SetEventTree() {
@@ -359,8 +363,7 @@ namespace ldmx {
         const TString treeName = textBox4_->GetText();
         TTree* tree = (TTree*) file_->Get(treeName);
         if (!tree) {
-            std::cout << std::endl;
-            std::cout << "Input file contains no tree \"" << treeName << "\"" << std::endl;
+            std::cout << "\n[ EventDisplay ] : Input file contains no tree \"" << treeName << "\"" << std::endl;
             return false;
         }
 
@@ -373,15 +376,15 @@ namespace ldmx {
         foundTrackerHits_ = GetTrackerHitsColl(trackerHitsCollName_);
         foundEcalSPHits_ = GetEcalSimParticlesColl(ecalSimParticlesCollName_);
 
-        GotoEvent(eventNum_);
-        return true;
+        return GotoEvent(eventNum_);
     }
 
     bool EventDisplay::SetSimThresh() {
 
         double thresh = atof(textBox3_->GetText());
-        if (thresh == 0 && std::string(textBox1_->GetText()) != "0") {
-            std::cout << "Invalid sim energy threshold entered!" << std::endl;
+        if (thresh == 0 && std::string(textBox3_->GetText()) != "0") {
+            std::cout << "[ EventDisplay ] : Invalid sim energy threshold entered: \""
+                << textBox3_->GetText() << "\"" << std::endl;
             return false;
         }
 
