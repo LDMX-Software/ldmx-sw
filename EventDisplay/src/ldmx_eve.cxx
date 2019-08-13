@@ -1,6 +1,7 @@
 /**
  * @file ldmx_eve.cxx
  * @author Josh Hiltbrand, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 // LDMX
