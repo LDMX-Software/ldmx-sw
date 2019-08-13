@@ -8,13 +8,16 @@ namespace ldmx {
 
     void EventObjects::Initialize() {
         
-        ecalHits_ = new TEveElementList("ECAL RecHits");
-        hcalHits_ = new TEveElementList("HCAL RecHits");
-        recoilTrackerHits_ = new TEveElementList("Recoil Sim Hits");
-        ecalClusters_ = new TEveElementList("ECAL Clusters");
-        ecalSimParticles_ = new TEveElementList("ECAL SP Sim Particles");
-        hits_ = new TEveElementList("Reco Hits");
-        recoObjs_ = new TEveElementList("Reco Objects");
+        //collections of event objects
+        ecalHits_           = new TEveElementList("ECAL RecHits");
+        hcalHits_           = new TEveElementList("HCAL RecHits");
+        recoilTrackerHits_  = new TEveElementList("Recoil Sim Hits");
+        ecalClusters_       = new TEveElementList("ECAL Clusters");
+        ecalSimParticles_   = new TEveElementList("ECAL SP Sim Particles");
+
+        //packages of event objects to be passed to event display manager
+        hits_               = new TEveElementList("Reco Hits");
+        recoObjs_           = new TEveElementList("Reco Objects");
 
     }
 
@@ -71,7 +74,7 @@ namespace ldmx {
 
         TEveElement* clusters = recoObjs_->FindChild("ECAL Clusters");
         if (clusters == 0) { 
-            std::cout << "No clusters to color!" << std::endl;
+            std::cout << "[ EventObjects ] : No clusters to color!" << std::endl;
             return; 
         }
 
@@ -90,6 +93,7 @@ namespace ldmx {
             } else {
                 Int_t ci = 200*r_.Rndm();
                 color = ci;
+                std::cout << "[ EventObjects ] : Using random colors to fill in extra clusters." << std::endl;
             }
 
             for (hit = el->BeginChildren(); hit != el->EndChildren(); hit++) { 
@@ -254,7 +258,6 @@ namespace ldmx {
         ecalClusters_->SetPickable(1);
         recoObjs_->AddElement(ecalClusters_);
     }
-
     
     void EventObjects::drawECALSimParticles(TClonesArray* ecalSimParticles) {
 
