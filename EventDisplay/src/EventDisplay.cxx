@@ -9,7 +9,8 @@ ClassImp(ldmx::EventDisplay);
 
 namespace ldmx {
 
-    EventDisplay::EventDisplay(TEveManager* manager) : TGMainFrame(gClient->GetRoot(), 320, 320) {
+    EventDisplay::EventDisplay( TEveManager* manager , bool verbose ) 
+        : TGMainFrame(gClient->GetRoot(), 320, 320), verbose_(verbose) {
 
         SetWindowName("LDMX Event Display");
 
