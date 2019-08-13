@@ -38,7 +38,7 @@ namespace ldmx {
              * Builds window frame and and control panel.
              * Imports geometry from EveDetectorGeometry.
              */
-            EventDisplay(TEveManager* manager);
+            EventDisplay( TEveManager* manager , bool verbose );
 
             /**
              * Destructor
@@ -200,6 +200,8 @@ namespace ldmx {
             void ColorClusters();
 
         private:
+
+            bool verbose_; //* verbosity flag
 
             TFile* file_; //* Event file
             TTree* tree_; //* Event tree
