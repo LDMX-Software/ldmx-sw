@@ -18,6 +18,10 @@ namespace ldmx {
         TGLViewer* viewer = manager_->GetDefaultGLViewer();
         viewer->UseLightColorSet();
 
+        if ( verbose_ ) {
+            std::cout << "[ EventDisplay ] : Drawing detector geometry... " << std::flush;
+        }
+
         theDetector_ = new EveDetectorGeometry();
         eventObjects_ = new EventObjects();
 
@@ -26,6 +30,11 @@ namespace ldmx {
         manager_->AddElement(theDetector_->getHCAL());
         manager_->AddElement(theDetector_->getRecoilTracker());
         manager_->AddEvent(new TEveEventManager("LDMX Event", ""));
+
+        if ( verbose_ ) {
+            std::cout << "done" << std::endl;
+            std::cout << "[ EventDisplay ] : Constructing and linking buttons... " << std::flush;
+        }
 
         TGVerticalFrame* contents = new TGVerticalFrame(this, 800,1200);
         TGHorizontalFrame* commandFrame1 = new TGHorizontalFrame(contents, 100,0);
@@ -126,6 +135,9 @@ namespace ldmx {
 
         manager_->FullRedraw3D(kTRUE);
 
+        if ( verbose_ ) {
+            std::cout << "done" << std::endl;
+        }
     }
 
     bool EventDisplay::SetFile(const TString file) {
@@ -133,16 +145,21 @@ namespace ldmx {
         file_ = TFile::Open(file);
 
         if (!file_) {
-            std::cout << "\n[ EventDisplay ] : Input root file cannot be opened." << std::endl;
+            std::cout << "[ EventDisplay ] : Input root file cannot be opened." << std::endl;
             return false;
+        } else if ( verbose_ ) {
+            std::cout << "[ EventDisplay ] : Input root file opened successfully." << std::endl;
         }
 
         tree_ = (TTree*) file_->Get(eventTreeName_);
 
         if (!tree_) {
-            std::cout << "\n[ EventDisplay ] : Input file contains no tree \"" << eventTreeName_ << "\"" << std::endl;
+            std::cout << "[ EventDisplay ] : Input file contains no tree \"" << eventTreeName_ << "\"" << std::endl;
             return false;
+        } else if ( verbose_ ) {
+            std::cout << "[ EventDisplay ] : Event tree retrieved from input file." << std::endl;
         }
+
         eventNumMax_ = tree_->GetEntriesFast()-1;
 
         ecalDigiHits_     = new TClonesArray( EventConstants::ECAL_HIT.c_str() );
@@ -161,7 +178,9 @@ namespace ldmx {
     }
 
     void EventDisplay::PreviousEvent() {
+
         if (eventNum_ <= 0) {
+            std::cout << "[ EventDisplay ] : Already at first event in file." << std::endl;
             return;
         }
 
@@ -169,7 +188,9 @@ namespace ldmx {
     }
 
     void EventDisplay::NextEvent() {
+
         if (eventNumMax_ == eventNum_) {
+            std::cout << "[ EventDisplay ] : Already at last event in file." << std::endl;
             return;
         }
 
@@ -180,6 +201,9 @@ namespace ldmx {
         
         if ( tree_->GetListOfBranches()->FindObject(branchName) ) {
             tree_->SetBranchAddress( branchName , &collection );
+            if ( verbose_ ) {
+                std::cout << "[ EventDisplay ] : Collection retrieved from branch \"" << branchName << "\"" << std::endl;
+            }
             return true;
         } else {
             std::cout << "[ EventDisplay ] : No branch with name \"" << branchName << "\"" << std::endl;
@@ -295,6 +319,7 @@ namespace ldmx {
                 << textBoxGotoEvent_->GetText() << "\"" << std::endl;
             return false;
         }
+
         return GotoEvent(event);
     }
 
@@ -303,8 +328,10 @@ namespace ldmx {
         const TString treeName = textBoxEventTreeName_->GetText();
         TTree* tree = (TTree*) file_->Get(treeName);
         if (!tree) {
-            std::cout << "\n[ EventDisplay ] : Input file contains no tree \"" << treeName << "\"" << std::endl;
+            std::cout << "[ EventDisplay ] : Input file contains no tree \"" << treeName << "\"" << std::endl;
             return false;
+        } else if ( verbose_ ) {
+            std::cout << "[ EventDisplay ] : Event tree set to \"" << treeName << "\"" << std::endl;
         }
 
         tree_ = tree;
@@ -326,6 +353,8 @@ namespace ldmx {
             std::cout << "[ EventDisplay ] : Invalid sim energy threshold entered: \""
                 << textBoxSimThresh_->GetText() << "\"" << std::endl;
             return false;
+        } else if ( verbose_ ) {
+            std::cout << "[ EventDisplay ] : Setting SimParticle energy threshold to " << thresh << std::endl;
         }
 
         eventObjects_->SetSimThresh(thresh);
