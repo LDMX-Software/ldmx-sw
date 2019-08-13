@@ -51,9 +51,7 @@ int main(int argc, char** argv) {
     TRint *app = new TRint( "app" , dummyArgC , dummyArgV, 0 , 0 , true );
     app->SetPrompt( "" ); //no root[#] at beginning of each line
 
-    TEveManager* manager = new TEveManager(1600, 1200, kTRUE, "FV");
-    TEveUtil::SetupEnvironment();
-    TEveUtil::SetupGUI();
+    TEveManager* manager = TEveManager::Create( kTRUE , "FV" );
 
     TEveBrowser* browser = manager->GetBrowser();
     browser->StartEmbedding(TRootBrowser::kLeft);
@@ -73,9 +71,8 @@ int main(int argc, char** argv) {
         std::cerr << "[ ldmx-eve ] : Unable to open file! Exiting..." << std::endl;
 
         app->Terminate(1);
-
-        delete browser;
-        delete manager;
+        manager->Terminate();
+        browser->ReallyDelete();
 
         return 1;
     }

@@ -127,6 +127,11 @@ namespace ldmx {
             void GetHCALDigisCollInput();
 
             /**
+             * Gets ECAL Sim Particles Branch name from text box
+             */
+            void GetEcalSimParticlesCollInput();
+
+            /**
              * Goes to the input event index if it is not outside the bounds.
              *
              * Destroys the elements from previous event and re-initializes the eventObjects_ instance.
