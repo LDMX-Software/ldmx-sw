@@ -105,37 +105,14 @@ namespace ldmx {
             void ColorClusters();
 
             /**
-             * Get the ecalHits Eve Element
-             */
-            TEveElement* getECALHits() { return ecalHits_; }
-
-            /**
-             * Get the hcalHits Eve Element
-             */
-            TEveElement* getHCALHits() { return hcalHits_; }
-
-            /**
-             * Get the recoilTrackerHits Eve Element
-             */
-            TEveElement* getRecoilHits() { return recoilTrackerHits_; }
-
-            /**
-             * Get the ecalClusters Eve Element
-             */
-            TEveElement* getECALClusters() { return ecalClusters_; }
-
-            /**
-             * Get the ecalSimParticles Eve Element
-             */
-            TEveElement* getECALSimParticles() { return ecalSimParticles_; }
-
-            /**
              * Get the hits Eve Element
+             * Used to attach these Eve Elements to the Eve Manager.
              */
             TEveElement* getHitCollections() { return hits_; }
 
             /**
              * Get the recoObjs Eve Element
+             * Used to attach these Eve Elements to the Eve Manager.
              */
             TEveElement* getRecoObjects() { return recoObjs_; }
 
