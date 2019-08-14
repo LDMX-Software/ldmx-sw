@@ -50,6 +50,14 @@ namespace ldmx {
                     float yStd,
                     float avgLayerHit,
                     float stdLayerHit,
+                    float ecalBackEnergy,
+
+                    std::vector<float> electronContainmentEnergy,
+                    std::vector<float> photonContainmentEnergy,
+                    std::vector<float> outsideContainmentEnergy,
+                    std::vector<int>   outsideContainmentNHits,
+                    std::vector<float> outsideContainmentXStd,
+                    std::vector<float> outsideContainmentYStd,
                     
                     std::vector<float> EcalLayerEdepReadout,
                     std::vector<double> recoilP, 
@@ -116,6 +124,34 @@ namespace ldmx {
             float getStdLayerHit() {
                 return stdLayerHit_;
             }
+
+            float getEcalBackEnergy() {
+                return ecalBackEnergy_;
+            }
+
+            std::vector<float> getElectronContainmentEnergy() {
+                return electronContainmentEnergy_;
+            }
+        
+            std::vector<float> getPhotonContainmentEnergy() {
+                return photonContainmentEnergy_;
+            }
+        
+            std::vector<float> getOutsideContainmentEnergy() {
+                return outsideContainmentEnergy_;
+            }
+        
+            std::vector<int> getOutsideContainmentNHits() {
+                return outsideContainmentNHits_;
+            }
+        
+            std::vector<float> getOutsideContainmentXStd() {
+                return outsideContainmentXStd_;
+            }
+        
+            std::vector<float> getOutsideContainmentYStd() {
+                return outsideContainmentYStd_;
+            }
         
             std::vector<float> getEcalLayerEdepReadout() {
                 return ecalLayerEdepReadout_;
@@ -153,7 +189,14 @@ namespace ldmx {
             float yStd_{0};
             float avgLayerHit_{0};
             float stdLayerHit_{0};
+            float ecalBackEnergy_{0};
 
+            std::vector<float> electronContainmentEnergy_;
+            std::vector<float> photonContainmentEnergy_;
+            std::vector<float> outsideContainmentEnergy_;
+            std::vector<int>   outsideContainmentNHits_;
+            std::vector<float> outsideContainmentXStd_;
+            std::vector<float> outsideContainmentYStd_;
         
             float discValue_{0};
             
@@ -174,7 +217,7 @@ namespace ldmx {
 
             std::vector<float> ecalLayerEdepReadout_;
 
-            ClassDef(EcalVetoResult, 3);
+            ClassDef(EcalVetoResult, 4);
     };
 }
 
