@@ -99,6 +99,7 @@ void printHelp() {
     printf( "   -v,--verbose    : Print debug messages to standard output\n" );
     printf( "   eventFilePath   : Event file to use in display\n" );
     printf( "                     Currently, only one input file is supported.\n" );
+    printf( "  NOTE: You still need to enter '.q' to quit root after closing the display window.\n" );
 
     return;
 }
