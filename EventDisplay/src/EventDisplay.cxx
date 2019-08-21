@@ -39,96 +39,97 @@ namespace ldmx {
             std::cout << "[ EventDisplay ] : Constructing and linking buttons... " << std::flush;
         }
 
-        TGVerticalFrame* contents = new TGVerticalFrame(this, 800,1200);
-        TGHorizontalFrame* commandFrame1 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame2 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame3 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame5 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame6 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame7 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame8 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame9 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame10 = new TGHorizontalFrame(contents, 100,0);
-        TGHorizontalFrame* commandFrame11 = new TGHorizontalFrame(contents, 100,0);
+        TGVerticalFrame* contents = new TGVerticalFrame(this, 1000,1200);
+        TGHorizontalFrame* commandFrameGotoEvent                = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrameNextEvent                = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrameColorClusters            = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrameEcalClusterBranch        = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrameSimThresh                = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrameEventTree                = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrameEcalHitBranch            = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrameHcalHitBranch            = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrameTrackerHitsBranch        = new TGHorizontalFrame(contents, 100,0);
+        TGHorizontalFrame* commandFrameEcalScorePlaneBranch     = new TGHorizontalFrame(contents, 100,0);
 
-        TGButton* buttonColor = new TGTextButton(commandFrame3, "Color Clusters");
-        commandFrame3->AddFrame(buttonColor, new TGLayoutHints(kLHintsExpandX));
+        TGButton* buttonColor = new TGTextButton(commandFrameColorClusters, "Color Clusters");
+        commandFrameColorClusters->AddFrame(buttonColor, new TGLayoutHints(kLHintsExpandX));
         buttonColor->Connect("Pressed()", "ldmx::EventDisplay", this, "ColorClusters()");
 
-        TGButton* buttonPrevious = new TGTextButton(commandFrame2, "<<< Previous Event");
-        commandFrame2->AddFrame(buttonPrevious, new TGLayoutHints(kLHintsExpandX));
+        TGButton* buttonPrevious = new TGTextButton(commandFrameNextEvent, "<<< Previous Event");
+        commandFrameNextEvent->AddFrame(buttonPrevious, new TGLayoutHints(kLHintsExpandX));
         buttonPrevious->Connect("Pressed()", "ldmx::EventDisplay", this, "PreviousEvent()");
 
-        TGButton* buttonNext = new TGTextButton(commandFrame2, "Next Event >>>");
-        commandFrame2->AddFrame(buttonNext, new TGLayoutHints(kLHintsExpandX));
+        TGButton* buttonNext = new TGTextButton(commandFrameNextEvent, "Next Event >>>");
+        commandFrameNextEvent->AddFrame(buttonNext, new TGLayoutHints(kLHintsExpandX));
         buttonNext->Connect("Pressed()", "ldmx::EventDisplay", this, "NextEvent()");
 
-        textBoxGotoEvent_ = new TGTextEntry(commandFrame1, new TGTextBuffer(100));
-        commandFrame1->AddFrame(textBoxGotoEvent_, new TGLayoutHints(kLHintsExpandX));
+        textBoxGotoEvent_ = new TGTextEntry(commandFrameGotoEvent, new TGTextBuffer(100));
+        commandFrameGotoEvent->AddFrame(textBoxGotoEvent_, new TGLayoutHints(kLHintsExpandX));
 
-        TGButton* buttonGoTo = new TGTextButton(commandFrame1, "Go to Event");
-        commandFrame1->AddFrame(buttonGoTo, new TGLayoutHints(kLHintsExpandX));
+        TGButton* buttonGoTo = new TGTextButton(commandFrameGotoEvent, "Go to Event");
+        commandFrameGotoEvent->AddFrame(buttonGoTo, new TGLayoutHints(kLHintsExpandX));
         buttonGoTo->Connect("Pressed()", "ldmx::EventDisplay", this, "GotoEvent()");
 
-        textBoxClustersCollName_ = new TGTextEntry(commandFrame5, new TGTextBuffer(100));
-        commandFrame5->AddFrame(textBoxClustersCollName_, new TGLayoutHints(kLHintsExpandX));
+        textBoxClustersCollName_ = new TGTextEntry(commandFrameEcalClusterBranch, new TGTextBuffer(100));
+        commandFrameEcalClusterBranch->AddFrame(textBoxClustersCollName_, new TGLayoutHints(kLHintsExpandX));
 
-        TGButton* buttonClusterName = new TGTextButton(commandFrame5, "Set Clusters Branch");
-        commandFrame5->AddFrame(buttonClusterName, new TGLayoutHints(kLHintsExpandX));
+        TGButton* buttonClusterName = new TGTextButton(commandFrameEcalClusterBranch, "Set Clusters Branch");
+        commandFrameEcalClusterBranch->AddFrame(buttonClusterName, new TGLayoutHints(kLHintsExpandX));
         buttonClusterName->Connect("Pressed()", "ldmx::EventDisplay", this, "GetClustersCollInput()");
 
-        textBoxSimThresh_ = new TGTextEntry(commandFrame6, new TGTextBuffer(100));
-        commandFrame6->AddFrame(textBoxSimThresh_, new TGLayoutHints(kLHintsExpandX));
+        textBoxSimThresh_ = new TGTextEntry(commandFrameSimThresh, new TGTextBuffer(100));
+        commandFrameSimThresh->AddFrame(textBoxSimThresh_, new TGLayoutHints(kLHintsExpandX));
 
-        TGButton* buttonDrawThresh = new TGTextButton(commandFrame6, "Sim P [MeV] Threshold");
-        commandFrame6->AddFrame(buttonDrawThresh, new TGLayoutHints(kLHintsExpandX));
+        TGButton* buttonDrawThresh = new TGTextButton(commandFrameSimThresh, "Sim P [MeV] Threshold");
+        commandFrameSimThresh->AddFrame(buttonDrawThresh, new TGLayoutHints(kLHintsExpandX));
         buttonDrawThresh->Connect("Pressed()", "ldmx::EventDisplay", this, "SetSimThresh()");
 
-        textBoxEventTreeName_ = new TGTextEntry(commandFrame7, new TGTextBuffer(100));
-        commandFrame7->AddFrame(textBoxEventTreeName_, new TGLayoutHints(kLHintsExpandX));
+        textBoxEventTreeName_ = new TGTextEntry(commandFrameEventTree, new TGTextBuffer(100));
+        commandFrameEventTree->AddFrame(textBoxEventTreeName_, new TGLayoutHints(kLHintsExpandX));
 
-        TGButton* buttonSetTree = new TGTextButton(commandFrame7, "Set Event TTree");
-        commandFrame7->AddFrame(buttonSetTree, new TGLayoutHints(kLHintsExpandX));
+        TGButton* buttonSetTree = new TGTextButton(commandFrameEventTree, "Set Event TTree");
+        commandFrameEventTree->AddFrame(buttonSetTree, new TGLayoutHints(kLHintsExpandX));
         buttonSetTree->Connect("Pressed()", "ldmx::EventDisplay", this, "SetEventTree()");
 
-        textBoxEcalDigisCollName_ = new TGTextEntry(commandFrame8, new TGTextBuffer(100));
-        commandFrame8->AddFrame(textBoxEcalDigisCollName_, new TGLayoutHints(kLHintsExpandX));
+        textBoxEcalDigisCollName_ = new TGTextEntry(commandFrameEcalHitBranch, new TGTextBuffer(100));
+        commandFrameEcalHitBranch->AddFrame(textBoxEcalDigisCollName_, new TGLayoutHints(kLHintsExpandX));
 
-        TGButton* buttonSetECALBranch = new TGTextButton(commandFrame8, "Set ECAL Digis Branch");
-        commandFrame8->AddFrame(buttonSetECALBranch, new TGLayoutHints(kLHintsExpandX));
+        TGButton* buttonSetECALBranch = new TGTextButton(commandFrameEcalHitBranch, "Set ECAL Digis Branch");
+        commandFrameEcalHitBranch->AddFrame(buttonSetECALBranch, new TGLayoutHints(kLHintsExpandX));
         buttonSetECALBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetECALDigisCollInput()");
 
-        textBoxHcalDigisCollName_ = new TGTextEntry(commandFrame9, new TGTextBuffer(100));
-        commandFrame9->AddFrame(textBoxHcalDigisCollName_, new TGLayoutHints(kLHintsExpandX));
+        textBoxHcalDigisCollName_ = new TGTextEntry(commandFrameHcalHitBranch, new TGTextBuffer(100));
+        commandFrameHcalHitBranch->AddFrame(textBoxHcalDigisCollName_, new TGLayoutHints(kLHintsExpandX));
 
-        TGButton* buttonSetHCALBranch = new TGTextButton(commandFrame9, "Set HCAL Digis Branch");
-        commandFrame9->AddFrame(buttonSetHCALBranch, new TGLayoutHints(kLHintsExpandX));
+        TGButton* buttonSetHCALBranch = new TGTextButton(commandFrameHcalHitBranch, "Set HCAL Digis Branch");
+        commandFrameHcalHitBranch->AddFrame(buttonSetHCALBranch, new TGLayoutHints(kLHintsExpandX));
         buttonSetHCALBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetHCALDigisCollInput()");
 
-        textBoxTrackerHitsCollName_ = new TGTextEntry(commandFrame10, new TGTextBuffer(100));
-        commandFrame10->AddFrame(textBoxTrackerHitsCollName_, new TGLayoutHints(kLHintsExpandX));
+        textBoxTrackerHitsCollName_ = new TGTextEntry(commandFrameTrackerHitsBranch, new TGTextBuffer(100));
+        commandFrameTrackerHitsBranch->AddFrame(textBoxTrackerHitsCollName_, new TGLayoutHints(kLHintsExpandX));
 
-        TGButton* buttonSetRecoilBranch = new TGTextButton(commandFrame10, "Set Recoil Sims Branch");
-        commandFrame10->AddFrame(buttonSetRecoilBranch, new TGLayoutHints(kLHintsExpandX));
+        TGButton* buttonSetRecoilBranch = new TGTextButton(commandFrameTrackerHitsBranch, "Set Recoil Sims Branch");
+        commandFrameTrackerHitsBranch->AddFrame(buttonSetRecoilBranch, new TGLayoutHints(kLHintsExpandX));
         buttonSetRecoilBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetTrackerHitsCollInput()");
 
-        textBoxEcalScorePlaneBranch_ = new TGTextEntry(commandFrame11, new TGTextBuffer(100));
-        commandFrame11->AddFrame(textBoxEcalScorePlaneBranch_, new TGLayoutHints(kLHintsExpandX));
+        textBoxEcalScorePlaneBranch_ = new TGTextEntry(commandFrameEcalScorePlaneBranch, new TGTextBuffer(100));
+        commandFrameEcalScorePlaneBranch->AddFrame(textBoxEcalScorePlaneBranch_, new TGLayoutHints(kLHintsExpandX));
 
-        TGButton* buttonSetSimParticlesBranch = new TGTextButton(commandFrame11, "Set Sim Particles Branch");
-        commandFrame11->AddFrame(buttonSetSimParticlesBranch, new TGLayoutHints(kLHintsExpandX));
+        TGButton* buttonSetSimParticlesBranch = new TGTextButton(commandFrameEcalScorePlaneBranch, "Set Sim Particles Branch");
+        commandFrameEcalScorePlaneBranch->AddFrame(buttonSetSimParticlesBranch, new TGLayoutHints(kLHintsExpandX));
         buttonSetSimParticlesBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetEcalSimParticlesCollInput()");
 
-        contents->AddFrame(commandFrame7, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
-        contents->AddFrame(commandFrame8, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
-        contents->AddFrame(commandFrame9, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
-        contents->AddFrame(commandFrame10, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
-        contents->AddFrame(commandFrame11, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
-        contents->AddFrame(commandFrame5, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
-        contents->AddFrame(commandFrame1, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
-        contents->AddFrame(commandFrame2, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
-        contents->AddFrame(commandFrame3, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
-        contents->AddFrame(commandFrame6, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        //Order from top to bottom here
+        contents->AddFrame(commandFrameEventTree            , new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrameEcalHitBranch        , new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrameHcalHitBranch        , new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrameTrackerHitsBranch    , new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrameEcalScorePlaneBranch , new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrameEcalClusterBranch    , new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrameGotoEvent            , new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrameNextEvent            , new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrameColorClusters        , new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
+        contents->AddFrame(commandFrameSimThresh            , new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
 
         AddFrame(contents, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY));
 
@@ -389,4 +390,5 @@ namespace ldmx {
         manager_->RegisterRedraw3D();
         manager_->FullRedraw3D(kFALSE, kTRUE);
     }
+
 }
