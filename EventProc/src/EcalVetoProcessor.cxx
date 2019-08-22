@@ -241,7 +241,7 @@ namespace ldmx {
             ele_trajectory = getTrajectory(recoilP, recoilPos);
             std::vector<double> pvec = recoilPAtTarget.size() ? recoilPAtTarget : std::vector<double>{0.0, 0.0, 0.0};
             std::vector<float>  posvec = recoilPosAtTarget.size() ? recoilPosAtTarget : std::vector<float>{0.0, 0.0, 0.0};
-            photon_trajectory = getTrajectory({-recoilPAtTarget[0], -recoilPAtTarget[1], 4000.0-recoilPAtTarget[2]}, recoilPosAtTarget);
+            photon_trajectory = getTrajectory({-pvec[0], -pvec[1], 4000.0 - pvec[2]}, posvec);
         }
 
         float recoilPMag = recoilP.size() ? sqrt(pow(recoilP[0],2) + pow(recoilP[1],2) + pow(recoilP[2],2)) : -1.0;
