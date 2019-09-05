@@ -18,7 +18,7 @@ namespace ldmx {
 
         hcalThicknessScint_ = 15.0; 
 
-        hcalWidthScint_ = 100.0;
+        hcalWidthScint_ = 50.0;
 
         hcalNLayers_[ HcalSection::BACK   ] = 100;
         hcalNLayers_[ HcalSection::TOP    ] = 32;
@@ -26,11 +26,11 @@ namespace ldmx {
         hcalNLayers_[ HcalSection::LEFT   ] = 32;
         hcalNLayers_[ HcalSection::RIGHT  ] = 32;
         
-        hcalNStrips_[ HcalSection::BACK   ] = 31;
-        hcalNStrips_[ HcalSection::TOP    ] = 3;
-        hcalNStrips_[ HcalSection::BOTTOM ] = 3;
-        hcalNStrips_[ HcalSection::LEFT   ] = 3;
-        hcalNStrips_[ HcalSection::RIGHT  ] = 3;
+        hcalNStrips_[ HcalSection::BACK   ] = 62;
+        hcalNStrips_[ HcalSection::TOP    ] = 6;
+        hcalNStrips_[ HcalSection::BOTTOM ] = 6;
+        hcalNStrips_[ HcalSection::LEFT   ] = 6;
+        hcalNStrips_[ HcalSection::RIGHT  ] = 6;
          
         double ecal_z  = 290.;
         double ecal_xy = 525.;
@@ -259,7 +259,7 @@ namespace ldmx {
                 X.first  = x - hcalUncertaintyTimingPos_;
                 X.second = x + hcalUncertaintyTimingPos_;
 
-                y = -hcalZeroStrip_.at( section ) + stripcenter;
+                y = -1*hcalZeroStrip_.at( section ) + stripcenter;
                 Y.first  = y - estrip;
                 Y.second = y + estrip;
 
