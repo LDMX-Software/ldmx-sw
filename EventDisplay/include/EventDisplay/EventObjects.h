@@ -8,7 +8,7 @@
 #define EVENTDISPLAY_EVENTOBJECTS_H_
 
 #include "DetDescr/HcalID.h"
-#include "DetDescr/DetectorGeometry.h"
+#include "EventDisplay/DetectorGeometry.h"
 #include "Event/EcalHit.h"
 #include "Event/HcalHit.h"
 #include "Event/SimTrackerHit.h"

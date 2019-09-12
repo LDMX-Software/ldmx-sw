@@ -12,7 +12,7 @@
 #include "TGeoShape.h"
 #include "TGeoMatrix.h"
 
-#include "DetDescr/DetectorGeometry.h" //for BoundingBox
+#include "EventDisplay/DetectorGeometry.h" //for BoundingBox
 
 #include "TVector3.h"
 #include <math.h>
