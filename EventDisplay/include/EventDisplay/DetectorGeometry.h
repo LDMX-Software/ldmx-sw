@@ -4,8 +4,8 @@
  * @brief Header file for class DetectorGeometry
  */
 
-#ifndef DETDESCR_DETECTORGEOMETRY_H
-#define DETDESCR_DETECTORGEOMETRY_H
+#ifndef EVENTDISPLAY_DETECTORGEOMETRY_H
+#define EVENTDISPLAY_DETECTORGEOMETRY_H
 
 //STL
 #include <map> //storage maps
@@ -249,4 +249,4 @@ namespace ldmx {
 
 }
 
-#endif /* DETDESCR_DETECTORGEOMETRY_H */
+#endif /* EVENTDISPLAY_DETECTORGEOMETRY_H */

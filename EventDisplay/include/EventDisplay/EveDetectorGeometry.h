@@ -10,7 +10,7 @@
 
 #include "TEveElement.h"
 #include "EventDisplay/EveShapeDrawer.h"
-#include "DetDescr/DetectorGeometry.h"
+#include "EventDisplay/DetectorGeometry.h"
 #include "DetDescr/HcalID.h" //for HcalSection enum
 
 namespace ldmx {

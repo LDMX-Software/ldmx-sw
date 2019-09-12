@@ -3,7 +3,7 @@
  * @brief Implementation file for class DetectorGeometry
  */
 
-#include "DetDescr/DetectorGeometry.h"
+#include "EventDisplay/DetectorGeometry.h"
 
 namespace ldmx {
     
