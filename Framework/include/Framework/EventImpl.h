@@ -152,6 +152,12 @@ namespace ldmx {
             // TClonesArray* getMutable(const std::string& collectionName,const std::string& passName);
             // TObject* getMutable(const std::string& collectionName, const std::string& passName);
 
+   	    /**
+             * Get a list of the data products in the event
+	     */
+	    virtual const std::vector<ProductTag>& getProducts() const { return products_; }
+
+      
             /**
              * Go to the next event by incrementing the entry index.
              * @return Hard-coded to return true.
@@ -253,8 +259,12 @@ namespace ldmx {
              * Efficiency cache for empty pass name lookups.
              */
             mutable std::map<std::string, std::string> knownLookups_;
-    };
-
+	
+            /**
+             * List of all the event products
+             */
+            std::vector<ProductTag> products_;
+    }; 
 }
 
 #endif

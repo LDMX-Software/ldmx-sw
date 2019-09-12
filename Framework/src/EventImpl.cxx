@@ -50,6 +50,9 @@ namespace ldmx {
                 }
                 newBranches_.push_back(outBranch);
             }
+	    std::string tcaContains(tca->GetName());
+	    if (!tcaContains.empty()) tcaContains.pop_back();
+	    products_.push_back(ProductTag(collectionName,passName_,"TClonesArray("+tcaContains+")"));
             branchNames_.push_back(branchName);
             knownLookups_.clear(); // have to invalidate this cache
         }
@@ -89,6 +92,7 @@ namespace ldmx {
                 }
                 newBranches_.push_back(outBranch);
             }
+	    products_.push_back(ProductTag(collectionName,passName_,to->Class()->GetName()));
             branchNames_.push_back(branchName);
             knownLookups_.clear(); // have to invalidate this cache
         }
@@ -237,10 +241,24 @@ namespace ldmx {
         branchNames_.clear();
 
 
+	products_.push_back(ProductTag(EventConstants::EVENT_HEADER,"","ldmx::EventHeader"));
+	
         // find the names of all the existing branches
         TObjArray* branches = inputTree_->GetListOfBranches();
         for (int i = 0; i < branches->GetEntriesFast(); i++) {
-            branchNames_.push_back(branches->At(i)->GetName());
+	    std::string brname=branches->At(i)->GetName();
+	    if (brname!=EventConstants::EVENT_HEADER) {
+		size_t j=brname.find("_");
+		std::string iname=brname.substr(0,j);
+		std::string pname=brname.substr(j+1);
+		std::string tname=branches->At(i)->ClassName();
+		if (tname=="TBranchElement")
+		    tname=std::string("TClonesArray(")+((TBranchElement*)(branches->At(i)))->GetClonesName()+")";
+		products_.push_back(ProductTag(iname,pname,tname));
+		
+	    }
+	    
+            branchNames_.push_back(brname);
         }
     }
 
