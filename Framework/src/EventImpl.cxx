@@ -40,9 +40,19 @@ namespace ldmx {
         if (ito == objects_.end()) { // create a new branch
             ito = objects_.insert(std::pair<std::string, TObject*>(branchName, tca)).first;
             if (outputTree_ != 0) {
-                TBranch* aBranch = outputTree_->Branch(branchName.c_str(), tca, 100000, 3);
-                newBranches_.push_back(aBranch);
+                TBranch *outBranch = outputTree_->GetBranch( branchName.c_str() );
+                if ( outBranch ) {
+                    //branch already exists, just reset branch address
+                    outBranch->SetAddress( &tca );
+                } else {
+                    //branch doesnt exist, make new one
+                    outBranch = outputTree_->Branch(branchName.c_str(), tca, 100000, 3);
+                }
+                newBranches_.push_back(outBranch);
             }
+	    std::string tcaContains(tca->GetName());
+	    if (!tcaContains.empty()) tcaContains.pop_back();
+	    products_.push_back(ProductTag(collectionName,passName_,"TClonesArray("+tcaContains+")"));
             branchNames_.push_back(branchName);
             knownLookups_.clear(); // have to invalidate this cache
         }
@@ -71,9 +81,18 @@ namespace ldmx {
             ito = objects_.insert(std::pair<std::string, TObject*>(branchName, myCopy)).first;
             objectsOwned_.insert(std::pair<std::string, TObject*>(branchName, myCopy));
             if (outputTree_ != 0) {
-                TBranch* aBranch = outputTree_->Branch(branchName.c_str(), myCopy);
-                newBranches_.push_back(aBranch);
+                //outputTree_ exists
+                TBranch* outBranch = outputTree_->GetBranch( branchName.c_str() );
+                if ( outBranch ) {
+                    //branch already exists on output Tree
+                    outBranch->SetAddress( &to );
+                } else {
+                    //branch doesn't exist on tree yet
+                    outBranch = outputTree_->Branch(branchName.c_str(), myCopy);
+                }
+                newBranches_.push_back(outBranch);
             }
+	    products_.push_back(ProductTag(collectionName,passName_,to->Class()->GetName()));
             branchNames_.push_back(branchName);
             knownLookups_.clear(); // have to invalidate this cache
         }
@@ -88,9 +107,11 @@ namespace ldmx {
 
         auto location = objectsOwned_.find(branchName);
         if (location == objectsOwned_.end()) {
+            //TCA not found in existing objects
             TClonesArray* tca = new TClonesArray(obj.ClassName(), 100);
             objectsOwned_[branchName] = tca;
             add(name, tca);
+            //copy object into TCA
             TObject* to = tca->ConstructedAt(0);
             obj.Copy(*to);
         } else {
@@ -183,7 +204,6 @@ namespace ldmx {
             if (branch == 0) {
                 EXCEPTION_RAISE("ProductNotFound", "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
             }
-
             // ooh, new branch!
             TObject* top(0);
             branch->SetAutoDelete(false);
@@ -221,10 +241,24 @@ namespace ldmx {
         branchNames_.clear();
 
 
+	products_.push_back(ProductTag(EventConstants::EVENT_HEADER,"","ldmx::EventHeader"));
+	
         // find the names of all the existing branches
         TObjArray* branches = inputTree_->GetListOfBranches();
         for (int i = 0; i < branches->GetEntriesFast(); i++) {
-            branchNames_.push_back(branches->At(i)->GetName());
+	    std::string brname=branches->At(i)->GetName();
+	    if (brname!=EventConstants::EVENT_HEADER) {
+		size_t j=brname.find("_");
+		std::string iname=brname.substr(0,j);
+		std::string pname=brname.substr(j+1);
+		std::string tname=branches->At(i)->ClassName();
+		if (tname=="TBranchElement")
+		    tname=std::string("TClonesArray(")+((TBranchElement*)(branches->At(i)))->GetClonesName()+")";
+		products_.push_back(ProductTag(iname,pname,tname));
+		
+	    }
+	    
+            branchNames_.push_back(brname);
         }
     }
 
