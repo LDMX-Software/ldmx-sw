@@ -1,3 +1,8 @@
+/**
+ * @file EventDisplay.h
+ * @author Josh Hiltbrand, University of Minnesota
+ */
+
 #ifndef EVENTDISPLAY_EVENTDISPLAY_H_
 #define EVENTDISPLAY_EVENTDISPLAY_H_
 
@@ -5,31 +10,20 @@
 #include "TGFrame.h"
 #include "TGButton.h"
 #include "TGLViewer.h"
-#include "TGLViewer.h"
 #include "TTree.h"
 #include "TClonesArray.h"
 #include "TFile.h"
-#include "TColor.h"
 #include "TString.h"
-#include "TRandom.h"
 #include "TRint.h"
 
-#include "TEveBox.h"
 #include "TEveBrowser.h"
-#include "TEveStraightLineSet.h"
 #include "TEveElement.h"
 #include "TEveManager.h"
 #include "TEveEventManager.h"
-#include "TEveArrow.h"
-#include "TEveRGBAPalette.h"
 #include "TEveViewer.h"
 
-#include "DetDescr/EcalHexReadout.h"
-#include "Event/EcalHit.h"
-#include "Event/SimTrackerHit.h"
-#include "Event/EcalCluster.h"
-#include "Event/SimParticle.h"
-#include "EventDisplay/EventDisplay.h"
+#include "EventDisplay/EventObjects.h"
+#include "EventDisplay/EveDetectorGeometry.h"
 
 #include <iostream>
 
@@ -39,87 +33,184 @@ namespace ldmx {
 
         public:
 
-            EventDisplay(TEveManager* manager);
+            /**
+             * Constructor
+             * Builds window frame and and control panel.
+             * Imports geometry from EveDetectorGeometry.
+             */
+            EventDisplay( TEveManager* manager , bool verbose );
 
+            /**
+             * Destructor
+             * Deletes hanging pointers from constructor and closes the TFile.
+             */
             ~EventDisplay() {
+
                 file_->Close();
-                Cleanup();
+                delete file_;
+                delete tree_;
+                delete theDetector_;
+                delete eventObjects_;
+                
+                delete ecalDigiHits_;
+                delete hcalDigiHits_;
+                delete recoilHits_;
+                delete ecalClusters_;
+                delete ecalSimParticles_;
+
+                delete textBoxGotoEvent_;
+                delete textBoxClustersCollName_;
+                delete textBoxSimThresh_;
+                delete textBoxEventTreeName_;
+                delete textBoxEcalDigisCollName_;
+                delete textBoxHcalDigisCollName_;
+                delete textBoxTrackerHitsCollName_;
+                delete textBoxEcalScorePlaneBranch_;
+
+                delete manager_;
             }
 
-            void NextEvent();
+            /**
+             * Opens input file and attempts to obtain the necessary information from it.
+             *
+             * Attempts to import the event objects from the event tree using the 'Get...'
+             * methods below.
+             *
+             * @param file name of file with events
+             * @return true if successfully opened file and found tree named eventTreeName_
+             * @return false unable to open file or find tree named eventTreeName_
+             */
+            bool SetFile(const TString file);
 
+            /**
+             * Goes back one event unless the current event number is not positive.
+             *
+             * @sa GotoEvent(int)
+             */
             void PreviousEvent();
 
-            bool GetClustersColl(const char* clustersCollName);
+            /**
+             * Goes forward one event unless the current event number equals the maximum event number.
+             *
+             * @sa GotoEvent(int)
+             */
+            void NextEvent();
 
+            /**
+             * Attempts to get branch from event tree and set the address to be
+             * the input TClonesArray.
+             *
+             * @param branchName name of branch containing TClonesArray
+             * @param collection TClonesArray that will be used in event display
+             * @return bool successful check
+             */
+            bool GetCollection( const TString branchName , TClonesArray *collection );
+
+            /**
+             * Gets ecalDigis collection name from text box
+             */
+            void GetECALDigisCollInput();
+
+            /**
+             * Gets clusters collection name from text box
+             */
             void GetClustersCollInput();
 
-            bool GetECALDigisColl(const char* ecalDigisCollName);
+            /**
+             * Gets trackerHits collection name from text box
+             */
+            void GetTrackerHitsCollInput();
 
-            bool GetTrackerHitsColl(const char* trackerHitsCollName);
+            /**
+             * Gets hcalDigis collection name from text box
+             */
+            void GetHCALDigisCollInput();
 
-            bool GetEcalSimParticlesColl(const char* ecalSimParticlesCollName);
+            /**
+             * Gets ECAL Sim Particles Branch name from text box
+             */
+            void GetEcalSimParticlesCollInput();
 
+            /**
+             * Goes to the input event index if it is not outside the bounds.
+             *
+             * Destroys the elements from previous event and re-initializes the eventObjects_ instance.
+             * Draws all objects that were able to be found.
+             * 
+             * @param event index for the event we want to go to.
+             * @return bool success check
+             */
             bool GotoEvent(int event);
 
+            /**
+             * Takes input of event index from text box.
+             */
             bool GotoEvent();
-            
+
+            /**
+             * Sets threshold energy from a SimParticle to be drawn from text box.
+             * Re-draws the display.
+             * @return bool success check
+             */
             bool SetSimThresh();
 
-            bool SetFile(const char* file);
+            /**
+             * Sets event tree from input text box.
+             *
+             * @return bool success check
+             */
+            bool SetEventTree();
 
-            TEveStraightLineSet* drawHexColumn(Double_t xCenter, Double_t yCenter, Double_t frontZ, Double_t backZ, Double_t h, Int_t color, const char* colName);
-
-            TEveBox* drawBox(Float_t xPos, Float_t yPos, Float_t frontZ, Float_t xWidth, Float_t yWidth, Float_t backZ, Float_t zRotateAngle, Int_t lineColor, Int_t transparency, const char* name);
-
-            TEveElement* drawECAL();
-
-            TEveElement* drawRecoilTracker();
-
-            TEveElement* drawECALHits(TClonesArray* hits);
-
-            TEveElement* drawRecoilHits(TClonesArray* hits);
-
-            TEveElement* drawECALClusters(TClonesArray* clusters);
-
-            TEveElement* drawECALSimParticles(TClonesArray* ecalSimParticles);
-
+            /**
+             * Colors cluster objects and redraws.
+             */
             void ColorClusters();
 
         private:
 
-            TFile* file_;
-            TTree* tree_;
-            TClonesArray* ecalDigiHits_;
-            TClonesArray* recoilHits_;
-            TClonesArray* ecalClusters_;
-            TClonesArray* ecalSimParticles_;
+            bool verbose_; //* verbosity flag
 
-            bool foundECALDigis_ = false;
-            bool foundClusters_ = false;
-            bool foundTrackerHits_ = false;
-            bool foundEcalSPHits_ = false;
+            TFile* file_; //* Event file
+            TTree* tree_; //* Event tree
 
-            TRandom r_;
-            int eventNum_ = 0;
-            int eventNumMax_;
-            double simThresh_ = 0;
-            const char* clustersCollName_ = "ecalClusters_recon";
-            TEveElementList* hits_;
-            TEveElementList* recoObjs_;
-            TEveElementList* detector_ = new TEveElementList("LDMX Detector");
-            TGTextEntry* textBox_;
-            TGTextEntry* textBox2_;
-            TGTextEntry* textBox3_;
+            TClonesArray* ecalDigiHits_; //* current ecalDigis collection
+            TClonesArray* hcalDigiHits_; //* current hcalDigis collection
+            TClonesArray* recoilHits_; //* curent recoil hits collection
+            TClonesArray* ecalClusters_; //* current ecal clusters collection
+            TClonesArray* ecalSimParticles_; //* current ecal sim particles collection
 
-            TEveManager* manager_{nullptr};
-            std::vector<Color_t> colors_ = {kRed, kBlue, kGreen, kYellow, kMagenta, kBlack, kOrange, kPink};
+            bool foundECALDigis_ = false; //* flag check if ecalDigis collection has been found
+            bool foundHCALDigis_ = false;//* flag check if hcalDigis collection has been found
+            bool foundClusters_ = false;//* flag check if clusters collection has been found
+            bool foundTrackerHits_ = false;//* flag check if tracker hits collection has been found
+            bool foundEcalSPHits_ = false;//* flag check if ecal sim particles collection has been found
 
-            EcalHexReadout* hexReadout_{nullptr};
+            int eventNum_ = -1; //* current event number
+            int eventNumMax_; ///* maximum event index for the current tree
+
+            TString clustersCollName_ = "ecalClusters_recon"; //* name of ecal clusters collection in event tree
+            TString ecalDigisCollName_ = "ecalDigis_recon"; //* name of ecalDigis collection in event tree
+            TString hcalDigisCollName_ = "hcalDigis_recon"; //* name of hcalDigis collection in event tree
+            TString trackerHitsCollName_ = "RecoilSimHits_sim"; //* name of recoil hitss collection in event tree
+            TString ecalSimParticlesCollName_ = "EcalScoringPlaneHits_sim"; //* name of ecal sim particles collection in event tree
+            TString eventTreeName_ = "LDMX_Events"; //* name of event tree
+
+            EveDetectorGeometry* theDetector_{nullptr}; //* detector geometry instance
+            EventObjects* eventObjects_{nullptr}; //* drawing methods for event objects
+
+            TGTextEntry* textBoxGotoEvent_;
+            TGTextEntry* textBoxClustersCollName_;
+            TGTextEntry* textBoxSimThresh_;
+            TGTextEntry* textBoxEventTreeName_;
+            TGTextEntry* textBoxEcalDigisCollName_;
+            TGTextEntry* textBoxHcalDigisCollName_;
+            TGTextEntry* textBoxTrackerHitsCollName_;
+            TGTextEntry* textBoxEcalScorePlaneBranch_;
+
+            TEveManager* manager_{nullptr}; //* event display manager
 
             ClassDef(EventDisplay, 1);
     };
-
 }
 
 #endif

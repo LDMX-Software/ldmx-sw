@@ -58,7 +58,7 @@ namespace ldmx {
         private:
 
             /** Random number generator. */
-            TRandom3* random_{new TRandom3(time(nullptr))}; 
+            std::unique_ptr<TRandom3> random_;
 
             /** The noise threshold. */
             double noiseThreshold_{4}; 
@@ -73,7 +73,7 @@ namespace ldmx {
             bool useGaussianModel_{true};
 
             /** pdf for poisson errors */
-            boost::math::poisson_distribution<>* poisson_dist_;
+            std::unique_ptr< boost::math::poisson_distribution<> > poisson_dist_;
     }; // NoiseGenerator
 
 } // ldmx

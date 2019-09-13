@@ -64,8 +64,8 @@ namespace ldmx {
             std::cout << TString::Format("  min/max radii of cell %.2f %.2f and module %.2f %.2f",cellr_,cellR_,moduler_,moduleR_) << std::endl;
         }
 
-        ecalMap_ = new TH2Poly();
-        gridMap_ = new TH2Poly();
+        ecalMap_ = std::make_unique<TH2Poly>();
+        gridMap_ = std::make_unique<TH2Poly>();
         buildModuleMap();
         buildCellMap();
         buildCellModuleMap();
