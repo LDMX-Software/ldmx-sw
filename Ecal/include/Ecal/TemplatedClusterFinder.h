@@ -19,7 +19,7 @@ namespace ldmx {
     
         public:
 
-            void add(const EcalHit* eh, const EcalHexReadout* hex, double zPos) {
+            void add(const EcalHit* eh, const std::shared_ptr<EcalHexReadout> hex, double zPos) {
                 clusters_.push_back(WorkingCluster(eh, hex, zPos));
             }
 
