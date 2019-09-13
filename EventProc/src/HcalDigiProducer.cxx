@@ -13,15 +13,12 @@ namespace ldmx {
     HcalDigiProducer::HcalDigiProducer(const std::string& name, Process& process) :
         Producer(name, process) {
         hits_ = new TClonesArray(EventConstants::HCAL_HIT.c_str());
-    }
-
-    HcalDigiProducer::~HcalDigiProducer() {
-        delete hits_;
+        noiseGenerator_ = new NoiseGenerator();
     }
 
     void HcalDigiProducer::configure(const ParameterSet& ps) {
-        detID_       = std::make_unique<HcalID>();
-        random_      = std::make_unique<TRandom3>(ps.getInteger("randomSeed", 1000));
+        detID_       = new HcalID();
+        random_      = new TRandom3(ps.getInteger("randomSeed", 1000));
         STRIPS_BACK_PER_LAYER_     = ps.getInteger("strips_back_per_layer");
         NUM_BACK_HCAL_LAYERS_      = ps.getInteger("num_back_hcal_layers");
         STRIPS_SIDE_TB_PER_LAYER_  = ps.getInteger("strips_side_tb_per_layer");
@@ -35,7 +32,7 @@ namespace ldmx {
         pe_per_mip_                = ps.getDouble("pe_per_mip");
         strip_attenuation_length_  = ps.getDouble("strip_attenuation_length");
         strip_position_resolution_  = ps.getDouble("strip_position_resolution");
-        noiseGenerator_ = std::make_unique<NoiseGenerator>(meanNoise_,false);
+        noiseGenerator_ = new NoiseGenerator(meanNoise_,false);
         //noiseGenerator_->setNoiseThreshold(readoutThreshold_);
         noiseGenerator_->setNoiseThreshold(1); // hard-code this number, create noise hits for non-zero PEs! 
     }
@@ -154,7 +151,7 @@ namespace ldmx {
             double energy = depEnergy; 
 
             // quantize/smear the position
-            std::unique_ptr<HcalID> curDetId = std::make_unique<HcalID>();
+            HcalID *curDetId = new HcalID();
             curDetId->setRawValue(detIDraw);
             curDetId->unpack();
             int cur_subsection = curDetId->getFieldValue("section");            
