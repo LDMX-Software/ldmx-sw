@@ -110,7 +110,7 @@ namespace ldmx {
                         "The specified BDT file '" + bdtFileName_ + "' does not exist!");
             }
 
-            BDTHelper_ = new BDTHelper(bdtFileName_);
+            BDTHelper_ = std::make_unique<BDTHelper>(bdtFileName_);
         }
 
         cellFileNamexy_ = ps.getString("cellxy_file");
@@ -128,7 +128,7 @@ namespace ldmx {
         }
 
 
-        hexReadout_ = new EcalHexReadout();
+        hexReadout_ = std::make_unique<EcalHexReadout>();
         nEcalLayers_ = ps.getInteger("num_ecal_layers");
 
         bdtCutVal_ = ps.getDouble("disc_cut");

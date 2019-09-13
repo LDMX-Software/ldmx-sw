@@ -29,11 +29,12 @@ namespace ldmx {
     PnWeightProcessor::PnWeightProcessor(const std::string &name, Process &process) :
         Producer(name, process) {
 
+            lFit = std::make_unique<TF1>( "lfit" , "exp([1]-[0]*x)" , 950 , 1150 );
             lFit->SetParameters(0.01093, 2.766); 
 
             std::string func = "exp([1]-[0]*x)*([2]+[3]*x + [4]*pow(x,2)"; 
             func += " + [5]*pow(x,3) + [6]*pow(x,4) + [7]*pow(x,5) + [8]*pow(x,6))"; 
-            hFit = new TF1("hfit", func.c_str(), 1150, 3700);
+            hFit = std::make_unique<TF1>("hfit", func.c_str(), 1150, 3700);
             hFit->SetParameters(0.004008, 11.23, 1.242e-6, -1.964e-9, 
                     8.243e-13, 9.333e-17, -7.584e-20, -1.991e-23, 9.757e-27);
     }
