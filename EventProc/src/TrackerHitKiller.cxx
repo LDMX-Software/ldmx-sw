@@ -11,9 +11,12 @@ namespace ldmx {
 
     TrackerHitKiller::TrackerHitKiller(const std::string& name, Process& process) :
         Producer(name, process) { 
+
+        random_ = std::make_unique<TRandom3>(time(nullptr));
     }
     
     TrackerHitKiller::~TrackerHitKiller() { 
+        if ( siStripHits_ ) delete siStripHits_;
     }
 
     void TrackerHitKiller::configure(const ParameterSet &pSet) { 
@@ -41,7 +44,7 @@ namespace ldmx {
             } else {
                 // Get the SimTrackerHit from the collection of recoil sim hits.
                 SiStripHit* stripHit = static_cast<SiStripHit*>(siStripHits_->ConstructedAt(iHit));
-               stripHit->addSimTrackerHit(static_cast<SimTrackerHit*>(recoilSimHits->At(hitCount))); 
+                stripHit->addSimTrackerHit(static_cast<SimTrackerHit*>(recoilSimHits->At(hitCount))); 
                 ++iHit;
             }
         }

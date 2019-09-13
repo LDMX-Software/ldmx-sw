@@ -13,6 +13,7 @@
 
 // LDMX
 #include "Event/EventHeader.h"
+#include "Event/ProductTag.h"
 
 // STL
 #include <string>
@@ -56,7 +57,7 @@ namespace ldmx {
              * @param name Name (label, not class name) given to the object when it was put into the event.
              * @return True if the object or collection exists in the event.
              */
-            bool exists(const std::string& name) {
+            bool exists(const std::string& name) const {
                 return getReal(name, "", false) != 0;
             }
 
@@ -67,10 +68,24 @@ namespace ldmx {
              * @param passName The process pass label which was in use when this object was put into the event, such as "sim" or "rerecov2".
              * @return True if the object or collection exists in the event.
              */
-            bool exists(const std::string& name, const std::string& passName) {
+            bool exists(const std::string& name, const std::string& passName) const {
                 return getReal(name, passName, false) != 0;
             }
 
+            /**
+             * Get a list of the data products in the event
+	     */
+            virtual const std::vector<ProductTag>& getProducts() const = 0;
+
+            /**
+	     * Get a list of products which match the given POSIX-Extended, case-insenstive regular-expressions.
+	     * An empty argument is interpreted as ".*", which matches everything.
+	     * @param namematch Regular expression to compare with the product name
+	     * @param passmatch Regular expression to compare with the pass name
+	     * @param typematch Regular expression to compare with the type name
+	     */
+            std::vector<ProductTag> searchProducts(const std::string& namematch, const std::string& passmatch, const std::string& typematch) const;
+      
             /**
              * Get a named object with a specific type without specifying
              * the pass name.  If there is one-and-only-one object with the

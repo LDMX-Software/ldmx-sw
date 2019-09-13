@@ -16,11 +16,11 @@ namespace ldmx {
 
         public:
 
-            WorkingCluster(const EcalHit* eh, const EcalHexReadout* hex, double zPos);
+            WorkingCluster(const EcalHit* eh, const std::shared_ptr<EcalHexReadout> hex, double zPos);
 
             ~WorkingCluster() {};
 
-            void add(const EcalHit* eh, const EcalHexReadout* hex, double zPos);
+            void add(const EcalHit* eh, const std::shared_ptr<EcalHexReadout> hex, double zPos);
     
             void add(const WorkingCluster& wc);
 

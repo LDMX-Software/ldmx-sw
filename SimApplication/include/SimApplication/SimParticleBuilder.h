@@ -8,6 +8,7 @@
 #define SIMAPPLICATION_SIMPARTICLEBUILDER_H_
 
 // LDMX
+#include "Event/EventConstants.h"
 #include "Event/Event.h"
 #include "Event/SimParticle.h"
 #include "SimApplication/TrackMap.h"
@@ -93,7 +94,7 @@ namespace ldmx {
             G4Event* currentEvent_;
 
             /** The output SimParticle collection. */
-            TClonesArray* outputParticleColl_{new TClonesArray("event::SimParticle", 50)};
+            TClonesArray* outputParticleColl_{new TClonesArray(EventConstants::SIM_PARTICLE.c_str(), 50)};
     };
 
 }
