@@ -116,6 +116,8 @@ namespace ldmx {
                     std::vector<std::map<int, float>>& cellMapIso_,
                     bool doTight = false);
 
+            std::vector<XYCoords> getTrajectory(std::vector<double> momentum, std::vector<float> position);
+
         private:
 
             std::vector<std::map<int, float>> cellMap_;
@@ -143,6 +145,7 @@ namespace ldmx {
             double yStd_{0};
             double avgLayerHit_{0};
             double stdLayerHit_{0};
+            double ecalBackEnergy_{0};
         
             double bdtCutVal_{0};
 

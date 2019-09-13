@@ -41,8 +41,8 @@ namespace ldmx {
                 EventFile(filename, EventConstants::EVENT_TREE_NAME, isOutputFile, compressionLevel) {
     }
 
-    EventFile::EventFile(const std::string& filename, EventFile* cloneParent, int compressionLevel) :
-                fileName_(filename), isOutputFile_(true), parent_(cloneParent) {
+    EventFile::EventFile(const std::string& filename, EventFile* cloneParent, bool isSingleOutput, int compressionLevel) :
+                fileName_(filename), isOutputFile_(true), isSingleOutput_(isSingleOutput), parent_(cloneParent) {
 
         file_ = new TFile(filename.c_str(), "RECREATE");
         if (!file_->IsWritable()) {
@@ -126,11 +126,17 @@ namespace ldmx {
             if (!parent_->tree_) {
                 EXCEPTION_RAISE("EventFile", "No event tree in the file");
             }
-            tree_ = parent_->tree_->CloneTree(0);
-            event_->setInputTree(parent_->tree_);
-            event_->setOutputTree(tree_);
-        }
 
+            //Only clone parent tree if either
+            //  1) There is no tree setup yet (first input file)
+            //  2) This is not single output (new input file --> new output file)
+            if ( !tree_ or !isSingleOutput_ ) {
+                tree_ = parent_->tree_->CloneTree(0);
+            }
+            event_->setInputTree( parent_->tree_ );
+            event_->setOutputTree( tree_ );
+        }
+        
         // close up the last event
         if (ientry_ >= 0) {
             if (isOutputFile_) {
@@ -194,6 +200,30 @@ namespace ldmx {
         } else {
             event_->setInputTree(tree_);
         }
+    }
+
+    void EventFile::updateParent(EventFile* parent) { 
+        
+        parent_ = parent; 
+        
+        TTree* parentTree = (TTree *)parent_->file_->Get("LDMX_Events");
+        if ( parentTree ) {
+            
+            //Enter output file
+            file_->cd();
+            
+            //Copy over addresses from the new parent
+            parentTree->CopyAddresses( tree_ );
+
+            //Reset the entry index with the new parent index
+            ientry_ = parent_->ientry_;
+        }
+
+        //copy over run headers and recreate run map
+        copyRunHeaders();
+        createRunMap();
+
+        return;
     }
 
     void EventFile::close() {
