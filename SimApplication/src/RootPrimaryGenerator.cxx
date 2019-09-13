@@ -1,19 +1,28 @@
+/**
+ * @file RootPrimaryGenerator.cxx
+ * @brief Primary generator used to generate primaries from SimParticles. 
+ * @author Nhan Tran, Fermilab
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
+
 #include "SimApplication/RootPrimaryGenerator.h"
 
-// Geant4
-#include "G4RunManager.hh"
+//------------//
+//   Geant4   //
+//------------//
 #include "G4Event.hh"
 #include "G4IonTable.hh"
+#include "G4PhysicalConstants.hh"
+#include "G4RunManager.hh"
+#include "G4SystemOfUnits.hh"
 
-// LDMX
-#include "SimApplication/UserPrimaryParticleInformation.h"
+//-------------//
+//   ldmx-sw   //
+//-------------//
+#include "Event/EventConstants.h"
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
-#include "Event/EventConstants.h"
-
-// Geant4
-#include "G4SystemOfUnits.hh"
-#include "G4PhysicalConstants.hh"
+#include "SimApplication/UserPrimaryParticleInformation.h"
 
 namespace ldmx {
 
@@ -51,20 +60,20 @@ namespace ldmx {
 
         int theMode = runMode_;
 
-        if (theMode == 1){
-            
+        if (theMode == 1) {
+
             // go through ecal SP hits
             for (int iSTH = 0; iSTH < ecalSPParticles_->GetEntriesFast(); ++iSTH) {
 
                 ldmx::SimTrackerHit* sth = (ldmx::SimTrackerHit*) ecalSPParticles_->At(iSTH);
 
                 /*
-                 std::cout << iSTH << ", " << sth->getID() << ", " << sth->getLayerID() << ", " << sth->getSimParticle()->getPdgID() << std::endl;
-                 std::cout << "\t STH position: " << sth->getPosition()[0] << ", " << sth->getPosition()[1] << ", " << sth->getPosition()[2] << std::endl;
-                 std::cout << "\t STH momentum: " << sth->getMomentum()[0] << ", " << sth->getMomentum()[1] << ", " << sth->getMomentum()[2] << std::endl;
-                 std::cout << "\t SIM momentum: " << sth->getSimParticle()->getMomentum()[0] << ", " << sth->getSimParticle()->getMomentum()[1] << ", " << sth->getSimParticle()->getMomentum()[2] << std::endl;
-                 std::cout << "\t SIM energy  : " << sth->getSimParticle()->getEnergy() << std::endl;
-                */   
+                   std::cout << iSTH << ", " << sth->getID() << ", " << sth->getLayerID() << ", " << sth->getSimParticle()->getPdgID() << std::endl;
+                   std::cout << "\t STH position: " << sth->getPosition()[0] << ", " << sth->getPosition()[1] << ", " << sth->getPosition()[2] << std::endl;
+                   std::cout << "\t STH momentum: " << sth->getMomentum()[0] << ", " << sth->getMomentum()[1] << ", " << sth->getMomentum()[2] << std::endl;
+                   std::cout << "\t SIM momentum: " << sth->getSimParticle()->getMomentum()[0] << ", " << sth->getSimParticle()->getMomentum()[1] << ", " << sth->getSimParticle()->getMomentum()[2] << std::endl;
+                   std::cout << "\t SIM energy  : " << sth->getSimParticle()->getEnergy() << std::endl;
+                   */   
 
                 /// let's go through the cases when the particle is entering the ECAL volume
                 if (sth->getLayerID() == 1 and sth->getMomentum()[2] > 0) continue;
@@ -91,8 +100,7 @@ namespace ldmx {
 
             }   
 
-        }
-        else if (theMode == 0){
+        } else if (theMode == 0) {
 
             // put in protection for if we run out of ROOT events
             std::vector<G4PrimaryVertex*> vertices;
