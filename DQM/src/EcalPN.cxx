@@ -33,7 +33,8 @@ namespace ldmx {
     EcalPN::~EcalPN() {}
 
     void EcalPN::onProcessStart() {
-       
+      
+
         // Get an instance of the histogram pool  
         histograms_ = HistogramPool::getInstance();    
 
@@ -144,6 +145,16 @@ namespace ldmx {
                             400, 0, 4000, 
                             "Kinetic Energy of 2nd Hardest Particle",
                             400, 0, 4000);
+        histograms_->create<TH2F>("1kp_ke:2nd_h_ke", 
+                            "Kinetic Energy of Leading Charged Kaon (MeV)",
+                            400, 0, 4000, 
+                            "Kinetic Energy of 2nd Hardest Particle",
+                            400, 0, 4000);
+        histograms_->create<TH2F>("1k0_ke:2nd_h_ke", 
+                            "Kinetic Energy of Leading K0 (MeV)",
+                            400, 0, 4000, 
+                            "Kinetic Energy of 2nd Hardest Particle",
+                            400, 0, 4000);
 
         std::vector<std::string> n_labels = {"", "",
             "nn", // 1
@@ -165,7 +176,8 @@ namespace ldmx {
     }
 
     void EcalPN::analyze(const Event & event) { 
-  
+ 
+
         // Get the collection of simulated particles from the event
         const TClonesArray* particles = event.getCollection("SimParticles");
       
@@ -257,7 +269,7 @@ namespace ldmx {
 
         double slke{-9999};
         double nEnergy{-9999}, energyDiff{-9999}, energyFrac{-9999}; 
-        if (eventType == 1) {
+        if (eventType == 1 || eventType == 17 || eventType == 16 || eventType == 18 || eventType == 2) {
             //Analysis::printDaughters(pnGamma);
             std::sort (pnDaughters.begin(), pnDaughters.end(), [] (const auto& lhs, const auto& rhs) 
             {
@@ -272,10 +284,28 @@ namespace ldmx {
             energyDiff = pnGamma->getEnergy() - nEnergy; 
             energyFrac = nEnergy/pnGamma->getEnergy(); 
 
-            histograms_->get("1n_ke:2nd_h_ke")->Fill(nEnergy, slke);
-            histograms_->get("1n_neutron_energy")->Fill(nEnergy);  
-            histograms_->get("1n_energy_diff")->Fill(energyDiff);
-            histograms_->get("1n_energy_frac")->Fill(energyFrac); 
+            if (eventType == 1) { 
+                histograms_->get("1n_ke:2nd_h_ke")->Fill(nEnergy, slke);
+                histograms_->get("1n_neutron_energy")->Fill(nEnergy);  
+                histograms_->get("1n_energy_diff")->Fill(energyDiff);
+                histograms_->get("1n_energy_frac")->Fill(energyFrac); 
+            } else if (eventType == 2) { 
+                histograms_->get("2n_n2_energy")->Fill(slke); 
+                auto energyFrac2n = (nEnergy + slke)/pnGamma->getEnergy();
+                histograms_->get("2n_energy_frac")->Fill(energyFrac2n);
+                  
+                  
+            } else if (eventType == 17) { 
+                histograms_->get("1kp_ke:2nd_h_ke")->Fill(nEnergy, slke);
+                histograms_->get("1kp_energy")->Fill(nEnergy);  
+                histograms_->get("1kp_energy_diff")->Fill(energyDiff);
+                histograms_->get("1kp_energy_frac")->Fill(energyFrac); 
+            } else if (eventType == 16 || eventType == 18) { 
+                histograms_->get("1k0_ke:2nd_h_ke")->Fill(nEnergy, slke);
+                histograms_->get("1k0_energy")->Fill(nEnergy);  
+                histograms_->get("1k0_energy_diff")->Fill(energyDiff);
+                histograms_->get("1k0_energy_frac")->Fill(energyFrac); 
+            }
 
             int nPdgID = abs(pnDaughters[1]->getPdgID());
             int nEventType = -10; 
@@ -284,8 +314,9 @@ namespace ldmx {
             else if (nPdgID == 211) nEventType = 3;
             else if (nPdgID == 111) nEventType = 4; 
        
-            histograms_->get("1n_event_type")->Fill(nEventType);  
-        }
+            histograms_->get("1n_event_type")->Fill(nEventType); 
+
+        } 
 
         // Get the collection of ECal veto results if it exist
         float bdtProb{-1}; 
