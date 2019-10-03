@@ -42,8 +42,7 @@ namespace ldmx {
         runMode_ = 0;
     }
 
-    RootPrimaryGenerator::~RootPrimaryGenerator() {
-    }
+    RootPrimaryGenerator::~RootPrimaryGenerator() { }
 
     void RootPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
@@ -57,25 +56,34 @@ namespace ldmx {
 
         // Mode == 0; regenerate the same events (with the useSeed option toggled on)
         // Mode == 1; generate events from the ecal scoring plane hits
-
         int theMode = runMode_;
+
+        
 
         if (theMode == 1) {
 
-            // go through ecal SP hits
-            for (int iSTH = 0; iSTH < ecalSPParticles_->GetEntriesFast(); ++iSTH) {
+            // In this mode, we need to loop through all ECal scoring plane hits
+            // and find the subset of unique hits created by particles exiting
+            // the ECal.  These particles will be stored in a container and 
+            // re-fired into the HCal. 
+            std::vector<SimTrackerHit*> spHits; 
 
-                ldmx::SimTrackerHit* sth = (ldmx::SimTrackerHit*) ecalSPParticles_->At(iSTH);
+            // Loop through all of the ECal scoring plane hits. 
+            for (int isph{0}; isph < ecalSPParticles_->GetEntriesFast(); ++isph) {
 
+                auto sth = static_cast<SimTrackerHit*>(ecalSPParticles_->At(isph));
+
+                
                 /*
-                   std::cout << iSTH << ", " << sth->getID() << ", " << sth->getLayerID() << ", " << sth->getSimParticle()->getPdgID() << std::endl;
-                   std::cout << "\t STH position: " << sth->getPosition()[0] << ", " << sth->getPosition()[1] << ", " << sth->getPosition()[2] << std::endl;
-                   std::cout << "\t STH momentum: " << sth->getMomentum()[0] << ", " << sth->getMomentum()[1] << ", " << sth->getMomentum()[2] << std::endl;
+                   std::cout << "\t Track ID: " << sth->getTrackID() << std::endl;
                    std::cout << "\t SIM momentum: " << sth->getSimParticle()->getMomentum()[0] << ", " << sth->getSimParticle()->getMomentum()[1] << ", " << sth->getSimParticle()->getMomentum()[2] << std::endl;
                    std::cout << "\t SIM energy  : " << sth->getSimParticle()->getEnergy() << std::endl;
-                   */   
+                   sth->Print(); 
+                   sth->getSimParticle()->Print();    
+                */
 
-                /// let's go through the cases when the particle is entering the ECAL volume
+                // First, start by skipping all hits that were created by 
+                // particles entering the ECal volume. 
                 if (sth->getLayerID() == 1 and sth->getMomentum()[2] > 0) continue;
                 if (sth->getLayerID() == 2 and sth->getMomentum()[2] < 0) continue; 
                 if (sth->getLayerID() == 3 and sth->getMomentum()[1] < 0) continue; 
@@ -83,13 +91,23 @@ namespace ldmx {
                 if (sth->getLayerID() == 5 and sth->getMomentum()[0] > 0) continue; 
                 if (sth->getLayerID() == 6 and sth->getMomentum()[0] < 0) continue; 
 
+                // Add the unique hit to the collection of all unique hits.
+                spHits.push_back(sth);
+            
+            } 
+
+            for (const auto& spHit : spHits) { 
+
+                spHit->Print(); 
+                spHit->getSimParticle()->Print(); 
+
                 G4PrimaryVertex* curvertex = new G4PrimaryVertex();
-                curvertex->SetPosition(sth->getPosition()[0]*mm, sth->getPosition()[1]*mm, sth->getPosition()[2]*mm);
+                curvertex->SetPosition(spHit->getPosition()[0]*mm, spHit->getPosition()[1]*mm, spHit->getPosition()[2]*mm);
                 curvertex->SetWeight(1.);
 
                 G4PrimaryParticle* primary = new G4PrimaryParticle();
-                primary->SetPDGcode(sth->getSimParticle()->getPdgID());
-                primary->SetMomentum(sth->getMomentum()[0] * MeV, sth->getMomentum()[1] * MeV, sth->getMomentum()[2] * MeV);
+                primary->SetPDGcode(spHit->getSimParticle()->getPdgID());
+                primary->SetMomentum(spHit->getMomentum()[0] * MeV, spHit->getMomentum()[1] * MeV, spHit->getMomentum()[2] * MeV);
 
                 UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
                 primaryInfo->setHepEvtStatus(1.);
