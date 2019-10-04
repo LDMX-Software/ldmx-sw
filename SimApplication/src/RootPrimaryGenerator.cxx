@@ -88,7 +88,12 @@ namespace ldmx {
                 if (sth->getLayerID() == 3 and sth->getMomentum()[1] < 0) continue; 
                 if (sth->getLayerID() == 4 and sth->getMomentum()[1] > 0) continue; 
                 if (sth->getLayerID() == 5 and sth->getMomentum()[0] > 0) continue; 
-                if (sth->getLayerID() == 6 and sth->getMomentum()[0] < 0) continue; 
+                if (sth->getLayerID() == 6 and sth->getMomentum()[0] < 0) continue;
+
+                // Don't consider particles created outside of the HCal readout
+                // window.  Currently, this is estimated to be 50 ns.  
+                // ToDo: This value should be made configurable. 
+                if (sth->getSimParticle()->getTime() > 50) continue; 
 
                 if (spHits.find(sth->getSimParticle()->getMomentum()[2]) == spHits.end()) {
                     spHits[sth->getSimParticle()->getMomentum()[2]] = sth; 
