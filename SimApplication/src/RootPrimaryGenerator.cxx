@@ -1,19 +1,33 @@
+/**
+ * @file RootPrimaryGenerator.cxx
+ * @brief Primary generator used to generate primaries from SimParticles. 
+ * @author Nhan Tran, Fermilab
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
+
 #include "SimApplication/RootPrimaryGenerator.h"
 
-// Geant4
-#include "G4RunManager.hh"
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <unordered_map>
+
+//------------//
+//   Geant4   //
+//------------//
 #include "G4Event.hh"
 #include "G4IonTable.hh"
+#include "G4PhysicalConstants.hh"
+#include "G4RunManager.hh"
+#include "G4SystemOfUnits.hh"
 
-// LDMX
-#include "SimApplication/UserPrimaryParticleInformation.h"
+//-------------//
+//   ldmx-sw   //
+//-------------//
+#include "Event/EventConstants.h"
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
-#include "Event/EventConstants.h"
-
-// Geant4
-#include "G4SystemOfUnits.hh"
-#include "G4PhysicalConstants.hh"
+#include "SimApplication/UserPrimaryParticleInformation.h"
 
 namespace ldmx {
 
@@ -33,10 +47,12 @@ namespace ldmx {
         runMode_ = 0;
     }
 
-    RootPrimaryGenerator::~RootPrimaryGenerator() {
-    }
+    RootPrimaryGenerator::~RootPrimaryGenerator() { }
 
     void RootPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
+
+        // TODO: Instead of having two different modes, each mode should exists
+        //       as its own primary generator. 
 
         if (evtCtr_ >= nEvts_) {
             std::cout << "[ RootPrimaryGenerator ]: End of file reached." << std::endl;
@@ -48,51 +64,72 @@ namespace ldmx {
 
         // Mode == 0; regenerate the same events (with the useSeed option toggled on)
         // Mode == 1; generate events from the ecal scoring plane hits
-
         int theMode = runMode_;
 
-        if (theMode == 1){
-            
-            // go through ecal SP hits
-            for (int iSTH = 0; iSTH < ecalSPParticles_->GetEntriesFast(); ++iSTH) {
+        if (theMode == 1) {
 
-                ldmx::SimTrackerHit* sth = (ldmx::SimTrackerHit*) ecalSPParticles_->At(iSTH);
+            // In this mode, we need to loop through all ECal scoring plane hits
+            // and find the subset of unique hits created by particles exiting
+            // the ECal.  These particles will be stored in a container and 
+            // re-fired into the HCal. 
+            std::unordered_map<float, SimTrackerHit*> spHits; 
 
-                /*
-                 std::cout << iSTH << ", " << sth->getID() << ", " << sth->getLayerID() << ", " << sth->getSimParticle()->getPdgID() << std::endl;
-                 std::cout << "\t STH position: " << sth->getPosition()[0] << ", " << sth->getPosition()[1] << ", " << sth->getPosition()[2] << std::endl;
-                 std::cout << "\t STH momentum: " << sth->getMomentum()[0] << ", " << sth->getMomentum()[1] << ", " << sth->getMomentum()[2] << std::endl;
-                 std::cout << "\t SIM momentum: " << sth->getSimParticle()->getMomentum()[0] << ", " << sth->getSimParticle()->getMomentum()[1] << ", " << sth->getSimParticle()->getMomentum()[2] << std::endl;
-                 std::cout << "\t SIM energy  : " << sth->getSimParticle()->getEnergy() << std::endl;
-                */   
+            // Loop through all of the ECal scoring plane hits. 
+            for (int isph{0}; isph < ecalSPParticles_->GetEntriesFast(); ++isph) {
 
-                /// let's go through the cases when the particle is entering the ECAL volume
-                if (sth->getLayerID() == 1 and sth->getMomentum()[2] > 0) continue;
-                if (sth->getLayerID() == 2 and sth->getMomentum()[2] < 0) continue; 
-                if (sth->getLayerID() == 3 and sth->getMomentum()[1] < 0) continue; 
-                if (sth->getLayerID() == 4 and sth->getMomentum()[1] > 0) continue; 
-                if (sth->getLayerID() == 5 and sth->getMomentum()[0] > 0) continue; 
-                if (sth->getLayerID() == 6 and sth->getMomentum()[0] < 0) continue; 
+                auto spHit = static_cast<SimTrackerHit*>(ecalSPParticles_->At(isph));
 
-                G4PrimaryVertex* curvertex = new G4PrimaryVertex();
-                curvertex->SetPosition(sth->getPosition()[0]*mm, sth->getPosition()[1]*mm, sth->getPosition()[2]*mm);
-                curvertex->SetWeight(1.);
+                // First, start by skipping all hits that were created by 
+                // particles entering the ECal volume. 
+                if (spHit->getLayerID() == 1 and spHit->getMomentum()[2] > 0) continue;
+                if (spHit->getLayerID() == 2 and spHit->getMomentum()[2] < 0) continue; 
+                if (spHit->getLayerID() == 3 and spHit->getMomentum()[1] < 0) continue; 
+                if (spHit->getLayerID() == 4 and spHit->getMomentum()[1] > 0) continue; 
+                if (spHit->getLayerID() == 5 and spHit->getMomentum()[0] > 0) continue; 
+                if (spHit->getLayerID() == 6 and spHit->getMomentum()[0] < 0) continue;
 
-                G4PrimaryParticle* primary = new G4PrimaryParticle();
-                primary->SetPDGcode(sth->getSimParticle()->getPdgID());
-                primary->SetMomentum(sth->getMomentum()[0] * MeV, sth->getMomentum()[1] * MeV, sth->getMomentum()[2] * MeV);
+                // Don't consider particles created outside of the HCal readout
+                // window.  Currently, this is estimated to be 50 ns.  
+                // TODO: This value should be made configurable. 
+                if (spHit->getSimParticle()->getTime() > 50) continue; 
 
-                UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
+                if (spHits.find(spHit->getSimParticle()->getMomentum()[2]) == spHits.end()) {
+                    spHits[spHit->getSimParticle()->getMomentum()[2]] = spHit; 
+                } else {  
+                        
+                   float currentPMag = sqrt(
+                                      pow(spHit->getMomentum()[0], 2) +
+                                      pow(spHit->getMomentum()[1], 2) +
+                                      pow(spHit->getMomentum()[2], 2)); 
+                   float pMag = sqrt(
+                                      pow(spHits[spHit->getSimParticle()->getMomentum()[2]]->getMomentum()[0], 2) +
+                                      pow(spHits[spHit->getSimParticle()->getMomentum()[2]]->getMomentum()[1], 2) +
+                                      pow(spHits[spHit->getSimParticle()->getMomentum()[2]]->getMomentum()[2], 2)); 
+
+                    if (pMag < currentPMag) spHits[spHit->getSimParticle()->getMomentum()[2]] = spHit; 
+                } 
+            } 
+
+            for (auto const& spHit : spHits) { 
+
+                auto cVertex{new G4PrimaryVertex()};
+                cVertex->SetPosition(spHit.second->getPosition()[0]*mm, spHit.second->getPosition()[1]*mm, spHit.second->getPosition()[2]*mm);
+                cVertex->SetWeight(1.);
+
+                auto primary{new G4PrimaryParticle()};
+                primary->SetPDGcode(spHit.second->getSimParticle()->getPdgID());
+                primary->SetMomentum(spHit.second->getMomentum()[0]*MeV, spHit.second->getMomentum()[1]*MeV, spHit.second->getMomentum()[2]*MeV);
+
+                auto primaryInfo{new UserPrimaryParticleInformation()};
                 primaryInfo->setHepEvtStatus(1.);
                 primary->SetUserInformation(primaryInfo);
 
-                curvertex->SetPrimary(primary);
-                anEvent->AddPrimaryVertex(curvertex);
+                cVertex->SetPrimary(primary);
+                anEvent->AddPrimaryVertex(cVertex);
 
             }   
 
-        }
-        else if (theMode == 0){
+        } else if (theMode == 0) {
 
             // put in protection for if we run out of ROOT events
             std::vector<G4PrimaryVertex*> vertices;
