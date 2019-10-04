@@ -51,6 +51,9 @@ namespace ldmx {
 
     void RootPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
+        // TODO: Instead of having two different modes, each mode should exists
+        //       as its own primary generator. 
+
         if (evtCtr_ >= nEvts_) {
             std::cout << "[ RootPrimaryGenerator ]: End of file reached." << std::endl;
             G4RunManager::GetRunManager()->AbortRun(true);
@@ -63,8 +66,6 @@ namespace ldmx {
         // Mode == 1; generate events from the ecal scoring plane hits
         int theMode = runMode_;
 
-        
-
         if (theMode == 1) {
 
             // In this mode, we need to loop through all ECal scoring plane hits
@@ -76,63 +77,55 @@ namespace ldmx {
             // Loop through all of the ECal scoring plane hits. 
             for (int isph{0}; isph < ecalSPParticles_->GetEntriesFast(); ++isph) {
 
-                auto sth = static_cast<SimTrackerHit*>(ecalSPParticles_->At(isph));
-
-                //sth->Print();
-                //sth->getSimParticle()->Print(); 
+                auto spHit = static_cast<SimTrackerHit*>(ecalSPParticles_->At(isph));
 
                 // First, start by skipping all hits that were created by 
                 // particles entering the ECal volume. 
-                if (sth->getLayerID() == 1 and sth->getMomentum()[2] > 0) continue;
-                if (sth->getLayerID() == 2 and sth->getMomentum()[2] < 0) continue; 
-                if (sth->getLayerID() == 3 and sth->getMomentum()[1] < 0) continue; 
-                if (sth->getLayerID() == 4 and sth->getMomentum()[1] > 0) continue; 
-                if (sth->getLayerID() == 5 and sth->getMomentum()[0] > 0) continue; 
-                if (sth->getLayerID() == 6 and sth->getMomentum()[0] < 0) continue;
+                if (spHit->getLayerID() == 1 and spHit->getMomentum()[2] > 0) continue;
+                if (spHit->getLayerID() == 2 and spHit->getMomentum()[2] < 0) continue; 
+                if (spHit->getLayerID() == 3 and spHit->getMomentum()[1] < 0) continue; 
+                if (spHit->getLayerID() == 4 and spHit->getMomentum()[1] > 0) continue; 
+                if (spHit->getLayerID() == 5 and spHit->getMomentum()[0] > 0) continue; 
+                if (spHit->getLayerID() == 6 and spHit->getMomentum()[0] < 0) continue;
 
                 // Don't consider particles created outside of the HCal readout
                 // window.  Currently, this is estimated to be 50 ns.  
-                // ToDo: This value should be made configurable. 
-                if (sth->getSimParticle()->getTime() > 50) continue; 
+                // TODO: This value should be made configurable. 
+                if (spHit->getSimParticle()->getTime() > 50) continue; 
 
-                if (spHits.find(sth->getSimParticle()->getMomentum()[2]) == spHits.end()) {
-                    spHits[sth->getSimParticle()->getMomentum()[2]] = sth; 
+                if (spHits.find(spHit->getSimParticle()->getMomentum()[2]) == spHits.end()) {
+                    spHits[spHit->getSimParticle()->getMomentum()[2]] = spHit; 
                 } else {  
                         
                    float currentPMag = sqrt(
-                                      pow(sth->getMomentum()[0], 2) +
-                                      pow(sth->getMomentum()[1], 2) +
-                                      pow(sth->getMomentum()[2], 2)); 
+                                      pow(spHit->getMomentum()[0], 2) +
+                                      pow(spHit->getMomentum()[1], 2) +
+                                      pow(spHit->getMomentum()[2], 2)); 
                    float pMag = sqrt(
-                                      pow(spHits[sth->getSimParticle()->getMomentum()[2]]->getMomentum()[0], 2) +
-                                      pow(spHits[sth->getSimParticle()->getMomentum()[2]]->getMomentum()[1], 2) +
-                                      pow(spHits[sth->getSimParticle()->getMomentum()[2]]->getMomentum()[2], 2)); 
+                                      pow(spHits[spHit->getSimParticle()->getMomentum()[2]]->getMomentum()[0], 2) +
+                                      pow(spHits[spHit->getSimParticle()->getMomentum()[2]]->getMomentum()[1], 2) +
+                                      pow(spHits[spHit->getSimParticle()->getMomentum()[2]]->getMomentum()[2], 2)); 
 
-                    if (pMag < currentPMag) spHits[sth->getSimParticle()->getMomentum()[2]] = sth; 
+                    if (pMag < currentPMag) spHits[spHit->getSimParticle()->getMomentum()[2]] = spHit; 
                 } 
             } 
 
-            //std::cout << ">>>>>>>>>>>>> Particles picked." << std::endl;
-
             for (auto const& spHit : spHits) { 
 
-                //spHit.second->Print(); 
-                //spHit.second->getSimParticle()->Print(); 
+                auto cVertex{new G4PrimaryVertex()};
+                cVertex->SetPosition(spHit.second->getPosition()[0]*mm, spHit.second->getPosition()[1]*mm, spHit.second->getPosition()[2]*mm);
+                cVertex->SetWeight(1.);
 
-                G4PrimaryVertex* curvertex = new G4PrimaryVertex();
-                curvertex->SetPosition(spHit.second->getPosition()[0]*mm, spHit.second->getPosition()[1]*mm, spHit.second->getPosition()[2]*mm);
-                curvertex->SetWeight(1.);
-
-                G4PrimaryParticle* primary = new G4PrimaryParticle();
+                auto primary{new G4PrimaryParticle()};
                 primary->SetPDGcode(spHit.second->getSimParticle()->getPdgID());
-                primary->SetMomentum(spHit.second->getMomentum()[0] * MeV, spHit.second->getMomentum()[1] * MeV, spHit.second->getMomentum()[2] * MeV);
+                primary->SetMomentum(spHit.second->getMomentum()[0]*MeV, spHit.second->getMomentum()[1]*MeV, spHit.second->getMomentum()[2]*MeV);
 
-                UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
+                auto primaryInfo{new UserPrimaryParticleInformation()};
                 primaryInfo->setHepEvtStatus(1.);
                 primary->SetUserInformation(primaryInfo);
 
-                curvertex->SetPrimary(primary);
-                anEvent->AddPrimaryVertex(curvertex);
+                cVertex->SetPrimary(primary);
+                anEvent->AddPrimaryVertex(cVertex);
 
             }   
 
