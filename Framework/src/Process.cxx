@@ -82,6 +82,7 @@ namespace ldmx {
                 int ifile = 0;
                 int wasRun = -1;
                 for (auto infilename : inputFiles_) {
+
                     EventFile inFile(infilename);
 
                     EventImpl theEvent(passname_);
@@ -92,6 +93,8 @@ namespace ldmx {
                         module->onFileOpen(infilename);
                     }
                     
+                    //configure event file that will be iterated over
+                    EventFile* masterFile; 
                     if ( !outputFiles_.empty() ) {
 
                         //setup new output file if either
@@ -103,22 +106,33 @@ namespace ldmx {
                             ifile++;
 
                             for ( auto rule : dropKeepRules_ ) {
-                                outFile->addDrop(rule);\
+                                outFile->addDrop(rule);
                             }
 
                             //setup theEvent we will iterate over
-                            if (outFile) outFile->setupEvent( &theEvent );
-                            else inFile.setupEvent( &theEvent );
+                            if (outFile) {
+                                outFile->setupEvent( &theEvent );
+                                masterFile = outFile;
+                            } else {
+                                EXCEPTION_RAISE(
+                                        "Process",
+                                        "Unable to construct output file for " + outputFiles_[ifile]
+                                        );
+                            }
 
                         } else {
 
                             //all other input files
                             outFile->updateParent( &inFile );
+                            masterFile = outFile;
 
                         } //check if in singleOutput mode
 
-                    } //non empty output file list
-                    EventFile* masterFile = (outFile) ? (outFile) : (&inFile);
+                    } else {
+                        //empty output file list, use inputFile as master file
+                        inFile.setupEvent( &theEvent );
+                        masterFile = &inFile;
+                    }
 
                     while (masterFile->nextEvent(m_storageController.keepEvent()) && 
                             (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
@@ -169,6 +183,8 @@ namespace ldmx {
 
                     if ( outFile and !singleOutput ) {
                         outFile->close();
+                        delete outFile;
+                        outFile = nullptr;
                     }
 
                     inFile.close();
@@ -185,6 +201,8 @@ namespace ldmx {
                     //close outFile
                     //  outFile would survive to here in single output mode
                     outFile->close();
+                    delete outFile;
+                    outFile = nullptr;
                 }
 
                 if (histoTFile_) {
