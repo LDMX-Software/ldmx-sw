@@ -93,14 +93,12 @@ namespace ldmx {
         }
 
         labels = {"", 
-            "Nothing hard", // 0  
-            "1 n", // 1
-            "#geq 2 n", // 2
-            "1 #pi", // 3
-            "1 p", // 4
-            "1 K^{0}", // 5
-            "K X", // 6
-            "multi-body", // 7
+            "1 n", // 0
+            "K#pm X", // 1
+            "1 K^{0}", // 2
+            "2 n", // 3
+            "Soft", // 4
+            "Other", // 5
             ""
         };
 
