@@ -20,6 +20,7 @@ for t in titles:
     ecalPN.build1DHistogram("1n_energy_frac%s"     % t, "E(n)/E(#gamma_{PN}) (MeV)", 500, 0, 1)
     ecalPN.build1DHistogram("2n_n2_energy%s"       % t, "Energy of second hardest neutron (MeV)", 500, 0, 5000)
     ecalPN.build1DHistogram("2n_energy_frac%s"     % t, "E(n)/E(#gamma_{PN}) (MeV)", 500, 0, 1)
+    ecalPN.build1DHistogram("2n_energy_other%s"    % t, "E_{other} (MeV)", 500, 0, 5000)
     ecalPN.build1DHistogram("1kp_energy%s"         % t, "Charged Kaon Energy (MeV)", 500, 0, 5000)
     ecalPN.build1DHistogram("1kp_energy_diff%s"    % t, "E(#gamma_{PN}) - E(K#pm) (MeV)", 500, 0, 5000)
     ecalPN.build1DHistogram("1kp_energy_frac%s"    % t, "E(K#pm)/E(#gamma_{PN}) (MeV)", 500, 0, 1)
