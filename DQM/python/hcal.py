@@ -2,6 +2,7 @@
 from LDMX.Framework import ldmxcfg
 
 hcal = ldmxcfg.Analyzer("HCal", "ldmx::HCalDQM")
+hcal.parameters["ecal_veto_collection"] = "EcalVeto"
 
 titles = ['', '_track_veto', '_bdt', '_hcal_veto', '_track_bdt', '_vetoes']
 for t in titles: 
