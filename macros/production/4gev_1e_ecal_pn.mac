@@ -56,8 +56,7 @@
 /ldmx/plugins/TargetBremFilter/brem_threshold 2500
 
 # Plugin used to filter events where a gamma undergoes a photo-nuclear 
-# reaction in the target.  In this case, the filter is being applied
-# to the Ecal.
+# reaction in the Ecal. 
 /ldmx/plugins/load EcalProcessFilter libBiasing.so
 /ldmx/plugins/EcalProcessFilter/volume ecal
 
