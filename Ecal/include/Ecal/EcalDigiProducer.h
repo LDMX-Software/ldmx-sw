@@ -75,6 +75,12 @@ namespace ldmx {
                 return (std::make_pair(layer, cellid));
             }
 
+            //evaluate the pulse given the input peakTime and amplitude parameters
+            //  the shape parameters were (and in the future should be) determined from a fit of the pulse shape
+            double evalPulse(const double evalTime, const double peakTime , const double amplitude ) const {
+                double f=amplitude/(1.0+exp(-0.345*(evalTime-70.6547+77.732-peakTime)))/(1.0+exp(0.140068*(evalTime-87.7649+77.732-peakTime)));
+            }
+
         private:
 
             /** Electrons per MIP. */
