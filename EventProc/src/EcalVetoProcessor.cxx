@@ -256,18 +256,18 @@ namespace ldmx {
 
 
         // Get the collection of digitized Ecal hits from the event. 
-        const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
-        int nEcalHits = ecalDigis->GetEntriesFast();
+        const TClonesArray* ecalRecHits = event.getCollection("ecalRecHits");
+        int nEcalHits = ecalRecHits->GetEntriesFast();
 
         //std::cout << "[ EcalVetoProcessor ] : Got " << nEcalHits << " ECal digis in event "
         //        << event.getEventHeader()->getEventNumber() << std::endl;
 
-        int globalCentroid = GetShowerCentroidIDAndRMS(ecalDigis, showerRMS_);
+        int globalCentroid = GetShowerCentroidIDAndRMS(ecalRecHits, showerRMS_);
         /* ~~ Fill the hit map ~~ O(n)  */
-        fillHitMap(ecalDigis, cellMap_);
+        fillHitMap(ecalRecHits, cellMap_);
         bool doTight = true;
         /* ~~ Fill the isolated hit maps ~~ O(n)  */
-        fillIsolatedHitMap(ecalDigis, globalCentroid, cellMap_, cellMapTightIso_, doTight);
+        fillIsolatedHitMap(ecalRecHits, globalCentroid, cellMap_, cellMapTightIso_, doTight);
 
         //Loop over the hits from the event to calculate the rest of the important quantities
 
@@ -288,7 +288,7 @@ namespace ldmx {
         
         for (int iHit = 0; iHit < nEcalHits; iHit++) {
             //Layer-wise quantities
-            EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
+            EcalHit* hit = (EcalHit*) ecalRecHits->At(iHit);
             LayerCellPair hit_pair = hitToPair(hit);
             ecalLayerEdepRaw_[hit_pair.first] = ecalLayerEdepRaw_[hit_pair.first] + hit->getEnergy();
             if(hit->getLayer() >= 20)
@@ -356,7 +356,7 @@ namespace ldmx {
 
         // Loop over hits a second time to find the standard deviations.
         for (int iHit = 0; iHit < nEcalHits; iHit++) {
-            EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
+            EcalHit* hit = (EcalHit*) ecalRecHits->At(iHit);
             LayerCellPair hit_pair = hitToPair(hit);
             if (hit->getEnergy() > 0) {
                 xStd_ += pow((getCellCentroidXYPair(hit_pair.second).first - xMean), 2) * hit->getEnergy();
@@ -489,14 +489,14 @@ namespace ldmx {
     }
 
     /* Function to calculate the energy weighted shower centroid */
-    int EcalVetoProcessor::GetShowerCentroidIDAndRMS(const TClonesArray* ecalDigis, double& showerRMS) {
-        int nEcalHits = ecalDigis->GetEntriesFast();
+    int EcalVetoProcessor::GetShowerCentroidIDAndRMS(const TClonesArray* ecalRecHits, double& showerRMS) {
+        int nEcalHits = ecalRecHits->GetEntriesFast();
         XYCoords wgtCentroidCoords = std::make_pair<float, float>(0., 0.);
         float sumEdep = 0;
         int returnCellId = 1e6;
         //Calculate Energy Weighted Centroid
         for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
-            EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
+            EcalHit* hit = static_cast<EcalHit*>(ecalRecHits->At(hitCounter));
             LayerCellPair hit_pair = hitToPair(hit);
             CellEnergyPair cell_energy_pair = std::make_pair(hit_pair.second, hit->getEnergy());
             XYCoords centroidCoords = getCellCentroidXYPair(hit_pair.second);
@@ -509,7 +509,7 @@ namespace ldmx {
         //Find Nearest Cell to Centroid
         float maxDist = 1e6;
         for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
-            EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
+            EcalHit* hit = static_cast<EcalHit*>(ecalRecHits->At(hitCounter));
             LayerCellPair hit_pair = hitToPair(hit);
             XYCoords centroidCoords = getCellCentroidXYPair(hit_pair.second);
 
@@ -526,11 +526,11 @@ namespace ldmx {
     }
 
                 /* Function to load up empty vector of hit maps */
-    void EcalVetoProcessor::fillHitMap(const TClonesArray* ecalDigis,
+    void EcalVetoProcessor::fillHitMap(const TClonesArray* ecalRecHits,
             std::vector<std::map<int, float>>& cellMap_) {
-        int nEcalHits = ecalDigis->GetEntriesFast();
+        int nEcalHits = ecalRecHits->GetEntriesFast();
         for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
-            EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(
+            EcalHit* hit = static_cast<EcalHit*>(ecalRecHits->At(
                     hitCounter));
             LayerCellPair hit_pair = hitToPair(hit);
 
@@ -540,12 +540,12 @@ namespace ldmx {
         }
     }
 
-    void EcalVetoProcessor::fillIsolatedHitMap(const TClonesArray* ecalDigis, float globalCentroid,
+    void EcalVetoProcessor::fillIsolatedHitMap(const TClonesArray* ecalRecHits, float globalCentroid,
             std::vector<std::map<int, float>>& cellMap_, std::vector<std::map<int, float>>& cellMapIso_, bool doTight) {
-        int nEcalHits = ecalDigis->GetEntriesFast();
+        int nEcalHits = ecalRecHits->GetEntriesFast();
         for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
             std::pair<bool, int> isolatedHit = std::make_pair(true, 0);
-            EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
+            EcalHit* hit = static_cast<EcalHit*>(ecalRecHits->At(hitCounter));
             LayerCellPair hit_pair = hitToPair(hit);
             if (doTight) {
                 //Disregard hits that are on the centroid.

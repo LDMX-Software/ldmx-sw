@@ -101,14 +101,14 @@ namespace ldmx {
             LayerCellPair hitToPair(EcalHit* hit);
 
             /* Function to calculate the energy weighted shower centroid */
-            int GetShowerCentroidIDAndRMS(const TClonesArray* ecalDigis, double & showerRMS);
+            int GetShowerCentroidIDAndRMS(const TClonesArray* ecalRecHits, double & showerRMS);
 
             /* Function to load up empty vector of hit maps */
-            void fillHitMap(const TClonesArray* ecalDigis,
+            void fillHitMap(const TClonesArray* ecalRecHits,
                     std::vector<std::map<int, float>>& cellMap_);
 
             /* Function to take loaded hit maps and find isolated hits in them */
-            void fillIsolatedHitMap(const TClonesArray* ecalDigis,
+            void fillIsolatedHitMap(const TClonesArray* ecalRecHits,
                     float globalCentroid,
                     std::vector<std::map<int, float>>& cellMap_,
                     std::vector<std::map<int, float>>& cellMapIso_,

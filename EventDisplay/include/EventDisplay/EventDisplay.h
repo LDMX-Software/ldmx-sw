@@ -52,7 +52,7 @@ namespace ldmx {
                 delete theDetector_;
                 delete eventObjects_;
                 
-                delete ecalDigiHits_;
+                delete ecalRecHits_;
                 delete hcalDigiHits_;
                 delete recoilHits_;
                 delete ecalClusters_;
@@ -62,7 +62,7 @@ namespace ldmx {
                 delete textBoxClustersCollName_;
                 delete textBoxSimThresh_;
                 delete textBoxEventTreeName_;
-                delete textBoxEcalDigisCollName_;
+                delete textBoxEcalRecHitsCollName_;
                 delete textBoxHcalDigisCollName_;
                 delete textBoxTrackerHitsCollName_;
                 delete textBoxEcalScorePlaneBranch_;
@@ -107,9 +107,9 @@ namespace ldmx {
             bool GetCollection( const TString branchName , TClonesArray *collection );
 
             /**
-             * Gets ecalDigis collection name from text box
+             * Gets ecalRecHits collection name from text box
              */
-            void GetECALDigisCollInput();
+            void GetECALRecHitsCollInput();
 
             /**
              * Gets clusters collection name from text box
@@ -173,13 +173,13 @@ namespace ldmx {
             TFile* file_; //* Event file
             TTree* tree_; //* Event tree
 
-            TClonesArray* ecalDigiHits_; //* current ecalDigis collection
+            TClonesArray* ecalRecHits_; //* current ecalRecHits collection
             TClonesArray* hcalDigiHits_; //* current hcalDigis collection
             TClonesArray* recoilHits_; //* curent recoil hits collection
             TClonesArray* ecalClusters_; //* current ecal clusters collection
             TClonesArray* ecalSimParticles_; //* current ecal sim particles collection
 
-            bool foundECALDigis_ = false; //* flag check if ecalDigis collection has been found
+            bool foundECALRecHits_ = false; //* flag check if ecalRecHits collection has been found
             bool foundHCALDigis_ = false;//* flag check if hcalDigis collection has been found
             bool foundClusters_ = false;//* flag check if clusters collection has been found
             bool foundTrackerHits_ = false;//* flag check if tracker hits collection has been found
@@ -189,7 +189,7 @@ namespace ldmx {
             int eventNumMax_; ///* maximum event index for the current tree
 
             TString clustersCollName_ = "ecalClusters_recon"; //* name of ecal clusters collection in event tree
-            TString ecalDigisCollName_ = "ecalDigis_recon"; //* name of ecalDigis collection in event tree
+            TString ecalRecHitsCollName_ = "ecalRecHits_recon"; //* name of ecalRecHits collection in event tree
             TString hcalDigisCollName_ = "hcalDigis_recon"; //* name of hcalDigis collection in event tree
             TString trackerHitsCollName_ = "RecoilSimHits_sim"; //* name of recoil hitss collection in event tree
             TString ecalSimParticlesCollName_ = "EcalScoringPlaneHits_sim"; //* name of ecal sim particles collection in event tree
@@ -202,7 +202,7 @@ namespace ldmx {
             TGTextEntry* textBoxClustersCollName_;
             TGTextEntry* textBoxSimThresh_;
             TGTextEntry* textBoxEventTreeName_;
-            TGTextEntry* textBoxEcalDigisCollName_;
+            TGTextEntry* textBoxEcalRecHitsCollName_;
             TGTextEntry* textBoxHcalDigisCollName_;
             TGTextEntry* textBoxTrackerHitsCollName_;
             TGTextEntry* textBoxEcalScorePlaneBranch_;

@@ -22,10 +22,10 @@ namespace ldmx {
 
         // Check if the collection of digitzed ECal hits exist.  If not, 
         // don't bother processing the event. 
-        if (!event.exists("ecalDigis")) return; 
+        if (!event.exists("ecalRecHits")) return; 
 
         // Get the collection of digitized ECal hits from the event
-        auto hits = event.getCollection("ecalDigis"); 
+        auto hits = event.getCollection("ecalRecHits"); 
 
         // Loop over the collection of hits and print the hit details
         for (int iHit{0}; iHit < hits->GetEntriesFast(); ++iHit) { 
