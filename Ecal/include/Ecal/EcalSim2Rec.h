@@ -1,5 +1,5 @@
 /**
- * @file EcalRecon.h
+ * @file EcalSim2Rec.h
  * @brief Class that performs basic ECal digitization
  * @author Owen Colegrove, UCSB
  * @author Omar Moreno, SLAC National Accelerator Laboratory
@@ -35,10 +35,10 @@
 namespace ldmx {
 
     /**
-     * @class EcalRecon
+     * @class EcalSim2Rec
      * @brief Performs basic ECal digitization
      */
-    class EcalRecon : public Producer {
+    class EcalSim2Rec : public Producer {
 
         public:
 
@@ -46,9 +46,9 @@ namespace ldmx {
 
             typedef std::pair<int, float> cell_energy_pair;
 
-            EcalRecon(const std::string& name, Process& process);
+            EcalSim2Rec(const std::string& name, Process& process);
 
-            virtual ~EcalRecon();
+            virtual ~EcalSim2Rec();
 
             virtual void configure(const ParameterSet&);
 
@@ -97,7 +97,7 @@ namespace ldmx {
 
 
             std::unique_ptr<TRandom3> noiseInjector_;
-            TClonesArray* ecalDigis_{nullptr};
+            TClonesArray* ecalRecHits_{nullptr};
             EcalDetectorID detID_;
             std::unique_ptr<EcalHexReadout> hexReadout_;
           
