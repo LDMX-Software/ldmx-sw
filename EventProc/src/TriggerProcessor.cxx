@@ -29,14 +29,14 @@ namespace ldmx {
     void TriggerProcessor::produce(Event& event) {
 
         /** Grab the Ecal hit collection for the given event */
-        const TClonesArray *ecalDigis = event.getCollection("ecalDigis");
-        int numEcalHits = ecalDigis->GetEntriesFast();
+        const TClonesArray *ecalRecHits = event.getCollection("ecalRecHits");
+        int numEcalHits = ecalRecHits->GetEntriesFast();
 
         std::vector<double> layerDigiE(100, 0.0); // big empty vector..
 
         /** Loop over all ecal hits in the given event */
         for (int iHit = 0; iHit < numEcalHits; ++iHit) {
-            EcalHit *hit = (EcalHit*) ecalDigis->At(iHit);
+            EcalHit *hit = (EcalHit*) ecalRecHits->At(iHit);
             if (hit->getLayer() < layerDigiE.size()) { // just to be safe...
                 if (mode_ == 0) { // Sum over all cells in a given layer
                     layerDigiE[hit->getLayer()] += hit->getEnergy();

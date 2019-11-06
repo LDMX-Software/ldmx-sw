@@ -91,12 +91,12 @@ namespace ldmx {
         commandFrameEventTree->AddFrame(buttonSetTree, new TGLayoutHints(kLHintsExpandX));
         buttonSetTree->Connect("Pressed()", "ldmx::EventDisplay", this, "SetEventTree()");
 
-        textBoxEcalDigisCollName_ = new TGTextEntry(commandFrameEcalHitBranch, new TGTextBuffer(100));
-        commandFrameEcalHitBranch->AddFrame(textBoxEcalDigisCollName_, new TGLayoutHints(kLHintsExpandX));
+        textBoxEcalRecHitsCollName_ = new TGTextEntry(commandFrameEcalHitBranch, new TGTextBuffer(100));
+        commandFrameEcalHitBranch->AddFrame(textBoxEcalRecHitsCollName_, new TGLayoutHints(kLHintsExpandX));
 
-        TGButton* buttonSetECALBranch = new TGTextButton(commandFrameEcalHitBranch, "Set ECAL Digis Branch");
+        TGButton* buttonSetECALBranch = new TGTextButton(commandFrameEcalHitBranch, "Set ECAL RecHits Branch");
         commandFrameEcalHitBranch->AddFrame(buttonSetECALBranch, new TGLayoutHints(kLHintsExpandX));
-        buttonSetECALBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetECALDigisCollInput()");
+        buttonSetECALBranch->Connect("Pressed()", "ldmx::EventDisplay", this, "GetECALRecHitsCollInput()");
 
         textBoxHcalDigisCollName_ = new TGTextEntry(commandFrameHcalHitBranch, new TGTextBuffer(100));
         commandFrameHcalHitBranch->AddFrame(textBoxHcalDigisCollName_, new TGLayoutHints(kLHintsExpandX));
@@ -166,13 +166,13 @@ namespace ldmx {
 
         eventNumMax_ = tree_->GetEntriesFast()-1;
 
-        ecalDigiHits_     = new TClonesArray( EventConstants::ECAL_HIT.c_str() );
+        ecalRecHits_     = new TClonesArray( EventConstants::ECAL_HIT.c_str() );
         hcalDigiHits_     = new TClonesArray( EventConstants::HCAL_HIT.c_str() );
         recoilHits_       = new TClonesArray( EventConstants::SIM_TRACKER_HIT.c_str() );
         ecalClusters_     = new TClonesArray( EventConstants::ECAL_CLUSTER.c_str() );
         ecalSimParticles_ = new TClonesArray( EventConstants::SIM_TRACKER_HIT.c_str() );
 
-        foundECALDigis_     = GetCollection( ecalDigisCollName_ , ecalDigiHits_ );
+        foundECALRecHits_     = GetCollection( ecalRecHitsCollName_ , ecalRecHits_ );
         foundHCALDigis_     = GetCollection( hcalDigisCollName_ , hcalDigiHits_ );
         foundClusters_      = GetCollection( clustersCollName_ , ecalClusters_ );
         foundTrackerHits_   = GetCollection( trackerHitsCollName_ , recoilHits_ );
@@ -215,13 +215,13 @@ namespace ldmx {
         }
     }
 
-    void EventDisplay::GetECALDigisCollInput() {
+    void EventDisplay::GetECALRecHitsCollInput() {
 
-        const TString ecalDigisCollName = textBoxEcalDigisCollName_->GetText();
-        foundECALDigis_ = GetCollection( ecalDigisCollName , ecalDigiHits_ );
+        const TString ecalRecHitsCollName = textBoxEcalRecHitsCollName_->GetText();
+        foundECALRecHits_ = GetCollection( ecalRecHitsCollName , ecalRecHits_ );
 
-        if (foundECALDigis_) {
-            ecalDigisCollName_ = ecalDigisCollName;
+        if (foundECALRecHits_) {
+            ecalRecHitsCollName_ = ecalRecHitsCollName;
             if (eventNum_ != -1) {
                 GotoEvent(eventNum_);
             }
@@ -298,8 +298,8 @@ namespace ldmx {
 
         tree_->GetEntry(eventNum_);
 
-        if (foundECALDigis_) {
-            eventObjects_->drawECALHits(ecalDigiHits_);
+        if (foundECALRecHits_) {
+            eventObjects_->drawECALHits(ecalRecHits_);
         }
 
         if (foundHCALDigis_) {
@@ -355,7 +355,7 @@ namespace ldmx {
         tree_ = tree;
         eventTreeName_ = treeName;
 
-        foundECALDigis_     = GetCollection( ecalDigisCollName_ , ecalDigiHits_ );
+        foundECALRecHits_     = GetCollection( ecalRecHitsCollName_ , ecalRecHits_ );
         foundHCALDigis_     = GetCollection( hcalDigisCollName_ , hcalDigiHits_ );
         foundClusters_      = GetCollection( clustersCollName_ , ecalClusters_ );
         foundTrackerHits_   = GetCollection( trackerHitsCollName_ , recoilHits_ );

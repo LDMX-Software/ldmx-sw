@@ -128,12 +128,12 @@ namespace ldmx {
             TColor* aColor = new TColor();
             Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
 
-            TEveGeoShape* ecalDigiHit = EveShapeDrawer::getInstance().drawHexPrism(
+            TEveGeoShape* ecalRecHit = EveShapeDrawer::getInstance().drawHexPrism(
                     DetectorGeometry::getInstance().getHexPrism( hitVec[i] ),
                     0, 0, 0, 
                     color, 0, digiName);
 
-            ecalHits_->AddElement(ecalDigiHit);
+            ecalHits_->AddElement(ecalRecHit);
         }
 
         ecalHits_->SetPickableRecursively(1);
@@ -239,11 +239,11 @@ namespace ldmx {
                 TColor* aColor = new TColor();
                 Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
     
-                TEveGeoShape* ecalDigiHit = EveShapeDrawer::getInstance().drawHexPrism(
+                TEveGeoShape* ecalRecHit = EveShapeDrawer::getInstance().drawHexPrism(
                         DetectorGeometry::getInstance().getHexPrism( cellID , moduleID , layer ),
                         0, 0, 0, 
                         color, 0, "RecHit");
-                ecalCluster->AddElement(ecalDigiHit);
+                ecalCluster->AddElement(ecalRecHit);
 
                 if (numHits < 2) { 
                     ecalCluster->SetPickableRecursively(0);
