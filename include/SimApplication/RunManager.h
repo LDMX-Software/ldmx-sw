@@ -18,6 +18,8 @@
 //-------------//
 #include "Biasing/BiasingMessenger.h"
 
+class G4PhysListFactory; 
+
 namespace ldmx {
 
     // Forward declare to avoid circular dependency in headers
@@ -47,7 +49,7 @@ namespace ldmx {
             /**
              * Initialize physics.
              */
-            void InitializePhysics();
+            void setupPhysics();
 
             /**
              * Perform application initialization.
@@ -83,6 +85,11 @@ namespace ldmx {
              * Manager of sim plugins.
              */
             PluginManager* pluginManager_{nullptr};
+
+            /**
+             * Factory class for instantiating the physics list.
+             */
+            G4PhysListFactory* physicsListFactory_{nullptr};
 
             /** 
              * Flag indicating whether a parallel world should be 
