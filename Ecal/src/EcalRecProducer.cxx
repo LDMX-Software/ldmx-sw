@@ -8,6 +8,10 @@
 
 namespace ldmx {
 
+    const double MIP_SI_RESPONSE = 0.130; // MeV
+
+    const double EcalRecProducer::DEFAULT_SECOND_ORDER_CORRECTION = 0.948;
+
     const std::vector<double> EcalRecProducer::DEFAULT_LAYER_WEIGHTS 
         = {1.641, 3.526, 5.184, 6.841,
         8.222, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775,
@@ -28,7 +32,7 @@ namespace ldmx {
         digiPassName_ = ps.getString( "digiPassName" , "" );
 
         layerWeights_ = ps.getVDouble( "layerWeights" , DEFAULT_LAYER_WEIGHTS );
-        secondOrderEnergyCorrection_ = ps.getDouble( "secondOrderEnergyCorrection" , DEFAULT_SECOND_ORDER_ENERGY_CORRECTION );
+        secondOrderEnergyCorrection_ = ps.getDouble( "secondOrderEnergyCorrection" , DEFAULT_SECOND_ORDER_CORRECTION );
 
         ecalRecHits_ = new TClonesArray( EventConstants::ECAL_HIT.c_str(), 10000 );
     }
@@ -59,7 +63,7 @@ namespace ldmx {
             int layer    = detID_.getLayerID();
 
             //cell, module, layer IDs to real space position
-            XYCoords cellCenter = ecalHexReadout_.getCellCenterAbsolute( ecalHexReadout_.combineID( cellID , moduleID ) );
+            XYCoords cellCenter = ecalHexReadout_->getCellCenterAbsolute( ecalHexReadout_->combineID( cellID , moduleID ) );
             //z position requires some encoding of the distance from the target
 
             //get energy and time estimate from digi information
@@ -79,6 +83,7 @@ namespace ldmx {
             //  p[4] = peak time to be fit (TBD)
             //  p[5] = 0.140068 shape parameter - rate of down slope
             //  p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
+            //These measurements can be used to fit the pulse shape if TOT is not available
 
             //TOT - number of clock ticks that pulse was over threshold
             //  this is related to the amplitude of the pulse through some convoluted relation using the pulse shape
