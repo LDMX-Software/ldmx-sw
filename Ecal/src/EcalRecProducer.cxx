@@ -8,7 +8,7 @@
 
 namespace ldmx {
 
-    const double MIP_SI_RESPONSE = 0.130; // MeV
+    const double EcalRecProducer::MIP_SI_RESPONSE = 0.130; // MeV
 
     const double EcalRecProducer::DEFAULT_SECOND_ORDER_CORRECTION = 0.948;
 
@@ -39,6 +39,8 @@ namespace ldmx {
 
     void EcalRecProducer::produce(Event& event) {
 
+        std::cout << "Producing Rechits" << std::endl;
+
         TClonesArray* ecalDigis = (TClonesArray*) event.getCollection( digiCollName_ , digiPassName_ );
         int totalNL1Samples = ecalDigis->GetEntriesFast();
 
@@ -52,7 +54,7 @@ namespace ldmx {
         //loop through map of hex coordinates
         std::map< int , std::vector< EcalDigi *> >::iterator it_detID_EcalDigi;
         int iHit = 0;
-        for ( it_detID_EcalDigi = detID_EcalDigi.begin() ; it_detID_EcalDigi == detID_EcalDigi.end(); ++it_detID_EcalDigi ) {
+        for ( it_detID_EcalDigi = detID_EcalDigi.begin() ; it_detID_EcalDigi != detID_EcalDigi.end(); ++it_detID_EcalDigi ) {
             
             int rawID = it_detID_EcalDigi->first;
             detID_.setRawValue( rawID );
@@ -72,6 +74,7 @@ namespace ldmx {
             //TODO: Energy estimate from N samples can (and should be) refined
             //TOA is the time of arrival with respect to the 25ns clock window
             double timeRelClock25 = it_detID_EcalDigi->second.at(0)->getTOA()*(25./pow(2.,10)); //ns
+            hitTime = timeRelClock25;
 
             //ADC - voltage measurement at a specific time of the pulse
             // Pulse Shape:
@@ -89,19 +92,19 @@ namespace ldmx {
             //  this is related to the amplitude of the pulse through some convoluted relation using the pulse shape
             //  the amplitude of the pulse is related to the energy deposited
             //  for now, we fit TOT vs EDep (from SimHit) and use that fit to do this transformation
+            siEnergy = it_detID_EcalDigi->second.at(0)->getTOT()/41.;
             
             //incorporate layer weights
             double recHitEnergy = 
                 ( (siEnergy / MIP_SI_RESPONSE)*layerWeights_.at(layer)+siEnergy )*secondOrderEnergyCorrection_;
 
             //copy over information to rec hit structure in new collection
-            EcalHit *recHit = (EcalHit *)( ecalRecHits_->ConstructedAt( iHit ) );
+            EcalHit *recHit = (EcalHit *)( ecalRecHits_->ConstructedAt( iHit++ ) );
             recHit->setID( rawID );
             recHit->setAmplitude( siEnergy );
             recHit->setEnergy( recHitEnergy );
             recHit->setTime( hitTime );
 
-            iHit++;
         }
 
         //add collection to event bus
