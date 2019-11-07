@@ -3,6 +3,7 @@
  * @brief Class that performs basic ECal digitization
  * @author Owen Colegrove, UCSB
  * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Cameron Bravo, SLAC National Accelerator Laboratory
  */
 
 #ifndef EVENTPROC_ECALDIGIPRODUCER_H_
@@ -19,14 +20,14 @@
 //----------//
 #include "TRandom3.h"
 #include "TClonesArray.h"
+#include "TF1.h"
 
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/EcalHit.h"
+#include "Event/EcalDigi.h"
 #include "Event/EventConstants.h"
 #include "Event/SimCalorimeterHit.h"
-#include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
@@ -55,7 +56,7 @@ namespace ldmx {
             virtual void produce(Event& event);
 
         private:
-            
+
             /** 
              * Calculate the noise in electrons given the pad capacitance. 
              *
@@ -65,7 +66,7 @@ namespace ldmx {
             double calculateNoise(const double capacitance, const double noiseIntercept, const double noiseSlope) { 
                 return noiseIntercept + noiseSlope*capacitance;
             } 
-            
+
             inline layer_cell_pair hitToPair(SimCalorimeterHit* hit) {
                 int detIDraw = hit->getID();
                 detID_.setRawValue(detIDraw);
@@ -81,6 +82,8 @@ namespace ldmx {
                 double f=amplitude/(1.0+exp(-0.345*(evalTime-70.6547+77.732-peakTime)))/(1.0+exp(0.140068*(evalTime-87.7649+77.732-peakTime)));
             }
 
+            TF1 pulseFunc;
+
         private:
 
             /** Electrons per MIP. */
@@ -88,6 +91,9 @@ namespace ldmx {
 
             /** MIP response in MeV. */
             static const double MIP_SI_RESPONSE;
+
+            /** MIP response in MeV. */
+            static const double CLOCK_CYCLE;
 
             /** Total number of Ecal layers. */
             static const int NUM_ECAL_LAYERS{34};
@@ -106,10 +112,16 @@ namespace ldmx {
             TClonesArray* ecalDigis_{nullptr};
             EcalDetectorID detID_;
             std::unique_ptr<EcalHexReadout> hexReadout_;
-          
+
             /** Generator of noise hits. */ 
             std::unique_ptr<NoiseGenerator> noiseGenerator_; 
-           
+
+            /** The pedestal in ADC units. */
+            double pedestal_{1100.};
+
+            /** The gain in ADC units per MeV. */
+            double gain_{2000.};
+
             /** Set the noise (in electrons) when the capacitance is 0. */
             double noiseIntercept_{900.};
 
@@ -121,7 +133,10 @@ namespace ldmx {
 
             /** Capacitance per cell pad. */
             double padCapacitance_{27.56}; // pF 
-            
+
+            /** Depth of ADC buffer. */
+            int nADCs_{10}; // pF 
+
             /** 
              * Set the threshold for reading out a channel. Units are 
              * multiples of RMS noise. 

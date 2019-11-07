@@ -1,8 +1,7 @@
 /**
  * @file EcalDigiProducer.cxx
  * @brief Class that performs basic ECal digitization
- * @author Owen Colegrove, UCSB
- * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Cameron Bravo, SLAC National Accelerator Laboratory
  */
 
 #include "Ecal/EcalDigiProducer.h"
@@ -10,7 +9,7 @@
 namespace ldmx {
 
     const double EcalDigiProducer::ELECTRONS_PER_MIP = 33000.0; // e-
-
+    const double EcalDigiProducer::CLOCK_CYCLE = 25.0; // ns
     const double EcalDigiProducer::MIP_SI_RESPONSE = 0.130; // MeV
 
     EcalDigiProducer::EcalDigiProducer(const std::string& name, Process& process) :
@@ -27,9 +26,12 @@ namespace ldmx {
 
         hexReadout_ = std::make_unique<EcalHexReadout>();
 
-        noiseIntercept_ = ps.getDouble("noiseIntercept",0.); 
-        noiseSlope_     = ps.getDouble("noiseSlope",1.);
-        padCapacitance_ = ps.getDouble("padCapacitance",0.1); 
+        gain_           = ps.getDouble("gain", 2000.); 
+        pedestal_       = ps.getDouble("pedestal", 1100.); 
+        noiseIntercept_ = ps.getDouble("noiseIntercept", 700.); 
+        noiseSlope_     = ps.getDouble("noiseSlope", 25.);
+        padCapacitance_ = ps.getDouble("padCapacitance", 0.1); 
+        nADCs_          = ps.getInteger("nADCs", 10);
 
         // Calculate the noise RMS based on the properties of the readout pad
         noiseRMS_ = this->calculateNoise(padCapacitance_, noiseIntercept_, noiseSlope_);  
@@ -45,41 +47,94 @@ namespace ldmx {
 
         noiseGenerator_->setNoise(noiseRMS_); 
         noiseGenerator_->setPedestal(0); 
-        noiseGenerator_->setNoiseThreshold(ps.getDouble("readoutThreshold")*noiseRMS_); 
+        noiseGenerator_->setNoiseThreshold(readoutThreshold_); 
 
-        ecalDigis_ = new TClonesArray(EventConstants::ECAL_HIT.c_str(), 10000);
+        noiseInjector_->SetSeed(0);
+
+        pulseFunc = TF1("pulseFunc","[1]/(1.0+exp(-0.345*(x-70.6547+77.732-[0])))/(1.0+exp(0.140068*(x-87.7649+77.732-[0])))",0.0,(double) nADCs_*EcalDigiProducer::CLOCK_CYCLE);
+
+        ecalDigis_ = new TClonesArray(EventConstants::ECAL_DIGI.c_str(), 10000);
     }
 
     void EcalDigiProducer::produce(Event& event) {
+        //Clear output collection TClonesArray
+        ecalDigis_->Clear();
 
         TClonesArray* ecalSimHits = (TClonesArray*) event.getCollection(EventConstants::ECAL_SIM_HITS);
         int numEcalSimHits = ecalSimHits->GetEntries();
 
         //create empty buffer to store measurements in
 
-        //First we emulate the measurement process by constructing
+        //First we emulate the ROC response by constructing
         //  a pulse from the timing/energy info and then measuring
         //  it at 25ns increments
-        std::map< int , std::vector<double> > detID_ADCBuffer;
+        std::map< int , std::vector<double> > adcBuffers;
+        std::map< int , std::vector<double> > energyBuffers;
+        std::map< int , std::vector<double> > timeBuffers;
         for (int iHit = 0; iHit < numEcalSimHits; iHit++) {
             
             SimCalorimeterHit* simHit = (SimCalorimeterHit*) ecalSimHits->At(iHit);
 
             //create pulse from timing/energy information
-            double amplitude = simHit->getEdep();
-            double peakTime  = simHit->getTime();
-            
-            //measure pulse at 25ns increments
-            
-            //add measurements to buffer
-            
+            int    hitID     = simHit->getID();
+            double hitEnergy = simHit->getEdep();
+            double hitTime   = simHit->getTime();
+            pulseFunc.SetParameters(hitTime,gain_*hitEnergy);
+
+            //init buffer for this detID if it doesn't exist yet
+            if( adcBuffers.find(hitID) == adcBuffers.end() ) 
+            {
+                std::vector<double> adcBuff(nADCs_,pedestal_);
+                adcBuffers.insert({hitID,adcBuff});
+                std::vector<double> energyBuff;
+                energyBuffers.insert({hitID,energyBuff});
+                std::vector<double> timeBuff;
+                timeBuffers.insert({hitID,timeBuff});
+            }
+            energyBuffers[hitID].push_back(hitEnergy);
+            timeBuffers[hitID].push_back(hitTime);
+
+            //measure pulse at 25ns increments and add measurements to buffer
+            for (int ss = 0; ss < nADCs_; ss++)
+            {
+                double pulseEval = pulseFunc.Eval((double) ss*EcalDigiProducer::CLOCK_CYCLE);
+                adcBuffers[hitID].at(ss) += pulseEval;
+            }
+            //measure TOA and TOT
+            double toa = pulseFunc.GetX(readoutThreshold_, 0.0, hitTime);
+            double tut = pulseFunc.GetX(readoutThreshold_, hitTime, nADCs_*EcalDigiProducer::CLOCK_CYCLE);
+            double tot = toa - tut;
+
         }
 
-        //iterate through all channels and simulate noise on top of everything
+        //iterate through all channels and simulate noise on top of everything and build digi
+        int iHit = 0;
+        std::map< int , std::vector<double> >::iterator it;
+        for ( it = adcBuffers.begin(); it != adcBuffers.end(); it++ )
+        {
 
-        //take measurement of all channels and put into ecalDigis_ array
-        
-        //EcalHit* digiHit = (EcalHit*) (ecalDigis_->ConstructedAt(iHit));
+            int detID = it->first;
+            std::vector<double> buff = it->second;
+            for(int ss = 0; ss < buff.size(); ss++)
+            {
+                buff[ss] = buff[ss]+noiseInjector_->Gaus(0.0,noiseRMS_/gain_); //Get noise in ADC units
+            }
+
+            std::vector<double> engs = energyBuffers[detID];
+            std::vector<double> times = timeBuffers[detID];
+            double EtimeSum;
+            double engTot = 0.0;
+            for(int hh = 0; hh < engs.size(); hh++)
+            {
+                engTot += engs[hh];
+                EtimeSum += engs[hh]*times[hh];
+            }
+            EcalDigi* digiHit = (EcalDigi*) (ecalDigis_->ConstructedAt(iHit++));
+            digiHit->setID(detID);
+            digiHit->setTOA(EtimeSum/engTot);
+            digiHit->setTOT(engTot/100.);
+            digiHit->setADCT(buff[2]);
+        }
 
         event.add("ecalDigis", ecalDigis_);
     }
