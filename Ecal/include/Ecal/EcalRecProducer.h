@@ -113,32 +113,27 @@ namespace ldmx {
              * Helper Instance of EcalHexReadout:
              * performs real space x,y postion <-> module,cell ID translation
              */
-            std::unique_ptr<EcalHexReadout> hexReadout_;
+            std::unique_ptr<EcalHexReadout> ecalHexReadout_;
 
             /**
              * Default Vector of Layer Weights
              * Used to convert from energy deposited in Silicon to approximate
              * energy from the particle deposited in absorber in front of the given layer.
              */
-            const std::vector<double> DEFAULT_LAYER_WEIGHTS;
+            static const std::vector<double> DEFAULT_LAYER_WEIGHTS;
 
             /**
              * Default Second Order Correction
              * Used to shift all the layer weights towards having the correct mean
              * for total energy deposited in ECal.
              */
-            const double DEFAULT_SECOND_ORDER_CORRECTION = 0.948;
-
-            /**
-             * Approximate number of electrons generated in Silicon per MIP Hit
-             */
-            const double ELECTRONS_PER_MIP = 33000.0; // e-
+            static const double DEFAULT_SECOND_ORDER_CORRECTION;
 
             /**
              * Approximate energy deposited in Silicon layer for a MIP hit
              * MeV
              */
-            const double MIP_SI_RESPONSE = 0.130; // MeV
+            static const double MIP_SI_RESPONSE; // MeV
 
     };
 }

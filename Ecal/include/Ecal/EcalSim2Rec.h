@@ -5,8 +5,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENTPROC_ECALDIGIPRODUCER_H_
-#define EVENTPROC_ECALDIGIPRODUCER_H_
+#ifndef ECAL_ECALSIM2REC_H_
+#define ECAL_ECALSIM2REC_H_
 
 //----------------//
 //   C++ StdLib   //
