@@ -63,42 +63,79 @@ namespace ldmx {
                 outFile.close();
 
             } else {
-                if (!outputFiles_.empty() && outputFiles_.size() != inputFiles_.size()) {
-                    EXCEPTION_RAISE("Process", "Unable to handle case of different number of input and output files (other than zero output files)");
+                //there are input files
+
+                EventFile* outFile(0);
+
+                bool singleOutput = false;
+                if ( outputFiles_.size() == 1 ) {
+                    singleOutput = true;
+                } else if ( !outputFiles_.empty() and outputFiles_.size() != inputFiles_.size() ) {
+                    EXCEPTION_RAISE( 
+                            "Process" ,
+                            "Unable to handle case of different number of input and output files (other than zero/one ouput file)."
+                            );
                 }
+
+
                 // next, loop through the files
                 int ifile = 0;
                 int wasRun = -1;
                 for (auto infilename : inputFiles_) {
+
                     EventFile inFile(infilename);
 
-                    std::cout << "Process: Opening file " << infilename << std::endl;
-                    EventFile* outFile(0);
+                    EventImpl theEvent(passname_);
 
-                    if (!outputFiles_.empty()) {
-                        outFile = new EventFile(outputFiles_[ifile], &inFile);
-                        ifile++;
-
-                        for (auto rule : dropKeepRules_) {
-                            outFile->addDrop(rule);
-                        }
-                    }
+                    std::cout << "[ Process ] : Opening file " << infilename << std::endl;
 
                     for (auto module : sequence_) {
                         module->onFileOpen(infilename);
                     }
+                    
+                    //configure event file that will be iterated over
+                    EventFile* masterFile; 
+                    if ( !outputFiles_.empty() ) {
 
-                    EventImpl theEvent(passname_);
-                    if (outFile) {
-                        outFile->setupEvent(&theEvent);
+                        //setup new output file if either
+                        // 1) we are not in single output mode
+                        // 2) this is the first input file
+                        if ( !singleOutput or ifile == 0 ) {
+                            //setup new output file
+                            outFile = new EventFile(outputFiles_[ifile], &inFile, singleOutput );
+                            ifile++;
+
+                            for ( auto rule : dropKeepRules_ ) {
+                                outFile->addDrop(rule);
+                            }
+
+                            //setup theEvent we will iterate over
+                            if (outFile) {
+                                outFile->setupEvent( &theEvent );
+                                masterFile = outFile;
+                            } else {
+                                EXCEPTION_RAISE(
+                                        "Process",
+                                        "Unable to construct output file for " + outputFiles_[ifile]
+                                        );
+                            }
+
+                        } else {
+
+                            //all other input files
+                            outFile->updateParent( &inFile );
+                            masterFile = outFile;
+
+                        } //check if in singleOutput mode
 
                     } else {
-                        inFile.setupEvent(&theEvent);
+                        //empty output file list, use inputFile as master file
+                        inFile.setupEvent( &theEvent );
+                        masterFile = &inFile;
                     }
-                    EventFile* masterFile = (outFile) ? (outFile) : (&inFile);
 
-                    while (masterFile->nextEvent(m_storageController.keepEvent()) && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
-
+                    while (masterFile->nextEvent(m_storageController.keepEvent()) && 
+                            (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
                         // clean up for storage control calculation
                         m_storageController.resetEventState();
             
@@ -107,23 +144,24 @@ namespace ldmx {
                             wasRun = theEvent.getEventHeader()->getRun();
                             try {
                                 const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
-                                std::cout << "[Process] got new run header from '" << masterFile->getFileName() << "' ..." << std::endl;
+                                std::cout << "[ Process ] : got new run header from '" << masterFile->getFileName() << "' ..." << std::endl;
                                 runHeader.Print();
                                 for (auto module : sequence_) {
                                     module->onNewRun(runHeader);
                                 }
                             } catch (const Exception&) {
-                                std::cout << "[Process] [WARNING] Run header for run " << wasRun << " was not found!" << std::endl;
+                                std::cout << "[ Process ] : [WARNING] Run header for run " << wasRun << " was not found!" << std::endl;
                             }
                         }
 
-                        if ((n_events_processed + 1)%logFrequency_ == 0) { 
+                        if ( (logFrequency_ != -1) && ((n_events_processed + 1)%logFrequency_ == 0)) { 
                             TTimeStamp t;
                             std::cout << "[ Process ] :  Processing " << n_events_processed + 1 
                                       << " Run " << theEvent.getEventHeader()->getRun() 
                                       << " Event " << theEvent.getEventHeader()->getEventNumber() 
                                       << "  (" << t.AsString("lc") << ")" << std::endl;
                         }
+
                         for (auto module : sequence_) {
                             if (dynamic_cast<Producer*>(module)) {
                                 (dynamic_cast<Producer*>(module))->produce(theEvent);
@@ -131,8 +169,9 @@ namespace ldmx {
                                 (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
                             }
                         }
+
                         n_events_processed++;
-                    }
+                    } //loop through events
 
                     if (eventLimit_ > 0 && n_events_processed == eventLimit_) {
                         std::cout << "[ Process ] : Reached event limit of " << eventLimit_ << " events\n";
@@ -142,14 +181,28 @@ namespace ldmx {
                         std::cout << "[ Process ] : Processing interrupted\n";
                     }
 
-                    if (outFile) {
+                    if ( outFile and !singleOutput ) {
                         outFile->close();
+                        delete outFile;
+                        outFile = nullptr;
                     }
+
                     inFile.close();
-                    std::cout << "Process: Closing file " << infilename << std::endl;
+
+                    std::cout << "[ Process ] : Closing file " << infilename << std::endl;
+
                     for (auto module : sequence_) {
                         module->onFileClose(infilename);
                     }
+
+                } //loop through input files
+
+                if ( outFile ) {
+                    //close outFile
+                    //  outFile would survive to here in single output mode
+                    outFile->close();
+                    delete outFile;
+                    outFile = nullptr;
                 }
 
                 if (histoTFile_) {

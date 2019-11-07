@@ -68,12 +68,7 @@ namespace ldmx {
                     Producer(name, process) {
             }
 
-            virtual ~NonFidEcalVetoProcessor() {
-                delete p001BDTHelper_;
-                delete p01BDTHelper_;
-                delete p1BDTHelper_;
-                delete p0BDTHelper_;
-            }
+            virtual ~NonFidEcalVetoProcessor() { }
 
             void configure(const ParameterSet&);
 
@@ -154,15 +149,15 @@ namespace ldmx {
             bool verbose_{false};
             bool doesPassVeto_{false};
 
-            EcalHexReadout* hexReadout_{nullptr};
+            std::unique_ptr<EcalHexReadout> hexReadout_;
 
             std::vector<std::basic_string<char>> nfbdtFileNames_;
             std::vector<int> bdtdrop_;
             std::string cellFileNamexy_;
-            NonFidBDTHelper* p001BDTHelper_{nullptr};
-            NonFidBDTHelper* p01BDTHelper_{nullptr};
-            NonFidBDTHelper* p1BDTHelper_{nullptr};
-            NonFidBDTHelper* p0BDTHelper_{nullptr};
+            std::unique_ptr<NonFidBDTHelper> p001BDTHelper_;
+            std::unique_ptr<NonFidBDTHelper> p01BDTHelper_;
+            std::unique_ptr<NonFidBDTHelper> p1BDTHelper_;
+            std::unique_ptr<NonFidBDTHelper> p0BDTHelper_;
             std::vector<float> bdtFeatures_;
     };
 

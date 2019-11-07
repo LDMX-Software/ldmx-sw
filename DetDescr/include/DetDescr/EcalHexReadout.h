@@ -46,9 +46,7 @@ namespace ldmx {
             /**
              * Class destructor.
              */
-            virtual ~EcalHexReadout() {
-                delete ecalMap_;
-            }
+            virtual ~EcalHexReadout() { }
 
             /**
              * Combine cell and module IDs into a per-layer ID
@@ -283,8 +281,8 @@ namespace ldmx {
             static constexpr double defaultGap_{0.};
             static constexpr unsigned defaultNCellsWide{23};
 
-            TH2Poly* ecalMap_;
-            TH2Poly* gridMap_;
+            std::unique_ptr<TH2Poly> ecalMap_;
+            std::unique_ptr<TH2Poly> gridMap_;
     };
 
 }
