@@ -27,6 +27,7 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <memory>
 
 //----------//
 //   LDMX   //
@@ -101,10 +102,10 @@ namespace ldmx {
             double thetaThreshold_{100 /* degrees */};
             
             /** Fit to lower slope of inclusive W (theta > 100) plot. */
-            TF1* lFit{new TF1{"lfit","exp([1]-[0]*x)", 950, 1150}};  
+            std::unique_ptr<TF1> lFit;
 
             /** Fit to high tail of inclusive W (theta > 100) plot. */
-            TF1* hFit{nullptr}; 
+            std::unique_ptr<TF1> hFit;
                 
     };
 }

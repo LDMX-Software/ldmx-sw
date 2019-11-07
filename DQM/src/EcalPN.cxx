@@ -33,7 +33,8 @@ namespace ldmx {
     EcalPN::~EcalPN() {}
 
     void EcalPN::onProcessStart() {
-       
+      
+
         // Get an instance of the histogram pool  
         histograms_ = HistogramPool::getInstance();    
 
@@ -92,14 +93,12 @@ namespace ldmx {
         }
 
         labels = {"", 
-            "Nothing hard", // 0  
-            "1 n", // 1
-            "#geq 2 n", // 2
-            "1 #pi", // 3
-            "1 p", // 4
-            "1 K^{0}", // 5
-            "K X", // 6
-            "multi-body", // 7
+            "1 n", // 0
+            "K#pm X", // 1
+            "1 K^{0}", // 2
+            "2 n", // 3
+            "Soft", // 4
+            "Other", // 5
             ""
         };
 
@@ -144,6 +143,16 @@ namespace ldmx {
                             400, 0, 4000, 
                             "Kinetic Energy of 2nd Hardest Particle",
                             400, 0, 4000);
+        histograms_->create<TH2F>("1kp_ke:2nd_h_ke", 
+                            "Kinetic Energy of Leading Charged Kaon (MeV)",
+                            400, 0, 4000, 
+                            "Kinetic Energy of 2nd Hardest Particle",
+                            400, 0, 4000);
+        histograms_->create<TH2F>("1k0_ke:2nd_h_ke", 
+                            "Kinetic Energy of Leading K0 (MeV)",
+                            400, 0, 4000, 
+                            "Kinetic Energy of 2nd Hardest Particle",
+                            400, 0, 4000);
 
         std::vector<std::string> n_labels = {"", "",
             "nn", // 1
@@ -165,7 +174,8 @@ namespace ldmx {
     }
 
     void EcalPN::analyze(const Event & event) { 
-  
+ 
+
         // Get the collection of simulated particles from the event
         const TClonesArray* particles = event.getCollection("SimParticles");
       
@@ -243,9 +253,9 @@ namespace ldmx {
         int eventType500MeV = classifyEvent(pnGamma, 500); 
         int eventType2000MeV = classifyEvent(pnGamma, 2000);
 
-        int eventTypeComp = classifyCompactEvent(eventType);  
-        int eventTypeComp500MeV = classifyCompactEvent(eventType500MeV);  
-        int eventTypeComp2000MeV = classifyCompactEvent(eventType2000MeV);  
+        int eventTypeComp = classifyCompactEvent(pnGamma, 200);  
+        int eventTypeComp500MeV = classifyCompactEvent(pnGamma, 500);  
+        int eventTypeComp2000MeV = classifyCompactEvent(pnGamma, 2000);  
 
         histograms_->get("event_type")->Fill(eventType);
         histograms_->get("event_type_500mev")->Fill(eventType500MeV);
@@ -257,7 +267,7 @@ namespace ldmx {
 
         double slke{-9999};
         double nEnergy{-9999}, energyDiff{-9999}, energyFrac{-9999}; 
-        if (eventType == 1) {
+        if (eventType == 1 || eventType == 17 || eventType == 16 || eventType == 18 || eventType == 2) {
             //Analysis::printDaughters(pnGamma);
             std::sort (pnDaughters.begin(), pnDaughters.end(), [] (const auto& lhs, const auto& rhs) 
             {
@@ -272,10 +282,28 @@ namespace ldmx {
             energyDiff = pnGamma->getEnergy() - nEnergy; 
             energyFrac = nEnergy/pnGamma->getEnergy(); 
 
-            histograms_->get("1n_ke:2nd_h_ke")->Fill(nEnergy, slke);
-            histograms_->get("1n_neutron_energy")->Fill(nEnergy);  
-            histograms_->get("1n_energy_diff")->Fill(energyDiff);
-            histograms_->get("1n_energy_frac")->Fill(energyFrac); 
+            if (eventType == 1) { 
+                histograms_->get("1n_ke:2nd_h_ke")->Fill(nEnergy, slke);
+                histograms_->get("1n_neutron_energy")->Fill(nEnergy);  
+                histograms_->get("1n_energy_diff")->Fill(energyDiff);
+                histograms_->get("1n_energy_frac")->Fill(energyFrac); 
+            } else if (eventType == 2) { 
+                histograms_->get("2n_n2_energy")->Fill(slke); 
+                auto energyFrac2n = (nEnergy + slke)/pnGamma->getEnergy();
+                histograms_->get("2n_energy_frac")->Fill(energyFrac2n);
+                histograms_->get("2n_energy_other")->Fill(pnGamma->getEnergy() - energyFrac2n); 
+                  
+            } else if (eventType == 17) { 
+                histograms_->get("1kp_ke:2nd_h_ke")->Fill(nEnergy, slke);
+                histograms_->get("1kp_energy")->Fill(nEnergy);  
+                histograms_->get("1kp_energy_diff")->Fill(energyDiff);
+                histograms_->get("1kp_energy_frac")->Fill(energyFrac); 
+            } else if (eventType == 16 || eventType == 18) { 
+                histograms_->get("1k0_ke:2nd_h_ke")->Fill(nEnergy, slke);
+                histograms_->get("1k0_energy")->Fill(nEnergy);  
+                histograms_->get("1k0_energy_diff")->Fill(energyDiff);
+                histograms_->get("1k0_energy_frac")->Fill(energyFrac); 
+            }
 
             int nPdgID = abs(pnDaughters[1]->getPdgID());
             int nEventType = -10; 
@@ -284,8 +312,9 @@ namespace ldmx {
             else if (nPdgID == 211) nEventType = 3;
             else if (nPdgID == 111) nEventType = 4; 
        
-            histograms_->get("1n_event_type")->Fill(nEventType);  
-        }
+            histograms_->get("1n_event_type")->Fill(nEventType); 
+
+        } 
 
         // Get the collection of ECal veto results if it exist
         float bdtProb{-1}; 
@@ -503,17 +532,50 @@ namespace ldmx {
         return 20;
     }
 
-    int EcalPN::classifyCompactEvent(int event_type) { 
-    
-        if (event_type == 0) return 0; 
-        if (event_type == 1) return 1; 
-        if ( (event_type == 2) || (event_type == 3) ) return 2;
-        if ( (event_type == 4) || (event_type == 6) ) return 3;
-        if (event_type == 13) return 4; 
-        if ( (event_type == 16) || (event_type == 18) ) return 5; 
-        if (event_type == 17) return 6; 
+    int EcalPN::classifyCompactEvent(const SimParticle* particle, double threshold) {
+   
+        short n{0}, n_t{0}, k0l{0}, kp{0}, k0s{0}, soft{0};
+
+        // Loop through all of the PN daughters and extract kinematic 
+        // information.
+        for (size_t idaughter = 0; idaughter < particle->getDaughterCount(); 
+                ++idaughter) {
+
+            // Get the ith daughter
+            const SimParticle* daughter = particle->getDaughter(idaughter);
         
-        return 7; 
+            // Calculate the kinetic energy
+            double ke = daughter->getEnergy() - daughter->getMass();
+            
+            //
+            if (ke < 500) { 
+                soft++;
+                continue; 
+            } 
+
+            // Get the PDG ID
+            int pdgID = abs(daughter->getPdgID());
+            
+            if (ke >= 0.8*particle->getEnergy()) {
+                if (pdgID == 2112) n++;
+                else if (pdgID == 130) k0l++; 
+                else if (pdgID == 321) kp++; 
+                else if (pdgID == 310) k0s++;
+                continue;
+            }
+
+            if ((pdgID == 2112) && ke > threshold) n_t++;
+        }
+
+        int neutral_kaons{k0l + k0s};
+        
+        if (n != 0) return 0; 
+        if (kp != 0) return 1; 
+        if (neutral_kaons != 0) return 2; 
+        if (n_t == 2) return 3; 
+        if (soft == particle->getDaughterCount()) return 4; 
+
+        return 5; 
     
     }
 
