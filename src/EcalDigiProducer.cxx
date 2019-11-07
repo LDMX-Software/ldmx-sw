@@ -42,7 +42,7 @@ namespace ldmx {
         //std::cout << "[ EcalDigiProducer ]: Noise RMS: " << noiseRMS_ << " MeV" << std::endl;
 
         // Calculate the readout threhsold
-        readoutThreshold_ = ps.getDouble("readoutThreshold")*noiseRMS_;
+        readoutThreshold_ = ps.getDouble("readoutThreshold", 4.)*noiseRMS_;
         //std::cout << "[ EcalDigiProducer ]: Readout threshold: " << readoutThreshold_ << " MeV" << std::endl;
 
         noiseGenerator_->setNoise(noiseRMS_); 
@@ -51,23 +51,30 @@ namespace ldmx {
 
         noiseInjector_->SetSeed(0);
 
-        pulseFunc = TF1("pulseFunc","[1]/(1.0+exp(-0.345*(x-70.6547+77.732-[0])))/(1.0+exp(0.140068*(x-87.7649+77.732-[0])))",0.0,(double) nADCs_*EcalDigiProducer::CLOCK_CYCLE);
+        pulseFunc_ = TF1(
+                "pulseFunc",
+                "[1]/(1.0+exp(-0.345*(x-70.6547+77.732-[0])))/(1.0+exp(0.140068*(x-87.7649+77.732-[0])))",
+                0.0,(double) nADCs_*EcalDigiProducer::CLOCK_CYCLE
+                );
 
         ecalDigis_ = new TClonesArray(EventConstants::ECAL_DIGI.c_str(), 10000);
     }
 
     void EcalDigiProducer::produce(Event& event) {
+
         //Clear output collection TClonesArray
+        //  Reset from last event
         ecalDigis_->Clear();
 
+        //get simulated ecal hits from Geant4
         TClonesArray* ecalSimHits = (TClonesArray*) event.getCollection(EventConstants::ECAL_SIM_HITS);
         int numEcalSimHits = ecalSimHits->GetEntries();
-
-        //create empty buffer to store measurements in
 
         //First we emulate the ROC response by constructing
         //  a pulse from the timing/energy info and then measuring
         //  it at 25ns increments
+        //Currently, using list of energies to calculate timing of hit and TOT measurement in linear scale
+        //  TODO: implement pulse measurement simulation
         std::map< int , std::vector<double> > adcBuffers;
         std::map< int , std::vector<double> > energyBuffers;
         std::map< int , std::vector<double> > timeBuffers;
@@ -79,7 +86,7 @@ namespace ldmx {
             int    hitID     = simHit->getID();
             double hitEnergy = simHit->getEdep();
             double hitTime   = simHit->getTime();
-            pulseFunc.SetParameters(hitTime,gain_*hitEnergy);
+            pulseFunc_.SetParameters( hitTime , gain_*hitEnergy );
 
             //init buffer for this detID if it doesn't exist yet
             if( adcBuffers.find(hitID) == adcBuffers.end() ) 
@@ -97,12 +104,13 @@ namespace ldmx {
             //measure pulse at 25ns increments and add measurements to buffer
             for (int ss = 0; ss < nADCs_; ss++)
             {
-                double pulseEval = pulseFunc.Eval((double) ss*EcalDigiProducer::CLOCK_CYCLE);
+                double pulseEval = pulseFunc_.Eval((double) ss*EcalDigiProducer::CLOCK_CYCLE);
                 adcBuffers[hitID].at(ss) += pulseEval;
             }
+
             //measure TOA and TOT
-            double toa = pulseFunc.GetX(readoutThreshold_, 0.0, hitTime);
-            double tut = pulseFunc.GetX(readoutThreshold_, hitTime, nADCs_*EcalDigiProducer::CLOCK_CYCLE);
+            double toa = pulseFunc_.GetX(readoutThreshold_, 0.0, hitTime);
+            double tut = pulseFunc_.GetX(readoutThreshold_, hitTime, nADCs_*EcalDigiProducer::CLOCK_CYCLE);
             double tot = toa - tut;
 
         }
@@ -117,26 +125,34 @@ namespace ldmx {
             std::vector<double> buff = it->second;
             for(int ss = 0; ss < buff.size(); ss++)
             {
-                buff[ss] = buff[ss]+noiseInjector_->Gaus(0.0,noiseRMS_/gain_); //Get noise in ADC units
+                //add noise in Gaussian distributed ADC units
+                buff[ss] += noiseInjector_->Gaus(0.0,noiseRMS_/gain_); 
             }
 
             std::vector<double> engs = energyBuffers[detID];
             std::vector<double> times = timeBuffers[detID];
-            double EtimeSum;
+            double EtimeSum = 0.0;
             double engTot = 0.0;
             for(int hh = 0; hh < engs.size(); hh++)
             {
-                engTot += engs[hh];
+                engTot   += engs[hh];
                 EtimeSum += engs[hh]*times[hh];
             }
+
+            //construct digi in event bus collection
+            //  right now, only creating one digi per hit
+            //  TODO: move onto several digis per hit to mimic real DAQ
             EcalDigi* digiHit = (EcalDigi*) (ecalDigis_->ConstructedAt(iHit++));
-            digiHit->setID(detID);
-            digiHit->setTOA(EtimeSum/engTot);
-            digiHit->setTOT(engTot/100.);
-            digiHit->setADCT(buff[2]);
+            digiHit->setID  ( detID );
+            digiHit->setTOA ( EtimeSum/engTot );
+            digiHit->setTOT ( engTot*41 ); //scaling number forces range of 0<->25MeV to 10 bit int
+            digiHit->setADCT( buff.at(0) );
         }
 
-        event.add("ecalDigis", ecalDigis_);
+        //TODO: simulate noise on empty channels
+        //std::vector<double> noiseHitAmplitudes = noiseGenerator->generateNoiseHits( numEmptyChannels );
+
+        event.add("EcalDigis", ecalDigis_);
     }
 }
 
