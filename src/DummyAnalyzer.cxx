@@ -21,12 +21,10 @@ namespace ldmx {
     class DummyAnalyzer : public ldmx::Analyzer {
         public:
 
-            DummyAnalyzer(const std::string& name, ldmx::Process& process) : ldmx::Analyzer(name, process) {}
+      DummyAnalyzer(const std::string& name, ldmx::Process& process) : ldmx::Analyzer(name, process) { ievt=0; }
 
             virtual void configure(const ldmx::ParameterSet& ps) {
                 caloCol_=ps.getString("caloHitCollection");
-                keepMod_=ps.getInteger("keepEventModulus",0);
-                dropMod_=ps.getInteger("dropEventModulus",0);
             }
 
             virtual void analyze(const ldmx::Event& event) {
@@ -36,9 +34,31 @@ namespace ldmx {
                     const ldmx::CalorimeterHit* chit=(const ldmx::CalorimeterHit*)(tca->At(i));
                     h_energy->Fill(chit->getEnergy());
                 }
-                int ievent=event.getEventHeader()->getEventNumber();
-                if (keepMod_>0 && !(ievent%keepMod_)) setStorageHint(hint_shouldKeep);
-                if (dropMod_>0 && !(ievent%dropMod_)) setStorageHint(hint_shouldDrop);
+        		if (ievt==0) {
+        		  std::vector<ProductTag> pts=event.getProducts();
+        		  std::cout << "\nDemonstration of printing out all the event contents\n";
+        		  for (auto j: pts) {
+        		    std::cout << "  " << j << std::endl;
+        		  }
+        		  std::cout << std::endl;
+        		}
+        		if (ievt==1) {
+        		  std::vector<ProductTag> pts=event.searchProducts("","sim","");
+        		  std::cout << "\nDemonstration of searching for all products with pass name 'sim'\n";
+        		  for (auto j: pts) {
+        		    std::cout << "   " << j << std::endl;
+        		  }
+        		  std::cout << std::endl;
+        		}
+        		if (ievt==2) {
+        		  std::vector<ProductTag> pts=event.searchProducts(".*cal.*","","");
+        		  std::cout << "\nDemonstration of searching for all products with 'cal' anywhere in the product name\n";
+        		  for (auto j: pts) {
+        		    std::cout << "   " << j << std::endl;
+        		  }
+        		  std::cout << std::endl;
+        		}
+        		ievt++;
             }
 
             virtual void onFileOpen() {
@@ -62,8 +82,7 @@ namespace ldmx {
         private:
             TH1* h_energy;
             std::string caloCol_;
-            int dropMod_;
-            int keepMod_;
+            int ievt;
     };
 }
 
