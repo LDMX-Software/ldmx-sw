@@ -11,6 +11,10 @@ namespace ldmx {
     const double EcalDigiProducer::ELECTRONS_PER_MIP = 33000.0; // e-
     const double EcalDigiProducer::CLOCK_CYCLE = 25.0; // ns
     const double EcalDigiProducer::MIP_SI_RESPONSE = 0.130; // MeV
+    const int    EcalDigiProducer::NUM_ECAL_LAYERS = 34;
+    const int    EcalDigiProducer::NUM_HEX_MODULES_PER_LAYER = 7;
+    const int    EcalDigiProducer::CELLS_PER_HEX_MODULE = 397;
+    const int    EcalDigiProducer::TOTAL_NUM_CHANNELS = NUM_ECAL_LAYERS*NUM_HEX_MODULES_PER_LAYER*CELLS_PER_HEX_MODULE;
 
     EcalDigiProducer::EcalDigiProducer(const std::string& name, Process& process) :
         Producer(name, process) {
@@ -68,7 +72,7 @@ namespace ldmx {
         //get simulated ecal hits from Geant4
         TClonesArray* ecalSimHits = (TClonesArray*) event.getCollection(EventConstants::ECAL_SIM_HITS);
         int numEcalSimHits = ecalSimHits->GetEntries();
-        std::cout << numEcalSimHits << "\t";
+
         //First we emulate the ROC response by constructing
         //  a pulse from the timing/energy info and then measuring
         //  it at 25ns increments
@@ -144,21 +148,49 @@ namespace ldmx {
             //  right now, only creating one digi per hit
             //  TODO: move onto several digis per hit to mimic real DAQ
             sampleToAdd.rawID_ = detID;
-            sampleToAdd.toa_   = EtimeSum/engTot;
-            sampleToAdd.tot_   = engTot*41; //scaling number forces range of 0<->25MeV to 10 bit int
-            sampleToAdd.adc_t_ = buff.at(0);
+            //large smearing on toa to represent bad simulation
+            sampleToAdd.toa_   = abs(EtimeSum/engTot + noiseInjector_->Gaus( 0.0 , 25.0 ));
+            //scaling number forces range of 0<->25MeV to 10 bit int
+            sampleToAdd.tot_   = (engTot + noiseInjector_->Gaus( 0.0 , noiseRMS_ ) )*41; 
+            sampleToAdd.adc_t_ = buff.at(0); //already has noise on top
 
             digisToAdd[0] = sampleToAdd;
             ecalDigis_->addDigi( digisToAdd );
         }
 
-        //TODO: simulate noise on empty channels
-        //std::vector<double> noiseHitAmplitudes = noiseGenerator->generateNoiseHits( numEmptyChannels );
-        std::cout << ecalDigis_->getNumDigis() << "\t";
+        //put noise into some empty channels
+        int numEmptyChannels = TOTAL_NUM_CHANNELS - ecalDigis_->getNumDigis();
+        std::vector<double> noiseHitAmplitudes = noiseGenerator_->generateNoiseHits( numEmptyChannels );
+        EcalDetectorID detID;
+        for ( double noiseHit : noiseHitAmplitudes ) {
+
+            //generate detector ID for noise hit
+            int noiseID;
+            do {
+
+                int layerID = noiseInjector_->Integer(NUM_ECAL_LAYERS);
+                int moduleID= noiseInjector_->Integer(NUM_HEX_MODULES_PER_LAYER);
+                int cellID  = noiseInjector_->Integer(CELLS_PER_HEX_MODULE);
+                detID.setFieldValue( 1 , layerID );
+                detID.setFieldValue( 2 , moduleID );
+                detID.setFieldValue( 3 , cellID );
+                noiseID = detID.pack();
+            } while ( adcBuffers.count(noiseID) > 0 );
+
+            sampleToAdd.rawID_ = noiseID;
+            //large smearing on toa to represent bad simulation
+            sampleToAdd.toa_   = noiseInjector_->Uniform( 25. );
+            //scaling number forces range of 0<->25MeV to 10 bit int
+            sampleToAdd.tot_   = noiseHit*41;
+            sampleToAdd.adc_t_ = 1; //arbitrary number - skipping pulse measurement due to lazyness
+
+            digisToAdd[0] = sampleToAdd;
+            ecalDigis_->addDigi( digisToAdd );
+        }
+
         event.add("EcalDigis", ecalDigis_ );
-        std::cout << ecalDigis_->getNumDigis() << "\t";
-        EcalDigiCollection *storedDigis = event.get<EcalDigiCollection *>( "EcalDigis" , "" );
-        std::cout << storedDigis->getNumDigis() << std::endl;
+
+        return;
     }
 }
 
