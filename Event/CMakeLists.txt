@@ -15,6 +15,7 @@ configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Event/Version.h.in
     ${CMAKE_CURRENT_BINARY_DIR}/include/Event/Version.h
 )
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/Event/Version.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Event/)
 
 # Add the location of Version.h to the build. Also, set the variable
 # EXTRA_INC in the parent scope so the extra include directory can 

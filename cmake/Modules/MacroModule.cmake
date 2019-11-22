@@ -43,6 +43,7 @@ macro(MODULE)
 
   # set module's include dir
   set(MODULE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  install(DIRECTORY ${MODULE_INCLUDE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
   
   # set module's source dir
   set(MODULE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -105,7 +106,6 @@ macro(MODULE)
     install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
   endif()
-  
   # make list of libraries required by executables and test programs which includes this module's lib
   if (sources)
     set(MODULE_BIN_LIBRARIES ${MODULE_NAME} ${MODULE_LIBRARIES})
