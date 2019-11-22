@@ -14,12 +14,12 @@
 //----------------//
 #include <time.h>
 #include <memory> //for smart pointers
+#include <map> //for rawID mapping
 
 //----------//
 //   ROOT   //
 //----------//
 #include "TRandom3.h"
-#include "TClonesArray.h"
 #include "TF1.h"
 
 //----------//
@@ -90,6 +90,18 @@ namespace ldmx {
 
             /** Time interval for chip clock */
             static const double CLOCK_CYCLE;
+
+            /** Number of layers in ECal */
+            static const int NUM_ECAL_LAYERS;
+
+            /** Number of Hexagnonal modules per layer in ECal */
+            static const int NUM_HEX_MODULES_PER_LAYER;
+
+            /** Number of cells in each hex module */
+            static const int CELLS_PER_HEX_MODULE;
+
+            /** Total number of channels in entire ECal */
+            static const int TOTAL_NUM_CHANNELS;
 
             //Python Configuration Parameters
             
