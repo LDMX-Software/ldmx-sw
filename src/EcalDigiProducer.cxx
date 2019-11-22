@@ -56,14 +56,19 @@ namespace ldmx {
                 0.0,(double) nADCs_*EcalDigiProducer::CLOCK_CYCLE
                 );
 
+        ecalDigis_ = new EcalDigiCollection();
+        ecalDigis_->setNumSamplesPerChannel( 1 );
     }
 
     void EcalDigiProducer::produce(Event& event) {
 
+        //Clean up last event
+        ecalDigis_->Clear();
+
         //get simulated ecal hits from Geant4
         TClonesArray* ecalSimHits = (TClonesArray*) event.getCollection(EventConstants::ECAL_SIM_HITS);
         int numEcalSimHits = ecalSimHits->GetEntries();
-
+        std::cout << numEcalSimHits << "\t";
         //First we emulate the ROC response by constructing
         //  a pulse from the timing/energy info and then measuring
         //  it at 25ns increments
@@ -108,14 +113,12 @@ namespace ldmx {
             double tot = toa - tut;
 
         }
-
+        
         //iterate through all channels and simulate noise on top of everything and build digi
         int iHit = 0;
         std::map< int , std::vector<double> >::iterator it;
-        EcalDigiCollection *ecalDigis = new EcalDigiCollection();
-        ecalDigis->setNumSamplesPerChannel( 1 );
         EcalDigiSample sampleToAdd;
-        std::vector<EcalDigiSample> digisToAdd( ecalDigis->getNumSamplesPerChannel() , sampleToAdd );
+        std::vector<EcalDigiSample> digisToAdd( ecalDigis_->getNumSamplesPerChannel() , sampleToAdd );
         for ( it = adcBuffers.begin(); it != adcBuffers.end(); it++ )
         {
 
@@ -146,13 +149,16 @@ namespace ldmx {
             sampleToAdd.adc_t_ = buff.at(0);
 
             digisToAdd[0] = sampleToAdd;
-            ecalDigis->addDigi( digisToAdd );
+            ecalDigis_->addDigi( digisToAdd );
         }
 
         //TODO: simulate noise on empty channels
         //std::vector<double> noiseHitAmplitudes = noiseGenerator->generateNoiseHits( numEmptyChannels );
-
-        event.add("EcalDigis", ecalDigis );
+        std::cout << ecalDigis_->getNumDigis() << "\t";
+        event.add("EcalDigis", ecalDigis_ );
+        std::cout << ecalDigis_->getNumDigis() << "\t";
+        EcalDigiCollection *storedDigis = event.get<EcalDigiCollection *>( "EcalDigis" , "" );
+        std::cout << storedDigis->getNumDigis() << std::endl;
     }
 }
 

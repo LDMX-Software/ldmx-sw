@@ -148,6 +148,11 @@ namespace ldmx {
              * par[1] = amplitude of pulse at its peak
              */
             TF1 pulseFunc_;
+
+            /**
+             * Collection object that will be used as the reference for the event bus.
+             */
+            EcalDigiCollection *ecalDigis_;
     };
 }
 
