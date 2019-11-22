@@ -42,6 +42,10 @@ namespace ldmx {
         EcalDigiCollection* ecalDigis = event.get<EcalDigiCollection *>( digiCollName_ , digiPassName_ );
         int numDigiHits = ecalDigis->getNumDigis();
 
+        std::cout << numDigiHits << std::endl;
+
+        return;
+
         //loop through map of hex coordinates
         for ( unsigned int iDigi = 0; iDigi < numDigiHits; iDigi++ ) {
             
