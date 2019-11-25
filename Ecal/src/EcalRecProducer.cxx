@@ -41,25 +41,24 @@ namespace ldmx {
 
         EcalDigiCollection* ecalDigis = event.get<EcalDigiCollection *>( digiCollName_ , digiPassName_ );
         int numDigiHits = ecalDigis->getNumDigis();
-
         std::cout << numDigiHits << std::endl;
-
-        return;
-
-        //loop through map of hex coordinates
+        //loop through digis
         for ( unsigned int iDigi = 0; iDigi < numDigiHits; iDigi++ ) {
             
-            EcalDigiSample sample = ecalDigis->getDigi( iDigi ).at(0);
+            //Right now, hard-coded to only use one sample in EcalDigiProducer
+            //TODO: expand to multiple samples per digi
+            EcalDigiSample sample = (ecalDigis->getDigi( iDigi )).at(0);
             int rawID = sample.rawID_;
+            std::cout << rawID << "\t";
             detID_.setRawValue( rawID );
             detID_.unpack();
 
             int cellID   = detID_.getFieldValue( 3 );
             int moduleID = detID_.getFieldValue( 2 );
             int layer    = detID_.getLayerID();
-
+            std::cout << cellID << "\t";
             //cell, module, layer IDs to real space position
-            XYCoords cellCenter = ecalHexReadout_->getCellCenterAbsolute( ecalHexReadout_->combineID( cellID , moduleID ) );
+//            XYCoords cellCenter = ecalHexReadout_->getCellCenterAbsolute( ecalHexReadout_->combineID( cellID , moduleID ) );
             //z position requires some encoding of the distance from the target
 
             //get energy and time estimate from digi information
@@ -91,14 +90,14 @@ namespace ldmx {
             //incorporate layer weights
             double recHitEnergy = 
                 ( (siEnergy / MIP_SI_RESPONSE)*layerWeights_.at(layer)+siEnergy )*secondOrderEnergyCorrection_;
-
+            std::cout << recHitEnergy << "\t";
             //copy over information to rec hit structure in new collection
             EcalHit *recHit = (EcalHit *)( ecalRecHits_->ConstructedAt( iDigi ) );
             recHit->setID( rawID );
             recHit->setAmplitude( siEnergy );
             recHit->setEnergy( recHitEnergy );
             recHit->setTime( hitTime );
-
+            std::cout << &recHit << std::endl;
         }
 
         //add collection to event bus
