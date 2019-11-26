@@ -121,7 +121,7 @@ namespace ldmx {
             digiHit->setEnergy(((noiseHit/MIP_SI_RESPONSE)*LAYER_WEIGHTS[layerID]+noiseHit)*0.948);
             
             // Identify this hit as a noise hit.
-            digiHit->setNoiseHit(true);
+            digiHit->setNoise(true);
             ++iHit; 
         } 
 
