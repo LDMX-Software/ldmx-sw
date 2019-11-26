@@ -40,6 +40,8 @@ namespace ldmx {
         //  module radius - center-to-flat radius of a module in mm
         //  num cells wide - number of cells in center horizontal row
         //  gap between modules - air gap between adjacent flat edges of module
+        //  z-position of front face of ECal [mm]
+        //  list of positions of sensitive layers relative to front of ECal [mm]
         ecalHexReadout_ = std::make_unique<EcalHexReadout>();
     }
 
@@ -54,18 +56,11 @@ namespace ldmx {
             //TODO: expand to multiple samples per digi
             EcalDigiSample sample = (ecalDigis->getDigi( iDigi )).at(0);
             int rawID = sample.rawID_;
-            detID_.setRawValue( rawID );
-            detID_.unpack();
-
-            int cellID   = detID_.getFieldValue( 3 );
-            int moduleID = detID_.getFieldValue( 2 );
-            int layer    = detID_.getLayerID();
             
-            //cell, module, layer IDs to real space position
-            //TODO:  EcalHit class doesn't store real space position right now
-            XYCoords cellCenter = ecalHexReadout_->getCellCenterAbsolute( ecalHexReadout_->combineID( cellID , moduleID ) );
-            //z position requires some encoding of the distance from the target
-
+            //ID to real space position
+            double x,y,z;
+            ecalHexReadout_->getCellAbsolutePosition( rawID , x , y , z );
+            
             //get energy and time estimate from digi information
             double siEnergy, hitTime;
             
@@ -93,12 +88,18 @@ namespace ldmx {
             siEnergy = sample.tot_/41.;
             
             //incorporate layer weights
+            detID_.setRawValue( rawID );
+            detID_.unpack();
+            int layer = detID_.getLayerID();
             double recHitEnergy = 
                 ( (siEnergy / MIP_SI_RESPONSE)*layerWeights_.at(layer)+siEnergy )*secondOrderEnergyCorrection_;
 
             //copy over information to rec hit structure in new collection
             EcalHit *recHit = (EcalHit *)( ecalRecHits_->ConstructedAt( iDigi ) );
             recHit->setID( rawID );
+            recHit->setXpos( x );
+            recHit->setYpos( y );
+            recHit->setZpos( z );
             recHit->setAmplitude( siEnergy );
             recHit->setEnergy( recHitEnergy );
             recHit->setTime( hitTime );
