@@ -35,13 +35,18 @@ namespace ldmx {
         secondOrderEnergyCorrection_ = ps.getDouble( "secondOrderEnergyCorrection" , DEFAULT_SECOND_ORDER_CORRECTION );
 
         ecalRecHits_ = new TClonesArray( EventConstants::ECAL_HIT.c_str(), 10000 );
+
+        //if changing Ecal geometry, input geometry parameters here
+        //  module radius - center-to-flat radius of a module in mm
+        //  num cells wide - number of cells in center horizontal row
+        //  gap between modules - air gap between adjacent flat edges of module
+        ecalHexReadout_ = std::make_unique<EcalHexReadout>();
     }
 
     void EcalRecProducer::produce(Event& event) {
 
         EcalDigiCollection* ecalDigis = event.get<EcalDigiCollection *>( digiCollName_ , digiPassName_ );
         int numDigiHits = ecalDigis->getNumDigis();
-        std::cout << numDigiHits << std::endl;
         //loop through digis
         for ( unsigned int iDigi = 0; iDigi < numDigiHits; iDigi++ ) {
             
@@ -49,16 +54,16 @@ namespace ldmx {
             //TODO: expand to multiple samples per digi
             EcalDigiSample sample = (ecalDigis->getDigi( iDigi )).at(0);
             int rawID = sample.rawID_;
-            std::cout << rawID << "\t";
             detID_.setRawValue( rawID );
             detID_.unpack();
 
             int cellID   = detID_.getFieldValue( 3 );
             int moduleID = detID_.getFieldValue( 2 );
             int layer    = detID_.getLayerID();
-            std::cout << cellID << "\t";
+            
             //cell, module, layer IDs to real space position
-//            XYCoords cellCenter = ecalHexReadout_->getCellCenterAbsolute( ecalHexReadout_->combineID( cellID , moduleID ) );
+            //TODO:  EcalHit class doesn't store real space position right now
+            XYCoords cellCenter = ecalHexReadout_->getCellCenterAbsolute( ecalHexReadout_->combineID( cellID , moduleID ) );
             //z position requires some encoding of the distance from the target
 
             //get energy and time estimate from digi information
@@ -90,14 +95,13 @@ namespace ldmx {
             //incorporate layer weights
             double recHitEnergy = 
                 ( (siEnergy / MIP_SI_RESPONSE)*layerWeights_.at(layer)+siEnergy )*secondOrderEnergyCorrection_;
-            std::cout << recHitEnergy << "\t";
+
             //copy over information to rec hit structure in new collection
             EcalHit *recHit = (EcalHit *)( ecalRecHits_->ConstructedAt( iDigi ) );
             recHit->setID( rawID );
             recHit->setAmplitude( siEnergy );
             recHit->setEnergy( recHitEnergy );
             recHit->setTime( hitTime );
-            std::cout << &recHit << std::endl;
         }
 
         //add collection to event bus

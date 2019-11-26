@@ -14,7 +14,7 @@ namespace ldmx {
     std::vector< EcalDigiSample > EcalDigiCollection::getDigi( unsigned int digiIndex ) const {
         
         std::vector< EcalDigiSample > digi;
-        for ( unsigned int sampleIndex = 0; sampleIndex < this->getNumSamplesPerChannel(); sampleIndex++ ) {
+        for ( unsigned int sampleIndex = 0; sampleIndex < this->getNumSamplesPerDigi(); sampleIndex++ ) {
             digi.push_back( this->getSample( digiIndex , sampleIndex ) );
         }
 
@@ -48,7 +48,7 @@ namespace ldmx {
             words.push_back( word );
         }
 
-        this->addDigiWords( channelID , words );
+        DigiCollection::addDigi( channelID , words );
 
         return;
     }
@@ -59,7 +59,7 @@ namespace ldmx {
 
         sample.rawID_ = this->getChannelID( digiIndex );
 
-        int32_t word = this->getSampleWord( digiIndex , sampleIndex  );
+        int32_t word = DigiCollection::getSampleWord( digiIndex , sampleIndex  );
 
         //this is where the word --> measurements translation occurs
 

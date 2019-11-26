@@ -61,7 +61,7 @@ namespace ldmx {
                 );
 
         ecalDigis_ = new EcalDigiCollection();
-        ecalDigis_->setNumSamplesPerChannel( 1 );
+        ecalDigis_->setNumSamplesPerDigi( 1 );
     }
 
     void EcalDigiProducer::produce(Event& event) {
@@ -122,7 +122,7 @@ namespace ldmx {
         int iHit = 0;
         std::map< int , std::vector<double> >::iterator it;
         EcalDigiSample sampleToAdd;
-        std::vector<EcalDigiSample> digisToAdd( ecalDigis_->getNumSamplesPerChannel() , sampleToAdd );
+        std::vector<EcalDigiSample> digisToAdd( ecalDigis_->getNumSamplesPerDigi() , sampleToAdd );
         for ( it = adcBuffers.begin(); it != adcBuffers.end(); it++ )
         {
 
@@ -149,7 +149,8 @@ namespace ldmx {
             //  TODO: move onto several digis per hit to mimic real DAQ
             sampleToAdd.rawID_ = detID;
             //large smearing on toa to represent bad simulation
-            sampleToAdd.toa_   = abs(EtimeSum/engTot + noiseInjector_->Gaus( 0.0 , 25.0 ));
+            //  toa counts fraction of time within each 25ns window.
+            sampleToAdd.toa_   = ( abs(EtimeSum/engTot + noiseInjector_->Gaus( 0.0 , 25.0 ))/25. ) / pow( 2. , 10 );
             //scaling number forces range of 0<->25MeV to 10 bit int
             sampleToAdd.tot_   = (engTot + noiseInjector_->Gaus( 0.0 , noiseRMS_ ) )*41; 
             sampleToAdd.adc_t_ = buff.at(0); //already has noise on top
@@ -179,7 +180,7 @@ namespace ldmx {
 
             sampleToAdd.rawID_ = noiseID;
             //large smearing on toa to represent bad simulation
-            sampleToAdd.toa_   = noiseInjector_->Uniform( 25. );
+            sampleToAdd.toa_   = noiseInjector_->Integer( 1023 );
             //scaling number forces range of 0<->25MeV to 10 bit int
             sampleToAdd.tot_   = noiseHit*41;
             sampleToAdd.adc_t_ = 1; //arbitrary number - skipping pulse measurement due to lazyness
