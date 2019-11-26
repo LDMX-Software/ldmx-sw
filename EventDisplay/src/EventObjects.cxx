@@ -178,7 +178,7 @@ namespace ldmx {
                     0, 0, 0, color, 0, digiName );
 
             if ( hcalDigiHit ) {
-                if ( hitVec[i]->getNoise() ) { hcalDigiHit->SetRnrSelf(0); }
+                if ( hitVec[i]->isNoise() ) { hcalDigiHit->SetRnrSelf(0); }
                 hcalHits_->AddElement(hcalDigiHit);
             } // successfully created hcal digi hit
 
