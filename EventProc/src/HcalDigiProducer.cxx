@@ -4,6 +4,7 @@
 #include "TClonesArray.h"
 
 #include "EventProc/HcalDigiProducer.h"
+#include "Exception/Exception.h"
 
 #include <iostream>
 #include <exception>
@@ -68,7 +69,8 @@ namespace ldmx {
 
         // first check if the super strip size divides nicely into the total number of strips
         if (STRIPS_BACK_PER_LAYER_ % SUPER_STRIP_SIZE_ != 0){
-            throw std::invalid_argument( "HcalDigiProducer: the specified superstrip size is not compatible with total number of strips!" );
+            EXCEPTION_RAISE( "InvalidArg" , 
+                    "The specified superstirp size is not compatible with the total number of strips! (Number of strips is not divisible by super strip size)" );
         }
 
         // looper over sim hits and aggregate energy depositions for each detID

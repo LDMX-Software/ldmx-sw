@@ -1,10 +1,10 @@
 #include "SimApplication/LHEParticle.h"
+#include "Exception/Exception.h"
 
 // STL
 #include <iostream>
 #include <vector>
 #include <sstream>
-#include <stdexcept>
 #include <stdlib.h>
 
 // Geant4
@@ -25,9 +25,7 @@ namespace ldmx {
         } while (iss);
 
         if (tokens.size() != 13) {
-            std::cerr << "ERROR: Bad particle record in LHE file ..." << std::endl;
-            std::cerr << "  " << line << std::endl;
-            G4Exception("LHEParticle::LHEParticle", "LHEParticleError", FatalException, "Wrong number of tokens in LHE particle record.");
+            EXCEPTION_RAISE( "TokenNum" , "Wrong number of tokens in LHE particle record." );
         }
 
         idup_ = atof(tokens[0].c_str());

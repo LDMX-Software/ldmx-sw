@@ -1,5 +1,7 @@
 #include "SimApplication/APrimePhysics.h"
 
+#include "Exception/Exception.h"
+
 // Geant4
 #include "G4SystemOfUnits.hh"
 
@@ -48,10 +50,8 @@ namespace ldmx {
          pm->AddProcess(&scatterProcess, -1, 1, 1);
          pm->AddProcess(&decayProcess, -1, -1, 2);
          } else {
-         G4Exception("APrimePhysics::ConstructProcess",
-         "InitializationError",
-         FatalException,
-         "The process manager for APrime is NULL.");
+            EXCEPTION_RAISE( "InitializationError",
+                "The process manager for APrime is NULL.");
          }
          */
     }

@@ -1,6 +1,6 @@
 # Declare "Tools" module
 module(
   NAME Tools
-  DEPENDENCIES Event  
+  DEPENDENCIES Exception Event  
   EXTERNAL_DEPENDENCIES ROOT
 )

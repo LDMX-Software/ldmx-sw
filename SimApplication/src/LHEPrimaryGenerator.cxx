@@ -6,6 +6,7 @@
 
 // LDMX
 #include "SimApplication/UserPrimaryParticleInformation.h"
+#include "Exception/Exception.h"
 
 // Geant4
 #include "G4SystemOfUnits.hh"
@@ -47,9 +48,8 @@ namespace ldmx {
                         if (tungstenIonDef != NULL) {
                             primary->SetParticleDefinition(tungstenIonDef);
                         } else {
-                            G4Exception("LHEPrimaryGenerator::GeneratePrimaryVertex", 
-                                        "EventGenerationError", FatalException, 
-                                        "Failed to find particle definition for W ion.");
+                            EXCEPTION_RAISE( "EventGenerator" ,
+                                    "Failed to find particle definition for W ion." );
                         }
                     } else {
                         primary->SetPDGcode(particle->getIDUP());
