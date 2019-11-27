@@ -4,8 +4,8 @@
  * @author Jeremy Mans, University of Minnesota
  */
 
-#ifndef LDMXSW_FRAMEWORK_EXCEPTION_H_
-#define LDMXSW_FRAMEWORK_EXCEPTION_H_
+#ifndef LDMXSW_EXCEPTION_EXCEPTION_H_
+#define LDMXSW_EXCEPTION_EXCEPTION_H_
 
 // STL
 #include <exception>
@@ -125,5 +125,5 @@ namespace ldmx {
  * supply the exception name and error message
  */
 #define EXCEPTION_RAISE(EXCEPTION, MSG) \
-        throw Exception( EXCEPTION, MSG, __FILE__, __LINE__, __FUNCTION__)
+        throw ldmx::Exception( EXCEPTION, MSG, __FILE__, __LINE__, __FUNCTION__)
 #endif

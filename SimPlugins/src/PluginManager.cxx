@@ -1,5 +1,7 @@
 #include "SimPlugins/PluginManager.h"
 
+#include "Exception/Exception.h"
+
 namespace ldmx {
 
     PluginManager::~PluginManager() {
@@ -126,8 +128,7 @@ namespace ldmx {
             UserActionPlugin* plugin = pluginLoader_.create(pluginName, libName);
             registerPlugin(plugin);
         } else {
-            std::cerr << "[ PluginManager ] - Plugin " << pluginName << " already exists." << std::endl;
-            throw new std::runtime_error("Plugin already loaded.");
+            EXCEPTION_RAISE( "CreateFail" , "Plugin '" + pluginName + "' already exists." );
         }
     }
 

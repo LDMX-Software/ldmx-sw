@@ -6,7 +6,7 @@
 // LDMX
 #include "Event/EventConstants.h"
 #include "Framework/EventImpl.h"
-#include "Framework/Exception.h"
+#include "Exception/Exception.h"
 
 // STL
 #include <iostream>
