@@ -7,6 +7,9 @@
 #ifndef ECAL_ECALDIGIVERIFIER_H
 #define ECAL_ECALDIGIVERIFIER_H
 
+//STL
+#include <map>
+
 //ROOT
 #include "TH1.h"
 #include "TH2.h"
@@ -54,6 +57,12 @@ namespace ldmx {
             virtual void onProcessEnd();
 
         private:
+
+            /** Name of collection and passes for sim and rec hits */
+            std::string ecalSimHitColl_;
+            std::string ecalSimHitPass_;
+            std::string ecalRecHitColl_;
+            std::string ecalRecHitPass_;
 
             /** 
              * SimHit E Dep vs Rec Hit Amplitude
