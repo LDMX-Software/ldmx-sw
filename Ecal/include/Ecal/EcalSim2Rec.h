@@ -5,14 +5,14 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef ECAL_ECALSIM2REC_H_
-#define ECAL_ECALSIM2REC_H_
+#ifndef EVENTPROC_ECALSIM2REC_H_
+#define EVENTPROC_ECALSIM2REC_H_
 
 //----------------//
 //   C++ StdLib   //
 //----------------//
 #include <time.h>
-#include <memory> //for smart pointers
+#include <memory>
 
 //----------//
 //   ROOT   //
@@ -48,7 +48,8 @@ namespace ldmx {
 
             EcalSim2Rec(const std::string& name, Process& process);
 
-            virtual ~EcalSim2Rec();
+            virtual ~EcalSim2Rec() {
+            }
 
             virtual void configure(const ParameterSet&);
 
@@ -121,6 +122,15 @@ namespace ldmx {
              * multiples of RMS noise. 
              */
             double readoutThreshold_{4.};
+
+            /** Layer Weights for Digitization of Energy accounting for the effect of the absorber */
+            std::vector<double> layerWeights_;
+
+            /** Second Order Energy Correction to the accounting done by the layer weights 
+             *  SHOULD BE CLOSE TO 1.
+             */
+            double secondOrderEnergyCorrection_;
+
     };
 }
 
