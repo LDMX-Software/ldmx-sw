@@ -169,10 +169,10 @@ namespace ldmx {
                             } else if (dynamic_cast<Analyzer*>(module)) {
                                 (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
                             }
-                            NtupleManager::getInstance()->fill(); 
-                            NtupleManager::getInstance()->clear(); 
                         }
 
+                        NtupleManager::getInstance()->fill(); 
+                        NtupleManager::getInstance()->clear(); 
                         n_events_processed++;
                     } //loop through events
 
