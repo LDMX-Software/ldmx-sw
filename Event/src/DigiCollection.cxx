@@ -42,20 +42,6 @@ namespace ldmx {
         return;
     }
 
-    void DigiCollection::Copy(TObject &copy) const {
-
-        TObject::Copy( copy );
-        
-        if ( dynamic_cast<DigiCollection *>(&copy) ) {
-            DigiCollection *digiColl = dynamic_cast<DigiCollection *>(&copy);
-            digiColl->numSamplesPerDigi_ = this->numSamplesPerDigi_;
-            digiColl->channelIDs_        = this->channelIDs_;
-            digiColl->samples_           = this->samples_;
-        }
-
-        return;
-    }
-
     void DigiCollection::addDigi( int channelID , std::vector< int32_t > newSamples ) {
 
         channelIDs_.push_back( channelID );
