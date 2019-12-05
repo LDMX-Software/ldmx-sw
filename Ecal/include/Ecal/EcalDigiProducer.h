@@ -4,7 +4,6 @@
  * @author Owen Colegrove, UCSB
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  * @author Cameron Bravo, SLAC National Accelerator Laboratory
- * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifndef EVENTPROC_ECALDIGIPRODUCER_H_
@@ -26,7 +25,7 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/EcalDigi.h"
+#include "Event/EcalDigiCollection.h"
 #include "Event/EventConstants.h"
 #include "Event/SimCalorimeterHit.h"
 #include "DetDescr/EcalDetectorID.h"
@@ -141,11 +140,6 @@ namespace ldmx {
              * Generates Gaussian noise on top of real hits
              */
             std::unique_ptr<TRandom3> noiseInjector_;
-
-            /**
-             * Collection that will be put into event bus
-             */
-            TClonesArray *ecalDigis_;
 
             /**
              * Functional shape of signal pulse in time

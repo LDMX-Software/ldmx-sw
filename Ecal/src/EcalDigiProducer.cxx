@@ -19,7 +19,6 @@ namespace ldmx {
     }
 
     EcalDigiProducer::~EcalDigiProducer() {
-        if ( ecalDigis_ ) delete ecalDigis_;
     }
 
     void EcalDigiProducer::configure(const ParameterSet& ps) {
@@ -57,14 +56,9 @@ namespace ldmx {
                 0.0,(double) nADCs_*EcalDigiProducer::CLOCK_CYCLE
                 );
 
-        ecalDigis_ = new TClonesArray(EventConstants::ECAL_DIGI.c_str(), 10000);
     }
 
     void EcalDigiProducer::produce(Event& event) {
-
-        //Clear output collection TClonesArray
-        //  Reset from last event
-        ecalDigis_->Clear();
 
         //get simulated ecal hits from Geant4
         TClonesArray* ecalSimHits = (TClonesArray*) event.getCollection(EventConstants::ECAL_SIM_HITS);
@@ -118,6 +112,10 @@ namespace ldmx {
         //iterate through all channels and simulate noise on top of everything and build digi
         int iHit = 0;
         std::map< int , std::vector<double> >::iterator it;
+        EcalDigiCollection *ecalDigis = new EcalDigiCollection();
+        ecalDigis->setNumSamplesPerChannel( 1 );
+        EcalDigiSample sampleToAdd;
+        std::vector<EcalDigiSample> digisToAdd( ecalDigis->getNumSamplesPerChannel() , sampleToAdd );
         for ( it = adcBuffers.begin(); it != adcBuffers.end(); it++ )
         {
 
@@ -142,17 +140,19 @@ namespace ldmx {
             //construct digi in event bus collection
             //  right now, only creating one digi per hit
             //  TODO: move onto several digis per hit to mimic real DAQ
-            EcalDigi* digiHit = (EcalDigi*) (ecalDigis_->ConstructedAt(iHit++));
-            digiHit->setID  ( detID );
-            digiHit->setTOA ( EtimeSum/engTot );
-            digiHit->setTOT ( engTot*41 ); //scaling number forces range of 0<->25MeV to 10 bit int
-            digiHit->setADCT( buff.at(0) );
+            sampleToAdd.rawID_ = detID;
+            sampleToAdd.toa_   = EtimeSum/engTot;
+            sampleToAdd.tot_   = engTot*41; //scaling number forces range of 0<->25MeV to 10 bit int
+            sampleToAdd.adc_t_ = buff.at(0);
+
+            digisToAdd[0] = sampleToAdd;
+            ecalDigis->addDigi( digisToAdd );
         }
 
         //TODO: simulate noise on empty channels
         //std::vector<double> noiseHitAmplitudes = noiseGenerator->generateNoiseHits( numEmptyChannels );
 
-        event.add("EcalDigis", ecalDigis_);
+        event.add("EcalDigis", ecalDigis );
     }
 }
 

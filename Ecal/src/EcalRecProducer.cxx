@@ -39,24 +39,14 @@ namespace ldmx {
 
     void EcalRecProducer::produce(Event& event) {
 
-        std::cout << "Producing Rechits" << std::endl;
-
-        TClonesArray* ecalDigis = (TClonesArray*) event.getCollection( digiCollName_ , digiPassName_ );
-        int totalNL1Samples = ecalDigis->GetEntriesFast();
-
-        //loop through all digis and sort based off of detector ID
-        std::map< int , std::vector< EcalDigi *> > detID_EcalDigi;
-        for (int iDigi = 0; iDigi < totalNL1Samples; iDigi++) {
-            EcalDigi *currDigi = (EcalDigi *)( ecalDigis->At( iDigi ) );
-            detID_EcalDigi[ currDigi->getID() ].push_back( currDigi );
-        }
+        EcalDigiCollection* ecalDigis = event.get<EcalDigiCollection *>( digiCollName_ , digiPassName_ );
+        int numDigiHits = ecalDigis->getNumDigis();
 
         //loop through map of hex coordinates
-        std::map< int , std::vector< EcalDigi *> >::iterator it_detID_EcalDigi;
-        int iHit = 0;
-        for ( it_detID_EcalDigi = detID_EcalDigi.begin() ; it_detID_EcalDigi != detID_EcalDigi.end(); ++it_detID_EcalDigi ) {
+        for ( unsigned int iDigi = 0; iDigi < numDigiHits; iDigi++ ) {
             
-            int rawID = it_detID_EcalDigi->first;
+            EcalDigiSample sample = ecalDigis->getDigi( iDigi ).at(0);
+            int rawID = sample.rawID_;
             detID_.setRawValue( rawID );
             detID_.unpack();
 
@@ -73,7 +63,7 @@ namespace ldmx {
             
             //TODO: Energy estimate from N samples can (and should be) refined
             //TOA is the time of arrival with respect to the 25ns clock window
-            double timeRelClock25 = it_detID_EcalDigi->second.at(0)->getTOA()*(25./pow(2.,10)); //ns
+            double timeRelClock25 = sample.toa_*(25./pow(2.,10)); //ns
             hitTime = timeRelClock25;
 
             //ADC - voltage measurement at a specific time of the pulse
@@ -91,15 +81,15 @@ namespace ldmx {
             //TOT - number of clock ticks that pulse was over threshold
             //  this is related to the amplitude of the pulse through some convoluted relation using the pulse shape
             //  the amplitude of the pulse is related to the energy deposited
-            //  for now, we fit TOT vs EDep (from SimHit) and use that fit to do this transformation
-            siEnergy = it_detID_EcalDigi->second.at(0)->getTOT()/41.;
+            //  for now, we set a linear relationship between EDep (from SimHit) and TOT
+            siEnergy = sample.tot_/41.;
             
             //incorporate layer weights
             double recHitEnergy = 
                 ( (siEnergy / MIP_SI_RESPONSE)*layerWeights_.at(layer)+siEnergy )*secondOrderEnergyCorrection_;
 
             //copy over information to rec hit structure in new collection
-            EcalHit *recHit = (EcalHit *)( ecalRecHits_->ConstructedAt( iHit++ ) );
+            EcalHit *recHit = (EcalHit *)( ecalRecHits_->ConstructedAt( iDigi ) );
             recHit->setID( rawID );
             recHit->setAmplitude( siEnergy );
             recHit->setEnergy( recHitEnergy );

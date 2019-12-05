@@ -42,7 +42,7 @@ namespace ldmx {
         return;
     }
 
-    void DigiCollection::addDigi( int channelID , std::vector< int32_t > newSamples ) {
+    void DigiCollection::addDigiWords( int channelID , std::vector< int32_t > newSamples ) {
 
         channelIDs_.push_back( channelID );
         samples_.insert( samples_.end() , newSamples.begin() , newSamples.end() );
