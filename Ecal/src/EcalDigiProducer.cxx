@@ -38,15 +38,12 @@ namespace ldmx {
 
         // Calculate the noise RMS based on the properties of the readout pad
         noiseRMS_ = this->calculateNoise(padCapacitance_, noiseIntercept_, noiseSlope_);  
-        //std::cout << "[ EcalDigiProducer ]: Noise RMS: " << noiseRMS_ << " e-" << std::endl;
 
         // Convert the noise RMS in electrons to energy
         noiseRMS_ = noiseRMS_*(MIP_SI_RESPONSE/ELECTRONS_PER_MIP); 
-        //std::cout << "[ EcalDigiProducer ]: Noise RMS: " << noiseRMS_ << " MeV" << std::endl;
 
         // Calculate the readout threhsold
         readoutThreshold_ = ps.getDouble("readoutThreshold", 4.)*noiseRMS_;
-        //std::cout << "[ EcalDigiProducer ]: Readout threshold: " << readoutThreshold_ << " MeV" << std::endl;
 
         noiseGenerator_->setNoise(noiseRMS_); 
         noiseGenerator_->setPedestal(0); 
@@ -56,9 +53,14 @@ namespace ldmx {
 
         pulseFunc_ = TF1(
                 "pulseFunc",
-                "[1]/(1.0+exp(-0.345*(x-70.6547+77.732-[0])))/(1.0+exp(0.140068*(x-87.7649+77.732-[0])))",
+                "[0]/(1.0+exp([1]*(x-[2]+[3]-[4])))/(1.0+exp([5]*(x-[6]+[3]-[4])))",
                 0.0,(double) nADCs_*EcalDigiProducer::CLOCK_CYCLE
                 );
+        pulseFunc_.SetParameter( 1 , -0.345   );
+        pulseFunc_.SetParameter( 2 , 70.6547  );
+        pulseFunc_.SetParameter( 3 , 77.732   );
+        pulseFunc_.SetParameter( 5 , 0.140068 );
+        pulseFunc_.SetParameter( 6 , 87.7649  );
 
         ecalDigis_ = new EcalDigiCollection();
         ecalDigis_->setNumSamplesPerDigi( 1 );
@@ -89,7 +91,8 @@ namespace ldmx {
             int    hitID     = simHit->getID();
             double hitEnergy = simHit->getEdep();
             double hitTime   = simHit->getTime();
-            pulseFunc_.SetParameters( hitTime , gain_*hitEnergy );
+            pulseFunc_.SetParameter( 0 , gain_*hitEnergy );
+            pulseFunc_.SetParameter( 4 , hitTime );
 
             //init buffer for this detID if it doesn't exist yet
             if( adcBuffers.find(hitID) == adcBuffers.end() ) 
@@ -168,7 +171,6 @@ namespace ldmx {
             //generate detector ID for noise hit
             int noiseID;
             do {
-
                 int layerID = noiseInjector_->Integer(NUM_ECAL_LAYERS);
                 int moduleID= noiseInjector_->Integer(NUM_HEX_MODULES_PER_LAYER);
                 int cellID  = noiseInjector_->Integer(CELLS_PER_HEX_MODULE);

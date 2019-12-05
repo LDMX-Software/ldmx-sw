@@ -12,7 +12,7 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <time.h>
+#include <time.h> //for initial seed to TRandom3
 #include <memory> //for smart pointers
 #include <map> //for rawID mapping
 
@@ -155,9 +155,17 @@ namespace ldmx {
 
             /**
              * Functional shape of signal pulse in time
+             *
              * Shape parameters are hardcoded into the function currently.
-             * par[0] = time pulse reaches its peak
-             * par[1] = amplitude of pulse at its peak
+             *  Pulse Shape:
+             *   p[0]/(1.0+exp(p[1](t-p[2]+p[3]-p[4])))/(1.0+exp(p[5]*(t-p[6]+p[3]-p[4])))
+             *   p[0] = amplitude (related to E dep through gain_)
+             *   p[1] = -0.345 shape parameter - rate of up slope
+             *   p[2] = 70.6547 shape parameter - time of up slope relative to shape fit
+             *   p[3] = 77.732 shape parameter - time of peak relative to shape fit
+             *   p[4] = peak time to be fit (related to time of hit [ns])
+             *   p[5] = 0.140068 shape parameter - rate of down slope
+             *   p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
              */
             TF1 pulseFunc_;
 

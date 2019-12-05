@@ -31,9 +31,12 @@ namespace ldmx {
             int32_t word;
 
             //this is where the measurements --> word translation occurs
-            int adc_t = it_newSamples->adc_t_;
-            int tot   = it_newSamples->tot_;
-            int toa   = it_newSamples->toa_;
+
+            //check if over largest number possible ==> set to largest if over
+            //  don't want wrapping
+            int adc_t = (it_newSamples->adc_t_ > TEN_BIT_MASK) ? TEN_BIT_MASK : it_newSamples->adc_t_;
+            int tot   = (it_newSamples->tot_   > TEN_BIT_MASK) ? TEN_BIT_MASK : it_newSamples->tot_;
+            int toa   = (it_newSamples->toa_   > TEN_BIT_MASK) ? TEN_BIT_MASK : it_newSamples->toa_;
 
             //the chip returns flags that determine what the three measurements are
             //  I (Tom E) don't know right now what that mapping is, so I will not use them.

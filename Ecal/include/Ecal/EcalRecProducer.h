@@ -24,9 +24,7 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/EcalHit.h"
-#include "Event/EcalDigiCollection.h"
-#include "Event/EventConstants.h"
+#include "Event/EventDef.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
@@ -84,6 +82,7 @@ namespace ldmx {
 
             /** 
              * Layer Weights to use for this reconstruction 
+             *
              * Layer weights account for the energy lost in the absorber directly
              * in front of the Silicon layer where the measured energy was deposited.
              * These are determined by calculating the average amount of energy lost
@@ -93,6 +92,7 @@ namespace ldmx {
 
             /**
              * Second Order Energy Correction to use for this reconstruction
+             *
              * This is a shift applied to all of the energies in order to have the
              * mean of the total energy deposited in the ECal be accurate.
              * This is less physically motivated than the layer weights and is more

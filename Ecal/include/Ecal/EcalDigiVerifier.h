@@ -68,8 +68,9 @@ namespace ldmx {
              * SimHit E Dep vs Rec Hit Amplitude
              *
              * A perfect reconstruction would see a one-to-one linear relationship between these two.
-             * Integrates to number of Rec Hits
-             * Aggregates EDeps from any SimHits in the same cell
+             * Integrates to number of Rec Hits.
+             * Aggregates EDeps from any SimHits in the same cell.
+             * The maximum is 25MeV.
              */
             TH2F *h_SimEDep_RecAmplitude_;
 
@@ -78,15 +79,16 @@ namespace ldmx {
              *
              * A perfect reconstruction would see a sharp gaussian around the total energy being fired into the ECal in the sample used.
              * (e.g. 4GeV electrons)
-             * Integrates to number of events
+             * Integrates to number of events.
+             * The maximum is 8000MeV.
              */
             TH1F *h_TotalRecEnergy_;
 
             /**
              * Number of SimHits per each cell
              *
-             * Only including cells that have at least one hit
-             * Integrates to number of rec hits
+             * Only including cells that have at least one hit.
+             * Integrates to number of rec hits.
              */
             TH1F *h_NumSimHitsPerCell_;
 
