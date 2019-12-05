@@ -25,7 +25,7 @@
 //   LDMX   //
 //----------//
 #include "Event/EcalHit.h"
-#include "Event/EcalDigi.h"
+#include "Event/EcalDigiCollection.h"
 #include "Event/EventConstants.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
