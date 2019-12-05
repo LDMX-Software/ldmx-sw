@@ -17,6 +17,15 @@ namespace ldmx {
 
     void NtupleManager::create(const std::string& name) {
 
+        // Check if a tree with named 'name' has already been created.  If so
+        // throw an exception. 
+        if (trees_.count(name) != 0) 
+            EXCEPTION_RAISE(
+                    "NtupleManager", 
+                    "A tree with name " + name + " has already been created." 
+            ); 
+
+        // Create a tree with the given name and add it to the list of trees.
         auto tree{new TTree{name.c_str(), name.c_str()}};
         trees_[name] = tree;       
     }
