@@ -15,6 +15,8 @@
 
 #include "TTree.h" 
 
+#include "Exception/Exception.h" 
+
 typedef boost::variant< short, int, float, double, long > vtype; 
 
 namespace ldmx {
@@ -50,7 +52,9 @@ namespace ldmx {
                 // Check if the variable exists in the map. If it does, throw 
                 // an exception.
                 if (variables_.count(vname) != 0) { 
-                    return;
+                    EXCEPTION_RAISE(
+                            "NtupleManager", 
+                            "A variable with name " + vname + " has already been defined."); 
                 } 
                
                 // Initialize the variable to the minimum limit of that type. 
@@ -70,10 +74,13 @@ namespace ldmx {
             template <typename T>
             void setVar(const std::string& vname, T value) {
                 
-                // Check if the variable already exists in the map.  If so, 
-                // throw an exception. 
+                // Check if the variable already exists in the map.  If it
+                // doesn't, warn the user and don't try to set the variable 
+                // value. 
                 if (variables_.count(vname) == 0) { 
-                    // throw an exception
+                    std::cout << "[ NtupleManager ]: Warning! The variable " 
+                              << vname << " does not exist in the tree." << std::endl;
+                    return; 
                 }
                 
                 // Set the value of the variable
