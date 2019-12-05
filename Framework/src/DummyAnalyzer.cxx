@@ -4,13 +4,29 @@
  * @author Jeremy Mans, University of Minnesota
  */
 
+
+/*~~~~~~~~~~~~*/
+/*   StdLib   */
+/*~~~~~~~~~~~~*/
+#include <iostream>
+
+/*~~~~~~~~~~*/
+/*   ROOT   */ 
+/*~~~~~~~~~~*/
+#include "TClonesArray.h"
+#include "TH1.h"
+
+/*~~~~~~~~~~~*/
+/*   Event   */
+/*~~~~~~~~~~~*/
+#include "Event/CalorimeterHit.h"
+#include "Event/Event.h"
+
+/*~~~~~~~~~~~~~~*/
+/*   Framework  */
+/*~~~~~~~~~~~~~~*/
 #include "Framework/EventProcessor.h"
 #include "Framework/ParameterSet.h"
-#include <iostream>
-#include "TH1.h"
-#include "Event/Event.h"
-#include "Event/CalorimeterHit.h"
-#include "TClonesArray.h"
 
 namespace ldmx {
 
@@ -19,7 +35,7 @@ namespace ldmx {
      * @brief A dummy Analyzer implementation that just prints some messages 
      *        and makes a simple histogram of calorimeter energy
      */
-    class DummyAnalyzer : public ldmx::Analyzer {
+    class DummyAnalyzer : public Analyzer {
         
         public:
             
@@ -32,7 +48,6 @@ namespace ldmx {
              */
             DummyAnalyzer(const std::string& name, ldmx::Process& process) 
                 : ldmx::Analyzer(name, process) { 
-                    ievt=0; 
             }
 
             /** 
@@ -40,8 +55,8 @@ namespace ldmx {
              * 
              * @param pSet Set of parameters used to configure this processor.
              */
-            virtual void configure(const ldmx::ParameterSet& ps) {
-                caloCol_=ps.getString("caloHitCollection");
+            void configure(const ldmx::ParameterSet& ps) final override {
+                caloCol_ = ps.getString("caloHitCollection");
             }
 
             /// Destructor 
@@ -53,85 +68,90 @@ namespace ldmx {
              *
              * @param event The event to analyze. 
              */
-            virtual void analyze(const ldmx::Event& event) {
+            void analyze(const ldmx::Event& event) final override {
 
                 std::cout << "[ DummyAnalyzer]: Analyzing an event!" << std::endl;
 
                 // Get the collection of calorimeter hits from the event. 
-                const TClonesArray* tca=event.getCollection(caloCol_);
+                const TClonesArray* tca = event.getCollection(caloCol_);
                 
                 // Loop through the collection and fill both the histogram and 
                 // ntuple. 
-                for (size_t i=0; i<tca->GetEntriesFast(); i++) {
-                    const ldmx::CalorimeterHit* chit=(const ldmx::CalorimeterHit*)(tca->At(i));
-                    hEnergy->Fill(chit->getEnergy());
+                for (size_t i{0}; i < tca->GetEntriesFast(); ++i) {
+                    
+                    // Get the ith hit from the collection.
+                    auto iHit{static_cast<const CalorimeterHit*>(tca->At(i))}; 
+
+                    // Fill the histogram
+                    hEnergy->Fill(iHit->getEnergy());
                 }
 
                 // Print out all of the product tags in the event.
-                if (ievt==0) {
-                    std::vector<ProductTag> pts=event.getProducts();
-                    std::cout << "\nDemonstration of printing out all the event contents\n";
-                    for (auto j: pts) {
-                        std::cout << "  " << j << std::endl;
-                    }
-                    std::cout << std::endl;
+                if (ievt == 0) {
+                    
+                    std::cout << "[ DummyAnalyzer ]: Demonstration of printing out all the event contents." << std::endl;
+                    
+                    auto pts = event.getProducts();
+                    for (const auto &j : pts) std::cout << "\t" << j << std::endl;
                 }
 
                 // Search for all of the products with the pass name 'sim' 
-                if (ievt==1) {
-                    std::vector<ProductTag> pts=event.searchProducts("","sim","");
-                    std::cout << "\nDemonstration of searching for all products with pass name 'sim'\n";
-                    for (auto j: pts) {
-                        std::cout << "   " << j << std::endl;
-                    }
-                    std::cout << std::endl;
+                if (ievt == 1) {
+                    
+                    std::cout << "[ DummyAnalyzer ]: Demonstration of searching for all products with pass name 'sim'." << std::endl;
+                    
+                    auto pts = event.searchProducts("","sim","");
+                    for (const auto &j : pts) std::cout << "\t" << j << std::endl;
                 }
 
                 //  Search for all of the products with the 'cal' in the product
                 //  name. 
-                if (ievt==2) {
-                    std::vector<ProductTag> pts=event.searchProducts(".*cal.*","","");
-                    std::cout << "\nDemonstration of searching for all products with 'cal' anywhere in the product name\n";
-                    for (auto j: pts) {
-                        std::cout << "   " << j << std::endl;
-                    }
-                    std::cout << std::endl;
+                if (ievt == 2) {
+                    
+                    std::cout << "[ DummyAnalyzer ]: Demonstration of searching for all products with 'cal' anywhere in the product name"
+                              << std::endl;
+                    
+                    auto pts = event.searchProducts(".*cal.*","","");
+                    for (const auto &j : pts) std::cout << "\t" << j << std::endl;
                 }
-                ievt++;
+                
+                ++ievt;
             }
 
             /** 
              *  Callback for the analyer to take any action once a file has been
              *  opened. 
              */
-            virtual void onFileOpen() {
-                std::cout << "DummyAnalyzer: Opening a file!" << std::endl;
+            void onFileOpen() {
+                std::cout << "[ DummyAnalyzer ]: Opening a file!" << std::endl;
             }
 
             /**
              *  Callback for the analyzer to take any action once the file 
              *  has been closed. 
              */
-            virtual void onFileClose() {
-                std::cout << "DummyAnalyzer: Closing a file!" << std::endl;
+            void onFileClose() {
+                std::cout << "[ DummyAnalyzer ]: Closing a file!" << std::endl;
             }
 
             /**
              * Callback for the analyzer to take any action before the 
              * processing of events begins. 
              */
-            virtual void onProcessStart() {
-                std::cout << "DummyAnalyzer: Starting processing!" << std::endl;
+            void onProcessStart() final override {
+                std::cout << "[ DummyAnalyzer ]: Starting processing!" << std::endl;
+               
+                // Create all histograms needed by the analyzer  
                 getHistoDirectory();
-                hEnergy=new TH1F("Energy","Energy",500,0.0,1.0);
+                hEnergy = new TH1F("Energy","Energy",500,0.0,1.0);
             }
 
             /** 
              * Callback for the analyzer to take any action after the processing
              * of all events has ended. 
              */
-            virtual void onProcessEnd() {
-                std::cout << "DummyAnalyzer: Finishing processing!" << std::endl;
+            void onProcessEnd() final override {
+                std::cout << "[ DummyAnalyzer ]: Finishing processing!" << std::endl;
             }
 
         private:
@@ -146,8 +166,10 @@ namespace ldmx {
             std::string caloCol_;
 
             /// Event counter
-            int ievt;
-    };
-}
+            int ievt{0};
+
+    }; // DummyAnalyzer 
+
+} // ldmx
 
 DECLARE_ANALYZER_NS(ldmx, DummyAnalyzer);
