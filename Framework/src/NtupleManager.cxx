@@ -17,7 +17,7 @@ namespace ldmx {
 
     void NtupleManager::create(const std::string& name) {
 
-        // Check if a tree with named 'name' has already been created.  If so
+        // Check if a tree named 'name' has already been created.  If so
         // throw an exception. 
         if (trees_.count(name) != 0) 
             EXCEPTION_RAISE(
@@ -32,8 +32,7 @@ namespace ldmx {
 
     void NtupleManager::fill() {
         
-        // Check for the existence of the tree with the name tname. If it
-        // doesn't exists, throw an exception
+        // Make sure there are trees to fill
         if (trees_.empty()) return;
         
         // Loop over all the trees and fill them
@@ -43,9 +42,11 @@ namespace ldmx {
     }
 
     void NtupleManager::clear() { 
-        
+       
+        // Make sure there are variables to clear. 
         if (variables_.empty()) return; 
 
+        // Loop over all of the variables and set them to a default. 
         for (const auto& element : variables_) { 
             variables_[element.first] = -9999; 
         }
