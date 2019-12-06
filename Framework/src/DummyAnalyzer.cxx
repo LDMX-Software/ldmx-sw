@@ -122,16 +122,18 @@ namespace ldmx {
              *  Callback for the analyer to take any action once a file has been
              *  opened. 
              */
-            void onFileOpen() {
-                std::cout << "[ DummyAnalyzer ]: Opening a file!" << std::endl;
+            void onFileOpen(const std::string& filename) final override {
+                std::cout << "[ DummyAnalyzer ]: Opening " 
+                          << filename << "!" << std::endl;
             }
 
             /**
              *  Callback for the analyzer to take any action once the file 
              *  has been closed. 
              */
-            void onFileClose() {
-                std::cout << "[ DummyAnalyzer ]: Closing a file!" << std::endl;
+            void onFileClose(const std::string& filename) final override {
+                std::cout << "[ DummyAnalyzer ]: Closing " 
+                          << filename << "!" << std::endl;
             }
 
             /**
