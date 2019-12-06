@@ -26,7 +26,9 @@
 /*   Framework  */
 /*~~~~~~~~~~~~~~*/
 #include "Framework/EventProcessor.h"
+#include "Framework/NtupleManager.h"
 #include "Framework/ParameterSet.h"
+#include "Framework/Process.h" 
 
 namespace ldmx {
 
@@ -84,6 +86,9 @@ namespace ldmx {
 
                     // Fill the histogram
                     hEnergy->Fill(iHit->getEnergy());
+
+                    // Fill the ntuple
+                    ntuple_->setVar<float>("energy", iHit->getEnergy()); 
                 }
 
                 // Print out all of the product tags in the event.
@@ -143,6 +148,20 @@ namespace ldmx {
             void onProcessStart() final override {
                 std::cout << "[ DummyAnalyzer ]: Starting processing!" << std::endl;
                
+                // Get the ntuple manager
+                ntuple_ = NtupleManager::getInstance(); 
+
+                // Create a tree.  Note that the openHistoFile method needs to 
+                // be called first.  By doing so, the histogram file is opened
+                // if it hasn't been by another process and the current 
+                // directory is changed to the top level directory.
+                process_.openHistoFile(); 
+
+                // Create a tree and add variable to it 
+                ntuple_->create("Dummy");
+                ntuple_->addVar<float>("Dummy", /* tree name */ 
+                                      "energy"); 
+
                 // Create all histograms needed by the analyzer  
                 getHistoDirectory();
                 hEnergy = new TH1F("Energy","Energy",500,0.0,1.0);
@@ -157,6 +176,9 @@ namespace ldmx {
             }
 
         private:
+
+            /// Instance of NtupleManager
+            NtupleManager* ntuple_{nullptr}; 
 
             /// Histogram of the calorimeter energy
             TH1* hEnergy{nullptr};
