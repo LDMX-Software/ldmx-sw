@@ -4,8 +4,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef EVENTPROC_SIMULATOR_H
-#define EVENTPROC_SIMULATOR_H
+#ifndef SIMAPPLICATION_SIMULATOR_H
+#define SIMAPPLICATION_SIMULATOR_H
 
 //LDMX Framework
 #include "Event/EventDef.h"
@@ -78,13 +78,22 @@ namespace ldmx {
 
         private:
 
+            /** Index of current event */
+            unsigned int iEvent_;
+
             /** Manager controlling G4 simulation run */
             G4RunManager *runManager_{nullptr};
 
             /** Class to parse GDML Detector Geometry */
             G4GDMLParser *parser_{nullptr};
 
+            /** Allows gdml to talk to g4? */
+            G4UImessenger *gdmlMessenger_{nullptr};
+
+            /** User Interface handle */
+            G4UImanager *uiManager_{nullptr};
+
     };
 }
 
-#endif /* EVENTPROC_SIMULATOR_H */
+#endif /* SIMAPPLICATION_SIMULATOR_H */
