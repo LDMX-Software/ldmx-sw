@@ -158,7 +158,7 @@ namespace ldmx {
              */
             void setRunNumber(int runNumber) { runNumber_ = runNumber; } 
 
-        private:
+        public:
 
             /**
              * Build an output event from the current Geant4 event.
