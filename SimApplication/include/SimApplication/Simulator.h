@@ -13,6 +13,7 @@
 #include "Framework/ParameterSet.h" // Needed to import parameters from configuration file
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RunManager.h"
+#include "SimApplication/RootPersistencyManager.h"
 #include "SimApplication/SimApplicationMessenger.h"
 
 //Geant4
@@ -92,6 +93,9 @@ namespace ldmx {
 
             /** User Interface handle */
             G4UImanager *uiManager_{nullptr};
+
+            /** G4 to LDMX translation */
+            RootPersistencyManager *persistencyManager_{nullptr};
 
     };
 }

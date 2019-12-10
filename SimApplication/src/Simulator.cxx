@@ -25,12 +25,15 @@ namespace ldmx {
 
         uiManager_ = G4UImanager::GetUIpointer();
 
+        persistencyManager_ = new RootPersistencyManager();
+        persistencyManager_->SetVerboseLevel( 3 );
     }
 
     Simulator::~Simulator() {
 
         if ( runManager_ ) delete runManager_;
         if ( parser_     ) delete parser_;
+        if ( persistencyManager_ ) delete persistencyManager_;
 
         //Producer destructor called automatically
     }
@@ -43,6 +46,9 @@ namespace ldmx {
     void Simulator::produce(ldmx::Event& event) {
 
         runManager_->ProcessOneEvent( iEvent_++ );
+        runManager_->GetCurrentEvent()->Print();
+//        persistencyManager_->buildEvent( runManager_->GetCurrentEvent() , &event );
+        persistencyManager_->writeHitsCollections( runManager_->GetCurrentEvent() , &event );
         runManager_->TerminateOneEvent();
 
         return;
@@ -71,6 +77,9 @@ namespace ldmx {
         runManager_->ConstructScoringWorlds();
         runManager_->RunInitialization();
         runManager_->InitializeEventLoop( 1 );
+        runManager_->Initialize();
+
+        persistencyManager_->setupHitsCollectionMap();
 
         return;
     }
