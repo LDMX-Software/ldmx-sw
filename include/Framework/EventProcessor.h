@@ -9,7 +9,7 @@
 
 // LDMX
 #include "Exception/Exception.h"
-#include "Event/Event.h"
+#include "Framework/Event.h"
 #include "Event/RunHeader.h"
 #include "Framework/ParameterSet.h"
 #include "Framework/StorageControl.h"
