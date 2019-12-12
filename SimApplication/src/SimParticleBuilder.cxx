@@ -4,7 +4,7 @@
 
 // LDMX
 #include "Exception/Exception.h"
-#include "Event/Event.h"
+#include "Framework/Event.h"
 #include "Event/EventConstants.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"

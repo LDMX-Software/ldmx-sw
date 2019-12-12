@@ -18,7 +18,7 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/Event.h"
+#include "Framework/Event.h"
 #include "Event/FindableTrackResult.h"
 #include "Event/HcalHit.h"
 #include "Event/HcalVetoResult.h"
