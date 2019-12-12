@@ -10,10 +10,11 @@
 
 // LDMX
 #include "Event/SimParticle.h"
-#include "Event/Event.h"
+#include "Framework/Event.h"
 #include "Event/EventConstants.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/ParameterSet.h"
+#include "Framework/Event.h"
 
 // STL
 #include <iostream>
@@ -41,15 +42,15 @@ namespace ldmx {
             virtual void produce(Event& event) {
                 std::cout << "DummyProducer: Analyzing an event!" << std::endl;
 
-                int np = random_.Poisson(nParticles_);
+                int np = nParticles_;
                 for (int i = 0; i < np; i++) {
-                    SimParticle* a = (SimParticle*) tca_->ConstructedAt(i);
-                    do {
-                        a->setEnergy(random_.Gaus(aveEnergy_, 1.0));
-                    } while (a->getEnergy() < 0);
-                    a->setPdgID(i + 1);
+                    SimParticle a;
+                    a.setEnergy( i );
+                    a.setPdgID(i + 1);
+                    simParticles_.push_back(a);
                 }
-                event.add("simParticles", tca_);
+                std::cout << "About to add to collection: " << simParticles_.size();
+                ((Event *)&event)->addCollection("simParticles", simParticles_ );
             }
 
             virtual void onFileOpen() {
@@ -62,7 +63,6 @@ namespace ldmx {
 
             virtual void onProcessStart() {
                 std::cout << "DummyProducer: Starting processing!" << std::endl;
-                tca_ = new TClonesArray(EventConstants::SIM_PARTICLE.c_str(), 1000);
             }
 
             virtual void onProcessEnd() {
@@ -70,7 +70,7 @@ namespace ldmx {
             }
 
         private:
-            TClonesArray* tca_{nullptr};
+            std::vector<SimParticle> simParticles_;
             int nParticles_{0};
             double aveEnergy_{0};
             std::vector<double> direction_;

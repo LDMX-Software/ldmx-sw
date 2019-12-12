@@ -2,7 +2,7 @@
 #include "TFile.h"
 #include "TROOT.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/EventImpl.h"
+#include "Framework/Event.h"
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
 #include "Event/RunHeader.h"
@@ -31,7 +31,7 @@ namespace ldmx {
                     module->onFileOpen(outputFiles_[0]);
                 }
 
-                EventImpl theEvent(passname_);
+                Event theEvent(passname_);
                 outFile.setupEvent(&theEvent);
 
                 while (n_events_processed < eventLimit_) {
@@ -85,7 +85,7 @@ namespace ldmx {
 
                     EventFile inFile(infilename);
 
-                    EventImpl theEvent(passname_);
+                    Event theEvent(passname_);
 
                     std::cout << "[ Process ] : Opening file " << infilename << std::endl;
 

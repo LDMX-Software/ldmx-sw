@@ -27,7 +27,7 @@
 //----------//
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/IDField.h"
-#include "Event/Event.h"
+#include "Framework/Event.h"
 #include "SimApplication/G4TrackerHit.h"
 
 namespace ldmx { 

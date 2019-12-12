@@ -21,11 +21,11 @@
 //   ldmx-sw   //
 //-------------//
 #include "Exception/Exception.h"
-#include "Event/Event.h"
+#include "Framework/Event.h"
 #include "Event/EventHeader.h"
 #include "Event/RunHeader.h"
 #include "Framework/EventFile.h"
-#include "Framework/EventImpl.h"
+#include "Framework/Event.h"
 #include "Event/EventConstants.h"
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/DetectorConstruction.h"
@@ -50,7 +50,7 @@ namespace ldmx {
         G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
         G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 
-        event_ = new EventImpl("sim");
+        event_ = new Event("sim");
     }
 
     G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
@@ -106,7 +106,7 @@ namespace ldmx {
 
         // Create and setup the output file for writing the events.
         outputFile_ = new EventFile(fileName_.c_str(), true, compressionLevel_);
-        outputFile_->setupEvent((EventImpl*) event_);
+        outputFile_->setupEvent((Event*) event_);
 
         // Create map with output hits collections.
         setupHitsCollectionMap();
@@ -162,7 +162,7 @@ namespace ldmx {
     }
 
     void RootPersistencyManager::writeHeader(const G4Event* anEvent, Event* outputEvent) {
-        EventHeader& eventHeader = ((EventImpl*) outputEvent)->getEventHeaderMutable();
+        EventHeader& eventHeader = ((Event*) outputEvent)->getEventHeaderMutable();
 
         eventHeader.setEventNumber(anEvent->GetEventID());
         TTimeStamp ts;

@@ -8,7 +8,7 @@
 #include "Framework/ParameterSet.h"
 #include <iostream>
 #include "TH1.h"
-#include "Event/Event.h"
+#include "Framework/Event.h"
 #include "Event/CalorimeterHit.h"
 #include "TClonesArray.h"
 

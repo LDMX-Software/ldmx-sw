@@ -20,7 +20,7 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/Event.h"
+#include "Framework/Event.h"
 #include "Event/EcalVetoResult.h"
 #include "Event/FindableTrackResult.h"
 #include "Event/HcalVetoResult.h"
