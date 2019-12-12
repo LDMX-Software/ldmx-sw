@@ -17,7 +17,7 @@
 //   LDMX   //
 //----------//
 #include "Event/EcalVetoResult.h"
-#include "Event/Event.h"
+#include "Framework/Event.h"
 #include "Event/HcalHit.h"
 #include "Event/HcalVetoResult.h"
 #include "Event/SimParticle.h"

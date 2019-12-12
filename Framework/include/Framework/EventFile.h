@@ -8,7 +8,7 @@
 #define EVENT_EVENTFILE_H_
 
 // LDMX
-#include "Framework/EventImpl.h"
+#include "Framework/Event.h"
 
 // ROOT
 #include "TTree.h"
@@ -72,10 +72,10 @@ namespace ldmx {
             void addDrop(const std::string& rule);
 
             /**
-             * Set an EventImpl object containing the event data to work with this file.
-             * @param evt The EventImpl object with event data.
+             * Set an Event object containing the event data to work with this file.
+             * @param evt The Event object with event data.
              */
-            void setupEvent(EventImpl* evt);
+            void setupEvent(Event* evt);
 
             /**
              * Change pointer to different parent file.
@@ -84,10 +84,10 @@ namespace ldmx {
             void updateParent(EventFile* parent);
 
             /**
-             * Get the EventImpl object containing the event data.
-             * @return The EventImpl object containing event data.
+             * Get the Event object containing the event data.
+             * @return The Event object containing event data.
              */
-            EventImpl* getEvent() { return event_; };
+            Event* getEvent() { return event_; };
 
             /**
              * Prepare the next event.
@@ -166,7 +166,7 @@ namespace ldmx {
             EventFile* parent_{nullptr};
 
             /** The object containing the actual event data (trees and branches). */
-            EventImpl* event_{nullptr};
+            Event* event_{nullptr};
 
             /** Pointer to run header from input file. */
             RunHeader* runHeader_{nullptr};

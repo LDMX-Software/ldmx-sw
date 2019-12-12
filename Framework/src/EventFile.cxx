@@ -1,6 +1,6 @@
 // LDMX
 #include "Framework/EventFile.h"
-#include "Framework/EventImpl.h"
+#include "Framework/Event.h"
 #include "Exception/Exception.h"
 #include "Event/EventConstants.h"
 #include "Event/RunHeader.h"
@@ -185,7 +185,7 @@ namespace ldmx {
         return false;
     }
 
-    void EventFile::setupEvent(EventImpl* evt) {
+    void EventFile::setupEvent(Event* evt) {
         event_ = evt;
         if (isOutputFile_) {
             if (!tree_ && !parent_) {
