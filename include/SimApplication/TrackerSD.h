@@ -11,7 +11,7 @@
 #include "G4VSensitiveDetector.hh"
 
 // LDMX
-#include "Event/Event.h"
+#include "Framework/Event.h"
 #include "DetDescr/TrackerID.h"
 #include "SimApplication/G4TrackerHit.h"
 
