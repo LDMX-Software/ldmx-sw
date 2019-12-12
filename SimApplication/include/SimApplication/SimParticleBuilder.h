@@ -9,7 +9,7 @@
 
 // LDMX
 #include "Event/EventConstants.h"
-#include "Event/Event.h"
+#include "Framework/Event.h"
 #include "Event/SimParticle.h"
 #include "SimApplication/TrackMap.h"
 #include "SimApplication/Trajectory.h"

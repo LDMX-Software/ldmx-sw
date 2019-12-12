@@ -2,6 +2,7 @@
  * @file EventLinkDef.h
  * @brief Pre-processor macro commands for configuring creation of the ROOT class dictionary
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifdef __CINT__
@@ -37,6 +38,8 @@
 #pragma link C++ class ldmx::SiStripHit+; 
 #pragma link C++ class ldmx::RawHit+;
 #pragma link C++ class ldmx::DigiCollection+; 
+
+#pragma link C++ class std::vector<ldmx::SimParticle>+;
 
 #endif
 
