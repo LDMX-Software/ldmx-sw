@@ -15,10 +15,8 @@
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/SimParticleBuilder.h"
 
-// ROOT
-#include "TClonesArray.h"
-
 // STL
+#include <vector>
 #include <utility>
 
 namespace ldmx {
@@ -54,23 +52,20 @@ namespace ldmx {
 
             /**
              * Class constructor.
-             * @param simParticleBuilder Object for accessing SimParticle store for the event.
              */
-            EcalHitIO(SimParticleBuilder* simParticleBuilder);
+            EcalHitIO() { }
 
             /**
              * Class destructor.
              */
-            ~EcalHitIO() {
-                ;
-            }
+            ~EcalHitIO() { }
 
             /**
              * Write out a Geant4 hits collection to the provided ROOT array.
              * @param hc The input hits collection.
              * @param outputColl The output collection in ROOT.
              */
-            void writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl);
+            void writeHitsCollection(G4CalorimeterHitsCollection* hc, std::vector<SimCalorimeterHit> &outputColl);
 
             /**
              * Set whether hit contributions should be enabled for the output hits.
@@ -89,11 +84,6 @@ namespace ldmx {
             }
 
         private:
-
-            /**
-             * Access to SimParticle list.
-             */
-            SimParticleBuilder* simParticleBuilder_;
 
             /**
              * Hex cell readout.

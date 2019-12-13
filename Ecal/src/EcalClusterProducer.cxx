@@ -9,13 +9,9 @@
 namespace ldmx {
 
     EcalClusterProducer::EcalClusterProducer(const std::string& name, Process& process) :
-        Producer(name, process) {
+        Producer(name, process) { } 
 
-    }
-
-    EcalClusterProducer::~EcalClusterProducer() {
-        if ( ecalClusters_ ) delete ecalClusters_;
-    }
+    EcalClusterProducer::~EcalClusterProducer() { }
 
     void EcalClusterProducer::configure(const ParameterSet& ps) {
 
@@ -26,7 +22,6 @@ namespace ldmx {
         algoCollName_ = ps.getString("algoCollName");
         algoName_ = ps.getString("algoName");
         clusterCollName_ = ps.getString("clusterCollName");
-        ecalClusters_ = new TClonesArray(EventConstants::ECAL_CLUSTER.c_str(), 10000);
 
     }
 
@@ -36,20 +31,18 @@ namespace ldmx {
 
         TemplatedClusterFinder<MyClusterWeight> cf;
 
-        TClonesArray* ecalDigiHits = (TClonesArray*) event.getObject<TClonesArray *>("ecalDigis", digisPassName_);
-        int nEcalDigis = ecalDigiHits->GetEntries();
+        std::vector< EcalHit > ecalHits = event.getCollection< EcalHit >( "ecalDigis" , digisPassName_ );
+        int nEcalDigis = ecalHits.size();
 
         // Don't do anything if there are no ECal digis!
         if (!(nEcalDigis > 0)) { return; }
         
-        for (int iDigi = 0; iDigi < nEcalDigis; iDigi++) {
-
-            EcalHit* aDigi = (EcalHit*) ecalDigiHits->At(iDigi);
+        for (EcalHit &hit : ecalHits ) {
 
             //Skip zero energy digis.
-            if (aDigi->getEnergy() == 0) { continue; }
+            if (hit.getEnergy() == 0) { continue; }
 
-            cf.add(aDigi, hexReadout_, layerZPos[aDigi->getLayer()]);
+            cf.add( &hit , hexReadout_, layerZPos[hit.getLayer()]);
         }
 
         cf.cluster(seedThreshold_, cutoff_);
@@ -57,31 +50,32 @@ namespace ldmx {
     
         std::map<int, double> cWeights = cf.getWeights();
     
-        algoResult_.set(algoName_, 3, cWeights.rbegin()->first);
-        algoResult_.setAlgoVar(0, cutoff_);
-        algoResult_.setAlgoVar(1, seedThreshold_);
-        algoResult_.setAlgoVar(2, cf.getNSeeds());
+        ClusterAlgoResult algoResult;
+        algoResult.set(algoName_, 3, cWeights.rbegin()->first);
+        algoResult.setAlgoVar(0, cutoff_);
+        algoResult.setAlgoVar(1, seedThreshold_);
+        algoResult.setAlgoVar(2, cf.getNSeeds());
     
         std::map<int, double>::iterator it = cWeights.begin();
         for (it = cWeights.begin(); it != cWeights.end(); it++) {
-            algoResult_.setWeight(it->first, it->second/100);
+            algoResult.setWeight(it->first, it->second/100);
         }
 
-        int iC = 0;
+        std::vector< EcalCluster > ecalClusters;
         for (int aWC = 0; aWC < wcVec.size(); aWC++) {
     
-            EcalCluster* cluster = (EcalCluster*) (ecalClusters_->ConstructedAt(iC));
+            EcalCluster cluster;
     
-            cluster->setEnergy(wcVec[aWC].centroid().E());
-            cluster->setCentroidXYZ(wcVec[aWC].centroid().Px(), wcVec[aWC].centroid().Py(), wcVec[aWC].centroid().Pz());
-            cluster->setNHits(wcVec[aWC].getHits().size());
-            cluster->addHits(wcVec[aWC].getHits());
+            cluster.setEnergy(wcVec[aWC].centroid().E());
+            cluster.setCentroidXYZ(wcVec[aWC].centroid().Px(), wcVec[aWC].centroid().Py(), wcVec[aWC].centroid().Pz());
+            cluster.setNHits(wcVec[aWC].getHits().size());
+            cluster.addHits(wcVec[aWC].getHits());
     
-            iC++;
+            ecalClusters.push_back( cluster );
         }
 
-        event.add(clusterCollName_, ecalClusters_);
-        event.add(algoCollName_, algoResult_);
+        event.add(clusterCollName_, ecalClusters );
+        event.add(algoCollName_, algoResult );
     } 
 }
 

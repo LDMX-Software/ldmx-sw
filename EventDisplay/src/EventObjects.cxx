@@ -42,10 +42,10 @@ namespace ldmx {
 
     static bool compSims(const SimTrackerHit* a, const SimTrackerHit* b) {
 
-        if (a->getSimParticle() == b->getSimParticle()) {
+        if (a->getTrackID() == b->getTrackID()) {
             return compSimsP(a,b);
         } else {
-            return a->getSimParticle() < b->getSimParticle();
+            return a->getTrackID() < b->getTrackID();
         }
     }
 
@@ -270,28 +270,25 @@ namespace ldmx {
 
         std::sort(simVec.begin(), simVec.end(), compSims);
            
-        SimParticle* lastP = 0; // sometimes multiple SP hits from same particle
-        for (int j = 0; j < simVec.size(); j++) {
-            SimParticle* sP = simVec[j]->getSimParticle();
-            if (sP == lastP) continue;
-            lastP = sP;
-            filteredSimVec.push_back(simVec[j]);
+        int lastP = 0; // sometimes multiple SP hits from same particle
+        for (SimTrackerHit *sP : simVec ) {
+            if (sP->getTrackID() == lastP) continue;
+            lastP = sP->getTrackID();
+            filteredSimVec.push_back(sP);
         }
 
         std::sort(filteredSimVec.begin(), filteredSimVec.end(), compSimsP);
 
-        for (int j = 0; j < filteredSimVec.size(); j++) {
+        for (SimTrackerHit *simHit : filteredSimVec ) {
 
-            SimParticle* sP = filteredSimVec[j]->getSimParticle();
-
-            std::vector<double> pVec = filteredSimVec[j]->getMomentum();
-            std::vector<float> rVec = filteredSimVec[j]->getPosition();
+            std::vector<double> pVec = simHit->getMomentum();
+            std::vector<float> rVec = simHit->getPosition();
             double p = pow(pow(pVec[0],2)+pow(pVec[1],2)+pow(pVec[2],2),0.5);
 
-            double E = sP->getEnergy();
+            double E = simHit->getEnergy();
 
-            std::vector<double> simStart = sP->getVertex();
-            std::vector<double> simEnd = sP->getEndPoint();
+            std::vector<float> simStart = simHit->getPosition();
+            std::vector<double> simEnd = pVec; //TODO: Change to more accurate length
             double rCheck = pow(pow(simEnd[0],2)+pow(simEnd[1],2)+pow(simEnd[2],2),0.5);
 
             double scale = 1;
@@ -309,11 +306,11 @@ namespace ldmx {
             }
 
             double r = pow(pow(scale*(simEnd[0]-simStart[0]),2) + pow(scale*(simEnd[1]-simStart[1]),2) + pow(scale*(simEnd[2]-simStart[2]),2),0.5);
-            signed int pdgID = sP->getPdgID();
+            signed int pdgID = simHit->getPdgID();
 
             TEveArrow* simArr = new TEveArrow(scale*(simEnd[0]-simStart[0]),scale*(simEnd[1]-simStart[1]),scale*(simEnd[2]-simStart[2]),simStart[0],simStart[1],simStart[2]);
 
-            simArr->SetSourceObject(sP);
+            simArr->SetSourceObject(simHit);
             simArr->SetMainColor(kBlack);
             simArr->SetTubeR(60*0.02/r);
             simArr->SetConeL(100*0.02/r);

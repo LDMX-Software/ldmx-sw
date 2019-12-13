@@ -13,7 +13,6 @@
 //   ROOT   //
 //----------//
 #include "TObject.h"
-#include "TRefArray.h"
 
 //----------------//
 //   C++ StdLib   //
@@ -133,31 +132,39 @@ namespace ldmx {
             double getCharge() const { return charge_; }
 
             /** @return A reference to all daughter particles. */
-            TRefArray* getDaughters() const { return daughters_; }
+            std::vector<int> getDaughters() const { return daughters_; }
 
             /** @return The number of daughter particles. */
-            int getDaughterCount() const { return daughters_->GetEntriesFast(); }
+            int getDaughterCount() const { return daughters_.size(); }
 
             /**
+             * DEPRECATED
+             *
+             * Use map::find with the daughter track ID to get a daughter
+             *
              * Retrieve a daughter particle by index. 
              * @param iDaughter The index of the daughter particle of interest.
              */
             SimParticle* getDaughter(const int& iDaughter) const { 
-                return static_cast<SimParticle*>(daughters_->At(iDaughter)); 
+                return nullptr; 
             }
 
             /** @return A reference to all of the parent particles. */
-            TRefArray* getParents() const { return parents_; }
+            std::vector<int> getParents() const { return parents_; }
             
             /** @return The number of parent particles. */
-            int getParentCount() const { return parents_->GetEntriesFast(); }
+            int getParentCount() const { return parents_.size(); }
 
             /**
+             * DEPRECATED
+             *
+             * Use map::find with the parent track ID to get a parent
+             *
              * Retrieve a parent particle by index.
              * @param iParent The index of the parent particle of interest.
              */
             SimParticle* getParent(const int& iParent) const {
-                return static_cast<SimParticle*>(parents_->At(iParent));
+                return nullptr;
             }
 
             /**
@@ -242,13 +249,13 @@ namespace ldmx {
              * Add a daughter particle.
              * @param daughter The daughter particle.
              */
-            void addDaughter(SimParticle* daughter) { daughters_->Add(daughter); }
+            void addDaughter(int daughterTrackID ) { daughters_.push_back( daughterTrackID ); }
 
             /**
              * Add a parent particle.
              * @param parent The parent particle.
              */
-            void addParent(SimParticle* parent) { parents_->Add(parent); }
+            void addParent(int parentTrackID ) { parents_.push_back( parentTrackID ); }
 
             /**
              * Get the creator process type of this particle.
@@ -353,10 +360,10 @@ namespace ldmx {
             double charge_{0};
 
             /** The list of daughter particles. */
-            TRefArray* daughters_;
+            std::vector<int> daughters_;
 
             /** The list of parent particles. */
-            TRefArray* parents_;
+            std::vector<int> parents_;
 
             /** Encoding of Geant4 process type. */
             int processType_{-1};
