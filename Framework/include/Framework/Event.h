@@ -159,6 +159,107 @@ namespace ldmx {
                 return;
             }
 
+            template <typename T> 
+            const T getImpl(const std::string& collectionName, const std::string& passName, bool mustExist) const {
+
+                T retValIfNotFound;
+
+                std::string branchName;
+                if (collectionName== EventConstants::EVENT_HEADER) branchName=collectionName;
+                else branchName = makeBranchName(collectionName, passName);
+        
+                if (passName.empty() && collectionName!= EventConstants::EVENT_HEADER) {
+                    auto ptr=knownLookups_.find(collectionName);
+                    if (ptr!=knownLookups_.end()) branchName=ptr->second;
+                    else {
+                        std::vector<std::vector<std::string>::const_iterator> matches;
+                        branchName=collectionName+"_";
+                        for (std::vector<std::string>::const_iterator ptr=branchNames_.begin(); ptr!=branchNames_.end(); ptr++) {
+                            if (!ptr->compare(0,branchName.size(),branchName)) matches.push_back(ptr);
+                        }
+                        if (matches.empty()) {
+                            if (!mustExist)
+                                return retValIfNotFound;
+                            EXCEPTION_RAISE(
+                                    "ProductNotFound",
+                                    "No product found for name '"+collectionName+"'");
+                        } else if (matches.size()>1) {
+                            std::string names;
+                            for (auto strs : matches) {
+                                if (!names.empty()) names+=", ";
+                                names+=*strs;
+                            }
+                            if (!mustExist)
+                                return retValIfNotFound;
+                            EXCEPTION_RAISE(
+                                    "ProductAmbiguous",
+                                    "Multiple products found for name '"+collectionName+"' without specified pass name ("+names+")");
+                        } else {
+                            branchName=*matches.front();
+                            knownLookups_[collectionName]=branchName;
+                        }
+                    }
+                }
+        
+                //get iterators to branch and collection
+                auto itb = branches_.find(branchName);
+                auto ito = collections_.find(branchName);
+        
+                if (ito != collections_.end()) {
+                   if (itb != branches_.end())
+                      itb->second->GetEntry(ientry_);
+                   return boost::get<T>(ito->second);
+                } else if (inputTree_ == 0) {
+                    EXCEPTION_RAISE(
+                            "ProductNotFound", 
+                            "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
+                }
+        
+                // find the active branch and update if necessary
+                if (itb != branches_.end()) {
+        
+                    // update buffers if needed
+                    if (itb->second->GetReadEntry() != ientry_) {
+        
+                        TBranchElement* tbe = dynamic_cast<TBranchElement*>(itb->second);
+                        if (!tbe)
+                            itb->second->SetAddress( &boost::get<T>(ito->second) );
+        
+                        int nr = itb->second->GetEntry(ientry_, 1);
+                    }
+        
+                    // check the objects map
+                    if (ito != collections_.end())
+                        return boost::get<T>(ito->second);
+        
+                    // this case is hard to achieve
+                    return retValIfNotFound;
+                } else {
+        
+                    // ok, maybe we've not loaded this yet, look for a branch
+                    TBranch* branch = inputTree_->GetBranch(branchName.c_str());
+                    if (branch == 0) {
+                        EXCEPTION_RAISE(
+                                "ProductNotFound", 
+                                "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
+                    }
+                    // ooh, new branch!
+                    branch->SetAutoDelete(false);
+                    branch->SetStatus(1);
+                    branch->GetEntry((ientry_<0)?(0):(ientry_));
+                    //use default constructor to create new collection owned by this class
+                    collections_[branchName] = EventBusPassenger( T() );
+                    //get address of object that will be the event passenger
+                    T *passengerAddress = &boost::get<T>( collections_[branchName] );
+                    //connect input branch to this passenger
+                    branch->SetAddress( passengerAddress );
+        
+                    branches_.insert(std::pair<std::string, TBranch*>(branchName, branch));
+        
+                    return *passengerAddress;
+                }
+            }
+
             /**
              * Adds a general object to the event/tree.
              * @param name The name of the object.
@@ -239,6 +340,7 @@ namespace ldmx {
             const TClonesArray* getCollection(const std::string& collectionName, std::string passName) const {
                 return (TClonesArray*) getReal(collectionName, passName, true);
             }
+
         protected:
 
             /**
@@ -247,6 +349,14 @@ namespace ldmx {
              * @param passName The pass name.
              */
             const TObject* getReal(const std::string& collectionName, const std::string& passName, bool mustExist) const;
+
+            /**
+             * Get an object from the event bus using a collection and pass name.
+             * @param collectionName The collection name.
+             * @param passName The pass name.
+             * @param mustExist bool to throw error if collection doesn't exist
+             */
+            EventBusPassenger getImpl(const std::string &collectionName, const std::string &passName, bool mustExist) const;
 
         public:
 

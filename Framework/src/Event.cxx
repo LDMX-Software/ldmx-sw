@@ -115,7 +115,6 @@ namespace ldmx {
         }
     }
 
-
     const TObject* Event::getReal(const std::string& collectionName, const std::string& passName, bool mustExist) const {
 
         std::string branchName;
@@ -157,9 +156,9 @@ namespace ldmx {
         // check the objects map
         std::map<std::string, TObject*>::const_iterator ito = objects_.find(branchName);
         if (ito != objects_.end()) {
-           if (itb!=branches_.end())
-              itb->second->GetEntry(ientry_);
-           return ito->second;
+            if (itb!=branches_.end())
+                itb->second->GetEntry(ientry_);
+            return ito->second;
         } else if (inputTree_ == 0) {
             EXCEPTION_RAISE("ProductNotFound", "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
         }
