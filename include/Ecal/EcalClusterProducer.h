@@ -10,7 +10,6 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TClonesArray.h"
 #include "TH2F.h"
 #include "TH1F.h"
 #include "TCanvas.h"
@@ -57,16 +56,12 @@ namespace ldmx {
 
         private:
 
-            TClonesArray* ecalClusters_{nullptr};
             std::shared_ptr<EcalHexReadout> hexReadout_;
             double seedThreshold_{0};
             double cutoff_{0};
             std::string digisPassName_;
             std::string algoCollName_;
             std::string clusterCollName_;
-
-            /** Object to hold cluster algo variables */
-            ClusterAlgoResult algoResult_;
 
             /** The name of the cluster algorithm used. */
             TString algoName_;
