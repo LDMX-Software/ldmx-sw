@@ -80,7 +80,7 @@ namespace ldmx {
              * @param trajectories The input trajectory container.
              * @param simParticleColl The output SimParticle collection.
              */
-            void buildParticleMap(TrajectoryContainer* trajectories, TClonesArray* simParticleColl);
+            void buildParticleMap(TrajectoryContainer* trajectories, std::vector<SimParticle> &simParticleColl);
 
         private:
 
@@ -93,8 +93,6 @@ namespace ldmx {
             /** The current Geant4 event. */
             G4Event* currentEvent_;
 
-            /** The output SimParticle collection. */
-            TClonesArray* outputParticleColl_{new TClonesArray(EventConstants::SIM_PARTICLE.c_str(), 50)};
     };
 
 }
