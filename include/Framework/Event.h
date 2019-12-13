@@ -33,9 +33,9 @@
 namespace ldmx {
 
     typedef boost::variant< 
-        EventHeader * ,
-        std::vector< CalorimeterHit > *
-        > EventObjectPtr;
+        std::vector< CalorimeterHit > ,
+        std::vector< HcalHit >
+        > EventBusPassenger;
 
     struct clearCollection : public boost::static_visitor<void> {
         void operator()(EventHeader *eh) const { eh->Clear(); return; }
@@ -43,7 +43,7 @@ namespace ldmx {
         void operator()(SimParticle *sp) const { sp->Clear(); return; }
 
         template <class T>
-        void operator()(std::vector<T> *vec) const { vec->clear(); return; }
+        void operator()(std::vector<T> &vec) const { vec.clear(); return; }
     };
 
     /**
@@ -134,27 +134,27 @@ namespace ldmx {
                 std::cout << "Going to check collecitons_" << std::endl; 
                 auto itCollection = collections_.find(branchName);
                 if (itCollection == collections_.end()) { 
-                    std::cout << "Collection doesn't exist yet" << std::endl;
                     // create a new branch for this collection
-                    collections_[branchName] = (EventObjectPtr)(&obj);
-                    std::cout << collections_[branchName].type().name() << std::endl;
+                    collections_[branchName] = EventBusPassenger( obj );
+                    T *passengerAddress = &boost::get<T>(collections_[branchName]);
                     if (outputTree_ != 0) {
                         TBranch *outBranch = outputTree_->GetBranch( branchName.c_str() );
                         if ( outBranch ) {
                             //branch already exists, just reset branch address
-                            outBranch->SetAddress( &obj );
+                            outBranch->SetAddress( passengerAddress );
                         } else {
                             //branch doesnt exist, make new one
-                            outBranch = outputTree_->Branch(
-                                    branchName.c_str(), &obj , 100000, 3);
+                            outBranch = outputTree_->Branch( branchName.c_str(), passengerAddress , 100000, 3);
                         }
                         newBranches_.push_back(outBranch);
-                        std::cout << "Added new collection ";
                     }
         	        products_.push_back(ProductTag(collectionName,passName_,collections_[branchName].type().name()));
                     branchNames_.push_back(branchName);
                     knownLookups_.clear(); // have to invalidate this cache
                 }
+                
+                //copy input contents into bus passenger
+                collections_[branchName] = EventBusPassenger( obj );
 
                 return;
             }
@@ -379,7 +379,7 @@ namespace ldmx {
             /**
              * Map of names to collections.
              */
-            mutable std::map<std::string, EventObjectPtr > collections_; 
+            mutable std::map<std::string, EventBusPassenger > collections_; 
 
             /**
              * Map of owned objects that should eventually be cleared at end of event
