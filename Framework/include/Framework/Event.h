@@ -58,7 +58,7 @@ namespace ldmx {
              * Get the event header.
              * @return A constant copy of the event header.
              */
-            const EventHeader* getEventHeader() const {
+            EventHeader &getEventHeader() {
                 return eventHeader_;
             }
 
@@ -184,7 +184,7 @@ namespace ldmx {
              * @param mustExist flag to say whether or not you require this collection to exist in the tree
              */
             template <typename T> 
-            const T getImpl(const std::string& collectionName, const std::string& passName, bool mustExist) const {
+            T getImpl(const std::string& collectionName, const std::string& passName, bool mustExist) const {
 
                 T retValIfNotFound;
 
@@ -283,17 +283,10 @@ namespace ldmx {
                     return *passengerAddress;
                 }
             }
+
         public:
 
             /** ********* Functionality for storage  ********** **/
-
-            /**
-             * Get a mutable copy of the EventHeader object.
-             * @return A mutable copy of the EventHeader object.
-             */
-            EventHeader& getEventHeaderMutable() const {
-                return *eventHeader_;
-            }
 
             /**
              * Set the input data tree.
@@ -374,7 +367,7 @@ namespace ldmx {
             /**
              * The event header object (as pointer).
              */
-            EventHeader* eventHeader_{nullptr};
+            EventHeader eventHeader_;
 
             /**
              * Number of entries in the tree.

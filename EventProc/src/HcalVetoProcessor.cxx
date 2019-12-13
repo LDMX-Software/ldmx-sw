@@ -35,7 +35,7 @@ namespace ldmx {
     void HcalVetoProcessor::produce(Event& event) {
 
         // Get the collection of sim particles from the event 
-        const TClonesArray *hcalHits = event.getCollection("hcalDigis");
+        const TClonesArray *hcalHits = event.getObject<TClonesArray *>("hcalDigis");
        
         // Loop over all of the Hcal hits and calculate to total photoelectrons
         // in the event.
@@ -83,7 +83,7 @@ namespace ldmx {
             setStorageHint(hint_shouldDrop); 
         } 
 
-        event.addToCollection("HcalVeto", result);
+        event.add("HcalVeto", result);
     }
 }
 

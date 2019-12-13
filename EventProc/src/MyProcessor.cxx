@@ -25,7 +25,7 @@ namespace ldmx {
         if (!event.exists("ecalDigis")) return; 
 
         // Get the collection of digitized ECal hits from the event
-        auto hits = event.getCollection("ecalDigis"); 
+        auto hits = event.getObject<TClonesArray *>("ecalDigis"); 
 
         // Loop over the collection of hits and print the hit details
         for (int iHit{0}; iHit < hits->GetEntriesFast(); ++iHit) { 

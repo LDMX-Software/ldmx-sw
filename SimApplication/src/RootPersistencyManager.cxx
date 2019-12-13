@@ -129,7 +129,7 @@ namespace ldmx {
 
     void RootPersistencyManager::printEvent(Event* outputEvent) {
 
-        auto particleColl = outputEvent->get<TClonesArray*>("SimParticles", "sim");
+        auto particleColl = outputEvent->getObject<TClonesArray*>("SimParticles", "sim");
         if (!particleColl) {
             EXCEPTION_RAISE( "NullColl" , "SimParticle output collection is null!" );
         }
@@ -162,7 +162,7 @@ namespace ldmx {
     }
 
     void RootPersistencyManager::writeHeader(const G4Event* anEvent, Event* outputEvent) {
-        EventHeader& eventHeader = ((Event*) outputEvent)->getEventHeaderMutable();
+        EventHeader& eventHeader = ((Event*) outputEvent)->getEventHeader();
 
         eventHeader.setEventNumber(anEvent->GetEventID());
         TTimeStamp ts;
