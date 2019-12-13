@@ -48,6 +48,8 @@ namespace ldmx {
                     caloHits.back().Print();
                 }
                 event.addCollection("caloHits", caloHits );
+
+                const std::vector<CalorimeterHit> getCaloHits = event.getImpl< std::vector<CalorimeterHit> >( "caloHits" , "" , true );
             }
 
             virtual void onFileOpen() {
