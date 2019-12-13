@@ -40,6 +40,7 @@
 #pragma link C++ class ldmx::DigiCollection+; 
 
 #pragma link C++ class std::vector<ldmx::SimParticle>+;
+#pragma link C++ class std::vector<ldmx::CalorimeterHit>+;
 
 #endif
 
