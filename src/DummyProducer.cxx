@@ -39,7 +39,7 @@ namespace ldmx {
             virtual void produce(Event& event) {
                 std::cout << "DummyProducer: Analyzing an event!" << std::endl;
 
-                int iEvent = event.getEventHeader()->getEventNumber();
+                int iEvent = event.getEventHeader().getEventNumber();
                 int np = nParticles_*iEvent;
                 std::vector<CalorimeterHit> caloHits;
                 for (int i = 0; i < np; i++) {
