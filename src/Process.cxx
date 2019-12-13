@@ -35,12 +35,12 @@ namespace ldmx {
                 outFile.setupEvent(&theEvent);
 
                 while (n_events_processed < eventLimit_) {
-                    EventHeader& eh = theEvent.getEventHeaderMutable();
+                    EventHeader& eh = theEvent.getEventHeader();
                     eh.setRun(runForGeneration_);
                     eh.setEventNumber(n_events_processed + 1);
                     eh.setTimestamp(TTimeStamp());
 
-                    theEvent.getEventHeader()->Print();
+                    theEvent.getEventHeader().Print();
 
                     // reset the storage controller state
                     m_storageController.resetEventState();
@@ -140,8 +140,8 @@ namespace ldmx {
                         m_storageController.resetEventState();
             
                         // notify for new run if necessary
-                        if (theEvent.getEventHeader()->getRun() != wasRun) {
-                            wasRun = theEvent.getEventHeader()->getRun();
+                        if (theEvent.getEventHeader().getRun() != wasRun) {
+                            wasRun = theEvent.getEventHeader().getRun();
                             try {
                                 const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
                                 std::cout << "[ Process ] : got new run header from '" << masterFile->getFileName() << "' ..." << std::endl;
@@ -157,8 +157,8 @@ namespace ldmx {
                         if ( (logFrequency_ != -1) && ((n_events_processed + 1)%logFrequency_ == 0)) { 
                             TTimeStamp t;
                             std::cout << "[ Process ] :  Processing " << n_events_processed + 1 
-                                      << " Run " << theEvent.getEventHeader()->getRun() 
-                                      << " Event " << theEvent.getEventHeader()->getEventNumber() 
+                                      << " Run " << theEvent.getEventHeader().getRun() 
+                                      << " Event " << theEvent.getEventHeader().getEventNumber() 
                                       << "  (" << t.AsString("lc") << ")" << std::endl;
                         }
 
