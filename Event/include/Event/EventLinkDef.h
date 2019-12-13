@@ -43,6 +43,7 @@
 #pragma link C++ class std::vector<ldmx::SimCalorimeterHit>+;
 #pragma link C++ class std::vector<ldmx::SimTrackerHit>+;
 #pragma link C++ class std::vector<ldmx::SimParticle>+;
+#pragma link C++ class std::map<int,ldmx::SimParticle>+;
 #pragma link C++ class std::vector<ldmx::CalorimeterHit>+;
 #pragma link C++ class std::vector<ldmx::EcalHit>+;
 #pragma link C++ class std::vector<ldmx::EcalCluster>+;

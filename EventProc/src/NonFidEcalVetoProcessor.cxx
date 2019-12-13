@@ -256,8 +256,7 @@ namespace ldmx {
 
                 if (spHit->getLayerID() != 1) continue;
 
-                SimParticle* spParticle = spHit->getSimParticle();
-                if (spParticle == recoilElectron) {
+                if (spHit->getTrackID() == recoilElectron->getTrackID()) {
                     recoilP = spHit->getMomentum();
                     recoilPos = spHit->getPosition();
                     if (recoilP[2] <= 0) continue;
