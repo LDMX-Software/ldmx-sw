@@ -37,8 +37,9 @@ namespace ldmx {
      * Allows all event bus passenger objects to be handled under one name (without an inheritance tree).
      * 
      * @note Any object that you want to be put into the event bus needs to be listed here as well as above.
+     * TODO: Modify to allow for more than 20 event bus types
      */
-    typedef boost::variant< 
+    using EventBusPassengerList = boost::mpl::list< 
         TClonesArray *, //temporary //TODO: Remove
         EcalVetoResult ,
         NonFidEcalVetoResult ,
@@ -52,13 +53,15 @@ namespace ldmx {
         std::vector< FindableTrackResult > ,
         std::vector< SimCalorimeterHit > ,
         std::vector< SimTrackerHit > ,
-        std::vector< SimParticle > ,
+        std::vector< SimParticle > ,//TODO: Switch particle vector to map
         std::vector< CalorimeterHit > ,
         std::vector< EcalHit > ,
         std::vector< EcalCluster > ,
         std::vector< HcalHit > ,
         std::vector< SiStripHit > ,
         std::vector< RawHit >
-        > EventBusPassenger;
+        >;
+
+    typedef boost::make_variant_over< EventBusPassengerList >::type EventBusPassenger;
 
 }

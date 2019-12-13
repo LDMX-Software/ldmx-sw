@@ -8,7 +8,6 @@
 #define SIMAPPLICATION_USEREVENTACTION_H_
 
 // LDMX
-#include "SimApplication/SimParticleBuilder.h"
 #include "SimPlugins/PluginManagerAccessor.h"
 #include "SimApplication/PrimaryGeneratorMessenger.h"
 

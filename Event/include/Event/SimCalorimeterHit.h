@@ -9,7 +9,6 @@
 
 // ROOT
 #include "TObject.h"
-#include "TRefArray.h"
 
 // LDMX
 #include "Event/SimParticle.h"
@@ -38,7 +37,7 @@ namespace ldmx {
              * @brief Information about a contribution to the hit in the associated cell
              */
             struct Contrib {
-                SimParticle* particle{nullptr};
+                int trackID{-1};
                 int pdgCode{0};
                 float edep{0};
                 float time{0};
@@ -142,27 +141,27 @@ namespace ldmx {
 
             /**
              * Add a hit contribution from a SimParticle.
-             * @param simParticle The particle that made the contribution.
+             * @param trackID the Geant4 track ID for the particle
              * @param pdgCode The PDG code of the actual track.
              * @param edep The energy deposition of the hit [MeV].
              * @param time The time of the hit [ns].
              */
-            void addContrib(SimParticle* simParticle, int pdgCode, float edep, float time);
+            void addContrib(int trackID, int pdgCode, float edep, float time);
 
             /**
              * Get a hit contribution by index.
              * @param i The index of the hit contribution.
              * @return The hit contribution at the index.
              */
-            Contrib getContrib(int i);
+            Contrib getContrib(int i) const;
 
             /**
              * Find the index of a hit contribution from a SimParticle and PDG code.
-             * @param simParticle The sim particle that made the contribution.
+             * @param trackID the track ID of the particle causing the hit
              * @param pdgCode The PDG code of the contribution.
              * @return The index of the contribution or -1 if none exists.
              */
-            int findContribIndex(SimParticle* simParticle, int pdgCode);
+            int findContribIndex(int trackID, int pdgCode) const;
 
             /**
              * Update an existing hit contribution by incrementing its edep and setting the time
@@ -206,9 +205,9 @@ namespace ldmx {
             float time_{0};
 
             /**
-             * The list of SimParticle objects contributing to the hit.
+             * The list of track IDs contributing to the hit.
              */
-            TRefArray* simParticleContribs_;
+            std::vector<int> trackIDContribs_;
 
             /**
              * The list of PDG codes contributing to the hit.

@@ -100,17 +100,17 @@ namespace ldmx {
 
             void clearProcessor();
 
-            LayerCellPair hitToPair(EcalHit* hit);
+            LayerCellPair hitToPair(const EcalHit &hit);
 
             /* Function to calculate the energy weighted shower centroid */
-            int GetShowerCentroidIDAndRMS(const TClonesArray* ecalDigis, double & showerRMS);
+            int GetShowerCentroidIDAndRMS(const std::vector< EcalHit > &ecalRecHits, double & showerRMS);
 
             /* Function to load up empty vector of hit maps */
-            void fillHitMap(const TClonesArray* ecalDigis,
+            void fillHitMap(const std::vector< EcalHit > &ecalRecHits,
                     std::vector<std::map<int, float>>& cellMap_);
 
             /* Function to take loaded hit maps and find isolated hits in them */
-            void fillIsolatedHitMap(const TClonesArray* ecalDigis,
+            void fillIsolatedHitMap(const std::vector< EcalHit > &ecalRecHits,
                     float globalCentroid,
                     std::vector<std::map<int, float>>& cellMap_,
                     std::vector<std::map<int, float>>& cellMapIso_,
@@ -149,7 +149,6 @@ namespace ldmx {
         
             double bdtCutVal_{0};
 
-            EcalVetoResult result_;
             EcalDetectorID detID_;
             bool verbose_{false};
             bool doesPassVeto_{false};

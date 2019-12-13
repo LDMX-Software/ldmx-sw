@@ -7,21 +7,17 @@ ClassImp(ldmx::SimCalorimeterHit)
 
 namespace ldmx {
 
-    SimCalorimeterHit::SimCalorimeterHit()
-        : TObject(), simParticleContribs_(new TRefArray) {
-    }
+    SimCalorimeterHit::SimCalorimeterHit() : TObject() { }
 
     SimCalorimeterHit::~SimCalorimeterHit() {
         TObject::Clear();
-        delete simParticleContribs_;
-        simParticleContribs_ = 0;
     }
 
     void SimCalorimeterHit::Clear(Option_t *option) {
 
         TObject::Clear();
 
-        simParticleContribs_->Delete();
+        trackIDContribs_.clear();
         pdgCodeContribs_.clear();
         edepContribs_.clear();
         timeContribs_.clear();
@@ -40,8 +36,8 @@ namespace ldmx {
                 "position: ( " << x_ << ", " << y_ << ", " << z_ << " ) }" << std::endl;
     }
 
-    void SimCalorimeterHit::addContrib(SimParticle* simParticle, int pdgCode, float edep, float time) {
-        simParticleContribs_->Add(simParticle);
+    void SimCalorimeterHit::addContrib(int trackID, int pdgCode, float edep, float time) {
+        trackIDContribs_.push_back(trackID);
         pdgCodeContribs_.push_back(pdgCode);
         edepContribs_.push_back(edep);
         timeContribs_.push_back(time);
@@ -52,20 +48,20 @@ namespace ldmx {
         ++nContribs_;
     }
 
-    SimCalorimeterHit::Contrib SimCalorimeterHit::getContrib(int i) {
+    SimCalorimeterHit::Contrib SimCalorimeterHit::getContrib(int i) const {
         Contrib contrib;
-        contrib.particle = (SimParticle*) simParticleContribs_->At(i);
-        contrib.edep = edepContribs_[i];
-        contrib.time = timeContribs_[i];
-        contrib.pdgCode = pdgCodeContribs_[i];
+        contrib.trackID = trackIDContribs_.at(i);
+        contrib.edep = edepContribs_.at(i);
+        contrib.time = timeContribs_.at(i);
+        contrib.pdgCode = pdgCodeContribs_.at(i);
         return contrib;
     }
 
-    int SimCalorimeterHit::findContribIndex(SimParticle* simParticle, int pdgCode) {
+    int SimCalorimeterHit::findContribIndex(int trackID, int pdgCode) const {
         int contribIndex = -1;
         for (int iContrib = 0; iContrib < nContribs_; iContrib++) {
             Contrib contrib = getContrib(iContrib);
-            if (contrib.particle == simParticle && contrib.pdgCode == pdgCode) {
+            if (contrib.trackID == trackID && contrib.pdgCode == pdgCode) {
                 contribIndex = iContrib;
                 break;
             }
@@ -75,11 +71,10 @@ namespace ldmx {
 
     void SimCalorimeterHit::updateContrib(int i, float edep, float time) {
         this->edepContribs_[i] += edep;
-        if (time < this->timeContribs_[i]) {
+        if (time < this->timeContribs_.at(i) ) {
             this->timeContribs_[i] = time;
         }
         edep_ += edep;
     }
-
 
 }
