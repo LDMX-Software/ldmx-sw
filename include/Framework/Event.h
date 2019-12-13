@@ -5,8 +5,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef FRAMEWORK_EVENTIMPL_H_
-#define FRAMEWORK_EVENTIMPL_H_
+#ifndef FRAMEWORK_EVENT_H_
+#define FRAMEWORK_EVENT_H_
 
 // ROOT
 #include "TObject.h"
@@ -34,8 +34,7 @@ namespace ldmx {
 
     typedef boost::variant< 
         EventHeader * ,
-        SimParticle *  , 
-        std::vector< SimParticle > *
+        std::vector< CalorimeterHit > *
         > EventObjectPtr;
 
     struct clearCollection : public boost::static_visitor<void> {
@@ -116,39 +115,48 @@ namespace ldmx {
              * @note both the input type and the vector have to be included in the event root dictionary
              */
             template <typename T> void addCollection( const std::string& collectionName, T &obj ) {
-        
+                std::cout << "In addCollection" << std::endl; 
                 if (collectionName.find('_') != std::string::npos) {
-                //    EXCEPTION_RAISE("IllegalName", "The product name '" + collectionName + "' is illegal as it contains an underscore.");
+                    EXCEPTION_RAISE(
+                            "IllegalName", 
+                            "The product name '" + collectionName + "' is illegal as it contains an underscore.");
                 }
         
                 std::string branchName = makeBranchName(collectionName);
         
                 if (branchesFilled_.find(branchName) != branchesFilled_.end()) {
-                 //   EXCEPTION_RAISE("ProductExists", "A product named '" + collectionName + "' already exists in the event (has been loaded by a previous producer in this process.");
+                    EXCEPTION_RAISE(
+                            "ProductExists", 
+                            "A product named '" + collectionName + 
+                            "' already exists in the event (has been loaded by a previous producer in this process.");
                 }
                 branchesFilled_.insert(branchName);
-        
+                std::cout << "Going to check collecitons_" << std::endl; 
                 auto itCollection = collections_.find(branchName);
                 if (itCollection == collections_.end()) { 
+                    std::cout << "Collection doesn't exist yet" << std::endl;
                     // create a new branch for this collection
                     collections_[branchName] = (EventObjectPtr)(&obj);
-                    std::cout << collections_[branchName].type().name();
+                    std::cout << collections_[branchName].type().name() << std::endl;
                     if (outputTree_ != 0) {
                         TBranch *outBranch = outputTree_->GetBranch( branchName.c_str() );
                         if ( outBranch ) {
                             //branch already exists, just reset branch address
-                            outBranch->SetAddress( boost::get< T *>(collections_[branchName]) );
+                            outBranch->SetAddress( &obj );
                         } else {
                             //branch doesnt exist, make new one
                             outBranch = outputTree_->Branch(
-                                    branchName.c_str(), boost::get<T *>(collections_[branchName]) , 100000, 3);
+                                    branchName.c_str(), &obj , 100000, 3);
                         }
                         newBranches_.push_back(outBranch);
+                        std::cout << "Added new collection ";
                     }
         	        products_.push_back(ProductTag(collectionName,passName_,collections_[branchName].type().name()));
                     branchNames_.push_back(branchName);
                     knownLookups_.clear(); // have to invalidate this cache
                 }
+
+                return;
             }
 
             /**
@@ -176,12 +184,12 @@ namespace ldmx {
             void addToCollection(const std::string& name, const TObject& obj);
 
             /**
-	     * Get a list of products which match the given POSIX-Extended, case-insenstive regular-expressions.
-	     * An empty argument is interpreted as ".*", which matches everything.
-	     * @param namematch Regular expression to compare with the product name
-	     * @param passmatch Regular expression to compare with the pass name
-	     * @param typematch Regular expression to compare with the type name
-	     */
+	         * Get a list of products which match the given POSIX-Extended, case-insenstive regular-expressions.
+	         * An empty argument is interpreted as ".*", which matches everything.
+	         * @param namematch Regular expression to compare with the product name
+	         * @param passmatch Regular expression to compare with the pass name
+	         * @param typematch Regular expression to compare with the type name
+	        */
             std::vector<ProductTag> searchProducts(const std::string& namematch, const std::string& passmatch, const std::string& typematch) const;
       
             /**
@@ -406,4 +414,4 @@ namespace ldmx {
     }; 
 }
 
-#endif
+#endif /* FRAMEWORK_EVENT_H_ */
