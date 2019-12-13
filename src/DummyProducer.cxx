@@ -5,7 +5,6 @@
  */
 
 // ROOT
-#include "TClonesArray.h"
 #include "TRandom.h"
 
 // LDMX
@@ -40,16 +39,17 @@ namespace ldmx {
             virtual void produce(Event& event) {
                 std::cout << "DummyProducer: Analyzing an event!" << std::endl;
 
-                int np = nParticles_;
+                int iEvent = event.getEventHeader()->getEventNumber();
+                int np = nParticles_*iEvent;
                 std::vector<CalorimeterHit> caloHits;
                 for (int i = 0; i < np; i++) {
                     caloHits.emplace_back();
                     caloHits.back().setAmplitude( i );
                     caloHits.back().Print();
                 }
-                event.addCollection("caloHits", caloHits );
 
-                const std::vector<CalorimeterHit> getCaloHits = event.getImpl< std::vector<CalorimeterHit> >( "caloHits" , "" , true );
+                event.add("caloHits", caloHits );
+
             }
 
             virtual void onFileOpen() {
