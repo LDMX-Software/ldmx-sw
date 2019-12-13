@@ -36,7 +36,7 @@ namespace ldmx {
     void TrackerVetoProcessor::produce(Event& event) {
 
         // Get the collection of simulated particles from the event
-        const TClonesArray* particles = event.getCollection("SimParticles");
+        const TClonesArray* particles = event.getObject<TClonesArray *>("SimParticles");
       
         // Search for the recoil electron 
         const SimParticle* recoil = Analysis::searchForRecoil(particles); 
@@ -48,7 +48,7 @@ namespace ldmx {
         if (event.exists("TargetScoringPlaneHits")) { 
             
             // Get the collection of simulated particles from the event
-            const TClonesArray* spHits = event.getCollection("TargetScoringPlaneHits");
+            const TClonesArray* spHits = event.getObject<TClonesArray *>("TargetScoringPlaneHits");
             
             //
             for (size_t iHit{0}; iHit < spHits->GetEntriesFast(); ++iHit) { 
@@ -76,7 +76,7 @@ namespace ldmx {
         if (event.exists("FindableTracks")) { 
             // Get the collection of simulated particles from the event
             const TClonesArray* tracks 
-                = event.getCollection("FindableTracks");
+                = event.getObject<TClonesArray *>("FindableTracks");
 
             map = Analysis::getFindableTrackMaps(tracks);
             
@@ -97,7 +97,7 @@ namespace ldmx {
             setStorageHint(hint_shouldDrop); 
         } 
 
-        event.addToCollection("TrackerVeto", result);
+        event.add("TrackerVeto", result);
     }
 }
 

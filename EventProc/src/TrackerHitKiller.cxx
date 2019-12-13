@@ -33,7 +33,7 @@ namespace ldmx {
     void TrackerHitKiller::produce(Event& event) { 
        
         // Get the collection of Recoil sim hits from the event 
-        const TClonesArray* recoilSimHits = event.getCollection("RecoilSimHits");
+        const TClonesArray* recoilSimHits = event.getObject<TClonesArray *>("RecoilSimHits");
 
         int iHit = 0;
         for (int hitCount = 0; hitCount < recoilSimHits->GetEntriesFast(); ++hitCount) { 

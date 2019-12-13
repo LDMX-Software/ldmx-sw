@@ -36,7 +36,7 @@ namespace ldmx {
 
         TemplatedClusterFinder<MyClusterWeight> cf;
 
-        TClonesArray* ecalDigiHits = (TClonesArray*) event.getCollection("ecalDigis", digisPassName_);
+        TClonesArray* ecalDigiHits = (TClonesArray*) event.getObject<TClonesArray *>("ecalDigis", digisPassName_);
         int nEcalDigis = ecalDigiHits->GetEntries();
 
         // Don't do anything if there are no ECal digis!
@@ -81,7 +81,7 @@ namespace ldmx {
         }
 
         event.add(clusterCollName_, ecalClusters_);
-        event.addToCollection(algoCollName_, algoResult_);
+        event.add(algoCollName_, algoResult_);
     } 
 }
 

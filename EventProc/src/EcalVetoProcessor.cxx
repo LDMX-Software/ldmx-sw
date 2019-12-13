@@ -179,11 +179,11 @@ namespace ldmx {
         std::vector<float> recoilPosAtTarget;
 
         if (event.exists("EcalScoringPlaneHits")) {
-            const TClonesArray* ecalSpHits{event.getCollection("EcalScoringPlaneHits")};
+            const TClonesArray* ecalSpHits{event.getObject<TClonesArray *>("EcalScoringPlaneHits")};
 
             // Loop through all of the sim particles and find the recoil 
             // electron.
-            const TClonesArray* simParticles{event.getCollection("SimParticles")};
+            const TClonesArray* simParticles{event.getObject<TClonesArray *>("SimParticles")};
             SimParticle* recoilElectron{nullptr}; 
             for (int simParticleIndex = 0; simParticleIndex < simParticles->GetEntriesFast();
                     ++simParticleIndex) { 
@@ -215,7 +215,7 @@ namespace ldmx {
 
             // Find target SP hit for recoil electron
             if (event.exists("TargetScoringPlaneHits")) {
-                const TClonesArray* targetSpHits{event.getCollection("TargetScoringPlaneHits")};
+                const TClonesArray* targetSpHits{event.getObject<TClonesArray *>("TargetScoringPlaneHits")};
                 pmax = 0;
                 for (int targetSpIndex = 0; targetSpIndex < targetSpHits->GetEntriesFast(); ++targetSpIndex) {
                     SimTrackerHit* spHit =  static_cast<SimTrackerHit*>(targetSpHits->At(targetSpIndex)); 
@@ -256,11 +256,11 @@ namespace ldmx {
 
 
         // Get the collection of digitized Ecal hits from the event. 
-        const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
+        const TClonesArray* ecalDigis = event.getObject<TClonesArray *>("ecalDigis");
         int nEcalHits = ecalDigis->GetEntriesFast();
 
         //std::cout << "[ EcalVetoProcessor ] : Got " << nEcalHits << " ECal digis in event "
-        //        << event.getEventHeader()->getEventNumber() << std::endl;
+        //        << event.getEventHeader().getEventNumber() << std::endl;
 
         int globalCentroid = GetShowerCentroidIDAndRMS(ecalDigis, showerRMS_);
         /* ~~ Fill the hit map ~~ O(n)  */
@@ -474,7 +474,7 @@ namespace ldmx {
         } else {
             setStorageHint(hint_shouldDrop);
         }
-        event.addToCollection(collectionName_, result_);
+        event.add(collectionName_, result_);
     }
 
     EcalVetoProcessor::LayerCellPair EcalVetoProcessor::hitToPair(EcalHit* hit) {

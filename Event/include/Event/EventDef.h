@@ -29,6 +29,7 @@
 #include "Event/DigiCollection.h" 
 
 #include <boost/variant.hpp>
+#include "TClonesArray.h" //temporary //TODO: Remove
 namespace ldmx {
 
     /**
@@ -38,6 +39,7 @@ namespace ldmx {
      * @note Any object that you want to be put into the event bus needs to be listed here as well as above.
      */
     typedef boost::variant< 
+        TClonesArray *, //temporary //TODO: Remove
         EcalVetoResult ,
         NonFidEcalVetoResult ,
         EventHeader ,
