@@ -41,18 +41,13 @@ namespace ldmx {
                 std::cout << "DummyProducer: Analyzing an event!" << std::endl;
 
                 int np = nParticles_;
+                std::vector<CalorimeterHit> caloHits;
                 for (int i = 0; i < np; i++) {
-//                    std::cout << "Creating new SimParticle" << std::endl;
-//                    SimParticle a;
-                    std::cout << "Emplace-back" << std::endl;
-                    caloHits_.emplace_back();
-                    std::cout << "Setting track id" << std::endl;
-//                    a.setTrackID( i );
-                    caloHits_.back().setAmplitude( i );
-                    caloHits_.back().Print();
+                    caloHits.emplace_back();
+                    caloHits.back().setAmplitude( i );
+                    caloHits.back().Print();
                 }
-                std::cout << "About to add to collection: " << caloHits_.size() << std::endl;
-                event.addCollection("caloHits", caloHits_ );
+                event.addCollection("caloHits", caloHits );
             }
 
             virtual void onFileOpen() {
@@ -72,7 +67,6 @@ namespace ldmx {
             }
 
         private:
-            std::vector<CalorimeterHit> caloHits_;
             int nParticles_{0};
             double aveEnergy_{0};
             std::vector<double> direction_;
