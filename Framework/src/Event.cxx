@@ -6,9 +6,7 @@ namespace ldmx {
         passName_(thePassName) {
     }
 
-    Event::~Event() {
-        if (eventHeader_) delete eventHeader_;
-    }
+    Event::~Event() { }
 
     std::vector<ProductTag> Event::searchProducts(
             const std::string& namematch, const std::string& passmatch, const std::string& typematch) const {
@@ -42,8 +40,6 @@ namespace ldmx {
 
     TTree* Event::createTree() {
         outputTree_ = new TTree("LDMX_Events", "LDMX Events");
-
-        eventHeader_ = new EventHeader();
 
         return outputTree_;
     }
@@ -80,13 +76,13 @@ namespace ldmx {
 
     bool Event::nextEvent() {
         ientry_++;
-        eventHeader_=get<EventHeader*>(EventConstants::EVENT_HEADER);
+        eventHeader_ = getImpl<EventHeader>(EventConstants::EVENT_HEADER, "" , true);
         return true;
     }
 
     void Event::beforeFill() {
         if (inputTree_==0 && branchesFilled_.find(EventConstants::EVENT_HEADER)==branchesFilled_.end()) {
-            add(EventConstants::EVENT_HEADER, *eventHeader_);
+            add(EventConstants::EVENT_HEADER, eventHeader_);
         }
     }
 

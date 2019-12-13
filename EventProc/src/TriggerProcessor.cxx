@@ -29,7 +29,7 @@ namespace ldmx {
     void TriggerProcessor::produce(Event& event) {
 
         /** Grab the Ecal hit collection for the given event */
-        const TClonesArray *ecalDigis = event.getCollection("ecalDigis");
+        const TClonesArray *ecalDigis = event.getObject<TClonesArray *>("ecalDigis");
         int numEcalHits = ecalDigis->GetEntriesFast();
 
         std::vector<double> layerDigiE(100, 0.0); // big empty vector..
@@ -64,7 +64,7 @@ namespace ldmx {
         result_.setAlgoVar(1, layerESumCut_);
         result_.setAlgoVar(2, endLayer_ - startLayer_);
 
-        event.addToCollection("Trigger", result_);
+        event.add("Trigger", result_);
 
         // mark the event
         if (pass) 

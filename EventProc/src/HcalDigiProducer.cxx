@@ -74,7 +74,7 @@ namespace ldmx {
         }
 
         // looper over sim hits and aggregate energy depositions for each detID
-        TClonesArray* hcalHits = (TClonesArray*) event.getCollection(EventConstants::HCAL_SIM_HITS, "sim");
+        TClonesArray* hcalHits = (TClonesArray*) event.getObject<TClonesArray *>(EventConstants::HCAL_SIM_HITS, "sim");
 
         int numHCalSimHits = hcalHits->GetEntries();
         for (int iHit = 0; iHit < numHCalSimHits; iHit++) {

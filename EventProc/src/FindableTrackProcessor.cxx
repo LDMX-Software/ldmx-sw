@@ -26,12 +26,12 @@ namespace ldmx {
     void FindableTrackProcessor::produce(Event &event) {
 
         // Get the collection of sim particles from the event 
-        const TClonesArray *simParticles = event.getCollection("SimParticles");
+        const TClonesArray *simParticles = event.getObject<TClonesArray *>("SimParticles");
         if (simParticles->GetEntriesFast() == 0) return; 
 
         // Get the collection of Recoil sim hits from the event
-        // const TClonesArray *recoilSimHits = event.getCollection("RecoilSimHits");  
-        const TClonesArray *siStripHits = event.getCollection("SiStripHits");  
+        // const TClonesArray *recoilSimHits = event.getObject<TClonesArray *>("RecoilSimHits");  
+        const TClonesArray *siStripHits = event.getObject<TClonesArray *>("SiStripHits");  
 
         // Create the hit map
         //this->createHitMap(recoilSimHits); 
