@@ -10,7 +10,6 @@
 #include "TH1.h"
 #include "Framework/Event.h"
 #include "Event/CalorimeterHit.h"
-#include "TClonesArray.h"
 
 namespace ldmx {
 
@@ -29,10 +28,9 @@ namespace ldmx {
 
             virtual void analyze(const ldmx::Event& event) {
                 std::cout << "DummyAnalyzer: Analyzing an event!" << std::endl;
-                const TClonesArray* tca=event.getCollection(caloCol_);
-                for (size_t i=0; i<tca->GetEntriesFast(); i++) {
-                    const ldmx::CalorimeterHit* chit=(const ldmx::CalorimeterHit*)(tca->At(i));
-                    h_energy->Fill(chit->getEnergy());
+                const std::vector<CalorimeterHit> getCaloHits = event.getCollection< CalorimeterHit >( caloCol_ );
+                for ( const CalorimeterHit &chit : getCaloHits ) {
+                    h_energy->Fill(chit.getEnergy());
                 }
         		if (ievt==0) {
         		  std::vector<ProductTag> pts=event.getProducts();
@@ -59,6 +57,7 @@ namespace ldmx {
         		  std::cout << std::endl;
         		}
         		ievt++;
+
             }
 
             virtual void onFileOpen() {
