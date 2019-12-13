@@ -9,9 +9,7 @@
 #include "TRandom.h"
 
 // LDMX
-#include "Event/SimParticle.h"
-#include "Framework/Event.h"
-#include "Event/EventConstants.h"
+#include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/ParameterSet.h"
 #include "Framework/Event.h"
@@ -44,13 +42,17 @@ namespace ldmx {
 
                 int np = nParticles_;
                 for (int i = 0; i < np; i++) {
-                    SimParticle a;
-                    a.setEnergy( i );
-                    a.setPdgID(i + 1);
-                    simParticles_.push_back(a);
+//                    std::cout << "Creating new SimParticle" << std::endl;
+//                    SimParticle a;
+                    std::cout << "Emplace-back" << std::endl;
+                    caloHits_.emplace_back();
+                    std::cout << "Setting track id" << std::endl;
+//                    a.setTrackID( i );
+                    caloHits_.back().setAmplitude( i );
+                    caloHits_.back().Print();
                 }
-                std::cout << "About to add to collection: " << simParticles_.size();
-                ((Event *)&event)->addCollection("simParticles", simParticles_ );
+                std::cout << "About to add to collection: " << caloHits_.size() << std::endl;
+                event.addCollection("caloHits", caloHits_ );
             }
 
             virtual void onFileOpen() {
@@ -70,7 +72,7 @@ namespace ldmx {
             }
 
         private:
-            std::vector<SimParticle> simParticles_;
+            std::vector<CalorimeterHit> caloHits_;
             int nParticles_{0};
             double aveEnergy_{0};
             std::vector<double> direction_;
