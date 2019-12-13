@@ -39,8 +39,17 @@
 #pragma link C++ class ldmx::RawHit+;
 #pragma link C++ class ldmx::DigiCollection+; 
 
+//objects that we want to be added inside of a vector must be repeated below
+#pragma link C++ class std::vector<ldmx::SimCalorimeterHit>+;
+#pragma link C++ class std::vector<ldmx::SimTrackerHit>+;
 #pragma link C++ class std::vector<ldmx::SimParticle>+;
 #pragma link C++ class std::vector<ldmx::CalorimeterHit>+;
+#pragma link C++ class std::vector<ldmx::EcalHit>+;
+#pragma link C++ class std::vector<ldmx::EcalCluster>+;
+#pragma link C++ class std::vector<ldmx::FinableTrackResult>+;
+#pragma link C++ class std::vector<ldmx::HcalHit>+;
+#pragma link C++ class std::vector<ldmx::SiStripHit>+;
+#pragma link C++ class std::vector<ldmx::RawHit>+;
 
 #endif
 

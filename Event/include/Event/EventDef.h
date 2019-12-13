@@ -2,6 +2,7 @@
  * @file EventDef.h
  * @brief Headers to be processed when creating the ROOT dictionary
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "Event/CalorimeterHit.h"
@@ -26,3 +27,36 @@
 #include "Event/SiStripHit.h"
 #include "Event/RawHit.h"
 #include "Event/DigiCollection.h" 
+
+#include <boost/variant.hpp>
+namespace ldmx {
+
+    /**
+     * @type EventBusPassenger
+     * Allows all event bus passenger objects to be handled under one name (without an inheritance tree).
+     * 
+     * @note Any object that you want to be put into the event bus needs to be listed here as well as above.
+     */
+    typedef boost::variant< 
+        EcalVetoResult ,
+        NonFidEcalVetoResult ,
+        EventHeader ,
+        TriggerResult ,
+        TrackerVetoResult ,
+        ClusterAlgoResult ,
+        HcalVetoResult ,
+        PnWeightResult ,
+        DigiCollection ,
+        std::vector< FindableTrackResult > ,
+        std::vector< SimCalorimeterHit > ,
+        std::vector< SimTrackerHit > ,
+        std::vector< SimParticle > ,
+        std::vector< CalorimeterHit > ,
+        std::vector< EcalHit > ,
+        std::vector< EcalCluster > ,
+        std::vector< HcalHit > ,
+        std::vector< SiStripHit > ,
+        std::vector< RawHit >
+        > EventBusPassenger;
+
+}
