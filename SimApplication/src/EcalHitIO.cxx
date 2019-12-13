@@ -9,11 +9,7 @@
 
 namespace ldmx {
 
-    EcalHitIO::EcalHitIO(SimParticleBuilder* simParticleBuilder) :
-            simParticleBuilder_(simParticleBuilder) {
-    }
-
-    void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl) {
+    void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, std::vector<SimCalorimeterHit> &outputColl) {
 
         int nHits = hc->GetSize();
         std::map<int, SimCalorimeterHit*> hitMap;
@@ -33,7 +29,8 @@ namespace ldmx {
             if (it == hitMap.end()) {
 
                 // Create sim hit and assign the ID.
-                simHit = (SimCalorimeterHit*) outputColl->ConstructedAt(outputColl->GetEntries());
+                outputColl.emplace_back();
+                simHit = &(outputColl.back());
                 simHit->setID(hitID);
 
                 /**
@@ -64,10 +61,10 @@ namespace ldmx {
             if (enableHitContribs_) {
 
                 // Find the SimParticle associated with this hit.
-                SimParticle* simParticle = simParticleBuilder_->findSimParticle(g4hit->getTrackID());
+                int trackID = g4hit->getTrackID();
 
                 // Find if there is an existing hit contrib.
-                int contribIndex = simHit->findContribIndex(simParticle, pdgCode);
+                int contribIndex = simHit->findContribIndex(trackID, pdgCode);
 
                 // Is contrib output being compressed and a record exists for this SimParticle and PDG code?
                 if (compressHitContribs_ && contribIndex != -1) {
@@ -81,7 +78,7 @@ namespace ldmx {
                 } else {
 
                     // Add a hit contrib because all steps are being saved or there is not an existing record.
-                    simHit->addContrib(simParticle, pdgCode, edep, time);
+                    simHit->addContrib(trackID, pdgCode, edep, time);
 
                     //std::cout << "added new contrib for hit with ID " << hitID << " with PDGID = "
                     //        << pdgCode << ", edep = " << edep << ", time = " << time << std::endl;

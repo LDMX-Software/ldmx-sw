@@ -60,7 +60,7 @@ namespace ldmx {
             for (int iContrib = 0; iContrib < simHit->getNumberOfContribs(); ++iContrib) {
                 SimCalorimeterHit::Contrib contrib = simHit->getContrib(iContrib);
 
-                if (contrib.particle == recoilElectron) { 
+                if (contrib.trackID == recoilElectron->getTrackID()) { 
                     /*std::cout << "[ RecoilMissesEcalSkimmer ]: " 
                               << "Ecal hit associated with recoil electron." << std::endl; */
                     

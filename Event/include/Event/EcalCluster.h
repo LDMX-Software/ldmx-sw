@@ -10,7 +10,6 @@
 // ROOT
 #include "TObject.h"
 #include "TString.h"
-#include "TRefArray.h"
 
 // STL
 #include <iostream>

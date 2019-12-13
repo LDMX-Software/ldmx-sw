@@ -48,7 +48,7 @@ namespace ldmx {
             if (abs(simParticle->getCharge()) != 1) continue;
     
             // Check if the track is findable 
-            if (hitMap_.count(simParticle) == 1) {
+            if (hitMap_.count(simParticle->getTrackID()) == 1) {
                 
                 // Create a result instance
                 FindableTrackResult* findableTrackResult 
@@ -58,7 +58,7 @@ namespace ldmx {
                 findableTrackResult->setSimParticle(simParticle);
 
                 // Check if the track is findable
-                this->isFindable(findableTrackResult, hitMap_[simParticle]); 
+                this->isFindable(findableTrackResult, hitMap_[simParticle->getTrackID()]); 
                 resultCount++;
             }      
         }
@@ -87,15 +87,15 @@ namespace ldmx {
             SimTrackerHit* simTrackerHit = static_cast<SimTrackerHit*>(siStripHit->getSimTrackerHits()->At(0));  
 
             // Get the MC particle associated with this hit
-            SimParticle* simParticle = simTrackerHit->getSimParticle();
+            int simParticleTrackID = simTrackerHit->getTrackID();
 
             // If the particle ins't in the hit map, add it.
-            if (hitMap_.count(simParticle) == 0) {
-                hitMap_[simParticle] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            if (hitMap_.count(simParticleTrackID) == 0) {
+                hitMap_[simParticleTrackID] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             }
             
             // Increment the hit count for the layer
-            hitMap_[simParticle][simTrackerHit->getLayerID() - 1]++;
+            hitMap_[simParticleTrackID][simTrackerHit->getLayerID() - 1]++;
         }
     }
 

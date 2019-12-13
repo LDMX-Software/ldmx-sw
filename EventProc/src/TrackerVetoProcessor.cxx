@@ -52,12 +52,12 @@ namespace ldmx {
             
             //
             for (size_t iHit{0}; iHit < spHits->GetEntriesFast(); ++iHit) { 
-                SimTrackerHit* hit = static_cast<SimTrackerHit*>(spHits->At(iHit)); 
-                if ((hit->getSimParticle() == recoil) && (hit->getLayerID() == 2)
-                        && (hit->getMomentum()[2] > 0)) {
-                    spHit = hit;
-                    break; 
-                }
+//TODO            SimTrackerHit* hit = static_cast<SimTrackerHit*>(spHits->At(iHit)); 
+//                if ((hit->getSimParticle() == recoil) && (hit->getLayerID() == 2)
+//                        && (hit->getMomentum()[2] > 0)) {
+//                    spHit = hit;
+//                    break; 
+//                }
             }
 
             if (spHit != nullptr) {

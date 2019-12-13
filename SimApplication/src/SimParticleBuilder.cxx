@@ -22,42 +22,41 @@ namespace ldmx {
     SimParticleBuilder::SimParticleBuilder() :
             currentEvent_(nullptr) {
         trackMap_ = UserTrackingAction::getUserTrackingAction()->getTrackMap();
-        outputParticleColl_ = new TClonesArray(EventConstants::SIM_PARTICLE.c_str(), 50);
     }
 
-    SimParticleBuilder::~SimParticleBuilder() {
-        delete outputParticleColl_;
-    }
+    SimParticleBuilder::~SimParticleBuilder() { }
 
     void SimParticleBuilder::buildSimParticles(ldmx::Event* outputEvent) {
 
-        // Clear the output particle collection.
-        outputParticleColl_->Clear("C");
-
         // Get the trajectory container for the event.
         TrajectoryContainer* trajectories = (TrajectoryContainer*) (const_cast<G4Event*>(currentEvent_))->GetTrajectoryContainer();
-
+        std::cout << "buildParticleMap" << std::endl;
         // Create empty SimParticle objects and create the map of track ID to particles.
-        buildParticleMap(trajectories, outputParticleColl_);
+        std::vector<SimParticle> outputParticleColl;
+        buildParticleMap(trajectories, outputParticleColl );
 
+        std::cout << "buildSimParticle" << std::endl;
         // Fill information into the particles.
         for (auto trajectory : *trajectories->GetVector()) {
             buildSimParticle(static_cast<Trajectory*>(trajectory));
         }
 
+        std::cout << "event->add" << std::endl;
         // Add the collection data to the output event.
-        outputEvent->add("SimParticles", outputParticleColl_);
+        outputEvent->add("SimParticles", outputParticleColl );
     }
 
     void SimParticleBuilder::buildSimParticle(Trajectory* traj) {
-
+         
+        std::cout << "particleMap_[trackID] " << traj << "\t";
         SimParticle* simParticle = particleMap_[traj->GetTrackID()];
 
-        if (!simParticle) {
-            EXCEPTION_RAISE( "MissingInfo" , "SimParticle not found for Trajectory with track ID '" 
-                    + std::to_string(traj->GetTrackID()) + "'." );
-        }
+//        if (!simParticle) {
+//            EXCEPTION_RAISE( "MissingInfo" , "SimParticle not found for Trajectory with track ID '" 
+//                    + std::to_string(traj->GetTrackID()) + "'." );
+//        }
 
+        std::cout << "simParticle->set(\t";
         simParticle->setGenStatus(traj->getGenStatus());
         simParticle->setTrackID(traj->GetTrackID());
         simParticle->setPdgID(traj->GetPDGEncoding());
@@ -80,22 +79,25 @@ namespace ldmx {
         simParticle->setEndPoint(endpoint[0], endpoint[1], endpoint[2]);
 
         if (traj->GetParentID() > 0) {
+            std::cout << "findSimParticle\t";
             SimParticle* parent = findSimParticle(traj->GetParentID());
-            if (parent != nullptr) {
-                simParticle->addParent(parent);
-                parent->addDaughter(simParticle);
-            } else {
-                // If the parent particle can not be found by its track ID, this is a fatal error!
-                EXCEPTION_RAISE( "MissingInfo" , "SimParticle with parent ID '" + std::to_string(traj->GetParentID()) 
-                        + "' not found for track ID '" + std::to_string(traj->GetTrackID()) + "'." );
-            }
-        }
+            std::cout << "addParent\t";
+            simParticle->addParent( traj->GetParentID() );
+            auto parentParticle = particleMap_.find( traj->GetParentID() );
+            if ( parentParticle != particleMap_.end() ) {
+                //this parent has been found in particleMap_
+                std::cout << "addDaughter\t";
+                particleMap_[ traj->GetParentID() ]->addDaughter( simParticle->getTrackID() );
+            }//check if parent exists
+        }//check if particle has a parent
+        std::cout << std::endl;
     }
 
-    void SimParticleBuilder::buildParticleMap(TrajectoryContainer* trajectories, TClonesArray* simParticleColl) {
+    void SimParticleBuilder::buildParticleMap(TrajectoryContainer* trajectories, std::vector<SimParticle> &simParticleColl) {
         particleMap_.clear();
         for (auto trajectory : *trajectories->GetVector()) {
-            particleMap_[trajectory->GetTrackID()] = (SimParticle*) simParticleColl->ConstructedAt(simParticleColl->GetEntries());
+            simParticleColl.emplace_back();
+            particleMap_[trajectory->GetTrackID()] = &(simParticleColl.back());
         }
     }
 

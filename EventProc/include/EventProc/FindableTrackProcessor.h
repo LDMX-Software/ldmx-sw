@@ -70,7 +70,7 @@ namespace ldmx {
             void isFindable(FindableTrackResult* result, std::vector<int> hitCount); 
 
             /** Map between a sim particle and it's hit array. */ 
-            std::map<SimParticle*, std::vector<int>> hitMap_;
+            std::map<int, std::vector<int>> hitMap_;
 
             /** Collection of results. */
             TClonesArray* findableTrackResults_{nullptr};
