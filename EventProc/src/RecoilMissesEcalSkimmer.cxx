@@ -22,7 +22,7 @@ namespace ldmx {
     void RecoilMissesEcalSkimmer::produce(Event &event) { 
         
         // Get the collection of sim particles from the event 
-        const TClonesArray *simParticles = event.getCollection("SimParticles");
+        const TClonesArray *simParticles = event.getObject<TClonesArray *>("SimParticles");
         if (simParticles->GetEntriesFast() == 0) return; 
 
         // Loop through all of the particles and search for the recoil electron
@@ -43,7 +43,7 @@ namespace ldmx {
         }
 
         // Get the collection of simulated Ecal hits from the event. 
-        const TClonesArray* ecalSimHits = event.getCollection(EventConstants::ECAL_SIM_HITS);
+        const TClonesArray* ecalSimHits = event.getObject<TClonesArray *>(EventConstants::ECAL_SIM_HITS);
        
         // Loop through the Ecal hits and check if the recoil electron is 
         // associated with any of them.  If there are any recoil electron hits

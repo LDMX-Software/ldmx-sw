@@ -55,7 +55,7 @@ namespace ldmx {
         // Get the collection of sim particles from the event.  If the 
         // collection of sim particles is empty, don't process the
         // event.
-        const TClonesArray* simParticles = event.getCollection("SimParticles");
+        const TClonesArray* simParticles = event.getObject<TClonesArray *>("SimParticles");
         if (simParticles->GetEntriesFast() == 0) return; 
 
         // Loop through all of the particles and search for the recoil electron
@@ -170,7 +170,7 @@ namespace ldmx {
         result_.setWeight(eventWeight); 
 
         // Add the result to the collection    
-        event.addToCollection("PNweight", result_);
+        event.add("PNweight", result_);
     }
 
     double PnWeightProcessor::calculateWeight(double w) {

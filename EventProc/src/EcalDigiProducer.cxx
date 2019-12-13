@@ -58,7 +58,7 @@ namespace ldmx {
 
     void EcalDigiProducer::produce(Event& event) {
 
-        TClonesArray* ecalSimHits = (TClonesArray*) event.getCollection(EventConstants::ECAL_SIM_HITS);
+        TClonesArray* ecalSimHits = (TClonesArray*) event.getObject<TClonesArray *>(EventConstants::ECAL_SIM_HITS);
         int numEcalSimHits = ecalSimHits->GetEntries();
 
         //std::cout << "[ EcalDigiProducer ] : Got " << numEcalSimHits 

@@ -143,11 +143,11 @@ namespace ldmx {
         clearProcessor();
 
         // Get the collection of digitized Ecal hits from the event.
-        const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
+        const TClonesArray* ecalDigis = event.getObject<TClonesArray *>("ecalDigis");
         int nEcalHits = ecalDigis->GetEntriesFast();
 
         std::cout << "[ NonFidEcalVetoProcessor ] : Got " << nEcalHits << " ECal digis in event "
-                << event.getEventHeader()->getEventNumber() << std::endl;
+                << event.getEventHeader().getEventNumber() << std::endl;
 
         int globalCentroid = GetShowerCentroidIDAndRMS(ecalDigis, showerRMS_);
         /* ~~ Fill the hit map ~~ O(n)  */
@@ -235,10 +235,10 @@ namespace ldmx {
         std::vector<float> recoilPos;
 
         if (event.exists("EcalScoringPlaneHits")) {
-            const TClonesArray* ecalSpHits{event.getCollection("EcalScoringPlaneHits")};
+            const TClonesArray* ecalSpHits{event.getObject<TClonesArray *>("EcalScoringPlaneHits")};
 
             // Loop through all of the sim particles and find the recoil electron
-            const TClonesArray* simParticles{event.getCollection("SimParticles")};
+            const TClonesArray* simParticles{event.getObject<TClonesArray *>("SimParticles")};
             SimParticle* recoilElectron{nullptr};
             for (int simParticleIndex = 0; simParticleIndex < simParticles->GetEntriesFast();
                 ++simParticleIndex) {
@@ -364,7 +364,7 @@ namespace ldmx {
             setStorageHint(hint_shouldDrop);
         }
 
-        event.addToCollection("NonFidEcalVeto", result_);
+        event.add("NonFidEcalVeto", result_);
     }
 
     NonFidEcalVetoProcessor::LayerCellPair NonFidEcalVetoProcessor::hitToPair(EcalHit* hit) {

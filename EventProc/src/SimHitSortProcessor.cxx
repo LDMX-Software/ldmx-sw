@@ -19,7 +19,7 @@ namespace ldmx {
     }
 
     void SimHitSortProcessor::produce(Event& event) {
-        TClonesArray* ecalSimHits = (TClonesArray*) event.getCollection(collectionName);
+        TClonesArray* ecalSimHits = (TClonesArray*) event.getObject<TClonesArray *>(collectionName);
 
         int numEcalSimHits = ecalSimHits->GetEntries();
         std::vector<SimCalorimeterHit*> vecSimCaloHit;

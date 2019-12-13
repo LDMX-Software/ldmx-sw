@@ -177,7 +177,7 @@ namespace ldmx {
  
 
         // Get the collection of simulated particles from the event
-        const TClonesArray* particles = event.getCollection("SimParticles");
+        const TClonesArray* particles = event.getObject<TClonesArray *>("SimParticles");
       
         // Search for the recoil electron 
         const SimParticle* recoil = Analysis::searchForRecoil(particles); 
@@ -322,7 +322,7 @@ namespace ldmx {
         if (event.exists(ecalVetoCollectionName_)) {
             const EcalVetoResult* veto 
                 = static_cast<const EcalVetoResult*>(
-                        event.getCollection(ecalVetoCollectionName_)->At(0));
+                        event.getObject<TClonesArray *>(ecalVetoCollectionName_)->At(0));
        
             // Get the BDT probability  
             bdtProb = veto->getDisc();
@@ -349,7 +349,7 @@ namespace ldmx {
         if (event.exists("HcalVeto")) {
         
             // Get the collection of HCalDQM digitized hits if the exists 
-            const TClonesArray* hcalVeto = event.getCollection("HcalVeto");
+            const TClonesArray* hcalVeto = event.getObject<TClonesArray *>("HcalVeto");
 
             HcalVetoResult* veto = static_cast<HcalVetoResult*>(hcalVeto->At(0));
             //HcalHit* maxPEHit = veto->getMaxPEHit(); 
@@ -377,7 +377,7 @@ namespace ldmx {
         if (event.exists("TrackerVeto")) { 
 
             // Get the collection of trackerVeto results
-            const TClonesArray* trackerVeto = event.getCollection("TrackerVeto");
+            const TClonesArray* trackerVeto = event.getObject<TClonesArray *>("TrackerVeto");
 
             TrackerVetoResult* veto = static_cast<TrackerVetoResult*>(trackerVeto->At(0)); 
             // Check if the event passes the tracker veto
