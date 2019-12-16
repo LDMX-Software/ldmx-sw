@@ -7,35 +7,41 @@
 #ifndef SIMAPPLICATION_SIMULATOR_H
 #define SIMAPPLICATION_SIMULATOR_H
 
-//LDMX Framework
+//~~~~~~~~~~~~//
+//   StdLib   //
+//~~~~~~~~~~~~//
+#include <memory>
+
+//~~~~~~~~~~~~~//
+//   ldmx-sw   //
+//~~~~~~~~~~~~~//
 #include "Event/EventDef.h"
-#include "Framework/EventProcessor.h" //Needed to declare processor
-#include "Framework/ParameterSet.h" // Needed to import parameters from configuration file
-#include "SimApplication/DetectorConstruction.h"
-#include "SimApplication/RunManager.h"
-#include "SimApplication/RootPersistencyManager.h"
-#include "SimApplication/SimApplicationMessenger.h"
+#include "Framework/EventProcessor.h"
+#include "Framework/ParameterSet.h" 
 
-//Geant4
-#include "G4RunManager.hh"
-#include "G4GDMLParser.hh"
-#include "G4UIExecutive.hh"
+//~~~~~~~~~~~~//
+//   Geant4   //
+//~~~~~~~~~~~~//
 #include "G4UImanager.hh"
-#include "G4VisManager.hh"
-#include "G4VisExecutive.hh"
-#include "G4CascadeParameters.hh"
 
+class G4RunManager;
+class G4GDMLParser; 
+class G4GDMLMessenger; 
 
 namespace ldmx {
-    
+
+    class RunManager; 
+
     /**
      * @class Simulator
      * @brief Producer that runs Geant4 simulation inside of ldmx-app
      *
-     * Most (if not all) of the heavy lifting is done in the classes in the Sim* modules.
-     * This producer is mainly focused on calling appropriate functions at the right time in the processing chain.
+     * Most (if not all) of the heavy lifting is done in the classes in the 
+     * Sim* modules.  This producer is mainly focused on calling appropriate
+     * functions at the right time in the processing chain.
      */
     class Simulator : public ldmx::Producer {
+
         public:
 
             /**
@@ -56,7 +62,8 @@ namespace ldmx {
             /**
              * Configure the simulation
              *
-             * This is called before run is begun, so all parameters/options for simulation must be set here.
+             * This is called before run is begun, so all parameters/options 
+             * for simulation must be set here.
              */
             virtual void configure(const ldmx::ParameterSet& ps);
 
@@ -68,7 +75,8 @@ namespace ldmx {
             /**
              * Initialization of simulation
              *
-             * This uses the parameters set in the configure method to construct and initialize the simulation objects.
+             * This uses the parameters set in the configure method to 
+             * construct and initialize the simulation objects.
              */
             virtual void onProcessStart(); 
 
@@ -80,23 +88,19 @@ namespace ldmx {
         private:
 
             /** Index of current event */
-            unsigned int iEvent_;
+            unsigned int iEvent_{0};
 
-            /** Manager controlling G4 simulation run */
-            G4RunManager *runManager_{nullptr};
+            /// Manager controlling G4 simulation run 
+            std::unique_ptr<G4RunManager> runManager_;
 
-            /** Class to parse GDML Detector Geometry */
-            G4GDMLParser *parser_{nullptr};
+            /// User interface handle
+            G4UImanager* uiManager_{G4UImanager::GetUIpointer()};
 
-            /** Allows gdml to talk to g4? */
-            G4UImessenger *gdmlMessenger_{nullptr};
+            /// GDML parser 
+            std::unique_ptr<G4GDMLParser> parser_;
 
-            /** User Interface handle */
-            G4UImanager *uiManager_{nullptr};
-
-            /** G4 to LDMX translation */
-            RootPersistencyManager *persistencyManager_{nullptr};
-
+            /// Messenger that allows passing commands to the parser
+            std::unique_ptr<G4GDMLMessenger> gdmlMessenger_; 
     };
 }
 
