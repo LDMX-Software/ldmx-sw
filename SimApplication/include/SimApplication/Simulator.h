@@ -2,6 +2,7 @@
  * @file Simulator.h
  * @brief Run the G4 simulation inside of ldmx-app
  * @author Tom Eichlersmith, University of Minnesota
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
 #ifndef SIMAPPLICATION_SIMULATOR_H
@@ -87,9 +88,6 @@ namespace ldmx {
 
         private:
 
-            /** Index of current event */
-            unsigned int iEvent_{0};
-
             /// Manager controlling G4 simulation run 
             std::unique_ptr<G4RunManager> runManager_;
 
@@ -101,6 +99,15 @@ namespace ldmx {
 
             /// Messenger that allows passing commands to the parser
             std::unique_ptr<G4GDMLMessenger> gdmlMessenger_; 
+
+            /// Index of current event
+            unsigned int iEvent_{0};
+
+            /// Path to detector description
+            std::string detectorPath_{""};
+
+            /// Macro path
+            std::string macroPath_{""};  
     };
 }
 
