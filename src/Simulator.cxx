@@ -18,6 +18,7 @@ namespace ldmx {
 
     Simulator::Simulator(const std::string& name, ldmx::Process& process) : Producer( name , process ) {
 
+        // Instantiate the run manager.  
         runManager_ = std::make_unique<RunManager>();
 
         // Instantiate the GDML parser and corresponding messenger
@@ -43,8 +44,12 @@ namespace ldmx {
 
 
     void Simulator::configure(const ldmx::ParameterSet& ps) {
-       
-        return;
+      
+        // Get the path to the detector description file
+        detectorPath_ = ps.getString("detector");
+
+        // Get the path to the macro used to configure the sim
+        macroPath_ = ps.getString("macro"); 
     }
 
     void Simulator::produce(ldmx::Event& event) {
@@ -62,10 +67,12 @@ namespace ldmx {
     
     void Simulator::onProcessStart() {
         
-        // Parser the detector
-        // TODO: This should be configurable via a parameter. 
-        uiManager_->ApplyCommand( "/persistency/gdml/read detector.gdml" );
-        uiManager_->ApplyCommand( "/run/initialize" );
+        // Parse the detector geometry
+        uiManager_->ApplyCommand("/persistency/gdml/read " + detectorPath_);
+
+        // Execute the macro
+        uiManager_->ApplyCommand("/control/execute " + macroPath_); 
+         
 
         //runManager_->ConstructScoringWorlds();
         runManager_->RunInitialization();
