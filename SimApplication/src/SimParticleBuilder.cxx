@@ -30,7 +30,6 @@ namespace ldmx {
 
         // Get the trajectory container for the event.
         TrajectoryContainer* trajectories = (TrajectoryContainer*) (const_cast<G4Event*>(currentEvent_))->GetTrajectoryContainer();
-        std::cout << "buildParticleMap" << std::endl;
 
         // Create empty SimParticle objects and create the map of track ID to particles.
         std::map< int , SimParticle > outputParticleMap;
@@ -38,16 +37,13 @@ namespace ldmx {
             outputParticleMap[trajectory->GetTrackID()] = SimParticle();
         }
 
-        std::cout << "buildSimParticle" << std::endl;
         // Fill information into the particles.
         for (auto trajectory : *trajectories->GetVector()) {
             
             Trajectory *traj = static_cast<Trajectory *>(trajectory);
             
-            std::cout << "particleMap_[trackID] " << traj << "\t";
             SimParticle* simParticle = &outputParticleMap[traj->GetTrackID()];
     
-            std::cout << "simParticle->set(\t";
             simParticle->setGenStatus(traj->getGenStatus());
             simParticle->setTrackID(traj->GetTrackID());
             simParticle->setPdgID(traj->GetPDGEncoding());
@@ -70,20 +66,16 @@ namespace ldmx {
             simParticle->setEndPoint(endpoint[0], endpoint[1], endpoint[2]);
     
             if (traj->GetParentID() > 0) {
-                std::cout << "addParent\t";
                 simParticle->addParent( traj->GetParentID() );
                 //check if parent track is being stored
                 auto parentParticle = outputParticleMap.find( traj->GetParentID() );
                 if ( parentParticle != outputParticleMap.end() ) {
                     //this parent has been found in the particle map
-                    std::cout << "addDaughter\t";
                     outputParticleMap[ traj->GetParentID() ].addDaughter( simParticle->getTrackID() );
                 }//check if parent exists in output map
             }//check if particle has a parent
-            std::cout << std::endl;
         }
 
-        std::cout << "event->add" << std::endl;
         // Add the collection data to the output event.
         outputEvent->add("SimParticles", outputParticleMap );
     }
