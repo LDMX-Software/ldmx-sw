@@ -55,15 +55,6 @@ namespace ldmx {
              */
             void buildSimParticles(Event* outputEvent);
 
-            /**
-             * DEPRECATED
-             * Use the trackID and map::find on the sim particle map
-             *
-             * Find a SimParticle by track ID.
-             * @param trackID The trackID of the particle.
-             */
-            SimParticle* findSimParticle(G4int trackID) { return nullptr; }
-
         private:
 
             /** The map of tracks to their parent IDs and Trajectory objects. */
