@@ -12,6 +12,7 @@
 //   C++ StdLib   //
 //----------------//
 #include <algorithm>
+#include <string>
 
 //-----------//
 //   Boost   //

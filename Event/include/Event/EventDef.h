@@ -53,7 +53,7 @@ namespace ldmx {
         std::vector< FindableTrackResult > ,
         std::vector< SimCalorimeterHit > ,
         std::vector< SimTrackerHit > ,
-        std::vector< SimParticle > ,//TODO: Switch particle vector to map
+        std::map< int , SimParticle > ,//TODO: Switch particle vector to map
         std::vector< CalorimeterHit > ,
         std::vector< EcalHit > ,
         std::vector< EcalCluster > ,

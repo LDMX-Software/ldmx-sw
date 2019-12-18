@@ -128,7 +128,16 @@ namespace ldmx {
                 }
                 
                 //copy input contents into bus passenger
-                collections_[branchName] = EventBusPassenger( obj );
+                EventBusPassenger toAdd( obj );
+                if ( toAdd.which() == collections_[branchName].which() ) {
+                    collections_[branchName] = toAdd;
+                } else {
+                    EXCEPTION_RAISE(
+                            "TypeMismatch",
+                            "Attempting to add an object whose type '" + std::string(toAdd.type().name()) + "' doesn't match the type stored in the collection '" +
+                            std::string(collections_[branchName].type().name()) + "'"
+                            );
+                }
 
                 return;
             }
