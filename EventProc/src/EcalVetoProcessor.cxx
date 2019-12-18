@@ -184,12 +184,12 @@ namespace ldmx {
 
             // Loop through all of the sim particles and find the recoil 
             // electron.
-            std::vector< SimParticle > simParticles = event.getCollection< SimParticle >( "SimParticles" );
+            std::map< int , SimParticle > simParticles = event.getObject< std::map<int,SimParticle> >( "SimParticles" );
             SimParticle* recoilElectron{nullptr}; 
-            for ( SimParticle &particle : simParticles ) {
+            for ( auto &mapContent : simParticles ) {
                 // We only care about the recoil electron
-                if ((particle.getPdgID() == 11) && (particle.getParentCount() == 0)) { 
-                    recoilElectron = &particle;
+                if ((mapContent.second.getPdgID() == 11) && (mapContent.second.getParentCount() == 0)) { 
+                    recoilElectron = &mapContent.second;
                     break;
                 } 
             }
