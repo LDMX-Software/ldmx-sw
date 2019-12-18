@@ -65,17 +65,13 @@ namespace ldmx {
                     // Update an existing hit contrib.
                     hitMap[hitID].updateContrib(contribIndex, edep, time);
 
-                    //std::cout << "updated contrib for hit with ID " << hitID << " with PDGID = "
-                    //        << pdgCode << ", edep = " << edep << ", time = " << time << std::endl;;
-
                 } else {
 
                     // Add a hit contrib because all steps are being saved or there is not an existing record.
                     hitMap[hitID].addContrib(trackID, pdgCode, edep, time);
 
-                    //std::cout << "added new contrib for hit with ID " << hitID << " with PDGID = "
-                    //        << pdgCode << ", edep = " << edep << ", time = " << time << std::endl;
                 }
+
             } else {
 
                 // Hit contributions are not being saved so manually increment the edep and set time.
@@ -84,7 +80,6 @@ namespace ldmx {
                     hitMap[hitID].setTime(time);
                 }
 
-                //std::cout << "updated hit with ID " << hitID << " with edep = " << edep << ", time = " << time << std::endl;
             } //contrib output enabled or not
         }//loop through geant4 hits
 

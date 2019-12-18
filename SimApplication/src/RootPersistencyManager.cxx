@@ -29,13 +29,13 @@ namespace ldmx {
             // TODO: Need event cleanup here?
             return false;
         }
-        std::cout << "buildEvent" << std::endl;
+
         // Build the output collections.
         buildEvent(anEvent, event_);
-        std::cout << "printEvent" << std::endl; 
+        
         // Print out event info and data depending on verbose level.
         printEvent(event_);
-        std::cout << "nextEvent" << std::endl;
+        
         outputFile_->nextEvent();
 
         return true;
@@ -78,13 +78,13 @@ namespace ldmx {
 
         // Set basic event information.
         writeHeader(anEvent, outputEvent);
-        std::cout << "simParticleBuilder_.setCurrentEvent" << std::endl;
+        
         // Set pointer to current G4Event.
         simParticleBuilder_.setCurrentEvent(anEvent);
-        std::cout << "simParticleBuilder_.buildSimParticles" << std::endl;
+        
         // Build the SimParticle list for the output ROOT event.
         simParticleBuilder_.buildSimParticles(outputEvent);
-        std::cout << "writeHitsCollections" << std::endl;
+        
         // Copy hit objects from SD hit collections into the output event.
         writeHitsCollections(anEvent, outputEvent);
     }
@@ -146,10 +146,10 @@ namespace ldmx {
         // Get the HC of this event.
         G4HCofThisEvent* hce = anEvent->GetHCofThisEvent();
         int nColl = hce->GetNumberOfCollections();
-        std::cout << "Got the HC of this event, nColl = " << nColl << std::endl;
+        
         // Loop over all hits collections.
         for (int iColl = 0; iColl < nColl; iColl++) {
-            std::cout << "Starting with ";
+            
             // Get a hits collection and its name.
             G4VHitsCollection* hc = hce->GetHC(iColl);
             if ( ! hc ) {
@@ -160,7 +160,7 @@ namespace ldmx {
             }
 
             std::string collName = hc->GetName();
-            std::cout << collName << "\t";
+            
             if (std::find(dropCollectionNames_.begin(), dropCollectionNames_.end(), collName) != dropCollectionNames_.end()) {
                 if (m_verbose > 1) {  
                     std::cout << "[ RootPersistencyManager ]: Dropping Collection: " << collName << std::endl;
@@ -173,10 +173,8 @@ namespace ldmx {
                 // Write G4TrackerHit collection to output SimTrackerHit collection.
                 G4TrackerHitsCollection* trackerHitsColl = dynamic_cast<G4TrackerHitsCollection*>(hc);
                 std::vector<SimTrackerHit> outputColl;
-                std::cout << "writeTrackerHitsCollection\t";
                 writeTrackerHitsCollection( trackerHitsColl, outputColl );
                 // Add hits collection to output event.
-                std::cout << "add\t";
                 outputEvent->add( collName, outputColl );
 
             } else if (dynamic_cast<G4CalorimeterHitsCollection*>(hc) != nullptr) {
@@ -185,58 +183,63 @@ namespace ldmx {
                 std::vector<SimCalorimeterHit> outputColl;
                 if (collName == EventConstants::ECAL_SIM_HITS) {
                     // Write ECal G4CalorimeterHit collection to output SimCalorimeterHit collection using helper class.
-                    std::cout << "ecalHitIO_.writeHitsCollection\t";
                     ecalHitIO_.writeHitsCollection(calHitsColl, outputColl );
                 } else {
                     // Write generic G4CalorimeterHit collection to output SimCalorimeterHit collection.
-                    std::cout << "writeCalorimeterHitsCollection\t";
                     writeCalorimeterHitsCollection(calHitsColl, outputColl );
                 }
                 // Add hits collection to output event.
-                std::cout << "add\t";
                 outputEvent->add( collName, outputColl );
-            }
-            std::cout << "done with " << collName << std::endl;
-        }
+            } //switch on type of hit collection
+        } //loop through geant4 hit collections
+
+        return;
     }
 
     void RootPersistencyManager::writeTrackerHitsCollection(G4TrackerHitsCollection* hc, std::vector<SimTrackerHit> &outputColl) {
+
+        outputColl.clear();
         int nHits = hc->GetSize();
         for (int iHit = 0; iHit < nHits; iHit++) {
             G4TrackerHit* g4hit = (G4TrackerHit*) hc->GetHit(iHit);
-            SimTrackerHit simTrackerHit;
-            simTrackerHit.setID(g4hit->getID());
-            simTrackerHit.setLayerID(g4hit->getLayerID());
-            simTrackerHit.setModuleID(g4hit->getModuleID());
-            simTrackerHit.setEdep(g4hit->getEdep());
             const G4ThreeVector& momentum = g4hit->getMomentum();
-            simTrackerHit.setMomentum(momentum.x(), momentum.y(), momentum.z());
             const G4ThreeVector& position = g4hit->getPosition();
-            simTrackerHit.setEnergy( g4hit->getEnergy() );
 
+            SimTrackerHit simTrackerHit;
+            simTrackerHit.setID(         g4hit->getID()         );
+            simTrackerHit.setTime(       g4hit->getTime()       );
+            simTrackerHit.setLayerID(    g4hit->getLayerID()    );
+            simTrackerHit.setModuleID(   g4hit->getModuleID()   );
+            simTrackerHit.setEdep(       g4hit->getEdep()       );
+            simTrackerHit.setEnergy(     g4hit->getEnergy()     );
+            simTrackerHit.setPathLength( g4hit->getPathLength() );
+            simTrackerHit.setTrackID(    g4hit->getTrackID()    );
+            simTrackerHit.setPdgID(      g4hit->getPdgID()      );
             simTrackerHit.setPosition(position.x(), position.y(), position.z());
-            simTrackerHit.setPathLength(g4hit->getPathLength());
-            simTrackerHit.setTrackID(g4hit->getTrackID());
-            simTrackerHit.setPdgID(g4hit->getPdgID());
+            simTrackerHit.setMomentum(momentum.x(), momentum.y(), momentum.z());
 
             outputColl.push_back( simTrackerHit );
         }
+
+        return;
     }
 
     void RootPersistencyManager::writeCalorimeterHitsCollection(G4CalorimeterHitsCollection* hc, 
             std::vector<SimCalorimeterHit> &outputColl) {
         int nHits = hc->GetSize();
-        std::cout << "writeHitsCollection: " << nHits << "\t";
         for (int iHit = 0; iHit < nHits; iHit++) {
             G4CalorimeterHit* g4hit = (G4CalorimeterHit*) hc->GetHit(iHit);
-            SimCalorimeterHit simHit;
-            simHit.setID(g4hit->getID());
             const G4ThreeVector& pos = g4hit->getPosition();
-            simHit.setPosition(pos.x(), pos.y(), pos.z());
-            simHit.addContrib( g4hit->getTrackID(), g4hit->getPdgCode(), g4hit->getEdep(), g4hit->getTime());
+
+            SimCalorimeterHit simHit;
+            simHit.setID( g4hit->getID() );
+            simHit.addContrib( g4hit->getTrackID(), g4hit->getPdgCode(), g4hit->getEdep(), g4hit->getTime() );
+            simHit.setPosition( pos.x(), pos.y(), pos.z() );
 
             outputColl.push_back( simHit );
         }
+
+        return;
     }
 
     RunHeader* RootPersistencyManager::createRunHeader(const G4Run* aRun) {
