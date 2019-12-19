@@ -52,18 +52,12 @@ namespace ldmx {
                 delete theDetector_;
                 delete eventObjects_;
                 
-                delete ecalDigiHits_;
-                delete hcalDigiHits_;
-                delete recoilHits_;
-                delete ecalClusters_;
-                delete ecalSimParticles_;
-
                 delete textBoxGotoEvent_;
                 delete textBoxClustersCollName_;
                 delete textBoxSimThresh_;
                 delete textBoxEventTreeName_;
-                delete textBoxEcalDigisCollName_;
-                delete textBoxHcalDigisCollName_;
+                delete textBoxEcalRecHitsCollName_;
+                delete textBoxHcalRecHitsCollName_;
                 delete textBoxTrackerHitsCollName_;
                 delete textBoxEcalScorePlaneBranch_;
 
@@ -98,18 +92,30 @@ namespace ldmx {
 
             /**
              * Attempts to get branch from event tree and set the address to be
-             * the input TClonesArray.
+             * the input collection.
              *
-             * @param branchName name of branch containing TClonesArray
-             * @param collection TClonesArray that will be used in event display
+             * @param branchName name of branch containing collection
+             * @param collection vector that will be used in event display
              * @return bool successful check
              */
-            bool GetCollection( const TString branchName , TClonesArray *collection );
+            template<typename T>
+            bool GetCollection( const TString branchName , std::vector<T> &collection ) {
+                if ( tree_->GetListOfBranches()->FindObject(branchName) ) {
+                    tree_->SetBranchAddress( branchName , &collection );
+                    if ( verbose_ ) {
+                        std::cout << "[ EventDisplay ] : Collection retrieved from branch \"" << branchName << "\"" << std::endl;
+                    }
+                    return true;
+                } else {
+                    std::cout << "[ EventDisplay ] : No branch with name \"" << branchName << "\"" << std::endl;
+                    return false;
+                }
+            }
 
             /**
-             * Gets ecalDigis collection name from text box
+             * Gets ecalRecHits collection name from text box
              */
-            void GetECALDigisCollInput();
+            void GetECALRecHitsCollInput();
 
             /**
              * Gets clusters collection name from text box
@@ -122,9 +128,9 @@ namespace ldmx {
             void GetTrackerHitsCollInput();
 
             /**
-             * Gets hcalDigis collection name from text box
+             * Gets hcalRecHits collection name from text box
              */
-            void GetHCALDigisCollInput();
+            void GetHCALRecHitsCollInput();
 
             /**
              * Gets ECAL Sim Particles Branch name from text box
@@ -173,14 +179,14 @@ namespace ldmx {
             TFile* file_; //* Event file
             TTree* tree_; //* Event tree
 
-            TClonesArray* ecalDigiHits_; //* current ecalDigis collection
-            TClonesArray* hcalDigiHits_; //* current hcalDigis collection
-            TClonesArray* recoilHits_; //* curent recoil hits collection
-            TClonesArray* ecalClusters_; //* current ecal clusters collection
-            TClonesArray* ecalSimParticles_; //* current ecal sim particles collection
+            std::vector<EcalHit> ecalRecHits_; //* current ecalRecHits collection
+            std::vector<HcalHit> hcalRecHits_; //* current hcalRecHits collection
+            std::vector<SimTrackerHit> recoilHits_; //* curent recoil hits collection
+            std::vector<EcalCluster> ecalClusters_; //* current ecal clusters collection
+            std::vector<SimTrackerHit> ecalSimParticles_; //* current ecal sim particles collection
 
-            bool foundECALDigis_ = false; //* flag check if ecalDigis collection has been found
-            bool foundHCALDigis_ = false;//* flag check if hcalDigis collection has been found
+            bool foundECALRecHits_ = false; //* flag check if ecalRecHits collection has been found
+            bool foundHCALRecHits_ = false;//* flag check if hcalRecHits collection has been found
             bool foundClusters_ = false;//* flag check if clusters collection has been found
             bool foundTrackerHits_ = false;//* flag check if tracker hits collection has been found
             bool foundEcalSPHits_ = false;//* flag check if ecal sim particles collection has been found
@@ -189,8 +195,8 @@ namespace ldmx {
             int eventNumMax_; ///* maximum event index for the current tree
 
             TString clustersCollName_ = "ecalClusters_recon"; //* name of ecal clusters collection in event tree
-            TString ecalDigisCollName_ = "ecalDigis_recon"; //* name of ecalDigis collection in event tree
-            TString hcalDigisCollName_ = "hcalDigis_recon"; //* name of hcalDigis collection in event tree
+            TString ecalRecHitsCollName_ = "EcalRecHits_recon"; //* name of ecalRecHits collection in event tree
+            TString hcalRecHitsCollName_ = "HcalRecHits_recon"; //* name of hcalRecHits collection in event tree
             TString trackerHitsCollName_ = "RecoilSimHits_sim"; //* name of recoil hitss collection in event tree
             TString ecalSimParticlesCollName_ = "EcalScoringPlaneHits_sim"; //* name of ecal sim particles collection in event tree
             TString eventTreeName_ = "LDMX_Events"; //* name of event tree
@@ -202,8 +208,8 @@ namespace ldmx {
             TGTextEntry* textBoxClustersCollName_;
             TGTextEntry* textBoxSimThresh_;
             TGTextEntry* textBoxEventTreeName_;
-            TGTextEntry* textBoxEcalDigisCollName_;
-            TGTextEntry* textBoxHcalDigisCollName_;
+            TGTextEntry* textBoxEcalRecHitsCollName_;
+            TGTextEntry* textBoxHcalRecHitsCollName_;
             TGTextEntry* textBoxTrackerHitsCollName_;
             TGTextEntry* textBoxEcalScorePlaneBranch_;
 

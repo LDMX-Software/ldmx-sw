@@ -16,7 +16,6 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TRefArray.h"
 #include "TObject.h"
 
 //-------------//
@@ -43,13 +42,13 @@ namespace ldmx {
              * @param simTrackerHit A simulated tracker hit that contributes to
              *                      this SiStripHit.
              */
-            void addSimTrackerHit(SimTrackerHit* simTrackerHit);
+            void addSimTrackerHit(const SimTrackerHit simTrackerHit);
 
             /** 
              * Return a TRefArray with the SimTrackerHits associated with 
              * this SiStripHit.
              */ 
-            TRefArray* getSimTrackerHits() { return simTrackerHits_; }
+            const std::vector<SimTrackerHit> getSimTrackerHits() const { return simTrackerHits_; }
 
             /** Print a description of this object. */
             void Print(Option_t* option = "") const; 
@@ -63,7 +62,7 @@ namespace ldmx {
              * References to the SimTrackerHits used to create this 
              * SiStripHit.  
              */
-            TRefArray* simTrackerHits_{new TRefArray{}};
+            std::vector<SimTrackerHit> simTrackerHits_;
             
             /** Class declaration */ 
             ClassDef(SiStripHit, 1);
