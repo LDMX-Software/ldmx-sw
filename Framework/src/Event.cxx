@@ -74,7 +74,7 @@ namespace ldmx {
 
     bool Event::nextEvent() {
         ientry_++;
-        eventHeader_ = getImpl<EventHeader>(EventConstants::EVENT_HEADER, "" , true);
+        eventHeader_ = getObject<EventHeader>(EventConstants::EVENT_HEADER);
         return true;
     }
 
