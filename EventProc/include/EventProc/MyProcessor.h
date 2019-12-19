@@ -5,6 +5,7 @@
 /***************/
 /*   ldmx-sw   */
 /***************/
+#include "Event/EcalHit.h"
 #include "Framework/EventProcessor.h"
 
 namespace ldmx { 

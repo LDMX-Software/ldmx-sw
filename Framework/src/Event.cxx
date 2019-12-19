@@ -65,8 +65,6 @@ namespace ldmx {
         		std::string pname=brname.substr(j+1);
                 //TODO: Improve the type-gettting algorithm
         		std::string tname=branches->At(i)->ClassName();
-//        		if (tname=="TBranchElement")
-//        		    tname=std::string("TClonesArray(")+((TBranchElement*)(branches->At(i)))->GetClonesName()+")";
     		    products_.push_back(ProductTag(iname,pname,tname));
     	    }
 	    

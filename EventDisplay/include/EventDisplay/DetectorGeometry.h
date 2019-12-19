@@ -65,7 +65,7 @@ namespace ldmx {
              * @param hit HcalHit to find real space hit for
              * @return BoundingBox in real space
              */
-            BoundingBox getBoundingBox( HcalHit* hit ) const;
+            BoundingBox getBoundingBox( const HcalHit &hit ) const;
             
             /**
              * Calculate real space coordinates of a cluster of hits.
@@ -75,7 +75,7 @@ namespace ldmx {
              * @param hitVec vector of HcalHits to find a "center" for
              * @return BoundingBox in real space
              */
-            BoundingBox getBoundingBox( const std::vector< HcalHit* > &hitVec ) const;
+            BoundingBox getBoundingBox( const std::vector< HcalHit > &hitVec ) const;
 
             /**
              * Get bounding box for the input section.
@@ -101,7 +101,7 @@ namespace ldmx {
              * @param hit EcalHit to find real space description
              * @return HexPrism
              */
-            HexPrism getHexPrism( EcalHit* hit ) const;
+            HexPrism getHexPrism( const EcalHit &hit ) const;
 
             /**
              * Get HexPrism for a tower
@@ -137,7 +137,7 @@ namespace ldmx {
              * @param recoilHit SimTrackerHit in recoil tracker
              * @return BoundingBox that bounds the hit
              */
-            BoundingBox getBoundingBox( SimTrackerHit* recoilHit ) const;
+            BoundingBox getBoundingBox( const SimTrackerHit &recoilHit ) const;
         
         private:
 

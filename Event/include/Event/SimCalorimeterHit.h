@@ -67,7 +67,7 @@ namespace ldmx {
              * Get the detector ID.
              * @return The detector ID.
              */
-            int getID() {
+            int getID() const {
                 return id_;
             }
 
@@ -83,7 +83,7 @@ namespace ldmx {
              * Get the energy deposition of the hit [MeV].
              * @return The energy deposition of the hit.
              */
-            float getEdep() {
+            float getEdep() const {
                 return edep_;
             }
 
@@ -119,7 +119,7 @@ namespace ldmx {
              * Get the global time of the hit [ns].
              * @return The global time of the hit.
              */
-            float getTime() {
+            float getTime() const {
                 return time_;
             }
 
@@ -135,7 +135,7 @@ namespace ldmx {
              * Get the number of hit contributions.
              * @return The number of hit contributions.
              */
-            unsigned getNumberOfContribs() {
+            unsigned getNumberOfContribs() const {
                 return nContribs_;
             }
 
