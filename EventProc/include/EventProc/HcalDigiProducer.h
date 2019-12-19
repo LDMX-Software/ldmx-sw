@@ -17,12 +17,9 @@
 // LDMX
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/HcalID.h"
-#include "Event/EventConstants.h"
-#include "Event/HcalHit.h"
-#include "Event/SimCalorimeterHit.h"
+#include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
-
 
 namespace ldmx {
 
@@ -36,19 +33,17 @@ namespace ldmx {
             
             HcalDigiProducer(const std::string& name, Process& process);
 
-            virtual ~HcalDigiProducer() {delete hits_;}
+            virtual ~HcalDigiProducer() {;}
 
             virtual void configure(const ParameterSet&);
             virtual void produce(Event& event);
 
             unsigned int generateRandomID(HcalSection sec);
-            void         constructNoiseHit(int, HcalSection, double, double, const std::map<unsigned int, float>&,std::unordered_set<unsigned int>&);
-
+            void         constructNoiseHit(std::vector<HcalHit>&, HcalSection, double, double, const std::map<unsigned int, float>&,std::unordered_set<unsigned int>&);
 
         private:
 
             bool                            verbose_{false};
-            TClonesArray*                   hits_{nullptr};
             std::unique_ptr<TRandom3>       random_;
             HcalID                          detID_;
             std::unique_ptr<NoiseGenerator> noiseGenerator_;

@@ -11,24 +11,24 @@
 //   C++ StdLib   //
 //----------------//
 #include <unordered_map>
+#include <utility>
 
 //----------//
 //   LDMX   //
 //----------//
+#include "Tools/AnalysisUtils.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Event.h"
+#include "Framework/HistogramPool.h"
+#include "Event/EventDef.h"
 
-// Forward declarations
-class SimParticle;
-class TClonesArray; 
+//----------//
+//   ROOT   //
+//----------//
+#include "TH1.h"
+#include "TVector3.h"
 
 namespace ldmx { 
-
-    // Forward declarations within the ldmx workspace
-    class Event;
-    class FindableTrackResult;
-    class HistogramPool; 
-    class Process;
-    class SimParticle; 
 
     class RecoilTrackerDQM : public Analyzer { 
 

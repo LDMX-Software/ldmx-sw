@@ -29,7 +29,6 @@
 #include "Event/DigiCollection.h" 
 
 #include <boost/variant.hpp>
-#include "TClonesArray.h" //temporary //TODO: Remove
 namespace ldmx {
 
     /**
@@ -40,7 +39,6 @@ namespace ldmx {
      * TODO: Modify to allow for more than 20 event bus types
      */
     using EventBusPassengerList = boost::mpl::list< 
-        TClonesArray *, //temporary //TODO: Remove
         EcalVetoResult ,
         NonFidEcalVetoResult ,
         EventHeader ,
@@ -53,7 +51,7 @@ namespace ldmx {
         std::vector< FindableTrackResult > ,
         std::vector< SimCalorimeterHit > ,
         std::vector< SimTrackerHit > ,
-        std::map< int , SimParticle > ,//TODO: Switch particle vector to map
+        std::map< int , SimParticle > ,
         std::vector< CalorimeterHit > ,
         std::vector< EcalHit > ,
         std::vector< EcalCluster > ,

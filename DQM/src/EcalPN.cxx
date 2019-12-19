@@ -177,14 +177,11 @@ namespace ldmx {
  
 
         // Get the collection of simulated particles from the event
-        const TClonesArray* particles = event.getObject<TClonesArray *>("SimParticles");
+        const std::map<int,SimParticle> particleMap = event.getObject<std::map<int,SimParticle>>("SimParticles");
       
-        // Search for the recoil electron 
-        const SimParticle* recoil = Analysis::searchForRecoil(particles); 
-
         // Use the recoil electron to retrieve the gamma that underwent a 
         // photo-nuclear reaction.
-        const SimParticle* pnGamma = Analysis::searchForPNGamma(recoil);
+        const SimParticle* pnGamma = Analysis::getRecoilPNGamma(particleMap);
         if (pnGamma == nullptr) { 
             std::cout << "[ EcalPN ]: PN Daughter is lost, skipping." << std::endl;
             return;
@@ -204,10 +201,12 @@ namespace ldmx {
 
         // Loop through all of the PN daughters and extract kinematic 
         // information.
-        for (size_t idaughter = 0; idaughter < pnGamma->getDaughterCount(); ++idaughter) {
+        for (int &daughterTrackID : pnGamma->getDaughters() ) {
 
-            // Get the ith daughter
-            const SimParticle* daughter = pnGamma->getDaughter(idaughter);
+            //skip daughters that weren't saved
+            if ( particleMap.count( daughterTrackID ) == 0 ) { continue; }
+
+            const SimParticle* daughter = &(particleMap.at(daughterTrackID));
 
             // Get the PDG ID
             int pdgID = daughter->getPdgID();
@@ -268,7 +267,7 @@ namespace ldmx {
         double slke{-9999};
         double nEnergy{-9999}, energyDiff{-9999}, energyFrac{-9999}; 
         if (eventType == 1 || eventType == 17 || eventType == 16 || eventType == 18 || eventType == 2) {
-            //Analysis::printDaughters(pnGamma);
+
             std::sort (pnDaughters.begin(), pnDaughters.end(), [] (const auto& lhs, const auto& rhs) 
             {
                 double lhs_ke = lhs->getEnergy() - lhs->getMass(); 
@@ -320,12 +319,10 @@ namespace ldmx {
         float bdtProb{-1}; 
         bool passesBDT{false};  
         if (event.exists(ecalVetoCollectionName_)) {
-            const EcalVetoResult* veto 
-                = static_cast<const EcalVetoResult*>(
-                        event.getObject<TClonesArray *>(ecalVetoCollectionName_)->At(0));
+            const EcalVetoResult ecalVeto = event.getObject<EcalVetoResult>(ecalVetoCollectionName_);
        
             // Get the BDT probability  
-            bdtProb = veto->getDisc();
+            bdtProb = ecalVeto.getDisc();
             
             // Fill the histograms if the event passes the ECal veto
             if (bdtProb >= .99) {
@@ -349,14 +346,9 @@ namespace ldmx {
         if (event.exists("HcalVeto")) {
         
             // Get the collection of HCalDQM digitized hits if the exists 
-            const TClonesArray* hcalVeto = event.getObject<TClonesArray *>("HcalVeto");
+            const HcalVetoResult hcalVeto = event.getObject<HcalVetoResult>("HcalVeto");
 
-            HcalVetoResult* veto = static_cast<HcalVetoResult*>(hcalVeto->At(0));
-            //HcalHit* maxPEHit = veto->getMaxPEHit(); 
-
-            //std::cout << "max PE: " << maxPEHit->getPE() << std::endl; 
-    
-            if (veto->passesVeto()) {
+            if (hcalVeto.passesVeto()) {
                 histograms_->get("event_type_hcal")->Fill(eventType);
                 histograms_->get("event_type_500mev_hcal")->Fill(eventType500MeV);
                 histograms_->get("event_type_2000mev_hcal")->Fill(eventType2000MeV);
@@ -368,7 +360,7 @@ namespace ldmx {
                 histograms_->get("1n_neutron_energy_hcal")->Fill(nEnergy);  
                 histograms_->get("1n_energy_diff_hcal")->Fill(energyDiff);
                 histograms_->get("1n_energy_frac_hcal")->Fill(energyFrac); 
-                passesHcalVeto = veto->passesVeto();  
+                passesHcalVeto = true;
             }
         }
 
@@ -377,11 +369,10 @@ namespace ldmx {
         if (event.exists("TrackerVeto")) { 
 
             // Get the collection of trackerVeto results
-            const TClonesArray* trackerVeto = event.getObject<TClonesArray *>("TrackerVeto");
+            const TrackerVetoResult trackerVeto = event.getObject<TrackerVetoResult>("TrackerVeto");
 
-            TrackerVetoResult* veto = static_cast<TrackerVetoResult*>(trackerVeto->At(0)); 
             // Check if the event passes the tracker veto
-            if (veto->passesVeto()) { 
+            if (trackerVeto.passesVeto()) { 
                 
                 passesTrackVeto = true; 
                 
@@ -432,6 +423,7 @@ namespace ldmx {
     }
 
     int EcalPN::classifyEvent(const SimParticle* particle, double threshold) {
+
         short n{0}, p{0}, pi{0}, pi0{0}, exotic{0}, k0l{0}, kp{0}, k0s{0}, 
               lambda{0};
 

@@ -15,8 +15,7 @@
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
 #include "DetDescr/EcalDetectorID.h"
-#include "Event/EcalVetoResult.h"
-#include "Event/SimTrackerHit.h"
+#include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
 
 //C++
@@ -24,9 +23,6 @@
 #include <memory>
 
 namespace ldmx {
-
-    class EcalHit;
-    class EcalHexReadout;
 
     /**
      * @class BDTHelper

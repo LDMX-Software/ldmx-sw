@@ -8,7 +8,9 @@
 #define EVENTPROC_TRIGGERPROCESSOR_H_
 
 // LDMX
+#include "DetDescr/EcalHexReadout.h"
 #include "Event/TriggerResult.h"
+#include "Event/EcalHit.h"
 #include "Framework/EventProcessor.h"
 
 namespace ldmx {
@@ -77,9 +79,6 @@ namespace ldmx {
 
             /** The name of the trigger algorithm used. */
             TString algoName_;
-
-            /** Object to hold trigger results and variables */
-            TriggerResult result_;
 
     };
 
