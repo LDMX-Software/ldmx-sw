@@ -109,12 +109,12 @@ namespace ldmx {
                 if (itCollection == collections_.end()) { 
                     // create a new branch for this collection
                     collections_[branchName] = EventBusPassenger( obj );
-                    T *passengerAddress = &boost::get<T>(collections_[branchName]);
+                    T *passengerAddress = boost::get<T>(&collections_[branchName]);
                     if (outputTree_ != 0) {
                         TBranch *outBranch = outputTree_->GetBranch( branchName.c_str() );
                         if ( outBranch ) {
                             //branch already exists, just reset branch address
-                            outBranch->SetAddress( passengerAddress );
+                            outBranch->SetAddress( &passengerAddress );
                         } else {
                             //branch doesnt exist, make new one
                             outBranch = outputTree_->Branch( branchName.c_str(), passengerAddress , 100000, 3);
@@ -254,8 +254,9 @@ namespace ldmx {
                     if (itb->second->GetReadEntry() != ientry_) {
         
                         TBranchElement* tbe = dynamic_cast<TBranchElement*>(itb->second);
+                        T *passengerAddress = boost::get<T>( &ito->second );
                         if (!tbe)
-                            itb->second->SetAddress( &boost::get<T>(ito->second) );
+                            itb->second->SetAddress( &passengerAddress );
         
                         int nr = itb->second->GetEntry(ientry_, 1);
                     }
@@ -276,19 +277,19 @@ namespace ldmx {
                                 "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
                     }
                     // ooh, new branch!
-                    branch->SetAutoDelete(false);
-                    branch->SetStatus(1);
-                    branch->GetEntry((ientry_<0)?(0):(ientry_));
                     //use default constructor to create new collection owned by this class
                     collections_[branchName] = EventBusPassenger( T() );
                     //get address of object that will be the event passenger
-                    T *passengerAddress = &boost::get<T>( collections_[branchName] );
+                    T *passengerAddress = boost::get<T>( &collections_[branchName] );
                     //connect input branch to this passenger
-                    branch->SetAddress( passengerAddress );
+                    branch->SetAddress( &passengerAddress );
+                    branch->SetAutoDelete(false);
+                    branch->SetStatus(1);
+                    branch->GetEntry((ientry_<0)?(0):(ientry_));
         
                     branches_.insert(std::pair<std::string, TBranch*>(branchName, branch));
         
-                    return *passengerAddress;
+                    return boost::get<T>( collections_.at(branchName) );
                 }
             }
 
