@@ -94,7 +94,9 @@ namespace ldmx {
                             "The product name '" + collectionName + "' is illegal as it contains an underscore.");
                 }
         
-                std::string branchName = makeBranchName(collectionName);
+                std::string branchName;
+                if (collectionName== EventConstants::EVENT_HEADER) branchName=collectionName;
+                else branchName = makeBranchName(collectionName);
         
                 if (branchesFilled_.find(branchName) != branchesFilled_.end()) {
                     EXCEPTION_RAISE(
