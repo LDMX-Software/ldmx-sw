@@ -10,7 +10,6 @@
 
 // ROOT
 #include "TObject.h"
-#include "TClonesArray.h"
 #include "TTree.h"
 #include "TBranch.h"
 #include "TBranchElement.h"
