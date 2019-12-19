@@ -47,7 +47,7 @@
 #pragma link C++ class std::vector<ldmx::CalorimeterHit>+;
 #pragma link C++ class std::vector<ldmx::EcalHit>+;
 #pragma link C++ class std::vector<ldmx::EcalCluster>+;
-#pragma link C++ class std::vector<ldmx::FinableTrackResult>+;
+#pragma link C++ class std::vector<ldmx::FindableTrackResult>+;
 #pragma link C++ class std::vector<ldmx::HcalHit>+;
 #pragma link C++ class std::vector<ldmx::SiStripHit>+;
 #pragma link C++ class std::vector<ldmx::RawHit>+;

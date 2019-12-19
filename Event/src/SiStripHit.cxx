@@ -11,7 +11,6 @@ namespace ldmx {
 
     SiStripHit::~SiStripHit() {
         Clear();
-        delete simTrackerHits_;  
     }
 
     void SiStripHit::Print(Option_t* option) const { 
@@ -30,10 +29,10 @@ namespace ldmx {
         TObject::Clear();  
         adcValues_.clear(); 
         time_ = -9999;
-        simTrackerHits_->Delete();  
+        simTrackerHits_.clear();
     }
 
-    void SiStripHit::addSimTrackerHit(SimTrackerHit* hit) { 
-        simTrackerHits_->Add(static_cast<TObject*>(hit)); 
+    void SiStripHit::addSimTrackerHit(const SimTrackerHit hit) { 
+        simTrackerHits_.push_back( hit );
     }
 }

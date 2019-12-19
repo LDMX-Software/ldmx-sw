@@ -11,16 +11,8 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/FindableTrackResult.h"
-#include "Event/SimParticle.h"
-#include "Event/SimTrackerHit.h"
-#include "Event/SiStripHit.h"
+#include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
-
-//----------//
-//   ROOT   //
-//----------//
-#include <TClonesArray.h>
 
 namespace ldmx { 
 
@@ -57,7 +49,7 @@ namespace ldmx {
              *
              * @param recoilSimHit collection of simulated recoil tracker hits.
              */
-            void createHitMap(const TClonesArray* siStripHits);
+            void createHitMap(const std::vector<SiStripHit> &siStripHits);
           
             /** 
              * Given a set of hits, check if a sim particle is expected to fall
@@ -67,14 +59,10 @@ namespace ldmx {
              * @param hitCount Vector indicating whether the nth layer of the 
              *                 recoil tracker has a hit.
              */
-            void isFindable(FindableTrackResult* result, std::vector<int> hitCount); 
+            void isFindable(FindableTrackResult &result, std::vector<int> hitCount); 
 
             /** Map between a sim particle and it's hit array. */ 
             std::map<int, std::vector<int>> hitMap_;
-
-            /** Collection of results. */
-            TClonesArray* findableTrackResults_{nullptr};
-
 
     }; // FindableTrackProcessor
 }

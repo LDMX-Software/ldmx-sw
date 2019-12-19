@@ -99,7 +99,7 @@ namespace ldmx {
     	     * Get the value of isNoise_.
     	     * @return isNoise_ of hit. 
     	     */
-    	    bool getNoise(){
+    	    bool getNoise() const {
     	        return isNoise_;
     	    }
 

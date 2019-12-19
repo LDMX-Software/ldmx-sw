@@ -15,9 +15,7 @@ namespace ldmx {
         random_ = std::make_unique<TRandom3>(time(nullptr));
     }
     
-    TrackerHitKiller::~TrackerHitKiller() { 
-        if ( siStripHits_ ) delete siStripHits_;
-    }
+    TrackerHitKiller::~TrackerHitKiller() { }
 
     void TrackerHitKiller::configure(const ParameterSet &pSet) { 
        
@@ -25,32 +23,28 @@ namespace ldmx {
         // in the range 0-100.  If more precision is needed in the future, 
         // this can be updated.
         hitEff_ = int(pSet.getDouble("hitEfficiency"));
-
-        // Instantiate the collection of Si strip hits 
-        siStripHits_ = new TClonesArray("ldmx::SiStripHit", 10000); 
     }
 
     void TrackerHitKiller::produce(Event& event) { 
        
         // Get the collection of Recoil sim hits from the event 
-        const TClonesArray* recoilSimHits = event.getObject<TClonesArray *>("RecoilSimHits");
+        const std::vector<SimTrackerHit> recoilSimHits = event.getCollection<SimTrackerHit>("RecoilSimHits");
 
-        int iHit = 0;
-        for (int hitCount = 0; hitCount < recoilSimHits->GetEntriesFast(); ++hitCount) { 
+        std::vector<SiStripHit> siStripHits;
+        for ( const SimTrackerHit &simHit : recoilSimHits ) {
             
             if (random_->Integer(100) >= hitEff_) { 
                 std::cout << "[ TrackerHitKiller ]: Dropping hit." << std::endl;
                 continue;
             } else {
                 // Get the SimTrackerHit from the collection of recoil sim hits.
-                SiStripHit* stripHit = static_cast<SiStripHit*>(siStripHits_->ConstructedAt(iHit));
-                stripHit->addSimTrackerHit(static_cast<SimTrackerHit*>(recoilSimHits->At(hitCount))); 
-                ++iHit;
+                siStripHits.emplace_back();
+                siStripHits.back().addSimTrackerHit( simHit );
             }
         }
 
         //Add the result to the collection
-        event.add("SiStripHits", siStripHits_);
+        event.add( "SiStripHits", siStripHits );
     }
 }
 

@@ -4,7 +4,6 @@
 #include "TString.h"
 #include "TFile.h"
 #include "TTree.h"
-#include "TClonesArray.h"
 #include "TPython.h"
 
 // LDMX

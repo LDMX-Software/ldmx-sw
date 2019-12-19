@@ -17,9 +17,7 @@
 // LDMX
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/HcalID.h"
-#include "Event/EventConstants.h"
-#include "Event/HcalHit.h"
-#include "Event/SimCalorimeterHit.h"
+#include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
 
@@ -40,7 +38,6 @@ namespace ldmx {
             HcalDigiProducer(const std::string& name, Process& process);
 
             virtual ~HcalDigiProducer() {
-                delete hits_;
                 if (random_)
                     delete random_;
             }
@@ -53,7 +50,6 @@ namespace ldmx {
 
         private:
 
-            TClonesArray* hits_{nullptr};
             TRandom3* random_{new TRandom3(time(nullptr))};
             std::map<layer, zboundaries> hcalLayers_;
             bool verbose_{false};

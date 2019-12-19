@@ -11,21 +11,26 @@
 #include "TString.h"
 #include "TFile.h"
 #include "TTree.h"
+#include "TPython.h"
+#include "TString.h"
+#include "TFile.h"
+#include "TTree.h"
 
-// LDMX
-#include "DetDescr/EcalHexReadout.h"
-#include "DetDescr/EcalDetectorID.h"
-#include "Event/NonFidEcalVetoResult.h"
-#include "Event/SimTrackerHit.h"
-#include "Framework/EventProcessor.h"
-
-//C++
+// C++
+#include <algorithm>
+#include <stdlib.h>
+#include <fstream>
+#include <cmath>
 #include <map>
 
-namespace ldmx {
+// LDMX
+#include "Tools/AnalysisUtils.h"
+#include "DetDescr/EcalHexReadout.h"
+#include "DetDescr/EcalDetectorID.h"
+#include "Event/EventDef.h"
+#include "Framework/EventProcessor.h"
 
-    class EcalHit;
-    class EcalHexReadout;
+namespace ldmx {
 
     /**
      * @class NonFidBDTHelper
@@ -98,17 +103,17 @@ namespace ldmx {
 
             void clearProcessor();
 
-            LayerCellPair hitToPair(EcalHit* hit);
+            LayerCellPair hitToPair(const EcalHit &hit);
 
             /* Function to calculate the energy weighted shower centroid */
-            int GetShowerCentroidIDAndRMS(const TClonesArray* ecalDigis, double & showerRMS);
+            int GetShowerCentroidIDAndRMS(const std::vector<EcalHit> &ecalRecHits, double & showerRMS);
 
             /* Function to load up empty vector of hit maps */
-            void fillHitMap(const TClonesArray* ecalDigis,
+            void fillHitMap(const std::vector<EcalHit> &ecalRecHits,
                     std::vector<std::map<int, float>>& cellMap_);
 
             /* Function to take loaded hit maps and find isolated hits in them */
-            void fillIsolatedHitMap(const TClonesArray* ecalDigis,
+            void fillIsolatedHitMap(const std::vector<EcalHit> &ecalRecHits,
                     float globalCentroid,
                     std::vector<std::map<int, float>>& cellMap_,
                     std::vector<std::map<int, float>>& cellMapIso_,
@@ -144,7 +149,6 @@ namespace ldmx {
 
             std::vector<double> bdtCutVal_{0};
 
-            NonFidEcalVetoResult result_;
             EcalDetectorID detID_;
             bool verbose_{false};
             bool doesPassVeto_{false};
