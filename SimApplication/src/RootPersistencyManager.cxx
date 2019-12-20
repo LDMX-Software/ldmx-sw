@@ -11,6 +11,7 @@
 //   C++ StdLib   //
 //----------------//
 #include <algorithm>
+#include <memory> 
 
 //-----------//
 //   Boost   //
@@ -24,7 +25,6 @@
 #include "Event/Event.h"
 #include "Event/EventHeader.h"
 #include "Event/RunHeader.h"
-#include "Framework/EventFile.h"
 #include "Framework/EventImpl.h"
 #include "Event/EventConstants.h"
 #include "SimApplication/CalorimeterSD.h"
@@ -32,6 +32,7 @@
 #include "SimApplication/RunManager.h"
 #include "SimApplication/TrackerSD.h"
 #include "SimApplication/ScoringPlaneSD.h"
+
 
 //------------//
 //   Geant4   //
@@ -43,18 +44,22 @@
 
 namespace ldmx {
 
-    RootPersistencyManager::RootPersistencyManager() :
-        G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"), 
+    RootPersistencyManager::RootPersistencyManager(EventFile &file) :
+        G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"),
+        file_(file),  
         ecalHitIO_(new EcalHitIO(&simParticleBuilder_)) 
     {
         G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
         G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 
-        event_ = new EventImpl("sim");
+        //event_ = new EventImpl("sim");
     }
 
     G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
 
+        std::cout << "Storing Event info." << std::endl; 
+
+        /*
         // verbose level 2
         if (m_verbose > 1) {
             std::cout << "[ RootPersistencyManager ] : Storing event " << anEvent->GetEventID() << std::endl;
@@ -71,29 +76,39 @@ namespace ldmx {
         // Print out event info and data depending on verbose level.
         printEvent(event_);
 
-        outputFile_->nextEvent();
+        outputFile_->nextEvent();*/
 
         return true;
     }
 
     void RootPersistencyManager::writeRunHeader(const G4Run* aRun) {
         RunHeader* runHeader = createRunHeader(aRun);
-        outputFile_->writeRunHeader(runHeader);
+        //outputFile_->writeRunHeader(runHeader);
         delete runHeader;
     }
 
     G4bool RootPersistencyManager::Store(const G4Run* aRun) {
-        if (m_verbose > 1) {
-            std::cout << "[ RootPersistencyManager ] : Storing run " << aRun->GetRunID() << std::endl;
-        }
+      
+        // NOTE: This method is called once the run is terminated through 
+        // the run manager.  
 
-        // Write out the run header.
-        writeRunHeader(aRun);
+        // Get the detector header from the user detector construction
+        auto detector 
+            = static_cast<RunManager*>(RunManager::GetRunManager())->getDetectorConstruction();
 
-        // Close the file and delete the output file object.
-        outputFile_->close();
-        delete outputFile_;
-        outputFile_ = nullptr;
+        // Create the run header.
+        auto runHeader  
+            = std::make_unique<RunHeader>(runNumber_, detector->getDetectorHeader()->getName(), description_);
+
+        // Set parameter value with number of events processed.
+        runHeader->setIntParameter("Event count", aRun->GetNumberOfEvent());
+
+        // Set a string parameter with the Geant4 SHA-1.
+        G4String g4Version{G4RunManagerKernel::GetRunManagerKernel()->GetVersionString()};
+        runHeader->setStringParameter("Geant4 revision", g4Version); 
+
+        // Write the header to the file.
+        file_.writeRunHeader(runHeader.get());  
 
         return true;
     }
@@ -105,8 +120,8 @@ namespace ldmx {
         }
 
         // Create and setup the output file for writing the events.
-        outputFile_ = new EventFile(fileName_.c_str(), true, compressionLevel_);
-        outputFile_->setupEvent((EventImpl*) event_);
+        //outputFile_ = new EventFile(fileName_.c_str(), true, compressionLevel_);
+        //outputFile_->setupEvent((EventImpl*) event_);
 
         // Create map with output hits collections.
         setupHitsCollectionMap();
