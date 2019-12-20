@@ -115,7 +115,7 @@ namespace ldmx {
             ecalRecHits.push_back( recHit );
         } 
 
-        event.add( "ecalRecHits", ecalRecHits );
+        event.add( "EcalRecHits", ecalRecHits );
     }
 }
 
