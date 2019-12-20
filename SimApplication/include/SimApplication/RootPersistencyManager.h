@@ -17,6 +17,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
+#include "Framework/EventFile.h"
 #include "SimApplication/EcalHitIO.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
@@ -30,7 +31,6 @@ namespace ldmx {
     // Forward declarations within the ldmx namespace
     class EcalHitIO; 
     class Event;
-    class EventFile;
     class RunHeader;
     
     /**
@@ -56,9 +56,10 @@ namespace ldmx {
 
             /**
              * Class constructor.
-             * Installs the object as the global persistency manager.
+             *
+             * @param eventFile 
              */
-            RootPersistencyManager();
+            RootPersistencyManager(EventFile &file);
 
             virtual ~RootPersistencyManager() {
                 for (auto entry : outputHitsCollections_) {
@@ -242,10 +243,8 @@ namespace ldmx {
             /** Run number. */
             int runNumber_{0}; 
 
-            /**
-             * The output file with the event tree.
-             */
-            EventFile* outputFile_ {nullptr};
+            /// The output file. 
+            EventFile &file_;
 
             /**
              * Output file compression level.
