@@ -214,19 +214,6 @@ namespace ldmx {
              */
             void setupHitsCollectionMap();
 
-            /**
-             * Create the run header for writing into the output file.
-             * @param aRun The current Geant4 run.
-             * @return The created run header.
-             */
-            RunHeader* createRunHeader(const G4Run* aRun);
-
-            /**
-             * Create the run header and write it into the current output file.
-             * @param aRun The current Geant4 run.
-             */
-            void writeRunHeader(const G4Run* aRun);
-
         private:
 
             /** List of collections whose hits should be droppped. */

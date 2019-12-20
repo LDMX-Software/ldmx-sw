@@ -81,12 +81,6 @@ namespace ldmx {
         return true;
     }
 
-    void RootPersistencyManager::writeRunHeader(const G4Run* aRun) {
-        RunHeader* runHeader = createRunHeader(aRun);
-        //outputFile_->writeRunHeader(runHeader);
-        delete runHeader;
-    }
-
     G4bool RootPersistencyManager::Store(const G4Run* aRun) {
       
         // NOTE: This method is called once the run is terminated through 
@@ -300,41 +294,6 @@ namespace ldmx {
             SimParticle* particle = simParticleBuilder_.findSimParticle(g4hit->getTrackID());
             simHit->addContrib(particle, g4hit->getPdgCode(), g4hit->getEdep(), g4hit->getTime());
         }
-    }
-
-    RunHeader* RootPersistencyManager::createRunHeader(const G4Run* aRun) {
-
-        // Get detector header from the user detector construction.
-        DetectorConstruction* detector = ((RunManager*) RunManager::GetRunManager())->getDetectorConstruction();
-        DetectorHeader* detectorHeader = detector->getDetectorHeader();
-
-        // Create the run header.
-        RunHeader* runHeader 
-            = new RunHeader(runNumber_, detectorHeader->getName(), description_);
-
-        // Set parameter value with number of events processed.
-        runHeader->setIntParameter("Event count", aRun->GetNumberOfEvent());
-
-        // Set a string parameter with the Geant4 SHA-1.
-        G4String g4Version = G4RunManagerKernel::GetRunManagerKernel()->GetVersionString();
-        runHeader->setStringParameter("Geant4 revision", g4Version); 
-
-        // Print information about run header.
-        if (m_verbose > 1) {
-            
-
-            std::ostringstream headerString; 
-            headerString << "\n[ RootPersistencyManager ]: Creating run header\n" 
-                         << boost::format("\t Run number: %s\n")    % runHeader->getRunNumber() 
-                         << boost::format("\t Detector name: %s\n") % runHeader->getDetectorName() 
-                         << boost::format("\t Software tag: %s\n")  % runHeader->getSoftwareTag() 
-                         << boost::format("\t Description: %s\n")   % runHeader->getDescription()
-                         << boost::format("\t Event count: %s\n")   % runHeader->getIntParameter("Event count")
-                         << boost::format("\t Geant4 revision: %s\n")  % runHeader->getStringParameter("Geant4 revision"); 
-            std::cout << headerString.str() << "\n";  
-        }
-
-        return runHeader;
     }
 
     void RootPersistencyManager::setupHitsCollectionMap() {
