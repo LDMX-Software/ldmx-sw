@@ -277,17 +277,22 @@ namespace ldmx {
                                 "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
                     }
                     // ooh, new branch!
-                    //use default constructor to create new collection owned by this class
-                    collections_[branchName] = EventBusPassenger( T() );
                     //get address of object that will be the event passenger
-                    T *passengerAddress = boost::get<T>( &collections_[branchName] );
+                    T *passengerAddress;
                     //connect input branch to this passenger
-                    branch->SetAddress( &passengerAddress );
+                    TBranchElement *tbe = dynamic_cast<TBranchElement *>(branch);
+                    if (tbe) {
+                        passengerAddress = (T *)(tbe->GetObject());
+                    } else {
+                        branch->SetAddress( &passengerAddress );
+                    }
                     branch->SetAutoDelete(false);
                     branch->SetStatus(1);
                     branch->GetEntry((ientry_<0)?(0):(ientry_));
         
-                    branches_.insert(std::pair<std::string, TBranch*>(branchName, branch));
+                    //insert into collection maps
+                    collections_[branchName] = EventBusPassenger( *passengerAddress );
+                    branches_[branchName]    = branch;
         
                     return boost::get<T>( collections_.at(branchName) );
                 }
