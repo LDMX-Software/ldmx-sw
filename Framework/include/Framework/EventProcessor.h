@@ -23,6 +23,7 @@ namespace ldmx {
 
     class Process;
     class EventProcessor;
+    class EventFile; 
 
     /** Typedef for EventProcessorFactory use. */
     typedef EventProcessor* EventProcessorMaker(const std::string& name, Process& process);
@@ -74,7 +75,7 @@ namespace ldmx {
              * @param filename Input event ROOT file name.
              * @note This callback is rarely used.
              */
-            virtual void onFileOpen(const std::string& filename) {
+            virtual void onFileOpen(EventFile& eventFile) {
             }
 
             /**
@@ -83,7 +84,7 @@ namespace ldmx {
              * @param filename Input event ROOT file name
              * @note This callback is rarely used.
              */
-            virtual void onFileClose(const std::string& filename) {
+            virtual void onFileClose(EventFile& eventFile) {
             }
 
             /**
