@@ -7,7 +7,9 @@
 
 #include "SimApplication/Simulator.h"
 
+#include "Framework/ParameterSet.h" 
 #include "SimApplication/DetectorConstruction.h"
+#include "SimApplication/RootPersistencyManager.h" 
 #include "SimApplication/RunManager.h"
 
 #include "G4CascadeParameters.hh"
@@ -52,6 +54,12 @@ namespace ldmx {
         macroPath_ = ps.getString("macro"); 
     }
 
+    void Simulator::onFileOpen(EventFile &file) {
+       
+        std::cout << "File name: " << file.getFileName() << std::endl; 
+        persistencyManager_ = new RootPersistencyManager(file); 
+    }
+
     void Simulator::produce(ldmx::Event& event) {
 
         runManager_->ProcessOneEvent( iEvent_++ );
@@ -81,11 +89,13 @@ namespace ldmx {
         return;
     }
 
-    void Simulator::onProcessEnd() {
-
+    void Simulator::onFileClose(EventFile& eventFile) { 
+        
         runManager_->TerminateEventLoop();
         runManager_->RunTermination();
-        return;
+    }
+
+    void Simulator::onProcessEnd() {
     }
 
 }
