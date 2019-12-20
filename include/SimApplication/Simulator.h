@@ -18,7 +18,6 @@
 //~~~~~~~~~~~~~//
 #include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/ParameterSet.h" 
 
 //~~~~~~~~~~~~//
 //   Geant4   //
@@ -31,7 +30,11 @@ class G4GDMLMessenger;
 
 namespace ldmx {
 
-    class RunManager; 
+    class EventFile;  
+    class ParameterSet; 
+    class RootPersistencyManager; 
+    class RunManager;
+     
 
     /**
      * @class Simulator
@@ -71,7 +74,23 @@ namespace ldmx {
             /**
              * Run simulation and export results to output event
              */
-            virtual void produce(ldmx::Event& event);
+            virtual void produce(ldmx::Event &event);
+
+            /**
+             *  Callback for the EventProcessor to take any necessary action 
+             *  when a new file is opened.
+             *
+             *  @param eventFile 
+             */
+            void onFileOpen(EventFile& eventFile);
+
+            /**
+             * Callback for the EventProcessor to take any necessary action
+             * when a file is closed.
+             *
+             * @param eventFile
+             */
+            void onFileClose(EventFile& eventFile);  
 
             /**
              * Initialization of simulation
@@ -107,7 +126,10 @@ namespace ldmx {
             std::string detectorPath_{""};
 
             /// Macro path
-            std::string macroPath_{""};  
+            std::string macroPath_{""}; 
+
+            /// PersistencyManager 
+            RootPersistencyManager* persistencyManager_{nullptr};  
     };
 }
 
