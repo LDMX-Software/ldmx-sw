@@ -177,7 +177,7 @@ namespace ldmx {
  
 
         // Get the collection of simulated particles from the event
-        const std::map<int,SimParticle> particleMap = event.getObject<std::map<int,SimParticle>>("SimParticles");
+        const std::map<int,SimParticle> particleMap = event.getMap<int,SimParticle>("SimParticles");
       
         // Use the recoil electron to retrieve the gamma that underwent a 
         // photo-nuclear reaction.
@@ -248,13 +248,13 @@ namespace ldmx {
         histograms_->get("hardest_pi_theta")->Fill(lpit); 
 
         // Classify the event
-        int eventType = classifyEvent(pnGamma, 200); 
-        int eventType500MeV = classifyEvent(pnGamma, 500); 
-        int eventType2000MeV = classifyEvent(pnGamma, 2000);
+        int eventType = classifyEvent(pnGamma, particleMap, 200); 
+        int eventType500MeV = classifyEvent(pnGamma, particleMap, 500); 
+        int eventType2000MeV = classifyEvent(pnGamma, particleMap, 2000);
 
-        int eventTypeComp = classifyCompactEvent(pnGamma, 200);  
-        int eventTypeComp500MeV = classifyCompactEvent(pnGamma, 500);  
-        int eventTypeComp2000MeV = classifyCompactEvent(pnGamma, 2000);  
+        int eventTypeComp = classifyCompactEvent(pnGamma, particleMap, 200);  
+        int eventTypeComp500MeV = classifyCompactEvent(pnGamma, particleMap, 500);  
+        int eventTypeComp2000MeV = classifyCompactEvent(pnGamma, particleMap, 2000);  
 
         histograms_->get("event_type")->Fill(eventType);
         histograms_->get("event_type_500mev")->Fill(eventType500MeV);
@@ -422,27 +422,27 @@ namespace ldmx {
         }
     }
 
-    int EcalPN::classifyEvent(const SimParticle* particle, double threshold) {
+    int EcalPN::classifyEvent(const SimParticle* particle, const std::map<int,SimParticle> &particleMap, double threshold) {
 
         short n{0}, p{0}, pi{0}, pi0{0}, exotic{0}, k0l{0}, kp{0}, k0s{0}, 
               lambda{0};
 
         // Loop through all of the PN daughters and extract kinematic 
         // information.
-        for (size_t idaughter = 0; idaughter < particle->getDaughterCount(); 
-                ++idaughter) {
+        for (int daughterTrackID : particle->getDaughters() ) {
 
-            // Get the ith daughter
-            const SimParticle* daughter = particle->getDaughter(idaughter);
-        
+            if ( particleMap.count( daughterTrackID ) == 0 ) continue; //daughter wasn't stored
+
+            const SimParticle &daughter = particleMap.find(daughterTrackID)->second;
+
             // Calculate the kinetic energy
-            double ke = daughter->getEnergy() - daughter->getMass();
+            double ke = daughter.getEnergy() - daughter.getMass();
             
             // If the kinetic energy is below threshold, continue
             if (ke <= threshold) continue;
 
             // Get the PDG ID
-            int pdgID = abs(daughter->getPdgID());
+            int pdgID = abs(daughter.getPdgID());
 
             if (pdgID == 2112) n++;
             else if (pdgID == 2212) p++;
@@ -524,29 +524,28 @@ namespace ldmx {
         return 20;
     }
 
-    int EcalPN::classifyCompactEvent(const SimParticle* particle, double threshold) {
+    int EcalPN::classifyCompactEvent(const SimParticle* particle, const std::map<int,SimParticle> &particleMap, double threshold) {
    
         short n{0}, n_t{0}, k0l{0}, kp{0}, k0s{0}, soft{0};
 
         // Loop through all of the PN daughters and extract kinematic 
         // information.
-        for (size_t idaughter = 0; idaughter < particle->getDaughterCount(); 
-                ++idaughter) {
+        for (int daughterTrackID : particle->getDaughters() ) {
 
-            // Get the ith daughter
-            const SimParticle* daughter = particle->getDaughter(idaughter);
-        
+            if ( particleMap.count( daughterTrackID) == 0 ) continue; //daughter wasn't stored
+
+            const SimParticle &daughter = particleMap.find( daughterTrackID )->second;
+
             // Calculate the kinetic energy
-            double ke = daughter->getEnergy() - daughter->getMass();
+            double ke = daughter.getEnergy() - daughter.getMass();
             
-            //
+            // Get the PDG ID
+            int pdgID = abs(daughter.getPdgID());
+
             if (ke < 500) { 
                 soft++;
                 continue; 
             } 
-
-            // Get the PDG ID
-            int pdgID = abs(daughter->getPdgID());
             
             if (ke >= 0.8*particle->getEnergy()) {
                 if (pdgID == 2112) n++;

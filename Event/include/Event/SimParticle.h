@@ -137,35 +137,11 @@ namespace ldmx {
             /** @return The number of daughter particles. */
             int getDaughterCount() const { return daughters_.size(); }
 
-            /**
-             * DEPRECATED
-             *
-             * Use map::find with the daughter track ID to get a daughter
-             *
-             * Retrieve a daughter particle by index. 
-             * @param iDaughter The index of the daughter particle of interest.
-             */
-            SimParticle* getDaughter(const int& iDaughter) const { 
-                return nullptr; 
-            }
-
             /** @return A reference to all of the parent particles. */
             std::vector<int> getParents() const { return parents_; }
             
             /** @return The number of parent particles. */
             int getParentCount() const { return parents_.size(); }
-
-            /**
-             * DEPRECATED
-             *
-             * Use map::find with the parent track ID to get a parent
-             *
-             * Retrieve a parent particle by index.
-             * @param iParent The index of the parent particle of interest.
-             */
-            SimParticle* getParent(const int& iParent) const {
-                return nullptr;
-            }
 
             /**
              * Set the energy of the particle [MeV].
