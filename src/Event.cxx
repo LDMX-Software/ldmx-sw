@@ -26,7 +26,7 @@ namespace ldmx {
         if (!regcomp(&reg_name,(namematch.empty()?(".*"):(namematch.c_str())),REG_EXTENDED|REG_ICASE|REG_NOSUB)) {
             if (!regcomp(&reg_pass,(passmatch.empty()?(".*"):(passmatch.c_str())),REG_EXTENDED|REG_ICASE|REG_NOSUB)) {
   	            if (!regcomp(&reg_type,(typematch.empty()?(".*"):(typematch.c_str())),REG_EXTENDED|REG_ICASE|REG_NOSUB)) {
-  
+                    //all passed expressions are valid regular expressions 
   	                const std::vector<ProductTag>& products=getProducts();
   	                for (std::vector<ProductTag>::const_iterator i=products.begin(); i!=products.end(); i++) {
   	                    if (!regexec(&reg_name,i->name().c_str(),0,0,0) &&
@@ -36,11 +36,32 @@ namespace ldmx {
   	                } 
   	  
   	                regfree(&reg_type);
-  	            } else { std::cout << "E3\n"; }
+  	            } else {
+                    EXCEPTION_RAISE(
+                            "InvalidRegex",
+                            "The passed type regex '"
+                            + typematch
+                            + "' is not a valid regular expression"
+                            );
+                }
   	            regfree(&reg_pass);
-            } else { std::cout << "E2\n"; }  
+            } else {
+                EXCEPTION_RAISE(
+                        "InvalidRegex",
+                        "The passed name regex '"
+                        + namematch
+                        + "' is not a valid regular expression"
+                        );
+            }
             regfree(&reg_name);
-        } else { std::cout << "E1\n"; }
+        } else {
+            EXCEPTION_RAISE(
+                    "InvalidRegex",
+                    "The passed pass regex '"
+                    + passmatch
+                    + "' is not a valid regular expression"
+                    );
+        }
 
         return retval;
     }
