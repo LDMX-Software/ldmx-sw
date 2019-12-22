@@ -101,7 +101,7 @@ namespace ldmx {
             void Clear(Option_t *option = ""); 
             
             /** Print out the object */
-            void Print(Option_t *option = "");
+            void Print(Option_t *option = "") const;
 
         private:
             
