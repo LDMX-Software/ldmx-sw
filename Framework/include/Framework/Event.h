@@ -110,6 +110,7 @@ namespace ldmx {
                     // create a new branch for this collection
                     collections_[branchName] = EventBusPassenger( obj );
                     T *passengerAddress = boost::get<T>(&collections_[branchName]);
+                    std::string tname = collections_[branchName].type().name();//type name (want to use branch element if possible)
                     if (outputTree_ != 0) {
                         TBranch *outBranch = outputTree_->GetBranch( branchName.c_str() );
                         if ( outBranch ) {
@@ -120,8 +121,11 @@ namespace ldmx {
                             outBranch = outputTree_->Branch( branchName.c_str(), passengerAddress , 100000, 3);
                         }
                         newBranches_.push_back(outBranch);
-                    }
-        	        products_.push_back(ProductTag(collectionName,passName_,collections_[branchName].type().name()));
+                        //get type name from branch if possible, otherwise use compiler level type name (above)
+                        TBranchElement *tbe = dynamic_cast<TBranchElement *>(outBranch);
+                        if (tbe) tname = tbe->GetClassName();
+                    } //output tree exists or not
+        	        products_.emplace_back(collectionName,passName_,tname);
                     branchNames_.push_back(branchName);
                     knownLookups_.clear(); // have to invalidate this cache
                 }
