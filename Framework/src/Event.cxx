@@ -93,10 +93,11 @@ namespace ldmx {
     void Event::Clear() {
         // clear the event objects
         branchesFilled_.clear();
-
+        for ( auto colls : collections_ ) {
+            boost::apply_visitor( clearCollection() , colls.second );
+        }
     }
     void Event::onEndOfEvent() {
-        branchesFilled_.clear();
     }
 
     void Event::onEndOfFile() {
