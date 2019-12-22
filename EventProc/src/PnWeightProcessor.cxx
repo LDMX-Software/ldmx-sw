@@ -53,7 +53,7 @@ namespace ldmx {
         // Get the collection of sim particles from the event.  If the 
         // collection of sim particles is empty, don't process the
         // event.
-        const std::map<int,SimParticle> simParticleMap = event.getObject<std::map<int,SimParticle>>("SimParticles");
+        const std::map<int,SimParticle> simParticleMap = event.getMap<int,SimParticle>("SimParticles");
         if (simParticleMap.size() == 0) return; 
 
         // Search for the PN gamma that is a daughter of the recoil electron

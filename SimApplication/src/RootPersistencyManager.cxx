@@ -91,7 +91,7 @@ namespace ldmx {
 
     void RootPersistencyManager::printEvent(Event* outputEvent) {
 
-        std::map<int,SimParticle> particleColl = outputEvent->getObject<std::map<int,SimParticle>>( "SimParticles", "sim");
+        std::map<int,SimParticle> particleColl = outputEvent->getMap<int,SimParticle>( "SimParticles", "sim");
 
         if (m_verbose > 1) {
             std::cout << "[ RootPersistencyManager ] : Wrote " << particleColl.size() << " SimParticle objects" << std::endl;
