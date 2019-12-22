@@ -51,11 +51,11 @@ namespace ldmx {
     void Event::setInputTree(TTree* tree) {
         inputTree_ = tree;
         entries_ = inputTree_->GetEntriesFast();
-        branchNames_.clear();
 
         // in some cases, setInputTree is called more than once,
-        // so reset product tag list before starting
+        // so reset branch listing before starting
         products_.clear();
+        branchNames_.clear();
 
         // put in EventHeader (only one without pass name)
 	    products_.emplace_back(EventConstants::EVENT_HEADER,"","ldmx::EventHeader");
