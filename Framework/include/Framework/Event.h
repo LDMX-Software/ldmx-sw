@@ -110,6 +110,7 @@ namespace ldmx {
                     // create a new branch for this collection
                     collections_[branchName] = EventBusPassenger( obj );
                     T *passengerAddress = boost::get<T>(&collections_[branchName]);
+                    std::string tname = collections_[branchName].type().name();//type name (want to use branch element if possible)
                     if (outputTree_ != 0) {
                         TBranch *outBranch = outputTree_->GetBranch( branchName.c_str() );
                         if ( outBranch ) {
@@ -120,8 +121,11 @@ namespace ldmx {
                             outBranch = outputTree_->Branch( branchName.c_str(), passengerAddress , 100000, 3);
                         }
                         newBranches_.push_back(outBranch);
-                    }
-        	        products_.push_back(ProductTag(collectionName,passName_,collections_[branchName].type().name()));
+                        //get type name from branch if possible, otherwise use compiler level type name (above)
+                        TBranchElement *tbe = dynamic_cast<TBranchElement *>(outBranch);
+                        if (tbe) tname = tbe->GetClassName();
+                    } //output tree exists or not
+        	        products_.emplace_back(collectionName,passName_,tname);
                     branchNames_.push_back(branchName);
                     knownLookups_.clear(); // have to invalidate this cache
                 }
@@ -156,7 +160,7 @@ namespace ldmx {
              */
             template <typename T>
             const T getObject(const std::string &collectionName, const std::string &passName) const {
-                return getImpl<T>( collectionName , passName , true );
+                return getImpl<T>( collectionName , passName );
             }
 
             /**
@@ -208,41 +212,41 @@ namespace ldmx {
              * @param mustExist flag to say whether or not you require this collection to exist in the tree
              */
             template <typename T> 
-            T getImpl(const std::string& collectionName, const std::string& passName, bool mustExist) const {
+            T getImpl(const std::string& collectionName, const std::string& passName) const {
 
-                T retValIfNotFound;
-
+                //get branch name
                 std::string branchName;
                 if (collectionName== EventConstants::EVENT_HEADER) branchName=collectionName;
                 else branchName = makeBranchName(collectionName, passName);
         
+                //if no passName, then find branchName by looking over known branches
                 if (passName.empty() && collectionName!= EventConstants::EVENT_HEADER) {
-                    auto ptr=knownLookups_.find(collectionName);
-                    if (ptr!=knownLookups_.end()) branchName=ptr->second;
+                    auto itKL = knownLookups_.find(collectionName);
+                    if (itKL!=knownLookups_.end()) branchName=itKL->second;
                     else {
+                        //this collecitonName hasn't been found before
                         std::vector<std::vector<std::string>::const_iterator> matches;
                         branchName=collectionName+"_";
-                        for (std::vector<std::string>::const_iterator ptr=branchNames_.begin(); ptr!=branchNames_.end(); ptr++) {
-                            if (!ptr->compare(0,branchName.size(),branchName)) matches.push_back(ptr);
+                        for (auto itBN=branchNames_.begin(); itBN!=branchNames_.end(); itBN++) {
+                            if (!itBN->compare(0,branchName.size(),branchName)) matches.push_back(itBN);
                         }
                         if (matches.empty()) {
-                            if (!mustExist)
-                                return retValIfNotFound;
+                            //no matches found
                             EXCEPTION_RAISE(
                                     "ProductNotFound",
                                     "No product found for name '"+collectionName+"'");
                         } else if (matches.size()>1) {
+                            //more than one branch found
                             std::string names;
                             for (auto strs : matches) {
                                 if (!names.empty()) names+=", ";
                                 names+=*strs;
                             }
-                            if (!mustExist)
-                                return retValIfNotFound;
                             EXCEPTION_RAISE(
                                     "ProductAmbiguous",
                                     "Multiple products found for name '"+collectionName+"' without specified pass name ("+names+")");
                         } else {
+                            //exactly one branch found
                             branchName=*matches.front();
                             knownLookups_[collectionName]=branchName;
                         }
@@ -250,13 +254,13 @@ namespace ldmx {
                 }
         
                 //get iterators to branch and collection
-                auto itb = branches_.find(branchName);
-                auto ito = collections_.find(branchName);
+                auto itBranch = branches_.find(branchName);
+                auto itObject = collections_.find(branchName);
         
-                if (ito != collections_.end()) {
-                   if (itb != branches_.end())
-                      itb->second->GetEntry(ientry_);
-                   return boost::get<T>(ito->second);
+                if (itObject != collections_.end()) {
+                   if (itBranch != branches_.end())
+                      itBranch->second->GetEntry(ientry_);
+                   return boost::get<T>(itObject->second);
                 } else if (inputTree_ == 0) {
                     EXCEPTION_RAISE(
                             "ProductNotFound", 
@@ -264,25 +268,27 @@ namespace ldmx {
                 }
         
                 // find the active branch and update if necessary
-                if (itb != branches_.end()) {
+                if (itBranch != branches_.end()) {
         
                     // update buffers if needed
-                    if (itb->second->GetReadEntry() != ientry_) {
+                    if (itBranch->second->GetReadEntry() != ientry_) {
         
-                        TBranchElement* tbe = dynamic_cast<TBranchElement*>(itb->second);
-                        T *passengerAddress = boost::get<T>( &ito->second );
+                        TBranchElement* tbe = dynamic_cast<TBranchElement*>(itBranch->second);
+                        T *passengerAddress = boost::get<T>( &itObject->second );
                         if (!tbe)
-                            itb->second->SetAddress( &passengerAddress );
+                            itBranch->second->SetAddress( &passengerAddress );
         
-                        int nr = itb->second->GetEntry(ientry_, 1);
+                        itBranch->second->GetEntry(ientry_, 1);
                     }
         
                     // check the objects map
-                    if (ito != collections_.end())
-                        return boost::get<T>(ito->second);
+                    if (itObject != collections_.end())
+                        return boost::get<T>(itObject->second);
         
                     // this case is hard to achieve
-                    return retValIfNotFound;
+                    EXCEPTION_RAISE(
+                            "ProductNotFound", 
+                            "A branch mis-match occurred. I'm not sure how I got here!" );
                 } else {
         
                     // ok, maybe we've not loaded this yet, look for a branch

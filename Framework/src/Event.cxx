@@ -51,9 +51,14 @@ namespace ldmx {
     void Event::setInputTree(TTree* tree) {
         inputTree_ = tree;
         entries_ = inputTree_->GetEntriesFast();
+
+        // in some cases, setInputTree is called more than once,
+        // so reset branch listing before starting
+        products_.clear();
         branchNames_.clear();
 
-	    products_.push_back(ProductTag(EventConstants::EVENT_HEADER,"","ldmx::EventHeader"));
+        // put in EventHeader (only one without pass name)
+	    products_.emplace_back(EventConstants::EVENT_HEADER,"","ldmx::EventHeader");
 	
         // find the names of all the existing branches
         TObjArray* branches = inputTree_->GetListOfBranches();
@@ -63,12 +68,11 @@ namespace ldmx {
         		size_t j=brname.find("_");
         		std::string iname=brname.substr(0,j);
         		std::string pname=brname.substr(j+1);
-        		std::string tname=branches->At(i)->ClassName();
-                if ( tname == "TBranchElement" ) {
-                    //vector/map of something
-                    //TODO: Determine class of TBranchElements
-                }
-    		    products_.push_back(ProductTag(iname,pname,tname));
+                std::string tname = "";
+                TBranchElement *tbe = dynamic_cast<TBranchElement*>(branches->At(i));
+                if (tbe) tname = tbe->GetClassName();
+                else tname = branches->At(i)->ClassName();
+    		    products_.emplace_back(iname,pname,tname);
     	    }
             branchNames_.push_back(brname);
         }
