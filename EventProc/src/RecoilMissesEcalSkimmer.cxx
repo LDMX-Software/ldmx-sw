@@ -22,7 +22,7 @@ namespace ldmx {
     void RecoilMissesEcalSkimmer::produce(Event &event) { 
         
         // Get the collection of sim particles from the event 
-        const std::map<int,SimParticle> simParticleMap = event.getObject<std::map<int,SimParticle>>("SimParticles");
+        const std::map<int,SimParticle> simParticleMap = event.getMap<int,SimParticle>("SimParticles");
         if (simParticleMap.size() == 0) return; 
 
         const SimParticle *recoilElectron = Analysis::getRecoil( simParticleMap );

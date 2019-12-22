@@ -63,11 +63,13 @@ namespace ldmx {
         		size_t j=brname.find("_");
         		std::string iname=brname.substr(0,j);
         		std::string pname=brname.substr(j+1);
-                //TODO: Improve the type-gettting algorithm
         		std::string tname=branches->At(i)->ClassName();
+                if ( tname == "TBranchElement" ) {
+                    //vector/map of something
+                    //TODO: Determine class of TBranchElements
+                }
     		    products_.push_back(ProductTag(iname,pname,tname));
     	    }
-	    
             branchNames_.push_back(brname);
         }
     }
