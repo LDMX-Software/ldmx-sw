@@ -29,6 +29,35 @@
 namespace ldmx {
 
     /**
+     * Clearing of event objects.
+     *
+     * This is necessary, so if a producer skips an event, then
+     * the last object added won't filled into event tree another time.
+     */
+    class clearCollection : public boost::static_visitor<void> {
+        public:
+            
+            /**
+             * All vector collections can be cleared in the same way.
+             */
+            template <typename T>
+            void operator()(std::vector<T> &vec) const { vec.clear(); }
+
+            /**
+             * All map collections can be cleared in the same way.
+             */
+            template <typename Key, typename Val>
+            void operator()(std::map<Key,Val> &m) const { m.clear(); }
+
+            /**
+             * Right now all other event objects have a clear method defined.
+             */
+            template <typename T>
+            void operator()(T &obj) const { obj.Clear(); }
+
+    };
+
+    /**
      * @class Event
      * @brief Implements an event buffer system for storing event data
      *
