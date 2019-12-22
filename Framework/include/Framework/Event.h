@@ -29,6 +29,7 @@
 namespace ldmx {
 
     /**
+     * @class clearPassenger
      * Clearing of event objects.
      *
      * This is necessary, so if a producer skips an event, then
@@ -59,6 +60,7 @@ namespace ldmx {
 
 
     /**
+     * @class printPassenger
      * Printing of event objects.
      *
      * This method requires all event objects to have a Print method defined.
@@ -72,7 +74,6 @@ namespace ldmx {
              * Sets verbosity
              */
             printPassenger(int verbosity) : verbosity_(verbosity) { }
-            printPassenger() : verbosity_(0) { }
 
             /**
              * Prints size and contents of all vectors depending on verbosity.
@@ -199,7 +200,9 @@ namespace ldmx {
                 if (collectionName.find('_') != std::string::npos) {
                     EXCEPTION_RAISE(
                             "IllegalName", 
-                            "The product name '" + collectionName + "' is illegal as it contains an underscore.");
+                            "The product name '" 
+                            + collectionName 
+                            + "' is illegal as it contains an underscore.");
                 }
         
                 std::string branchName;
@@ -209,8 +212,9 @@ namespace ldmx {
                 if (branchesFilled_.find(branchName) != branchesFilled_.end()) {
                     EXCEPTION_RAISE(
                             "ProductExists", 
-                            "A product named '" + collectionName + 
-                            "' already exists in the event (has been loaded by a previous producer in this process.");
+                            "A product named '" 
+                            + collectionName 
+                            + "' already exists in the event (has been loaded by a previous producer in this process.");
                 }
                 branchesFilled_.insert(branchName);
                 auto itCollection = collections_.find(branchName);
@@ -245,8 +249,11 @@ namespace ldmx {
                 } else {
                     EXCEPTION_RAISE(
                             "TypeMismatch",
-                            "Attempting to add an object whose type '" + std::string(toAdd.type().name()) + "' doesn't match the type stored in the collection '" +
-                            std::string(collections_[branchName].type().name()) + "'"
+                            "Attempting to add an object whose type '" 
+                            + std::string(toAdd.type().name()) 
+                            + "' doesn't match the type stored in the collection '" 
+                            + std::string(collections_[branchName].type().name()) 
+                            + "'"
                             );
                 }
 
@@ -317,7 +324,6 @@ namespace ldmx {
              * Get an event passenger from the event bus (actual implementation)
              * @param collectionName name of collection you want
              * @param passName name of pass you want
-             * @param mustExist flag to say whether or not you require this collection to exist in the tree
              */
             template <typename T> 
             T getImpl(const std::string& collectionName, const std::string& passName) const {
@@ -342,7 +348,9 @@ namespace ldmx {
                             //no matches found
                             EXCEPTION_RAISE(
                                     "ProductNotFound",
-                                    "No product found for name '"+collectionName+"'");
+                                    "No product found for name '"
+                                    + collectionName
+                                    + "'");
                         } else if (matches.size()>1) {
                             //more than one branch found
                             std::string names;
@@ -352,7 +360,12 @@ namespace ldmx {
                             }
                             EXCEPTION_RAISE(
                                     "ProductAmbiguous",
-                                    "Multiple products found for name '"+collectionName+"' without specified pass name ("+names+")");
+                                    "Multiple products found for name '"
+                                    + collectionName
+                                    + "' without specified pass name ("
+                                    + names
+                                    + ")"
+                                    );
                         } else {
                             //exactly one branch found
                             branchName=*matches.front();
@@ -370,9 +383,15 @@ namespace ldmx {
                       itBranch->second->GetEntry(ientry_);
                    return boost::get<T>(itObject->second);
                 } else if (inputTree_ == 0) {
+                    //not found in loaded branches and there is not inputTree,
+                    // so no hope of finding an unloaded object
                     EXCEPTION_RAISE(
                             "ProductNotFound", 
-                            "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
+                            "No product found for name '" 
+                            + collectionName 
+                            + "' and pass '" 
+                            + passName_ 
+                            + "'");
                 }
         
                 // find the active branch and update if necessary
@@ -393,18 +412,25 @@ namespace ldmx {
                     if (itObject != collections_.end())
                         return boost::get<T>(itObject->second);
         
-                    // this case is hard to achieve
+                    // this case is hard (impossible?) to achieve
                     EXCEPTION_RAISE(
                             "ProductNotFound", 
-                            "A branch mis-match occurred. I'm not sure how I got here!" );
+                            "A branch mis-match occurred. I'm not sure how I got here!" 
+                            );
                 } else {
         
                     // ok, maybe we've not loaded this yet, look for a branch
                     TBranch* branch = inputTree_->GetBranch(branchName.c_str());
                     if (branch == 0) {
+                        //inputTree doesn't have that branch
                         EXCEPTION_RAISE(
                                 "ProductNotFound", 
-                                "No product found for name '" + collectionName + "' and pass '" + passName_ + "'");
+                                "No product found for name '" 
+                                + collectionName 
+                                + "' and pass '" 
+                                + passName_ 
+                                + "'"
+                                );
                     }
                     // ooh, new branch!
                     //get address of object that will be the event passenger
@@ -422,7 +448,7 @@ namespace ldmx {
                     branch->SetStatus(1); //tell root this branch should be active
                     branch->GetEntry((ientry_<0)?(0):(ientry_)); //load in current entry
         
-                    //insert into collection maps
+                    //insert into maps of loaded branches and passengers
                     collections_[branchName] = EventBusPassenger( *passengerAddress );
                     branches_[branchName]    = branch;
         
@@ -486,12 +512,12 @@ namespace ldmx {
             void beforeFill();
 
             /**
-             * Clear this object's data.
+             * Clear this object's data (including passengers).
              */
             void Clear();
 
             /**
-             * Perform end of event action (clears the owned objects).
+             * Perform end of event action (doesn't do anything right now).
              */
             void onEndOfEvent();
 
@@ -511,7 +537,7 @@ namespace ldmx {
         private:
 
             /**
-             * The event header object (as pointer).
+             * The event header object.
              */
             EventHeader eventHeader_;
 
