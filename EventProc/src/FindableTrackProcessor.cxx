@@ -19,7 +19,7 @@ namespace ldmx {
     void FindableTrackProcessor::produce(Event &event) {
 
         // Get the collection of sim particles from the event 
-        const std::map<int,SimParticle> simParticles = event.getObject<std::map<int,SimParticle>>("SimParticles");
+        const std::map<int,SimParticle> simParticles = event.getMap<int,SimParticle>("SimParticles");
         if (simParticles.size() == 0) return; 
 
         // Get the collection of Recoil sim hits from the event

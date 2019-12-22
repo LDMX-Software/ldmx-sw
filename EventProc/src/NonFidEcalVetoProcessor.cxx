@@ -220,7 +220,7 @@ namespace ldmx {
 
             const std::vector<SimTrackerHit> ecalSpHits = event.getCollection<SimTrackerHit>("EcalScoringPlaneHits");
 
-            const std::map<int,SimParticle> simParticleMap = event.getObject<std::map<int,SimParticle>>("SimParticles");
+            const std::map<int,SimParticle> simParticleMap = event.getMap<int,SimParticle>("SimParticles");
             const SimParticle *recoilElectron = Analysis::getRecoil( simParticleMap );
 
             for ( const SimTrackerHit &spHit : ecalSpHits ) {
