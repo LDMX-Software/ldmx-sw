@@ -39,13 +39,13 @@ namespace ldmx {
         public:
             
             /**
-             * All vector collections can be cleared in the same way.
+             * All vector passengers can be cleared in the same way.
              */
             template <typename T>
             void operator()(std::vector<T> &vec) const { vec.clear(); }
 
             /**
-             * All map collections can be cleared in the same way.
+             * All map passengers can be cleared in the same way.
              */
             template <typename Key, typename Val>
             void operator()(std::map<Key,Val> &m) const { m.clear(); }
@@ -159,7 +159,7 @@ namespace ldmx {
             /**
              * Print event bus
              *
-             * Only prints collections that have been loaded into the member object.
+             * Only prints passengers that have been loaded into the member object.
              * This means what is printed depends on when this method is called.
              * For example, if this method is called after the Clear method, then
              * everything will be an empty object.
@@ -217,12 +217,11 @@ namespace ldmx {
                             + "' already exists in the event (has been loaded by a previous producer in this process.");
                 }
                 branchesFilled_.insert(branchName);
-                auto itCollection = collections_.find(branchName);
-                if (itCollection == collections_.end()) { 
+                if (passengers_.find(branchName) == passengers_.end()) { 
                     // create a new branch for this collection
-                    collections_[branchName] = EventBusPassenger( obj );
-                    T *passengerAddress = boost::get<T>(&collections_[branchName]);
-                    std::string tname = collections_[branchName].type().name();//type name (want to use branch element if possible)
+                    passengers_[branchName] = EventBusPassenger( obj );
+                    T *passengerAddress = boost::get<T>(&passengers_[branchName]);
+                    std::string tname = passengers_[branchName].type().name();//type name (want to use branch element if possible)
                     if (outputTree_ != 0) {
                         TBranch *outBranch = outputTree_->GetBranch( branchName.c_str() );
                         if ( outBranch ) {
@@ -244,15 +243,15 @@ namespace ldmx {
                 
                 //copy input contents into bus passenger
                 EventBusPassenger toAdd( obj );
-                if ( toAdd.which() == collections_[branchName].which() ) {
-                    collections_[branchName] = toAdd;
+                if ( toAdd.which() == passengers_[branchName].which() ) {
+                    passengers_[branchName] = toAdd;
                 } else {
                     EXCEPTION_RAISE(
                             "TypeMismatch",
                             "Attempting to add an object whose type '" 
                             + std::string(toAdd.type().name()) 
                             + "' doesn't match the type stored in the collection '" 
-                            + std::string(collections_[branchName].type().name()) 
+                            + std::string(passengers_[branchName].type().name()) 
                             + "'"
                             );
                 }
@@ -376,12 +375,12 @@ namespace ldmx {
         
                 //get iterators to branch and collection
                 auto itBranch = branches_.find(branchName);
-                auto itObject = collections_.find(branchName);
+                auto itPassenger = passengers_.find(branchName);
         
-                if (itObject != collections_.end()) {
+                if (itPassenger != passengers_.end()) {
                    if (itBranch != branches_.end())
                       itBranch->second->GetEntry(ientry_);
-                   return boost::get<T>(itObject->second);
+                   return boost::get<T>(itPassenger->second);
                 } else if (inputTree_ == 0) {
                     //not found in loaded branches and there is not inputTree,
                     // so no hope of finding an unloaded object
@@ -401,7 +400,7 @@ namespace ldmx {
                     if (itBranch->second->GetReadEntry() != ientry_) {
         
                         TBranchElement* tbe = dynamic_cast<TBranchElement*>(itBranch->second);
-                        T *passengerAddress = boost::get<T>( &itObject->second );
+                        T *passengerAddress = boost::get<T>( &itPassenger->second );
                         if (!tbe)
                             itBranch->second->SetAddress( &passengerAddress );
         
@@ -409,8 +408,8 @@ namespace ldmx {
                     }
         
                     // check the objects map
-                    if (itObject != collections_.end())
-                        return boost::get<T>(itObject->second);
+                    if (itPassenger != passengers_.end())
+                        return boost::get<T>(itPassenger->second);
         
                     // this case is hard (impossible?) to achieve
                     EXCEPTION_RAISE(
@@ -449,10 +448,10 @@ namespace ldmx {
                     branch->GetEntry((ientry_<0)?(0):(ientry_)); //load in current entry
         
                     //insert into maps of loaded branches and passengers
-                    collections_[branchName] = EventBusPassenger( *passengerAddress );
+                    passengers_[branchName] = EventBusPassenger( *passengerAddress );
                     branches_[branchName]    = branch;
         
-                    return boost::get<T>( collections_.at(branchName) );
+                    return boost::get<T>( passengers_.at(branchName) );
                 }
             }
 
@@ -572,9 +571,9 @@ namespace ldmx {
             mutable std::map<std::string, TBranch*> branches_;
 
             /**
-             * Map of names to collections.
+             * Map of names to passengers.
              */
-            mutable std::map<std::string, EventBusPassenger > collections_; 
+            mutable std::map<std::string, EventBusPassenger > passengers_; 
 
             /**
              * List of new branches added.
