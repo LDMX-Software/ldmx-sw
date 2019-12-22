@@ -8,6 +8,13 @@ namespace ldmx {
 
     Event::~Event() { }
 
+    void Event::Print(int verbosity) const {
+        for ( const auto &keyVal : collections_ ) {
+            if ( verbosity > 0 ) std::cout << keyVal.first << std::endl;
+            boost::apply_visitor( printPassenger(verbosity) , keyVal.second );
+        }
+    }
+
     std::vector<ProductTag> Event::searchProducts(
             const std::string& namematch, const std::string& passmatch, const std::string& typematch) const {
         std::vector<ProductTag> retval;
@@ -94,7 +101,7 @@ namespace ldmx {
         // clear the event objects
         branchesFilled_.clear();
         for ( auto colls : collections_ ) {
-            boost::apply_visitor( clearCollection() , colls.second );
+            boost::apply_visitor( clearPassenger() , colls.second );
         }
     }
     void Event::onEndOfEvent() {
