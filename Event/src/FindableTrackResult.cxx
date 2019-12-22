@@ -52,7 +52,7 @@ namespace ldmx {
         is3sFindable_   = false;
     }
 
-    void FindableTrackResult::Print(Option_t *option) { 
+    void FindableTrackResult::Print(Option_t *option) const { 
         std::cout << "[ FindableTrackResult ]: "
                   << "Sim particle Track ID: " 
                   << particleTrackID_ << "\n" 

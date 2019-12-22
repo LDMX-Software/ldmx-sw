@@ -93,18 +93,12 @@ namespace ldmx {
 
         std::map<int,SimParticle> particleColl = outputEvent->getMap<int,SimParticle>( "SimParticles", "sim");
 
-        if (m_verbose > 1) {
-            std::cout << "[ RootPersistencyManager ] : Wrote " << particleColl.size() << " SimParticle objects" << std::endl;
+        if ( m_verbose > 0 ) {
+            std::cout << "[ RootPersistencyManager ] : Event Bus Contents" << std::endl;
+            outputEvent->Print( m_verbose );
+            std::cout << "[ RootPersistencyManager ] : End Event Bus Contents" << std::endl;
         }
 
-        if (m_verbose > 2) {
-            for ( const auto &sp : particleColl ) {
-                sp.second.Print();
-            }
-            std::cout << std::endl;
-        }
-
-        //TODO: Write more verbose printing method for hit collections
     }
 
     void RootPersistencyManager::writeHeader(const G4Event* anEvent, Event* outputEvent) {
