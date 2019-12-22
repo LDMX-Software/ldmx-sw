@@ -9,7 +9,7 @@ namespace ldmx {
     Event::~Event() { }
 
     void Event::Print(int verbosity) const {
-        for ( const auto &keyVal : collections_ ) {
+        for ( const auto &keyVal : passengers_ ) {
             if ( verbosity > 0 ) std::cout << keyVal.first << std::endl;
             boost::apply_visitor( printPassenger(verbosity) , keyVal.second );
         }
@@ -121,8 +121,8 @@ namespace ldmx {
     void Event::Clear() {
         // clear the event objects
         branchesFilled_.clear();
-        for ( auto colls : collections_ ) {
-            boost::apply_visitor( clearPassenger() , colls.second );
+        for ( auto passenger : passengers_ ) {
+            boost::apply_visitor( clearPassenger() , passenger.second );
         }
     }
     void Event::onEndOfEvent() {
