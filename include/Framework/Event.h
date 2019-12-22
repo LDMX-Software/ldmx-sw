@@ -34,7 +34,7 @@ namespace ldmx {
      * This is necessary, so if a producer skips an event, then
      * the last object added won't filled into event tree another time.
      */
-    class clearCollection : public boost::static_visitor<void> {
+    class clearPassenger : public boost::static_visitor<void> {
         public:
             
             /**
@@ -54,6 +54,73 @@ namespace ldmx {
              */
             template <typename T>
             void operator()(T &obj) const { obj.Clear(); }
+
+    };
+
+
+    /**
+     * Printing of event objects.
+     *
+     * This method requires all event objects to have a Print method defined.
+     */
+    class printPassenger : public boost::static_visitor<void> {
+        public:
+            
+            /**
+             * Constructor
+             *
+             * Sets verbosity
+             */
+            printPassenger(int verbosity) : verbosity_(verbosity) { }
+            printPassenger() : verbosity_(0) { }
+
+            /**
+             * Prints size and contents of all vectors depending on verbosity.
+             */
+            template <typename T>
+            void operator()(const std::vector<T> &vec) const { 
+                if ( verbosity_ > 0 ) {
+                    std::cout << "Size: " << vec.size() << std::endl;
+                }
+                if ( verbosity_ > 1 ) {
+                    std::cout << "Contents:" << std::endl;
+                    for ( const T &obj : vec ) {
+                        std::cout << "    ";
+                        obj.Print();
+                    }
+                    std::cout << std::endl;
+                }
+            }
+
+            /**
+             * Prints size and contents of all maps depending on verbosity.
+             */
+            template <typename Key, typename Val>
+            void operator()(const std::map<Key,Val> &m) const { 
+                if ( verbosity_ > 0 ) {
+                    std::cout << "Size: " << m.size() << std::endl;
+                }
+                if ( verbosity_ > 1 ) {
+                    std::cout << "Contents:" << std::endl;
+                    for ( const auto &keyVal : m ) {
+                        std::cout << "    " << keyVal.first << " -> ";
+                        keyVal.second.Print();
+                    }
+                    std::cout << std::endl;
+                }
+            }
+
+            /**
+             * Just prints the object if verbosity is nonzero.
+             */
+            template <typename T>
+            void operator()(const T &obj) const { 
+                if ( verbosity_ > 0 ) obj.Print(); 
+            }
+
+        private:
+            /** Flag for how much to print */
+            int verbosity_;
 
     };
 
@@ -87,6 +154,18 @@ namespace ldmx {
             EventHeader &getEventHeader() {
                 return eventHeader_;
             }
+
+            /**
+             * Print event bus
+             *
+             * Only prints collections that have been loaded into the member object.
+             * This means what is printed depends on when this method is called.
+             * For example, if this method is called after the Clear method, then
+             * everything will be an empty object.
+             *
+             * @param verbosity integer flag to determine how verbose you want to be.
+             */
+            void Print(int verbosity) const;
 
             /**
              * Check the existence of one-and-only-one object with the
