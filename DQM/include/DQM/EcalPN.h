@@ -52,10 +52,10 @@ namespace ldmx {
         private:
 
             /** Method used to classify events. */
-            int classifyEvent(const SimParticle* particle, double threshold); 
+            int classifyEvent(const SimParticle* particle, const std::map<int,SimParticle> &particleMap, double threshold); 
 
             /** Method used to classify events in a compact manner. */
-            int classifyCompactEvent(const SimParticle* particle, double threshold); 
+            int classifyCompactEvent(const SimParticle* particle, const std::map<int,SimParticle> &particleMap, double threshold); 
 
             /** Singleton used to access histograms. */
             HistogramPool* histograms_{nullptr}; 
