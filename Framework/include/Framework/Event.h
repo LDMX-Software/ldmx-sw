@@ -180,7 +180,23 @@ namespace ldmx {
              */
             template <typename T>
             const std::vector<T> getCollection(const std::string &collectionName ) const {
-                return getObject< std::vector<T> >( collectionName , "" );
+                return getCollection<T>( collectionName , "" );
+            }
+
+            /**
+             * Get a map (std::map) of objects from the event bus
+             */
+            template <typename Key, typename Val>
+            const std::map<Key,Val> getMap(const std::string &collectionName, const std::string &passName ) const {
+                return getObject< std::map<Key,Val> >( collectionName , passName );
+            }
+
+            /**
+             * Get a map of objects from the event bus when you don't care about the pass
+             */
+            template <typename Key, typename Val>
+            const std::map<Key,Val> getMap(const std::string &collectionName ) const {
+                return getMap<Key,Val>( collectionName , "" );
             }
 
         protected:
@@ -282,13 +298,15 @@ namespace ldmx {
                     //connect input branch to this passenger
                     TBranchElement *tbe = dynamic_cast<TBranchElement *>(branch);
                     if (tbe) {
+                        //arrays of objects (e.g. vectors) are loaded into TTree's as TBranchElements
                         passengerAddress = (T *)(tbe->GetObject());
                     } else {
+                        //for non-array objects
                         branch->SetAddress( &passengerAddress );
                     }
-                    branch->SetAutoDelete(false);
-                    branch->SetStatus(1);
-                    branch->GetEntry((ientry_<0)?(0):(ientry_));
+                    branch->SetAutoDelete(false); //don't let root remove the objects we want
+                    branch->SetStatus(1); //tell root this branch should be active
+                    branch->GetEntry((ientry_<0)?(0):(ientry_)); //load in current entry
         
                     //insert into collection maps
                     collections_[branchName] = EventBusPassenger( *passengerAddress );

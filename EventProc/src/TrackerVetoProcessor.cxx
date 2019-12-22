@@ -32,7 +32,7 @@ namespace ldmx {
     void TrackerVetoProcessor::produce(Event& event) {
 
         // Get the collection of simulated particles from the event
-        const std::map<int,SimParticle> particleMap = event.getObject<std::map<int,SimParticle>>("SimParticles");
+        const std::map<int,SimParticle> particleMap = event.getMap<int,SimParticle>("SimParticles");
       
         // Search for the recoil electron 
         const SimParticle* recoil = Analysis::getRecoil( particleMap );
