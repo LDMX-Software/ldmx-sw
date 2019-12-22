@@ -87,8 +87,8 @@ namespace ldmx {
                     for ( const T &obj : vec ) {
                         std::cout << "    ";
                         obj.Print();
-                        std::cout << std::endl;
                     }
+                    std::cout << std::endl;
                 }
             }
 
@@ -105,8 +105,8 @@ namespace ldmx {
                     for ( const auto &keyVal : m ) {
                         std::cout << "    " << keyVal.first << " -> ";
                         keyVal.second.Print();
-                        std::cout << std::endl;
                     }
+                    std::cout << std::endl;
                 }
             }
 
