@@ -53,6 +53,11 @@ namespace ldmx {
         entries_ = inputTree_->GetEntriesFast();
         branchNames_.clear();
 
+        // in some cases, setInputTree is called more than once,
+        // so reset product tag list before starting
+        products_.clear();
+
+        // put in EventHeader (only one without pass name)
 	    products_.emplace_back(EventConstants::EVENT_HEADER,"","ldmx::EventHeader");
 	
         // find the names of all the existing branches
