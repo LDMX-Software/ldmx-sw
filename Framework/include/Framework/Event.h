@@ -409,11 +409,17 @@ namespace ldmx {
                 auto itPassenger = passengers_.find(branchName);
         
                 if (itPassenger != passengers_.end()) {
-                   if (itBranch != branches_.end())
-                      itBranch->second->GetEntry(ientry_);
-                   return boost::get<T>(itPassenger->second);
+                    if (itBranch != branches_.end()) {
+                        //passenger and branch found
+                        itBranch->second->GetEntry(ientry_);
+                        TBranchElement *tbe = dynamic_cast<TBranchElement *>(itBranch->second);
+                        //if branch is a TBranchElement, then event passenger is complicated
+                        // and it needs to be manually updated
+                        if (tbe) passengers_[branchName] = *((T *)(tbe->GetObject()));
+                    }
+                    return boost::get<T>(itPassenger->second);
                 } else if (inputTree_ == 0) {
-                    //not found in loaded branches and there is not inputTree,
+                    //not found in loaded branches and there is no inputTree,
                     // so no hope of finding an unloaded object
                     EXCEPTION_RAISE(
                             "ProductNotFound", 
@@ -469,18 +475,21 @@ namespace ldmx {
                     TBranchElement *tbe = dynamic_cast<TBranchElement *>(branch);
                     if (tbe) {
                         //arrays of objects (e.g. vectors) are loaded into TTree's as TBranchElements
-                        passengerAddress = (T *)(tbe->GetObject());
+                        passengers_[branchName] = *((T *)(tbe->GetObject()));
+                        //passengerAddress = (T *)(tbe->GetObject());
                     } else {
                         //for non-array objects
+                        std::cout << "I AM NOT A TBRANCHELEMENT" << std::endl;
                         branch->SetAddress( &passengerAddress );
+                        passengers_[branchName] = EventBusPassenger( *passengerAddress );
                     }
                     branch->SetAutoDelete(false); //don't let root remove the objects we want
                     branch->SetStatus(1); //tell root this branch should be active
                     branch->GetEntry((ientry_<0)?(0):(ientry_)); //load in current entry
         
                     //insert into maps of loaded branches and passengers
-                    passengers_[branchName] = EventBusPassenger( *passengerAddress );
-                    branches_[branchName]    = branch;
+                    //passengers_[branchName] = EventBusPassenger( *passengerAddress );
+                    branches_[branchName]   = branch;
         
                     return boost::get<T>( passengers_.at(branchName) );
                 }
