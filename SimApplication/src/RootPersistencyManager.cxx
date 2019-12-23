@@ -124,6 +124,8 @@ namespace ldmx {
             std::cout << "  ";
             eventHeader.Print("");
         }
+
+        outputEvent->add( EventConstants::EVENT_HEADER , eventHeader );
     }
 
     std::string RootPersistencyManager::getEventSeeds(std::string fileName) {
