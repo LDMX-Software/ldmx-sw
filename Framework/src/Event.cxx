@@ -96,10 +96,7 @@ namespace ldmx {
         		size_t j=brname.find("_");
         		std::string iname=brname.substr(0,j);
         		std::string pname=brname.substr(j+1);
-                std::string tname = "";
-                TBranchElement *tbe = dynamic_cast<TBranchElement*>(branches->At(i));
-                if (tbe) tname = tbe->GetClassName();
-                else tname = branches->At(i)->ClassName();
+                std::string tname = dynamic_cast<TBranchElement*>(branches->At(i))->GetClassName();
     		    products_.emplace_back(iname,pname,tname);
     	    }
             branchNames_.push_back(brname);
