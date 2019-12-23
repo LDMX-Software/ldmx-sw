@@ -254,18 +254,20 @@ namespace ldmx {
                     T *passengerAddress = boost::get<T>(&passengers_[branchName]);
                     std::string tname = passengers_[branchName].type().name();//type name (want to use branch element if possible)
                     if (outputTree_ != 0) {
-                        TBranch *outBranch = outputTree_->GetBranch( branchName.c_str() );
+                        TBranchElement *outBranch = dynamic_cast<TBranchElement *>(outputTree_->GetBranch( branchName.c_str() ));
                         if ( outBranch ) {
                             //branch already exists, just reset branch address
+                            //TODO: This is what made Merge Mode work before vector transition
+                            //  This is not called unless in single output file mode and more than one input file
+                            //  Currently causes a seg fault when transitioning between input files
                             outBranch->SetAddress( &passengerAddress );
                         } else {
                             //branch doesnt exist, make new one
-                            outBranch = outputTree_->Branch( branchName.c_str(), passengerAddress , 100000, 3);
+                            outBranch = dynamic_cast<TBranchElement*>(outputTree_->Branch( branchName.c_str(), passengerAddress , 100000, 3));
                         }
                         newBranches_.push_back(outBranch);
                         //get type name from branch if possible, otherwise use compiler level type name (above)
-                        TBranchElement *tbe = dynamic_cast<TBranchElement *>(outBranch);
-                        if (tbe) tname = tbe->GetClassName();
+                        tname = outBranch->GetClassName();
                     } //output tree exists or not
         	        products_.emplace_back(collectionName,passName_,tname);
                     branchNames_.push_back(branchName);
@@ -283,7 +285,7 @@ namespace ldmx {
                             "Attempting to add an object whose type '" 
                             + std::string(toAdd.type().name()) 
                             + "' doesn't match the type stored in the collection '" 
-                            + std::string(passengers_[branchName].type().name()) 
+                            + std::string(passengers_.at(branchName).type().name()) 
                             + "'"
                             );
                 }
@@ -413,10 +415,8 @@ namespace ldmx {
                     if (itBranch != branches_.end()) {
                         //passenger and branch found
                         itBranch->second->GetEntry(ientry_);
-                        TBranchElement *tbe = dynamic_cast<TBranchElement *>(itBranch->second);
-                        //if branch is a TBranchElement, then event passenger is complicated
-                        // and it needs to be manually updated
-                        if (tbe) passengers_[branchName] = *((T *)(tbe->GetObject()));
+                        //reading branches need to be manually updated
+                        passengers_[branchName] = *((T *)(itBranch->second->GetObject()));
                     }
                     return boost::get<T>(itPassenger->second);
                 } else if (inputTree_ == 0) {
@@ -436,12 +436,7 @@ namespace ldmx {
         
                     // update buffers if needed
                     if (itBranch->second->GetReadEntry() != ientry_) {
-        
-                        TBranchElement* tbe = dynamic_cast<TBranchElement*>(itBranch->second);
                         T *passengerAddress = boost::get<T>( &itPassenger->second );
-                        if (!tbe)
-                            itBranch->second->SetAddress( &passengerAddress );
-        
                         itBranch->second->GetEntry(ientry_, 1);
                     }
         
@@ -457,7 +452,7 @@ namespace ldmx {
                 } else {
         
                     // ok, maybe we've not loaded this yet, look for a branch
-                    TBranch* branch = inputTree_->GetBranch(branchName.c_str());
+                    TBranchElement* branch = dynamic_cast<TBranchElement *>(inputTree_->GetBranch(branchName.c_str()));
                     if (branch == 0) {
                         //inputTree doesn't have that branch
                         EXCEPTION_RAISE(
@@ -471,25 +466,13 @@ namespace ldmx {
                     }
                     // ooh, new branch!
                     //get address of object that will be the event passenger
-                    T *passengerAddress;
                     //connect input branch to this passenger
-                    TBranchElement *tbe = dynamic_cast<TBranchElement *>(branch);
-                    if (tbe) {
-                        //arrays of objects (e.g. vectors) are loaded into TTree's as TBranchElements
-                        passengers_[branchName] = *((T *)(tbe->GetObject()));
-                        //passengerAddress = (T *)(tbe->GetObject());
-                    } else {
-                        //for non-array objects
-                        std::cout << "I AM NOT A TBRANCHELEMENT" << std::endl;
-                        branch->SetAddress( &passengerAddress );
-                        passengers_[branchName] = EventBusPassenger( *passengerAddress );
-                    }
+                    passengers_[branchName] = *((T *)(branch->GetObject()));
                     branch->SetAutoDelete(false); //don't let root remove the objects we want
                     branch->SetStatus(1); //tell root this branch should be active
                     branch->GetEntry((ientry_<0)?(0):(ientry_)); //load in current entry
         
                     //insert into maps of loaded branches and passengers
-                    //passengers_[branchName] = EventBusPassenger( *passengerAddress );
                     branches_[branchName]   = branch;
         
                     return boost::get<T>( passengers_.at(branchName) );
@@ -609,7 +592,7 @@ namespace ldmx {
             /**
              * Map of names to branches.
              */
-            mutable std::map<std::string, TBranch*> branches_;
+            mutable std::map<std::string, TBranchElement*> branches_;
 
             /**
              * Map of names to passengers.
@@ -619,7 +602,7 @@ namespace ldmx {
             /**
              * List of new branches added.
              */
-            std::vector<TBranch*> newBranches_;
+            std::vector<TBranchElement*> newBranches_;
 
             /**
              * Names of all branches.
