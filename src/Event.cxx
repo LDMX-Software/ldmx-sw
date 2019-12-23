@@ -114,7 +114,12 @@ namespace ldmx {
 
     void Event::beforeFill() {
         if (inputTree_==0 && branchesFilled_.find(EventConstants::EVENT_HEADER)==branchesFilled_.end()) {
+            //Event Header not copied from input and hasn't been added yet, need to put it in
             add(EventConstants::EVENT_HEADER, eventHeader_);
+        }
+        //sort passengers as defined in sortPassenger class
+        for ( auto passenger : passengers_ ) {
+            boost::apply_visitor( sortPassenger() , passenger.second );
         }
     }
 
