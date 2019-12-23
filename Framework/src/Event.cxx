@@ -117,10 +117,6 @@ namespace ldmx {
             //Event Header not copied from input and hasn't been added yet, need to put it in
             add(EventConstants::EVENT_HEADER, eventHeader_);
         }
-        //sort passengers as defined in sortPassenger class
-        for ( auto passenger : passengers_ ) {
-            boost::apply_visitor( sortPassenger() , passenger.second );
-        }
     }
 
     void Event::Clear() {

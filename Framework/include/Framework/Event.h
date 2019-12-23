@@ -275,6 +275,7 @@ namespace ldmx {
                 //copy input contents into bus passenger
                 EventBusPassenger toAdd( obj );
                 if ( toAdd.which() == passengers_[branchName].which() ) {
+                    boost::apply_visitor( sortPassenger() , toAdd ); //sort before copying over
                     passengers_[branchName] = toAdd;
                 } else {
                     EXCEPTION_RAISE(
