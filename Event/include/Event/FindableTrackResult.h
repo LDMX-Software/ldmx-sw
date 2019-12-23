@@ -103,6 +103,11 @@ namespace ldmx {
             /** Print out the object */
             void Print(Option_t *option = "") const;
 
+            /** Sort by track ID of particle causing track */
+            bool operator < ( const FindableTrackResult &rhs ) const {
+                return this->getParticleTrackID() < rhs.getParticleTrackID();
+            }
+
         private:
             
             /** Unique identifying number for the particle in Geant4 */

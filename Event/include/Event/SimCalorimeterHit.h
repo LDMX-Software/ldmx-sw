@@ -172,6 +172,13 @@ namespace ldmx {
              */
             void updateContrib(int i, float edep, float time);
 
+            /**
+             * Sort by time of hit
+             */
+            bool operator < ( const SimCalorimeterHit &rhs ) const {
+                return this->getTime() < rhs.getTime();
+            }
+
         private:
 
             /**

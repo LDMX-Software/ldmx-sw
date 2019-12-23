@@ -58,6 +58,37 @@ namespace ldmx {
 
     };
 
+    /**
+     * @class sortPassenger
+     * Sorting of passenger event objects.
+     *
+     * This method allows for the collections to be sorted by
+     * the content's defined comparison operator <.
+     *
+     * @note If the operator < is not defined, std::sort implicitly
+     * converts the object to a more basic object that has an included
+     * less than operator.
+     *
+     * @note More specific sorting methods can be input here if you wish.
+     * When templating, be aware that the order does matter. boost uses
+     * the first function that matches the input type.
+     */
+    class sortPassenger : public boost::static_visitor<void> {
+        public:
+            /**
+             * Sort vectors using the std::sort method.
+             */
+            template <typename T>
+            void operator()(std::vector<T> &vec) const { std::sort(vec.begin(),vec.end()); }
+
+            /**
+             * Don't sort the other objects.
+             */
+            template <typename T>
+            void operator()(T &obj) const { /*Nothing on purpose*/ return; }
+
+    };
+
 
     /**
      * @class printPassenger
