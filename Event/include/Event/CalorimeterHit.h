@@ -121,6 +121,13 @@ namespace ldmx {
              */
             int getLayer() const;
 
+            /**
+             * Sort by time of hit
+             */
+            bool operator < ( const CalorimeterHit &rhs ) const {
+                return this->getTime() < rhs.getTime();
+            }
+
         private:
 
             /** The detector ID of the hit. */

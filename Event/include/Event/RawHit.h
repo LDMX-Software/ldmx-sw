@@ -39,6 +39,13 @@ namespace ldmx {
              */
             float getTime() const { return time_; }
 
+            /**
+             * Sort by time of hit
+             */
+            bool operator < ( const RawHit &rhs ) const {
+                return this->getTime() < rhs.getTime();
+            }
+
         protected: 
 
             /** ADC values associated with this hit. */
