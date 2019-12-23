@@ -123,6 +123,10 @@ namespace ldmx {
                 return hitIDs_;
             }
 
+            bool operator < ( const EcalCluster &rhs ) const {
+                return this->getEnergy() < rhs.getEnergy();
+            }
+
         private:
 
             std::vector<unsigned int> hitIDs_;

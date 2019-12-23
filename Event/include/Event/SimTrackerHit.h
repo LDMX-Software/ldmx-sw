@@ -185,6 +185,13 @@ namespace ldmx {
              */
             void setPdgID(const int simPdgID) { this->pdgID_ = simPdgID; };
 
+            /**
+             * Sort by time of hit
+             */
+            bool operator < ( const SimTrackerHit &rhs ) const {
+                return this->getTime() < rhs.getTime();
+            }
+
         private:
 
             /**
