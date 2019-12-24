@@ -18,6 +18,9 @@ namespace ldmx {
         try {
             int n_events_processed = 0;
 
+            //event bus for this process
+            Event theEvent(passname_);
+
             // first, notify everyone that we are starting
             for (auto module : sequence_) {
                 module->onProcessStart();
@@ -31,7 +34,6 @@ namespace ldmx {
                     module->onFileOpen(outputFiles_[0]);
                 }
 
-                Event theEvent(passname_);
                 outFile.setupEvent(&theEvent);
 
                 while (n_events_processed < eventLimit_) {
@@ -61,6 +63,7 @@ namespace ldmx {
                     module->onFileClose(outputFiles_[0]);
                 }
                 outFile.close();
+                theEvent.onEndOfFile();
 
             } else {
                 //there are input files
@@ -84,8 +87,6 @@ namespace ldmx {
                 for (auto infilename : inputFiles_) {
 
                     EventFile inFile(infilename);
-
-                    Event theEvent(passname_);
 
                     std::cout << "[ Process ] : Opening file " << infilename << std::endl;
 
@@ -188,6 +189,9 @@ namespace ldmx {
                     }
 
                     inFile.close();
+
+                    //reset event in case of single output mode
+                    theEvent.onEndOfFile();
 
                     std::cout << "[ Process ] : Closing file " << infilename << std::endl;
 

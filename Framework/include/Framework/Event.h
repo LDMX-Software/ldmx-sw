@@ -51,7 +51,10 @@ namespace ldmx {
             void operator()(std::map<Key,Val> &m) const { m.clear(); }
 
             /**
-             * Right now all other event objects have a clear method defined.
+             * Right now all other event objects have a Clear method defined.
+             *
+             * @note Notice the difference in capitalization.
+             * This is a artefact of inheriting from TObject.
              */
             template <typename T>
             void operator()(T &obj) const { obj.Clear(); }
@@ -67,7 +70,8 @@ namespace ldmx {
      *
      * @note If the operator < is not defined, std::sort implicitly
      * converts the object to a more basic object that has an included
-     * less than operator.
+     * less than operator. If this implicit conversion doesn't work,
+     * then a complicated compile error is thrown.
      *
      * @note More specific sorting methods can be input here if you wish.
      * When templating, be aware that the order does matter. boost uses
@@ -83,9 +87,11 @@ namespace ldmx {
 
             /**
              * Don't sort the other objects.
+             *
+             * The unused attribute requires the compiler to be gcc!
              */
             template <typename T>
-            void operator()(T &obj) const { /*Nothing on purpose*/ return; }
+            void operator()(__attribute__((unused)) T &obj) const { /*Nothing on purpose*/ return; }
 
     };
 
@@ -224,8 +230,6 @@ namespace ldmx {
              * Adds an object to the event bus
              * @param collectionName
              * @param obj in ROOT dictionary to add
-             *
-             * @note both the input type and the vector have to be included in the event root dictionary
              */
             template <typename T> void add( const std::string& collectionName, T &obj ) {
                 if (collectionName.find('_') != std::string::npos) {
@@ -245,22 +249,30 @@ namespace ldmx {
                             "ProductExists", 
                             "A product named '" 
                             + collectionName 
-                            + "' already exists in the event (has been loaded by a previous producer in this process.");
+                            + "' already exists in the event (has been loaded by a previous producer in this process)."
+                            );
                 }
                 branchesFilled_.insert(branchName);
                 if (passengers_.find(branchName) == passengers_.end()) { 
                     // create a new branch for this collection
+//                    // check type of input exists in passenger list?
+//                    if ( not boost::mpl::has_key< EventBusPassengerList , T >() ) {
+//                        //input type is not allowed
+//                        EXCEPTION_RAISE(
+//                                "IllegalPassenger",
+//                                "The input event bus passenger type '"
+//                                + std::string(typeid(obj).name())
+//                                + "' is not in the list of allowed types EventBusPassengerList defined in Event/include/EventDef.h"
+//                                );
+//                    }
                     passengers_[branchName] = EventBusPassenger( obj );
                     T *passengerAddress = boost::get<T>(&passengers_[branchName]);
                     std::string tname = passengers_[branchName].type().name();//type name (want to use branch element if possible)
                     if (outputTree_ != 0) {
                         TBranchElement *outBranch = dynamic_cast<TBranchElement *>(outputTree_->GetBranch( branchName.c_str() ));
                         if ( outBranch ) {
-                            //branch already exists, just reset branch address
-                            //TODO: This is what made Merge Mode work before vector transition
-                            //  This is not called unless in single output file mode and more than one input file
-                            //  Currently causes a seg fault when transitioning between input files
-                            outBranch->SetAddress( &passengerAddress );
+                            //branch already exists, just reset branch object
+                            outBranch->SetObject( passengerAddress );
                         } else {
                             //branch doesnt exist, make new one
                             outBranch = dynamic_cast<TBranchElement*>(outputTree_->Branch( branchName.c_str(), passengerAddress , 100000, 3));
@@ -383,7 +395,8 @@ namespace ldmx {
                                     "ProductNotFound",
                                     "No product found for name '"
                                     + collectionName
-                                    + "'");
+                                    + "'"
+                                    );
                         } else if (matches.size()>1) {
                             //more than one branch found
                             std::string names;
@@ -436,7 +449,6 @@ namespace ldmx {
         
                     // update buffers if needed
                     if (itBranch->second->GetReadEntry() != ientry_) {
-                        T *passengerAddress = boost::get<T>( &itPassenger->second );
                         itBranch->second->GetEntry(ientry_, 1);
                     }
         
@@ -545,7 +557,10 @@ namespace ldmx {
             void onEndOfEvent();
 
             /**
-             * Perform end of file action (doesn't do anything right now).
+             * Perform end of file action.
+             *
+             * Clears buffer objects and resets output branch addresses.
+             * This prepares the event bus for a new input file (with new addresses).
              */
             void onEndOfFile();
 
