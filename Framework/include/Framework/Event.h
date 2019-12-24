@@ -256,11 +256,8 @@ namespace ldmx {
                     if (outputTree_ != 0) {
                         TBranchElement *outBranch = dynamic_cast<TBranchElement *>(outputTree_->GetBranch( branchName.c_str() ));
                         if ( outBranch ) {
-                            //branch already exists, just reset branch address
-                            //TODO: This is what made Merge Mode work before vector transition
-                            //  This is not called unless in single output file mode and more than one input file
-                            //  Currently causes a seg fault when transitioning between input files
-                            outBranch->SetAddress( &passengerAddress );
+                            //branch already exists, just reset branch object
+                            outBranch->SetObject( passengerAddress );
                         } else {
                             //branch doesnt exist, make new one
                             outBranch = dynamic_cast<TBranchElement*>(outputTree_->Branch( branchName.c_str(), passengerAddress , 100000, 3));
