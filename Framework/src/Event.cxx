@@ -123,10 +123,14 @@ namespace ldmx {
             boost::apply_visitor( clearPassenger() , passenger.second );
         }
     }
+
     void Event::onEndOfEvent() {
     }
 
     void Event::onEndOfFile() {
+        passengers_.clear(); //reset event bus
+        branches_.clear(); //reset branches
+        outputTree_->ResetBranchAddresses(); //reset addresses for output branch
     }
 
 }
