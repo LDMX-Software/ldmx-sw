@@ -39,7 +39,7 @@
 #pragma link C++ class ldmx::RawHit+;
 #pragma link C++ class ldmx::DigiCollection+; 
 
-//objects that we want to be added inside of a vector must be repeated below
+//objects that we want to be added inside of an STL collection must be repeated below
 #pragma link C++ class std::vector<ldmx::SimCalorimeterHit>+;
 #pragma link C++ class std::vector<ldmx::SimTrackerHit>+;
 #pragma link C++ class std::vector<ldmx::SimParticle>+;
