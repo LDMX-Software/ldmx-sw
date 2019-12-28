@@ -15,8 +15,7 @@
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
 #include "DetDescr/EcalDetectorID.h"
-#include "Event/EcalVetoResult.h"
-#include "Event/SimTrackerHit.h"
+#include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
 
 //C++
@@ -24,9 +23,6 @@
 #include <memory>
 
 namespace ldmx {
-
-    class EcalHit;
-    class EcalHexReadout;
 
     /**
      * @class BDTHelper
@@ -100,17 +96,17 @@ namespace ldmx {
 
             void clearProcessor();
 
-            LayerCellPair hitToPair(EcalHit* hit);
+            LayerCellPair hitToPair(const EcalHit &hit);
 
             /* Function to calculate the energy weighted shower centroid */
-            int GetShowerCentroidIDAndRMS(const TClonesArray* ecalRecHits, double & showerRMS);
+            int GetShowerCentroidIDAndRMS(const std::vector< EcalHit > &ecalRecHits, double & showerRMS);
 
             /* Function to load up empty vector of hit maps */
-            void fillHitMap(const TClonesArray* ecalRecHits,
+            void fillHitMap(const std::vector< EcalHit > &ecalRecHits,
                     std::vector<std::map<int, float>>& cellMap_);
 
             /* Function to take loaded hit maps and find isolated hits in them */
-            void fillIsolatedHitMap(const TClonesArray* ecalRecHits,
+            void fillIsolatedHitMap(const std::vector< EcalHit > &ecalRecHits,
                     float globalCentroid,
                     std::vector<std::map<int, float>>& cellMap_,
                     std::vector<std::map<int, float>>& cellMapIso_,
@@ -149,7 +145,6 @@ namespace ldmx {
         
             double bdtCutVal_{0};
 
-            EcalVetoResult result_;
             EcalDetectorID detID_;
             bool verbose_{false};
             bool doesPassVeto_{false};

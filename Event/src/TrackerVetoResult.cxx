@@ -29,7 +29,7 @@ namespace ldmx {
         passesVeto_ = false;
     }    
 
-    void TrackerVetoResult::Print(Option_t *option) { 
+    void TrackerVetoResult::Print(Option_t *option) const { 
         std::cout << "[ TrackerVetoResult ]: Passes veto : " 
                   << " Passes veto: " << passesVeto_ << std::endl;
     }

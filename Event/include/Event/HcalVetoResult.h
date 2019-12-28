@@ -12,13 +12,14 @@
 //   ROOT   //
 //----------//
 #include "TObject.h"
-#include "TRef.h"
+
+//----------//
+//   LDMX   //
+//----------//
+#include "Event/HcalHit.h"
 
 namespace ldmx { 
 
-    // Forward declarations within the ldmx namespace
-    class HcalHit; 
-    
     class HcalVetoResult : public TObject { 
         
         public: 
@@ -36,38 +37,32 @@ namespace ldmx {
             void Clear(Option_t *option = ""); 
             
             /** Print out the object */
-            void Print(Option_t *option = "");
+            void Print(Option_t *option = "") const;
 
             /** Checks if the event passes the Hcal veto. */
             bool passesVeto() const { return passesVeto_; };
 
             /** @return The maximum PE HcalHit. */
-            inline HcalHit* getMaxPEHit() const { 
-                return (HcalHit*) maxPEHit_.GetObject();
-            } 
+            inline HcalHit getMaxPEHit() const { return maxPEHit_; } 
 
             /**
              * Sets whether the Hcal veto was passed or not.
              *
              * @param passesVeto Veto result. 
              */
-            inline void setVetoResult(const bool& passesVeto = true) { 
-                passesVeto_ = passesVeto; 
-            } 
+            inline void setVetoResult(const bool& passesVeto = true) { passesVeto_ = passesVeto; } 
 
             /**
              * Set the maximum PE hit.
              *
              * @param maxPEHit The maximum PE HcalHit
              */
-            inline void setMaxPEHit(HcalHit* maxPEHit) { 
-               maxPEHit_ = (TObject*) maxPEHit; 
-            } 
+            inline void setMaxPEHit(const HcalHit maxPEHit) { maxPEHit_ = maxPEHit; } 
 
         private:
             
             /** Reference to max PE hit. */
-            TRef maxPEHit_; 
+            HcalHit maxPEHit_; 
 
             /** Flag indicating whether the event passes the Hcal veto. */
             bool passesVeto_{false};

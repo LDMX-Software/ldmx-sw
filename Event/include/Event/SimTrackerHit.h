@@ -10,10 +10,6 @@
 
 // ROOT
 #include "TObject.h"
-#include "TRef.h"
-
-// LDMX
-#include "Event/SimParticle.h"
 
 // STL
 #include <iostream>
@@ -118,12 +114,6 @@ namespace ldmx {
             int getPdgID() const { return pdgID_; };
 
             /**
-             * Get the Monte Carlo particle that created the hit.
-             * @return The particle that created the hit.
-             */
-            SimParticle* getSimParticle() const;
-
-            /**
              * Set the detector ID of the hit.
              * @param id The detector ID of the hit.
              */
@@ -196,10 +186,11 @@ namespace ldmx {
             void setPdgID(const int simPdgID) { this->pdgID_ = simPdgID; };
 
             /**
-             * Set the Monte Carlo particle that created the hit.
-             * @param simParticle The particle that created the hit.
+             * Sort by time of hit
              */
-            void setSimParticle(SimParticle* simParticle) { this->simParticle_ = (TObject*) simParticle; };
+            bool operator < ( const SimTrackerHit &rhs ) const {
+                return this->getTime() < rhs.getTime();
+            }
 
         private:
 
@@ -275,11 +266,6 @@ namespace ldmx {
              * The Sim PDG ID.
              */
             int pdgID_{0};
-
-            /**
-             * The particle that caused the hit.
-             */
-            TRef simParticle_{nullptr};
 
             /**
              * The ROOT class definition.

@@ -10,7 +10,6 @@
 // ROOT
 #include "TObject.h"
 #include "TString.h"
-#include "TRefArray.h"
 
 // STL
 #include <iostream>
@@ -122,6 +121,10 @@ namespace ldmx {
 
             const std::vector<unsigned int>& getHitIDs() const {
                 return hitIDs_;
+            }
+
+            bool operator < ( const EcalCluster &rhs ) const {
+                return this->getEnergy() < rhs.getEnergy();
             }
 
         private:

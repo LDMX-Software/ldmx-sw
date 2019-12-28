@@ -8,19 +8,44 @@
 #ifndef _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 #define _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 
-//------------//
-//   Geant4   //
-//------------//
-#include "G4PersistencyManager.hh"
-#include "G4PersistencyCenter.hh"
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <algorithm>
+#include <string>
+
+//-----------//
+//   Boost   //
+//-----------//
+#include <boost/format.hpp>
+#include <boost/variant.hpp>
 
 //-------------//
 //   ldmx-sw   //
 //-------------//
+#include "Exception/Exception.h"
+#include "Event/EventDef.h"
+#include "Framework/Event.h"
+#include "Framework/EventFile.h"
+#include "SimApplication/CalorimeterSD.h"
+#include "SimApplication/DetectorConstruction.h"
+#include "SimApplication/RunManager.h"
+#include "SimApplication/TrackerSD.h"
+#include "SimApplication/ScoringPlaneSD.h"
 #include "SimApplication/EcalHitIO.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
 #include "SimApplication/SimParticleBuilder.h"
+
+//------------//
+//   Geant4   //
+//------------//
+#include "G4Run.hh"
+#include "G4RunManager.hh"
+#include "G4RunManagerKernel.hh"
+#include "G4SDManager.hh"
+#include "G4PersistencyManager.hh"
+#include "G4PersistencyCenter.hh"
 
 // Forward declarations
 class G4Run; 
@@ -52,19 +77,13 @@ namespace ldmx {
 
         public:
 
-            typedef std::map<std::string, TClonesArray*> HitsCollectionMap;
-
             /**
              * Class constructor.
              * Installs the object as the global persistency manager.
              */
             RootPersistencyManager();
 
-            virtual ~RootPersistencyManager() {
-                for (auto entry : outputHitsCollections_) {
-                    delete entry.second;
-                }
-            }
+            virtual ~RootPersistencyManager() { }
 
             /**
              * Get the current ROOT persistency manager or <i>nullptr</i> if not registered.
@@ -116,7 +135,7 @@ namespace ldmx {
              */
             void setEnableHitContribs(bool enableHitContribs) {
                 // Pass this flag to the ECal IO helper.
-                ecalHitIO_->setEnableHitContribs(enableHitContribs);
+                ecalHitIO_.setEnableHitContribs(enableHitContribs);
             }
 
             /**
@@ -127,7 +146,7 @@ namespace ldmx {
              */
             void setCompressHitContribs(bool compressHitContribs) {
                 // Pass this flag to the ECal IO helper.
-                ecalHitIO_->setCompressHitContribs(compressHitContribs);
+                ecalHitIO_.setCompressHitContribs(compressHitContribs);
             }
 
             void setCompressionLevel(int compressionLevel) {
@@ -192,26 +211,20 @@ namespace ldmx {
              * @param hc The collection of G4TrackerHits.
              * @param outputColl The output collection of SimTrackerHits.
              */
-            void writeTrackerHitsCollection(G4TrackerHitsCollection* hc, TClonesArray* outputColl);
+            void writeTrackerHitsCollection(G4TrackerHitsCollection* hc, std::vector<SimTrackerHit> &outputColl);
 
             /**
              * Write a collection of tracker hits to an output collection.
              * @param hc The collection of G4CalorimeterHits.
              * @param outputColl The output collection of SimCalorimeterHits.
              */
-            void writeCalorimeterHitsCollection(G4CalorimeterHitsCollection* hc, TClonesArray* outputColl);
+            void writeCalorimeterHitsCollection(G4CalorimeterHitsCollection* hc, std::vector<SimCalorimeterHit> &outputColl);
 
             /**
              * Print out event info and data depending on the verbose level.
              * @param anEvent The output event.
              */
             void printEvent(Event* anEvent);
-
-            /**
-             * Setup a map of HC names to output TClonesArray collections.
-             * This is called once at the beginning of the run.
-             */
-            void setupHitsCollectionMap();
 
             /**
              * Create the run header for writing into the output file.
@@ -265,17 +278,12 @@ namespace ldmx {
             /**
              * Handles ECal hit readout and IO.
              */
-            EcalHitIO* ecalHitIO_;
+            EcalHitIO ecalHitIO_;
 
             /**
              * Helper for building output SimParticle collection.
              */
             SimParticleBuilder simParticleBuilder_;
-
-            /**
-             * Map of HC names to output TClonesArray collection.
-             */
-            HitsCollectionMap outputHitsCollections_;
 
     };
 

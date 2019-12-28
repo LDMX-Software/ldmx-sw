@@ -1,14 +1,5 @@
-// ROOT
-#include "TString.h"
 
-// STL
-#include <cmath>
-
-#include "Event/TriggerResult.h"
-#include "Event/EcalHit.h"
 #include "EventProc/TriggerProcessor.h"
-#include "Framework/EventProcessor.h"
-#include "DetDescr/EcalHexReadout.h"
 
 namespace ldmx {
 
@@ -29,17 +20,16 @@ namespace ldmx {
     void TriggerProcessor::produce(Event& event) {
 
         /** Grab the Ecal hit collection for the given event */
-        const TClonesArray *ecalRecHits = event.getCollection("ecalRecHits");
-        int numEcalHits = ecalRecHits->GetEntriesFast();
+        const std::vector<EcalHit> ecalRecHits = event.getCollection<EcalHit>("EcalRecHits");
 
         std::vector<double> layerDigiE(100, 0.0); // big empty vector..
 
         /** Loop over all ecal hits in the given event */
-        for (int iHit = 0; iHit < numEcalHits; ++iHit) {
-            EcalHit *hit = (EcalHit*) ecalRecHits->At(iHit);
-            if (hit->getLayer() < layerDigiE.size()) { // just to be safe...
+        for (const EcalHit &hit : ecalRecHits ) {
+
+            if (hit.getLayer() < layerDigiE.size()) { // just to be safe...
                 if (mode_ == 0) { // Sum over all cells in a given layer
-                    layerDigiE[hit->getLayer()] += hit->getEnergy();
+                    layerDigiE[hit.getLayer()] += hit.getEnergy();
                 } else if (mode_ == 1) { // Sum over cells in central tower only
                     //std::pair<float, float> xyPos = hit->getCellCentroidXYPair(hit->getID());
                     //float cellRadius = sqrt(pow(xyPos.first, 2) + pow(xyPos.second, 2));
@@ -59,12 +49,13 @@ namespace ldmx {
 
         pass = (layerSum <= layerESumCut_);
 
-        result_.set(algoName_, pass, 3);
-        result_.setAlgoVar(0, layerSum);
-        result_.setAlgoVar(1, layerESumCut_);
-        result_.setAlgoVar(2, endLayer_ - startLayer_);
+        TriggerResult result;
+        result.set(algoName_, pass, 3);
+        result.setAlgoVar(0, layerSum);
+        result.setAlgoVar(1, layerESumCut_);
+        result.setAlgoVar(2, endLayer_ - startLayer_);
 
-        event.addToCollection("Trigger", result_);
+        event.add("Trigger", result );
 
         // mark the event
         if (pass) 

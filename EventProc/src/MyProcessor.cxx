@@ -1,11 +1,6 @@
 
 #include "EventProc/MyProcessor.h" 
 
-/************/
-/*   LDMX   */
-/************/
-#include "Event/EcalHit.h"
-
 namespace ldmx { 
 
     MyProcessor::MyProcessor(const std::string &name, Process &process) : 
@@ -20,21 +15,18 @@ namespace ldmx {
 
     void MyProcessor::produce(Event& event) { 
 
-        // Check if the collection of digitzed ECal hits exist.  If not, 
+        // Check if the collection of reconstructed ECal hits exist.  If not, 
         // don't bother processing the event. 
-        if (!event.exists("ecalRecHits")) return; 
+        if (!event.exists("EcalRecHits")) return; 
 
         // Get the collection of digitized ECal hits from the event
-        auto hits = event.getCollection("ecalRecHits"); 
+        const std::vector<EcalHit> hits = event.getCollection<EcalHit>("EcalRecHits"); 
 
         // Loop over the collection of hits and print the hit details
-        for (int iHit{0}; iHit < hits->GetEntriesFast(); ++iHit) { 
+        for (const EcalHit &hit : hits ) {
             
-            // Retrieve the ith hit from the collection
-            auto hit = static_cast<EcalHit*>(hits->At(iHit)); 
-
             // Print the hit
-            hit->Print(); 
+            hit.Print(); 
         }
     }
 } // ldmx

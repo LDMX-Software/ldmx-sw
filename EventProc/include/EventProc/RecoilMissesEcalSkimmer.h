@@ -11,6 +11,7 @@
 //----------//
 //   LDMX   //
 //----------//
+#include "Tools/AnalysisUtils.h"
 #include "Event/EventConstants.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Event/SimParticle.h"

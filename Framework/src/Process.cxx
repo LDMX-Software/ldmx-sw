@@ -2,7 +2,7 @@
 #include "TFile.h"
 #include "TROOT.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/EventImpl.h"
+#include "Framework/Event.h"
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
 #include "Event/RunHeader.h"
@@ -18,6 +18,9 @@ namespace ldmx {
         try {
             int n_events_processed = 0;
 
+            //event bus for this process
+            Event theEvent(passname_);
+
             // first, notify everyone that we are starting
             for (auto module : sequence_) {
                 module->onProcessStart();
@@ -31,16 +34,15 @@ namespace ldmx {
                     module->onFileOpen(outputFiles_[0]);
                 }
 
-                EventImpl theEvent(passname_);
                 outFile.setupEvent(&theEvent);
 
                 while (n_events_processed < eventLimit_) {
-                    EventHeader& eh = theEvent.getEventHeaderMutable();
+                    EventHeader& eh = theEvent.getEventHeader();
                     eh.setRun(runForGeneration_);
                     eh.setEventNumber(n_events_processed + 1);
                     eh.setTimestamp(TTimeStamp());
 
-                    theEvent.getEventHeader()->Print();
+                    theEvent.getEventHeader().Print();
 
                     // reset the storage controller state
                     m_storageController.resetEventState();
@@ -61,6 +63,7 @@ namespace ldmx {
                     module->onFileClose(outputFiles_[0]);
                 }
                 outFile.close();
+                theEvent.onEndOfFile();
 
             } else {
                 //there are input files
@@ -84,8 +87,6 @@ namespace ldmx {
                 for (auto infilename : inputFiles_) {
 
                     EventFile inFile(infilename);
-
-                    EventImpl theEvent(passname_);
 
                     std::cout << "[ Process ] : Opening file " << infilename << std::endl;
 
@@ -140,8 +141,8 @@ namespace ldmx {
                         m_storageController.resetEventState();
             
                         // notify for new run if necessary
-                        if (theEvent.getEventHeader()->getRun() != wasRun) {
-                            wasRun = theEvent.getEventHeader()->getRun();
+                        if (theEvent.getEventHeader().getRun() != wasRun) {
+                            wasRun = theEvent.getEventHeader().getRun();
                             try {
                                 const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
                                 std::cout << "[ Process ] : got new run header from '" << masterFile->getFileName() << "' ..." << std::endl;
@@ -157,8 +158,8 @@ namespace ldmx {
                         if ( (logFrequency_ != -1) && ((n_events_processed + 1)%logFrequency_ == 0)) { 
                             TTimeStamp t;
                             std::cout << "[ Process ] :  Processing " << n_events_processed + 1 
-                                      << " Run " << theEvent.getEventHeader()->getRun() 
-                                      << " Event " << theEvent.getEventHeader()->getEventNumber() 
+                                      << " Run " << theEvent.getEventHeader().getRun() 
+                                      << " Event " << theEvent.getEventHeader().getEventNumber() 
                                       << "  (" << t.AsString("lc") << ")" << std::endl;
                         }
 
@@ -188,6 +189,9 @@ namespace ldmx {
                     }
 
                     inFile.close();
+
+                    //reset event in case of single output mode
+                    theEvent.onEndOfFile();
 
                     std::cout << "[ Process ] : Closing file " << infilename << std::endl;
 
