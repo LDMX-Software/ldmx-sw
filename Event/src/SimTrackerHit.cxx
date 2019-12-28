@@ -41,11 +41,6 @@ namespace ldmx {
         trackID_ = -1;
         pdgID_ = 0;
 
-        simParticle_ = nullptr;
-    }
-
-    SimParticle* SimTrackerHit::getSimParticle() const {
-        return static_cast<SimParticle*>(simParticle_.GetObject());
     }
 
     void SimTrackerHit::setPosition(const float x, const float y, const float z) {

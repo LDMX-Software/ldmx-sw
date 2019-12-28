@@ -17,7 +17,6 @@
 //   ROOT   //
 //----------//
 #include "TRandom3.h"
-#include "TClonesArray.h"
 
 //----------//
 //   LDMX   //
@@ -60,9 +59,6 @@ namespace ldmx {
              * dropped. 
              */
             std::unique_ptr<TRandom3> random_;
-
-            /** Collection of digitized tracker strip hits. */
-            TClonesArray* siStripHits_{nullptr};
 
             /** 
              * Hit efficiency. For now, this is an integer in the range 0-100.

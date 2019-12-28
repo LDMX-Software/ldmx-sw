@@ -35,9 +35,9 @@ namespace ldmx {
         passesVeto_ = false;
     }
 
-    void HcalVetoResult::Print(Option_t *option) { 
+    void HcalVetoResult::Print(Option_t *option) const { 
         std::cout << "[ HcalVetoResult ]: Passes veto : " 
                   << " Passes veto: " << passesVeto_ << std::endl;
-        maxPEHit_.GetObject()->Print(); 
+        maxPEHit_.Print(); 
     }
 }

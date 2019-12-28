@@ -50,54 +50,20 @@ namespace ldmx {
 
     void PnWeightProcessor::produce(Event& event) {
         
-        result_.Clear();
-
         // Get the collection of sim particles from the event.  If the 
         // collection of sim particles is empty, don't process the
         // event.
-        const TClonesArray* simParticles = event.getCollection("SimParticles");
-        if (simParticles->GetEntriesFast() == 0) return; 
+        const std::map<int,SimParticle> simParticleMap = event.getMap<int,SimParticle>("SimParticles");
+        if (simParticleMap.size() == 0) return; 
 
-        // Loop through all of the particles and search for the recoil electron
-        // i.e. an electron which doesn't have any parents.
-        SimParticle* recoilElectron{nullptr};
-        for (int particleCount = 0; particleCount < simParticles->GetEntriesFast(); ++particleCount) { 
-            
-            // Get the nth particle from the collection of particles
-            SimParticle* simParticle = static_cast<SimParticle*>(simParticles->At(particleCount));
-
-            // If the particle doesn't correspond to the recoil electron, 
-            // continue to the next particle.
-            if ((simParticle->getPdgID() == 11) && (simParticle->getParentCount() == 0)) {
-                //std::cout << "[ pnWeightProcessor ]: Recoil electron found." << std::endl;
-                recoilElectron = simParticle; 
-                break;
-            }
-        }
-        /*std::cout << "[ PnWeightProcessor ]: Recoil electron total daughters: " 
-                  << recoilElectron->getDaughterCount() 
-                  << std::endl;*/
-
-        // Search for the PN gamma and use it to get the PN daughters.
-        SimParticle* pnGamma{nullptr};
-        for (int daughterCount = 0; daughterCount < recoilElectron->getDaughterCount(); ++daughterCount) {
-            SimParticle* daughter = recoilElectron->getDaughter(daughterCount);
-            /*std::cout << "[ PnWeightProcessor ]: Total daughters: "
-                      << daughter->getDaughterCount() 
-                      << std::endl;*/
-            if ((daughter->getDaughterCount() > 0) && 
-                    (daughter->getDaughter(0)->getProcessType() == SimParticle::ProcessType::photonNuclear)) {
-                /*std::cout << "[ PnWeightProcessor ]: Found PN gamma!"
-                          << std::endl;*/
-                pnGamma = daughter; 
-                break;
-            }
-        }
+        // Search for the PN gamma that is a daughter of the recoil electron
+        // and use it to get the PN daughters.
+        const SimParticle* pnGamma = Analysis::getRecoilPNGamma( simParticleMap );
 
         // For PN biased events, there should always be a gamma that
         // underwent a PN reaction.
         if (pnGamma == nullptr) {
-            EXCEPTION_RAISE( "PnWeightProc" , "Event doesn't contain a PN Gamma." );
+            EXCEPTION_RAISE( "PnWeightProc" , "Event doesn't contain a PN Gamma that is the daughter of the recoil electron." );
         }
 
         double hardestNucleonKe = -9999;
@@ -106,10 +72,21 @@ namespace ldmx {
         double highestWNucleonKe = -9999;
         double highestWNucleonTheta = -9999;
         double highestWNucleonW = -9999; 
-        for (int pnDaughterCount = 0; pnDaughterCount < pnGamma->getDaughterCount(); ++pnDaughterCount) { 
+        PnWeightResult result;
+        for (const int &daughterTrackID : pnGamma->getDaughters() ) { 
            
             // Get a daughter of the PN gamma 
-            SimParticle* pnDaughter = pnGamma->getDaughter(pnDaughterCount);
+            const SimParticle *pnDaughter;
+            if ( simParticleMap.count( daughterTrackID ) > 0 ) {
+                pnDaughter = &( simParticleMap.at( daughterTrackID ) );
+            } else {
+                //pnDaughter not stored in particle map
+                EXCEPTION_RAISE(
+                        "MissingPNDaughter",
+                        "PN Daughter with track ID " + std::to_string(daughterTrackID) +
+                        " has not been stored. Have you stored all of the daughters of PN interactions?"
+                        );
+            }
 
             // Calculate the kinetic energy
             double ke = (pnDaughter->getEnergy() - pnDaughter->getMass());
@@ -132,10 +109,10 @@ namespace ldmx {
             if ((pdgID == PROTON_PDGID) || (pdgID == NEUTRON_PDGID)) { 
 
                 // Add the W of the current nucleon to the inclusive collection.
-                result_.addW(w);
+                result.addW(w);
                 
                 // Add the theta of the current nucleon to the inclusive collection. 
-                result_.addTheta(theta); 
+                result.addTheta(theta); 
 
                 // Find the nucleon with the greatest kinetic energy   
                 if (ke > hardestNucleonKe) { 
@@ -150,8 +127,8 @@ namespace ldmx {
                     highestWNucleonTheta = theta;
                     highestWNucleonW = w;  
                 }
-            }
-        }
+            }//pnDaughter is nucleon
+        }//loop through pnDaughters
        
         // If the W of the highest W nucleon is above the threshold and the
         // polar angle is above the angle threshold, reweight the event. 
@@ -161,23 +138,23 @@ namespace ldmx {
             eventWeight = calculateWeight(highestWNucleonW);   
         }
 
-        result_.setHardestNucleonKe(hardestNucleonKe); 
-        result_.setHardestNucleonTheta(hardestNucleonTheta); 
-        result_.setHardestNucleonW(hardestNucleonW); 
-        result_.setHighestWNucleonKe(highestWNucleonKe); 
-        result_.setHighestWNucleonTheta(highestWNucleonTheta); 
-        result_.setHighestWNucleonW(highestWNucleonW); 
-        result_.setWeight(eventWeight); 
+        result.setHardestNucleonKe(hardestNucleonKe); 
+        result.setHardestNucleonTheta(hardestNucleonTheta); 
+        result.setHardestNucleonW(hardestNucleonW); 
+        result.setHighestWNucleonKe(highestWNucleonKe); 
+        result.setHighestWNucleonTheta(highestWNucleonTheta); 
+        result.setHighestWNucleonW(highestWNucleonW); 
+        result.setWeight(eventWeight); 
 
         // Add the result to the collection    
-        event.addToCollection("PNweight", result_);
+        event.add("PNweight", result);
     }
 
     double PnWeightProcessor::calculateWeight(double w) {
         return lFit->Eval(w)/hFit->Eval(w); 
     }
 
-    double PnWeightProcessor::calculateW(SimParticle* particle, double delta) {
+    double PnWeightProcessor::calculateW(const SimParticle* particle, double delta) {
         double px = particle->getMomentum()[0];
         double py = particle->getMomentum()[1];
         double pz = particle->getMomentum()[2];

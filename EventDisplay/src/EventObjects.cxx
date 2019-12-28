@@ -21,32 +21,20 @@ namespace ldmx {
 
     }
 
-    static bool compEcalHits(const EcalHit* a, const EcalHit* b) {
-        return a->getEnergy() > b->getEnergy();
+    static bool compEcalHits(const EcalHit &a, const EcalHit &b) {
+        return a.getEnergy() > b.getEnergy();
     }
 
-    static bool compHcalHits(const HcalHit* a, const HcalHit* b) {
-        return a->getPE() > b->getPE();
+    static bool compHcalHits(const HcalHit &a, const HcalHit &b) {
+        return a.getPE() > b.getPE();
     }
 
-    static bool compSimsP(const SimTrackerHit* a, const SimTrackerHit* b) {
-
-        std::vector<double> paVec = a->getMomentum();
-        std::vector<double> pbVec = b->getMomentum();
-
-        double pa2 = pow(paVec[0],2)+pow(paVec[1],2)+pow(paVec[2],2);
-        double pb2 = pow(pbVec[0],2)+pow(pbVec[1],2)+pow(pbVec[2],2);
-
-        return pa2 > pb2;
+    static bool compScorePlaneHits(const SimTrackerHit &a, const SimTrackerHit &b) {
+        return (a.getTrackID() < b.getTrackID());
     }
 
-    static bool compSims(const SimTrackerHit* a, const SimTrackerHit* b) {
-
-        if (a->getSimParticle() == b->getSimParticle()) {
-            return compSimsP(a,b);
-        } else {
-            return a->getSimParticle() < b->getSimParticle();
-        }
+    static bool areScorePlaneHitsEqual(const SimTrackerHit &a, const SimTrackerHit &b) {
+        return (a.getTrackID() == b.getTrackID());
     }
 
     void EventObjects::SetSimThresh(double simThresh) {
@@ -59,7 +47,7 @@ namespace ldmx {
         for (sim = spHits->BeginChildren(); sim != spHits->EndChildren(); sim++) {
             
             TEveElement* el = *sim;
-            SimParticle* sp = (ldmx::SimParticle*)el->GetSourceObject();
+            SimTrackerHit* sp = (ldmx::SimTrackerHit*)el->GetSourceObject();
             std::vector<double> pVec = sp->getMomentum();
             double p = pow(pow(pVec[0],2) + pow(pVec[1],2) + pow(pVec[2],2),0.5);
             if (p < simThresh_) { 
@@ -103,21 +91,15 @@ namespace ldmx {
         }
     }
 
-    void EventObjects::drawECALHits(TClonesArray* hits) {
+    void EventObjects::drawECALHits(std::vector<EcalHit> hits) {
 
-        ldmx::EcalHit* hit;
         TEveRGBAPalette* palette = new TEveRGBAPalette(0,500.0);
 
-        std::vector<EcalHit*> hitVec;
-        for (TIter next(hits); hit = (ldmx::EcalHit*)next();) {
-            hitVec.push_back(hit);
-        }
+        std::sort(hits.begin(), hits.end(), compEcalHits);
 
-        std::sort(hitVec.begin(), hitVec.end(), compEcalHits);
+        for ( const EcalHit &hit : hits ) {
 
-        for (int i = 0; i < hitVec.size(); i++) {
-
-            double energy = hitVec[i]->getEnergy();
+            double energy = hit.getEnergy();
 
             if (energy == 0) { continue; }
 
@@ -128,12 +110,12 @@ namespace ldmx {
             TColor* aColor = new TColor();
             Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
 
-            TEveGeoShape* ecalRecHit = EveShapeDrawer::getInstance().drawHexPrism(
-                    DetectorGeometry::getInstance().getHexPrism( hitVec[i] ),
+            TEveGeoShape* ecalDigiHit = EveShapeDrawer::getInstance().drawHexPrism(
+                    DetectorGeometry::getInstance().getHexPrism( hit ),
                     0, 0, 0, 
                     color, 0, digiName);
 
-            ecalHits_->AddElement(ecalRecHit);
+            ecalHits_->AddElement(ecalDigiHit);
         }
 
         ecalHits_->SetPickableRecursively(1);
@@ -141,44 +123,38 @@ namespace ldmx {
         hits_->AddElement(ecalHits_);
     }
 
-    void EventObjects::drawHCALHits(TClonesArray* hits) {
+    void EventObjects::drawHCALHits(std::vector<HcalHit> hits) {
 
 
         TEveRGBAPalette* palette = new TEveRGBAPalette(0,100.0);
 
-        std::vector<HcalHit*> hitVec;
-        ldmx::HcalHit* hit;
-        for (TIter next(hits); hit = (ldmx::HcalHit*)next();) {
-            hitVec.push_back(hit);
-        }
-
-        std::sort(hitVec.begin(), hitVec.end(), compHcalHits);
+        std::sort(hits.begin(), hits.end(), compHcalHits);
 
         ldmx::HcalID detID;
-        for (int i = 0; i < hitVec.size(); i++) {
-            int pe = hitVec[i]->getPE();
+        for ( const HcalHit &hit : hits ) {
+            int pe = hit.getPE();
             if (pe == 0) { continue; }
 
-            detID.setRawValue(hitVec[i]->getID());
+            detID.setRawValue(hit.getID());
             detID.unpack();
 
             const UChar_t* rgb = palette->ColorFromValue(pe);
             TColor* aColor = new TColor();
             Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
 
-            int bar = hitVec[i]->getStrip();
-            int layer = hitVec[i]->getLayer();
-            int section = hitVec[i]->getSection();
+            int bar = hit.getStrip();
+            int layer = hit.getLayer();
+            int section = hit.getSection();
             TString digiName;
-            digiName.Form("%d PEs, Section %d, Layer %d, Bar %d, Z %1.5g", pe, section, layer, bar, hitVec[i]->getZ());
+            digiName.Form("%d PEs, Section %d, Layer %d, Bar %d, Z %1.5g", pe, section, layer, bar, hit.getZ());
 
-            BoundingBox hcal_hit_bb = DetectorGeometry::getInstance().getBoundingBox( hitVec[i] );
+            BoundingBox hcal_hit_bb = DetectorGeometry::getInstance().getBoundingBox( hit );
             TEveGeoShape *hcalDigiHit = EveShapeDrawer::getInstance().drawRectPrism(
                     hcal_hit_bb ,
                     0, 0, 0, color, 0, digiName );
 
             if ( hcalDigiHit ) {
-                if ( hitVec[i]->isNoise() ) { hcalDigiHit->SetRnrSelf(0); }
+                if ( hit.getNoise() ) { hcalDigiHit->SetRnrSelf(0); }
                 hcalHits_->AddElement(hcalDigiHit);
             } // successfully created hcal digi hit
 
@@ -188,21 +164,20 @@ namespace ldmx {
         hits_->AddElement(hcalHits_);
     }
 
-    void EventObjects::drawRecoilHits(TClonesArray* hits) {
+    void EventObjects::drawRecoilHits(std::vector<SimTrackerHit> hits) {
 
-        ldmx::SimTrackerHit* hit;
         int iter = 0;
-        for (TIter next(hits); hit = (ldmx::SimTrackerHit*)next();) {
+        for ( const SimTrackerHit &hit : hits ) {
 
-            std::vector<float> xyzPos = hit->getPosition();
-            double energy = hit->getEdep();
+            std::vector<float> xyzPos = hit.getPosition();
+            double energy = hit.getEdep();
 
             TString recoilName;
             recoilName.Form("Recoil Hit %d", iter);
 
             TEveGeoShape *recoilHit = EveShapeDrawer::getInstance().drawRectPrism(
                     DetectorGeometry::getInstance().getBoundingBox( hit ) ,
-                    0, 0, DetectorGeometry::getInstance().getRotAngle( hit->getLayerID() , hit->getModuleID() )*180/M_PI,
+                    0, 0, DetectorGeometry::getInstance().getRotAngle( hit.getLayerID() , hit.getModuleID() )*180/M_PI,
                     kRed+1, 0, recoilName );
             recoilTrackerHits_->AddElement(recoilHit);
 
@@ -212,21 +187,20 @@ namespace ldmx {
         hits_->AddElement(recoilTrackerHits_);
     }
 
-    void EventObjects::drawECALClusters(TClonesArray* clusters) {
+    void EventObjects::drawECALClusters(std::vector<EcalCluster> clusters) {
 
         TEveRGBAPalette* palette = new TEveRGBAPalette(0,4000.0);
 
         int iC = 0;
-        EcalCluster* cluster;
-        for (TIter next(clusters); cluster = (ldmx::EcalCluster*)next();) {
+        for (const EcalCluster &cluster : clusters ) {
 
             TString clusterName;
             clusterName.Form("ECAL Cluster %d", iC);
 
             TEveElement* ecalCluster = new TEveElementList(clusterName);
 
-            double energy = cluster->getEnergy();
-            std::vector<unsigned int> clusterHitIDs = cluster->getHitIDs();
+            double energy = cluster.getEnergy();
+            std::vector<unsigned int> clusterHitIDs = cluster.getHitIDs();
 
             int numHits = clusterHitIDs.size();
 
@@ -239,11 +213,11 @@ namespace ldmx {
                 TColor* aColor = new TColor();
                 Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
     
-                TEveGeoShape* ecalRecHit = EveShapeDrawer::getInstance().drawHexPrism(
+                TEveGeoShape* ecalDigiHit = EveShapeDrawer::getInstance().drawHexPrism(
                         DetectorGeometry::getInstance().getHexPrism( cellID , moduleID , layer ),
                         0, 0, 0, 
                         color, 0, "RecHit");
-                ecalCluster->AddElement(ecalRecHit);
+                ecalCluster->AddElement(ecalDigiHit);
 
                 if (numHits < 2) { 
                     ecalCluster->SetPickableRecursively(0);
@@ -259,61 +233,45 @@ namespace ldmx {
         recoObjs_->AddElement(ecalClusters_);
     }
     
-    void EventObjects::drawECALSimParticles(TClonesArray* ecalSimParticles) {
+    void EventObjects::drawECALSimParticles(std::vector<SimTrackerHit> ecalSimParticles) {
 
-        ldmx::SimTrackerHit* ecalSPP;
-        std::vector<SimTrackerHit*> simVec;
-        std::vector<SimTrackerHit*> filteredSimVec;
-        for (TIter next(ecalSimParticles); ecalSPP = (ldmx::SimTrackerHit*)next();) {
-            simVec.push_back(ecalSPP);
-        }
-
-        std::sort(simVec.begin(), simVec.end(), compSims);
+        std::sort(ecalSimParticles.begin(), ecalSimParticles.end(), compScorePlaneHits );
            
-        SimParticle* lastP = 0; // sometimes multiple SP hits from same particle
-        for (int j = 0; j < simVec.size(); j++) {
-            SimParticle* sP = simVec[j]->getSimParticle();
-            if (sP == lastP) continue;
-            lastP = sP;
-            filteredSimVec.push_back(simVec[j]);
-        }
+        auto lastUniqueEntry = std::unique( ecalSimParticles.begin() , ecalSimParticles.end() , areScorePlaneHitsEqual );
 
-        std::sort(filteredSimVec.begin(), filteredSimVec.end(), compSimsP);
+        ecalSimParticles.erase( lastUniqueEntry , ecalSimParticles.end() );
 
-        for (int j = 0; j < filteredSimVec.size(); j++) {
+        for ( const SimTrackerHit &spHit : ecalSimParticles ) {
 
-            SimParticle* sP = filteredSimVec[j]->getSimParticle();
-
-            std::vector<double> pVec = filteredSimVec[j]->getMomentum();
-            std::vector<float> rVec = filteredSimVec[j]->getPosition();
+            std::vector<double> pVec = spHit.getMomentum();
             double p = pow(pow(pVec[0],2)+pow(pVec[1],2)+pow(pVec[2],2),0.5);
 
-            double E = sP->getEnergy();
+            double E = spHit.getEnergy();
 
-            std::vector<double> simStart = sP->getVertex();
-            std::vector<double> simEnd = sP->getEndPoint();
-            double rCheck = pow(pow(simEnd[0],2)+pow(simEnd[1],2)+pow(simEnd[2],2),0.5);
+            std::vector<float> simStart = spHit.getPosition();
+            std::vector<double> simDir   = pVec;
+            double rCheck = pow(pow(simDir[0],2)+pow(simDir[1],2)+pow(simDir[2],2),0.5);
 
             double scale = 1;
             double largest = 0;
-            if (abs(simEnd[0]) > 3500.0) {
-                 scale = 500.0/abs(simEnd[0]-simStart[0]);
-                 largest = simEnd[0];
+            if (abs(simDir[0]) > 3500.0) {
+                 scale = 500.0/abs(simDir[0]);
+                 largest = simDir[0];
             }
-            if (abs(simEnd[1]) > 3500.0 && abs(simEnd[1]) > largest) {
-                 scale = 500.0/abs(simEnd[1]-simStart[1]);
-                 largest = simEnd[1];
+            if (abs(simDir[1]) > 3500.0 && abs(simDir[1]) > largest) {
+                 scale = 500.0/abs(simDir[1]);
+                 largest = simDir[1];
             }
-            if (abs(simEnd[2]) > 3500.0 && abs(simEnd[2]) > 3500) {
-                 scale = 500.0/abs(simEnd[2]-simStart[2]);
+            if (abs(simDir[2]) > 3500.0 && abs(simDir[2]) > 3500) {
+                 scale = 500.0/abs(simDir[2]);
             }
 
-            double r = pow(pow(scale*(simEnd[0]-simStart[0]),2) + pow(scale*(simEnd[1]-simStart[1]),2) + pow(scale*(simEnd[2]-simStart[2]),2),0.5);
-            signed int pdgID = sP->getPdgID();
+            double r = pow(pow(scale*(simDir[0]),2) + pow(scale*(simDir[1]),2) + pow(scale*(simDir[2]),2),0.5);
+            signed int pdgID = spHit.getPdgID();
 
-            TEveArrow* simArr = new TEveArrow(scale*(simEnd[0]-simStart[0]),scale*(simEnd[1]-simStart[1]),scale*(simEnd[2]-simStart[2]),simStart[0],simStart[1],simStart[2]);
+            TEveArrow* simArr = new TEveArrow(scale*simDir[0],scale*simDir[1],scale*simDir[2],simStart[0],simStart[1],simStart[2]);
 
-            simArr->SetSourceObject(sP);
+            simArr->SetSourceObject( new SimTrackerHit(spHit) ); //TODO: clean up, this is horrendous and depends on TObject
             simArr->SetMainColor(kBlack);
             simArr->SetTubeR(60*0.02/r);
             simArr->SetConeL(100*0.02/r);

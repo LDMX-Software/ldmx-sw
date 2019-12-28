@@ -15,11 +15,6 @@
 #include <map>
 
 //----------//
-//   LDMX   //
-//----------//
-#include "Event/SimParticle.h"
-
-//----------//
 //   ROOT   //
 //----------//
 #include <TObject.h>
@@ -52,50 +47,50 @@ namespace ldmx {
              * Checks if a sim particle is findable using the 4 stereo layers 
              * of the recoil tracker only. 
              */
-            bool is4sFindable() { return is4sFindable_; };
+            bool is4sFindable() const { return is4sFindable_; };
 
             /** 
              * Checks if a sim particle is findable using the strategy 3 
              * stereo + 1 axial.
              *
              */
-            bool is3s1aFindable() { return is3s1aFindable_; };
+            bool is3s1aFindable() const { return is3s1aFindable_; };
 
             /** 
              * Checks if a sim particle is findable using the strategy 2 
              * stereo + 2 axial.
              *
              */
-            bool is2s2aFindable() { return is2s2aFindable_; };
+            bool is2s2aFindable() const { return is2s2aFindable_; };
            
             /** 
              * Checks if a sim particle is findable using the strategy 2 
              * axial.
              *
              */
-            bool is2aFindable() { return is2aFindable_; };
+            bool is2aFindable() const { return is2aFindable_; };
 
             /**
              * Checks if a sim particle is findable using the 2 stereo hit 
              * strategy.
              */
-            bool is2sFindable() { return is2sFindable_; };
+            bool is2sFindable() const { return is2sFindable_; };
 
             /**
              * Checks if a sim particle is findable using the 3 stereo hit 
              * strategy.
              */
-            bool is3sFindable() { return is3sFindable_; };
+            bool is3sFindable() const { return is3sFindable_; };
 
-            /**
-             * Get the sim particle associated with this result.
-             */
-            SimParticle* getSimParticle() const { return (SimParticle*) simParticle_.GetObject(); };
-            
             /**
              * Set the sim particle associated with this result.
              */
-            void setSimParticle(SimParticle* simParticle) { simParticle_ = simParticle; };
+            void setParticleTrackID(int trackID) { particleTrackID_ = trackID; };
+
+            /**
+             * Get the track ID of the sim particle causing this track
+             */
+            int getParticleTrackID() const { return particleTrackID_; }
 
             /**
              * Set the sim particle and 'is findable' flag.
@@ -106,12 +101,17 @@ namespace ldmx {
             void Clear(Option_t *option = ""); 
             
             /** Print out the object */
-            void Print(Option_t *option = "");
+            void Print(Option_t *option = "") const;
+
+            /** Sort by track ID of particle causing track */
+            bool operator < ( const FindableTrackResult &rhs ) const {
+                return this->getParticleTrackID() < rhs.getParticleTrackID();
+            }
 
         private:
             
-            /** Refence to the sim particle. */
-            TRef simParticle_{nullptr};
+            /** Unique identifying number for the particle in Geant4 */
+            int particleTrackID_{-1};
 
             /**
              * Flag indicating whether a particle is findable using the
