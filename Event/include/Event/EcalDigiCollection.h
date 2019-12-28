@@ -21,19 +21,19 @@ namespace ldmx {
      */
     struct EcalDigiSample {
         /** Raw integer ID of channel this sample is for */
-        int rawID_;
+        int rawID_{-1};
 
         /** ADC counts in this channel at this time */
-        int adc_t_;
+        int adc_t_{0};
 
         /** ADC counts in this channel at the previous time */
-        int adc_tm1_;
+        int adc_tm1_{0};
 
         /** Time counts over threshhold in this channel */
-        int tot_;
+        int tot_{0};
 
         /** Time counts when signal arrived in this channel */
-        int toa_;
+        int toa_{0};
     };
 
     /**
