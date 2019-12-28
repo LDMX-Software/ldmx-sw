@@ -67,94 +67,62 @@ namespace ldmx {
     void EcalDigiProducer::produce(Event& event) {
 
         //get simulated ecal hits from Geant4
+        //  the class EcalHitIO in the SimApplication module handles the translation from G4CalorimeterHits to SimCalorimeterHits
+        //  this class ensures that only one SimCalorimeterHit is generated per cell, but
+        //  multiple "contributions" are still handled within SimCalorimeterHit 
         std::vector<SimCalorimeterHit> ecalSimHits = event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS);
 
-        //First we emulate the ROC response by constructing
-        //  a pulse from the timing/energy info and then measuring
-        //  it at 25ns increments
-        //Currently, using list of energies to calculate timing of hit and TOT measurement in linear scale
-        //  TODO: implement pulse measurement simulation
-        std::map< int , std::vector<double> > adcBuffers;
-        std::map< int , std::vector<double> > energyBuffers;
-        std::map< int , std::vector<double> > timeBuffers;
-        for (const SimCalorimeterHit &simHit : ecalSimHits ) {
-            
-            //create pulse from timing/energy information
-            int    hitID     = simHit.getID();
-            double hitEnergy = simHit.getEdep();
-            double hitTime   = simHit.getTime();
-            pulseFunc_.SetParameter( 0 , gain_*hitEnergy );
-            pulseFunc_.SetParameter( 4 , hitTime );
-
-            //init buffer for this detID if it doesn't exist yet
-            if( adcBuffers.find(hitID) == adcBuffers.end() ) 
-            {
-                std::vector<double> adcBuff(nADCs_,pedestal_);
-                adcBuffers.insert({hitID,adcBuff});
-                std::vector<double> energyBuff;
-                energyBuffers.insert({hitID,energyBuff});
-                std::vector<double> timeBuff;
-                timeBuffers.insert({hitID,timeBuff});
-            }
-            energyBuffers[hitID].push_back(hitEnergy);
-            timeBuffers[hitID].push_back(hitTime);
-
-            //measure pulse at 25ns increments and add measurements to buffer
-            for (int ss = 0; ss < nADCs_; ss++)
-            {
-                double pulseEval = pulseFunc_.Eval((double) ss*EcalDigiProducer::CLOCK_CYCLE);
-                adcBuffers[hitID].at(ss) += pulseEval;
-            }
-
-            //measure TOA and TOT
-            double toa = pulseFunc_.GetX(readoutThreshold_, 0.0, hitTime);
-            double tut = pulseFunc_.GetX(readoutThreshold_, hitTime, nADCs_*EcalDigiProducer::CLOCK_CYCLE);
-            double tot = toa - tut;
-
-        }
-        
         //Empty collection to be filled
         EcalDigiCollection ecalDigis;
-        ecalDigis.setNumSamplesPerDigi( 1 );
+        //TODO: number samples per digi probably more than 1
+        ecalDigis.setNumSamplesPerDigi( 1 ); 
 
-        //iterate through all channels and simulate noise on top of everything and build digi
-        std::map< int , std::vector<double> >::iterator it;
-        EcalDigiSample sampleToAdd;
-        std::vector<EcalDigiSample> digisToAdd( ecalDigis.getNumSamplesPerDigi() , sampleToAdd );
-        for ( it = adcBuffers.begin(); it != adcBuffers.end(); it++ )
-        {
+        std::vector<EcalDigiSample> digiToAdd( 1 , EcalDigiSample() );
+        std::set<int> simHitIDs;
+        for (const SimCalorimeterHit &simHit : ecalSimHits ) {
+            
+            //First we emulate the ROC response by constructing
+            //  a pulse from the timing/energy info and then measuring
+            //  it at 25ns increments
+            //total energy and average tiem of contribs inside timing window
+            double energyInWindow = 0.0;
+            double timeInWindow   = 0.0;
+            for ( int iContrib = 0; iContrib < simHit.getNumberOfContribs(); iContrib++ ) {
 
-            int detID = it->first;
-            std::vector<double> buff = it->second;
-            for(int ss = 0; ss < buff.size(); ss++)
-            {
-                //add noise in Gaussian distributed ADC units
-                buff[ss] += noiseInjector_->Gaus(0.0,noiseRMS_/gain_); 
+                SimCalorimeterHit::Contrib contrib = simHit.getContrib( iContrib );
+
+                if ( contrib.time == 0 or contrib.time > EcalDigiProducer::CLOCK_CYCLE*nADCs_ ) {
+                    //invalid contribution - outside time range or time is unset
+                    continue;
+                }
+
+                energyInWindow += contrib.edep;
+                timeInWindow   += contrib.edep * contrib.time;
             }
+            timeInWindow /= energyInWindow; //energy weighted average
 
-            std::vector<double> engs = energyBuffers[detID];
-            std::vector<double> times = timeBuffers[detID];
-            double EtimeSum = 0.0;
-            double engTot = 0.0;
-            for(int hh = 0; hh < engs.size(); hh++)
-            {
-                engTot   += engs[hh];
-                EtimeSum += engs[hh]*times[hh];
-            }
+            //put noise onto pulse parameters
+            energyInWindow += noiseInjector_->Gaus( 0.0 , noiseRMS_/gain_ );
+            timeInWindow   += noiseInjector_->Gaus( 0.0 , EcalDigiProducer::CLOCK_CYCLE / 10. );
 
-            //construct digi in event bus collection
-            //  right now, only creating one digi per hit
-            //  TODO: move onto several digis per hit to mimic real DAQ
-            sampleToAdd.rawID_ = detID;
-            //large smearing on toa to represent bad simulation
-            //  toa counts fraction of time within each 25ns window.
-            sampleToAdd.toa_   = ( abs(EtimeSum/engTot + noiseInjector_->Gaus( 0.0 , 25.0 ))/25. ) / pow( 2. , 10 );
-            //scaling number forces range of 0<->25MeV to 10 bit int
-            sampleToAdd.tot_   = (engTot + noiseInjector_->Gaus( 0.0 , noiseRMS_ ) )*41; 
-            sampleToAdd.adc_t_ = buff.at(0); //already has noise on top
+            pulseFunc_.SetParameter( 0 , gain_*energyInWindow ); //set amplitude to gain * energy
+            pulseFunc_.SetParameter( 4 , timeInWindow ); //set time of peak to simulated hit time
 
-            digisToAdd[0] = sampleToAdd;
-            ecalDigis.addDigi( digisToAdd );
+            //measure TOA and TOT
+            double toa = pulseFunc_.GetX(readoutThreshold_, 0.0, timeInWindow);
+            double tut = pulseFunc_.GetX(readoutThreshold_, timeInWindow, nADCs_*EcalDigiProducer::CLOCK_CYCLE);
+            double tot = toa - tut;
+
+            int    hitID     = simHit.getID();
+            simHitIDs.insert( hitID );
+            
+            digiToAdd[0].rawID_   = hitID;
+            digiToAdd[0].adc_t_   = -1; //NOT IMPLEMENTED
+            digiToAdd[0].adc_tm1_ = -1; //NOT IMPLEMENTED
+            digiToAdd[0].tot_     = tot / pow( 2 , 10. );
+            digiToAdd[0].toa_     = toa / pow( 2 , 10. );
+
+            ecalDigis.addDigi( digiToAdd );
         }
 
         //put noise into some empty channels
@@ -173,17 +141,24 @@ namespace ldmx {
                 detID.setFieldValue( 2 , moduleID );
                 detID.setFieldValue( 3 , cellID );
                 noiseID = detID.pack();
-            } while ( adcBuffers.count(noiseID) > 0 );
+            } while ( simHitIDs.find( noiseID ) != simHitIDs.end() );
 
-            sampleToAdd.rawID_ = noiseID;
-            //large smearing on toa to represent bad simulation
-            sampleToAdd.toa_   = noiseInjector_->Integer( 1023 );
-            //scaling number forces range of 0<->25MeV to 10 bit int
-            sampleToAdd.tot_   = noiseHit*41;
-            sampleToAdd.adc_t_ = 1; //arbitrary number - skipping pulse measurement due to lazyness
+            double hitTime = noiseInjector_->Uniform( EcalDigiProducer::CLOCK_CYCLE );
+            pulseFunc_.SetParameter( 0 , gain_*noiseHit ); //set amplitude to gain * energy
+            pulseFunc_.SetParameter( 4 , hitTime ); //set time of peak to simulated hit time
 
-            digisToAdd[0] = sampleToAdd;
-            ecalDigis.addDigi( digisToAdd );
+            //measure TOA and TOT
+            double toa = pulseFunc_.GetX(readoutThreshold_, 0.0, hitTime );
+            double tut = pulseFunc_.GetX(readoutThreshold_, hitTime, nADCs_*EcalDigiProducer::CLOCK_CYCLE);
+            double tot = toa - tut;
+
+            digiToAdd[0].rawID_   = noiseID;
+            digiToAdd[0].adc_t_   = -1; //NOT IMPLEMENTED
+            digiToAdd[0].adc_tm1_ = -1; //NOT IMPLEMENTED
+            digiToAdd[0].tot_     = tot / pow( 2 , 10. );
+            digiToAdd[0].toa_     = toa / pow( 2 , 10. );
+
+            ecalDigis.addDigi( digiToAdd );
         }
 
         event.add("EcalDigis", ecalDigis );
