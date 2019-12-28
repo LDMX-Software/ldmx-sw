@@ -62,18 +62,12 @@ namespace ldmx {
         pulseFunc_.SetParameter( 5 , 0.140068 );
         pulseFunc_.SetParameter( 6 , 87.7649  );
 
-        ecalDigis_ = new EcalDigiCollection();
-        ecalDigis_->setNumSamplesPerDigi( 1 );
     }
 
     void EcalDigiProducer::produce(Event& event) {
 
-        //Clean up last event
-        ecalDigis_->Clear();
-
         //get simulated ecal hits from Geant4
-        TClonesArray* ecalSimHits = (TClonesArray*) event.getCollection(EventConstants::ECAL_SIM_HITS);
-        int numEcalSimHits = ecalSimHits->GetEntries();
+        std::vector<SimCalorimeterHit> ecalSimHits = event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS);
 
         //First we emulate the ROC response by constructing
         //  a pulse from the timing/energy info and then measuring
@@ -83,14 +77,12 @@ namespace ldmx {
         std::map< int , std::vector<double> > adcBuffers;
         std::map< int , std::vector<double> > energyBuffers;
         std::map< int , std::vector<double> > timeBuffers;
-        for (int iHit = 0; iHit < numEcalSimHits; iHit++) {
+        for (const SimCalorimeterHit &simHit : ecalSimHits ) {
             
-            SimCalorimeterHit* simHit = (SimCalorimeterHit*) ecalSimHits->At(iHit);
-
             //create pulse from timing/energy information
-            int    hitID     = simHit->getID();
-            double hitEnergy = simHit->getEdep();
-            double hitTime   = simHit->getTime();
+            int    hitID     = simHit.getID();
+            double hitEnergy = simHit.getEdep();
+            double hitTime   = simHit.getTime();
             pulseFunc_.SetParameter( 0 , gain_*hitEnergy );
             pulseFunc_.SetParameter( 4 , hitTime );
 
@@ -121,11 +113,14 @@ namespace ldmx {
 
         }
         
+        //Empty collection to be filled
+        EcalDigiCollection ecalDigis;
+        ecalDigis.setNumSamplesPerDigi( 1 );
+
         //iterate through all channels and simulate noise on top of everything and build digi
-        int iHit = 0;
         std::map< int , std::vector<double> >::iterator it;
         EcalDigiSample sampleToAdd;
-        std::vector<EcalDigiSample> digisToAdd( ecalDigis_->getNumSamplesPerDigi() , sampleToAdd );
+        std::vector<EcalDigiSample> digisToAdd( ecalDigis.getNumSamplesPerDigi() , sampleToAdd );
         for ( it = adcBuffers.begin(); it != adcBuffers.end(); it++ )
         {
 
@@ -159,11 +154,11 @@ namespace ldmx {
             sampleToAdd.adc_t_ = buff.at(0); //already has noise on top
 
             digisToAdd[0] = sampleToAdd;
-            ecalDigis_->addDigi( digisToAdd );
+            ecalDigis.addDigi( digisToAdd );
         }
 
         //put noise into some empty channels
-        int numEmptyChannels = TOTAL_NUM_CHANNELS - ecalDigis_->getNumDigis();
+        int numEmptyChannels = TOTAL_NUM_CHANNELS - ecalDigis.getNumDigis();
         std::vector<double> noiseHitAmplitudes = noiseGenerator_->generateNoiseHits( numEmptyChannels );
         EcalDetectorID detID;
         for ( double noiseHit : noiseHitAmplitudes ) {
@@ -188,10 +183,10 @@ namespace ldmx {
             sampleToAdd.adc_t_ = 1; //arbitrary number - skipping pulse measurement due to lazyness
 
             digisToAdd[0] = sampleToAdd;
-            ecalDigis_->addDigi( digisToAdd );
+            ecalDigis.addDigi( digisToAdd );
         }
 
-        event.add("EcalDigis", ecalDigis_ );
+        event.add("EcalDigis", ecalDigis );
 
         return;
     }

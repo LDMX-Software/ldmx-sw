@@ -21,40 +21,50 @@ namespace ldmx {
     void EcalDigiVerifier::analyze(const ldmx::Event& event) {
 
         //get truth information sorted into an ID based map
-        const TClonesArray *ecalSimHits = event.getCollection( ecalSimHitColl_ , ecalSimHitPass_ );
-        int numSimHits = ecalSimHits->GetEntriesFast();
-        std::map< int , std::vector< SimCalorimeterHit *> > id_simHit;
-        for ( int iHit = 0; iHit < numSimHits; iHit++ ) {
-            
-            SimCalorimeterHit *simHit = (SimCalorimeterHit *)(ecalSimHits->At( iHit ));
+        std::vector<SimCalorimeterHit> ecalSimHits = event.getCollection<SimCalorimeterHit>( ecalSimHitColl_ , ecalSimHitPass_ );
 
-            int  rawID = simHit->getID();
-            id_simHit[ rawID ].push_back( simHit );
-        }
+        //sort sim hits by ID
+        std::sort( ecalSimHits.begin() , ecalSimHits.end() , 
+                []( const SimCalorimeterHit &lhs , const SimCalorimeterHit &rhs ) {
+                    return lhs.getID() < rhs.getID();
+                }
+                );
 
-        const TClonesArray *ecalRecHits = event.getCollection( ecalRecHitColl_ , ecalRecHitPass_ );
-        int numRecHits = ecalRecHits->GetEntriesFast();
+        std::vector<EcalHit> ecalRecHits = event.getCollection<EcalHit>( ecalRecHitColl_ , ecalRecHitPass_ );
+
+        //sort rec hits by ID
+        std::sort( ecalRecHits.begin() , ecalRecHits.end() , 
+                []( const EcalHit &lhs , const EcalHit &rhs ) {
+                    return lhs.getID() < rhs.getID();
+                }
+                );
+
         double totalRecEnergy = 0.;
-        for ( int iRecHit = 0; iRecHit < numRecHits; iRecHit++ ) {
-
-            EcalHit *recHit = (EcalHit *)(ecalRecHits->At( iRecHit ));
+        for ( const EcalHit &recHit : ecalRecHits ) {
 
             //skip anything that digi flagged as noise
-            if ( recHit->isNoise() ) continue;
+            if ( recHit.isNoise() ) continue;
 
-            int rawID = recHit->getID();
+            int rawID = recHit.getID();
 
-            int numSimHits = id_simHit[rawID].size();
-            h_NumSimHitsPerCell_->Fill( numSimHits );
-
+            //get information for this hit
+            int numSimHits = 0;
             double totalSimEDep = 0.;
-            for ( int iSimHit = 0; iSimHit < numSimHits; iSimHit++ ) {
-                totalSimEDep += id_simHit[rawID][iSimHit]->getEdep();
+            for ( const SimCalorimeterHit &simHit : ecalSimHits ) {
+                if ( rawID == simHit.getID() ) {
+                    numSimHits++;
+                    totalSimEDep += simHit.getEdep();
+                } else if ( rawID < simHit.getID() ) {
+                    //later sim hits - all done
+                    break;
+                }
             }
 
-            h_SimEDep_RecAmplitude_->Fill( totalSimEDep , recHit->getAmplitude() );
+            h_NumSimHitsPerCell_->Fill( numSimHits );
 
-            totalRecEnergy += recHit->getEnergy();
+            h_SimEDep_RecAmplitude_->Fill( totalSimEDep , recHit.getAmplitude() );
+
+            totalRecEnergy += recHit.getEnergy();
         }
 
         h_TotalRecEnergy_->Fill( totalRecEnergy );

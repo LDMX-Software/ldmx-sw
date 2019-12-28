@@ -169,10 +169,6 @@ namespace ldmx {
              */
             TF1 pulseFunc_;
 
-            /**
-             * Collection object that will be used as the reference for the event bus.
-             */
-            EcalDigiCollection *ecalDigis_;
     };
 }
 
