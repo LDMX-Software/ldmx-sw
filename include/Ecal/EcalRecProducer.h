@@ -19,7 +19,6 @@
 //   ROOT   //
 //----------//
 #include "TRandom3.h"
-#include "TClonesArray.h"
 
 //----------//
 //   LDMX   //
@@ -99,9 +98,6 @@ namespace ldmx {
              * of a calibration number.
              */
             double secondOrderEnergyCorrection_;
-
-            /** Array of EcalHits that will be put into the event bus */
-            TClonesArray* ecalRecHits_{nullptr};
 
             /** 
              * Helper Instance of EcalDetectorID:

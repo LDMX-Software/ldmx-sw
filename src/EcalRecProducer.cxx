@@ -22,9 +22,7 @@ namespace ldmx {
         Producer(name, process) {
     }
 
-    EcalRecProducer::~EcalRecProducer() {
-        if ( ecalRecHits_ ) delete ecalRecHits_;
-    }
+    EcalRecProducer::~EcalRecProducer() { }
 
     void EcalRecProducer::configure(const ParameterSet& ps) {
 
@@ -33,8 +31,6 @@ namespace ldmx {
 
         layerWeights_ = ps.getVDouble( "layerWeights" , DEFAULT_LAYER_WEIGHTS );
         secondOrderEnergyCorrection_ = ps.getDouble( "secondOrderEnergyCorrection" , DEFAULT_SECOND_ORDER_CORRECTION );
-
-        ecalRecHits_ = new TClonesArray( EventConstants::ECAL_HIT.c_str(), 10000 );
 
         //if changing Ecal geometry, input geometry parameters here
         //  module radius - center-to-flat radius of a module in mm
@@ -47,14 +43,15 @@ namespace ldmx {
 
     void EcalRecProducer::produce(Event& event) {
 
-        EcalDigiCollection* ecalDigis = event.get<EcalDigiCollection *>( digiCollName_ , digiPassName_ );
-        int numDigiHits = ecalDigis->getNumDigis();
+        std::vector<EcalHit> ecalRecHits;
+        EcalDigiCollection ecalDigis = event.getObject<EcalDigiCollection>( digiCollName_ , digiPassName_ );
+        int numDigiHits = ecalDigis.getNumDigis();
         //loop through digis
         for ( unsigned int iDigi = 0; iDigi < numDigiHits; iDigi++ ) {
             
             //Right now, hard-coded to only use one sample in EcalDigiProducer
             //TODO: expand to multiple samples per digi
-            EcalDigiSample sample = (ecalDigis->getDigi( iDigi )).at(0);
+            EcalDigiSample sample = (ecalDigis.getDigi( iDigi )).at(0);
             int rawID = sample.rawID_;
             
             //ID to real space position
@@ -95,18 +92,20 @@ namespace ldmx {
                 ( (siEnergy / MIP_SI_RESPONSE)*layerWeights_.at(layer)+siEnergy )*secondOrderEnergyCorrection_;
 
             //copy over information to rec hit structure in new collection
-            EcalHit *recHit = (EcalHit *)( ecalRecHits_->ConstructedAt( iDigi ) );
-            recHit->setID( rawID );
-            recHit->setXpos( x );
-            recHit->setYpos( y );
-            recHit->setZpos( z );
-            recHit->setAmplitude( siEnergy );
-            recHit->setEnergy( recHitEnergy );
-            recHit->setTime( hitTime );
+            EcalHit recHit;
+            recHit.setID( rawID );
+            recHit.setXPos( x );
+            recHit.setYPos( y );
+            recHit.setZPos( z );
+            recHit.setAmplitude( siEnergy );
+            recHit.setEnergy( recHitEnergy );
+            recHit.setTime( hitTime );
+
+            ecalRecHits.push_back( recHit );
         }
 
         //add collection to event bus
-        event.add( "EcalRecHits", ecalRecHits_ );
+        event.add( "EcalRecHits", ecalRecHits );
     }
 }
 
