@@ -189,6 +189,7 @@ namespace ldmx {
         event_ = evt;
         if (isOutputFile_) {
             if (!tree_ && !parent_) {
+                std::cout << "Creating an event tree." << std::endl;
                 tree_ = event_->createTree();
                 ientry_ = 0;
                 entries_ = 0;
@@ -227,7 +228,11 @@ namespace ldmx {
     }
 
     void EventFile::close() {
-        //if (isOutputFile_) tree_->Write();
+        
+        // Before an output file, the Event tree needs to be written. 
+        if (isOutputFile_) tree_->Write();
+
+        // Close the file
         file_->Close();
     }
 
