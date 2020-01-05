@@ -1,7 +1,6 @@
 /**
  * @file RootPersistencyManager.cxx
  * @brief Class used to manage ROOT based persistency.
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
@@ -52,31 +51,16 @@ namespace ldmx {
         G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
         G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 
-        //event_ = new EventImpl("sim");
     }
 
     G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
 
-        std::cout << "Storing Event info." << std::endl; 
-
-        /*
-        // verbose level 2
-        if (m_verbose > 1) {
-            std::cout << "[ RootPersistencyManager ] : Storing event " << anEvent->GetEventID() << std::endl;
-        }
-
-        if (G4RunManager::GetRunManager()->GetCurrentEvent()->IsAborted()) {
-            // TODO: Need event cleanup here?
-            return false;
-        }
+        // Check if the event has been aborted.  If so, skip storage of the 
+        // event. 
+        if (G4RunManager::GetRunManager()->GetCurrentEvent()->IsAborted()) return false; 
 
         // Build the output collections.
-        buildEvent(anEvent, event_);
-
-        // Print out event info and data depending on verbose level.
-        printEvent(event_);
-
-        outputFile_->nextEvent();*/
+        buildEvent(anEvent);
 
         return true;
     }
@@ -109,31 +93,24 @@ namespace ldmx {
 
     void RootPersistencyManager::Initialize() {
 
-        if (m_verbose > 1) {
-            std::cout << "[ RootPersistencyManager ] : Opening output file " << fileName_ << std::endl;
-        }
-
-        // Create and setup the output file for writing the events.
-        //outputFile_ = new EventFile(fileName_.c_str(), true, compressionLevel_);
-        //outputFile_->setupEvent((EventImpl*) event_);
-
         // Create map with output hits collections.
         setupHitsCollectionMap();
     }
 
-    void RootPersistencyManager::buildEvent(const G4Event* anEvent, Event* outputEvent) {
+    void RootPersistencyManager::buildEvent(const G4Event* anEvent) {
 
         // Set basic event information.
-        writeHeader(anEvent, outputEvent);
+        writeHeader(anEvent);
 
         // Set pointer to current G4Event.
         simParticleBuilder_.setCurrentEvent(anEvent);
 
         // Build the SimParticle list for the output ROOT event.
-        simParticleBuilder_.buildSimParticles(outputEvent);
+        simParticleBuilder_.buildSimParticles(event_);
 
         // Copy hit objects from SD hit collections into the output event.
-        writeHitsCollections(anEvent, outputEvent);
+        writeHitsCollections(anEvent, event_);
+
     }
 
     void RootPersistencyManager::printEvent(Event* outputEvent) {
@@ -170,28 +147,22 @@ namespace ldmx {
         }
     }
 
-    void RootPersistencyManager::writeHeader(const G4Event* anEvent, Event* outputEvent) {
-        EventHeader& eventHeader = ((EventImpl*) outputEvent)->getEventHeaderMutable();
+    void RootPersistencyManager::writeHeader(const G4Event* anEvent) {
 
-        eventHeader.setEventNumber(anEvent->GetEventID());
-        TTimeStamp ts;
-        ts.SetSec((int) time(NULL));
-        eventHeader.setTimestamp(ts);
-        eventHeader.setRun(G4RunManager::GetRunManager()->GetCurrentRun()->GetRunID());
-        if (BiasingMessenger::isBiasingEnabled()) {
+        // Retrieve a mutable version of the event header
+        EventHeader& eventHeader = static_cast<EventImpl*>(event_)->getEventHeaderMutable();
+
+        // Set the event weight
+        if (BiasingMessenger::isBiasingEnabled()) { 
             eventHeader.setWeight(BiasingMessenger::getEventWeight());
-        } else if (anEvent->GetPrimaryVertex(0)) {
+        } else if (anEvent->GetPrimaryVertex(0)) { 
             eventHeader.setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
+            
         }
 
+        // Set the seeds used for this event
         std::string seedString = getEventSeeds();
         eventHeader.setStringParameter("eventSeed", seedString);
-
-        if (m_verbose > 1) {
-            std::cout << "[ RootPersistencyManager ] : Wrote event header for event ID " << anEvent->GetEventID() << std::endl;
-            std::cout << "  ";
-            eventHeader.Print("");
-        }
     }
 
     std::string RootPersistencyManager::getEventSeeds(std::string fileName) {
@@ -313,22 +284,13 @@ namespace ldmx {
         for (int i = 0; i < entries; i++) {
             std::string sdName = hcTable->GetSDname(i);
             std::string hcName = hcTable->GetHCname(i);
-            G4VSensitiveDetector* sd = sdMgr->FindSensitiveDetector(sdName);
+            auto sd{sdMgr->FindSensitiveDetector(sdName)};
             if (dynamic_cast<CalorimeterSD*>(sd)) {
                 outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_CALORIMETER_HIT.c_str(), 500);
-                if (m_verbose > 1) {
-                    std::cout << "[ RootPersistencyManager ]: Created SimCalorimeterHit HC " << hcName << std::endl;
-                }
             } else if (dynamic_cast<TrackerSD*>(sd)) {
                 outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_TRACKER_HIT.c_str(), 50);
-                if (m_verbose > 1) {
-                    std::cout << "[ RootPersistencyManager ]: Created SimTrackerHit HC " << hcName << std::endl;
-                }
             } else if (dynamic_cast<ScoringPlaneSD*>(sd)) { 
                 outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_TRACKER_HIT.c_str(), 500);
-                if (m_verbose > 1) {
-                    std::cout << "[ RootPersistencyManager ]: Created ScoringPlaneHit HC " << hcName << std::endl;
-                }
             }
         }
     }
