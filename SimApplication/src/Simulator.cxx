@@ -30,8 +30,10 @@ namespace ldmx {
         // Instantiate the class so cascade parameters can be set.
         G4CascadeParameters::Instance();  
 
+        // Supply the default user initialization and actions
         runManager_->SetUserInitialization(new DetectorConstruction( parser_.get() ) );
 
+        // Store the random numbers used to generate an event. 
         runManager_->SetRandomNumberStore( true );
         
         /*
@@ -76,7 +78,7 @@ namespace ldmx {
         uiManager_->ApplyCommand("/control/execute " + macroPath_); 
          
 
-        //runManager_->ConstructScoringWorlds();
+        runManager_->ConstructScoringWorlds();
         runManager_->RunInitialization();
         runManager_->InitializeEventLoop( 1 );
 
