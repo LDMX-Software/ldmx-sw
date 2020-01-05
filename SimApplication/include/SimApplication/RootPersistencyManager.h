@@ -61,6 +61,7 @@ namespace ldmx {
              */
             RootPersistencyManager(EventFile &file);
 
+            /// Destructor
             virtual ~RootPersistencyManager() {
                 for (auto entry : outputHitsCollections_) {
                     delete entry.second;
@@ -68,7 +69,9 @@ namespace ldmx {
             }
 
             /**
-             * Get the current ROOT persistency manager or <i>nullptr</i> if not registered.
+             * Get the current ROOT persistency manager or <i>nullptr</i> if not
+             * registered.
+             *
              * @return The ROOT persistency manager.
              */
             static RootPersistencyManager* getInstance() {
@@ -159,6 +162,15 @@ namespace ldmx {
              */
             void setRunNumber(int runNumber) { runNumber_ = runNumber; } 
 
+            /**
+             * Set the current ldmx-sw event.  This is used by the persistency
+             * manager to retrieve and fill the containers that will be 
+             * persisted. 
+             *
+             * @param event Event buffer for the current event. 
+             */
+            void setCurrentEvent(Event* event) { event_ = event; }
+
         public:
 
             /**
@@ -166,14 +178,13 @@ namespace ldmx {
              * @param anEvent The Geant4 event.
              * @param outputEvent The output event.
              */
-            void buildEvent(const G4Event* anEvent, Event* outputEvent);
+            void buildEvent(const G4Event* anEvent);
 
             /**
              * Write header info into the output event from Geant4.
              * @param anEvent The Geant4 event.
-             * @param outputEvent The output event.
              */
-            void writeHeader(const G4Event* anEvent, Event* outputEvent);
+            void writeHeader(const G4Event* anEvent);
 
             /**
              * Write header info into the output event from Geant4.
