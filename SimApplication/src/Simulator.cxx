@@ -36,8 +36,6 @@ namespace ldmx {
         
         /*
         new SimApplicationMessenger();
-        persistencyManager_ = new RootPersistencyManager();
-        persistencyManager_->SetVerboseLevel( 3 );
         */
     }
 
@@ -56,20 +54,16 @@ namespace ldmx {
 
     void Simulator::onFileOpen(EventFile &file) {
        
-        std::cout << "File name: " << file.getFileName() << std::endl; 
         persistencyManager_ = new RootPersistencyManager(file); 
+        persistencyManager_->Initialize(); 
     }
 
     void Simulator::produce(ldmx::Event& event) {
 
+        persistencyManager_->setCurrentEvent(&event); 
         runManager_->ProcessOneEvent( iEvent_++ );
-        runManager_->GetCurrentEvent()->Print();
         runManager_->TerminateOneEvent();
     
-        /*
-        persistencyManager_->buildEvent( runManager_->GetCurrentEvent() , &event );
-        persistencyManager_->writeHitsCollections( runManager_->GetCurrentEvent() , &event );
-        */
         return;
     }
     
@@ -85,6 +79,7 @@ namespace ldmx {
         //runManager_->ConstructScoringWorlds();
         runManager_->RunInitialization();
         runManager_->InitializeEventLoop( 1 );
+
 
         return;
     }
