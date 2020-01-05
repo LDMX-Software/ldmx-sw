@@ -189,7 +189,6 @@ namespace ldmx {
         event_ = evt;
         if (isOutputFile_) {
             if (!tree_ && !parent_) {
-                std::cout << "Creating an event tree." << std::endl;
                 tree_ = event_->createTree();
                 ientry_ = 0;
                 entries_ = 0;
