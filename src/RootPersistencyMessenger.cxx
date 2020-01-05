@@ -127,7 +127,7 @@ namespace ldmx {
         } else {
             // Re-enable ROOT IO.
             if (command == enableCmd_) {
-                rootIO_ = new RootPersistencyManager();
+                //rootIO_ = new RootPersistencyManager();
             } else {
                 // Print a warning if user tries to send commands when IO is disabled.
                 std::cout << "WARNING: Command was ignored.  ROOT IO is disabled!" << std::endl;
