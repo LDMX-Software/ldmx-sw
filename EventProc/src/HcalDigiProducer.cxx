@@ -110,17 +110,17 @@ namespace ldmx {
         for (const SimCalorimeterHit &simHit : hcalHits ) {
             
             int detIDraw = simHit.getID();
-            detID_->setRawValue(detIDraw);
-            detID_->unpack();
-            int layer = detID_->getFieldValue("layer");
-            int subsection = detID_->getFieldValue("section");
-            int strip = detID_->getFieldValue("strip");                 
+            detID_.setRawValue(detIDraw);
+            detID_.unpack();
+            int layer = detID_.getFieldValue("layer");
+            int subsection = detID_.getFieldValue("section");
+            int strip = detID_.getFieldValue("strip");                 
             std::vector<float> position = simHit.getPosition();       
 
             if (verbose_) {
-                std::cout << "section: " << detID_->getFieldValue("section") 
-                    << "  layer: " << detID_->getFieldValue("layer") 
-                    <<  "  strip: " << detID_->getFieldValue("strip") <<std::endl;
+                std::cout << "section: " << detID_.getFieldValue("section") 
+                    << "  layer: " << detID_.getFieldValue("layer") 
+                    <<  "  strip: " << detID_.getFieldValue("strip") <<std::endl;
             }        
 
             // re-assign the strip number based on super strip size -- ONLY FOR Back Hcal
@@ -182,7 +182,6 @@ namespace ldmx {
 
             // quantize/smear the position            
             float cur_xpos(hcalXpos[detIDraw]),cur_ypos(hcalYpos[detIDraw]),cur_zpos(hcalZpos[detIDraw]); 
-
 
             // for back HCal, get PEs with attentuation
             if (cur_subsection == 0) {
@@ -308,7 +307,7 @@ namespace ldmx {
             ctr_back_noise++;
 
         }
-        if (verbose_) std::cout << "numSigHits_back = " << numSigHits_back << ", ihit = " << ihit << ", ctr_back_noise = " << ctr_back_noise << std::endl;
+        if (verbose_) std::cout << "numSigHits_back = " << numSigHits_back << ", ctr_back_noise = " << ctr_back_noise << std::endl;
 
         // simulate noise hits in side, top / bottom hcal
         noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_TB_PER_LAYER_*NUM_SIDE_TB_HCAL_LAYERS_)*2-numSigHits_side_tb);

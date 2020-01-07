@@ -24,143 +24,10 @@
 #include <string>
 #include <map>
 #include <set>
+#include <variant>
 #include <regex.h>
 
 namespace ldmx {
-
-    /**
-     * @class clearPassenger
-     * Clearing of event objects.
-     *
-     * This is necessary, so if a producer skips an event, then
-     * the last object added won't filled into event tree another time.
-     */
-    class clearPassenger : public boost::static_visitor<void> {
-        public:
-            
-            /**
-             * All vector passengers can be cleared in the same way.
-             */
-            template <typename T>
-            void operator()(std::vector<T> &vec) const { vec.clear(); }
-
-            /**
-             * All map passengers can be cleared in the same way.
-             */
-            template <typename Key, typename Val>
-            void operator()(std::map<Key,Val> &m) const { m.clear(); }
-
-            /**
-             * Right now all other event objects have a Clear method defined.
-             *
-             * @note Notice the difference in capitalization.
-             * This is a artefact of inheriting from TObject.
-             */
-            template <typename T>
-            void operator()(T &obj) const { obj.Clear(); }
-
-    };
-
-    /**
-     * @class sortPassenger
-     * Sorting of passenger event objects.
-     *
-     * This method allows for the collections to be sorted by
-     * the content's defined comparison operator <.
-     *
-     * @note If the operator < is not defined, std::sort implicitly
-     * converts the object to a more basic object that has an included
-     * less than operator. If this implicit conversion doesn't work,
-     * then a complicated compile error is thrown.
-     *
-     * @note More specific sorting methods can be input here if you wish.
-     * When templating, be aware that the order does matter. boost uses
-     * the first function that matches the input type.
-     */
-    class sortPassenger : public boost::static_visitor<void> {
-        public:
-            /**
-             * Sort vectors using the std::sort method.
-             */
-            template <typename T>
-            void operator()(std::vector<T> &vec) const { std::sort(vec.begin(),vec.end()); }
-
-            /**
-             * Don't sort the other objects.
-             *
-             * The unused attribute requires the compiler to be gcc!
-             */
-            template <typename T>
-            void operator()(__attribute__((unused)) T &obj) const { /*Nothing on purpose*/ return; }
-
-    };
-
-
-    /**
-     * @class printPassenger
-     * Printing of event objects.
-     *
-     * This method requires all event objects to have a Print method defined.
-     */
-    class printPassenger : public boost::static_visitor<void> {
-        public:
-            
-            /**
-             * Constructor
-             *
-             * Sets verbosity
-             */
-            printPassenger(int verbosity) : verbosity_(verbosity) { }
-
-            /**
-             * Prints size and contents of all vectors depending on verbosity.
-             */
-            template <typename T>
-            void operator()(const std::vector<T> &vec) const { 
-                if ( verbosity_ > 0 ) {
-                    std::cout << "Size: " << vec.size() << std::endl;
-                }
-                if ( verbosity_ > 1 ) {
-                    std::cout << "Contents:" << std::endl;
-                    for ( const T &obj : vec ) {
-                        std::cout << "    ";
-                        obj.Print();
-                    }
-                    std::cout << std::endl;
-                }
-            }
-
-            /**
-             * Prints size and contents of all maps depending on verbosity.
-             */
-            template <typename Key, typename Val>
-            void operator()(const std::map<Key,Val> &m) const { 
-                if ( verbosity_ > 0 ) {
-                    std::cout << "Size: " << m.size() << std::endl;
-                }
-                if ( verbosity_ > 1 ) {
-                    std::cout << "Contents:" << std::endl;
-                    for ( const auto &keyVal : m ) {
-                        std::cout << "    " << keyVal.first << " -> ";
-                        keyVal.second.Print();
-                    }
-                    std::cout << std::endl;
-                }
-            }
-
-            /**
-             * Just prints the object if verbosity is nonzero.
-             */
-            template <typename T>
-            void operator()(const T &obj) const { 
-                if ( verbosity_ > 0 ) obj.Print(); 
-            }
-
-        private:
-            /** Flag for how much to print */
-            int verbosity_;
-
-    };
 
     /**
      * @class Event
@@ -231,7 +98,8 @@ namespace ldmx {
              * @param collectionName
              * @param obj in ROOT dictionary to add
              */
-            template <typename T> void add( const std::string& collectionName, T &obj ) {
+            template <typename T> 
+            void add( const std::string& collectionName, T &obj ) {
                 if (collectionName.find('_') != std::string::npos) {
                     EXCEPTION_RAISE(
                             "IllegalName", 
@@ -255,19 +123,10 @@ namespace ldmx {
                 branchesFilled_.insert(branchName);
                 if (passengers_.find(branchName) == passengers_.end()) { 
                     // create a new branch for this collection
-//                    // check type of input exists in passenger list?
-//                    if ( not boost::mpl::has_key< EventBusPassengerList , T >() ) {
-//                        //input type is not allowed
-//                        EXCEPTION_RAISE(
-//                                "IllegalPassenger",
-//                                "The input event bus passenger type '"
-//                                + std::string(typeid(obj).name())
-//                                + "' is not in the list of allowed types EventBusPassengerList defined in Event/include/EventDef.h"
-//                                );
-//                    }
+                    //TODO check if input type is listed as an EventBusPassenger?
                     passengers_[branchName] = EventBusPassenger( obj );
-                    T *passengerAddress = boost::get<T>(&passengers_[branchName]);
-                    std::string tname = passengers_[branchName].type().name();//type name (want to use branch element if possible)
+                    T *passengerAddress = std::get_if<T>(&passengers_[branchName]);
+                    std::string tname = typeid(obj).name();//type name (want to use branch element if possible)
                     if (outputTree_ != 0) {
                         TBranchElement *outBranch = dynamic_cast<TBranchElement *>(outputTree_->GetBranch( branchName.c_str() ));
                         if ( outBranch ) {
@@ -288,17 +147,15 @@ namespace ldmx {
                 
                 //copy input contents into bus passenger
                 EventBusPassenger toAdd( obj );
-                if ( toAdd.which() == passengers_[branchName].which() ) {
-                    boost::apply_visitor( sortPassenger() , toAdd ); //sort before copying over
+                if ( toAdd.index() == passengers_[branchName].index() ) {
+                    std::visit( sortPassenger() , toAdd ); //sort before copying over
                     passengers_[branchName] = toAdd;
                 } else {
                     EXCEPTION_RAISE(
                             "TypeMismatch",
                             "Attempting to add an object whose type '" 
-                            + std::string(toAdd.type().name()) 
-                            + "' doesn't match the type stored in the collection '" 
-                            + std::string(passengers_.at(branchName).type().name()) 
-                            + "'"
+                            + std::string(typeid(obj).name()) 
+                            + "' doesn't match the type stored in the collection."
                             );
                 }
 
@@ -312,8 +169,7 @@ namespace ldmx {
 	         * @param passmatch Regular expression to compare with the pass name
 	         * @param typematch Regular expression to compare with the type name
 	        */
-            std::vector<ProductTag> searchProducts(
-                    const std::string& namematch, const std::string& passmatch, const std::string& typematch) const;
+            std::vector<ProductTag> searchProducts( const std::string& namematch, const std::string& passmatch, const std::string& typematch) const;
       
             /**
              * Get a general object from the event bus
@@ -431,7 +287,7 @@ namespace ldmx {
                         //reading branches need to be manually updated
                         passengers_[branchName] = *((T *)(itBranch->second->GetObject()));
                     }
-                    return boost::get<T>(itPassenger->second);
+                    return std::get<T>(itPassenger->second);
                 } else if (inputTree_ == 0) {
                     //not found in loaded branches and there is no inputTree,
                     // so no hope of finding an unloaded object
@@ -454,7 +310,7 @@ namespace ldmx {
         
                     // check the objects map
                     if (itPassenger != passengers_.end())
-                        return boost::get<T>(itPassenger->second);
+                        return std::get<T>(itPassenger->second);
         
                     // this case is hard (impossible?) to achieve
                     EXCEPTION_RAISE(
@@ -487,9 +343,9 @@ namespace ldmx {
                     //insert into maps of loaded branches and passengers
                     branches_[branchName]   = branch;
         
-                    return boost::get<T>( passengers_.at(branchName) );
+                    return std::get<T>( passengers_.at(branchName) );
                 }
-            }
+            } //getImpl
 
         public:
 
@@ -571,6 +427,143 @@ namespace ldmx {
             std::string getPassName() {
                 return passName_;
             }
+
+        private:
+        
+            /**
+             * @class clearPassenger
+             * Clearing of event objects.
+             *
+             * This is necessary, so if a producer skips an event, then
+             * the last object added won't be filled into event tree another time.
+             */
+            class clearPassenger {
+                public:
+                    
+                    /**
+                     * All vector passengers can be cleared in the same way.
+                     */
+                    template <typename T>
+                    void operator()(std::vector<T> &vec) const { vec.clear(); }
+        
+                    /**
+                     * All map passengers can be cleared in the same way.
+                     */
+                    template <typename Key, typename Val>
+                    void operator()(std::unordered_map<Key,Val> &m) const { m.clear(); }
+        
+                    /**
+                     * Right now all other event objects have a Clear method defined.
+                     *
+                     * @note Notice the difference in capitalization.
+                     * This is a artefact of inheriting from TObject.
+                     */
+                    template <typename T>
+                    void operator()(T &obj) const { obj.Clear(); }
+        
+            };
+        
+            /**
+             * @class sortPassenger
+             * Sorting of passenger event objects.
+             *
+             * This method allows for the collections to be sorted by
+             * the content's defined comparison operator <.
+             *
+             * @note If the operator < is not defined, std::sort implicitly
+             * converts the object to a more basic object that has an included
+             * less than operator. If this implicit conversion doesn't work,
+             * then a complicated compile error is thrown.
+             *
+             * @note More specific sorting methods can be input here if you wish.
+             * When templating, be aware that the order does matter. std uses
+             * the first function that matches the input type. (From top down,
+             * so input a specific sorting method at the top).
+             */
+            class sortPassenger {
+                public:
+                    /**
+                     * Sort vectors using the std::sort method.
+                     */
+                    template <typename T>
+                    void operator()(std::vector<T> &vec) const { std::sort(vec.begin(),vec.end()); }
+        
+                    /**
+                     * Don't sort the other objects.
+                     *
+                     * The unused attribute requires the compiler to be gcc!
+                     */
+                    template <typename T>
+                    void operator()(__attribute__((unused)) T &obj) const { /*Nothing on purpose*/ return; }
+        
+            };
+        
+        
+            /**
+             * @class printPassenger
+             * Printing of event objects.
+             *
+             * This method requires all event objects to have a Print method defined.
+             */
+            class printPassenger {
+                public:
+                    
+                    /**
+                     * Constructor
+                     *
+                     * Sets verbosity
+                     */
+                    printPassenger(int verbosity) : verbosity_(verbosity) { }
+        
+                    /**
+                     * Prints size and contents of all vectors depending on verbosity.
+                     */
+                    template <typename T>
+                    void operator()(const std::vector<T> &vec) const { 
+                        if ( verbosity_ > 0 ) {
+                            std::cout << "Size: " << vec.size() << std::endl;
+                        }
+                        if ( verbosity_ > 1 ) {
+                            std::cout << "Contents:" << std::endl;
+                            for ( const T &obj : vec ) {
+                                std::cout << "    ";
+                                obj.Print();
+                            }
+                            std::cout << std::endl;
+                        }
+                    }
+        
+                    /**
+                     * Prints size and contents of all maps depending on verbosity.
+                     */
+                    template <typename Key, typename Val>
+                    void operator()(const std::unordered_map<Key,Val> &m) const { 
+                        if ( verbosity_ > 0 ) {
+                            std::cout << "Size: " << m.size() << std::endl;
+                        }
+                        if ( verbosity_ > 1 ) {
+                            std::cout << "Contents:" << std::endl;
+                            for ( const auto &keyVal : m ) {
+                                std::cout << "    " << keyVal.first << " -> ";
+                                keyVal.second.Print();
+                            }
+                            std::cout << std::endl;
+                        }
+                    }
+        
+                    /**
+                     * Just prints the object if verbosity is nonzero.
+                     */
+                    template <typename T>
+                    void operator()(const T &obj) const { 
+                        if ( verbosity_ > 0 ) obj.Print(); 
+                    }
+        
+                private:
+                    /** Flag for how much to print */
+                    int verbosity_;
+        
+            };
 
         private:
 

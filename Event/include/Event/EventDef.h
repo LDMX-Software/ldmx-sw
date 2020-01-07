@@ -28,7 +28,8 @@
 #include "Event/RawHit.h"
 #include "Event/DigiCollection.h" 
 
-#include <boost/variant.hpp>
+#include <variant>
+
 namespace ldmx {
 
     /**
@@ -45,12 +46,9 @@ namespace ldmx {
      *      All passengers must inherit from TObject so that they contain the unique IDs ROOT uses for memory handling within TTrees.
      *      There is no way around that right now.
      *
-     * Right now, boost::mpl::list is restricted to a maximum of 20 types.
-     * There is a way to change this maximum, but it is complicated and leads to a question of if we want to do that or
-     * write an inheritance tree that allows for STL collections to be used along side TObject.
-     * TODO: Modify to allow for more than 20 event bus types
+     * TODO: Figure out if there are a maximum number of types allowed.
      */
-    using EventBusPassengerList = boost::mpl::list< 
+    typedef std::variant< 
         EcalVetoResult ,
         NonFidEcalVetoResult ,
         EventHeader ,
@@ -70,8 +68,6 @@ namespace ldmx {
         std::vector< HcalHit > ,
         std::vector< SiStripHit > ,
         std::vector< RawHit >
-        >;
-
-    typedef boost::make_variant_over< EventBusPassengerList >::type EventBusPassenger;
+        > EventBusPassenger;
 
 }
