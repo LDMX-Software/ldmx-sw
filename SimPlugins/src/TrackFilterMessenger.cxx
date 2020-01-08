@@ -3,6 +3,8 @@
 #include "SimPlugins/TrackFilterPlugin.h"
 #include "SimCore/TrackFilter.h"
 
+#include <iostream>
+
 namespace ldmx {
 
     TrackFilterMessenger::TrackFilterMessenger(TrackFilterPlugin* plugin)
@@ -144,7 +146,7 @@ namespace ldmx {
             std::string newAction(newValue);
             std::transform(newAction.begin(), newAction.end(), newAction.begin(), ::tolower);
             if (newAction != "pre" && newAction != "post") {
-                G4Exception("", "", JustWarning, std::string("Unknown tracking action: " + newValue).c_str());
+                std::cerr << "[ Warning ] : Unknown tracking action '" << newValue.data() << "'" << std::endl;
             } else {
                 action_ = newAction;
             }

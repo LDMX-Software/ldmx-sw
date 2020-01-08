@@ -12,6 +12,7 @@
 //   C++ StdLib   //
 //----------------//
 #include <time.h>
+#include <memory> //for smart pointers
 
 //----------//
 //   ROOT   //
@@ -47,8 +48,7 @@ namespace ldmx {
 
             EcalDigiProducer(const std::string& name, Process& process);
 
-            virtual ~EcalDigiProducer() {
-            }
+            virtual ~EcalDigiProducer();
 
             virtual void configure(const ParameterSet&);
 
@@ -96,13 +96,13 @@ namespace ldmx {
             static const int TOTAL_CELLS{NUM_ECAL_LAYERS*HEX_MODULES_PER_LAYER*CELLS_PER_HEX_MODULE};
 
 
-            TRandom3* noiseInjector_{new TRandom3(time(nullptr))};
+            std::unique_ptr<TRandom3> noiseInjector_;
             TClonesArray* ecalDigis_{nullptr};
             EcalDetectorID detID_;
-            EcalHexReadout* hexReadout_{nullptr};
+            std::unique_ptr<EcalHexReadout> hexReadout_;
           
             /** Generator of noise hits. */ 
-            NoiseGenerator* noiseGenerator_; 
+            std::unique_ptr<NoiseGenerator> noiseGenerator_; 
            
             /** Set the noise (in electrons) when the capacitance is 0. */
             double noiseIntercept_{900.};

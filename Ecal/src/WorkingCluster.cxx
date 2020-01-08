@@ -7,11 +7,11 @@
 
 namespace ldmx {
 
-    WorkingCluster::WorkingCluster(const EcalHit* eh, const EcalHexReadout* hex, double zPos) {
+    WorkingCluster::WorkingCluster(const EcalHit* eh, const std::shared_ptr<EcalHexReadout> hex, double zPos) {
         add(eh, hex, zPos);
     }
 
-    void WorkingCluster::add(const EcalHit* eh, const EcalHexReadout* hex, double zPos) {
+    void WorkingCluster::add(const EcalHit* eh, const std::shared_ptr<EcalHexReadout> hex, double zPos) {
     
         double hitE = eh->getEnergy();
         unsigned int hitID = eh->getID();

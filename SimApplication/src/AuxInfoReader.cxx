@@ -1,6 +1,7 @@
 #include "SimApplication/AuxInfoReader.h"
 
 // LDMX
+#include "Exception/Exception.h"
 #include "SimApplication/TrackerSD.h"
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/EcalSD.h"
@@ -101,16 +102,15 @@ namespace ldmx {
         }
 
         if (sdType == "") {
-            G4Exception("", "", FatalException, "The SensDet is missing the SensDetType.");
+            EXCEPTION_RAISE( "MissingInfo" , "The SensDet is missing the SensDetType." );
         }
 
         if (hcName == "") {
-            G4Exception("", "", FatalException, "The SensDet is missing the HitsCollection.");
+            EXCEPTION_RAISE( "MissingInfo" , "The SensDet is missing the HitsCollection." );
         }
 
         if (subdetID <= 0) {
-            std::cerr << "Bad SubdetID: " << subdetID << std::endl;
-            G4Exception("", "", FatalException, "The SubdetID is missing or has an invalid value.");
+            EXCEPTION_RAISE( "BadID" , "The SubdetID '" + std::to_string(subdetID) + "' is missing or invalid." );
         }
 
         /*
@@ -120,8 +120,7 @@ namespace ldmx {
         if (idName != "") {
             detID = DetectorIDStore::getInstance()->getID(idName);
             if (!detID) {
-                std::cerr << "The Detector ID" << idName << " does not exist.  Is it defined before the SensDet in userinfo?" << std::endl;
-                G4Exception("", "", FatalException, "The referenced Detector ID was not found.");
+                EXCEPTION_RAISE( "MissingInfo" , "The Detector ID " + std::string(idName.data()) + " does not exist. Is it defined before the SensDet in userinfo?" );
             }
         }
         /*
@@ -142,8 +141,7 @@ namespace ldmx {
         } else if (sdType == "ScoringPlaneSD") { 
             sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID, detID); 
         } else {
-            std::cerr << "Unknown SensitiveDetector type: " << sdType << std::endl;
-            G4Exception("", "", FatalException, "Unknown SensitiveDetector type in aux info.");
+            EXCEPTION_RAISE( "DetType" , "Unknown SensitiveDetector type: " + sdType );
         }
 
         /*
@@ -180,8 +178,7 @@ namespace ldmx {
                             lv->SetSensitiveDetector(sd);
                             std::cout << "Assigned SD " << sd->GetName() << " to " << lv->GetName() << std::endl;
                         } else {
-                            std::cout << "Unknown SensDet in volume's auxiliary info: " << sdName << std::endl;
-                            G4Exception("", "", FatalException, "The SensDet was not found.  Is it defined in userinfo?");
+                            EXCEPTION_RAISE( "MissingInfo" , "Unknown SensDet in volume's auxiliary info: " + std::string(sdName.data()) );
                         }
                     } else if (auxType == "MagneticField") {
                         G4String magFieldName = auxVal;
@@ -191,8 +188,7 @@ namespace ldmx {
                             lv->SetFieldManager(mgr, true /* FIXME: hard-coded to force field manager to daughters */);
                             std::cout << "Assigned magnetic field " << magFieldName << " to volume " << lv->GetName() << std::endl;
                         } else {
-                            std::cout << "Unknown MagneticField ref in volume's auxiliary info: " << magFieldName << std::endl;
-                            G4Exception("", "", FatalException, "The MagneticField was not found.  Is it defined in userinfo?");
+                            EXCEPTION_RAISE( "MissingInfo" , "Unknown MagneticField ref in volume's auxiliary info: " + std::string(magFieldName.data()) );
                         }
                     } else if (auxType == "Region") {
                         G4String regionName = auxVal;
@@ -201,8 +197,7 @@ namespace ldmx {
                             region->AddRootLogicalVolume(lv);
                             std::cout << "Added volume " << lv->GetName() << " to region " << regionName << std::endl;
                         } else {
-                            std::cerr << "Referenced region " << regionName << " was not found!" << std::endl;
-                            G4Exception("", "", FatalException, "The region was not found.  Is it defined in userinfo?");
+                            EXCEPTION_RAISE( "MissingInfo" , "Reference region '" + std::string(regionName.data()) + "' was not found!" );
                         }
                     } else if (auxType == "VisAttributes") {
                         G4String visName = auxVal;
@@ -211,8 +206,7 @@ namespace ldmx {
                             lv->SetVisAttributes(visAttributes);
                             std::cout << "Assigned VisAttributes " << visName << " to volume " << lv->GetName() << std::endl;
                         } else {
-                            std::cerr << "Referenced VisAttributes " << visName << " was not found!" << std::endl;
-                            G4Exception("", "", FatalException, "The VisAttributes was not found.  Is it defined in userinfo?");
+                            EXCEPTION_RAISE( "MissingInfo" , "Referenced VisAttributes '" + std::string(visName.data()) + "' was not found!" );
                         }
                     }
                 }
@@ -256,11 +250,11 @@ namespace ldmx {
                 }
 
                 if (startBit == -1) {
-                    G4Exception("", "", FatalException, "The DetectorID is missing the StartBit.");
+                    EXCEPTION_RAISE( "MissingInfo" , "The DetectorID is missing the StartBit." );
                 }
 
                 if (endBit == -1) {
-                    G4Exception("", "", FatalException, "The DetectorID is missing the EndBit.");
+                    EXCEPTION_RAISE( "MissingInfo" , "The DetectorID is missing the EndBit." );
                 }
 
                 fieldList->push_back(new IDField(fieldName, fieldIndex, startBit, endBit));
@@ -293,7 +287,7 @@ namespace ldmx {
         }
 
         if (magFieldType == "") {
-            G4Exception("", "", FatalException, "Missing MagFieldType for magnetic field definition.");
+            EXCEPTION_RAISE( "MissingInfo" , "Missing MagFieldType for magnetic field definition." );
         }
 
         G4MagneticField* magField = NULL;
@@ -349,7 +343,7 @@ namespace ldmx {
             }
 
             if (fileName.size() == 0) {
-                G4Exception("", "", FatalException, "File info with field data was not provided.");
+                EXCEPTION_RAISE( "MissingInfo" , "File info with field data was not provided." );
             }
 
             // Create new 3D field map.
@@ -358,14 +352,13 @@ namespace ldmx {
             // Assign field map as global field.
             G4FieldManager* fieldMgr = G4TransportationManager::GetTransportationManager()->GetFieldManager();
             if (fieldMgr->GetDetectorField() != nullptr) {
-                G4Exception("", "", FatalException, "Global mag field was already assigned.");
+                EXCEPTION_RAISE( "MisAssign" , "Global mag field was already assigned." );
             }
             fieldMgr->SetDetectorField(fieldMap);
             fieldMgr->CreateChordFinder(fieldMap);
 
         } else {
-            std::cerr << "Unknown MagFieldType in auxiliary info: " << magFieldType << std::endl;
-            G4Exception("", "", FatalException, "Unknown MagFieldType in auxiliary info.");
+            EXCEPTION_RAISE( "UnknownType" , "Unknown MagFieldType '" + std::string(magFieldType.data()) + "' in auxiliary info." );
         }
 
         MagneticFieldStore::getInstance()->addMagneticField(magFieldName, magField);

@@ -9,13 +9,14 @@
 //-----------------//
 //   C++  StdLib   //
 //-----------------//
-#include <stdexcept>
+#include <string>
 
 //----------//
 //   ldmx   //
 //----------//
 #include "Event/FindableTrackResult.h"
 #include "Event/SimParticle.h"
+#include "Exception/Exception.h"
 
 //----------//
 //   ROOT   //
@@ -32,7 +33,7 @@ namespace ldmx {
             // Check that the index is within the bounds of the array. If not, 
             // throw an exception.
             if (index == particles->GetEntriesFast()) 
-                throw std::out_of_range("Index is beyond the size of the TClonesArray."); 
+                EXCEPTION_RAISE( "OutRange" , "Index is beyond the size of the TClonesArray." );
 
             const SimParticle* particle = static_cast<const SimParticle*>(particles->At(index));
 
@@ -43,10 +44,8 @@ namespace ldmx {
 
         const SimParticle* searchForPNGamma(const SimParticle* particle, const int index) { 
 
-            // Check that the index is within the bounds of the array. If not, 
-            // throw an exception.
+            // Check that the index is within the bounds of the array.
             if (index == particle->getDaughterCount()) return nullptr; 
-                //throw std::out_of_range("Index is beyond the size of the TClonesArray.");
 
             const SimParticle* daughter = particle->getDaughter(index);
             if ((daughter->getDaughterCount() > 0) 

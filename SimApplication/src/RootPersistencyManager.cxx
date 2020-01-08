@@ -20,6 +20,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
+#include "Exception/Exception.h"
 #include "Event/Event.h"
 #include "Event/EventHeader.h"
 #include "Event/RunHeader.h"
@@ -130,7 +131,7 @@ namespace ldmx {
 
         auto particleColl = outputEvent->get<TClonesArray*>("SimParticles", "sim");
         if (!particleColl) {
-            throw std::runtime_error("SimParticle output collection is null!");
+            EXCEPTION_RAISE( "NullColl" , "SimParticle output collection is null!" );
         }
 
         if (m_verbose > 1) {
@@ -224,8 +225,7 @@ namespace ldmx {
 
             // If the collection is not found in the output ROOT event, then a fatal error occurs!
             if (!outputHitsColl) {
-                std::cerr << "ERROR: The output collection " << collName << " was not found!" << std::endl;
-                G4Exception("RootPersistencyManager::writeHitsCollections", "", FatalException, "The output collection was not found.");
+                EXCEPTION_RAISE( "MissingInfo" , "The output collection '" + collName + "' was not found!" );
             }
 
             if (dynamic_cast<G4TrackerHitsCollection*>(hc) != nullptr) {

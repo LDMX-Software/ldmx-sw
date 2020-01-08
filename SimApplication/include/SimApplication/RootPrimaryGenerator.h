@@ -1,29 +1,39 @@
 /**
  * @file RootPrimaryGenerator.h
- * @brief Class for generating a Geant4 event from LHE event data
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @brief Primary generator used to generate primaries from SimParticles. 
+ * @author Nhan Tran, Fermilab
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
 #ifndef SIMAPPLICATION_ROOTPRIMARYGENERATOR_H_
 #define SIMAPPLICATION_ROOTPRIMARYGENERATOR_H_
 
-// Geant4
+//----------------//
+//   C++ StdLib   //
+//----------------//
+#include <fstream>
+#include <iostream>
+
+//------------//
+//   Geant4   //
+//------------//
 #include "G4VPrimaryGenerator.hh"
+
+//----------//
+//   ROOT   //
+//----------//
 #include "TFile.h"
 #include "TTree.h"
 #include "TClonesArray.h"
 #include "TVector3.h"
-#include <fstream>
-#include <iostream>
 
+//-------------//
+//   ldmx-sw   //
+//-------------//
 #include "Event/EventHeader.h"
 
 namespace ldmx {
 
-    /**
-     * @class RootPrimaryGenerator
-     * @brief Generates a Geant4 event from an LHEEvent
-     */
     class RootPrimaryGenerator : public G4VPrimaryGenerator {
 
         public:

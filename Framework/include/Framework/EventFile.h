@@ -52,9 +52,10 @@ namespace ldmx {
              * Class constructor for cloning data from a "parent" file.
              * @param fileName The file name.
              * @param cloneParent Parent file for cloning data tree.
+             * @param isSingleOutput boolean check if only one output file is being written to
              * @param compressionLevel The compression level.
              */
-            EventFile(const std::string& fileName, EventFile* cloneParent, int compressionLevel = 9);
+            EventFile(const std::string& fileName, EventFile* cloneParent, bool isSingleOutput = false, int compressionLevel = 9);
 
             /**
              * Class destructor.
@@ -75,6 +76,12 @@ namespace ldmx {
              * @param evt The EventImpl object with event data.
              */
             void setupEvent(EventImpl* evt);
+
+            /**
+             * Change pointer to different parent file.
+             * @param parent pointer to new parent file
+             */
+            void updateParent(EventFile* parent);
 
             /**
              * Get the EventImpl object containing the event data.
@@ -145,6 +152,9 @@ namespace ldmx {
 
             /** True if file is an output file being written to disk. */
             bool isOutputFile_;
+
+            /** True if there is only one output file */
+            bool isSingleOutput_;
 
             /** The backing TFile for this EventFile. */
             TFile* file_{nullptr};

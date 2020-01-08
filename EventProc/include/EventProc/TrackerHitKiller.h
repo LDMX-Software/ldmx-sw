@@ -59,7 +59,7 @@ namespace ldmx {
              * Random number generator used to determine if hit should be
              * dropped. 
              */
-            TRandom3* random_{new TRandom3(time(nullptr))}; 
+            std::unique_ptr<TRandom3> random_;
 
             /** Collection of digitized tracker strip hits. */
             TClonesArray* siStripHits_{nullptr};

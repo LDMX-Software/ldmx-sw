@@ -77,10 +77,10 @@ namespace ldmx {
 
             }
 
-            p001BDTHelper_ = new NonFidBDTHelper(nfbdtFileNames_[0]);
-            p01BDTHelper_ = new NonFidBDTHelper(nfbdtFileNames_[1]);
-            p1BDTHelper_ = new NonFidBDTHelper(nfbdtFileNames_[2]);
-            p0BDTHelper_ = new NonFidBDTHelper(nfbdtFileNames_[3]);
+            p001BDTHelper_ = std::make_unique<NonFidBDTHelper>(nfbdtFileNames_[0]);
+            p01BDTHelper_ = std::make_unique<NonFidBDTHelper>(nfbdtFileNames_[1]);
+            p1BDTHelper_ = std::make_unique<NonFidBDTHelper>(nfbdtFileNames_[2]);
+            p0BDTHelper_ = std::make_unique<NonFidBDTHelper>(nfbdtFileNames_[3]);
 
             TPython::Exec("modelp001 = pkl.load(open('" + TString(nfbdtFileNames_[0]) + "','r'));");
             TPython::Exec("modelp01 = pkl.load(open('" + TString(nfbdtFileNames_[1]) + "','r'));");
@@ -103,7 +103,7 @@ namespace ldmx {
             }
         }
 
-        hexReadout_ = new EcalHexReadout();
+        hexReadout_ = std::make_unique<EcalHexReadout>();
         nEcalLayers_ = ps.getInteger("num_ecal_layers");
 
         bdtCutVal_ = ps.getVDouble("disc_cut");
