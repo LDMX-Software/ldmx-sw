@@ -12,7 +12,7 @@ You will need the following build tools available in your environment before beg
 
 ### Linux
 
-The software has been built and tested on CentOS7 and RHEL6.  Using an older Linux releases such as RHEL6 or SLC6 will require you to install and use a more up to date compiler (gcc 4.8 is preferable) than the default system one.
+The software has been built and tested on CentOS7 and RHEL6.  Using an older Linux releases such as RHEL6 or SLC6 will require you to install and use a more up to date compiler (gcc 6.3 is preferable) than the default system one.
 
 ### CMake
 
@@ -20,7 +20,7 @@ You should have at least CMake 3.0 installed on your machine, and preferably a c
 
 ### GCC
 
-You will need a version of GCC that supports the C++-11 standard.  I believe that ROOT6 is not compatible with GCC 5 so a 4.7 or 4.8 release is preferrable.  The default compiler on CentOS7 or RHEL7 should suffice.
+You will need a version of GCC that supports the C++-14 standard.  
 
 ## External Packages
 
@@ -225,5 +225,4 @@ If you plan on starting a major (sub)project within the repository like adding a
 
 ## References
 
-* [LDMX Simulation Framework](https://www.dropbox.com/s/oosmuyo553kvlce/LDMX%20Simulation%20Framework.pptx?dl=0) - Powerpoint presentation
 * [LDMX-SW Doxygen Documentation](https://ldmxanalysis.github.io/ldmx-sw/html/index.html)

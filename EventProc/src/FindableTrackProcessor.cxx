@@ -14,7 +14,7 @@ namespace ldmx {
     }
 
     FindableTrackProcessor::~FindableTrackProcessor() { 
-        delete findableTrackResults_; 
+        if ( findableTrackResults_ ) delete findableTrackResults_; 
     }
 
     void FindableTrackProcessor::configure(const ParameterSet &pset) { 

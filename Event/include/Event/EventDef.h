@@ -25,3 +25,4 @@
 #include "Event/PnWeightResult.h"
 #include "Event/SiStripHit.h"
 #include "Event/RawHit.h"
+#include "Event/DigiCollection.h" 

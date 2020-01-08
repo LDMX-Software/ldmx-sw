@@ -1,5 +1,8 @@
 #include "SimPlugins/PluginLoader.h"
 
+#include "Exception/Exception.h"
+
+#include <string>
 #include <dlfcn.h>
 
 namespace ldmx {
@@ -31,20 +34,17 @@ namespace ldmx {
                     this->pluginHandles_[plugin] = handle;
                 } else {
                     // For some reason, the plugin could not be created by the lib function!
-                    std::cerr << "[ PluginLoader ] : Failed to create plugin " << pluginName << " from lib "
-                    << libName << "!!!" << std::endl;
-                    throw std::runtime_error("Failed to create the plugin.");
+                    EXCEPTION_RAISE( "CreateFail" , "Failed to create plugin " + pluginName
+                            + " from lib " + libName + "." );
                 }
             } else {
                 // The create function was not found in the lib.
-                std::cerr << "[ PluginLoader ] : Failed to find create function for plugin " << pluginName << " in lib "
-                << libName << "!!!" << std::endl;
-                throw std::runtime_error("Failed to find library function for creating plugin.");
+                EXCEPTION_RAISE( "CreateFail" , "Failed to find create function for plugin " + pluginName
+                        + " in lib " + libName + "." );
             }
         } else {
             // The plugin lib could not be opened.  Probably it doesn't exist!
-            std::cerr << "[ PluginLoader ] : Could not open " << libName << " plugin lib." << std::endl;
-            throw std::runtime_error("Plugin lib not found.");
+            EXCEPTION_RAISE( "CreateFail" , "Could not open " + libName + " plugin lib." );
         }
 
         return plugin;
@@ -74,8 +74,7 @@ namespace ldmx {
                 }
             } else {
                 // No handle exists for this plugin.  Maybe it wasn't registered with this PluginLoader?
-                std::cerr << "[ PluginLoader ] : Failed to find handle for " << plugin->getName() << " plugin!!!" << std::endl;
-                throw std::runtime_error("Failed to find handle for plugin.");
+                EXCEPTION_RAISE( "FindFail" , "Failed to find handle for " + plugin->getName() + " plugin." );
             }
         } else {
             // Null argument is just ignored with a warning.

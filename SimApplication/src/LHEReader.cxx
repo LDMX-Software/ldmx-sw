@@ -2,7 +2,6 @@
 
 // STL
 #include <iostream>
-#include <stdexcept>
 
 namespace ldmx {
 

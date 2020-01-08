@@ -13,9 +13,13 @@ namespace ldmx {
 
     }
 
+    EcalClusterProducer::~EcalClusterProducer() {
+        if ( ecalClusters_ ) delete ecalClusters_;
+    }
+
     void EcalClusterProducer::configure(const ParameterSet& ps) {
 
-        hexReadout_ = new EcalHexReadout();
+        hexReadout_ = std::make_shared<EcalHexReadout>();
         cutoff_ = ps.getDouble("cutoff");
         seedThreshold_ = ps.getDouble("seedThreshold"); 
         digisPassName_ = ps.getString("digisPassName");
