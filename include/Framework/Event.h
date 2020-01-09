@@ -450,7 +450,7 @@ namespace ldmx {
                      * All map passengers can be cleared in the same way.
                      */
                     template <typename Key, typename Val>
-                    void operator()(std::unordered_map<Key,Val> &m) const { m.clear(); }
+                    void operator()(std::map<Key,Val> &m) const { m.clear(); }
         
                     /**
                      * Right now all other event objects have a Clear method defined.
@@ -537,7 +537,7 @@ namespace ldmx {
                      * Prints size and contents of all maps depending on verbosity.
                      */
                     template <typename Key, typename Val>
-                    void operator()(const std::unordered_map<Key,Val> &m) const { 
+                    void operator()(const std::map<Key,Val> &m) const { 
                         if ( verbosity_ > 0 ) {
                             std::cout << "Size: " << m.size() << std::endl;
                         }
