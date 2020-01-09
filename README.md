@@ -12,15 +12,19 @@ You will need the following build tools available in your environment before beg
 
 ### Linux
 
-The software has been built and tested on CentOS7 and RHEL6.  Using an older Linux releases such as RHEL6 or SLC6 will require you to install and use a more up to date compiler (gcc 6.3 is preferable) than the default system one.
+The software has been built and tested on CentOS7 and RHEL6.
+Using an older Linux releases such as RHEL6 or SLC6 will require you to install and use a more up to date compiler (gcc 6.3 is preferable) than the default system one.
 
 ### CMake
 
-You should have at least CMake 3.0 installed on your machine, and preferably a current version from the [CMake website](https://cmake.org).  As of this writing, the current CMake version is the 3.6.2 release.  The installation will not work with any 2.x version of cmake, which is too old.
+You should have at least CMake 3.1 installed on your machine, and preferably a current version from the [CMake website](https://cmake.org).  
+As of this writing, the current CMake version is the 3.6.2 release.  
+The installation will not work with any 2.x version of cmake, which is too old.
 
 ### GCC
 
-You will need a version of GCC that supports the C++-14 standard.  
+You will need a version of GCC that supports the C++-17 standard.
+This is equivalent to gcc > 7.1.
 
 ## External Packages
 
@@ -42,13 +46,17 @@ make install
 export XercesC_DIR=$PWD
 ```
 
-The *XercesC_DIR* environment variable is optional and for convenience.  Where you see these types of variables in these instructions, you may also substitute the actual full path to your local installation of that dependency.
+The *XercesC_DIR* environment variable is optional and for convenience.  
+Where you see these types of variables in these instructions, you may also substitute the actual full path to your local installation of that dependency.
 
 ## Geant4
 
-You need to have a local Geant4 installation available with GDML enabled.  You can check for this by looking for the header files in the Geant4 include dir, e.g. by doing `ls G4GDML*.hh` from that directory.  If no files are found, then it is not enabled in your installation.
+You need to have a local Geant4 installation available with GDML enabled.  
+You can check for this by looking for the header files in the Geant4 include dir, e.g. by doing `ls G4GDML*.hh` from that directory.  
+If no files are found, then it is not enabled in your installation.
 
-LDMX uses a custom version of Geant4 10.02.p03 that includes modifications to the range in which the Bertini Cascade model is used and fixes to the calculation of the Gamma to mu+mu- matrix element.  This version of geant4 can be cloned from github as follows: 
+LDMX uses a custom version of Geant4 10.02.p03 that includes modifications to the range in which the Bertini Cascade model is used and fixes to the calculation of the Gamma to mu+mu- matrix element.  
+This version of geant4 can be cloned from github as follows: 
 
 ``` bash
 git clone https://github.com/LDMXAnalysis/geant4.git 
@@ -78,6 +86,7 @@ sudo apt-get install libx11-dev libxmu-dev libgl1-mesa-dev
 ## ROOT
 
 LDMX is standardizing on ROOT 6, and no support for ROOT 5 is planned.
+Your ROOT 6 install must have the C++17 standard enabled.
 
 ROOT has many installation options and optional dependencies, and the [building ROOT documentation](https://root.cern.ch/building-root) covers this in full detail.
 
@@ -93,9 +102,9 @@ wget https://root.cern.ch/download/root_v6.06.08.source.tar.gz
 tar -zxvf root_v6.06.08.source.tar.gz
 mkdir root-6.06.08-build
 cd root-6.06.08-build
-cmake -Dgdml=ON ../root-6.06.08
+cmake -Dgdml=ON -Dcxx17=ON ../root-6.06.08
 make 
-export ROOTDIR=$PWD
+source bin/thisroot.sh
 ```
 
 Depending on what extra tools you want to use in ROOT, you should supply your own extra CMake arguments to enable them.
@@ -110,7 +119,7 @@ These commands should install the software locally:
 git clone https://github.com/LDMXAnalysis/ldmx-sw.git
 cd ldmx-sw
 mkdir build; cd build
-cmake -DGeant4_DIR=$G4DIR -DROOT_DIR=$ROOTDIR -DXercesC_DIR=$XercesC_DIR -DCMAKE_INSTALL_PREFIX=../ldmx-sw-install ..
+cmake -DGeant4_DIR=$G4DIR -DROOT_DIR=$ROOTSYS -DXercesC_DIR=$XercesC_DIR -DCMAKE_INSTALL_PREFIX=../ldmx-sw-install ..
 make install
 ```
 
@@ -132,19 +141,11 @@ Assuming your source and installation directories are the same, you can source t
 . ./ldmx-sw/bin/ldmx-setup-env.sh
 ```
 
-The only additional step is adding the Xerces library directory to the load library path:
-
-``` bash
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/xerces/install/dir/lib
-```
-
-Replace the above path with the actual full path to your Xerces library directory.
-
 Once you have executed the above commands in your shell, you should be able to execute programs like `ldmx-sim` without any additional setup.
 
 ## Running the LDMX Simulation Application
 
-There is currently one main binary program created by the framework which is the LDMX Simulation Application.
+There is currently two main binary programs created by the framework one of which is the LDMX Simulation Application.
 
 It can be run from the command line in interactive mode using the `ldmx-sim` command or in batch mode by supplying a macro like `ldmx-sim run.mac`.
 
@@ -173,7 +174,7 @@ The detector file is located in the *Detectors* module data directory and the ea
 
 ## Running the LDMX Analysis Application
 
-The `ldmx-app` command will run an analysis job using an input configuration file.
+The `ldmx-app` command runs an analysis job using an input configuration file.
 
 Sample configuration files can be found in `Configuration/python` in the git repository.
 
