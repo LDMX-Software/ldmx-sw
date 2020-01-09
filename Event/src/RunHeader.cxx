@@ -20,8 +20,7 @@ namespace ldmx {
         description_(description) {
     }
 
-
-    void RunHeader::Print(Option_t *) const {
+    void RunHeader::Print() const {
         std::cout << "RunHeader { run: " << runNumber_
                 << ", detectorName: " << detectorName_
                 << ", description: " << description_

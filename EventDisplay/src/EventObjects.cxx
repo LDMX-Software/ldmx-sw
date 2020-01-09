@@ -271,7 +271,6 @@ namespace ldmx {
 
             TEveArrow* simArr = new TEveArrow(scale*simDir[0],scale*simDir[1],scale*simDir[2],simStart[0],simStart[1],simStart[2]);
 
-            simArr->SetSourceObject( new SimTrackerHit(spHit) ); //TODO: clean up, this is horrendous and depends on TObject
             simArr->SetMainColor(kBlack);
             simArr->SetTubeR(60*0.02/r);
             simArr->SetConeL(100*0.02/r);

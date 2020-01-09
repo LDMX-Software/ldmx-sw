@@ -12,7 +12,7 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TObject.h"
+#include "TObject.h" //For ClassDef
 
 //----------------//
 //   C++ StdLib   //
@@ -27,7 +27,7 @@ namespace ldmx {
      * @class SimParticle
      * @brief Represents MC particle information from a track in the simulation
      */
-    class SimParticle: public TObject {
+    class SimParticle {
 
         public:
 
@@ -64,12 +64,12 @@ namespace ldmx {
             /**
              * Clear the data in this object.
              */
-            void Clear(Option_t *option = "");
+            void Clear();
 
             /**
              * Print out information of this object.
              */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /**
              * Get the energy of the particle [MeV].

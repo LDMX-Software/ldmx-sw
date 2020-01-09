@@ -8,7 +8,7 @@
 #define EVENT_SIMCALORIMETERHIT_H_
 
 // ROOT
-#include "TObject.h"
+#include "TObject.h" //For ClassDef
 
 // LDMX
 #include "Event/SimParticle.h"
@@ -28,7 +28,7 @@ namespace ldmx {
      * energy (may be different from the actual SimParticle), the time of the contribution
      * and the energy deposition.
      */
-    class SimCalorimeterHit: public TObject {
+    class SimCalorimeterHit {
 
         public:
 
@@ -56,12 +56,12 @@ namespace ldmx {
             /**
              * Clear the data in the object.
              */
-            void Clear(Option_t *option = "");
+            void Clear();
 
             /**
              * Print out the object.
              */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /**
              * Get the detector ID.

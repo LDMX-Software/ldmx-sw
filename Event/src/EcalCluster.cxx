@@ -4,7 +4,7 @@ ClassImp(ldmx::EcalCluster)
 
 namespace ldmx {
 
-    EcalCluster::EcalCluster() : TObject() {
+    EcalCluster::EcalCluster() {
 
     }
 
@@ -12,7 +12,7 @@ namespace ldmx {
         Clear();
     }
 
-    void EcalCluster::Print(Option_t *option) const {
+    void EcalCluster::Print() const {
 
         std::cout << "EcalCluster { " << "Energy: " << energy_ << ", " << "Number of hits: " << nHits_ << " }" << std::endl;
 
@@ -22,9 +22,8 @@ namespace ldmx {
         //}
     }
 
-    void EcalCluster::Clear(Option_t*) {
+    void EcalCluster::Clear() {
 
-        TObject::Clear();
         hitIDs_.clear();
 
         energy_ = 0;
@@ -33,17 +32,6 @@ namespace ldmx {
         centroidY_ = 0;
         centroidZ_ = 0;
 
-    }
-
-    void EcalCluster::Copy(TObject& ob) const {
-
-        EcalCluster& tr = (EcalCluster&) (ob);
-        tr.energy_ = energy_;
-        tr.nHits_ = nHits_;
-        tr.hitIDs_ = hitIDs_;
-        tr.centroidX_ = centroidX_;
-        tr.centroidY_ = centroidY_;
-        tr.centroidZ_ = centroidZ_;
     }
 
     void EcalCluster::addHits(const std::vector<const EcalHit*> hitsVec) {
