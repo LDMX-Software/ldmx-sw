@@ -11,7 +11,7 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TObject.h"
+#include "TObject.h" //For ClassDef
 
 //----------//
 //   LDMX   //
@@ -20,7 +20,7 @@
 
 namespace ldmx { 
 
-    class HcalVetoResult : public TObject { 
+    class HcalVetoResult { 
         
         public: 
 
@@ -30,14 +30,11 @@ namespace ldmx {
             /** Destructor */
             ~HcalVetoResult(); 
 
-            /** Copy the object */
-            void Copy(TObject& object) const; 
-
             /** Reset the object. */
-            void Clear(Option_t *option = ""); 
+            void Clear(); 
             
             /** Print out the object */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /** Checks if the event passes the Hcal veto. */
             bool passesVeto() const { return passesVeto_; };

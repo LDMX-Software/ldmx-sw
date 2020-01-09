@@ -34,14 +34,12 @@ namespace ldmx {
 
     SimParticle::ProcessTypeMap SimParticle::PROCESS_MAP = SimParticle::createProcessTypeMap();
 
-    SimParticle::SimParticle() : TObject() { }
+    SimParticle::SimParticle() { }
 
     SimParticle::~SimParticle() {
-        TObject::Clear();
     }
 
-    void SimParticle::Clear(Option_t *option) {
-        TObject::Clear();
+    void SimParticle::Clear() {
 
         daughters_.clear();
         parents_.clear();
@@ -68,7 +66,7 @@ namespace ldmx {
         processType_ = ProcessType::unknown;
     }
 
-    void SimParticle::Print(Option_t *option) const {
+    void SimParticle::Print() const {
         std::cout << "SimParticle { " <<
                 "energy: " << energy_ << ", " <<
                 "Track ID: " << trackID_ << ", " <<

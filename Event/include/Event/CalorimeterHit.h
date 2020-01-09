@@ -8,7 +8,7 @@
 #define EVENT_CALORIMETERHIT_H_
 
 // ROOT
-#include "TObject.h"
+#include "TObject.h" //For ClassDef
 
 namespace ldmx {
 
@@ -20,7 +20,7 @@ namespace ldmx {
      * from a calorimeter including detector ID, raw amplitude, corrected energy
      * and time.
      */
-    class CalorimeterHit : public TObject {
+    class CalorimeterHit {
 
         public:
 
@@ -39,12 +39,12 @@ namespace ldmx {
             /**
              * Clear the data in the object.
              */
-            void Clear(Option_t *option = "");
+            void Clear();
 
             /**
              * Print out the object.
              */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /**
              * Get the detector ID.

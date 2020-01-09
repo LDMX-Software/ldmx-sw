@@ -9,7 +9,7 @@
 #define EVENT_SIMTRACKERHIT_H_
 
 // ROOT
-#include "TObject.h"
+#include "TObject.h" //For ClassDef
 
 // STL
 #include <iostream>
@@ -20,7 +20,7 @@ namespace ldmx {
      * @class SimTrackerHit
      * @brief Represents a simulated tracker hit in the simulation
      */
-    class SimTrackerHit: public TObject {
+    class SimTrackerHit {
 
         public:
 
@@ -37,12 +37,12 @@ namespace ldmx {
             /**
              * Print a description of this object.
              */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /**
              * Reset the SimTrackerHit object.
              */
-            void Clear(Option_t *option = "");
+            void Clear();
 
             /**
              * Get the detector ID of the hit.

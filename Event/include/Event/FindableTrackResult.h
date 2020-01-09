@@ -17,12 +17,12 @@
 //----------//
 //   ROOT   //
 //----------//
-#include <TObject.h>
+#include <TObject.h> //For ClassDef
 #include <TRef.h>
 
 namespace ldmx { 
     
-    class FindableTrackResult : public TObject { 
+    class FindableTrackResult { 
         
         public: 
 
@@ -98,10 +98,10 @@ namespace ldmx {
             void setResult(Strategy strategy, bool isFindable); 
 
             /** Reset the object. */
-            void Clear(Option_t *option = ""); 
+            void Clear(); 
             
             /** Print out the object */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /** Sort by track ID of particle causing track */
             bool operator < ( const FindableTrackResult &rhs ) const {
