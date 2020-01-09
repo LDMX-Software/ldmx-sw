@@ -63,7 +63,6 @@ namespace ldmx {
                     module->onFileClose(outputFiles_[0]);
                 }
                 outFile.close();
-                theEvent.onEndOfFile();
 
             } else {
                 //there are input files
@@ -182,10 +181,10 @@ namespace ldmx {
                         std::cout << "[ Process ] : Processing interrupted\n";
                     }
 
-                    if ( outFile and !singleOutput ) {
-                        outFile->close();
-                        delete outFile;
-                        outFile = nullptr;
+                    std::cout << "[ Process ] : Closing file " << infilename << std::endl;
+
+                    for (auto module : sequence_) {
+                        module->onFileClose(infilename);
                     }
 
                     inFile.close();
@@ -193,10 +192,10 @@ namespace ldmx {
                     //reset event in case of single output mode
                     theEvent.onEndOfFile();
 
-                    std::cout << "[ Process ] : Closing file " << infilename << std::endl;
-
-                    for (auto module : sequence_) {
-                        module->onFileClose(infilename);
+                    if ( outFile and !singleOutput ) {
+                        outFile->close();
+                        delete outFile;
+                        outFile = nullptr;
                     }
 
                 } //loop through input files
