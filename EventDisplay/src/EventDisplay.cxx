@@ -166,8 +166,8 @@ namespace ldmx {
 
         eventNumMax_ = tree_->GetEntriesFast()-1;
 
-        foundECALRecHits_     = GetCollection( ecalRecHitsCollName_ , ecalRecHits_ );
-        foundHCALRecHits_     = GetCollection( hcalRecHitsCollName_ , hcalRecHits_ );
+        foundECALRecHits_   = GetCollection( ecalRecHitsCollName_ , ecalRecHits_ );
+        foundHCALRecHits_   = GetCollection( hcalRecHitsCollName_ , hcalRecHits_ );
         foundClusters_      = GetCollection( clustersCollName_ , ecalClusters_ );
         foundTrackerHits_   = GetCollection( trackerHitsCollName_ , recoilHits_ );
         foundEcalSPHits_    = GetCollection( ecalSimParticlesCollName_ , ecalSimParticles_ );
