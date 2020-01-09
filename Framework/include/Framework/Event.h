@@ -9,11 +9,8 @@
 #define FRAMEWORK_EVENT_H_
 
 // ROOT
-#include "TObject.h"
 #include "TTree.h"
-#include "TBranch.h"
 #include "TBranchElement.h"
-#include "TBranchClones.h"
 
 // LDMX
 #include "Event/EventDef.h"

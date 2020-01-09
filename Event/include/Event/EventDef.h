@@ -43,8 +43,6 @@ namespace ldmx {
      *          These must have Print and operator< (for sorting) methods defined.
      *      2) Those that exist outside an STL collection (e.g. EcalVetoResult)
      *          These must have Print and Clear methods defined.
-     *      All passengers must inherit from TObject so that they contain the unique IDs ROOT uses for memory handling within TTrees.
-     *      There is no way around that right now.
      *
      * TODO: Figure out if there are a maximum number of types allowed.
      */
