@@ -4,15 +4,15 @@
  * @author Michael Revering, University of Minnesota
  */
 
-#ifndef SIMPLUGINS_DarkBremXSECBIASINGPLUGINMESSENGER_H
-#define SIMPLUGINS_DarkBremXSECBIASINGPLUGINMESSENGER_H
+#ifndef SIMPLUGINS_DARKBREMXSECBIASINGPLUGINMESSENGER_H
+#define SIMPLUGINS_DARKBREMXSECBIASINGPLUGINMESSENGER_H
 
 // LDMX
 #include "SimPlugins/UserActionPluginMessenger.h"
 
 namespace ldmx {
 
-// Forward declare to avoid circular dependency in headers.
+    /** Forward declare to avoid circular dependency in headers. */
     class DarkBremXsecBiasingPlugin;
 
     /**
@@ -34,6 +34,7 @@ namespace ldmx {
              */
             virtual ~DarkBremXsecBiasingMessenger() {
                 delete xsecFactorCmd_;
+                delete modeCmd_;
             }
 
             /**
@@ -54,11 +55,11 @@ namespace ldmx {
              * The command for setting the cross-section biasing factor.
              */
             G4UIcommand* xsecFactorCmd_;
-
-	    /**
-	     * The command for changing the simulation mode.
-	     */
-	    G4UIcommand* modeCmd_;
+    
+    	    /**
+    	     * The command for changing the simulation mode.
+    	     */
+    	    G4UIcommand* modeCmd_;
     };
 
 }

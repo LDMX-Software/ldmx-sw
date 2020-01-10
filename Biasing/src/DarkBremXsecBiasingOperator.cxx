@@ -1,12 +1,18 @@
 /**
- * @file XsecBiasingPlugin.cxx
- * @brief Geant4 Biasing Operator used to bias the occurence of photonuclear 
+ * @file DarkBremXsecBiasingPlugin.cxx
+ * @brief Geant4 Biasing Operator used to bias the occurence of dark brem
  *        events by modifying the cross-section.
- * @author Omar Moreno
- *         SLAC National Accelerator Laboratory
+ * @author Michael Revering, University of Minnesota
  */
 
 #include "Biasing/DarkBremXsecBiasingOperator.h"
+
+//------------//
+//   Geant4   //
+//------------//
+#include "G4BiasingProcessInterface.hh"
+#include "G4Track.hh"
+#include "G4VBiasingOperator.hh"
 
 namespace ldmx { 
 
@@ -20,7 +26,6 @@ namespace ldmx {
     }
 
     void DarkBremXsecBiasingOperator::StartRun() { 
-     
         XsecBiasingOperator::StartRun(); 
     }
 
@@ -32,12 +37,14 @@ namespace ldmx {
                   << " Created within " << track->GetLogicalVolumeAtVertex()->GetName() 
                   << std::endl;*/
 
+        //only bias primary particle
         if (track->GetParentID() != 0) return 0; 
 
         /*std::cout << "[ DarkBremXsecBiasingOperator ]: " 
                   << "Kinetic energy: " << track->GetKineticEnergy() 
                   << " MeV" << std::endl;*/
 
+        //only bias primary particles above the minimum energy
         if (track->GetKineticEnergy() < XsecBiasingOperator::threshold_) return 0; 
 
         /*std::cout << "[ DarkBremXsecBiasingOperator ]: " 
@@ -47,6 +54,7 @@ namespace ldmx {
 
         std::string currentProcess = callingProcess->GetWrappedProcess()->GetProcessName(); 
         if (currentProcess.compare(this->getProcessToBias()) == 0) { 
+            //only bias the process that we want to DARKBREM_PROCESS
             
             G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
             /*std::cout << "[ DarkBremXsecBiasingOperator ]: "
@@ -61,6 +69,8 @@ namespace ldmx {
             std::cout << "[ DarkBremXsecBiasingOperator ]: Biased DBrem xsec: "
                       << dbXsecBiased_ << std::endl;
 
+            //xsecOperation is a protected member variable of XsecBiasingOperator
+            //  it is set in XsecBiasingOperator::StartRun()
             xsecOperation->SetBiasedCrossSection(dbXsecBiased_);
             xsecOperation->Sample();
             return xsecOperation;

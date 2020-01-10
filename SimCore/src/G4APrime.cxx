@@ -1,4 +1,15 @@
+/**
+ * @file G4APrime.cxx
+ * @brief Class creating the A' particle in Geant.
+ * @author Michael Revering, University of Minnesota
+ */
+
 #include "SimCore/G4APrime.h"
+
+#include "globals.hh"
+#include "G4ParticleTable.hh"
+#include "G4PhysicalConstants.hh"
+#include "G4SystemOfUnits.hh"
 
 G4APrime* G4APrime::theAPrime = 0;
 
@@ -19,25 +30,16 @@ G4APrime::G4APrime(
    G4int               encoding,
    G4bool              stable, 
    G4double            lifetime,
-   G4DecayTable        *decaytable)	
+   G4DecayTable        *decaytable) 
    : G4ParticleDefinition( aName, mass, width, charge, iSpin, iParity, 
                            iConjugation, iIsospin, iIsospin3, gParity, pType,    
-			   lepton, baryon, encoding, stable, lifetime, decaytable ) 
-{
+                           lepton, baryon, encoding, stable, lifetime, decaytable ) { /* Nothing on purpose */ }
 
-}
-
-G4APrime::~G4APrime()
-{
-
-}
-
-G4APrime* G4APrime::APrime()
-{
+G4APrime* G4APrime::APrime() {
    if(!theAPrime) {
      
       const G4String&     name = "A^1";
-      G4double            mass = 10.0*MeV;
+      G4double            mass = 10.0*MeV; //TODO A' mass hard coded
       G4double            width = 0.;       
       G4double            charge = 0;
       G4int               iSpin = 0;
@@ -55,10 +57,12 @@ G4APrime* G4APrime::APrime()
       G4DecayTable*       decaytable = 0;
 
       theAPrime = new G4APrime(
-         name, mass, width, charge, iSpin, iParity,
-	 iConjugation, iIsospin, iIsospin3, gParity, pType,
-	 lepton, baryon, encoding, stable, lifetime, decaytable);
+            name, mass, width, charge, iSpin, iParity,
+            iConjugation, iIsospin, iIsospin3, gParity, pType,
+            lepton, baryon, encoding, stable, lifetime, decaytable
+            );
    }
+
    return theAPrime;
 }
 

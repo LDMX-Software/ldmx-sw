@@ -1,13 +1,13 @@
 /**
- * @file TargetDarkBremFilter.h
- * @class TargetDarkBremFilter
+ * @file DarkBremFilter.h
+ * @class DarkBremFilter
  * @brief Class defining a UserActionPlugin that allows a user to filter out 
- *        events that don't result in a brem within the target.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
+ *        events that don't result in a dark brem inside a given volume
+ * @author Michael Revering, University of Minnesota
  */
 
-#ifndef BIASING_TARGETBREMFILTER_H_
-#define BIASING_TARGETBREMFILTER_H_
+#ifndef BIASING_DARKBREMFILTER_H_
+#define BIASING_DARKBREMFILTER_H_
 
 //----------------//
 //   C++ StdLib   //
@@ -24,41 +24,45 @@
 //----------//
 #include "SimPlugins/UserActionPlugin.h"
 #include "Biasing/BiasingMessenger.h"
-#include "Biasing/TargetDarkBremFilterMessenger.h"
+#include "Biasing/DarkBremFilterMessenger.h"
 
 namespace ldmx {
 
-    class TargetDarkBremFilterMessenger; 
+    class DarkBremFilterMessenger; 
 
-    class TargetDarkBremFilter : public UserActionPlugin {
+    class DarkBremFilter : public UserActionPlugin {
 
         public:
 
             /**
              * Class constructor.
+             *
+             * Links this filter to its messenger.
              */
-            TargetDarkBremFilter();
+            DarkBremFilter();
 
             /**
              * Class destructor.
              */
-            ~TargetDarkBremFilter();
+            ~DarkBremFilter();
 
             /**
              * Get the name of the plugin.
              * @return The name of the plugin.
              */
             virtual std::string getName() {
-                return "TargetDarkBremFilter";
+                return "DarkBremFilter";
             }
 
             /**
+             * Not implemented right now, but want to investigate using it
              * Get whether this plugin implements the event action.
+             *
              * @return True if the plugin implements the event action.
              */
-            virtual bool hasEventAction() { 
-                return true;
-            }
+//            virtual bool hasEventAction() { 
+//                return true;
+//            }
 
             /**
              * Get whether this plugin implements the stepping action.
@@ -77,83 +81,51 @@ namespace ldmx {
             }
 
             /**
-             * Implement the stepping action which performs the target volume biasing.
+             * Kills events that don't contain a DarkBrem produced by the primary electron within the desired volume.
+             *
              * @param step The Geant4 step.
              */
             void stepping(const G4Step* step);
 
             /**
+             * Not implemented right now, but want to investigate using it
              * End of event action.
              */
-            virtual void endEvent(const G4Event*);
+            //virtual void endEvent(const G4Event*);
 
             /**
              * Classify a new track which postpones track processing.
-             * Track processing resumes normally if a target PN interaction occurred.
+             * Track processing resumes normally if an interaction occurred.
              * @param aTrack The Geant4 track.
              * @param currentTrackClass The current track classification.
              */
             G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack, 
                     const G4ClassificationOfNewTrack& currentTrackClass);
 
-            /**
-             *
-             */
-            static std::vector<G4Track*> getBremGammaList() { return bremGammaTracks_; }
-
-            /** 
-             * Enable/disable killing of the recoil electron track.  If the 
-             * recoil track is killed, only the brem gamma is propagated.
-             */
-            void setKillRecoilElectron(bool killRecoilElectron) { 
-                killRecoilElectron_ = killRecoilElectron; 
-            }
-
             /** 
              * @param volume Set the volume that the filter will be applied to. 
              */
             void setVolume(std::string volumeName) { volumeName_ = volumeName; }; 
 
-            /**
-             * Set the energy threshold that the recoil electron must exceed.
-             */
-            void setRecoilEnergyThreshold(double recoilEnergyThreshold) { 
-                recoilEnergyThreshold_ = recoilEnergyThreshold; 
-            }
+        private:
 
             /**
-             * Set the minimum energy that the brem gamma must have.
-             */
-            void setBremEnergyThreshold(double bremEnergyThreshold) { 
-                bremEnergyThreshold_ = bremEnergyThreshold; 
-            }
-
-            /**
+             * Checks if the secondaries given has an A Prime.
              *
+             * @param secondaries list to search
+             * @return true if A Prime in secondaries
              */
-            static void removeBremFromList(G4Track* track);
+            bool hasAPrime(const G4TrackVector *secondaries) const;
 
         private:
             
             /** Messenger used to pass arguments to this class. */
-            TargetDarkBremFilterMessenger* messenger_{nullptr};
-
-            static std::vector<G4Track*> bremGammaTracks_; 
+            DarkBremFilterMessenger* messenger_{nullptr};
 
             /** The volume that the filter will be applied to. */
             G4String volumeName_{"target_PV"};
 
-            /** Recoil electron threshold. */
-            double recoilEnergyThreshold_{1500}; // MeV
-
-            /** Brem gamma energy treshold. */
-            double bremEnergyThreshold_{0}; 
-
-            /** Flag indicating if the recoil electron track should be killed. */
-            bool killRecoilElectron_{false};
-
-
-    }; // TargetDarkBremFilter
+    }; // DarkBremFilter
 }
 
-#endif // BIASING_TARGETBREMFILTER_H__
+#endif // BIASING_DARKBREMFILTER_H__

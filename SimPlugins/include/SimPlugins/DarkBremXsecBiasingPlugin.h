@@ -7,19 +7,9 @@
 #ifndef SIMPLUGINS_DarkBremXSECBIASINGPLUGIN_H_
 #define SIMPLUGINS_DarkBremXSECBIASINGPLUGIN_H_
 
-// Geant4
-#include "G4Electron.hh"
-#include "G4VEnergyLossProcess.hh"
-#include "G4RunManager.hh"
-#include "G4ProcessManager.hh"
-#include "G4ProcessTable.hh"
-
 // LDMX
 #include "SimPlugins/UserActionPlugin.h"
 #include "SimPlugins/DarkBremXsecBiasingMessenger.h"
-
-// Sim Core
-#include "SimCore/G4eDarkBremsstrahlung.h"
 
 namespace ldmx {
 
@@ -38,6 +28,8 @@ namespace ldmx {
 
             /**
              * Class destructor.
+             *
+             * Deletes the messenger attached to this plugin.
              */
             ~DarkBremXsecBiasingPlugin();
 
@@ -65,20 +57,19 @@ namespace ldmx {
             void beginRun(const G4Run* aRun);
 
             /**
-	     * Get whether this plugin implements an event action.
-	     * @return True to indicate this plugin has an event action.
-	     */
- 
+             * Get whether this plugin implements an event action.
+             * @return True to indicate this plugin has an event action.
+             */
             bool hasEventAction() {
-	        return true;
-	    }
+                return true;
+            }
 
             /**
-	     * Implementation of end event hook.
-	     * Resets the process to active, to limit the number of brems per event to one.
-	     * @param aEvent The Geant4 event that is ending.
-	     */
-	    void endEvent(const G4Event* aEvent);
+             * Implementation of end event hook.
+             * Resets the process to active, to limit the number of brems per event to one.
+             * @param aEvent The Geant4 event that is ending.
+             */
+            void endEvent(const G4Event* aEvent);
 
             /**
              * Set the PN cross-section biasing factor.
@@ -88,12 +79,12 @@ namespace ldmx {
                 xsecBiasingFactor_ = xsecBiasingFactor;
             }
 
-	    /**
-	     * Set the simulation mode.
-	     * @param mode The new simulation mode.
-	     */
-	    void setXsecSimulationMode(std::string mode) {
-	        mode_ = mode;
+            /**
+             * Set the simulation mode.
+             * @param mode The new simulation mode.
+             */
+            void setXsecSimulationMode(std::string mode) {
+                mode_ = mode;
             }
 
         private:
@@ -110,4 +101,4 @@ namespace ldmx {
 
 }
 
-#endif // SIMPLUGINS_DarkBremXSECBIASINGPLUGIN_H__
+#endif // SIMPLUGINS_DARKBREMXSECBIASINGPLUGIN_H_
