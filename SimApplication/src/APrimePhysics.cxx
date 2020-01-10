@@ -20,25 +20,7 @@ namespace ldmx {
          * Insert A-prime into the Geant4 particle table.
          * For now we flag it as stable.
          */
-        aprimeDef_ = new G4ParticleDefinition("A^1", /* name */
-                0.003 * GeV, /* mass */
-                0, /* width */
-                0, /* charge */
-                0, /* 2*spin */
-                0, /* parity */
-                0, /* C-conjugation */
-                0, /* 2*isospin */
-                0, /* 2*isospin3 */
-                0, /* G-parity */
-                "APrime", /* type */
-                0, /* lepton number */
-                0, /* baryon number */
-                622, /* PDG encoding */
-                true, /* stable */
-                0, /*DBL_MIN,*//* lifetime (may be overridden by predefined decay time) */
-                0, /* decay table */
-                false /* short lived */
-            );
+        aprimeDef_ = G4APrime::APrime();
 
         //aprimeDef->SetProcessManager(new G4ProcessManager(aprimeDef));
     }
@@ -54,6 +36,9 @@ namespace ldmx {
                 "The process manager for APrime is NULL.");
          }
          */
+	G4ParticleDefinition* particle = G4Electron::ElectronDefinition();
+	G4ProcessManager* pm = particle->GetProcessManager();
+	pm->AddProcess(new G4eDarkBremsstrahlung(), -1, 1, 1);
     }
 
 }
