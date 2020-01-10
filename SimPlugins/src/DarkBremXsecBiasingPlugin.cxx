@@ -45,8 +45,9 @@ void ldmx::DarkBremXsecBiasingPlugin::endEvent(const G4Event*) {
 
     //Re-activate the process at the end of each event. The process is deactivated each time it occurs, to limit it to one brem per event.
     G4bool active = true;
-    G4String pname = "eDBrem";
+    G4String pname = "biasWrapper(eDBrem)";
     G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
     ptable->SetProcessActivation(pname,active);    
+    std::cout << "Reset the dark brem process.\n";
 
 }
