@@ -1,6 +1,7 @@
 /persistency/gdml/read detector.gdml
-/ldmx/plugins/load TargetDarkBremFilter libBiasing.so
-/ldmx/plugins/TargetDarkBremFilter/volume target_PV
+/ldmx/plugins/load DarkBremFilter libBiasing.so
+/ldmx/plugins/DarkBremFilter/volume target_PV
+/ldmx/plugins/DarkBremFilter/verbose 2
 /ldmx/biasing/enable
 /ldmx/biasing/particle e-
 /ldmx/biasing/process eDBrem
