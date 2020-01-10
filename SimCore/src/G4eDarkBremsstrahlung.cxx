@@ -38,7 +38,7 @@ void G4eDarkBremsstrahlung::InitialiseEnergyLossProcess(const G4ParticleDefiniti
       isInitialised = true;
    }
 
-   G4double eth = 1*MeV;
+   G4double eth = 0*MeV;
    EmModel(1)->SetSecondaryThreshold(eth);
    EmModel(1)->SetLPMFlag(false);
 }

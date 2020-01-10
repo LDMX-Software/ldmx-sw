@@ -345,9 +345,11 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
 {
    //Deactivate the process after one dark brem. Needs to be reactivated in the end of event action. If this is in the stepping action instead, more than one brem can occur within each step.
    G4bool state = false;
-   G4String pname = "eDBrem";
+   G4String pname = "biasWrapper(eDBrem)";
    G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
    ptable->SetProcessActivation(pname,state);
+
+   cout << "A dark brem occurred!\n";
 
    if(lhe_loaded==false)
    {
@@ -438,7 +440,7 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
    G4double finalKE = EAcc - electron_mass_c2;
   
    // stop tracking and create new secondary instead of primary
-   if(finalKE > SecondaryThreshold()) {
+   if(finalKE < SecondaryThreshold()) {
      fParticleChange->ProposeTrackStatus(fStopAndKill);
      fParticleChange->SetProposedKineticEnergy(0.0);
      G4DynamicParticle* el = 
