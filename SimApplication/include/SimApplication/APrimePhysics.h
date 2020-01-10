@@ -1,28 +1,26 @@
 /**
  * @file APrimePhysics.h
  * @brief Class which defines basic APrime physics
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Michael Revering, University of Minnesota
  */
 
 #ifndef SIMAPPLICATION_APRIMEPHYSICS_H_
-#define SIMAPPLICATION_APRIMEPHYSICS_H 1_
+#define SIMAPPLICATION_APRIMEPHYSICS_H_
 
 // Geant4
 #include "G4VPhysicsConstructor.hh"
-#include "G4Decay.hh"
-#include "G4hMultipleScattering.hh"
-#include "G4ProcessManager.hh"
-#include "G4Electron.hh"
 
-// Sim Core
-#include "SimCore/G4APrime.h"
-#include "SimCore/G4eDarkBremsstrahlung.h"
+class G4String;
+class G4ParticleDefinition;
 
 namespace ldmx {
 
     /**
      * @class APrimePhysics
      * @brief Defines basic APrime physics
+     *
+     * It constructs the APrime particle and links the dark brem process
+     * to the electron.
      *
      * @note
      * This class basically does not do anything except define
@@ -34,22 +32,29 @@ namespace ldmx {
 
             /**
              * Class constructor.
+             *
              * @param name The name of the physics.
              */
             APrimePhysics(const G4String& name = "APrime");
 
             /**
              * Class destructor.
+             *
+             * Nothing right now.
              */
             virtual ~APrimePhysics();
 
             /**
              * Construct particles.
+             *
+             * Instatiates the APrime particle by calling the accessor method.
              */
             void ConstructParticle();
 
             /**
              * Construct the process.
+             *
+             * Links the dark brem processs to the electron through the process manager.
              */
             void ConstructProcess();
 
@@ -59,8 +64,6 @@ namespace ldmx {
              * Definition of the APrime particle.
              */
             G4ParticleDefinition* aprimeDef_;
-            //G4Decay decayProcess;
-            //G4hMultipleScattering scatterProcess;
     };
 
 }

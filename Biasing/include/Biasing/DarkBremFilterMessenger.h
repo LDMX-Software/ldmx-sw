@@ -1,11 +1,11 @@
 /**
- * @file TargetDarkBremFilterMessenger.h
- * @brief Messenger for setting parameters on TargetDarkBremFilter.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @file DarkBremFilterMessenger.h
+ * @brief Messenger for setting parameters on DarkBremFilter.
+ * @author Michael Revering, University of Minnesota
  */
 
-#ifndef BIASING_TARGETBREMFILTERMESSENGER_H
-#define BIASING_TARGETBREMFILTERMESSENGER_H
+#ifndef BIASING_DARKBREMFILTERMESSENGER_H
+#define BIASING_DARKBREMFILTERMESSENGER_H
 
 //------------//
 //   Geant4   //
@@ -15,15 +15,20 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "Biasing/TargetDarkBremFilter.h"
+#include "Biasing/DarkBremFilter.h"
 #include "SimPlugins/UserActionPluginMessenger.h"
 
 namespace ldmx { 
    
     // Forward declare to avoid circular dependency in headers
-    class TargetDarkBremFilter;
+    class DarkBremFilter;
 
-    class TargetDarkBremFilterMessenger : UserActionPluginMessenger {
+    /**
+     * @class DarkBremFilterMessenger
+     *
+     * Interface between geant4 macro commands and the DarkBremFilter.
+     */
+    class DarkBremFilterMessenger : UserActionPluginMessenger {
         
         public: 
 
@@ -32,31 +37,31 @@ namespace ldmx {
              *
              * @param Filter associated with this messenger.
              */
-            TargetDarkBremFilterMessenger(TargetDarkBremFilter* filter); 
+            DarkBremFilterMessenger(DarkBremFilter* filter); 
 
             /** Destructor */
-            ~TargetDarkBremFilterMessenger();
+            ~DarkBremFilterMessenger();
 
             /**
+             * Copies input value to DarkBremFilter.
+             *
+             * Right now only one command available: setting the physical volume for the filter.
              */
             void SetNewValue(G4UIcommand * command, G4String newValue);
 
         private:
 
             /** The filter associated with this messenger. */
-            TargetDarkBremFilter* filter_{nullptr};
+            DarkBremFilter* filter_{nullptr};
             
-            /** Command dictating whether the electron track gets killed. */
-            G4UIcmdWithoutParameter* killRecoilCmd_{nullptr};
-
             /** 
              * Command allowing a user to specify what volume the filter 
              * should be applied to.
              */
             G4UIcmdWithAString* volumeCmd_{nullptr};
 
-    }; // TargetDarkBremFilterMessenger
+    }; // DarkBremFilterMessenger
 }
 
-#endif // BIASING_TARGETBREMFILTERMESSENGER_H
+#endif // BIASING_DARKBREMFILTERMESSENGER_H
 

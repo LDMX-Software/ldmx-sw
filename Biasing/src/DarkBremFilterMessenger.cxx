@@ -1,15 +1,15 @@
 /**
- * @file TargetDarkBremFilterMessenger.cxx
- * @brief Messenger for setting parameters on TargetDarkBremFilter.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @file DarkBremFilterMessenger.cxx
+ * @brief Messenger for setting parameters on DarkBremFilter.
+ * @author Michael Revering, University of Minnesota
  */
 
-#include "Biasing/TargetDarkBremFilterMessenger.h"
+#include "Biasing/DarkBremFilterMessenger.h"
 #include <iostream>
 
 namespace ldmx { 
     
-    TargetDarkBremFilterMessenger::TargetDarkBremFilterMessenger(TargetDarkBremFilter* filter) :
+    DarkBremFilterMessenger::DarkBremFilterMessenger(DarkBremFilter* filter) :
         UserActionPluginMessenger(filter), filter_(filter) {
 
             volumeCmd_ = new G4UIcmdWithAString{std::string(getPath() + "volume").c_str(), this};
@@ -18,11 +18,11 @@ namespace ldmx {
             volumeCmd_->SetGuidance("Volume to apply the filter to.");     
     }
 
-    TargetDarkBremFilterMessenger::~TargetDarkBremFilterMessenger() {
+    DarkBremFilterMessenger::~DarkBremFilterMessenger() {
         delete volumeCmd_; 
     }
 
-    void TargetDarkBremFilterMessenger::SetNewValue(G4UIcommand* command, G4String newValue) {
+    void DarkBremFilterMessenger::SetNewValue(G4UIcommand* command, G4String newValue) {
         
         // Handles verbose command.
         UserActionPluginMessenger::SetNewValue(command, newValue);

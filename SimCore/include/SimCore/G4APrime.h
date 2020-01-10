@@ -4,49 +4,49 @@
  * @author Michael Revering, University of Minnesota
  */
 
-#ifndef G4APrime_h
-#define G4APrime_h
+#ifndef SIMCORE_G4APRIME_H_
+#define SIMCORE_G4APRIME_H_
 
 // Geant
 #include "G4ParticleDefinition.hh"
-#include "globals.hh"
-#include "G4ParticleTable.hh"
-#include "G4PhysicalConstants.hh"
-#include "G4SystemOfUnits.hh"
 
-class G4APrime : public G4ParticleDefinition
-{
-   private:
-      static G4APrime* theAPrime;
+class G4String;
+class G4DecayTable;
 
-      G4APrime(
-         const G4String&      Name,
-	 G4double             mass,
-	 G4double             width,
-	 G4double             charge,
-	 G4int                iSpin,
-	 G4int                iParity,
-	 G4int                iConjugation,
-	 G4int                iIsospin,
-	 G4int                iIsospin3,
-	 G4int                gParity,
-	 const G4String&      pType,
-	 G4int                lepton,
-	 G4int                baryon,
-	 G4int                encoding,
-	 G4bool               stable,
-	 G4double             lifetime,
-	 G4DecayTable         *decaytable
-	 );
+class G4APrime : public G4ParticleDefinition {
+    private:
 
-      virtual ~G4APrime();
+        /** Reference to single particle definition of A' */
+        static G4APrime* theAPrime;
 
-   public:
+        G4APrime(
+            const G4String&      Name,
+            G4double             mass,
+            G4double             width,
+            G4double             charge,
+            G4int                iSpin,
+            G4int                iParity,
+            G4int                iConjugation,
+            G4int                iIsospin,
+            G4int                iIsospin3,
+            G4int                gParity,
+            const G4String&      pType,
+            G4int                lepton,
+            G4int                baryon,
+            G4int                encoding,
+            G4bool               stable,
+            G4double             lifetime,
+            G4DecayTable         *decaytable
+          );
 
-      static G4APrime* APrime();
+        virtual ~G4APrime() { /* Nothing on purpose */ }
+
+    public:
+
+        /** Accessor for APrime definition */
+        static G4APrime* APrime();
 };
 
-
-#endif
+#endif //SIMCORE_G4APRIME_H_
 
 
