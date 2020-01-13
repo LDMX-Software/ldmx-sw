@@ -1,22 +1,33 @@
 /persistency/gdml/read detector.gdml
+
+# DarkBremFilter checks that a dark brem happened in a given volume
+#   aborts the event if it didn't happen
 /ldmx/plugins/load DarkBremFilter libBiasing.so
-/ldmx/plugins/DarkBremFilter/volume target_PV
+/ldmx/plugins/DarkBremFilter/volume target
 /ldmx/plugins/DarkBremFilter/verbose 2
+
+# Bias the electron dark brem process inside of the target
 /ldmx/biasing/enable
 /ldmx/biasing/particle e-
 /ldmx/biasing/process eDBrem
 /ldmx/biasing/volume target
+
 /run/initialize
+
+# Set the biasing cross section factor
 /ldmx/biasing/xsec/particle e-
 /ldmx/biasing/xsec/factor 1000000
 
+# Determine how the dark brem cross section will be calculated
 /ldmx/plugins/load DarkBremXsecBiasingPlugin
 /ldmx/plugins/DarkBremXsecBiasingPlugin/mode forward_only 
 /ldmx/plugins/DarkBremXsecBiasingPlugin/xsecFactor 1
+
+# Normal particle gun
 /gun/particle e-
 /gun/energy 4 GeV
-#/gun/position -27.926 5 -700 mm
 /gun/position 0 0 0 mm
 /gun/direction 0 0 4 GeV
+
 /run/beamOn 10
 
