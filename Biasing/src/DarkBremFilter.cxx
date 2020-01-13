@@ -60,7 +60,7 @@ namespace ldmx {
         G4String volumeName = volume->GetName();
 
         // If the particle isn't in the given volume, don't continue with the processing.
-        if (volumeName.compareTo(volumeName_) != 0) return;
+        if (not volumeName.contains(volumeName_)) return;
 
         // Get the particle type.
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
