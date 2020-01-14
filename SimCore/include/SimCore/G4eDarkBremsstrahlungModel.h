@@ -2,6 +2,7 @@
  * @file G4eDarkBremsstrahlungModel.h
  * @brief Class provided to simulate the dark brem cross section and interaction.
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifndef SIMCORE_G4EDARKBREMSSTRAHLUNGMODEL_H_
@@ -30,6 +31,17 @@ class TLorentzVector;
 class G4eDarkBremsstrahlungModel : public G4VEmModel {
 
     public:
+
+        /**
+         * @enum DarkBremMethod
+         *
+         * Possible methods to dark brem inside of this model.
+         */
+        enum DarkBremMethod{
+            ForwardOnly,
+            CMScaling,
+            Undefined
+        };
 
         /**
          * @struct ParamsForChi
@@ -126,7 +138,7 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
          * Set the method for the dark brem simulation
          * TODO write enum to make this safer
          */
-        void SetMethod(std::string);
+        void SetMethod(DarkBremMethod method);
 
         /**
          * Set the data file for the dark brem events to be scaled.
@@ -219,7 +231,7 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
         G4bool   isInitialised;
 
         /** method for this model */
-        std::string method;
+        DarkBremMethod method_{DarkBremMethod::Undefined};
 
         /** Storage of data from mad graph */
         std::map< double , std::vector < frame > > madGraphData_;

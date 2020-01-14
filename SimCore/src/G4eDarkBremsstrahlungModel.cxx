@@ -2,6 +2,7 @@
  * @file G4eDarkBremsstrahlungModel.cxx
  * @brief Class provided to simulate the dark brem cross section and interaction.
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "SimCore/G4eDarkBremsstrahlungModel.h"
@@ -46,7 +47,7 @@ G4eDarkBremsstrahlungModel::G4eDarkBremsstrahlungModel(const G4ParticleDefinitio
       particle(0),
       isElectron(true),
       isInitialised(false),
-      method("forward_only") {
+      method_(DarkBremMethod::Undefined) {
 
     if(p) { SetParticle(p); } //Verify that the particle is an electron.
     theAPrime = G4APrime::APrime();
@@ -57,16 +58,18 @@ G4eDarkBremsstrahlungModel::G4eDarkBremsstrahlungModel(const G4ParticleDefinitio
 }
 
 G4eDarkBremsstrahlungModel::~G4eDarkBremsstrahlungModel() {
-    size_t n = partialSumSigma.size();
-    for(size_t i=0; i<n; i++) {
-        delete partialSumSigma[i];
+    for (G4DataVector *dv : partialSumSigma ) {
+       if ( dv )  delete dv;
     }
+    partialSumSigma.clear();
     for ( auto& kV : madGraphData_ ) {
         for ( frame& fr : kV.second ) {
             delete fr.fEl;
             delete fr.cm;
         }
     }
+    madGraphData_.clear();
+    energies.clear();
 }
 
 void G4eDarkBremsstrahlungModel::SetParticle(const G4ParticleDefinition* p) {
@@ -80,7 +83,7 @@ void G4eDarkBremsstrahlungModel::Initialise(const G4ParticleDefinition* p,
         SetParticle(p);
     }
 
-    G4double highKinEnergy = HighEnergyLimit();
+    G4double highKinEnergy = this->HighEnergyLimit();
     const G4ProductionCutsTable* theCoupleTable = G4ProductionCutsTable::GetProductionCutsTable();
     
     if(theCoupleTable) {
@@ -88,22 +91,20 @@ void G4eDarkBremsstrahlungModel::Initialise(const G4ParticleDefinition* p,
         G4int nn = partialSumSigma.size();
         G4int nc = cuts.size();
         if(nn > 0) {
-            for (G4int ii=0; ii<nn; ii++) {
-                G4DataVector* a=partialSumSigma[ii];
-                if ( a )  delete a;
+            //reset partialSumSigma
+            for (G4DataVector *dv : partialSumSigma ) {
+                if ( dv )  delete dv;
             }
             partialSumSigma.clear();
         }
-        if(numOfCouples>0) {
-            for (G4int i=0; i<numOfCouples; i++) {
-                G4double cute   = DBL_MAX;
-                if(i < nc) cute = cuts[i];
-                const G4MaterialCutsCouple* couple = theCoupleTable->GetMaterialCutsCouple(i);
-                const G4Material* material = couple->GetMaterial();
-                G4DataVector* dv = ComputePartialSumSigma(material, 0.5*highKinEnergy,
-                std::min(cute, 0.25*highKinEnergy));
-                partialSumSigma.push_back(dv);
-            }
+        for (G4int i=0; i<numOfCouples; i++) {
+            G4double cute   = DBL_MAX;
+            if(i < nc) cute = cuts[i];
+            const G4MaterialCutsCouple* couple = theCoupleTable->GetMaterialCutsCouple(i);
+            const G4Material* material = couple->GetMaterial();
+            G4DataVector* dv = ComputePartialSumSigma(material, 0.5*highKinEnergy,
+            std::min(cute, 0.25*highKinEnergy));
+            partialSumSigma.push_back(dv);
         }
     }
 
@@ -361,7 +362,7 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
 
     frame data = GetMadgraphData(E0);
     double EAcc, Pt, P, PhiAcc;
-    if(method == "forward_only") {
+    if ( method_ == DarkBremMethod::ForwardOnly ) { 
         EAcc = (data.fEl->E()-Mel)/(data.E-Mel-MA)*(E0-Mel-MA);
         Pt = data.fEl->Pt();
         P = sqrt(EAcc*EAcc-Mel*Mel);
@@ -380,7 +381,7 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
                 printf("Did not manage to simulate. E0 = %e, EAcc = %e\n", E0, EAcc);
             }
         }
-    } else if(method == "cm_scaling") {
+    } else if( method_ == DarkBremMethod::CMScaling ) {
         TLorentzVector* el = new TLorentzVector(data.fEl->X(),data.fEl->Y(),data.fEl->Z(),data.fEl->E());
         double ediff = data.E-E0;
         TLorentzVector* newcm = new TLorentzVector(data.cm->X(),data.cm->Y(),data.cm->Z()-ediff,data.cm->E()-ediff);
@@ -391,12 +392,17 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
         EAcc = el->E();
         Pt = el->Pt();
         P = el->P();
-    } else {
-        //TODO: move method checking somewhere else
-        G4cout << "Method not recognized. Skipping Event.\n";
+        delete el;
+        delete newcm;
+    } else if ( method_ == DarkBremMethod::Undefined ) {
         EAcc = E0;
         P = primary->GetTotalMomentum();
         Pt = sqrt(primary->Get4Momentum().px()*primary->Get4Momentum().px()+primary->Get4Momentum().py()*primary->Get4Momentum().py());
+    } else {
+        EXCEPTION_RAISE(
+                "InvalidMethod",
+                "Invallid dark brem simulation method " + std::to_string(method_) + "."
+                );
     }
 
     EAcc = EAcc*CLHEP::GeV; //Change the energy back to MeV, the internal GEANT unit.
@@ -461,8 +467,8 @@ const G4Element* G4eDarkBremsstrahlungModel::SelectRandomAtom( const G4MaterialC
     return elm;
 }
  
-void G4eDarkBremsstrahlungModel::SetMethod(std::string method_in) {
-    method = method_in;
+void G4eDarkBremsstrahlungModel::SetMethod(DarkBremMethod method ) {
+    method_ = method;
     return;
 }
  

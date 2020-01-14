@@ -8,9 +8,6 @@
 
 #include "SimPlugins/DarkBremXsecBiasingPlugin.h"
 
-// Sim Core
-#include "SimCore/G4eDarkBremsstrahlung.h"
-
 // Geant4
 #include "G4Electron.hh"
 #include "G4VEnergyLossProcess.hh"
@@ -51,14 +48,14 @@ void ldmx::DarkBremXsecBiasingPlugin::beginRun(const G4Run*) {
             //process is Dark Brem process
 
             eDarkBrem->SetCrossSectionBiasingFactor(xsecBiasingFactor_);
-            eDarkBrem->SetMethod(mode_);
+            eDarkBrem->SetMethod(method_);
             eDarkBrem->SetMadGraphDataFile(madGraphDataFile_);
 
             if ( this->getVerboseLevel() > 1 ) {
     	        std::cout << "[ DarkBremXsecBiasingPlugin ]: " 
                     << "Dark Brem xsec has increased by a factor of " << xsecBiasingFactor_ << std::endl;
     	        std::cout << "[ DarkBremXsecBiasingPlugin ]: " 
-                    << "Dark Brem simulation mode set to " << mode_ << std::endl;
+                    << "Dark Brem simulation mode set to " << method_ << std::endl;
             }// verbose
         } //if process is Dark Brem
     }//loop through process list

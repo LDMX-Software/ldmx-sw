@@ -9,6 +9,7 @@
 
 // LDMX
 #include "SimPlugins/UserActionPluginMessenger.h"
+#include "SimCore/G4eDarkBremsstrahlungModel.h"
 
 namespace ldmx {
 

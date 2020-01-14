@@ -8,6 +8,7 @@
 #define SIMPLUGINS_DarkBremXSECBIASINGPLUGIN_H_
 
 // LDMX
+#include "SimCore/G4eDarkBremsstrahlung.h"
 #include "SimPlugins/UserActionPlugin.h"
 #include "SimPlugins/DarkBremXsecBiasingMessenger.h"
 
@@ -83,8 +84,8 @@ namespace ldmx {
              * Set the simulation mode.
              * @param mode The new simulation mode.
              */
-            void setXsecSimulationMode(std::string mode) {
-                mode_ = mode;
+            void setXsecSimulationMethod(G4eDarkBremsstrahlungModel::DarkBremMethod method) {
+                method_ = method;
             }
 
             /**
@@ -101,7 +102,7 @@ namespace ldmx {
             double xsecBiasingFactor_ {1000};
 
             /** DarkBrem simulation mode ("forward_only" or "cm_scaling") */
-            std::string mode_ {"forward_only"};
+            G4eDarkBremsstrahlungModel::DarkBremMethod method_{G4eDarkBremsstrahlungModel::DarkBremMethod::Undefined};
 
             /** Mad Graph data file containing dark brem events */
             std::string madGraphDataFile_{""};

@@ -7,6 +7,7 @@
 #include "SimPlugins/DarkBremXsecBiasingMessenger.h"
 
 // LDMX
+#include "Exception/Exception.h"
 #include "SimPlugins/DarkBremXsecBiasingPlugin.h"
 
 // STL
@@ -45,8 +46,16 @@ namespace ldmx {
         if (command == xsecFactorCmd_) {
             biasingPlugin_->setXsecBiasingFactor(std::stod(newValue));
         } else if (command == modeCmd_) {
-            if((newValue == "forward_only")or(newValue=="cm_scaling")) {
-                biasingPlugin_->setXsecSimulationMode(newValue);
+            if( newValue == "forward_only" ) {
+                biasingPlugin_->setXsecSimulationMethod(
+                        G4eDarkBremsstrahlungModel::DarkBremMethod::ForwardOnly );
+            } else if( newValue == "cm_scaling" ) {
+                biasingPlugin_->setXsecSimulationMethod(
+                        G4eDarkBremsstrahlungModel::DarkBremMethod::CMScaling );
+            } else {
+                EXCEPTION_RAISE(
+                        "InvalidMethod",
+                        "Input method '" + newValue + "' is not a valid dark brem simulation method." );
             }
         } else if (command == madGraphDataFileCmd_ ) {
             biasingPlugin_->setMadGraphDataFile( newValue );
