@@ -46,19 +46,14 @@ G4eDarkBremsstrahlungModel::G4eDarkBremsstrahlungModel(const G4ParticleDefinitio
       particle(0),
       isElectron(true),
       isInitialised(false),
-      method("forward_only"),
-      lhe_loaded(false) {
+      method("forward_only") {
 
     if(p) { SetParticle(p); } //Verify that the particle is an electron.
     theAPrime = G4APrime::APrime();
     MA = G4APrime::APrime()->GetPDGMass()/CLHEP::GeV; //Get the A' mass.
     
     fParticleChange = 0;
-     //std::string fname = "mg_events.lhe";
-     //ParseLHE(fname); //Parse LHE files into the data vectors.
 
-    //Sort the energies list after parsing all LHE files. Necessary for GetMadgraphData() to function correctly.
-    std::sort(energies.begin(), energies.end());
 }
 
 G4eDarkBremsstrahlungModel::~G4eDarkBremsstrahlungModel() {
@@ -66,7 +61,7 @@ G4eDarkBremsstrahlungModel::~G4eDarkBremsstrahlungModel() {
     for(size_t i=0; i<n; i++) {
         delete partialSumSigma[i];
     }
-    for ( auto& kV : mgdata ) {
+    for ( auto& kV : madGraphData_ ) {
         for ( frame& fr : kV.second ) {
             delete fr.fEl;
             delete fr.cm;
@@ -138,7 +133,6 @@ void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
             if((ptype==11)&&(state==-1)) {
                 double ebeam = E;
                 double e_px, e_py, e_pz, a_px, a_py, a_pz, e_E, a_E, e_M, a_M; 
-                if (mgdata.count(ebeam) == 0) {mgdata[ebeam];}
                 for(int i=0;i<2;i++) {std::getline(ifile,line);}
                 std::istringstream jss(line);
                 jss >> ptype >> state >> skip >> skip >> skip >> skip >> e_px >> e_py >> e_pz >> e_E >> e_M; 
@@ -155,7 +149,7 @@ void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
                         evnt.fEl = new TLorentzVector(e_px,e_py,e_pz,e_E);
                         evnt.cm = new TLorentzVector(cmpx,cmpy,cmpz,cmE);
                         evnt.E = ebeam;
-                        mgdata[ebeam].push_back(evnt);
+                        madGraphData_[ebeam].push_back(evnt);
                     } //get a prime information
                 } //check for final state
             } //check for particle type and state
@@ -163,11 +157,13 @@ void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
     }//while getting lines
     //Add the energy to the list, with a random offset between 0 and the total number of entries.
     ifile.close();
-    std::cout << "LHE File " << fname << " parsed.\n";
+    std::cout << "LHE File " << fname << " parsed. "
+        << "Found " << madGraphData_.size() << " data points in it." << std::endl;
 }
 
 void G4eDarkBremsstrahlungModel::MakePlaceholders() {
-    for ( const auto &iter : mgdata ) {
+    energies.clear();
+    for ( const auto &iter : madGraphData_ ) {
         energies.push_back(std::make_pair(iter.first,iter.second.size()));
     }
 }
@@ -189,12 +185,12 @@ G4eDarkBremsstrahlungModel::frame G4eDarkBremsstrahlungModel::GetMadgraphData(do
 
     //energies is a vector of pairs. energies[i].first holds the imported beam energy,
     //energies[i].second holds the place as we loop through different energy sampling files.
-    //Need to loop around if we hit the end, when the size of mgdata is smaller than our index 
+    //Need to loop around if we hit the end, when the size of madGraphData_ is smaller than our index 
     //on energies[i].second.
-    if(energies[i].second>=double(mgdata[energies[i].first].size())) {energies[i].second = 0;}
+    if(energies[i].second>=double(madGraphData_[energies[i].first].size())) {energies[i].second = 0;}
 
     //Get the lorentz vectors from the index given by the placeholder.
-    cmdata = mgdata[energies[i].first].at(energies[i].second);
+    cmdata = madGraphData_[energies[i].first].at(energies[i].second);
 
     //Increment the placeholder.
     energies[i].second=energies[i].second+1;
@@ -351,29 +347,11 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
     //Deactivate the process after one dark brem. Needs to be reactivated in the end of event action. 
     //If this is in the stepping action instead, more than one brem can occur within each step.
     G4bool state = false;
-    G4String pname = "biasWrapper(eDBrem)";
+    G4String pname = "eDBrem";
     G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
     ptable->SetProcessActivation(pname,state);
 
     std::cout << "A dark brem occurred!\n";
-
-    if(lhe_loaded==false) {
-        //Read all of the lhe files in the Resources/ directory. Assumes that they 
-        //are of the correct mass, need to implement method of separating masses 
-        //(either filenames, or skipping events with incorrect masses).
-        DIR *dir;
-        dir = opendir("Resources/"); 
-        struct dirent *directory;
-        if(dir) {
-            while((directory = readdir(dir)) != NULL) {
-                std::string fname = "Resources/" + std::string(directory->d_name);
-                //Parse files that end in ".lhe"
-                if(fname.substr(fname.find_last_of(".")+1) == "lhe") {ParseLHE(fname);}   
-            }
-        }
-        MakePlaceholders(); //Setup the placeholder offsets for getting data.
-        lhe_loaded=true;
-    }
 
     G4double E0 = primary->GetTotalEnergy();
     G4double tmax = std::min(maxEnergy, E0);
@@ -487,4 +465,41 @@ void G4eDarkBremsstrahlungModel::SetMethod(std::string method_in) {
     method = method_in;
     return;
 }
+ 
+void G4eDarkBremsstrahlungModel::SetMadGraphDataFile(std::string file) {
+
+    //TODO do we need to read all LHE files in a directory? Can it just be one LHE file?
+    //Read all of the lhe files in the Resources/ directory. Assumes that they 
+    //are of the correct mass, need to implement method of separating masses 
+    //(either filenames, or skipping events with incorrect masses).
+//    DIR *dir;
+//    dir = opendir("Resources/"); 
+//    struct dirent *directory;
+//    if(dir) {
+//        while((directory = readdir(dir)) != NULL) {
+//            std::string fname = "Resources/" + std::string(directory->d_name);
+//            //Parse files that end in ".lhe"
+//            if(fname.substr(fname.find_last_of(".")+1) == "lhe") {ParseLHE(fname);}   
+//        }
+//    }
+
+    if( file.substr(file.find_last_of(".")+1) == "lhe" ) {
+        //is an lhe file
+        ParseLHE(file);
+    } else {
+        EXCEPTION_RAISE(
+                "LHEFile",
+                "The passed file path '" + file
+                + "' does not end with 'lhe', so we are assuming it is not an LHE file."
+                );
+    }
+
+    MakePlaceholders(); //Setup the placeholder offsets for getting data.
+
+    //Sort the energies list after parsing all LHE files. Necessary for GetMadgraphData() to function correctly.
+    std::sort(energies.begin(), energies.end());
+
+    return;
+}
+
 

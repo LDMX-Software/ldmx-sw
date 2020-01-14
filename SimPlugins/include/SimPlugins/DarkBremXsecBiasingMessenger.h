@@ -35,6 +35,7 @@ namespace ldmx {
             virtual ~DarkBremXsecBiasingMessenger() {
                 delete xsecFactorCmd_;
                 delete modeCmd_;
+                delete madGraphDataFileCmd_;
             }
 
             /**
@@ -60,6 +61,11 @@ namespace ldmx {
     	     * The command for changing the simulation mode.
     	     */
     	    G4UIcommand* modeCmd_;
+
+            /**
+             * Command to set LHE file that the dark brem mad graph data will be pulled from.
+             */
+            G4UIcommand* madGraphDataFileCmd_;
     };
 
 }

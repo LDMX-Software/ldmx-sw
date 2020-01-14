@@ -3,6 +3,7 @@
  * @brief Run action plugin that biases the Geant4 Dark Brem xsec by a user
  *        specified value. 
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "SimPlugins/DarkBremXsecBiasingPlugin.h"
@@ -13,6 +14,7 @@
 // Geant4
 #include "G4Electron.hh"
 #include "G4VEnergyLossProcess.hh"
+#include "G4BiasingProcessInterface.hh"
 #include "G4RunManager.hh"
 #include "G4ProcessManager.hh"
 #include "G4ProcessTable.hh"
@@ -39,10 +41,18 @@ void ldmx::DarkBremXsecBiasingPlugin::beginRun(const G4Run*) {
 
         G4VProcess* process = (*processes)[processIndex];
 
-        if (process->GetProcessName().compareTo("eDBrem") == 0) {
+        if (dynamic_cast<G4BiasingProcessInterface*>(process)) {
+            //resetting process to the real process (the one contained within the biasing wrapper)
+            process = dynamic_cast<G4BiasingProcessInterface*>(process)->GetWrappedProcess();
+        }
 
-            ((G4VEnergyLossProcess*)process)->SetCrossSectionBiasingFactor(xsecBiasingFactor_);
-            ((G4eDarkBremsstrahlung*)process)->SetMethod(mode_);
+        G4eDarkBremsstrahlung *eDarkBrem = dynamic_cast<G4eDarkBremsstrahlung*>(process);
+        if (eDarkBrem) {
+            //process is Dark Brem process
+
+            eDarkBrem->SetCrossSectionBiasingFactor(xsecBiasingFactor_);
+            eDarkBrem->SetMethod(mode_);
+            eDarkBrem->SetMadGraphDataFile(madGraphDataFile_);
 
             if ( this->getVerboseLevel() > 1 ) {
     	        std::cout << "[ DarkBremXsecBiasingPlugin ]: " 
@@ -50,7 +60,7 @@ void ldmx::DarkBremXsecBiasingPlugin::beginRun(const G4Run*) {
     	        std::cout << "[ DarkBremXsecBiasingPlugin ]: " 
                     << "Dark Brem simulation mode set to " << mode_ << std::endl;
             }// verbose
-        } //if process is eDBrem
+        } //if process is Dark Brem
     }//loop through process list
 }
 
@@ -59,7 +69,7 @@ void ldmx::DarkBremXsecBiasingPlugin::endEvent(const G4Event*) {
     //Re-activate the process at the end of each event. 
     //The process is deactivated each time it occurs, to limit it to one brem per event.
     G4bool active = true;
-    G4String pname = "biasWrapper(eDBrem)";
+    G4String pname = "eDBrem";
     G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
     ptable->SetProcessActivation(pname,active);    
     if ( this->getVerboseLevel() > 1 ) {

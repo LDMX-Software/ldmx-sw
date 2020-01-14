@@ -87,6 +87,14 @@ namespace ldmx {
                 mode_ = mode;
             }
 
+            /**
+             * Set the mad graph data file.
+             * @param path the path to the data file
+             */
+            void setMadGraphDataFile(std::string path) {
+                madGraphDataFile_ = path;
+            }
+
         private:
 
             /** DarkBrem cross-section multiplicative factor. */
@@ -94,6 +102,9 @@ namespace ldmx {
 
             /** DarkBrem simulation mode ("forward_only" or "cm_scaling") */
             std::string mode_ {"forward_only"};
+
+            /** Mad Graph data file containing dark brem events */
+            std::string madGraphDataFile_{""};
 
             /** Messenger used to parse arguments specified in a macro. */
             DarkBremXsecBiasingMessenger* messenger_ {new DarkBremXsecBiasingMessenger {this}};

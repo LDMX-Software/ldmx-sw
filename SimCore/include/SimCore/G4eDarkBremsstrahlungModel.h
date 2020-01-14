@@ -128,6 +128,12 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
          */
         void SetMethod(std::string);
 
+        /**
+         * Set the data file for the dark brem events to be scaled.
+         * @param file path to LHE file
+         */
+        void SetMadGraphDataFile(std::string file);
+
     protected:
 
         /**
@@ -215,15 +221,12 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
         /** method for this model */
         std::string method;
 
-        /** is the lhe file of madgraph events loaded yet? */
-        G4bool lhe_loaded;
-
         /** Storage of data from mad graph */
-        std::map< double , std::vector < frame > > mgdata;
+        std::map< double , std::vector < frame > > madGraphData_;
 
         /**
          * Stores pairs of imported beam energies (sampled on madgraph data),
-         * and the place holder that loops on the mgdata. See source.
+         * and the place holder that loops on the madGraphData_ vector. See source.
          */
         std::vector < std::pair < double, int > > energies;
 
