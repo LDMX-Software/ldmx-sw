@@ -2,6 +2,7 @@
  * @file APrimePhysics.h
  * @brief Class which defines basic APrime physics
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifndef SIMAPPLICATION_APRIMEPHYSICS_H_
@@ -9,9 +10,6 @@
 
 // Geant4
 #include "G4VPhysicsConstructor.hh"
-
-class G4String;
-class G4ParticleDefinition;
 
 namespace ldmx {
 

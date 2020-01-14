@@ -2,17 +2,19 @@
  * @file G4eDarkBremsstrahlung.h
  * @brief Class providing the Dark Bremsstrahlung process class.
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifndef SIMCORE_G4EDARKBREMSSTRAHLUNG_H_
 #define SIMCORE_G4EDARKBREMSSTRAHLUNG_H_
+
+#include "SimCore/G4eDarkBremsstrahlungModel.h"
 
 // Geant
 #include "G4VEnergyLossProcess.hh"
 
 class G4String;
 class G4ParticleDefinition;
-class G4eDarkBremsstrahlungModel;
 
 /**
  * @class G4eDarkBremsstrahlung
@@ -46,12 +48,10 @@ class G4eDarkBremsstrahlung : public G4VEnergyLossProcess {
         virtual G4bool IsApplicable(const G4ParticleDefinition& p);
   
         //TODO: write a helpful print function
-        virtual void PrintInfo() { 
-            std::cout << "G4eDarkBremsstrahlung" << std::endl;
-        }
+        virtual void PrintInfo() {;}
   
         /** Pass the method for this process to the model */
-        void SetMethod(std::string method_in);
+        void SetMethod(G4eDarkBremsstrahlungModel::DarkBremMethod method);
 
         /** Pass LHE file of dark brem events to the model */
         void SetMadGraphDataFile(std::string file);

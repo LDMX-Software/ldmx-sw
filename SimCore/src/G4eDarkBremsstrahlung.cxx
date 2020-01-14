@@ -2,11 +2,11 @@
  * @file G4eDarkBremsstrahlung.cxx
  * @brief Class providing the Dark Bremsstrahlung process class.
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "SimCore/G4eDarkBremsstrahlung.h"
 #include "SimCore/G4APrime.h"
-#include "SimCore/G4eDarkBremsstrahlungModel.h"
 
 #include "G4DynamicParticle.hh"
 #include "G4Electron.hh"
@@ -45,7 +45,8 @@ void G4eDarkBremsstrahlung::InitialiseEnergyLossProcess(const G4ParticleDefiniti
         this->EmModel(0)->SetHighEnergyLimit(energyLimit);
         
         G4VEmFluctuationModel* fm = 0;
-        this->AddEmModel(0, EmModel(0), fm); //adds model to ModelManager which handles initialisation procedures and cleaning up pointers (I think ==> TODO CHECK)
+        //adds model to ModelManager which handles initialisation procedures and cleaning up pointers
+        this->AddEmModel(0, EmModel(0), fm); 
 
         isInitialised = true;
     }
@@ -55,8 +56,8 @@ void G4eDarkBremsstrahlung::InitialiseEnergyLossProcess(const G4ParticleDefiniti
     this->EmModel(0)->SetLPMFlag(false);
 }
 
-void G4eDarkBremsstrahlung::SetMethod(std::string method_in) {
-    dynamic_cast<G4eDarkBremsstrahlungModel *>(this->EmModel(0))->SetMethod(method_in);
+void G4eDarkBremsstrahlung::SetMethod(G4eDarkBremsstrahlungModel::DarkBremMethod method) {
+    dynamic_cast<G4eDarkBremsstrahlungModel *>(this->EmModel(0))->SetMethod(method);
     return;
 }
 
