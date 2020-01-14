@@ -28,6 +28,13 @@ namespace ldmx {
         modeCmd_->SetParameter(mode);
         modeCmd_->SetGuidance("Set the simulation mode for the Dark Brem process. Options are \"forward_only\" or \"cm_scaling\".");
         modeCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
+
+        madGraphDataFileCmd_ = new G4UIcommand(std::string(getPath() + "madGraphDataFile").c_str(), this);
+        G4UIparameter* madGraphDataFile = new G4UIparameter("madGraphDataFile", 's', false);
+        madGraphDataFileCmd_->SetParameter(madGraphDataFile);
+        madGraphDataFileCmd_->SetGuidance(
+                "Set the LHE file that contains mad graph data on dark brem processes. Needed for re-scaling." );
+        madGraphDataFileCmd_->AvailableForStates(G4ApplicationState::G4State_PreInit, G4ApplicationState::G4State_Idle);
     }
 
     void DarkBremXsecBiasingMessenger::SetNewValue(G4UIcommand *command, G4String newValue) {
@@ -37,11 +44,12 @@ namespace ldmx {
 
         if (command == xsecFactorCmd_) {
             biasingPlugin_->setXsecBiasingFactor(std::stod(newValue));
-        }
-        if (command == modeCmd_) {
-            if((newValue == "forward_only")||(newValue=="cm_scaling")) {
+        } else if (command == modeCmd_) {
+            if((newValue == "forward_only")or(newValue=="cm_scaling")) {
                 biasingPlugin_->setXsecSimulationMode(newValue);
             }
+        } else if (command == madGraphDataFileCmd_ ) {
+            biasingPlugin_->setMadGraphDataFile( newValue );
         }
 
     } //SetNewValue

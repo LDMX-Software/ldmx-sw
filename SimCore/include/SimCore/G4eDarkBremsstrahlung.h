@@ -46,10 +46,15 @@ class G4eDarkBremsstrahlung : public G4VEnergyLossProcess {
         virtual G4bool IsApplicable(const G4ParticleDefinition& p);
   
         //TODO: write a helpful print function
-        virtual void PrintInfo() { std::cout << "G4eDarkBremsstrahlung" << std::endl; }
+        virtual void PrintInfo() { 
+            std::cout << "G4eDarkBremsstrahlung" << std::endl;
+        }
   
         /** Pass the method for this process to the model */
         void SetMethod(std::string method_in);
+
+        /** Pass LHE file of dark brem events to the model */
+        void SetMadGraphDataFile(std::string file);
  
     protected:
   
@@ -66,9 +71,6 @@ class G4eDarkBremsstrahlung : public G4VEnergyLossProcess {
         G4eDarkBremsstrahlung & operator=(const G4eDarkBremsstrahlung &right);
         G4eDarkBremsstrahlung(const G4eDarkBremsstrahlung&);
   
-        /** Instance of model for this process (does the heavy lifting) */
-        G4eDarkBremsstrahlungModel *theModel_{nullptr};
-
 };
 
 
