@@ -14,14 +14,20 @@
 
 /run/initialize
 
+# Save A' whereever it is
+/ldmx/plugins/load TrackFilterPlugin
+/ldmx/plugins/TrackFilterPlugin/pdgid 622
+/ldmx/plugins/TrackFilterPlugin/create KeepAPrime
+
 # Set the biasing cross section factor
-/ldmx/biasing/xsec/particle e-
-/ldmx/biasing/xsec/factor 1000000
+#/ldmx/biasing/xsec/particle e- #TODO not sure if this is necessary
 
 # Determine how the dark brem cross section will be calculated
 /ldmx/plugins/load DarkBremXsecBiasingPlugin
+/ldmx/plugins/DarkBremXsecBiasingPlugin/verbose 2
 /ldmx/plugins/DarkBremXsecBiasingPlugin/mode forward_only 
-/ldmx/plugins/DarkBremXsecBiasingPlugin/xsecFactor 1
+/ldmx/plugins/DarkBremXsecBiasingPlugin/madGraphDataFile mad_graph_data.lhe #mad graph events to use
+/ldmx/plugins/DarkBremXsecBiasingPlugin/xsecFactor 1000000 #large factor to force dark brem to happen
 
 # Normal particle gun
 /gun/particle e-
