@@ -45,6 +45,8 @@ namespace ldmx {
      *          These must have Print and Clear methods defined.
      *
      * TODO: Figure out if there are a maximum number of types allowed.
+     *
+     * TODO: Dynamically (pre-processor) set the EventBusPassenger object to be the objects being used in the run.
      */
     typedef std::variant< 
         EcalVetoResult ,
