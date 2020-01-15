@@ -317,7 +317,7 @@ void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
     while(std::getline(ifile,line)) {
         std::istringstream iss(line);
         int ptype, state;
-        double skip, px, py, pz, E, pt, M;
+        double skip, px, py, pz, E, M;
         if (iss >> ptype >> state >> skip >> skip >> skip >> skip >> px >> py >> pz >> E >> M ) {
             if((ptype==11)&&(state==-1)) {
                 double ebeam = E;
@@ -329,7 +329,14 @@ void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
                     for(int i=0;i<2;i++) {std::getline(ifile,line);}
                     std::istringstream kss(line);
                     kss >> ptype >> state >> skip >> skip >> skip >> skip >>  a_px >> a_py >> a_pz >> a_E >> a_M;
-                    if((ptype==622)&&(state==1)) {
+                    if( ptype==622 and state==1 ) {
+                        if ( abs( 1. - a_M/MA_ ) > 1e-3 ) {
+                            EXCEPTION_RAISE(
+                                    "BadMGEvnt",
+                                    "A MadGraph imported event has a different APrime mass than the model has (MadGraph = " 
+                                    + std::to_string(a_M) + " Model = " + std::to_string(MA_) + ")."
+                                    );
+                        }
                         OutgoingKinematics evnt;
                         double cmpx = a_px+e_px;
                         double cmpy = a_py+e_py;
@@ -339,7 +346,7 @@ void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
                         evnt.centerMomentum = TLorentzVector(cmpx,cmpy,cmpz,cmE);
                         evnt.E = ebeam;
                         madGraphData_[ebeam].push_back(evnt);
-                    } //get a prime information
+                    } //get a prime kinematics
                 } //check for final state
             } //check for particle type and state
         } //able to get momentum/energy numbers
