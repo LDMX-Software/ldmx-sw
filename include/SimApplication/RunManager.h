@@ -31,6 +31,7 @@ namespace ldmx {
     // Forward declare to avoid circular dependency in headers
     class DetectorConstruction;
     class UserActionManager; 
+    class APrimeMessenger;
 
     /**
      * @class RunManager
@@ -69,6 +70,9 @@ namespace ldmx {
             /** Enable a parallel world. */
             void enableParallelWorld(bool isPWEnabled) { isPWEnabled_ = isPWEnabled; }
 
+            /** Define A Prime mass for this simulation run */
+            void setAPrimeMass(double theMass) { massAPrime_ = theMass; }
+
             /** Set the path to the GDML description of the parallel world. */
             void setParallelWorldPath(std::string parallelWorldPath) { 
                 parallelWorldPath_ = parallelWorldPath; 
@@ -99,6 +103,13 @@ namespace ldmx {
              * registered 
              */
             bool isPWEnabled_{false};
+
+            /**
+             * Mass of A Prime this simulation should use.
+             *
+             * Negative value means no dark brems.
+             */
+            double massAPrime_{-1};
 
             /** Path to GDML description of parallel world. */
             std::string parallelWorldPath_{""};

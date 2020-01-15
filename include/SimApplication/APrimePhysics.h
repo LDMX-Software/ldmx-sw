@@ -33,7 +33,7 @@ namespace ldmx {
              *
              * @param name The name of the physics.
              */
-            APrimePhysics(const G4String& name = "APrime");
+            APrimePhysics(double aprimeMass, const G4String& name = "APrime");
 
             /**
              * Class destructor.
@@ -57,6 +57,11 @@ namespace ldmx {
             void ConstructProcess();
 
         private:
+
+            /**
+             * Mass of A Prime
+             */
+            double aprimeMass_;
 
             /**
              * Definition of the APrime particle.
