@@ -32,18 +32,6 @@ get_filename_component(XercesC_LIBRARY_DIR ${XercesC_LIBRARIES} DIRECTORY)
 find_package(Geant4 REQUIRED ui_all vis_all)
 message(STATUS "Geant4 found at: ${Geant4_DIR}")
 
-# find gsl installation
-if(gsl_DIR)
-   set(gsl_INCLUDE_DIR "${gsl_DIR}/include" CACHE FILEPATH "")
-   set(gsl_LIBRARY "${gsl_DIR}/lib/libgsl.so" CACHE FILEPATH "")
-   set(gsl_CBLAS_LIBRARY "${gsl_DIR}/lib/libgslcblas.so" CACHE FILEPATH "")
-endif()
-if (NOT EXISTS "${gsl_LIBRARY}")
-   message(FATAL_ERROR "No gsl library found. Please specify using -Dgsl_LIBRARY")
-endif()
-message(STATUS "gsl libs found at: ${gsl_LIBRARY}")
-message(STATUS "gsl include dir found at: ${gsl_INCLUDE_DIR}")
-
 # find Python installation
 find_package(PythonLibs REQUIRED)
 message(STATUS "Python lib found at: ${PYTHON_LIBRARIES}")

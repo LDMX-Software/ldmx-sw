@@ -11,15 +11,6 @@
 // Geant
 #include "G4VEmModel.hh"
 
-class G4ParticleDefinition;
-class G4String;
-class G4DataVector;
-class G4Material;
-class G4DynamicParticle;
-class G4MaterialCutsCouple;
-class G4Element;
-class G4ParticleChangeForLoss;
-
 // ROOT
 class TLorentzVector;
 
@@ -27,6 +18,9 @@ class TLorentzVector;
  * @class G4eDarkBremsstrahlungModel
  *
  * Geant4 implementation of the model for a particle undergoing a dark brem.
+ *
+ * This is where all the heavy lifting in terms of calculating cross sections
+ * and actually having an electron do a dark brem occurs.
  */
 class G4eDarkBremsstrahlungModel : public G4VEmModel {
 
@@ -44,16 +38,45 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
         };
 
         /**
-         * @struct ParamsForChi
+         * Helpful typedef for boost integration.
+         */
+        typedef std::vector<double> StateType;
+
+        /**
+         * @struct Chi
          *
          * Stores parameters for chi function used in integration.
+         * Implements function as member operator compatible with boost::numeric::odeint
          */
-        struct ParamsForChi {double AA; double ZZ; double MMA; double EE0;};
+        struct Chi {
+            double A; /// atomic number
+            double Z; /// atomic mass
+            double E0; /// incoming beam energy
+            double MA; /// mass of A prime
+
+            void operator()( const StateType &x , StateType &dxdt , double t );
+        };
+
+        /**
+         * @struct DiffCross
+         *
+         * Implementation of the differential scattering cross section.
+         * Stores parameters.
+         *
+         * Implements function as member operator compatible with boost::numeric::odeint
+         */
+        struct DiffCross {
+            double E0; /// incoming beam energy
+            double MA; /// mass of A prime
+
+            void operator()( const StateType &sigma , StateType &DsigmaDx , double x );
+        };
 
         /**
          * @struct frame
          *
          * Data frame to store mad graph data read in from LHE files.
+         * TODO move away from pointers
          */
         struct frame {TLorentzVector* fEl; TLorentzVector* cm; G4double E;};
 
@@ -61,7 +84,7 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
          * Set the particle definition that this model will represent.
          */
         G4eDarkBremsstrahlungModel(const G4ParticleDefinition* p = 0,
-                                   const G4String& name = "eDBrem");
+                                   const G4String& theName = "eDBrem");
 
         /**
          * Destructor
@@ -82,8 +105,7 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
          *
          * Non named parameters are not used.
          *
-         * Numerical integrals are done using the GNU Scientific Library (gsl).
-         * TODO Translate these integrals to boost, so we can remove gsl as a dependency.
+         * Numerical integrals are done using boost::numeric::odeint.
          *
          * @param E0 energy of beam (incoming particle)
          * @param Z atomic number of atom
@@ -121,9 +143,6 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
          * Deactivates the dark brem, ensuring only one dark brem per step and per event.
          * Needs to be reactived in the end of event action.
          *
-         * Gets madgraph files from 'Resources' directory in the current working directory.
-         * TODO Implement a better way to pass madgraph data files
-         * 
          * @param secondaries vector of primary particle's offspring
          * @param primary particle that could go dark brem
          * @param tmin minimum energy possible for sampling
@@ -136,7 +155,6 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
                                       G4double maxEnergy);
         /**
          * Set the method for the dark brem simulation
-         * TODO write enum to make this safer
          */
         void SetMethod(DarkBremMethod method);
 
@@ -194,14 +212,6 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
          */
         void SetParticle(const G4ParticleDefinition* p);
       
-        static G4double chi(double t, void * pp);
- 
-        /**
-         * Implementation of the differential scattering cross section that is compatible
-         * with the integration done by the gsl library.
-         */
-        static G4double DsigmaDx(double x, void * pp);
-        
         /** Hide assignment operator */
         G4eDarkBremsstrahlungModel & operator=(const  G4eDarkBremsstrahlungModel &right);
 
@@ -211,38 +221,42 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
     protected:
 
         /** definition of particle */
-        const G4ParticleDefinition*   particle;
+        const G4ParticleDefinition*   particle_;
 
         /** pointer to the definition of the A Prime */
-        G4ParticleDefinition*         theAPrime;
+        G4ParticleDefinition*         theAPrime_;
 
         /** loss in particle energy */
-        G4ParticleChangeForLoss*      fParticleChange;
+        G4ParticleChangeForLoss*      fParticleChange_;
 
         /** mass of the A Prime */
-        G4double                      MA;
-
-        /** is the particle an electron? */
-        G4bool                        isElectron;
+        G4double                      MA_;
 
     private:
-
-        /** is this model been initialised? */
-        G4bool   isInitialised;
 
         /** method for this model */
         DarkBremMethod method_{DarkBremMethod::Undefined};
 
-        /** Storage of data from mad graph */
+        /** 
+         * Storage of data from mad graph 
+         *
+         * Maps incoming electron energy to various options for outgoing kinematics.
+         */
         std::map< double , std::vector < frame > > madGraphData_;
 
         /**
-         * Stores pairs of imported beam energies (sampled on madgraph data),
-         * and the place holder that loops on the madGraphData_ vector. See source.
+         * Stores a map of current access points to mad graph data.
+         *
+         * Maps incoming electron energy to the index of the data vector
+         * that we will get the data from.
+         *
+         * Also sorts the incoming electron energy so that we can find
+         * the sampling energy that is closest above the actual incoming energy.
          */
-        std::vector < std::pair < double, int > > energies;
+        std::map< double , unsigned int > currentDataPoints_;
 
-        std::vector<G4DataVector*> partialSumSigma;
+        
+        std::vector<G4DataVector*> partialSumSigma_;
   
 };
 
