@@ -32,54 +32,17 @@
 #include <stdio.h>
 #include <dirent.h>
 
-// ROOT
-#include "TLorentzVector.h"
-
-void G4eDarkBremsstrahlungModel::Chi::operator()( const StateType &x, StateType &dxdt, double t ) {
-
-    G4double Mel = 5.1E-04;
-    G4double MUp = 2.79;
-    G4double Mpr = 0.938;
-
-    G4double d = 0.164/pow(A,2./3.);
-    G4double ap = 773.0/Mel/pow(Z,2./3.);
-    G4double a = 111.0/Mel/pow(Z,1./3.);
-    G4double G2el = Z*Z*a*a*a*a*t*t/(1.0+a*a*t)/(1.0+a*a*t)/(1.0+t/d)/(1.0+t/d);
-    G4double G2in = Z*ap*ap*ap*ap*t*t/(1.0+ap*ap*t)/(1.0+ap*ap*t)/(1.0+t/0.71)/(1.0+t/0.71)
-     /(1.0+t/0.71)/(1.0+t/0.71)/(1.0+t/0.71)/(1.0+t/0.71)/(1.0+t/0.71)/(1.0+t/0.71)
-     *(1.0+t*(MUp*MUp-1.0)/4.0/Mpr/Mpr)*(1.0+t*(MUp*MUp-1.0)/4.0/Mpr/Mpr);
-    G4double G2 = G2el+G2in;
-    G4double ttmin = MA*MA*MA*MA/4.0/E0/E0;
-    G4double Under = G2*(t-ttmin)/t/t;
-    
-    dxdt[0] = Under;
-
-    return;
-}
-
-void G4eDarkBremsstrahlungModel::DiffCross::operator()( const StateType &sigma, StateType &DsigmaDx, double x ) {
-
-    G4double Mel = 5.1E-04;
-
-    G4double beta = sqrt(1 - MA*MA/E0/E0);
-    G4double num = 1.-x+x*x/3.;
-    G4double denom = MA*MA*(1.-x)/x+Mel*Mel*x;
-
-    DsigmaDx[0] = beta*num/denom;
-
-    return;
-}
-
 G4eDarkBremsstrahlungModel::G4eDarkBremsstrahlungModel(const G4ParticleDefinition* p,
                                                          const G4String& theName)
     : G4VEmModel(theName),
       particle_(nullptr),
-      theAPrime_(G4APrime::APrime()),
       fParticleChange_(nullptr),
       method_(DarkBremMethod::Undefined) {
 
     if(p) { SetParticle(p); } //Verify that the particle is an electron.
-    MA_ = G4APrime::APrime()->GetPDGMass()/CLHEP::GeV; //Get the A' mass in GeV
+
+    MA_  = G4APrime::APrime()    ->GetPDGMass()/CLHEP::GeV; //Get the A' mass in GeV
+    Mel_ = G4Electron::Electron()->GetPDGMass()/CLHEP::GeV;
     
 }
 
@@ -88,25 +51,8 @@ G4eDarkBremsstrahlungModel::~G4eDarkBremsstrahlungModel() {
        if ( dv )  delete dv;
     }
     partialSumSigma_.clear();
-    for ( auto& kV : madGraphData_ ) {
-        for ( frame& fr : kV.second ) {
-            delete fr.fEl;
-            delete fr.cm;
-        }
-    }
     madGraphData_.clear();
     currentDataPoints_.clear();
-}
-
-void G4eDarkBremsstrahlungModel::SetParticle(const G4ParticleDefinition* p) {
-    if (p != G4Electron::Electron()) {
-        EXCEPTION_RAISE(
-                "InvalidParticle",
-                "The particle passed to G4eDarkBremsstrahlungModel '" 
-                + p->GetParticleName() + "' is not an electron."
-                );
-    }
-    particle_ = p;
 }
 
 void G4eDarkBremsstrahlungModel::Initialise(const G4ParticleDefinition* p,
@@ -140,191 +86,6 @@ void G4eDarkBremsstrahlungModel::Initialise(const G4ParticleDefinition* p,
     if(not fParticleChange_) fParticleChange_ = GetParticleChangeForLoss();
 }
 
-void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
-    //TODO: use already written LHE parser?
-    if ( true ) { //TODO verbosity options
-        std::cout << "[ G4eDarkBremsstrahlungModel ] : Parsing LHE file '" << fname << "'" << std::endl;
-    }
-    std::ifstream ifile;
-    ifile.open(fname.c_str());
-    if(!ifile) {
-        EXCEPTION_RAISE(
-                "LHEFile",
-                "Unable to open LHE file '" + fname + "'."
-                );
-    }
-
-    std::string line;
-    while(std::getline(ifile,line)) {
-        std::istringstream iss(line);
-        int ptype, state;
-        double skip, px, py, pz, E, pt, M;
-        if (iss >> ptype >> state >> skip >> skip >> skip >> skip >> px >> py >> pz >> E >> M ) {
-            if((ptype==11)&&(state==-1)) {
-                double ebeam = E;
-                double e_px, e_py, e_pz, a_px, a_py, a_pz, e_E, a_E, e_M, a_M; 
-                for(int i=0;i<2;i++) {std::getline(ifile,line);}
-                std::istringstream jss(line);
-                jss >> ptype >> state >> skip >> skip >> skip >> skip >> e_px >> e_py >> e_pz >> e_E >> e_M; 
-                if((ptype==11)&&(state==1)) {//Find a final state electron.
-                    for(int i=0;i<2;i++) {std::getline(ifile,line);}
-                    std::istringstream kss(line);
-                    kss >> ptype >> state >> skip >> skip >> skip >> skip >>  a_px >> a_py >> a_pz >> a_E >> a_M;
-                    if((ptype==622)&&(state==1)) {
-                        frame evnt;
-                        double cmpx = a_px+e_px;
-                        double cmpy = a_py+e_py;
-                        double cmpz = a_pz+e_pz;
-                        double cmE = a_E + e_E;
-                        evnt.fEl = new TLorentzVector(e_px,e_py,e_pz,e_E);
-                        evnt.cm = new TLorentzVector(cmpx,cmpy,cmpz,cmE);
-                        evnt.E = ebeam;
-                        madGraphData_[ebeam].push_back(evnt);
-                    } //get a prime information
-                } //check for final state
-            } //check for particle type and state
-        } //able to get momentum/energy numbers
-    }//while getting lines
-    //Add the energy to the list, with a random offset between 0 and the total number of entries.
-    ifile.close();
-    if ( true ) {
-        std::cout << "[ G4eDarkBremsstrahlungModel ] : Parsed LHE file '" << fname << "'" << std::endl
-                  << "                                 Found " 
-                  << madGraphData_.size() << " beam energy points in it." << std::endl;
-    }
-}
-
-void G4eDarkBremsstrahlungModel::MakePlaceholders() {
-    currentDataPoints_.clear();
-    for ( const auto &iter : madGraphData_ ) {
-        currentDataPoints_[iter.first] = iter.second.size();
-    }
-}
-
-G4eDarkBremsstrahlungModel::frame G4eDarkBremsstrahlungModel::GetMadgraphData(double E0) {
-
-    frame cmdata; //data frame to return
-    
-    //Cycle through imported beam energies until the closest one above is found, or the max is reached.
-    double samplingE = 0.;
-    for ( const auto &keyVal : currentDataPoints_ ) {
-        samplingE = keyVal.first; //move samplingE up
-        if ( E0 < keyVal.first ) {
-            //just went under the sampling energy 
-            break;
-        }
-    }
-    //now samplingE is the closest energy above E0 or the maximum energy imported from mad graph
-
-    //Need to loop around if we hit the end, when the size of madGraphData_[samplingE] is smaller than 
-    //  the number of events we want
-    if(currentDataPoints_.at(samplingE)>=madGraphData_.at(samplingE).size()) {currentDataPoints_[samplingE] = 0;}
-
-    //Get the lorentz vectors from the index given by the placeholder.
-    cmdata = madGraphData_.at(samplingE).at(currentDataPoints_.at(samplingE));
-
-    //Increment the current index
-    currentDataPoints_[samplingE]++;
-
-    return cmdata;
-}
-
-G4double G4eDarkBremsstrahlungModel::ComputeCrossSectionPerAtom(
-                                              const G4ParticleDefinition*,
-                                              G4double E0, 
-                                              G4double Z,   G4double A,
-                                              G4double cut, G4double) {
-    G4double cross = 0.0 ;
-    if ( E0 < keV || E0 < cut) {
-        return cross; 
-    }
-
-    E0 = E0 / CLHEP::GeV; //Change energy to GeV.
-    G4double Mel = 5.1E-04;
-
-    if(E0 < 2.*MA_) return 0.; //can't produce a prime
-    
-    //begin: chi-formfactor calculation
-    Chi chiformfactor;
-    //  set parameters
-    chiformfactor.A  = A;
-    chiformfactor.Z  = Z;
-    chiformfactor.E0 = E0;
-    chiformfactor.MA = MA_;
-
-    double tmin = MA_*MA_*MA_*MA_/(4.*E0*E0);
-    double tmax = MA_*MA_;
-
-    //Integrate over chi.
-    StateType integral(1);
-    integral[0] = 0.; //start integral value at zero
-    boost::numeric::odeint::integrate (
-            chiformfactor // how to calculate integrand
-            , integral // integral result
-            , tmin // integral lower limit
-            , tmax // integral upper limit
-            , (tmax - tmin)/1000 // dt - initial, adapts based off error
-            );
-    
-    G4double ChiRes = integral[0];
-  
-    //Integrate over x. Can use log approximation instead, which falls off at high A' mass.
-    DiffCross diffcross;
-    diffcross.E0 = E0;
-    diffcross.MA = MA_;
-
-    double xmin = 0;
-    double xmax = 1;
-    if((Mel/E0)>(MA_/E0)) xmax = 1-Mel/E0;
-    else xmax = 1-MA_/E0;
-
-    //Integrate over differential cross section.
-    integral[0] = 0.; //start integral value at zero
-    boost::numeric::odeint::integrate (
-            diffcross // how to calculate integrand
-            , integral // integral result
-            , xmin // integral lower limit
-            , xmax // integral upper limit
-            , (xmax - xmin)/1000 // dt - initial, adapts based off error
-            );
-
-    G4double DsDx = integral[0];
-    
-    G4double GeVtoPb = 3.894E08;   
-    G4double alphaEW = 1.0/137.0;
-    G4double epsilBench = 1;
- 
-    cross= GeVtoPb*4.*alphaEW*alphaEW*alphaEW*epsilBench*epsilBench*ChiRes*DsDx*CLHEP::picobarn;
-    if(cross < 0.) { 
-        cross = 0.; 
-    }
-
-    E0 = E0*CLHEP::GeV;
-    return cross;
-}
-
-G4DataVector* G4eDarkBremsstrahlungModel::ComputePartialSumSigma(
-                                          const G4Material* material,
-                                          G4double kineticEnergy,
-                                          G4double cut) {
-
-    G4int nElements = material->GetNumberOfElements();
-    const G4ElementVector* theElementVector = material->GetElementVector();
-    const G4double* theAtomNumDensityVector = material->GetAtomicNumDensityVector();
-    G4DataVector* dv = new G4DataVector(); //stored into partialSumSigma_ and then cleaned up later
-    G4double cross = 0.0;
-
-    for (G4int i=0; i<nElements; i++ ) {
-        cross += theAtomNumDensityVector[i] * ComputeCrossSectionPerAtom( 
-                particle_, kineticEnergy, (*theElementVector)[i]->GetZ(), (*theElementVector)[i]->GetA(), cut, 0.
-                );
-        dv->push_back(cross);
-    }
-
-    return dv;
-}
-
-
 void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle*>* secondaries, 
                                                   const G4MaterialCutsCouple* ,
                                                   const G4DynamicParticle* primary,
@@ -345,27 +106,26 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
     G4double E0 = primary->GetTotalEnergy();
     G4double tmax = std::min(maxEnergy, E0);
     if(tmin >= tmax) { return; } // limits of the energy sampling
-    G4double Mel = 5.1E-04;
     E0 = E0 / CLHEP::GeV; //Convert the energy to GeV, the units used in the LHE files.
 
-    frame data = GetMadgraphData(E0);
+    OutgoingKinematics data = GetMadgraphData(E0);
     double EAcc, Pt, P, PhiAcc;
     if ( method_ == DarkBremMethod::ForwardOnly ) { 
-        EAcc = (data.fEl->E()-Mel)/(data.E-Mel-MA_)*(E0-Mel-MA_);
-        Pt = data.fEl->Pt();
-        P = sqrt(EAcc*EAcc-Mel*Mel);
-        PhiAcc = data.fEl->Phi();
+        EAcc = (data.electron.E()-Mel_)/(data.E-Mel_-MA_)*(E0-Mel_-MA_);
+        Pt = data.electron.Pt();
+        P = sqrt(EAcc*EAcc-Mel_*Mel_);
+        PhiAcc = data.electron.Phi();
         int i = 0;
-        while(Pt*Pt+Mel*Mel>EAcc*EAcc) {
+        while(Pt*Pt+Mel_*Mel_>EAcc*EAcc) {
             //Skip events until the Pt is less than the energy.
             i++;
             data = GetMadgraphData(E0);
-            EAcc = (data.fEl->E()-Mel)/(data.E-Mel-MA_)*(E0-Mel-MA_);
-            Pt = data.fEl->Pt();
-            P = sqrt(EAcc*EAcc-Mel*Mel);
-            PhiAcc = data.fEl->Phi();
+            EAcc = (data.electron.E()-Mel_)/(data.E-Mel_-MA_)*(E0-Mel_-MA_);
+            Pt = data.electron.Pt();
+            P = sqrt(EAcc*EAcc-Mel_*Mel_);
+            PhiAcc = data.electron.Phi();
 
-            //TODO make limit an optional parameter
+            //TODO make limit an optional parameter or related to madGraphData file
             if(i>10000) {
                 std::cout << "[ G4eDarkBremsstrahlungModel ] : "
                     << "Did not manage to simulate with E0 = " << E0
@@ -374,18 +134,18 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
             }
         }
     } else if( method_ == DarkBremMethod::CMScaling ) {
-        TLorentzVector* el = new TLorentzVector(data.fEl->X(),data.fEl->Y(),data.fEl->Z(),data.fEl->E());
+        TLorentzVector el(data.electron.X(),data.electron.Y(),data.electron.Z(),data.electron.E());
         double ediff = data.E-E0;
-        TLorentzVector* newcm = new TLorentzVector(data.cm->X(),data.cm->Y(),data.cm->Z()-ediff,data.cm->E()-ediff);
-        el->Boost(-1.*data.cm->BoostVector());
-        el->Boost(newcm->BoostVector());
-        double newE = (data.fEl->E()-Mel)/(data.E-Mel-MA_)*(E0-Mel-MA_);
-        el->SetE(newE);
-        EAcc = el->E();
-        Pt = el->Pt();
-        P = el->P();
-        delete el;
-        delete newcm;
+        TLorentzVector newcm(
+                data.centerMomentum.X(),data.centerMomentum.Y()
+                ,data.centerMomentum.Z()-ediff,data.centerMomentum.E()-ediff);
+        el.Boost(-1.*data.centerMomentum.BoostVector());
+        el.Boost(newcm.BoostVector());
+        double newE = (data.electron.E()-Mel_)/(data.E-Mel_-MA_)*(E0-Mel_-MA_);
+        el.SetE(newE);
+        EAcc = el.E();
+        Pt = el.Pt();
+        P = el.P();
     } else if ( method_ == DarkBremMethod::Undefined ) {
         EAcc = E0;
         P = primary->GetTotalMomentum();
@@ -408,7 +168,7 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
 
     // create g4dynamicparticle object for the dark photon.
     G4ThreeVector direction = (primary->GetMomentum()- newDirection);
-    G4DynamicParticle* dphoton = new G4DynamicParticle(theAPrime_,direction);
+    G4DynamicParticle* dphoton = new G4DynamicParticle(G4APrime::APrime(),direction);
     secondaries->push_back(dphoton);
  
     // energy of primary
@@ -427,38 +187,7 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
         fParticleChange_->SetProposedKineticEnergy(finalKE);
     }
 } 
-    
-const G4Element* G4eDarkBremsstrahlungModel::SelectRandomAtom( const G4MaterialCutsCouple* couple) {
 
-    // select randomly 1 element within the material
- 
-    const G4Material* material = couple->GetMaterial();
-    G4int nElements = material->GetNumberOfElements();
-    const G4ElementVector* theElementVector = material->GetElementVector();
- 
-    const G4Element* elm = 0;
- 
-    if(1 < nElements) {
- 
-        --nElements; 
-        G4DataVector* dv = partialSumSigma_.at(couple->GetIndex());
-        G4double rval = G4UniformRand()*((*dv)[nElements]);
- 
-        elm = (*theElementVector)[nElements];
-        for (G4int i=0; i<nElements; ++i) {
-            if (rval <= (*dv)[i]) {
-                elm = (*theElementVector)[i];
-                break;
-            }
-        }
-    } else { 
-        elm = (*theElementVector)[0]; 
-    }
-  
-    SetCurrentElement(elm);
-    return elm;
-}
- 
 void G4eDarkBremsstrahlungModel::SetMethod(DarkBremMethod method ) {
     method_ = method;
     return;
@@ -497,4 +226,255 @@ void G4eDarkBremsstrahlungModel::SetMadGraphDataFile(std::string file) {
     return;
 }
 
+const G4Element* G4eDarkBremsstrahlungModel::SelectRandomAtom( const G4MaterialCutsCouple* couple) {
 
+    // select randomly 1 element within the material
+ 
+    const G4Material* material = couple->GetMaterial();
+    G4int nElements = material->GetNumberOfElements();
+    const G4ElementVector* theElementVector = material->GetElementVector();
+ 
+    const G4Element* elm = 0;
+ 
+    if(1 < nElements) {
+ 
+        --nElements; 
+        G4DataVector* dv = partialSumSigma_.at(couple->GetIndex());
+        G4double rval = G4UniformRand()*((*dv)[nElements]);
+ 
+        elm = (*theElementVector)[nElements];
+        for (G4int i=0; i<nElements; ++i) {
+            if (rval <= (*dv)[i]) {
+                elm = (*theElementVector)[i];
+                break;
+            }
+        }
+    } else { 
+        elm = (*theElementVector)[0]; 
+    }
+  
+    SetCurrentElement(elm);
+    return elm;
+}
+
+void G4eDarkBremsstrahlungModel::Chi::operator()( const StateType &, StateType &dxdt, double t ) {
+
+    G4double MUp = 2.79; //mass up quark [GeV]
+    G4double Mpr = 0.938; //mass proton [GeV]
+
+    G4double d = 0.164/pow(A,2./3.);
+    G4double ap = 773.0/( Mel*pow(Z,2./3.) );
+    G4double a = 111.0/( Mel*pow(Z,1./3.) );
+    G4double G2el = pow(Z,2)*pow(a,4)*pow(t,2)/( pow(1.0+a*a*t,2)*pow(1.0+t/d,2) );
+    G4double G2in = Z*pow(ap,4)*pow(t,2)/( pow(1.0+ap*ap*t,2)*pow(1.0+t/0.71,8) )
+        *pow( 1.0+t*(pow(MUp,2)-1.0)/(4.0*pow(Mpr,2)) , 2 );
+    G4double G2 = G2el+G2in;
+    G4double ttmin = MA*MA*MA*MA/4.0/E0/E0;
+    G4double Under = G2*(t-ttmin)/t/t;
+    
+    dxdt[0] = Under;
+
+    return;
+}
+
+void G4eDarkBremsstrahlungModel::DiffCross::operator()( const StateType &, StateType &DsigmaDx, double x ) {
+
+    G4double beta = sqrt(1 - MA*MA/E0/E0);
+    G4double num = 1.-x+x*x/3.;
+    G4double denom = MA*MA*(1.-x)/x+Mel*Mel*x;
+
+    DsigmaDx[0] = beta*num/denom;
+
+    return;
+}
+
+void G4eDarkBremsstrahlungModel::SetParticle(const G4ParticleDefinition* p) {
+    if (p != G4Electron::Electron()) {
+        EXCEPTION_RAISE(
+                "InvalidParticle",
+                "The particle passed to G4eDarkBremsstrahlungModel '" 
+                + p->GetParticleName() + "' is not an electron."
+                );
+    }
+    particle_ = p;
+}
+
+void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
+    //TODO: use already written LHE parser?
+    if ( true ) { //TODO verbosity options
+        std::cout << "[ G4eDarkBremsstrahlungModel ] : Parsing LHE file '" << fname << "'" << std::endl;
+    }
+    std::ifstream ifile;
+    ifile.open(fname.c_str());
+    if(!ifile) {
+        EXCEPTION_RAISE(
+                "LHEFile",
+                "Unable to open LHE file '" + fname + "'."
+                );
+    }
+
+    std::string line;
+    while(std::getline(ifile,line)) {
+        std::istringstream iss(line);
+        int ptype, state;
+        double skip, px, py, pz, E, pt, M;
+        if (iss >> ptype >> state >> skip >> skip >> skip >> skip >> px >> py >> pz >> E >> M ) {
+            if((ptype==11)&&(state==-1)) {
+                double ebeam = E;
+                double e_px, e_py, e_pz, a_px, a_py, a_pz, e_E, a_E, e_M, a_M; 
+                for(int i=0;i<2;i++) {std::getline(ifile,line);}
+                std::istringstream jss(line);
+                jss >> ptype >> state >> skip >> skip >> skip >> skip >> e_px >> e_py >> e_pz >> e_E >> e_M; 
+                if((ptype==11)&&(state==1)) {//Find a final state electron.
+                    for(int i=0;i<2;i++) {std::getline(ifile,line);}
+                    std::istringstream kss(line);
+                    kss >> ptype >> state >> skip >> skip >> skip >> skip >>  a_px >> a_py >> a_pz >> a_E >> a_M;
+                    if((ptype==622)&&(state==1)) {
+                        OutgoingKinematics evnt;
+                        double cmpx = a_px+e_px;
+                        double cmpy = a_py+e_py;
+                        double cmpz = a_pz+e_pz;
+                        double cmE = a_E + e_E;
+                        evnt.electron = TLorentzVector(e_px,e_py,e_pz,e_E);
+                        evnt.centerMomentum = TLorentzVector(cmpx,cmpy,cmpz,cmE);
+                        evnt.E = ebeam;
+                        madGraphData_[ebeam].push_back(evnt);
+                    } //get a prime information
+                } //check for final state
+            } //check for particle type and state
+        } //able to get momentum/energy numbers
+    }//while getting lines
+    //Add the energy to the list, with a random offset between 0 and the total number of entries.
+    ifile.close();
+    if ( true ) {
+        std::cout << "[ G4eDarkBremsstrahlungModel ] : Parsed LHE file '" << fname << "'" << std::endl
+                  << "                                 Found " 
+                  << madGraphData_.size() << " beam energy points in it." << std::endl;
+    }
+}
+
+void G4eDarkBremsstrahlungModel::MakePlaceholders() {
+    currentDataPoints_.clear();
+    for ( const auto &iter : madGraphData_ ) {
+        currentDataPoints_[iter.first] = iter.second.size();
+    }
+}
+
+G4eDarkBremsstrahlungModel::OutgoingKinematics G4eDarkBremsstrahlungModel::GetMadgraphData(double E0) {
+
+    OutgoingKinematics cmdata; //data frame to return
+    
+    //Cycle through imported beam energies until the closest one above is found, or the max is reached.
+    double samplingE = 0.;
+    for ( const auto &keyVal : currentDataPoints_ ) {
+        samplingE = keyVal.first; //move samplingE up
+        //check if went under the sampling energy 
+        //  the map is sorted by key, so we can be done right after E0 goes under samplingE
+        if ( E0 < samplingE ) break;
+    }
+    //now samplingE is the closest energy above E0 or the maximum energy imported from mad graph
+
+    //Need to loop around if we hit the end, when the size of madGraphData_[samplingE] is smaller than 
+    //  the number of events we want
+    if(currentDataPoints_.at(samplingE)>=madGraphData_.at(samplingE).size()) {currentDataPoints_[samplingE] = 0;}
+
+    //Get the lorentz vectors from the index given by the placeholder.
+    cmdata = madGraphData_.at(samplingE).at(currentDataPoints_.at(samplingE));
+
+    //Increment the current index
+    currentDataPoints_[samplingE]++;
+
+    return cmdata;
+}
+
+G4double G4eDarkBremsstrahlungModel::ComputeCrossSectionPerAtom(
+                                              const G4ParticleDefinition*,
+                                              G4double E0, 
+                                              G4double Z,   G4double A,
+                                              G4double cut, G4double) {
+
+    if ( E0 < keV or E0 < cut) return 0.; //outside viable region for model
+
+    E0 = E0 / CLHEP::GeV; //Change energy to GeV.
+
+    if(E0 < 2.*MA_) return 0.; //can't produce a prime
+    
+    //begin: chi-formfactor calculation
+    Chi chiformfactor;
+    //  set parameters
+    chiformfactor.A  = A;
+    chiformfactor.Z  = Z;
+    chiformfactor.E0 = E0;
+    chiformfactor.MA = MA_;
+    chiformfactor.Mel = Mel_;
+
+    double tmin = MA_*MA_*MA_*MA_/(4.*E0*E0);
+    double tmax = MA_*MA_;
+
+    //Integrate over chi.
+    StateType integral(1);
+    integral[0] = 0.; //start integral value at zero
+    boost::numeric::odeint::integrate (
+            chiformfactor // how to calculate integrand
+            , integral // integral result
+            , tmin // integral lower limit
+            , tmax // integral upper limit
+            , (tmax - tmin)/1000 // dt - initial, adapts based off error
+            );
+    
+    G4double ChiRes = integral[0];
+  
+    //Integrate over x. Can use log approximation instead, which falls off at high A' mass.
+    DiffCross diffcross;
+    diffcross.E0 = E0;
+    diffcross.MA = MA_;
+    diffcross.Mel = Mel_;
+
+    double xmin = 0;
+    double xmax = 1;
+    if((Mel_/E0)>(MA_/E0)) xmax = 1-Mel_/E0;
+    else xmax = 1-MA_/E0;
+
+    //Integrate over differential cross section.
+    integral[0] = 0.; //start integral value at zero
+    boost::numeric::odeint::integrate (
+            diffcross // how to calculate integrand
+            , integral // integral result
+            , xmin // integral lower limit
+            , xmax // integral upper limit
+            , (xmax - xmin)/1000 // dx - initial, adapts based off error
+            );
+
+    G4double DsDx = integral[0];
+    
+    G4double GeVtoPb = 3.894E08;
+    G4double alphaEW = 1.0/137.0;
+    G4double epsilBench = 1;
+ 
+    G4double cross = GeVtoPb*4.*alphaEW*alphaEW*alphaEW*epsilBench*epsilBench*ChiRes*DsDx*CLHEP::picobarn;
+
+    if(cross < 0.) return 0.; //safety check all the math
+
+    return cross;
+}
+
+G4DataVector* G4eDarkBremsstrahlungModel::ComputePartialSumSigma(
+                                          const G4Material* material,
+                                          G4double kineticEnergy,
+                                          G4double cut) {
+
+    G4int nElements = material->GetNumberOfElements();
+    const G4ElementVector* theElementVector = material->GetElementVector();
+    const G4double* theAtomNumDensityVector = material->GetAtomicNumDensityVector();
+    G4DataVector* dv = new G4DataVector(); //stored into partialSumSigma_ and then cleaned up later
+    G4double cross = 0.0;
+
+    for (G4int i=0; i<nElements; i++ ) {
+        cross += theAtomNumDensityVector[i] * ComputeCrossSectionPerAtom( 
+                particle_, kineticEnergy, (*theElementVector)[i]->GetZ(), (*theElementVector)[i]->GetA(), cut, 0.
+                );
+        dv->push_back(cross);
+    }
+
+    return dv;
+}
