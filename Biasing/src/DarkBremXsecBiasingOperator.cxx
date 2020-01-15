@@ -3,6 +3,7 @@
  * @brief Geant4 Biasing Operator used to bias the occurence of dark brem
  *        events by modifying the cross-section.
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "Biasing/DarkBremXsecBiasingOperator.h"
@@ -32,34 +33,17 @@ namespace ldmx {
     G4VBiasingOperation* DarkBremXsecBiasingOperator::ProposeOccurenceBiasingOperation(
             const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
     
-        /*std::cout << "[ DarkBremXsecBiasingOperator ]: "
-                  << "Parent ID: " << track->GetParentID() 
-                  << " Created within " << track->GetLogicalVolumeAtVertex()->GetName() 
-                  << std::endl;*/
-
         //only bias primary particle
         if (track->GetParentID() != 0) return 0; 
 
-        /*std::cout << "[ DarkBremXsecBiasingOperator ]: " 
-                  << "Kinetic energy: " << track->GetKineticEnergy() 
-                  << " MeV" << std::endl;*/
-
         //only bias primary particles above the minimum energy
         if (track->GetKineticEnergy() < XsecBiasingOperator::threshold_) return 0; 
-
-        /*std::cout << "[ DarkBremXsecBiasingOperator ]: " 
-                  << "Calling process: " 
-                  << callingProcess->GetWrappedProcess()->GetProcessName() 
-                  << std::endl;*/
 
         std::string currentProcess = callingProcess->GetWrappedProcess()->GetProcessName(); 
         if (currentProcess.compare(this->getProcessToBias()) == 0) { 
             //only bias the process that we want to DARKBREM_PROCESS
             
             G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
-            /*std::cout << "[ DarkBremXsecBiasingOperator ]: "
-                      << "PN Interaction length: " 
-                      << interactionLength << std::endl;*/
 
             dbXsecUnbiased_ = 1./interactionLength;
             std::cout << "[ DarkBremXsecBiasingOperator ]: Unbiased DBrem xsec: "
@@ -77,11 +61,5 @@ namespace ldmx {
     
         } else return 0; 
 
-        // TODO: These should be pulled out to their own operator ... 
-        /*if (XsecBiasingOperator::biasIncident_ && (track->GetParentID() != 0)) {
-            return 0;
-        } else if (!XsecBiasingOperator::biasAll_ && !XsecBiasingOperator::biasIncident_ && track->GetParentID() != 1) {
-            return 0;
-        }*/
     }
 }

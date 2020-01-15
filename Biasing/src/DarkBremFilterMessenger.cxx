@@ -2,10 +2,20 @@
  * @file DarkBremFilterMessenger.cxx
  * @brief Messenger for setting parameters on DarkBremFilter.
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "Biasing/DarkBremFilterMessenger.h"
-#include <iostream>
+
+//-------------//
+//   ldmx-sw   //
+//-------------//
+#include "Biasing/DarkBremFilter.h"
+
+//-------------//
+//   Geant4    //
+//-------------//
+#include "G4UIcmdWithAString.hh"
 
 namespace ldmx { 
     

@@ -4,6 +4,7 @@
  * @brief Class defining a UserActionPlugin that allows a user to filter out 
  *        events that don't result in a dark brem inside a given volume
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifndef BIASING_DARKBREMFILTER_H_

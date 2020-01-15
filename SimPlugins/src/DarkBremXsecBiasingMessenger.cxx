@@ -2,6 +2,7 @@
  * @file DarkBremXsecBiasingMessenger.cxx
  * @brief Class providing a macro messenger for a DarkBremXsecBiasingPlugin
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "SimPlugins/DarkBremXsecBiasingMessenger.h"
