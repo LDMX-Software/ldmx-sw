@@ -10,6 +10,7 @@
 //   ldmx-sw   //
 //-------------//
 #include "SimApplication/APrimePhysics.h"
+#include "SimApplication/APrimeMessenger.h"
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/GammaPhysics.h"
 #include "SimApplication/ParallelWorld.h"
@@ -64,7 +65,8 @@ namespace ldmx {
             pList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
         }
         
-        pList->RegisterPhysics(new APrimePhysics);
+        if ( massAPrime_ > 0 ) pList->RegisterPhysics(new APrimePhysics( massAPrime_ ));
+
         pList->RegisterPhysics(new GammaPhysics);
        
         auto biasingEnabled{parameters_.getParameter< bool >("biasing.enabled")}; 

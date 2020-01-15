@@ -7,26 +7,30 @@
 /ldmx/plugins/DarkBremFilter/verbose 2
 
 # Bias the electron dark brem process inside of the target
+#   These commands allow us to restrict the dark brem process to the a given volume.
+#   The actual biasing factor is passed to the biasing plugin below.
 /ldmx/biasing/enable
 /ldmx/biasing/particle e-
 /ldmx/biasing/process eDBrem
 /ldmx/biasing/volume target
 
+# Tell the simulation what A' mass to use
+#   This is necessary to register the APrimePhysics into the physics list
+/ldmx/aprime/mass 10. MeV
+
 /run/initialize
 
-# Save A' whereever it is
+# Save A' no matter what
+#   The hard-coded PDG ID for the A' is defined in SimCore/src/G4APrime.cxx
 /ldmx/plugins/load TrackFilterPlugin
 /ldmx/plugins/TrackFilterPlugin/pdgid 622
 /ldmx/plugins/TrackFilterPlugin/create KeepAPrime
 
-# Set the biasing cross section factor
-#/ldmx/biasing/xsec/particle e- #TODO not sure if this is necessary
-
 # Determine how the dark brem cross section will be calculated
 /ldmx/plugins/load DarkBremXsecBiasingPlugin
 /ldmx/plugins/DarkBremXsecBiasingPlugin/verbose 2
-/ldmx/plugins/DarkBremXsecBiasingPlugin/mode forward_only 
-/ldmx/plugins/DarkBremXsecBiasingPlugin/madGraphDataFile mad_graph_data.lhe #mad graph events to use
+/ldmx/plugins/DarkBremXsecBiasingPlugin/mode forward_only #required - how to interpret mad graph events
+/ldmx/plugins/DarkBremXsecBiasingPlugin/madGraphDataFile mad_graph_data.lhe #required - mad graph events to use
 /ldmx/plugins/DarkBremXsecBiasingPlugin/xsecFactor 1000000 #large factor to force dark brem to happen
 
 # Normal particle gun
