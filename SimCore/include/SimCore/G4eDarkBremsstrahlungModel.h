@@ -12,7 +12,7 @@
 #include "G4VEmModel.hh"
 
 // ROOT
-class TLorentzVector;
+#include "TLorentzVector.h"
 
 /**
  * @class G4eDarkBremsstrahlungModel
@@ -38,49 +38,6 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
         };
 
         /**
-         * Helpful typedef for boost integration.
-         */
-        typedef std::vector<double> StateType;
-
-        /**
-         * @struct Chi
-         *
-         * Stores parameters for chi function used in integration.
-         * Implements function as member operator compatible with boost::numeric::odeint
-         */
-        struct Chi {
-            double A; /// atomic number
-            double Z; /// atomic mass
-            double E0; /// incoming beam energy
-            double MA; /// mass of A prime
-
-            void operator()( const StateType &x , StateType &dxdt , double t );
-        };
-
-        /**
-         * @struct DiffCross
-         *
-         * Implementation of the differential scattering cross section.
-         * Stores parameters.
-         *
-         * Implements function as member operator compatible with boost::numeric::odeint
-         */
-        struct DiffCross {
-            double E0; /// incoming beam energy
-            double MA; /// mass of A prime
-
-            void operator()( const StateType &sigma , StateType &DsigmaDx , double x );
-        };
-
-        /**
-         * @struct frame
-         *
-         * Data frame to store mad graph data read in from LHE files.
-         * TODO move away from pointers
-         */
-        struct frame {TLorentzVector* fEl; TLorentzVector* cm; G4double E;};
-
-        /**
          * Set the particle definition that this model will represent.
          */
         G4eDarkBremsstrahlungModel(const G4ParticleDefinition* p = 0,
@@ -96,42 +53,7 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
         /**
          * Set the cuts using the particle definition and comput the partial sum sigma.
          */
-        virtual void Initialise(const G4ParticleDefinition*, const G4DataVector&);
-
-        
-        /**
-         * Calculates the cross section per atom in GEANT4 internal units.
-         * Uses WW approximation to find the total cross section, performing numerical integrals over x and theta.
-         *
-         * Non named parameters are not used.
-         *
-         * Numerical integrals are done using boost::numeric::odeint.
-         *
-         * @param E0 energy of beam (incoming particle)
-         * @param Z atomic number of atom
-         * @param A atomic mass of atom
-         * @param cut minimum energy cut to calculate cross section
-         * @return cross section (0. if outside energy cuts)
-         */
-        virtual G4double ComputeCrossSectionPerAtom(const G4ParticleDefinition*,
-                                                   G4double E0, 
-                                                   G4double Z,   G4double A,
-                                                   G4double cut, G4double);
-
-
-        /** 
-         * Build the table of cross section per element. 
-         *
-         * The table is built for MATERIALS. 
-         * This table is used by DoIt to select randomly an element in the material.
-         *
-         * @param material Material to build cross section table for
-         * @param kineticEnergy kinetic energy of incoming particle
-         * @param cut minimum energy cut on cross section
-         * @return G4DataVector of elements to cross sections for the input material. 
-         */
-        G4DataVector* ComputePartialSumSigma(const G4Material* material,
-                                            G4double kineticEnergy, G4double cut);
+        virtual void Initialise(const G4ParticleDefinition* p, const G4DataVector& cuts);
 
         /**
          * Simulates the emission of a dark photon + electron.
@@ -178,6 +100,69 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
 
     private:
         
+        /**
+         * Helpful typedef for boost integration.
+         */
+        typedef std::vector<double> StateType;
+
+        /**
+         * @struct Chi
+         *
+         * Stores parameters for chi function used in integration.
+         * Implements function as member operator compatible with boost::numeric::odeint
+         */
+        struct Chi {
+            double A; /// atomic number
+            double Z; /// atomic mass
+            double E0; /// incoming beam energy [GeV]
+            double MA; /// A' mass [GeV]
+            double Mel; /// electron mass [GeV]
+
+            /**
+             * Access function in style required by boost::numeric::odeint
+             *
+             * Calculates dxdt from t and other paramters.
+             */
+            void operator()( const StateType &, StateType &dxdt , double t );
+        };
+
+        /**
+         * @struct DiffCross
+         *
+         * Implementation of the differential scattering cross section.
+         * Stores parameters.
+         *
+         * Implements function as member operator compatible with boost::numeric::odeint
+         */
+        struct DiffCross {
+            double E0; /// incoming beam energy [GeV]
+            double MA; /// A' mass [GeV]
+            double Mel; /// electron mass [GeV]
+
+            /**
+             * Access function in style required by boost::numeric::odeint
+             *
+             * Calculates DsigmaDx from x and other paramters.
+             */
+            void operator()( const StateType &, StateType &DsigmaDx , double x );
+        };
+
+        /**
+         * @struct OutgoingKinematics
+         *
+         * Data frame to store mad graph data read in from LHE files.
+         */
+        struct OutgoingKinematics {
+            TLorentzVector electron; /// 4-momentum of electron in center of momentum frame for electron-A' system
+            TLorentzVector centerMomentum; /// 4-vector pointing to center of momentum frame
+            G4double E; /// energy of electron before brem (used as key in mad graph data map)
+        };
+
+        /**
+         * Sets the particle being looked at and checks whether it is an electron or not.
+         */
+        void SetParticle(const G4ParticleDefinition* p);
+      
         /*
          * Parse an LHE File
          *
@@ -205,13 +190,41 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
          * @param E0 energy of particle undergoing dark brem [GeV]
          * @return total energy and transverse momentum of particle [GeV]
          */
-        G4eDarkBremsstrahlungModel::frame GetMadgraphData(double E0);
+        G4eDarkBremsstrahlungModel::OutgoingKinematics GetMadgraphData(double E0);
 
         /**
-         * Sets the particle being looked at and checks whether it is an electron or not.
+         * Calculates the cross section per atom in GEANT4 internal units.
+         * Uses WW approximation to find the total cross section, performing numerical integrals over x and theta.
+         *
+         * Non named parameters are not used.
+         *
+         * Numerical integrals are done using boost::numeric::odeint.
+         *
+         * @param E0 energy of beam (incoming particle)
+         * @param Z atomic number of atom
+         * @param A atomic mass of atom
+         * @param cut minimum energy cut to calculate cross section
+         * @return cross section (0. if outside energy cuts)
          */
-        void SetParticle(const G4ParticleDefinition* p);
-      
+        virtual G4double ComputeCrossSectionPerAtom(const G4ParticleDefinition*,
+                                                   G4double E0, 
+                                                   G4double Z,   G4double A,
+                                                   G4double cut, G4double);
+
+        /** 
+         * Build the table of cross section per element. 
+         *
+         * The table is built for MATERIALS. 
+         * This table is used by DoIt to select randomly an element in the material.
+         *
+         * @param material Material to build cross section table for
+         * @param kineticEnergy kinetic energy of incoming particle
+         * @param cut minimum energy cut on cross section
+         * @return G4DataVector of elements to cross sections for the input material. 
+         */
+        G4DataVector* ComputePartialSumSigma(const G4Material* material,
+                                            G4double kineticEnergy, G4double cut);
+
         /** Hide assignment operator */
         G4eDarkBremsstrahlungModel & operator=(const  G4eDarkBremsstrahlungModel &right);
 
@@ -221,18 +234,18 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
     protected:
 
         /** definition of particle */
-        const G4ParticleDefinition*   particle_;
-
-        /** pointer to the definition of the A Prime */
-        G4ParticleDefinition*         theAPrime_;
+        const G4ParticleDefinition* particle_;
 
         /** loss in particle energy */
-        G4ParticleChangeForLoss*      fParticleChange_;
-
-        /** mass of the A Prime */
-        G4double                      MA_;
+        G4ParticleChangeForLoss* fParticleChange_;
 
     private:
+
+        /** mass of the A Prime [GeV] */
+        double MA_;
+
+        /** mass of an electron [GeV] */
+        double Mel_;
 
         /** method for this model */
         DarkBremMethod method_{DarkBremMethod::Undefined};
@@ -242,7 +255,7 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
          *
          * Maps incoming electron energy to various options for outgoing kinematics.
          */
-        std::map< double , std::vector < frame > > madGraphData_;
+        std::map< double , std::vector < OutgoingKinematics > > madGraphData_;
 
         /**
          * Stores a map of current access points to mad graph data.
