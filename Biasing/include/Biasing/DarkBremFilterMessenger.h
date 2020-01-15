@@ -2,21 +2,16 @@
  * @file DarkBremFilterMessenger.h
  * @brief Messenger for setting parameters on DarkBremFilter.
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifndef BIASING_DARKBREMFILTERMESSENGER_H
 #define BIASING_DARKBREMFILTERMESSENGER_H
 
-//------------//
-//   Geant4   //
-//------------//
-#include "G4UIcmdWithoutParameter.hh"
-
-//-------------//
-//   ldmx-sw   //
-//-------------//
-#include "Biasing/DarkBremFilter.h"
 #include "SimPlugins/UserActionPluginMessenger.h"
+
+// Geant4
+class G4UIcmdWithAString;
 
 namespace ldmx { 
    
@@ -39,7 +34,11 @@ namespace ldmx {
              */
             DarkBremFilterMessenger(DarkBremFilter* filter); 
 
-            /** Destructor */
+            /** 
+             * Destructor 
+             *
+             * Cleans up commands.
+             */
             ~DarkBremFilterMessenger();
 
             /**

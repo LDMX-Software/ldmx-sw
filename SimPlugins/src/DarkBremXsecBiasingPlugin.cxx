@@ -18,13 +18,6 @@
 
 SIM_PLUGIN(ldmx, DarkBremXsecBiasingPlugin)
 
-ldmx::DarkBremXsecBiasingPlugin::DarkBremXsecBiasingPlugin() {
-}
-
-ldmx::DarkBremXsecBiasingPlugin::~DarkBremXsecBiasingPlugin() {
-    delete messenger_;
-}
-
 void ldmx::DarkBremXsecBiasingPlugin::beginRun(const G4Run*) {
 
     // Get the process manager associated with reactions involving photons.
@@ -52,9 +45,9 @@ void ldmx::DarkBremXsecBiasingPlugin::beginRun(const G4Run*) {
             eDarkBrem->SetMadGraphDataFile(madGraphDataFile_);
 
             if ( this->getVerboseLevel() > 1 ) {
-    	        std::cout << "[ DarkBremXsecBiasingPlugin ]: " 
+    	        std::cout << "[ DarkBremXsecBiasingPlugin ] : " 
                     << "Dark Brem xsec has increased by a factor of " << xsecBiasingFactor_ << std::endl;
-    	        std::cout << "[ DarkBremXsecBiasingPlugin ]: " 
+    	        std::cout << "[ DarkBremXsecBiasingPlugin ] : " 
                     << "Dark Brem simulation mode set to " << method_ << std::endl;
             }// verbose
         } //if process is Dark Brem
@@ -70,6 +63,7 @@ void ldmx::DarkBremXsecBiasingPlugin::endEvent(const G4Event*) {
     G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
     ptable->SetProcessActivation(pname,active);    
     if ( this->getVerboseLevel() > 1 ) {
-        std::cout << "Reset the dark brem process.\n";
+        std::cout << "[ DarkBremXsecBiasingPlugin ] : "
+                  << "Reset the dark brem process." << std::endl;
     }
 }

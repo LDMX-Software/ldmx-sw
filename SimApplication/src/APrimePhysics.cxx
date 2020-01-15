@@ -28,6 +28,10 @@ namespace ldmx {
          * Insert A-prime into the Geant4 particle table.
          * For now we flag it as stable.
          *
+         * This is the first time the particle is created, 
+         * so this is where we *could* change its mass.
+         * TODO change APrime mass
+         *
          * Geant4 registers all instances derived from G4ParticleDefinition and 
          * deletes them at the end of the run.
          */

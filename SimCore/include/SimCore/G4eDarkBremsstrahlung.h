@@ -35,15 +35,13 @@ class G4eDarkBremsstrahlung : public G4VEnergyLossProcess {
   
         /**
          * Destructor
-         *
-         * Deletes the model if it has been created
          */
-        virtual ~G4eDarkBremsstrahlung();
+        virtual ~G4eDarkBremsstrahlung() { /*Nothing on purpose*/ }
   
         /** 
          * Checks if the passed particle should be able to do this process
          *
-         * @return true if particle is electron or positron
+         * @return true if particle is electron
          */
         virtual G4bool IsApplicable(const G4ParticleDefinition& p);
   
@@ -67,8 +65,10 @@ class G4eDarkBremsstrahlung : public G4VEnergyLossProcess {
  
     private:
   
-        /** remove ability to copy construct or assign this object */
+        /** remove ability to assign this object */
         G4eDarkBremsstrahlung & operator=(const G4eDarkBremsstrahlung &right);
+
+        /** remove ability to copy construct */
         G4eDarkBremsstrahlung(const G4eDarkBremsstrahlung&);
   
 };

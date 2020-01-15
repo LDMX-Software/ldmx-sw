@@ -9,6 +9,7 @@
 
 // Geant
 #include "G4ParticleDefinition.hh"
+#include "G4SystemOfUnits.hh"
 
 class G4String;
 class G4DecayTable;
@@ -44,7 +45,7 @@ class G4APrime : public G4ParticleDefinition {
     public:
 
         /** Accessor for APrime definition */
-        static G4APrime* APrime();
+        static G4APrime* APrime(G4double theMass = 10.0*MeV);
 };
 
 #endif //SIMCORE_G4APRIME_H_

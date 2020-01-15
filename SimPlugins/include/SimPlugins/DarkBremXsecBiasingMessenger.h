@@ -2,14 +2,15 @@
  * @file DarkBremXsecBiasingMessenger.h
  * @brief Class providing a macro messenger for a DarkBremXsecBiasingPlugin
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifndef SIMPLUGINS_DARKBREMXSECBIASINGPLUGINMESSENGER_H
 #define SIMPLUGINS_DARKBREMXSECBIASINGPLUGINMESSENGER_H
 
 // LDMX
-#include "SimPlugins/UserActionPluginMessenger.h"
-#include "SimCore/G4eDarkBremsstrahlungModel.h"
+#include "SimPlugins/UserActionPluginMessenger.h" //for inheritance
+#include "SimCore/G4eDarkBremsstrahlungModel.h" //For metehod enum
 
 namespace ldmx {
 

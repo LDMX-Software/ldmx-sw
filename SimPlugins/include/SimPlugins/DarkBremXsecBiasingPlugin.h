@@ -2,10 +2,11 @@
  * @file DarkBremXsecBiasingPlugin.h
  * @brief Class that defines a simulation plugin for biasing the DarkBrem xsec by a specified value
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMPLUGINS_DarkBremXSECBIASINGPLUGIN_H_
-#define SIMPLUGINS_DarkBremXSECBIASINGPLUGIN_H_
+#ifndef SIMPLUGINS_DARKBREMXSECBIASINGPLUGIN_H_
+#define SIMPLUGINS_DARKBREMXSECBIASINGPLUGIN_H_
 
 // LDMX
 #include "SimCore/G4eDarkBremsstrahlung.h"
@@ -25,14 +26,16 @@ namespace ldmx {
             /**
              * Class constructor.
              */
-            DarkBremXsecBiasingPlugin();
+            DarkBremXsecBiasingPlugin() : UserActionPlugin() { }
 
             /**
              * Class destructor.
              *
              * Deletes the messenger attached to this plugin.
              */
-            ~DarkBremXsecBiasingPlugin();
+            ~DarkBremXsecBiasingPlugin() {
+                delete messenger_;
+            }
 
             /**
              * Get the name of the plugin.
@@ -52,7 +55,9 @@ namespace ldmx {
 
             /**
              * Implementation of begin run hook.
-             * Sets biasing factor for PN reactions.
+             * 
+             * Gets the dark brem process and passes the setup variables for initialisation.
+             *
              * @param aRun The Geant4 run that is starting.
              */
             void beginRun(const G4Run* aRun);
@@ -67,13 +72,16 @@ namespace ldmx {
 
             /**
              * Implementation of end event hook.
-             * Resets the process to active, to limit the number of brems per event to one.
+             *
+             * Resets the process to active.
+             * The process is deactivated every time it occurs to limit it to once brem per event.
+             *
              * @param aEvent The Geant4 event that is ending.
              */
             void endEvent(const G4Event* aEvent);
 
             /**
-             * Set the PN cross-section biasing factor.
+             * Set the dark brem cross-section biasing factor.
              * @param xsecBiasingFactor The new xsec biasing factor.
              */
             void setXsecBiasingFactor(double xsecBiasingFactor) {
@@ -99,7 +107,7 @@ namespace ldmx {
         private:
 
             /** DarkBrem cross-section multiplicative factor. */
-            double xsecBiasingFactor_ {1000};
+            double xsecBiasingFactor_ {1};
 
             /** DarkBrem simulation mode ("forward_only" or "cm_scaling") */
             G4eDarkBremsstrahlungModel::DarkBremMethod method_{G4eDarkBremsstrahlungModel::DarkBremMethod::Undefined};

@@ -3,6 +3,7 @@
  * @brief Geant4 Biasing Operator used to bias the occurence of dark brem
  *        events by modifying the cross-section.
  * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifndef BIASING_DARKBREMXSECBIASINGOPERATOR_H_
@@ -30,7 +31,11 @@ namespace ldmx {
              */
             DarkBremXsecBiasingOperator(std::string name);
 
-            /** Destructor */
+            /** 
+             * Destructor 
+             *
+             * Blank right now
+             */
             ~DarkBremXsecBiasingOperator();
 
             /** 
