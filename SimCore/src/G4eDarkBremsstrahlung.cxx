@@ -19,10 +19,6 @@ G4eDarkBremsstrahlung::G4eDarkBremsstrahlung(const G4String& name):
     G4VEnergyLossProcess(name),
     isInitialised(false) {  
 
-    //Setting the process type to user defined forces some G4 magic to
-    // happen that allows this process to be persisted through initialisation
-    SetProcessType( G4ProcessType::fUserDefined ); //This is really important
-
     G4int subtype = 63;   
     SetProcessSubType(subtype);
     SetSecondaryParticle(G4APrime::APrime());
