@@ -75,8 +75,8 @@ namespace ldmx {
 
     void EventFile::addDrop(const std::string& rule) {
 
-        if (parent_ == 0)
-            return;
+        //no parent => drop rules are meaningless
+        if (not parent_) return;
 
         int offset;
         bool isKeep=false,isDrop=false,isIgnore=false;
@@ -96,28 +96,37 @@ namespace ldmx {
             isIgnore = true;
         }
 
-        if( int(isKeep) + int(isDrop) + int(isIgnore) != 1 )
-            return;
+        //more than one of (keep,drop,ignore) was provided => not valid rule
+        if( int(isKeep) + int(isDrop) + int(isIgnore) != 1 ) return;
 
         std::string srule = rule.substr(offset);
         for (i = srule.find_first_of(" \t\n\r"); i != std::string::npos; i = srule.find_first_of(" \t\n\r"))
             srule.erase(i, 1);
 
-        if (srule.length() == 0)
-            return;
+        //name of branch is not given
+        if (srule.length() == 0) return;
 
-        if (srule.back() != '*')
-            srule += '*';
+        //add wild card at end for matching purposes
+        if (srule.back() != '*') srule += '*';
 
-        if( isKeep ){
+        if( isKeep ) {
+            //turn both the input and output tree's on
             parent_->tree_->SetBranchStatus(srule.c_str(),1);
-            tree_->SetBranchStatus(srule.c_str(),1);
-        } else if( isDrop ){
-            parent_->tree_->SetBranchStatus(srule.c_str(),0);
-        } else if( isIgnore ){
+            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),1);
+        } else if( isDrop ) {
+            //read from input but don't output
+            parent_->tree_->SetBranchStatus(srule.c_str(),1);
+            //make new tree if output doesn't exist yet
+            if ( not tree_ and isOutputFile_ ) 
+                tree_ = parent_->tree_->CloneTree(0);
+
+            //check for output tree
+            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),0);
+        } else if( isIgnore ) {
+            //don't event read it from the input file
             parent_->tree_->SetBranchAddress(srule.c_str(),0);
-        } else 
-            return;
+            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),0);
+        }
     }
 
     bool EventFile::nextEvent(bool storeCurrentEvent) {
