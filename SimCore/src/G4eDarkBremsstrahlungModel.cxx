@@ -95,7 +95,7 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
     //Deactivate the process after one dark brem. Needs to be reactivated in the end of event action. 
     //If this is in the stepping action instead, more than one brem can occur within each step.
     G4bool state = false;
-    G4String pname = "eDBrem";
+    G4String pname = "biasWrapper(eDBrem)";
     G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
     ptable->SetProcessActivation(pname,state);
 

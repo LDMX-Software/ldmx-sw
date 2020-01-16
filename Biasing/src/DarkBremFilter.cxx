@@ -9,6 +9,8 @@
 
 #include "Biasing/DarkBremFilter.h"
 
+#include "SimCore/G4APrime.h"
+
 SIM_PLUGIN(ldmx, DarkBremFilter)
 
 namespace ldmx { 
@@ -117,8 +119,7 @@ namespace ldmx {
 
     bool DarkBremFilter::hasAPrime(const G4TrackVector *secondaries) const {
         for (auto& secondary_track : *secondaries) {
-            std::string pName = secondary_track->GetParticleDefinition()->GetParticleName();
-            if (pName =="A^1") return true;
+            if (secondary_track->GetParticleDefinition() == G4APrime::APrime()) return true;
         }
         return false;
     }

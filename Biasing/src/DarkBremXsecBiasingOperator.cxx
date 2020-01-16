@@ -33,16 +33,16 @@ namespace ldmx {
     G4VBiasingOperation* DarkBremXsecBiasingOperator::ProposeOccurenceBiasingOperation(
             const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
     
-        //only bias primary particle
-        if (track->GetParentID() != 0) return 0; 
-
-        //only bias primary particles above the minimum energy
-        if (track->GetKineticEnergy() < XsecBiasingOperator::threshold_) return 0; 
-
         std::string currentProcess = callingProcess->GetWrappedProcess()->GetProcessName(); 
         if (currentProcess.compare(this->getProcessToBias()) == 0) { 
             //only bias the process that we want to DARKBREM_PROCESS
-            
+                        
+            //only bias primary particle
+            if (track->GetParentID() != 0) return 0; 
+    
+            //only bias primary particles above the minimum energy
+            if (track->GetKineticEnergy() < XsecBiasingOperator::threshold_) return 0; 
+
             G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
 
             dbXsecUnbiased_ = 1./interactionLength;
@@ -50,7 +50,7 @@ namespace ldmx {
                       << dbXsecUnbiased_ << std::endl;
 
             dbXsecBiased_ = dbXsecUnbiased_*xsecFactor_; 
-            std::cout << "[ DarkBremXsecBiasingOperator ]: Biased DBrem xsec: "
+            std::cout << "[ DarkBremXsecBiasingOperator ]: In volume biased DBrem xsec: "
                       << dbXsecBiased_ << std::endl;
 
             //xsecOperation is a protected member variable of XsecBiasingOperator
