@@ -29,6 +29,20 @@ G4bool G4eDarkBremsstrahlung::IsApplicable(const G4ParticleDefinition& p) {
     return &p == G4Electron::Electron();
 }
 
+void G4eDarkBremsstrahlung::PrintInfo() {
+
+    std::string method = "UNDEFINED";
+    if ( method_ == G4eDarkBremsstrahlungModel::DarkBremMethod::ForwardOnly ) {
+        method = "forward_only";
+    } else if ( method_ == G4eDarkBremsstrahlungModel::DarkBremMethod::CMScaling ) {
+        method = "cm_scaling";
+    }
+
+    std::cout << "\tInterpretation Method: " + method << std::endl;
+    std::cout << "\tMad Graph Data File  : " + madGraphFile_ << std::endl;
+
+}
+
 void G4eDarkBremsstrahlung::InitialiseEnergyLossProcess(const G4ParticleDefinition*,
                                                         const G4ParticleDefinition*) {
     if(!isInitialised) {
@@ -53,11 +67,13 @@ void G4eDarkBremsstrahlung::InitialiseEnergyLossProcess(const G4ParticleDefiniti
 }
 
 void G4eDarkBremsstrahlung::SetMethod(G4eDarkBremsstrahlungModel::DarkBremMethod method) {
+    method_ = method;
     dynamic_cast<G4eDarkBremsstrahlungModel *>(this->EmModel(0))->SetMethod(method);
     return;
 }
 
 void G4eDarkBremsstrahlung::SetMadGraphDataFile(std::string file) {
+    madGraphFile_ = file;
     dynamic_cast<G4eDarkBremsstrahlungModel *>(this->EmModel(0))->SetMadGraphDataFile(file);
     return;
 }

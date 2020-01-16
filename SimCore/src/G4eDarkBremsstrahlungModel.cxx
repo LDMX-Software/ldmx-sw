@@ -109,13 +109,12 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
     E0 = E0 / CLHEP::GeV; //Convert the energy to GeV, the units used in the LHE files.
 
     OutgoingKinematics data = GetMadgraphData(E0);
-    double EAcc, Pt, P, PhiAcc;
+    double EAcc   = (data.electron.E()-Mel_)/(data.E-Mel_-MA_)*(E0-Mel_-MA_); 
+    double Pt     = data.electron.Pt();
+    double P      = sqrt(EAcc*EAcc-Mel_*Mel_);
+    double PhiAcc = data.electron.Phi();
     if ( method_ == DarkBremMethod::ForwardOnly ) { 
-        EAcc = (data.electron.E()-Mel_)/(data.E-Mel_-MA_)*(E0-Mel_-MA_);
-        Pt = data.electron.Pt();
-        P = sqrt(EAcc*EAcc-Mel_*Mel_);
-        PhiAcc = data.electron.Phi();
-        int i = 0;
+        unsigned int i = 0;
         while(Pt*Pt+Mel_*Mel_>EAcc*EAcc) {
             //Skip events until the Pt is less than the energy.
             i++;
@@ -125,8 +124,7 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
             P = sqrt(EAcc*EAcc-Mel_*Mel_);
             PhiAcc = data.electron.Phi();
 
-            //TODO make limit an optional parameter or related to madGraphData file
-            if(i>10000) {
+            if(i > maxIterations_) {
                 std::cout << "[ G4eDarkBremsstrahlungModel ] : "
                     << "Did not manage to simulate with E0 = " << E0
                     << " and EAcc = " << EAcc << std::endl;
@@ -354,16 +352,19 @@ void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
     //Add the energy to the list, with a random offset between 0 and the total number of entries.
     ifile.close();
     if ( true ) {
-        std::cout << "[ G4eDarkBremsstrahlungModel ] : Parsed LHE file '" << fname << "'" << std::endl
-                  << "                                 Found " 
-                  << madGraphData_.size() << " beam energy points in it." << std::endl;
+        printf( "[ G4eDarkBremsstrahlungModel ] : Parsed LHE file '%s':\n", fname.c_str() );
+        for ( const auto &kV : madGraphData_ ) {
+            printf( "                               : %6.4f GeV Beam -> %lu Events\n", kV.first , kV.second.size() );
+        }
     }
 }
 
 void G4eDarkBremsstrahlungModel::MakePlaceholders() {
     currentDataPoints_.clear();
+    maxIterations_ = 10000;
     for ( const auto &iter : madGraphData_ ) {
         currentDataPoints_[iter.first] = int(G4UniformRand()*iter.second.size());
+        if ( iter.second.size() < maxIterations_ ) maxIterations_ = iter.second.size();
     }
 }
 
