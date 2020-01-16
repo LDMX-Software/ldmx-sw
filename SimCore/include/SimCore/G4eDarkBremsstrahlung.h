@@ -45,8 +45,10 @@ class G4eDarkBremsstrahlung : public G4VEnergyLossProcess {
          */
         virtual G4bool IsApplicable(const G4ParticleDefinition& p);
   
-        //TODO: write a helpful print function
-        virtual void PrintInfo() {;}
+        /**
+         * Reports the file name and the method (in string form)
+         */
+        virtual void PrintInfo();
   
         /** Pass the method for this process to the model */
         void SetMethod(G4eDarkBremsstrahlungModel::DarkBremMethod method);
@@ -70,6 +72,12 @@ class G4eDarkBremsstrahlung : public G4VEnergyLossProcess {
 
         /** remove ability to copy construct */
         G4eDarkBremsstrahlung(const G4eDarkBremsstrahlung&);
+
+        /** Method that was passed to the model */
+        G4eDarkBremsstrahlungModel::DarkBremMethod method_{G4eDarkBremsstrahlungModel::DarkBremMethod::Undefined};
+
+        /** Mad Graph file passed to model */
+        std::string madGraphFile_;
   
 };
 

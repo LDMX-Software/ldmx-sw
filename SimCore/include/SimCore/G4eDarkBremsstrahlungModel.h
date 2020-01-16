@@ -241,6 +241,9 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
 
     private:
 
+        /** maximum number of iterations to check before giving up on an event */
+        unsigned int maxIterations_{10000};
+
         /** mass of the A Prime [GeV] */
         double MA_;
 
