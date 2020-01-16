@@ -334,7 +334,7 @@ void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
                             EXCEPTION_RAISE(
                                     "BadMGEvnt",
                                     "A MadGraph imported event has a different APrime mass than the model has (MadGraph = " 
-                                    + std::to_string(a_M) + " Model = " + std::to_string(MA_) + ")."
+                                    + std::to_string(a_M) + "GeV; Model = " + std::to_string(MA_) + "GeV)."
                                     );
                         }
                         OutgoingKinematics evnt;
@@ -363,7 +363,7 @@ void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
 void G4eDarkBremsstrahlungModel::MakePlaceholders() {
     currentDataPoints_.clear();
     for ( const auto &iter : madGraphData_ ) {
-        currentDataPoints_[iter.first] = iter.second.size();
+        currentDataPoints_[iter.first] = int(G4UniformRand()*iter.second.size());
     }
 }
 
