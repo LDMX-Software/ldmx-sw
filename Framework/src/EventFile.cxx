@@ -75,9 +75,6 @@ namespace ldmx {
 
     void EventFile::addDrop(const std::string& rule) {
 
-        //no parent => drop rules are meaningless
-        if (not parent_) return;
-
         int offset;
         bool isKeep=false,isDrop=false,isIgnore=false;
         size_t i = rule.find("keep");
@@ -92,7 +89,7 @@ namespace ldmx {
         }
         i = rule.find("ignore");
         if( i != std::string::npos ){
-            offset = i+5 ;
+            offset = i+6 ;
             isIgnore = true;
         }
 
@@ -111,20 +108,20 @@ namespace ldmx {
 
         if( isKeep ) {
             //turn both the input and output tree's on
-            parent_->tree_->SetBranchStatus(srule.c_str(),1);
+            if ( parent_ ) parent_->tree_->SetBranchStatus(srule.c_str(),1);
             if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),1);
         } else if( isDrop ) {
             //read from input but don't output
-            parent_->tree_->SetBranchStatus(srule.c_str(),1);
+            if ( parent_ ) parent_->tree_->SetBranchStatus(srule.c_str(),1);
             //make new tree if output doesn't exist yet
             if ( not tree_ and isOutputFile_ ) 
                 tree_ = parent_->tree_->CloneTree(0);
 
             //check for output tree
-            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),0);
+            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),0); //doesn't work to drop
         } else if( isIgnore ) {
-            //don't event read it from the input file
-            parent_->tree_->SetBranchAddress(srule.c_str(),0);
+            //don't even read it from the input file
+            if ( parent_ ) parent_->tree_->SetBranchStatus(srule.c_str(),0);
             if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),0);
         }
     }
