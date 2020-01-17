@@ -108,10 +108,6 @@ namespace ldmx {
                             outFile = new EventFile(outputFiles_[ifile], &inFile, singleOutput );
                             ifile++;
 
-                            for ( auto rule : dropKeepRules_ ) {
-                                outFile->addDrop(rule);
-                            }
-
                             //setup theEvent we will iterate over
                             if (outFile) {
                                 outFile->setupEvent( &theEvent );
@@ -121,6 +117,10 @@ namespace ldmx {
                                         "Process",
                                         "Unable to construct output file for " + outputFiles_[ifile]
                                         );
+                            }
+
+                            for ( auto rule : dropKeepRules_ ) {
+                                outFile->addDrop(rule);
                             }
 
                         } else {
