@@ -17,6 +17,7 @@
 #include "Exception/Exception.h"
 
 // STL
+#include <algorithm> 
 #include <iostream>
 #include <string>
 #include <map>
