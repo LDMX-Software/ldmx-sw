@@ -333,10 +333,10 @@ namespace ldmx {
                     // ooh, new branch!
                     //get address of object that will be the event passenger
                     //connect input branch to this passenger
-                    passengers_[branchName] = *((T *)(branch->GetObject()));
-                    branch->SetAutoDelete(false); //don't let root remove the objects we want
-                    branch->SetStatus(1); //tell root this branch should be active
                     branch->GetEntry((ientry_<0)?(0):(ientry_)); //load in current entry
+                    passengers_[branchName] = *((T *)(branch->GetObject()));
+                    //branch->SetAutoDelete(false); //don't let root remove the objects we want //TODO: necessary? This is the default behavior
+                    //branch->SetStatus(1); //tell root this branch should be active //TODO: necessary? This may prevent us from dropping collections
         
                     //insert into maps of loaded branches and passengers
                     branches_[branchName]   = branch;
