@@ -8,7 +8,7 @@ namespace ldmx {
 
     void Event::Print(int verbosity) const {
         for ( const auto &keyVal : passengers_ ) {
-            if ( verbosity > 0 ) std::cout << keyVal.first << std::endl;
+            if ( verbosity > 1 ) std::cout << keyVal.first << std::endl;
             std::visit( printPassenger(verbosity) , keyVal.second );
         }
     }
