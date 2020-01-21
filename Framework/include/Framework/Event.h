@@ -518,10 +518,10 @@ namespace ldmx {
                      */
                     template <typename T>
                     void operator()(const std::vector<T> &vec) const { 
-                        if ( verbosity_ > 0 ) {
+                        if ( verbosity_ > 1 ) {
                             std::cout << "Size: " << vec.size() << std::endl;
                         }
-                        if ( verbosity_ > 1 ) {
+                        if ( verbosity_ > 2 ) {
                             std::cout << "Contents:" << std::endl;
                             for ( const T &obj : vec ) {
                                 std::cout << "    ";
@@ -536,10 +536,10 @@ namespace ldmx {
                      */
                     template <typename Key, typename Val>
                     void operator()(const std::map<Key,Val> &m) const { 
-                        if ( verbosity_ > 0 ) {
+                        if ( verbosity_ > 1 ) {
                             std::cout << "Size: " << m.size() << std::endl;
                         }
-                        if ( verbosity_ > 1 ) {
+                        if ( verbosity_ > 2 ) {
                             std::cout << "Contents:" << std::endl;
                             for ( const auto &keyVal : m ) {
                                 std::cout << "    " << keyVal.first << " -> ";
@@ -554,7 +554,7 @@ namespace ldmx {
                      */
                     template <typename T>
                     void operator()(const T &obj) const { 
-                        if ( verbosity_ > 0 ) obj.Print(); 
+                        if ( verbosity_ > 1 ) obj.Print(); 
                     }
         
                 private:
