@@ -282,7 +282,7 @@ namespace ldmx {
                     if (itBranch != branches_.end()) {
                         //passenger and branch found
                         itBranch->second->GetEntry(ientry_);
-                        //reading branches need to be manually updated
+                        //reading branches from input tree need to be manually updated
                         passengers_[branchName] = *((T *)(itBranch->second->GetObject()));
                     }
                     return std::get<T>(itPassenger->second);
@@ -331,14 +331,11 @@ namespace ldmx {
                                 );
                     }
                     // ooh, new branch!
-                    //get address of object that will be the event passenger
-                    //connect input branch to this passenger
-                    branch->GetEntry((ientry_<0)?(0):(ientry_)); //load in current entry
-                    passengers_[branchName] = *((T *)(branch->GetObject()));
-                    //branch->SetAutoDelete(false); //don't let root remove the objects we want //TODO: necessary? This is the default behavior
-                    //branch->SetStatus(1); //tell root this branch should be active //TODO: necessary? This may prevent us from dropping collections
+                    // load in the current entry
+                    branch->GetEntry((ientry_<0)?(0):(ientry_));
         
                     //insert into maps of loaded branches and passengers
+                    passengers_[branchName] = *((T *)(branch->GetObject()));
                     branches_[branchName]   = branch;
         
                     return std::get<T>( passengers_.at(branchName) );
