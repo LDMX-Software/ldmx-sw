@@ -177,11 +177,11 @@ namespace ldmx {
  
 
         // Get the collection of simulated particles from the event
-        const std::map<int,SimParticle> particleMap = event.getMap<int,SimParticle>("SimParticles");
+        auto particleMap{event.getMap<int,SimParticle>("SimParticles")};
       
         // Use the recoil electron to retrieve the gamma that underwent a 
         // photo-nuclear reaction.
-        const SimParticle* pnGamma = Analysis::getRecoilPNGamma(particleMap);
+        auto pnGamma{Analysis::getRecoilPNGamma(particleMap)};
         if (pnGamma == nullptr) { 
             std::cout << "[ EcalPN ]: PN Daughter is lost, skipping." << std::endl;
             return;
