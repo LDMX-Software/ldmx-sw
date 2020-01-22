@@ -29,14 +29,8 @@ namespace ldmx {
 
         const SimParticle* getRecoil(const std::map<int,SimParticle> &particleMap) {
             
-            for ( const auto &sp : particleMap ) {
-                if (
-                    (sp.second.getPdgID() == 11) //check that the particle is an electron
-                    and (sp.second.getGenStatus() == 1) //check that it was generated "originally" (is a primary according to Geant4)
-                   ) { return &(sp.second); }
-            }//loop through particle map
-
-            return nullptr;
+            // The recoil electron always has a track ID of 1.  
+            return &(particleMap.at(1));
         }
 
         const SimParticle* getPNGamma(const std::map<int,SimParticle> &particleMap) {
@@ -67,25 +61,31 @@ namespace ldmx {
 
         const SimParticle* getRecoilPNGamma(const std::map<int,SimParticle> &particleMap) {
 
-            const SimParticle *recoilElectron = Analysis::getRecoil( particleMap );
+            // Search for and rretrieve the recoil electron 
+            auto recoilElectron{Analysis::getRecoil(particleMap)};
 
+            // If the recoil electron was found, continue to search for the 
+            // PN gamma. If not, return null. 
             if ( recoilElectron ) {
             
-               std::vector<int> daughterTrackIDs = recoilElectron->getDaughters();
-               for ( const int &dID : daughterTrackIDs ) {
-                    
-                    if ( particleMap.count(dID) > 0 /*daughter exists in particleMap*/) { 
-                        std::vector<int> grandDaughterTrackIDs = particleMap.at(dID).getDaughters();
-                        for ( const int &gdID : grandDaughterTrackIDs ) {
-                            if ( particleMap.count(gdID) > 0 /*granddaughter exists in particleMap*/ and
-                                 particleMap.at(gdID).getProcessType() == SimParticle::ProcessType::photonNuclear /*granddaughter came from PN */
-                               ) { return &(particleMap.at(gdID)); }
-                        } //loop through grand daughter track IDs 
-                    } //daughter exists in particle map
+               auto daughterTrackIDs{recoilElectron->getDaughters()};
 
-               } //loop through daughter track IDs
+               auto pit = std::find_if(daughterTrackIDs.begin(), daughterTrackIDs.end(), [particleMap] (const int& id) {
+                       
+                            // If the particle doesn't have any daughters, return false
+                            if (particleMap.at(id).getDaughters().size() == 0) return false;
 
-            } //found recoil electron
+                            // If the particle has daughters that were a result
+                            // of a photo-nuclear reaction, then tag it as the 
+                            // PN gamma. 
+                            return (particleMap.at(particleMap.at(id).getDaughters().front()).getProcessType() 
+                                    == SimParticle::ProcessType::photonNuclear); 
+                            });
+             
+                // If a PN daughter was found, return it.   
+                if (pit != daughterTrackIDs.end()) return &particleMap.at(*pit); 
+
+            } 
             
             return nullptr;
         }
