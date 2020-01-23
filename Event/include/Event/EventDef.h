@@ -70,6 +70,6 @@ namespace ldmx {
         std::vector< HcalHit > ,
         std::vector< SiStripHit > ,
         std::vector< RawHit >
-        >;
+        > EventBusPassenger;
 
 }

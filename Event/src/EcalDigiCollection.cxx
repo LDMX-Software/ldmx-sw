@@ -4,13 +4,6 @@ ClassImp(ldmx::EcalDigiCollection)
 
 namespace ldmx {
 
-    void EcalDigiCollection::Copy( TObject &copy ) const {
-
-        DigiCollection::Copy( copy );
-
-        return;
-    }
-
     std::vector< EcalDigiSample > EcalDigiCollection::getDigi( unsigned int digiIndex ) const {
         
         std::vector< EcalDigiSample > digi;
