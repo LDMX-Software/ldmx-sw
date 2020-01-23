@@ -21,6 +21,7 @@
 //----------//
 #include "TRandom3.h"
 #include "TF1.h"
+#include "TH2F.h"
 
 //----------//
 //   LDMX   //
@@ -123,6 +124,9 @@ namespace ldmx {
             /** Depth of ADC buffer. */
             int nADCs_{10}; 
 
+            /** Should we make and fill configuration histograms? */
+            bool makeConfigHists_{false};
+
             //Member Variables that are used for each event
 
             /** 
@@ -169,6 +173,11 @@ namespace ldmx {
              */
             TF1 pulseFunc_;
 
+
+            /**
+             * Optional Histogram to be filled to help with configuring recon
+             */
+            TH2F *tot_SimE_{nullptr};
     };
 }
 

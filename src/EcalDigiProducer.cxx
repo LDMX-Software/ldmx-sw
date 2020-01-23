@@ -29,12 +29,12 @@ namespace ldmx {
 
         hexReadout_ = std::make_unique<EcalHexReadout>();
 
-        gain_           = ps.getDouble("gain", 2000.); 
-        pedestal_       = ps.getDouble("pedestal", 1100.); 
-        noiseIntercept_ = ps.getDouble("noiseIntercept", 700.); 
-        noiseSlope_     = ps.getDouble("noiseSlope", 25.);
-        padCapacitance_ = ps.getDouble("padCapacitance", 0.1); 
-        nADCs_          = ps.getInteger("nADCs", 10);
+        gain_            = ps.getDouble("gain", 2000.); 
+        pedestal_        = ps.getDouble("pedestal", 1100.); 
+        noiseIntercept_  = ps.getDouble("noiseIntercept", 700.); 
+        noiseSlope_      = ps.getDouble("noiseSlope", 25.);
+        padCapacitance_  = ps.getDouble("padCapacitance", 0.1); 
+        nADCs_           = ps.getInteger("nADCs", 10);
 
         // Calculate the noise RMS based on the properties of the readout pad
         noiseRMS_ = this->calculateNoise(padCapacitance_, noiseIntercept_, noiseSlope_);  
@@ -62,6 +62,16 @@ namespace ldmx {
         pulseFunc_.SetParameter( 5 , 0.140068 );
         pulseFunc_.SetParameter( 6 , 87.7649  );
 
+        //Option to make configuration histograms
+        makeConfigHists_ = (ps.getInteger("makeConfigHists",1) > 0);
+        if ( makeConfigHists_ ) {
+            getHistoDirectory();
+
+            tot_SimE_ = new TH2F( "tot_SimE_" , ";TOT (Clock Counts);Sim E [MeV]",
+                    1500, 0 , 1500 ,
+                    100 , 0 , 50.
+                    );
+        }
     }
 
     void EcalDigiProducer::produce(Event& event) {
@@ -91,7 +101,7 @@ namespace ldmx {
 
                 SimCalorimeterHit::Contrib contrib = simHit.getContrib( iContrib );
 
-                if ( contrib.time == 0 or contrib.time > EcalDigiProducer::CLOCK_CYCLE*nADCs_ ) {
+                if ( contrib.time < 0 or contrib.time > EcalDigiProducer::CLOCK_CYCLE*nADCs_ ) {
                     //invalid contribution - outside time range or time is unset
                     continue;
                 }
@@ -99,19 +109,23 @@ namespace ldmx {
                 energyInWindow += contrib.edep;
                 timeInWindow   += contrib.edep * contrib.time;
             }
-            timeInWindow /= energyInWindow; //energy weighted average
+            if ( energyInWindow > 0. ) timeInWindow /= energyInWindow; //energy weighted average
 
             //put noise onto pulse parameters
             energyInWindow += noiseInjector_->Gaus( 0.0 , noiseRMS_/gain_ );
-            timeInWindow   += noiseInjector_->Gaus( 0.0 , EcalDigiProducer::CLOCK_CYCLE / 10. );
+            timeInWindow   += noiseInjector_->Gaus( 0.0 , EcalDigiProducer::CLOCK_CYCLE / 100. );
+            if ( energyInWindow < 0. ) continue; //skip this sim hit
+            if ( timeInWindow   < 0. ) continue; //skip this sim hit
 
             pulseFunc_.SetParameter( 0 , gain_*energyInWindow ); //set amplitude to gain * energy
             pulseFunc_.SetParameter( 4 , timeInWindow ); //set time of peak to simulated hit time
 
             //measure TOA and TOT
-            double toa = pulseFunc_.GetX(readoutThreshold_, 0.0, timeInWindow);
+            double toa = pulseFunc_.GetX(readoutThreshold_, -nADCs_*EcalDigiProducer::CLOCK_CYCLE, timeInWindow);
             double tut = pulseFunc_.GetX(readoutThreshold_, timeInWindow, nADCs_*EcalDigiProducer::CLOCK_CYCLE);
-            double tot = toa - tut;
+            double tot = tut - toa;
+
+            printf( "%6.4f MeV at %6.4f ns --> %6.2f TOT %6.2f TOA %6.2f TUT\n", energyInWindow , timeInWindow , tot, toa, tut );
 
             int    hitID     = simHit.getID();
             simHitIDs.insert( hitID );
@@ -119,10 +133,14 @@ namespace ldmx {
             digiToAdd[0].rawID_   = hitID;
             digiToAdd[0].adc_t_   = -1; //NOT IMPLEMENTED
             digiToAdd[0].adc_tm1_ = -1; //NOT IMPLEMENTED
-            digiToAdd[0].tot_     = tot / pow( 2 , 10. );
-            digiToAdd[0].toa_     = toa / pow( 2 , 10. );
+            digiToAdd[0].tot_     = tot; // / pow( 2 , 10. );
+            digiToAdd[0].toa_     = toa; // / pow( 2 , 10. );
 
             ecalDigis.addDigi( digiToAdd );
+
+            if ( makeConfigHists_ ) {
+                tot_SimE_->Fill( digiToAdd[0].tot_ , energyInWindow );
+            }
         }
 
         //put noise into some empty channels
