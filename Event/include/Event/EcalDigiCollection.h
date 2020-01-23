@@ -60,15 +60,6 @@ namespace ldmx {
             }
 
             /**
-             * Copy this collection into copy
-             *
-             * This methhod is required to successfully transfer this object onto the event bus.
-             * Right now, it just calls DigiCollection::Copy, but if new member variables are introduced,
-             * they should be added to this method to be copied over.
-             */
-            void Copy(TObject &copy) const;
-
-            /**
              * Get samples for the input digi index
              */
             std::vector< EcalDigiSample > getDigi( unsigned int digiIndex ) const;
