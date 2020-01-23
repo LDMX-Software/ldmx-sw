@@ -10,7 +10,7 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TObject.h"
+#include "TObject.h" //For ClassDef
 
 //----------------//
 //   C++ StdLib   //
@@ -25,7 +25,7 @@
 
 namespace ldmx {
 
-    class RunHeader : public TObject {
+    class RunHeader {
 
         public:
 
@@ -124,14 +124,7 @@ namespace ldmx {
             }
 
             /** Print a string desciption of this object. */
-            void Print(Option_t *option = "") const;
-
-            /**
-             * Copy this object.
-             * 
-             * @param o The target object.
-             */
-            void Copy(TObject& o) const { ((RunHeader&) o) = *this; }
+            void Print() const;
 
         private:
 

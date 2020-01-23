@@ -11,11 +11,11 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TObject.h"
+#include "TObject.h" //ClassDef
 
 namespace ldmx { 
 
-    class TrackerVetoResult : public TObject { 
+    class TrackerVetoResult { 
         
         public: 
 
@@ -25,14 +25,11 @@ namespace ldmx {
             /** Destructor */
             ~TrackerVetoResult(); 
 
-            /** Copy the object */
-            void Copy(TObject& object) const; 
-
             /** Reset the object. */
-            void Clear(Option_t *option = ""); 
+            void Clear(); 
             
             /** Print out the object */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /** Checks if the event passes the Hcal veto. */
             bool passesVeto() const { return passesVeto_; };

@@ -7,15 +7,12 @@ ClassImp(ldmx::SimCalorimeterHit)
 
 namespace ldmx {
 
-    SimCalorimeterHit::SimCalorimeterHit() : TObject() { }
+    SimCalorimeterHit::SimCalorimeterHit() { }
 
     SimCalorimeterHit::~SimCalorimeterHit() {
-        TObject::Clear();
     }
 
-    void SimCalorimeterHit::Clear(Option_t *option) {
-
-        TObject::Clear();
+    void SimCalorimeterHit::Clear() {
 
         trackIDContribs_.clear();
         pdgCodeContribs_.clear();
@@ -31,7 +28,7 @@ namespace ldmx {
         time_ = 0;
     }
 
-    void SimCalorimeterHit::Print(Option_t *option) const {
+    void SimCalorimeterHit::Print() const {
         std::cout << "SimCalorimeterHit { " << "id: " << id_ << ",  edep: " << edep_ << ", "
                 "position: ( " << x_ << ", " << y_ << ", " << z_ << " ), num contribs: " << nContribs_ << " }" << std::endl;
     }

@@ -19,8 +19,8 @@ namespace ldmx {
         BACK = 0,
         TOP = 1,
         BOTTOM = 2,
-        LEFT = 3,
-        RIGHT = 4
+        LEFT = 4,
+        RIGHT = 3
     };
 
     /**

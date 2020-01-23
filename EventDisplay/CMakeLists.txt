@@ -4,7 +4,7 @@ module(
   EXTRA_SOURCES EventDisplayDict.cxx
   DEPENDENCIES Exception Event DetDescr Framework
   EXECUTABLES src/ldmx_eve.cxx
-  EXTERNAL_DEPENDENCIES ROOT
+  EXTERNAL_DEPENDENCIES ROOT Python
 )
 
 # generate ROOT dictionary for Event classes 

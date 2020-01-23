@@ -7,11 +7,11 @@ ClassImp(ldmx::EcalHit)
 
 namespace ldmx {
 
-    void EcalHit::Clear(Option_t* option) { 
+    void EcalHit::Clear() { 
         CalorimeterHit::Clear(); 
     }
 
-    void EcalHit::Print(Option_t *option) const {
+    void EcalHit::Print() const {
         std::cout << "EcalHit { " << "id: " << std::hex << getID() << std::dec
                 << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
                 << "ns, amplitude: " << getAmplitude() << "}" << std::endl;

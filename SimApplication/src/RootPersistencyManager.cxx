@@ -93,7 +93,7 @@ namespace ldmx {
 
         std::map<int,SimParticle> particleColl = outputEvent->getMap<int,SimParticle>( "SimParticles", "sim");
 
-        if ( m_verbose > 0 ) {
+        if ( m_verbose > 1 ) {
             std::cout << "[ RootPersistencyManager ] : Event Bus Contents" << std::endl;
             outputEvent->Print( m_verbose );
             std::cout << "[ RootPersistencyManager ] : End Event Bus Contents" << std::endl;

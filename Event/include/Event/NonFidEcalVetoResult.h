@@ -22,11 +22,11 @@
 //----------//
 //   ROOT   //
 //----------//
-#include <TObject.h>
+#include <TObject.h> //For ClassDef
 
 namespace ldmx {
 
-    class NonFidEcalVetoResult : public TObject {
+    class NonFidEcalVetoResult {
 
         public:
 
@@ -59,17 +59,10 @@ namespace ldmx {
             );
 
             /** Reset the object. */
-            void Clear(Option_t *option = "");
-
-            /**
-             * Copy this object.
-             *
-             * @param object The target object.
-             */
-            void Copy(TObject& object) const;
+            void Clear();
 
             /** Print the object */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /** Checks if the event passes the Ecal veto. */
             std::vector<int> passesVeto() {

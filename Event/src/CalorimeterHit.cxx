@@ -7,9 +7,7 @@ ClassImp(ldmx::CalorimeterHit)
 
 namespace ldmx {
 
-    void CalorimeterHit::Clear(Option_t *option) {
-
-        TObject::Clear();
+    void CalorimeterHit::Clear() {
 
         id_        = 0;
         amplitude_ = 0;
@@ -22,7 +20,7 @@ namespace ldmx {
 
     }
 
-    void CalorimeterHit::Print(Option_t *option) const {
+    void CalorimeterHit::Print() const {
         std::cout << "CalorimeterHit { " << "id: " << std::hex << id_ << std::dec
                 << ",  energy: " << energy_ << "MeV, time: " << time_
                 << "ns, amplitude: " << amplitude_ << "}" << std::endl;
