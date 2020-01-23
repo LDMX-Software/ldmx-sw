@@ -6,7 +6,7 @@
 
 ## Quick Start 
 
-- Clone the repo: `git clone https://github.com/LDMX-Software/ldmx-sw.git
+- Clone the repo: `git clone https://github.com/LDMX-Software/ldmx-sw.git`
 
 For information on how to install the framework, examples and more, the the [Getting Started](). 
 
