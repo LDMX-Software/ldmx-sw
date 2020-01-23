@@ -63,7 +63,6 @@ namespace ldmx {
                     module->onFileClose(outputFiles_[0]);
                 }
                 outFile.close();
-                theEvent.onEndOfFile();
 
             } else {
                 //there are input files
@@ -80,7 +79,6 @@ namespace ldmx {
                             );
                 }
 
-
                 // next, loop through the files
                 int ifile = 0;
                 int wasRun = -1;
@@ -93,7 +91,7 @@ namespace ldmx {
                     for (auto module : sequence_) {
                         module->onFileOpen(infilename);
                     }
-                    
+                   
                     //configure event file that will be iterated over
                     EventFile* masterFile; 
                     if ( !outputFiles_.empty() ) {
@@ -182,21 +180,23 @@ namespace ldmx {
                         std::cout << "[ Process ] : Processing interrupted\n";
                     }
 
-                    if ( outFile and !singleOutput ) {
-                        outFile->close();
-                        delete outFile;
-                        outFile = nullptr;
-                    }
-
-                    inFile.close();
-
-                    //reset event in case of single output mode
-                    theEvent.onEndOfFile();
-
                     std::cout << "[ Process ] : Closing file " << infilename << std::endl;
 
                     for (auto module : sequence_) {
                         module->onFileClose(infilename);
+                    }
+
+                    inFile.close();
+
+                    // Reset the event in case of single output mode.  This is 
+                    // only needed if an output file is being written out and 
+                    // is ignored when writing a histogram file only. 
+                    if (outFile) theEvent.onEndOfFile();
+
+                    if ( outFile and !singleOutput ) {
+                        outFile->close();
+                        delete outFile;
+                        outFile = nullptr;
                     }
 
                 } //loop through input files

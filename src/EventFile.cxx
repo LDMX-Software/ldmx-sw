@@ -265,7 +265,7 @@ namespace ldmx {
             for (int iEntry = 0; iEntry < runTree->GetEntriesFast(); iEntry++) {
                 runTree->GetEntry(iEntry);
                 RunHeader* newRunHeader = new RunHeader();
-                aRunHeader->Copy(*newRunHeader);
+                *newRunHeader = *aRunHeader; //copy over run header
                 runMap_[newRunHeader->getRunNumber()] = newRunHeader;
             }
             runTree->ResetBranchAddresses();
