@@ -21,6 +21,8 @@
 #include "TEveEventManager.h"
 #include "TEveViewer.h"
 
+#include "TBranchElement.h"
+
 #include "EventDisplay/EventObjects.h"
 #include "EventDisplay/EveDetectorGeometry.h"
 
@@ -99,8 +101,9 @@ namespace ldmx {
              */
             template<typename T>
             bool GetCollection( const TString branchName , std::vector<T> &collection ) {
-                if ( tree_->GetListOfBranches()->FindObject(branchName) ) {
-                    tree_->SetBranchAddress( branchName , &collection );
+                TBranchElement *br = dynamic_cast<TBranchElement*>(tree_->GetBranch(branchName));
+                if ( br ) {
+                    br->SetObject( &collection ); 
                     if ( verbose_ ) {
                         std::cout << "[ EventDisplay ] : Collection retrieved from branch \"" << branchName << "\"" << std::endl;
                     }

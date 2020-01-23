@@ -2,21 +2,18 @@
 
 namespace ldmx {
 
-    Event::Event(const std::string& thePassName) :
-        passName_(thePassName) {
-    }
+    Event::Event(const std::string& thePassName) : passName_(thePassName) { }
 
     Event::~Event() { }
 
     void Event::Print(int verbosity) const {
         for ( const auto &keyVal : passengers_ ) {
-            if ( verbosity > 0 ) std::cout << keyVal.first << std::endl;
-            boost::apply_visitor( printPassenger(verbosity) , keyVal.second );
+            if ( verbosity > 1 ) std::cout << keyVal.first << std::endl;
+            std::visit( printPassenger(verbosity) , keyVal.second );
         }
     }
 
-    std::vector<ProductTag> Event::searchProducts(
-            const std::string& namematch, const std::string& passmatch, const std::string& typematch) const {
+    std::vector<ProductTag> Event::searchProducts( const std::string& namematch, const std::string& passmatch, const std::string& typematch) const {
         std::vector<ProductTag> retval;
 
         regex_t reg_name, reg_pass, reg_type;
@@ -120,12 +117,11 @@ namespace ldmx {
         // clear the event objects
         branchesFilled_.clear();
         for ( auto passenger : passengers_ ) {
-            boost::apply_visitor( clearPassenger() , passenger.second );
+            std::visit( clearPassenger() , passenger.second );
         }
     }
 
-    void Event::onEndOfEvent() {
-    }
+    void Event::onEndOfEvent() { }
 
     void Event::onEndOfFile() {
         passengers_.clear(); //reset event bus

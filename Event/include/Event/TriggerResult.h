@@ -8,7 +8,7 @@
 #define EVENT_TRIGGERRESULT_H_
 
 // ROOT
-#include "TObject.h"
+#include "TObject.h" //ClassDef
 #include "TString.h"
 #include "TArrayD.h"
 
@@ -21,7 +21,7 @@ namespace ldmx {
      * @class TriggerResult
      * @brief Represents the trigger decision (pass/fail) for reconstruction
      */
-    class TriggerResult : public TObject {
+    class TriggerResult {
 
         public:
 
@@ -38,18 +38,12 @@ namespace ldmx {
             /**
              * Print a description of this object.
              */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /**
              * Reset the TriggerResult object.
              */
-            void Clear(Option_t *option = "");
-
-            /**
-             * Copy this object.
-             * @param o The target object.
-             */
-            void Copy(TObject& o) const;
+            void Clear();
 
             /**
              * Return the name of the trigger.

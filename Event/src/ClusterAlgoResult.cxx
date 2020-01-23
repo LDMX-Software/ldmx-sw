@@ -4,14 +4,14 @@ ClassImp(ldmx::ClusterAlgoResult)
 
 namespace ldmx {
 
-    ClusterAlgoResult::ClusterAlgoResult() : TObject() {
+    ClusterAlgoResult::ClusterAlgoResult() {
     }
 
     ClusterAlgoResult::~ClusterAlgoResult() {
         Clear();
     }
 
-    void ClusterAlgoResult::Print(Option_t *option) const {
+    void ClusterAlgoResult::Print() const {
 
         std::cout << "ClusterAlgoResult { " << "name: " << name_ << " }" << std::endl;
 
@@ -20,23 +20,13 @@ namespace ldmx {
         }
     }
 
-    void ClusterAlgoResult::Clear(Option_t*) {
-
-        TObject::Clear();
+    void ClusterAlgoResult::Clear() {
 
         name_ = "";
 
         for (int i = 0; i < variables_.GetSize(); ++i) {
             variables_[i] = 0;
         }
-    }
-
-    void ClusterAlgoResult::Copy(TObject& ob) const {
-
-        ClusterAlgoResult& tr = (ClusterAlgoResult&) (ob);
-        tr.name_ = name_;
-        tr.variables_ = variables_;
-        tr.weights_ = weights_;
     }
 
     void ClusterAlgoResult::set(const TString& name, int nvar) {

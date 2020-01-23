@@ -16,7 +16,7 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TObject.h"
+#include "TObject.h" //ClassDef
 
 //-------------//
 //   LDMX-SW   //
@@ -51,10 +51,10 @@ namespace ldmx {
             const std::vector<SimTrackerHit> getSimTrackerHits() const { return simTrackerHits_; }
 
             /** Print a description of this object. */
-            void Print(Option_t* option = "") const; 
+            void Print() const; 
 
             /** Reset this object. */
-            void Clear(Option_t* option = "");
+            void Clear();
         
         private: 
 

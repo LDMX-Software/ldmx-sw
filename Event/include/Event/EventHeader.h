@@ -8,7 +8,7 @@
 #define EVENT_EVENTHEADER_H_
 
 // ROOT
-#include "TObject.h"
+#include "TObject.h" //For ClassDef
 #include "TTimeStamp.h"
 
 // STL
@@ -22,7 +22,7 @@ namespace ldmx {
      * @class EventHeader
      * @brief Provides header information an event such as event number and timestamp
      */
-    class EventHeader : public TObject {
+    class EventHeader {
 
         public:
 
@@ -63,14 +63,6 @@ namespace ldmx {
                 else
                     std::cout << ", MC";
                 std::cout << " }" << std::endl;
-            }
-
-            /**
-             * Copy this object.
-             * @param o The target object.
-             */
-            void Copy(TObject& o) const {
-                ((EventHeader&) o) = *this;
             }
 
             /**

@@ -22,9 +22,7 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/EcalHit.h"
-#include "Event/EventConstants.h"
-#include "Event/SimCalorimeterHit.h"
+#include "Event/EventDef.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
@@ -95,11 +93,9 @@ namespace ldmx {
             /** Total number of cells across all modules. */
             static const int TOTAL_CELLS{NUM_ECAL_LAYERS*HEX_MODULES_PER_LAYER*CELLS_PER_HEX_MODULE};
 
-
             std::unique_ptr<TRandom3> noiseInjector_;
             EcalDetectorID detID_;
             std::unique_ptr<EcalHexReadout> hexReadout_;
-          
             /** Generator of noise hits. */ 
             std::unique_ptr<NoiseGenerator> noiseGenerator_; 
            
