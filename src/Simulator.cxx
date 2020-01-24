@@ -22,13 +22,24 @@
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
 /*~~~~~~~~~~~~~~*/
+#include "G4UImanager.hh"
 #include "G4CascadeParameters.hh"
 #include "G4GDMLMessenger.hh"
 #include "G4GDMLParser.hh"
 
 namespace ldmx {
 
+    const std::vector<std::string> Simulator::invalidCommands_ = {
+            "/run/initialize", //hard coded at the right time
+            "/run/beamOn", //passed commands should only be sim setup
+            "/ldmx/pw", //parallel world scoring planes is handled here (if passed a path to the scoring plane description)
+            "/persistency/gdml/read" //detector description is read after passed a path to the detector description
+        };
+
     Simulator::Simulator(const std::string& name, ldmx::Process& process) : Producer( name , process ) {
+
+        // Get the ui manager from geant
+        uiManager_ = G4UImanager::GetUIpointer();
 
         // Instantiate the run manager.  
         runManager_ = std::make_unique<RunManager>();
@@ -38,10 +49,11 @@ namespace ldmx {
         gdmlMessenger_ = std::make_unique<G4GDMLMessenger>(parser_.get()); 
 
         // Instantiate the class so cascade parameters can be set.
-        G4CascadeParameters::Instance();  
+        cascadeParameters_ = G4CascadeParameters::Instance();  
 
         // Supply the default user initialization and actions
-        runManager_->SetUserInitialization(new DetectorConstruction( parser_.get() ) );
+        detectorConstruction_ = std::make_unique<DetectorConstruction>( parser_.get() );
+        runManager_->SetUserInitialization( detectorConstruction_.get() );
 
         // Store the random numbers used to generate an event. 
         runManager_->SetRandomNumberStore( true );
@@ -49,22 +61,47 @@ namespace ldmx {
     }
 
     Simulator::~Simulator() {
+        if ( cascadeParameters_ ) delete cascadeParameters_;
+        if ( uiManager_         ) delete uiManager_;
     }
 
 
     void Simulator::configure(const ldmx::ParameterSet& ps) {
       
-        // Get the path to the detector description file
-        detectorPath_ = ps.getString("detector");
+        description_ = ps.getString( "description" );
 
-        // Get the path to the macro used to configure the sim
-        macroPath_ = ps.getString("macro"); 
+        // Get the path to the detector description file
+        detectorPath_ = ps.getString( "detector" );
+
+        // Get the path to the scoring planes
+        scoringPlanesPath_ = ps.getString( "scoringPlanes" , "" );
+
+        // Get the simulation configuring commands
+        preInitCommands_  = ps.getVString( "preInitCommands"  , { } );
+        postInitCommands_ = ps.getVString( "postInitCommands" , { } );
+
+        // Parse the detector geometry
+        uiManager_->ApplyCommand( "/persistency/gdml/read " + detectorPath_ );
+
+        if ( scoringPlanesPath_ != "" ) {
+            //path was given, enable and read scoring planes into parallel world
+            uiManager_->ApplyCommand( "/ldmx/pw/enable" );
+            uiManager_->ApplyCommand( "/ldmx/pw/read " + scoringPlanesPath_ );
+        }
+
+        for ( const std::string& cmd : preInitCommands_ ) {
+            if ( allowed(cmd) ) {
+                uiManager_->ApplyCommand( cmd );
+            } else {
+                std::cout << "[ Simulator ] : Pre initialize command '"
+                    << cmd << "' has been skipped." << std::endl;
+            }
+        }
     }
 
     void Simulator::onFileOpen(EventFile &file) {
-      
-        // Instantiate the persistency manager  
-        persistencyManager_ = new RootPersistencyManager(file); 
+       
+        persistencyManager_ = std::make_unique<RootPersistencyManager>(file); 
         persistencyManager_->Initialize(); 
     }
 
@@ -94,9 +131,18 @@ namespace ldmx {
         // Parse the detector geometry
         uiManager_->ApplyCommand("/persistency/gdml/read " + detectorPath_);
 
-        // Execute the macro
-        uiManager_->ApplyCommand("/control/execute " + macroPath_); 
-         
+        //initialize run
+        uiManager_->ApplyCommand( "/run/initialize" );
+
+        for ( const std::string& cmd : postInitCommands_ ) {
+            if ( allowed(cmd) ) {
+                uiManager_->ApplyCommand( cmd );
+            } else {
+                std::cout << "[ Simulator ] : Post initialize command '"
+                    << cmd << "' has been skipped." << std::endl;
+            }
+        }
+
         // Instantiate the scoring worlds including any parallel worlds. 
         runManager_->ConstructScoringWorlds();
 
@@ -105,8 +151,7 @@ namespace ldmx {
 
         // Initialize the event processing
         runManager_->InitializeEventLoop( 1 );
-
-
+        
         return;
     }
 
@@ -122,6 +167,23 @@ namespace ldmx {
     }
 
     void Simulator::onProcessEnd() {
+        /*TODO some annoying warnings about deleting things when geometry is/isn't open at end of run
+         * WARNING - Attempt to delete the physical volume store while geometry closed !
+         * WARNING - Attempt to delete the logical volume store while geometry closed !
+         * WARNING - Attempt to delete the solid store while geometry closed !
+         * WARNING - Attempt to delete the region store while geometry closed !
+         */
+    }
+
+    bool Simulator::allowed(const std::string &command) const {
+        for ( const std::string &invalidSubstring : invalidCommands_ ) {
+            if ( command.find( invalidSubstring ) != std::string::npos ) {
+                //found invalid substring in this command ==> NOT ALLOWED
+                return false;
+            }
+        }
+        //checked all invalid commands ==> ALLOWED
+        return true;
     }
 
 }
