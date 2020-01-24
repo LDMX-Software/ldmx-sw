@@ -8,8 +8,7 @@
 #define EVENT_SIMCALORIMETERHIT_H_
 
 // ROOT
-#include "TObject.h"
-#include "TRefArray.h"
+#include "TObject.h" //For ClassDef
 
 // LDMX
 #include "Event/SimParticle.h"
@@ -29,7 +28,7 @@ namespace ldmx {
      * energy (may be different from the actual SimParticle), the time of the contribution
      * and the energy deposition.
      */
-    class SimCalorimeterHit: public TObject {
+    class SimCalorimeterHit {
 
         public:
 
@@ -38,7 +37,7 @@ namespace ldmx {
              * @brief Information about a contribution to the hit in the associated cell
              */
             struct Contrib {
-                SimParticle* particle{nullptr};
+                int trackID{-1};
                 int pdgCode{0};
                 float edep{0};
                 float time{0};
@@ -57,18 +56,18 @@ namespace ldmx {
             /**
              * Clear the data in the object.
              */
-            void Clear(Option_t *option = "");
+            void Clear();
 
             /**
              * Print out the object.
              */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /**
              * Get the detector ID.
              * @return The detector ID.
              */
-            int getID() {
+            int getID() const {
                 return id_;
             }
 
@@ -84,7 +83,7 @@ namespace ldmx {
              * Get the energy deposition of the hit [MeV].
              * @return The energy deposition of the hit.
              */
-            float getEdep() {
+            float getEdep() const {
                 return edep_;
             }
 
@@ -120,7 +119,7 @@ namespace ldmx {
              * Get the global time of the hit [ns].
              * @return The global time of the hit.
              */
-            float getTime() {
+            float getTime() const {
                 return time_;
             }
 
@@ -136,33 +135,33 @@ namespace ldmx {
              * Get the number of hit contributions.
              * @return The number of hit contributions.
              */
-            unsigned getNumberOfContribs() {
+            unsigned getNumberOfContribs() const {
                 return nContribs_;
             }
 
             /**
              * Add a hit contribution from a SimParticle.
-             * @param simParticle The particle that made the contribution.
+             * @param trackID the Geant4 track ID for the particle
              * @param pdgCode The PDG code of the actual track.
              * @param edep The energy deposition of the hit [MeV].
              * @param time The time of the hit [ns].
              */
-            void addContrib(SimParticle* simParticle, int pdgCode, float edep, float time);
+            void addContrib(int trackID, int pdgCode, float edep, float time);
 
             /**
              * Get a hit contribution by index.
              * @param i The index of the hit contribution.
              * @return The hit contribution at the index.
              */
-            Contrib getContrib(int i);
+            Contrib getContrib(int i) const;
 
             /**
              * Find the index of a hit contribution from a SimParticle and PDG code.
-             * @param simParticle The sim particle that made the contribution.
+             * @param trackID the track ID of the particle causing the hit
              * @param pdgCode The PDG code of the contribution.
              * @return The index of the contribution or -1 if none exists.
              */
-            int findContribIndex(SimParticle* simParticle, int pdgCode);
+            int findContribIndex(int trackID, int pdgCode) const;
 
             /**
              * Update an existing hit contribution by incrementing its edep and setting the time
@@ -172,6 +171,13 @@ namespace ldmx {
              * @param time The time of the contribution [ns].
              */
             void updateContrib(int i, float edep, float time);
+
+            /**
+             * Sort by time of hit
+             */
+            bool operator < ( const SimCalorimeterHit &rhs ) const {
+                return this->getTime() < rhs.getTime();
+            }
 
         private:
 
@@ -206,9 +212,9 @@ namespace ldmx {
             float time_{0};
 
             /**
-             * The list of SimParticle objects contributing to the hit.
+             * The list of track IDs contributing to the hit.
              */
-            TRefArray* simParticleContribs_;
+            std::vector<int> trackIDContribs_;
 
             /**
              * The list of PDG codes contributing to the hit.

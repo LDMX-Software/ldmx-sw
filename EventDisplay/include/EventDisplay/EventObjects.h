@@ -21,7 +21,6 @@
 #include "TEveRGBAPalette.h"
 #include "TEveArrow.h"
 #include "TEveBox.h"
-#include "TClonesArray.h"
 #include "TColor.h"
 #include "TRandom.h"
 
@@ -68,29 +67,29 @@ namespace ldmx {
             /**
              * Draws the hits in the input collection assuming that they are EcalHits
              */
-            void drawECALHits(TClonesArray* hits);
+            void drawECALHits(std::vector<EcalHit> hits);
             
             /**
              * Draws the hits in the input collection assuming that they are HcalHits
              */
-            void drawHCALHits(TClonesArray* hits);
+            void drawHCALHits(std::vector<HcalHit> hits);
 
             /**
              * Draws the hits in the input collection assuming that they are SimTrackerHits
              * that hit the recoil tracker.
              */
-            void drawRecoilHits(TClonesArray* hits);
+            void drawRecoilHits(std::vector<SimTrackerHit> hits);
 
             /**
              * Draws the hits in the input collection assuming that they are EcalClusters
              */
-            void drawECALClusters(TClonesArray* clusters);
+            void drawECALClusters(std::vector<EcalCluster> clusters);
 
             /**
              * Draws the hits in the input collection assuming that they are SimTrackerHits
              * that hit the Ecal Scoring Planes
              */
-            void drawECALSimParticles(TClonesArray* ecalSimParticles);
+            void drawECALSimParticles(std::vector<SimTrackerHit> ecalSimParticles);
 
             /**
              * Sets the energy threshold for a sim particle to be drawn.

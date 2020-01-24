@@ -18,14 +18,11 @@
 //   ROOT   //
 //----------//
 #include "TRandom3.h"
-#include "TClonesArray.h"
 
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/EcalHit.h"
-#include "Event/EventConstants.h"
-#include "Event/SimCalorimeterHit.h"
+#include "Event/EventDef.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
@@ -66,8 +63,8 @@ namespace ldmx {
                 return noiseIntercept + noiseSlope*capacitance;
             } 
             
-            inline layer_cell_pair hitToPair(SimCalorimeterHit* hit) {
-                int detIDraw = hit->getID();
+            inline layer_cell_pair hitToPair(SimCalorimeterHit &hit) {
+                int detIDraw = hit.getID();
                 detID_.setRawValue(detIDraw);
                 detID_.unpack();
                 int layer = detID_.getFieldValue("layer");
@@ -95,12 +92,9 @@ namespace ldmx {
             /** Total number of cells across all modules. */
             static const int TOTAL_CELLS{NUM_ECAL_LAYERS*HEX_MODULES_PER_LAYER*CELLS_PER_HEX_MODULE};
 
-
             std::unique_ptr<TRandom3> noiseInjector_;
-            TClonesArray* ecalDigis_{nullptr};
             EcalDetectorID detID_;
             std::unique_ptr<EcalHexReadout> hexReadout_;
-          
             /** Generator of noise hits. */ 
             std::unique_ptr<NoiseGenerator> noiseGenerator_; 
            

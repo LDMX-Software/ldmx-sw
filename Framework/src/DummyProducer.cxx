@@ -5,15 +5,13 @@
  */
 
 // ROOT
-#include "TClonesArray.h"
 #include "TRandom.h"
 
 // LDMX
-#include "Event/SimParticle.h"
-#include "Event/Event.h"
-#include "Event/EventConstants.h"
+#include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/ParameterSet.h"
+#include "Framework/Event.h"
 
 // STL
 #include <iostream>
@@ -41,15 +39,17 @@ namespace ldmx {
             virtual void produce(Event& event) {
                 std::cout << "DummyProducer: Analyzing an event!" << std::endl;
 
-                int np = random_.Poisson(nParticles_);
+                int iEvent = event.getEventHeader().getEventNumber();
+                int np = nParticles_*iEvent;
+                std::vector<CalorimeterHit> caloHits;
                 for (int i = 0; i < np; i++) {
-                    SimParticle* a = (SimParticle*) tca_->ConstructedAt(i);
-                    do {
-                        a->setEnergy(random_.Gaus(aveEnergy_, 1.0));
-                    } while (a->getEnergy() < 0);
-                    a->setPdgID(i + 1);
+                    caloHits.emplace_back();
+                    caloHits.back().setAmplitude( i );
+                    caloHits.back().Print();
                 }
-                event.add("simParticles", tca_);
+
+                event.add("caloHits", caloHits );
+
             }
 
             virtual void onFileOpen() {
@@ -62,7 +62,6 @@ namespace ldmx {
 
             virtual void onProcessStart() {
                 std::cout << "DummyProducer: Starting processing!" << std::endl;
-                tca_ = new TClonesArray(EventConstants::SIM_PARTICLE.c_str(), 1000);
             }
 
             virtual void onProcessEnd() {
@@ -70,7 +69,6 @@ namespace ldmx {
             }
 
         private:
-            TClonesArray* tca_{nullptr};
             int nParticles_{0};
             double aveEnergy_{0};
             std::vector<double> direction_;

@@ -32,6 +32,7 @@
 //----------//
 //   LDMX   //
 //----------//
+#include "Tools/AnalysisUtils.h"
 #include "Event/PnWeightResult.h"
 #include "Event/SimParticle.h"
 #include "Framework/EventProcessor.h"
@@ -43,7 +44,6 @@
 #include "TFile.h"
 #include "TF1.h"
 #include "TH1F.h"
-#include "TClonesArray.h"
 
 namespace ldmx {
 
@@ -88,13 +88,10 @@ namespace ldmx {
              * @param particle SimParticle used to calculate W.
              * @return W
              */
-            double calculateW(SimParticle* particle, double delta = 0.5);
+            double calculateW(const SimParticle* particle, double delta = 0.5);
 
         private:
     
-            /** Object used to persit weights. */
-            PnWeightResult result_;
-
             /** Threshold after which to apply W reweighting. */
             double wThreshold_{1150 /* MeV */};
 

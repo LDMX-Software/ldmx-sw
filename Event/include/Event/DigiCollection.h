@@ -8,7 +8,7 @@
 #define EVENT_DIGICOLLECTION_H_
 
 // ROOT
-#include "TObject.h"
+#include "TObject.h" //for ClassDef
 
 // STL
 #include <stdint.h> //32bit words
@@ -29,7 +29,7 @@ namespace ldmx {
      *
      * Each digi corresponds to a one channel ID and numSamplesPerDigi_ samples.
      */
-    class DigiCollection : public TObject {
+    class DigiCollection {
 
         public:
 
@@ -50,23 +50,14 @@ namespace ldmx {
              *
              * Clears the vectors of channel IDs and samples, but does not change the number of samples per digi setting.
              */
-            void Clear(Option_t *option = "");
+            void Clear();
 
             /**
              * Print out the object.
              *
              * Prints out the lengths of the stored vectors and the number of samples per digi setting.
              */
-            void Print(Option_t *option = "") const;
-
-            /**
-             * Copy this collection into copy
-             *
-             * This is required to successfully transfer this object onto the event bus.
-             * It is virtual so that the specific subsystem DigiCollection objects 
-             * can have their own Copy method if they add more member variables.
-             */
-            virtual void Copy(TObject &copy) const;
+            void Print() const;
 
             /**
              * Get number of samples per digi 
