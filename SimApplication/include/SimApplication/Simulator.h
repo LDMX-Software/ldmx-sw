@@ -164,9 +164,18 @@ namespace ldmx {
             
             /// Path to detector description
             std::string detectorPath_{""};
+
+            /// Run Number for this Sim Run
+            int runNumber_;
             
             /// Path to scoring planes description
             std::string scoringPlanesPath_{""};
+
+            /// Vector of Random Seeds to use for this run.
+            std::vector< int > randomSeeds_;
+
+            /// Vector to use as beamspot smearing
+            std::vector< double > beamspotSmear_;
             
             /// Vector of Geant4 Commands to Run before /run/initialize
             std::vector< std::string > preInitCommands_;

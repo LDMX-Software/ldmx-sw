@@ -117,6 +117,12 @@ namespace ldmx {
             inline void setLogFrequency(int logFrequency) { logFrequency_ = logFrequency; }
 
             /**
+             * Get the frequency with which the event information is printed.
+             * @return integer log frequency (negative if turned off)
+             */
+            int getLogFrequency() const { return logFrequency_; }
+
+            /**
              * Run the process.
              */
             void run();
