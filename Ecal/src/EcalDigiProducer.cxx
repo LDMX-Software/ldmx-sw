@@ -67,9 +67,18 @@ namespace ldmx {
         if ( makeConfigHists_ ) {
             getHistoDirectory();
 
+            int nbinsSimE = 33;
+            double binsSimE[34] = {
+                0.,
+                1e-3,
+                1e-2, 2e-2, 3e-2, 4e-2, 5e-2, 6e-2, 7e-2, 8e-2, 9e-2,
+                1e-1, 2e-1, 3e-1, 4e-1, 5e-1, 6e-1, 7e-1, 8e-1, 9e-1,
+                1., 2., 3., 4., 5., 6., 7., 8., 9.,
+                1e1, 2e1, 3e1, 4e1, 5e1
+            };
             tot_SimE_ = new TH2F( "tot_SimE_" , ";TOT (Clock Counts);Sim E [MeV]",
-                    1500, 0 , 1500 ,
-                    100 , 0 , 50.
+                    nADCs_*1024, 0 , nADCs_*1024,
+                    nbinsSimE , binsSimE
                     );
         }
     }
@@ -125,7 +134,7 @@ namespace ldmx {
             double tut = pulseFunc_.GetX(readoutThreshold_, timeInWindow, nADCs_*EcalDigiProducer::CLOCK_CYCLE);
             double tot = tut - toa;
 
-            printf( "%6.4f MeV at %6.4f ns --> %6.2f TOT %6.2f TOA %6.2f TUT\n", energyInWindow , timeInWindow , tot, toa, tut );
+            //printf( "%6.4f MeV at %6.4f ns --> %6.2f TOT %6.2f TOA %6.2f TUT\n", energyInWindow , timeInWindow , tot, toa, tut );
 
             int    hitID     = simHit.getID();
             simHitIDs.insert( hitID );
@@ -133,8 +142,8 @@ namespace ldmx {
             digiToAdd[0].rawID_   = hitID;
             digiToAdd[0].adc_t_   = -1; //NOT IMPLEMENTED
             digiToAdd[0].adc_tm1_ = -1; //NOT IMPLEMENTED
-            digiToAdd[0].tot_     = tot; // / pow( 2 , 10. );
-            digiToAdd[0].toa_     = toa; // / pow( 2 , 10. );
+            digiToAdd[0].tot_     = tot * (pow( 2 , 10. )/25.); //conversion from ns to clock counts
+            digiToAdd[0].toa_     = toa * (pow( 2 , 10. )/25.); //conversion from ns to clock counts
 
             ecalDigis.addDigi( digiToAdd );
 
