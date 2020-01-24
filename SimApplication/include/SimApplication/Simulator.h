@@ -23,14 +23,11 @@
 /*~~~~~~~~~~~*/
 #include "Framework/EventProcessor.h"
 
-/*~~~~~~~~~~~~~~*/
-/*    Geant4    */
-/*~~~~~~~~~~~~~~*/
-#include "G4UImanager.hh"
-
+class G4UImanager;
 class G4RunManager;
 class G4GDMLParser; 
 class G4GDMLMessenger; 
+class G4CascadeParameters;
 
 namespace ldmx {
 
@@ -38,7 +35,7 @@ namespace ldmx {
     class ParameterSet; 
     class RootPersistencyManager; 
     class RunManager;
-     
+    class DetectorConstruction;
 
     /**
      * @class Simulator
@@ -76,6 +73,7 @@ namespace ldmx {
              *
              * This is called before run is begun, so all parameters/options 
              * for simulation must be set here.
+             * This function runs the pre init setup commands.
              *
              * @param ps ParameterSet for the configuration. 
              */
@@ -109,6 +107,8 @@ namespace ldmx {
              *
              * This uses the parameters set in the configure method to 
              * construct and initialize the simulation objects.
+             *
+             * This function runs the post init setup commands.
              */
             virtual void onProcessStart(); 
 
@@ -119,11 +119,21 @@ namespace ldmx {
 
         private:
 
+            /**
+             * Check if the input command is allowed to be run.
+             *
+             * Looks for sub-strings matching the ones listed as an invalid command.
+             * These invalid commands are mostly commands where control has been handed over to Simulator.
+             */
+            bool allowed(const std::string& command) const;
+
+        private:
+
             /// Manager controlling G4 simulation run 
             std::unique_ptr<G4RunManager> runManager_;
 
             /// User interface handle
-            G4UImanager* uiManager_{G4UImanager::GetUIpointer()};
+            G4UImanager* uiManager_{nullptr};
 
             /// GDML parser 
             std::unique_ptr<G4GDMLParser> parser_;
@@ -131,17 +141,39 @@ namespace ldmx {
             /// Messenger that allows passing commands to the parser
             std::unique_ptr<G4GDMLMessenger> gdmlMessenger_; 
 
-            /// Index of current event
-            unsigned int iEvent_{0};
+            /// Geant4 Class Instance holding cascade parameters
+            ///     Can't be a unique_ptr
+            const G4CascadeParameters* cascadeParameters_{nullptr};
 
-            /// Path to detector description
-            std::string detectorPath_{""};
-
-            /// Macro path
-            std::string macroPath_{""}; 
+            /// LDMX Object that constructs our detector
+            std::unique_ptr<DetectorConstruction> detectorConstruction_;
 
             /// PersistencyManager 
-            RootPersistencyManager* persistencyManager_{nullptr};  
+            std::unique_ptr<RootPersistencyManager> persistencyManager_;  
+
+            /// Commands not allowed to be passed from python config file
+            ///     This is because Simulator already runs them.
+            static const std::vector< std::string > invalidCommands_;
+
+            /*********************************************************
+             * Python Configuration Parameters
+             *********************************************************/
+
+            /// Short Description of Simulation for Run Header
+            std::string description_;
+            
+            /// Path to detector description
+            std::string detectorPath_{""};
+            
+            /// Path to scoring planes description
+            std::string scoringPlanesPath_{""};
+            
+            /// Vector of Geant4 Commands to Run before /run/initialize
+            std::vector< std::string > preInitCommands_;
+            
+            /// Vector of Geant4 Commands to Run after /run/initialize
+            std::vector< std::string > postInitCommands_;
+
     };
 }
 
