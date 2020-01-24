@@ -6,36 +6,12 @@
 
 #include "DQM/RecoilTrackerDQM.h" 
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <utility>
-
-//----------//
-//   ROOT   //
-//----------//
-#include "TH1.h"
-#include "TVector3.h"
-
-//----------//
-//   LDMX   //
-//----------//
-#include "Event/Event.h"
-#include "Event/EcalVetoResult.h"
-#include "Event/FindableTrackResult.h"
-#include "Event/HcalVetoResult.h"
-#include "Event/SimParticle.h"
-#include "Event/SimTrackerHit.h"
-#include "Event/TrackerVetoResult.h"
-#include "Framework/HistogramPool.h"
-#include "Tools/AnalysisUtils.h"
-
 namespace ldmx { 
 
     RecoilTrackerDQM::RecoilTrackerDQM(const std::string &name, Process &process) : 
         Analyzer(name, process) { }
 
-    RecoilTrackerDQM::~RecoilTrackerDQM() {}
+    RecoilTrackerDQM::~RecoilTrackerDQM() { }
 
     void RecoilTrackerDQM::onProcessStart() {
         
@@ -58,8 +34,8 @@ namespace ldmx {
         if (!event.exists("FindableTracks")) return;
 
         // Get the collection of simulated particles from the event
-        const TClonesArray* tracks 
-            = event.getCollection("FindableTracks");
+        const std::vector<FindableTrackResult> tracks 
+            = event.getCollection<FindableTrackResult>("FindableTracks");
 
         TrackMaps map = Analysis::getFindableTrackMaps(tracks);
       
@@ -68,15 +44,13 @@ namespace ldmx {
         histograms_->get("axial_track_count")->Fill(map.axial.size());  
 
         // Get the collection of simulated particles from the event
-        const TClonesArray* particles = event.getCollection("SimParticles");
+        const std::map<int,SimParticle> particleMap = event.getObject<std::map<int,SimParticle>>("SimParticles");
       
         // Search for the recoil electron 
-        const SimParticle* recoil = Analysis::searchForRecoil(particles);
+        const SimParticle* recoil = Analysis::getRecoil(particleMap);
 
-
-        bool recoilIsFindable{false}; 
-        auto it = map.findable.find(recoil);
-        if ( it != map.findable.end()) recoilIsFindable = true; 
+        auto it = map.findable.find(recoil->getTrackID());
+        bool recoilIsFindable = ( it != map.findable.end() );
 
         // Fill the recoil vertex position histograms
         std::vector<double> recoilVertex = recoil->getVertex();
@@ -85,23 +59,24 @@ namespace ldmx {
         histograms_->get("recoil_vz")->Fill(recoilVertex[2]);  
 
         double p{-1}, pt{-1}, px{-9999}, py{-9999}, pz{-9999}; 
-        SimTrackerHit* spHit{nullptr}; 
+        const SimTrackerHit* spHit{nullptr}; 
         if (event.exists("TargetScoringPlaneHits")) { 
             
             // Get the collection of simulated particles from the event
-            const TClonesArray* spHits = event.getCollection("TargetScoringPlaneHits");
+            const std::vector<SimTrackerHit> spHits = event.getCollection<SimTrackerHit>("TargetScoringPlaneHits");
             
-            //
-            for (size_t iHit{0}; iHit < spHits->GetEntriesFast(); ++iHit) { 
-                SimTrackerHit* hit = static_cast<SimTrackerHit*>(spHits->At(iHit)); 
-                if ((hit->getSimParticle() == recoil) && (hit->getLayerID() == 2)
-                        && (hit->getMomentum()[2] > 0)) {
-                    spHit = hit;
+            for (const SimTrackerHit &hit : spHits ) {
+                if ( (hit.getTrackID() == recoil->getTrackID()) /*hit caused by recoil*/ and
+                     (hit.getLayerID() == 2) /*hit on downstream side of target*/ and
+                     (hit.getMomentum()[2] > 0) /*hit momentum leaving target*/
+                   ) {
+                    spHit = &hit;
                     break; 
                 }
             }
 
-            if (spHit != nullptr) {
+            if ( spHit ) {
+
                 TVector3 recoilP(spHit->getMomentum().data()); 
         
                 p = recoilP.Mag(); 
@@ -123,15 +98,13 @@ namespace ldmx {
         if (event.exists("TrackerVeto")) { 
 
             // Get the collection of trackerVeto results
-            const TClonesArray* trackerVeto = event.getCollection("TrackerVeto");
+            const TrackerVetoResult trackerVeto = event.getObject<TrackerVetoResult>("TrackerVeto");
 
-            TrackerVetoResult* veto = static_cast<TrackerVetoResult*>(trackerVeto->At(0)); 
             // Check if the event passes the tracker veto
-            if (veto->passesVeto()) { 
+            if (trackerVeto.passesVeto()) { 
                 passesTrackVeto = true; 
             }
         }
-
 
         if (passesTrackVeto) { 
             histograms_->get("tp_track_veto")->Fill(p);
@@ -145,12 +118,10 @@ namespace ldmx {
         float bdtProb{-1}; 
         bool passesBDT{false};  
         if (event.exists(ecalVetoCollectionName_)) {
-            const EcalVetoResult* veto 
-                = static_cast<const EcalVetoResult*>(
-                        event.getCollection(ecalVetoCollectionName_)->At(0));
+            const EcalVetoResult veto = event.getObject<EcalVetoResult>(ecalVetoCollectionName_);
        
             // Get the BDT probability  
-            bdtProb = veto->getDisc();
+            bdtProb = veto.getDisc();
     
             // Fill the histograms if the event passes the ECal veto
             if (bdtProb >= .99) {
@@ -177,24 +148,22 @@ namespace ldmx {
         if (event.exists("HcalVeto")) {
         
             // Get the collection of HCalDQM digitized hits if the exists 
-            const TClonesArray* hcalVeto = event.getCollection("HcalVeto");
+            const HcalVetoResult hcalVeto = event.getObject<HcalVetoResult>("HcalVeto");
 
-            HcalVetoResult* veto = static_cast<HcalVetoResult*>(hcalVeto->At(0));
-
-            if (veto->passesVeto()) {
+            if (hcalVeto.passesVeto()) {
                 
                 histograms_->get("tp_hcal")->Fill(p);
                 histograms_->get("tpt_hcal")->Fill(pt); 
                 histograms_->get("tpx_hcal")->Fill(px); 
                 histograms_->get("tpy_hcal")->Fill(py); 
                 histograms_->get("tpz_hcal")->Fill(pz); 
-                passesHcalVeto = veto->passesVeto();  
+                passesHcalVeto = true;
             }
         }
 
 
 
-        if (passesTrackVeto && passesBDT && passesHcalVeto) { 
+        if (passesTrackVeto and passesBDT and passesHcalVeto) { 
             histograms_->get("tp_vetoes")->Fill(p);
             histograms_->get("tpt_vetoes")->Fill(pt); 
             histograms_->get("tpx_vetoes")->Fill(px); 

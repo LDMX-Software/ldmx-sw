@@ -12,10 +12,8 @@
 //----------------//
 #include <cmath>
 #include <vector>
+#include <map>
 #include <unordered_map>
-
-// Forward declaration
-class TClonesArray; 
 
 namespace ldmx {
 
@@ -24,43 +22,46 @@ namespace ldmx {
     class SimParticle;
 
     struct TrackMaps {
-            std::unordered_map<const SimParticle*, const FindableTrackResult*> findable;        
-            std::unordered_map<const SimParticle*, const FindableTrackResult*> loose;        
-            std::unordered_map<const SimParticle*, const FindableTrackResult*> axial;        
+            std::unordered_map<int, const FindableTrackResult *> findable;        
+            std::unordered_map<int, const FindableTrackResult *> loose;        
+            std::unordered_map<int, const FindableTrackResult *> axial;        
     };
 
     namespace Analysis {
 
         /**
-         * Find and return the the sim particle associated with the recoil 
-         * electron.
+         * Find and return the sim particle associated with the recoil electron.
          *
-         * @param particles Collection of sim particles
-         * @param index Position along the TClonesArray to start the search for 
-         *              the recoil.  The default is to start at the 
-         *              beginning of the array. 
+         * @param particleMap map of sim particles
+         * @return pointer to sim particle labeled as recoil electron (nullptr if not found)
          */
-        const SimParticle* searchForRecoil(const TClonesArray* particles, const int index = 0);
+        const SimParticle* getRecoil(const std::map<int,SimParticle> &particleMap);
 
         /**
-         * Find and return the sim particle associated with the gamma that 
+         * Get a pointer to the sim particle associated with the photon that
          * underwent a photo-nuclear reaction.
          *
-         * @param particle Sim particle that will be used to retrieve the list of 
-         *                 particles to search through.
-         * @param index Position along the TClonesArray to start the search for the
-         *              photo-nuclear gamma.  The default is to start at the 
-         *              beginning of the array.
+         * Returns the first particle in the map that underwent a PN interaction.
+         * If more than one particle undergoes a PN interaction, this will NOT notice.
+         *
+         * @param particleMap map of sim particles
+         * @return pointer to sim particle labeled as PN Gamma photon (nullptr if not found)
          */
-        const SimParticle* searchForPNGamma(const SimParticle* particle, const int index = 0);  
+        const SimParticle* getPNGamma(const std::map<int,SimParticle> &particleMap);
 
         /**
-         * 
+         * Get a pointer to the sim particle associated with the photon daughter
+         * of the recoil electron that underwent a photo-nuclear reaction.
+         *
+         * @param particleMap map of sim particles
+         * @return pointer to sim particle (nullptr if not found)
          */
-        TrackMaps getFindableTrackMaps(const TClonesArray* tracks);
+        const SimParticle* getRecoilPNGamma(const std::map<int,SimParticle> &particleMap);
 
-        void printDaughters(const SimParticle* particle, std::string prefix = ""); 
-
+        /**
+         * Sort tracks depending on how finable they are.
+         */
+        TrackMaps getFindableTrackMaps(const std::vector<FindableTrackResult> &tracks);
 
     } // Analysis
 

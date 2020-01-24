@@ -37,8 +37,6 @@ namespace ldmx {
         ifile_ = new TFile(filename_);
         itree_ = (TTree*) ifile_->Get(EventConstants::EVENT_TREE_NAME.c_str());
         eventHeader_ = 0;
-        simParticles_ = new TClonesArray(EventConstants::SIM_PARTICLE.c_str());
-        ecalSPParticles_ = new TClonesArray(EventConstants::SIM_TRACKER_HIT.c_str());
         itree_->SetBranchAddress(EventConstants::EVENT_HEADER.c_str(), &eventHeader_);
         itree_->SetBranchAddress("SimParticles_sim", &simParticles_);
         itree_->SetBranchAddress("EcalScoringPlaneHits_sim", &ecalSPParticles_);
@@ -72,41 +70,39 @@ namespace ldmx {
             // and find the subset of unique hits created by particles exiting
             // the ECal.  These particles will be stored in a container and 
             // re-fired into the HCal. 
-            std::unordered_map<float, SimTrackerHit*> spHits; 
+            std::unordered_map<int, SimTrackerHit*> spHits; 
 
             // Loop through all of the ECal scoring plane hits. 
-            for (int isph{0}; isph < ecalSPParticles_->GetEntriesFast(); ++isph) {
-
-                auto spHit = static_cast<SimTrackerHit*>(ecalSPParticles_->At(isph));
+            for (SimTrackerHit &spHit : ecalSPParticles_ ) {
 
                 // First, start by skipping all hits that were created by 
                 // particles entering the ECal volume. 
-                if (spHit->getLayerID() == 1 and spHit->getMomentum()[2] > 0) continue;
-                if (spHit->getLayerID() == 2 and spHit->getMomentum()[2] < 0) continue; 
-                if (spHit->getLayerID() == 3 and spHit->getMomentum()[1] < 0) continue; 
-                if (spHit->getLayerID() == 4 and spHit->getMomentum()[1] > 0) continue; 
-                if (spHit->getLayerID() == 5 and spHit->getMomentum()[0] > 0) continue; 
-                if (spHit->getLayerID() == 6 and spHit->getMomentum()[0] < 0) continue;
+                if (spHit.getLayerID() == 1 and spHit.getMomentum()[2] > 0) continue;
+                if (spHit.getLayerID() == 2 and spHit.getMomentum()[2] < 0) continue; 
+                if (spHit.getLayerID() == 3 and spHit.getMomentum()[1] < 0) continue; 
+                if (spHit.getLayerID() == 4 and spHit.getMomentum()[1] > 0) continue; 
+                if (spHit.getLayerID() == 5 and spHit.getMomentum()[0] > 0) continue; 
+                if (spHit.getLayerID() == 6 and spHit.getMomentum()[0] < 0) continue;
 
                 // Don't consider particles created outside of the HCal readout
                 // window.  Currently, this is estimated to be 50 ns.  
                 // TODO: This value should be made configurable. 
-                if (spHit->getSimParticle()->getTime() > 50) continue; 
+                if (spHit.getTime() > 50) continue; 
 
-                if (spHits.find(spHit->getSimParticle()->getMomentum()[2]) == spHits.end()) {
-                    spHits[spHit->getSimParticle()->getMomentum()[2]] = spHit; 
+                if (spHits.find(spHit.getTrackID()) == spHits.end()) {
+                    spHits[spHit.getTrackID()] = &spHit; 
                 } else {  
                         
                    float currentPMag = sqrt(
-                                      pow(spHit->getMomentum()[0], 2) +
-                                      pow(spHit->getMomentum()[1], 2) +
-                                      pow(spHit->getMomentum()[2], 2)); 
+                                      pow(spHit.getMomentum()[0], 2) +
+                                      pow(spHit.getMomentum()[1], 2) +
+                                      pow(spHit.getMomentum()[2], 2)); 
                    float pMag = sqrt(
-                                      pow(spHits[spHit->getSimParticle()->getMomentum()[2]]->getMomentum()[0], 2) +
-                                      pow(spHits[spHit->getSimParticle()->getMomentum()[2]]->getMomentum()[1], 2) +
-                                      pow(spHits[spHit->getSimParticle()->getMomentum()[2]]->getMomentum()[2], 2)); 
+                                      pow(spHits[spHit.getTrackID()]->getMomentum()[0], 2) +
+                                      pow(spHits[spHit.getTrackID()]->getMomentum()[1], 2) +
+                                      pow(spHits[spHit.getTrackID()]->getMomentum()[2], 2)); 
 
-                    if (pMag < currentPMag) spHits[spHit->getSimParticle()->getMomentum()[2]] = spHit; 
+                    if (pMag < currentPMag) spHits[spHit.getTrackID()] = &spHit; 
                 } 
             } 
 
@@ -117,7 +113,7 @@ namespace ldmx {
                 cVertex->SetWeight(1.);
 
                 auto primary{new G4PrimaryParticle()};
-                primary->SetPDGcode(spHit.second->getSimParticle()->getPdgID());
+                primary->SetPDGcode(spHit.second->getPdgID());
                 primary->SetMomentum(spHit.second->getMomentum()[0]*MeV, spHit.second->getMomentum()[1]*MeV, spHit.second->getMomentum()[2]*MeV);
 
                 auto primaryInfo{new UserPrimaryParticleInformation()};
@@ -133,19 +129,18 @@ namespace ldmx {
 
             // put in protection for if we run out of ROOT events
             std::vector<G4PrimaryVertex*> vertices;
-            for (int iSP = 0; iSP < simParticles_->GetEntriesFast(); ++iSP) {
+            for (const SimParticle &sp : simParticles_ ) {
 
                 // check if particle has status 1
-                ldmx::SimParticle* sp = (ldmx::SimParticle*) simParticles_->At(iSP);
-                if (sp->getGenStatus() != 1)
+                if (sp.getGenStatus() != 1)
                     continue;
 
                 bool vertexExists = false;
                 G4PrimaryVertex* curvertex = new G4PrimaryVertex();
                 for (unsigned int iV = 0; iV < vertices.size(); ++iV) {
-                    double cur_vx = sp->getVertex()[0];
-                    double cur_vy = sp->getVertex()[1];
-                    double cur_vz = sp->getVertex()[2];
+                    double cur_vx = sp.getVertex()[0];
+                    double cur_vy = sp.getVertex()[1];
+                    double cur_vz = sp.getVertex()[2];
                     double i_vx = vertices.at(iV)->GetX0();
                     double i_vy = vertices.at(iV)->GetY0();
                     double i_vz = vertices.at(iV)->GetZ0();
@@ -155,15 +150,15 @@ namespace ldmx {
                     }
                 }
                 if (vertexExists == false) {
-                    curvertex->SetPosition(sp->getVertex()[0], sp->getVertex()[1], sp->getVertex()[2]);
+                    curvertex->SetPosition(sp.getVertex()[0], sp.getVertex()[1], sp.getVertex()[2]);
                     curvertex->SetWeight(1.);
                     anEvent->AddPrimaryVertex(curvertex);
                 }
 
                 G4PrimaryParticle* primary = new G4PrimaryParticle();
-                primary->SetPDGcode(sp->getPdgID());
-                primary->SetMomentum(sp->getMomentum()[0] * MeV, sp->getMomentum()[1] * MeV, sp->getMomentum()[2] * MeV);
-                primary->SetMass(sp->getMass() * MeV);
+                primary->SetPDGcode(sp.getPdgID());
+                primary->SetMomentum(sp.getMomentum()[0] * MeV, sp.getMomentum()[1] * MeV, sp.getMomentum()[2] * MeV);
+                primary->SetMass(sp.getMass() * MeV);
 
                 UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
                 primaryInfo->setHepEvtStatus(1.);

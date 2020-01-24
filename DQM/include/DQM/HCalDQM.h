@@ -8,16 +8,27 @@
 #define _DQM_HCAL_DQM_H_
 
 //----------//
+//   STL    //
+//----------//
+#include <algorithm>
+
+//----------//
+//   ROOT   //
+//----------//
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TVector3.h"
+
+//----------//
 //   LDMX   //
 //----------//
+#include "Framework/Event.h"
+#include "Framework/HistogramPool.h"
 #include "Framework/EventProcessor.h"
+#include "Tools/AnalysisUtils.h"
+#include "Event/EventDef.h"
 
 namespace ldmx { 
-
-    // Forward declarations within the ldmx workspace
-    class Event;
-    class HistogramPool; 
-    class Process;
 
     class HCalDQM : public Analyzer { 
     

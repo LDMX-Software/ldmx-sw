@@ -21,23 +21,17 @@ ClassImp(ldmx::HcalVetoResult)
 
 namespace ldmx {
             
-    HcalVetoResult::HcalVetoResult() : TObject() {}
+    HcalVetoResult::HcalVetoResult() {}
 
     HcalVetoResult::~HcalVetoResult() {}
 
-    void HcalVetoResult::Copy(TObject& object) const { 
-        HcalVetoResult& result = static_cast<HcalVetoResult&>(object);
-        result.passesVeto_	   = passesVeto_;
-        result.maxPEHit_       = maxPEHit_; 
-    }
-
-    void HcalVetoResult::Clear(Option_t *option) { 
+    void HcalVetoResult::Clear() { 
         passesVeto_ = false;
     }
 
-    void HcalVetoResult::Print(Option_t *option) { 
+    void HcalVetoResult::Print() const { 
         std::cout << "[ HcalVetoResult ]: Passes veto : " 
                   << " Passes veto: " << passesVeto_ << std::endl;
-        maxPEHit_.GetObject()->Print(); 
+        maxPEHit_.Print(); 
     }
 }

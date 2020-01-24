@@ -39,12 +39,12 @@ namespace ldmx {
             /**
              * Clear the data in the object.
              */
-            void Clear(Option_t *option = "");
+            void Clear();
 
             /**
              * Print out the object.
              */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /**
              * Get the number of photoelectrons estimated for this hit.
@@ -99,7 +99,7 @@ namespace ldmx {
     	     * Get the value of isNoise_.
     	     * @return isNoise_ of hit. 
     	     */
-    	    bool getNoise(){
+    	    bool getNoise() const {
     	        return isNoise_;
     	    }
 

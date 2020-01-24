@@ -1,6 +1,6 @@
 // LDMX
 #include "Framework/EventFile.h"
-#include "Framework/EventImpl.h"
+#include "Framework/Event.h"
 #include "Exception/Exception.h"
 #include "Event/EventConstants.h"
 #include "Event/RunHeader.h"
@@ -185,7 +185,7 @@ namespace ldmx {
         return false;
     }
 
-    void EventFile::setupEvent(EventImpl* evt) {
+    void EventFile::setupEvent(Event* evt) {
         event_ = evt;
         if (isOutputFile_) {
             if (!tree_ && !parent_) {
@@ -265,7 +265,7 @@ namespace ldmx {
             for (int iEntry = 0; iEntry < runTree->GetEntriesFast(); iEntry++) {
                 runTree->GetEntry(iEntry);
                 RunHeader* newRunHeader = new RunHeader();
-                aRunHeader->Copy(*newRunHeader);
+                *newRunHeader = *aRunHeader; //copy over run header
                 runMap_[newRunHeader->getRunNumber()] = newRunHeader;
             }
             runTree->ResetBranchAddresses();

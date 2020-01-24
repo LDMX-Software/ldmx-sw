@@ -11,9 +11,7 @@ ClassImp(ldmx::FindableTrackResult)
 
 namespace ldmx {
             
-    FindableTrackResult::FindableTrackResult() :
-        TObject() {  
-    }
+    FindableTrackResult::FindableTrackResult() { }
 
     FindableTrackResult::~FindableTrackResult() {}
 
@@ -43,8 +41,8 @@ namespace ldmx {
         }
     }
 
-    void FindableTrackResult::Clear(Option_t *option) { 
-        simParticle_    = nullptr;
+    void FindableTrackResult::Clear() { 
+        particleTrackID_= -1;
         is4sFindable_   = false; 
         is3s1aFindable_ = false;
         is2s2aFindable_ = false;
@@ -53,10 +51,10 @@ namespace ldmx {
         is3sFindable_   = false;
     }
 
-    void FindableTrackResult::Print(Option_t *option) { 
+    void FindableTrackResult::Print() const { 
         std::cout << "[ FindableTrackResult ]: "
-                  << "Sim particle PDG ID: " 
-                  << static_cast<SimParticle*>(simParticle_.GetObject())->getPdgID() << "\n" 
+                  << "Sim particle Track ID: " 
+                  << particleTrackID_ << "\n" 
                   << "\t4s Findable: "   << is4sFindable_    << "\n" 
                   << "\t3s1a Findable: " << is3s1aFindable_  << "\n"
                   << "\t2s2a Findable: " << is2s2aFindable_  << "\n"

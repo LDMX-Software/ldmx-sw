@@ -20,11 +20,11 @@
 /*   Event   */
 /*~~~~~~~~~~~*/
 #include "Event/CalorimeterHit.h"
-#include "Event/Event.h"
 
 /*~~~~~~~~~~~~~~*/
 /*   Framework  */
 /*~~~~~~~~~~~~~~*/
+#include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/NtupleManager.h"
 #include "Framework/ParameterSet.h"
@@ -74,21 +74,18 @@ namespace ldmx {
 
                 std::cout << "[ DummyAnalyzer]: Analyzing an event!" << std::endl;
 
-                // Get the collection of calorimeter hits from the event. 
-                const TClonesArray* tca = event.getCollection(caloCol_);
+                // Get the collection of calorimeter hits from the event.
+                auto tca = event.getCollection<EcalHit>(caloCol_);  
                 
                 // Loop through the collection and fill both the histogram and 
-                // ntuple. 
-                for (size_t i{0}; i < tca->GetEntriesFast(); ++i) {
+                // ntuple.
+                for (const EcalHit &hit : tca) {  
                     
-                    // Get the ith hit from the collection.
-                    auto iHit{static_cast<const CalorimeterHit*>(tca->At(i))}; 
-
                     // Fill the histogram
-                    hEnergy->Fill(iHit->getEnergy());
+                    hEnergy->Fill(hit.getEnergy());
 
                     // Fill the ntuple
-                    ntuple_->setVar<float>("energy", iHit->getEnergy()); 
+                    ntuple_->setVar<float>("energy", hit.getEnergy()); 
                 }
 
                 // Print out all of the product tags in the event.

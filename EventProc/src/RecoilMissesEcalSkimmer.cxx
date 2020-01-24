@@ -22,45 +22,29 @@ namespace ldmx {
     void RecoilMissesEcalSkimmer::produce(Event &event) { 
         
         // Get the collection of sim particles from the event 
-        const TClonesArray *simParticles = event.getCollection("SimParticles");
-        if (simParticles->GetEntriesFast() == 0) return; 
+        const std::map<int,SimParticle> simParticleMap = event.getMap<int,SimParticle>("SimParticles");
+        if (simParticleMap.size() == 0) return; 
 
-        // Loop through all of the particles and search for the recoil electron
-        // i.e. an electron which doesn't have any parents.
-        SimParticle* recoilElectron{nullptr};
-        for (int particleCount = 0; particleCount < simParticles->GetEntriesFast(); ++particleCount) { 
-            
-            // Get the nth particle from the collection of particles
-            SimParticle* simParticle = static_cast<SimParticle*>(simParticles->At(particleCount));
-
-            // If the particle doesn't correspond to the recoil electron, 
-            // continue to the next particle.
-            if ((simParticle->getPdgID() == 11) && (simParticle->getParentCount() == 0)) {
-                //std::cout << "[ pnWeightProcessor ]: Recoil electron found." << std::endl;
-                recoilElectron = simParticle; 
-                break;
-            }
-        }
+        const SimParticle *recoilElectron = Analysis::getRecoil( simParticleMap );
 
         // Get the collection of simulated Ecal hits from the event. 
-        const TClonesArray* ecalSimHits = event.getCollection(EventConstants::ECAL_SIM_HITS);
+        const std::vector<SimCalorimeterHit> ecalSimHits = event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS);
        
         // Loop through the Ecal hits and check if the recoil electron is 
         // associated with any of them.  If there are any recoil electron hits
         // in the Ecal, drop the event.
         bool hasRecoilElectronHits = false; 
-        for (int iHit = 0; iHit < ecalSimHits->GetEntriesFast(); ++iHit) { 
+        for (const SimCalorimeterHit &simHit : ecalSimHits ) {
             
-            SimCalorimeterHit* simHit = static_cast<SimCalorimeterHit*>(ecalSimHits->At(iHit));
-
             /*std::cout << "[ RecoilMissesEcalSkimmer ]: "  
                       << "Number of hit contributions: "  
                       << simHit->getNumberOfContribs() << std::endl;*/
 
-            for (int iContrib = 0; iContrib < simHit->getNumberOfContribs(); ++iContrib) {
-                SimCalorimeterHit::Contrib contrib = simHit->getContrib(iContrib);
+            for (int iContrib = 0; iContrib < simHit.getNumberOfContribs(); ++iContrib) {
 
-                if (contrib.particle == recoilElectron) { 
+                SimCalorimeterHit::Contrib contrib = simHit.getContrib(iContrib);
+
+                if (contrib.trackID == recoilElectron->getTrackID()) { 
                     /*std::cout << "[ RecoilMissesEcalSkimmer ]: " 
                               << "Ecal hit associated with recoil electron." << std::endl; */
                     

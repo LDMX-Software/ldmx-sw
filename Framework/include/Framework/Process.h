@@ -22,7 +22,7 @@ namespace ldmx {
 
     class EventProcessor;
     class EventFile;
-    class EventImpl;
+    class Event;
 
     /**
      * @class Process

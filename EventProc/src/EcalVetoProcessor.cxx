@@ -4,7 +4,6 @@
 #include "TString.h"
 #include "TFile.h"
 #include "TTree.h"
-#include "TClonesArray.h"
 #include "TPython.h"
 
 // LDMX
@@ -167,7 +166,9 @@ namespace ldmx {
     }
 
     void EcalVetoProcessor::produce(Event& event) {
-        result_.Clear();
+
+        EcalVetoResult result;
+
         clearProcessor();
 
         // Get the collection of Ecal scoring plane hits. If it doesn't exist,
@@ -179,35 +180,30 @@ namespace ldmx {
         std::vector<float> recoilPosAtTarget;
 
         if (event.exists("EcalScoringPlaneHits")) {
-            const TClonesArray* ecalSpHits{event.getCollection("EcalScoringPlaneHits")};
 
             // Loop through all of the sim particles and find the recoil 
             // electron.
-            const TClonesArray* simParticles{event.getCollection("SimParticles")};
+            std::map< int , SimParticle > simParticles = event.getMap<int,SimParticle>( "SimParticles" );
             SimParticle* recoilElectron{nullptr}; 
-            for (int simParticleIndex = 0; simParticleIndex < simParticles->GetEntriesFast();
-                    ++simParticleIndex) { 
-                SimParticle* particle = static_cast<SimParticle*>(simParticles->At(simParticleIndex)); 
-
+            for ( auto &mapContent : simParticles ) {
                 // We only care about the recoil electron
-                if ((particle->getPdgID() == 11) && (particle->getParentCount() == 0)) { 
-                    recoilElectron = particle;
+                if ((mapContent.second.getPdgID() == 11) && (mapContent.second.getParentCount() == 0)) { 
+                    recoilElectron = &mapContent.second;
                     break;
                 } 
             }
 
             // Find ECAL SP hit for recoil electron
+            std::vector< SimTrackerHit > ecalSpHits = event.getCollection< SimTrackerHit >( "EcalScoringPlaneHits" );
             float pmax = 0;
-            for (int ecalSpIndex = 0; ecalSpIndex < ecalSpHits->GetEntriesFast(); ++ecalSpIndex) {
-                SimTrackerHit* spHit =  static_cast<SimTrackerHit*>(ecalSpHits->At(ecalSpIndex)); 
+            for ( SimTrackerHit &spHit : ecalSpHits ) {
                 
-                if (spHit->getLayerID() != 1 || spHit->getMomentum()[2] <= 0) continue;
+                if (spHit.getLayerID() != 1 || spHit.getMomentum()[2] <= 0) continue;
                 
-                SimParticle* spParticle = spHit->getSimParticle();
-                if (spParticle == recoilElectron) { 
-                    if(sqrt(pow(spHit->getMomentum()[0],2) + pow(spHit->getMomentum()[1],2) + pow(spHit->getMomentum()[2],2)) > pmax) {
-                        recoilP = spHit->getMomentum();
-                        recoilPos = spHit->getPosition();
+                if (spHit.getTrackID() == recoilElectron->getTrackID()) { 
+                    if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {
+                        recoilP = spHit.getMomentum();
+                        recoilPos = spHit.getPosition();
                         pmax = sqrt(pow(recoilP[0],2) + pow(recoilP[1],2) + pow(recoilP[2],2));
                     }
                 } 
@@ -215,18 +211,16 @@ namespace ldmx {
 
             // Find target SP hit for recoil electron
             if (event.exists("TargetScoringPlaneHits")) {
-                const TClonesArray* targetSpHits{event.getCollection("TargetScoringPlaneHits")};
+                std::vector< SimTrackerHit > targetSpHits = event.getCollection< SimTrackerHit >( "TargetScoringPlaneHits" );
                 pmax = 0;
-                for (int targetSpIndex = 0; targetSpIndex < targetSpHits->GetEntriesFast(); ++targetSpIndex) {
-                    SimTrackerHit* spHit =  static_cast<SimTrackerHit*>(targetSpHits->At(targetSpIndex)); 
+                for ( SimTrackerHit &spHit : targetSpHits ) {
                     
-                    if (spHit->getLayerID() != 2 || spHit->getMomentum()[2] <= 0) continue;
+                    if (spHit.getLayerID() != 2 || spHit.getMomentum()[2] <= 0) continue;
                     
-                    SimParticle* spParticle = spHit->getSimParticle();
-                    if (spParticle == recoilElectron) { 
-                        if(sqrt(pow(spHit->getMomentum()[0],2) + pow(spHit->getMomentum()[1],2) + pow(spHit->getMomentum()[2],2)) > pmax) {
-                            recoilPAtTarget = spHit->getMomentum();
-                            recoilPosAtTarget = spHit->getPosition();
+                    if (spHit.getTrackID() == recoilElectron->getTrackID()) { 
+                        if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {
+                            recoilPAtTarget = spHit.getMomentum();
+                            recoilPosAtTarget = spHit.getPosition();
                             pmax = sqrt(pow(recoilPAtTarget[0],2) + pow(recoilPAtTarget[1],2) + pow(recoilPAtTarget[2],2));
                         }
                     } 
@@ -256,18 +250,14 @@ namespace ldmx {
 
 
         // Get the collection of digitized Ecal hits from the event. 
-        const TClonesArray* ecalDigis = event.getCollection("ecalDigis");
-        int nEcalHits = ecalDigis->GetEntriesFast();
+        const std::vector< EcalHit > ecalRecHits = event.getCollection< EcalHit >( "EcalRecHits" );
 
-        //std::cout << "[ EcalVetoProcessor ] : Got " << nEcalHits << " ECal digis in event "
-        //        << event.getEventHeader()->getEventNumber() << std::endl;
-
-        int globalCentroid = GetShowerCentroidIDAndRMS(ecalDigis, showerRMS_);
+        int globalCentroid = GetShowerCentroidIDAndRMS( ecalRecHits , showerRMS_);
         /* ~~ Fill the hit map ~~ O(n)  */
-        fillHitMap(ecalDigis, cellMap_);
+        fillHitMap( ecalRecHits , cellMap_);
         bool doTight = true;
         /* ~~ Fill the isolated hit maps ~~ O(n)  */
-        fillIsolatedHitMap(ecalDigis, globalCentroid, cellMap_, cellMapTightIso_, doTight);
+        fillIsolatedHitMap( ecalRecHits , globalCentroid, cellMap_, cellMapTightIso_, doTight);
 
         //Loop over the hits from the event to calculate the rest of the important quantities
 
@@ -286,40 +276,39 @@ namespace ldmx {
         std::vector<float> outsideContainmentXstd (nregions, 0.0);
         std::vector<float> outsideContainmentYstd (nregions, 0.0);
         
-        for (int iHit = 0; iHit < nEcalHits; iHit++) {
+        for ( const EcalHit &hit : ecalRecHits ) {
             //Layer-wise quantities
-            EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
             LayerCellPair hit_pair = hitToPair(hit);
-            ecalLayerEdepRaw_[hit_pair.first] = ecalLayerEdepRaw_[hit_pair.first] + hit->getEnergy();
-            if(hit->getLayer() >= 20)
-                ecalBackEnergy_ += hit->getEnergy();
-            if (maxCellDep_ < hit->getEnergy())
-                maxCellDep_ = hit->getEnergy();
-            if (hit->getEnergy() > 0) {
+            ecalLayerEdepRaw_[hit_pair.first] = ecalLayerEdepRaw_[hit_pair.first] + hit.getEnergy();
+            if(hit.getLayer() >= 20)
+                ecalBackEnergy_ += hit.getEnergy();
+            if (maxCellDep_ < hit.getEnergy())
+                maxCellDep_ = hit.getEnergy();
+            if (hit.getEnergy() > 0) {
                 nReadoutHits_++;
-                ecalLayerEdepReadout_[hit_pair.first] += hit->getEnergy();
-                ecalLayerTime_[hit_pair.first] += (hit->getEnergy()) * hit->getTime();
-                xMean += getCellCentroidXYPair(hit_pair.second).first * hit->getEnergy();
-                yMean += getCellCentroidXYPair(hit_pair.second).second * hit->getEnergy();
-                avgLayerHit_ += hit->getLayer();
-                wavgLayerHit += hit->getLayer() * hit->getEnergy();
-                if (deepestLayerHit_ < hit->getLayer()) {
-                    deepestLayerHit_ = hit->getLayer();
+                ecalLayerEdepReadout_[hit_pair.first] += hit.getEnergy();
+                ecalLayerTime_[hit_pair.first] += (hit.getEnergy()) * hit.getTime();
+                xMean += getCellCentroidXYPair(hit_pair.second).first * hit.getEnergy();
+                yMean += getCellCentroidXYPair(hit_pair.second).second * hit.getEnergy();
+                avgLayerHit_ += hit.getLayer();
+                wavgLayerHit += hit.getLayer() * hit.getEnergy();
+                if (deepestLayerHit_ < hit.getLayer()) {
+                    deepestLayerHit_ = hit.getLayer();
                 }
                 XYCoords xy_pair = getCellCentroidXYPair(hit_pair.second);
-                float distance_ele_trajectory = ele_trajectory.size() ? sqrt( pow((xy_pair.first - ele_trajectory[hit->getLayer()].first),2) + pow((xy_pair.second - ele_trajectory[hit->getLayer()].second),2) ) : -1.0;
-                float distance_photon_trajectory = photon_trajectory.size() ? sqrt( pow((xy_pair.first - photon_trajectory[hit->getLayer()].first),2) + pow((xy_pair.second - photon_trajectory[hit->getLayer()].second),2) ) : -1.0;
+                float distance_ele_trajectory = ele_trajectory.size() ? sqrt( pow((xy_pair.first - ele_trajectory[hit.getLayer()].first),2) + pow((xy_pair.second - ele_trajectory[hit.getLayer()].second),2) ) : -1.0;
+                float distance_photon_trajectory = photon_trajectory.size() ? sqrt( pow((xy_pair.first - photon_trajectory[hit.getLayer()].first),2) + pow((xy_pair.second - photon_trajectory[hit.getLayer()].second),2) ) : -1.0;
                 // Decide which region a hit goes into and add to sums
                 for(unsigned int ireg = 0; ireg < nregions; ireg++) {
-                    if(distance_ele_trajectory >= ireg*ele_radii[hit->getLayer()] && distance_ele_trajectory < (ireg+1)*ele_radii[hit->getLayer()])
-                        electronContainmentEnergy[ireg] += hit->getEnergy();
-                    if(distance_photon_trajectory >= ireg*photon_radii[hit->getLayer()] && distance_photon_trajectory < (ireg+1)*photon_radii[hit->getLayer()])
-                        photonContainmentEnergy[ireg] += hit->getEnergy();
-                    if(distance_ele_trajectory > (ireg+1)*ele_radii[hit->getLayer()] && distance_photon_trajectory > (ireg+1)*photon_radii[hit->getLayer()]) {
-                        outsideContainmentEnergy[ireg] += hit->getEnergy();
+                    if(distance_ele_trajectory >= ireg*ele_radii[hit.getLayer()] && distance_ele_trajectory < (ireg+1)*ele_radii[hit.getLayer()])
+                        electronContainmentEnergy[ireg] += hit.getEnergy();
+                    if(distance_photon_trajectory >= ireg*photon_radii[hit.getLayer()] && distance_photon_trajectory < (ireg+1)*photon_radii[hit.getLayer()])
+                        photonContainmentEnergy[ireg] += hit.getEnergy();
+                    if(distance_ele_trajectory > (ireg+1)*ele_radii[hit.getLayer()] && distance_photon_trajectory > (ireg+1)*photon_radii[hit.getLayer()]) {
+                        outsideContainmentEnergy[ireg] += hit.getEnergy();
                         outsideContainmentNHits[ireg] += 1;
-                        outsideContainmentXmean[ireg] += xy_pair.first*hit->getEnergy();
-                        outsideContainmentYmean[ireg] += xy_pair.second*hit->getEnergy();
+                        outsideContainmentXmean[ireg] += xy_pair.first*hit.getEnergy();
+                        outsideContainmentYmean[ireg] += xy_pair.second*hit.getEnergy();
                     }
                 }
             }
@@ -355,21 +344,20 @@ namespace ldmx {
         }
 
         // Loop over hits a second time to find the standard deviations.
-        for (int iHit = 0; iHit < nEcalHits; iHit++) {
-            EcalHit* hit = (EcalHit*) ecalDigis->At(iHit);
+        for ( const EcalHit &hit : ecalRecHits ) {
             LayerCellPair hit_pair = hitToPair(hit);
-            if (hit->getEnergy() > 0) {
-                xStd_ += pow((getCellCentroidXYPair(hit_pair.second).first - xMean), 2) * hit->getEnergy();
-                yStd_ += pow((getCellCentroidXYPair(hit_pair.second).second - yMean), 2) * hit->getEnergy();
-                stdLayerHit_ += pow((hit->getLayer() - wavgLayerHit), 2) * hit->getEnergy();
+            if (hit.getEnergy() > 0) {
+                xStd_ += pow((getCellCentroidXYPair(hit_pair.second).first - xMean), 2) * hit.getEnergy();
+                yStd_ += pow((getCellCentroidXYPair(hit_pair.second).second - yMean), 2) * hit.getEnergy();
+                stdLayerHit_ += pow((hit.getLayer() - wavgLayerHit), 2) * hit.getEnergy();
             }
             XYCoords xy_pair = getCellCentroidXYPair(hit_pair.second);
-            float distance_ele_trajectory = ele_trajectory.size() ? sqrt( pow((xy_pair.first - ele_trajectory[hit->getLayer()].first),2) + pow((xy_pair.second - ele_trajectory[hit->getLayer()].second),2) ) : -1.0;
-            float distance_photon_trajectory = photon_trajectory.size() ? sqrt( pow((xy_pair.first - photon_trajectory[hit->getLayer()].first),2) + pow((xy_pair.second - photon_trajectory[hit->getLayer()].second),2) ) : -1.0;
+            float distance_ele_trajectory = ele_trajectory.size() ? sqrt( pow((xy_pair.first - ele_trajectory[hit.getLayer()].first),2) + pow((xy_pair.second - ele_trajectory[hit.getLayer()].second),2) ) : -1.0;
+            float distance_photon_trajectory = photon_trajectory.size() ? sqrt( pow((xy_pair.first - photon_trajectory[hit.getLayer()].first),2) + pow((xy_pair.second - photon_trajectory[hit.getLayer()].second),2) ) : -1.0;
             for(unsigned int ireg = 0; ireg < nregions; ireg++) {
-                if(distance_ele_trajectory > (ireg+1)*ele_radii[hit->getLayer()] && distance_photon_trajectory > (ireg+1)*photon_radii[hit->getLayer()]) {
-                    outsideContainmentXstd[ireg] += pow((xy_pair.first - outsideContainmentXmean[ireg]),2) * hit->getEnergy();
-                    outsideContainmentYstd[ireg] += pow((xy_pair.second - outsideContainmentYmean[ireg]),2) * hit->getEnergy();
+                if(distance_ele_trajectory > (ireg+1)*ele_radii[hit.getLayer()] && distance_photon_trajectory > (ireg+1)*photon_radii[hit.getLayer()]) {
+                    outsideContainmentXstd[ireg] += pow((xy_pair.first - outsideContainmentXmean[ireg]),2) * hit.getEnergy();
+                    outsideContainmentYstd[ireg] += pow((xy_pair.second - outsideContainmentYmean[ireg]),2) * hit.getEnergy();
                 }
             }
         }
@@ -450,19 +438,19 @@ namespace ldmx {
             }
         }
 
-        result_.setVariables(nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
+        result.setVariables(nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
             showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_, electronContainmentEnergy, photonContainmentEnergy, outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd, outsideContainmentYstd, ecalLayerEdepReadout_, recoilP, recoilPos);
         
         if (doBdt_) {
-            BDTHelper_->buildFeatureVector(bdtFeatures_, result_);
+            BDTHelper_->buildFeatureVector(bdtFeatures_, result );
             float pred = BDTHelper_->getSinglePred(bdtFeatures_);
-            result_.setVetoResult(pred > bdtCutVal_);
-            result_.setDiscValue(pred);
+            result.setVetoResult(pred > bdtCutVal_);
+            result.setDiscValue(pred);
             //std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
         
             // If the event passes the veto, keep it. Otherwise, 
             // drop the event.
-            if (result_.passesVeto() && inside) { 
+            if (result.passesVeto() && inside) { 
                 setStorageHint(hint_shouldKeep); 
             } else { 
                 setStorageHint(hint_shouldDrop);
@@ -474,11 +462,11 @@ namespace ldmx {
         } else {
             setStorageHint(hint_shouldDrop);
         }
-        event.addToCollection(collectionName_, result_);
+        event.add( collectionName_, result );
     }
 
-    EcalVetoProcessor::LayerCellPair EcalVetoProcessor::hitToPair(EcalHit* hit) {
-        int detIDraw = hit->getID();
+    EcalVetoProcessor::LayerCellPair EcalVetoProcessor::hitToPair(const EcalHit &hit) {
+        int detIDraw = hit.getID();
         detID_.setRawValue(detIDraw);
         detID_.unpack();
         int layer = detID_.getFieldValue("layer");
@@ -489,16 +477,14 @@ namespace ldmx {
     }
 
     /* Function to calculate the energy weighted shower centroid */
-    int EcalVetoProcessor::GetShowerCentroidIDAndRMS(const TClonesArray* ecalDigis, double& showerRMS) {
-        int nEcalHits = ecalDigis->GetEntriesFast();
+    int EcalVetoProcessor::GetShowerCentroidIDAndRMS(const std::vector<EcalHit> &ecalRecHits, double& showerRMS) {
         XYCoords wgtCentroidCoords = std::make_pair<float, float>(0., 0.);
         float sumEdep = 0;
         int returnCellId = 1e6;
         //Calculate Energy Weighted Centroid
-        for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
-            EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
+        for (const EcalHit &hit : ecalRecHits ) {
             LayerCellPair hit_pair = hitToPair(hit);
-            CellEnergyPair cell_energy_pair = std::make_pair(hit_pair.second, hit->getEnergy());
+            CellEnergyPair cell_energy_pair = std::make_pair(hit_pair.second, hit.getEnergy());
             XYCoords centroidCoords = getCellCentroidXYPair(hit_pair.second);
             wgtCentroidCoords.first = wgtCentroidCoords.first + centroidCoords.first * cell_energy_pair.second;
             wgtCentroidCoords.second = wgtCentroidCoords.second + centroidCoords.second * cell_energy_pair.second;
@@ -508,13 +494,12 @@ namespace ldmx {
         wgtCentroidCoords.second = (sumEdep > 1E-6) ? wgtCentroidCoords.second / sumEdep : wgtCentroidCoords.second;
         //Find Nearest Cell to Centroid
         float maxDist = 1e6;
-        for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
-            EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
+        for ( const EcalHit &hit : ecalRecHits ) {
             LayerCellPair hit_pair = hitToPair(hit);
             XYCoords centroidCoords = getCellCentroidXYPair(hit_pair.second);
 
             float deltaR = pow(pow((centroidCoords.first - wgtCentroidCoords.first), 2) + pow((centroidCoords.second - wgtCentroidCoords.second), 2), .5);
-            showerRMS += deltaR * hit->getEnergy();
+            showerRMS += deltaR * hit.getEnergy();
             if (deltaR < maxDist) {
                 maxDist = deltaR;
                 returnCellId = hit_pair.second;
@@ -525,27 +510,22 @@ namespace ldmx {
         return returnCellId;
     }
 
-                /* Function to load up empty vector of hit maps */
-    void EcalVetoProcessor::fillHitMap(const TClonesArray* ecalDigis,
+    /* Function to load up empty vector of hit maps */
+    void EcalVetoProcessor::fillHitMap(const std::vector<EcalHit> &ecalRecHits,
             std::vector<std::map<int, float>>& cellMap_) {
-        int nEcalHits = ecalDigis->GetEntriesFast();
-        for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
-            EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(
-                    hitCounter));
+        for ( const EcalHit &hit : ecalRecHits ) {
             LayerCellPair hit_pair = hitToPair(hit);
 
             CellEnergyPair cell_energy_pair = std::make_pair(
-                    hit_pair.second, hit->getEnergy());
+                    hit_pair.second, hit.getEnergy());
             cellMap_[hit_pair.first].insert(cell_energy_pair);
         }
     }
 
-    void EcalVetoProcessor::fillIsolatedHitMap(const TClonesArray* ecalDigis, float globalCentroid,
+    void EcalVetoProcessor::fillIsolatedHitMap(const std::vector<EcalHit> &ecalRecHits, float globalCentroid,
             std::vector<std::map<int, float>>& cellMap_, std::vector<std::map<int, float>>& cellMapIso_, bool doTight) {
-        int nEcalHits = ecalDigis->GetEntriesFast();
-        for (int hitCounter = 0; hitCounter < nEcalHits; ++hitCounter) {
+        for (const EcalHit &hit : ecalRecHits ) {
             std::pair<bool, int> isolatedHit = std::make_pair(true, 0);
-            EcalHit* hit = static_cast<EcalHit*>(ecalDigis->At(hitCounter));
             LayerCellPair hit_pair = hitToPair(hit);
             if (doTight) {
                 //Disregard hits that are on the centroid.
@@ -573,7 +553,7 @@ namespace ldmx {
                 continue;
             }
             //Insert isolated hit
-            CellEnergyPair cell_energy_pair = std::make_pair(hit_pair.second, hit->getEnergy());
+            CellEnergyPair cell_energy_pair = std::make_pair(hit_pair.second, hit.getEnergy());
             cellMapIso_[hit_pair.first].insert(cell_energy_pair);
         }
     }

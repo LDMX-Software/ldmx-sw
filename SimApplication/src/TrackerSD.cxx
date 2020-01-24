@@ -108,6 +108,10 @@ namespace ldmx {
         hit->setLayerID(layer);
         hit->setModuleID(module); 
 
+        // Set energy and pdg code of SimParticle (common things requested)
+        hit->setEnergy( postPoint->GetTotalEnergy() );
+        hit->setPdgID( aStep->GetTrack()->GetDynamicParticle()->GetPDGcode() );
+
         /*
          * Debug print.
          */
