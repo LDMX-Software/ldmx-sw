@@ -4,14 +4,14 @@ ClassImp(ldmx::SimTrackerHit)
 
 namespace ldmx {
 
-    SimTrackerHit::SimTrackerHit() : TObject() {
+    SimTrackerHit::SimTrackerHit() {
     }
 
     SimTrackerHit::~SimTrackerHit() {
         Clear();
     }
 
-    void SimTrackerHit::Print(Option_t *option) const {
+    void SimTrackerHit::Print() const {
         std::cout << "SimTrackerHit { " << "id: " << id_ << ", " <<
                 "layerID: " << layerID_ << ", " <<
                 "moduleID: " << moduleID_ << ", " <<
@@ -22,8 +22,7 @@ namespace ldmx {
                 " }" << std::endl;
     }
 
-    void SimTrackerHit::Clear(Option_t*) {
-        TObject::Clear();
+    void SimTrackerHit::Clear() {
 
         id_ = 0;
         layerID_ = 0;
@@ -41,11 +40,6 @@ namespace ldmx {
         trackID_ = -1;
         pdgID_ = 0;
 
-        simParticle_ = nullptr;
-    }
-
-    SimParticle* SimTrackerHit::getSimParticle() const {
-        return static_cast<SimParticle*>(simParticle_.GetObject());
     }
 
     void SimTrackerHit::setPosition(const float x, const float y, const float z) {

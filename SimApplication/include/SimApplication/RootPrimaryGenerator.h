@@ -13,6 +13,7 @@
 //----------------//
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 //------------//
 //   Geant4   //
@@ -24,13 +25,12 @@
 //----------//
 #include "TFile.h"
 #include "TTree.h"
-#include "TClonesArray.h"
 #include "TVector3.h"
 
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "Event/EventHeader.h"
+#include "Event/EventDef.h"
 
 namespace ldmx {
 
@@ -81,8 +81,8 @@ namespace ldmx {
             /**
              * The sim particles
              */
-            TClonesArray* simParticles_;
-            TClonesArray* ecalSPParticles_;
+            std::vector<SimParticle> simParticles_;
+            std::vector<SimTrackerHit> ecalSPParticles_;
 
             /**
              * The event header

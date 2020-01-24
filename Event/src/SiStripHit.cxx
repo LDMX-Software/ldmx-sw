@@ -11,10 +11,9 @@ namespace ldmx {
 
     SiStripHit::~SiStripHit() {
         Clear();
-        delete simTrackerHits_;  
     }
 
-    void SiStripHit::Print(Option_t* option) const { 
+    void SiStripHit::Print() const { 
         
         std::cout << "[ SiStripHit ]:\n" 
                   << "\t ADC Values: [ ";  
@@ -26,14 +25,13 @@ namespace ldmx {
 
     }
 
-    void SiStripHit::Clear(Option_t* option) { 
-        TObject::Clear();  
+    void SiStripHit::Clear() { 
         adcValues_.clear(); 
         time_ = -9999;
-        simTrackerHits_->Delete();  
+        simTrackerHits_.clear();
     }
 
-    void SiStripHit::addSimTrackerHit(SimTrackerHit* hit) { 
-        simTrackerHits_->Add(static_cast<TObject*>(hit)); 
+    void SiStripHit::addSimTrackerHit(const SimTrackerHit hit) { 
+        simTrackerHits_.push_back( hit );
     }
 }

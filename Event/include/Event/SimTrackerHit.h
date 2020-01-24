@@ -9,11 +9,7 @@
 #define EVENT_SIMTRACKERHIT_H_
 
 // ROOT
-#include "TObject.h"
-#include "TRef.h"
-
-// LDMX
-#include "Event/SimParticle.h"
+#include "TObject.h" //For ClassDef
 
 // STL
 #include <iostream>
@@ -24,7 +20,7 @@ namespace ldmx {
      * @class SimTrackerHit
      * @brief Represents a simulated tracker hit in the simulation
      */
-    class SimTrackerHit: public TObject {
+    class SimTrackerHit {
 
         public:
 
@@ -41,12 +37,12 @@ namespace ldmx {
             /**
              * Print a description of this object.
              */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /**
              * Reset the SimTrackerHit object.
              */
-            void Clear(Option_t *option = "");
+            void Clear();
 
             /**
              * Get the detector ID of the hit.
@@ -116,12 +112,6 @@ namespace ldmx {
              * @return The Sim particle track ID of the hit.
              */
             int getPdgID() const { return pdgID_; };
-
-            /**
-             * Get the Monte Carlo particle that created the hit.
-             * @return The particle that created the hit.
-             */
-            SimParticle* getSimParticle() const;
 
             /**
              * Set the detector ID of the hit.
@@ -196,10 +186,11 @@ namespace ldmx {
             void setPdgID(const int simPdgID) { this->pdgID_ = simPdgID; };
 
             /**
-             * Set the Monte Carlo particle that created the hit.
-             * @param simParticle The particle that created the hit.
+             * Sort by time of hit
              */
-            void setSimParticle(SimParticle* simParticle) { this->simParticle_ = (TObject*) simParticle; };
+            bool operator < ( const SimTrackerHit &rhs ) const {
+                return this->getTime() < rhs.getTime();
+            }
 
         private:
 
@@ -275,11 +266,6 @@ namespace ldmx {
              * The Sim PDG ID.
              */
             int pdgID_{0};
-
-            /**
-             * The particle that caused the hit.
-             */
-            TRef simParticle_{nullptr};
 
             /**
              * The ROOT class definition.

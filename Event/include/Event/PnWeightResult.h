@@ -22,11 +22,11 @@
 //----------//
 //   ROOT   //
 //----------//
-#include <TObject.h>
+#include <TObject.h> //For ClassDef
 
 namespace ldmx {
 
-    class PnWeightResult : public TObject {
+    class PnWeightResult {
 
         public:
 
@@ -88,17 +88,10 @@ namespace ldmx {
             void setWeight(const double weight) { weight_ = weight; }
 
             /** Reset the object. */
-            void Clear(Option_t *option = "");
-
-            /**
-             * Copy this object. 
-             *
-             * @param object The target object. 
-             */
-            void Copy(TObject& object) const;
+            void Clear();
 
             /** Print the object */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
         private:
 

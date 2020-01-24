@@ -38,9 +38,7 @@ namespace ldmx {
             /**
              * Class destructor.
              */
-            virtual ~SimHitSortProcessor() {
-                if ( sortedHits ) delete sortedHits;
-            }
+            virtual ~SimHitSortProcessor() { }
 
             /**
              */
@@ -53,7 +51,6 @@ namespace ldmx {
 
         private:
             
-            TClonesArray *sortedHits;
             std::string collectionName;
             std::string outputCollection;
     };

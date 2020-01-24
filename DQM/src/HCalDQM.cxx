@@ -6,29 +6,6 @@
 
 #include "DQM/HCalDQM.h" 
 
-#include <algorithm>
-
-//----------//
-//   ROOT   //
-//----------//
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TVector3.h"
-
-//----------//
-//   LDMX   //
-//----------//
-#include "Event/Event.h"
-#include "Event/FindableTrackResult.h"
-#include "Event/HcalHit.h"
-#include "Event/HcalVetoResult.h"
-#include "Event/SimParticle.h"
-#include "Event/SimTrackerHit.h"
-#include "Event/EcalVetoResult.h"
-#include "Event/TrackerVetoResult.h"
-#include "Framework/HistogramPool.h"
-#include "Tools/AnalysisUtils.h"
-
 namespace ldmx { 
 
     HCalDQM::HCalDQM(const std::string &name, Process &process) : 
@@ -102,39 +79,39 @@ namespace ldmx {
         if (!event.exists("hcalDigis")) return; 
 
         // Get the collection of HCalDQM digitized hits if the exists 
-        const TClonesArray* hcalHits = event.getCollection("hcalDigis");
+        const std::vector<HcalHit> hcalHits = event.getCollection<HcalHit>("hcalDigis");
      
         // Get the total hit count
-        int hitCount = hcalHits->GetEntriesFast();  
+        int hitCount = hcalHits.size();  
         histograms_->get("n_hits")->Fill(hitCount); 
 
-        // Vector containing all HCal hits.  This will be used for sorting.
-        std::vector<HcalHit*> hits; 
-
         double totalPE{0};  
-        // Loop through all HCal hits in the event
-        for (size_t ihit{0}; ihit < hitCount; ++ihit) {
-            HcalHit* hit = static_cast<HcalHit*>(hcalHits->At(ihit)); 
-            histograms_->get("pe")->Fill(hit->getPE());
-            histograms_->get("hit_time")->Fill(hit->getTime());
-           
-            totalPE += hit->getPE();
 
-            // Create the list that will be used to find the earliest hit time
-            if (hit->getTime() != -999) hits.push_back(hit);  
+        // Loop through all HCal hits in the event
+        // Get non-noise generated hits into new vector for sorting
+        std::vector<const HcalHit *> filteredHits;
+        for (const HcalHit &hit : hcalHits ) {
+
+            histograms_->get("pe")->Fill(hit.getPE());
+            histograms_->get("hit_time")->Fill(hit.getTime());
+           
+            totalPE += hit.getPE();
+
+            if ( hit.getTime() > -999. ) { filteredHits.push_back( &hit ); }
         }
         
         histograms_->get("total_pe")->Fill(totalPE); 
 
         // Sort the array by hit time
-        std::sort (hits.begin(), hits.end(), [ ](const auto& lhs, const auto& rhs) 
+        std::sort (filteredHits.begin(), filteredHits.end(), [ ](const auto& lhs, const auto& rhs) 
         {
             return lhs->getTime() < rhs->getTime(); 
         });
         
+        //get first time and PE of hit over threshold
         double minTime{-1}; 
         double minTimePE{-1}; 
-        for (const auto& hit : hits) { 
+        for (const auto& hit : filteredHits) { 
             if (hit->getPE() < maxPEThreshold_) continue; 
             minTime = hit->getTime(); 
             minTimePE = hit->getPE(); 
@@ -151,27 +128,26 @@ namespace ldmx {
         if (event.exists("HcalVeto")) {
         
             // Get the collection of HCalDQM digitized hits if the exists 
-            const TClonesArray* hcalVeto = event.getCollection("HcalVeto");
+            const HcalVetoResult hcalVeto = event.getObject<HcalVetoResult>("HcalVeto");
 
-            HcalVetoResult* veto = static_cast<HcalVetoResult*>(hcalVeto->At(0));
-            HcalHit* maxPEHit = veto->getMaxPEHit();  
+            HcalHit maxPEHit = hcalVeto.getMaxPEHit();  
 
             // Get the max PE and it's time
-            maxPE = maxPEHit->getPE();
-            maxPETime = maxPEHit->getTime();
+            maxPE = maxPEHit.getPE();
+            maxPETime = maxPEHit.getTime();
             
             histograms_->get("max_pe")->Fill(maxPE);
             histograms_->get("hit_time_max_pe")->Fill(maxPETime); 
             histograms_->get("max_pe:time")->Fill(maxPE, maxPETime);
-            histograms_->get("veto")->Fill(veto->passesVeto());   
+            histograms_->get("veto")->Fill(hcalVeto.passesVeto());   
 
-            if (veto->passesVeto()) {
+            if (hcalVeto.passesVeto()) {
                 histograms_->get("max_pe_hcal_veto")->Fill(maxPE);
                 histograms_->get("hit_time_max_pe_hcal_veto")->Fill(maxPETime); 
                 histograms_->get("max_pe:time_hcal_veto")->Fill(maxPE, maxPETime);
                 histograms_->get("total_pe_hcal_veto")->Fill(totalPE); 
                 histograms_->get("n_hits_hcal_veto")->Fill(hitCount); 
-                passesHcalVeto = veto->passesVeto();  
+                passesHcalVeto = true;
             }
         }
 
@@ -179,12 +155,10 @@ namespace ldmx {
         float bdtProb{-1};
         bool passesBDT{false};  
         if (event.exists(ecalVetoCollectionName_)) {
-            const EcalVetoResult* veto 
-                = static_cast<const EcalVetoResult*>(
-                        event.getCollection(ecalVetoCollectionName_)->At(0));
+            const EcalVetoResult ecalVeto = event.getObject<EcalVetoResult>(ecalVetoCollectionName_);
        
             // Get the BDT probability  
-            bdtProb = veto->getDisc();
+            bdtProb = ecalVeto.getDisc();
             histograms_->get("bdt_n_hits")->Fill(bdtProb, hitCount); 
             
             // Fill the histograms if the event passes the ECal veto
@@ -205,11 +179,10 @@ namespace ldmx {
         if (event.exists("TrackerVeto")) { 
 
             // Get the collection of trackerVeto results
-            const TClonesArray* trackerVeto = event.getCollection("TrackerVeto");
+            const TrackerVetoResult trackerVeto = event.getObject<TrackerVetoResult>("TrackerVeto");
 
-            TrackerVetoResult* veto = static_cast<TrackerVetoResult*>(trackerVeto->At(0)); 
             // Check if the event passes the tracker veto
-            if (veto->passesVeto()) { 
+            if (trackerVeto.passesVeto()) { 
                 
                 passesTrackVeto = true; 
 

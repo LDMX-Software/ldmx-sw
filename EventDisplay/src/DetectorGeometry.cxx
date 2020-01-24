@@ -216,14 +216,14 @@ namespace ldmx {
 
     }
 
-    BoundingBox DetectorGeometry::getBoundingBox( HcalHit* hit ) const {
+    BoundingBox DetectorGeometry::getBoundingBox( const HcalHit &hit ) const {
         
         //pairs that will go into BoundingBox
         std::pair<double,double> X(0,0), Y(0,0), Z(0,0);
 
-        HcalSection section = (HcalSection)( hit->getSection() );
-        int layer = hit->getLayer();
-        int strip = hit->getStrip();
+        HcalSection section = (HcalSection)( hit.getSection() );
+        int layer = hit.getLayer();
+        int strip = hit.getStrip();
 
         //calculate center of layer,strip with respect to detector section
         double layercenter = layer*hcalLayerThickness_.at( section ) + 0.5*hcalThicknessScint_;
@@ -248,14 +248,14 @@ namespace ldmx {
                 X.first  = x - estrip;
                 X.second = x + estrip;
                 
-                y = hit->getY();
+                y = hit.getY();
                 Y.first  = y - hcalUncertaintyTimingPos_;
                 Y.second = y + hcalUncertaintyTimingPos_;
 
             } else {
                 //Horizontal Layers
                 
-                x = hit->getX();
+                x = hit.getX();
                 X.first  = x - hcalUncertaintyTimingPos_;
                 X.second = x + hcalUncertaintyTimingPos_;
 
@@ -273,7 +273,7 @@ namespace ldmx {
 
             if ( section == HcalSection::TOP or section == HcalSection::BOTTOM ) {
                 
-                x = hit->getX();
+                x = hit.getX();
                 X.first  = x - hcalUncertaintyTimingPos_;
                 X.second = x + hcalUncertaintyTimingPos_;
                 
@@ -287,7 +287,7 @@ namespace ldmx {
                 
             } else if ( section == HcalSection::LEFT or section == HcalSection::RIGHT ) {
                 
-                y = hit->getY();
+                y = hit.getY();
                 Y.first  = y - hcalUncertaintyTimingPos_;
                 Y.second = y + hcalUncertaintyTimingPos_;
 
@@ -313,13 +313,13 @@ namespace ldmx {
         return hbox;
     }
     
-    BoundingBox DetectorGeometry::getBoundingBox( const std::vector<HcalHit*>  &hitVec ) const {
+    BoundingBox DetectorGeometry::getBoundingBox( const std::vector<HcalHit>  &hitVec ) const {
         
         std::vector<double> pointSum ( 3 , 0.0 ); //sums of weighted coordinates
         std::vector<double> weightSum( 3 , 0.0 ); //sums of weights for each coordinate
         
         //calculate real space point for each hit
-        for ( HcalHit* hit : hitVec ) {
+        for ( const HcalHit &hit : hitVec ) {
             
             BoundingBox box = getBoundingBox( hit );
             
@@ -430,12 +430,12 @@ namespace ldmx {
         return hexpris;
     }
 
-    HexPrism DetectorGeometry::getHexPrism( EcalHit* hit ) const {
+    HexPrism DetectorGeometry::getHexPrism( const EcalHit &hit ) const {
 
-        unsigned int hitID = hit->getID();
+        unsigned int hitID = hit.getID();
         unsigned int cellID = hitID >> 15;
         unsigned int moduleID = (hitID << 17) >> 29;
-        int layer = hit->getLayer();
+        int layer = hit.getLayer();
 
         return this->getHexPrism( cellID , moduleID , layer );
     }
@@ -501,10 +501,10 @@ namespace ldmx {
         return bbox;
     }
 
-    BoundingBox DetectorGeometry::getBoundingBox( SimTrackerHit* recoilHit ) const {
+    BoundingBox DetectorGeometry::getBoundingBox( const SimTrackerHit &recoilHit ) const {
         
-        int layerID = recoilHit->getLayerID();
-        int moduleID = recoilHit->getModuleID();
+        int layerID = recoilHit.getLayerID();
+        int moduleID = recoilHit.getModuleID();
         int combined = layerID*10 + moduleID;
 
         BoundingBox bbox;
@@ -514,7 +514,7 @@ namespace ldmx {
             return bbox;
         }
 
-        std::vector<float> hitPos = recoilHit->getPosition();
+        std::vector<float> hitPos = recoilHit.getPosition();
 
         double xWidth = 1.0;
         double yWidth = recoilStereoStripLength_;

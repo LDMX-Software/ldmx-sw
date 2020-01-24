@@ -2,9 +2,10 @@
 #include "TFile.h"
 #include "TROOT.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/EventImpl.h"
+#include "Framework/Event.h"
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
+#include "Framework/NtupleManager.h"
 #include "Event/RunHeader.h"
 
 namespace ldmx {
@@ -21,6 +22,9 @@ namespace ldmx {
             // procesed
             auto n_events_processed{0};
 
+            //event bus for this process
+            Event theEvent(passname_);
+            
             // Start by notifying everyone that modules processing is beginning
             for (auto module : sequence_) module->onProcessStart();
 
@@ -32,11 +36,10 @@ namespace ldmx {
 
                 for (auto module : sequence_) module->onFileOpen(outFile);
 
-                EventImpl theEvent(passname_);
                 outFile.setupEvent(&theEvent);
 
                 while (n_events_processed < eventLimit_) {
-                    EventHeader& eh = theEvent.getEventHeaderMutable();
+                    EventHeader& eh = theEvent.getEventHeader();
                     eh.setRun(runForGeneration_);
                     eh.setEventNumber(n_events_processed + 1);
                     eh.setTimestamp(TTimeStamp());
@@ -76,15 +79,12 @@ namespace ldmx {
                             );
                 }
 
-
                 // next, loop through the files
                 int ifile = 0;
                 int wasRun = -1;
                 for (auto infilename : inputFiles_) {
 
                     EventFile inFile(infilename);
-
-                    EventImpl theEvent(passname_);
 
                     std::cout << "[ Process ] : Opening file " << infilename << std::endl;
 
@@ -137,8 +137,8 @@ namespace ldmx {
                         m_storageController.resetEventState();
             
                         // notify for new run if necessary
-                        if (theEvent.getEventHeader()->getRun() != wasRun) {
-                            wasRun = theEvent.getEventHeader()->getRun();
+                        if (theEvent.getEventHeader().getRun() != wasRun) {
+                            wasRun = theEvent.getEventHeader().getRun();
                             try {
                                 const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
                                 std::cout << "[ Process ] : got new run header from '" << masterFile->getFileName() << "' ..." << std::endl;
@@ -154,8 +154,8 @@ namespace ldmx {
                         if ( (logFrequency_ != -1) && ((n_events_processed + 1)%logFrequency_ == 0)) { 
                             TTimeStamp t;
                             std::cout << "[ Process ] :  Processing " << n_events_processed + 1 
-                                      << " Run " << theEvent.getEventHeader()->getRun() 
-                                      << " Event " << theEvent.getEventHeader()->getEventNumber() 
+                                      << " Run " << theEvent.getEventHeader().getRun() 
+                                      << " Event " << theEvent.getEventHeader().getEventNumber() 
                                       << "  (" << t.AsString("lc") << ")" << std::endl;
                         }
 
@@ -167,6 +167,8 @@ namespace ldmx {
                             }
                         }
 
+                        NtupleManager::getInstance()->fill(); 
+                        NtupleManager::getInstance()->clear(); 
                         n_events_processed++;
                     } //loop through events
 
@@ -178,11 +180,6 @@ namespace ldmx {
                         std::cout << "[ Process ] : Processing interrupted\n";
                     }
 
-                    if ( outFile and !singleOutput ) {
-                        outFile->close();
-                        delete outFile;
-                        outFile = nullptr;
-                    }
 
                     std::cout << "[ Process ] : Closing file " << infilename << std::endl;
 
@@ -190,6 +187,16 @@ namespace ldmx {
 
                     inFile.close();
 
+                    // Reset the event in case of single output mode.  This is 
+                    // only needed if an output file is being written out and 
+                    // is ignored when writing a histogram file only. 
+                    if (outFile) theEvent.onEndOfFile();
+
+                    if ( outFile and !singleOutput ) {
+                        outFile->close();
+                        delete outFile;
+                        outFile = nullptr;
+                    }
 
                 } //loop through input files
 
@@ -245,18 +252,23 @@ namespace ldmx {
     }
 
     TDirectory* Process::makeHistoDirectory(const std::string& dirName) {
-        TDirectory* owner;
-        if (histoFilename_.empty()) {
-            owner = gROOT;
-        } else if (histoTFile_ == 0) {
-            histoTFile_ = new TFile(histoFilename_.c_str(), "RECREATE");
-            owner = histoTFile_;
-        } else
-            owner = histoTFile_;
-        owner->cd();
+        auto owner{openHistoFile()}; 
         TDirectory* child = owner->mkdir((char*) dirName.c_str());
         if (child)
             child->cd();
         return child;
+    }
+
+    TDirectory* Process::openHistoFile() {
+        TDirectory* owner{nullptr}; 
+        
+        if (histoFilename_.empty()) owner = gROOT; 
+        else if (histoTFile_ == nullptr) { 
+            histoTFile_ = new TFile(histoFilename_.c_str(), "RECREATE");
+            owner = histoTFile_;
+        } else owner = histoTFile_; 
+        owner->cd(); 
+
+        return owner; 
     }
 }

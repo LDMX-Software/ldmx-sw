@@ -4,14 +4,14 @@ ClassImp(ldmx::TriggerResult)
 
 namespace ldmx {
 
-    TriggerResult::TriggerResult() : TObject() {
+    TriggerResult::TriggerResult() {
     }
 
     TriggerResult::~TriggerResult() {
         Clear();
     }
 
-    void TriggerResult::Print(Option_t *option) const {
+    void TriggerResult::Print() const {
 
         std::cout << "TriggerResult { " << "name: " << name_ << ", " << "pass: " << pass_ << " }" << std::endl;
 
@@ -20,9 +20,7 @@ namespace ldmx {
         }
     }
 
-    void TriggerResult::Clear(Option_t*) {
-
-        TObject::Clear();
+    void TriggerResult::Clear() {
 
         name_ = "";
         pass_ = false;
@@ -30,14 +28,6 @@ namespace ldmx {
         for (int i = 0; i < variables_.GetSize(); ++i) {
             variables_[i] = 0;
         }
-    }
-
-    void TriggerResult::Copy(TObject& ob) const {
-
-        TriggerResult& tr = (TriggerResult&) (ob);
-        tr.name_ = name_;
-        tr.pass_ = pass_;
-        tr.variables_ = variables_;
     }
 
     void TriggerResult::set(const TString& name, bool pass, int nvar) {

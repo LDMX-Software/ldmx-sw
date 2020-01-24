@@ -9,7 +9,7 @@
 #define EVENT_CLUSTERALGORESULT_H_
 
 // ROOT
-#include "TObject.h"
+#include "TObject.h" //For ClassDef
 #include "TString.h"
 #include "TArrayD.h"
 
@@ -22,7 +22,7 @@ namespace ldmx {
      * @class ClusterAlgoResult
      * @brief Contains details about the clustering algorithm 
      */
-    class ClusterAlgoResult : public TObject {
+    class ClusterAlgoResult {
 
         public:
 
@@ -39,18 +39,12 @@ namespace ldmx {
             /**
              * Print a description of this object.
              */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /**
              * Reset the ClusterAlgoResult object.
              */
-            void Clear(Option_t *option = "");
-
-            /**
-             * Copy this object.
-             * @param o The target object.
-             */
-            void Copy(TObject& o) const;
+            void Clear();
 
             /**
              * Return the name of the cluster algo.

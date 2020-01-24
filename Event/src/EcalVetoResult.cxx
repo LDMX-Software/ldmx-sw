@@ -10,16 +10,14 @@ ClassImp(ldmx::EcalVetoResult)
 
 namespace ldmx {
 
-    EcalVetoResult::EcalVetoResult() :
-        TObject() {
+    EcalVetoResult::EcalVetoResult() {
     }
 
     EcalVetoResult::~EcalVetoResult() {
         Clear();
     }
 
-    void EcalVetoResult::Clear(Option_t *option) {
-        TObject::Clear();
+    void EcalVetoResult::Clear() {
 
         passesVeto_ = false;
 
@@ -51,43 +49,6 @@ namespace ldmx {
         recoilY_ = -9999;
 
         ecalLayerEdepReadout_.clear();
-    }
-
-    void EcalVetoResult::Copy(TObject& object) const {
-
-        EcalVetoResult& result = (EcalVetoResult&) object;
-
-        result.passesVeto_ = passesVeto_;
-
-        result.nReadoutHits_ = nReadoutHits_;
-        result.summedDet_ = summedDet_;
-        result.summedTightIso_ = summedTightIso_;
-        result.maxCellDep_ = maxCellDep_;
-        result.showerRMS_ = showerRMS_;
-        result.xStd_ = xStd_;
-        result.yStd_ = yStd_;
-        result.avgLayerHit_ = avgLayerHit_;
-        result.stdLayerHit_ = stdLayerHit_;
-        result.deepestLayerHit_ = deepestLayerHit_;
-        result.ecalBackEnergy_ = ecalBackEnergy_;
-        
-        result.electronContainmentEnergy_ = electronContainmentEnergy_;
-        result.photonContainmentEnergy_ = photonContainmentEnergy_;
-        result.outsideContainmentEnergy_ = outsideContainmentEnergy_;
-        result.outsideContainmentNHits_ = outsideContainmentNHits_;
-        result.outsideContainmentXStd_ = outsideContainmentXStd_;
-        result.outsideContainmentYStd_ = outsideContainmentYStd_;
-        
-        result.discValue_ = discValue_;
-        
-        result.recoilPx_ = recoilPx_;
-        result.recoilPy_ = recoilPy_;
-        result.recoilPz_ = recoilPz_;
-        result.recoilX_ = recoilX_; 
-        result.recoilY_ = recoilY_;
-
-        // vector copy
-        result.ecalLayerEdepReadout_ = ecalLayerEdepReadout_;
     }
 
     void EcalVetoResult::setVariables(
@@ -147,7 +108,7 @@ namespace ldmx {
         ecalLayerEdepReadout_ = EcalLayerEdepReadout;
     }
 
-    void EcalVetoResult::Print(Option_t *option) const {
+    void EcalVetoResult::Print() const {
         std::cout << "[ EcalVetoResult ]:\n" << "\t Passes veto : " << passesVeto_ << "\n" << std::endl;
     }
 }

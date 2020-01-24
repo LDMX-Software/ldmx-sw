@@ -2,6 +2,7 @@
  * @file EventLinkDef.h
  * @brief Pre-processor macro commands for configuring creation of the ROOT class dictionary
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifdef __CINT__
@@ -37,6 +38,19 @@
 #pragma link C++ class ldmx::SiStripHit+; 
 #pragma link C++ class ldmx::RawHit+;
 #pragma link C++ class ldmx::DigiCollection+; 
+
+//objects that we want to be added inside of an STL collection must be repeated below
+#pragma link C++ class std::vector<ldmx::SimCalorimeterHit>+;
+#pragma link C++ class std::vector<ldmx::SimTrackerHit>+;
+#pragma link C++ class std::vector<ldmx::SimParticle>+;
+#pragma link C++ class std::map<int,ldmx::SimParticle>+;
+#pragma link C++ class std::vector<ldmx::CalorimeterHit>+;
+#pragma link C++ class std::vector<ldmx::EcalHit>+;
+#pragma link C++ class std::vector<ldmx::EcalCluster>+;
+#pragma link C++ class std::vector<ldmx::FindableTrackResult>+;
+#pragma link C++ class std::vector<ldmx::HcalHit>+;
+#pragma link C++ class std::vector<ldmx::SiStripHit>+;
+#pragma link C++ class std::vector<ldmx::RawHit>+;
 
 #endif
 
