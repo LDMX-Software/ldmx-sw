@@ -33,6 +33,10 @@ namespace ldmx {
             "/run/initialize", //hard coded at the right time
             "/run/beamOn", //passed commands should only be sim setup
             "/ldmx/pw", //parallel world scoring planes is handled here (if passed a path to the scoring plane description)
+            "/random/setSeeds", //handled by own config parameter
+            "EventPrintPlugin", //tied to process log frequency
+            "/ldmx/persistency/root", //persistency messenger not operational right now (I believe)
+            "/ldmx/generators/beamspot", //handled by own config parameter
             "/persistency/gdml/read" //detector description is read after passed a path to the detector description
         };
 
@@ -73,8 +77,13 @@ namespace ldmx {
         // Get the path to the detector description file
         detectorPath_ = ps.getString( "detector" );
 
+        runNumber_ = ps.getInteger( "runNumber" );
+
         // Get the path to the scoring planes
         scoringPlanesPath_ = ps.getString( "scoringPlanes" , "" );
+
+        randomSeeds_ = ps.getVInteger( "randomSeeds" , { } );
+        beamspotSmear_ = ps.getVDouble( "beamspotSmear" , { } );
 
         // Get the simulation configuring commands
         preInitCommands_  = ps.getVString( "preInitCommands"  , { } );
@@ -103,6 +112,7 @@ namespace ldmx {
        
         persistencyManager_ = std::make_unique<RootPersistencyManager>(file); 
         persistencyManager_->Initialize(); 
+        persistencyManager_->setRunNumber( runNumber_ );
     }
 
     void Simulator::produce(ldmx::Event& event) {
@@ -141,6 +151,22 @@ namespace ldmx {
                 std::cout << "[ Simulator ] : Post initialize command '"
                     << cmd << "' has been skipped." << std::endl;
             }
+        }
+
+        if ( beamspotSmear_.size() == 2 ) {
+            uiManager_->ApplyCommand( "/ldmx/generators/beamspot/enable" );
+            uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeX " + std::to_string(beamspotSmear_.at(0)) );
+            uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeY " + std::to_string(beamspotSmear_.at(1)) );
+        }
+
+        if ( process_.getLogFrequency() > 0 ) {
+            uiManager_->ApplyCommand( "/ldmx/plugins/load EventPrintPlugin" );
+            uiManager_->ApplyCommand( "/ldmx/plugins/EventPrintPlugin/modulus " + std::to_string(process_.getLogFrequency()) );
+        }
+
+        if ( randomSeeds_.size() == 2 ) {
+            uiManager_->ApplyCommand( "/random/setSeeds " + std::to_string(randomSeeds_.at(0)) 
+                    + " " + std::to_string(randomSeeds_.at(1)) );
         }
 
         // Instantiate the scoring worlds including any parallel worlds. 
