@@ -47,15 +47,21 @@ namespace ldmx {
                     // reset the storage controller state
                     m_storageController.resetEventState();
 
+                    bool eventAborted = false;
                     for (auto module : sequence_) {
-                        if (dynamic_cast<Producer*>(module)) {
-                            (dynamic_cast<Producer*>(module))->produce(theEvent);
-                        } else if (dynamic_cast<Analyzer*>(module)) {
-                            (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
+                        try {
+                            if (dynamic_cast<Producer*>(module)) {
+                                (dynamic_cast<Producer*>(module))->produce(theEvent);
+                            } else if (dynamic_cast<Analyzer*>(module)) {
+                                (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
+                            }
+                        } catch( AbortEventException& ) {
+                            eventAborted = true;
+                            break;
                         }
                     }
                     
-                    outFile.nextEvent(m_storageController.keepEvent());
+                    outFile.nextEvent( eventAborted ? false : m_storageController.keepEvent() /*ignore storage control if event aborted*/);
                     theEvent.Clear();
                     n_events_processed++;
                 }
@@ -131,8 +137,9 @@ namespace ldmx {
                         masterFile = &inFile;
                     }
 
-                    while (masterFile->nextEvent(m_storageController.keepEvent()) && 
-                            (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
+                    bool eventAborted = false;
+                    while (masterFile->nextEvent(eventAborted ? false : m_storageController.keepEvent()/*ignore storage controller if event aborted*/) 
+                            && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
                         // clean up for storage control calculation
                         m_storageController.resetEventState();
             
@@ -159,11 +166,17 @@ namespace ldmx {
                                       << "  (" << t.AsString("lc") << ")" << std::endl;
                         }
 
+                        eventAborted = false;
                         for (auto module : sequence_) {
-                            if (dynamic_cast<Producer*>(module)) {
-                                (dynamic_cast<Producer*>(module))->produce(theEvent);
-                            } else if (dynamic_cast<Analyzer*>(module)) {
-                                (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
+                            try {
+                                if (dynamic_cast<Producer*>(module)) {
+                                    (dynamic_cast<Producer*>(module))->produce(theEvent);
+                                } else if (dynamic_cast<Analyzer*>(module)) {
+                                    (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
+                                }
+                            } catch( AbortEventException& ) {
+                                eventAborted = true;
+                                break;
                             }
                         }
 
