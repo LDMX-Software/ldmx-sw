@@ -62,8 +62,9 @@ namespace ldmx {
 
     void Simulator::produce(ldmx::Event& event) {
 
-        persistencyManager_->setCurrentEvent(&event); 
-        runManager_->ProcessOneEvent( iEvent_++ );
+        persistencyManager_->setCurrentEvent( &event ); 
+        runManager_->ProcessOneEvent( event.getEventHeader().getEventNumber() );
+        if ( runManager_->GetCurrentEvent()->IsAborted() ) { this->abortEvent(); } //skip rest of sequence and leave the Simulator NOW
         runManager_->TerminateOneEvent();
     
         return;
