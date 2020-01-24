@@ -5,6 +5,7 @@
 #include "Framework/Event.h"
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
+#include "Framework/NtupleManager.h"
 #include "Event/RunHeader.h"
 
 namespace ldmx {
@@ -169,6 +170,8 @@ namespace ldmx {
                             }
                         }
 
+                        NtupleManager::getInstance()->fill(); 
+                        NtupleManager::getInstance()->clear(); 
                         n_events_processed++;
                     } //loop through events
 
@@ -252,18 +255,23 @@ namespace ldmx {
     }
 
     TDirectory* Process::makeHistoDirectory(const std::string& dirName) {
-        TDirectory* owner;
-        if (histoFilename_.empty()) {
-            owner = gROOT;
-        } else if (histoTFile_ == 0) {
-            histoTFile_ = new TFile(histoFilename_.c_str(), "RECREATE");
-            owner = histoTFile_;
-        } else
-            owner = histoTFile_;
-        owner->cd();
+        auto owner{openHistoFile()}; 
         TDirectory* child = owner->mkdir((char*) dirName.c_str());
         if (child)
             child->cd();
         return child;
+    }
+
+    TDirectory* Process::openHistoFile() {
+        TDirectory* owner{nullptr}; 
+        
+        if (histoFilename_.empty()) owner = gROOT; 
+        else if (histoTFile_ == nullptr) { 
+            histoTFile_ = new TFile(histoFilename_.c_str(), "RECREATE");
+            owner = histoTFile_;
+        } else owner = histoTFile_; 
+        owner->cd(); 
+
+        return owner; 
     }
 }
