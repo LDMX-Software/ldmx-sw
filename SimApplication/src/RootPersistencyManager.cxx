@@ -21,17 +21,14 @@
 //   ldmx-sw   //
 //-------------//
 #include "Exception/Exception.h"
-#include "Event/Event.h"
 #include "Event/EventHeader.h"
 #include "Event/RunHeader.h"
-#include "Framework/EventImpl.h"
 #include "Event/EventConstants.h"
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RunManager.h"
 #include "SimApplication/TrackerSD.h"
 #include "SimApplication/ScoringPlaneSD.h"
-
 
 //------------//
 //   Geant4   //
@@ -45,8 +42,7 @@ namespace ldmx {
 
     RootPersistencyManager::RootPersistencyManager(EventFile &file) :
         G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"),
-        file_(file),  
-        ecalHitIO_(new EcalHitIO(&simParticleBuilder_)) 
+        file_(file)  
     {
         G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
         G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
@@ -92,9 +88,6 @@ namespace ldmx {
     }
 
     void RootPersistencyManager::Initialize() {
-
-        // Create map with output hits collections.
-        setupHitsCollectionMap();
     }
 
     void RootPersistencyManager::buildEvent(const G4Event* anEvent) {
@@ -128,7 +121,7 @@ namespace ldmx {
     void RootPersistencyManager::writeHeader(const G4Event* anEvent) {
 
         // Retrieve a mutable version of the event header
-        EventHeader& eventHeader = static_cast<EventImpl*>(event_)->getEventHeaderMutable();
+        EventHeader& eventHeader = event_->getEventHeader();
 
         // Set the event weight
         if (BiasingMessenger::isBiasingEnabled()) { 
@@ -185,6 +178,7 @@ namespace ldmx {
                 G4TrackerHitsCollection* trackerHitsColl = dynamic_cast<G4TrackerHitsCollection*>(hc);
                 std::vector<SimTrackerHit> outputColl;
                 writeTrackerHitsCollection( trackerHitsColl, outputColl );
+                
                 // Add hits collection to output event.
                 outputEvent->add( collName, outputColl );
 
@@ -199,9 +193,12 @@ namespace ldmx {
                     // Write generic G4CalorimeterHit collection to output SimCalorimeterHit collection.
                     writeCalorimeterHitsCollection(calHitsColl, outputColl );
                 }
+                
                 // Add hits collection to output event.
                 outputEvent->add( collName, outputColl );
             } //switch on type of hit collection
+                
+        
         } //loop through geant4 hit collections
 
         return;
@@ -251,68 +248,6 @@ namespace ldmx {
         }
 
         return;
-    }
-
-    void RootPersistencyManager::setupHitsCollectionMap() {
-
-        // Clear any state from the last run.
-        if (outputHitsCollections_.size()) {
-            for (auto entry : outputHitsCollections_) {
-                delete entry.second;
-            }
-        }
-        outputHitsCollections_.clear();
-
-        // Create an output TClonesArray in the map for each registered HC.
-        G4SDManager* sdMgr = G4SDManager::GetSDMpointer();
-        G4HCtable* hcTable = sdMgr->GetHCtable();
-        int entries = hcTable->entries();
-        for (int i = 0; i < entries; i++) {
-            std::string sdName = hcTable->GetSDname(i);
-            std::string hcName = hcTable->GetHCname(i);
-            auto sd{sdMgr->FindSensitiveDetector(sdName)};
-            if (dynamic_cast<CalorimeterSD*>(sd)) {
-                outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_CALORIMETER_HIT.c_str(), 500);
-            } else if (dynamic_cast<TrackerSD*>(sd)) {
-                outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_TRACKER_HIT.c_str(), 50);
-            } else if (dynamic_cast<ScoringPlaneSD*>(sd)) { 
-                outputHitsCollections_[hcName] = new TClonesArray(EventConstants::SIM_TRACKER_HIT.c_str(), 500);
-            }
-        }
-    }
-    
-    RunHeader* RootPersistencyManager::createRunHeader(const G4Run* aRun) {
-
-        // Get detector header from the user detector construction.
-        DetectorConstruction* detector = ((RunManager*) RunManager::GetRunManager())->getDetectorConstruction();
-        DetectorHeader* detectorHeader = detector->getDetectorHeader();
-
-        // Create the run header.
-        RunHeader* runHeader 
-            = new RunHeader(runNumber_, detectorHeader->getName(), description_);
-
-        // Set parameter value with number of events processed.
-        runHeader->setIntParameter("Event count", aRun->GetNumberOfEvent());
-
-        // Set a string parameter with the Geant4 SHA-1.
-        G4String g4Version = G4RunManagerKernel::GetRunManagerKernel()->GetVersionString();
-        runHeader->setStringParameter("Geant4 revision", g4Version); 
-
-        // Print information about run header.
-        if (m_verbose > 1) {
-
-            std::ostringstream headerString; 
-            headerString << "\n[ RootPersistencyManager ]: Creating run header\n" 
-                         << boost::format("\t Run number: %s\n")    % runHeader->getRunNumber() 
-                         << boost::format("\t Detector name: %s\n") % runHeader->getDetectorName() 
-                         << boost::format("\t Software tag: %s\n")  % runHeader->getSoftwareTag() 
-                         << boost::format("\t Description: %s\n")   % runHeader->getDescription()
-                         << boost::format("\t Event count: %s\n")   % runHeader->getIntParameter("Event count")
-                         << boost::format("\t Geant4 revision: %s\n")  % runHeader->getStringParameter("Geant4 revision"); 
-            std::cout << headerString.str() << "\n";  
-        }
-
-        return runHeader;
     }
 
 } // namespace ldmx
