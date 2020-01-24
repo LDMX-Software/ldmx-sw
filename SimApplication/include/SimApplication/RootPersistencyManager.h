@@ -7,18 +7,6 @@
 #ifndef _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 #define _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <algorithm>
-#include <string>
-
-//-----------//
-//   Boost   //
-//-----------//
-#include <boost/format.hpp>
-#include <boost/variant.hpp>
-
 //-------------//
 //   ldmx-sw   //
 //-------------//
@@ -31,10 +19,6 @@
 //------------//
 //   Geant4   //
 //------------//
-#include "G4Run.hh"
-#include "G4RunManager.hh"
-#include "G4RunManagerKernel.hh"
-#include "G4SDManager.hh"
 #include "G4PersistencyManager.hh"
 #include "G4PersistencyCenter.hh"
 
@@ -44,7 +28,6 @@ class G4Run;
 namespace ldmx {
 
     // Forward declarations within the ldmx namespace
-    class EcalHitIO; 
     class Event;
     class RunHeader;
     
@@ -227,25 +210,7 @@ namespace ldmx {
              */
             void printEvent(Event* anEvent);
 
-            /**
-             * Setup a map of HC names to output TClonesArray collections.
-             * This is called once at the beginning of the run.
-             */
-            void setupHitsCollectionMap();
             
-            /** 
-             * Create the run header for writing into the output file.
-             * @param aRun The current Geant4 run.
-             * @return The created run header.
-             */
-            RunHeader* createRunHeader(const G4Run* aRun);
-
-            /**
-             * Create the run header and write it into the current output file.
-             * @param aRun The current Geant4 run.
-             */
-            void writeRunHeader(const G4Run* aRun);
-
         private:
 
             /** List of collections whose hits should be droppped. */
