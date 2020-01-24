@@ -73,6 +73,19 @@ namespace ldmx {
 
         private:
 
+            /**
+             * Convert TOT from digis to a reconstructed energy deposited in the Silicon.
+             *
+             * We construct this conversion by fitting the plot of TOT vs Sim Energy Dep.
+             * The choice of fit and different scalings pre- or post- fit may have a large effect and should be studied.
+             *
+             * @param tot tot to convert
+             * @return converted silicon energy
+             */
+            double convertTOT(const int tot) const;
+
+        private:
+
             /** Digi Collection Name to use as input */
             std::string digiCollName_;
 

@@ -63,7 +63,7 @@ namespace ldmx {
             
             //TODO: Energy estimate from N samples can (and should be) refined
             //TOA is the time of arrival with respect to the 25ns clock window
-            double timeRelClock25 = sample.toa_*(25./pow(2.,10)); //ns
+            double timeRelClock25 = sample.toa_; //*(25./pow(2.,10)); //ns
             hitTime = timeRelClock25;
 
             //ADC - voltage measurement at a specific time of the pulse
@@ -81,8 +81,7 @@ namespace ldmx {
             //TOT - number of clock ticks that pulse was over threshold
             //  this is related to the amplitude of the pulse through some convoluted relation using the pulse shape
             //  the amplitude of the pulse is related to the energy deposited
-            //  for now, we set a linear relationship between EDep (from SimHit) and TOT
-            siEnergy = sample.tot_/41.;
+            siEnergy = convertTOT( sample.tot_ );
             
             //incorporate layer weights
             detID_.setRawValue( rawID );
@@ -106,6 +105,20 @@ namespace ldmx {
 
         //add collection to event bus
         event.add( "EcalRecHits", ecalRecHits );
+    }
+
+    double EcalRecProducer::convertTOT(const int tot) const {
+
+        /**
+         * Low TOT -> Low Slope
+         *
+         * High TOT -> High Slope
+         *
+         * Kinda Exponential shape
+         */
+
+        return tot;
+
     }
 }
 
