@@ -9,9 +9,7 @@ ClassImp(ldmx::DigiCollection)
 
 namespace ldmx {
 
-    void DigiCollection::Clear(Option_t *option) {
-
-        TObject::Clear();
+    void DigiCollection::Clear() {
 
         channelIDs_.clear();
         samples_.clear();
@@ -19,25 +17,11 @@ namespace ldmx {
         return;
     }
 
-    void DigiCollection::Print(Option_t *option) const {
+    void DigiCollection::Print() const {
 
         printf( "Num Channel IDs:      %d\n" , channelIDs_.size() );
         printf( "Num Samples:          %d\n" , samples_.size() );
         printf( "Num Samples Per Digi: %d\n" , numSamplesPerDigi_ );
-
-        return;
-    }
-
-    void DigiCollection::Copy(TObject &copy) const {
-
-        TObject::Copy( copy );
-        
-        if ( dynamic_cast<DigiCollection *>(&copy) ) {
-            DigiCollection *digiColl = dynamic_cast<DigiCollection *>(&copy);
-            digiColl->numSamplesPerDigi_ = this->numSamplesPerDigi_;
-            digiColl->channelIDs_        = this->channelIDs_;
-            digiColl->samples_           = this->samples_;
-        }
 
         return;
     }

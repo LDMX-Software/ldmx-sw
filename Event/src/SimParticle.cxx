@@ -34,21 +34,15 @@ namespace ldmx {
 
     SimParticle::ProcessTypeMap SimParticle::PROCESS_MAP = SimParticle::createProcessTypeMap();
 
-    SimParticle::SimParticle()
-        : TObject(), daughters_(new TRefArray()), parents_(new TRefArray()) {
-    }
+    SimParticle::SimParticle() { }
 
     SimParticle::~SimParticle() {
-        TObject::Clear();
-        delete daughters_;
-        delete parents_;
     }
 
-    void SimParticle::Clear(Option_t *option) {
-        TObject::Clear();
+    void SimParticle::Clear() {
 
-        daughters_->Delete();
-        parents_->Delete();
+        daughters_.clear();
+        parents_.clear();
 
         energy_ = 0;
         trackID_ = -1;
@@ -72,7 +66,7 @@ namespace ldmx {
         processType_ = ProcessType::unknown;
     }
 
-    void SimParticle::Print(Option_t *option) const {
+    void SimParticle::Print() const {
         std::cout << "SimParticle { " <<
                 "energy: " << energy_ << ", " <<
                 "Track ID: " << trackID_ << ", " <<
@@ -84,8 +78,8 @@ namespace ldmx {
                 "momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " ), " <<
                 "endPointMomentum: ( " << endpx_ << ", " << endpy_ << ", " << endpz_ << " ), " <<
                 "mass: " << mass_ << ", " <<
-                "nDaughters: " << daughters_->GetEntries() << ", "
-                "nParents: " << parents_->GetEntries() << ", "
+                "nDaughters: " << getDaughterCount() << ", "
+                "nParents: " << getParentCount() << ", "
                 "processType: " << processType_ <<
                 " }" << std::endl;
     }

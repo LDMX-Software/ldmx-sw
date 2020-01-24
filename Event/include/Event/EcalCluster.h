@@ -8,9 +8,8 @@
 #define EVENT_ECALCLUSTER_H_
 
 // ROOT
-#include "TObject.h"
+#include "TObject.h" //For ClassDef
 #include "TString.h"
-#include "TRefArray.h"
 
 // STL
 #include <iostream>
@@ -26,7 +25,7 @@ namespace ldmx {
      * @class EcalCluster 
      * @brief Stores cluster information from the ECal 
      */
-    class EcalCluster : public TObject {
+    class EcalCluster {
 
         public:
 
@@ -43,18 +42,12 @@ namespace ldmx {
             /**
              * Print a description of this object.
              */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /**
              * Reset the EcalCluster object.
              */
-            void Clear(Option_t *option = "");
-
-            /**
-             * Copy this object.
-             * @param o The target object.
-             */
-            void Copy(TObject& o) const;
+            void Clear();
 
             /**
              * Take in the hits that make up the cluster.
@@ -122,6 +115,10 @@ namespace ldmx {
 
             const std::vector<unsigned int>& getHitIDs() const {
                 return hitIDs_;
+            }
+
+            bool operator < ( const EcalCluster &rhs ) const {
+                return this->getEnergy() < rhs.getEnergy();
             }
 
         private:

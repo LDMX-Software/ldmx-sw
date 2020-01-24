@@ -15,11 +15,11 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TObject.h"
+#include "TObject.h" //For ClassDef
 
 namespace ldmx { 
 
-    class RawHit : public TObject { 
+    class RawHit { 
     
         public:
 
@@ -38,6 +38,15 @@ namespace ldmx {
              * time at which the readout of the ADC values started (t0). 
              */
             float getTime() const { return time_; }
+
+            virtual void Print() const {;}
+
+            /**
+             * Sort by time of hit
+             */
+            bool operator < ( const RawHit &rhs ) const {
+                return this->getTime() < rhs.getTime();
+            }
 
         protected: 
 

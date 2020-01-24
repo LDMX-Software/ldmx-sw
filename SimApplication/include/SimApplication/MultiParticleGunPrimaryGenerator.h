@@ -28,7 +28,6 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TClonesArray.h"
 #include "TFile.h"
 #include "TLorentzVector.h"
 #include "TRandom.h"
@@ -40,7 +39,6 @@
 //-------------//
 #include "Event/EventConstants.h"
 #include "Event/EventHeader.h"
-#include "Event/SimParticle.h"
 #include "SimApplication/PrimaryGeneratorMessenger.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
 

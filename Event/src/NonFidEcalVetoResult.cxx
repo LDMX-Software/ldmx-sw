@@ -10,16 +10,13 @@ ClassImp(ldmx::NonFidEcalVetoResult)
 
 namespace ldmx {
 
-    NonFidEcalVetoResult::NonFidEcalVetoResult() :
-        TObject() {
-    }
+    NonFidEcalVetoResult::NonFidEcalVetoResult() { }
 
     NonFidEcalVetoResult::~NonFidEcalVetoResult() {
         Clear();
     }
 
-    void NonFidEcalVetoResult::Clear(Option_t *option) {
-        TObject::Clear();
+    void NonFidEcalVetoResult::Clear() {
 
         nReadoutHits_ = 0;
         summedDet_ = 0;
@@ -47,39 +44,6 @@ namespace ldmx {
         passesVeto_.clear();
         discValue_.clear();
         ecalLayerEdepReadout_.clear();
-    }
-
-    void NonFidEcalVetoResult::Copy(TObject& object) const {
-
-        NonFidEcalVetoResult& result = (NonFidEcalVetoResult&) object;
-
-        result.passesVeto_ = passesVeto_;
-
-        result.nReadoutHits_ = nReadoutHits_;
-        result.summedDet_ = summedDet_;
-        result.summedTightIso_ = summedTightIso_;
-        result.maxCellDep_ = maxCellDep_;
-        result.showerRMS_ = showerRMS_;
-        result.xStd_ = xStd_;
-        result.yStd_ = yStd_;
-        result.avgLayerHit_ = avgLayerHit_;
-        result.stdLayerHit_ = stdLayerHit_;
-        result.deepestLayerHit_ = deepestLayerHit_;
-
-        result.discValue_ = discValue_;
-
-        result.recoilPx_ = recoilPx_;
-        result.recoilPy_ = recoilPy_;
-        result.recoilPz_ = recoilPz_;
-        result.recoilX_ = recoilX_;
-        result.recoilY_ = recoilY_;
-
-        result.Inside_ = Inside_;
-        result.FaceX_ = FaceX_;
-        result.FaceY_ = FaceY_;
-
-        // vector copy
-        result.ecalLayerEdepReadout_ = ecalLayerEdepReadout_;
     }
 
     void NonFidEcalVetoResult::setVariables(
@@ -131,7 +95,8 @@ namespace ldmx {
         FaceX_ = faceXY[0];
         FaceY_ = faceXY[1];
     }
-    void NonFidEcalVetoResult::Print(Option_t *option) const {
+
+    void NonFidEcalVetoResult::Print() const {
         std::cout << "[ NonFidEcalVetoResult ]:\n" << "\t Passes veto : " << passesVeto_[0] << "," << passesVeto_[1]
 	<< "," << passesVeto_[2] << "," << passesVeto_[3] << "," << passesVeto_[4] << "\n" << std::endl;
     }

@@ -33,10 +33,10 @@ namespace ldmx {
             virtual ~EcalHit() {}
             
             /** Clear the data in the object. */
-            void Clear(Option_t *option = "");
+            void Clear();
 
             /** Print a text representation of this object. */
-            void Print(Option_t *option = "") const;
+            void Print() const;
 
             /**
              * Get the cell of the hit from the ID.

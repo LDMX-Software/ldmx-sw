@@ -2,7 +2,7 @@
 #include "TFile.h"
 #include "TROOT.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/EventImpl.h"
+#include "Framework/Event.h"
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
 #include "Framework/NtupleManager.h"
@@ -19,6 +19,9 @@ namespace ldmx {
         try {
             int n_events_processed = 0;
 
+            //event bus for this process
+            Event theEvent(passname_);
+
             // first, notify everyone that we are starting
             for (auto module : sequence_) {
                 module->onProcessStart();
@@ -32,16 +35,15 @@ namespace ldmx {
                     module->onFileOpen(outputFiles_[0]);
                 }
 
-                EventImpl theEvent(passname_);
                 outFile.setupEvent(&theEvent);
 
                 while (n_events_processed < eventLimit_) {
-                    EventHeader& eh = theEvent.getEventHeaderMutable();
+                    EventHeader& eh = theEvent.getEventHeader();
                     eh.setRun(runForGeneration_);
                     eh.setEventNumber(n_events_processed + 1);
                     eh.setTimestamp(TTimeStamp());
 
-                    theEvent.getEventHeader()->Print();
+                    theEvent.getEventHeader().Print();
 
                     // reset the storage controller state
                     m_storageController.resetEventState();
@@ -78,7 +80,6 @@ namespace ldmx {
                             );
                 }
 
-
                 // next, loop through the files
                 int ifile = 0;
                 int wasRun = -1;
@@ -86,14 +87,12 @@ namespace ldmx {
 
                     EventFile inFile(infilename);
 
-                    EventImpl theEvent(passname_);
-
                     std::cout << "[ Process ] : Opening file " << infilename << std::endl;
 
                     for (auto module : sequence_) {
                         module->onFileOpen(infilename);
                     }
-                    
+                   
                     //configure event file that will be iterated over
                     EventFile* masterFile; 
                     if ( !outputFiles_.empty() ) {
@@ -141,8 +140,8 @@ namespace ldmx {
                         m_storageController.resetEventState();
             
                         // notify for new run if necessary
-                        if (theEvent.getEventHeader()->getRun() != wasRun) {
-                            wasRun = theEvent.getEventHeader()->getRun();
+                        if (theEvent.getEventHeader().getRun() != wasRun) {
+                            wasRun = theEvent.getEventHeader().getRun();
                             try {
                                 const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
                                 std::cout << "[ Process ] : got new run header from '" << masterFile->getFileName() << "' ..." << std::endl;
@@ -158,8 +157,8 @@ namespace ldmx {
                         if ( (logFrequency_ != -1) && ((n_events_processed + 1)%logFrequency_ == 0)) { 
                             TTimeStamp t;
                             std::cout << "[ Process ] :  Processing " << n_events_processed + 1 
-                                      << " Run " << theEvent.getEventHeader()->getRun() 
-                                      << " Event " << theEvent.getEventHeader()->getEventNumber() 
+                                      << " Run " << theEvent.getEventHeader().getRun() 
+                                      << " Event " << theEvent.getEventHeader().getEventNumber() 
                                       << "  (" << t.AsString("lc") << ")" << std::endl;
                         }
 
@@ -184,18 +183,23 @@ namespace ldmx {
                         std::cout << "[ Process ] : Processing interrupted\n";
                     }
 
-                    if ( outFile and !singleOutput ) {
-                        outFile->close();
-                        delete outFile;
-                        outFile = nullptr;
-                    }
-
-                    inFile.close();
-
                     std::cout << "[ Process ] : Closing file " << infilename << std::endl;
 
                     for (auto module : sequence_) {
                         module->onFileClose(infilename);
+                    }
+
+                    inFile.close();
+
+                    // Reset the event in case of single output mode.  This is 
+                    // only needed if an output file is being written out and 
+                    // is ignored when writing a histogram file only. 
+                    if (outFile) theEvent.onEndOfFile();
+
+                    if ( outFile and !singleOutput ) {
+                        outFile->close();
+                        delete outFile;
+                        outFile = nullptr;
                     }
 
                 } //loop through input files
