@@ -29,6 +29,28 @@ namespace ldmx {
     typedef EventProcessor* EventProcessorMaker(const std::string& name, Process& process);
 
     /**
+     * @class AbortEventException
+     *
+     * @brief Specific exception used to abort an event.
+     */
+    class AbortEventException : public Exception {
+
+        public:
+
+            /**
+             * Constructor
+             */
+            AbortEventException() throw ()
+                : Exception( "AbortEventException" , "I should have been caught earlier!" , "" , 0 , "" ) { }
+    
+            /**
+             * Destructor
+             */
+            virtual ~AbortEventException() throw () { }
+
+    };
+
+    /**
      * @class EventProcessor
      * @brief Base class for all event processing components
      */
@@ -132,6 +154,13 @@ namespace ldmx {
             static void declare(const std::string& classname, int classtype, EventProcessorMaker*);
       
         protected:
+
+            /**
+             * Abort the event immediately.
+             *
+             * Skip the rest of the sequence and don't save anything in the event bus.
+             */
+            void abortEvent() { throw AbortEventException(); }
 
             /** Handle to the Process. */
             Process& process_;
