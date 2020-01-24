@@ -22,19 +22,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-<<<<<<< HEAD
 #include "Framework/EventFile.h"
-=======
-#include "Exception/Exception.h"
-#include "Event/EventDef.h"
-#include "Framework/Event.h"
-#include "Framework/EventFile.h"
-#include "SimApplication/CalorimeterSD.h"
-#include "SimApplication/DetectorConstruction.h"
-#include "SimApplication/RunManager.h"
-#include "SimApplication/TrackerSD.h"
-#include "SimApplication/ScoringPlaneSD.h"
->>>>>>> master
 #include "SimApplication/EcalHitIO.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
