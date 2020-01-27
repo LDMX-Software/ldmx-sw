@@ -35,7 +35,7 @@ namespace ldmx {
             "/ldmx/pw", //parallel world scoring planes is handled here (if passed a path to the scoring plane description)
             "/random/setSeeds", //handled by own config parameter (if passed)
             "EventPrintPlugin", //tied to process log frequency
-            "/ldmx/persistency/root", //persistency messenger not operational right now (I believe)
+            "/ldmx/persistency/root", //persistency manager handled directly with python config parameters
             "/ldmx/generators/beamspot", //handled by own config parameter (if passed)
             "/persistency/gdml/read" //detector description is read after passed a path to the detector description (required)
         };
@@ -79,6 +79,8 @@ namespace ldmx {
 
         runNumber_ = ps.getInteger( "runNumber" );
 
+        dropCollections_ = ps.getVString( "dropCollections" , { } );
+
         // Get the path to the scoring planes
         scoringPlanesPath_ = ps.getString( "scoringPlanes" , "" );
 
@@ -115,6 +117,12 @@ namespace ldmx {
         persistencyManager_ = std::make_unique<RootPersistencyManager>(file); 
         persistencyManager_->Initialize(); 
         persistencyManager_->setRunNumber( runNumber_ );
+        persistencyManager_->setRunDescription( description_ );
+        for ( const std::string &collName : dropCollections_ ) persistencyManager_->dropCollection( collName );
+        /* TODO hit contrib paramters
+        if ( enableHitContribs_ ) persistencyManager_->setEnableHitContribs( true );
+        if ( compressHitContribs_ ) persistencyManager_->setCompressHitContribs( true );
+        */
     }
 
     void Simulator::produce(ldmx::Event& event) {
