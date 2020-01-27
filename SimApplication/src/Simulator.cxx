@@ -66,11 +66,8 @@ namespace ldmx {
 
     Simulator::~Simulator() {
         std::cout << "~Simulator" << std::endl;
-        if ( cascadeParameters_ ) delete cascadeParameters_;
-        if ( uiManager_         ) delete uiManager_;
         std::cout << "Done ~Simulator" << std::endl;
     }
-
 
     void Simulator::configure(const ldmx::ParameterSet& ps) {
       
@@ -80,7 +77,6 @@ namespace ldmx {
 
         description_ = ps.getString( "description" );
 
-        // Get the path to the detector description file
         detectorPath_ = ps.getString( "detector" );
 
         runNumber_ = ps.getInteger( "runNumber" );
@@ -91,13 +87,16 @@ namespace ldmx {
 
         verbosity_ = ps.getInteger( "verbosity" , 1 );
 
+        enableHitContribs_   = (ps.getInteger( "enableHitContribs"   , 1 ) > 0);
+        compressHitContribs_ = (ps.getInteger( "compressHitContribs" , 1 ) > 0);
+
         dropCollections_ = ps.getVString( "dropCollections" , { } );
 
         // Get the path to the scoring planes
-        scoringPlanesPath_ = ps.getString( "scoringPlanes" , "" );
+        scoringPlanesPath_ = ps.getString( "scoringPlanes" , { } );
 
-        randomSeeds_ = ps.getVInteger( "randomSeeds" , { } );
-        beamspotSmear_ = ps.getVDouble( "beamspotSmear" , { } );
+        randomSeeds_ = ps.getVInteger( "randomSeeds" , { } ); //required to be size 2
+        beamspotSmear_ = ps.getVDouble( "beamspotSmear" , { } ); //required to be size 2
 
         // Get the extra simulation configuring commands
         preInitCommands_  = ps.getVString( "preInitCommands"  , { } );
@@ -110,7 +109,7 @@ namespace ldmx {
         // Parse the detector geometry
         uiManager_->ApplyCommand( "/persistency/gdml/read " + detectorPath_ );
 
-        if ( scoringPlanesPath_ != "" ) {
+        if ( not scoringPlanesPath_.empty() ) {
             //TODO enable scoring planes directly?
             //path was given, enable and read scoring planes into parallel world
             uiManager_->ApplyCommand( "/ldmx/pw/enable" );
@@ -136,11 +135,11 @@ namespace ldmx {
         persistencyManager_->setRunNumber( runNumber_ );
         persistencyManager_->setRunDescription( description_ );
         for ( const std::string &collName : dropCollections_ ) persistencyManager_->dropCollection( collName );
-        /* TODO hit contrib paramters
+        /* 
          * TODO cleanup RootPersistencyManager and remove unneeded RootPersistencyMessenger
-        if ( enableHitContribs_ ) persistencyManager_->setEnableHitContribs( true );
-        if ( compressHitContribs_ ) persistencyManager_->setCompressHitContribs( true );
         */
+        persistencyManager_->setEnableHitContribs( enableHitContribs_ );
+        persistencyManager_->setCompressHitContribs( compressHitContribs_ );
     }
 
     void Simulator::produce(ldmx::Event& event) {
@@ -162,7 +161,7 @@ namespace ldmx {
             //TODO: logging in production run of Process
             //print according to log frequency
             std::cout << "[ Simulator ] : Printing event contents:" << std::endl;
-            //TODO: Event::Print exists on master, wait for merge
+            //TODO: Event::Print(int) exists on master, wait for merge
             //event.Print( verbosity_ );
         }
 
@@ -194,6 +193,7 @@ namespace ldmx {
 
         if ( beamspotSmear_.size() == 2 ) {
             //TODO smear beamspot directly?
+            //  Would need a handle to the PrimaryGeneratorAction
             uiManager_->ApplyCommand( "/ldmx/generators/beamspot/enable" );
             uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeX " + std::to_string(beamspotSmear_.at(0)) );
             uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeY " + std::to_string(beamspotSmear_.at(1)) );
@@ -201,6 +201,21 @@ namespace ldmx {
 
         if ( randomSeeds_.size() == 2 ) {
             //TODO set random seeds directly?
+            /* This is what Geant4 does under the hood:
+             *  G4Tokenizer next(newValue);
+             *  G4int idx=0;
+             *  long seeds[100];
+             *  G4String vl;
+             *  while(!(vl=next()).isNull())
+             *  { seeds[idx] = (long)(StoI(vl)); idx++; }
+             *  if(idx<2)
+             *  { G4cerr << "/random/setSeeds should have at least two integers. Command ignored." << G4endl; }
+             *  else
+             *  {
+             *      seeds[idx] = 0;
+             *      CLHEP::HepRandom::setTheSeeds(seeds);
+             *  }
+             */
             uiManager_->ApplyCommand( "/random/setSeeds " + std::to_string(randomSeeds_.at(0)) 
                     + " " + std::to_string(randomSeeds_.at(1)) );
         }
@@ -234,10 +249,11 @@ namespace ldmx {
          * Occur after Simulator::onProcessEnd
          * ~Simulator never called
          * WARNING - Attempt to delete the physical volume store while geometry closed !
-         * WARNING - Attempt to delete the logical volume store while geometry closed !
-         * WARNING - Attempt to delete the solid store while geometry closed !
-         * WARNING - Attempt to delete the region store while geometry closed !
+         * WARNING - Attempt to delete the logical volume  store while geometry closed !
+         * WARNING - Attempt to delete the solid           store while geometry closed !
+         * WARNING - Attempt to delete the region          store while geometry closed !
          */
+        std::cout << "Done onProcessEnd" << std::endl;
     }
 
     bool Simulator::allowed(const std::string &command) const {
