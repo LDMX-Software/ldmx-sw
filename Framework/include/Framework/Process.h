@@ -39,6 +39,14 @@ namespace ldmx {
             Process(const std::string& passname);
 
             /**
+             * Class Destructor
+             *
+             * Cleans up sequence of EventProcessors.
+             * These processors were created by ConfigurePython and should be deleted.
+             */
+            ~Process();
+
+            /**
              * Get the processing pass label.
              * @return The processing pass label.
              */

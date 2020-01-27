@@ -93,6 +93,8 @@ int main(int argc, char* argv[]) {
         
         std::cout << "---- LDMXSW: Event processing complete  --------" << std::endl;
 
+        delete p; //ConfigurePython::makeProcess returns a newly allocated object that we need to delete
+
     } catch (Exception& e) {
         std::cerr << "Framework Error [" << e.name() << "] : " << e.message() << std::endl;
         std::cerr << "  at " << e.module() << ":" << e.line() << " in " << e.function() << std::endl;
