@@ -77,11 +77,11 @@ namespace ldmx {
                 std::cout << "[ DummyAnalyzer]: Analyzing an event!" << std::endl;
                 
                 // Get the collection of calorimeter hits from the event.
-                auto tca = event.getCollection<EcalHit>(caloCol_);  
+                auto tca = event.getCollection<CalorimeterHit>(caloCol_);  
                 
                 // Loop through the collection and fill both the histogram and 
                 // ntuple.
-                for (const EcalHit &hit : tca) {  
+                for (const CalorimeterHit &hit : tca) {  
                     
                     // Fill the histogram
                     hEnergy->Fill(hit.getEnergy());
