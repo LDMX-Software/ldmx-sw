@@ -168,6 +168,9 @@ namespace ldmx {
             /// Run Number for this Sim Run
             int runNumber_;
 
+            /// Vebosity for the simulation
+            int verbosity_{1};
+
             /// Collections to drop from simulation (usually scoring plane collections)
             std::vector< std::string > dropCollections_;
             

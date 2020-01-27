@@ -65,19 +65,31 @@ namespace ldmx {
     }
 
     Simulator::~Simulator() {
+        std::cout << "~Simulator" << std::endl;
         if ( cascadeParameters_ ) delete cascadeParameters_;
         if ( uiManager_         ) delete uiManager_;
+        std::cout << "Done ~Simulator" << std::endl;
     }
 
 
     void Simulator::configure(const ldmx::ParameterSet& ps) {
       
+        /*************************************************
+         * Necessary Parameters
+         *************************************************/
+
         description_ = ps.getString( "description" );
 
         // Get the path to the detector description file
         detectorPath_ = ps.getString( "detector" );
 
         runNumber_ = ps.getInteger( "runNumber" );
+
+        /*************************************************
+         * Optional Parameters
+         *************************************************/
+
+        verbosity_ = ps.getInteger( "verbosity" , 1 );
 
         dropCollections_ = ps.getVString( "dropCollections" , { } );
 
@@ -87,14 +99,19 @@ namespace ldmx {
         randomSeeds_ = ps.getVInteger( "randomSeeds" , { } );
         beamspotSmear_ = ps.getVDouble( "beamspotSmear" , { } );
 
-        // Get the simulation configuring commands
+        // Get the extra simulation configuring commands
         preInitCommands_  = ps.getVString( "preInitCommands"  , { } );
         postInitCommands_ = ps.getVString( "postInitCommands" , { } );
 
+        /*************************************************
+         * Do Pre /run/initialize commands
+         *************************************************/
+        
         // Parse the detector geometry
         uiManager_->ApplyCommand( "/persistency/gdml/read " + detectorPath_ );
 
         if ( scoringPlanesPath_ != "" ) {
+            //TODO enable scoring planes directly?
             //path was given, enable and read scoring planes into parallel world
             uiManager_->ApplyCommand( "/ldmx/pw/enable" );
             uiManager_->ApplyCommand( "/ldmx/pw/read " + scoringPlanesPath_ );
@@ -120,6 +137,7 @@ namespace ldmx {
         persistencyManager_->setRunDescription( description_ );
         for ( const std::string &collName : dropCollections_ ) persistencyManager_->dropCollection( collName );
         /* TODO hit contrib paramters
+         * TODO cleanup RootPersistencyManager and remove unneeded RootPersistencyMessenger
         if ( enableHitContribs_ ) persistencyManager_->setEnableHitContribs( true );
         if ( compressHitContribs_ ) persistencyManager_->setCompressHitContribs( true );
         */
@@ -139,6 +157,15 @@ namespace ldmx {
         // the next event. 
         if ( runManager_->GetCurrentEvent()->IsAborted() ) { this->abortEvent(); }
         
+        if ( process_.getLogFrequency() > 0 and event.getEventHeader()->getEventNumber() % process_.getLogFrequency() == 0 ) {
+            //TODO: remove unnecessary EventPrintPlugin
+            //TODO: logging in production run of Process
+            //print according to log frequency
+            std::cout << "[ Simulator ] : Printing event contents:" << std::endl;
+            //TODO: Event::Print exists on master, wait for merge
+            //event.Print( verbosity_ );
+        }
+
         // Terminate the event.  This checks if an event is to be stored or 
         // stacked for later. 
         runManager_->TerminateOneEvent();
@@ -166,19 +193,14 @@ namespace ldmx {
         }
 
         if ( beamspotSmear_.size() == 2 ) {
+            //TODO smear beamspot directly?
             uiManager_->ApplyCommand( "/ldmx/generators/beamspot/enable" );
             uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeX " + std::to_string(beamspotSmear_.at(0)) );
             uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeY " + std::to_string(beamspotSmear_.at(1)) );
         }
 
-        if ( process_.getLogFrequency() > 0 ) {
-            uiManager_->ApplyCommand( "/ldmx/plugins/load EventPrintPlugin" );
-            uiManager_->ApplyCommand( "/ldmx/plugins/EventPrintPlugin/modulus " + std::to_string(process_.getLogFrequency()) );
-            uiManager_->ApplyCommand( "/ldmx/plugins/EventPrintPlugin/prepend \"[ Simulator ] : \"" );
-            uiManager_->ApplyCommand( "/ldmx/plugins/EventPrintPlugin/append \"\"" );
-        }
-
         if ( randomSeeds_.size() == 2 ) {
+            //TODO set random seeds directly?
             uiManager_->ApplyCommand( "/random/setSeeds " + std::to_string(randomSeeds_.at(0)) 
                     + " " + std::to_string(randomSeeds_.at(1)) );
         }
@@ -207,7 +229,10 @@ namespace ldmx {
     }
 
     void Simulator::onProcessEnd() {
+        std::cout << "onProcessEnd" << std::endl;
         /*TODO some annoying warnings about deleting things when geometry is/isn't open at end of run
+         * Occur after Simulator::onProcessEnd
+         * ~Simulator never called
          * WARNING - Attempt to delete the physical volume store while geometry closed !
          * WARNING - Attempt to delete the logical volume store while geometry closed !
          * WARNING - Attempt to delete the solid store while geometry closed !
