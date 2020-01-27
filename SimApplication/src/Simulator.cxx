@@ -33,11 +33,11 @@ namespace ldmx {
             "/run/initialize", //hard coded at the right time
             "/run/beamOn", //passed commands should only be sim setup
             "/ldmx/pw", //parallel world scoring planes is handled here (if passed a path to the scoring plane description)
-            "/random/setSeeds", //handled by own config parameter
+            "/random/setSeeds", //handled by own config parameter (if passed)
             "EventPrintPlugin", //tied to process log frequency
             "/ldmx/persistency/root", //persistency messenger not operational right now (I believe)
-            "/ldmx/generators/beamspot", //handled by own config parameter
-            "/persistency/gdml/read" //detector description is read after passed a path to the detector description
+            "/ldmx/generators/beamspot", //handled by own config parameter (if passed)
+            "/persistency/gdml/read" //detector description is read after passed a path to the detector description (required)
         };
 
     Simulator::Simulator(const std::string& name, ldmx::Process& process) : Producer( name , process ) {
@@ -102,8 +102,10 @@ namespace ldmx {
             if ( allowed(cmd) ) {
                 uiManager_->ApplyCommand( cmd );
             } else {
-                std::cout << "[ Simulator ] : Pre initialize command '"
-                    << cmd << "' has been skipped." << std::endl;
+                EXCEPTION_RAISE(
+                        "PreInitCmd",
+                        "Pre Initialization command '" + cmd + "' is not allowed because another part of Simulator handles it."
+                        );
             }
         }
     }
@@ -148,8 +150,10 @@ namespace ldmx {
             if ( allowed(cmd) ) {
                 uiManager_->ApplyCommand( cmd );
             } else {
-                std::cout << "[ Simulator ] : Post initialize command '"
-                    << cmd << "' has been skipped." << std::endl;
+                EXCEPTION_RAISE(
+                        "PostInitCmd",
+                        "Post Initialization command '" + cmd + "' is not allowed because another part of Simulator handles it."
+                        );
             }
         }
 
@@ -162,6 +166,8 @@ namespace ldmx {
         if ( process_.getLogFrequency() > 0 ) {
             uiManager_->ApplyCommand( "/ldmx/plugins/load EventPrintPlugin" );
             uiManager_->ApplyCommand( "/ldmx/plugins/EventPrintPlugin/modulus " + std::to_string(process_.getLogFrequency()) );
+            uiManager_->ApplyCommand( "/ldmx/plugins/EventPrintPlugin/prepend \"[ Simulator ] : \"" );
+            uiManager_->ApplyCommand( "/ldmx/plugins/EventPrintPlugin/append \"\"" );
         }
 
         if ( randomSeeds_.size() == 2 ) {
