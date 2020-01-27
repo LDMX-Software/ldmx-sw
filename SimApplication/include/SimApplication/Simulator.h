@@ -163,7 +163,7 @@ namespace ldmx {
             std::string description_;
             
             /// Path to detector description
-            std::string detectorPath_{""};
+            std::string detectorPath_;
 
             /// Run Number for this Sim Run
             int runNumber_;
@@ -171,11 +171,17 @@ namespace ldmx {
             /// Vebosity for the simulation
             int verbosity_{1};
 
+            /// Should the simulation save individual hit contributions to ECal Hits?
+            bool enableHitContribs_{true};
+
+            /// Should the simulation compress hit contributions by pdgID?
+            bool compressHitContribs_{true};
+
             /// Collections to drop from simulation (usually scoring plane collections)
             std::vector< std::string > dropCollections_;
             
             /// Path to scoring planes description
-            std::string scoringPlanesPath_{""};
+            std::string scoringPlanesPath_;
 
             /// Vector of Random Seeds to use for this run.
             std::vector< int > randomSeeds_;
