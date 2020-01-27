@@ -167,6 +167,9 @@ namespace ldmx {
 
             /// Run Number for this Sim Run
             int runNumber_;
+
+            /// Collections to drop from simulation (usually scoring plane collections)
+            std::vector< std::string > dropCollections_;
             
             /// Path to scoring planes description
             std::string scoringPlanesPath_{""};
