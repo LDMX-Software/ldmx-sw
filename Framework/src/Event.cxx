@@ -13,50 +13,45 @@ namespace ldmx {
         }
     }
 
+    void Event::addDrop( const std::string &exp ) {
+        try {
+            regexDropCollections_.emplace_back( exp );
+        } catch ( std::regex_error & ) {
+            EXCEPTION_RAISE(
+                    "RegexErr",
+                    "The drop rule expression '"
+                    + exp
+                    + "' is not a valid regular expression."
+                    );
+        }
+    }
+
     std::vector<ProductTag> Event::searchProducts( const std::string& namematch, const std::string& passmatch, const std::string& typematch) const {
         std::vector<ProductTag> retval;
 
-        regex_t reg_name, reg_pass, reg_type;
-        char errbuf[1000];
-        int rv;
+        std::regex reg_name(namematch.empty()?".*":namematch);
+        std::regex reg_pass(passmatch.empty()?".*":passmatch);
+        std::regex reg_type(typematch.empty()?".*":typematch);
   
-        if (!regcomp(&reg_name,(namematch.empty()?(".*"):(namematch.c_str())),REG_EXTENDED|REG_ICASE|REG_NOSUB)) {
-            if (!regcomp(&reg_pass,(passmatch.empty()?(".*"):(passmatch.c_str())),REG_EXTENDED|REG_ICASE|REG_NOSUB)) {
-  	            if (!regcomp(&reg_type,(typematch.empty()?(".*"):(typematch.c_str())),REG_EXTENDED|REG_ICASE|REG_NOSUB)) {
-                    //all passed expressions are valid regular expressions 
-  	                const std::vector<ProductTag>& products=getProducts();
-  	                for (std::vector<ProductTag>::const_iterator i=products.begin(); i!=products.end(); i++) {
-  	                    if (!regexec(&reg_name,i->name().c_str(),0,0,0) &&
-  		                    !regexec(&reg_pass,i->passname().c_str(),0,0,0) &&
-  		                    !regexec(&reg_type,i->type().c_str(),0,0,0))
-  	                        retval.push_back(*i);
-  	                } 
-  	  
-  	                regfree(&reg_type);
-  	            } else {
-                    EXCEPTION_RAISE(
-                            "InvalidRegex",
-                            "The passed type regex '"
-                            + typematch
-                            + "' is not a valid regular expression"
-                            );
-                }
-  	            regfree(&reg_pass);
-            } else {
-                EXCEPTION_RAISE(
-                        "InvalidRegex",
-                        "The passed name regex '"
-                        + namematch
-                        + "' is not a valid regular expression"
-                        );
-            }
-            regfree(&reg_name);
-        } else {
+        //all passed expressions are valid regular expressions 
+        try {
+      	    const std::vector<ProductTag>& products=getProducts();
+      	    for ( const ProductTag &pt : products ) {
+      	       if ( std::regex_match( pt.name() , reg_name ) and
+                    std::regex_match( pt.passname() , reg_pass ) and
+                    std::regex_match( pt.type() , reg_type )
+                  ) retval.push_back(pt);
+      	    } 
+        } catch ( std::regex_error & ) {
             EXCEPTION_RAISE(
-                    "InvalidRegex",
-                    "The passed pass regex '"
+                    "RegexErr",
+                    "One of '"
+                    + namematch
+                    + "', '"
                     + passmatch
-                    + "' is not a valid regular expression"
+                    + "', or '"
+                    + typematch
+                    + "' is non-empty and not a valid regular expression."
                     );
         }
 
@@ -127,6 +122,13 @@ namespace ldmx {
         passengers_.clear(); //reset event bus
         branches_.clear(); //reset branches
         outputTree_->ResetBranchAddresses(); //reset addresses for output branch
+    }
+
+    bool Event::shouldDrop(const std::string &collName) const {
+        for ( const std::regex &exp : regexDropCollections_ ) {
+            if ( std::regex_match( collName , exp ) ) return true;
+        }
+        return false;
     }
 
 }
