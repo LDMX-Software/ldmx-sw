@@ -204,22 +204,10 @@ namespace ldmx {
              */
             void writeCalorimeterHitsCollection(G4CalorimeterHitsCollection* hc, std::vector<SimCalorimeterHit> &outputColl);
 
-            /**
-             * Print out event info and data depending on the verbose level.
-             * @param anEvent The output event.
-             */
-            void printEvent(Event* anEvent);
-
-            
         private:
 
             /** List of collections whose hits should be droppped. */
             std::vector<std::string> dropCollectionNames_; 
-
-            /**
-             * The output file name.
-             */
-            std::string fileName_ {"ldmx_sim_events.root"};
 
             /** Description of this run. */
             std::string description_{"LDMX simulated events."}; 
@@ -231,19 +219,9 @@ namespace ldmx {
             EventFile &file_;
 
             /**
-             * Output file compression level.
-             */
-            int compressionLevel_ {6};
-
-            /**
              * The event container used to manage the tree/branches/collections.
              */
             Event* event_ {nullptr};
-
-            /**
-             * Event header for writing out event number, etc. into output.
-             */
-            EventHeader eventHeader_;
 
             /**
              * Handles ECal hit readout and IO.
