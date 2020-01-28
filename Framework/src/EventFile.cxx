@@ -231,6 +231,7 @@ namespace ldmx {
             file_->cd();
             
             //Copy over addresses from the new parent
+            //TODO  will throw warnings about not finding branches if using ignore/drop rules
             parentTree->CopyAddresses( tree_ );
 
             //Reset the entry index with the new parent index
