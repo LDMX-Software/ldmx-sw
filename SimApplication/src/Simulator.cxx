@@ -36,9 +36,6 @@ namespace ldmx {
         // Store the random numbers used to generate an event. 
         runManager_->SetRandomNumberStore( true );
         
-        /*
-        new SimApplicationMessenger();
-        */
     }
 
     Simulator::~Simulator() {
@@ -62,9 +59,20 @@ namespace ldmx {
 
     void Simulator::produce(ldmx::Event& event) {
 
+        // Pass the current LDMX event object to the persistency manager.  This
+        // is needed by the persistency manager to fill the current event. 
         persistencyManager_->setCurrentEvent( &event ); 
+
+        // Generate and process a Geant4 event. 
         runManager_->ProcessOneEvent( event.getEventHeader().getEventNumber() );
-        if ( runManager_->GetCurrentEvent()->IsAborted() ) { this->abortEvent(); } //skip rest of sequence and leave the Simulator NOW
+
+        // If a Geant4 event has been aborted, skip the rest of the processing
+        // sequence. This will immediately force the simulation to move on to 
+        // the next event. 
+        if ( runManager_->GetCurrentEvent()->IsAborted() ) { this->abortEvent(); }
+        
+        // Terminate the event.  This checks if an event is to be stored or 
+        // stacked for later. 
         runManager_->TerminateOneEvent();
     
         return;
