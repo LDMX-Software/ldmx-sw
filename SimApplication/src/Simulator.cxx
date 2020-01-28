@@ -7,14 +7,24 @@
 
 #include "SimApplication/Simulator.h"
 
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
 #include "Framework/ParameterSet.h" 
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RootPersistencyManager.h" 
 #include "SimApplication/RunManager.h"
 
+/*~~~~~~~~~~~~~~*/
+/*    Geant4    */
+/*~~~~~~~~~~~~~~*/
 #include "G4CascadeParameters.hh"
-#include "G4GDMLParser.hh"
 #include "G4GDMLMessenger.hh"
+#include "G4GDMLParser.hh"
 
 namespace ldmx {
 
@@ -52,7 +62,8 @@ namespace ldmx {
     }
 
     void Simulator::onFileOpen(EventFile &file) {
-       
+      
+        // Instantiate the persistency manager  
         persistencyManager_ = new RootPersistencyManager(file); 
         persistencyManager_->Initialize(); 
     }
@@ -86,9 +97,13 @@ namespace ldmx {
         // Execute the macro
         uiManager_->ApplyCommand("/control/execute " + macroPath_); 
          
-
+        // Instantiate the scoring worlds including any parallel worlds. 
         runManager_->ConstructScoringWorlds();
+
+        // Initialize the current run
         runManager_->RunInitialization();
+
+        // Initialize the event processing
         runManager_->InitializeEventLoop( 1 );
 
 
@@ -96,8 +111,13 @@ namespace ldmx {
     }
 
     void Simulator::onFileClose(EventFile& eventFile) { 
-        
+       
+        // End the current run and print out some basic statistics if verbose 
+        // level > 0.  
         runManager_->TerminateEventLoop();
+
+        // Persist any remaining events, call the end of run action and 
+        // terminate the Geant4 kernel. 
         runManager_->RunTermination();
     }
 
