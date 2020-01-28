@@ -17,7 +17,6 @@
 #include "SimApplication/ParallelWorldMessenger.h"
 #include "SimApplication/PrimaryGeneratorAction.h"
 #include "SimApplication/PrimaryGeneratorMessenger.h"
-#include "SimApplication/RootPersistencyMessenger.h"
 #include "SimApplication/RootPersistencyManager.h" 
 #include "SimApplication/SteppingAction.h"
 #include "SimApplication/UserEventAction.h"

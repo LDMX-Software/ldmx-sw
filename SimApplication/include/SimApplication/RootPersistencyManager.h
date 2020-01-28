@@ -97,14 +97,6 @@ namespace ldmx {
             void Initialize();
 
             /**
-             * Set the output file name.
-             * @param fileName The output file name.
-             */
-            void setFileName(std::string fileName) {
-                fileName_ = fileName;
-            }
-
-            /**
              * Enable or disable hit contribution output for SimCalorimeterHits.
              * This is enabled by default.
              * @param enableHitContribs True to enable hit contributions.
@@ -123,10 +115,6 @@ namespace ldmx {
             void setCompressHitContribs(bool compressHitContribs) {
                 // Pass this flag to the ECal IO helper.
                 ecalHitIO_.setCompressHitContribs(compressHitContribs);
-            }
-
-            void setCompressionLevel(int compressionLevel) {
-                compressionLevel_ = compressionLevel;
             }
 
             /** 
