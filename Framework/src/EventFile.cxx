@@ -104,25 +104,36 @@ namespace ldmx {
         if (srule.length() == 0) return;
 
         //add wild card at end for matching purposes
-        if (srule.back() != '*') srule += '*';
+        if (srule.back() != '*') srule += ".*"; //add wildcard to back
+
+        //skip any rule that changes EventHeader
+        if ( std::regex_match( EventConstants::EVENT_HEADER , std::regex(srule) ) ) return;
 
         if( isKeep ) {
             //turn both the input and output tree's on
+            //root needs . removed otherwise it gets cranky
+            srule.erase( std::remove( srule.begin(), srule.end(), '.' ) , srule.end() );
             if ( parent_ ) parent_->tree_->SetBranchStatus(srule.c_str(),1);
             if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),1);
-        } else if( isDrop ) {
-            //read from input but don't output
-            if ( parent_ ) parent_->tree_->SetBranchStatus(srule.c_str(),1);
-            //make new tree if output doesn't exist yet
-            if ( not tree_ and isOutputFile_ ) 
-                tree_ = parent_->tree_->CloneTree(0);
-
-            //check for output tree
-            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),0); //doesn't work to drop
         } else if( isIgnore ) {
             //don't even read it from the input file
+            //root needs . removed otherwise it gets cranky
+            srule.erase( std::remove( srule.begin(), srule.end(), '.' ) , srule.end() );
             if ( parent_ ) parent_->tree_->SetBranchStatus(srule.c_str(),0);
             if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),0);
+        } else if ( isDrop ) {
+            //drop means allowing it on reading but not writing
+            // pass these regex to event bus
+            event_->addDrop( srule ); //requires event_ to be set
+
+            //root needs . removed otherwise it gets cranky
+            srule.erase( std::remove( srule.begin(), srule.end(), '.' ) , srule.end() );
+            if ( not tree_ and parent_ ) tree_ = parent_->tree_->CloneTree(0);
+            if ( parent_ ) parent_->tree_->SetBranchStatus(srule.c_str(),1);
+            unsigned int f = 0; //look at this ROOT nonsense 
+            // ==> the third parameter *must* be an address to an unsigned int
+            // apparently Rene has never heard of pass by reference ¯\_(ツ)_/¯
+            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),0,&f);//third parameter suppresses warning message
         }
     }
 
@@ -137,6 +148,7 @@ namespace ldmx {
             //  1) There is no tree setup yet (first input file)
             //  2) This is not single output (new input file --> new output file)
             if ( !tree_ or !isSingleOutput_ ) {
+                //TODO this may mean that collecitons aren't dropped after first file
                 tree_ = parent_->tree_->CloneTree(0);
             }
             event_->setInputTree( parent_->tree_ );

@@ -37,6 +37,8 @@ namespace ldmx {
                 for (auto module : sequence_) module->onFileOpen(outFile);
 
                 outFile.setupEvent(&theEvent);
+                
+                for ( auto rule : dropKeepRules_ ) outFile.addDrop(rule);
 
                 while (n_events_processed < eventLimit_) {
                     EventHeader& eh = theEvent.getEventHeader();
@@ -119,9 +121,7 @@ namespace ldmx {
                                         );
                             }
 
-                            for ( auto rule : dropKeepRules_ ) {
-                                outFile->addDrop(rule);
-                            }
+                            for ( auto rule : dropKeepRules_ ) outFile->addDrop(rule);
 
                         } else {
 
