@@ -11,6 +11,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/ParameterSet.h" 
+#include "Framework/Process.h"
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
@@ -152,7 +153,7 @@ namespace ldmx {
         // the next event. 
         if ( runManager_->GetCurrentEvent()->IsAborted() ) { this->abortEvent(); }
         
-        if ( process_.getLogFrequency() > 0 and event.getEventHeader()->getEventNumber() % process_.getLogFrequency() == 0 ) {
+        if ( process_.getLogFrequency() > 0 and event.getEventHeader().getEventNumber() % process_.getLogFrequency() == 0 ) {
             //TODO: remove unnecessary EventPrintPlugin
             //TODO: logging in production run of Process
             //print according to log frequency
