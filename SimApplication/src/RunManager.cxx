@@ -14,7 +14,6 @@
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/GammaPhysics.h"
 #include "SimApplication/ParallelWorld.h"
-#include "SimApplication/ParallelWorldMessenger.h"
 #include "SimApplication/PrimaryGeneratorAction.h"
 #include "SimApplication/PrimaryGeneratorMessenger.h"
 #include "SimApplication/RootPersistencyManager.h" 
@@ -41,7 +40,6 @@ namespace ldmx {
     RunManager::RunManager() {
         pluginManager_ = new PluginManager();
         pluginMessenger_ = new PluginMessenger(pluginManager_);
-        pwMessenger_ = new ParallelWorldMessenger(this);
         
         // Setup messenger for physics list.
         physicsListFactory_ = new G4PhysListFactory;
