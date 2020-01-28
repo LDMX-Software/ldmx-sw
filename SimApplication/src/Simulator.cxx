@@ -161,8 +161,7 @@ namespace ldmx {
             //TODO: logging in production run of Process
             //print according to log frequency
             std::cout << "[ Simulator ] : Printing event contents:" << std::endl;
-            //TODO: Event::Print(int) exists on master, wait for merge
-            //event.Print( verbosity_ );
+            event.Print( verbosity_ );
         }
 
         // Terminate the event.  This checks if an event is to be stored or 
