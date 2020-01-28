@@ -110,10 +110,9 @@ namespace ldmx {
         uiManager_->ApplyCommand( "/persistency/gdml/read " + detectorPath_ );
 
         if ( not scoringPlanesPath_.empty() ) {
-            //TODO enable scoring planes directly?
             //path was given, enable and read scoring planes into parallel world
-            uiManager_->ApplyCommand( "/ldmx/pw/enable" );
-            uiManager_->ApplyCommand( "/ldmx/pw/read " + scoringPlanesPath_ );
+            dynamic_cast<RunManager*>(runManager_.get())->enableParallelWorld(true);
+            dynamic_cast<RunManager*>(runManager_.get())->setParallelWorldPath(scoringPlanesPath_);
         }
 
         for ( const std::string& cmd : preInitCommands_ ) {
@@ -135,9 +134,6 @@ namespace ldmx {
         persistencyManager_->setRunNumber( runNumber_ );
         persistencyManager_->setRunDescription( description_ );
         for ( const std::string &collName : dropCollections_ ) persistencyManager_->dropCollection( collName );
-        /* 
-         * TODO cleanup RootPersistencyManager and remove unneeded RootPersistencyMessenger
-         */
         persistencyManager_->setEnableHitContribs( enableHitContribs_ );
         persistencyManager_->setCompressHitContribs( compressHitContribs_ );
     }
