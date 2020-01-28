@@ -227,24 +227,36 @@ namespace ldmx {
     }
 
     void EventFile::close() {
-        if (isOutputFile_)
-            tree_->Write();
+        
+        // Before an output file, the Event tree needs to be written. 
+        if (isOutputFile_) tree_->Write();
+
+        // Close the file
         file_->Close();
     }
 
     void EventFile::writeRunHeader(RunHeader* runHeader) {
+    
+        // Before writing the event header, make sure the file is an output
+        // file.  TODO: Is checking whether the file is writable good enough?  
         if (!isOutputFile_) {
             EXCEPTION_RAISE("FileError", "Output file '" + fileName_ + "' is not writable.");
         }
-        TTree* runTree = (TTree*) file_->Get("LDMX_Run");
-        if (!runTree) {
-            runTree = new TTree("LDMX_Run", "LDMX run header");
-        }
-        TBranch* runBranch = runTree->GetBranch("RunHeader");
-        if (!runBranch) {
-            runBranch = runTree->Branch("RunHeader", EventConstants::RUN_HEADER.c_str(), &runHeader, 32000, 3);
-        }
-        runBranch->SetFile(file_);
+        
+        // Check for the existence of the run tree in the file.  If it doesn't
+        // exists, create it. 
+        // TODO: Tree name shouldn't be hardcoded. Is this check really necessary?
+        auto runTree{static_cast<TTree*>(file_->Get("LDMX_Run"))};
+        if (!runTree) runTree = new TTree("LDMX_Run", "LDMX run header");
+
+        // Check for the existence of the "RunHeader" branch in the tree.  If
+        // it doesn't exists, crate it. 
+        // TODO: Is this check really necessary?
+        auto runBranch{runTree->GetBranch("RunHeader")};
+        if (!runBranch) 
+            runTree->Branch("RunHeader", EventConstants::RUN_HEADER.c_str(), &runHeader, 32000, 3);
+
+        // Fill the tree and write it to the file. 
         runTree->Fill();
         runTree->Write();
     }

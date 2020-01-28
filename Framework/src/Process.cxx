@@ -17,23 +17,24 @@ namespace ldmx {
     void Process::run() {
 
         try {
-            int n_events_processed = 0;
+            
+            // Counter to keep track of the number of events that have been 
+            // procesed
+            auto n_events_processed{0};
 
             //event bus for this process
             Event theEvent(passname_);
+            
+            // Start by notifying everyone that modules processing is beginning
+            for (auto module : sequence_) module->onProcessStart();
 
-            // first, notify everyone that we are starting
-            for (auto module : sequence_) {
-                module->onProcessStart();
-            }
-
-            // if we have no input files, but do have an event number, run for that number of events on an output file
+            // If we have no input files, but do have an event number, run for
+            // that number of events and generate an output file.
             if (inputFiles_.empty() && eventLimit_ > 0) {
+                
                 EventFile outFile(outputFiles_[0], true);
 
-                for (auto module : sequence_) {
-                    module->onFileOpen(outputFiles_[0]);
-                }
+                for (auto module : sequence_) module->onFileOpen(outFile);
 
                 outFile.setupEvent(&theEvent);
 
@@ -43,28 +44,32 @@ namespace ldmx {
                     eh.setEventNumber(n_events_processed + 1);
                     eh.setTimestamp(TTimeStamp());
 
-                    theEvent.getEventHeader().Print();
-
                     // reset the storage controller state
                     m_storageController.resetEventState();
 
+                    bool eventAborted = false;
                     for (auto module : sequence_) {
-                        if (dynamic_cast<Producer*>(module)) {
-                            (dynamic_cast<Producer*>(module))->produce(theEvent);
-                        } else if (dynamic_cast<Analyzer*>(module)) {
-                            (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
+                        try {
+                            if (dynamic_cast<Producer*>(module)) {
+                                (dynamic_cast<Producer*>(module))->produce(theEvent);
+                            } else if (dynamic_cast<Analyzer*>(module)) {
+                                (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
+                            }
+                        } catch( AbortEventException& ) {
+                            eventAborted = true;
+                            break;
                         }
                     }
-                    outFile.nextEvent(m_storageController.keepEvent());
+                    
+                    outFile.nextEvent( eventAborted ? false : m_storageController.keepEvent() /*ignore storage control if event aborted*/);
                     theEvent.Clear();
                     n_events_processed++;
                 }
 
-                for (auto module : sequence_) {
-                    module->onFileClose(outputFiles_[0]);
-                }
+                for (auto module : sequence_) module->onFileClose(outFile);
+                
                 outFile.close();
-
+                
             } else {
                 //there are input files
 
@@ -89,10 +94,8 @@ namespace ldmx {
 
                     std::cout << "[ Process ] : Opening file " << infilename << std::endl;
 
-                    for (auto module : sequence_) {
-                        module->onFileOpen(infilename);
-                    }
-                   
+                    for (auto module : sequence_) module->onFileOpen(inFile);
+                    
                     //configure event file that will be iterated over
                     EventFile* masterFile; 
                     if ( !outputFiles_.empty() ) {
@@ -134,8 +137,9 @@ namespace ldmx {
                         masterFile = &inFile;
                     }
 
-                    while (masterFile->nextEvent(m_storageController.keepEvent()) && 
-                            (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
+                    bool eventAborted = false;
+                    while (masterFile->nextEvent(eventAborted ? false : m_storageController.keepEvent()/*ignore storage controller if event aborted*/) 
+                            && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
                         // clean up for storage control calculation
                         m_storageController.resetEventState();
             
@@ -162,11 +166,17 @@ namespace ldmx {
                                       << "  (" << t.AsString("lc") << ")" << std::endl;
                         }
 
+                        eventAborted = false;
                         for (auto module : sequence_) {
-                            if (dynamic_cast<Producer*>(module)) {
-                                (dynamic_cast<Producer*>(module))->produce(theEvent);
-                            } else if (dynamic_cast<Analyzer*>(module)) {
-                                (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
+                            try {
+                                if (dynamic_cast<Producer*>(module)) {
+                                    (dynamic_cast<Producer*>(module))->produce(theEvent);
+                                } else if (dynamic_cast<Analyzer*>(module)) {
+                                    (dynamic_cast<Analyzer*>(module))->analyze(theEvent);
+                                }
+                            } catch( AbortEventException& ) {
+                                eventAborted = true;
+                                break;
                             }
                         }
 
@@ -183,11 +193,10 @@ namespace ldmx {
                         std::cout << "[ Process ] : Processing interrupted\n";
                     }
 
+
                     std::cout << "[ Process ] : Closing file " << infilename << std::endl;
 
-                    for (auto module : sequence_) {
-                        module->onFileClose(infilename);
-                    }
+                    for (auto module : sequence_) module->onFileClose(inFile);
 
                     inFile.close();
 
@@ -223,6 +232,7 @@ namespace ldmx {
             for (auto module : sequence_) {
                 module->onProcessEnd();
             }
+
         } catch (Exception& e) {
             std::cerr << "Framework Error [" << e.name() << "] : " << e.message() << std::endl;
             std::cerr << "  at " << e.module() << ":" << e.line() << " in " << e.function() << std::endl;

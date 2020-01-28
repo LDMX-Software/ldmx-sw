@@ -14,11 +14,6 @@ namespace ldmx {
 
     void UserRunAction::BeginOfRunAction(const G4Run* aRun) {
 
-        // Open the ROOT writer.
-        if (RootPersistencyManager::getInstance()) {
-            RootPersistencyManager::getInstance()->Initialize();
-        }
-
         pluginManager_->beginRun(aRun);
 
     }

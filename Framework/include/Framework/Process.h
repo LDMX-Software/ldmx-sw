@@ -175,7 +175,6 @@ namespace ldmx {
 
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};
-
     };
 }
 

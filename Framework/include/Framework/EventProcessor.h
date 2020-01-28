@@ -23,9 +23,32 @@ namespace ldmx {
 
     class Process;
     class EventProcessor;
+    class EventFile; 
 
     /** Typedef for EventProcessorFactory use. */
     typedef EventProcessor* EventProcessorMaker(const std::string& name, Process& process);
+
+    /**
+     * @class AbortEventException
+     *
+     * @brief Specific exception used to abort an event.
+     */
+    class AbortEventException : public Exception {
+
+        public:
+
+            /**
+             * Constructor
+             */
+            AbortEventException() throw ()
+                : Exception( "AbortEventException" , "I should have been caught earlier!" , "" , 0 , "" ) { }
+    
+            /**
+             * Destructor
+             */
+            virtual ~AbortEventException() throw () { }
+
+    };
 
     /**
      * @class EventProcessor
@@ -74,7 +97,7 @@ namespace ldmx {
              * @param filename Input event ROOT file name.
              * @note This callback is rarely used.
              */
-            virtual void onFileOpen(const std::string& filename) {
+            virtual void onFileOpen(EventFile& eventFile) {
             }
 
             /**
@@ -83,7 +106,7 @@ namespace ldmx {
              * @param filename Input event ROOT file name
              * @note This callback is rarely used.
              */
-            virtual void onFileClose(const std::string& filename) {
+            virtual void onFileClose(EventFile& eventFile) {
             }
 
             /**
@@ -131,6 +154,13 @@ namespace ldmx {
             static void declare(const std::string& classname, int classtype, EventProcessorMaker*);
       
         protected:
+
+            /**
+             * Abort the event immediately.
+             *
+             * Skip the rest of the sequence and don't save anything in the event bus.
+             */
+            void abortEvent() { throw AbortEventException(); }
 
             /** Handle to the Process. */
             Process& process_;
