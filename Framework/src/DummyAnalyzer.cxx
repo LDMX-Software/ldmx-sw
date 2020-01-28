@@ -25,6 +25,7 @@
 /*   Framework  */
 /*~~~~~~~~~~~~~~*/
 #include "Framework/Event.h"
+#include "Framework/EventFile.h" 
 #include "Framework/EventProcessor.h"
 #include "Framework/NtupleManager.h"
 #include "Framework/ParameterSet.h"
@@ -124,18 +125,18 @@ namespace ldmx {
              *  Callback for the analyer to take any action once a file has been
              *  opened. 
              */
-            void onFileOpen(const std::string& filename) final override {
+            void onFileOpen(EventFile& eventFile) final override {
                 std::cout << "[ DummyAnalyzer ]: Opening " 
-                          << filename << "!" << std::endl;
+                          << eventFile.getFileName() << "!" << std::endl;
             }
 
             /**
              *  Callback for the analyzer to take any action once the file 
              *  has been closed. 
              */
-            void onFileClose(const std::string& filename) final override {
+            void onFileClose(EventFile& eventFile) final override {
                 std::cout << "[ DummyAnalyzer ]: Closing " 
-                          << filename << "!" << std::endl;
+                          << eventFile.getFileName() << "!" << std::endl;
             }
 
             /**
