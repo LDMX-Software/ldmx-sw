@@ -5,23 +5,27 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_SIMULATOR_H
-#define SIMAPPLICATION_SIMULATOR_H
+#ifndef _SIMAPPLICATION_SIMULATOR_H_
+#define _SIMAPPLICATION_SIMULATOR_H_
 
-//~~~~~~~~~~~~//
-//   StdLib   //
-//~~~~~~~~~~~~//
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
 #include <memory>
 
-//~~~~~~~~~~~~~//
-//   ldmx-sw   //
-//~~~~~~~~~~~~~//
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
 #include "Event/EventDef.h"
+
+/*~~~~~~~~~~~*/
+/*   Event   */
+/*~~~~~~~~~~~*/
 #include "Framework/EventProcessor.h"
 
-//~~~~~~~~~~~~//
-//   Geant4   //
-//~~~~~~~~~~~~//
+/*~~~~~~~~~~~~~~*/
+/*    Geant4    */
+/*~~~~~~~~~~~~~~*/
 #include "G4UImanager.hh"
 
 class G4RunManager;
@@ -49,30 +53,38 @@ namespace ldmx {
         public:
 
             /**
-             * Constructor
+             * Constructor.
              *
              * Blank Producer constructor
              * Constructs object that are non-configurable.
+             *
+             * @param name Name for this instance of the class.
+             * @param process The Process class assocaited with EventProcessor, 
+             *                provided by the Framework. 
              */
             Simulator(const std::string& name, ldmx::Process& process);
 
             /**
-             * Destructor
+             * Destructor.
              *
              * Deletes hanging pointers
              */
             ~Simulator();
 
             /**
-             * Configure the simulation
+             * Configure the simulation.
              *
              * This is called before run is begun, so all parameters/options 
              * for simulation must be set here.
+             *
+             * @param ps ParameterSet for the configuration. 
              */
             virtual void configure(const ldmx::ParameterSet& ps);
 
             /**
-             * Run simulation and export results to output event
+             * Run simulation and export results to output event.
+             *
+             * @param event The event to process. 
              */
             virtual void produce(ldmx::Event &event);
 
@@ -80,7 +92,7 @@ namespace ldmx {
              *  Callback for the EventProcessor to take any necessary action 
              *  when a new file is opened.
              *
-             *  @param eventFile 
+             *  @param eventFile  The input/output file.  
              */
             void onFileOpen(EventFile& eventFile);
 
@@ -88,7 +100,7 @@ namespace ldmx {
              * Callback for the EventProcessor to take any necessary action
              * when a file is closed.
              *
-             * @param eventFile
+             * @param eventFile The intput/output file. 
              */
             void onFileClose(EventFile& eventFile);  
 
