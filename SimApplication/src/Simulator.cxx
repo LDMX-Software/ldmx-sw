@@ -137,7 +137,7 @@ namespace ldmx {
         for ( const std::string &collName : dropCollections_ ) persistencyManager_->dropCollection( collName );
         /* 
          * TODO cleanup RootPersistencyManager and remove unneeded RootPersistencyMessenger
-        */
+         */
         persistencyManager_->setEnableHitContribs( enableHitContribs_ );
         persistencyManager_->setCompressHitContribs( compressHitContribs_ );
     }
