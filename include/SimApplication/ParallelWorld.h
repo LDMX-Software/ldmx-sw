@@ -20,7 +20,6 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "SimApplication/ParallelWorldMessenger.h"
 #include "SimApplication/AuxInfoReader.h"
 
 namespace ldmx { 

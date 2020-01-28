@@ -24,7 +24,6 @@ namespace ldmx {
 
     // Forward declare to avoid circular dependency in headers
     class DetectorConstruction; 
-    class ParallelWorldMessenger; 
     class PluginManager; 
     class PluginMessenger; 
 
@@ -77,9 +76,6 @@ namespace ldmx {
 
             /** Biasing messenger. */
             BiasingMessenger* biasingMessenger_ {new BiasingMessenger()};
-
-            /** Parallel world messenger. */
-            ParallelWorldMessenger* pwMessenger_{nullptr};
 
             /**
              * Manager of sim plugins.
