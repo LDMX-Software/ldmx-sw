@@ -46,6 +46,7 @@ namespace ldmx {
     }
 
     RunManager::~RunManager() {
+        std::cout << "~RunManager" << std::endl;
         delete pluginManager_;
         delete pluginMessenger_;
         delete physicsListFactory_; 

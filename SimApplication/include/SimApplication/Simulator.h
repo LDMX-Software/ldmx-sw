@@ -130,20 +130,13 @@ namespace ldmx {
         private:
 
             /// Manager controlling G4 simulation run 
-            std::unique_ptr<G4RunManager> runManager_;
+            std::unique_ptr<RunManager> runManager_;
 
             /// User interface handle
             G4UImanager* uiManager_{nullptr};
 
             /// GDML parser 
             std::unique_ptr<G4GDMLParser> parser_;
-
-            /// Messenger that allows passing commands to the parser
-            std::unique_ptr<G4GDMLMessenger> gdmlMessenger_; 
-
-            /// Geant4 Class Instance holding cascade parameters
-            ///     Can't be a unique_ptr
-            const G4CascadeParameters* cascadeParameters_{nullptr};
 
             /// LDMX Object that constructs our detector
             std::unique_ptr<DetectorConstruction> detectorConstruction_;
@@ -178,6 +171,7 @@ namespace ldmx {
             bool compressHitContribs_{true};
 
             /// Collections to drop from simulation (usually scoring plane collections)
+            //TODO deprecate this when functional dropping is merged in
             std::vector< std::string > dropCollections_;
             
             /// Path to scoring planes description
