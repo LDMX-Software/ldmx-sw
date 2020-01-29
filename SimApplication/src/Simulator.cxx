@@ -195,25 +195,13 @@ namespace ldmx {
             uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeY " + std::to_string(beamspotSmear_.at(1)) );
         }
 
-        if ( randomSeeds_.size() == 2 ) {
-            //TODO set random seeds directly?
-            /* This is what Geant4 does under the hood:
-             *  G4Tokenizer next(newValue);
-             *  G4int idx=0;
-             *  long seeds[100];
-             *  G4String vl;
-             *  while(!(vl=next()).isNull())
-             *  { seeds[idx] = (long)(StoI(vl)); idx++; }
-             *  if(idx<2)
-             *  { G4cerr << "/random/setSeeds should have at least two integers. Command ignored." << G4endl; }
-             *  else
-             *  {
-             *      seeds[idx] = 0;
-             *      CLHEP::HepRandom::setTheSeeds(seeds);
-             *  }
-             */
-            uiManager_->ApplyCommand( "/random/setSeeds " + std::to_string(randomSeeds_.at(0)) 
-                    + " " + std::to_string(randomSeeds_.at(1)) );
+        if ( randomSeeds_.size() > 1 ) {
+            //Geant4 allows for random seeds from 2 to 100
+            std::string cmd( "/random/setSeeds " );
+            for ( const int &seed : randomSeeds_ ) {
+                cmd += std::to_string(seed) + " ";
+            }
+            uiManager_->ApplyCommand( cmd );
         }
 
         // Instantiate the scoring worlds including any parallel worlds. 
