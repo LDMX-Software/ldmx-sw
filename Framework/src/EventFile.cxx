@@ -231,8 +231,25 @@ namespace ldmx {
             file_->cd();
             
             //Copy over addresses from the new parent
-            //TODO  will throw warnings about not finding branches if using ignore/drop rules
-            parentTree->CopyAddresses( tree_ );
+            //  Taken from TTree::CopyAddresses but removed warning when branch not found
+            //  The outBranch may not exist for each inBranch because we may be using some drop/ignore rules
+            TObjArray *branches = parentTree->GetListOfBranches();
+            int nbranches = branches->GetEntriesFast();
+            for ( int iBr = 0; iBr < nbranches; iBr++ ) {
+                TBranch *inBranch = (TBranch *)branches->At(iBr);
+                if ( inBranch->TestBit(kDoNotProcess) ) {
+                    continue; //parent tree has this inBranch turned off ==> skip
+                }
+                char* addr = inBranch->GetAddress();
+                TBranch *outBranch = tree_->GetBranch( inBranch->GetName() );
+                if ( outBranch ) {
+                    //if outTree has this branch -> reset address
+                    outBranch->SetAddress( addr );
+                    if ( outBranch->InheritsFrom(TBranchElement::Class()) ) {
+                        ((TBranchElement*)outBranch)->ResetDeleteObject();
+                    } //reset object if more complicated
+                } //if outBranch was found
+            } //loop through parentTree branches
 
             //Reset the entry index with the new parent index
             ientry_ = parent_->ientry_;
