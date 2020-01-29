@@ -29,12 +29,12 @@ namespace ldmx {
     std::vector<ProductTag> Event::searchProducts( const std::string& namematch, const std::string& passmatch, const std::string& typematch) const {
         std::vector<ProductTag> retval;
 
-        std::regex reg_name(namematch.empty()?".*":namematch);
-        std::regex reg_pass(passmatch.empty()?".*":passmatch);
-        std::regex reg_type(typematch.empty()?".*":typematch);
-  
-        //all passed expressions are valid regular expressions 
         try {
+            std::regex reg_name(namematch.empty()?".*":namematch);
+            std::regex reg_pass(passmatch.empty()?".*":passmatch);
+            std::regex reg_type(typematch.empty()?".*":typematch);
+      
+            //all passed expressions are valid regular expressions 
       	    const std::vector<ProductTag>& products=getProducts();
       	    for ( const ProductTag &pt : products ) {
       	       if ( std::regex_match( pt.name() , reg_name ) and
