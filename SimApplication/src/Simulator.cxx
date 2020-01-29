@@ -81,6 +81,8 @@ namespace ldmx {
         detectorPath_ = ps.getString( "detector" );
 
         runNumber_ = ps.getInteger( "runNumber" );
+        //make sure Process uses this run number when creating the event headers
+        process_.setRunNumber( runNumber_ );
 
         /*************************************************
          * Optional Parameters
@@ -154,10 +156,8 @@ namespace ldmx {
         if ( runManager_->GetCurrentEvent()->IsAborted() ) { this->abortEvent(); }
         
         if ( process_.getLogFrequency() > 0 and event.getEventHeader().getEventNumber() % process_.getLogFrequency() == 0 ) {
-            //TODO: remove unnecessary EventPrintPlugin
-            //TODO: logging in production run of Process
             //print according to log frequency
-            std::cout << "[ Simulator ] : Printing event contents:" << std::endl;
+            if ( verbosity_ > 1 ) std::cout << "[ Simulator ] : Printing event contents:" << std::endl;
             event.Print( verbosity_ );
         }
 
@@ -170,9 +170,6 @@ namespace ldmx {
     
     void Simulator::onProcessStart() {
         
-        // Parse the detector geometry
-        uiManager_->ApplyCommand("/persistency/gdml/read " + detectorPath_);
-
         //initialize run
         uiManager_->ApplyCommand( "/run/initialize" );
 
