@@ -25,7 +25,7 @@
 /*~~~~~~~~~~~~~~*/
 #include "G4UImanager.hh"
 #include "G4CascadeParameters.hh"
-#include "G4GDMLMessenger.hh"
+#include "G4GeometryManager.hh"
 #include "G4GDMLParser.hh"
 
 namespace ldmx {
@@ -44,6 +44,7 @@ namespace ldmx {
     Simulator::Simulator(const std::string& name, ldmx::Process& process) : Producer( name , process ) {
 
         // Get the ui manager from geant
+        //      This pointer is handled by Geant4
         uiManager_ = G4UImanager::GetUIpointer();
 
         // Instantiate the run manager.  
@@ -51,10 +52,10 @@ namespace ldmx {
 
         // Instantiate the GDML parser and corresponding messenger
         parser_ = std::make_unique<G4GDMLParser>();
-        gdmlMessenger_ = std::make_unique<G4GDMLMessenger>(parser_.get()); 
 
         // Instantiate the class so cascade parameters can be set.
-        cascadeParameters_ = G4CascadeParameters::Instance();  
+        //      This pointer is handled by Geant4
+        G4CascadeParameters::Instance();
 
         // Supply the default user initialization and actions
         detectorConstruction_ = std::make_unique<DetectorConstruction>( parser_.get() );
@@ -98,8 +99,8 @@ namespace ldmx {
         // Get the path to the scoring planes
         scoringPlanesPath_ = ps.getString( "scoringPlanes" , { } );
 
-        randomSeeds_ = ps.getVInteger( "randomSeeds" , { } ); //required to be size 2
-        beamspotSmear_ = ps.getVDouble( "beamspotSmear" , { } ); //required to be size 2
+        randomSeeds_ = ps.getVInteger( "randomSeeds" , { } ); //required to be size 2 or greater
+        beamspotSmear_ = ps.getVDouble( "beamspotSmear" , { } ); //required to be size 2 or 3 [x,y] or [x,y,z]
 
         // Get the extra simulation configuring commands
         preInitCommands_  = ps.getVString( "preInitCommands"  , { } );
@@ -110,12 +111,14 @@ namespace ldmx {
          *************************************************/
         
         // Parse the detector geometry
-        uiManager_->ApplyCommand( "/persistency/gdml/read " + detectorPath_ );
+        G4GeometryManager::GetInstance()->OpenGeometry();
+        parser_->Read( detectorPath_ );
+        runManager_->DefineWorldVolume( parser_->GetWorldVolume() );
 
         if ( not scoringPlanesPath_.empty() ) {
             //path was given, enable and read scoring planes into parallel world
-            dynamic_cast<RunManager*>(runManager_.get())->enableParallelWorld(true);
-            dynamic_cast<RunManager*>(runManager_.get())->setParallelWorldPath(scoringPlanesPath_);
+            runManager_->enableParallelWorld(true);
+            runManager_->setParallelWorldPath(scoringPlanesPath_);
         }
 
         for ( const std::string& cmd : preInitCommands_ ) {
@@ -131,12 +134,18 @@ namespace ldmx {
     }
 
     void Simulator::onFileOpen(EventFile &file) {
-       
+
+        // Initialize persistency manager and connect it to the current EventFile
         persistencyManager_ = std::make_unique<RootPersistencyManager>(file); 
         persistencyManager_->Initialize(); 
+        // set the run number
         persistencyManager_->setRunNumber( runNumber_ );
+        // pass on the description
         persistencyManager_->setRunDescription( description_ );
+        // pass on the collections to drop after sim (i.e. NOT save)
+        // TODO remove this after functional dropping is merged in
         for ( const std::string &collName : dropCollections_ ) persistencyManager_->dropCollection( collName );
+        // set how to deal with hit contributions in ECal
         persistencyManager_->setEnableHitContribs( enableHitContribs_ );
         persistencyManager_->setCompressHitContribs( compressHitContribs_ );
     }
@@ -156,7 +165,7 @@ namespace ldmx {
         if ( runManager_->GetCurrentEvent()->IsAborted() ) { this->abortEvent(); }
         
         if ( process_.getLogFrequency() > 0 and event.getEventHeader().getEventNumber() % process_.getLogFrequency() == 0 ) {
-            //print according to log frequency
+            //print according to log frequency and verbosity
             if ( verbosity_ > 1 ) std::cout << "[ Simulator ] : Printing event contents:" << std::endl;
             event.Print( verbosity_ );
         }
@@ -184,12 +193,15 @@ namespace ldmx {
             }
         }
 
-        if ( beamspotSmear_.size() == 2 ) {
+        if ( beamspotSmear_.size() > 1 ) {
             //TODO smear beamspot directly?
             //  Would need a handle to the PrimaryGeneratorAction
             uiManager_->ApplyCommand( "/ldmx/generators/beamspot/enable" );
             uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeX " + std::to_string(beamspotSmear_.at(0)) );
             uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeY " + std::to_string(beamspotSmear_.at(1)) );
+            if ( beamspotSmear_.size() > 2 ) {
+                uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeZ " + std::to_string(beamspotSmear_.at(2)) );
+            }
         }
 
         if ( randomSeeds_.size() > 1 ) {
