@@ -48,6 +48,9 @@ macro(MODULE)
   # set module's source dir
   set(MODULE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+  # add internal module dependencies to list of libraries that need to be linked to it
+  list(APPEND MODULE_EXTRA_LINK_LIBRARIES ${MODULE_DEPENDENCIES})
+
   # print debug info 
   if(MODULE_DEBUG) 
     message("MODULE_NAME='${MODULE_NAME}'")
