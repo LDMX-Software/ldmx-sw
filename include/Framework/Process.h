@@ -131,6 +131,11 @@ namespace ldmx {
              */
             TDirectory* makeHistoDirectory(const std::string& dirName);
 
+            /**
+             * Open a ROOT TFile to write histograms and TTrees.
+             */
+            TDirectory* openHistoFile(); 
+
             /**  
              * Access the storage control unit for this process
              */
