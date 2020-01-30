@@ -27,7 +27,7 @@ namespace ldmx {
         delete detID_;
     }
 
-    G4bool ScoringPlaneSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
+    G4bool ScoringPlaneSD::ProcessHits(G4Step* step, G4TouchableHistory* ) {
 
         // Get the edep from the step.
         G4double edep = step->GetTotalEnergyDeposit();

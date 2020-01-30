@@ -92,32 +92,32 @@ namespace ldmx {
              * 
              * @param parameters ParameterSet for configuration.
              */
-            virtual void configure(Parameters& parameters) { } 
+            virtual void configure(Parameters& ) { } 
 
             /**
              * Callback for the EventProcessor to take any necessary
              * action when the run being processed changes.
-             * @param runHeader The RunHeader containing run information.
+             * @param The RunHeader containing run information.
              */
-            virtual void onNewRun(const RunHeader& runHeader) {
+            virtual void onNewRun(const RunHeader& ) {
             }
 
             /**
              * Callback for the EventProcessor to take any necessary
              * action when a new event input ROOT file is opened.
-             * @param filename Input event ROOT file name.
+             * @param Input event ROOT file
              * @note This callback is rarely used.
              */
-            virtual void onFileOpen(EventFile& eventFile) {
+            virtual void onFileOpen(EventFile& ) {
             }
 
             /**
              * Callback for the EventProcessor to take any necessary
              * action when a event input ROOT file is closed.
-             * @param filename Input event ROOT file name
+             * @param Input event ROOT file
              * @note This callback is rarely used.
              */
-            virtual void onFileClose(EventFile& eventFile) {
+            virtual void onFileClose(EventFile& ) {
             }
 
             /**

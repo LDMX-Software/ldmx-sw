@@ -60,11 +60,11 @@ namespace ldmx {
 
             }
 
-            virtual void onFileOpen() {
+            virtual void onFileOpen(EventFile&) {
                 std::cout << "DummyProducer: Opening a file!" << std::endl;
             }
 
-            virtual void onFileClose() {
+            virtual void onFileClose(EventFile&) {
                 std::cout << "DummyProducer: Closing a file!" << std::endl;
             }
 
@@ -85,4 +85,4 @@ namespace ldmx {
 
 }
 
-DECLARE_ANALYZER_NS(ldmx, DummyProducer);
+DECLARE_ANALYZER_NS(ldmx, DummyProducer)

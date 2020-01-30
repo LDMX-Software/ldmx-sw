@@ -335,8 +335,10 @@ namespace ldmx {
                 oldtree->SetBranchStatus("RunHeader", 1);
                 file_->cd();
                 TTree* newtree = oldtree->CloneTree();
-                file_->Write();
-                file_->Flush();
+                if ( newtree ) {
+                    file_->Write();
+                    file_->Flush();
+                }
             }
         }
     }

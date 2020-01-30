@@ -234,7 +234,7 @@ namespace ldmx {
 
                 G4cout << "Creating IDField " << fieldName << G4endl;
 
-                int startBit, endBit = -1;
+                int startBit(-1), endBit(-1);
 
                 // iterate field aux values
                 for (std::vector<G4GDMLAuxStructType>::const_iterator fieldValsIt = fieldsAux->begin(); fieldValsIt != fieldsAux->end(); fieldValsIt++) {
@@ -294,7 +294,6 @@ namespace ldmx {
 
         // Create a uniform mag field using the built-in Geant4 type.
         if (magFieldType == "G4UniformMagField") {
-            string::size_type sz;
             double bx, by, bz;
             bx = by = bz = 0.;
             for (std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin(); iaux != auxInfoList->end(); iaux++) {
@@ -321,7 +320,7 @@ namespace ldmx {
         } else if (magFieldType == "MagneticFieldMap3D") {
 
             string fileName;
-            double offsetX, offsetY, offsetZ;
+            double offsetX(0.), offsetY(0.), offsetZ(0.);
 
             for (std::vector<G4GDMLAuxStructType>::const_iterator iaux = auxInfoList->begin(); iaux != auxInfoList->end(); iaux++) {
 

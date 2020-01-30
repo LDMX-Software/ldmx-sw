@@ -34,7 +34,7 @@ namespace ldmx {
     
         if (!purpose_pat.empty()) {
             preg=new regex_t;
-            int error=regcomp(preg,purpose_pat.c_str(),REG_EXTENDED|REG_NOSUB);
+            error=regcomp(preg,purpose_pat.c_str(),REG_EXTENDED|REG_NOSUB);
             if (error) {        
                 char msg[1024];
                 regerror(error,preg,msg,1024);

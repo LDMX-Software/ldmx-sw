@@ -24,7 +24,7 @@ namespace ldmx {
 
     HcalSD::~HcalSD() {}
 
-    G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
+    G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* /*unused*/) {
 
         // Determine if current particle of this step is a Geantino.
         G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();

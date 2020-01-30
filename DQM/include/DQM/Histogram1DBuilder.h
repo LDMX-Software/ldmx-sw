@@ -25,10 +25,10 @@ namespace ldmx {
                                const double& xLow, const double& xHigh);
 
             /** Set the histogram title. */
-            Histogram1DBuilder title(const std::string& title) { title_ = title; };
+            void title(const std::string& title) { title_ = title; };
             
             /** Set the x Label. */
-            Histogram1DBuilder xLabel(const std::string& xLabel) { xLabel_ = xLabel; }; 
+            void xLabel(const std::string& xLabel) { xLabel_ = xLabel; }; 
 
             /** @return An instance of a histogram of type T (TH1F, etc.) */
             T* build();

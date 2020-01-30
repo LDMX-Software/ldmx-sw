@@ -218,7 +218,7 @@ namespace ldmx {
         return;
     }
 
-    void Simulator::onFileClose(EventFile&) { 
+    void Simulator::onFileClose(EventFile& ) { 
        
         // End the current run and print out some basic statistics if verbose 
         // level > 0.  

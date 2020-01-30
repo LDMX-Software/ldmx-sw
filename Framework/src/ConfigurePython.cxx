@@ -38,7 +38,7 @@ namespace ldmx {
     }
 
     static long intMember(PyObject* owner, const std::string& name) {
-        long retval;
+        long retval(0);
         PyObject* temp = PyObject_GetAttrString(owner, name.c_str());
         if (temp != 0) {
             retval = PyInt_AsLong(temp);
@@ -68,7 +68,7 @@ namespace ldmx {
             delete[] targs;
         }
 
-        PyObject* script, *temp, *process, *pMain, *pylist;
+        PyObject* script, *temp, *pylist;
         temp = PyString_FromString(cmd.c_str());
         script = PyImport_ImportModule(cmd.c_str());
         Py_DECREF(temp);
