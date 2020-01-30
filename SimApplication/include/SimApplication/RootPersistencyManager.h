@@ -1,37 +1,16 @@
 /**
  * @file RootPersistencyManager.h
  * @brief Class used to manage ROOT based persistency.
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
 #ifndef _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 #define _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <algorithm>
-#include <string>
-
-//-----------//
-//   Boost   //
-//-----------//
-#include <boost/format.hpp>
-#include <boost/variant.hpp>
-
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "Exception/Exception.h"
-#include "Event/EventDef.h"
-#include "Framework/Event.h"
 #include "Framework/EventFile.h"
-#include "SimApplication/CalorimeterSD.h"
-#include "SimApplication/DetectorConstruction.h"
-#include "SimApplication/RunManager.h"
-#include "SimApplication/TrackerSD.h"
-#include "SimApplication/ScoringPlaneSD.h"
 #include "SimApplication/EcalHitIO.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
@@ -40,10 +19,6 @@
 //------------//
 //   Geant4   //
 //------------//
-#include "G4Run.hh"
-#include "G4RunManager.hh"
-#include "G4RunManagerKernel.hh"
-#include "G4SDManager.hh"
 #include "G4PersistencyManager.hh"
 #include "G4PersistencyCenter.hh"
 
@@ -53,9 +28,7 @@ class G4Run;
 namespace ldmx {
 
     // Forward declarations within the ldmx namespace
-    class EcalHitIO; 
     class Event;
-    class EventFile;
     class RunHeader;
     
     /**
@@ -79,14 +52,17 @@ namespace ldmx {
 
             /**
              * Class constructor.
-             * Installs the object as the global persistency manager.
+             *
+             * @param eventFile 
              */
-            RootPersistencyManager();
+            RootPersistencyManager(EventFile &file);
 
             virtual ~RootPersistencyManager() { }
 
             /**
-             * Get the current ROOT persistency manager or <i>nullptr</i> if not registered.
+             * Get the current ROOT persistency manager or <i>nullptr</i> if not
+             * registered.
+             *
              * @return The ROOT persistency manager.
              */
             static RootPersistencyManager* getInstance() {
@@ -177,21 +153,29 @@ namespace ldmx {
              */
             void setRunNumber(int runNumber) { runNumber_ = runNumber; } 
 
-        private:
+            /**
+             * Set the current ldmx-sw event.  This is used by the persistency
+             * manager to retrieve and fill the containers that will be 
+             * persisted. 
+             *
+             * @param event Event buffer for the current event. 
+             */
+            void setCurrentEvent(Event* event) { event_ = event; }
+
+        public:
 
             /**
              * Build an output event from the current Geant4 event.
              * @param anEvent The Geant4 event.
              * @param outputEvent The output event.
              */
-            void buildEvent(const G4Event* anEvent, Event* outputEvent);
+            void buildEvent(const G4Event* anEvent);
 
             /**
              * Write header info into the output event from Geant4.
              * @param anEvent The Geant4 event.
-             * @param outputEvent The output event.
              */
-            void writeHeader(const G4Event* anEvent, Event* outputEvent);
+            void writeHeader(const G4Event* anEvent);
 
             /**
              * Write header info into the output event from Geant4.
@@ -226,19 +210,7 @@ namespace ldmx {
              */
             void printEvent(Event* anEvent);
 
-            /**
-             * Create the run header for writing into the output file.
-             * @param aRun The current Geant4 run.
-             * @return The created run header.
-             */
-            RunHeader* createRunHeader(const G4Run* aRun);
-
-            /**
-             * Create the run header and write it into the current output file.
-             * @param aRun The current Geant4 run.
-             */
-            void writeRunHeader(const G4Run* aRun);
-
+            
         private:
 
             /** List of collections whose hits should be droppped. */
@@ -255,10 +227,8 @@ namespace ldmx {
             /** Run number. */
             int runNumber_{0}; 
 
-            /**
-             * The output file with the event tree.
-             */
-            EventFile* outputFile_ {nullptr};
+            /// The output file. 
+            EventFile &file_;
 
             /**
              * Output file compression level.
