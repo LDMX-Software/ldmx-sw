@@ -10,6 +10,7 @@
 //   C++  StdLib   //
 //-----------------//
 #include <string>
+#include <tuple>
 
 //----------//
 //   ldmx   //
@@ -27,10 +28,10 @@ namespace ldmx {
 
     namespace Analysis {
 
-        const SimParticle* getRecoil(const std::map<int,SimParticle> &particleMap) {
+        std::tuple<int, const SimParticle*> getRecoil(const std::map<int,SimParticle> &particleMap) {
             
             // The recoil electron always has a track ID of 1.  
-            return &(particleMap.at(1));
+            return {1, &(particleMap.at(1))};
         }
 
         const SimParticle* getPNGamma(const std::map<int,SimParticle> &particleMap) {
@@ -62,7 +63,7 @@ namespace ldmx {
         const SimParticle* getRecoilPNGamma(const std::map<int,SimParticle> &particleMap) {
 
             // Search for and rretrieve the recoil electron 
-            auto recoilElectron{Analysis::getRecoil(particleMap)};
+            auto [trackID, recoilElectron] = Analysis::getRecoil(particleMap);
 
             // If the recoil electron was found, continue to search for the 
             // PN gamma. If not, return null. 

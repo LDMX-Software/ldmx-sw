@@ -10,6 +10,11 @@
 #include "Event/EcalHit.h"
 #include "Event/EventConstants.h"
 
+/*~~~~~~~~~~~*/
+/*   Tools   */
+/*~~~~~~~~~~~*/
+#include "Tools/AnalysisUtils.h" 
+
 // C++
 #include <algorithm>
 #include <stdlib.h>
@@ -181,26 +186,24 @@ namespace ldmx {
 
         if (event.exists("EcalScoringPlaneHits")) {
 
-            // Loop through all of the sim particles and find the recoil 
-            // electron.
-            std::map< int , SimParticle > simParticles = event.getMap<int,SimParticle>( "SimParticles" );
-            SimParticle* recoilElectron{nullptr}; 
-            for ( auto &mapContent : simParticles ) {
-                // We only care about the recoil electron
-                if ((mapContent.second.getPdgID() == 11) && (mapContent.second.getParentCount() == 0)) { 
-                    recoilElectron = &mapContent.second;
-                    break;
-                } 
-            }
+            //
+            // Loop through all of the sim particles and find the recoil electron.
+            //
 
+            // Get the collection of simulated particles from the event
+            auto particleMap{event.getMap< int, SimParticle >("SimParticles")};
+            
+            // Search for the recoil electron 
+            auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
+            
             // Find ECAL SP hit for recoil electron
-            std::vector< SimTrackerHit > ecalSpHits = event.getCollection< SimTrackerHit >( "EcalScoringPlaneHits" );
+            auto ecalSpHits{event.getCollection< SimTrackerHit >( "EcalScoringPlaneHits" )};
             float pmax = 0;
             for ( SimTrackerHit &spHit : ecalSpHits ) {
                 
                 if (spHit.getLayerID() != 1 || spHit.getMomentum()[2] <= 0) continue;
                 
-                if (spHit.getTrackID() == recoilElectron->getTrackID()) { 
+                if (spHit.getTrackID() == recoilTrackID) { 
                     if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {
                         recoilP = spHit.getMomentum();
                         recoilPos = spHit.getPosition();
@@ -217,7 +220,7 @@ namespace ldmx {
                     
                     if (spHit.getLayerID() != 2 || spHit.getMomentum()[2] <= 0) continue;
                     
-                    if (spHit.getTrackID() == recoilElectron->getTrackID()) { 
+                    if (spHit.getTrackID() == recoilTrackID) { 
                         if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {
                             recoilPAtTarget = spHit.getMomentum();
                             recoilPosAtTarget = spHit.getPosition();
