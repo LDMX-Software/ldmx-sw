@@ -39,16 +39,16 @@ namespace ldmx {
             if (abs(simParticle->getCharge()) != 1) continue;
     
             // Check if the track is findable 
-            if (hitMap_.count(simParticle->getTrackID()) == 1) {
+            if (hitMap_.count(keyVal.first) == 1) {
                 
                 // Create a result instance
                 findableTrackResults.emplace_back();
                 
                 // Set the sim particle associated with the result
-                findableTrackResults.back().setParticleTrackID(simParticle->getTrackID());
+                findableTrackResults.back().setParticleTrackID(keyVal.first);
 
                 // Check if the track is findable
-                this->isFindable( findableTrackResults.back(), hitMap_[simParticle->getTrackID()]); 
+                this->isFindable( findableTrackResults.back(), hitMap_[keyVal.first]); 
                 resultCount++;
             }      
         }

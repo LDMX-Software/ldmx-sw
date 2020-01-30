@@ -218,16 +218,20 @@ namespace ldmx {
 
         if (event.exists("EcalScoringPlaneHits")) {
 
-            const std::vector<SimTrackerHit> ecalSpHits = event.getCollection<SimTrackerHit>("EcalScoringPlaneHits");
+            // Get the collection of simulated particles from the event
+            auto particleMap{event.getMap< int, SimParticle >("SimParticles")};
 
-            const std::map<int,SimParticle> simParticleMap = event.getMap<int,SimParticle>("SimParticles");
-            const SimParticle *recoilElectron = Analysis::getRecoil( simParticleMap );
+            // Get the ECal scoring plane hits from the event
+            auto ecalSpHits{event.getCollection< SimTrackerHit >( "EcalScoringPlaneHits" )};
+
+            // Search for the recoil electron 
+            auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
 
             for ( const SimTrackerHit &spHit : ecalSpHits ) {
 
                 if (spHit.getLayerID() != 1) continue;
 
-                if (spHit.getTrackID() == recoilElectron->getTrackID()) {
+                if (spHit.getTrackID() == recoilTrackID) {
                     recoilP = spHit.getMomentum();
                     recoilPos = spHit.getPosition();
                     if (recoilP[2] <= 0) continue;
