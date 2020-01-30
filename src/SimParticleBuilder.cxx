@@ -45,7 +45,6 @@ namespace ldmx {
             SimParticle* simParticle = &outputParticleMap[traj->GetTrackID()];
     
             simParticle->setGenStatus(traj->getGenStatus());
-            simParticle->setTrackID(traj->GetTrackID());
             simParticle->setPdgID(traj->GetPDGEncoding());
             simParticle->setCharge(traj->GetCharge());
             simParticle->setMass(traj->getMass());
@@ -71,7 +70,7 @@ namespace ldmx {
                 auto parentParticle = outputParticleMap.find( traj->GetParentID() );
                 if ( parentParticle != outputParticleMap.end() ) {
                     //this parent has been found in the particle map
-                    outputParticleMap[ traj->GetParentID() ].addDaughter( simParticle->getTrackID() );
+                    outputParticleMap[ traj->GetParentID() ].addDaughter( trajectory->GetTrackID() );
                 }//check if parent exists in output map
             }//check if particle has a parent
         }
