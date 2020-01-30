@@ -78,12 +78,6 @@ namespace ldmx {
             double getEnergy() const { return energy_; }
 
             /**
-             * Get the GEANT track ID of the particle.
-             * @return The GEANT track ID of the particle.
-             */
-            int getTrackID() const { return trackID_; }
-
-            /**
              * Get the PDG code of the particle.
              * @return The PDG code of the particle.
              */
@@ -148,12 +142,6 @@ namespace ldmx {
              * @param energy The energy of the particle.
              */
             void setEnergy(const double& energy) { energy_ = energy; }
-
-            /**
-             * Set the GEANT track ID of the hit.
-             * @param trackID The GEANT track ID of the hit.
-             */
-            void setTrackID(const int&  trackID) { trackID_ = trackID; }
 
             /**
              * Set the PDG code of the hit.
@@ -281,9 +269,6 @@ namespace ldmx {
             /** The energy of the particle. */
             double energy_{0};
 
-            /** The GEANT track ID of the particle. */
-            int trackID_{-1};
-
             /** The PDG code of the particle. */
             int pdgID_{0};
 
@@ -349,7 +334,7 @@ namespace ldmx {
             /**
              * ROOT class definition.
              */
-            ClassDef(SimParticle, 5);
+            ClassDef(SimParticle, 6);
     };
 
 }
