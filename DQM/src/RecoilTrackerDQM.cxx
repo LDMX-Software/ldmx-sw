@@ -44,12 +44,12 @@ namespace ldmx {
         histograms_->get("axial_track_count")->Fill(map.axial.size());  
 
         // Get the collection of simulated particles from the event
-        const std::map<int,SimParticle> particleMap = event.getObject<std::map<int,SimParticle>>("SimParticles");
-      
-        // Search for the recoil electron 
-        const SimParticle* recoil = Analysis::getRecoil(particleMap);
+        auto particleMap{event.getMap<int, SimParticle>("SimParticles")}; 
 
-        auto it = map.findable.find(recoil->getTrackID());
+        // Search for the recoil electron 
+        auto [recoilTrackID, recoil] = Analysis::getRecoil(particleMap);
+
+        auto it = map.findable.find(recoilTrackID);
         bool recoilIsFindable = ( it != map.findable.end() );
 
         // Fill the recoil vertex position histograms
@@ -66,7 +66,7 @@ namespace ldmx {
             const std::vector<SimTrackerHit> spHits = event.getCollection<SimTrackerHit>("TargetScoringPlaneHits");
             
             for (const SimTrackerHit &hit : spHits ) {
-                if ( (hit.getTrackID() == recoil->getTrackID()) /*hit caused by recoil*/ and
+                if ( (hit.getTrackID() == recoilTrackID) /*hit caused by recoil*/ and
                      (hit.getLayerID() == 2) /*hit on downstream side of target*/ and
                      (hit.getMomentum()[2] > 0) /*hit momentum leaving target*/
                    ) {

@@ -32,11 +32,11 @@ namespace ldmx {
     void TrackerVetoProcessor::produce(Event& event) {
 
         // Get the collection of simulated particles from the event
-        const std::map<int,SimParticle> particleMap = event.getMap<int,SimParticle>("SimParticles");
-      
-        // Search for the recoil electron 
-        const SimParticle* recoil = Analysis::getRecoil( particleMap );
+        auto particleMap{event.getMap< int, SimParticle >("SimParticles")};
 
+        // Search for the recoil electron 
+        auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
+      
         // Find the target scoring plane hit associated with the recoil
         // electron and extract the momentum
         double p{-1}, pt{-1}, px{-9999}, py{-9999}, pz{-9999}; 
@@ -48,7 +48,7 @@ namespace ldmx {
             
             for (const SimTrackerHit &hit : spHits ) {
                 if (
-                    (hit.getTrackID() == recoil->getTrackID()) /*hit blamed on recoil*/ and
+                    (hit.getTrackID() == recoilTrackID) /*hit blamed on recoil*/ and
                     (hit.getLayerID() == 2) /*hit in outgoing layer*/ and
                     (hit.getMomentum()[2] > 0) /*particle leaving target*/
                    ) {
@@ -76,7 +76,7 @@ namespace ldmx {
 
             map = Analysis::getFindableTrackMaps(tracks);
             
-            auto it = map.findable.find(recoil->getTrackID());
+            auto it = map.findable.find(recoilTrackID);
             if ( it != map.findable.end()) recoilIsFindable = true; 
         }
 
