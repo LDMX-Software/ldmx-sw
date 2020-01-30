@@ -35,7 +35,7 @@ namespace ldmx {
          * @param particleMap map of sim particles
          * @return pointer to sim particle labeled as recoil electron (nullptr if not found)
          */
-        const SimParticle* getRecoil(const std::map<int,SimParticle> &particleMap);
+        std::tuple<int, const SimParticle*> getRecoil(const std::map<int,SimParticle> &particleMap);
 
         /**
          * Get a pointer to the sim particle associated with the photon that
