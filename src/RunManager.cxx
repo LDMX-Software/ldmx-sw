@@ -122,8 +122,8 @@ namespace ldmx {
         SetUserAction(steppingAction);
         SetUserAction(stackingAction);
 
-        RootPersistencyManager* rootIO = new RootPersistencyManager();
-        new RootPersistencyMessenger(rootIO);
+        //RootPersistencyManager* rootIO = new RootPersistencyManager();
+        //new RootPersistencyMessenger(rootIO);
     }
 
     DetectorConstruction* RunManager::getDetectorConstruction() {
