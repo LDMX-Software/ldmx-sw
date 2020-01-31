@@ -46,12 +46,16 @@ namespace ldmx {
             G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
 
             dbXsecUnbiased_ = 1./interactionLength;
-            std::cout << "[ DarkBremXsecBiasingOperator ]: Unbiased DBrem xsec: "
-                      << dbXsecUnbiased_ << std::endl;
-
             dbXsecBiased_ = dbXsecUnbiased_*xsecFactor_; 
-            std::cout << "[ DarkBremXsecBiasingOperator ]: In volume biased DBrem xsec: "
-                      << dbXsecBiased_ << std::endl;
+
+            if ( false ) {
+                //TODO change verbosity?
+                std::cout << "[ DarkBremXsecBiasingOperator ]: Unbiased DBrem xsec: "
+                          << dbXsecUnbiased_ << std::endl;
+    
+                std::cout << "[ DarkBremXsecBiasingOperator ]: In volume biased DBrem xsec: "
+                          << dbXsecBiased_ << std::endl;
+            }
 
             //xsecOperation is a protected member variable of XsecBiasingOperator
             //  it is set in XsecBiasingOperator::StartRun()

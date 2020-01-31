@@ -99,7 +99,7 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
     G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
     ptable->SetProcessActivation(pname,state);
 
-    if ( true ) {
+    if ( false ) {
         std::cout << "[ G4eDarkBremsstrahlungModel ] : A dark brem occurred!" << std::endl;
     }
 
