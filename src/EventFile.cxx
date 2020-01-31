@@ -106,9 +106,6 @@ namespace ldmx {
         //add wild card at end for matching purposes
         if (srule.back() != '*') srule += ".*"; //add wildcard to back
 
-        //skip any rule that changes EventHeader
-        if ( std::regex_match( EventConstants::EVENT_HEADER , std::regex(srule) ) ) return;
-
         if( isKeep ) {
             //turn both the input and output tree's on
             //root needs . removed otherwise it gets cranky
