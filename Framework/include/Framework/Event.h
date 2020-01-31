@@ -23,7 +23,7 @@
 #include <map>
 #include <set>
 #include <variant>
-#include <regex>
+#include <regex.h>
 
 namespace ldmx {
 
@@ -135,7 +135,7 @@ namespace ldmx {
                     passengers_[branchName] = EventBusPassenger( obj );
                     T *passengerAddress = std::get_if<T>(&passengers_[branchName]);
                     std::string tname = typeid(obj).name();//type name (want to use branch element if possible)
-                    if (outputTree_ != 0 or shouldDrop( collectionName ) ) {
+                    if (outputTree_ != 0 and not shouldDrop( branchName ) ) {
                         TBranchElement *outBranch = dynamic_cast<TBranchElement *>(outputTree_->GetBranch( branchName.c_str() ));
                         if ( outBranch ) {
                             //branch already exists, just reset branch object
@@ -647,7 +647,7 @@ namespace ldmx {
             /**
              * Regex of collection names to *not* store in event.
              */
-            std::vector<std::regex> regexDropCollections_;
+            std::vector<regex_t> regexDropCollections_;
 
             /**
              * Efficiency cache for empty pass name lookups.
