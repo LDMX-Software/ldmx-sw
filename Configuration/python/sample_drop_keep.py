@@ -10,8 +10,8 @@ from LDMX.EventProc.hcalDigis import hcalDigis
 from LDMX.EventProc.ecalDigis import ecalDigis
 
 p.keep = [ 
-        "ignore .*_sim" #ignore everything from the sim pass
-        , "drop .*SimHits.*" #read in SimHits but don't write them out
+            "keep .*SimHits.*" #keep all SimHits
+            , "drop .*EcalSimHits.*" #except those in the ECal
          ]
 
 p.sequence=[ hcalDigis, ecalDigis ]
