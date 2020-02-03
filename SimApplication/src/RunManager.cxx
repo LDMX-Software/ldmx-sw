@@ -14,9 +14,6 @@
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/GammaPhysics.h"
 #include "SimApplication/ParallelWorld.h"
-#include "SimApplication/PrimaryGeneratorAction.h"
-#include "SimApplication/PrimaryGeneratorMessenger.h"
-#include "SimApplication/RootPersistencyManager.h" 
 #include "SimApplication/SteppingAction.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
@@ -97,10 +94,6 @@ namespace ldmx {
 
         G4RunManager::Initialize();
 
-        PrimaryGeneratorAction* primaryGeneratorAction = new PrimaryGeneratorAction;
-        SetUserAction(primaryGeneratorAction);
-        new PrimaryGeneratorMessenger(primaryGeneratorAction);
-
         UserRunAction* runAction = new UserRunAction;
         UserEventAction* eventAction = new UserEventAction;
         UserTrackingAction* trackingAction = new UserTrackingAction;
@@ -112,7 +105,6 @@ namespace ldmx {
         trackingAction->setPluginManager(pluginManager_);
         steppingAction->setPluginManager(pluginManager_);
         stackingAction->setPluginManager(pluginManager_);
-        primaryGeneratorAction->setPluginManager(pluginManager_);
 
         SetUserAction(runAction);
         SetUserAction(eventAction);
@@ -120,8 +112,6 @@ namespace ldmx {
         SetUserAction(steppingAction);
         SetUserAction(stackingAction);
 
-        //RootPersistencyManager* rootIO = new RootPersistencyManager();
-        //new RootPersistencyMessenger(rootIO);
     }
 
     DetectorConstruction* RunManager::getDetectorConstruction() {
