@@ -39,7 +39,6 @@
 //-------------//
 #include "Event/EventConstants.h"
 #include "Event/EventHeader.h"
-#include "SimApplication/PrimaryGeneratorMessenger.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
 
 namespace ldmx {
