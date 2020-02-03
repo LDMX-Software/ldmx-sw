@@ -53,7 +53,8 @@ namespace ldmx {
             EXCEPTION_RAISE("FileError", "File '" + filename + "' is not readable or does not exist.");
         }
 
-        parent_->tree_->SetBranchStatus("*", 1);
+        parent_->tree_->SetBranchStatus("*", 0); //turn everything off
+        parent_->tree_->SetBranchStatus( (EventConstants::EVENT_HEADER + "*").c_str() , 1); //turn EventHeader on
 
         if (isOutputFile_) {
             file_->SetCompressionLevel(compressionLevel);
