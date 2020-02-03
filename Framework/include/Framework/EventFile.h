@@ -75,6 +75,9 @@ namespace ldmx {
              *      keep   ==> any branch with name matching exp is read in from the input (if exists) and written to output (if exists)
              *      drop   ==> any branch with name matching exp is read in from the input (if exists) and NOT written to output
              *
+             * The default behavior for branches read in from the input file is drop.
+             * The default behavior for branches added during processing is keep.
+             *
              * ROOT uses the internal TRegexp to match branch names to the passed
              * expression and set the status of the branch (whether it will be read or not).
              * This internal object has different rules than real regular expressions, 
@@ -82,13 +85,16 @@ namespace ldmx {
              * Additionally, the rules you pass are analyzed in succession, so you can go from something more general
              * to something more specific.
              *
-             * For example, to ignore all products from the sim pass but drop SimHits (so that you could use them for recon):
-             *      ignore .*_sim
-             *      drop .*SimHits.*
+             * For example, to keep all SimHits except EcalSimHits, you could
+             *      ignore .*SimHits.*
+             *      drop EcalSimHits.*
              *
              * @note In order to make sure that the output tree doesn't copy over information from the input tree
              * in the "drop" case, we need to clone the tree when any "drop" command is passed. This means that
-             * using "ignore" or "keep" after a "drop" may lead to undefined behavior.
+             * using "ignore" or "keep" after a "drop" leads to undefined behavior.
+             *
+             * @note The Event::getImpl overrides any ignore rules for the input file in order to avoid any seg faults.
+             * The items accessed will still be dropped.
              *
              * @note Following a "drop <collection>" by a "keep <collection>" will drop collections matching <collection>.
              *
