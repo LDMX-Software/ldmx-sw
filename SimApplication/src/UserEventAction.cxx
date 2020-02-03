@@ -2,6 +2,7 @@
 
 // LDMX
 #include "SimApplication/RootPersistencyManager.h"
+#include "SimApplication/RunManager.h"
 #include "SimApplication/TrackMap.h"
 #include "SimApplication/TrajectoryContainer.h"
 #include "SimApplication/UserTrackingAction.h"
@@ -29,7 +30,7 @@ namespace ldmx {
         // G4Random::showEngineStatus();
         // G4Random::saveEngineStatus();
         // G4Random::getTheEngine();
-        if (PrimaryGeneratorMessenger::useRootSeed())
+        if ( dynamic_cast<RunManager*>(G4RunManager::GetRunManager())->useRootSeed() )
             G4Random::restoreEngineStatus("tmpEvent.rndm"); // this line will be needed to read in a set of seeds
 
             // Activate user plugins.

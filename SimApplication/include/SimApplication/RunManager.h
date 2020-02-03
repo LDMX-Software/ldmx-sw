@@ -69,6 +69,21 @@ namespace ldmx {
                 parallelWorldPath_ = parallelWorldPath; 
             }
 
+            /**
+             * Tell RunManager to use the seed from the root file.
+             */
+            void setUseRootSeed(bool useIt = true) { useRootSeed_ = useIt; }
+
+            /**
+             * Should we use the seed from the root file?
+             */
+            bool useRootSeed() { return useRootSeed_; }
+
+            /**
+             * Get access to the plugin manager
+             */
+            PluginManager* getPluginManager() { return pluginManager_; }
+
         private:
 
             /** Plugin messenger. */
@@ -95,6 +110,11 @@ namespace ldmx {
 
             /** Path to GDML description of parallel world. */
             std::string parallelWorldPath_{""};
+
+            /**
+             * Should we use random seed from root file?
+             */
+            bool useRootSeed_{false};
 
     }; // RunManager
 } // ldmx

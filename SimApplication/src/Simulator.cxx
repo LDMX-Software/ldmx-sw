@@ -18,6 +18,11 @@
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RootPersistencyManager.h" 
+#include "SimApplication/PrimaryGeneratorAction.h"
+#include "SimApplication/GeneralParticleSource.h"
+#include "SimApplication/LHEPrimaryGenerator.h"
+#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
+#include "SimApplication/RootPrimaryGenerator.h"
 #include "SimApplication/RunManager.h"
 
 /*~~~~~~~~~~~~~~*/
@@ -37,7 +42,7 @@ namespace ldmx {
             "/random/setSeeds", //handled by own config parameter (if passed)
             "EventPrintPlugin", //tied to process log frequency
             "/ldmx/persistency/root", //persistency manager handled directly with python config parameters
-            "/ldmx/generators/beamspot", //handled by own config parameter (if passed)
+            "/ldmx/generators", //handled by own config parameters (if passed)
             "/persistency/gdml/read" //detector description is read after passed a path to the detector description (required)
         };
 
@@ -100,6 +105,23 @@ namespace ldmx {
         scoringPlanesPath_ = ps.getString( "scoringPlanes" , { } );
 
         randomSeeds_ = ps.getVInteger( "randomSeeds" , { } ); //required to be size 2 or greater
+
+        //LHE Generator
+        lheFilePath_ = ps.getString( "lheFilePath" , { } );
+
+        //ROOT Generator
+        rootReSimPath_         = ps.getString( "rootReSimPath" , { } );
+        rootPrimaryGenRunMode_ = ps.getInteger( "rootPrimaryGenRunMode" , 1 ); //1 or 0
+        rootPrimaryGenUseSeed_ = (ps.getInteger( "rootPrimaryGenUseSeed" , -1 ) > 0);
+
+        //Multi Particle Gun
+        mpgNparticles_    = ps.getInteger( "mpgNparticles" , -1 );
+        mpgEnablePoisson_ = (ps.getInteger( "mpgEnablePoisson" , -1 ) > 0);
+        mpgPdgID_         = ps.getInteger( "mpgPdgID" , 11 );
+        mpgVertex_        = ps.getVDouble( "mpgVertex"   , { 0., 0., 0.} );
+        mpgMomentum_      = ps.getVDouble( "mpgMomentum" , { 0., 0., 4000.} );
+
+        //Beamspot (all generators)
         beamspotSmear_ = ps.getVDouble( "beamspotSmear" , { } ); //required to be size 2 or 3 [x,y] or [x,y,z]
 
         // Get the extra simulation configuring commands
@@ -180,27 +202,63 @@ namespace ldmx {
     void Simulator::onProcessStart() {
         
         //initialize run
-        uiManager_->ApplyCommand( "/run/initialize" );
+        runManager_->Initialize();
 
-        for ( const std::string& cmd : postInitCommands_ ) {
-            if ( allowed(cmd) ) {
-                uiManager_->ApplyCommand( cmd );
-            } else {
-                EXCEPTION_RAISE(
-                        "PostInitCmd",
-                        "Post Initialization command '" + cmd + "' is not allowed because another part of Simulator handles it."
-                        );
+        //attach generator to runManager
+        PrimaryGeneratorAction *primaryGeneratorAction = new PrimaryGeneratorAction;
+        runManager_->SetUserAction( primaryGeneratorAction );
+        primaryGeneratorAction->setPluginManager( runManager_->getPluginManager() );
+
+        /*************************************************
+         * Generator Setup Commands
+         *************************************************/
+
+        if ( not lheFilePath_.empty() ) {
+            //lhe generator
+            primaryGeneratorAction->setPrimaryGenerator(new LHEPrimaryGenerator(new LHEReader(lheFilePath_)));
+        } 
+        
+        if ( not rootReSimPath_.empty() ) {
+            //root generator
+            RootPrimaryGenerator *rpg = new RootPrimaryGenerator(rootReSimPath_);
+            primaryGeneratorAction->setPrimaryGenerator(rpg);
+            runManager_->setUseRootSeed( rootPrimaryGenUseSeed_ );
+
+            //TODO break up root resim into two different generators
+            rpg->setRunMode( rootPrimaryGenRunMode_ ); //default 1
+        } 
+        
+        if ( mpgNparticles_ > 0 ) {
+            MultiParticleGunPrimaryGenerator *mpg = new MultiParticleGunPrimaryGenerator();
+            primaryGeneratorAction->setPrimaryGenerator(mpg);
+
+            mpg->setMpgNparticles( mpgNparticles_ ); //default 0 (mpg is off)
+            if ( mpgEnablePoisson_ ) mpg->enablePoisson(); //default false
+            mpg->setMpgPdgId( mpgPdgID_ ); //default 11
+            if ( mpgVertex_.size() == 3 ) {
+                mpg->setMpgVertex( 
+                            G4ThreeVector( mpgVertex_.at(0)*mm , mpgVertex_.at(1)*mm , mpgVertex_.at(2)*mm )
+                            ); //default ( 0. , 0. , 0. )*mm (in middle of target)
             }
+            if ( mpgMomentum_.size() == 3 ) {
+                mpg->setMpgMomentum( 
+                            G4ThreeVector( mpgMomentum_.at(0)*MeV , mpgMomentum_.at(1)*MeV , mpgMomentum_.at(2)*MeV )
+                            ); //default ( 0. , 0. , 4000. )*MeV
+            }
+        } 
+        
+        if ( enableGeneralParticleSource_ ) {
+            primaryGeneratorAction->setPrimaryGenerator(new GeneralParticleSource());
+            //other gps commands?
         }
 
+        //beam spot smearing (should work with all generators)
         if ( beamspotSmear_.size() > 1 ) {
-            //TODO smear beamspot directly?
-            //  Would need a handle to the PrimaryGeneratorAction
-            uiManager_->ApplyCommand( "/ldmx/generators/beamspot/enable" );
-            uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeX " + std::to_string(beamspotSmear_.at(0)) );
-            uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeY " + std::to_string(beamspotSmear_.at(1)) );
+            primaryGeneratorAction->setUseBeamspot(true);
+            primaryGeneratorAction->setBeamspotXSize( beamspotSmear_.at(0) );
+            primaryGeneratorAction->setBeamspotYSize( beamspotSmear_.at(1) );
             if ( beamspotSmear_.size() > 2 ) {
-                uiManager_->ApplyCommand( "/ldmx/generators/beamspot/sizeZ " + std::to_string(beamspotSmear_.at(2)) );
+                primaryGeneratorAction->setBeamspotZSize( beamspotSmear_.at(2) );
             }
         }
 
@@ -211,6 +269,17 @@ namespace ldmx {
                 cmd += std::to_string(seed) + " ";
             }
             uiManager_->ApplyCommand( cmd );
+        }
+
+        for ( const std::string& cmd : postInitCommands_ ) {
+            if ( allowed(cmd) ) {
+                uiManager_->ApplyCommand( cmd );
+            } else {
+                EXCEPTION_RAISE(
+                        "PostInitCmd",
+                        "Post Initialization command '" + cmd + "' is not allowed because another part of Simulator handles it."
+                        );
+            }
         }
 
         // Instantiate the scoring worlds including any parallel worlds. 
@@ -225,7 +294,7 @@ namespace ldmx {
         return;
     }
 
-    void Simulator::onFileClose(EventFile& eventFile) { 
+    void Simulator::onFileClose(EventFile&) { 
        
         // End the current run and print out some basic statistics if verbose 
         // level > 0.  
