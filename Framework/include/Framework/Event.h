@@ -339,22 +339,14 @@ namespace ldmx {
                                 + passName_ 
                                 + "'"
                                 );
-                    } else if ( not (T*)branch->GetObject() ) {
-                        EXCEPTION_RAISE(
-                                "ProductNotLoaded",
-                                "Product for '"
-                                + collectionName
-                                + "' and pass '"
-                                + passName_
-                                + "' was not loaded. Check your drop/keep rules and type!"
-                                );
-                    }
+                    } 
                     // ooh, new branch!
                     // load in the current entry
+                    branch->SetStatus(1); //overrides any 'ignore' rules
                     branch->GetEntry((ientry_<0)?(0):(ientry_));
         
                     //insert into maps of loaded branches and passengers
-                    passengers_[branchName] = *((T *)(branch->GetObject()));
+                    passengers_[branchName] = *((T *)(branch->GetObject())); //this will fail if wrong type is passed
                     branches_[branchName]   = branch;
         
                     return std::get<T>( passengers_.at(branchName) );
