@@ -53,7 +53,8 @@ namespace ldmx {
             EXCEPTION_RAISE("FileError", "File '" + filename + "' is not readable or does not exist.");
         }
 
-        parent_->tree_->SetBranchStatus("*", 1);
+        parent_->tree_->SetBranchStatus("*", 0); //turn everything off
+        parent_->tree_->SetBranchStatus( (EventConstants::EVENT_HEADER + "*").c_str() , 1); //turn EventHeader on
 
         if (isOutputFile_) {
             file_->SetCompressionLevel(compressionLevel);
@@ -75,9 +76,6 @@ namespace ldmx {
 
     void EventFile::addDrop(const std::string& rule) {
 
-        if (parent_ == 0)
-            return;
-
         int offset;
         bool isKeep=false,isDrop=false,isIgnore=false;
         size_t i = rule.find("keep");
@@ -92,32 +90,59 @@ namespace ldmx {
         }
         i = rule.find("ignore");
         if( i != std::string::npos ){
-            offset = i+5 ;
+            offset = i+6 ;
             isIgnore = true;
         }
 
-        if( int(isKeep) + int(isDrop) + int(isIgnore) != 1 )
-            return;
+        //more than one of (keep,drop,ignore) was provided => not valid rule
+        if( int(isKeep) + int(isDrop) + int(isIgnore) != 1 ) return;
 
         std::string srule = rule.substr(offset);
         for (i = srule.find_first_of(" \t\n\r"); i != std::string::npos; i = srule.find_first_of(" \t\n\r"))
             srule.erase(i, 1);
 
-        if (srule.length() == 0)
-            return;
+        //name of branch is not given
+        if (srule.length() == 0) return;
 
-        if (srule.back() != '*')
-            srule += '*';
+        //add wild card at end for matching purposes
+        if (srule.back() != '*') srule += ".*"; //add wildcard to back
 
-        if( isKeep ){
-            parent_->tree_->SetBranchStatus(srule.c_str(),1);
-            tree_->SetBranchStatus(srule.c_str(),1);
-        } else if( isDrop ){
-            parent_->tree_->SetBranchStatus(srule.c_str(),0);
-        } else if( isIgnore ){
-            parent_->tree_->SetBranchAddress(srule.c_str(),0);
-        } else 
-            return;
+        if( isKeep ) {
+            //turn both the input and output tree's on
+            //root needs . removed otherwise it gets cranky
+            srule.erase( std::remove( srule.begin(), srule.end(), '.' ) , srule.end() );
+            if ( parent_ ) parent_->tree_->SetBranchStatus(srule.c_str(),1);
+            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),1);
+        } else if( isIgnore ) {
+            //don't even read it from the input file
+            //root needs . removed otherwise it gets cranky
+            srule.erase( std::remove( srule.begin(), srule.end(), '.' ) , srule.end() );
+            if ( parent_ ) parent_->tree_->SetBranchStatus(srule.c_str(),0);
+            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),0);
+        } else if ( isDrop ) {
+            //drop means allowing it on reading but not writing
+            // pass these regex to event bus
+            event_->addDrop( srule ); //requires event_ to be set
+
+            //root needs . removed otherwise it gets cranky
+            srule.erase( std::remove( srule.begin(), srule.end(), '.' ) , srule.end() );
+
+            if ( parent_ ) {
+                if ( not tree_ ) {
+                    //deactivate this branch before clone
+                    parent_->tree_->SetBranchStatus(srule.c_str(),0);
+                    tree_ = parent_->tree_->CloneTree(0);
+                }
+                //reactivate the read-in branch
+                parent_->tree_->SetBranchStatus(srule.c_str(),1);
+            }
+
+            //deactivate branch on output tree
+            unsigned int f = 0; //look at this ROOT nonsense 
+            // ==> the third parameter *must* be an address to an unsigned int
+            // apparently Rene has never heard of pass by reference ¯\_(ツ)_/¯
+            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),0,&f);//third parameter suppresses warning message
+        }
     }
 
     bool EventFile::nextEvent(bool storeCurrentEvent) {
@@ -131,6 +156,7 @@ namespace ldmx {
             //  1) There is no tree setup yet (first input file)
             //  2) This is not single output (new input file --> new output file)
             if ( !tree_ or !isSingleOutput_ ) {
+                //TODO this may mean that collecitons aren't dropped after first file
                 tree_ = parent_->tree_->CloneTree(0);
             }
             event_->setInputTree( parent_->tree_ );
@@ -213,7 +239,25 @@ namespace ldmx {
             file_->cd();
             
             //Copy over addresses from the new parent
-            parentTree->CopyAddresses( tree_ );
+            //  Taken from TTree::CopyAddresses but removed warning when branch not found
+            //  The outBranch may not exist for each inBranch because we may be using some drop/ignore rules
+            TObjArray *branches = parentTree->GetListOfBranches();
+            int nbranches = branches->GetEntriesFast();
+            for ( int iBr = 0; iBr < nbranches; iBr++ ) {
+                TBranch *inBranch = (TBranch *)branches->At(iBr);
+                if ( inBranch->TestBit(kDoNotProcess) ) {
+                    continue; //parent tree has this inBranch turned off ==> skip
+                }
+                char* addr = inBranch->GetAddress();
+                TBranch *outBranch = tree_->GetBranch( inBranch->GetName() );
+                if ( outBranch ) {
+                    //if outTree has this branch -> reset address
+                    outBranch->SetAddress( addr );
+                    if ( outBranch->InheritsFrom(TBranchElement::Class()) ) {
+                        ((TBranchElement*)outBranch)->ResetDeleteObject();
+                    } //reset object if more complicated
+                } //if outBranch was found
+            } //loop through parentTree branches
 
             //Reset the entry index with the new parent index
             ientry_ = parent_->ientry_;

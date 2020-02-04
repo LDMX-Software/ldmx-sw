@@ -32,11 +32,24 @@ namespace ldmx {
             // that number of events and generate an output file.
             if (inputFiles_.empty() && eventLimit_ > 0) {
                 
-                EventFile outFile(outputFiles_[0], true);
+                if ( outputFiles_.empty() ) {
+                    EXCEPTION_RAISE(
+                            "InvalidConfig",
+                            "No input files or output files were given."
+                            );
+                } else if ( outputFiles_.size() > 1 ) {
+                    std::cout << "[ Process ] : Several output files given with no input files. "
+                        << "Only the first output file '" << outputFiles_.at(0) << "' will be used." << std::endl;
+                }
+                std::string outputFileName = outputFiles_.at(0);
+                
+                EventFile outFile(outputFileName, true);
 
                 for (auto module : sequence_) module->onFileOpen(outFile);
 
                 outFile.setupEvent(&theEvent);
+                
+                for ( auto rule : dropKeepRules_ ) outFile.addDrop(rule);
 
                 while (n_events_processed < eventLimit_) {
                     EventHeader& eh = theEvent.getEventHeader();
@@ -46,6 +59,14 @@ namespace ldmx {
 
                     // reset the storage controller state
                     m_storageController.resetEventState();
+
+                    if ( getLogFrequency() > 0 and (eh.getEventNumber() % getLogFrequency() == 0 ) ) {
+                        TTimeStamp t;
+                        std::cout << "[ Process ] : Processing " << n_events_processed + 1 
+                            << " Run " << theEvent.getEventHeader().getRun() 
+                            << " Event " << theEvent.getEventHeader().getEventNumber() 
+                            << "  (" << t.AsString("lc") << ")" << std::endl;
+                    }
 
                     bool eventAborted = false;
                     for (auto module : sequence_) {
@@ -108,10 +129,6 @@ namespace ldmx {
                             outFile = new EventFile(outputFiles_[ifile], &inFile, singleOutput );
                             ifile++;
 
-                            for ( auto rule : dropKeepRules_ ) {
-                                outFile->addDrop(rule);
-                            }
-
                             //setup theEvent we will iterate over
                             if (outFile) {
                                 outFile->setupEvent( &theEvent );
@@ -122,6 +139,8 @@ namespace ldmx {
                                         "Unable to construct output file for " + outputFiles_[ifile]
                                         );
                             }
+
+                            for ( auto rule : dropKeepRules_ ) outFile->addDrop(rule);
 
                         } else {
 
