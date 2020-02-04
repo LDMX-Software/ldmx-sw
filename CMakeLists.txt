@@ -58,7 +58,7 @@ if(INSTALL_FIELDMAP)
 endif()
 
 # option to print extra module information during CMake config
-option(MODULE_DEBUG "Print extra module information during CMake config" ON)
+option(MODULE_DEBUG "Print extra module information during CMake config" OFF)
 
 # add dir with extra CMake modules 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
