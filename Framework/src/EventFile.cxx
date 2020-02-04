@@ -126,8 +126,18 @@ namespace ldmx {
 
             //root needs . removed otherwise it gets cranky
             srule.erase( std::remove( srule.begin(), srule.end(), '.' ) , srule.end() );
-            if ( not tree_ and parent_ ) tree_ = parent_->tree_->CloneTree(0);
-            if ( parent_ ) parent_->tree_->SetBranchStatus(srule.c_str(),1);
+
+            if ( parent_ ) {
+                if ( not tree_ ) {
+                    //deactivate this branch before clone
+                    parent_->tree_->SetBranchStatus(srule.c_str(),0);
+                    tree_ = parent_->tree_->CloneTree(0);
+                }
+                //reactivate the read-in branch
+                parent_->tree_->SetBranchStatus(srule.c_str(),1);
+            }
+
+            //deactivate branch on output tree
             unsigned int f = 0; //look at this ROOT nonsense 
             // ==> the third parameter *must* be an address to an unsigned int
             // apparently Rene has never heard of pass by reference ¯\_(ツ)_/¯
