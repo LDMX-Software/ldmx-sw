@@ -63,7 +63,7 @@ namespace ldmx {
             
             //TODO: Energy estimate from N samples can (and should be) refined
             //TOA is the time of arrival with respect to the 25ns clock window
-            double timeRelClock25 = sample.toa_; //*(25./pow(2.,10)); //ns
+            double timeRelClock25 = sample.toa_*(25./1024); //ns
             hitTime = timeRelClock25;
 
             //ADC - voltage measurement at a specific time of the pulse
@@ -81,7 +81,8 @@ namespace ldmx {
             //TOT - number of clock ticks that pulse was over threshold
             //  this is related to the amplitude of the pulse through some convoluted relation using the pulse shape
             //  the amplitude of the pulse is related to the energy deposited
-            siEnergy = convertTOT( sample.tot_ );
+            //  TODO actually have mutliple samples instead of having adc_t_ count number of samples over threshold
+            siEnergy = convertTOT( sample.adc_t_*1024 + sample.tot_ );
             
             //incorporate layer weights
             detID_.setRawValue( rawID );
@@ -110,15 +111,22 @@ namespace ldmx {
     double EcalRecProducer::convertTOT(const int tot) const {
 
         /**
-         * Low TOT -> Low Slope
+         * Fit retrieved from a SimEDep vs TOT plot.
+         * NOT physically motivated, will need to investigate further.
          *
-         * High TOT -> High Slope
-         *
-         * Kinda Exponential shape
+         * Fit (for TOT > 3000):
+         *    Function: expo ==> exp([0]+[1]*x)
+         *    EDM=1.27359e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+         *    EXT PARAMETER                                   STEP         FIRST   
+         *    NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+         *     1  Constant    -1.36729e+01   1.91947e-03   3.15252e-05  -6.27332e-01
+         *     2  Slope        2.41246e-03   3.53378e-07   5.80385e-09  -1.99549e+03
+         * Roughly flattens out (within uncertainty) to ~5e-2MeV when TOT < 3000
          */
 
-        return tot;
-
+        if ( tot > 3000 ) return exp( -1.36729e1 + 2.41246e-3*tot );
+        
+        return 5e-2;
     }
 }
 

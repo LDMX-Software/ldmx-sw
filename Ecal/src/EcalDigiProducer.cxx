@@ -123,8 +123,8 @@ namespace ldmx {
             //put noise onto pulse parameters
             energyInWindow += noiseInjector_->Gaus( 0.0 , noiseRMS_/gain_ );
             timeInWindow   += noiseInjector_->Gaus( 0.0 , EcalDigiProducer::CLOCK_CYCLE / 100. );
-            if ( energyInWindow < 0. ) continue; //skip this sim hit
-            if ( timeInWindow   < 0. ) continue; //skip this sim hit
+            if ( energyInWindow < 0. ) continue; //skip this sim hit TODO this better
+            if ( timeInWindow   < 0. ) continue; //skip this sim hit TODO this better
 
             pulseFunc_.SetParameter( 0 , gain_*energyInWindow ); //set amplitude to gain * energy
             pulseFunc_.SetParameter( 4 , timeInWindow ); //set time of peak to simulated hit time
@@ -139,11 +139,14 @@ namespace ldmx {
             int    hitID     = simHit.getID();
             simHitIDs.insert( hitID );
             
+            int totalClockCounts = tot*(1024/25.); //conversion from ns to clock counts (converting to int implicitly)
+
+            //TODO currently using adc_t_ to count number of samples that clock is over threshold
             digiToAdd[0].rawID_   = hitID;
-            digiToAdd[0].adc_t_   = -1; //NOT IMPLEMENTED
+            digiToAdd[0].adc_t_   = totalClockCounts % 1024; //Place Holder - not actually how response works
             digiToAdd[0].adc_tm1_ = -1; //NOT IMPLEMENTED
-            digiToAdd[0].tot_     = tot * (pow( 2 , 10. )/25.); //conversion from ns to clock counts
-            digiToAdd[0].toa_     = toa * (pow( 2 , 10. )/25.); //conversion from ns to clock counts
+            digiToAdd[0].tot_     = totalClockCounts / 1024; //clock counts since last trigger clock (25ns clock)
+            digiToAdd[0].toa_     = toa * (1024/25.); //conversion from ns to clock counts
 
             ecalDigis.addDigi( digiToAdd );
 
@@ -179,11 +182,14 @@ namespace ldmx {
             double tut = pulseFunc_.GetX(readoutThreshold_, hitTime, nADCs_*EcalDigiProducer::CLOCK_CYCLE);
             double tot = toa - tut;
 
+            int totalClockCounts = tot*(1024/25.); //conversion from ns to clock counts (converting to int implicitly)
+
+            //TODO currently using adc_t_ to count number of samples that clock is over threshold
             digiToAdd[0].rawID_   = noiseID;
-            digiToAdd[0].adc_t_   = -1; //NOT IMPLEMENTED
+            digiToAdd[0].adc_t_   = totalClockCounts % 1024; //Place Holder - not actually how response works
             digiToAdd[0].adc_tm1_ = -1; //NOT IMPLEMENTED
-            digiToAdd[0].tot_     = tot / pow( 2 , 10. );
-            digiToAdd[0].toa_     = toa / pow( 2 , 10. );
+            digiToAdd[0].tot_     = totalClockCounts / 1024; //clock counts since last trigger clock (25ns clock)
+            digiToAdd[0].toa_     = toa * (1024/25.); //conversion from ns to clock counts
 
             ecalDigis.addDigi( digiToAdd );
         }
