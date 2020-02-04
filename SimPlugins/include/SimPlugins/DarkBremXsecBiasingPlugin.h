@@ -46,23 +46,6 @@ namespace ldmx {
             }
 
             /**
-             * Get whether this plugin implements a run action.
-             * @return True to indicate this plugin has a run action.
-             */
-            bool hasRunAction() {
-                return true;
-            }
-
-            /**
-             * Implementation of begin run hook.
-             * 
-             * Gets the dark brem process and passes the setup variables for initialisation.
-             *
-             * @param aRun The Geant4 run that is starting.
-             */
-            void beginRun(const G4Run* aRun);
-
-            /**
              * Get whether this plugin implements an event action.
              * @return True to indicate this plugin has an event action.
              */

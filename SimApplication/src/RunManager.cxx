@@ -10,7 +10,6 @@
 //   ldmx-sw   //
 //-------------//
 #include "SimApplication/APrimePhysics.h"
-#include "SimApplication/APrimeMessenger.h"
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/GammaPhysics.h"
 #include "SimApplication/ParallelWorld.h"
@@ -66,8 +65,17 @@ namespace ldmx {
         }
         
         //TODO clean this crap up
-        massAPrime_ = parameters_.getParameter< double >( "massAPrime" );
-        if ( massAPrime_ > 0 ) pList->RegisterPhysics(new APrimePhysics( massAPrime_ ));
+        double aPrimeMass = parameters_.getParameter< double >( "APrimeMass" );
+        if ( aPrimeMass > 0 and not madGraphFilePath_.empty() ) {
+            //positive A' mass ==> we should activate A' physics
+            APrimePhysics* aprimePhys = new APrimePhysics;
+            aprimePhys->setAPrimeMass(       aPrimeMass        );
+            aprimePhys->setDarkBremMethod(   parameters_.getParameter<int        >( "darkbrem.method"           ));
+            aprimePhys->setMadGraphFilePath( parameters_.getParameter<std::string>( "darkbrem.madgraphfilepath" ));
+            aprimePhys->setGlobalXsecFactor( parameters_.getParameter<double     >( "darkbrem.globalxsecfactor" ));
+            
+            pList->RegisterPhysics(aprimePhys); //physics list handles cleanup
+        }
 
         pList->RegisterPhysics(new GammaPhysics);
        
