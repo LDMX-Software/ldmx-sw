@@ -9,7 +9,6 @@
 
 // LDMX
 #include "SimPlugins/PluginManagerAccessor.h"
-#include "SimApplication/PrimaryGeneratorMessenger.h"
 
 // Geant4
 #include "G4UserEventAction.hh"
