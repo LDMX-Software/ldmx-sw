@@ -86,7 +86,7 @@ namespace ldmx {
              * to something more specific.
              *
              * For example, to keep all SimHits except EcalSimHits, you could
-             *      ignore .*SimHits.*
+             *      keep .*SimHits.*
              *      drop EcalSimHits.*
              *
              * @note In order to make sure that the output tree doesn't copy over information from the input tree
