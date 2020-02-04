@@ -9,7 +9,6 @@
 
 // LDMX
 #include "SimCore/G4APrime.h"
-#include "SimCore/G4eDarkBremsstrahlung.h"
 
 // Geant4
 #include "G4Electron.hh"
@@ -17,8 +16,8 @@
 
 namespace ldmx {
 
-    APrimePhysics::APrimePhysics(double aprimeMass, const G4String& name) :
-            G4VPhysicsConstructor(name), aprimeMass_(aprimeMass), aprimeDef_(nullptr) { }
+    APrimePhysics::APrimePhysics(const G4String& name) :
+            G4VPhysicsConstructor(name), aprimeDef_(nullptr) { }
 
     APrimePhysics::~APrimePhysics() {
     }
@@ -37,8 +36,13 @@ namespace ldmx {
     void APrimePhysics::ConstructProcess() {
 
         //add process to electron
+        G4eDarkBremsstrahlung *theDarkBremProcess = new G4eDarkBremsstrahlung;
+        theDarkBremProcess->SetCrossSectionBiasingFactor(globalXsecFactor_);
+        theDarkBremProcess->SetMethod(bremMethod_);
+        theDarkBremProcess->SetMadGraphDataFile(madGraphFilePath_);
+
     	G4Electron::ElectronDefinition()->GetProcessManager()->AddProcess(
-                new G4eDarkBremsstrahlung() /*process to add - G4ProcessManager cleans up processes*/
+                theDarkBremProcess /*process to add - G4ProcessManager cleans up processes*/
                 , G4ProcessVectorOrdering::ordInActive /*activation when particle at rest*/
                 , 1 /*activation along step*/
                 , 1 /*activation at end of step*/

@@ -11,6 +11,8 @@
 // Geant4
 #include "G4VPhysicsConstructor.hh"
 
+#include "SimCore/G4eDarkBremsstrahlung.h"
+
 namespace ldmx {
 
     /**
@@ -33,7 +35,7 @@ namespace ldmx {
              *
              * @param name The name of the physics.
              */
-            APrimePhysics(double aprimeMass, const G4String& name = "APrime");
+            APrimePhysics(const G4String& name = "APrime");
 
             /**
              * Class destructor.
@@ -56,12 +58,49 @@ namespace ldmx {
              */
             void ConstructProcess();
 
+            /**
+             * Set the A' Mass [MeV]
+             */
+            void setAPrimeMass(double mass) { aprimeMass_ = mass; }
+
+            /**
+             * Set the MadGraph Data file path
+             */
+            void setMadGraphFilePath(const std::string& filepath) { madGraphFilePath_ = filepath; }
+
+            /**
+             * Set the global xsec biasing factor
+             */
+            void setGlobalXsecFactor(double factor) { globalXsecFactor_ = factor; }
+
+            /**
+             * Set the mode of interpretation of MG events
+             */
+            void setDarkBremMethod(int method) { bremMethod_ = (G4eDarkBremsstrahlungModel::DarkBremMethod)method; }
+
         private:
 
             /**
              * Mass of A Prime
              */
             double aprimeMass_;
+
+            /**
+             * Path to LHE file containing MadGraph simulated Dark Brems
+             *
+             * Mass of A' in this file has to match passed A'
+             */
+            std::string madGraphFilePath_;
+
+            /**
+             * Set mode of interpretation for MadGraph events
+             */
+            G4eDarkBremsstrahlungModel::DarkBremMethod bremMethod_;
+
+            /**
+             * Global Xsec Biasing factor for Dark Brem process
+             */
+            double globalXsecFactor_{1};
 
             /**
              * Definition of the APrime particle.
