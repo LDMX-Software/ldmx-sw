@@ -37,6 +37,8 @@ namespace ldmx {
                 for (auto module : sequence_) module->onFileOpen(outFile);
 
                 outFile.setupEvent(&theEvent);
+                
+                for ( auto rule : dropKeepRules_ ) outFile.addDrop(rule);
 
                 while (n_events_processed < eventLimit_) {
                     EventHeader& eh = theEvent.getEventHeader();
@@ -108,10 +110,6 @@ namespace ldmx {
                             outFile = new EventFile(outputFiles_[ifile], &inFile, singleOutput );
                             ifile++;
 
-                            for ( auto rule : dropKeepRules_ ) {
-                                outFile->addDrop(rule);
-                            }
-
                             //setup theEvent we will iterate over
                             if (outFile) {
                                 outFile->setupEvent( &theEvent );
@@ -122,6 +120,8 @@ namespace ldmx {
                                         "Unable to construct output file for " + outputFiles_[ifile]
                                         );
                             }
+
+                            for ( auto rule : dropKeepRules_ ) outFile->addDrop(rule);
 
                         } else {
 
