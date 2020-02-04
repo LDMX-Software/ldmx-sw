@@ -65,6 +65,8 @@ namespace ldmx {
             pList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
         }
         
+        //TODO clean this crap up
+        massAPrime_ = parameters_.getParameter< double >( "massAPrime" );
         if ( massAPrime_ > 0 ) pList->RegisterPhysics(new APrimePhysics( massAPrime_ ));
 
         pList->RegisterPhysics(new GammaPhysics);
