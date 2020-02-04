@@ -32,7 +32,7 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
          * Possible methods to dark brem inside of this model.
          */
         enum DarkBremMethod{
-            ForwardOnly,
+            ForwardOnly = 1,
             CMScaling,
             Undefined
         };
