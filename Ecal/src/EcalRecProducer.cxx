@@ -83,6 +83,7 @@ namespace ldmx {
             //  the amplitude of the pulse is related to the energy deposited
             //  TODO actually have mutliple samples instead of having adc_t_ count number of samples over threshold
             siEnergy = convertTOT( sample.adc_t_*1024 + sample.tot_ );
+            //printf( "%6d Clocks and %6d tot --> %6.2f MeV\n" , sample.adc_t_ , sample.tot_ , siEnergy );
             
             //incorporate layer weights
             detID_.setRawValue( rawID );
@@ -122,11 +123,15 @@ namespace ldmx {
          *     1  Constant    -1.36729e+01   1.91947e-03   3.15252e-05  -6.27332e-01
          *     2  Slope        2.41246e-03   3.53378e-07   5.80385e-09  -1.99549e+03
          * Roughly flattens out (within uncertainty) to ~5e-2MeV when TOT < 3000
+         *
+         * For TOT < 3000:
+         *   Just assume a linear line from (0,0) to (3000, 1e-2)
+         *   This is discontinuous!
          */
 
         if ( tot > 3000 ) return exp( -1.36729e1 + 2.41246e-3*tot );
         
-        return 5e-2;
+        return (1e-2/3000)*tot;
     }
 }
 
