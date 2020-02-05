@@ -12,7 +12,7 @@ darkBremOn.parameters[ "mpgMomentum"   ] = [ 313.8, 0, 3987.7 ]
 darkBremOn.parameters[ "APrimeMass"    ] = 10. #MeV
 darkBremOn.parameters[ "MadGraphFilePath" ] = "mad_graph_data.lhe"
 
-darkBremOn.parameters[ "PreInitCommands" ] = [
+darkBremOn.parameters[ "preInitCommands" ] = [
         # Bias the electron dark brem process inside of the target
         #   These commands allow us to restrict the dark brem process to a given volume.
         #   The actual biasing factor is passed after run initialization
@@ -22,7 +22,7 @@ darkBremOn.parameters[ "PreInitCommands" ] = [
         "/ldmx/biasing/volume target" #options: target, ecal
         ]
 
-darkBremOn.parameters[ "PostInitCommands" ] = [
+darkBremOn.parameters[ "postInitCommands" ] = [
         # Set the biasing cross section factor
         #   The factor passed here is applied only in the volume defined above
         "/ldmx/biasing/xsec/particle e-",
