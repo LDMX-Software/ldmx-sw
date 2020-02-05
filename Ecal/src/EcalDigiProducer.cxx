@@ -143,15 +143,17 @@ namespace ldmx {
 
             //TODO currently using adc_t_ to count number of samples that clock is over threshold
             digiToAdd[0].rawID_   = hitID;
-            digiToAdd[0].adc_t_   = totalClockCounts % 1024; //Place Holder - not actually how response works
+            digiToAdd[0].adc_t_   = totalClockCounts / 1024; //Place Holder - not actually how response works
             digiToAdd[0].adc_tm1_ = -1; //NOT IMPLEMENTED
-            digiToAdd[0].tot_     = totalClockCounts / 1024; //clock counts since last trigger clock (25ns clock)
+            digiToAdd[0].tot_     = totalClockCounts % 1024; //clock counts since last trigger clock (25ns clock)
             digiToAdd[0].toa_     = toa * (1024/25.); //conversion from ns to clock counts
+
+            //printf( "%6d TOT --> %6d Clocks and %6d tot\n" , totalClockCounts , digiToAdd[0].adc_t_ , digiToAdd[0].tot_ );
 
             ecalDigis.addDigi( digiToAdd );
 
             if ( makeConfigHists_ ) {
-                tot_SimE_->Fill( digiToAdd[0].tot_ , energyInWindow );
+                tot_SimE_->Fill( totalClockCounts , energyInWindow );
             }
         }
 
@@ -180,15 +182,15 @@ namespace ldmx {
             //measure TOA and TOT
             double toa = pulseFunc_.GetX(readoutThreshold_, 0.0, hitTime );
             double tut = pulseFunc_.GetX(readoutThreshold_, hitTime, nADCs_*EcalDigiProducer::CLOCK_CYCLE);
-            double tot = toa - tut;
+            double tot = tut - toa;
 
             int totalClockCounts = tot*(1024/25.); //conversion from ns to clock counts (converting to int implicitly)
 
             //TODO currently using adc_t_ to count number of samples that clock is over threshold
             digiToAdd[0].rawID_   = noiseID;
-            digiToAdd[0].adc_t_   = totalClockCounts % 1024; //Place Holder - not actually how response works
+            digiToAdd[0].adc_t_   = totalClockCounts / 1024; //Place Holder - not actually how response works
             digiToAdd[0].adc_tm1_ = -1; //NOT IMPLEMENTED
-            digiToAdd[0].tot_     = totalClockCounts / 1024; //clock counts since last trigger clock (25ns clock)
+            digiToAdd[0].tot_     = totalClockCounts % 1024; //clock counts since last trigger clock (25ns clock)
             digiToAdd[0].toa_     = toa * (1024/25.); //conversion from ns to clock counts
 
             ecalDigis.addDigi( digiToAdd );
