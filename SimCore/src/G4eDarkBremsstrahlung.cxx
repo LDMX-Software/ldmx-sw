@@ -53,6 +53,8 @@ void G4eDarkBremsstrahlung::InitialiseEnergyLossProcess(const G4ParticleDefiniti
 
         this->EmModel(0)->SetLowEnergyLimit(MinKinEnergy());
         this->EmModel(0)->SetHighEnergyLimit(energyLimit);
+        dynamic_cast<G4eDarkBremsstrahlungModel*>(this->EmModel(0))->SetMethod( method_ );
+        dynamic_cast<G4eDarkBremsstrahlungModel*>(this->EmModel(0))->SetMadGraphDataFile( madGraphFile_ );
         
         G4VEmFluctuationModel* fm = 0;
         //adds model to ModelManager which handles initialisation procedures and cleaning up pointers
@@ -68,12 +70,10 @@ void G4eDarkBremsstrahlung::InitialiseEnergyLossProcess(const G4ParticleDefiniti
 
 void G4eDarkBremsstrahlung::SetMethod(G4eDarkBremsstrahlungModel::DarkBremMethod method) {
     method_ = method;
-    dynamic_cast<G4eDarkBremsstrahlungModel *>(this->EmModel(0))->SetMethod(method);
     return;
 }
 
 void G4eDarkBremsstrahlung::SetMadGraphDataFile(std::string file) {
     madGraphFile_ = file;
-    dynamic_cast<G4eDarkBremsstrahlungModel *>(this->EmModel(0))->SetMadGraphDataFile(file);
     return;
 }
