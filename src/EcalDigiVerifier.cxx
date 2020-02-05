@@ -79,8 +79,8 @@ namespace ldmx {
         h_SimEDep_RecAmplitude_ = new TH2F(
                 "h_SimEDep_RecAmplitude_",
                 "Total Energy Deposited in ECal Cell;Simulated [MeV];Reconstructed [MeV];Count",
-                100,0,25.,
-                100,0,25.
+                100,0,50.,
+                100,0,50.
                 );
 
         h_TotalRecEnergy_ = new TH1F(
