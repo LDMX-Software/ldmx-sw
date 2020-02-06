@@ -1,5 +1,5 @@
 /**
- * @file DarkBremXsecBiasingPlugin.h
+ * @file DarkBremXsecBiasingOperator.h
  * @brief Geant4 Biasing Operator used to bias the occurence of dark brem
  *        events by modifying the cross-section.
  * @author Michael Revering, University of Minnesota
