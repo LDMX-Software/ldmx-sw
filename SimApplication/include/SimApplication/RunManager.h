@@ -1,12 +1,11 @@
 /**
  * @file RunManager.h
  * @brief Class providing a Geant4 run manager implementation.
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef _SIMAPPLICATION_RUNMANAGER_H_
-#define _SIMAPPLICATION_RUNMANAGER_H_
+#ifndef SIMAPPLICATION_RUNMANAGER_H
+#define SIMAPPLICATION_RUNMANAGER_H
 
 //------------//
 //   Geant4   //
@@ -26,6 +25,7 @@ namespace ldmx {
     class DetectorConstruction; 
     class PluginManager; 
     class PluginMessenger; 
+    class UserActionManager; 
 
     /**
      * @class RunManager
@@ -85,6 +85,9 @@ namespace ldmx {
             PluginManager* getPluginManager() { return pluginManager_; }
 
         private:
+
+            /// Class used to load and manage Geant4 user actions
+            std::unique_ptr<UserActionManager> actionManager_; 
 
             /** Plugin messenger. */
             PluginMessenger* pluginMessenger_;
