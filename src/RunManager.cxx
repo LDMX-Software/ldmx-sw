@@ -46,7 +46,6 @@ namespace ldmx {
     }
 
     RunManager::~RunManager() {
-        std::cout << "~RunManager" << std::endl;
         delete pluginManager_;
         delete pluginMessenger_;
         delete physicsListFactory_; 
@@ -97,48 +96,20 @@ namespace ldmx {
 
         G4RunManager::Initialize();
 
-        /// Instantiate action manager
+        // Instantiate action manager
         actionManager_ = std::make_unique<UserActionManager>(); 
-        std::cout << "User action manager created." << std::endl;
 
-        /*
-        UserRunAction* runAction = new UserRunAction;
-        UserEventAction* eventAction = new UserEventAction;
-        UserTrackingAction* trackingAction = new UserTrackingAction;
-        SteppingAction* steppingAction = new SteppingAction;
-        UserStackingAction* stackingAction = new UserStackingAction;
-        */
-
+        // Get instances of all G4 actions
         auto actions = actionManager_->getActions();
         
-
+        // Register all actions with the G4 engine
         std::for_each( actions.begin(), actions.end(), [ this ]( auto a ) {
                 std::visit([this](auto&& arg){
                         arg->setPluginManager(this->pluginManager_);
                         this->SetUserAction(arg);  
                         }, a);
-                });
-
-                //std::get<0>(a)->setPluginManager(this->pluginManager_); 
-                //std::cout << "Plugging manager set." << std::endl;            
-                //this->SetUserAction(std::get<0>(a)); 
-                //} 
-        //);
-
-        /*
-        runAction->setPluginManager(pluginManager_);
-        eventAction->setPluginManager(pluginManager_);
-        trackingAction->setPluginManager(pluginManager_);
-        steppingAction->setPluginManager(pluginManager_);
-        stackingAction->setPluginManager(pluginManager_);
-
-        SetUserAction(runAction);
-        SetUserAction(eventAction);
-        SetUserAction(trackingAction);
-        SetUserAction(steppingAction);
-        SetUserAction(stackingAction);
-        */
-
+                }
+        );
     }
 
     DetectorConstruction* RunManager::getDetectorConstruction() {
