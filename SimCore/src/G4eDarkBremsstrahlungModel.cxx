@@ -22,6 +22,7 @@
 #include "G4DataVector.hh"
 #include "G4ParticleChangeForLoss.hh"
 #include "G4ProcessTable.hh"
+#include "G4RunManager.hh" //for VerboseLevel
 
 // Boost
 #include <boost/numeric/odeint.hpp>
@@ -99,7 +100,7 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
     G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
     ptable->SetProcessActivation(pname,state);
 
-    if ( false ) {
+    if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
         std::cout << "[ G4eDarkBremsstrahlungModel ] : A dark brem occurred!" << std::endl;
     }
 
@@ -299,7 +300,7 @@ void G4eDarkBremsstrahlungModel::SetParticle(const G4ParticleDefinition* p) {
 
 void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
     //TODO: use already written LHE parser?
-    if ( true ) { //TODO verbosity options
+    if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 0 ) {
         std::cout << "[ G4eDarkBremsstrahlungModel ] : Parsing LHE file '" << fname << "'" << std::endl;
     }
     std::ifstream ifile;
@@ -351,7 +352,7 @@ void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
     }//while getting lines
     //Add the energy to the list, with a random offset between 0 and the total number of entries.
     ifile.close();
-    if ( true ) {
+    if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 0 ) {
         printf( "[ G4eDarkBremsstrahlungModel ] : Parsed LHE file '%s':\n", fname.c_str() );
         for ( const auto &kV : madGraphData_ ) {
             printf( "                               : %6.4f GeV Beam -> %lu Events\n", kV.first , kV.second.size() );

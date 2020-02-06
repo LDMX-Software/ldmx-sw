@@ -1,5 +1,5 @@
 /**
- * @file DarkBremXsecBiasingPlugin.cxx
+ * @file DarkBremXsecBiasingOperator.cxx
  * @brief Geant4 Biasing Operator used to bias the occurence of dark brem
  *        events by modifying the cross-section.
  * @author Michael Revering, University of Minnesota
@@ -14,6 +14,7 @@
 #include "G4BiasingProcessInterface.hh"
 #include "G4Track.hh"
 #include "G4VBiasingOperator.hh"
+#include "G4RunManager.hh"
 
 namespace ldmx { 
 
@@ -48,8 +49,7 @@ namespace ldmx {
             dbXsecUnbiased_ = 1./interactionLength;
             dbXsecBiased_ = dbXsecUnbiased_*xsecFactor_; 
 
-            if ( false ) {
-                //TODO change verbosity?
+            if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
                 std::cout << "[ DarkBremXsecBiasingOperator ]: Unbiased DBrem xsec: "
                           << dbXsecUnbiased_ << std::endl;
     
