@@ -35,6 +35,7 @@
 #include "G4VModularPhysicsList.hh"
 #include "G4ParallelWorldPhysics.hh"
 #include "G4PhysListFactory.hh"
+#include "G4ProcessTable.hh"
 
 namespace ldmx {
 
@@ -136,6 +137,27 @@ namespace ldmx {
         for (const auto& [key, act] : actions) {
             std::visit([this](auto&& arg) { this->SetUserAction(arg); }, act); 
         }
+    }
+
+    void RunManager::TerminateOneEvent() {
+        
+        //have geant4 do its own thing
+        G4RunManager::TerminateOneEvent();
+
+        //reset dark brem process (if needed)
+        if ( aPrimeMass_ > 0 ) {
+            //Re-activate the process at the end of each event. 
+            //The process is deactivated each time it occurs, to limit it to one brem per event.
+            G4bool active = true;
+            G4String pname = "biasWrapper(eDBrem)"; //TODO allow eDBrem to be biased or unbiased
+            G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
+            ptable->SetProcessActivation(pname,active);    
+            if ( this->GetVerboseLevel() > 1 ) {
+                std::cout << "[ RunManager ] : "
+                          << "Reset the dark brem process." << std::endl;
+            }
+        }
+
     }
 
     DetectorConstruction* RunManager::getDetectorConstruction() {
