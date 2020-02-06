@@ -39,8 +39,4 @@ darkBremOn.parameters[ "postInitCommands" ] = [
         "/ldmx/plugins/load TrackFilterPlugin",
         "/ldmx/plugins/TrackFilterPlugin/pdgid 622",
         "/ldmx/plugins/TrackFilterPlugin/create KeepAPrime",
-        # Determine how the dark brem cross section will be calculated
-        #   the xsec factor passed here is applied globally
-        "/ldmx/plugins/load DarkBremXsecBiasingPlugin",
-        "/ldmx/plugins/DarkBremXsecBiasingPlugin/verbose 2"
         ]
