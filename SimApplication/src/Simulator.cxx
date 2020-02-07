@@ -25,10 +25,12 @@
 #include "SimApplication/MultiParticleGunPrimaryGenerator.h"
 #include "SimApplication/RootPrimaryGenerator.h"
 #include "SimApplication/RunManager.h"
+#include "SimApplication/G4Session.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
 /*~~~~~~~~~~~~~~*/
+#include "G4UIsession.hh"
 #include "G4UImanager.hh"
 #include "G4CascadeParameters.hh"
 #include "G4GeometryManager.hh"
@@ -74,6 +76,7 @@ namespace ldmx {
 
     Simulator::~Simulator() {
         std::cout << "~Simulator" << std::endl;
+        if ( sessionHandle_ ) delete sessionHandle_;
         std::cout << "Done ~Simulator" << std::endl;
     }
 
@@ -107,6 +110,15 @@ namespace ldmx {
          *************************************************/
 
         verbosity_ = ps.getInteger( "verbosity" , 1 );
+        if ( verbosity_ > 0 ) {
+            // non-zero verbosity ==> log geant4 comments in files
+            //  can input different log file names into this constructor
+            sessionHandle_ = new LoggedSession();
+        } else {
+            // zero verbosity ==> batch run
+            sessionHandle_ = new BatchSession();
+        }
+        uiManager_->SetCoutDestination( sessionHandle_ );
 
         enableHitContribs_   = (ps.getInteger( "enableHitContribs"   , 1 ) > 0);
         compressHitContribs_ = (ps.getInteger( "compressHitContribs" , 1 ) > 0);
@@ -143,9 +155,15 @@ namespace ldmx {
          *************************************************/
         
         // Parse the detector geometry
+        if ( verbosity_ > 0 ) {
+            std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath_ << "'... " << std::flush;
+        }
         G4GeometryManager::GetInstance()->OpenGeometry();
         parser_->Read( detectorPath_ );
         runManager_->DefineWorldVolume( parser_->GetWorldVolume() );
+        if ( verbosity_ > 0 ) {
+            std::cout << "done" << std::endl;
+        }
 
         if ( not scoringPlanesPath_.empty() ) {
             //path was given, enable and read scoring planes into parallel world

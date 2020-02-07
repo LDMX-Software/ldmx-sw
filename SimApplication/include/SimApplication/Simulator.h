@@ -24,6 +24,7 @@
 #include "Framework/EventProcessor.h"
 
 class G4UImanager;
+class G4UIsession;
 class G4RunManager;
 class G4GDMLParser; 
 class G4GDMLMessenger; 
@@ -151,6 +152,9 @@ namespace ldmx {
 
             /// PersistencyManager 
             std::unique_ptr<RootPersistencyManager> persistencyManager_;  
+
+            /// Handle to the G4Session -> how to deal with G4cout and G4cerr
+            G4UIsession* sessionHandle_{nullptr};
 
             /// Commands not allowed to be passed from python config file
             ///     This is because Simulator already runs them.
