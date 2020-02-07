@@ -43,7 +43,9 @@ macro(MODULE)
 
   # set module's include dir
   set(MODULE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
-  install(DIRECTORY ${MODULE_INCLUDE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
+  if ( EXISTS ${MODULE_INCLUDE_DIR} )
+    install(DIRECTORY ${MODULE_INCLUDE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
+  endif()
   
   # set module's source dir
   set(MODULE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -73,11 +75,15 @@ macro(MODULE)
   set(${MODULE_NAME}_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include PARENT_SCOPE)
     
   # add the module include dir to the build
-  include_directories(${${MODULE_NAME}_INCLUDE_DIR})
+  if ( EXISTS "${${MODULE_NAME}_INCLUDE_DIR}" )
+    include_directories(${${MODULE_NAME}_INCLUDE_DIR})
+  endif()
   
   # add include directories of module dependencies
   foreach(dependency ${MODULE_DEPENDENCIES})
-    include_directories(${${dependency}_INCLUDE_DIR})
+    if ( EXISTS "${${dependency}_INCLUDE_DIR}" )
+      include_directories(${${dependency}_INCLUDE_DIR})
+    endif()
   endforeach()
   
   # get source and header lists for building the application

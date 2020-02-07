@@ -128,6 +128,14 @@ namespace ldmx {
              */
             bool allowed(const std::string& command) const;
 
+            /**
+             * Get the detector path based on the input version number.
+             *
+             * @param version integer specifying the version of the detector
+             * @return absolute system path to the detector gdml files
+             */
+            std::string getDetectorPath(int version) const;
+
         private:
 
             /// Manager controlling G4 simulation run 
