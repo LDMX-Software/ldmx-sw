@@ -169,10 +169,6 @@ namespace ldmx {
 
             /// Should the simulation compress hit contributions by pdgID?
             bool compressHitContribs_{true};
-
-            /// Collections to drop from simulation (usually scoring plane collections)
-            //TODO deprecate this when functional dropping is merged in
-            std::vector< std::string > dropCollections_;
             
             /// Path to scoring planes description
             std::string scoringPlanesPath_;

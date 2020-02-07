@@ -147,13 +147,6 @@ namespace ldmx {
             }
 
             std::string collName = hc->GetName();
-            
-            if (std::find(dropCollectionNames_.begin(), dropCollectionNames_.end(), collName) != dropCollectionNames_.end()) {
-                if (m_verbose > 1) {  
-                    std::cout << "[ RootPersistencyManager ]: Dropping Collection: " << collName << std::endl;
-                }
-                continue;
-            }
 
             if (dynamic_cast<G4TrackerHitsCollection*>(hc) != nullptr) {
 

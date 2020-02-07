@@ -99,8 +99,6 @@ namespace ldmx {
         enableHitContribs_   = (ps.getInteger( "enableHitContribs"   , 1 ) > 0);
         compressHitContribs_ = (ps.getInteger( "compressHitContribs" , 1 ) > 0);
 
-        dropCollections_ = ps.getVString( "dropCollections" , { } );
-
         // Get the path to the scoring planes
         scoringPlanesPath_ = ps.getString( "scoringPlanes" , { } );
 
@@ -170,9 +168,6 @@ namespace ldmx {
         persistencyManager_->setRunNumber( runNumber_ );
         // pass on the description
         persistencyManager_->setRunDescription( description_ );
-        // pass on the collections to drop after sim (i.e. NOT save)
-        // TODO remove this after functional dropping is merged in
-        for ( const std::string &collName : dropCollections_ ) persistencyManager_->dropCollection( collName );
         // set how to deal with hit contributions in ECal
         persistencyManager_->setEnableHitContribs( enableHitContribs_ );
         persistencyManager_->setCompressHitContribs( compressHitContribs_ );

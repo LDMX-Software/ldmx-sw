@@ -118,16 +118,6 @@ namespace ldmx {
             }
 
             /** 
-             * Drop the hits associated with the specified collection.
-             *
-             * @param collectionName The name of the collection whose hits
-             *                       should be dropped.
-             */
-            void dropCollection(std::string collectionName) { 
-                dropCollectionNames_.push_back(collectionName);  
-            }  
-
-            /** 
              * Set the description of the run. 
              *
              * @param description Description of the run.
@@ -193,9 +183,6 @@ namespace ldmx {
             void writeCalorimeterHitsCollection(G4CalorimeterHitsCollection* hc, std::vector<SimCalorimeterHit> &outputColl);
 
         private:
-
-            /** List of collections whose hits should be droppped. */
-            std::vector<std::string> dropCollectionNames_; 
 
             /** Description of this run. */
             std::string description_{"LDMX simulated events."}; 
