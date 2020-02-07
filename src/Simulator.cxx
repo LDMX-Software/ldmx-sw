@@ -11,6 +11,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Process.h"
+#include "Event/Version.h" //for LDMX_INSTALL path
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
@@ -79,10 +80,10 @@ namespace ldmx {
         
         detectorPath_ = parameters.getParameter< std::string >("detector");
 
-        runNumber_ = parameters.getParameter< int >("runNumber"); 
-       
-        process_.setRunNumber( runNumber_ ); 
-         
+        runNumber_ = ps.getInteger( "runNumber" );
+        //make sure Process uses this run number when creating the event headers
+        process_.setRunNumber( runNumber_ );
+
         /*************************************************
          * Optional Parameters
          *************************************************/
@@ -238,6 +239,31 @@ namespace ldmx {
         }
         //checked all invalid commands ==> ALLOWED
         return true;
+    }
+
+    std::string Simulator::getDetectorPath(int version) const {
+        
+        std::map< int , std::string > versionToName = {
+            { 3 , "ldmx-det-full-v3-fieldmap-magnet" },
+            { 4 , "ldmx-det-full-v4-fieldmap-magnet" },
+            { 5 , "ldmx-det-full-v5-fieldmap-magnet" },
+            { 9 , "ldmx-det-full-v9-fieldmap-magnet" },
+            { 11 , "ldmx-det-full-v11-fieldmap-magnet" },
+            { 12 , "ldmx-det-full-v12-fieldmap-magnet" }
+        };
+
+        if ( versionToName.find( version ) == versionToName.end() ) {
+            EXCEPTION_RAISE(
+                    "DetectorVersion",
+                    "Detector Version " + std::to_string(version)
+                    + " is not listed in the version to detector name map."
+                    );
+        }
+
+        std::string detectorDirectory = LDMX_INSTALL;
+        detectorDirectory += "/data/detectors/";
+
+        return ( detectorDirectory + versionToName.at(version) + "/detector.gdml" );
     }
 
 }
