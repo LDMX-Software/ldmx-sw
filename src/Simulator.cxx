@@ -113,7 +113,13 @@ namespace ldmx {
 
         for ( const std::string& cmd : preInitCommands_ ) {
             if ( allowed(cmd) ) {
-                uiManager_->ApplyCommand( cmd );
+                int g4Ret = uiManager_->ApplyCommand( cmd );
+                if ( g4Ret > 0 ) {
+                    EXCEPTION_RAISE(
+                            "PreInitCmd",
+                            "Pre Initialization command '" + cmd + "' returned a failue status from Geant4: " + std::to_string(g4Ret)
+                            );
+                }
             } else {
                 EXCEPTION_RAISE(
                         "PreInitCmd",
@@ -173,7 +179,13 @@ namespace ldmx {
 
         for ( const std::string& cmd : postInitCommands_ ) {
             if ( allowed(cmd) ) {
-                uiManager_->ApplyCommand( cmd );
+                int g4Ret = uiManager_->ApplyCommand( cmd );
+                if ( g4Ret > 0 ) {
+                    EXCEPTION_RAISE(
+                            "PostInitCmd",
+                            "Post Initialization command '" + cmd + "' returned a failue status from Geant4: " + std::to_string(g4Ret)
+                            );
+                }
             } else {
                 EXCEPTION_RAISE(
                         "PostInitCmd",
