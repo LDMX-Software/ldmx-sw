@@ -19,10 +19,12 @@
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RootPersistencyManager.h" 
 #include "SimApplication/RunManager.h"
+#include "SimApplication/G4Session.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
 /*~~~~~~~~~~~~~~*/
+#include "G4UIsession.hh"
 #include "G4UImanager.hh"
 #include "G4CascadeParameters.hh"
 #include "G4GeometryManager.hh"
@@ -50,7 +52,9 @@ namespace ldmx {
         
     }
 
-    Simulator::~Simulator() { }
+    Simulator::~Simulator() {
+        if ( sessionHandle_ ) delete sessionHandle_;
+    }
 
     void Simulator::configure(Parameters& parameters) {
     
@@ -73,7 +77,7 @@ namespace ldmx {
 
         // Store the random numbers used to generate an event. 
         runManager_->SetRandomNumberStore( true );
-
+        
         /*************************************************
          * Necessary Parameters
          *************************************************/
@@ -88,6 +92,15 @@ namespace ldmx {
          * Optional Parameters
          *************************************************/
         verbosity_ = parameters.getParameter< int >("verbosity");
+        if ( verbosity_ > 0 ) {
+            // non-zero verbosity ==> log geant4 comments in files
+            //  can input different log file names into this constructor
+            sessionHandle_ = new LoggedSession();
+        } else {
+            // zero verbosity ==> batch run
+            sessionHandle_ = new BatchSession();
+        }
+        uiManager_->SetCoutDestination( sessionHandle_ );
 
         // Get the path to the scoring planes
         scoringPlanesPath_ = parameters.getParameter< std::string >("scoringPlanes"); 
@@ -103,9 +116,15 @@ namespace ldmx {
          *************************************************/
         
         // Parse the detector geometry
+        if ( verbosity_ > 0 ) {
+            std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath_ << "'... " << std::flush;
+        }
         G4GeometryManager::GetInstance()->OpenGeometry();
         parser_->Read( detectorPath_ );
         runManager_->DefineWorldVolume( parser_->GetWorldVolume() );
+        if ( verbosity_ > 0 ) {
+            std::cout << "done" << std::endl;
+        }
 
         if (!scoringPlanesPath_.empty() ) {
             //path was given, enable and read scoring planes into parallel world
