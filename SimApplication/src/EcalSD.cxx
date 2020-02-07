@@ -1,8 +1,5 @@
 #include "SimApplication/EcalSD.h"
 
-// STL
-#include <iostream>
-
 // Geant4
 #include "G4Polyhedron.hh"
 #include "G4VSolid.hh"
@@ -35,7 +32,7 @@ namespace ldmx {
         // Skip steps with no energy dep which come from non-Geantino particles.
         if (edep == 0.0 && !isGeantino) {
             if (verboseLevel > 2) {
-                std::cout << "CalorimeterSD skipping step with zero edep." << std::endl << std::endl;
+                G4cout << "CalorimeterSD skipping step with zero edep." << G4endl << G4endl;
             }
             return false;
         }
@@ -73,9 +70,9 @@ namespace ldmx {
         hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
 
         if (this->verboseLevel > 2) {
-	    std::cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << subdet_ << " and layer " << layerNumber << " and cellid " << cellID << " module position " << module_position << " ...";
+	    G4cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << subdet_ << " and layer " << layerNumber << " and cellid " << cellID << " module position " << module_position << " ...";
             hit->Print();
-            std::cout << std::endl;
+            G4cout << G4endl;
         }
 
 	// Insert the hit into the hits collection.
