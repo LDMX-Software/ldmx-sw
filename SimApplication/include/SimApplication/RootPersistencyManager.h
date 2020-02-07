@@ -131,16 +131,6 @@ namespace ldmx {
                 ecalHitIO_.setCompressHitContribs(compressHitContribs);
             }
 
-            /** 
-             * Drop the hits associated with the specified collection.
-             *
-             * @param collectionName The name of the collection whose hits
-             *                       should be dropped.
-             */
-            void dropCollection(std::string collectionName) { 
-                dropCollectionNames_.push_back(collectionName);  
-            }  
-
             /**
              * Set the run number. 
              *
@@ -206,9 +196,6 @@ namespace ldmx {
              * in the run header. 
              */ 
             std::string description_{""};
-
-            /// List of collections whose hits should be droppped.
-            std::vector<std::string> dropCollectionNames_; 
 
             /// Run number
             int runNumber_{0}; 
