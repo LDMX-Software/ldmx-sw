@@ -12,6 +12,7 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/ParameterSet.h" 
 #include "Framework/Process.h"
+#include "Event/Version.h" //for LDMX_INSTALL path
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
@@ -84,7 +85,18 @@ namespace ldmx {
 
         description_ = ps.getString( "description" );
 
-        detectorPath_ = ps.getString( "detector" );
+        std::string detectorPath = ps.getString( "detectorPath" , { } );
+        int detectorVersion      = ps.getInteger( "detector" , -1 );
+        if ( detectorPath.empty() and detectorVersion < 0 ) {
+            EXCEPTION_RAISE(
+                    "Detector",
+                    "Detector not specified. You either need to give the full path to the detector (detectorPath) or one of the versions installed (detector)."
+                    );
+        } else if ( not detectorPath.empty() ) {
+            detectorPath_ = detectorPath;
+        } else {
+            detectorPath_ = getDetectorPath( detectorVersion );
+        }
 
         runNumber_ = ps.getInteger( "runNumber" );
         //make sure Process uses this run number when creating the event headers
@@ -334,6 +346,31 @@ namespace ldmx {
         }
         //checked all invalid commands ==> ALLOWED
         return true;
+    }
+
+    std::string Simulator::getDetectorPath(int version) const {
+        
+        std::map< int , std::string > versionToName = {
+            { 3 , "ldmx-det-full-v3-fieldmap-magnet" },
+            { 4 , "ldmx-det-full-v4-fieldmap-magnet" },
+            { 5 , "ldmx-det-full-v5-fieldmap-magnet" },
+            { 9 , "ldmx-det-full-v9-fieldmap-magnet" },
+            { 11 , "ldmx-det-full-v11-fieldmap-magnet" },
+            { 12 , "ldmx-det-full-v12-fieldmap-magnet" }
+        };
+
+        if ( versionToName.find( version ) == versionToName.end() ) {
+            EXCEPTION_RAISE(
+                    "DetectorVersion",
+                    "Detector Version " + std::to_string(version)
+                    + " is not listed in the version to detector name map."
+                    );
+        }
+
+        std::string detectorDirectory = LDMX_INSTALL;
+        detectorDirectory += "/data/detectors/";
+
+        return ( detectorDirectory + versionToName.at(version) + "/detector.gdml" );
     }
 
 }
