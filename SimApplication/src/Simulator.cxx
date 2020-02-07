@@ -96,6 +96,7 @@ namespace ldmx {
         // Get the extra simulation configuring commands
         preInitCommands_  = parameters.getParameter< std::vector< std::string > >("preInitCommands" ); 
         postInitCommands_ = parameters.getParameter< std::vector< std::string > >("postInitCommands");
+
         /*************************************************
          * Do Pre /run/initialize commands
          *************************************************/

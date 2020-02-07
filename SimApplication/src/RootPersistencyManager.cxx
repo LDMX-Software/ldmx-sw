@@ -46,12 +46,9 @@ namespace ldmx {
         // Set the description 
         description_ = parameters.getParameter< std::string >("description"); 
         
-        setEnableHitContribs(parameters.getParameter< int >("enableHitContribs")); 
-        setCompressHitContribs(parameters.getParameter< int >("compressHitContribs"));
+        setEnableHitContribs(parameters.getParameter< bool >("enableHitContribs")); 
+        setCompressHitContribs(parameters.getParameter< bool >("compressHitContribs"));
 
-        // TODO remove this after functional dropping is merged in
-        auto collections{parameters.getParameter< std::vector< std::string > >("dropCollections")};
-        for (auto& collection : collections) dropCollection(collection); 
     }
 
     G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
@@ -158,13 +155,6 @@ namespace ldmx {
             }
 
             std::string collName = hc->GetName();
-            
-            if (std::find(dropCollectionNames_.begin(), dropCollectionNames_.end(), collName) != dropCollectionNames_.end()) {
-                if (m_verbose > 1) {  
-                    std::cout << "[ RootPersistencyManager ]: Dropping Collection: " << collName << std::endl;
-                }
-                continue;
-            }
 
             if (dynamic_cast<G4TrackerHitsCollection*>(hc) != nullptr) {
 

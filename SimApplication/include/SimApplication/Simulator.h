@@ -156,9 +156,6 @@ namespace ldmx {
              * Python Configuration Parameters
              *********************************************************/
 
-            /// Short Description of Simulation for Run Header
-            std::string description_;
-            
             /// Path to detector description
             std::string detectorPath_;
 
@@ -168,56 +165,11 @@ namespace ldmx {
             /// Vebosity for the simulation
             int verbosity_{1};
 
-            /// Should the simulation save individual hit contributions to ECal Hits?
-            bool enableHitContribs_{true};
-
-            /// Should the simulation compress hit contributions by pdgID?
-            bool compressHitContribs_{true};
-
-            /// Collections to drop from simulation (usually scoring plane collections)
-            //TODO deprecate this when functional dropping is merged in
-            std::vector< std::string > dropCollections_;
-            
             /// Path to scoring planes description
             std::string scoringPlanesPath_;
 
             /// Vector of Random Seeds to use for this run.
             std::vector< int > randomSeeds_;
-
-            /// Path to LHE file to generate primary particles from
-            std::string lheFilePath_;
-
-            /// Path to ROOT file to generate primary particles from
-            std::string rootReSimPath_;
-
-            /// How should the simulation interpret the information from the input root file?
-            /// Options: 0 (from ECal SP) and 1 (total regen)
-            int rootPrimaryGenRunMode_{1};
-
-            /// Should the sim use the random number seeds in the root file?
-            bool rootPrimaryGenUseSeed_{false};
-
-            /// Number of particles to use in the multi particle gun
-            ///     Negative values turn it off
-            int mpgNparticles_{-1};
-
-            /// Whether to enable poisson variation in the multi particle gun
-            bool mpgEnablePoisson_{false};
-
-            /// PDG ID of the particle shot by the multi particle gun
-            int mpgPdgID_{11};
-
-            /// Starting position of the particles shot by the multi particle gun [mm]
-            std::vector<double> mpgVertex_{0.,0.,0.};
-
-            /// Starting momentum of the particles shot by the multi particle gun [MeV]
-            std::vector<double> mpgMomentum_{0.,0.,4000.0};
-
-            /// Should a general particle source be turned on?
-            bool enableGeneralParticleSource_{false};
-
-            /// Vector to use as beamspot smearing
-            std::vector< double > beamspotSmear_;
             
             /// Vector of Geant4 Commands to Run before /run/initialize
             std::vector< std::string > preInitCommands_;
