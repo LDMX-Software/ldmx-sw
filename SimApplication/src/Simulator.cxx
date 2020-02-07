@@ -55,23 +55,6 @@ namespace ldmx {
         //      This pointer is handled by Geant4
         uiManager_ = G4UImanager::GetUIpointer();
 
-        // Instantiate the run manager.  
-        runManager_ = std::make_unique<RunManager>();
-
-        // Instantiate the GDML parser and corresponding messenger
-        parser_ = std::make_unique<G4GDMLParser>();
-
-        // Instantiate the class so cascade parameters can be set.
-        //      This pointer is handled by Geant4
-        G4CascadeParameters::Instance();
-
-        // Supply the default user initialization and actions
-        detectorConstruction_ = std::make_unique<DetectorConstruction>( parser_.get() );
-        runManager_->SetUserInitialization( detectorConstruction_.get() );
-
-        // Store the random numbers used to generate an event. 
-        runManager_->SetRandomNumberStore( true );
-        
     }
 
     Simulator::~Simulator() {
@@ -120,6 +103,23 @@ namespace ldmx {
         }
         uiManager_->SetCoutDestination( sessionHandle_ );
 
+        // Instantiate the run manager.  
+        runManager_ = std::make_unique<RunManager>();
+
+        // Instantiate the GDML parser and corresponding messenger
+        parser_ = std::make_unique<G4GDMLParser>();
+
+        // Instantiate the class so cascade parameters can be set.
+        //      This pointer is handled by Geant4
+        G4CascadeParameters::Instance();
+
+        // Supply the default user initialization and actions
+        detectorConstruction_ = std::make_unique<DetectorConstruction>( parser_.get() );
+        runManager_->SetUserInitialization( detectorConstruction_.get() );
+
+        // Store the random numbers used to generate an event. 
+        runManager_->SetRandomNumberStore( true );
+        
         enableHitContribs_   = (ps.getInteger( "enableHitContribs"   , 1 ) > 0);
         compressHitContribs_ = (ps.getInteger( "compressHitContribs" , 1 ) > 0);
 
