@@ -169,8 +169,8 @@ namespace ldmx {
        
     }
 
-    void EcalPN::configure(const ParameterSet& ps) {
-        ecalVetoCollectionName_ = ps.getString("ecal_veto_collection");
+    void EcalPN::configure(std::map < std::string, std::any > parameters) {
+        ecalVetoCollectionName_ = std::any_cast< std::string >(parameters["ecal_veto_collection"]);
     }
 
     void EcalPN::analyze(const Event & event) { 
