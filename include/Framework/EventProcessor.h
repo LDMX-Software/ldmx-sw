@@ -86,7 +86,9 @@ namespace ldmx {
             virtual ~EventProcessor() {;}
 
             /**
-             * Callback for the EventProcessor to configure itself from the given set of parameters.
+             * Callback for the EventProcessor to configure itself from the 
+             * given set of parameters.
+             * 
              * @param parameters ParameterSet for configuration.
              */
             virtual void configure(std::map < std::string, std::any > parameters) { } 
