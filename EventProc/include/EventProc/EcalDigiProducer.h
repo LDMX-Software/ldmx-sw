@@ -47,7 +47,13 @@ namespace ldmx {
 
             virtual ~EcalDigiProducer();
 
-            virtual void configure(const ParameterSet&);
+            /**
+             * Callback for the processor to configure itself from the given set
+             * of parameters.
+             * 
+             * @param parameters ParameterSet for configuration.
+             */
+            void configure(std::map < std::string, std::any > parameters) final override;  
 
             virtual void produce(Event& event);
 

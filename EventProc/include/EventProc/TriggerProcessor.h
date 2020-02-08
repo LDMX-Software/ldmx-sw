@@ -43,13 +43,12 @@ namespace ldmx {
              */
             virtual ~TriggerProcessor() {;}
 
-            /**
-             * Read in a set of user specified parameters to be used
-             * in defining aspects of the trigger.
-             * @param pSet A set containing parameters to be used
-             * by the trigger algorithm.
+            /** 
+             * Configure the processor using the given user specified parameters.
+             * 
+             * @param parameters Set of parameters used to configure this processor.
              */
-            virtual void configure(const ParameterSet& pSet);
+            void configure(std::map < std::string, std::any > parameters) final override;
 
             /**
              * Run the trigger algorithm and create a TriggerResult

@@ -43,9 +43,9 @@ namespace ldmx {
     PnWeightProcessor::~PnWeightProcessor() { 
     }
 
-    void PnWeightProcessor::configure(const ParameterSet& pSet) {
-        wThreshold_ = pSet.getDouble("w_threshold");
-        thetaThreshold_ = pSet.getDouble("theta_threshold");
+    void PnWeightProcessor::configure(std::map < std::string, std::any > parameters) {
+        wThreshold_ = std::any_cast< double >(parameters["w_threshold"]);
+        thetaThreshold_ = std::any_cast< double >(parameters["theta_threshold"]);
     }
 
     void PnWeightProcessor::produce(Event& event) {

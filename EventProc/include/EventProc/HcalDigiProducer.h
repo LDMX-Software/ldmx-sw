@@ -35,7 +35,13 @@ namespace ldmx {
 
             virtual ~HcalDigiProducer() {;}
 
-            virtual void configure(const ParameterSet&);
+            /** 
+             * Configure the processor using the given user specified parameters.
+             * 
+             * @param parameters Set of parameters used to configure this processor.
+             */
+            void configure(std::map < std::string, std::any > parameters) final override;
+            
             virtual void produce(Event& event);
 
             unsigned int generateRandomID(HcalSection sec);
