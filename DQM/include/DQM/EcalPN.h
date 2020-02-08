@@ -37,7 +37,7 @@ namespace ldmx {
              * 
              * @param parameters Set of parameters used to configure this processor.
              */
-            void configure(std::map < std::string, std::any > parameters);
+            void configure(std::map < std::string, std::any > parameters) final override;
  
             /**
              * Process the event and make histograms ro summaries.

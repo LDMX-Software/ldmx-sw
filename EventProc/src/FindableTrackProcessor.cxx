@@ -14,7 +14,7 @@ namespace ldmx {
 
     FindableTrackProcessor::~FindableTrackProcessor() { }
 
-    void FindableTrackProcessor::configure(const ParameterSet &pset) { }
+    void FindableTrackProcessor::configure(std::map < std::string, std::any > parameters) { }
 
     void FindableTrackProcessor::produce(Event &event) {
 

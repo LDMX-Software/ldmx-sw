@@ -67,8 +67,12 @@ namespace ldmx {
 
             virtual ~EcalVetoProcessor() { }
             
-
-            void configure(const ParameterSet&);
+            /** 
+             * Configure the processor using the given user specified parameters.
+             * 
+             * @param parameters Set of parameters used to configure this processor.
+             */
+            void configure(std::map < std::string, std::any > parameters) final override;
 
             void produce(Event& event);
 

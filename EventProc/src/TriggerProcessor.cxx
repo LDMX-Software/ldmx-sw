@@ -3,12 +3,12 @@
 
 namespace ldmx {
 
-    void TriggerProcessor::configure(const ParameterSet& pSet) {
+    void TriggerProcessor::configure(std::map < std::string, std::any > parameters) {
 
-        layerESumCut_ = pSet.getDouble("threshold");
-        mode_ = pSet.getInteger("mode");
-        startLayer_ = pSet.getInteger("start_layer");
-        endLayer_ = pSet.getInteger("end_layer");
+        layerESumCut_ = std::any_cast< double >(parameters["threshold"]);
+        mode_ = std::any_cast< int >(parameters["mode"]);
+        startLayer_ = std::any_cast< int >(parameters["start_layer"]);
+        endLayer_ = std::any_cast< int >(parameters["end_layer"]);
 
         if (mode_ == 0) {
             algoName_ = "LayerSumTrig";

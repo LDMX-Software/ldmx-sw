@@ -47,11 +47,11 @@ namespace ldmx {
     }
 
 
-    void NonFidEcalVetoProcessor::configure(const ParameterSet& ps) {
-        doBdt_ = ps.getInteger("do_bdt");
+    void NonFidEcalVetoProcessor::configure(std::map < std::string, std::any > parameters) {
+        doBdt_ = std::any_cast< int >(parameters["do_bdt"]);
         if (doBdt_){
             // Config and init the BDTs.
-            nfbdtFileNames_ = ps.getVString("nf_bdt_files");
+            nfbdtFileNames_ = std::any_cast< std::vector < std::string > >(parameters["nf_bdt_files"]);
 
             for (int i = 0; i<nfbdtFileNames_.size(); i++) {
                 if (!std::ifstream(nfbdtFileNames_[i]).good()) {
@@ -73,7 +73,8 @@ namespace ldmx {
 
         }
 
-        cellFileNamexy_ = ps.getString("cellxy_file");
+        cellFileNamexy_ = std::any_cast< std::string >(parameters["cellxy_file"]);
+
         if (!std::ifstream(cellFileNamexy_).good()) {
             EXCEPTION_RAISE("NonFidEcalVetoProcessor",
                     "The specified x,y cell file '" + cellFileNamexy_ + "' does not exist!");
@@ -88,9 +89,9 @@ namespace ldmx {
         }
 
         hexReadout_ = std::make_unique<EcalHexReadout>();
-        nEcalLayers_ = ps.getInteger("num_ecal_layers");
+        nEcalLayers_ = std::any_cast< int >(parameters["num_ecal_layers"]);
 
-        bdtCutVal_ = ps.getVDouble("disc_cut");
+        bdtCutVal_ = std::any_cast< std::vector < double > >(parameters["disc_cut"]);
         ecalLayerEdepRaw_.resize(nEcalLayers_, 0);
         ecalLayerEdepReadout_.resize(nEcalLayers_, 0);
         ecalLayerTime_.resize(nEcalLayers_, 0);

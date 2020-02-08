@@ -104,11 +104,11 @@ namespace ldmx {
         return cmd;
     }
 
-    void EcalVetoProcessor::configure(const ParameterSet& ps) {
-        doBdt_ = ps.getInteger("do_bdt");
+    void EcalVetoProcessor::configure(std::map < std::string, std::any > parameters) {
+        doBdt_ = std::any_cast< int >(parameters["do_bdt"]);
         if (doBdt_){
             // Config and init the BDT.
-            bdtFileName_ = ps.getString("bdt_file");
+            bdtFileName_ = std::any_cast< std::string >(parameters["bdt_file"]);
             if (!std::ifstream(bdtFileName_).good()) {
                 EXCEPTION_RAISE("EcalVetoProcessor",
                         "The specified BDT file '" + bdtFileName_ + "' does not exist!");
@@ -117,7 +117,7 @@ namespace ldmx {
             BDTHelper_ = std::make_unique<BDTHelper>(bdtFileName_);
         }
 
-        cellFileNamexy_ = ps.getString("cellxy_file");
+        cellFileNamexy_ = std::any_cast< std::string >(parameters["cellxy_file"]);
         if (!std::ifstream(cellFileNamexy_).good()) {
             EXCEPTION_RAISE("NonFidEcalVetoProcessor",
                             "The specified x,y cell file '" + cellFileNamexy_ + "' does not exist!");
@@ -133,9 +133,9 @@ namespace ldmx {
 
 
         hexReadout_ = std::make_unique<EcalHexReadout>();
-        nEcalLayers_ = ps.getInteger("num_ecal_layers");
+        nEcalLayers_ = std::any_cast< int >(parameters["num_ecal_layers"]);
 
-        bdtCutVal_ = ps.getDouble("disc_cut");
+        bdtCutVal_ = std::any_cast< double >(parameters["disc_cut"]);
         ecalLayerEdepRaw_.resize(nEcalLayers_, 0);
         ecalLayerEdepReadout_.resize(nEcalLayers_, 0);
         ecalLayerTime_.resize(nEcalLayers_, 0);
@@ -143,7 +143,7 @@ namespace ldmx {
         cellMapTightIso_.resize(nEcalLayers_, std::map<int, float>());
 
         // Set the collection name as defined in the configuration
-        collectionName_ = ps.getString("collection_name"); 
+        collectionName_ = std::any_cast< std::string >(parameters["collection_name"]); 
     }
 
     void EcalVetoProcessor::clearProcessor(){
