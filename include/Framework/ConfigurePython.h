@@ -1,25 +1,64 @@
 /**
  * @file ConfigurePython.h
- * @brief Utility class that reads/executes a python script and creates a Process object based on the input.
+ * @brief Utility class that reads/executes a python script and creates a 
+ *        Process object based on the input.
  * @author Jeremy Mans, University of Minnesota
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef FRAMEWORK_CONFIGUREPYTHON_H_
-#define FRAMEWORK_CONFIGUREPYTHON_H_
+#ifndef FRAMEWORK_CONFIGUREPYTHON_H
+#define FRAMEWORK_CONFIGUREPYTHON_H
 
-//-------------//
-//   ldmx-sw   //
-//-------------//
-#include "Framework/ParameterSet.h"
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/FrameworkDef.h" 
 
 //----------------//
 //   C++ StdLib   //
 //----------------//
+#include <any>
 #include <string>
 #include <vector>
 
+
 namespace ldmx {
 
+    /**
+     * @struct HistogramInfo
+     * @brief Encapsulates the information required to create a histogram 
+     */
+    struct HistogramInfo { 
+     
+        /// Name of the histogram 
+        std::string name_;
+
+        /// X axis label
+        std::string xLabel_;  
+
+        /// The number of bins
+        int bins_; 
+
+        /// The minimum value of the histogram axis
+        int xmin_;
+
+        /// The maximum value of the histogram axis 
+        int xmax_;
+
+    };
+
+    /**
+     * @struct ProcessorClass
+     * @brief Represents the configuration of an EventProcessor in the job.
+     */
+    struct ProcessorClass : Class {
+
+        /// Histograms associated with this class    
+        std::vector<HistogramInfo> histograms_; 
+
+    };
+
+    // Forward declaration within the ldmx namespace 
     class Process;
 
     /**
@@ -110,30 +149,13 @@ namespace ldmx {
             /** Histogram output file name */
             std::string histoOutFile_{""};
 
-            struct HistogramInfo { 
-                std::string name_;
-                std::string xLabel_;  
-                int bins_; 
-                int xmin_; 
-                int xmax_;
-            };
-
-            /**
-             * @struct ProcessorInfo
-             * @brief Represents the configuration of an EventProcessor in the job.
-             */
-            struct ProcessorInfo {
-                    std::string classname_;
-                    std::string instancename_;
-                    ParameterSet params_;
-                    std::vector<HistogramInfo> histograms_; 
-            };
-
             /** The sequence of EventProcessor objects to be executed in order. */
-            std::vector<ProcessorInfo> sequence_;
-    };
+            std::vector<ProcessorClass> sequence_;
 
-}
 
-#endif
+    };  // ConfigurePython
+
+} // ldmx
+
+#endif  // FRAMEWORK_CONFIGURE_PYTHON_H
 
