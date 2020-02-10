@@ -7,6 +7,8 @@ ldmx::ParallelWorld::ParallelWorld(G4GDMLParser* parser, G4String worldName)
 }
 
 ldmx::ParallelWorld::~ParallelWorld() { 
+    std::cout << "~ParallelWorld" << std::endl;
+    delete auxInfoReader_;
 }
 
 void ldmx::ParallelWorld::Construct() {

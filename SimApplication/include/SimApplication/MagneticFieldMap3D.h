@@ -68,6 +68,8 @@ namespace ldmx {
              */
             MagneticFieldMap3D(const char* filename, double xOffset, double yOffset, double zOffset);
 
+            ~MagneticFieldMap3D() { std::cout << "~MagneticFieldMap3D" << std::endl; }
+
             /**
              * Implementation of primary virtual method from G4MagneticField interface.
              * @param[in]  point  The point in 3D space.

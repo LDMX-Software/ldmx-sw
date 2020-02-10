@@ -109,7 +109,7 @@ namespace ldmx {
             /**
              * Class destructor.
              */
-            ~EcalHitIO() { }
+            ~EcalHitIO() { std::cout << "~EcalHitIO" << std::endl; }
 
             /**
              * Write out a Geant4 hits collection to the provided ROOT array.

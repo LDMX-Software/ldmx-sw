@@ -39,8 +39,8 @@ namespace ldmx {
              * @param name The name of the vis attributes.
              * @return The vis attributes or <i>nullptr</i> if does not exist.
              */
-            G4VisAttributes* getVisAttributes(const std::string& name) {
-                return visAttributesMap_[name];
+            G4VisAttributes* getVisAttributes(const std::string& name) const {
+                return visAttributesMap_.at(name);
             }
 
             /**
@@ -53,6 +53,19 @@ namespace ldmx {
             }
 
         private:
+
+            /**
+             * Destructor
+             *
+             * Cleans up G4VisAttributes
+             */
+            ~VisAttributesStore() {
+                std::cout << "~VisAttributesStore" << std::endl;
+                for ( auto &nameAtt : visAttributesMap_ ) {
+                    delete nameAtt.second;
+                }
+                visAttributesMap_.clear();
+            }
 
             /**
              * The map of names to vis attributes.

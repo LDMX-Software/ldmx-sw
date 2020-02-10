@@ -38,6 +38,7 @@ namespace ldmx {
     }
 
     AuxInfoReader::~AuxInfoReader() {
+        std::cout << "~AuxInfoReader" << std::endl;
         delete eval_;
         delete detectorHeader_;
     }
@@ -116,30 +117,34 @@ namespace ldmx {
         /*
          * Use the default detector ID or create one from information supplied in the userinfo block, if present.
          */
-        DetectorID* detID = new DefaultDetectorID();
+        DetectorID* detID = nullptr;
         if (idName != "") {
             detID = DetectorIDStore::getInstance()->getID(idName);
             if (!detID) {
                 EXCEPTION_RAISE( "MissingInfo" , "The Detector ID " + std::string(idName.data()) + " does not exist. Is it defined before the SensDet in userinfo?" );
             }
         }
+
         /*
          * Build the Sensitive Detector, and re-assign the detID if applicable
          */
         G4VSensitiveDetector* sd = 0;
 
         if (sdType == "TrackerSD") {
-            sd = new TrackerSD(theSensDetName, hcName, subdetID, detID);
+            if ( not detID ) detID = new DefaultDetectorID(); //owned by TrackerSD
+            sd = new TrackerSD(theSensDetName, hcName, subdetID, detID); //owned by Geant4
         } else if (sdType == "EcalSD") {
-            detID = new EcalDetectorID();
-            sd = new EcalSD(theSensDetName, hcName, subdetID, detID);
+            if ( not detID ) detID = new EcalDetectorID(); //owned by EcalSD
+            sd = new EcalSD(theSensDetName, hcName, subdetID, detID); //owned by Geant4
         } else if (sdType == "HcalSD") {
-            detID = new HcalID();
-            sd = new HcalSD(theSensDetName, hcName, subdetID, detID);
+            if ( not detID ) detID = new HcalID(); //owned by HcalSD
+            sd = new HcalSD(theSensDetName, hcName, subdetID, detID); //owned by Geant4
         } else if (sdType == "CalorimeterSD") {
-            sd = new CalorimeterSD(theSensDetName, hcName, subdetID, detID);
+            if ( not detID ) detID = new DefaultDetectorID(); //owned by CalorimeterSD
+            sd = new CalorimeterSD(theSensDetName, hcName, subdetID, detID); //owned by Geant4
         } else if (sdType == "ScoringPlaneSD") { 
-            sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID, detID); 
+            if ( not detID ) detID = new DefaultDetectorID(); //owned by ScoringPlaneSD
+            sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID, detID);  //owned by Geant4
         } else {
             EXCEPTION_RAISE( "DetType" , "Unknown SensitiveDetector type: " + sdType );
         }
@@ -184,7 +189,7 @@ namespace ldmx {
                         G4String magFieldName = auxVal;
                         G4MagneticField* magField = MagneticFieldStore::getInstance()->getMagneticField(magFieldName);
                         if (magField != NULL) {
-                            G4FieldManager* mgr = new G4FieldManager(magField);
+                            G4FieldManager* mgr = new G4FieldManager(magField); //owned by Geant4
                             lv->SetFieldManager(mgr, true /* FIXME: hard-coded to force field manager to daughters */);
                             G4cout << "Assigned magnetic field " << magFieldName << " to volume " << lv->GetName() << G4endl;
                         } else {
@@ -257,6 +262,7 @@ namespace ldmx {
                     EXCEPTION_RAISE( "MissingInfo" , "The DetectorID is missing the EndBit." );
                 }
 
+                //owned by FieldList
                 fieldList->push_back(new IDField(fieldName, fieldIndex, startBit, endBit));
 
                 G4cout << "Added IDField " << fieldName << " with StartBit = " << startBit << ", EndBit = " << endBit << ", Index = " << fieldIndex << G4endl;
@@ -266,6 +272,7 @@ namespace ldmx {
             }
         }
 
+        //these DetectorIDs should be assinged to a Sensitive Detector which will own them
         DetectorID* id = new DetectorID(fieldList);
         DetectorIDStore::getInstance()->addID(idName, id);
         G4cout << "Created detector ID " << idName << G4endl << G4endl;
@@ -290,7 +297,7 @@ namespace ldmx {
             EXCEPTION_RAISE( "MissingInfo" , "Missing MagFieldType for magnetic field definition." );
         }
 
-        G4MagneticField* magField = NULL;
+        G4MagneticField* magField = NULL; //owned by MagFieldMapStore
 
         // Create a uniform mag field using the built-in Geant4 type.
         if (magFieldType == "G4UniformMagField") {
@@ -312,6 +319,7 @@ namespace ldmx {
                 }
             }
             G4ThreeVector fieldComponents(bx, by, bz);
+            // owned by MagneticFieldStore
             magField = new G4UniformMagField(fieldComponents);
 
             G4cout << "Created G4UniformMagField " << magFieldName << " with field components " << fieldComponents << G4endl << G4endl;
@@ -346,15 +354,16 @@ namespace ldmx {
             }
 
             // Create new 3D field map.
-            G4MagneticField* fieldMap = new MagneticFieldMap3D(fileName.c_str(), offsetX, offsetY, offsetZ);
+            //  owned by MagneticFieldStore
+            magField = new MagneticFieldMap3D(fileName.c_str(), offsetX, offsetY, offsetZ);
 
             // Assign field map as global field.
             G4FieldManager* fieldMgr = G4TransportationManager::GetTransportationManager()->GetFieldManager();
             if (fieldMgr->GetDetectorField() != nullptr) {
                 EXCEPTION_RAISE( "MisAssign" , "Global mag field was already assigned." );
             }
-            fieldMgr->SetDetectorField(fieldMap);
-            fieldMgr->CreateChordFinder(fieldMap);
+            fieldMgr->SetDetectorField(magField);
+            fieldMgr->CreateChordFinder(magField);
 
         } else {
             EXCEPTION_RAISE( "UnknownType" , "Unknown MagFieldType '" + std::string(magFieldType.data()) + "' in auxiliary info." );
@@ -381,6 +390,7 @@ namespace ldmx {
             }
         }
 
+        //both of the 'new's below are owned and cleaned up by Geant4
         G4VUserRegionInformation* regionInfo = new UserRegionInformation(storeTrajectories);
         G4Region* region = new G4Region(name);
         region->SetUserInformation(regionInfo);
@@ -443,6 +453,7 @@ namespace ldmx {
             }
         }
 
+        //owned by VisAttributesStore
         G4VisAttributes* visAttributes = new G4VisAttributes();
         visAttributes->SetColor(rgba[0], rgba[1], rgba[2], rgba[3]);
         visAttributes->SetVisibility(visible);
@@ -479,6 +490,7 @@ namespace ldmx {
             }
         }
 
+        //owned and cleaned by this
         detectorHeader_ = new DetectorHeader(detectorName, detectorVersion, description, author);
 
         G4cout << G4endl;

@@ -22,7 +22,9 @@ namespace ldmx {
     {
     }
 
-    HcalSD::~HcalSD() {}
+    HcalSD::~HcalSD() {
+        std::cout << "~HcalSD" << std::endl;
+    }
 
     G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* /*unused*/) {
 

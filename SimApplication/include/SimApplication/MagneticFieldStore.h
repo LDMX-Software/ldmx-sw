@@ -38,8 +38,8 @@ namespace ldmx {
              * Get a magnetic field by name.
              * @param name The name of the magnetic field.
              */
-            G4MagneticField* getMagneticField(const std::string& name) {
-                return magFields_[name];
+            G4MagneticField* getMagneticField(const std::string& name) const {
+                return magFields_.at(name);
             }
 
             /**
@@ -52,6 +52,19 @@ namespace ldmx {
             }
 
         private:
+
+            /**
+             * Destructor
+             *
+             * Cleans up all stored G4MagneticFields
+             */
+            ~MagneticFieldStore() {
+                std::cout << "~MagneticFieldStore" << std::endl;
+                for ( auto &nameField : magFields_ ) {
+                    delete nameField.second;
+                }
+                magFields_.clear();
+            }
 
             /**
              * Map of names to magnetic fields.

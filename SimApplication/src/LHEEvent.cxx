@@ -39,6 +39,7 @@ namespace ldmx {
     }
 
     LHEEvent::~LHEEvent() {
+        std::cout << "~LHEEvent" << std::endl;
         for (std::vector<LHEParticle*>::iterator it = particles_.begin(); it != particles_.end(); it++) {
             delete (*it);
         }

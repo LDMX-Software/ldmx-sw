@@ -24,6 +24,7 @@ namespace ldmx {
     }
 
     ScoringPlaneSD::~ScoringPlaneSD() {
+        std::cout << "~ScoringPlaneSD" << std::endl;
         delete detID_;
     }
 

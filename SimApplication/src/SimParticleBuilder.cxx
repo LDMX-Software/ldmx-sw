@@ -24,7 +24,9 @@ namespace ldmx {
         trackMap_ = UserTrackingAction::getUserTrackingAction()->getTrackMap();
     }
 
-    SimParticleBuilder::~SimParticleBuilder() { }
+    SimParticleBuilder::~SimParticleBuilder() { 
+        std::cout << "~SimParticleBuilder" << std::endl;
+    }
 
     void SimParticleBuilder::buildSimParticles(ldmx::Event* outputEvent) {
 
