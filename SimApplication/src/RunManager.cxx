@@ -22,7 +22,6 @@
 #include "SimPlugins/PluginManager.h"
 #include "SimPlugins/PluginMessenger.h"
 
-
 //------------//
 //   Geant4   //
 //------------//
@@ -35,7 +34,9 @@
 
 namespace ldmx {
 
-    RunManager::RunManager() {
+    RunManager::RunManager(std::map < std::string, std::any > parameters) {  
+
+        parameters_ = parameters; 
 
         pluginManager_ = new PluginManager();
         pluginMessenger_ = new PluginMessenger(pluginManager_);
@@ -107,8 +108,8 @@ namespace ldmx {
                 std::visit([this](auto&& arg){
                         arg->setPluginManager(this->pluginManager_);
                         this->SetUserAction(arg);  
-                        }, a);
-                }
+                }, a);
+            }
         );
     }
 
