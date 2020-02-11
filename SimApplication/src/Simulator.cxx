@@ -52,8 +52,18 @@ namespace ldmx {
         //      This pointer is handled by Geant4
         uiManager_ = G4UImanager::GetUIpointer();
 
+        
+    }
+
+    Simulator::~Simulator() {
+        std::cout << "~Simulator" << std::endl;
+        std::cout << "Done ~Simulator" << std::endl;
+    }
+
+    void Simulator::configure(std::map < std::string, std::any > parameters) {
+     
         // Instantiate the run manager.  
-        runManager_ = std::make_unique<RunManager>();
+        runManager_ = std::make_unique<RunManager>(parameters);
 
         // Instantiate the GDML parser and corresponding messenger
         parser_ = std::make_unique<G4GDMLParser>();
@@ -68,20 +78,12 @@ namespace ldmx {
 
         // Store the random numbers used to generate an event. 
         runManager_->SetRandomNumberStore( true );
-        
-    }
 
-    Simulator::~Simulator() {
-        std::cout << "~Simulator" << std::endl;
-        std::cout << "Done ~Simulator" << std::endl;
-    }
-
-    void Simulator::configure(const ldmx::ParameterSet& ps) {
-      
         /*************************************************
          * Necessary Parameters
          *************************************************/
 
+        /*
         description_ = ps.getString( "description" );
 
         detectorPath_ = ps.getString( "detector" );
@@ -89,11 +91,11 @@ namespace ldmx {
         runNumber_ = ps.getInteger( "runNumber" );
         //make sure Process uses this run number when creating the event headers
         process_.setRunNumber( runNumber_ );
-
+        */
         /*************************************************
          * Optional Parameters
          *************************************************/
-
+        /*
         verbosity_ = ps.getInteger( "verbosity" , 1 );
 
         enableHitContribs_   = (ps.getInteger( "enableHitContribs"   , 1 ) > 0);
@@ -127,7 +129,7 @@ namespace ldmx {
         // Get the extra simulation configuring commands
         preInitCommands_  = ps.getVString( "preInitCommands"  , { } );
         postInitCommands_ = ps.getVString( "postInitCommands" , { } );
-
+        */
         /*************************************************
          * Do Pre /run/initialize commands
          *************************************************/
