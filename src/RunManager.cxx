@@ -13,7 +13,7 @@
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/GammaPhysics.h"
 #include "SimApplication/ParallelWorld.h"
-#include "SimApplication/SteppingAction.h"
+#include "SimApplication/USteppingAction.h"
 #include "SimApplication/UserActionManager.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
@@ -98,16 +98,16 @@ namespace ldmx {
         G4RunManager::Initialize();
 
         // Instantiate action manager
-        actionManager_ = std::make_unique<UserActionManager>(); 
+        auto actionManager{UserActionManager::getInstance()}; 
 
         // Get instances of all G4 actions
-        auto actions = actionManager_->getActions();
+        auto actions = actionManager.getActions();
         
         // Register all actions with the G4 engine
         std::for_each( actions.begin(), actions.end(), [ this ]( auto a ) {
                 std::visit([this](auto&& arg){
-                        arg->setPluginManager(this->pluginManager_);
-                        this->SetUserAction(arg);  
+                        arg.setPluginManager(this->pluginManager_);
+                        this->SetUserAction(&arg);  
                 }, a);
             }
         );
