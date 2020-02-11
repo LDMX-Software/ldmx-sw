@@ -4,29 +4,55 @@
 
 #include "SimApplication/UserActionManager.h"
 
-#include "SimApplication/UserRunAction.h" 
-#include "SimApplication/UserEventAction.h" 
-#include "SimApplication/UserTrackingAction.h" 
-#include "SimApplication/SteppingAction.h" 
-#include "SimApplication/UserStackingAction.h" 
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <dlfcn.h> 
 
+#include "Exception/Exception.h" 
+
+
+ldmx::UserActionManager ldmx::UserActionManager::instance_ __attribute__((init_priority(200))); 
 
 namespace ldmx {
-    
-    UserActionManager::UserActionManager() {
+
+    UserActionManager::UserActionManager() { }
+
+    UserActionManager& UserActionManager::getInstance() { return instance_; }
+
+    actionVec UserActionManager::getActions() { 
         
-        actions_.push_back(new UserRunAction); 
-        actions_.push_back(new UserEventAction); 
-        actions_.push_back(new UserTrackingAction); 
-        actions_.push_back(new SteppingAction); 
-        actions_.push_back(new UserStackingAction);  
+        if (actions_.empty()) { 
+            actions_.push_back(UserRunAction()); 
+            actions_.push_back(UserEventAction()); 
+            actions_.push_back(UserTrackingAction()); 
+            actions_.push_back(USteppingAction()); 
+            actions_.push_back(UserStackingAction());
+        }
+
+        return actions_; 
     }
 
-    UserActionManager::~UserActionManager() {
+    void UserActionManager::registerAction(const std::string& className, UserActionBuilder* builder) { 
     
-        std::for_each( actions_.begin(), actions_.end(), 
-                [](action& a) { delete std::get<0>(a); } );
-        actions_.clear();  
+        auto it{actionInfo_.find(className)}; 
+        if (it != actionInfo_.end()) { 
+            EXCEPTION_RAISE("ExistingEventProcessorDefinition", "The user action " + className + " has already been registered."); 
+        }
+
+        ActionInfo info; 
+        info.className_ = className; 
+        info.builder_ = builder;
+        
+        actionInfo_[className] = info; 
+    }
+
+    UserAction* UserActionManager::createAction(const std::string& className, const std::string& instanceName) { 
+    
+        auto it{actionInfo_.find(className)}; 
+        if (it == actionInfo_.end()) return 0; 
+
+        return it->second.builder_(instanceName); 
     }
 
 } // ldmx
