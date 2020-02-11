@@ -11,7 +11,10 @@
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
+#include <any>
+#include <map>
 #include <memory>
+#include <string> 
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -69,15 +72,12 @@ namespace ldmx {
             ~Simulator();
 
             /**
-             * Configure the simulation.
-             *
-             * This is called before run is begun, so all parameters/options 
-             * for simulation must be set here.
-             * This function runs the pre init setup commands.
-             *
-             * @param ps ParameterSet for the configuration. 
+             * Callback for the processor to configure itself from the given set
+             * of parameters.
+             * 
+             * @param parameters ParameterSet for configuration.
              */
-            virtual void configure(const ldmx::ParameterSet& ps);
+            void configure(std::map < std::string, std::any > parameters) final override;  
 
             /**
              * Run simulation and export results to output event.
