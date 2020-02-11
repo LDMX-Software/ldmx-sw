@@ -96,9 +96,6 @@ namespace ldmx {
             /// The set of parameters used to configure the RunManager
             std::map < std::string, std::any > parameters_; 
 
-            /// Class used to load and manage Geant4 user actions
-            std::unique_ptr<UserActionManager> actionManager_; 
-
             /** Plugin messenger. */
             PluginMessenger* pluginMessenger_;
 
