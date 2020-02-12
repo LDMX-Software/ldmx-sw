@@ -55,10 +55,7 @@ namespace ldmx {
         
     }
 
-    Simulator::~Simulator() {
-        std::cout << "~Simulator" << std::endl;
-        std::cout << "Done ~Simulator" << std::endl;
-    }
+    Simulator::~Simulator() { }
 
     void Simulator::configure(std::map < std::string, std::any > parameters) {
      
@@ -82,54 +79,54 @@ namespace ldmx {
         /*************************************************
          * Necessary Parameters
          *************************************************/
+        
+        detectorPath_ = std::any_cast< std::string >(parameters["detector"]);
+         
 
-        /*
-        description_ = ps.getString( "description" );
+        description_ = std::any_cast< std::string >(parameters["description"]);
 
-        detectorPath_ = ps.getString( "detector" );
 
-        runNumber_ = ps.getInteger( "runNumber" );
+        runNumber_ = std::any_cast< int >(parameters["runNumber"]);
+       
         //make sure Process uses this run number when creating the event headers
         process_.setRunNumber( runNumber_ );
-        */
+        
         /*************************************************
          * Optional Parameters
          *************************************************/
-        /*
-        verbosity_ = ps.getInteger( "verbosity" , 1 );
+        verbosity_ = std::any_cast< int >(parameters["verbosity"]);
 
-        enableHitContribs_   = (ps.getInteger( "enableHitContribs"   , 1 ) > 0);
-        compressHitContribs_ = (ps.getInteger( "compressHitContribs" , 1 ) > 0);
+        enableHitContribs_   = std::any_cast< int >(parameters["enableHitContribs"]); 
+        compressHitContribs_ = std::any_cast< int >(parameters["compressHitContribs"]);
 
-        dropCollections_ = ps.getVString( "dropCollections" , { } );
+        dropCollections_ = std::any_cast< std::vector< std::string > >(parameters["dropCollections"]);
 
         // Get the path to the scoring planes
-        scoringPlanesPath_ = ps.getString( "scoringPlanes" , { } );
+        scoringPlanesPath_ = std::any_cast< std::string >(parameters["scoringPlanes"]); 
 
-        randomSeeds_ = ps.getVInteger( "randomSeeds" , { } ); //required to be size 2 or greater
+        randomSeeds_ = std::any_cast< std::vector< int > >(parameters["randomSeeds"]);
 
         //LHE Generator
-        lheFilePath_ = ps.getString( "lheFilePath" , { } );
+        lheFilePath_ = std::any_cast< std::string >(parameters[ "lheFilePath"]); 
 
         //ROOT Generator
-        rootReSimPath_         = ps.getString( "rootReSimPath" , { } );
-        rootPrimaryGenRunMode_ = ps.getInteger( "rootPrimaryGenRunMode" , 1 ); //1 or 0
-        rootPrimaryGenUseSeed_ = (ps.getInteger( "rootPrimaryGenUseSeed" , -1 ) > 0);
+        rootReSimPath_         = std::any_cast< std::string >(parameters[ "rootReSimPath"]); 
+        rootPrimaryGenRunMode_ = std::any_cast< int >(parameters[ "rootPrimaryGenRunMode"]);
+        rootPrimaryGenUseSeed_ = std::any_cast< int >(parameters[ "rootPrimaryGenUseSeed"]); 
 
         //Multi Particle Gun
-        mpgNparticles_    = ps.getInteger( "mpgNparticles" , -1 );
-        mpgEnablePoisson_ = (ps.getInteger( "mpgEnablePoisson" , -1 ) > 0);
-        mpgPdgID_         = ps.getInteger( "mpgPdgID" , 11 );
-        mpgVertex_        = ps.getVDouble( "mpgVertex"   , { 0., 0., 0.} );
-        mpgMomentum_      = ps.getVDouble( "mpgMomentum" , { 0., 0., 4000.} );
+        mpgNparticles_    = std::any_cast< int >(parameters[ "mpgNparticles"]); 
+        mpgEnablePoisson_ = std::any_cast< int >(parameters[ "mpgEnablePoisson"]); 
+        mpgPdgID_         = std::any_cast< int >(parameters[ "mpgPdgID"]); 
+        mpgVertex_        = std::any_cast< std::vector< double > >(parameters[ "mpgVertex"]);    
+        mpgMomentum_      = std::any_cast< std::vector< double > >(parameters[ "mpgMomentum"]);
 
         //Beamspot (all generators)
-        beamspotSmear_ = ps.getVDouble( "beamspotSmear" , { } ); //required to be size 2 or 3 [x,y] or [x,y,z]
+        beamspotSmear_ = std::any_cast< std::vector< double > >(parameters[ "beamspotSmear" ]);
 
         // Get the extra simulation configuring commands
-        preInitCommands_  = ps.getVString( "preInitCommands"  , { } );
-        postInitCommands_ = ps.getVString( "postInitCommands" , { } );
-        */
+        preInitCommands_  = std::any_cast< std::vector< std::string > >(parameters[ "preInitCommands" ]); 
+        postInitCommands_ = std::any_cast< std::vector< std::string > >(parameters[ "postInitCommands"]);
         /*************************************************
          * Do Pre /run/initialize commands
          *************************************************/
