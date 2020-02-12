@@ -85,12 +85,6 @@ namespace ldmx {
 
         description_ = std::any_cast< std::string >(parameters["description"]);
 
-
-        runNumber_ = std::any_cast< int >(parameters["runNumber"]);
-       
-        //make sure Process uses this run number when creating the event headers
-        process_.setRunNumber( runNumber_ );
-        
         /*************************************************
          * Optional Parameters
          *************************************************/
