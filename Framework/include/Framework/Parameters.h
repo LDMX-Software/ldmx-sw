@@ -4,6 +4,9 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
+#ifndef FRAMEWORK_PARAMETERS_H
+#define FRAMEWORK_PARAMETERS_H
+
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
@@ -25,10 +28,10 @@ namespace ldmx {
         public: 
 
             /// Constructor
-            Parameters();
+            Parameters() {};
 
             /// Destructor
-            ~Parameters(); 
+            ~Parameters() {}; 
 
             /**
              * Set the mapping of parameter names to value.
@@ -63,5 +66,9 @@ namespace ldmx {
 
             /// Parameters 
             std::map < std::string, std::any > parameters_; 
-    };
-}
+    
+    }; // Parameters
+
+} // ldmx
+
+#endif // FRAMEWORK_PARAMETERS_H
