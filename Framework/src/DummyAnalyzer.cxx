@@ -8,7 +8,9 @@
 /*~~~~~~~~~~~~*/
 /*   StdLib   */
 /*~~~~~~~~~~~~*/
+#include <any>
 #include <iostream>
+#include <variant>
 
 /*~~~~~~~~~~*/
 /*   ROOT   */ 
@@ -58,8 +60,8 @@ namespace ldmx {
              * 
              * @param pSet Set of parameters used to configure this processor.
              */
-            void configure(const ldmx::ParameterSet& ps) final override {
-                caloCol_ = ps.getString("caloHitCollection");
+            void configure(Parameters parameters) { 
+                caloCol_ = parameters.getParameter< std::string >("caloHitCollection");  
             }
 
             /// Destructor 
@@ -74,7 +76,7 @@ namespace ldmx {
             void analyze(const ldmx::Event& event) final override {
 
                 std::cout << "[ DummyAnalyzer]: Analyzing an event!" << std::endl;
-
+                
                 // Get the collection of calorimeter hits from the event.
                 auto tca = event.getCollection<EcalHit>(caloCol_);  
                 
@@ -194,4 +196,4 @@ namespace ldmx {
 
 } // ldmx
 
-DECLARE_ANALYZER_NS(ldmx, DummyAnalyzer);
+DECLARE_ANALYZER_NS(ldmx, DummyAnalyzer)

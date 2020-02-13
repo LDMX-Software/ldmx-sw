@@ -19,6 +19,11 @@
 //------------//
 #include "G4RunManager.hh"
 
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Parameters.h" 
+
 //-------------//
 //   ldmx-sw   //
 //-------------//
@@ -45,7 +50,7 @@ namespace ldmx {
             /**
              * Class constructor.
              */
-            RunManager(std::map < std::string, std::any > parameters); 
+            RunManager(Parameters& parameters); 
 
             /**
              * Class destructor.
@@ -94,7 +99,7 @@ namespace ldmx {
         private:
 
             /// The set of parameters used to configure the RunManager
-            std::map < std::string, std::any > parameters_; 
+            Parameters parameters_; 
 
             /** Plugin messenger. */
             PluginMessenger* pluginMessenger_;

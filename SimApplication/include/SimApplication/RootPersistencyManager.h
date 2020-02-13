@@ -7,10 +7,23 @@
 #ifndef _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 #define _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
 
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <any>
+#include <map> 
+#include <string> 
+#include <vector> 
+
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/EventFile.h"
+#include "Framework/Parameters.h" 
+
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "Framework/EventFile.h"
 #include "SimApplication/EcalHitIO.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
@@ -55,8 +68,9 @@ namespace ldmx {
              *
              * @param eventFile 
              */
-            RootPersistencyManager(EventFile &file);
+            RootPersistencyManager(EventFile &file, Parameters& parameters );
 
+            /// Destructor 
             virtual ~RootPersistencyManager() { }
 
             /**
@@ -132,7 +146,7 @@ namespace ldmx {
              *
              * @param description Description of the run.
              */
-            void setRunDescription(std::string description) { description_ = description; }
+            //void setRunDescription(std::string description) { description_ = description; }
 
             /**
              * Set the run number. 
@@ -194,11 +208,11 @@ namespace ldmx {
 
         private:
 
+            /// Parameters used to configure this class
+            Parameters parameters_; 
+
             /** List of collections whose hits should be droppped. */
             std::vector<std::string> dropCollectionNames_; 
-
-            /** Description of this run. */
-            std::string description_{"LDMX simulated events."}; 
 
             /** Run number. */
             int runNumber_{0}; 

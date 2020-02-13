@@ -122,23 +122,25 @@ namespace ldmx {
             }
             Py_DECREF(histos);
 
-            auto params{PyObject_GetAttrString(processor, "parameters")};
-            if (params != 0 && PyDict_Check(params)) {
+            auto parameters{PyObject_GetAttrString(processor, "parameters")};
+            if (parameters != 0 && PyDict_Check(parameters)) {
 
                 PyObject *key(0), *value(0);
                 Py_ssize_t pos = 0;
 
-                while (PyDict_Next(params, &pos, &key, &value)) {
+                std::map < std::string, std::any > params; 
+
+                while (PyDict_Next(parameters, &pos, &key, &value)) {
                 
                     std::string skey{PyString_AsString(key)};
 
                     if (PyInt_Check(value)) {
                    
-                        pc.params_[skey] = int(PyInt_AsLong(value));  
+                        params[skey] = int(PyInt_AsLong(value));  
                     } else if (PyFloat_Check(value)) {
-                        pc.params_[skey] = PyFloat_AsDouble(value);  
+                        params[skey] = PyFloat_AsDouble(value);  
                     } else if (PyString_Check(value)) {
-                        pc.params_[skey] = std::string(PyString_AsString(value)); 
+                        params[skey] = std::string(PyString_AsString(value)); 
                     } else if (PyList_Check(value)) { // assume everything is same value as first value
                         if (PyList_Size(value) > 0) {
 
@@ -150,7 +152,7 @@ namespace ldmx {
                                 for (auto j{0}; j < PyList_Size(value); j++)
                                     vals.push_back(PyInt_AsLong(PyList_GetItem(value, j)));
 
-                                pc.params_[skey] = vals;
+                                params[skey] = vals;
                             
                             } else if (PyFloat_Check(vec0)) {
                                 std::vector<double> vals;
@@ -158,7 +160,7 @@ namespace ldmx {
                                 for (auto j{0}; j < PyList_Size(value); j++)
                                     vals.push_back(PyFloat_AsDouble(PyList_GetItem(value, j)));
                                 
-                                pc.params_[skey] = vals;
+                                params[skey] = vals;
                             
                             } else if (PyString_Check(vec0)) {
                                 std::vector<std::string> vals;
@@ -166,7 +168,7 @@ namespace ldmx {
                                 for (auto j{0}; j < PyList_Size(value); j++)
                                     vals.push_back(PyString_AsString(PyList_GetItem(value, j)));
                                 
-                                pc.params_[skey] = vals;
+                                params[skey] = vals;
                             
                             } else { 
 
@@ -181,11 +183,12 @@ namespace ldmx {
                                     c.instanceName_ = stringMember(object, "instanceName");  
                                     vals.push_back(c);
                                 } 
-                                pc.params_[skey] = vals;
+                                params[skey] = vals;
                             }
                         }
                     }
                 }
+                pc.params_.setParameters(params); 
             }
 
             sequence_.push_back(pc);

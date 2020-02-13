@@ -35,9 +35,10 @@
 
 namespace ldmx {
 
-    RootPersistencyManager::RootPersistencyManager(EventFile &file) :
+    RootPersistencyManager::RootPersistencyManager(EventFile &file, Parameters& parameters) :
         G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"),
-        file_(file)  
+        file_(file), 
+        parameters_(parameters)
     {
         G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
         G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
@@ -65,9 +66,11 @@ namespace ldmx {
         auto detector 
             = static_cast<RunManager*>(RunManager::GetRunManager())->getDetectorConstruction();
 
+        auto description{parameters_.getParameter< std::string >("description")}; 
+
         // Create the run header.
         auto runHeader  
-            = std::make_unique<RunHeader>(runNumber_, detector->getDetectorHeader()->getName(), description_);
+            = std::make_unique<RunHeader>(runNumber_, detector->getDetectorHeader()->getName(), description);
 
         // Set parameter value with number of events processed.
         runHeader->setIntParameter("Event count", aRun->GetNumberOfEvent());
@@ -105,6 +108,9 @@ namespace ldmx {
 
         // Retrieve a mutable version of the event header
         EventHeader& eventHeader = event_->getEventHeader();
+
+        // Set the run number
+        runNumber_ = eventHeader.getRun(); 
 
         // Set the event weight
         if (BiasingMessenger::isBiasingEnabled()) { 

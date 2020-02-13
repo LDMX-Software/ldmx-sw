@@ -34,7 +34,7 @@
 
 namespace ldmx {
 
-    RunManager::RunManager(std::map < std::string, std::any > parameters) {  
+    RunManager::RunManager(Parameters& parameters) {  
 
         parameters_ = parameters; 
 

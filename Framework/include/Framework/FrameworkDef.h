@@ -10,10 +10,12 @@
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
-#include <any>
-#include <map>
 #include <string> 
-#include <vector>
+
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Parameters.h" 
 
 namespace ldmx { 
 
@@ -31,7 +33,7 @@ namespace ldmx {
         std::string instanceName_;
 
         /// The parameters associated with this class
-        std::map< std::string, std::any > params_;
+        Parameters params_;
 
     };
 
