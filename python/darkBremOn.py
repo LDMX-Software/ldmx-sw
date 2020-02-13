@@ -4,7 +4,7 @@ from LDMX.Framework import ldmxcfg
 
 darkBremOn = ldmxcfg.Producer( "darkBremOn", "ldmx::Simulator")
 
-darkBremOn.parameters[ "description" ] = "One e- fired far upstream without Dark Brem turned on a biased up in target"
+darkBremOn.parameters[ "description" ] = "One e- fired far upstream with Dark Brem turned on and biased up in target"
 darkBremOn.parameters[ "mpgNparticles" ] = 1
 darkBremOn.parameters[ "mpgPdgId"      ] = 11
 darkBremOn.parameters[ "mpgVertex"     ] = [ -27.926, 5, -700 ]
@@ -31,7 +31,7 @@ darkBremOn.parameters[ "postInitCommands" ] = [
         #   aborts the event if it didn't happen
         #   can generate A' without this, but helpful for generating pure signal sample
         "/ldmx/plugins/load DarkBremFilter libBiasing.so",
-        "/ldmx/plugins/DarkBremFilter/volume ecal", #should match volume defined for biasing
+        "/ldmx/plugins/DarkBremFilter/volume target", #should match volume defined for biasing
         "/ldmx/plugins/DarkBremFilter/verbose 2",
         # Save A' no matter what
         #   The hard-coded PDG ID for the A' is defined in SimCore/src/G4APrime.cxx
