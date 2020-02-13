@@ -13,15 +13,15 @@ namespace ldmx {
 
     EcalClusterProducer::~EcalClusterProducer() { }
 
-    void EcalClusterProducer::configure(std::map < std::string, std::any > parameters) {
+    void EcalClusterProducer::configure(Parameters& parameters) {
 
         hexReadout_ = std::make_shared<EcalHexReadout>();
-        cutoff_ = std::any_cast< double >(parameters["cutoff"]);
-        seedThreshold_ = std::any_cast< double >(parameters["seedThreshold"]); 
-        digisPassName_ = std::any_cast< std::string >(parameters["digisPassName"]);
-        algoCollName_ = std::any_cast< std::string >(parameters["algoCollName"]);
-        algoName_ = std::any_cast< std::string >(parameters["algoName"]);
-        clusterCollName_ = std::any_cast< std::string >(parameters["clusterCollName"]);
+        cutoff_ = parameters.getParameter< double >("cutoff");
+        seedThreshold_ = parameters.getParameter< double >("seedThreshold"); 
+        digisPassName_ = parameters.getParameter< std::string >("digisPassName");
+        algoCollName_ = parameters.getParameter< std::string >("algoCollName");
+        algoName_ = parameters.getParameter< std::string >("algoName");
+        clusterCollName_ = parameters.getParameter< std::string >("clusterCollName");
 
     }
 
