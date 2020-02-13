@@ -17,7 +17,8 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Event.h"
-#include "Framework/FrameworkDef.h" 
+#include "Framework/FrameworkDef.h"
+#include "Framework/Parameters.h" 
 #include "Framework/StorageControl.h"
 
 /*~~~~~~~~~~~~~~~~*/
@@ -91,7 +92,7 @@ namespace ldmx {
              * 
              * @param parameters ParameterSet for configuration.
              */
-            virtual void configure(std::map < std::string, std::any > parameters) { } 
+            virtual void configure(Parameters& parameters) { } 
 
             /**
              * Callback for the EventProcessor to take any necessary
