@@ -47,11 +47,11 @@ namespace ldmx {
     }
 
 
-    void NonFidEcalVetoProcessor::configure(std::map < std::string, std::any > parameters) {
-        doBdt_ = std::any_cast< int >(parameters["do_bdt"]);
+    void NonFidEcalVetoProcessor::configure(Parameters& parameters) {
+        doBdt_ = parameters.getParameter< int >("do_bdt");
         if (doBdt_){
             // Config and init the BDTs.
-            nfbdtFileNames_ = std::any_cast< std::vector < std::string > >(parameters["nf_bdt_files"]);
+            nfbdtFileNames_ = parameters.getParameter< std::vector < std::string > >("nf_bdt_files");
 
             for (int i = 0; i<nfbdtFileNames_.size(); i++) {
                 if (!std::ifstream(nfbdtFileNames_[i]).good()) {
@@ -73,7 +73,7 @@ namespace ldmx {
 
         }
 
-        cellFileNamexy_ = std::any_cast< std::string >(parameters["cellxy_file"]);
+        cellFileNamexy_ = parameters.getParameter< std::string >("cellxy_file");
 
         if (!std::ifstream(cellFileNamexy_).good()) {
             EXCEPTION_RAISE("NonFidEcalVetoProcessor",
@@ -89,9 +89,9 @@ namespace ldmx {
         }
 
         hexReadout_ = std::make_unique<EcalHexReadout>();
-        nEcalLayers_ = std::any_cast< int >(parameters["num_ecal_layers"]);
+        nEcalLayers_ = parameters.getParameter< int >("num_ecal_layers");
 
-        bdtCutVal_ = std::any_cast< std::vector < double > >(parameters["disc_cut"]);
+        bdtCutVal_ = parameters.getParameter< std::vector < double > >("disc_cut");
         ecalLayerEdepRaw_.resize(nEcalLayers_, 0);
         ecalLayerEdepReadout_.resize(nEcalLayers_, 0);
         ecalLayerTime_.resize(nEcalLayers_, 0);

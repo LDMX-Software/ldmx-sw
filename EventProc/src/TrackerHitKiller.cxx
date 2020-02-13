@@ -17,12 +17,12 @@ namespace ldmx {
     
     TrackerHitKiller::~TrackerHitKiller() { }
 
-    void TrackerHitKiller::configure(std::map < std::string, std::any > parameters) {
+    void TrackerHitKiller::configure(Parameters& parameters) {
        
         // Get the hit efficiency. For now, this will be an integer quantiy 
         // in the range 0-100.  If more precision is needed in the future, 
         // this can be updated.
-        hitEff_ = int(std::any_cast< double >(parameters["hitEfficiency"]));
+        hitEff_ = int(parameters.getParameter< double >("hitEfficiency"));
     }
 
     void TrackerHitKiller::produce(Event& event) { 

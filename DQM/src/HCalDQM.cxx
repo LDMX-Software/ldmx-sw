@@ -68,8 +68,8 @@ namespace ldmx {
     
     }
 
-    void HCalDQM::configure(std::map < std::string, std::any > parameters) {
-        ecalVetoCollectionName_ = std::any_cast< std::string >(parameters["ecal_veto_collection"]);
+    void HCalDQM::configure(Parameters& parameters) {
+        ecalVetoCollectionName_ = parameters.getParameter< std::string >("ecal_veto_collection");
     }
 
     void HCalDQM::analyze(const Event & event) { 

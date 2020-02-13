@@ -36,6 +36,7 @@
 #include "Event/PnWeightResult.h"
 #include "Event/SimParticle.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Parameters.h" 
 
 //----------//
 //   ROOT   //
@@ -72,7 +73,7 @@ namespace ldmx {
              * 
              * @param parameters Set of parameters used to configure this processor.
              */
-            void configure(std::map < std::string, std::any > parameters) final override;
+            void configure(Parameters& parameters) final override;
 
             /** Run the weight calculation and create a pnWeightResult. */
             void produce(Event& event);

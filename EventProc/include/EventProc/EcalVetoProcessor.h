@@ -17,6 +17,7 @@
 #include "DetDescr/EcalDetectorID.h"
 #include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Parameters.h" 
 
 //C++
 #include <map>
@@ -72,7 +73,7 @@ namespace ldmx {
              * 
              * @param parameters Set of parameters used to configure this processor.
              */
-            void configure(std::map < std::string, std::any > parameters) final override;
+            void configure(Parameters& parameters) final override; 
 
             void produce(Event& event);
 

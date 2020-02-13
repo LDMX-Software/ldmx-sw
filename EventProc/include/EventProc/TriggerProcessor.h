@@ -12,6 +12,7 @@
 #include "Event/TriggerResult.h"
 #include "Event/EcalHit.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Parameters.h" 
 
 namespace ldmx {
 
@@ -48,7 +49,7 @@ namespace ldmx {
              * 
              * @param parameters Set of parameters used to configure this processor.
              */
-            void configure(std::map < std::string, std::any > parameters) final override;
+            void configure(Parameters& parameters) final override;
 
             /**
              * Run the trigger algorithm and create a TriggerResult
