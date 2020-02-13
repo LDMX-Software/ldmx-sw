@@ -19,12 +19,13 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Event/EventDef.h"
+#include "Framework/EventProcessor.h"
+#include "Framework/Parameters.h" 
 
 /*~~~~~~~~~~~*/
 /*   Event   */
 /*~~~~~~~~~~~*/
-#include "Framework/EventProcessor.h"
+#include "Event/EventDef.h"
 
 class G4UImanager;
 class G4RunManager;
@@ -77,7 +78,7 @@ namespace ldmx {
              * 
              * @param parameters ParameterSet for configuration.
              */
-            void configure(std::map < std::string, std::any > parameters) final override;  
+            void configure(Parameters& parameters) final override; 
 
             /**
              * Run simulation and export results to output event.
@@ -142,7 +143,10 @@ namespace ldmx {
             std::unique_ptr<DetectorConstruction> detectorConstruction_;
 
             /// PersistencyManager 
-            std::unique_ptr<RootPersistencyManager> persistencyManager_;  
+            std::unique_ptr<RootPersistencyManager> persistencyManager_;
+
+            /// The parameters used to configure the simulation
+            Parameters parameters_;   
 
             /// Commands not allowed to be passed from python config file
             ///     This is because Simulator already runs them.
