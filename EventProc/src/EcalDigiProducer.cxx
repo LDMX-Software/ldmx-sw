@@ -27,13 +27,13 @@ namespace ldmx {
 
     EcalDigiProducer::~EcalDigiProducer() { }
 
-    void EcalDigiProducer::configure(std::map < std::string, std::any > parameters) {
+    void EcalDigiProducer::configure(Parameters& parameters) {
 
         hexReadout_ = std::make_unique<EcalHexReadout>();
 
-        noiseIntercept_ = std::any_cast< double >(parameters["noiseIntercept"]);  
-        noiseSlope_     = std::any_cast< double >(parameters["noiseSlope"]); 
-        padCapacitance_ = std::any_cast< double >(parameters["padCapacitance"]); 
+        noiseIntercept_ = parameters.getParameter< double >("noiseIntercept");  
+        noiseSlope_     = parameters.getParameter< double >("noiseSlope"); 
+        padCapacitance_ = parameters.getParameter< double >("padCapacitance"); 
 
         // Calculate the noise RMS based on the properties of the readout pad
         noiseRMS_ = this->calculateNoise(padCapacitance_, noiseIntercept_, noiseSlope_);  
@@ -44,12 +44,12 @@ namespace ldmx {
         //std::cout << "[ EcalDigiProducer ]: Noise RMS: " << noiseRMS_ << " MeV" << std::endl;
 
         // Calculate the readout threhsold
-        readoutThreshold_ = std::any_cast< double >(parameters["readoutThreshold"])*noiseRMS_;
+        readoutThreshold_ = parameters.getParameter< double >("readoutThreshold")*noiseRMS_;
         //std::cout << "[ EcalDigiProducer ]: Readout threshold: " << readoutThreshold_ << " MeV" << std::endl;
 
         noiseGenerator_->setNoise(noiseRMS_); 
         noiseGenerator_->setPedestal(0); 
-        noiseGenerator_->setNoiseThreshold(std::any_cast< double >(parameters["readoutThreshold"])*noiseRMS_); 
+        noiseGenerator_->setNoiseThreshold(parameters.getParameter< double >("readoutThreshold")*noiseRMS_); 
 
     }
 

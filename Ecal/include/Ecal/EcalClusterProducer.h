@@ -26,6 +26,7 @@
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Parameters.h" 
 #include "Ecal/WorkingCluster.h"
 #include "Ecal/MyClusterWeight.h"
 #include "Ecal/TemplatedClusterFinder.h"
@@ -55,7 +56,7 @@ namespace ldmx {
              * 
              * @param parameters Set of parameters used to configure this processor.
              */
-            void configure(std::map < std::string, std::any > parameters) final override;
+            void configure(Parameters& parameters) final override;
 
             virtual void produce(Event& event);
 

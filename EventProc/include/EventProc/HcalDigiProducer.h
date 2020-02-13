@@ -20,6 +20,7 @@
 #include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
+#include "Framework/Parameters.h" 
 
 namespace ldmx {
 
@@ -40,7 +41,7 @@ namespace ldmx {
              * 
              * @param parameters Set of parameters used to configure this processor.
              */
-            void configure(std::map < std::string, std::any > parameters) final override;
+            void configure(Parameters& parameters) final override;
             
             virtual void produce(Event& event);
 

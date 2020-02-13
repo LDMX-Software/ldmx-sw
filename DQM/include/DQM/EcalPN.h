@@ -7,10 +7,11 @@
 #ifndef _DQM_ECAL_PN_H_
 #define _DQM_ECAL_PN_H_
 
-//----------//
-//   LDMX   //
-//----------//
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
 #include "Framework/EventProcessor.h"
+#include "Framework/Parameters.h" 
 
 class TH1; 
 
@@ -37,7 +38,7 @@ namespace ldmx {
              * 
              * @param parameters Set of parameters used to configure this processor.
              */
-            void configure(std::map < std::string, std::any > parameters) final override;
+            void configure(Parameters& parameters) final override; 
  
             /**
              * Process the event and make histograms ro summaries.
