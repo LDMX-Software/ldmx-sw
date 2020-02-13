@@ -57,8 +57,11 @@ namespace ldmx {
 
     Simulator::~Simulator() { }
 
-    void Simulator::configure(std::map < std::string, std::any > parameters) {
-     
+    void Simulator::configure(Parameters& parameters) {
+    
+        // parameters used to configure the simulation
+        parameters_ = parameters; 
+
         // Instantiate the run manager.  
         runManager_ = std::make_unique<RunManager>(parameters);
 
@@ -80,47 +83,44 @@ namespace ldmx {
          * Necessary Parameters
          *************************************************/
         
-        detectorPath_ = std::any_cast< std::string >(parameters["detector"]);
+        detectorPath_ = parameters.getParameter< std::string >("detector");
          
-
-        description_ = std::any_cast< std::string >(parameters["description"]);
-
         /*************************************************
          * Optional Parameters
          *************************************************/
-        verbosity_ = std::any_cast< int >(parameters["verbosity"]);
+        verbosity_ = parameters.getParameter< int >("verbosity");
 
-        enableHitContribs_   = std::any_cast< int >(parameters["enableHitContribs"]); 
-        compressHitContribs_ = std::any_cast< int >(parameters["compressHitContribs"]);
+        enableHitContribs_   = parameters.getParameter< int >("enableHitContribs"); 
+        compressHitContribs_ = parameters.getParameter< int >("compressHitContribs");
 
-        dropCollections_ = std::any_cast< std::vector< std::string > >(parameters["dropCollections"]);
+        dropCollections_ = parameters.getParameter< std::vector< std::string > >("dropCollections");
 
         // Get the path to the scoring planes
-        scoringPlanesPath_ = std::any_cast< std::string >(parameters["scoringPlanes"]); 
+        scoringPlanesPath_ = parameters.getParameter< std::string >("scoringPlanes"); 
 
-        randomSeeds_ = std::any_cast< std::vector< int > >(parameters["randomSeeds"]);
+        randomSeeds_ = parameters.getParameter< std::vector< int > >("randomSeeds");
 
         //LHE Generator
-        lheFilePath_ = std::any_cast< std::string >(parameters[ "lheFilePath"]); 
+        lheFilePath_ = parameters.getParameter< std::string >("lheFilePath"); 
 
         //ROOT Generator
-        rootReSimPath_         = std::any_cast< std::string >(parameters[ "rootReSimPath"]); 
-        rootPrimaryGenRunMode_ = std::any_cast< int >(parameters[ "rootPrimaryGenRunMode"]);
-        rootPrimaryGenUseSeed_ = std::any_cast< int >(parameters[ "rootPrimaryGenUseSeed"]); 
+        rootReSimPath_         = parameters.getParameter< std::string >("rootReSimPath"); 
+        rootPrimaryGenRunMode_ = parameters.getParameter< int >("rootPrimaryGenRunMode");
+        rootPrimaryGenUseSeed_ = parameters.getParameter< int >("rootPrimaryGenUseSeed"); 
 
         //Multi Particle Gun
-        mpgNparticles_    = std::any_cast< int >(parameters[ "mpgNparticles"]); 
-        mpgEnablePoisson_ = std::any_cast< int >(parameters[ "mpgEnablePoisson"]); 
-        mpgPdgID_         = std::any_cast< int >(parameters[ "mpgPdgID"]); 
-        mpgVertex_        = std::any_cast< std::vector< double > >(parameters[ "mpgVertex"]);    
-        mpgMomentum_      = std::any_cast< std::vector< double > >(parameters[ "mpgMomentum"]);
+        mpgNparticles_    = parameters.getParameter< int >("mpgNparticles"); 
+        mpgEnablePoisson_ = parameters.getParameter< int >("mpgEnablePoisson"); 
+        mpgPdgID_         = parameters.getParameter< int >("mpgPdgID"); 
+        mpgVertex_        = parameters.getParameter< std::vector< double > >("mpgVertex");    
+        mpgMomentum_      = parameters.getParameter< std::vector< double > >("mpgMomentum");
 
         //Beamspot (all generators)
-        beamspotSmear_ = std::any_cast< std::vector< double > >(parameters[ "beamspotSmear" ]);
+        beamspotSmear_ = parameters.getParameter< std::vector< double > >("beamspotSmear" );
 
         // Get the extra simulation configuring commands
-        preInitCommands_  = std::any_cast< std::vector< std::string > >(parameters[ "preInitCommands" ]); 
-        postInitCommands_ = std::any_cast< std::vector< std::string > >(parameters[ "postInitCommands"]);
+        preInitCommands_  = parameters.getParameter< std::vector< std::string > >("preInitCommands" ); 
+        postInitCommands_ = parameters.getParameter< std::vector< std::string > >("postInitCommands");
         /*************************************************
          * Do Pre /run/initialize commands
          *************************************************/
@@ -151,12 +151,11 @@ namespace ldmx {
     void Simulator::onFileOpen(EventFile &file) {
 
         // Initialize persistency manager and connect it to the current EventFile
-        persistencyManager_ = std::make_unique<RootPersistencyManager>(file); 
+        persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_); 
         persistencyManager_->Initialize(); 
-        // set the run number
-        persistencyManager_->setRunNumber( runNumber_ );
+        
         // pass on the description
-        persistencyManager_->setRunDescription( description_ );
+        //persistencyManager_->setRunDescription( description_ );
         // pass on the collections to drop after sim (i.e. NOT save)
         // TODO remove this after functional dropping is merged in
         for ( const std::string &collName : dropCollections_ ) persistencyManager_->dropCollection( collName );
