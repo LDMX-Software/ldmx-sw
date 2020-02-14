@@ -2,7 +2,7 @@
  * @file DetectorIDTest.cxx
  * @brief Test the operation of DetectorID class
  */
-#include "Test/catch.hpp"
+#include "Exception/catch.hpp"
 
 #include "DetDescr/DetectorID.h"
 

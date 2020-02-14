@@ -13,4 +13,4 @@
  * I have chosen to put it here for now.
  */
 #define CATCH_CONFIG_MAIN
-#include "Test/catch.hpp"
+#include "Exception/catch.hpp"
