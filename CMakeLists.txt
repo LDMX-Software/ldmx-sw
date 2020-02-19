@@ -143,6 +143,26 @@ foreach(module ${MODULES})
   endif()
 endforeach()
 
+# test executable must be linked to all other module directories
+set(executable_test_source Exception/src/ldmx_test.cxx)
+get_filename_component(executable ${executable_test_source} NAME)
+string(REPLACE ".cxx" "" executable ${executable})
+string(REPLACE "_" "-" executable ${executable})
+if(MODULE_DEBUG)
+  message("building test executable: ${executable}")
+endif()
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Exception/include) # need Exception/include/catch.hpp
+file(GLOB external_libs ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/Use*.cmake)
+foreach(external_lib ${external_libs})
+  include(${external_lib}) # include all external libs
+endforeach()
+add_executable(${executable} ${executable_test_source}) # add executable
+target_link_libraries(${executable} ${MODULES} ${EXT_DEP_LIBRARIES})
+install(TARGETS ${executable} DESTINATION bin)
+if(MODULE_DEBUG)
+    message("${executable} linked with: ${MODULES};${EXT_DEP_LIBRARIES}")
+endif()
+
 # configure scripts and copy to installation dir 
 file(GLOB config_scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.in)
 foreach(config_script ${config_scripts})
