@@ -2,7 +2,6 @@
 
 // LDMX
 #include "Framework/Process.h"
-#include "Framework/ParameterSet.h"
 #include "Framework/EventProcessorFactory.h"
 #include "TDirectory.h"
 #include "Event/RunHeader.h"
