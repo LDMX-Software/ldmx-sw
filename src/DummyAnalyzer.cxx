@@ -30,7 +30,6 @@
 #include "Framework/EventFile.h" 
 #include "Framework/EventProcessor.h"
 #include "Framework/NtupleManager.h"
-#include "Framework/ParameterSet.h"
 #include "Framework/Process.h" 
 
 namespace ldmx {
