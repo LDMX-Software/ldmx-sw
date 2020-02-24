@@ -11,7 +11,7 @@ namespace ldmx {
     void EcalDigiVerifier::configure(const ldmx::ParameterSet& ps) {
 
         ecalSimHitColl_ = ps.getString( "ecalSimHitColl" , "EcalSimHits" );
-        ecalSimHitPass_ = ps.getString( "ecalSimHitPass" , "sim" );
+        ecalSimHitPass_ = ps.getString( "ecalSimHitPass" , "" );
         ecalRecHitColl_ = ps.getString( "ecalRecHitColl" , "EcalRecHits" );
         ecalRecHitPass_ = ps.getString( "ecalSimHitPass" , "" );
 
