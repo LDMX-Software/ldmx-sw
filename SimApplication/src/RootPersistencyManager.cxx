@@ -12,11 +12,6 @@
 #include <algorithm>
 #include <memory> 
 
-//-----------//
-//   Boost   //
-//-----------//
-#include "boost/format.hpp"
-
 //-------------//
 //   ldmx-sw   //
 //-------------//
@@ -103,18 +98,6 @@ namespace ldmx {
 
         // Copy hit objects from SD hit collections into the output event.
         writeHitsCollections(anEvent, event_);
-
-    }
-
-    void RootPersistencyManager::printEvent(Event* outputEvent) {
-
-        std::map<int,SimParticle> particleColl = outputEvent->getMap<int,SimParticle>( "SimParticles", "sim");
-
-        if ( m_verbose > 1 ) {
-            std::cout << "[ RootPersistencyManager ] : Event Bus Contents" << std::endl;
-            outputEvent->Print( m_verbose );
-            std::cout << "[ RootPersistencyManager ] : End Event Bus Contents" << std::endl;
-        }
 
     }
 

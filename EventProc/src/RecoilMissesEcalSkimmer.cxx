@@ -21,11 +21,11 @@ namespace ldmx {
 
     void RecoilMissesEcalSkimmer::produce(Event &event) { 
         
-        // Get the collection of sim particles from the event 
-        const std::map<int,SimParticle> simParticleMap = event.getMap<int,SimParticle>("SimParticles");
-        if (simParticleMap.size() == 0) return; 
-
-        const SimParticle *recoilElectron = Analysis::getRecoil( simParticleMap );
+        // Get the collection of simulated particles from the event
+        auto particleMap{event.getMap< int, SimParticle >("SimParticles")};
+        
+        // Search for the recoil electron 
+        auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
 
         // Get the collection of simulated Ecal hits from the event. 
         const std::vector<SimCalorimeterHit> ecalSimHits = event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS);
@@ -44,7 +44,7 @@ namespace ldmx {
 
                 SimCalorimeterHit::Contrib contrib = simHit.getContrib(iContrib);
 
-                if (contrib.trackID == recoilElectron->getTrackID()) { 
+                if (contrib.trackID == recoilTrackID) { 
                     /*std::cout << "[ RecoilMissesEcalSkimmer ]: " 
                               << "Ecal hit associated with recoil electron." << std::endl; */
                     

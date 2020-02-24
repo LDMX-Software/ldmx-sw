@@ -14,11 +14,6 @@
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/GammaPhysics.h"
 #include "SimApplication/ParallelWorld.h"
-#include "SimApplication/ParallelWorldMessenger.h"
-#include "SimApplication/PrimaryGeneratorAction.h"
-#include "SimApplication/PrimaryGeneratorMessenger.h"
-#include "SimApplication/RootPersistencyMessenger.h"
-#include "SimApplication/RootPersistencyManager.h" 
 #include "SimApplication/SteppingAction.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
@@ -42,13 +37,13 @@ namespace ldmx {
     RunManager::RunManager() {
         pluginManager_ = new PluginManager();
         pluginMessenger_ = new PluginMessenger(pluginManager_);
-        pwMessenger_ = new ParallelWorldMessenger(this);
         
         // Setup messenger for physics list.
         physicsListFactory_ = new G4PhysListFactory;
     }
 
     RunManager::~RunManager() {
+        std::cout << "~RunManager" << std::endl;
         delete pluginManager_;
         delete pluginMessenger_;
         delete physicsListFactory_; 
@@ -99,10 +94,6 @@ namespace ldmx {
 
         G4RunManager::Initialize();
 
-        PrimaryGeneratorAction* primaryGeneratorAction = new PrimaryGeneratorAction;
-        SetUserAction(primaryGeneratorAction);
-        new PrimaryGeneratorMessenger(primaryGeneratorAction);
-
         UserRunAction* runAction = new UserRunAction;
         UserEventAction* eventAction = new UserEventAction;
         UserTrackingAction* trackingAction = new UserTrackingAction;
@@ -114,7 +105,6 @@ namespace ldmx {
         trackingAction->setPluginManager(pluginManager_);
         steppingAction->setPluginManager(pluginManager_);
         stackingAction->setPluginManager(pluginManager_);
-        primaryGeneratorAction->setPluginManager(pluginManager_);
 
         SetUserAction(runAction);
         SetUserAction(eventAction);
@@ -122,8 +112,6 @@ namespace ldmx {
         SetUserAction(steppingAction);
         SetUserAction(stackingAction);
 
-        //RootPersistencyManager* rootIO = new RootPersistencyManager();
-        //new RootPersistencyMessenger(rootIO);
     }
 
     DetectorConstruction* RunManager::getDetectorConstruction() {
