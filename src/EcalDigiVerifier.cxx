@@ -52,7 +52,7 @@ namespace ldmx {
             double totalSimEDep = 0.;
             for ( const SimCalorimeterHit &simHit : ecalSimHits ) {
                 if ( rawID == simHit.getID() ) {
-                    numSimHits++;
+                    numSimHits += simHit.getNumberOfContribs();
                     totalSimEDep += simHit.getEdep();
                 } else if ( rawID < simHit.getID() ) {
                     //later sim hits - all done
@@ -68,6 +68,12 @@ namespace ldmx {
         }
 
         h_TotalRecEnergy_->Fill( totalRecEnergy );
+
+        if ( totalRecEnergy > 6000. ) {
+            setStorageHint( hint_shouldKeep );
+        } else {
+            setStorageHint( hint_shouldDrop );
+        }
 
         return;
     }
@@ -88,12 +94,14 @@ namespace ldmx {
                 ";Total Reconstructed Energy in ECal [MeV];Count",
                 800,0,8000.
                 );
+        h_TotalRecEnergy_->SetCanExtend( TH1::kXaxis );
 
         h_NumSimHitsPerCell_ = new TH1F(
                 "h_NumSimHitsPerCell_",
                 ";Number SimHits per ECal Cell (excluding empty rec cells);Count",
                 20,0,20
                 );
+        h_NumSimHitsPerCell_->SetCanExtend( TH1::kXaxis );
 
         return;
     }
