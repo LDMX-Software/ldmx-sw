@@ -84,6 +84,12 @@ macro(MODULE)
   file(GLOB sources ${MODULE_SOURCE_DIR}/*.cxx)
   file(GLOB headers ${MODULE_INCLUDE_DIR}/include/*/*.h)
 
+  # find test sources
+  file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cxx)
+  if(test_sources)
+      list(APPEND sources ${test_sources})
+  endif()
+
   # setup external dependencies
   ext_deps(DEPENDENCIES ${MODULE_EXTERNAL_DEPENDENCIES}) 
   if (EXT_DEP_INCLUDE_DIRS)
@@ -109,6 +115,7 @@ macro(MODULE)
     install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
   endif()
+
   # make list of libraries required by executables and test programs which includes this module's lib
   if (sources)
     set(MODULE_BIN_LIBRARIES ${MODULE_NAME} ${MODULE_LIBRARIES})
@@ -119,23 +126,7 @@ macro(MODULE)
   if(MODULE_DEBUG)
     message("MODULE_BIN_LIBRARIES='${MODULE_BIN_LIBRARIES}'")
   endif()
- 
-  # find test programs
-  file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cxx)
 
-  # setup test programs from all source files in test directory
-  foreach(test_source ${test_sources})
-    get_filename_component(test_program ${test_source} NAME)
-    string(REPLACE ".cxx" "" test_program ${test_program})
-    string(REPLACE "_" "-" test_program ${test_program})
-    add_executable(${test_program} ${test_source})
-    target_link_libraries(${test_program} ${MODULE_BIN_LIBRARIES})
-    install(TARGETS ${test_program} DESTINATION bin)
-    if(MODULE_DEBUG)
-      message("building test program: ${test_program}")
-    endif()
-  endforeach()
-  
   # setup module executables
   foreach(executable_source ${MODULE_EXECUTABLES})
     get_filename_component(executable ${executable_source} NAME)

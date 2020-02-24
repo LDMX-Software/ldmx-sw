@@ -92,6 +92,16 @@ namespace ldmx {
             }
 
             /**
+             * Add a drop rule to the list of regex expressions to drop.
+             *
+             * If a collection name matches one of the stored regex expressions, it will be stored as a passenger 
+             * but not added to output tree.
+             *
+             * @param exp regex to match
+             */
+            void addDrop( const std::string &exp );
+
+            /**
              * Adds an object to the event bus
              * @param collectionName
              * @param obj in ROOT dictionary to add
@@ -125,7 +135,7 @@ namespace ldmx {
                     passengers_[branchName] = EventBusPassenger( obj );
                     T *passengerAddress = std::get_if<T>(&passengers_[branchName]);
                     std::string tname = typeid(obj).name();//type name (want to use branch element if possible)
-                    if (outputTree_ != 0) {
+                    if (outputTree_ != 0 and not shouldDrop( branchName ) ) {
                         TBranchElement *outBranch = dynamic_cast<TBranchElement *>(outputTree_->GetBranch( branchName.c_str() ));
                         if ( outBranch ) {
                             //branch already exists, just reset branch object
@@ -273,7 +283,7 @@ namespace ldmx {
                         }
                     }
                 }
-        
+       
                 //get iterators to branch and collection
                 auto itBranch = branches_.find(branchName);
                 auto itPassenger = passengers_.find(branchName);
@@ -329,13 +339,14 @@ namespace ldmx {
                                 + passName_ 
                                 + "'"
                                 );
-                    }
+                    } 
                     // ooh, new branch!
                     // load in the current entry
+                    branch->SetStatus(1); //overrides any 'ignore' rules
                     branch->GetEntry((ientry_<0)?(0):(ientry_));
         
                     //insert into maps of loaded branches and passengers
-                    passengers_[branchName] = *((T *)(branch->GetObject()));
+                    passengers_[branchName] = *((T *)(branch->GetObject())); //this will fail if wrong type is passed
                     branches_[branchName]   = branch;
         
                     return std::get<T>( passengers_.at(branchName) );
@@ -424,6 +435,14 @@ namespace ldmx {
             }
 
         private:
+
+            /**
+             * Check if collection should be dropped.
+             *
+             * @param collName name of collection
+             * @return true if the collection should be dropped (i.e. NOT saved)
+             */
+            bool shouldDrop(const std::string &collName) const;
         
             /**
              * @class clearPassenger
@@ -616,6 +635,11 @@ namespace ldmx {
              * Names of branches filled during this event.
              */
             std::set<std::string> branchesFilled_;
+
+            /**
+             * Regex of collection names to *not* store in event.
+             */
+            std::vector<regex_t> regexDropCollections_;
 
             /**
              * Efficiency cache for empty pass name lookups.

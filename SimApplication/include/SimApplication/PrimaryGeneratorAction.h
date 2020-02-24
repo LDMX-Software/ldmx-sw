@@ -30,7 +30,6 @@
 #include "SimPlugins/PluginManagerAccessor.h"
 #include "SimApplication/MultiParticleGunPrimaryGenerator.h"
 #include "SimApplication/RootPrimaryGenerator.h"
-#include "SimApplication/PrimaryGeneratorMessenger.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
 
 namespace ldmx {
