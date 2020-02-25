@@ -63,7 +63,7 @@ namespace ldmx {
         pulseFunc_.SetParameter( 6 , 87.7649  );
 
         //Option to make configuration histograms
-        makeConfigHists_ = (ps.getInteger("makeConfigHists",1) > 0);
+        makeConfigHists_ = (ps.getInteger("makeConfigHists",-1) > 0);
         if ( makeConfigHists_ ) {
             getHistoDirectory();
 
