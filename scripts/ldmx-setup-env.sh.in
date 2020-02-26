@@ -3,8 +3,6 @@
 #
 # This file is configured by CMake and installed into the 'bin' directory.
 #
-# For now, the Xerces lib dir must be added to the 'LD_LIBRARY_PATH' manually.
-# 
 # @author Jeremy McCormick, SLAC
 ###############################################################################
 
@@ -12,10 +10,14 @@
 export LDMXSW_DIR=@CMAKE_INSTALL_PREFIX@
 
 # setup Geant4 env
-. @Geant4_DIR@/../../bin/geant4.sh
+#   Geant4_DIR cmake variable points to directory containing the Geant4 libraries
+#   Need to back out of that directory to find the setup script
+source @Geant4_DIR@/../../bin/geant4.sh
 
 # setup ROOT env
-. @ROOT_DIR@/bin/thisroot.sh
+#   ROOT_DIR cmake variable points to directory containing the cmake use file
+#   Need to back out of that directory to find the setup script
+source @ROOT_DIR@/../../../bin/thisroot.sh
 
 # set load library path for module libs
 export LD_LIBRARY_PATH=$LDMXSW_DIR/lib:@PYTHON_LIBRARY_DIR@:@XercesC_LIBRARY_DIR@:$LD_LIBRARY_PATH
@@ -24,4 +26,4 @@ export LD_LIBRARY_PATH=$LDMXSW_DIR/lib:@PYTHON_LIBRARY_DIR@:@XercesC_LIBRARY_DIR
 export PYTHONPATH=$LDMXSW_DIR/lib/python:$PYTHONPATH
 
 # add bin dir to PATH
-export PATH=$LDMXSW_DIR/bin:$(dirname @PYTHON_EXECUTABLE@):$PATH
+export PATH=$LDMXSW_DIR/bin:$PATH
