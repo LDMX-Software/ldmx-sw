@@ -35,18 +35,20 @@ namespace ldmx {
 
     void APrimePhysics::ConstructProcess() {
 
-        //add process to electron
-        G4eDarkBremsstrahlung *theDarkBremProcess = new G4eDarkBremsstrahlung;
-        theDarkBremProcess->SetCrossSectionBiasingFactor(globalXsecFactor_);
-        theDarkBremProcess->SetMethod(bremMethod_);
-        theDarkBremProcess->SetMadGraphDataFile(madGraphFilePath_);
-
-    	G4Electron::ElectronDefinition()->GetProcessManager()->AddProcess(
-                theDarkBremProcess /*process to add - G4ProcessManager cleans up processes*/
-                , G4ProcessVectorOrdering::ordInActive /*activation when particle at rest*/
-                , 1 /*activation along step*/
-                , 1 /*activation at end of step*/
-                );
+        //add process to electron if LHE file has been provided
+        if ( not madGraphFilePath_.empty() ) {
+            G4eDarkBremsstrahlung *theDarkBremProcess = new G4eDarkBremsstrahlung;
+            theDarkBremProcess->SetCrossSectionBiasingFactor(globalXsecFactor_);
+            theDarkBremProcess->SetMethod(bremMethod_);
+            theDarkBremProcess->SetMadGraphDataFile(madGraphFilePath_);
+    
+        	G4Electron::ElectronDefinition()->GetProcessManager()->AddProcess(
+                    theDarkBremProcess /*process to add - G4ProcessManager cleans up processes*/
+                    , G4ProcessVectorOrdering::ordInActive /*activation when particle at rest*/
+                    , 1 /*activation along step*/
+                    , 1 /*activation at end of step*/
+                    );
+        }
 
     }
 

@@ -67,7 +67,7 @@ namespace ldmx {
         
         //TODO clean this crap up
         double aPrimeMass = parameters_.getParameter< double >( "APrimeMass" );
-        if ( aPrimeMass > 0 and not madGraphFilePath_.empty() ) {
+        if ( aPrimeMass_ > 0 ) {
             //positive A' mass ==> we should activate A' physics
             APrimePhysics* aprimePhys = new APrimePhysics;
             aprimePhys->setAPrimeMass(       aPrimeMass        );
@@ -145,7 +145,7 @@ namespace ldmx {
         G4RunManager::TerminateOneEvent();
 
         //reset dark brem process (if needed)
-        if ( aPrimeMass_ > 0 ) {
+        if ( aPrimeMass_ > 0 and not madGraphFilePath_.empty() ) {
             //Re-activate the process at the end of each event. 
             //The process is deactivated each time it occurs, to limit it to one brem per event.
             G4bool active = true;

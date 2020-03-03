@@ -79,18 +79,6 @@ namespace ldmx {
             /** Enable a parallel world. */
             void enableParallelWorld(bool isPWEnabled) { isPWEnabled_ = isPWEnabled; }
 
-            /** Define A Prime mass for this simulation run */
-            void setAPrimeMass(double theMass) { aPrimeMass_ = theMass; }
-
-            /** Give path to mad graph events file */
-            void setMadGraphFilePath(const std::string& filepath) { madGraphFilePath_ = filepath; }
-
-            /** Give the method of interpreting mad graph events */
-            void setDarkBremMethod(int method) { bremMethod_ = method; }
-
-            /** Set global xsec biasing factor for DarkBrem process */
-            void setGlobalXsecFactor(double factor) { globalXsecFactor_ = factor; }
-
             /** Set the path to the GDML description of the parallel world. */
             void setParallelWorldPath(std::string parallelWorldPath) { 
                 parallelWorldPath_ = parallelWorldPath; 
@@ -121,28 +109,6 @@ namespace ldmx {
              * registered 
              */
             bool isPWEnabled_{false};
-
-            /**
-             * Mass of A Prime this simulation should use.
-             *
-             * Negative value means no dark brems.
-             */
-            double aPrimeMass_{-1};
-
-            /**
-             * File path to mad graph events simulation dark brems
-             */
-            std::string madGraphFilePath_;
-
-            /**
-             * Method to interpret the mad graph data
-             */
-            int bremMethod_;
-
-            /**
-             * Global xsec biasing factor to apply to the dark brem
-             */
-            double globalXsecFactor_{1.};
 
             /** Path to GDML description of parallel world. */
             std::string parallelWorldPath_{""};
