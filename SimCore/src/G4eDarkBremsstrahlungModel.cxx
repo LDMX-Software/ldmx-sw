@@ -174,7 +174,7 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
     G4double finalKE = EAcc - electron_mass_c2;
   
     // stop tracking and create new secondary instead of primary
-    if(finalKE < SecondaryThreshold()) {
+    if(alwaysCreateNewElectron_ or finalKE < SecondaryThreshold()) {
         fParticleChange_->ProposeTrackStatus(fStopAndKill);
         fParticleChange_->SetProposedKineticEnergy(0.0);
         G4DynamicParticle* el = new G4DynamicParticle(const_cast<G4ParticleDefinition*>(particle_),
@@ -182,6 +182,7 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
         secondaries->push_back(el);
         // continue tracking
     } else {
+        // just have primary lose energy (don't rename to different track ID)
         fParticleChange_->SetProposedMomentumDirection(newDirection.unit());
         fParticleChange_->SetProposedKineticEnergy(finalKE);
     }

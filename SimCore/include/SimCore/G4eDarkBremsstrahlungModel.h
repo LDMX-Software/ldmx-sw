@@ -254,6 +254,13 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
         DarkBremMethod method_{DarkBremMethod::Undefined};
 
         /** 
+         * should we always create a totally new electron when we dark brem? 
+         *
+         * TODO make this configurable? I (Tom E) can't think of a reason NOT to have it...
+         */
+        bool alwaysCreateNewElectron_{true};
+
+        /** 
          * Storage of data from mad graph 
          *
          * Maps incoming electron energy to various options for outgoing kinematics.
