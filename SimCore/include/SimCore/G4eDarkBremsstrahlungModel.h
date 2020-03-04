@@ -32,9 +32,9 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
          * Possible methods to dark brem inside of this model.
          */
         enum DarkBremMethod{
-            ForwardOnly = 1,
-            CMScaling,
-            Undefined
+            ForwardOnly = 1, /// Use actual electron energy and get pT from LHE (such that pT^2+me^2 < Eacc^2)
+            CMScaling, /// Boost LHE vertex momenta to the actual electron energy
+            Undefined /// Use LHE vertex as is
         };
 
         /**
