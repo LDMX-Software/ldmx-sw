@@ -54,7 +54,7 @@ namespace ldmx {
 
         auto time{parameters.getParameter< double >("gun.time")}; 
         if (time < 0) time = 0.0; 
-        std::cout << "ParticleGun::ParticleGun : Setting particle time  to " << time << std::endl;
+        //std::cout << "ParticleGun::ParticleGun : Setting particle time  to " << time << std::endl;
         SetParticleTime(time*ns); 
 
         auto direction{parameters.getParameter< std::vector<double > >("gun.direction")};
@@ -68,14 +68,15 @@ namespace ldmx {
     ParticleGun::~ParticleGun() {} 
 
     void ParticleGun::GeneratePrimaryVertex(G4Event* event) { 
-       
+      
+        // Call base class method to generate primaries. 
         G4ParticleGun::GeneratePrimaryVertex(event);
 
         // Set the generator status to 1 for particle gun primaries
         for (int ivertex = 0; ivertex < event->GetNumberOfPrimaryVertex(); ++ivertex) {
             
             // Get the ith primary vertex from the event
-            G4PrimaryVertex* vertex = event->GetPrimaryVertex(ivertex);
+            auto vertex{event->GetPrimaryVertex(ivertex)}; 
             
             // Loop over all particle associated with the primary vertex and
             // set the generator status to 1.
