@@ -49,7 +49,7 @@ void G4eDarkBremsstrahlung::InitialiseEnergyLossProcess(const G4ParticleDefiniti
 
         this->SetEmModel(new G4eDarkBremsstrahlungModel(),0); //adds model to vector stored in process
 
-        G4double energyLimit = 1*GeV;
+        G4double energyLimit = 4*GeV;
 
         this->EmModel(0)->SetLowEnergyLimit(MinKinEnergy());
         this->EmModel(0)->SetHighEnergyLimit(energyLimit);
