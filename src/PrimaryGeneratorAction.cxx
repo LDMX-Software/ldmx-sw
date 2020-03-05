@@ -36,7 +36,16 @@ namespace ldmx {
         random_->SetSeed( CLHEP::HepRandom::getTheSeed() );
 
         // Instantiate the manager 
-        manager_ = std::make_unique< PrimaryGeneratorManager >(parameters); 
+        manager_ = std::make_unique< PrimaryGeneratorManager >(parameters);
+
+        // Check whether a beamspot should be used or not.
+        auto beamSpot{parameters.getParameter< std::vector< double > >("beamSpotSmear")};
+        if (!beamSpot.empty()) {
+            useBeamSpot_ = true;
+            beamspotXSize_ = beamSpot[0];
+            beamspotYSize_ = beamSpot[1];
+            beamspotZSize_ = beamSpot[2];
+        }
         
     }
 
