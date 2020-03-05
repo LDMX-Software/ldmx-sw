@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef _SIM_APPLICATION_PARTICLE_GUN_H_
-#define _SIM_APPLICATION_PARTICLE_GUN_H_
+#ifndef SIMCORE_PARTICLE_GUN_H
+#define SIMCORE_PARTICLE_GUN_H
 
 //------------//
 //   Geant4   //
@@ -15,16 +15,22 @@
 // Forward declarations
 class G4Event; 
 
-namespace ldmx { 
+namespace ldmx {
+
+    class Parameters;  
 
     class ParticleGun : public G4ParticleGun { 
     
         public: 
 
-            /** Constructor. */
-            ParticleGun(); 
+            /** 
+             * Constructor. 
+             *
+             * @param parameters Parameters used to configure the particle gun. 
+             */
+            ParticleGun(Parameters& parameters); 
 
-            /** Destructor. */
+            /// Destructor
             ~ParticleGun();
 
             /** 
@@ -37,4 +43,4 @@ namespace ldmx {
 
 } // ldmx
 
-#endif // _SIM_APPLICATION_PARTICLE_GUN_H_
+#endif // SIMCORE_PARTICLE_GUN_H
