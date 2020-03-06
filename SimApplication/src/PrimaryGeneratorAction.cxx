@@ -41,7 +41,7 @@ namespace ldmx {
         // Check whether a beamspot should be used or not.
         auto beamSpot{parameters.getParameter< std::vector< double > >("beamSpotSmear")};
         if (!beamSpot.empty()) {
-            useBeamSpot_ = true;
+            useBeamspot_ = true;
             beamspotXSize_ = beamSpot[0];
             beamspotYSize_ = beamSpot[1];
             beamspotZSize_ = beamSpot[2];
