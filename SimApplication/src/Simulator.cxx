@@ -10,7 +10,6 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/ParameterSet.h" 
 #include "Framework/Process.h"
 
 /*~~~~~~~~~~~~~*/
@@ -18,11 +17,6 @@
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RootPersistencyManager.h" 
-#include "SimApplication/PrimaryGeneratorAction.h"
-#include "SimApplication/GeneralParticleSource.h"
-#include "SimApplication/LHEPrimaryGenerator.h"
-#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
-#include "SimApplication/RootPrimaryGenerator.h"
 #include "SimApplication/RunManager.h"
 
 /*~~~~~~~~~~~~~~*/
@@ -84,6 +78,12 @@ namespace ldmx {
          *************************************************/
         
         detectorPath_ = parameters.getParameter< std::string >("detector");
+
+        description_ = parameters.getParameter< std::string > ("description"); 
+
+        description_ = parameters.getParameter< int >("runNumber"); 
+       
+        process_.setRunNumber( runNumber_ ); 
          
         /*************************************************
          * Optional Parameters
@@ -99,24 +99,6 @@ namespace ldmx {
         scoringPlanesPath_ = parameters.getParameter< std::string >("scoringPlanes"); 
 
         randomSeeds_ = parameters.getParameter< std::vector< int > >("randomSeeds");
-
-        //LHE Generator
-        lheFilePath_ = parameters.getParameter< std::string >("lheFilePath"); 
-
-        //ROOT Generator
-        rootReSimPath_         = parameters.getParameter< std::string >("rootReSimPath"); 
-        rootPrimaryGenRunMode_ = parameters.getParameter< int >("rootPrimaryGenRunMode");
-        rootPrimaryGenUseSeed_ = parameters.getParameter< int >("rootPrimaryGenUseSeed"); 
-
-        //Multi Particle Gun
-        mpgNparticles_    = parameters.getParameter< int >("mpgNparticles"); 
-        mpgEnablePoisson_ = parameters.getParameter< int >("mpgEnablePoisson"); 
-        mpgPdgID_         = parameters.getParameter< int >("mpgPdgID"); 
-        mpgVertex_        = parameters.getParameter< std::vector< double > >("mpgVertex");    
-        mpgMomentum_      = parameters.getParameter< std::vector< double > >("mpgMomentum");
-
-        //Beamspot (all generators)
-        beamspotSmear_ = parameters.getParameter< std::vector< double > >("beamspotSmear" );
 
         // Get the extra simulation configuring commands
         preInitCommands_  = parameters.getParameter< std::vector< std::string > >("preInitCommands" ); 
@@ -151,11 +133,12 @@ namespace ldmx {
     void Simulator::onFileOpen(EventFile &file) {
 
         // Initialize persistency manager and connect it to the current EventFile
-        persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_); 
+        //persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_); 
+        persistencyManager_ = std::make_unique<RootPersistencyManager>(file);//, parameters_); 
         persistencyManager_->Initialize(); 
         
         // pass on the description
-        //persistencyManager_->setRunDescription( description_ );
+        persistencyManager_->setRunDescription( description_ );
         // pass on the collections to drop after sim (i.e. NOT save)
         // TODO remove this after functional dropping is merged in
         for ( const std::string &collName : dropCollections_ ) persistencyManager_->dropCollection( collName );
@@ -195,64 +178,6 @@ namespace ldmx {
         
         //initialize run
         runManager_->Initialize();
-
-        //attach generator to runManager
-        PrimaryGeneratorAction *primaryGeneratorAction = new PrimaryGeneratorAction;
-        runManager_->SetUserAction( primaryGeneratorAction );
-        primaryGeneratorAction->setPluginManager( runManager_->getPluginManager() );
-
-        /*************************************************
-         * Generator Setup Commands
-         *************************************************/
-
-        if ( not lheFilePath_.empty() ) {
-            //lhe generator
-            primaryGeneratorAction->setPrimaryGenerator(new LHEPrimaryGenerator(new LHEReader(lheFilePath_)));
-        } 
-        
-        if ( not rootReSimPath_.empty() ) {
-            //root generator
-            RootPrimaryGenerator *rpg = new RootPrimaryGenerator(rootReSimPath_);
-            primaryGeneratorAction->setPrimaryGenerator(rpg);
-            runManager_->setUseRootSeed( rootPrimaryGenUseSeed_ );
-
-            //TODO break up root resim into two different generators
-            rpg->setRunMode( rootPrimaryGenRunMode_ ); //default 1
-        } 
-        
-        if ( mpgNparticles_ > 0 ) {
-            MultiParticleGunPrimaryGenerator *mpg = new MultiParticleGunPrimaryGenerator();
-            primaryGeneratorAction->setPrimaryGenerator(mpg);
-
-            mpg->setMpgNparticles( mpgNparticles_ ); //default 0 (mpg is off)
-            if ( mpgEnablePoisson_ ) mpg->enablePoisson(); //default false
-            mpg->setMpgPdgId( mpgPdgID_ ); //default 11
-            if ( mpgVertex_.size() == 3 ) {
-                mpg->setMpgVertex( 
-                            G4ThreeVector( mpgVertex_.at(0)*mm , mpgVertex_.at(1)*mm , mpgVertex_.at(2)*mm )
-                            ); //default ( 0. , 0. , 0. )*mm (in middle of target)
-            }
-            if ( mpgMomentum_.size() == 3 ) {
-                mpg->setMpgMomentum( 
-                            G4ThreeVector( mpgMomentum_.at(0)*MeV , mpgMomentum_.at(1)*MeV , mpgMomentum_.at(2)*MeV )
-                            ); //default ( 0. , 0. , 4000. )*MeV
-            }
-        } 
-        
-        if ( enableGeneralParticleSource_ ) {
-            primaryGeneratorAction->setPrimaryGenerator(new GeneralParticleSource());
-            //other gps commands?
-        }
-
-        //beam spot smearing (should work with all generators)
-        if ( beamspotSmear_.size() > 1 ) {
-            primaryGeneratorAction->setUseBeamspot(true);
-            primaryGeneratorAction->setBeamspotXSize( beamspotSmear_.at(0) );
-            primaryGeneratorAction->setBeamspotYSize( beamspotSmear_.at(1) );
-            if ( beamspotSmear_.size() > 2 ) {
-                primaryGeneratorAction->setBeamspotZSize( beamspotSmear_.at(2) );
-            }
-        }
 
         if ( randomSeeds_.size() > 1 ) {
             //Geant4 allows for random seeds from 2 to 100
