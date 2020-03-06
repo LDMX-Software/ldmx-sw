@@ -23,11 +23,11 @@ namespace ldmx {
     actionVec UserActionManager::getActions() { 
         
         if (actions_.empty()) { 
-            actions_.push_back(UserRunAction()); 
-            actions_.push_back(UserEventAction()); 
-            actions_.push_back(UserTrackingAction()); 
-            actions_.push_back(USteppingAction()); 
-            actions_.push_back(UserStackingAction());
+            actions_.push_back(new UserRunAction()); 
+            actions_.push_back(new UserEventAction()); 
+            actions_.push_back(new UserTrackingAction()); 
+            actions_.push_back(new USteppingAction()); 
+            actions_.push_back(new UserStackingAction());
         }
 
         return actions_; 
