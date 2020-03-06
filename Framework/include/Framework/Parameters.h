@@ -54,7 +54,7 @@ namespace ldmx {
                     std::cout << "[ Parameters ]: Parameter " << name
                               << " hasn't been set. Using default value." << std::endl; 
                
-                    if constexpr (std::is_integral<T>::value || std::is_floating_point<T>::value) {
+                    if constexpr (std::numeric_limits<T>::is_integer || std::is_floating_point<T>::value) {
                         return std::numeric_limits<T>::lowest(); 
                     } else return {};  
                 }
