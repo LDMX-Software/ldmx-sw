@@ -24,11 +24,11 @@
 namespace ldmx { 
 
 
-    typedef std::variant < UserRunAction, 
-                           UserEventAction, 
-                           UserTrackingAction, 
-                           USteppingAction, 
-                           UserStackingAction >   action; 
+    typedef std::variant < UserRunAction*, 
+                           UserEventAction*, 
+                           UserTrackingAction*, 
+                           USteppingAction*, 
+                           UserStackingAction* >   action; 
 
     typedef std::vector < action > actionVec;  
 
@@ -39,7 +39,7 @@ namespace ldmx {
      */
     class UserActionManager { 
     
-        public: 
+        public:
 
             /// @return the UserActionManager instance 
             static UserActionManager& getInstance(); 
