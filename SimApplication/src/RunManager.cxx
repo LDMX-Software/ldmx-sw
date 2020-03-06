@@ -13,6 +13,7 @@
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/GammaPhysics.h"
 #include "SimApplication/ParallelWorld.h"
+#include "SimApplication/PrimaryGeneratorAction.h"
 #include "SimApplication/USteppingAction.h"
 #include "SimApplication/UserActionManager.h"
 #include "SimApplication/UserEventAction.h"
@@ -43,6 +44,11 @@ namespace ldmx {
         
         // Setup messenger for physics list.
         physicsListFactory_ = new G4PhysListFactory;
+
+        // Set whether the ROOT primary generator should use the persisted seed.
+        auto rootPrimaryGenUseSeed{parameters.getParameter< int >("rootPrimaryGenUseSeed")}; 
+        if (rootPrimaryGenUseSeed < 0) rootPrimaryGenUseSeed = 0; 
+        setUseRootSeed(rootPrimaryGenUseSeed); 
     
     }
 
@@ -54,7 +60,7 @@ namespace ldmx {
 
     void RunManager::setupPhysics() {
 
-        G4VModularPhysicsList* pList = physicsListFactory_->GetReferencePhysList("FTFP_BERT");
+        auto pList{physicsListFactory_->GetReferencePhysList("FTFP_BERT")};
         
         if (isPWEnabled_) {
             std::cout << "[ RunManager ]: Parallel worlds physics list has been registered." << std::endl;
@@ -97,6 +103,10 @@ namespace ldmx {
 
         G4RunManager::Initialize();
 
+        // Instantiate the primary generator action
+        auto primaryGeneratorAction{ new PrimaryGeneratorAction(parameters_) };
+        SetUserAction( primaryGeneratorAction );
+
         // Instantiate action manager
         auto actionManager{UserActionManager::getInstance()}; 
 
@@ -106,8 +116,8 @@ namespace ldmx {
         // Register all actions with the G4 engine
         std::for_each( actions.begin(), actions.end(), [ this ]( auto a ) {
                 std::visit([this](auto&& arg){
-                        arg.setPluginManager(this->pluginManager_);
-                        this->SetUserAction(&arg);  
+                        arg->setPluginManager(this->pluginManager_);
+                        this->SetUserAction(arg);  
                 }, a);
             }
         );
