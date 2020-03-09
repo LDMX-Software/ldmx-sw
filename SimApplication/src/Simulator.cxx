@@ -79,8 +79,6 @@ namespace ldmx {
         
         detectorPath_ = parameters.getParameter< std::string >("detector");
 
-        description_ = parameters.getParameter< std::string > ("description"); 
-
         description_ = parameters.getParameter< int >("runNumber"); 
        
         process_.setRunNumber( runNumber_ ); 
@@ -89,11 +87,6 @@ namespace ldmx {
          * Optional Parameters
          *************************************************/
         verbosity_ = parameters.getParameter< int >("verbosity");
-
-        enableHitContribs_   = parameters.getParameter< int >("enableHitContribs"); 
-        compressHitContribs_ = parameters.getParameter< int >("compressHitContribs");
-
-        dropCollections_ = parameters.getParameter< std::vector< std::string > >("dropCollections");
 
         // Get the path to the scoring planes
         scoringPlanesPath_ = parameters.getParameter< std::string >("scoringPlanes"); 
@@ -112,7 +105,7 @@ namespace ldmx {
         parser_->Read( detectorPath_ );
         runManager_->DefineWorldVolume( parser_->GetWorldVolume() );
 
-        if ( not scoringPlanesPath_.empty() ) {
+        if (!scoringPlanesPath_.empty() ) {
             //path was given, enable and read scoring planes into parallel world
             runManager_->enableParallelWorld(true);
             runManager_->setParallelWorldPath(scoringPlanesPath_);
@@ -133,18 +126,8 @@ namespace ldmx {
     void Simulator::onFileOpen(EventFile &file) {
 
         // Initialize persistency manager and connect it to the current EventFile
-        //persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_); 
-        persistencyManager_ = std::make_unique<RootPersistencyManager>(file);//, parameters_); 
+        persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_); 
         persistencyManager_->Initialize(); 
-        
-        // pass on the description
-        persistencyManager_->setRunDescription( description_ );
-        // pass on the collections to drop after sim (i.e. NOT save)
-        // TODO remove this after functional dropping is merged in
-        for ( const std::string &collName : dropCollections_ ) persistencyManager_->dropCollection( collName );
-        // set how to deal with hit contributions in ECal
-        persistencyManager_->setEnableHitContribs( enableHitContribs_ );
-        persistencyManager_->setCompressHitContribs( compressHitContribs_ );
     }
 
     void Simulator::produce(ldmx::Event& event) {
