@@ -4,14 +4,12 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
-#define _SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H_
+#ifndef SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H
+#define SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
-#include <any>
-#include <map> 
 #include <string> 
 #include <vector> 
 
@@ -21,22 +19,24 @@
 #include "Framework/EventFile.h"
 #include "Framework/Parameters.h" 
 
-//-------------//
-//   ldmx-sw   //
-//-------------//
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
 #include "SimApplication/EcalHitIO.h"
 #include "SimApplication/G4CalorimeterHit.h"
 #include "SimApplication/G4TrackerHit.h"
 #include "SimApplication/SimParticleBuilder.h"
 
-//------------//
-//   Geant4   //
-//------------//
-#include "G4PersistencyManager.hh"
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
 #include "G4PersistencyCenter.hh"
+#include "G4PersistencyManager.hh"
 
 // Forward declarations
-class G4Run; 
+class G4Run;
+class G4CalorimeterHitsCollection; 
+class G4TrackerHitsCollection; 
 
 namespace ldmx {
 
@@ -68,7 +68,7 @@ namespace ldmx {
              *
              * @param eventFile 
              */
-            RootPersistencyManager(EventFile &file, Parameters& parameters );
+            RootPersistencyManager(EventFile &file, Parameters& parameters);
 
             /// Destructor 
             virtual ~RootPersistencyManager() { }
@@ -141,13 +141,6 @@ namespace ldmx {
                 dropCollectionNames_.push_back(collectionName);  
             }  
 
-            /** 
-             * Set the description of the run. 
-             *
-             * @param description Description of the run.
-             */
-            //void setRunDescription(std::string description) { description_ = description; }
-
             /**
              * Set the run number. 
              *
@@ -208,31 +201,28 @@ namespace ldmx {
 
         private:
 
-            /// Parameters used to configure this class
-            Parameters parameters_; 
+            /* 
+             * Description of the current run.  The description is persisted 
+             * in the run header. 
+             */ 
+            std::string description_{""};
 
-            /** List of collections whose hits should be droppped. */
+            /// List of collections whose hits should be droppped.
             std::vector<std::string> dropCollectionNames_; 
 
-            /** Run number. */
+            /// Run number
             int runNumber_{0}; 
 
             /// The output file. 
             EventFile &file_;
 
-            /**
-             * The event container used to manage the tree/branches/collections.
-             */
+            /// The event container used to manage the tree/branches/collections.
             Event* event_ {nullptr};
 
-            /**
-             * Handles ECal hit readout and IO.
-             */
+            /// Handles ECal hit readout and IO.
             EcalHitIO ecalHitIO_;
 
-            /**
-             * Helper for building output SimParticle collection.
-             */
+            /// Helper for building output SimParticle collection.
             SimParticleBuilder simParticleBuilder_;
 
     };

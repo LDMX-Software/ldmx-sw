@@ -6,43 +6,52 @@
 
 #include "SimApplication/RootPersistencyManager.h"
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
 #include <algorithm>
 #include <memory> 
 
-//-------------//
-//   ldmx-sw   //
-//-------------//
-#include "Exception/Exception.h"
+/*~~~~~~~~~~~*/
+/*   Event   */
+/*~~~~~~~~~~~*/
+#include "Event/EventConstants.h"
 #include "Event/EventHeader.h"
 #include "Event/RunHeader.h"
-#include "Event/EventConstants.h"
-#include "SimApplication/CalorimeterSD.h"
+#include "Event/SimTrackerHit.h" 
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RunManager.h"
-#include "SimApplication/TrackerSD.h"
-#include "SimApplication/ScoringPlaneSD.h"
 
-//------------//
-//   Geant4   //
-//------------//
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
 #include "G4Run.hh"
 #include "G4RunManager.hh"
 #include "G4RunManagerKernel.hh"
-#include "G4SDManager.hh"
 
 namespace ldmx {
 
     RootPersistencyManager::RootPersistencyManager(EventFile &file, Parameters& parameters) :
         G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"),
-        file_(file), 
-        parameters_(parameters)
-    {
+        file_(file) {
+
+        // Let Geant4 know what to use this persistency manager
         G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
         G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 
+        // Set the description 
+        description_ = parameters.getParameter< std::string >("description"); 
+        
+        setEnableHitContribs(parameters.getParameter< int >("enableHitContribs")); 
+        setCompressHitContribs(parameters.getParameter< int >("compressHitContribs"));
+
+        // TODO remove this after functional dropping is merged in
+        auto collections{parameters.getParameter< std::vector< std::string > >("dropCollections")};
+        for (auto& collection : collections) dropCollection(collection); 
     }
 
     G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
@@ -66,11 +75,9 @@ namespace ldmx {
         auto detector 
             = static_cast<RunManager*>(RunManager::GetRunManager())->getDetectorConstruction();
 
-        auto description{parameters_.getParameter< std::string >("description")}; 
-
         // Create the run header.
         auto runHeader  
-            = std::make_unique<RunHeader>(runNumber_, detector->getDetectorHeader()->getName(), description);
+            = std::make_unique<RunHeader>(runNumber_, detector->getDetectorHeader()->getName(), description_);
 
         // Set parameter value with number of events processed.
         runHeader->setIntParameter("Event count", aRun->GetNumberOfEvent());
@@ -95,7 +102,7 @@ namespace ldmx {
 
         // Set pointer to current G4Event.
         simParticleBuilder_.setCurrentEvent(anEvent);
-        
+
         // Build the SimParticle list for the output ROOT event.
         simParticleBuilder_.buildSimParticles(event_);
 
@@ -108,9 +115,6 @@ namespace ldmx {
 
         // Retrieve a mutable version of the event header
         EventHeader& eventHeader = event_->getEventHeader();
-
-        // Set the run number
-        runNumber_ = eventHeader.getRun(); 
 
         // Set the event weight
         if (BiasingMessenger::isBiasingEnabled()) { 
@@ -186,7 +190,6 @@ namespace ldmx {
                 // Add hits collection to output event.
                 outputEvent->add( collName, outputColl );
             } //switch on type of hit collection
-                
         
         } //loop through geant4 hit collections
 
