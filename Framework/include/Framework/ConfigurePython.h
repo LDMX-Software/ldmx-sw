@@ -9,18 +9,22 @@
 #ifndef FRAMEWORK_CONFIGUREPYTHON_H
 #define FRAMEWORK_CONFIGUREPYTHON_H
 
+/*~~~~~~~~~~~~*/
+/*   python   */
+/*~~~~~~~~~~~~*/
+#include "Python.h"
+
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/FrameworkDef.h" 
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
 #include <any>
 #include <string>
 #include <vector>
-
 
 namespace ldmx {
 
@@ -94,6 +98,15 @@ namespace ldmx {
             Process* makeProcess();
 
         private:
+
+            /**
+             * Extract parameter array from a python object.
+             *
+             * @param dictionary Python dictionary class.
+             * @return Mapping between parameter name and value. 
+             */
+            std::map< std::string, std::any > getParameters(PyObject* dictionary); 
+            
 
             /** The label for this processing pass. */
             std::string passname_;

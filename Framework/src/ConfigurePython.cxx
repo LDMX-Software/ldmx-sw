@@ -1,15 +1,28 @@
-// python
-#include "Python.h"
+/**
+ * @file ConfigurePython.cxx
+ * @brief Utility class that reads/executes a python script and creates a 
+ *        Process object based on the input.
+ * @author Jeremy Mans, University of Minnesota
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
 
-// LDMX
 #include "Framework/ConfigurePython.h"
+
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
 #include "Framework/HistogramPool.h"
 #include "Framework/Process.h"
 #include "Framework/EventProcessorFactory.h"
 
-// STL
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
+/*~~~~~~~~~~*/
+/*   ROOT   */
+/*~~~~~~~~~~*/
 #include "TH1F.h"
 
 namespace ldmx {
@@ -33,7 +46,7 @@ namespace ldmx {
         }
         return retval;
     }
-  
+
     ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[], int nargs) {
         std::string path(".");
         std::string cmd = pythonScript;
@@ -96,19 +109,19 @@ namespace ldmx {
         if (!PyList_Check(pysequence)) {
             EXCEPTION_RAISE("ConfigureError", "sequence is not a python list as expected.");
         }
-        
+
         for (auto i{0}; i < PyList_Size(pysequence); ++i) {
 
             auto processor{PyList_GetItem(pysequence, i)}; 
-            
+
             ProcessorClass pc; 
             pc.className_ = stringMember(processor, "className");
             pc.instanceName_ = stringMember(processor, "instanceName");
-            
+
             auto histos{PyObject_GetAttrString(processor, "histograms")};
 
             for (auto ihisto{0}; ihisto < PyList_Size(histos); ++ihisto) {
-                
+
                 auto histogram{PyList_GetItem(histos, ihisto)};
 
                 HistogramInfo histInfo; 
@@ -128,66 +141,8 @@ namespace ldmx {
                 PyObject *key(0), *value(0);
                 Py_ssize_t pos = 0;
 
-                std::map < std::string, std::any > params; 
-
-                while (PyDict_Next(parameters, &pos, &key, &value)) {
+                auto params{getParameters(parameters)}; 
                 
-                    std::string skey{PyString_AsString(key)};
-
-                    if (PyInt_Check(value)) {
-                   
-                        params[skey] = int(PyInt_AsLong(value));  
-                    } else if (PyFloat_Check(value)) {
-                        params[skey] = PyFloat_AsDouble(value);  
-                    } else if (PyString_Check(value)) {
-                        params[skey] = std::string(PyString_AsString(value)); 
-                    } else if (PyList_Check(value)) { // assume everything is same value as first value
-                        if (PyList_Size(value) > 0) {
-
-                            auto vec0{PyList_GetItem(value, 0)};
-                            
-                            if (PyInt_Check(vec0)) {
-                                std::vector<int> vals;
-                                
-                                for (auto j{0}; j < PyList_Size(value); j++)
-                                    vals.push_back(PyInt_AsLong(PyList_GetItem(value, j)));
-
-                                params[skey] = vals;
-                            
-                            } else if (PyFloat_Check(vec0)) {
-                                std::vector<double> vals;
-                           
-                                for (auto j{0}; j < PyList_Size(value); j++)
-                                    vals.push_back(PyFloat_AsDouble(PyList_GetItem(value, j)));
-                                
-                                params[skey] = vals;
-                            
-                            } else if (PyString_Check(vec0)) {
-                                std::vector<std::string> vals;
-                           
-                                for (auto j{0}; j < PyList_Size(value); j++)
-                                    vals.push_back(PyString_AsString(PyList_GetItem(value, j)));
-                                
-                                params[skey] = vals;
-                            
-                            } else { 
-
-                                // If the objects stored in the list doesn't 
-                                // satisfy any of the above conditions, just
-                                // create a vector of Class objects.
-                                std::vector< Class > vals;
-                                for (auto j{0}; j < PyList_Size(value); ++j) {
-                                    auto object{PyList_GetItem( value, j )}; 
-                                    Class c; 
-                                    c.className_    = stringMember(object, "className"); 
-                                    c.instanceName_ = stringMember(object, "instanceName");  
-                                    vals.push_back(c);
-                                } 
-                                params[skey] = vals;
-                            }
-                        }
-                    }
-                }
                 pc.params_.setParameters(params); 
             }
 
@@ -257,7 +212,7 @@ namespace ldmx {
     }
 
     Process* ConfigurePython::makeProcess() {
-      
+
         auto process{std::make_unique<Process>(passname_)};  
 
         process->setHistogramFileName(histoOutFile_);
@@ -266,14 +221,14 @@ namespace ldmx {
 
         std::for_each(libraries_.begin(), libraries_.end(), 
                 [](auto& lib) { EventProcessorFactory::getInstance().loadLibrary(lib);}
-        ); 
+                ); 
 
         for (auto proc : sequence_) {
             EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(proc.className_, proc.instanceName_, *process);
             if (ep == 0) {
                 EXCEPTION_RAISE("UnableToCreate", "Unable to create instance '" + proc.instanceName_ + "' of class '" + proc.className_ + "'");
             }
-            
+
             if (!proc.histograms_.empty()) {
                 HistogramPool* histograms = HistogramPool::getInstance(); 
                 ep->getHistoDirectory();
@@ -301,6 +256,80 @@ namespace ldmx {
             process->setRunNumber(run_);
 
         return process.release();
+    }
+
+    std::map< std::string, std::any > ConfigurePython::getParameters(PyObject* dictionary) { 
+
+        PyObject *key(0), *value(0);
+        Py_ssize_t pos = 0;
+
+        std::map < std::string, std::any > params; 
+
+        while (PyDict_Next(dictionary, &pos, &key, &value)) {
+
+            std::string skey{PyString_AsString(key)};
+
+            if (PyInt_Check(value)) {
+                params[skey] = int(PyInt_AsLong(value));  
+            } else if (PyFloat_Check(value)) {
+                params[skey] = PyFloat_AsDouble(value);  
+            } else if (PyString_Check(value)) {
+                params[skey] = std::string(PyString_AsString(value)); 
+            } else if (PyList_Check(value)) { // assume everything is same value as first value
+                if (PyList_Size(value) > 0) {
+
+                    auto vec0{PyList_GetItem(value, 0)};
+
+                    if (PyInt_Check(vec0)) {
+                        std::vector<int> vals;
+
+                        for (auto j{0}; j < PyList_Size(value); j++)
+                            vals.push_back(PyInt_AsLong(PyList_GetItem(value, j)));
+
+                        params[skey] = vals;
+
+                    } else if (PyFloat_Check(vec0)) {
+                        std::vector<double> vals;
+
+                        for (auto j{0}; j < PyList_Size(value); j++)
+                            vals.push_back(PyFloat_AsDouble(PyList_GetItem(value, j)));
+
+                        params[skey] = vals;
+
+                    } else if (PyString_Check(vec0)) {
+                        std::vector<std::string> vals;
+
+                        for (auto j{0}; j < PyList_Size(value); j++)
+                            vals.push_back(PyString_AsString(PyList_GetItem(value, j)));
+
+                        params[skey] = vals;
+
+                    } else { 
+
+                        // If the objects stored in the list doesn't 
+                        // satisfy any of the above conditions, just
+                        // create a vector of Class objects.
+                        std::vector< Class > vals;
+                        for (auto j{0}; j < PyList_Size(value); ++j) {
+                            
+                            auto object{PyList_GetItem( value, j )}; 
+                            Class c; 
+                            c.className_    = stringMember(object, "class_name");
+                            c.instanceName_ = stringMember(object, "instance_name");  
+
+                            auto dict{PyObject_GetAttrString(object, "parameters")};
+                            auto classParams{getParameters(dict)}; 
+                            c.params_.setParameters(classParams); 
+
+                            vals.push_back(c);
+                        } 
+                        params[skey] = vals;
+                    }
+                }
+            }
+        }
+
+        return params; 
     }
 }
 
