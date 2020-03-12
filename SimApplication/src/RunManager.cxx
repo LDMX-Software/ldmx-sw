@@ -23,6 +23,11 @@
 #include "SimPlugins/PluginManager.h"
 #include "SimPlugins/PluginMessenger.h"
 
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/FrameworkDef.h" 
+
 //------------//
 //   Geant4   //
 //------------//
@@ -111,16 +116,22 @@ namespace ldmx {
         auto actionManager{UserActionManager::getInstance()}; 
 
         // Get instances of all G4 actions
-        auto actions = actionManager.getActions();
-        
-        // Register all actions with the G4 engine
-        std::for_each( actions.begin(), actions.end(), [ this ]( auto a ) {
-                std::visit([this](auto&& arg){
-                        arg->setPluginManager(this->pluginManager_);
-                        this->SetUserAction(arg);  
-                }, a);
-            }
+        auto actions{actionManager.getActions()};
+       
+        // Create all user actions
+        auto userActions{parameters_.getParameter< std::vector< Class > >("actions")}; 
+        std::for_each(userActions.begin(), userActions.end(), 
+                [&actionManager](auto& userAction) { 
+                    actionManager.createAction(userAction.className_, userAction.instanceName_); 
+                }
         );
+
+        // Register all actions with the G4 engine
+        for (const auto& [key, act] : actions) {
+            std::visit([this](auto&& arg) { 
+                    arg->setPluginManager(this->pluginManager_); 
+                    this->SetUserAction(arg); }, act); 
+        }
     }
 
     DetectorConstruction* RunManager::getDetectorConstruction() {
