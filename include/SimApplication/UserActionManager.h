@@ -30,7 +30,7 @@ namespace ldmx {
                            USteppingAction*, 
                            UserStackingAction* >   action; 
 
-    typedef std::vector < action > actionVec;  
+    typedef std::map < TYPE, action > actionMap;  
 
 
     /**
@@ -47,7 +47,7 @@ namespace ldmx {
            /**
             *
             */ 
-            actionVec getActions(); 
+            actionMap getActions(); 
 
             /**
              *
@@ -57,7 +57,7 @@ namespace ldmx {
            /**
             *
             */
-           UserAction* createAction(const std::string& className, const std::string& instanceName); 
+            void createAction(const std::string& className, const std::string& instanceName); 
 
         private:
 
@@ -65,7 +65,7 @@ namespace ldmx {
             static UserActionManager instance_; 
 
             /// Container for all Geant4 actions
-            actionVec actions_; 
+            actionMap actions_; 
 
 
             /**
