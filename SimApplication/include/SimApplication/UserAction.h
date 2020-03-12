@@ -13,6 +13,13 @@ class G4Step;
 
 namespace ldmx { 
 
+    enum TYPE { RUN = 1,
+                EVENT, 
+                TRACKING,  
+                STEPPING,
+                STACKING, 
+                NONE 
+    }; 
 
     class UserAction; 
 
@@ -36,12 +43,15 @@ namespace ldmx {
             /**
              *
              */
-            static void declare(const std::string& className, UserActionBuilder* builder);  
+            static void declare(const std::string& className, UserActionBuilder* builder); 
+
+            /// @return The user action type
+            virtual TYPE getType() = 0; 
 
         private:
 
             /// Name of the UserAction
-            std::string name_{""};  
+            std::string name_{""}; 
 
     }; // UserAction
 
@@ -60,7 +70,10 @@ namespace ldmx {
             /**
              *
              */
-            virtual void stepping(const G4Step* step) = 0;  
+            virtual void stepping(const G4Step* step) = 0; 
+
+            /// @return The type of this class as STEPPING
+            TYPE getType() final override { return TYPE::STEPPING; };  
 
     };
 
