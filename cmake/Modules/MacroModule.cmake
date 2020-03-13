@@ -100,7 +100,7 @@ macro(MODULE)
     add_library(${MODULE_NAME} SHARED ${sources} ${MODULE_EXTRA_SOURCES})
    
     # add link libs
-    target_link_libraries(${MODULE_NAME} ${MODULE_EXTRA_LINK_LIBRARIES})
+    target_link_libraries(${MODULE_NAME} ${MODULE_LIBRARIES})
   
     # install the library
     install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
