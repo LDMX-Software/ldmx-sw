@@ -6,12 +6,20 @@
 #ifndef SIMCORE_USTEPPINGACTION_H
 #define SIMCORE_USTEPPINGACTION_H
 
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <vector>
+
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
 /*~~~~~~~~~~~~*/
 #include "G4UserSteppingAction.hh"
 
-#include "SimPlugins/PluginManagerAccessor.h"
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimApplication/UserAction.h" 
 
 namespace ldmx {
 
@@ -19,7 +27,7 @@ namespace ldmx {
      * @class USteppingAction
      * @brief Implements the Geant4 user stepping action.
      */
-    class USteppingAction : public G4UserSteppingAction, public PluginManagerAccessor {
+    class USteppingAction : public G4UserSteppingAction {
 
         public:
 
@@ -31,6 +39,17 @@ namespace ldmx {
              * @param step The Geant4 step. 
              */
             void UserSteppingAction(const G4Step* step) final override;
+
+            /**
+             * Register a user action of type SteppingAction with this class. 
+             *
+             * @param action  User action of type SteppingAction
+             */
+            void registerAction(SteppingAction* steppingAction) { steppingActions_.push_back(steppingAction); }
+        
+        private:
+
+            std::vector<SteppingAction*> steppingActions_; 
     
     }; // USteppingAction
 
