@@ -48,9 +48,6 @@ macro(MODULE)
   # set module's source dir
   set(MODULE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-  # add internal module dependencies to list of libraries that need to be linked to it
-  list(APPEND MODULE_EXTRA_LINK_LIBRARIES ${MODULE_DEPENDENCIES})
-
   # print debug info 
   if(MODULE_DEBUG) 
     message("MODULE_NAME='${MODULE_NAME}'")
@@ -84,12 +81,6 @@ macro(MODULE)
   file(GLOB sources ${MODULE_SOURCE_DIR}/*.cxx)
   file(GLOB headers ${MODULE_INCLUDE_DIR}/include/*/*.h)
 
-  # find test sources
-  file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cxx)
-  if(test_sources)
-      list(APPEND sources ${test_sources})
-  endif()
-
   # setup external dependencies
   ext_deps(DEPENDENCIES ${MODULE_EXTERNAL_DEPENDENCIES}) 
   if (EXT_DEP_INCLUDE_DIRS)
@@ -109,7 +100,7 @@ macro(MODULE)
     add_library(${MODULE_NAME} SHARED ${sources} ${MODULE_EXTRA_SOURCES})
    
     # add link libs
-    target_link_libraries(${MODULE_NAME} ${MODULE_EXTRA_LINK_LIBRARIES})
+    target_link_libraries(${MODULE_NAME} ${MODULE_LIBRARIES})
   
     # install the library
     install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
