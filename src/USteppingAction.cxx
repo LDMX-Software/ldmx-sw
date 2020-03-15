@@ -5,8 +5,6 @@
 
 #include "SimApplication/USteppingAction.h" 
 
-#include "SimPlugins/PluginManager.h"
-
 namespace ldmx {
 
     void USteppingAction::UserSteppingAction(const G4Step* step) {
