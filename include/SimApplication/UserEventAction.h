@@ -49,15 +49,15 @@ namespace ldmx {
 
             /**
              * Implementation of begin of event hook.
-             * @param anEvent The Geant4 event.
+             * @param event The Geant4 event.
              */
-            void BeginOfEventAction(const G4Event* anEvent);
+            void BeginOfEventAction(const G4Event* event);
 
             /**
              * Implementation of end of event hook.
-             * @param anEvent The Geant4 event.
+             * @param event The Geant4 event.
              */
-            void EndOfEventAction(const G4Event* anEvent);
+            void EndOfEventAction(const G4Event* event);
 
             /**
              * Register a user action of type EventAction with this class. 
@@ -74,4 +74,4 @@ namespace ldmx {
 
 }  // ldmx
 
-#endif //
+#endif // SIMAPPLICATION_USEREVENTACTION_H
