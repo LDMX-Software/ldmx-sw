@@ -35,7 +35,8 @@ namespace ldmx {
             ~USteppingAction() final override {;}
 
             /**
-             * Callback used to process a step. 
+             * Callback used to process a step.
+             *
              * @param step The Geant4 step. 
              */
             void UserSteppingAction(const G4Step* step) final override;
@@ -49,6 +50,7 @@ namespace ldmx {
         
         private:
 
+            /// Collection of user stepping actions
             std::vector<SteppingAction*> steppingActions_; 
     
     }; // USteppingAction
