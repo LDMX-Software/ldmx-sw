@@ -1,44 +1,49 @@
+/**
+ * @file UserEventAction.cxx
+ * @brief Class which implements the Geant4 user event action
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
+
 #include "SimApplication/UserEventAction.h"
 
-// LDMX
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <iostream>
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
 #include "SimApplication/RootPersistencyManager.h"
 #include "SimApplication/RunManager.h"
 #include "SimApplication/TrackMap.h"
 #include "SimApplication/TrajectoryContainer.h"
 #include "SimApplication/UserTrackingAction.h"
-#include "SimPlugins/PluginManager.h"
 
-// Geant4
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
+#include "G4Event.hh"
 #include "G4RunManager.hh"
-#include "G4Run.hh"
 
-// STL
-#include <iostream>
-#include <stdio.h>
-#include <time.h>
 
 namespace ldmx {
 
-    void UserEventAction::BeginOfEventAction(const G4Event* anEvent) {
+    void UserEventAction::BeginOfEventAction(const G4Event* event) {
 
         // Clear the global track map.
         UserTrackingAction::getUserTrackingAction()->getTrackMap()->clear();
 
-        // Install custom trajectory container for the event.
-        //G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetTrajectoryContainer(new TrajectoryContainer);
-
-        // G4Random::showEngineStatus();
-        // G4Random::saveEngineStatus();
-        // G4Random::getTheEngine();
         if ( dynamic_cast<RunManager*>(G4RunManager::GetRunManager())->useRootSeed() )
             G4Random::restoreEngineStatus("tmpEvent.rndm"); // this line will be needed to read in a set of seeds
 
-            // Activate user plugins.
-        pluginManager_->beginEvent(anEvent);
+        // Call user event actions
+        for ( auto& eventAction : eventActions_ ) eventAction->BeginOfEventAction(event); 
     }
 
-    void UserEventAction::EndOfEventAction(const G4Event* anEvent) {
-        pluginManager_->endEvent(anEvent);
+    void UserEventAction::EndOfEventAction(const G4Event* event) {
+        // Call user event actions
+        for ( auto& eventAction : eventActions_ ) eventAction->EndOfEventAction(event); 
     }
 
 }
