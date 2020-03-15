@@ -1,8 +1,15 @@
+/**
+ * @file UserRunAction.cxx
+ * @brief Class which implements user run action
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
+
 #include "SimApplication/UserRunAction.h"
 
-// LDMX
-#include "SimPlugins/PluginManager.h"
-#include "SimApplication/RootPersistencyManager.h"
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
+#include "G4Run.hh"
 
 namespace ldmx {
 
@@ -12,15 +19,16 @@ namespace ldmx {
     UserRunAction::~UserRunAction() {
     }
 
-    void UserRunAction::BeginOfRunAction(const G4Run* aRun) {
-
-        pluginManager_->beginRun(aRun);
-
+    void UserRunAction::BeginOfRunAction(const G4Run* run) {
+        
+        // Call user run action
+        for( auto& runAction : runActions_) runAction->BeginOfRunAction(run); 
     }
 
-    void UserRunAction::EndOfRunAction(const G4Run* aRun) {
-
-        pluginManager_->endRun(aRun);
+    void UserRunAction::EndOfRunAction(const G4Run* run) {
+        
+        // Call user run action
+        for( auto& runAction : runActions_) runAction->EndOfRunAction(run); 
     }
 
 }
