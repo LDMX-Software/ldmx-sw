@@ -47,15 +47,15 @@ namespace ldmx {
 
             /**
              * Implementation of begin run hook.
-             * @param aRun The current Geant4 run info.
+             * @param run The current Geant4 run info.
              */
-            void BeginOfRunAction(const G4Run* aRun);
+            void BeginOfRunAction(const G4Run* run);
 
             /**
              * Implementation of end run hook.
-             * @param aRun The current Geant4 run info.
+             * @param run The current Geant4 run info.
              */
-            void EndOfRunAction(const G4Run* aRun);
+            void EndOfRunAction(const G4Run* run);
             
             /**
              * Register a user action of type RunAction with this class. 
