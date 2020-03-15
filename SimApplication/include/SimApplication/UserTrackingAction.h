@@ -7,8 +7,12 @@
 #ifndef SIMAPPLICATION_USERTRACKINGACTION_H_
 #define SIMAPPLICATION_USERTRACKINGACTION_H_
 
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <vector>
+
 // LDMX
-#include "SimPlugins/PluginManagerAccessor.h"
 #include "SimApplication/TrackMap.h"
 #include "SimApplication/Trajectory.h"
 
@@ -16,13 +20,18 @@
 #include "G4RunManager.hh"
 #include "G4UserTrackingAction.hh"
 
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimApplication/UserAction.h" 
+
 namespace ldmx {
 
     /**
      * @class UserTrackingAction
      * @brief Implementation of user tracking action
      */
-    class UserTrackingAction : public G4UserTrackingAction, public PluginManagerAccessor {
+    class UserTrackingAction : public G4UserTrackingAction {
 
         public:
 
@@ -37,8 +46,6 @@ namespace ldmx {
              */
             virtual ~UserTrackingAction() {
             }
-
-        public:
 
             /**
              * Implementation of pre-tracking action.
@@ -86,7 +93,19 @@ namespace ldmx {
                 return static_cast<UserTrackingAction*>(const_cast<G4UserTrackingAction*>(G4RunManager::GetRunManager()->GetUserTrackingAction()));
             }
 
+            /**
+             * Register a user action of type RunAction with this class. 
+             *
+             * @param action  User action of type RunAction
+             */
+            void registerAction(TrackingAction* trackingAction) { 
+                trackingActions_.push_back(trackingAction); 
+            }
+
         private:
+
+            /// 
+            std::vector<TrackingAction*> trackingActions_; 
 
             /** Stores parentage information for all tracks in the event. */
             TrackMap trackMap_;
