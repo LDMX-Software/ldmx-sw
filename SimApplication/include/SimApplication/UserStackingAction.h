@@ -7,11 +7,20 @@
 #ifndef SIMAPPLICATION_USERSTACKINGACTION_H
 #define SIMAPPLICATION_USERSTACKINGACTION_H
 
-// LDMX
-#include "SimPlugins/PluginManagerAccessor.h"
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <vector>
 
-// Geant4
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
 #include "G4UserStackingAction.hh"
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimApplication/UserAction.h" 
 
 namespace ldmx {
 
@@ -19,7 +28,7 @@ namespace ldmx {
      * @class UserStackingAction
      * @brief User stacking action implementation
      */
-    class UserStackingAction : public G4UserStackingAction, public PluginManagerAccessor {
+    class UserStackingAction : public G4UserStackingAction {
 
         public:
 
@@ -40,7 +49,7 @@ namespace ldmx {
              * @param aTrack The track to classify.
              * @return The track classification.
              */
-            G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track *aTrack);
+            //G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track *aTrack);
 
             /**
              * Invoked when there is a new stacking stage.
@@ -51,6 +60,17 @@ namespace ldmx {
              * Invoked for a new event.
              */
             void PrepareNewEvent();
+
+            /**
+             * Register a user action of type stacking action with this class. 
+             *
+             * @param action  User action of type StackingAction
+             */
+            void registerAction(StackingAction* stackingAction) { stackingActions_.push_back(stackingAction); }
+
+        private: 
+
+            std::vector<StackingAction*> stackingActions_; 
     };
 
 }
