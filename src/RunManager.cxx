@@ -128,9 +128,7 @@ namespace ldmx {
 
         // Register all actions with the G4 engine
         for (const auto& [key, act] : actions) {
-            std::visit([this](auto&& arg) { 
-                    arg->setPluginManager(this->pluginManager_); 
-                    this->SetUserAction(arg); }, act); 
+            std::visit([this](auto&& arg) { this->SetUserAction(arg); }, act); 
         }
     }
 
