@@ -20,8 +20,6 @@
 #include "SimApplication/UserRunAction.h"
 #include "SimApplication/UserStackingAction.h"
 #include "SimApplication/UserTrackingAction.h"
-#include "SimPlugins/PluginManager.h"
-#include "SimPlugins/PluginMessenger.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -44,9 +42,6 @@ namespace ldmx {
 
         parameters_ = parameters; 
 
-        pluginManager_ = new PluginManager();
-        pluginMessenger_ = new PluginMessenger(pluginManager_);
-        
         // Setup messenger for physics list.
         physicsListFactory_ = new G4PhysListFactory;
 
@@ -58,8 +53,6 @@ namespace ldmx {
     }
 
     RunManager::~RunManager() {
-        delete pluginManager_;
-        delete pluginMessenger_;
         delete physicsListFactory_; 
     }
 
@@ -75,15 +68,17 @@ namespace ldmx {
         pList->RegisterPhysics(new APrimePhysics);
         pList->RegisterPhysics(new GammaPhysics);
        
-        if (BiasingMessenger::isBiasingEnabled()) {
+        auto biasingEnabled{parameters_.getParameter< int >("biasing.enabled")}; 
+        if (biasingEnabled) {
 
-            std::cout << "[ RunManager ]: Enabling biasing of particle type " << BiasingMessenger::getParticleType() << std::endl;
+            auto biasedParticle{parameters_.getParameter< std::string >("biasing.particle")}; 
+            std::cout << "RunManager::setupPhysics : Enabling biasing of particle type " << biasedParticle << std::endl;
 
             // Instantiate the constructor used when biasing
             G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
 
             // Specify what particles are being biased
-            biasingPhysics->Bias(BiasingMessenger::getParticleType());
+            biasingPhysics->Bias(biasedParticle);
 
             // Register the physics constructor to the physics list:
             pList->RegisterPhysics(biasingPhysics);
