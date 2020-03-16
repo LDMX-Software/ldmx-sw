@@ -24,11 +24,6 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Parameters.h" 
 
-//-------------//
-//   ldmx-sw   //
-//-------------//
-#include "Biasing/BiasingMessenger.h"
-
 class G4PhysListFactory; 
 
 namespace ldmx {
@@ -90,27 +85,19 @@ namespace ldmx {
              * Should we use the seed from the root file?
              */
             bool useRootSeed() { return useRootSeed_; }
-
-            /**
-             * Get access to the plugin manager
-             */
-            PluginManager* getPluginManager() { return pluginManager_; }
-
+ 
         private:
 
             /// The set of parameters used to configure the RunManager
             Parameters parameters_; 
 
             /** Plugin messenger. */
-            PluginMessenger* pluginMessenger_;
-
-            /** Biasing messenger. */
-            BiasingMessenger* biasingMessenger_ {new BiasingMessenger()};
+            //PluginMessenger* pluginMessenger_;
 
             /**
              * Manager of sim plugins.
              */
-            PluginManager* pluginManager_{nullptr};
+            //PluginManager* pluginManager_{nullptr};
 
             /**
              * Factory class for instantiating the physics list.
