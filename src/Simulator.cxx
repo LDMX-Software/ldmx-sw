@@ -67,7 +67,7 @@ namespace ldmx {
         G4CascadeParameters::Instance();
 
         // Supply the default user initialization and actions
-        detectorConstruction_ = std::make_unique<DetectorConstruction>( parser_.get() );
+        detectorConstruction_ = std::make_unique<DetectorConstruction>( parser_.get(), parameters );
         runManager_->SetUserInitialization( detectorConstruction_.get() );
 
         // Store the random numbers used to generate an event. 
