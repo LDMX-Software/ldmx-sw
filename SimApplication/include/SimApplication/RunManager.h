@@ -30,8 +30,6 @@ namespace ldmx {
 
     // Forward declare to avoid circular dependency in headers
     class DetectorConstruction;
-    class PluginManager; 
-    class PluginMessenger; 
     class UserActionManager; 
 
     /**
