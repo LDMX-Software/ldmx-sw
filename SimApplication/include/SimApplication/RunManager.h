@@ -91,14 +91,6 @@ namespace ldmx {
             /// The set of parameters used to configure the RunManager
             Parameters parameters_; 
 
-            /** Plugin messenger. */
-            //PluginMessenger* pluginMessenger_;
-
-            /**
-             * Manager of sim plugins.
-             */
-            //PluginManager* pluginManager_{nullptr};
-
             /**
              * Factory class for instantiating the physics list.
              */
