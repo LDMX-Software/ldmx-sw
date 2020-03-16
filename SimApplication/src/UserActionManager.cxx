@@ -55,20 +55,22 @@ namespace ldmx {
         } 
 
         auto act{it->second.builder_(instanceName)};
-
-        if (act->getType() == TYPE::RUN) 
-            std::get< UserRunAction* >(actions_[act->getType()])->registerAction(static_cast<RunAction*>(act)); 
-        else if (act->getType() == TYPE::EVENT) 
-            std::get< UserEventAction* >(actions_[act->getType()])->registerAction(static_cast<EventAction*>(act)); 
-        else if (act->getType() == TYPE::TRACKING) 
-            std::get< UserTrackingAction* >(actions_[act->getType()])->registerAction(static_cast<TrackingAction*>(act)); 
-        else if (act->getType() == TYPE::STEPPING) 
-            std::get< USteppingAction* >(actions_[act->getType()])->registerAction(static_cast<SteppingAction*>(act)); 
-        else if (act->getType() == TYPE::STACKING) 
-            std::get< UserStackingAction* >(actions_[act->getType()])->registerAction(static_cast<StackingAction*>(act)); 
-        else {
-            EXCEPTION_RAISE("UserActionException", "Action type  doesn't exist."); 
-        }
+        
+        std::vector< TYPE > types = act->getTypes();
+        for (auto& type : types) {
+            if (type == TYPE::RUN) 
+                std::get< UserRunAction* >(actions_[TYPE::RUN])->registerAction(static_cast<RunAction*>(act)); 
+            else if (type == TYPE::EVENT) 
+                std::get< UserEventAction* >(actions_[TYPE::EVENT])->registerAction(static_cast<EventAction*>(act)); 
+            else if (type == TYPE::TRACKING) 
+                std::get< UserTrackingAction* >(actions_[TYPE::TRACKING])->registerAction(static_cast<TrackingAction*>(act)); 
+            else if (type == TYPE::STEPPING) 
+                std::get< USteppingAction* >(actions_[TYPE::STEPPING])->registerAction(static_cast<SteppingAction*>(act)); 
+            else if (type == TYPE::STACKING) 
+                std::get< UserStackingAction* >(actions_[TYPE::STACKING])->registerAction(static_cast<StackingAction*>(act)); 
+            else 
+               EXCEPTION_RAISE("UserActionException", "User action type doesn't exist."); 
+        } 
     }
 
 } // ldmx

@@ -7,7 +7,8 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <map>
 #include <iostream>
-#include <string> 
+#include <string>
+#include <vector>
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -63,8 +64,8 @@ namespace ldmx {
              */
             static void declare(const std::string& className, UserActionBuilder* builder); 
 
-            /// @return The user action type
-            virtual TYPE getType() = 0; 
+            /// @return The user action types
+            virtual std::vector< TYPE > getTypes() = 0; 
 
         private:
 
@@ -104,9 +105,6 @@ namespace ldmx {
              */
             virtual void EndOfEventAction(const G4Event* event) = 0; 
             
-            /// @return The type of this class as TYPE::EVENT
-            TYPE getType() final override { return TYPE::EVENT; };  
-
     };
 
     /**
@@ -139,9 +137,6 @@ namespace ldmx {
              */
             virtual void EndOfRunAction(const G4Run* run) = 0; 
             
-            /// @return The type of this class as TYPE::RUN
-            TYPE getType() final override { return TYPE::RUN; };  
-
     };
 
     /**
@@ -163,9 +158,6 @@ namespace ldmx {
 
             virtual void PostUserTrackingAction(const G4Track* track) = 0; 
             
-            /// @return The type of this class as TYPE::TRACKING
-            TYPE getType() final override { return TYPE::TRACKING; };  
-
     };
 
     /**
@@ -188,9 +180,6 @@ namespace ldmx {
              */
             virtual void stepping(const G4Step* step) = 0; 
 
-            /// @return The type of this class as TYPE::STEPPING
-            TYPE getType() final override { return TYPE::STEPPING; };  
-
     };
 
     class StackingAction : public UserAction { 
@@ -210,14 +199,11 @@ namespace ldmx {
 
             virtual void PrepareNewEvent() = 0; 
             
-            /// @return The type of this class as TYPE::STACKING
-            TYPE getType() final override { return TYPE::STACKING; };  
-
     };
 
 
 } // ldmx
 
-#define DECLARE_STEPPING_ACTION(NS, CLASS) ldmx::UserAction* CLASS ## Builder (const std::string& name) { return new NS::CLASS(name); } __attribute((constructor(205))) static void CLASS ## Declare() { ldmx::UserAction::declare(std::string(#NS) + "::" + std::string(#CLASS), & CLASS ## Builder); } 
+#define DECLARE_ACTION(NS, CLASS) ldmx::UserAction* CLASS ## Builder (const std::string& name) { return new NS::CLASS(name); } __attribute((constructor(205))) static void CLASS ## Declare() { ldmx::UserAction::declare(std::string(#NS) + "::" + std::string(#CLASS), & CLASS ## Builder); } 
 
 #endif // SIMCORE_USERACTION_H
