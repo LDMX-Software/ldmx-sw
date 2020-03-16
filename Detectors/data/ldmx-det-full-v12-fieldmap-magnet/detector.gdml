@@ -37,7 +37,7 @@
 
     <!-- position of calorimeter mother, thicknesses taken from ecal.gdml and hcal.gdml, see correspoding files -->
     <constant name="ecal_front_z"                 value="220*mm"/>
-    <constant name="em_calorimeter_thickness"     value="445.1*mm"/>
+    <constant name="em_calorimeter_thickness"     value="450.2*mm"/>
     <constant name="hadron_calorimeter_thickness" value="5000*mm"/>
     <constant name="em_calorimeter_pos_z"         value="ecal_front_z + em_calorimeter_thickness/2."/>
     <constant name="hadron_calorimeter_pos_z"     value="ecal_front_z + hadron_calorimeter_thickness/2."/>
