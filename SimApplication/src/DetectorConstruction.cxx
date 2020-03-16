@@ -2,8 +2,9 @@
 
 namespace ldmx {
 
-    DetectorConstruction::DetectorConstruction(G4GDMLParser* theParser) :
+    DetectorConstruction::DetectorConstruction(G4GDMLParser* theParser, Parameters& parameters) :
             parser_(theParser), auxInfoReader_(new AuxInfoReader(theParser)) {
+                parameters_ = parameters; 
     }
 
     DetectorConstruction::~DetectorConstruction() {
@@ -18,24 +19,28 @@ namespace ldmx {
 
     void DetectorConstruction::ConstructSDandField() {
 
-        if (BiasingMessenger::isBiasingEnabled()) {
+        auto biasingEnabled{parameters_.getParameter< int >("biasing.enabled")}; 
+        if (biasingEnabled) {
+
+            auto biasingProcess{parameters_.getParameter< std::string >("biasing.process")}; 
+            auto biasingVolume{parameters_.getParameter< std::string >("biasing.volume")}; 
 
             // Instantiate the biasing operator
             // TODO: At some point, this should be more generic i.e. operators should be
             //       similar to plugins.
             XsecBiasingOperator* xsecBiasing = nullptr; 
-            if (BiasingMessenger::getProcess().compare("photonNuclear") == 0) { 
+            if (biasingProcess.compare("photonNuclear") == 0) { 
                 xsecBiasing = new PhotoNuclearXsecBiasingOperator("PhotoNuclearXsecBiasingOperator");
-            } else if (BiasingMessenger::getProcess().compare("GammaToMuPair") == 0) { 
+            } else if (biasingProcess.compare("GammaToMuPair") == 0) { 
                 xsecBiasing = new GammaToMuPairXsecBiasingOperator("GammaToMuPairXsecBiasingOperator");
-            } else if (BiasingMessenger::getProcess().compare("electronNuclear") == 0) { 
+            } else if (biasingProcess.compare("electronNuclear") == 0) { 
                 xsecBiasing = new ElectroNuclearXsecBiasingOperator("ElectroNuclearXsecBiasingOperator");
             }
 
             for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
                 G4String volumeName = volume->GetName();
                 //std::cout << "[ DetectorConstruction ]: " << "Volume: " << volume->GetName() << std::endl;
-                if ((BiasingMessenger::getVolume().compare("ecal") == 0) 
+                if ((biasingVolume.compare("ecal") == 0) 
                         && (volumeName.contains("Wthick") 
                             || volumeName.contains("Si")
                             || volumeName.contains("W")) 
@@ -44,7 +49,7 @@ namespace ldmx {
                     std::cout << "[ DetectorConstruction ]: " << "Attaching biasing operator " 
                               << xsecBiasing->GetName() << " to volume " 
                               << volume->GetName() << std::endl;
-                } else if (volumeName.contains(BiasingMessenger::getVolume())) {
+                } else if (volumeName.contains(biasingVolume)) {
                     xsecBiasing->AttachTo(volume);
                     std::cout << "[ DetectorConstruction ]: " 
                               << "Attaching biasing operator " << xsecBiasing->GetName() 

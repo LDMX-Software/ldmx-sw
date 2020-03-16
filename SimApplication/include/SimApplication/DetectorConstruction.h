@@ -11,7 +11,6 @@
 #include "AuxInfoReader.h"
 
 // Biasing
-#include "Biasing/BiasingMessenger.h"
 #include "Biasing/ElectroNuclearXsecBiasingOperator.h"
 #include "Biasing/GammaToMuPairXsecBiasingOperator.h"
 #include "Biasing/PhotoNuclearXsecBiasingOperator.h"
@@ -21,6 +20,11 @@
 #include "G4GDMLParser.hh"
 #include "G4LogicalVolume.hh"
 #include "G4LogicalVolumeStore.hh"
+
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Parameters.h" 
 
 namespace ldmx {
 
@@ -43,7 +47,7 @@ namespace ldmx {
              * Class constructor.
              * @param theParser GDML parser defining the geometry.
              */
-            DetectorConstruction(G4GDMLParser* theParser);
+            DetectorConstruction(G4GDMLParser* theParser, Parameters& parameters);
 
             /**
              * Class destructor.
@@ -79,6 +83,9 @@ namespace ldmx {
              * The auxiliary GDML info reader.
              */
             AuxInfoReader* auxInfoReader_;
+            
+            /// The set of parameters used to configure this class
+            Parameters parameters_; 
     };
 
 }
