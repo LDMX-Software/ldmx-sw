@@ -117,9 +117,10 @@ namespace ldmx {
         EventHeader& eventHeader = event_->getEventHeader();
 
         // Set the event weight
-        if (BiasingMessenger::isBiasingEnabled()) { 
-            eventHeader.setWeight(BiasingMessenger::getEventWeight());
-        } else if (anEvent->GetPrimaryVertex(0)) { 
+        //if (BiasingMessenger::isBiasingEnabled()) { 
+        //    eventHeader.setWeight(BiasingMessenger::getEventWeight());
+        if (anEvent->GetPrimaryVertex(0)) { 
+        //} else if (anEvent->GetPrimaryVertex(0)) { 
             eventHeader.setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
             
         }
