@@ -64,11 +64,11 @@ namespace ldmx {
              *
              * @param action  User action of type EventAction
              */
-            void registerAction(EventAction* eventAction) { eventActions_.push_back(eventAction); }
+            void registerAction(UserAction* eventAction) { eventActions_.push_back(eventAction); }
         
         private:
 
-            std::vector<EventAction*> eventActions_; 
+            std::vector<UserAction*> eventActions_; 
     
     };  // UserEventAction
 

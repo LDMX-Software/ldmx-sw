@@ -46,12 +46,12 @@ namespace ldmx {
              *
              * @param action  User action of type SteppingAction
              */
-            void registerAction(SteppingAction* steppingAction) { steppingActions_.push_back(steppingAction); }
+            void registerAction(UserAction* steppingAction) { steppingActions_.push_back(steppingAction); }
         
         private:
 
             /// Collection of user stepping actions
-            std::vector<SteppingAction*> steppingActions_; 
+            std::vector<UserAction*> steppingActions_; 
     
     }; // USteppingAction
 
