@@ -11,9 +11,9 @@
 #include "AuxInfoReader.h"
 
 // Biasing
-#include "Biasing/ElectroNuclearXsecBiasingOperator.h"
-#include "Biasing/GammaToMuPairXsecBiasingOperator.h"
-#include "Biasing/PhotoNuclearXsecBiasingOperator.h"
+#include "SimApplication/ElectroNuclearXsecBiasingOperator.h"
+#include "SimApplication/GammaToMuPairXsecBiasingOperator.h"
+#include "SimApplication/PhotoNuclearXsecBiasingOperator.h"
 
 // Geant4
 #include "G4VUserDetectorConstruction.hh"
