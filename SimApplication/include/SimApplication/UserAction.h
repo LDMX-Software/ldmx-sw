@@ -64,6 +64,50 @@ namespace ldmx {
              */
             static void declare(const std::string& className, UserActionBuilder* builder); 
 
+            /**
+             * Method called at the beginning of every event.
+             *
+             * @param event Geant4 event object.
+             */
+            virtual void BeginOfEventAction(const G4Event* evemt) {}; 
+
+            /**
+             * Method called at the end of every event.
+             *
+             * @param event Geant4 event object.
+             */
+            virtual void EndOfEventAction(const G4Event* event) {};
+
+            /**
+             * Method called at the beginning of a run.
+             *
+             * @param run Curremt Geant4 run object.
+             */
+            virtual void BeginOfRunAction(const G4Run* run) {}; 
+            
+            /**
+             * Method called at the end of a run.
+             *
+             * @param run Curremt Geant4 run object.
+             */
+            virtual void EndOfRunAction(const G4Run* run) {};
+
+
+            virtual void PreUserTrackingAction(const G4Track* track) {}; 
+
+            virtual void PostUserTrackingAction(const G4Track* track) {};
+
+            /**
+             *
+             */
+            virtual void stepping(const G4Step* step) {};
+
+            virtual G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass ) {};  
+
+            virtual void NewStage() {}; 
+
+            virtual void PrepareNewEvent() {}; 
+
             /// @return The user action types
             virtual std::vector< TYPE > getTypes() = 0; 
 
@@ -73,134 +117,6 @@ namespace ldmx {
             std::string name_{""}; 
 
     }; // UserAction
-
-    
-    /**
-     * @class EventAction
-     * @brief Class used to define actions to take at the beginning and end of
-     *        an event.
-     */
-    class EventAction : public UserAction { 
-    
-        public: 
-
-            /**
-             * Constructor.
-             *
-             * @param name Name given the to class instance. 
-             */
-            EventAction(const std::string& name);
-
-            /**
-             * Method called at the beginning of every event.
-             *
-             * @param event Geant4 event object.
-             */
-            virtual void BeginOfEventAction(const G4Event* evemt) = 0; 
-
-            /**
-             * Method called at the end of every event.
-             *
-             * @param event Geant4 event object.
-             */
-            virtual void EndOfEventAction(const G4Event* event) = 0; 
-            
-    };
-
-    /**
-     * @class RunAction
-     * @brief Class used to define actions to take at the beginning and end of
-     *        an run.
-     */
-    class RunAction : public UserAction { 
-    
-        public: 
-
-            /**
-             * Constructor.
-             *
-             * @param name Name given the to class instance. 
-             */
-            RunAction(const std::string& name);
-
-            /**
-             * Method called at the beginning of a run.
-             *
-             * @param run Curremt Geant4 run object.
-             */
-            virtual void BeginOfRunAction(const G4Run* run) = 0; 
-            
-            /**
-             * Method called at the end of a run.
-             *
-             * @param run Curremt Geant4 run object.
-             */
-            virtual void EndOfRunAction(const G4Run* run) = 0; 
-            
-    };
-
-    /**
-     * @class TrackingAction
-     * @brief Class used to define actions to take when a track is created.
-     */
-    class TrackingAction : public UserAction { 
-    
-        public: 
-
-            /**
-             * Constructor.
-             *
-             * @param name Name given the to class instance. 
-             */
-            TrackingAction(const std::string& name);
-
-            virtual void PreUserTrackingAction(const G4Track* track) = 0; 
-
-            virtual void PostUserTrackingAction(const G4Track* track) = 0; 
-            
-    };
-
-    /**
-     * @class SteppingAction
-     * @brief Class used to define actions to take when a track is created.
-     */
-    class SteppingAction : public UserAction { 
-
-        public:
-           
-            /**
-             * Constructor.
-             *
-             * @param name Name given the to class instance. 
-             */
-            SteppingAction(const std::string& name); 
-
-            /**
-             *
-             */
-            virtual void stepping(const G4Step* step) = 0; 
-
-    };
-
-    class StackingAction : public UserAction { 
-    
-        public: 
-
-            /**
-             * Constructor.
-             *
-             * @param name Name given the to class instance. 
-             */
-            StackingAction(const std::string& name);
-
-            virtual G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* track) = 0;  
-
-            virtual void NewStage() = 0; 
-
-            virtual void PrepareNewEvent() = 0; 
-            
-    };
-
 
 } // ldmx
 

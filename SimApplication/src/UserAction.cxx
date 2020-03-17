@@ -27,17 +27,4 @@ namespace ldmx {
         std::cout << "UserAction::declare : Declaring class " << className << std::endl;
         UserActionManager::getInstance().registerAction(className, builder);      
     }
-
-    EventAction::EventAction(const std::string& name)       : UserAction(name) {}
-
-    RunAction::RunAction(const std::string& name)           : UserAction(name) {}
-
-    TrackingAction::TrackingAction(const std::string& name) : UserAction(name) {}
-
-    SteppingAction::SteppingAction(const std::string& name) : UserAction(name) {}
-
-    StackingAction::StackingAction(const std::string& name) : UserAction(name) {}
-
-
-
 }
