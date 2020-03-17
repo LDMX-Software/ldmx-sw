@@ -17,7 +17,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "Biasing/XsecBiasingOperator.h"
+#include "SimApplication/XsecBiasingOperator.h"
 
 namespace ldmx { 
    

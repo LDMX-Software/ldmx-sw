@@ -9,7 +9,7 @@
 #ifndef BIASING_GAMMATOMUPAIRXSECBIASINGOPERATOR_H_
 #define BIASING_GAMMATOMUPAIRXSECBIASINGOPERATOR_H_
 
-#include "Biasing/PhotoNuclearXsecBiasingOperator.h"
+#include "SimApplication/PhotoNuclearXsecBiasingOperator.h"
 
 namespace ldmx { 
     

@@ -6,7 +6,7 @@
  *         SLAC National Accelerator Laboratory
  */
 
-#include "Biasing/GammaToMuPairXsecBiasingOperator.h"
+#include "SimApplication/GammaToMuPairXsecBiasingOperator.h"
 
 namespace ldmx { 
 
