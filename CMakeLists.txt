@@ -1,6 +1,6 @@
 # declare SimApplication module
 module(
   NAME SimApplication
-  DEPENDENCIES Exception Event Framework DetDescr SimCore SimPlugins Biasing
+  DEPENDENCIES Exception Event Framework DetDescr SimCore SimPlugins
   EXTERNAL_DEPENDENCIES Geant4 ROOT Python
 )
