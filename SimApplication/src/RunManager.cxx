@@ -68,7 +68,7 @@ namespace ldmx {
         pList->RegisterPhysics(new APrimePhysics);
         pList->RegisterPhysics(new GammaPhysics);
        
-        auto biasingEnabled{parameters_.getParameter< int >("biasing.enabled")}; 
+        auto biasingEnabled{parameters_.getParameter< bool >("biasing.enabled")}; 
         if (biasingEnabled) {
 
             auto biasedParticle{parameters_.getParameter< std::string >("biasing.particle")}; 
