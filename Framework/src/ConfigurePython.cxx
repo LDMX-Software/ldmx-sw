@@ -268,13 +268,17 @@ namespace ldmx {
         while (PyDict_Next(dictionary, &pos, &key, &value)) {
 
             std::string skey{PyString_AsString(key)};
-
+    
             if (PyInt_Check(value)) {
-                params[skey] = int(PyInt_AsLong(value));  
+                if (PyBool_Check(value)) {
+                    params[skey] = bool(PyInt_AsLong(value)); 
+                } else { 
+                    params[skey] = int(PyInt_AsLong(value));
+                }
             } else if (PyFloat_Check(value)) {
                 params[skey] = PyFloat_AsDouble(value);  
             } else if (PyString_Check(value)) {
-                params[skey] = std::string(PyString_AsString(value)); 
+                params[skey] = std::string(PyString_AsString(value));
             } else if (PyList_Check(value)) { // assume everything is same value as first value
                 if (PyList_Size(value) > 0) {
 
