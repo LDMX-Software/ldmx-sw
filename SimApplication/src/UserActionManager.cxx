@@ -47,14 +47,14 @@ namespace ldmx {
         actionInfo_[className] = info; 
     }
 
-    void UserActionManager::createAction(const std::string& className, const std::string& instanceName) { 
+    void UserActionManager::createAction(const std::string& className, const std::string& instanceName, Parameters& parameters) { 
     
         auto it{actionInfo_.find(className)}; 
         if (it == actionInfo_.end()) {
             EXCEPTION_RAISE("UserActionException", "Failed to create " + className); 
         } 
 
-        auto act{it->second.builder_(instanceName)};
+        auto act{it->second.builder_(instanceName, parameters)};
         
         std::vector< TYPE > types = act->getTypes();
         for (auto& type : types) {
