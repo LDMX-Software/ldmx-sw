@@ -62,11 +62,11 @@ namespace ldmx {
              *
              * @param action  User action of type RunAction
              */
-            void registerAction(RunAction* runAction) { runActions_.push_back(runAction); }
+            void registerAction(UserAction* runAction) { runActions_.push_back(runAction); }
         
         private:
 
-            std::vector<RunAction*> runActions_; 
+            std::vector<UserAction*> runActions_; 
     
     }; // UserRunAction
 

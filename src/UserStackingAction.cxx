@@ -16,7 +16,7 @@ namespace ldmx {
         for( auto& stackingAction : stackingActions_) { 
             
             // Get proposed new track classification from this plugin. 
-            G4ClassificationOfNewTrack newTrackClass = stackingAction->ClassifyNewTrack(track);
+            G4ClassificationOfNewTrack newTrackClass = stackingAction->ClassifyNewTrack(track, currentTrackClass);
 
             // Only set the current classification if the plugin changed it.
             if (newTrackClass != currentTrackClass) currentTrackClass = newTrackClass;
