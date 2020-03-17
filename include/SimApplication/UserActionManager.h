@@ -13,6 +13,11 @@
 #include <variant>
 #include <vector> 
 
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Parameters.h" 
+
 #include "SimApplication/UserRunAction.h" 
 #include "SimApplication/UserEventAction.h" 
 #include "SimApplication/UserTrackingAction.h" 
@@ -57,7 +62,7 @@ namespace ldmx {
            /**
             *
             */
-            void createAction(const std::string& className, const std::string& instanceName); 
+            void createAction(const std::string& className, const std::string& instanceName, Parameters& parameters); 
 
         private:
 
