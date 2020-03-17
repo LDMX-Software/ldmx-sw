@@ -117,7 +117,7 @@ namespace ldmx {
         auto userActions{parameters_.getParameter< std::vector< Class > >("actions")}; 
         std::for_each(userActions.begin(), userActions.end(), 
                 [&actionManager](auto& userAction) { 
-                    actionManager.createAction(userAction.className_, userAction.instanceName_); 
+                    actionManager.createAction(userAction.className_, userAction.instanceName_, userAction.params_); 
                 }
         );
 
