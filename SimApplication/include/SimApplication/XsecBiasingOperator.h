@@ -27,7 +27,7 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Biasing/XsecBiasingOperatorMessenger.h"
+#include "SimApplication/XsecBiasingOperatorMessenger.h"
 
 namespace ldmx { 
 

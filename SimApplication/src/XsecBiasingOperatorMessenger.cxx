@@ -4,7 +4,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "Biasing/XsecBiasingOperatorMessenger.h"
+#include "SimApplication/XsecBiasingOperatorMessenger.h"
 
 namespace ldmx { 
     
