@@ -58,16 +58,17 @@ namespace ldmx {
         
         std::vector< TYPE > types = act->getTypes();
         for (auto& type : types) {
+            
             if (type == TYPE::RUN) 
-                std::get< UserRunAction* >(actions_[TYPE::RUN])->registerAction(static_cast<RunAction*>(act)); 
+                std::get< UserRunAction* >(actions_[TYPE::RUN])->registerAction(act); 
             else if (type == TYPE::EVENT) 
-                std::get< UserEventAction* >(actions_[TYPE::EVENT])->registerAction(static_cast<EventAction*>(act)); 
+                std::get< UserEventAction* >(actions_[TYPE::EVENT])->registerAction(act); 
             else if (type == TYPE::TRACKING) 
-                std::get< UserTrackingAction* >(actions_[TYPE::TRACKING])->registerAction(static_cast<TrackingAction*>(act)); 
+                std::get< UserTrackingAction* >(actions_[TYPE::TRACKING])->registerAction(act); 
             else if (type == TYPE::STEPPING) 
-                std::get< USteppingAction* >(actions_[TYPE::STEPPING])->registerAction(static_cast<SteppingAction*>(act)); 
+                std::get< USteppingAction* >(actions_[TYPE::STEPPING])->registerAction(act); 
             else if (type == TYPE::STACKING) 
-                std::get< UserStackingAction* >(actions_[TYPE::STACKING])->registerAction(static_cast<StackingAction*>(act)); 
+                std::get< UserStackingAction* >(actions_[TYPE::STACKING])->registerAction(act); 
             else 
                EXCEPTION_RAISE("UserActionException", "User action type doesn't exist."); 
         } 

@@ -60,12 +60,12 @@ namespace ldmx {
              *
              * @param action  User action of type StackingAction
              */
-            void registerAction(StackingAction* stackingAction) { stackingActions_.push_back(stackingAction); }
+            void registerAction(UserAction* stackingAction) { stackingActions_.push_back(stackingAction); }
 
         private: 
 
             /// Collection of user stacking actions
-            std::vector<StackingAction*> stackingActions_; 
+            std::vector<UserAction*> stackingActions_; 
     
     }; // UserStackingAction
 

@@ -98,14 +98,12 @@ namespace ldmx {
              *
              * @param action  User action of type RunAction
              */
-            void registerAction(TrackingAction* trackingAction) { 
-                trackingActions_.push_back(trackingAction); 
-            }
+            void registerAction(UserAction* trackingAction) { trackingActions_.push_back(trackingAction); }
 
         private:
 
             /// 
-            std::vector<TrackingAction*> trackingActions_; 
+            std::vector<UserAction*> trackingActions_; 
 
             /** Stores parentage information for all tracks in the event. */
             TrackMap trackMap_;
