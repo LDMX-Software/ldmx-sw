@@ -16,8 +16,9 @@
 
 namespace ldmx { 
 
-    UserAction::UserAction(const std::string& name) { 
+    UserAction::UserAction(const std::string& name, Parameters& parameters) { 
         name_ = name; 
+        parameters_ = parameters; 
     }
 
     UserAction::~UserAction() {} 

@@ -15,6 +15,11 @@
 /*~~~~~~~~~~~~*/
 #include "G4UserStackingAction.hh"
 
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Parameters.h" 
+
 // Forward Declarations
 class G4Event; 
 class G4Run; 
@@ -36,7 +41,7 @@ namespace ldmx {
     class UserAction; 
     
     
-    typedef UserAction* UserActionBuilder(const std::string& name); 
+    typedef UserAction* UserActionBuilder(const std::string& name, Parameters& parameters); 
 
     /**
      * @class UserAction
@@ -51,7 +56,7 @@ namespace ldmx {
              *
              * @param name Name given the to class instance. 
              */
-            UserAction(const std::string& name); 
+            UserAction(const std::string& name, Parameters& parameters); 
 
             /// Destructor
             virtual ~UserAction();
@@ -111,15 +116,19 @@ namespace ldmx {
             /// @return The user action types
             virtual std::vector< TYPE > getTypes() = 0; 
 
-        private:
+        protected:
 
             /// Name of the UserAction
-            std::string name_{""}; 
+            std::string name_{""};
+
+            
+            /// The set of parameters used to configure this class
+            Parameters parameters_; 
 
     }; // UserAction
 
 } // ldmx
 
-#define DECLARE_ACTION(NS, CLASS) ldmx::UserAction* CLASS ## Builder (const std::string& name) { return new NS::CLASS(name); } __attribute((constructor(205))) static void CLASS ## Declare() { ldmx::UserAction::declare(std::string(#NS) + "::" + std::string(#CLASS), & CLASS ## Builder); } 
+#define DECLARE_ACTION(NS, CLASS) ldmx::UserAction* CLASS ## Builder (const std::string& name, ldmx::Parameters& parameters) { return new NS::CLASS(name, parameters); } __attribute((constructor(205))) static void CLASS ## Declare() { ldmx::UserAction::declare(std::string(#NS) + "::" + std::string(#CLASS), & CLASS ## Builder); } 
 
 #endif // SIMCORE_USERACTION_H
