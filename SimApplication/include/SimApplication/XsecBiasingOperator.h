@@ -24,14 +24,7 @@
 #include "G4Track.hh"
 #include "G4VBiasingOperator.hh"
 
-//----------//
-//   LDMX   //
-//----------//
-#include "SimApplication/XsecBiasingOperatorMessenger.h"
-
 namespace ldmx { 
-
-    class XsecBiasingOperatorMessenger; 
 
     class XsecBiasingOperator : public G4VBiasingOperator { 
 
@@ -75,7 +68,7 @@ namespace ldmx {
             void setThreshold(double threshold) { threshold_ = threshold; };
 
             /** Set the factor by which the xsec will be enhanced. */
-            void setXsecFactor(double xsecFactor) { xsecFactor_ = xsecFactor; };
+            void setBiasFactor(double xsecFactor) { xsecFactor_ = xsecFactor; };
 
         protected: 
 
@@ -95,9 +88,6 @@ namespace ldmx {
 
             /** Process manager associated with the particle of interest. */
             G4ProcessManager* processManager_{nullptr}; 
-
-            /** Messenger used to pass arguments to this operator. */
-            XsecBiasingOperatorMessenger* messenger_{nullptr}; 
 
             /** 
              * Flag indicating whether EM should be biased down when either
