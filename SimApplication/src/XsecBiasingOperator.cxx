@@ -8,11 +8,15 @@
 
 #include "SimApplication/XsecBiasingOperator.h"
 
+/*~~~~~~~~~~~~~~~*/
+/*   Exception   */
+/*~~~~~~~~~~~~~~~*/
+#include "Exception/Exception.h" 
+
 namespace ldmx { 
 
     XsecBiasingOperator::XsecBiasingOperator(std::string name) :
         G4VBiasingOperator(name) {
-           messenger_ = new XsecBiasingOperatorMessenger(this);  
     }
 
     XsecBiasingOperator::~XsecBiasingOperator() {
@@ -24,8 +28,8 @@ namespace ldmx {
             processManager_ = G4Gamma::GammaDefinition()->GetProcessManager();
         } else if (particleType_.compare("e-") == 0) { 
             processManager_ = G4Electron::ElectronDefinition()->GetProcessManager();
-        } else { 
-            // Throw an exception
+        } else {
+            EXCEPTION_RAISE("BiasingException", "Invalid particle type"); 
         }
 
         std::cout << "[ XsecBiasingOperator ]: Biasing particles of type " 
