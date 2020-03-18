@@ -144,8 +144,8 @@ namespace ldmx {
                             << std::endl;*/
                 if (processName.compareTo("eBrem") == 0 
                         && secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
-                    std::cout << "[ TargetBremFilter ]: " 
-                                << "Adding secondary to brem list." << std::endl;
+                    //std::cout << "[ TargetBremFilter ]: " 
+                    //          << "Adding secondary to brem list." << std::endl;
                     TargetBremFilter::bremGammaTracks_.push_back(secondary_track); 
                     hasBremCandidate = true;
                 } 
