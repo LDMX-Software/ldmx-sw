@@ -24,7 +24,6 @@
 //   LDMX   //
 //----------//
 #include "SimPlugins/UserActionPlugin.h"
-//#include "Biasing/BiasingMessenger.h"
 #include "Biasing/TargetBremFilter.h"
 #include "SimCore/UserTrackInformation.h"
 
