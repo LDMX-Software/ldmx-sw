@@ -45,12 +45,12 @@
     <variable name="trigger_pad_tag_z"   value="target_z + tagger_pos_z - tagger_thickness/2. - trigger_pad_thickness/2. - trigger_pad_zclear - 5."/>
 
     <!-- distance from target to ecal face -->
-    <constant name="ecal_front_z" value="20.0*cm"/>
+    <constant name="ecal_front_z" value="22.0*cm"/>
             
     <!-- position of calorimeter mother -->
-    <constant name="em_calorimeter_thickness" value="321.0*mm"/>
+    <constant name="em_calorimeter_thickness" value="450.2*mm"/>
     <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2."/>
-    <constant name="hadron_calorimeter_thickness" value="4731*mm"/>
+    <constant name="hadron_calorimeter_thickness" value="5000*mm"/>
     <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2."/>
 
     <!-- magnet position -->
