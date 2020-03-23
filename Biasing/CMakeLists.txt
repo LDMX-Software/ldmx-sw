@@ -1,6 +1,6 @@
 # declare Biasing module
 module(
   NAME Biasing
-  DEPENDENCIES SimCore SimPlugins SimApplication Framework
+  DEPENDENCIES SimCore SimApplication Framework
   EXTERNAL_DEPENDENCIES Geant4
 )

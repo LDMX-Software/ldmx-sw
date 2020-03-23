@@ -8,29 +8,28 @@
 #ifndef BIASING_ECALPROCESSFILTER_H
 #define BIASING_ECALPROCESSFILTER_H
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
 #include <algorithm>
 
-//------------//
-//   Geant4   //
-//------------//
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
 #include "G4VPhysicalVolume.hh"
 #include "G4PhysicalVolumeStore.hh"
 #include "G4RunManager.hh"
 
-//----------//
-//   LDMX   //
-//----------//
-#include "SimPlugins/UserActionPlugin.h"
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/TargetBremFilter.h"
-#include "SimCore/UserTrackInformation.h"
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/UserAction.h"
+#include "SimCore/UserTrackInformation.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
