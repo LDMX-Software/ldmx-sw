@@ -33,14 +33,14 @@ ecalSim2Rec.parameters["readoutThreshold"] = 4.
 #        16.347, 8.334
 #        ]
 
-### v12
-### These layer weights are for the most recent change to the ecal geometry where motherboards and more component space is added
-#ecalSim2Rec.parameters[ "secondOrderEnergyCorrection" ] = 4000./4010.
-#
-#ecalSim2Rec.parameters[ "layerWeights" ] = [
-#        1.675, 2.724, 4.398, 6.039, 7.696, 9.077, 9.630, 9.630, 9.630, 9.630, 9.630,
-#        9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630,
-#        9.630, 13.497, 17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 17.364,
-#        17.364, 8.990
-#        ]
+## v12
+## These layer weights are for the most recent change to the ecal geometry where motherboards and more component space is added
+ecalSim2Rec.parameters[ "secondOrderEnergyCorrection" ] = 4000./4010.
+
+ecalSim2Rec.parameters[ "layerWeights" ] = [
+        1.675, 2.724, 4.398, 6.039, 7.696, 9.077, 9.630, 9.630, 9.630, 9.630, 9.630,
+        9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630,
+        9.630, 13.497, 17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 17.364, 17.364,
+        17.364, 8.990
+        ]
 
