@@ -28,6 +28,7 @@
         hard-coded length of the ECAL in the hcal.gdml and detector.gdml
         files. This is necessary because Geant4 cannot pass constants/variables
         from one gdml file to another.
+        Thickness with current values is 450.2
     -->
     <variable name="Wthick_A_dz" value="0.75"/>
     <variable name="W_A_dz" value="0.75"/>
@@ -45,7 +46,7 @@
     <variable name="CFMixThick_dz" value="0.2"/>
     <variable name="PCB_dz" value="1.5"/>
     <variable name="Si_dz" value="0.5"/>
-    <variable name="C_dz" value="0.35"/>
+    <variable name="C_dz" value="0.5"/>
     <variable name="Al_dz" value="2.0"/>
 
     <variable name="FrontTolerance" value="0.5"/> <!-- Air separating sheets of Al or W with PCB motherboard, limited by construction abilities -->

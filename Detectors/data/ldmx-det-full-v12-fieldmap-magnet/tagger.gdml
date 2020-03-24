@@ -40,9 +40,9 @@
       <variable name="tagger_L7_target_z" value="7.5*mm"/>
       
       <!-- layer X positions -->
-      <variable name="tagger_L1_x" value="-20.874*mm"/>
-      <variable name="tagger_L2_x" value="-14.758*mm"/>
-      <variable name="tagger_L3_x" value="-9.657*mm"/>
+      <variable name="tagger_L1_x" value="-12.874*mm"/>
+      <variable name="tagger_L2_x" value="-10.758*mm"/>
+      <variable name="tagger_L3_x" value="-7.657*mm"/>
       <variable name="tagger_L4_x" value="-5.342*mm"/>
       <variable name="tagger_L5_x" value="-2.723*mm"/>
       <variable name="tagger_L6_x" value="-0.938*mm"/>
