@@ -143,11 +143,6 @@ namespace ldmx {
             double readoutThreshold_{4.};
 
             /**
-             * Helper Object that translates between realspace and cell/module IDs in the hexagonal layout
-             */
-            std::unique_ptr<EcalHexReadout> hexReadout_;
-
-            /**
              * Generates noise hits based off of number of cells that are not hit
              */
             std::unique_ptr<NoiseGenerator> noiseGenerator_;

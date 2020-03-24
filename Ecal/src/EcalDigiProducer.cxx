@@ -27,8 +27,6 @@ namespace ldmx {
 
     void EcalDigiProducer::configure(const ParameterSet& ps) {
 
-        hexReadout_ = std::make_unique<EcalHexReadout>();
-
         gain_            = ps.getDouble("gain", 2000.); 
         pedestal_        = ps.getDouble("pedestal", 1100.); 
         noiseIntercept_  = ps.getDouble("noiseIntercept", 700.); 
