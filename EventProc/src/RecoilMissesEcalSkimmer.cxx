@@ -16,9 +16,6 @@ namespace ldmx {
     RecoilMissesEcalSkimmer::~RecoilMissesEcalSkimmer() { 
     }
 
-    void RecoilMissesEcalSkimmer::configure(const ParameterSet &pset) { 
-    }
-
     void RecoilMissesEcalSkimmer::produce(Event &event) { 
         
         // Get the collection of simulated particles from the event

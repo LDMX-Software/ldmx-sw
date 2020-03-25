@@ -36,6 +36,7 @@
 #include "Event/PnWeightResult.h"
 #include "Event/SimParticle.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Parameters.h" 
 
 //----------//
 //   ROOT   //
@@ -67,8 +68,12 @@ namespace ldmx {
             /** Destructor */
             ~PnWeightProcessor();
 
-            /** Read in user-specified parameters. */
-            void configure(const ParameterSet& pSet);
+            /** 
+             * Configure the processor using the given user specified parameters.
+             * 
+             * @param parameters Set of parameters used to configure this processor.
+             */
+            void configure(Parameters& parameters) final override;
 
             /** Run the weight calculation and create a pnWeightResult. */
             void produce(Event& event);

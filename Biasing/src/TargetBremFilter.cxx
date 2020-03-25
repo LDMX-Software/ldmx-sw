@@ -8,20 +8,23 @@
 
 #include "Biasing/TargetBremFilter.h"
 
-SIM_PLUGIN(ldmx, TargetBremFilter)
-
 namespace ldmx { 
 
     std::vector<G4Track*> TargetBremFilter::bremGammaTracks_ = {};
 
-    TargetBremFilter::TargetBremFilter() {
-        messenger_ = new TargetBremFilterMessenger(this);
+    TargetBremFilter::TargetBremFilter(const std::string& name, Parameters& parameters) 
+        : UserAction(name, parameters) { 
+        
+        volumeName_ = parameters.getParameter< std::string >("volume"); 
+        recoilEnergyThreshold_ = parameters.getParameter< double >("recoilEnergyThreshold"); 
+        bremEnergyThreshold_ = parameters.getParameter< double >("bremEnergyThreshold"); 
+        killRecoilElectron_ = parameters.getParameter<bool>("killRecoilElectron"); 
     }
 
     TargetBremFilter::~TargetBremFilter() {
     }
 
-    G4ClassificationOfNewTrack TargetBremFilter::stackingClassifyNewTrack(
+    G4ClassificationOfNewTrack TargetBremFilter::ClassifyNewTrack(
             const G4Track* track, 
             const G4ClassificationOfNewTrack& currentTrackClass) {
 
@@ -141,8 +144,8 @@ namespace ldmx {
                             << std::endl;*/
                 if (processName.compareTo("eBrem") == 0 
                         && secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
-                    /*std::cout << "[ TargetBremFilter ]: " 
-                                << "Adding secondary to brem list." << std::endl;*/
+                    //std::cout << "[ TargetBremFilter ]: " 
+                    //          << "Adding secondary to brem list." << std::endl;
                     TargetBremFilter::bremGammaTracks_.push_back(secondary_track); 
                     hasBremCandidate = true;
                 } 
@@ -178,7 +181,7 @@ namespace ldmx {
         }
     }
 
-    void TargetBremFilter::endEvent(const G4Event*) {
+    void TargetBremFilter::EndOfEventAction(const G4Event*) {
         bremGammaTracks_.clear();
     }
     
@@ -188,3 +191,4 @@ namespace ldmx {
     }
 }
 
+DECLARE_ACTION(ldmx, TargetBremFilter) 

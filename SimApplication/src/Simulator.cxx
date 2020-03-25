@@ -10,7 +10,6 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/ParameterSet.h" 
 #include "Framework/Process.h"
 
 /*~~~~~~~~~~~~~*/
@@ -18,11 +17,6 @@
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RootPersistencyManager.h" 
-#include "SimApplication/PrimaryGeneratorAction.h"
-#include "SimApplication/GeneralParticleSource.h"
-#include "SimApplication/LHEPrimaryGenerator.h"
-#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
-#include "SimApplication/RootPrimaryGenerator.h"
 #include "SimApplication/RunManager.h"
 
 /*~~~~~~~~~~~~~~*/
@@ -52,8 +46,18 @@ namespace ldmx {
         //      This pointer is handled by Geant4
         uiManager_ = G4UImanager::GetUIpointer();
 
+        
+    }
+
+    Simulator::~Simulator() { }
+
+    void Simulator::configure(Parameters& parameters) {
+    
+        // parameters used to configure the simulation
+        parameters_ = parameters; 
+
         // Instantiate the run manager.  
-        runManager_ = std::make_unique<RunManager>();
+        runManager_ = std::make_unique<RunManager>(parameters);
 
         // Instantiate the GDML parser and corresponding messenger
         parser_ = std::make_unique<G4GDMLParser>();
@@ -63,71 +67,35 @@ namespace ldmx {
         G4CascadeParameters::Instance();
 
         // Supply the default user initialization and actions
-        detectorConstruction_ = std::make_unique<DetectorConstruction>( parser_.get() );
+        detectorConstruction_ = std::make_unique<DetectorConstruction>( parser_.get(), parameters );
         runManager_->SetUserInitialization( detectorConstruction_.get() );
 
         // Store the random numbers used to generate an event. 
         runManager_->SetRandomNumberStore( true );
-        
-    }
 
-    Simulator::~Simulator() {
-        std::cout << "~Simulator" << std::endl;
-        std::cout << "Done ~Simulator" << std::endl;
-    }
-
-    void Simulator::configure(const ldmx::ParameterSet& ps) {
-      
         /*************************************************
          * Necessary Parameters
          *************************************************/
+        
+        detectorPath_ = parameters.getParameter< std::string >("detector");
 
-        description_ = ps.getString( "description" );
-
-        detectorPath_ = ps.getString( "detector" );
-
-        runNumber_ = ps.getInteger( "runNumber" );
-        //make sure Process uses this run number when creating the event headers
-        process_.setRunNumber( runNumber_ );
-
+        runNumber_ = parameters.getParameter< int >("runNumber"); 
+       
+        process_.setRunNumber( runNumber_ ); 
+         
         /*************************************************
          * Optional Parameters
          *************************************************/
-
-        verbosity_ = ps.getInteger( "verbosity" , 1 );
-
-        enableHitContribs_   = (ps.getInteger( "enableHitContribs"   , 1 ) > 0);
-        compressHitContribs_ = (ps.getInteger( "compressHitContribs" , 1 ) > 0);
-
-        dropCollections_ = ps.getVString( "dropCollections" , { } );
+        verbosity_ = parameters.getParameter< int >("verbosity");
 
         // Get the path to the scoring planes
-        scoringPlanesPath_ = ps.getString( "scoringPlanes" , { } );
+        scoringPlanesPath_ = parameters.getParameter< std::string >("scoringPlanes"); 
 
-        randomSeeds_ = ps.getVInteger( "randomSeeds" , { } ); //required to be size 2 or greater
-
-        //LHE Generator
-        lheFilePath_ = ps.getString( "lheFilePath" , { } );
-
-        //ROOT Generator
-        rootReSimPath_         = ps.getString( "rootReSimPath" , { } );
-        rootPrimaryGenRunMode_ = ps.getInteger( "rootPrimaryGenRunMode" , 1 ); //1 or 0
-        rootPrimaryGenUseSeed_ = (ps.getInteger( "rootPrimaryGenUseSeed" , -1 ) > 0);
-
-        //Multi Particle Gun
-        mpgNparticles_    = ps.getInteger( "mpgNparticles" , -1 );
-        mpgEnablePoisson_ = (ps.getInteger( "mpgEnablePoisson" , -1 ) > 0);
-        mpgPdgID_         = ps.getInteger( "mpgPdgID" , 11 );
-        mpgVertex_        = ps.getVDouble( "mpgVertex"   , { 0., 0., 0.} );
-        mpgMomentum_      = ps.getVDouble( "mpgMomentum" , { 0., 0., 4000.} );
-
-        //Beamspot (all generators)
-        beamspotSmear_ = ps.getVDouble( "beamspotSmear" , { } ); //required to be size 2 or 3 [x,y] or [x,y,z]
+        randomSeeds_ = parameters.getParameter< std::vector< int > >("randomSeeds");
 
         // Get the extra simulation configuring commands
-        preInitCommands_  = ps.getVString( "preInitCommands"  , { } );
-        postInitCommands_ = ps.getVString( "postInitCommands" , { } );
-
+        preInitCommands_  = parameters.getParameter< std::vector< std::string > >("preInitCommands" ); 
+        postInitCommands_ = parameters.getParameter< std::vector< std::string > >("postInitCommands");
         /*************************************************
          * Do Pre /run/initialize commands
          *************************************************/
@@ -137,7 +105,7 @@ namespace ldmx {
         parser_->Read( detectorPath_ );
         runManager_->DefineWorldVolume( parser_->GetWorldVolume() );
 
-        if ( not scoringPlanesPath_.empty() ) {
+        if (!scoringPlanesPath_.empty() ) {
             //path was given, enable and read scoring planes into parallel world
             runManager_->enableParallelWorld(true);
             runManager_->setParallelWorldPath(scoringPlanesPath_);
@@ -158,18 +126,8 @@ namespace ldmx {
     void Simulator::onFileOpen(EventFile &file) {
 
         // Initialize persistency manager and connect it to the current EventFile
-        persistencyManager_ = std::make_unique<RootPersistencyManager>(file); 
+        persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_); 
         persistencyManager_->Initialize(); 
-        // set the run number
-        persistencyManager_->setRunNumber( runNumber_ );
-        // pass on the description
-        persistencyManager_->setRunDescription( description_ );
-        // pass on the collections to drop after sim (i.e. NOT save)
-        // TODO remove this after functional dropping is merged in
-        for ( const std::string &collName : dropCollections_ ) persistencyManager_->dropCollection( collName );
-        // set how to deal with hit contributions in ECal
-        persistencyManager_->setEnableHitContribs( enableHitContribs_ );
-        persistencyManager_->setCompressHitContribs( compressHitContribs_ );
     }
 
     void Simulator::produce(ldmx::Event& event) {
@@ -203,64 +161,6 @@ namespace ldmx {
         
         //initialize run
         runManager_->Initialize();
-
-        //attach generator to runManager
-        PrimaryGeneratorAction *primaryGeneratorAction = new PrimaryGeneratorAction;
-        runManager_->SetUserAction( primaryGeneratorAction );
-        primaryGeneratorAction->setPluginManager( runManager_->getPluginManager() );
-
-        /*************************************************
-         * Generator Setup Commands
-         *************************************************/
-
-        if ( not lheFilePath_.empty() ) {
-            //lhe generator
-            primaryGeneratorAction->setPrimaryGenerator(new LHEPrimaryGenerator(new LHEReader(lheFilePath_)));
-        } 
-        
-        if ( not rootReSimPath_.empty() ) {
-            //root generator
-            RootPrimaryGenerator *rpg = new RootPrimaryGenerator(rootReSimPath_);
-            primaryGeneratorAction->setPrimaryGenerator(rpg);
-            runManager_->setUseRootSeed( rootPrimaryGenUseSeed_ );
-
-            //TODO break up root resim into two different generators
-            rpg->setRunMode( rootPrimaryGenRunMode_ ); //default 1
-        } 
-        
-        if ( mpgNparticles_ > 0 ) {
-            MultiParticleGunPrimaryGenerator *mpg = new MultiParticleGunPrimaryGenerator();
-            primaryGeneratorAction->setPrimaryGenerator(mpg);
-
-            mpg->setMpgNparticles( mpgNparticles_ ); //default 0 (mpg is off)
-            if ( mpgEnablePoisson_ ) mpg->enablePoisson(); //default false
-            mpg->setMpgPdgId( mpgPdgID_ ); //default 11
-            if ( mpgVertex_.size() == 3 ) {
-                mpg->setMpgVertex( 
-                            G4ThreeVector( mpgVertex_.at(0)*mm , mpgVertex_.at(1)*mm , mpgVertex_.at(2)*mm )
-                            ); //default ( 0. , 0. , 0. )*mm (in middle of target)
-            }
-            if ( mpgMomentum_.size() == 3 ) {
-                mpg->setMpgMomentum( 
-                            G4ThreeVector( mpgMomentum_.at(0)*MeV , mpgMomentum_.at(1)*MeV , mpgMomentum_.at(2)*MeV )
-                            ); //default ( 0. , 0. , 4000. )*MeV
-            }
-        } 
-        
-        if ( enableGeneralParticleSource_ ) {
-            primaryGeneratorAction->setPrimaryGenerator(new GeneralParticleSource());
-            //other gps commands?
-        }
-
-        //beam spot smearing (should work with all generators)
-        if ( beamspotSmear_.size() > 1 ) {
-            primaryGeneratorAction->setUseBeamspot(true);
-            primaryGeneratorAction->setBeamspotXSize( beamspotSmear_.at(0) );
-            primaryGeneratorAction->setBeamspotYSize( beamspotSmear_.at(1) );
-            if ( beamspotSmear_.size() > 2 ) {
-                primaryGeneratorAction->setBeamspotZSize( beamspotSmear_.at(2) );
-            }
-        }
 
         if ( randomSeeds_.size() > 1 ) {
             //Geant4 allows for random seeds from 2 to 100
@@ -306,7 +206,6 @@ namespace ldmx {
     }
 
     void Simulator::onProcessEnd() {
-        std::cout << "onProcessEnd" << std::endl;
         /*TODO some annoying warnings about deleting things when geometry is/isn't open at end of run
          * Occur after Simulator::onProcessEnd
          * ~Simulator never called
@@ -315,7 +214,6 @@ namespace ldmx {
          * WARNING - Attempt to delete the solid           store while geometry closed !
          * WARNING - Attempt to delete the region          store while geometry closed !
          */
-        std::cout << "Done onProcessEnd" << std::endl;
     }
 
     bool Simulator::allowed(const std::string &command) const {

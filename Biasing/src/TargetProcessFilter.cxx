@@ -2,23 +2,29 @@
  * @file TargetPhotonuclearBiasing.cxx
  * @brief User action plugin that biases Geant4 to only process events which
  *        involve a photonuclear reaction in the target.
- * @author Omar Moreno
- *         SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
 #include "Biasing/TargetProcessFilter.h"
 
-SIM_PLUGIN(ldmx, TargetProcessFilter)
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
+#include "Biasing/TargetBremFilter.h"
 
 namespace ldmx { 
 
-    TargetProcessFilter::TargetProcessFilter() {
+    TargetProcessFilter::TargetProcessFilter(const std::string& name, Parameters& parameters) 
+        : UserAction(name, parameters) {
+        
+        volumeName_ = parameters.getParameter< std::string >("volume");
+        photonEnergyThreshold_ = parameters.getParameter< double >("photonThreshold"); 
+        process_ = parameters.getParameter< std::string >("process");  
     }
 
-    TargetProcessFilter::~TargetProcessFilter() {
-    }
+    TargetProcessFilter::~TargetProcessFilter() {}
 
-    G4ClassificationOfNewTrack TargetProcessFilter::stackingClassifyNewTrack(
+    G4ClassificationOfNewTrack TargetProcessFilter::ClassifyNewTrack(
             const G4Track* track, 
             const G4ClassificationOfNewTrack& currentTrackClass) {
 
@@ -134,7 +140,7 @@ namespace ldmx {
                       << std::endl;*/
 
             // Only record the process that is being biased
-            if (!processName.contains(BiasingMessenger::getProcess())) {
+            if (!processName.contains(process_)) {
 
                 /*std::cout << "[ TargetProcessFilter ]: "
                           << "Process was not " << BiasingMessenger::getProcess() << "--> Killing all tracks!" 
@@ -158,12 +164,12 @@ namespace ldmx {
                       << " particle via " << processName << " process." 
                       << std::endl;
             TargetBremFilter::removeBremFromList(track);
-            BiasingMessenger::setEventWeight(track->GetWeight());
+            //BiasingMessenger::setEventWeight(track->GetWeight());
             reactionOccurred_ = true;
         }
     }    
 
-    void TargetProcessFilter::endEvent(const G4Event*) {
+    void TargetProcessFilter::EndOfEventAction(const G4Event*) {
         reactionOccurred_ = false; 
     }
 }

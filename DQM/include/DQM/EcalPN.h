@@ -7,10 +7,11 @@
 #ifndef _DQM_ECAL_PN_H_
 #define _DQM_ECAL_PN_H_
 
-//----------//
-//   LDMX   //
-//----------//
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
 #include "Framework/EventProcessor.h"
+#include "Framework/Parameters.h" 
 
 class TH1; 
 
@@ -35,9 +36,9 @@ namespace ldmx {
             /** 
              * Configure the processor using the given user specified parameters.
              * 
-             * @param pSet Set of parameters used to configure this processor.
+             * @param parameters Set of parameters used to configure this processor.
              */
-            void configure(const ParameterSet &pSet);
+            void configure(Parameters& parameters) final override; 
  
             /**
              * Process the event and make histograms ro summaries.

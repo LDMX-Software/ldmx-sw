@@ -17,10 +17,15 @@
 //   LDMX   //
 //----------//
 #include "Tools/AnalysisUtils.h"
-#include "Framework/EventProcessor.h"
-#include "Framework/Event.h"
-#include "Framework/HistogramPool.h"
 #include "Event/EventDef.h"
+
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Event.h"
+#include "Framework/EventProcessor.h"
+#include "Framework/HistogramPool.h"
+#include "Framework/Parameters.h" 
 
 //----------//
 //   ROOT   //
@@ -44,9 +49,9 @@ namespace ldmx {
             /** 
              * Configure the processor using the given user specified parameters.
              * 
-             * @param pSet Set of parameters used to configure this processor.
+             * @param parameters Set of parameters used to configure this processor.
              */
-            void configure(const ParameterSet &pSet);
+            void configure(Parameters& parameters) final override; 
 
             /**
              * Process the event and make histograms ro summaries.

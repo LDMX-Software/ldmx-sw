@@ -2,87 +2,57 @@
  * @file EcalProcessFilter.h
  * @brief User action plugin that biases Geant4 to only process events which
  *        involve a photonuclear reaction in the ECal.
- * @author Omar Moreno
- *         SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef BIASING_ECALPROCESSFILTER_H_
-#define BIASING_ECALPROCESSFILTER_H_
+#ifndef BIASING_ECALPROCESSFILTER_H
+#define BIASING_ECALPROCESSFILTER_H
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
 #include <algorithm>
 
-//------------//
-//   Geant4   //
-//------------//
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
 #include "G4VPhysicalVolume.hh"
 #include "G4PhysicalVolumeStore.hh"
 #include "G4RunManager.hh"
 
-//----------//
-//   LDMX   //
-//----------//
-#include "SimPlugins/UserActionPlugin.h"
-#include "Biasing/BiasingMessenger.h"
-#include "Biasing/EcalProcessFilterMessenger.h"
+/*~~~~~~~~~~~~~*/
+/*   Biasing   */
+/*~~~~~~~~~~~~~*/
 #include "Biasing/TargetBremFilter.h"
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimApplication/UserAction.h"
 #include "SimCore/UserTrackInformation.h"
 
-class UserTrackingAction;
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Parameters.h" 
 
 namespace ldmx {
 
-    
-    // Forward declaration to avoid circular dependecies
-    class EcalProcessFilterMessenger; 
-
-    class EcalProcessFilter : public UserActionPlugin {
+    class EcalProcessFilter : public UserAction {
 
         public:
 
-            /** Default Ctor */
-            EcalProcessFilter();
+            /**
+             *
+             */
+            EcalProcessFilter(const std::string& name, Parameters& parameters);
 
-            /** Destructor */
+            /// Destructor
             ~EcalProcessFilter();
 
-            /** @return A std::string descriptor of the class. */
-            virtual std::string getName() {
-                return "EcalProcessFilter";
-            }
+            void stepping(const G4Step* step) final override;
 
-            /**
-             * Get whether this plugin implements the stepping action.
-             * @return True to indicate this plugin implements the stepping action.
-             */
-            bool hasSteppingAction() {
-                return true;
-            }
-
-            /**
-             * Get whether this plugin implements the tracking action.
-             * @return True if the plugin implements the tracking action.
-             */
-            bool hasTrackingAction() { 
-                return true;
-            }
-
-            /**
-             * Get whether this plugin implements the stacking aciton.
-             * @return True to indicate this plugin implements the stacking action.
-             */
-            bool hasStackingAction() { 
-                return true;
-            }
-
-            void stepping(const G4Step* step);
-
-            /**
-             * Pre-tracking action.
-             */
-            void postTracking(const G4Track*); 
+            void PostUserTrackingAction(const G4Track*) final override; 
 
             /**
              * Classify a new track which postpones track processing.
@@ -90,7 +60,8 @@ namespace ldmx {
              * @param aTrack The Geant4 track.
              * @param currentTrackClass The current track classification.
              */
-            G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& currentTrackClass);
+            G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* aTrack, 
+                    const G4ClassificationOfNewTrack& currentTrackClass) final override;
 
             /** 
              * Add a volume to apply the filter to.
@@ -106,10 +77,12 @@ namespace ldmx {
              */
             void addBoundingVolume(std::string volume);
 
-        private:
+            /// Retrieve the type of actions this class defines
+            std::vector< TYPE > getTypes() final override { 
+                return { TYPE::TRACKING, TYPE::STACKING, TYPE::STEPPING }; 
+            } 
 
-            /** Messenger used to pass arguments to this class. */
-            EcalProcessFilterMessenger* messenger_{nullptr};
+        private:
 
             /** Pointer to the current track being processed. */
             G4Track* currentTrack_{nullptr};
@@ -120,8 +93,8 @@ namespace ldmx {
             /** List of volumes to bound the particle to. */
             std::vector<std::string> boundVolumes_;
 
-            /** Brem photon energy threshold */
-            double photonEnergyThreshold_{2500}; // MeV
+            /// Process to filter
+            std::string process_{""}; 
 
             /** PN gamma parent ID. */
             double photonGammaID_{-1}; 
@@ -129,4 +102,4 @@ namespace ldmx {
     }; // EcalProcessFilter 
 }
 
-#endif // BIASING_ECALPROCESSFILTER_H__
+#endif // BIASING_ECALPROCESSFILTER_H

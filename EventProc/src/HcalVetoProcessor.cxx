@@ -20,11 +20,11 @@ namespace ldmx {
     HcalVetoProcessor::~HcalVetoProcessor() { 
     }
 
-    void HcalVetoProcessor::configure(const ParameterSet& pSet) {
-        totalPEThreshold_  = pSet.getDouble("pe_threshold");
-        maxTime_ = pSet.getDouble("max_time"); 
-        maxDepth_ = pSet.getDouble("max_depth"); 
-        minPE_ = pSet.getDouble("back_min_pe");  
+    void HcalVetoProcessor::configure(Parameters& parameters) {
+        totalPEThreshold_  = parameters.getParameter< double >("pe_threshold");
+        maxTime_ = parameters.getParameter< double >("max_time"); 
+        maxDepth_ = parameters.getParameter< double >("max_depth"); 
+        minPE_ = parameters.getParameter< double >("back_min_pe");  
     }
 
     void HcalVetoProcessor::produce(Event& event) {

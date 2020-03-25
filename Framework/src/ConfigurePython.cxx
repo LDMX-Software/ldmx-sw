@@ -1,15 +1,28 @@
-// python
-#include "Python.h"
+/**
+ * @file ConfigurePython.cxx
+ * @brief Utility class that reads/executes a python script and creates a 
+ *        Process object based on the input.
+ * @author Jeremy Mans, University of Minnesota
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
+ */
 
-// LDMX
 #include "Framework/ConfigurePython.h"
+
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
 #include "Framework/HistogramPool.h"
 #include "Framework/Process.h"
 #include "Framework/EventProcessorFactory.h"
 
-// STL
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
+/*~~~~~~~~~~*/
+/*   ROOT   */
+/*~~~~~~~~~~*/
 #include "TH1F.h"
 
 namespace ldmx {
@@ -33,7 +46,7 @@ namespace ldmx {
         }
         return retval;
     }
-  
+
     ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[], int nargs) {
         std::string path(".");
         std::string cmd = pythonScript;
@@ -96,17 +109,20 @@ namespace ldmx {
         if (!PyList_Check(pysequence)) {
             EXCEPTION_RAISE("ConfigureError", "sequence is not a python list as expected.");
         }
-        for (Py_ssize_t i = 0; i < PyList_Size(pysequence); i++) {
 
-            PyObject* processor = PyList_GetItem(pysequence, i);
-            ProcessorInfo pi;
-            pi.classname_ = stringMember(processor, "className");
-            pi.instancename_ = stringMember(processor, "instanceName");
+        for (auto i{0}; i < PyList_Size(pysequence); ++i) {
 
-            PyObject* histos = PyObject_GetAttrString(processor, "histograms");
-            
-            for (Py_ssize_t ihisto{0}; ihisto < PyList_Size(histos); ++ihisto) {
-                PyObject* histogram{PyList_GetItem(histos, ihisto)};
+            auto processor{PyList_GetItem(pysequence, i)}; 
+
+            ProcessorClass pc; 
+            pc.className_ = stringMember(processor, "className");
+            pc.instanceName_ = stringMember(processor, "instanceName");
+
+            auto histos{PyObject_GetAttrString(processor, "histograms")};
+
+            for (auto ihisto{0}; ihisto < PyList_Size(histos); ++ihisto) {
+
+                auto histogram{PyList_GetItem(histos, ihisto)};
 
                 HistogramInfo histInfo; 
                 histInfo.name_   = stringMember(histogram, "name"); 
@@ -115,54 +131,22 @@ namespace ldmx {
                 histInfo.xmin_   = intMember(histogram, "xmin"); 
                 histInfo.xmax_   = intMember(histogram, "xmax");  
 
-                pi.histograms_.push_back(histInfo); 
+                pc.histograms_.push_back(histInfo); 
             }
             Py_DECREF(histos);
 
-            PyObject* params = PyObject_GetAttrString(processor, "parameters");
-            if (params != 0 && PyDict_Check(params)) {
+            auto parameters{PyObject_GetAttrString(processor, "parameters")};
+            if (parameters != 0 && PyDict_Check(parameters)) {
+
                 PyObject *key(0), *value(0);
                 Py_ssize_t pos = 0;
 
-                while (PyDict_Next(params, &pos, &key, &value)) {
-                    std::string skey = PyString_AsString(key);
-                    if (PyInt_Check(value)) {
-                        pi.params_.insert(skey, int(PyInt_AsLong(value)));
-                        //printf("Int Key: %s\n",skey.c_str());
-                    } else if (PyFloat_Check(value)) {
-                        pi.params_.insert(skey, PyFloat_AsDouble(value));
-                        //printf("Double Key: %s\n",skey.c_str());
-                    } else if (PyString_Check(value)) {
-                        pi.params_.insert(skey, PyString_AsString(value));
-                        //printf("String Key: %s\n",skey.c_str());
-                    } else if (PyList_Check(value)) { // assume everything is same value as first value
-                        if (PyList_Size(value) > 0) {
-                            PyObject* vec0 = PyList_GetItem(value, 0);
-                            if (PyInt_Check(vec0)) {
-                                std::vector<int> vals;
-                                for (Py_ssize_t j = 0; j < PyList_Size(value); j++)
-                                    vals.push_back(PyInt_AsLong(PyList_GetItem(value, j)));
-                                pi.params_.insert(skey, vals);
-                                //printf("VInt Key: %s\n",skey.c_str());
-                            } else if (PyFloat_Check(vec0)) {
-                                std::vector<double> vals;
-                                for (Py_ssize_t j = 0; j < PyList_Size(value); j++)
-                                    vals.push_back(PyFloat_AsDouble(PyList_GetItem(value, j)));
-                                pi.params_.insert(skey, vals);
-                                //printf("VDouble Key: %s\n",skey.c_str());
-                            } else if (PyString_Check(vec0)) {
-                                std::vector<std::string> vals;
-                                for (Py_ssize_t j = 0; j < PyList_Size(value); j++)
-                                    vals.push_back(PyString_AsString(PyList_GetItem(value, j)));
-                                pi.params_.insert(skey, vals);
-                                //printf("VString Key: %s\n",skey.c_str());
-                            }
-                        }
-                    }
-                }
+                auto params{getParameters(parameters)}; 
+                
+                pc.params_.setParameters(params); 
             }
 
-            sequence_.push_back(pi);
+            sequence_.push_back(pc);
         }
         Py_DECREF(pysequence);
 
@@ -228,22 +212,23 @@ namespace ldmx {
     }
 
     Process* ConfigurePython::makeProcess() {
-        Process* p = new Process(passname_);
 
-        p->setHistogramFileName(histoOutFile_);
-        p->setEventLimit(eventLimit_);
-        p->setLogFrequency(logFrequency_); 
+        auto process{std::make_unique<Process>(passname_)};  
 
-        for (auto lib : libraries_) {
-            EventProcessorFactory::getInstance().loadLibrary(lib);
-        }
+        process->setHistogramFileName(histoOutFile_);
+        process->setEventLimit(eventLimit_);
+        process->setLogFrequency(logFrequency_); 
+
+        std::for_each(libraries_.begin(), libraries_.end(), 
+                [](auto& lib) { EventProcessorFactory::getInstance().loadLibrary(lib);}
+                ); 
 
         for (auto proc : sequence_) {
-            EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(proc.classname_, proc.instancename_, *p);
+            EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(proc.className_, proc.instanceName_, *process);
             if (ep == 0) {
-                EXCEPTION_RAISE("UnableToCreate", "Unable to create instance '" + proc.instancename_ + "' of class '" + proc.classname_ + "'");
+                EXCEPTION_RAISE("UnableToCreate", "Unable to create instance '" + proc.instanceName_ + "' of class '" + proc.className_ + "'");
             }
-            
+
             if (!proc.histograms_.empty()) {
                 HistogramPool* histograms = HistogramPool::getInstance(); 
                 ep->getHistoDirectory();
@@ -252,25 +237,103 @@ namespace ldmx {
                 } 
             }
             ep->configure(proc.params_);
-            p->addToSequence(ep);
+            process->addToSequence(ep);
         }
         for (auto file : inputFiles_) {
-            p->addFileToProcess(file);
+            process->addFileToProcess(file);
         }
         for (auto file : outputFiles_) {
-            p->addOutputFileName(file);
+            process->addOutputFileName(file);
         }
         for (auto rule : keepRules_) {
-            p->addDropKeepRule(rule);
+            process->addDropKeepRule(rule);
         }
-        p->getStorageController().setDefaultKeep(skimDefaultIsKeep_);
+        process->getStorageController().setDefaultKeep(skimDefaultIsKeep_);
         for (size_t i=0; i<skimRules_.size(); i+=2) {
-            p->getStorageController().addRule(skimRules_[i],skimRules_[i+1]);
+            process->getStorageController().addRule(skimRules_[i],skimRules_[i+1]);
         }
         if (run_ > 0)
-            p->setRunNumber(run_);
+            process->setRunNumber(run_);
 
-        return p;
+        return process.release();
+    }
+
+    std::map< std::string, std::any > ConfigurePython::getParameters(PyObject* dictionary) { 
+
+        PyObject *key(0), *value(0);
+        Py_ssize_t pos = 0;
+
+        std::map < std::string, std::any > params; 
+
+        while (PyDict_Next(dictionary, &pos, &key, &value)) {
+
+            std::string skey{PyString_AsString(key)};
+    
+            if (PyInt_Check(value)) {
+                if (PyBool_Check(value)) {
+                    params[skey] = bool(PyInt_AsLong(value)); 
+                } else { 
+                    params[skey] = int(PyInt_AsLong(value));
+                }
+            } else if (PyFloat_Check(value)) {
+                params[skey] = PyFloat_AsDouble(value);  
+            } else if (PyString_Check(value)) {
+                params[skey] = std::string(PyString_AsString(value));
+            } else if (PyList_Check(value)) { // assume everything is same value as first value
+                if (PyList_Size(value) > 0) {
+
+                    auto vec0{PyList_GetItem(value, 0)};
+
+                    if (PyInt_Check(vec0)) {
+                        std::vector<int> vals;
+
+                        for (auto j{0}; j < PyList_Size(value); j++)
+                            vals.push_back(PyInt_AsLong(PyList_GetItem(value, j)));
+
+                        params[skey] = vals;
+
+                    } else if (PyFloat_Check(vec0)) {
+                        std::vector<double> vals;
+
+                        for (auto j{0}; j < PyList_Size(value); j++)
+                            vals.push_back(PyFloat_AsDouble(PyList_GetItem(value, j)));
+
+                        params[skey] = vals;
+
+                    } else if (PyString_Check(vec0)) {
+                        std::vector<std::string> vals;
+
+                        for (auto j{0}; j < PyList_Size(value); j++)
+                            vals.push_back(PyString_AsString(PyList_GetItem(value, j)));
+
+                        params[skey] = vals;
+
+                    } else { 
+
+                        // If the objects stored in the list doesn't 
+                        // satisfy any of the above conditions, just
+                        // create a vector of Class objects.
+                        std::vector< Class > vals;
+                        for (auto j{0}; j < PyList_Size(value); ++j) {
+                            
+                            auto object{PyList_GetItem( value, j )}; 
+                            Class c; 
+                            c.className_    = stringMember(object, "class_name");
+                            c.instanceName_ = stringMember(object, "instance_name");  
+
+                            auto dict{PyObject_GetAttrString(object, "parameters")};
+                            auto classParams{getParameters(dict)}; 
+                            c.params_.setParameters(classParams); 
+
+                            vals.push_back(c);
+                        } 
+                        params[skey] = vals;
+                    }
+                }
+            }
+        }
+
+        return params; 
     }
 }
 

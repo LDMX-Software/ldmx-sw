@@ -7,14 +7,24 @@
 #ifndef FRAMEWORK_EVENTPROCESSOR_H_
 #define FRAMEWORK_EVENTPROCESSOR_H_
 
-// LDMX
+/*~~~~~~~~~~~*/
+/*   Event   */
+/*~~~~~~~~~~~*/
 #include "Exception/Exception.h"
-#include "Framework/Event.h"
 #include "Event/RunHeader.h"
-#include "Framework/ParameterSet.h"
+
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Event.h"
+#include "Framework/FrameworkDef.h"
+#include "Framework/Parameters.h" 
 #include "Framework/StorageControl.h"
 
-// STL
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <any>
 #include <map>
 
 class TDirectory;
@@ -77,11 +87,12 @@ namespace ldmx {
             virtual ~EventProcessor() {;}
 
             /**
-             * Callback for the EventProcessor to configure itself from the given set of parameters.
+             * Callback for the EventProcessor to configure itself from the 
+             * given set of parameters.
+             * 
              * @param parameters ParameterSet for configuration.
              */
-            virtual void configure(const ParameterSet& parameters) {
-            }
+            virtual void configure(Parameters& parameters) { } 
 
             /**
              * Callback for the EventProcessor to take any necessary
