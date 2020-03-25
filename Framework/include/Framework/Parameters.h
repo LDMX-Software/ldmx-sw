@@ -16,7 +16,12 @@
 #include <map>
 #include <string>
 #include <type_traits>
-#include <vector> 
+#include <vector>
+
+/*~~~~~~~~~~~~~~~*/
+/*   Exception   */
+/*~~~~~~~~~~~~~~~*/
+#include "Exception/Exception.h" 
 
 namespace ldmx {
 
@@ -51,15 +56,21 @@ namespace ldmx {
                 // Check if the variable exists in the map.  If it doesn't, 
                 // warn the user and set a default.
                 if (parameters_.count(name) == 0) { 
-                    std::cout << "[ Parameters ]: Parameter " << name
-                              << " hasn't been set. Using default value." << std::endl; 
                
                     if constexpr (std::numeric_limits<T>::is_integer || std::is_floating_point<T>::value) {
                         return std::numeric_limits<T>::lowest(); 
                     } else return {};  
                 }
 
-                return std::any_cast< T >(parameters_[name]); 
+                T parameter; 
+                try { 
+                    parameter = std::any_cast< T >(parameters_[name]);
+                } catch(const std::bad_any_cast& e) {
+                    EXCEPTION_RAISE("Parameters::getParameter", 
+                                    "Parameter is being cast to incorrect type."); 
+                }
+
+               return parameter; 
             }                
 
         private:
