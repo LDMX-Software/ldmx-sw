@@ -79,7 +79,7 @@ namespace ldmx {
         
         detectorPath_ = parameters.getParameter< std::string >("detector");
 
-        description_ = parameters.getParameter< int >("runNumber"); 
+        runNumber_ = parameters.getParameter< int >("runNumber"); 
        
         process_.setRunNumber( runNumber_ ); 
          
