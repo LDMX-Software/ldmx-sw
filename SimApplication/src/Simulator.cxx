@@ -206,7 +206,6 @@ namespace ldmx {
     }
 
     void Simulator::onProcessEnd() {
-        std::cout << "onProcessEnd" << std::endl;
         /*TODO some annoying warnings about deleting things when geometry is/isn't open at end of run
          * Occur after Simulator::onProcessEnd
          * ~Simulator never called
@@ -215,7 +214,6 @@ namespace ldmx {
          * WARNING - Attempt to delete the solid           store while geometry closed !
          * WARNING - Attempt to delete the region          store while geometry closed !
          */
-        std::cout << "Done onProcessEnd" << std::endl;
     }
 
     bool Simulator::allowed(const std::string &command) const {
