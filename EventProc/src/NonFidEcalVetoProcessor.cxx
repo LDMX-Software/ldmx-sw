@@ -48,7 +48,7 @@ namespace ldmx {
 
 
     void NonFidEcalVetoProcessor::configure(Parameters& parameters) {
-        doBdt_ = parameters.getParameter< int >("do_bdt");
+        doBdt_ = parameters.getParameter< bool >("do_bdt");
         if (doBdt_){
             // Config and init the BDTs.
             nfbdtFileNames_ = parameters.getParameter< std::vector < std::string > >("nf_bdt_files");
