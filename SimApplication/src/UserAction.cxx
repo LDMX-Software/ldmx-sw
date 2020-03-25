@@ -24,8 +24,6 @@ namespace ldmx {
     UserAction::~UserAction() {} 
 
     void UserAction::declare(const std::string& className, UserActionBuilder* builder) {
-
-        std::cout << "UserAction::declare : Declaring class " << className << std::endl;
         UserActionManager::getInstance().registerAction(className, builder);      
     }
 }
