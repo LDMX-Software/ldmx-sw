@@ -105,7 +105,7 @@ namespace ldmx {
     }
 
     void EcalVetoProcessor::configure(Parameters& parameters) {
-        doBdt_ = parameters.getParameter< int >("do_bdt");
+        doBdt_ = parameters.getParameter< bool >("do_bdt");
         if (doBdt_){
             // Config and init the BDT.
             bdtFileName_ = parameters.getParameter< std::string >("bdt_file");
