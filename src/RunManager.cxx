@@ -46,8 +46,7 @@ namespace ldmx {
         physicsListFactory_ = new G4PhysListFactory;
 
         // Set whether the ROOT primary generator should use the persisted seed.
-        auto rootPrimaryGenUseSeed{parameters.getParameter< int >("rootPrimaryGenUseSeed")}; 
-        if (rootPrimaryGenUseSeed < 0) rootPrimaryGenUseSeed = 0; 
+        auto rootPrimaryGenUseSeed{parameters.getParameter< bool >("rootPrimaryGenUseSeed")}; 
         setUseRootSeed(rootPrimaryGenUseSeed); 
     
     }
