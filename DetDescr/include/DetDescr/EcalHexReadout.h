@@ -252,7 +252,7 @@ namespace ldmx {
 
             unsigned nCellsWide_{0};
             double lengthWide_{0};
-            double gap_{0};
+            double gap_{1};
             double cellr_{0};
             double moduler_{0};
             double cellR_{0};
@@ -278,7 +278,7 @@ namespace ldmx {
              *   E.g. c = 23 gives N = 397.
              */
             static constexpr double defaultMinR{85.};
-            static constexpr double defaultGap_{0.};
+            static constexpr double defaultGap_{1.};
             static constexpr unsigned defaultNCellsWide{23};
 
             std::unique_ptr<TH2Poly> ecalMap_;
