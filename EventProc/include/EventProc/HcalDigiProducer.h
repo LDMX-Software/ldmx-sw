@@ -20,6 +20,7 @@
 #include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
+#include "Framework/Parameters.h" 
 
 namespace ldmx {
 
@@ -35,7 +36,13 @@ namespace ldmx {
 
             virtual ~HcalDigiProducer() {;}
 
-            virtual void configure(const ParameterSet&);
+            /** 
+             * Configure the processor using the given user specified parameters.
+             * 
+             * @param parameters Set of parameters used to configure this processor.
+             */
+            void configure(Parameters& parameters) final override;
+            
             virtual void produce(Event& event);
 
             unsigned int generateRandomID(HcalSection sec);

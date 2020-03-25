@@ -29,13 +29,6 @@ namespace ldmx {
             /** Destructor */
             ~TrackerVetoProcessor();
 
-            /** 
-             * Configure the processor using the given user specified parameters.
-             * 
-             * @param pSet Set of parameters used to configure this processor.
-             */
-            void configure(const ParameterSet &pSet); 
-
             /**
              * Run the processor and create a collection of results which 
              * indicate if the event passes/fails the Hcal veto.

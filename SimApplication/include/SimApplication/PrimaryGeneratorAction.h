@@ -1,36 +1,38 @@
 /**
  * @file PrimaryGeneratorAction.h
  * @brief Class implementing the Geant4 primary generator action
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_PRIMARYGENERATORACTION_H_
-#define SIMAPPLICATION_PRIMARYGENERATORACTION_H_
+#ifndef SIMAPPLICATION_PRIMARYGENERATORACTION_H
+#define SIMAPPLICATION_PRIMARYGENERATORACTION_H
 
-//------------//
-//   Geant4   //
-//------------//
-#include "G4Event.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4ParticleGun.hh"
-#include "G4ParticleTable.hh"
-#include "G4VPrimaryGenerator.hh"
-#include "G4RunManager.hh"
-#include "G4SystemOfUnits.hh"
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <algorithm>
+#include <memory>
+
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
 #include "G4VUserPrimaryGeneratorAction.hh"
 
-//----------//
-//   ROOT   //
-//----------//
-#include "TRandom.h"
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+//#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
+#include "SimApplication/PrimaryGeneratorManager.h" 
+//#include "SimApplication/RootPrimaryGenerator.h"
 
-//-------------//
-//   LDMX-SW   //
-//-------------//
-#include "SimPlugins/PluginManagerAccessor.h"
-#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
-#include "SimApplication/RootPrimaryGenerator.h"
-#include "SimApplication/UserPrimaryParticleInformation.h"
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Parameters.h"
+
+// Forward declarations
+class G4Event; 
+class TRandom3;
 
 namespace ldmx {
 
@@ -40,14 +42,17 @@ namespace ldmx {
      * @class PrimaryGeneratorAction
      * @brief Implementation of Geant4 primary generator action
      */
-    class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction, public PluginManagerAccessor {
+    class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
         public:
 
-            /**
-             * Class constructor.
-             */
-            PrimaryGeneratorAction();
+            /*
+             * Constructor
+             *
+             * @param parameters The parameters used to configure the primary
+             *                   generator action. 
+             */  
+            PrimaryGeneratorAction(Parameters& parameters);
 
             /**
              * Class destructor.
@@ -56,15 +61,9 @@ namespace ldmx {
 
             /**
              * Generate the event.
-             * @param anEvent The Geant4 event.
+             * @param event The Geant4 event.
              */
-            virtual void GeneratePrimaries(G4Event* anEvent);
-
-            /**
-             * Set the primary generator.
-             * @param primaryGenerator The primary generator.
-             */
-            void setPrimaryGenerator(G4VPrimaryGenerator* primaryGenerator);
+            void GeneratePrimaries(G4Event* event) final override;
 
             /**
              * Enable beamspot smearing.
@@ -90,9 +89,6 @@ namespace ldmx {
              */
             void setBeamspotZSize(double bssize){ beamspotZSize_ = bssize; };
 
-            /** Return the ith generator. */ 
-            G4VPrimaryGenerator* getGenerator(int i){ return generator_.at(i); }
-
             /** 
              * Get the index of the last generator in the list of 
              * generators.
@@ -104,20 +100,18 @@ namespace ldmx {
 
             /**
              * Smearing beamspot
-             * @param anEvent The Geant4 event.
+             * @param event The Geant4 event.
              */
-            void smearingBeamspot(G4Event* anEvent);
+            void smearingBeamspot(G4Event* event);
 
-            /** By default, G4ParticleGun is used as the primary generator. */
-            ParticleGun* gun; 
+            /// Manager of all generators used by the event
+            std::unique_ptr< PrimaryGeneratorManager > manager_;
 
-            /**
-             * The primary generator.
-             */
-            std::vector< G4VPrimaryGenerator* > generator_;
+            /// Random number generator
+            std::unique_ptr< TRandom3 > random_;
 
-            /** Random number generator. */
-            TRandom* random_;
+            /// The parameters used to configure the primary generator of choice
+            Parameters parameters_; 
 
             /** 
              * Flag denoting whether the vertex position of a particle 
@@ -139,5 +133,7 @@ namespace ldmx {
             int indexRpg_{-1};          
 
     };  // PrimaryGeneratorAction
-}
-#endif // SIMAPPLICATION_PRIMARYGENERATORACTION_H_
+
+} // ldmx
+
+#endif // SIMAPPLICATION_PRIMARYGENERATORACTION_H

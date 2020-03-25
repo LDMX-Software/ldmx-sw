@@ -5,110 +5,65 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef BIASING_TARGETENPROCESSFILTER_H_
-#define BIASING_TARGETENPROCESSFILTER_H_
+#ifndef BIASING_TARGETENPROCESSFILTER_H
+#define BIASING_TARGETENPROCESSFILTER_H
 
-//------------//
-//   Geant4   //
-//------------//
-#include "G4RunManager.hh"
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimApplication/UserAction.h"
 
-//----------//
-//   LDMX   //
-//----------//
-#include "SimPlugins/UserActionPlugin.h"
-#include "Biasing/BiasingMessenger.h"
-#include "Biasing/TargetENProcessFilterMessenger.h"
+// Forward Declarations 
+class G4Step; 
+class G4Event; 
 
 namespace ldmx {
 
-    class TargetENProcessFilterMessenger; 
-
-    class TargetENProcessFilter : public UserActionPlugin {
+    class TargetENProcessFilter : public UserAction {
 
         public:
 
             /**
              * Class constructor.
              */
-            TargetENProcessFilter();
+            TargetENProcessFilter(const std::string& name, Parameters& parameters);
 
-            /**
-             * Class destructor.
-             */
+            /// Destructor
             ~TargetENProcessFilter();
 
-            /**
-             * Get the name of the plugin.
-             * @return The name of the plugin.
-             */
-            virtual std::string getName() {
-                return "TargetENProcessFilter";
-            }
-
-            /**
-             * Get whether this plugin implements the event action.
-             * @return True if the plugin implements the event action.
-             */
-            virtual bool hasEventAction() { 
-                return true;
-            }
-
-            /**
-             * Get whether this plugin implements the stepping action.
-             * @return True to indicate this plugin implements the stepping action.
-             */
-            bool hasSteppingAction() {
-                return true;
-            }
-
-            /**
-             * Get whether this plugin implements the stacking aciton.
-             * @return True to indicate this plugin implements the stacking action.
-             */
-            bool hasStackingAction() { 
-                return true;
-            }
 
             /**
              * Implementmthe stepping action which performs the target volume biasing.
              * @param step The Geant4 step.
              */
-            void stepping(const G4Step* step);
+            void stepping(const G4Step* step) final override;
 
             /**
              * End of event action.
              */
-            virtual void endEvent(const G4Event*);
+            void EndOfEventAction(const G4Event*) final override;
 
-            /** 
-             * @param volume Set the volume that the filter will be applied to. 
-             */
-            void setVolume(std::string volumeName) { volumeName_ = volumeName; }; 
-
-            /**
-             * Set the energy threshold that the recoil electron must exceed.
-             */
-            void setRecoilEnergyThreshold(double recoilEnergyThreshold) { 
-                recoilEnergyThreshold_ = recoilEnergyThreshold; 
-            }
-
+            /// Retrieve the type of actions this class defines
+            std::vector< TYPE > getTypes() final override { 
+                return { TYPE::EVENT, TYPE::STEPPING }; 
+            } 
 
         private:
 
-            /** Messenger used to pass arguments to this class. */
-            TargetENProcessFilterMessenger* messenger_{nullptr}; 
-
             /** The volume name of the LDMX target. */
-            G4String volumeName_{"target_PV"};
+            std::string volumeName_{"target_PV"};
 
             /** Flag indicating if the reaction of intereset occurred. */
             bool reactionOccurred_{false};
 
             /** Energy that the recoil electron must not surpass. */
-            double recoilEnergyThreshold_{1500}; 
+            double recoilEnergyThreshold_{1500};
 
-    };
-}
+            /// Process to filter on 
+            std::string process_{""}; 
+                
+    }; // TargetENProcessFilter
 
-#endif // BIASING_TARGETPROCESSFILTER_H__
+} // ldmx
+
+#endif // BIASING_TARGETPROCESSFILTER_H

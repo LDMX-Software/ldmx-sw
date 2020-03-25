@@ -10,8 +10,7 @@ namespace ldmx {
     MyProcessor::~MyProcessor() { 
     }
 
-    void MyProcessor::configure(const ParameterSet &pSet) { 
-    }
+    void MyProcessor::configure(Parameters& parameters) { }
 
     void MyProcessor::produce(Event& event) { 
 

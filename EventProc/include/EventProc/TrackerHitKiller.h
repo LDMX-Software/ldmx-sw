@@ -24,6 +24,7 @@
 #include "Event/SimTrackerHit.h"
 #include "Event/SiStripHit.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Parameters.h" 
 
 namespace ldmx { 
 
@@ -40,9 +41,9 @@ namespace ldmx {
             /** 
              * Configure the processor using the given user specified parameters.
              * 
-             * @param pSet Set of parameters used to configure this processor.
+             * @param parameters Set of parameters used to configure this processor.
              */
-            void configure(const ParameterSet &pSet);
+            void configure(Parameters& parameters) final override;
 
             /**
              * Run the processor and create a collection of "digitized" Si
