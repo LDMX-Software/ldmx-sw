@@ -1,18 +1,29 @@
 /**
  * @file UserEventAction.h
  * @brief Class which implements the Geant4 user event action
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_USEREVENTACTION_H_
-#define SIMAPPLICATION_USEREVENTACTION_H_
+#ifndef SIMAPPLICATION_USEREVENTACTION_H
+#define SIMAPPLICATION_USEREVENTACTION_H
 
-// LDMX
-#include "SimPlugins/PluginManagerAccessor.h"
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <vector>
 
-// Geant4
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
 #include "G4UserEventAction.hh"
-#include "G4Event.hh"
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimApplication/UserAction.h" 
+
+// Forward declarations
+class G4Event;
 
 namespace ldmx {
 
@@ -20,7 +31,7 @@ namespace ldmx {
      * @class UserEventAction
      * @brief Implementation of user event action hook
      */
-    class UserEventAction : public G4UserEventAction, public PluginManagerAccessor {
+    class UserEventAction : public G4UserEventAction {
 
         public:
 
@@ -38,18 +49,29 @@ namespace ldmx {
 
             /**
              * Implementation of begin of event hook.
-             * @param anEvent The Geant4 event.
+             * @param event The Geant4 event.
              */
-            void BeginOfEventAction(const G4Event* anEvent);
+            void BeginOfEventAction(const G4Event* event);
 
             /**
              * Implementation of end of event hook.
-             * @param anEvent The Geant4 event.
+             * @param event The Geant4 event.
              */
-            void EndOfEventAction(const G4Event* anEvent);
+            void EndOfEventAction(const G4Event* event);
 
-    };
+            /**
+             * Register a user action of type EventAction with this class. 
+             *
+             * @param action  User action of type EventAction
+             */
+            void registerAction(UserAction* eventAction) { eventActions_.push_back(eventAction); }
+        
+        private:
 
-}
+            std::vector<UserAction*> eventActions_; 
+    
+    };  // UserEventAction
 
-#endif
+}  // ldmx
+
+#endif // SIMAPPLICATION_USEREVENTACTION_H

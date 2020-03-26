@@ -286,7 +286,7 @@ namespace ldmx {
 
             unsigned nCellsWide_{0};
             double lengthWide_{0};
-            double gap_{0};
+            double gap_{1};
             double cellr_{0};
             double moduler_{0};
             double cellR_{0};

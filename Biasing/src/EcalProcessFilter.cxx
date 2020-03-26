@@ -2,24 +2,26 @@
  * @file EcalProcessFilter.cxx
  * @brief User action plugin that biases Geant4 to only process events which
  *        involve a photonuclear reaction in the ECal.
- * @author Omar Moreno
- *         SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
 #include "Biasing/EcalProcessFilter.h"
 
-SIM_PLUGIN(ldmx, EcalProcessFilter)
-
 namespace ldmx { 
 
-    EcalProcessFilter::EcalProcessFilter() {
-        messenger_ = new EcalProcessFilterMessenger(this);
+    EcalProcessFilter::EcalProcessFilter(const std::string& name, Parameters& parameters) 
+        : UserAction(name, parameters) {
+
+        boundVolumes_ = parameters.getParameter< std::vector < std::string > >("boundVolumes"); 
+        auto volume{parameters.getParameter< std::string >("volume")};
+        addVolume(volume); 
+        process_ = parameters.getParameter< std::string >("process");  
     }
 
     EcalProcessFilter::~EcalProcessFilter() {
     }
 
-    G4ClassificationOfNewTrack EcalProcessFilter::stackingClassifyNewTrack(
+    G4ClassificationOfNewTrack EcalProcessFilter::ClassifyNewTrack(
             const G4Track* track, 
             const G4ClassificationOfNewTrack& currentTrackClass) {
 
@@ -72,9 +74,9 @@ namespace ldmx {
         G4VPhysicalVolume* volume = track->GetVolume();
         G4String volumeName = volume->GetName();
 
-        /*std::cout << "*******************************" << std::endl;*/ 
-        /*std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;*/
-        /*std::cout << "********************************" << std::endl;*/
+        //std::cout << "*******************************" << std::endl;
+        //std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;
+        //std::cout << "********************************" << std::endl;
         
         // Get the particle type.
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
@@ -82,21 +84,21 @@ namespace ldmx {
         // Get the kinetic energy of the particle.
         //double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
 
-        /*std::cout << "[ EcalProcessFilter ]:\n" 
-                    << "\tTotal energy of " << particleName  << ": " << incidentParticleEnergy << " MeV \n"
-                    << "\tPDG ID: " << pdgID << "\n"
-                    << "\tTrack ID: " << track->GetTrackID() << "\n" 
-                    << "\tStep #: " << track->GetCurrentStepNumber() << "\n"
-                    << "\tParent ID: " << track->GetParentID() << "\n"
-                    << "\tParticle currently in " << volumeName  << std::endl;*/
+        //std::cout << "[ EcalProcessFilter ]:\n" 
+        //            << "\tTotal energy of " << particleName  << ": " << incidentParticleEnergy << " MeV \n"
+        //            << "\tPDG ID: " << pdgID << "\n"
+        //            << "\tTrack ID: " << track->GetTrackID() << "\n" 
+        //            << "\tStep #: " << track->GetCurrentStepNumber() << "\n"
+        //            << "\tParent ID: " << track->GetParentID() << "\n"
+        //            << "\tParticle currently in " << volumeName  << std::endl;
 
         // If the particle isn't in the specified volume, stop processing the 
         // event.
         std::vector<G4Track*> bremGammaList = TargetBremFilter::getBremGammaList();
         if (std::find(std::begin(volumes_), std::end(volumes_), volumeName) == std::end(volumes_)) {
 
-                    /*std::cout << "[ EcalProcessFilter ]: "
-                                << "Brem is in " << volumeName  << std::endl;*/
+            //std::cout << "[ EcalProcessFilter ]: "
+            //            << "Brem is in " << volumeName  << std::endl;
 
             // If secondaries were produced outside of the volume of interest, 
             // and there aren't additional brems to process, abort the 
@@ -105,9 +107,9 @@ namespace ldmx {
             if (step->GetSecondary()->size() != 0 
                     && (std::find(bremGammaList.begin(), bremGammaList.end(), track) != bremGammaList.end())) { 
                 
-                /*std::cout << "[ EcalProcessFilter ]: "
-                            << "Reaction occured outside volume of intereset --> Aborting event." 
-                            << std::endl;*/
+                //std::cout << "[ EcalProcessFilter ]: "
+                //            << "Reaction occured outside volume of intereset --> Aborting event." 
+                //            << std::endl;
 
                 if (bremGammaList.size() == 1) { 
                     track->SetTrackStatus(fKillTrackAndSecondaries);
@@ -122,6 +124,7 @@ namespace ldmx {
                     return;
                 }
             }
+            //std::cout << "[ EcalProcessFilter ]: Returning." << std::endl;
             return;
         }
 
@@ -142,38 +145,39 @@ namespace ldmx {
  
         // Get the particles daughters.
         const G4TrackVector* secondaries = step->GetSecondary();
+        //std::cout << "[ EcalProcessFilter ]: Secondaries: " << secondaries->size() << std::endl;
 
 
         // If the particle doesn't interact, then move on to the next step.
         if (secondaries->size() == 0) { 
             
-            /*std::cout << "[ EcalProcessFilter ]: "
-                        << "Brem photon did not interact --> Continue propogating track."
-                        << std::endl;*/    
+            //std::cout << "[ EcalProcessFilter ]: "
+            //            << "Brem photon did not interact --> Continue propogating track."
+            //            << std::endl;   
         
             // If the particle is exiting the bounding volume, kill it.
             if (!boundVolumes_.empty() && step->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) {
                 if (std::find(std::begin(boundVolumes_), std::end(boundVolumes_), volumeName) != std::end(boundVolumes_)) {
 
-                    /*std::cout << "[ EcalProcessFilter ]: "
-                                << "Brem photon is exiting the volume --> particle will be killed or suspended."
-                                << std::endl;*/    
+                    //std::cout << "[ EcalProcessFilter ]: "
+                    //            << "Brem photon is exiting the volume --> particle will be killed or suspended."
+                    //            << std::endl;  
                     
                     if (bremGammaList.size() == 1) { 
                         track->SetTrackStatus(fKillTrackAndSecondaries);
                         G4RunManager::GetRunManager()->AbortEvent();
                         currentTrack_ = nullptr;
-                        /*std::cout << "[ EcalProcessFilter ]: " 
-                                    << " Brem list is empty --> Killing all tracks!"
-                                    << std::endl;*/
+                        //std::cout << "[ EcalProcessFilter ]: " 
+                        //            << " Brem list is empty --> Killing all tracks!"
+                        //            << std::endl;
                         return;
                     } else { 
                         currentTrack_ = track; 
                         track->SetTrackStatus(fSuspend);
                         TargetBremFilter::removeBremFromList(track);
-                        /*std::cout << "[ EcalProcessFilter ]: " 
-                                    << " Other tracks still need to be processed --> Suspending track!"
-                                    << std::endl;*/
+                        //std::cout << "[ EcalProcessFilter ]: " 
+                        //            << " Other tracks still need to be processed --> Suspending track!"
+                        //            << std::endl;
                         return;
                     }
                 }
@@ -185,33 +189,33 @@ namespace ldmx {
             // process used to create them. 
             G4String processName = secondaries->at(0)->GetCreatorProcess()->GetProcessName(); 
             
-            /*std::cout << "[ EcalProcessFilter ]: "
-                        << "Brem photon produced " << secondaries->size() 
-                        << " particle via " << processName << " process." 
-                        << std::endl;*/
+            //std::cout << "[ EcalProcessFilter ]: "
+            //            << "Brem photon produced " << secondaries->size() 
+            //            << " particle via " << processName << " process." 
+            //            << std::endl;
 
             // Only record the process that is being biased
-            if (!processName.contains(BiasingMessenger::getProcess())) {
+            if (!processName.contains(process_)) {
 
-                /*std::cout << "[ EcalProcessFilter ]: "
-                            << "Process was not " << BiasingMessenger::getProcess() 
-                            << std::endl;*/
+                //std::cout << "[ EcalProcessFilter ]: "
+                //            << "Process was not " << process_ 
+                //            << std::endl;
                 
                 if (bremGammaList.size() == 1) { 
                     track->SetTrackStatus(fKillTrackAndSecondaries);
                     G4RunManager::GetRunManager()->AbortEvent();
                     currentTrack_ = nullptr;
-                    /*std::cout << "[ EcalProcessFilter ]: " 
-                              << " Brem list is empty --> Killing all tracks!"
-                              << std::endl;*/
+                    //std::cout << "[ EcalProcessFilter ]: " 
+                    //          << " Brem list is empty --> Killing all tracks!"
+                    //          << std::endl;
                     return;
                 } else { 
                     currentTrack_ = track; 
                     track->SetTrackStatus(fSuspend);
                     TargetBremFilter::removeBremFromList(track);
-                    /*std::cout << "[ EcalProcessFilter ]: " 
-                                << " Other tracks still need to be processed --> Suspending track!"
-                                << std::endl;*/
+                    //std::cout << "[ EcalProcessFilter ]: " 
+                    //            << " Other tracks still need to be processed --> Suspending track!"
+                    //            << std::endl;
                     return;
                 }
             }
@@ -221,13 +225,13 @@ namespace ldmx {
                       << " particle via " << processName << " process." 
                       << std::endl;
             TargetBremFilter::removeBremFromList(track);
-            BiasingMessenger::setEventWeight(track->GetWeight());
+            //BiasingMessenger::setEventWeight(track->GetWeight());
             photonGammaID_ = track->GetTrackID(); 
         }
 
     }
 
-    void EcalProcessFilter::postTracking(const G4Track* track) { 
+    void EcalProcessFilter::PostUserTrackingAction(const G4Track* track) { 
        
         if (track->GetParentID() == photonGammaID_) { 
             UserTrackInformation* userInfo 
@@ -247,7 +251,6 @@ namespace ldmx {
 
     void EcalProcessFilter::addVolume(std::string volume) { 
         
-        std::cout << "[ EcalProcessFilter ]: Applying filter to volume " << volume << std::endl;
         if (volume.compare("ecal") == 0) { 
             for (G4VPhysicalVolume* physVolume : *G4PhysicalVolumeStore::GetInstance()) {
                 G4String physVolumeName = physVolume->GetName();
@@ -262,7 +265,8 @@ namespace ldmx {
     }        
     
     void EcalProcessFilter::addBoundingVolume(std::string volume) { 
-        std::cout << "[ EcalProcessFilter ]: Bounding particle to volume " << volume << std::endl;
         boundVolumes_.push_back(volume);
     }        
 }
+
+DECLARE_ACTION(ldmx, EcalProcessFilter)

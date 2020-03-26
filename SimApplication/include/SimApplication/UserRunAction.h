@@ -1,18 +1,29 @@
 /**
  * @file UserRunAction.h
  * @brief Class which implements user run action
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_USERRUNACTION_H_
-#define SIMAPPLICATION_USERRUNACTION_H_
+#ifndef SIMAPPLICATION_USERRUNACTION_H
+#define SIMAPPLICATION_USERRUNACTION_H
 
-// LDMX
-#include "SimPlugins/PluginManagerAccessor.h"
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <vector>
 
-// Geant4
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
 #include "G4UserRunAction.hh"
-#include "G4Run.hh"
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimApplication/UserAction.h" 
+
+// Forward declarations
+class G4Run; 
 
 namespace ldmx {
 
@@ -20,7 +31,7 @@ namespace ldmx {
      * @class UserRunAction
      * @brief Implementation of user run action hook
      */
-    class UserRunAction : public G4UserRunAction, public PluginManagerAccessor {
+    class UserRunAction : public G4UserRunAction {
 
         public:
 
@@ -36,17 +47,29 @@ namespace ldmx {
 
             /**
              * Implementation of begin run hook.
-             * @param aRun The current Geant4 run info.
+             * @param run The current Geant4 run info.
              */
-            void BeginOfRunAction(const G4Run* aRun);
+            void BeginOfRunAction(const G4Run* run);
 
             /**
              * Implementation of end run hook.
-             * @param aRun The current Geant4 run info.
+             * @param run The current Geant4 run info.
              */
-            void EndOfRunAction(const G4Run* aRun);
-    };
+            void EndOfRunAction(const G4Run* run);
+            
+            /**
+             * Register a user action of type RunAction with this class. 
+             *
+             * @param action  User action of type RunAction
+             */
+            void registerAction(UserAction* runAction) { runActions_.push_back(runAction); }
+        
+        private:
 
-}
+            std::vector<UserAction*> runActions_; 
+    
+    }; // UserRunAction
 
-#endif
+} // ldmx
+
+#endif // SIMAPPLICATION_USERRUNACTION_H

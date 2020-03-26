@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef _SIM_APPLICATION_PARTICLE_GUN_H_
-#define _SIM_APPLICATION_PARTICLE_GUN_H_
+#ifndef SIMCORE_PARTICLE_GUN_H
+#define SIMCORE_PARTICLE_GUN_H
 
 //------------//
 //   Geant4   //
@@ -15,26 +15,38 @@
 // Forward declarations
 class G4Event; 
 
-namespace ldmx { 
+namespace ldmx {
 
+    // Forward declarations
+    class Parameters;  
+
+    /**
+     * @class ParticleGun
+     * @brief Class that extends the functionality of G4ParticleGun.
+     */
     class ParticleGun : public G4ParticleGun { 
     
         public: 
 
-            /** Constructor. */
-            ParticleGun(); 
+            /** 
+             * Constructor. 
+             *
+             * @param parameters Parameters used to configure the particle gun. 
+             */
+            ParticleGun(Parameters& parameters); 
 
-            /** Destructor. */
+            /// Destructor
             ~ParticleGun();
 
             /** 
              * Generate the primary vertices in the Geant4 event. 
+             * 
              * @param event The Geant4 event.
              */
-            void GeneratePrimaryVertex(G4Event* event); 
+            void GeneratePrimaryVertex(G4Event* event) final override; 
 
     }; // ParticleGun 
 
 } // ldmx
 
-#endif // _SIM_APPLICATION_PARTICLE_GUN_H_
+#endif // SIMCORE_PARTICLE_GUN_H

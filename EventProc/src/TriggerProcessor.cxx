@@ -3,12 +3,12 @@
 
 namespace ldmx {
 
-    void TriggerProcessor::configure(const ParameterSet& pSet) {
+    void TriggerProcessor::configure(Parameters& parameters) {
 
-        layerESumCut_ = pSet.getDouble("threshold");
-        mode_ = pSet.getInteger("mode");
-        startLayer_ = pSet.getInteger("start_layer");
-        endLayer_ = pSet.getInteger("end_layer");
+        layerESumCut_ = parameters.getParameter< double >("threshold");
+        mode_ = parameters.getParameter< int >("mode");
+        startLayer_ = parameters.getParameter< int >("start_layer");
+        endLayer_ = parameters.getParameter< int >("end_layer");
 
         if (mode_ == 0) {
             algoName_ = "LayerSumTrig";

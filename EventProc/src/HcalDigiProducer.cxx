@@ -15,21 +15,21 @@ namespace ldmx {
     {
     }
 
-    void HcalDigiProducer::configure(const ParameterSet& ps) {
-        random_                    = std::make_unique<TRandom3>(ps.getInteger("randomSeed", 1000));
-        STRIPS_BACK_PER_LAYER_     = ps.getInteger("strips_back_per_layer");
-        NUM_BACK_HCAL_LAYERS_      = ps.getInteger("num_back_hcal_layers");
-        STRIPS_SIDE_TB_PER_LAYER_  = ps.getInteger("strips_side_tb_per_layer");
-        NUM_SIDE_TB_HCAL_LAYERS_   = ps.getInteger("num_side_tb_hcal_layers");
-        STRIPS_SIDE_LR_PER_LAYER_  = ps.getInteger("strips_side_lr_per_layer");
-        NUM_SIDE_LR_HCAL_LAYERS_   = ps.getInteger("num_side_lr_hcal_layers");
-        SUPER_STRIP_SIZE_          = ps.getInteger("super_strip_size");
-        readoutThreshold_          = ps.getInteger("readoutThreshold");
-        meanNoise_                 = ps.getDouble("meanNoise");
-        mev_per_mip_               = ps.getDouble("mev_per_mip");
-        pe_per_mip_                = ps.getDouble("pe_per_mip");
-        strip_attenuation_length_  = ps.getDouble("strip_attenuation_length");
-        strip_position_resolution_ = ps.getDouble("strip_position_resolution");
+    void HcalDigiProducer::configure(Parameters& parameters) {
+        random_                    = std::make_unique<TRandom3>(parameters.getParameter< int >("randomSeed"));
+        STRIPS_BACK_PER_LAYER_     = parameters.getParameter< int >("strips_back_per_layer");
+        NUM_BACK_HCAL_LAYERS_      = parameters.getParameter< int >("num_back_hcal_layers");
+        STRIPS_SIDE_TB_PER_LAYER_  = parameters.getParameter< int >("strips_side_tb_per_layer");
+        NUM_SIDE_TB_HCAL_LAYERS_   = parameters.getParameter< int >("num_side_tb_hcal_layers");
+        STRIPS_SIDE_LR_PER_LAYER_  = parameters.getParameter< int >("strips_side_lr_per_layer");
+        NUM_SIDE_LR_HCAL_LAYERS_   = parameters.getParameter< int >("num_side_lr_hcal_layers");
+        SUPER_STRIP_SIZE_          = parameters.getParameter< int >("super_strip_size");
+        readoutThreshold_          = parameters.getParameter< int >("readoutThreshold");
+        meanNoise_                 = parameters.getParameter< double >("meanNoise");
+        mev_per_mip_               = parameters.getParameter< double >("mev_per_mip");
+        pe_per_mip_                = parameters.getParameter< double >("pe_per_mip");
+        strip_attenuation_length_  = parameters.getParameter< double >("strip_attenuation_length");
+        strip_position_resolution_ = parameters.getParameter< double >("strip_position_resolution");
         noiseGenerator_ = std::make_unique<NoiseGenerator>(meanNoise_,false);
         noiseGenerator_->setNoiseThreshold(1); // hard-code this number, create noise hits for non-zero PEs! 
     }

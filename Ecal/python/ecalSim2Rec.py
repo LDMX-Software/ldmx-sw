@@ -19,6 +19,16 @@ ecalSim2Rec.parameters["readoutThreshold"] = 4.
 ### v2 
 ### The default layerWeights and secondOrderEnergyCorrection were calculated at least before v3.
 ### The other options are below, uncomment those lines if you wish to use those geometries.
+#ecalSim2Rec.parameters[ "secondOrderEnergyCorrection" ] = 4000./4220.
+##                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+##   This correction was found by comparing the mean of 1M single 4GeV electron events with 4GeV.
+#
+#ecalSim2Rec.parameters[ "layerWeights" ] = [
+#        1.641, 3.526, 5.184, 6.841,
+#        8.222, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775,
+#        8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 12.642, 16.51,
+#        16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 8.45
+#        ]
 
 ### v9
 ### These layer weights work for all ecal designs between v3 and v9

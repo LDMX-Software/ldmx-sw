@@ -61,7 +61,7 @@ namespace ldmx {
              * Sets event constants and configures the noise generator, noise injector, and pulse function.
              * Creates digi collection
              */
-            virtual void configure(const ParameterSet&);
+            virtual void configure(Parameters&);
 
             /**
              * Simulates measurement of pulse and creates digi collection for input event.

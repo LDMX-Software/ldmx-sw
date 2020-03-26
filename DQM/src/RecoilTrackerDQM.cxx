@@ -23,8 +23,8 @@ namespace ldmx {
 
     }
 
-    void RecoilTrackerDQM::configure(const ParameterSet& ps) {
-        ecalVetoCollectionName_ = ps.getString("ecal_veto_collection");
+    void RecoilTrackerDQM::configure(Parameters& parameters) {
+        ecalVetoCollectionName_ = parameters.getParameter< std::string >("ecal_veto_collection");
     }
 
     void RecoilTrackerDQM::analyze(const Event & event) { 

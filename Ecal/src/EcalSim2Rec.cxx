@@ -9,12 +9,6 @@
 
 namespace ldmx {
 
-    const std::vector<double> LAYER_WEIGHTS 
-        = {1.641, 3.526, 5.184, 6.841,
-          8.222, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775,
-          8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 12.642, 16.51,
-          16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 8.45}; //v2
-   
     const double EcalSim2Rec::ELECTRONS_PER_MIP = 33000.0; // e-
 
     const double EcalSim2Rec::MIP_SI_RESPONSE = 0.130; // MeV
@@ -25,7 +19,7 @@ namespace ldmx {
         noiseGenerator_ = std::make_unique<NoiseGenerator>();
     }
 
-    void EcalSim2Rec::configure(const ParameterSet& ps) {
+    void EcalSim2Rec::configure(Parameters& ps) {
 
         // These are the v12 parameters
         //  all distances in mm
@@ -78,9 +72,9 @@ namespace ldmx {
                 ecalFrontZ
                 );
 
-        noiseIntercept_ = ps.getDouble("noiseIntercept",0.); 
-        noiseSlope_     = ps.getDouble("noiseSlope",1.);
-        padCapacitance_ = ps.getDouble("padCapacitance",0.1); 
+        noiseIntercept_ = ps.getParameter<double>("noiseIntercept"); 
+        noiseSlope_     = ps.getParameter<double>("noiseSlope");
+        padCapacitance_ = ps.getParameter<double>("padCapacitance"); 
 
         // Calculate the noise RMS based on the properties of the readout pad
         noiseRMS_ = this->calculateNoise(padCapacitance_, noiseIntercept_, noiseSlope_);  
@@ -91,16 +85,16 @@ namespace ldmx {
         //std::cout << "[ EcalSim2Rec ]: Noise RMS: " << noiseRMS_ << " MeV" << std::endl;
 
         // Calculate the readout threhsold
-        readoutThreshold_ = ps.getDouble("readoutThreshold")*noiseRMS_;
+        readoutThreshold_ = ps.getParameter<double>("readoutThreshold")*noiseRMS_;
         //std::cout << "[ EcalSim2Rec ]: Readout threshold: " << readoutThreshold_ << " MeV" << std::endl;
 
-        secondOrderEnergyCorrection_ = ps.getDouble( "secondOrderEnergyCorrection" , 4000./4220. );
+        secondOrderEnergyCorrection_ = ps.getParameter<double>( "secondOrderEnergyCorrection" );
 
-        layerWeights_ = ps.getVDouble( "layerWeights" , LAYER_WEIGHTS );
+        layerWeights_ = ps.getParameter<std::vector<double>>( "layerWeights" );
 
         noiseGenerator_->setNoise(noiseRMS_); 
         noiseGenerator_->setPedestal(0); 
-        noiseGenerator_->setNoiseThreshold(ps.getDouble("readoutThreshold")*noiseRMS_); 
+        noiseGenerator_->setNoiseThreshold(readoutThreshold_);
 
     }
 

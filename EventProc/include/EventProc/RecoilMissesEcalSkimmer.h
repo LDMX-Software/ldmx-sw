@@ -29,13 +29,6 @@ namespace ldmx {
             /** Destructor */
             ~RecoilMissesEcalSkimmer();
 
-            /** 
-             * Configure the processor using the given user specified parameters.
-             * 
-             * @param pSet Set of parameters used to configure this processor.
-             */
-            void configure(const ParameterSet &pSet); 
-
             /**
              * Run the processor and select events where the recoil misses the 
              * Ecal. 
