@@ -29,7 +29,7 @@ namespace ldmx {
 
         //convert int to enum
         bremMethod_ = G4eDarkBremsstrahlungModel::DarkBremMethod( bremMethodInt );
-            
+
     }
 
     APrimePhysics::~APrimePhysics() {
