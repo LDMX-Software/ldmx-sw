@@ -46,8 +46,10 @@ namespace ldmx {
                 xsecBiasing = new GammaToMuPairXsecBiasingOperator("GammaToMuPairXsecBiasingOperator");
             } else if (biasingProcess.compare("electronNuclear") == 0) { 
                 xsecBiasing = new ElectroNuclearXsecBiasingOperator("ElectroNuclearXsecBiasingOperator");
+            } else if (biasingProcess.compare("eDBrem") == 0) { 
+                xsecBiasing = new DarkBremXsecBiasingOperator("DarkBremXsecBiasingOperator");
             } else {
-                EXCEPTION_RAISE("BiasingException", "Invalid particle type"); 
+                EXCEPTION_RAISE("BiasingException", "Invalid process name '" + biasingProcess + "'." ); 
             }
 
             // Configure the operator

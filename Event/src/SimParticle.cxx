@@ -29,6 +29,7 @@ namespace ldmx {
         procMap["photonNuclear"] = ProcessType::photonNuclear; /* photonuclear */
         procMap["electronNuclear"] = ProcessType::electronNuclear; /* electronuclear*/
         procMap["GammaToMuPair"] = ProcessType::GammaToMuPair; /* gamma to mu+mu- */
+        procMap["eDBrem"] = ProcessType::eDarkBrem; /* e- --> A' + e- */
         return procMap;
     }
 
