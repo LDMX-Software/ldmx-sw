@@ -129,14 +129,6 @@ namespace ldmx {
              */
             bool allowed(const std::string& command) const;
 
-            /**
-             * Get the detector path based on the input version number.
-             *
-             * @param version integer specifying the version of the detector
-             * @return absolute system path to the detector gdml files
-             */
-            std::string getDetectorPath(int version) const;
-
         private:
 
             /// Manager controlling G4 simulation run 
@@ -154,9 +146,6 @@ namespace ldmx {
             /// PersistencyManager 
             std::unique_ptr<RootPersistencyManager> persistencyManager_;
 
-            /// The parameters used to configure the simulation
-            Parameters parameters_;   
-
             /// Handle to the G4Session -> how to deal with G4cout and G4cerr
             G4UIsession* sessionHandle_{nullptr};
 
@@ -167,6 +156,9 @@ namespace ldmx {
             /*********************************************************
              * Python Configuration Parameters
              *********************************************************/
+
+            /// The parameters used to configure the simulation
+            Parameters parameters_;   
 
             /// Path to detector description
             std::string detectorPath_;

@@ -45,9 +45,10 @@ namespace ldmx {
 
         // Set the description 
         description_ = parameters.getParameter< std::string >("description"); 
+        runNumber_   = parameters.getParameter< int >("runNumber");
         
-        setEnableHitContribs(parameters.getParameter< bool >("enableHitContribs")); 
-        setCompressHitContribs(parameters.getParameter< bool >("compressHitContribs"));
+        ecalHitIO_.setEnableHitContribs(parameters.getParameter< bool >("enableHitContribs")); 
+        ecalHitIO_.setCompressHitContribs(parameters.getParameter< bool >("compressHitContribs"));
 
     }
 
