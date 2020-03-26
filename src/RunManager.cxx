@@ -1,7 +1,6 @@
 /**
  * @file RunManager.cxx
  * @brief Class providing a Geant4 run manager implementation.
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
@@ -14,13 +13,18 @@
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/GammaPhysics.h"
 #include "SimApplication/ParallelWorld.h"
-#include "SimApplication/SteppingAction.h"
+#include "SimApplication/PrimaryGeneratorAction.h"
+#include "SimApplication/USteppingAction.h"
+#include "SimApplication/UserActionManager.h"
 #include "SimApplication/UserEventAction.h"
 #include "SimApplication/UserRunAction.h"
 #include "SimApplication/UserStackingAction.h"
 #include "SimApplication/UserTrackingAction.h"
-#include "SimPlugins/PluginManager.h"
-#include "SimPlugins/PluginMessenger.h"
+
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/FrameworkDef.h" 
 
 //------------//
 //   Geant4   //
@@ -34,24 +38,26 @@
 
 namespace ldmx {
 
-    RunManager::RunManager() {
-        pluginManager_ = new PluginManager();
-        pluginMessenger_ = new PluginMessenger(pluginManager_);
-        
+    RunManager::RunManager(Parameters& parameters) {  
+
+        parameters_ = parameters; 
+
         // Setup messenger for physics list.
         physicsListFactory_ = new G4PhysListFactory;
+
+        // Set whether the ROOT primary generator should use the persisted seed.
+        auto rootPrimaryGenUseSeed{parameters.getParameter< bool >("rootPrimaryGenUseSeed")}; 
+        setUseRootSeed(rootPrimaryGenUseSeed); 
+    
     }
 
     RunManager::~RunManager() {
-        std::cout << "~RunManager" << std::endl;
-        delete pluginManager_;
-        delete pluginMessenger_;
         delete physicsListFactory_; 
     }
 
     void RunManager::setupPhysics() {
 
-        G4VModularPhysicsList* pList = physicsListFactory_->GetReferencePhysList("FTFP_BERT");
+        auto pList{physicsListFactory_->GetReferencePhysList("FTFP_BERT")};
         
         if (isPWEnabled_) {
             std::cout << "[ RunManager ]: Parallel worlds physics list has been registered." << std::endl;
@@ -61,15 +67,17 @@ namespace ldmx {
         pList->RegisterPhysics(new APrimePhysics);
         pList->RegisterPhysics(new GammaPhysics);
        
-        if (BiasingMessenger::isBiasingEnabled()) {
+        auto biasingEnabled{parameters_.getParameter< bool >("biasing.enabled")}; 
+        if (biasingEnabled) {
 
-            std::cout << "[ RunManager ]: Enabling biasing of particle type " << BiasingMessenger::getParticleType() << std::endl;
+            auto biasedParticle{parameters_.getParameter< std::string >("biasing.particle")}; 
+            std::cout << "RunManager::setupPhysics : Enabling biasing of particle type " << biasedParticle << std::endl;
 
             // Instantiate the constructor used when biasing
             G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
 
             // Specify what particles are being biased
-            biasingPhysics->Bias(BiasingMessenger::getParticleType());
+            biasingPhysics->Bias(biasedParticle);
 
             // Register the physics constructor to the physics list:
             pList->RegisterPhysics(biasingPhysics);
@@ -94,24 +102,28 @@ namespace ldmx {
 
         G4RunManager::Initialize();
 
-        UserRunAction* runAction = new UserRunAction;
-        UserEventAction* eventAction = new UserEventAction;
-        UserTrackingAction* trackingAction = new UserTrackingAction;
-        SteppingAction* steppingAction = new SteppingAction;
-        UserStackingAction* stackingAction = new UserStackingAction;
+        // Instantiate the primary generator action
+        auto primaryGeneratorAction{ new PrimaryGeneratorAction(parameters_) };
+        SetUserAction( primaryGeneratorAction );
 
-        runAction->setPluginManager(pluginManager_);
-        eventAction->setPluginManager(pluginManager_);
-        trackingAction->setPluginManager(pluginManager_);
-        steppingAction->setPluginManager(pluginManager_);
-        stackingAction->setPluginManager(pluginManager_);
+        // Instantiate action manager
+        auto actionManager{UserActionManager::getInstance()}; 
 
-        SetUserAction(runAction);
-        SetUserAction(eventAction);
-        SetUserAction(trackingAction);
-        SetUserAction(steppingAction);
-        SetUserAction(stackingAction);
+        // Get instances of all G4 actions
+        auto actions{actionManager.getActions()};
+       
+        // Create all user actions
+        auto userActions{parameters_.getParameter< std::vector< Class > >("actions")}; 
+        std::for_each(userActions.begin(), userActions.end(), 
+                [&actionManager](auto& userAction) { 
+                    actionManager.createAction(userAction.className_, userAction.instanceName_, userAction.params_); 
+                }
+        );
 
+        // Register all actions with the G4 engine
+        for (const auto& [key, act] : actions) {
+            std::visit([this](auto&& arg) { this->SetUserAction(arg); }, act); 
+        }
     }
 
     DetectorConstruction* RunManager::getDetectorConstruction() {
