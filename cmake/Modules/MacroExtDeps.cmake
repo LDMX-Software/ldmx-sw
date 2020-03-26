@@ -1,3 +1,10 @@
+###############################################################################
+# Declare external dependencies for a module
+#   simply runs the Use file for any external modules listed
+#
+# @author Tom Eichlersmith, University of Minnesota
+###############################################################################
+
 macro(ext_deps)
 
   # define options for this function
@@ -7,12 +14,10 @@ macro(ext_deps)
   # parse command options
   cmake_parse_arguments(EXT_DEPS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-  #message("multiValueArgs='${multiValueArgs}'")
-  #message("EXT_DEPS_DEPENDENCIES='${EXT_DEPS_DEPENDENCIES}'")
-
   foreach(ext_dep ${EXT_DEPS_DEPENDENCIES})
-    #message(${ext_dep})
-    #message("including Use${ext_dep}.cmake")
+    if(MODULE_DEBUG)
+      message("including Use${ext_dep}.cmake")
+    endif()
     include("Use${ext_dep}")
   endforeach()
 

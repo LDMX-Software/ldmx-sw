@@ -20,17 +20,20 @@
 #
 # - The C++ source files are in a directory 'src' and have the extension '.cxx'.
 #
-# - Test programs are in the 'test' directory and define an executable 'main' 
+# - Test programs are in the 'test' directory and define an catch2 TEST_CASE
 #   function and also have the '.cxx' extension.
 #
 # The names of the output executables and test programs will be derived from
 # the source file names using the file's base name stripped of its extension,
-# with underscores replaced by dashes.  All test programs and executables will
-# be installed into the output 'bin' directory so their names should be unique 
-# across all modules within the repository.
+# with underscores replaced by dashes.  
+#
+# All test programs are compiled against Exception/test/ldmx_test.cxx
+#   @sa cmake/Modules/TestExecutable.cmake
 #
 # @author Jeremy McCormick, SLAC
+# @author Tom Eichlersmith, University of Minnesota
 ###############################################################################
+
 macro(MODULE)
 
   # define options for this function
@@ -40,13 +43,6 @@ macro(MODULE)
   
   # parse command options
   cmake_parse_arguments(MODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-  # set module's include dir
-  set(MODULE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
-  install(DIRECTORY ${MODULE_INCLUDE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
-  
-  # set module's source dir
-  set(MODULE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
   # print debug info 
   if(MODULE_DEBUG) 
@@ -63,24 +59,26 @@ macro(MODULE)
   # define current project based on module name
   project(${MODULE_NAME} CXX)
       
-  # set the local include dir var
-  set(${MODULE_NAME}_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-    
+  # set module's include dir (this is global variable ==> used when including other module deps)
+  set(${MODULE_NAME}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  include_directories(${${MODULE_NAME}_INCLUDE_DIR})
+  if(EXISTS ${${MODULE_NAME}_INCLUDE_DIR})
+    # module include directory exists ==> install
+    install(DIRECTORY ${${MODULE_NAME}_INCLUDE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
+  endif()
+  
+  # set module's source dir
+  set(${MODULE_NAME}_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
   # export the include dir var to the parent scope
+  #   used by other modules to include
   set(${MODULE_NAME}_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include PARENT_SCOPE)
     
-  # add the module include dir to the build
-  include_directories(${${MODULE_NAME}_INCLUDE_DIR})
-  
   # add include directories of module dependencies
   foreach(dependency ${MODULE_DEPENDENCIES})
     include_directories(${${dependency}_INCLUDE_DIR})
   endforeach()
   
-  # get source and header lists for building the application
-  file(GLOB sources ${MODULE_SOURCE_DIR}/*.cxx)
-  file(GLOB headers ${MODULE_INCLUDE_DIR}/include/*/*.h)
-
   # setup external dependencies
   ext_deps(DEPENDENCIES ${MODULE_EXTERNAL_DEPENDENCIES}) 
   if (EXT_DEP_INCLUDE_DIRS)
@@ -92,6 +90,9 @@ macro(MODULE)
   if(MODULE_DEBUG)
     message("MODULE_LIBRARIES='${MODULE_LIBRARIES}'")
   endif()
+
+  # get source and header lists for building the application
+  file(GLOB sources ${${MODULE_NAME}_SOURCE_DIR}/*.cxx)
 
   # if there are C++ source files then build a shared library
   if (sources)
@@ -105,16 +106,15 @@ macro(MODULE)
     # install the library
     install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
-  endif()
-  # make list of libraries required by executables and test programs which includes this module's lib
-  if (sources)
-    set(MODULE_BIN_LIBRARIES ${MODULE_NAME} ${MODULE_LIBRARIES})
+    # make list of libraries required by executables and test programs which includes this module's lib
+    set(${MODULE_NAME}_BIN_LIBRARIES ${MODULE_NAME} ${MODULE_LIBRARIES})
   else()
-    set(MODULE_BIN_LIBRARIES ${MODULE_LIBRARIES})
+    # no sources ==> still list module libraries for test executables
+    set(${MODULE_NAME}_BIN_LIBRARIES ${MODULE_LIBRARIES})
   endif()
-    
+
   if(MODULE_DEBUG)
-    message("MODULE_BIN_LIBRARIES='${MODULE_BIN_LIBRARIES}'")
+    message("${MODULE_NAME}_BIN_LIBRARIES='${${MODULE_NAME}_BIN_LIBRARIES}'")
   endif()
  
   # find test programs
@@ -142,7 +142,7 @@ macro(MODULE)
       message("building executable: ${executable}")
     endif()
     add_executable(${executable} ${executable_source})
-    target_link_libraries(${executable} ${MODULE_BIN_LIBRARIES})
+    target_link_libraries(${executable} ${${MODULE_NAME}_BIN_LIBRARIES})
     install(TARGETS ${executable} DESTINATION bin)
   endforeach()
 

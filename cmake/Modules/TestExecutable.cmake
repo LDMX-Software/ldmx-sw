@@ -1,5 +1,9 @@
+###############################################################################
 # Build and link test executable with all test sources
 # must be run after all modules are built
+#
+# @author Tom Eichlersmith, University of Minnesota
+###############################################################################
 
 # find test sources
 file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/*/test/*.cxx)
@@ -8,7 +12,8 @@ if(MODULE_DEBUG)
 endif()
 
 if(test_sources)
-  # test executable must be linked to all other module directories
+
+  # test executable must be compiled with all other test sources
   set(executable_test_source Exception/test/ldmx_test.cxx)
   get_filename_component(executable ${executable_test_source} NAME)
   string(REPLACE ".cxx" "" executable ${executable})
@@ -17,16 +22,33 @@ if(test_sources)
     message("building test executable: ${executable}")
   endif()
   add_executable(${executable} ${executable_test_source} ${test_sources})
+
+  # include all headers
   foreach(module ${MODULES})
-      target_include_directories(${executable} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/${module}/include) # need all module headers
+    target_include_directories(${executable} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/${module}/include) # need all module headers
   endforeach()
+
+  # link all external libraries
   file(GLOB external_libs ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/Use*.cmake)
   foreach(external_lib ${external_libs})
     include(${external_lib}) # include all external libs
   endforeach()
-  target_link_libraries(${executable} PUBLIC ${MODULES} ${EXT_DEP_LIBRARIES}) # link all module and external libraries
-  install(TARGETS ${executable} DESTINATION bin)
+  target_link_libraries(${executable} PUBLIC ${EXT_DEP_LIBRARIES})
   if(MODULE_DEBUG)
-      message("${executable} linked with: ${MODULES};${EXT_DEP_LIBRARIES}")
+    message("${executable} linked with: ${EXT_DEP_LIBRARIES}")
   endif()
+
+  # link all modules with sources
+  foreach(module ${MODULES}) 
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${module}/src)
+      if(MODULE_DEBUG)
+        message("${executable} linked with: ${module}")
+      endif()
+      target_link_libraries(${executable} PUBLIC ${module})
+    endif()
+  endforeach()
+
+  # install executable
+  install(TARGETS ${executable} DESTINATION bin)
+
 endif()
