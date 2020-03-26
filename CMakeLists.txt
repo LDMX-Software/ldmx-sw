@@ -70,6 +70,7 @@ include(MacroModule)
 include(MacroExtDeps)
 
 # construct list of modules in dependency order
+#   puts modules into MODULES cmake variable
 include(ConstructModuleList)
 
 # build each module in the list
