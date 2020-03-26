@@ -16,8 +16,21 @@
 
 namespace ldmx {
 
-    APrimePhysics::APrimePhysics(const G4String& name) :
-            G4VPhysicsConstructor(name), aprimeDef_(nullptr) { }
+    APrimePhysics::APrimePhysics(Parameters &params, const G4String& name) :
+            G4VPhysicsConstructor(name), aprimeDef_(nullptr) { 
+
+        aprimeMass_       = params.getParameter<double     >( "APrimeMass"                );
+        int bremMethodInt = params.getParameter<int        >( "darkbrem.method"           );
+        madGraphFilePath_ = params.getParameter<std::string>( "darkbrem.madgraphfilepath" );
+        globalXsecFactor_ = params.getParameter<double     >( "darkbrem.globalxsecfactor" );
+
+        //prevent negative or shrinking xsec factors
+        if ( globalXsecFactor_ < 1 ) globalXsecFactor_ = 1.;
+
+        //convert int to enum
+        bremMethod_ = G4eDarkBremsstrahlungModel::DarkBremMethod( bremMethodInt );
+            
+    }
 
     APrimePhysics::~APrimePhysics() {
     }

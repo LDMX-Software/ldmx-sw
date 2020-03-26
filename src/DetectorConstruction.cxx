@@ -46,7 +46,7 @@ namespace ldmx {
                 xsecBiasing = new GammaToMuPairXsecBiasingOperator("GammaToMuPairXsecBiasingOperator");
             } else if (biasingProcess.compare("electronNuclear") == 0) { 
                 xsecBiasing = new ElectroNuclearXsecBiasingOperator("ElectroNuclearXsecBiasingOperator");
-            } else if (BiasingMessenger::getProcess().compare("eDBrem") == 0) {
+            } else if (biasingProcess.compare("eDBrem") == 0) { 
                 xsecBiasing = new DarkBremXsecBiasingOperator("DarkBremXsecBiasingOperator");
             } else {
                 EXCEPTION_RAISE("BiasingException", "Invalid process name '" + biasingProcess + "'." ); 

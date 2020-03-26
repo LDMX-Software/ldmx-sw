@@ -11,6 +11,8 @@
 // Geant4
 #include "G4VPhysicsConstructor.hh"
 
+// LDMX
+#include "Framework/Parameters.h"
 #include "SimCore/G4eDarkBremsstrahlung.h"
 
 namespace ldmx {
@@ -35,7 +37,7 @@ namespace ldmx {
              *
              * @param name The name of the physics.
              */
-            APrimePhysics(const G4String& name = "APrime");
+            APrimePhysics(Parameters &params, const G4String& name = "APrime");
 
             /**
              * Class destructor.
@@ -57,26 +59,6 @@ namespace ldmx {
              * Links the dark brem processs to the electron through the process manager.
              */
             void ConstructProcess();
-
-            /**
-             * Set the A' Mass [MeV]
-             */
-            void setAPrimeMass(double mass) { aprimeMass_ = mass; }
-
-            /**
-             * Set the MadGraph Data file path
-             */
-            void setMadGraphFilePath(const std::string& filepath) { madGraphFilePath_ = filepath; }
-
-            /**
-             * Set the global xsec biasing factor
-             */
-            void setGlobalXsecFactor(double factor) { globalXsecFactor_ = factor; }
-
-            /**
-             * Set the mode of interpretation of MG events
-             */
-            void setDarkBremMethod(int method) { bremMethod_ = (G4eDarkBremsstrahlungModel::DarkBremMethod)method; }
 
         private:
 
