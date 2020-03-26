@@ -8,12 +8,15 @@
 
 namespace ldmx {
 
-    void EcalDigiVerifier::configure(const ldmx::ParameterSet& ps) {
+    void EcalDigiVerifier::configure(Parameters& ps) {
 
-        ecalSimHitColl_ = ps.getString( "ecalSimHitColl" , "EcalSimHits" );
-        ecalSimHitPass_ = ps.getString( "ecalSimHitPass" , "" );
-        ecalRecHitColl_ = ps.getString( "ecalRecHitColl" , "EcalRecHits" );
-        ecalRecHitPass_ = ps.getString( "ecalSimHitPass" , "" );
+        ecalSimHitColl_ = ps.getParameter<std::string>( "ecalSimHitColl" );
+        ecalSimHitPass_ = ps.getParameter<std::string>( "ecalSimHitPass" );
+        ecalRecHitColl_ = ps.getParameter<std::string>( "ecalRecHitColl" );
+        ecalRecHitPass_ = ps.getParameter<std::string>( "ecalSimHitPass" );
+
+        if ( ecalSimHitColl_.empty() ) ecalSimHitColl_ = "EcalSimHits";
+        if ( ecalRecHitColl_.empty() ) ecalRecHitColl_ = "EcalRecHits";
 
         return;
     }

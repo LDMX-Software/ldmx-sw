@@ -1,31 +1,36 @@
 /**
  * @file RunManager.h
  * @brief Class providing a Geant4 run manager implementation.
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef _SIMAPPLICATION_RUNMANAGER_H_
-#define _SIMAPPLICATION_RUNMANAGER_H_
+#ifndef SIMAPPLICATION_RUNMANAGER_H
+#define SIMAPPLICATION_RUNMANAGER_H
+
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <any>
+#include <map>
+#include <string>
 
 //------------//
 //   Geant4   //
 //------------//
 #include "G4RunManager.hh"
 
-//-------------//
-//   ldmx-sw   //
-//-------------//
-#include "Biasing/BiasingMessenger.h"
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Parameters.h" 
 
 class G4PhysListFactory; 
 
 namespace ldmx {
 
     // Forward declare to avoid circular dependency in headers
-    class DetectorConstruction; 
-    class PluginManager; 
-    class PluginMessenger; 
+    class DetectorConstruction;
+    class UserActionManager; 
 
     /**
      * @class RunManager
@@ -38,7 +43,7 @@ namespace ldmx {
             /**
              * Class constructor.
              */
-            RunManager();
+            RunManager(Parameters& parameters); 
 
             /**
              * Class destructor.
@@ -78,24 +83,11 @@ namespace ldmx {
              * Should we use the seed from the root file?
              */
             bool useRootSeed() { return useRootSeed_; }
-
-            /**
-             * Get access to the plugin manager
-             */
-            PluginManager* getPluginManager() { return pluginManager_; }
-
+ 
         private:
 
-            /** Plugin messenger. */
-            PluginMessenger* pluginMessenger_;
-
-            /** Biasing messenger. */
-            BiasingMessenger* biasingMessenger_ {new BiasingMessenger()};
-
-            /**
-             * Manager of sim plugins.
-             */
-            PluginManager* pluginManager_{nullptr};
+            /// The set of parameters used to configure the RunManager
+            Parameters parameters_; 
 
             /**
              * Factory class for instantiating the physics list.

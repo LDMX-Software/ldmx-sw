@@ -17,7 +17,7 @@
 //LDMX Framework
 #include "Event/EventDef.h"
 #include "Framework/EventProcessor.h" //Needed to declare processor
-#include "Framework/ParameterSet.h" // Needed to import parameters from configuration file
+#include "Framework/Parameters.h" // Needed to import parameters from configuration file
 
 namespace ldmx {
     
@@ -39,7 +39,7 @@ namespace ldmx {
             /**
              * Input python configuration parameters
              */
-            virtual void configure(const ldmx::ParameterSet& ps);
+            virtual void configure(Parameters& ps);
 
             /**
              * Fills histograms

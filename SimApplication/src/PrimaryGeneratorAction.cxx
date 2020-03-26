@@ -1,62 +1,80 @@
 /**
  * @file PrimaryGeneratorAction.cxx
  * @brief Class implementing the Geant4 primary generator action
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
 #include "SimApplication/PrimaryGeneratorAction.h"
 
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
+#include "G4Event.hh"
+#include "G4RunManager.hh"  // Needed for CLHEP
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
 #include "SimApplication/ParticleGun.h"
+#include "SimApplication/UserPrimaryParticleInformation.h"
+
+/*~~~~~~~~~~*/
+/*   ROOT   */
+/*~~~~~~~~~~*/
+#include "TRandom3.h" 
 
 namespace ldmx {
 
-    PrimaryGeneratorAction::PrimaryGeneratorAction() :
-        G4VUserPrimaryGeneratorAction(), 
-        random_(new TRandom) {
+    PrimaryGeneratorAction::PrimaryGeneratorAction(Parameters& parameters) 
+        : G4VUserPrimaryGeneratorAction() {
+
+        // The parameters used to configure the primary generator action
+        parameters_ = parameters;  
+
+        // Instantiate the random number generator and set the seed.
+        random_ = std::make_unique< TRandom3 >(); 
         random_->SetSeed( CLHEP::HepRandom::getTheSeed() );
-        gun = new ParticleGun();  
-        generator_.push_back(gun);
+
+        // Instantiate the manager 
+        manager_ = std::make_unique< PrimaryGeneratorManager >(parameters);
+
+        // Check whether a beamspot should be used or not.
+        auto beamSpot{parameters.getParameter< std::vector< double > >("beamSpotSmear")};
+        if (!beamSpot.empty()) {
+            useBeamspot_ = true;
+            beamspotXSize_ = beamSpot[0];
+            beamspotYSize_ = beamSpot[1];
+            beamspotZSize_ = beamSpot[2];
+        }
+        
     }
 
-    PrimaryGeneratorAction::~PrimaryGeneratorAction() {
-    }
+    PrimaryGeneratorAction::~PrimaryGeneratorAction() {}
 
+    /*
     void PrimaryGeneratorAction::setPrimaryGenerator(G4VPrimaryGenerator* aGenerator) {
-       
-        // The other generators don't play nice with ParticleGun, so
-        // if there is already a generator and it's the G4ParticleGun
-        // just clear the vector
-        if (gun != nullptr) {
-            generator_.erase(
-                    std::remove_if( generator_.begin(), generator_.end(), 
-                        [&]( G4VPrimaryGenerator* const& generator ) { 
-                            return generator == gun; 
-                    }), generator_.end()); 
-           delete gun; 
-        } 
-
-        generator_.push_back(aGenerator);
-
+      
         if ((dynamic_cast<MultiParticleGunPrimaryGenerator*>(aGenerator)) != NULL){
             indexMpg_ = ((int) generator_.size()) - 1;
         }
         if ((dynamic_cast<RootPrimaryGenerator*>(aGenerator)) != NULL){
             indexRpg_ = ((int) generator_.size()) - 1;
         }        
-    }
+    }*/
 
     void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
-        
-        for (const auto& generator : generator_) {
-            generator->GeneratePrimaryVertex(event);
-        }
+      
+        /// Get the list of generators that will be used for this event
+        auto generators{manager_->getGenerators()}; 
+
+        // Generator the primary vertex 
+        std::for_each( generators.begin(), generators.end(), 
+                [event](const auto& generator) { generator->GeneratePrimaryVertex(event); } );
         
         // Activate the plugin manager hook.  
         if (event->GetNumberOfPrimaryVertex() > 0) {
-            if (useBeamspot_) smearingBeamspot(event);        
-            pluginManager_->generatePrimary(event);
+            if (useBeamspot_) smearingBeamspot(event);
         }
-
     }
 
     void PrimaryGeneratorAction::smearingBeamspot(G4Event* event) {

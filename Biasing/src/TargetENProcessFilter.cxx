@@ -7,16 +7,22 @@
 
 #include "Biasing/TargetENProcessFilter.h"
 
-SIM_PLUGIN(ldmx, TargetENProcessFilter)
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
+#include "G4RunManager.hh"
 
 namespace ldmx { 
 
-    TargetENProcessFilter::TargetENProcessFilter() {
-        messenger_ = new TargetENProcessFilterMessenger(this);
+    TargetENProcessFilter::TargetENProcessFilter(const std::string& name, Parameters& parameters) 
+        : UserAction (name, parameters) {
+        
+        volumeName_ = parameters.getParameter< std::string >("volume");
+        recoilEnergyThreshold_ = parameters.getParameter< double >("recoilThreshold"); 
+        process_ = parameters.getParameter< std::string >("process");  
     }
 
-    TargetENProcessFilter::~TargetENProcessFilter() {
-    }
+    TargetENProcessFilter::~TargetENProcessFilter() {}
 
     void TargetENProcessFilter::stepping(const G4Step* step) { 
 
@@ -76,7 +82,7 @@ namespace ldmx {
                       << std::endl;*/
 
             // Only record the process that is being biased
-            if (!processName.contains(BiasingMessenger::getProcess())) {
+            if (!processName.contains(process_)) {
 
                 /*std::cout << "[ TargetENProcessFilter ]: "
                           << "Process was not " << BiasingMessenger::getProcess() << "--> Killing all tracks!" 
@@ -91,12 +97,14 @@ namespace ldmx {
                       << "Electronuclear reaction resulted in " << secondaries->size() 
                       << " particles via " << processName << " process." 
                       << std::endl;
-            BiasingMessenger::setEventWeight(track->GetWeight());
+            //BiasingMessenger::setEventWeight(track->GetWeight());
             reactionOccurred_ = true;
         }
     }    
 
-    void TargetENProcessFilter::endEvent(const G4Event*) {
+    void TargetENProcessFilter::EndOfEventAction(const G4Event*) {
         reactionOccurred_ = false; 
     }
 }
+
+DECLARE_ACTION(ldmx, TargetENProcessFilter) 

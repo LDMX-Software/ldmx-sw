@@ -29,6 +29,7 @@
 #include "DetDescr/EcalDetectorID.h"
 #include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Parameters.h" 
 
 namespace ldmx {
 
@@ -75,7 +76,12 @@ namespace ldmx {
 
             virtual ~NonFidEcalVetoProcessor() { }
 
-            void configure(const ParameterSet&);
+            /** 
+             * Configure the processor using the given user specified parameters.
+             * 
+             * @param parameters Set of parameters used to configure this processor.
+             */
+            void configure(Parameters& parameters) final override;
 
             void produce(Event& event);
 

@@ -27,8 +27,6 @@ namespace ldmx {
     
     TrackerVetoProcessor::~TrackerVetoProcessor() { }
 
-    void TrackerVetoProcessor::configure(const ParameterSet& pSet) { }
-
     void TrackerVetoProcessor::produce(Event& event) {
 
         // Get the collection of simulated particles from the event

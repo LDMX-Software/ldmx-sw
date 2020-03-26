@@ -1,46 +1,49 @@
 /**
  * @file UserStackingAction.h
  * @brief Class which implements the Geant4 user stacking action
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
 #ifndef SIMAPPLICATION_USERSTACKINGACTION_H
 #define SIMAPPLICATION_USERSTACKINGACTION_H
 
-// LDMX
-#include "SimPlugins/PluginManagerAccessor.h"
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <vector>
 
-// Geant4
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
 #include "G4UserStackingAction.hh"
+
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimApplication/UserAction.h" 
 
 namespace ldmx {
 
     /**
      * @class UserStackingAction
-     * @brief User stacking action implementation
+     * @brief Class implementing a user stacking action.
      */
-    class UserStackingAction : public G4UserStackingAction, public PluginManagerAccessor {
+    class UserStackingAction : public G4UserStackingAction {
 
         public:
 
-            /**
-             * Class constructor.
-             */
-            UserStackingAction() {
-            }
+            /// Constructor
+            UserStackingAction(); 
 
-            /**
-             * Class destructor.
-             */
-            virtual ~UserStackingAction() {
-            }
+            /// Destructor
+            virtual ~UserStackingAction() final override; 
 
             /**
              * Classify a new track.
              * @param aTrack The track to classify.
              * @return The track classification.
              */
-            G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track *aTrack);
+            G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track *track);
 
             /**
              * Invoked when there is a new stacking stage.
@@ -51,8 +54,21 @@ namespace ldmx {
              * Invoked for a new event.
              */
             void PrepareNewEvent();
-    };
 
-}
+            /**
+             * Register a user action of type stacking action with this class. 
+             *
+             * @param action  User action of type StackingAction
+             */
+            void registerAction(UserAction* stackingAction) { stackingActions_.push_back(stackingAction); }
 
-#endif
+        private: 
+
+            /// Collection of user stacking actions
+            std::vector<UserAction*> stackingActions_; 
+    
+    }; // UserStackingAction
+
+} // ldmx
+
+#endif // SIMAPPLICATION_USERSTACKINGACTION_H

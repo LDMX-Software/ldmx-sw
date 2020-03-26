@@ -4,17 +4,24 @@
  * @author Jeremy Mans, University of Minnesota
  */
 
-// ROOT
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <iostream>
+#include <vector>
+
+/*~~~~~~~~~~*/
+/*   ROOT   */
+/*~~~~~~~~~~*/
 #include "TRandom.h"
 
-// LDMX
+/*~~~~~~~~~~*/
+/*   LDMX   */
+/*~~~~~~~~~~*/
+#include "Framework/Event.h"
 #include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/ParameterSet.h"
-#include "Framework/Event.h"
-
-// STL
-#include <iostream>
+#include "Framework/Parameters.h" 
 
 namespace ldmx {
 
@@ -30,10 +37,11 @@ namespace ldmx {
                 Producer(name, process) {
             }
 
-            virtual void configure(const ParameterSet& ps) {
-                nParticles_ = ps.getInteger("nParticles_");
-                aveEnergy_ = ps.getDouble("aveEnergy_");
-                direction_ = ps.getVDouble("direction_");
+            void configure(Parameters& parameters) final override {
+            
+                nParticles_ = parameters.getParameter< int >("nParticles");
+                aveEnergy_  = parameters.getParameter< double >("aveEnergy"); 
+                direction_  = parameters.getParameter< std::vector < double > >("direction"); 
             }
 
             virtual void produce(Event& event) {
