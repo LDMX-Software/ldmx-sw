@@ -6,13 +6,13 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef BIASING_DARKBREMXSECBIASINGOPERATOR_H_
-#define BIASING_DARKBREMXSECBIASINGOPERATOR_H_
+#ifndef SIMAPPLICATION_DARKBREMXSECBIASINGOPERATOR_H
+#define SIMAPPLICATION_DARKBREMXSECBIASINGOPERATOR_H
 
 //----------//
 //   LDMX   //
 //----------//
-#include "XsecBiasingOperator.h"
+#include "SimApplication/XsecBiasingOperator.h"
 
 class G4Track;
 class G4BiasingProcessInterface;
@@ -71,4 +71,4 @@ namespace ldmx {
     };  // DarkBremXsecBiasingOperator
 }
 
-#endif // SIMPLUGINS_DARKBREMXSECBIASINGOPERATOR_H_ 
+#endif // SIMAPPLICATION_DARKBREMXSECBIASINGOPERATOR_H

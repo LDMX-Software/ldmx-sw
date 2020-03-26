@@ -64,21 +64,9 @@ namespace ldmx {
             std::cout << "[ RunManager ]: Parallel worlds physics list has been registered." << std::endl;
             pList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
         }
-        
-        //TODO clean this crap up
-        double aPrimeMass = parameters_.getParameter< double >( "APrimeMass" );
-        if ( aPrimeMass_ > 0 ) {
-            //positive A' mass ==> we should activate A' physics
-            APrimePhysics* aprimePhys = new APrimePhysics;
-            aprimePhys->setAPrimeMass(       aPrimeMass        );
-            aprimePhys->setDarkBremMethod(   parameters_.getParameter<int        >( "darkbrem.method"           ));
-            aprimePhys->setMadGraphFilePath( parameters_.getParameter<std::string>( "darkbrem.madgraphfilepath" ));
-            aprimePhys->setGlobalXsecFactor( parameters_.getParameter<double     >( "darkbrem.globalxsecfactor" ));
-            
-            pList->RegisterPhysics(aprimePhys); //physics list handles cleanup
-        }
 
         pList->RegisterPhysics(new GammaPhysics);
+        pList->RegisterPhysics(new APrimePhysics( parameters_ ));
        
         auto biasingEnabled{parameters_.getParameter< bool >("biasing.enabled")}; 
         if (biasingEnabled) {
@@ -145,18 +133,17 @@ namespace ldmx {
         G4RunManager::TerminateOneEvent();
 
         //reset dark brem process (if needed)
-        if ( aPrimeMass_ > 0 and not madGraphFilePath_.empty() ) {
-            //Re-activate the process at the end of each event. 
-            //The process is deactivated each time it occurs, to limit it to one brem per event.
-            G4bool active = true;
-            G4String pname = "biasWrapper(eDBrem)"; //TODO allow eDBrem to be biased or unbiased
-            G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
-            ptable->SetProcessActivation(pname,active);    
-            if ( this->GetVerboseLevel() > 1 ) {
-                std::cout << "[ RunManager ] : "
-                          << "Reset the dark brem process." << std::endl;
-            }
+        G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
+        G4int verbosity = ptable->GetVerboseLevel();
+        ptable->SetVerboseLevel(0); //silent ptable while searching for process that may/may not exist
+        G4String pname = "biasWrapper(eDBrem)"; //TODO allow eDBrem to be biased or unbiased
+        bool active = true;
+        ptable->SetProcessActivation(pname,active);    
+        if ( this->GetVerboseLevel() > 1 ) {
+            std::cout << "[ RunManager ] : "
+                << "Reset the dark brem process (if it was activated)." << std::endl;
         }
+        ptable->SetVerboseLevel(verbosity);
 
     }
 

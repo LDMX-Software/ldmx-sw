@@ -20,18 +20,19 @@
 //------------//
 #include "G4RunManager.hh"
 
-//----------//
-//   LDMX   //
-//----------//
-#include "SimPlugins/UserActionPlugin.h"
-#include "Biasing/BiasingMessenger.h"
-#include "Biasing/DarkBremFilterMessenger.h"
+/*~~~~~~~~~~~~~*/
+/*   SimCore   */
+/*~~~~~~~~~~~~~*/
+#include "SimApplication/UserAction.h"
+
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Parameters.h" 
 
 namespace ldmx {
 
-    class DarkBremFilterMessenger; 
-
-    class DarkBremFilter : public UserActionPlugin {
+    class DarkBremFilter : public UserAction {
 
         public:
 
@@ -40,7 +41,7 @@ namespace ldmx {
              *
              * Links this filter to its messenger.
              */
-            DarkBremFilter();
+            DarkBremFilter(const std::string& name, Parameters& parameters);
 
             /**
              * Class destructor.
@@ -48,37 +49,10 @@ namespace ldmx {
             ~DarkBremFilter();
 
             /**
-             * Get the name of the plugin.
-             * @return The name of the plugin.
+             * Get the types of actions this class can do
              */
-            virtual std::string getName() {
-                return "DarkBremFilter";
-            }
-
-            /**
-             * Not implemented right now, but want to investigate using it
-             * Get whether this plugin implements the event action.
-             *
-             * @return True if the plugin implements the event action.
-             */
-//            virtual bool hasEventAction() { 
-//                return true;
-//            }
-
-            /**
-             * Get whether this plugin implements the stepping action.
-             * @return True to indicate this plugin implements the stepping action.
-             */
-            bool hasSteppingAction() {
-                return true;
-            }
-
-            /**
-             * Get whether this plugin implements the stacking aciton.
-             * @return True to indicate this plugin implements the stacking action.
-             */
-            bool hasStackingAction() { 
-                return true;
+            std::vector< TYPE > getTypes() final override {
+                return { TYPE::STACKING , TYPE::STEPPING };
             }
 
             /**
@@ -89,24 +63,13 @@ namespace ldmx {
             void stepping(const G4Step* step);
 
             /**
-             * Not implemented right now, but want to investigate using it
-             * End of event action.
-             */
-            //virtual void endEvent(const G4Event*);
-
-            /**
              * Classify a new track which postpones track processing.
              * Track processing resumes normally if an interaction occurred.
              * @param aTrack The Geant4 track.
              * @param currentTrackClass The current track classification.
              */
-            G4ClassificationOfNewTrack stackingClassifyNewTrack(const G4Track* aTrack, 
-                    const G4ClassificationOfNewTrack& currentTrackClass);
-
-            /** 
-             * @param volume Set the volume that the filter will be applied to. 
-             */
-            void setVolume(std::string volumeName) { volumeName_ = volumeName; }; 
+            G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* aTrack, 
+                    const G4ClassificationOfNewTrack& currentTrackClass) final override;
 
         private:
 
@@ -120,11 +83,19 @@ namespace ldmx {
 
         private:
             
-            /** Messenger used to pass arguments to this class. */
-            DarkBremFilterMessenger* messenger_{nullptr};
+            /** 
+             * Level of verbosity for this filter
+             *
+             * Parameter Name: 'verbosity'
+             */
+            int verbosity_;
 
-            /** The volume that the filter will be applied to. */
-            G4String volumeName_{"target_PV"};
+            /** 
+             * The volume that the filter will be applied to.
+             *
+             * Parameter Name: 'volume'
+             */
+            std::string volumeName_;
 
     }; // DarkBremFilter
 }

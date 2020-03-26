@@ -6,7 +6,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "Biasing/DarkBremXsecBiasingOperator.h"
+#include "SimApplication/DarkBremXsecBiasingOperator.h"
 
 //------------//
 //   Geant4   //
