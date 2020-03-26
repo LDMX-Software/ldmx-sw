@@ -41,3 +41,10 @@ foreach(detector_dir ${detector_dirs})
     endforeach()
   endif()
 endforeach()
+
+# install python module with function that returns absolute path to detector descriptions
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# LDMX Detectors python module" )
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/makeDetectorPath.py
+    "#function returning full path to detector description in install location\ndef makeDetectorPath(detName) :\n    return \"${CMAKE_INSTALL_PREFIX}/data/detectors/\" + detName + \"/detector.gdml\"\n" )
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION lib/python/LDMX/Detectors)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/makeDetectorPath.py DESTINATION lib/python/LDMX/Detectors)

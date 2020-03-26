@@ -155,7 +155,12 @@ foreach(external_lib ${external_libs})
   include(${external_lib}) # include all external libs
 endforeach()
 add_executable(${executable} ${executable_test_source}) # add executable
-target_link_libraries(${executable} ${MODULES} ${EXT_DEP_LIBRARIES})
+target_link_libraries(${executable} ${EXT_DEP_LIBRARIES})
+foreach(module ${MODULES})
+  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${module}/src)
+    target_link_libraries(${executable} ${module})
+  endif()
+endforeach()
 install(TARGETS ${executable} DESTINATION bin)
 if(MODULE_DEBUG)
     message("${executable} linked with: ${MODULES};${EXT_DEP_LIBRARIES}")
