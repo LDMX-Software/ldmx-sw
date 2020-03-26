@@ -35,11 +35,8 @@ namespace ldmx {
     const std::vector<std::string> Simulator::invalidCommands_ = {
             "/run/initialize", //hard coded at the right time
             "/run/beamOn", //passed commands should only be sim setup
-            "/ldmx/pw", //parallel world scoring planes is handled here (if passed a path to the scoring plane description)
             "/random/setSeeds", //handled by own config parameter (if passed)
-            "EventPrintPlugin", //tied to process log frequency
-            "/ldmx/persistency/root", //persistency manager handled directly with python config parameters
-            "/ldmx/generators", //handled by own config parameters (if passed)
+            "ldmx", //all ldmx messengers have been removed
             "/persistency/gdml/read" //detector description is read after passed a path to the detector description (required)
         };
 
@@ -59,6 +56,35 @@ namespace ldmx {
     
         // parameters used to configure the simulation
         parameters_ = parameters; 
+        
+        /*************************************************
+         * Necessary Parameters
+         *************************************************/
+        
+        detectorPath_ = parameters.getParameter< std::string >("detector");
+
+        runNumber_ = parameters.getParameter< int >( "runNumber" );
+        //make sure Process uses this run number when creating the event headers
+        process_.setRunNumber( runNumber_ );
+
+        /*************************************************
+         * Optional Parameters
+         *************************************************/
+
+        verbosity_ = parameters.getParameter< int >("verbosity");
+        if ( verbosity_ > 0 or verbosity_ == std::numeric_limits<int>::min() ) {
+            // non-zero verbosity ==> log geant4 comments in files
+            //  can input different log file names into this constructor
+            sessionHandle_ = new LoggedSession();
+        } else {
+            // zero verbosity ==> batch run
+            sessionHandle_ = new BatchSession();
+        }
+        uiManager_->SetCoutDestination( sessionHandle_ ); //re-direct the G4 messaging service
+
+        /*************************************************
+         * Start Configuration of Simulation
+         *************************************************/
 
         // Instantiate the run manager.  
         runManager_ = std::make_unique<RunManager>(parameters);
@@ -72,47 +98,6 @@ namespace ldmx {
 
         // Supply the default user initialization and actions
         detectorConstruction_ = std::make_unique<DetectorConstruction>( parser_.get(), parameters );
-        runManager_->SetUserInitialization( detectorConstruction_.get() );
-
-        // Store the random numbers used to generate an event. 
-        runManager_->SetRandomNumberStore( true );
-        
-        /*************************************************
-         * Necessary Parameters
-         *************************************************/
-        
-        detectorPath_ = parameters.getParameter< std::string >("detector");
-
-        runNumber_ = ps.getInteger( "runNumber" );
-        //make sure Process uses this run number when creating the event headers
-        process_.setRunNumber( runNumber_ );
-
-        /*************************************************
-         * Optional Parameters
-         *************************************************/
-        verbosity_ = parameters.getParameter< int >("verbosity");
-        if ( verbosity_ > 0 ) {
-            // non-zero verbosity ==> log geant4 comments in files
-            //  can input different log file names into this constructor
-            sessionHandle_ = new LoggedSession();
-        } else {
-            // zero verbosity ==> batch run
-            sessionHandle_ = new BatchSession();
-        }
-        uiManager_->SetCoutDestination( sessionHandle_ );
-
-        // Instantiate the run manager.  
-        runManager_ = std::make_unique<RunManager>();
-
-        // Instantiate the GDML parser and corresponding messenger
-        parser_ = std::make_unique<G4GDMLParser>();
-
-        // Instantiate the class so cascade parameters can be set.
-        //      This pointer is handled by Geant4
-        G4CascadeParameters::Instance();
-
-        // Supply the default user initialization and actions
-        detectorConstruction_ = std::make_unique<DetectorConstruction>( parser_.get() );
         runManager_->SetUserInitialization( detectorConstruction_.get() );
 
         // Store the random numbers used to generate an event. 
@@ -167,7 +152,6 @@ namespace ldmx {
     }
 
     void Simulator::onFileOpen(EventFile &file) {
-
         // Initialize persistency manager and connect it to the current EventFile
         persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_); 
         persistencyManager_->Initialize(); 
@@ -274,31 +258,6 @@ namespace ldmx {
         }
         //checked all invalid commands ==> ALLOWED
         return true;
-    }
-
-    std::string Simulator::getDetectorPath(int version) const {
-        
-        std::map< int , std::string > versionToName = {
-            { 3 , "ldmx-det-full-v3-fieldmap-magnet" },
-            { 4 , "ldmx-det-full-v4-fieldmap-magnet" },
-            { 5 , "ldmx-det-full-v5-fieldmap-magnet" },
-            { 9 , "ldmx-det-full-v9-fieldmap-magnet" },
-            { 11 , "ldmx-det-full-v11-fieldmap-magnet" },
-            { 12 , "ldmx-det-full-v12-fieldmap-magnet" }
-        };
-
-        if ( versionToName.find( version ) == versionToName.end() ) {
-            EXCEPTION_RAISE(
-                    "DetectorVersion",
-                    "Detector Version " + std::to_string(version)
-                    + " is not listed in the version to detector name map."
-                    );
-        }
-
-        std::string detectorDirectory = LDMX_INSTALL;
-        detectorDirectory += "/data/detectors/";
-
-        return ( detectorDirectory + versionToName.at(version) + "/detector.gdml" );
     }
 
 }
