@@ -70,6 +70,7 @@ include(MacroModule)
 include(MacroExtDeps)
 
 # construct list of modules in dependency order
+#   puts modules into MODULES cmake variable
 include(ConstructModuleList)
 
 # build each module in the list
@@ -84,7 +85,10 @@ foreach(module ${MODULES})
 endforeach()
 
 # build and install test executable ldmx-test
-include(TestExecutable)
+option(BUILD_TESTS "Build and link ldmx-test executable." ON)
+if(BUILD_TESTS)
+  include(TestExecutable)
+endif()
 
 # configure scripts and copy to installation dir 
 file(GLOB config_scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.in)
