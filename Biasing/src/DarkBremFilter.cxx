@@ -11,19 +11,22 @@
 
 #include "SimCore/G4APrime.h"
 
-SIM_PLUGIN(ldmx, DarkBremFilter)
-
 namespace ldmx { 
 
-    DarkBremFilter::DarkBremFilter() {
-        messenger_ = new DarkBremFilterMessenger(this);
+    DarkBremFilter::DarkBremFilter(const std::string& name, Parameters& parameters)
+        : UserAction(name, parameters) {
+        volumeName_ = parameters.getParameter< std::string >("volume");
+        verbosity_  = parameters.getParameter< int         >("verbosity");
+
+        //re-set verbosity and volumes to reasonable defaults
+        if ( verbosity_ < 0 ) verbosity_ = 0;
+        if ( volumeName_.empty() ) volumeName_ = "target_PV";
     }
 
     DarkBremFilter::~DarkBremFilter() {
-        delete messenger_;
     }
 
-    G4ClassificationOfNewTrack DarkBremFilter::stackingClassifyNewTrack(
+    G4ClassificationOfNewTrack DarkBremFilter::ClassifyNewTrack(
             const G4Track* track, 
             const G4ClassificationOfNewTrack& currentTrackClass) {
 
@@ -37,7 +40,9 @@ namespace ldmx {
         G4ClassificationOfNewTrack classification = currentTrackClass;
 
         if (track->GetTrackID() == 1 && pdgID == 11) {
-            ///*std::cout << "[ DarkBremFilter ]: Pushing track to waiting stack." << std::endl;*/
+            if ( verbosity_ > 2 ) {
+                std::cout << "[ DarkBremFilter ]: Pushing track to waiting stack." << std::endl;
+            }
             return fWaiting; 
         }
 
@@ -63,7 +68,7 @@ namespace ldmx {
         G4String volumeName = volume->GetName();
 
         // If the particle isn't in the given volume, don't continue with the processing.
-        if (not volumeName.contains(volumeName_)) return;
+        if (not volumeName.contains(volumeName_.c_str())) return;
 
         // Get the particle type.
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
@@ -76,7 +81,7 @@ namespace ldmx {
            
             if (secondaries->size() == 0) { 
                 // If the particle didn't produce any secondaries, stop processing the event.
-                if ( this->getVerboseLevel() > 1 ) {
+                if ( verbosity_ > 1 ) {
                     std::cout << "[ DarkBremFilter ]: "
                                 << "Primary did not produce secondaries --> Killing primary track!" 
                                 << std::endl;
@@ -87,7 +92,7 @@ namespace ldmx {
                 return;
             } else if (not hasAPrime(secondaries)) { 
                 // If the particle din't produce an A Prime, stop processing the event
-                if ( this->getVerboseLevel() > 1 ) {
+                if ( verbosity_ > 1 ) {
                     std::cout << "[ DarkBremFilter ]: "
                                 << "No dark brem in " << volumeName_ << " --> Aborting event."
                                 << std::endl;
@@ -103,7 +108,7 @@ namespace ldmx {
             const G4TrackVector* secondaries = step->GetSecondary();
             if(not hasAPrime( secondaries )){
                 // If the particle din't produce an A Prime, stop processing the event
-                if ( this->getVerboseLevel() > 1 ) {
+                if ( verbosity_ > 1 ) {
                     std::cout << "[ DarkBremFilter ]: "
                               << "Electron never made it out of the " << volumeName_ << " --> Killing all tracks!"
                               << std::endl;
