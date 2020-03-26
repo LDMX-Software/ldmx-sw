@@ -130,3 +130,4 @@ namespace ldmx {
     }
 }
 
+DECLARE_ACTION(ldmx, DarkBremFilter) 
