@@ -55,7 +55,7 @@ namespace ldmx {
 
     void EcalDigiProducer::produce(Event& event) {
 
-        std::vector<SimCalorimeterHit> ecalSimHits = event.getCollection<SimCalorimeterHit>("EcalSimHits" , "sim" );
+        std::vector<SimCalorimeterHit> ecalSimHits = event.getCollection<SimCalorimeterHit>("EcalSimHits" , "" );
         std::vector<EcalHit> ecalRecHits;
 
         //First we simulate noise injection into each hit and store layer-wise 
