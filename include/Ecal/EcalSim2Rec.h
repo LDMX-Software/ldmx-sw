@@ -28,6 +28,7 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
+#include "Framework/Parameters.h" 
 
 namespace ldmx {
 
@@ -48,7 +49,13 @@ namespace ldmx {
             virtual ~EcalSim2Rec() {
             }
 
-            virtual void configure(const ParameterSet&);
+            /**
+             * Callback for the processor to configure itself from the given set
+             * of parameters.
+             * 
+             * @param parameters ParameterSet for configuration.
+             */
+            void configure(Parameters& parameters) final override; 
 
             virtual void produce(Event& event);
 

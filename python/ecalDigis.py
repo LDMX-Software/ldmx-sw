@@ -23,3 +23,6 @@ ecalDigis.parameters[ "nADCs" ] = 10;
 
 # threshold in multiples of noiseRMS as minimum to be readout
 ecalDigis.parameters[ "readoutThreshold" ] = 4.;
+
+# should I fill a configuration histogram?
+ecalDigis.parameters[ "makeConfigHists" ] = False;

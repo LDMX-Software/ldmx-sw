@@ -63,7 +63,7 @@ namespace ldmx {
              * layerWeights     DEFAULT_LAYER_WEIGHTS
              * secondOrderEnergyCorrection DEFAULT_SECOND_ORDER_ENERGY_CORRECTION
              */
-            virtual void configure(const ParameterSet&);
+            virtual void configure(Parameters&);
 
             /**
              * Produce EcalHits and put them into the event bus using the
@@ -123,20 +123,6 @@ namespace ldmx {
              * performs real space x,y postion <-> module,cell ID translation
              */
             std::unique_ptr<EcalHexReadout> ecalHexReadout_;
-
-            /**
-             * Default Vector of Layer Weights
-             * Used to convert from energy deposited in Silicon to approximate
-             * energy from the particle deposited in absorber in front of the given layer.
-             */
-            static const std::vector<double> DEFAULT_LAYER_WEIGHTS;
-
-            /**
-             * Default Second Order Correction
-             * Used to shift all the layer weights towards having the correct mean
-             * for total energy deposited in ECal.
-             */
-            static const double DEFAULT_SECOND_ORDER_CORRECTION;
 
             /**
              * Approximate energy deposited in Silicon layer for a MIP hit

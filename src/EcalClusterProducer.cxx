@@ -13,7 +13,7 @@ namespace ldmx {
 
     EcalClusterProducer::~EcalClusterProducer() { }
 
-    void EcalClusterProducer::configure(const ParameterSet& ps) {
+    void EcalClusterProducer::configure(Parameters& parameters) {
 
         // These are the v12 parameters
         //  all distances in mm
@@ -66,12 +66,12 @@ namespace ldmx {
                 ecalFrontZ
                 );
 
-        cutoff_ = ps.getDouble("cutoff");
-        seedThreshold_ = ps.getDouble("seedThreshold"); 
-        digisPassName_ = ps.getString("digisPassName");
-        algoCollName_ = ps.getString("algoCollName");
-        algoName_ = ps.getString("algoName");
-        clusterCollName_ = ps.getString("clusterCollName");
+        cutoff_ = parameters.getParameter< double >("cutoff");
+        seedThreshold_ = parameters.getParameter< double >("seedThreshold"); 
+        digisPassName_ = parameters.getParameter< std::string >("digisPassName");
+        algoCollName_ = parameters.getParameter< std::string >("algoCollName");
+        algoName_ = parameters.getParameter< std::string >("algoName");
+        clusterCollName_ = parameters.getParameter< std::string >("clusterCollName");
 
     }
 

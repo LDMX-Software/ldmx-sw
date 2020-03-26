@@ -25,14 +25,14 @@ namespace ldmx {
     EcalDigiProducer::~EcalDigiProducer() {
     }
 
-    void EcalDigiProducer::configure(const ParameterSet& ps) {
+    void EcalDigiProducer::configure(Parameters& ps) {
 
-        gain_            = ps.getDouble("gain", 2000.); 
-        pedestal_        = ps.getDouble("pedestal", 1100.); 
-        noiseIntercept_  = ps.getDouble("noiseIntercept", 700.); 
-        noiseSlope_      = ps.getDouble("noiseSlope", 25.);
-        padCapacitance_  = ps.getDouble("padCapacitance", 0.1); 
-        nADCs_           = ps.getInteger("nADCs", 10);
+        gain_            = ps.getParameter<double>("gain");
+        pedestal_        = ps.getParameter<double>("pedestal");
+        noiseIntercept_  = ps.getParameter<double>("noiseIntercept");
+        noiseSlope_      = ps.getParameter<double>("noiseSlope");
+        padCapacitance_  = ps.getParameter<double>("padCapacitance");
+        nADCs_           = ps.getParameter<int>("nADCs");
 
         // Calculate the noise RMS based on the properties of the readout pad
         noiseRMS_ = this->calculateNoise(padCapacitance_, noiseIntercept_, noiseSlope_);  
@@ -41,7 +41,7 @@ namespace ldmx {
         noiseRMS_ = noiseRMS_*(MIP_SI_RESPONSE/ELECTRONS_PER_MIP); 
 
         // Calculate the readout threhsold
-        readoutThreshold_ = ps.getDouble("readoutThreshold", 4.)*noiseRMS_;
+        readoutThreshold_ = ps.getParameter<double>("readoutThreshold")*noiseRMS_;
 
         noiseGenerator_->setNoise(noiseRMS_); 
         noiseGenerator_->setPedestal(0); 
@@ -61,7 +61,7 @@ namespace ldmx {
         pulseFunc_.SetParameter( 6 , 87.7649  );
 
         //Option to make configuration histograms
-        makeConfigHists_ = (ps.getInteger("makeConfigHists",-1) > 0);
+        makeConfigHists_ = ps.getParameter<bool>("makeConfigHists");
         if ( makeConfigHists_ ) {
             getHistoDirectory();
 

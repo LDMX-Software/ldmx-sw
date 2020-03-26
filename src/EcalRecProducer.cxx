@@ -10,27 +10,19 @@ namespace ldmx {
 
     const double EcalRecProducer::MIP_SI_RESPONSE = 0.130; // MeV
 
-    const double EcalRecProducer::DEFAULT_SECOND_ORDER_CORRECTION = 0.948;
-
-    const std::vector<double> EcalRecProducer::DEFAULT_LAYER_WEIGHTS 
-        = {1.641, 3.526, 5.184, 6.841,
-        8.222, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775,
-        8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 8.775, 12.642, 16.51,
-        16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 16.51, 8.45}; 
-
     EcalRecProducer::EcalRecProducer(const std::string& name, Process& process) :
         Producer(name, process) {
     }
 
     EcalRecProducer::~EcalRecProducer() { }
 
-    void EcalRecProducer::configure(const ParameterSet& ps) {
+    void EcalRecProducer::configure(Parameters& ps) {
 
-        digiCollName_ = ps.getString( "digiCollName" , "EcalDigis" );
-        digiPassName_ = ps.getString( "digiPassName" , "" );
+        digiCollName_ = ps.getParameter<std::string>( "digiCollName" );
+        digiPassName_ = ps.getParameter<std::string>( "digiPassName" );
 
-        layerWeights_ = ps.getVDouble( "layerWeights" , DEFAULT_LAYER_WEIGHTS );
-        secondOrderEnergyCorrection_ = ps.getDouble( "secondOrderEnergyCorrection" , DEFAULT_SECOND_ORDER_CORRECTION );
+        layerWeights_ = ps.getParameter<std::vector<double>>( "layerWeights" );
+        secondOrderEnergyCorrection_ = ps.getParameter<double>( "secondOrderEnergyCorrection" );
 
         //if changing Ecal geometry, input geometry parameters here
         //  module radius - center-to-flat radius of a module in mm
