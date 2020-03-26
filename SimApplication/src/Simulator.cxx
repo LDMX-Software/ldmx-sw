@@ -72,10 +72,11 @@ namespace ldmx {
          *************************************************/
 
         verbosity_ = parameters.getParameter< int >("verbosity");
+        auto loggingPrefix = parameters.getParameter< std::string >("loggingPrefix");
         if ( verbosity_ > 0 or verbosity_ == std::numeric_limits<int>::min() ) {
             // non-zero verbosity ==> log geant4 comments in files
             //  can input different log file names into this constructor
-            sessionHandle_ = new LoggedSession();
+            sessionHandle_ = new LoggedSession( loggingPrefix + "_G4cout.log" , loggingPrefix + "_G4cerr.log" );
         } else {
             // zero verbosity ==> batch run
             sessionHandle_ = new BatchSession();
