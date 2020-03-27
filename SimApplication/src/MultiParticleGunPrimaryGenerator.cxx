@@ -74,4 +74,4 @@ namespace ldmx {
 
 } //ldmx
 
-DECLARE_GENERATOR( ldmx , MultiParticleGunPrimaryGenerator );
+DECLARE_GENERATOR( ldmx , MultiParticleGunPrimaryGenerator )
