@@ -1,59 +1,68 @@
+/**
+ * @file APrimePhysics.cxx
+ * @brief Class which defines basic APrime physics
+ * @author Michael Revering, University of Minnesota
+ * @author Tom Eichlersmith, University of Minnesota
+ */
+
 #include "SimApplication/APrimePhysics.h"
 
-#include "Exception/Exception.h"
+// LDMX
+#include "SimCore/G4APrime.h"
 
 // Geant4
-#include "G4SystemOfUnits.hh"
+#include "G4Electron.hh"
+#include "G4ProcessManager.hh"
 
 namespace ldmx {
 
-    APrimePhysics::APrimePhysics(const G4String& name) :
-            G4VPhysicsConstructor(name), aprimeDef_(nullptr) {
+    APrimePhysics::APrimePhysics(Parameters &params, const G4String& name) :
+            G4VPhysicsConstructor(name), aprimeDef_(nullptr) { 
+
+        aprimeMass_       = params.getParameter<double     >( "APrimeMass"                );
+        int bremMethodInt = params.getParameter<int        >( "darkbrem.method"           );
+        madGraphFilePath_ = params.getParameter<std::string>( "darkbrem.madgraphfilepath" );
+        globalXsecFactor_ = params.getParameter<double     >( "darkbrem.globalxsecfactor" );
+
+        //prevent negative or shrinking xsec factors
+        if ( globalXsecFactor_ < 1 ) globalXsecFactor_ = 1.;
+
+        //convert int to enum
+        bremMethod_ = G4eDarkBremsstrahlungModel::DarkBremMethod( bremMethodInt );
+
     }
 
     APrimePhysics::~APrimePhysics() {
     }
 
-    void APrimePhysics::ConstructParticle() {
-
+    void APrimePhysics::ConstructParticle() { 
         /**
          * Insert A-prime into the Geant4 particle table.
          * For now we flag it as stable.
+         *
+         * Geant4 registers all instances derived from G4ParticleDefinition and 
+         * deletes them at the end of the run.
          */
-        aprimeDef_ = new G4ParticleDefinition("A^1", /* name */
-                0.003 * GeV, /* mass */
-                0, /* width */
-                0, /* charge */
-                0, /* 2*spin */
-                0, /* parity */
-                0, /* C-conjugation */
-                0, /* 2*isospin */
-                0, /* 2*isospin3 */
-                0, /* G-parity */
-                "APrime", /* type */
-                0, /* lepton number */
-                0, /* baryon number */
-                622, /* PDG encoding */
-                true, /* stable */
-                0, /*DBL_MIN,*//* lifetime (may be overridden by predefined decay time) */
-                0, /* decay table */
-                false /* short lived */
-            );
-
-        //aprimeDef->SetProcessManager(new G4ProcessManager(aprimeDef));
+        aprimeDef_ = G4APrime::APrime(aprimeMass_);
     }
 
     void APrimePhysics::ConstructProcess() {
-        /*
-         G4ProcessManager* pm = aprimeDef->GetProcessManager();
-         if (pm != NULL) {
-         pm->AddProcess(&scatterProcess, -1, 1, 1);
-         pm->AddProcess(&decayProcess, -1, -1, 2);
-         } else {
-            EXCEPTION_RAISE( "InitializationError",
-                "The process manager for APrime is NULL.");
-         }
-         */
+
+        //add process to electron if LHE file has been provided
+        if ( not madGraphFilePath_.empty() ) {
+            G4eDarkBremsstrahlung *theDarkBremProcess = new G4eDarkBremsstrahlung;
+            theDarkBremProcess->SetCrossSectionBiasingFactor(globalXsecFactor_);
+            theDarkBremProcess->SetMethod(bremMethod_);
+            theDarkBremProcess->SetMadGraphDataFile(madGraphFilePath_);
+    
+        	G4Electron::ElectronDefinition()->GetProcessManager()->AddProcess(
+                    theDarkBremProcess /*process to add - G4ProcessManager cleans up processes*/
+                    , G4ProcessVectorOrdering::ordInActive /*activation when particle at rest*/
+                    , 1 /*activation along step*/
+                    , 1 /*activation at end of step*/
+                    );
+        }
+
     }
 
 }
