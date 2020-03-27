@@ -127,7 +127,7 @@ namespace ldmx {
              * @param y Any Y position [mm]
              */
             int getCellIDRelative(double x, double y) const {
-                int bin = ecalMap_->FindBin(x,y)-1; // NB FindBin indices starts from 1, our maps start from 0
+                int bin = ecalMap_.FindBin(x,y)-1; // NB FindBin indices starts from 1, our maps start from 0
                 if(bin < 0) {
                     TString error_msg = TString("[EcalHexReadout::getCellIDRelative] Relative coordinates are outside module hexagon!") + 
                                         TString::Format(" Is the gap used by EcalHexReadout (%.2f mm) and the minimum module radius (%.2f mm)",gap_,moduler_) +
@@ -320,8 +320,12 @@ namespace ldmx {
             static constexpr double defaultEcalFrontZ_{200.};
             static const std::vector<double> defaultLayerZPositions_; //defined in src
 
-            std::unique_ptr<TH2Poly> ecalMap_;
-            std::unique_ptr<TH2Poly> gridMap_;
+            /**
+             * Honeycomb binning from ROOT
+             *
+             * Needs to be mutable because ROOT doesn't have good const handling
+             */
+            mutable TH2Poly ecalMap_;
     };
 
 }
