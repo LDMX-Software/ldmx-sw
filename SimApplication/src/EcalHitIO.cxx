@@ -35,13 +35,9 @@ namespace ldmx {
                  * Assign XY position to the hit using the ECal hex readout.
                  * Z position is set from the original hit, which should be the middle of the sensor.
                  */
-                detID_.setRawValue(hitID);
-                detID_.unpack();
-                int cellID = detID_.getFieldValue("cell");
-                int moduleID = detID_.getFieldValue("module_position");
-                int cellModuleID = hexReadout_.combineID(cellID,moduleID);
-                std::pair<double,double> XYPair = hexReadout_.getCellCenterAbsolute(cellModuleID);
-                hitMap[hitID].setPosition(XYPair.first, XYPair.second, g4hit->getPosition().z());
+                double x,y,z;
+                hexReadout_->getCellAbsolutePosition( hitID , x , y , z );
+                hitMap[hitID].setPosition( x , y , z );
 
             } 
 

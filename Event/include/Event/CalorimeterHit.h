@@ -117,6 +117,70 @@ namespace ldmx {
             }
 
             /**
+             * Get the X position of the hit [mm].
+             * @return the x position of the hit
+             */
+            float getXPos() const {
+                return xpos_;
+            }
+
+            /**
+             * Set the X position of the hit [mm].
+             * @param xpos the x position of the hit
+             */
+            void setXPos(float xpos) {
+                xpos_ = xpos;
+            }
+
+            /**
+             * Get the Y position of the hit [mm].
+             * @return the y position of the hit
+             */
+            float getYPos() const {
+                return ypos_;
+            }
+
+            /**
+             * Set the Y position of the hit [mm].
+             * @param ypos the y position of the hit
+             */
+            void setYPos(float ypos) {
+                ypos_ = ypos;
+            }
+
+            /**
+             * Get the Z position of the hit [mm].
+             * @return the z position of the hit
+             */
+            float getZPos() const {
+                return zpos_;
+            }
+
+            /**
+             * Set the Z position of the hit [mm].
+             * @param zpos the z position of the hit
+             */
+            void setZPos(float zpos) {
+                zpos_ = zpos;
+            }
+
+            /**
+             * Is this hit a noise hit?
+             * @return true if this hit is a noise hit
+             */
+            bool isNoise() const {
+                return isNoise_;
+            }
+
+            /**
+             * Set if this hit is a noise hit.
+             * @param yes true if this hit is a noise hit
+             */
+            void setNoise(bool yes) {
+                isNoise_ = yes;
+            }
+
+            /**
              * Get the layer of the hit from the ID.
              */
             int getLayer() const;
@@ -141,6 +205,18 @@ namespace ldmx {
 
             /** The time of the hit. */
             float time_{0};
+
+            /** X Position of the hit */
+            float xpos_;
+
+            /** Y Position of the hit */
+            float ypos_;
+
+            /** Z Position of the hit */
+            float zpos_;
+
+            /** Is this a noise hit? */
+            bool isNoise_;
 
             /**
              * The ROOT class definition.
