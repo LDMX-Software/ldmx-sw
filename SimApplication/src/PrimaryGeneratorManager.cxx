@@ -29,7 +29,7 @@
 #include "SimApplication/RootPrimaryGenerator.h"
 #include "SimApplication/ParticleGun.h"
 
-ldmx::PrimaryGeneratorManager ldmx::PrimaryGeneratorManager::instance_ __attribute__((init_priority(100)));
+ldmx::PrimaryGeneratorManager ldmx::PrimaryGeneratorManager::instance_ __attribute__((init_priority(300)));
 
 namespace ldmx { 
 
