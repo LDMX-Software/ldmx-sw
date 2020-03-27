@@ -104,8 +104,6 @@ namespace ldmx {
             std::cout << TString::Format("  min/max radii of cell %.2f %.2f and module %.2f %.2f",cellr_,cellR_,moduler_,moduleR_) << std::endl;
         }
 
-        ecalMap_ = std::make_unique<TH2Poly>();
-        gridMap_ = std::make_unique<TH2Poly>();
         buildModuleMap();
         buildCellMap();
         buildCellModuleMap();
@@ -153,8 +151,7 @@ namespace ldmx {
          * the latter is simple (see isInside()) and is all that needs to
          * be changed for future module layouts.
          */
-        if(ecalMap_) ecalMap_->Clear();
-        if(gridMap_) gridMap_->Clear();
+        TH2Poly gridMap;
 
         // make hexagonal grid [boundary is rectangle] larger than the module
         unsigned gridCellsWide = nCellsWide_+2;
@@ -163,7 +160,7 @@ namespace ldmx {
         rowDistance_ = 1.5*cellR_;
         double gridWidth = (gridCellsWide)*columnDistance_;
         double gridHeight = (gridCellsWide-1)*rowDistance_ + 2*cellR_;
-        gridMap_->Honeycomb( -gridWidth/2, -gridHeight/2, cellR_, gridCellsWide, gridCellsWide);
+        gridMap.Honeycomb( -gridWidth/2, -gridHeight/2, cellR_, gridCellsWide, gridCellsWide);
 
         if(verbose_>0){
             std::cout << std::endl;
@@ -174,8 +171,8 @@ namespace ldmx {
         }
 
         // copy cells lying within module boundaries to a module grid
-        std::vector<int> cellIdCopied(gridMap_->GetNumberOfBins());
-        TListIter next(gridMap_->GetBins()); // a TH2Poly is a TList of TH2PolyBin
+        std::vector<int> cellIdCopied(gridMap.GetNumberOfBins());
+        TListIter next(gridMap.GetBins()); // a TH2Poly is a TList of TH2PolyBin
         TH2PolyBin *polyBin = 0;
         TGraph * poly = 0; // a polygon returned by TH2Poly is a TGraph
         int ecalMapID = 0; // ecalMap cell IDs go from 0 to N-1, not equal to original grid cell ID.
@@ -204,7 +201,10 @@ namespace ldmx {
                 bool isCopied = (std::find(std::begin(cellIdCopied), std::end(cellIdCopied), id) != cellIdCopied.end());
                 if(verbose_>1 && isCopied) std::cout << "    cell was used already! not copying." << std::endl;
                 if(!isCopied){
-                    ecalMap_->AddBin(poly);
+                    //ecalMap_ needs to have its own copy of the polygon TGraph
+                    //  otherwise we get a segfault in ~EcalHexReadout because the polygon that
+                    //  was copied over is destroyed at the end of this function
+                    ecalMap_.AddBin( poly->GetN() , poly->GetX() , poly->GetY() );
                     cellPositionMap_[ecalMapID] = std::pair<double,double>(x,y);
                     ecalMapID++;
                     cellIdCopied.push_back(id);
