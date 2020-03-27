@@ -21,11 +21,6 @@ namespace ldmx {
  */
 #define GIT_SHA1 "${GIT_SHA1}"
 
-/**
- * The path to this installation of ldmx-sw
- */
-#define LDMX_INSTALL "${CMAKE_INSTALL_PREFIX}"
-
 }
 
 #endif // _EVENT_VERSION_H_
