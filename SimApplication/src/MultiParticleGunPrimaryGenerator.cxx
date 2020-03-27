@@ -26,7 +26,7 @@ namespace ldmx {
         }
 
         mpgVertex_ = G4ThreeVector( stlVertex.at(0)*mm , stlVertex.at(1)*mm , stlVertex.at(2)*mm );
-        mpgMomentum_ = G4ThreeVector( stlMomentum.at(0)*MeV , stlMomentum.at(1)*MeV , stlVertex.at(2)*MeV );
+        mpgMomentum_ = G4ThreeVector( stlMomentum.at(0)*MeV , stlMomentum.at(1)*MeV , stlMomentum.at(2)*MeV );
 
     }
 

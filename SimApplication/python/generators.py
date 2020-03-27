@@ -55,8 +55,7 @@ def stdhep( name ) :
 # @return PrimaryGenerator of class ldmx::GeneralParticleSource
 #############################################################
 def gps( name ) :
-    print "gps PrimaryGenerator Not Implemented yet"
-    return False
+    return simcfg.PrimaryGenerator( name , "ldmx::GeneralParticleSource" )
 
 #############################################################
 # @function farUpstreamSingleElectron
