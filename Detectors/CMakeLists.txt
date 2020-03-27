@@ -42,10 +42,15 @@ foreach(detector_dir ${detector_dirs})
   endif()
 endforeach()
 
-# install python module with function that returns absolute path to detector descriptions
-set( makeDetPathPyFunc "#function returning full path to detector description in install location\ndef makeDetectorPath(detName) :\n    return \"${CMAKE_INSTALL_PREFIX}/data/detectors/\" + detName + \"/detector.gdml\"\n" )
-set( makeScorePlanePathPyFunc "#function returning full path to detector description in install location\ndef makeScoringPlanePath(detName) :\n    return \"${CMAKE_INSTALL_PREFIX}/data/detectors/\" + detName + \"/scoring_planes.gdml\"\n" )
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# LDMX Detectors python module" )
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/makePath.py "${makeDetPathPyFunc}\n\n${makeScorePlanePathPyFunc}" )
+# install python init file for this module
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# Detectors python package")
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION lib/python/LDMX/Detectors)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/makePath.py DESTINATION lib/python/LDMX/Detectors)
+
+# configure python scripts that need cmake variables
+file(GLOB config_scripts ${CMAKE_CURRENT_SOURCE_DIR}/python/*.in)
+foreach(config_script ${config_scripts})
+  string(REPLACE ".in" "" config_script_output ${config_script})
+  get_filename_component(config_script_output ${config_script_output} NAME)
+  configure_file(${config_script} ${CMAKE_CURRENT_BINARY_DIR}/python/${config_script_output})
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${config_script_output} DESTINATION lib/python/LDMX/Detectors)
+endforeach()
