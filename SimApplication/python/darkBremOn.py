@@ -6,14 +6,16 @@
 #   from LDMX.SimApplication.darkBremOn import darkBremOn
 # Still Need to Define:
 #   1. path to dark brem input LHE file ('darkbrem.madgraphfilepath')
-#   2. detector description ('detector')
-#   3. mass of A' in MeV ('APrimeMass')
+#   2. mass of A' in MeV ('APrimeMass')
 
 from LDMX.Framework import ldmxcfg
 
 darkBremOn = ldmxcfg.Producer( "darkBremOn", "ldmx::Simulator")
 
 darkBremOn.parameters[ "description" ] = "One e- fired far upstream with Dark Brem turned on and biased up in target"
+
+from LDMX.Detector.makePath import makeDetectorPath
+darkBremOn.parameters[ "detector" ] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
 
 from LDMX.SimApplication import generators
 darkBremOn.parameters[ "generators" ] = [ farUpstreamSingleElectron() ]

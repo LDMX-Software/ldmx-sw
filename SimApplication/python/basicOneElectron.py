@@ -4,7 +4,7 @@ from LDMX.Framework import ldmxcfg
 
 basicOneElectron = ldmxcfg.Producer( "basicOneElectron" , "ldmx::Simulator" )
 
-from LDMX.Detectors.makeDetectorPath import makeDetectorPath
+from LDMX.Detectors.makePath import makeDetectorPath
 
 basicOneElectron.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
 basicOneElectron.parameters[ "runNumber" ] = 1
