@@ -1,13 +1,13 @@
 /**
- * @file RootPrimaryGenerator.h
+ * @file RootCompleteReSim.h
  * @brief Primary generator used to generate primaries from SimParticles. 
  * @author Nhan Tran, Fermilab
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMAPPLICATION_ROOTPRIMARYGENERATOR_H
-#define SIMAPPLICATION_ROOTPRIMARYGENERATOR_H
+#ifndef SIMAPPLICATION_ROOTCOMPLETERESIM_H
+#define SIMAPPLICATION_ROOTCOMPLETERESIM_H
 
 //----------------//
 //   C++ StdLib   //
@@ -26,7 +26,8 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "Event/EventDef.h"
+#include "Framework/EventFile.h"
+#include "Framework/Event.h"
 #include "SimApplication/PrimaryGenerator.h"
 
 class G4Event;
@@ -35,20 +36,32 @@ namespace ldmx {
 
     class Parameters;
 
-    class RootPrimaryGenerator : public PrimaryGenerator {
+    /**
+     * @class RootCompleteReSim
+     * 
+     * PrimaryGenerator that gets primaries and event seeds and
+     * inputs them into current event as primaries with the exact same kinematics.
+     */
+    class RootCompleteReSim : public PrimaryGenerator {
 
         public:
 
             /**
              * Class constructor.
-             * @param reader The LHE reader with the event data.
+             * @param name the name of the generator
+             * @param parameters configuration parameters
+             *
+             * Parameters:
+             *   filePath : path to root file to re-sim
+             *   simParticleCollName : name of collection of SimParticles
+             *   simParticlePassName : name of pass of SimParticles
              */
-            RootPrimaryGenerator(const std::string& name, Parameters& parameters);
+            RootCompleteReSim(const std::string& name, Parameters& parameters);
 
             /**
              * Class destructor.
              */
-            virtual ~RootPrimaryGenerator();
+            virtual ~RootCompleteReSim();
 
             /**
              * Generate vertices in the Geant4 event.
@@ -59,48 +72,27 @@ namespace ldmx {
         private:
 
             /**
-             * The root filename
+             * Name of SimParticles collection
              */
-            G4String filename_;
+            std::string simParticleCollName_;
 
             /**
-             * The root file
+             * Name of SimParticles pass
              */
-            TFile* ifile_;
+            std::string simParticlePassName_;
 
             /**
-             * The ldmx root tree
+             * The input root file
              */
-            TTree* itree_;
+            std::unique_ptr<EventFile> ifile_;
 
             /**
-             * The sim particles
+             * The input ldmx event bus
              */
-            std::vector<SimParticle> simParticles_;
-            std::vector<SimTrackerHit> ecalSPParticles_;
-
-            /**
-             * The event header
-             */
-            ldmx::EventHeader* eventHeader_;
-
-            /**
-             * The event counter
-             */
-            int evtCtr_;
-
-            /**
-             * Events in the tree...
-             */
-            int nEvts_;
-
-            /**
-             * Run mode...
-             */
-            int runMode_;
+            Event ievent_;
 
     };
 
 }
 
-#endif //SIMAPPLICATION_ROOTPRIMARYGENERATOR_H
+#endif //SIMAPPLICATION_ROOTCOMPLETERESIM_H
