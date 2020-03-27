@@ -15,8 +15,9 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimApplication/ParticleGun.h"
+#include "SimApplication/PrimaryGeneratorManager.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
+#include "Framework/FrameworkDef.h"
 
 /*~~~~~~~~~~*/
 /*   ROOT   */
@@ -26,7 +27,9 @@
 namespace ldmx {
 
     PrimaryGeneratorAction::PrimaryGeneratorAction(Parameters& parameters) 
-        : G4VUserPrimaryGeneratorAction() {
+        : G4VUserPrimaryGeneratorAction(),
+        manager_( PrimaryGeneratorManager::getInstance() )
+    {
 
         // The parameters used to configure the primary generator action
         parameters_ = parameters;  
@@ -34,9 +37,6 @@ namespace ldmx {
         // Instantiate the random number generator and set the seed.
         random_ = std::make_unique< TRandom3 >(); 
         random_->SetSeed( CLHEP::HepRandom::getTheSeed() );
-
-        // Instantiate the manager 
-        manager_ = std::make_unique< PrimaryGeneratorManager >(parameters);
 
         // Check whether a beamspot should be used or not.
         auto beamSpot{parameters.getParameter< std::vector< double > >("beamSpotSmear")};
@@ -46,32 +46,33 @@ namespace ldmx {
             beamspotYSize_ = beamSpot[1];
             beamspotZSize_ = beamSpot[2];
         }
+
+        auto generators{parameters_.getParameter< std::vector< Class > >("generators")};
+        if ( generators.size() == 0 ) {
+            EXCEPTION_RAISE(
+                    "MissingGenerator",
+                    "Need to define some generator of primaries."
+                    );
+        }
+
+        for ( auto& generator : generators ) {
+            manager_.createGenerator(generator.className_, generator.instanceName_, generator.params_);
+        }
         
     }
 
-    PrimaryGeneratorAction::~PrimaryGeneratorAction() {}
-
-    /*
-    void PrimaryGeneratorAction::setPrimaryGenerator(G4VPrimaryGenerator* aGenerator) {
-      
-        if ((dynamic_cast<MultiParticleGunPrimaryGenerator*>(aGenerator)) != NULL){
-            indexMpg_ = ((int) generator_.size()) - 1;
-        }
-        if ((dynamic_cast<RootPrimaryGenerator*>(aGenerator)) != NULL){
-            indexRpg_ = ((int) generator_.size()) - 1;
-        }        
-    }*/
+    PrimaryGeneratorAction::~PrimaryGeneratorAction() { }
 
     void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event) {
       
         /// Get the list of generators that will be used for this event
-        auto generators{manager_->getGenerators()}; 
+        auto generators{manager_.getGenerators()}; 
 
         // Generator the primary vertex 
         std::for_each( generators.begin(), generators.end(), 
                 [event](const auto& generator) { generator->GeneratePrimaryVertex(event); } );
         
-        // Activate the plugin manager hook.  
+        // smear all primary vertices (if activated)
         if (event->GetNumberOfPrimaryVertex() > 0) {
             if (useBeamspot_) smearingBeamspot(event);
         }
