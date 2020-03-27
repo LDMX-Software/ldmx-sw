@@ -1,13 +1,13 @@
 /**
- * @file RootPrimaryGenerator.h
+ * @file RootSimFromEcalSP.h
  * @brief Primary generator used to generate primaries from SimParticles. 
  * @author Nhan Tran, Fermilab
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMAPPLICATION_ROOTPRIMARYGENERATOR_H
-#define SIMAPPLICATION_ROOTPRIMARYGENERATOR_H
+#ifndef SIMAPPLICATION_ROOTSIMFROMECALSP_H
+#define SIMAPPLICATION_ROOTSIMFROMECALSP_H
 
 //----------------//
 //   C++ StdLib   //
@@ -26,7 +26,8 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "Event/EventDef.h"
+#include "Framework/EventFile.h"
+#include "Framework/Event.h"
 #include "SimApplication/PrimaryGenerator.h"
 
 class G4Event;
@@ -35,20 +36,34 @@ namespace ldmx {
 
     class Parameters;
 
-    class RootPrimaryGenerator : public PrimaryGenerator {
+    /**
+     * @class RootSimFromEcalSP
+     *
+     * Generate primaries that correspond to particles leaving
+     * the ECal (passing through the Ecal Scoring Planes) before
+     * a time cutoff.
+     */
+    class RootSimFromEcalSP : public PrimaryGenerator {
 
         public:
 
             /**
              * Class constructor.
-             * @param reader The LHE reader with the event data.
+             * @param name name of this generator
+             * @param parameters configuration parameters
+             *
+             * Parameters:
+             *   filePath : path to root file containing events to re-sim
+             *   timeCutoff : maximum time that a particle can pass through Ecal Scoring Planes and be included in re-sim (ns)
+             *   ecalSPHitsCollName : name of collection for Ecal Scoring Plane hits
+             *   ecalSPHitsPassName : name of pass for Ecal Scoring Plane hits
              */
-            RootPrimaryGenerator(const std::string& name, Parameters& parameters);
+            RootSimFromEcalSP(const std::string& name, Parameters& parameters);
 
             /**
              * Class destructor.
              */
-            virtual ~RootPrimaryGenerator();
+            virtual ~RootSimFromEcalSP();
 
             /**
              * Generate vertices in the Geant4 event.
@@ -59,48 +74,35 @@ namespace ldmx {
         private:
 
             /**
-             * The root filename
+             * The cutoff time
+             *
+             * Any particle passing through the ECal scoring planes at a time
+             * greater than this time is NOT re-used as a primary.
              */
-            G4String filename_;
+            double timeCutoff_;
 
             /**
-             * The root file
+             * The Ecal Scoring Planes Hits collection name
              */
-            TFile* ifile_;
+            std::string ecalSPHitsCollName_;
 
             /**
-             * The ldmx root tree
+             * The Ecal Scoring Planes Hits pass name
              */
-            TTree* itree_;
+            std::string ecalSPHitsPassName_;
 
             /**
-             * The sim particles
+             * The input root file
              */
-            std::vector<SimParticle> simParticles_;
-            std::vector<SimTrackerHit> ecalSPParticles_;
+            std::unique_ptr<EventFile> ifile_;
 
             /**
-             * The event header
+             * The input ldmx event bus
              */
-            ldmx::EventHeader* eventHeader_;
-
-            /**
-             * The event counter
-             */
-            int evtCtr_;
-
-            /**
-             * Events in the tree...
-             */
-            int nEvts_;
-
-            /**
-             * Run mode...
-             */
-            int runMode_;
+            Event ievent_;
 
     };
 
 }
 
-#endif //SIMAPPLICATION_ROOTPRIMARYGENERATOR_H
+#endif //SIMAPPLICATION_ROOTSIMFROMECALSP_H
