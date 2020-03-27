@@ -48,9 +48,7 @@ namespace ldmx {
 
     }
 
-    Simulator::~Simulator() {
-        if ( sessionHandle_ ) delete sessionHandle_;
-    }
+    Simulator::~Simulator() { }
 
     void Simulator::configure(Parameters& parameters) {
     
@@ -58,21 +56,19 @@ namespace ldmx {
         parameters_ = parameters; 
         
         /*************************************************
-         * Necessary Parameters
+         * Pass Run Number to Process
          *************************************************/
-        
-        detectorPath_ = parameters.getParameter< std::string >("detector");
 
-        runNumber_ = parameters.getParameter< int >( "runNumber" );
+        int runNumber = parameters_.getParameter< int >( "runNumber" );
         //make sure Process uses this run number when creating the event headers
-        process_.setRunNumber( runNumber_ );
+        process_.setRunNumber( runNumber );
 
         /*************************************************
-         * Optional Parameters
+         * Verbosity and Logging
          *************************************************/
 
-        verbosity_ = parameters.getParameter< int >("verbosity");
-        auto loggingPrefix = parameters.getParameter< std::string >("loggingPrefix");
+        verbosity_ = parameters_.getParameter< int >("verbosity");
+        auto loggingPrefix = parameters_.getParameter< std::string >("loggingPrefix");
         if ( verbosity_ > 0 or verbosity_ == std::numeric_limits<int>::min() ) {
             // non-zero verbosity ==> log geant4 comments in files
             //  can input different log file names into this constructor
@@ -82,6 +78,7 @@ namespace ldmx {
             sessionHandle_ = new BatchSession();
         }
         uiManager_->SetCoutDestination( sessionHandle_ ); //re-direct the G4 messaging service
+        // G4UImanager owns and cleans up G4Sessions
 
         /*************************************************
          * Start Configuration of Simulation
@@ -91,50 +88,38 @@ namespace ldmx {
         runManager_ = std::make_unique<RunManager>(parameters);
 
         // Instantiate the GDML parser and corresponding messenger
-        parser_ = std::make_unique<G4GDMLParser>();
+        //      owned and managed by DetectorConstruction
+        G4GDMLParser *parser = new G4GDMLParser;
 
         // Instantiate the class so cascade parameters can be set.
         //      This pointer is handled by Geant4
         G4CascadeParameters::Instance();
 
         // Supply the default user initialization and actions
-        detectorConstruction_ = std::make_unique<DetectorConstruction>( parser_.get(), parameters );
-        runManager_->SetUserInitialization( detectorConstruction_.get() );
+        //  detector construction owned and managed by RunManager
+        runManager_->SetUserInitialization( new DetectorConstruction( parser , parameters ) );
 
         // Store the random numbers used to generate an event. 
         runManager_->SetRandomNumberStore( true );
-        
-        // Get the path to the scoring planes
-        scoringPlanesPath_ = parameters.getParameter< std::string >("scoringPlanes"); 
-
-        randomSeeds_ = parameters.getParameter< std::vector< int > >("randomSeeds");
-
-        // Get the extra simulation configuring commands
-        preInitCommands_  = parameters.getParameter< std::vector< std::string > >("preInitCommands" ); 
-        postInitCommands_ = parameters.getParameter< std::vector< std::string > >("postInitCommands");
 
         /*************************************************
          * Do Pre /run/initialize commands
          *************************************************/
         
         // Parse the detector geometry
+        std::string detectorPath = parameters_.getParameter<std::string>("detector");
         if ( verbosity_ > 0 ) {
-            std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath_ << "'... " << std::flush;
+            std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath << "'... " << std::flush;
         }
         G4GeometryManager::GetInstance()->OpenGeometry();
-        parser_->Read( detectorPath_ );
-        runManager_->DefineWorldVolume( parser_->GetWorldVolume() );
+        parser->Read( detectorPath );
+        runManager_->DefineWorldVolume( parser->GetWorldVolume() );
         if ( verbosity_ > 0 ) {
             std::cout << "done" << std::endl;
         }
 
-        if (!scoringPlanesPath_.empty() ) {
-            //path was given, enable and read scoring planes into parallel world
-            runManager_->enableParallelWorld(true);
-            runManager_->setParallelWorldPath(scoringPlanesPath_);
-        }
-
-        for ( const std::string& cmd : preInitCommands_ ) {
+        auto preInitCommands = parameters_.getParameter< std::vector< std::string > >("preInitCommands" ); 
+        for ( const std::string& cmd : preInitCommands ) {
             if ( allowed(cmd) ) {
                 int g4Ret = uiManager_->ApplyCommand( cmd );
                 if ( g4Ret > 0 ) {
@@ -190,16 +175,19 @@ namespace ldmx {
         //initialize run
         runManager_->Initialize();
 
-        if ( randomSeeds_.size() > 1 ) {
+        auto randomSeeds = parameters_.getParameter<std::vector<int>>("randomSeeds");
+        if ( randomSeeds.size() > 1 ) {
             //Geant4 allows for random seeds from 2 to 100
             std::string cmd( "/random/setSeeds " );
-            for ( const int &seed : randomSeeds_ ) {
+            for ( const int &seed : randomSeeds ) {
                 cmd += std::to_string(seed) + " ";
             }
             uiManager_->ApplyCommand( cmd );
         }
 
-        for ( const std::string& cmd : postInitCommands_ ) {
+        // Get the extra simulation configuring commands
+        auto postInitCommands = parameters_.getParameter< std::vector< std::string > >("postInitCommands");
+        for ( const std::string& cmd : postInitCommands ) {
             if ( allowed(cmd) ) {
                 int g4Ret = uiManager_->ApplyCommand( cmd );
                 if ( g4Ret > 0 ) {
@@ -237,17 +225,23 @@ namespace ldmx {
         // Persist any remaining events, call the end of run action and 
         // terminate the Geant4 kernel. 
         runManager_->RunTermination();
+
+        // Cleanup persistency manager
+        // TODO cleanup persistency manager
+        // Because of some nonsense in EcalHexReadout using TH2Poly's and stuff,
+        // deleting the RootPersistencyManager seg faults.
+        //persistencyManager_.reset( nullptr );
     }
 
     void Simulator::onProcessEnd() {
-        /*TODO some annoying warnings about deleting things when geometry is/isn't open at end of run
-         * Occur after Simulator::onProcessEnd
-         * ~Simulator never called
-         * WARNING - Attempt to delete the physical volume store while geometry closed !
-         * WARNING - Attempt to delete the logical volume  store while geometry closed !
-         * WARNING - Attempt to delete the solid           store while geometry closed !
-         * WARNING - Attempt to delete the region          store while geometry closed !
-         */
+        
+        // Delete Run Manager
+        // From Geant4 Basic Example B01:
+        // Job termination
+        // Free the store: user actions, physics list and detector descriptions are
+        // owned and deleted by the run manager, so they should not be deleted 
+        // in the main() program 
+        runManager_.reset( nullptr );
     }
 
     bool Simulator::allowed(const std::string &command) const {

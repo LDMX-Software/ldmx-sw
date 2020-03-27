@@ -132,16 +132,10 @@ namespace ldmx {
         private:
 
             /// Manager controlling G4 simulation run 
-            std::unique_ptr<RunManager> runManager_;
+            std::unique_ptr<RunManager> runManager_{nullptr};
 
             /// User interface handle
             G4UImanager* uiManager_{nullptr};
-
-            /// GDML parser 
-            std::unique_ptr<G4GDMLParser> parser_;
-
-            /// LDMX Object that constructs our detector
-            std::unique_ptr<DetectorConstruction> detectorConstruction_;
 
             /// PersistencyManager 
             std::unique_ptr<RootPersistencyManager> persistencyManager_;
@@ -160,26 +154,8 @@ namespace ldmx {
             /// The parameters used to configure the simulation
             Parameters parameters_;   
 
-            /// Path to detector description
-            std::string detectorPath_;
-
-            /// Run Number for this Sim Run
-            int runNumber_;
-
             /// Vebosity for the simulation
             int verbosity_{1};
-
-            /// Path to scoring planes description
-            std::string scoringPlanesPath_;
-
-            /// Vector of Random Seeds to use for this run.
-            std::vector< int > randomSeeds_;
-            
-            /// Vector of Geant4 Commands to Run before /run/initialize
-            std::vector< std::string > preInitCommands_;
-            
-            /// Vector of Geant4 Commands to Run after /run/initialize
-            std::vector< std::string > postInitCommands_;
 
     };
 }

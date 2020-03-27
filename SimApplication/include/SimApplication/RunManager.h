@@ -76,14 +76,6 @@ namespace ldmx {
              */
             DetectorConstruction* getDetectorConstruction(); 
 
-            /** Enable a parallel world. */
-            void enableParallelWorld(bool isPWEnabled) { isPWEnabled_ = isPWEnabled; }
-
-            /** Set the path to the GDML description of the parallel world. */
-            void setParallelWorldPath(std::string parallelWorldPath) { 
-                parallelWorldPath_ = parallelWorldPath; 
-            }
-
             /**
              * Tell RunManager to use the seed from the root file.
              */

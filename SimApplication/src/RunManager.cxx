@@ -60,7 +60,9 @@ namespace ldmx {
 
         auto pList{physicsListFactory_->GetReferencePhysList("FTFP_BERT")};
         
-        if (isPWEnabled_) {
+        parallelWorldPath_ = parameters_.getParameter<std::string>("scoringPlanes");
+        isPWEnabled_ = (not parallelWorldPath_.empty());
+        if ( isPWEnabled_ ) {
             std::cout << "[ RunManager ]: Parallel worlds physics list has been registered." << std::endl;
             pList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
         }
