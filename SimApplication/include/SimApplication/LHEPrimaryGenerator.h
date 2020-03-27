@@ -2,25 +2,27 @@
  * @file LHEPrimaryGenerator.h
  * @brief Class for generating a Geant4 event from LHE event data
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMAPPLICATION_LHEPRIMARYGENERATOR_H_
-#define SIMAPPLICATION_LHEPRIMARYGENERATOR_H_
-
-// Geant4
-#include "G4RunManager.hh"
-#include "G4VPrimaryGenerator.hh"
+#ifndef SIMAPPLICATION_LHEPRIMARYGENERATOR_H
+#define SIMAPPLICATION_LHEPRIMARYGENERATOR_H
 
 // LDMX
+#include "SimApplication/PrimaryGenerator.h"
 #include "SimApplication/LHEReader.h"
 
+class G4Event;
+
 namespace ldmx {
+
+    class Parameters;
 
     /**
      * @class LHEPrimaryGenerator
      * @brief Generates a Geant4 event from an LHEEvent
      */
-    class LHEPrimaryGenerator : public G4VPrimaryGenerator {
+    class LHEPrimaryGenerator : public PrimaryGenerator {
 
         public:
 
@@ -28,7 +30,7 @@ namespace ldmx {
              * Class constructor.
              * @param reader The LHE reader with the event data.
              */
-            LHEPrimaryGenerator(LHEReader* reader);
+            LHEPrimaryGenerator(const std::string& name, Parameters& parameters);
 
             /**
              * Class destructor.
@@ -51,4 +53,4 @@ namespace ldmx {
 
 }
 
-#endif
+#endif // SIMAPPLICATION_LHEPRIMARYGENERATOR_H

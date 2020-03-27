@@ -21,9 +21,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-//#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
 #include "SimApplication/PrimaryGeneratorManager.h" 
-//#include "SimApplication/RootPrimaryGenerator.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -35,8 +33,6 @@ class G4Event;
 class TRandom3;
 
 namespace ldmx {
-
-    class ParticleGun; 
 
     /**
      * @class PrimaryGeneratorAction
@@ -65,30 +61,6 @@ namespace ldmx {
              */
             void GeneratePrimaries(G4Event* event) final override;
 
-            /**
-             * Enable beamspot smearing.
-             * @param bool
-             */
-            void setUseBeamspot(bool usebs) { useBeamspot_ = usebs; };
-
-            /**
-             * Set beamspot size in x.
-             * @param beamspot size
-             */
-            void setBeamspotXSize(double bssize){ beamspotXSize_ = bssize; };
-            
-            /**
-             * Set beamspot size in y.
-             * @param beamspot size
-             */
-            void setBeamspotYSize(double bssize){ beamspotYSize_ = bssize; };
-
-            /**
-             * Set beamspot size in z.
-             * @param beamspot size
-             */
-            void setBeamspotZSize(double bssize){ beamspotZSize_ = bssize; };
-
             /** 
              * Get the index of the last generator in the list of 
              * generators.
@@ -105,7 +77,7 @@ namespace ldmx {
             void smearingBeamspot(G4Event* event);
 
             /// Manager of all generators used by the event
-            std::unique_ptr< PrimaryGeneratorManager > manager_;
+            PrimaryGeneratorManager &manager_;
 
             /// Random number generator
             std::unique_ptr< TRandom3 > random_;

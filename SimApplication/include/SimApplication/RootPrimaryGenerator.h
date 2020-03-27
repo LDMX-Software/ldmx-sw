@@ -3,10 +3,11 @@
  * @brief Primary generator used to generate primaries from SimParticles. 
  * @author Nhan Tran, Fermilab
  * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMAPPLICATION_ROOTPRIMARYGENERATOR_H_
-#define SIMAPPLICATION_ROOTPRIMARYGENERATOR_H_
+#ifndef SIMAPPLICATION_ROOTPRIMARYGENERATOR_H
+#define SIMAPPLICATION_ROOTPRIMARYGENERATOR_H
 
 //----------------//
 //   C++ StdLib   //
@@ -14,11 +15,6 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-
-//------------//
-//   Geant4   //
-//------------//
-#include "G4VPrimaryGenerator.hh"
 
 //----------//
 //   ROOT   //
@@ -31,10 +27,15 @@
 //   ldmx-sw   //
 //-------------//
 #include "Event/EventDef.h"
+#include "SimApplication/PrimaryGenerator.h"
+
+class G4Event;
 
 namespace ldmx {
 
-    class RootPrimaryGenerator : public G4VPrimaryGenerator {
+    class Parameters;
+
+    class RootPrimaryGenerator : public PrimaryGenerator {
 
         public:
 
@@ -42,18 +43,12 @@ namespace ldmx {
              * Class constructor.
              * @param reader The LHE reader with the event data.
              */
-            RootPrimaryGenerator(G4String filename);
+            RootPrimaryGenerator(const std::string& name, Parameters& parameters);
 
             /**
              * Class destructor.
              */
             virtual ~RootPrimaryGenerator();
-
-            /**
-             * Specify the run mode
-             * @param the mode index.
-             */
-            void setRunMode(int curmode) { runMode_ = curmode; };
 
             /**
              * Generate vertices in the Geant4 event.
@@ -108,4 +103,4 @@ namespace ldmx {
 
 }
 
-#endif
+#endif //SIMAPPLICATION_ROOTPRIMARYGENERATOR_H

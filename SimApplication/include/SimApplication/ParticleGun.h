@@ -2,6 +2,7 @@
  * @file ParticleGun.h
  * @brief Extension of G4ParticleGun.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifndef SIMCORE_PARTICLE_GUN_H
@@ -11,6 +12,11 @@
 //   Geant4   //
 //------------//
 #include "G4ParticleGun.hh"
+
+//------------//
+//   LDMX     //
+//------------//
+#include "SimApplication/PrimaryGenerator.h"
 
 // Forward declarations
 class G4Event; 
@@ -24,7 +30,7 @@ namespace ldmx {
      * @class ParticleGun
      * @brief Class that extends the functionality of G4ParticleGun.
      */
-    class ParticleGun : public G4ParticleGun { 
+    class ParticleGun : public G4ParticleGun, public PrimaryGenerator { 
     
         public: 
 
@@ -32,8 +38,15 @@ namespace ldmx {
              * Constructor. 
              *
              * @param parameters Parameters used to configure the particle gun. 
+             *
+             * Parameters:
+             *  particle : name of particle to shoot (Geant4 naming)
+             *  energy   : energy of particle (GeV)
+             *  position : position to shoot from (mm three-vector)
+             *  time     : time to shoot at (ns)
+             *  direction: direction to shoot in (unitless three-vector)
              */
-            ParticleGun(Parameters& parameters); 
+            ParticleGun(const std::string& name, Parameters& parameters); 
 
             /// Destructor
             ~ParticleGun();
