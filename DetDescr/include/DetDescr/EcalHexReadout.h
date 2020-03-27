@@ -6,6 +6,7 @@
  *           https://cms-hgcal.github.io/TestBeam/HGCSSGeometryConversion_8cc_source.html
  *           modified TH2Poly::Honeycomb routine
  * @author Patterson, UCSB
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifndef DETDESCR_ECALHEXREADOUT_H_
@@ -13,6 +14,7 @@
 
 // LDMX
 #include "Exception/Exception.h"
+#include "DetDescr/EcalDetectorID.h"
 
 // STL
 #include <map>
@@ -39,14 +41,39 @@ namespace ldmx {
             /**
              * Class constructor.
              * @param moduleMinR The center-to-flat radius of an ECal module [mm]. See comments in src.
+             * @param gap air gap between edges of adjacent ECal modules [mm]
              * @param nCellsWide Total cell count in center horizontal row.
              */
-            EcalHexReadout(double moduleMinR = defaultMinR, double gap = defaultGap_, unsigned nCellsWide = defaultNCellsWide);
+            EcalHexReadout(double moduleMinR = defaultMinR_, double gap = defaultGap_, unsigned nCellsWide = defaultNCellsWide_,
+                    const std::vector<double> &layerZPositions = defaultLayerZPositions_, double ecalFrontZ = defaultEcalFrontZ_);
 
             /**
              * Class destructor.
              */
             virtual ~EcalHexReadout() { }
+
+            /**
+             * Get entire real space position for the cell with the input raw ID
+             *
+             * Inputs x,y,z will be set to the calculated position
+             */
+            void getCellAbsolutePosition( int rawID , double &x, double &y, double &z ) const {
+                
+                EcalDetectorID tmpID;
+                tmpID.setRawValue( rawID );
+                tmpID.unpack();
+
+                int layerID  = tmpID.getLayerID();
+                int moduleID = tmpID.getFieldValue( "module_position" );
+                int cellID   = tmpID.getCellID();
+
+                XYCoords xy = this->getCellCenterAbsolute( this->combineID( cellID , moduleID ) );
+                x = xy.first;
+                y = xy.second;
+                z = this->getZPosition( layerID );
+
+                return;
+            }
 
             /**
              * Combine cell and module IDs into a per-layer ID
@@ -60,6 +87,13 @@ namespace ldmx {
              */
             std::pair<int,int> separateID(int cellModuleID) const {
               return std::pair<int,int>(cellModuleID/10, cellModuleID % 10);
+            }
+
+            /**
+             * Get the z position from the layer index
+             */
+            double getZPosition(int layerID) const {
+                return ecalFrontZ_ + layerZPositions_.at(layerID);
             }
 
             /**
@@ -259,7 +293,10 @@ namespace ldmx {
             double moduleR_{0};
             double columnDistance_{0};
             double rowDistance_{0};
+            double ecalFrontZ_{0};
 
+            /** The layer Z postions are with respect to the front of the ECal */
+            std::vector<double> layerZPositions_;
             std::map<int, XYCoords> modulePositionMap_;
             std::map<int, XYCoords> cellPositionMap_;
             std::map<int, XYCoords> cellModulePositionMap_;
@@ -277,9 +314,11 @@ namespace ldmx {
              *   Then N = 1 + 3n(n+1).
              *   E.g. c = 23 gives N = 397.
              */
-            static constexpr double defaultMinR{85.};
-            static constexpr double defaultGap_{1.};
-            static constexpr unsigned defaultNCellsWide{23};
+            static constexpr double defaultMinR_{85.};
+            static constexpr double defaultGap_{0.};
+            static constexpr unsigned defaultNCellsWide_{23};
+            static constexpr double defaultEcalFrontZ_{200.};
+            static const std::vector<double> defaultLayerZPositions_; //defined in src
 
             std::unique_ptr<TH2Poly> ecalMap_;
             std::unique_ptr<TH2Poly> gridMap_;

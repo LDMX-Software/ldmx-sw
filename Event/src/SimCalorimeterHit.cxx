@@ -30,7 +30,7 @@ namespace ldmx {
 
     void SimCalorimeterHit::Print() const {
         std::cout << "SimCalorimeterHit { " << "id: " << id_ << ",  edep: " << edep_ << ", "
-                "position: ( " << x_ << ", " << y_ << ", " << z_ << " ) }" << std::endl;
+                "position: ( " << x_ << ", " << y_ << ", " << z_ << " ), num contribs: " << nContribs_ << " }" << std::endl;
     }
 
     void SimCalorimeterHit::addContrib(int trackID, int pdgCode, float edep, float time) {

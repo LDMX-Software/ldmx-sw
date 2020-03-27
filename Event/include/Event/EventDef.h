@@ -7,6 +7,7 @@
 
 #include "Event/CalorimeterHit.h"
 #include "Event/EcalHit.h"
+#include "Event/EcalDigiCollection.h"
 #include "Event/EcalVetoResult.h"
 #include "Event/NonFidEcalVetoResult.h"
 #include "Event/EcalCluster.h"
@@ -58,6 +59,7 @@ namespace ldmx {
         HcalVetoResult ,
         PnWeightResult ,
         DigiCollection ,
+        EcalDigiCollection ,
         std::vector< FindableTrackResult > ,
         std::vector< SimCalorimeterHit > ,
         std::vector< SimTrackerHit > ,

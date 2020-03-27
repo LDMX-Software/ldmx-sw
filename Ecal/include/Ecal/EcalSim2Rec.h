@@ -1,18 +1,18 @@
 /**
- * @file EcalDigiProducer.h
+ * @file EcalSim2Rec.h
  * @brief Class that performs basic ECal digitization
  * @author Owen Colegrove, UCSB
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENTPROC_ECALDIGIPRODUCER_H_
-#define EVENTPROC_ECALDIGIPRODUCER_H_
+#ifndef EVENTPROC_ECALSIM2REC_H_
+#define EVENTPROC_ECALSIM2REC_H_
 
 //----------------//
 //   C++ StdLib   //
 //----------------//
 #include <time.h>
-#include <memory> //for smart pointers
+#include <memory>
 
 //----------//
 //   ROOT   //
@@ -33,10 +33,10 @@
 namespace ldmx {
 
     /**
-     * @class EcalDigiProducer
+     * @class EcalSim2Rec
      * @brief Performs basic ECal digitization
      */
-    class EcalDigiProducer : public Producer {
+    class EcalSim2Rec : public Producer {
 
         public:
 
@@ -44,9 +44,10 @@ namespace ldmx {
 
             typedef std::pair<int, float> cell_energy_pair;
 
-            EcalDigiProducer(const std::string& name, Process& process);
+            EcalSim2Rec(const std::string& name, Process& process);
 
-            virtual ~EcalDigiProducer();
+            virtual ~EcalSim2Rec() {
+            }
 
             /**
              * Callback for the processor to configure itself from the given set
@@ -70,7 +71,7 @@ namespace ldmx {
                 return noiseIntercept + noiseSlope*capacitance;
             } 
             
-            inline layer_cell_pair hitToPair(SimCalorimeterHit &hit) {
+            inline layer_cell_pair hitToPair(const SimCalorimeterHit &hit) {
                 int detIDraw = hit.getID();
                 detID_.setRawValue(detIDraw);
                 detID_.unpack();
@@ -122,6 +123,15 @@ namespace ldmx {
              * multiples of RMS noise. 
              */
             double readoutThreshold_{4.};
+
+            /** Layer Weights for Digitization of Energy accounting for the effect of the absorber */
+            std::vector<double> layerWeights_;
+
+            /** Second Order Energy Correction to the accounting done by the layer weights 
+             *  SHOULD BE CLOSE TO 1.
+             */
+            double secondOrderEnergyCorrection_;
+
     };
 }
 
