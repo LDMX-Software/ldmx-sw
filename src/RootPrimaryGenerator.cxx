@@ -3,6 +3,7 @@
  * @brief Primary generator used to generate primaries from SimParticles. 
  * @author Nhan Tran, Fermilab
  * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "SimApplication/RootPrimaryGenerator.h"
@@ -27,13 +28,15 @@
 #include "Event/EventConstants.h"
 #include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
+#include "Framework/Parameters.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
 
 namespace ldmx {
 
-    RootPrimaryGenerator::RootPrimaryGenerator(G4String filename) {
+    RootPrimaryGenerator::RootPrimaryGenerator( const std::string& name , Parameters& parameters )
+        : PrimaryGenerator( name , parameters ) {
 
-        filename_ = filename;
+        filename_ = parameters_.getParameter< std::string >( "filePath" );
         ifile_ = new TFile(filename_);
         itree_ = (TTree*) ifile_->Get(EventConstants::EVENT_TREE_NAME.c_str());
         eventHeader_ = 0;
@@ -42,10 +45,15 @@ namespace ldmx {
         itree_->SetBranchAddress("EcalScoringPlaneHits_sim", &ecalSPParticles_);
         evtCtr_ = 0;
         nEvts_ = itree_->GetEntriesFast();
-        runMode_ = 0;
+        runMode_ = parameters_.getParameter< int >( "runMode" );
     }
 
-    RootPrimaryGenerator::~RootPrimaryGenerator() { }
+    RootPrimaryGenerator::~RootPrimaryGenerator() { 
+
+        //TODO cleanup?
+        ifile_->Close();
+        delete ifile_;
+    }
 
     void RootPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
 
@@ -182,4 +190,6 @@ namespace ldmx {
 
     }
 
-}
+} //ldmx
+
+DECLARE_GENERATOR( ldmx , RootPrimaryGenerator )
