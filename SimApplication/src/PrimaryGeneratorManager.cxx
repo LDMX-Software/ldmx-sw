@@ -2,6 +2,7 @@
  * @file PrimaryGeneratorManager.cxx
  * @brief Class that manages the generators used to fire particles. 
  * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "SimApplication/PrimaryGeneratorManager.h"
@@ -18,16 +19,6 @@
 /*   Exception   */
 /*~~~~~~~~~~~~~~~*/
 #include "Exception/Exception.h" 
-
-/*~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~*/
-#include "SimApplication/GeneralParticleSource.h"
-#include "SimApplication/LHEPrimaryGenerator.h"
-#include "SimApplication/LHEReader.h"
-#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
-#include "SimApplication/RootPrimaryGenerator.h"
-#include "SimApplication/ParticleGun.h"
 
 ldmx::PrimaryGeneratorManager ldmx::PrimaryGeneratorManager::instance_ __attribute__((init_priority(300)));
 

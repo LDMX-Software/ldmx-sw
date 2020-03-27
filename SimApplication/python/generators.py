@@ -27,27 +27,50 @@ def multi( name ) :
 #############################################################
 # @function lhe
 # @param name name of LHEPrimaryGenerator
-# @return PrimaryGenerator of class ldmx::LHEPrimaryGenerator
+# @param filePath LHE file to use
+# @return PrimaryGenerator of class ldmx::LHEPrimaryGenerator with filePath parameter set
 #############################################################
-def lhe( name ) :
-    return simcfg.PrimaryGenerator( name , "ldmx::LHEPrimaryGenerator" )
+def lhe( name , filePath ) :
+    sim = simcfg.PrimaryGenerator( name , "ldmx::LHEPrimaryGenerator" )
+    sim.parameters[ "filePath" ] = filePath
+    return sim
 
 #############################################################
-# @function root
-# @param name name of RootPrimaryGenerator
-# @return PrimaryGenerator of class ldmx::RootPrimaryGenerator
+# @function completeReSim
+# @param name name of RootCompleteReSim
+# @param filePath root file to re-sim
+# @return PrimaryGenerator of class ldmx::RootCompleteReSim with parameters set to reasonable defaults
 #############################################################
-def root( name ) :
-    return simcfg.PrimaryGenerator( name , "ldmx::RootPrimaryGenerator" )
+def completeReSim( name , filePath ) :
+    sim = simcfg.PrimaryGenerator( name , "ldmx::RootCompleteReSim" )
+    sim.parameters[ "filePath" ] = filePath
+    sim.parameters[ "simParticleCollName" ] = "SimParticles"
+    sim.parameters[ "simParticlePassName" ] = ""
+    return sim
+
+#############################################################
+# @function ecalSP
+# @param name name of RootSimFromEcalSP
+# @param filePath root file to re-sim
+# @return PrimaryGenerator of class ldmx::RootSimFromEcalSP with parameters set to reasonable defaults
+#############################################################
+def ecalSP( name , filePath ) :
+    sim = simcfg.PrimaryGenerator( name , "ldmx::RootSimFromEcalSP" )
+    sim.parameters[ "filePath" ] = filePath
+    sim.parameters[ "ecalSPHitsCollName" ] = "EcalScoringPlaneHits"
+    sim.parameters[ "ecalSPHitsPassName" ] = ""
+    sim.parameters[ "timeCutoff" ] = 50.
+    return sim
 
 #############################################################
 # @function stdhep
 # @param name name of StdHepPrimaryGenerator
 # @return PrimaryGenerator of class ldmx::StdHepPrimaryGenerator
 #############################################################
+import sys
 def stdhep( name ) :
     print "stdhep PrimaryGenerator Not Implemented yet"
-    quit()
+    sys.exit(1)
 
 #############################################################
 # @function gps
@@ -66,5 +89,5 @@ def farUpstreamSingleElectron() :
     farUpstreamElectron.parameters[ 'particle'  ] = 'e-'
     farUpstreamElectron.parameters[ 'position'  ] = [ -27.926, 5, -700 ] #mm
     farUpstreamElectron.parameters[ 'direction' ] = [ 313.8 / 4000 , 0, 3987.7/4000 ] #unitless
-    farUpstreamElectron.parameters[ 'energy'    ] = 4.0 #GeV
+    farUpstreamElectron.parameters[ 'energy'    ] = 4.0000000 #GeV
     return farUpstreamElectron
