@@ -1,40 +1,69 @@
 /**
  * @file GeneralParticleSource.h
  * @brief Extension of G4GeneralParticleSource.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef _SIM_APPLICATION_GENERAL_PARTICLE_SOURCE_H_
-#define _SIM_APPLICATION_GENERAL_PARTICLE_SOURCE_H_
+#ifndef SIMCORE_GENERALPARTICLESOURCE_H
+#define SIMCORE_GENERALPARTICLESOURCE_H
 
 //------------//
 //   Geant4   //
 //------------//
 #include "G4GeneralParticleSource.hh"
 
+//------------//
+//   LDMX     //
+//------------//
+#include "SimApplication/PrimaryGenerator.h"
+
 // Forward declarations
 class G4Event; 
 
-namespace ldmx { 
+namespace ldmx {
 
-    class GeneralParticleSource : public G4GeneralParticleSource { 
+    // Forward declarations
+    class Parameters;  
+
+    /**
+     * @class GeneralParticleSource
+     * @brief Class that extends the functionality of G4GeneralParticleSource.
+     */
+    class GeneralParticleSource : public PrimaryGenerator { 
     
         public: 
 
-            /** Constructor. */
-            GeneralParticleSource(); 
+            /** 
+             * Constructor. 
+             *
+             * @param parameters Parameters used to configure the particle gun. 
+             *
+             * Parameters:
+             *  initCommands : vector of Geant4 strings to initialize the GPS
+             */
+            GeneralParticleSource(const std::string& name, Parameters& parameters); 
 
-            /** Destructor. */
+            /// Destructor
             ~GeneralParticleSource();
 
             /** 
              * Generate the primary vertices in the Geant4 event. 
+             * 
              * @param event The Geant4 event.
              */
-            void GeneratePrimaryVertex(G4Event* event); 
+            void GeneratePrimaryVertex(G4Event* event) final override; 
+
+        private:
+
+            /**
+             * The underlying Geant4 GPS implementation.
+             *
+             * The creation of this class creates a new messenger that we can pass commands to.
+             */
+            G4GeneralParticleSource theG4Source_;
 
     }; // GeneralParticleSource 
 
 } // ldmx
 
-#endif // _SIM_APPLICATION_GENERAL_PARTICLE_SOURCE_H_
+#endif // SIMCORE_GENERALPARTICLESOURCE_H
