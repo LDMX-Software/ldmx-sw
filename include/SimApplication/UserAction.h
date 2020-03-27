@@ -72,48 +72,95 @@ namespace ldmx {
             /**
              * Method called at the beginning of every event.
              *
+             * TYPE::EVENT
+             *
              * @param event Geant4 event object.
              */
-            virtual void BeginOfEventAction(const G4Event* evemt) {}; 
+            virtual void BeginOfEventAction(const G4Event* ) {}; 
 
             /**
              * Method called at the end of every event.
              *
+             * TYPE::EVENT
+             *
              * @param event Geant4 event object.
              */
-            virtual void EndOfEventAction(const G4Event* event) {};
+            virtual void EndOfEventAction(const G4Event* ) {};
 
             /**
              * Method called at the beginning of a run.
              *
-             * @param run Curremt Geant4 run object.
+             * TYPE::RUN
+             *
+             * @param run Current Geant4 run object.
              */
-            virtual void BeginOfRunAction(const G4Run* run) {}; 
+            virtual void BeginOfRunAction(const G4Run* ) {}; 
             
             /**
              * Method called at the end of a run.
              *
-             * @param run Curremt Geant4 run object.
+             * TYPE::RUN
+             *
+             * @param run Current Geant4 run object.
              */
-            virtual void EndOfRunAction(const G4Run* run) {};
-
-
-            virtual void PreUserTrackingAction(const G4Track* track) {}; 
-
-            virtual void PostUserTrackingAction(const G4Track* track) {};
+            virtual void EndOfRunAction(const G4Run* ) {};
 
             /**
+             * Method called before the UserTrackingAction.
              *
+             * TYPE::TRACKING
+             *
+             * @param track current Geant4 track
              */
-            virtual void stepping(const G4Step* step) {};
+            virtual void PreUserTrackingAction(const G4Track* ) {}; 
 
-            virtual G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass ) {};  
+            /**
+             * Method called after the UserTrackingAction.
+             *
+             * TYPE::TRACKING
+             *
+             * @param track current Geant4 track
+             */
+            virtual void PostUserTrackingAction(const G4Track* ) {};
 
+            /**
+             * Method called after each simulation step.
+             *
+             * TYPE::STEPPING
+             *
+             * @param current Geant4 step
+             */
+            virtual void stepping(const G4Step* ) {};
+
+            /**
+             * Method called when a track is updated
+             *
+             * TYPE::STEPPING
+             *
+             * @param current Geant4 track
+             * @param current tracks' classification
+             */
+            virtual G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* , const G4ClassificationOfNewTrack& cl) { return cl; };
+
+            /**
+             * Method called at the beginning of a new stage
+             *
+             * TYPE::STACKING
+             */
             virtual void NewStage() {}; 
 
+            /**
+             * Method called at the beginning of a new event
+             *
+             * TYPE::STACKING
+             */
             virtual void PrepareNewEvent() {}; 
 
-            /// @return The user action types
+            /**
+             * @return The user action types
+             *
+             * Must be defined by any UserActions so that we know what functions to call.
+             */
             virtual std::vector< TYPE > getTypes() = 0; 
 
         protected:
