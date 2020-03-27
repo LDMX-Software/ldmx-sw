@@ -142,7 +142,7 @@ namespace ldmx {
     void Event::onEndOfFile() {
         passengers_.clear(); //reset event bus
         branches_.clear(); //reset branches
-        outputTree_->ResetBranchAddresses(); //reset addresses for output branch
+        if ( outputTree_ ) outputTree_->ResetBranchAddresses(); //reset addresses for output branch
     }
 
     bool Event::shouldDrop(const std::string &branchName) const {

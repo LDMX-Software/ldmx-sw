@@ -31,6 +31,7 @@ namespace ldmx {
     // Forward declare to avoid circular dependency in headers
     class DetectorConstruction;
     class UserActionManager; 
+    class APrimeMessenger;
 
     /**
      * @class RunManager
@@ -59,6 +60,15 @@ namespace ldmx {
              * Perform application initialization.
              */
             void Initialize();
+
+            /**
+             * Called at the end of each event.
+             *
+             * Runs parent process G4RunManager::TerminateOneEvent() and
+             * resets the activation for the G4eDarkBremsstrahlung process
+             * (if dark brem is possible)
+             */
+            void TerminateOneEvent();
 
             /**
              * Get the user detector construction cast to a specific type.
