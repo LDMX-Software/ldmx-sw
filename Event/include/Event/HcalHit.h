@@ -85,15 +85,11 @@ namespace ldmx {
                 return zpos_;
             }
 
-            /** Decode the section associated with the hit from the ID. */
-            int getSection() const {
-                return (getID() & 0x7000) >> 12;
-            }
+            /// Decode the section associated with the hit from the ID. 
+            virtual int getSection() const { return (getID() & 0x7000) >> 12; }
 
-            /** Decode the strip associated with the hit from the ID. */
-            int getStrip() const {
-                return (getID() & 0x7F8000) >> 15;
-            }
+            /// Decode the strip associated with the hit from the ID. 
+            virtual int getStrip() const { return (getID() & 0x7F8000) >> 15; }
 
     	    /**
     	     * Get the value of isNoise_.
