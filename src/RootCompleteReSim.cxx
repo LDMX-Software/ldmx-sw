@@ -22,7 +22,6 @@
 //-------------//
 #include "Event/SimParticle.h"
 #include "Framework/Parameters.h"
-#include "SimApplication/UserPrimaryParticleInformation.h"
 
 namespace ldmx {
 
@@ -84,10 +83,6 @@ namespace ldmx {
             primary->SetPDGcode(sp.getPdgID());
             primary->SetMomentum(sp.getMomentum()[0] * MeV, sp.getMomentum()[1] * MeV, sp.getMomentum()[2] * MeV);
             primary->SetMass(sp.getMass() * MeV);
-
-            UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
-            primaryInfo->setHepEvtStatus(1.);
-            primary->SetUserInformation(primaryInfo);
 
             curvertex->SetPrimary(primary);
 
