@@ -32,7 +32,8 @@
 #pragma link C++ class ldmx::SimTrackerHit+;
 #pragma link C++ class ldmx::SimParticle+;
 #pragma link C++ class ldmx::TriggerResult+;
-#pragma link C++ class ldmx::TrackerVetoResult+; 
+#pragma link C++ class ldmx::TrigScintHit+; 
+#pragma link C++ class ldmx::TrackerVetoResult+;
 #pragma link C++ class ldmx::ClusterAlgoResult+;
 #pragma link C++ class ldmx::PnWeightResult+;
 #pragma link C++ class ldmx::SiStripHit+; 
@@ -51,6 +52,7 @@
 #pragma link C++ class std::vector<ldmx::HcalHit>+;
 #pragma link C++ class std::vector<ldmx::SiStripHit>+;
 #pragma link C++ class std::vector<ldmx::RawHit>+;
+#pragma link C++ class std::vector< ldmx::TrigScintHit >+;
 
 #endif
 
