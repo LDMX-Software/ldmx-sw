@@ -9,6 +9,7 @@
 #include "Event/DigiCollection.h" 
 #include "Event/EcalCluster.h"
 #include "Event/EcalHit.h"
+#include "Event/EcalDigiCollection.h"
 #include "Event/EcalVetoResult.h"
 #include "Event/EventConstants.h"
 #include "Event/EventHeader.h"
@@ -49,27 +50,28 @@ namespace ldmx {
      * TODO: Dynamically (pre-processor) set the EventBusPassenger object to be the objects being used in the run.
      */
     typedef std::variant< 
-        EcalVetoResult ,
-        NonFidEcalVetoResult ,
-        EventHeader ,
-        TriggerResult ,
-        TrackerVetoResult ,
         ClusterAlgoResult ,
-        HcalVetoResult ,
-        PnWeightResult ,
         DigiCollection ,
+        EcalDigiCollection ,
+        EcalVetoResult ,
+        EventHeader ,
+        HcalVetoResult ,
+        NonFidEcalVetoResult ,
+        PnWeightResult ,
+        TrackerVetoResult ,
+        TriggerResult ,
         TrigScintHit,
-        std::vector< FindableTrackResult > ,
-        std::vector< SimCalorimeterHit > ,
-        std::vector< SimTrackerHit > ,
-        std::map< int , SimParticle > ,
         std::vector < CalorimeterHit > ,
-        std::vector < EcalHit > ,
         std::vector < EcalCluster > ,
+        std::vector < EcalHit > ,
+        std::vector < FindableTrackResult > ,
         std::vector < HcalHit > ,
-        std::vector < SiStripHit > ,
         std::vector < RawHit >, 
+        std::vector < SimCalorimeterHit > ,
+        std::vector < SiStripHit > ,
+        std::vector < SimTrackerHit > ,
         std::vector < TrigScintHit >
+        std::map< int , SimParticle > ,
     > EventBusPassenger;
 
 }

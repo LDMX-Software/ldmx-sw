@@ -9,7 +9,6 @@ namespace ldmx {
 
     void EcalHit::Clear() { 
         CalorimeterHit::Clear(); 
-        isNoise_ = false; 
     }
 
     void EcalHit::Print() const {

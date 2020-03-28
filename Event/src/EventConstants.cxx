@@ -25,6 +25,7 @@ namespace ldmx {
      * Type names.
      */
     const std::string EventConstants::ECAL_HIT = "ldmx::EcalHit";
+    const std::string EventConstants::ECAL_DIGI_COLLECTION = "ldmx::EcalDigiCollection";
     const std::string EventConstants::ECAL_CLUSTER = "ldmx::EcalCluster";
     const std::string EventConstants::HCAL_HIT = "ldmx::HcalHit";
     const std::string EventConstants::SIM_PARTICLE = "ldmx::SimParticle";
