@@ -78,7 +78,7 @@ namespace ldmx {
              * Can be overwritten for a specific subsystem.
              *  e.g. The chip encoding can be done in a overwritten function of a derived class.
              */
-            virtual void addDigi( int channelID , std::vector< int32_t > newSamples );
+            void addDigi( int channelID , std::vector< int32_t > newSamples );
 
             /**
              * Get Sample at the input indices

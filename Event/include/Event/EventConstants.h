@@ -42,6 +42,7 @@ namespace ldmx {
              * Type names, mostly for initializing clones arrays.
              */
             static const std::string ECAL_HIT;
+            static const std::string ECAL_DIGI_COLLECTION;
             static const std::string ECAL_CLUSTER;
             static const std::string HCAL_HIT;
             static const std::string SIM_PARTICLE;

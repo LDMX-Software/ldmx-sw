@@ -35,6 +35,7 @@
 #include "G4VModularPhysicsList.hh"
 #include "G4ParallelWorldPhysics.hh"
 #include "G4PhysListFactory.hh"
+#include "G4ProcessTable.hh"
 
 namespace ldmx {
 
@@ -63,9 +64,9 @@ namespace ldmx {
             std::cout << "[ RunManager ]: Parallel worlds physics list has been registered." << std::endl;
             pList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
         }
-        
-        pList->RegisterPhysics(new APrimePhysics);
+
         pList->RegisterPhysics(new GammaPhysics);
+        pList->RegisterPhysics(new APrimePhysics( parameters_ ));
        
         auto biasingEnabled{parameters_.getParameter< bool >("biasing.enabled")}; 
         if (biasingEnabled) {
@@ -124,6 +125,26 @@ namespace ldmx {
         for (const auto& [key, act] : actions) {
             std::visit([this](auto&& arg) { this->SetUserAction(arg); }, act); 
         }
+    }
+
+    void RunManager::TerminateOneEvent() {
+        
+        //have geant4 do its own thing
+        G4RunManager::TerminateOneEvent();
+
+        //reset dark brem process (if needed)
+        G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
+        G4int verbosity = ptable->GetVerboseLevel();
+        ptable->SetVerboseLevel(0); //silent ptable while searching for process that may/may not exist
+        G4String pname = "biasWrapper(eDBrem)"; //TODO allow eDBrem to be biased or unbiased
+        bool active = true;
+        ptable->SetProcessActivation(pname,active);    
+        if ( this->GetVerboseLevel() > 1 ) {
+            std::cout << "[ RunManager ] : "
+                << "Reset the dark brem process (if it was activated)." << std::endl;
+        }
+        ptable->SetVerboseLevel(verbosity);
+
     }
 
     DetectorConstruction* RunManager::getDetectorConstruction() {

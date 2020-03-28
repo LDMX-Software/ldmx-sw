@@ -23,12 +23,6 @@
 
 namespace ldmx {
 
-    const std::vector<double> LAYER_Z_POSITIONS = {223.8000030517578, 226.6999969482422, 233.0500030517578, 237.4499969482422, 245.3000030517578, 251.1999969482422, 260.29998779296875,
-        266.70001220703125, 275.79998779296875, 282.20001220703125, 291.29998779296875, 297.70001220703125, 306.79998779296875, 313.20001220703125,
-        322.29998779296875, 328.70001220703125, 337.79998779296875, 344.20001220703125, 353.29998779296875, 359.70001220703125, 368.79998779296875,
-        375.20001220703125, 384.29998779296875, 390.70001220703125, 403.29998779296875, 413.20001220703125, 425.79998779296875, 435.70001220703125,
-        448.29998779296875, 458.20001220703125, 470.79998779296875, 480.70001220703125, 493.29998779296875, 503.20001220703125};
-
     // arrays holding 68% containment radius per layer for different bins in momentum/angle
     const std::vector<double> radius68_thetalt10_plt500 = {4.045666158618167, 4.086393662224346, 4.359141107602775, 4.666549994726691, 5.8569181911416015, 6.559716356124256, 8.686967529043072, 10.063482736354674, 13.053528344041274, 14.883496407943747, 18.246694748611368, 19.939799900443724, 22.984795944506224, 25.14745829663406, 28.329169392203216, 29.468032123356345, 34.03271241527079, 35.03747443690781, 38.50748727211848, 39.41576583301171, 42.63622296033334, 45.41123601592071, 48.618139095742876, 48.11801717451056, 53.220539860213655, 58.87753380915155, 66.31550881539764, 72.94685877928593, 85.95506228335348, 89.20607201266672, 93.34370253818409, 96.59471226749734, 100.7323427930147, 103.98335252232795};
 
@@ -132,7 +126,57 @@ namespace ldmx {
         }
 
 
-        hexReadout_ = std::make_unique<EcalHexReadout>();
+        // These are the v12 parameters
+        //  all distances in mm
+        double moduleRadius = 85.0; //same as default
+        int    numCellsWide = 23; //same as default
+        double moduleGap = 1.0;
+        double ecalFrontZ = 220;
+        std::vector<double> ecalSensLayersZ = {
+             7.850,
+            13.300,
+            26.400,
+            33.500,
+            47.950,
+            56.550,
+            72.250,
+            81.350,
+            97.050,
+            106.150,
+            121.850,
+            130.950,
+            146.650,
+            155.750,
+            171.450,
+            180.550,
+            196.250,
+            205.350,
+            221.050,
+            230.150,
+            245.850,
+            254.950,
+            270.650,
+            279.750,
+            298.950,
+            311.550,
+            330.750,
+            343.350,
+            362.550,
+            375.150,
+            394.350,
+            406.950,
+            426.150,
+            438.750
+        };
+
+        hexReadout_ = std::make_unique<EcalHexReadout>(
+                moduleRadius,
+                moduleGap,
+                numCellsWide,
+                ecalSensLayersZ,
+                ecalFrontZ
+                );
+
         nEcalLayers_ = parameters.getParameter< int >("num_ecal_layers");
 
         bdtCutVal_ = parameters.getParameter< double >("disc_cut");
@@ -565,8 +609,8 @@ namespace ldmx {
     std::vector<std::pair<float,float> > EcalVetoProcessor::getTrajectory(std::vector<double> momentum, std::vector<float> position) {
         std::vector<XYCoords> positions;
         for(int iLayer = 0; iLayer < nEcalLayers_; iLayer++) {
-            float posX = position[0] + (momentum[0]/momentum[2])*(LAYER_Z_POSITIONS[iLayer] - position[2]);
-            float posY = position[1] + (momentum[1]/momentum[2])*(LAYER_Z_POSITIONS[iLayer] - position[2]);
+            float posX = position[0] + (momentum[0]/momentum[2])*(hexReadout_->getZPosition(iLayer) - position[2]);
+            float posY = position[1] + (momentum[1]/momentum[2])*(hexReadout_->getZPosition(iLayer) - position[2]);
             positions.push_back(std::make_pair(posX, posY));
         }
         return positions;

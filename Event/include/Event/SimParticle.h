@@ -45,7 +45,8 @@ namespace ldmx {
                 msc,
                 phot,
                 photonNuclear,
-                GammaToMuPair
+                GammaToMuPair,
+                eDarkBrem,
                 /* Only add additional processes to the end of this list! */
             };
 

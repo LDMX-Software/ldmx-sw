@@ -52,10 +52,10 @@ namespace ldmx {
                 [&parameters, this] (auto gen) {
                     if (gen.compare("gun") == 0) {
                         generators_.push_back(new ParticleGun(parameters));  
-                    } else if (gen.compare("lhe")) {
+                    } else if (gen.compare("lhe") == 0) {
                         auto lheFilePath{parameters.getParameter< std::string >("lheFilePath")}; 
                         generators_.push_back( new LHEPrimaryGenerator( new LHEReader(lheFilePath) )); 
-                    } else if (gen.compare("root")) {
+                    } else if (gen.compare("root") == 0) {
                         
                         auto rootResimPath{parameters.getParameter< std::string >("rootResimPath")}; 
                         auto rpg{new RootPrimaryGenerator(rootResimPath)}; 
@@ -66,14 +66,14 @@ namespace ldmx {
                         if (rootPrimaryGenRunMode < 0) rootPrimaryGenRunMode = 1; 
                         rpg->setRunMode( rootPrimaryGenRunMode ); //default 1
 
-                    } else if (gen.compare("gps")) {
+                    } else if (gen.compare("gps") == 0) {
 
                         // TODO: There are too many GPS commands to port into 
                         //       the framework.  For now, the config should 
                         //       be put into a macro.   
                         generators_.push_back(new GeneralParticleSource());
 
-                    } else if (gen.compare("multi")) {
+                    } else if (gen.compare("multi") == 0) {
                          
                         //Multi Particle Gun
                         if (auto mpgNparticles{parameters.getParameter< int >("mpg.nParticles")}; 
@@ -100,7 +100,7 @@ namespace ldmx {
                             generators_.push_back(mpg); 
 
                         }
-                    } else if (gen.compare("stdhep")) { 
+                    } else if (gen.compare("stdhep") == 0) { 
                         EXCEPTION_RAISE("NotImplemented", 
                                 "Generator has not been implemented."); 
                     }

@@ -19,14 +19,16 @@ from LDMX.EventProc.hcalDigis import hcalDigis
 # change the noise level (for testing)
 hcalDigis.parameters["meanNoise"] = 1.5
 
-# load the template ecalDigis configuration from its python file
-from LDMX.EventProc.ecalDigis import ecalDigis
+p.libraries.append("libEcal.so")
 
-# load the template ecalDigis configuration from its python file
+# load the template ecalSim2Rec configuration from its python file
+from LDMX.Ecal.ecalSim2Rec import ecalSim2Rec
+
+# load the template ecalSim2Rec configuration from its python file
 from LDMX.EventProc.simpleTrigger import simpleTrigger
 
 # Define the sequence of event processors to be run
-p.sequence=[ecalDigis,hcalDigis,simpleTrigger]
+p.sequence=[ecalSim2Rec,hcalDigis,simpleTrigger]
 
 # Provide the list of input files to run on
 p.inputFiles=["ldmx_sim_events.root"]

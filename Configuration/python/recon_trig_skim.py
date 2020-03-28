@@ -7,7 +7,7 @@ import os
 from LDMX.Framework import ldmxcfg
 
 # Setup producers with default templates
-from LDMX.EventProc.ecalDigis import ecalDigis
+from LDMX.Ecal.ecalSim2Rec import ecalSim2Rec
 from LDMX.EventProc.ecalVeto import ecalVeto
 from LDMX.EventProc.hcalDigis import hcalDigis
 from LDMX.EventProc.hcalVeto import hcalVeto
@@ -21,6 +21,7 @@ p = ldmxcfg.Process("recon")
 # Currently, we need to explicitly identify plugin libraries which should be
 # loaded.  In future, we do not expect this be necessary
 p.libraries.append("libEventProc.so")
+p.libraries.append("libEcal.so")
 
 # Create a processor to determine how many findable tracks are in an event.
 findableTrack = ldmxcfg.Producer("findable", "ldmx::FindableTrackProcessor")
@@ -30,7 +31,7 @@ findableTrack = ldmxcfg.Producer("findable", "ldmx::FindableTrackProcessor")
 trackerVeto= ldmxcfg.Producer("trackerVeto", "ldmx::TrackerVetoProcessor")
 
 # Define the sequence of event processor to be run
-p.sequence=[ecalDigis, hcalDigis, ecalVeto, hcalVeto, simpleTrigger, trackerHitKiller, findableTrack, trackerVeto]
+p.sequence=[ecalSim2Rec, hcalDigis, ecalVeto, hcalVeto, simpleTrigger, trackerHitKiller, findableTrack, trackerVeto]
 
 # Default to dropping all events
 p.skimDefaultIsDrop()

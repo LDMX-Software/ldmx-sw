@@ -67,7 +67,7 @@ namespace ldmx {
             /**
              * The hex readout defining the cell grid.
              */
-            EcalHexReadout* hitMap_;
+            std::unique_ptr<EcalHexReadout> hitMap_;
 
             /**
              * Map of polygonal layers for getting Z positions.

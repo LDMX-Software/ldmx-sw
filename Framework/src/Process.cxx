@@ -219,10 +219,8 @@ namespace ldmx {
 
                     inFile.close();
 
-                    // Reset the event in case of single output mode.  This is 
-                    // only needed if an output file is being written out and 
-                    // is ignored when writing a histogram file only. 
-                    if (outFile) theEvent.onEndOfFile();
+                    // Reset the event in case of single output mode.
+                    theEvent.onEndOfFile();
 
                     if ( outFile and !singleOutput ) {
                         outFile->close();

@@ -33,7 +33,7 @@ find_package(Geant4 REQUIRED ui_all vis_all)
 message(STATUS "Geant4 found at: ${Geant4_DIR}")
 
 # find Python installation
-find_package(PythonLibs REQUIRED)
+find_package(PythonLibs 2 REQUIRED EXACT)
 message(STATUS "Python lib found at: ${PYTHON_LIBRARIES}")
 message(STATUS "Python include dir found at: ${PYTHON_INCLUDE_DIRS}")
 get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
