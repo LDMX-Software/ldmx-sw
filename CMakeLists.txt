@@ -33,7 +33,7 @@ find_package(Geant4 REQUIRED ui_all vis_all)
 message(STATUS "Geant4 found at: ${Geant4_DIR}")
 
 # find Python installation
-find_package(PythonLibs 2 EXACT REQUIRED)
+find_package(PythonLibs 2 REQUIRED EXACT)
 message(STATUS "Python lib found at: ${PYTHON_LIBRARIES}")
 message(STATUS "Python include dir found at: ${PYTHON_INCLUDE_DIRS}")
 get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
@@ -47,7 +47,7 @@ message(STATUS "ROOT found at: ${ROOT_DIR}")
 find_package(Boost REQUIRED)
 message(STATUS "Boost lib found at: ${Boost_LIBRARY_DIRS}")
 if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
+  include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
 # mag field map installation
@@ -108,29 +108,30 @@ option(INSTALL_DOC "Set to ON to generate documentation using doxygen" OFF)
 message(STATUS "Doxygen documentation: ${INSTALL_DOC}")
 if(INSTALL_DOC)
 
-    # message that documentation is off for this build
-    message(STATUS "Doxygen documentation will be generated")
+  # message that documentation is off for this build
+  message(STATUS "Doxygen documentation will be generated")
 
-    # find doxygen
-    find_program(DOXYGEN_EXECUTABLE doxygen ${PATH})
-    if(DOXYGEN_EXECUTABLE-NOTFOUND)
-        message(FATAL_ERROR "The doxygen executable was not found")
-    endif()
+  # find doxygen
+  find_program(DOXYGEN_EXECUTABLE doxygen ${PATH})
+  if(DOXYGEN_EXECUTABLE-NOTFOUND)
+      message(FATAL_ERROR "The doxygen executable was not found")
+  endif()
 
-    # find dot
-    #find_program(DOT_EXECUTABLE dot ${PATH})
-    #if(DOT_EXECUTABLE-NOTFOUND)
-    #    message(FATAL_ERROR "The dot executable was not found.")
-    #endif()
-    
-    # configure doxygen file
-    configure_file(${PROJECT_SOURCE_DIR}/docs/doxygen.conf.in ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)
+  # find dot
+  #find_program(DOT_EXECUTABLE dot ${PATH})
+  #if(DOT_EXECUTABLE-NOTFOUND)
+  #    message(FATAL_ERROR "The dot executable was not found.")
+  #endif()
+  
+  # configure doxygen file
+  configure_file(${PROJECT_SOURCE_DIR}/docs/doxygen.conf.in ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)
 
-    # generate the documentation
-    install(CODE "execute_process(COMMAND doxygen ${PROJECT_SOURCE_DIR}/docs/doxygen.conf WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})")
+  # generate the documentation
+  install(CODE 
+      "execute_process(COMMAND doxygen ${PROJECT_SOURCE_DIR}/docs/doxygen.conf WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})")
 
-    # documentation generation target 
-    add_custom_target(doc COMMAND doxygen ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)
+  # documentation generation target 
+  add_custom_target(doc COMMAND doxygen ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)
 
 endif()
 

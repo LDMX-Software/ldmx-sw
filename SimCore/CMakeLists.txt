@@ -1,4 +1,4 @@
-# declare SimApplication module
+# declare SimCore module
 module(
   NAME SimCore
   DEPENDENCIES Exception
