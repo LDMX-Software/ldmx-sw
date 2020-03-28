@@ -1,32 +1,32 @@
 /**
  * @file EventDef.h
  * @brief Headers to be processed when creating the ROOT dictionary
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "Event/CalorimeterHit.h"
+#include "Event/ClusterAlgoResult.h"
+#include "Event/DigiCollection.h" 
+#include "Event/EcalCluster.h"
 #include "Event/EcalHit.h"
 #include "Event/EcalVetoResult.h"
-#include "Event/NonFidEcalVetoResult.h"
-#include "Event/EcalCluster.h"
 #include "Event/EventConstants.h"
 #include "Event/EventHeader.h"
 #include "Event/FindableTrackResult.h"
-#include "Event/RunHeader.h"
-#include "Event/SimCalorimeterHit.h"
-#include "Event/SimTrackerHit.h"
-#include "Event/SimParticle.h"
-#include "Event/TriggerResult.h"
-#include "Event/TrackerVetoResult.h"
-#include "Event/ClusterAlgoResult.h"
 #include "Event/HcalHit.h"
 #include "Event/HcalVetoResult.h"
+#include "Event/NonFidEcalVetoResult.h"
 #include "Event/PnWeightResult.h"
 #include "Event/ProductTag.h"
-#include "Event/SiStripHit.h"
 #include "Event/RawHit.h"
-#include "Event/DigiCollection.h" 
+#include "Event/RunHeader.h"
+#include "Event/SimCalorimeterHit.h"
+#include "Event/SimParticle.h"
+#include "Event/SiStripHit.h"
+#include "Event/SimTrackerHit.h"
+#include "Event/TrackerVetoResult.h"
+#include "Event/TriggerResult.h"
+#include "Event/TrigScintHit.h" 
 
 #include <variant>
 
@@ -58,16 +58,18 @@ namespace ldmx {
         HcalVetoResult ,
         PnWeightResult ,
         DigiCollection ,
+        TrigScintHit,
         std::vector< FindableTrackResult > ,
         std::vector< SimCalorimeterHit > ,
         std::vector< SimTrackerHit > ,
         std::map< int , SimParticle > ,
-        std::vector< CalorimeterHit > ,
-        std::vector< EcalHit > ,
-        std::vector< EcalCluster > ,
-        std::vector< HcalHit > ,
-        std::vector< SiStripHit > ,
-        std::vector< RawHit >
-        > EventBusPassenger;
+        std::vector < CalorimeterHit > ,
+        std::vector < EcalHit > ,
+        std::vector < EcalCluster > ,
+        std::vector < HcalHit > ,
+        std::vector < SiStripHit > ,
+        std::vector < RawHit >, 
+        std::vector < TrigScintHit >
+    > EventBusPassenger;
 
 }
