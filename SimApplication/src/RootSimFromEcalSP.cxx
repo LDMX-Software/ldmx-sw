@@ -26,10 +26,8 @@
 //   ldmx-sw   //
 //-------------//
 #include "Event/EventConstants.h"
-#include "Event/SimParticle.h"
 #include "Event/SimTrackerHit.h"
 #include "Framework/Parameters.h"
-#include "SimApplication/UserPrimaryParticleInformation.h"
 
 namespace ldmx {
 
@@ -110,10 +108,6 @@ namespace ldmx {
             auto primary{new G4PrimaryParticle()};
             primary->SetPDGcode(spHit.second->getPdgID());
             primary->SetMomentum(spHit.second->getMomentum()[0]*MeV, spHit.second->getMomentum()[1]*MeV, spHit.second->getMomentum()[2]*MeV);
-
-            auto primaryInfo{new UserPrimaryParticleInformation()};
-            primaryInfo->setHepEvtStatus(1.);
-            primary->SetUserInformation(primaryInfo);
 
             cVertex->SetPrimary(primary);
             anEvent->AddPrimaryVertex(cVertex);

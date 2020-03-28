@@ -20,11 +20,6 @@
 #include "G4SystemOfUnits.hh"
 #include "G4ThreeVector.hh"
 
-/*~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~*/
-#include "SimApplication/UserPrimaryParticleInformation.h"
-
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
@@ -87,20 +82,6 @@ namespace ldmx {
         // Call G4 class method to generate primaries. 
         theGun_.GeneratePrimaryVertex(event);
 
-        // Set the generator status to 1 for particle gun primaries
-        for (int ivertex = 0; ivertex < event->GetNumberOfPrimaryVertex(); ++ivertex) {
-            
-            // Get the ith primary vertex from the event
-            auto vertex{event->GetPrimaryVertex(ivertex)}; 
-            
-            // Loop over all particle associated with the primary vertex and
-            // set the generator status to 1.
-            for (int iparticle = 0; iparticle < vertex->GetNumberOfParticle(); ++iparticle) { 
-                auto primaryInfo{new UserPrimaryParticleInformation()};
-                primaryInfo->setHepEvtStatus(1); 
-                vertex->GetPrimary(iparticle)->SetUserInformation(primaryInfo);  
-            }
-        }
     }
 
 } // ldmx

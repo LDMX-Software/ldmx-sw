@@ -74,7 +74,13 @@ namespace ldmx {
         
         // smear all primary vertices (if activated)
         if (event->GetNumberOfPrimaryVertex() > 0) {
+            setUserPrimaryInfo(event);
             if (useBeamspot_) smearingBeamspot(event);
+        } else {
+            EXCEPTION_RAISE(
+                    "NoPrimaries",
+                    "No primary vertices were produced by any of the generators."
+                    );
         }
     }
 
@@ -95,6 +101,36 @@ namespace ldmx {
             double z0_f = random_->Uniform( z0_i - IPWidthZ, z0_i + IPWidthZ );            
             curPV->SetPosition( x0_f, y0_f, z0_f );
         }        
+
+    }
+
+    void PrimaryGeneratorAction::setUserPrimaryInfo(G4Event* event) {
+
+        int nPV = event->GetNumberOfPrimaryVertex();
+        for (int iPV = 0; iPV < nPV; ++iPV) {
+            G4PrimaryVertex* vertex = event->GetPrimaryVertex(iPV);
+                
+            // Loop over all particle associated with the primary vertex and
+            // set the generator status to 1.
+            for (int iparticle = 0; iparticle < vertex->GetNumberOfParticle(); ++iparticle) { 
+                G4PrimaryParticle* primary = vertex->GetPrimary(iparticle);
+
+                auto primaryInfo{dynamic_cast<UserPrimaryParticleInformation*>(primary->GetUserInformation())};
+                if( not primaryInfo ) {
+                    // no user info defined
+                    //  ==> make a new one
+                    primaryInfo = new UserPrimaryParticleInformation;
+                    primary->SetUserInformation( primaryInfo );
+                }//check if primaryinfo is defined
+
+                int hepStatus = primaryInfo->getHepEvtStatus();
+                if ( hepStatus <= 0 ) {
+                    //undefined hepStatus ==> set to 1
+                    primaryInfo->setHepEvtStatus(1);
+                }//check if hepStatus defined
+
+            }//iparticle - loop over primary particles
+        } //iPV - loop over primary vertices
 
     }
 }
