@@ -73,17 +73,30 @@ namespace ldmx {
             TRandom3* random_{new TRandom3(time(nullptr))};
             bool verbose_{false};
             DefaultDetectorID* detID_{nullptr};
-	        std::string input_collection_;
-	        std::string output_collection_;
             NoiseGenerator* noiseGenerator_;
 
-            /** Generator for simulating noise hits. */
+            /// Name of the input collection containing the sim hits
+	        std::string inputCollection_;
+
+            /// Name of the output collection that will be used to stored the
+            /// digitized trigger scintillator hits
+	        std::string outputCollection_;
+
+            /// Number of strips per array
+	        int stripsPerArray_{50};
+
+            /// Number of arrays
+            int numberOfArrays_{3};
+
+            /// Mean readout noise
             double meanNoise_{0};
-            int    nProcessed_{0};
-            double mev_per_mip_{1.40};
-            double pe_per_mip_{13.5};
-	        int    NUM_STRIPS_PER_ARRAY_{50};
-            int    NUM_ARRAYS_{3};
+
+            /// Total MeV per MIP
+            double mevPerMip_{1.40};
+
+            /// Total number of photoelectrons per MIP
+            double pePerMip_{13.5};
+
     };
 
 }
