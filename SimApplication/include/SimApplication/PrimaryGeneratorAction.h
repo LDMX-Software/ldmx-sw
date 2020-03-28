@@ -61,13 +61,6 @@ namespace ldmx {
              */
             void GeneratePrimaries(G4Event* event) final override;
 
-            /** 
-             * Get the index of the last generator in the list of 
-             * generators.
-             */
-            int getIndexMPG(){ return indexMpg_; }
-            int getIndexRPG(){ return indexRpg_; }
-
         private:
 
             /**
@@ -75,6 +68,20 @@ namespace ldmx {
              * @param event The Geant4 event.
              */
             void smearingBeamspot(G4Event* event);
+
+            /**
+             * Set UserInformation for primary vertices if they haven't been set before.
+             *
+             * Some features downstream of the primaries require certain user info to function
+             * properly. This ensures that it happens.
+             *
+             * Makes sure that each particle on each primary vertex has
+             *  1. A defined UserPrimaryParticleInformation member
+             *  2. The HepEvtStatus for this primary info is non-zero
+             *
+             * @param event Geant4 event to go through primaries
+             */
+            void setUserPrimaryInfo(G4Event* event);
 
             /// Manager of all generators used by the event
             PrimaryGeneratorManager &manager_;
@@ -99,10 +106,6 @@ namespace ldmx {
 
             /** Extent of the beamspot in y. */
             double beamspotZSize_{0.};   
-
-            /** The index of the last generator in the list of generators. */ 
-            int indexMpg_{-1};          
-            int indexRpg_{-1};          
 
     };  // PrimaryGeneratorAction
 
