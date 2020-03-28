@@ -79,6 +79,20 @@ namespace ldmx {
 
 } // ldmx
 
-#define DECLARE_GENERATOR(NS, CLASS) ldmx::PrimaryGenerator* CLASS ## Builder (const std::string& name, ldmx::Parameters& parameters) { return new NS::CLASS(name, parameters); } __attribute((constructor(305))) static void CLASS ## Declare() { ldmx::PrimaryGenerator::declare(std::string(#NS) + "::" + std::string(#CLASS), & CLASS ## Builder); } 
+/**
+ * @macro DECLARE_GENERATOR
+ *
+ * Defines a builder for the declared class
+ * and then registers the class as a generator
+ * with the PrimaryGeneratorManager
+ */
+#define DECLARE_GENERATOR(NS, CLASS)                                                                        \
+    ldmx::PrimaryGenerator* CLASS ## Builder (const std::string& name, ldmx::Parameters& parameters) {      \
+        return new NS::CLASS(name, parameters);                                                             \
+    }                                                                                                       \
+    __attribute((constructor(305)))                                                                         \
+    static void CLASS ## Declare() {                                                                        \
+        ldmx::PrimaryGenerator::declare(std::string(#NS) + "::" + std::string(#CLASS), & CLASS ## Builder); \
+    } 
 
 #endif // SIMCORE_PRIMARYGENERATOR_H
