@@ -44,35 +44,30 @@ macro(MODULE)
   # parse command options
   cmake_parse_arguments(MODULE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-  # print debug info 
-  if(MODULE_DEBUG) 
-    message("MODULE_NAME='${MODULE_NAME}'")
-    message("MODULE_DEPENDENCIES='${MODULE_DEPENDENCIES}'")
-    message("MODULE_EXTERNAL_DEPENDENCIES='${MODULE_EXTERNAL_DEPENDENCIES}'")
-    message("MODULE_INCLUDE_DIR='${MODULE_INCLUDE_DIR}'")
-    message("MODULE_SOURCE_DIR='${MODULE_SOURCE_DIR}'")
-    message("MODULE_EXTRA_SOURCES='${MODULE_EXTRA_SOURCES}'")
-    message("MODULE_EXTRA_LINK_LIBRARIES='${MODULE_EXTRA_LINK_LIBRARIES}'")
-    message("MODULE_EXECUTABLES='${MODULE_EXECUTABLES}'")
-  endif()
-
   # define current project based on module name
   project(${MODULE_NAME} CXX)
-      
-  # set module's include dir (this is global variable ==> used when including other module deps)
-  set(${MODULE_NAME}_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+  # set the module's directory information
+  set(${MODULE_NAME}_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)  #include 
+  set(${MODULE_NAME}_SOURCE_DIR  ${PROJECT_SOURCE_DIR}/src)      #src
+  set(${MODULE_NAME}_PYTHON_DIR  ${PROJECT_SOURCE_DIR}/python)   #python 
+  set(${MODULE_NAME}_DATA_DIR    ${PROJECT_SOURCE_DIR}/data)     #data
+  set(${MODULE_NAME}_TEST_DIR    ${PROJECT_SOURCE_DIR}/test)     #data
+
+  # export the directory variables to the parent scope (outside this module function)
+  #   used by other modules to include
+  set(${MODULE_NAME}_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include PARENT_SCOPE)
+  set(${MODULE_NAME}_SOURCE_DIR  ${PROJECT_SOURCE_DIR}/src     PARENT_SCOPE)
+  set(${MODULE_NAME}_PYTHON_DIR  ${PROJECT_SOURCE_DIR}/python  PARENT_SCOPE)
+  set(${MODULE_NAME}_DATA_DIR    ${PROJECT_SOURCE_DIR}/data    PARENT_SCOPE)
+  set(${MODULE_NAME}_TEST_DIR    ${PROJECT_SOURCE_DIR}/test    PARENT_SCOPE)
+
+  # include the headers (and install them if they exist)
   include_directories(${${MODULE_NAME}_INCLUDE_DIR})
   if(EXISTS ${${MODULE_NAME}_INCLUDE_DIR})
     # module include directory exists ==> install
     install(DIRECTORY ${${MODULE_NAME}_INCLUDE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX})
   endif()
-  
-  # set module's source dir
-  set(${MODULE_NAME}_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-  # export the include dir var to the parent scope
-  #   used by other modules to include
-  set(${MODULE_NAME}_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include PARENT_SCOPE)
     
   # add include directories of module dependencies
   foreach(dependency ${MODULE_DEPENDENCIES})
@@ -87,9 +82,6 @@ macro(MODULE)
 
   # make list of all library dependencies
   set(MODULE_LIBRARIES ${MODULE_DEPENDENCIES} ${EXT_DEP_LIBRARIES} ${MODULE_EXTRA_LINK_LIBRARIES})
-  if(MODULE_DEBUG)
-    message("MODULE_LIBRARIES='${MODULE_LIBRARIES}'")
-  endif()
 
   # get source and header lists for building the application
   file(GLOB sources ${${MODULE_NAME}_SOURCE_DIR}/*.cxx)
@@ -113,26 +105,6 @@ macro(MODULE)
     set(${MODULE_NAME}_BIN_LIBRARIES ${MODULE_LIBRARIES})
   endif()
 
-  if(MODULE_DEBUG)
-    message("${MODULE_NAME}_BIN_LIBRARIES='${${MODULE_NAME}_BIN_LIBRARIES}'")
-  endif()
- 
-  # find test programs
-  file(GLOB test_sources ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cxx)
-
-  # setup test programs from all source files in test directory
-  foreach(test_source ${test_sources})
-    get_filename_component(test_program ${test_source} NAME)
-    string(REPLACE ".cxx" "" test_program ${test_program})
-    string(REPLACE "_" "-" test_program ${test_program})
-    add_executable(${test_program} ${test_source})
-    target_link_libraries(${test_program} ${MODULE_BIN_LIBRARIES})
-    install(TARGETS ${test_program} DESTINATION bin)
-    if(MODULE_DEBUG)
-      message("building test program: ${test_program}")
-    endif()
-  endforeach()
-  
   # setup module executables
   foreach(executable_source ${MODULE_EXECUTABLES})
     get_filename_component(executable ${executable_source} NAME)
@@ -146,23 +118,50 @@ macro(MODULE)
     install(TARGETS ${executable} DESTINATION bin)
   endforeach()
 
-  # install python scripts
   set(PYTHON_INSTALL_DIR lib/python/LDMX/${MODULE_NAME})
-  file(GLOB py_scripts "${CMAKE_CURRENT_SOURCE_DIR}/python/[!_]*.py")
-  if (py_scripts)
+
+  # install python scripts
+  file(GLOB py_scripts "${${MODULE_NAME}_PYTHON_DIR}/[!_]*.py")
+  foreach(pyscript ${py_scripts})
+    install(FILES ${pyscript} DESTINATION ${PYTHON_INSTALL_DIR})
+  endforeach()
+
+  # configure and install python scripts that need cmake variables
+  file(GLOB need_config_py_scripts "${${MODULE_NAME}_PYTHON_DIR}/[!_]*.in")
+  foreach(script ${need_config_py_scripts})
+    string(REPLACE ".in" "" script_output ${script})
+    get_filename_component(script_output ${script_output} NAME)
+    configure_file(${script} ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output} DESTINATION ${PYTHON_INSTALL_DIR})
+  endforeach()
+
+  # write an __init__ file for this python module (if any python scripts are installed)
+  if(py_scripts OR need_config_py_scripts)
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# python package")
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION ${PYTHON_INSTALL_DIR})
   endif()
-  
-  # install python programs 
-  foreach(pyscript ${py_scripts})
-    install(FILES ${pyscript} DESTINATION ${PYTHON_INSTALL_DIR})
-    if(MODULE_DEBUG)
-      message("installing python script: ${pyscript}")
-    endif()
+
+  # install anything in the data directory to data/${MODULE}
+  file(GLOB data_files "${${MODULE_NAME}_DATA_DIR}/*")
+  foreach(data_file ${data_files})
+    install(FILES ${data_file} DESTINATION data/${MODULE_NAME} PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
   endforeach()
 
+  # print debug info 
   if (MODULE_DEBUG)
+    message("MODULE_NAME='${MODULE_NAME}'")
+    message("MODULE_DEPENDENCIES='${MODULE_DEPENDENCIES}'")
+    message("MODULE_EXTERNAL_DEPENDENCIES='${MODULE_EXTERNAL_DEPENDENCIES}'")
+    message("MODULE_INCLUDE_DIR='${MODULE_INCLUDE_DIR}'")
+    message("MODULE_SOURCE_DIR='${MODULE_SOURCE_DIR}'")
+    message("MODULE_EXTRA_SOURCES='${MODULE_EXTRA_SOURCES}'")
+    message("MODULE_EXTRA_LINK_LIBRARIES='${MODULE_EXTRA_LINK_LIBRARIES}'")
+    message("MODULE_EXECUTABLES='${MODULE_EXECUTABLES}'")
+    message("MODULE_LIBRARIES='${MODULE_LIBRARIES}'")
+    message("${MODULE_NAME}_BIN_LIBRARIES='${${MODULE_NAME}_BIN_LIBRARIES}'")
+    message("installing python scripts: ${py_scripts}")
+    message("installing and configuring python scripts: ${need_config_py_scripts}")
+    message("installing data files: ${data_files}")
     message("")
   endif()
   
