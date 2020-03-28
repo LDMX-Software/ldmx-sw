@@ -229,20 +229,21 @@ namespace ldmx {
         runManager_->RunTermination();
 
         // Cleanup persistency manager
-        // TODO cleanup persistency manager
-        // Because of some nonsense in EcalHexReadout using TH2Poly's and stuff,
-        // deleting the RootPersistencyManager seg faults.
-        //persistencyManager_.reset( nullptr );
+        //  Geant4 expects us to handle the persistency manager
+        //  In order to avoid segfaulting nonsense, I delete it here
+        //  so that it is deleted before the EventFile it references
+        //  is deleted
+        persistencyManager_.reset( nullptr );
     }
 
     void Simulator::onProcessEnd() {
         
         // Delete Run Manager
         // From Geant4 Basic Example B01:
-        // Job termination
-        // Free the store: user actions, physics list and detector descriptions are
-        // owned and deleted by the run manager, so they should not be deleted 
-        // in the main() program 
+        //      Job termination
+        //      Free the store: user actions, physics list and detector descriptions are
+        //      owned and deleted by the run manager, so they should not be deleted 
+        //      in the main() program 
         // This needs to happen here because otherwise, Geant4 objects are deleted twice:
         //  1. When the histogram file is closed (all ROOT objects created during processing are put there because ROOT)
         //  2. When Simulator is deleted because runManager_ is a unique_ptr
