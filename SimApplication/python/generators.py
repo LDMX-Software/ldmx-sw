@@ -84,7 +84,7 @@ def gps( name ) :
 # @function farUpstreamSingleElectron
 # @return a ParticleGun with a single 4GeV electron fired from far upstream of target
 #############################################################
-def farUpstreamSingleElectron() :
+def farUpstreamSingle4GeVElectron() :
     farUpstreamElectron = gun( "farUpstreamSingleElectron" )
     farUpstreamElectron.parameters[ 'particle'  ] = 'e-'
     farUpstreamElectron.parameters[ 'position'  ] = [ -27.926, 5, -700 ] #mm
