@@ -18,15 +18,18 @@ namespace ldmx {
 
     void TrigScintDigiProducer::configure(Parameters& parameters) {
 
-        detID_ = new DefaultDetectorID();
+        // Configure this instance of the producer
+        stripsPerArray_   = parameters.getParameter< int >("number_of_strips");
+        numberOfArrays_   = parameters.getParameter< int >("number_of_arrays");
+        meanNoise_        = parameters.getParameter< double >("mean_noise");
+        mevPerMip_        = parameters.getParameter< double >("mev_per_mip");
+        pePerMip_         = parameters.getParameter< double >("pe_per_mip");
+        inputCollection_  = parameters.getParameter< std::string >("input_collection");
+        outputCollection_ = parameters.getParameter< std::string >("output_collection");
+
+
         random_ = new TRandom3(parameters.getParameter< int >("randomSeed"));
-        NUM_STRIPS_PER_ARRAY_ = parameters.getParameter< int >("number_of_strips");
-        NUM_ARRAYS_ = parameters.getParameter< int >("number_of_arrays");
-        meanNoise_ = parameters.getParameter< double >("meanNoise");
-        mev_per_mip_ = parameters.getParameter< double >("mev_per_mip");
-        pe_per_mip_ = parameters.getParameter< double >("pe_per_mip");
-        input_collection_ = parameters.getParameter< std::string >("input_collection");
-        output_collection_ = parameters.getParameter< std::string >("output_collection");
+        detID_ = new DefaultDetectorID();
         noiseGenerator_ = new NoiseGenerator(meanNoise_,false); 
         noiseGenerator_->setNoiseThreshold(1); 
     }
@@ -35,7 +38,7 @@ namespace ldmx {
         DefaultDetectorID tempID;
         if( sec < TrigScintSection::NUM_SECTIONS ){
             tempID.setFieldValue(0,int(sec));
-            tempID.setFieldValue(1,random_->Integer(NUM_STRIPS_PER_ARRAY_));
+            tempID.setFieldValue(1,random_->Integer(stripsPerArray_));
         }else
             std::cout << "WARNING [TrigScintDigiProducer::generateRandomID]: TrigScintSection is not known" << std::endl;
 
@@ -52,7 +55,7 @@ namespace ldmx {
         auto numRecHits{0};
 
         // looper over sim hits and aggregate energy depositions for each detID
-        const auto simHits{event.getCollection< SimCalorimeterHit >(input_collection_, "sim")};
+        const auto simHits{event.getCollection< SimCalorimeterHit >(inputCollection_, "sim")};
 
         for (const auto& simHit : simHits) {          
 
@@ -102,7 +105,7 @@ namespace ldmx {
             Xpos[detIDraw]      = Xpos[detIDraw] / Edep[detIDraw];
             Ypos[detIDraw]      = Ypos[detIDraw] / Edep[detIDraw];
             Zpos[detIDraw]      = Zpos[detIDraw] / Edep[detIDraw];
-            double meanPE       = depEnergy / mev_per_mip_ * pe_per_mip_;
+            double meanPE       = depEnergy / mevPerMip_ * pePerMip_;
             cellPEs[detIDraw]   = random_->Poisson(meanPE);
 
 
@@ -144,7 +147,7 @@ namespace ldmx {
         }
 
         // ------------------------------- Noise simulation -------------------------------
-        int numEmptyCells = NUM_STRIPS_PER_ARRAY_ - numRecHits; // only simulating for single array until all arrays are merged into one collection
+        int numEmptyCells = stripsPerArray_ - numRecHits; // only simulating for single array until all arrays are merged into one collection
         std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits( numEmptyCells );
         int detIDraw, tempID;
 
@@ -155,7 +158,7 @@ namespace ldmx {
             // generate random ID from remoaining cells
             detIDraw=2;  // for now subdet is alwways 2
             do {
-                tempID = random_->Integer(NUM_STRIPS_PER_ARRAY_);
+                tempID = random_->Integer(stripsPerArray_);
             } while( Edep.find(tempID) != Edep.end() || 
                     noiseHitIDs.find(tempID) != noiseHitIDs.end() );
             detIDraw ^= tempID<<4;
@@ -175,7 +178,7 @@ namespace ldmx {
         }
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-        event.add(output_collection_, trigScintHits);
+        event.add(outputCollection_, trigScintHits);
     }
 
 }
