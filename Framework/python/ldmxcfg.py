@@ -55,6 +55,7 @@ class Analyzer:
         return msg
                 
 class Process:
+
     lastProcess=None
     
     def __init__(self, passName):

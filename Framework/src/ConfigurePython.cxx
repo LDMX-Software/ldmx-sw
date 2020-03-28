@@ -83,18 +83,29 @@ namespace ldmx {
             PyErr_Print();
             EXCEPTION_RAISE("ConfigureError", "Problem loading python script");
         }
+
         PyObject* pProcessClass = PyObject_GetAttrString(pCMod, "Process");
         Py_DECREF(pCMod);
         if (pProcessClass == 0) {
             PyErr_Print();
-            EXCEPTION_RAISE("ConfigureError", "Problem loading python script");
+            EXCEPTION_RAISE("ConfigureError", 
+                    "Process object not defined. This object is required to run ldmx-app."
+                    );
         }
 
         PyObject* pProcess = PyObject_GetAttrString(pProcessClass, "lastProcess");
         Py_DECREF(pProcessClass);
         if (pProcess == 0) {
+            //wasn't able to get lastProcess class member
             PyErr_Print();
-            EXCEPTION_RAISE("ConfigureError", "Problem loading python script");
+            EXCEPTION_RAISE("ConfigureError", 
+                    "Process object not defined. This object is required to run ldmx-app."
+                    );
+        } else if ( pProcess == Py_None ) {
+            //lasProcess was left undefined
+            EXCEPTION_RAISE("ConfigureError", 
+                    "Process object not defined. This object is required to run ldmx-app."
+                    );
         }
 
         passname_ = stringMember(pProcess, "passName");
