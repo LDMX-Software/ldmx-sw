@@ -25,7 +25,7 @@ if(test_sources)
 
   # include all headers
   foreach(module ${MODULES})
-    target_include_directories(${executable} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/${module}/include) # need all module headers
+    target_include_directories(${executable} PRIVATE ${${module}_INCLUDE_DIR}) #need all module includes
   endforeach()
 
   # link all external libraries
@@ -40,7 +40,7 @@ if(test_sources)
 
   # link all modules with sources
   foreach(module ${MODULES}) 
-    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${module}/src)
+    if(EXISTS ${${module}_SOURCE_DIR})
       if(MODULE_DEBUG)
         message("${executable} linked with: ${module}")
       endif()

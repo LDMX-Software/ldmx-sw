@@ -1,4 +1,4 @@
-# Declare "Tools" module
+# Declare Tools module
 module(
   NAME Tools
   DEPENDENCIES Exception Event  
