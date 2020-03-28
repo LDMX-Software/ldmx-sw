@@ -132,7 +132,7 @@ namespace ldmx {
         private:
 
             /// Manager controlling G4 simulation run 
-            std::unique_ptr<RunManager> runManager_{nullptr};
+            std::unique_ptr<RunManager> runManager_;
 
             /// User interface handle
             G4UImanager* uiManager_{nullptr};
@@ -141,7 +141,7 @@ namespace ldmx {
             std::unique_ptr<RootPersistencyManager> persistencyManager_;
 
             /// Handle to the G4Session -> how to deal with G4cout and G4cerr
-            G4UIsession* sessionHandle_{nullptr};
+            std::unique_ptr<G4UIsession> sessionHandle_;
 
             /// Commands not allowed to be passed from python config file
             ///     This is because Simulator already runs them.

@@ -72,13 +72,15 @@ namespace ldmx {
         if ( verbosity_ > 0 or verbosity_ == std::numeric_limits<int>::min() ) {
             // non-zero verbosity ==> log geant4 comments in files
             //  can input different log file names into this constructor
-            sessionHandle_ = new LoggedSession( loggingPrefix + "_G4cout.log" , loggingPrefix + "_G4cerr.log" );
+            if ( loggingPrefix.empty() )
+                sessionHandle_ = std::make_unique<LoggedSession>();
+            else
+                sessionHandle_ = std::make_unique<LoggedSession>( loggingPrefix + "_G4cout.log" , loggingPrefix + "_G4cerr.log" );
         } else {
             // zero verbosity ==> batch run
-            sessionHandle_ = new BatchSession();
+            sessionHandle_ = std::make_unique<BatchSession>();
         }
-        uiManager_->SetCoutDestination( sessionHandle_ ); //re-direct the G4 messaging service
-        // G4UImanager owns and cleans up G4Sessions
+        uiManager_->SetCoutDestination( sessionHandle_.get() ); //re-direct the G4 messaging service
 
         /*************************************************
          * Start Configuration of Simulation
@@ -241,7 +243,14 @@ namespace ldmx {
         // Free the store: user actions, physics list and detector descriptions are
         // owned and deleted by the run manager, so they should not be deleted 
         // in the main() program 
+        // This needs to happen here because otherwise, Geant4 objects are deleted twice:
+        //  1. When the histogram file is closed (all ROOT objects created during processing are put there because ROOT)
+        //  2. When Simulator is deleted because runManager_ is a unique_ptr
         runManager_.reset( nullptr );
+
+        // Delete the G4UIsession
+        // I don't think this needs to happen here, but since we are cleaning up loose ends...
+        sessionHandle_.reset( nullptr );
     }
 
     bool Simulator::allowed(const std::string &command) const {
