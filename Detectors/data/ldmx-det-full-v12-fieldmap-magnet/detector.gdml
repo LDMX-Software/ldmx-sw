@@ -250,10 +250,10 @@
   <userinfo>
   
     <!-- detector version -->
-    <auxiliary auxtype="DetectorVersion" auxvalue="1">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v11-fieldmap-magnet"/>
-      <auxiliary auxtype="Author" auxvalue="Omar Moreno, Andrew Whitbeck"/>
-      <auxiliary auxtype="Description" auxvalue="The v9 detector with a full 3D field map and magnet material."/>
+    <auxiliary auxtype="DetectorVersion" auxvalue="12">
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-full-v12-fieldmap-magnet"/>
+      <auxiliary auxtype="Author" auxvalue="Omar Moreno, Andrew Whitbeck (Trigger Pad), Bertrand Echenard (HCal), Tom Eichlersmith (ECal)"/>
+      <auxiliary auxtype="Description" auxvalue="The v12 detector: ECal has motherboards inserted and HCal has made room for this extra space, Trigger Pads inserted."/>
     </auxiliary>
     
     <!-- define sensitive detectors -->
