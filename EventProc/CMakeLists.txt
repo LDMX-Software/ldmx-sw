@@ -1,4 +1,4 @@
-# declare SimApplication module
+# declare EventProc module
 module(
   NAME EventProc
   DEPENDENCIES Exception Ecal Tools Event DetDescr Framework 

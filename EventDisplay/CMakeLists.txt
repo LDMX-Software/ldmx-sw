@@ -1,4 +1,4 @@
-# declare SimApplication module
+# declare EventDisplay module
 module(
   NAME EventDisplay
   EXTRA_SOURCES EventDisplayDict.cxx
