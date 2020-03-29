@@ -69,11 +69,18 @@ namespace ldmx {
 
         private:
 
-            TClonesArray* hits_{nullptr};
-            TRandom3* random_{new TRandom3(time(nullptr))};
+            /// Random number generator 
+            std::unique_ptr<TRandom3> random_; 
+            
+            /// Detector ID 
+            std::unique_ptr<DefaultDetectorID> detID_;
+            
+            /// Generate noise hits given the number of channels and mean noise.
+            std::unique_ptr<NoiseGenerator> noiseGenerator_;
+
+            /// Class to set the verbosity level.  
+            // TODO: Make use of the global verbose parameter. 
             bool verbose_{false};
-            DefaultDetectorID* detID_{nullptr};
-            NoiseGenerator* noiseGenerator_;
 
             /// Name of the input collection containing the sim hits
 	        std::string inputCollection_;
