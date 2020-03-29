@@ -9,11 +9,9 @@ namespace ldmx {
 
     TrigScintDigiProducer::TrigScintDigiProducer(const std::string& name, Process& process) :
         Producer(name, process) {
-            noiseGenerator_ = new NoiseGenerator();
     }
 
     TrigScintDigiProducer::~TrigScintDigiProducer() {
-        if (random_) delete random_;
     }
 
     void TrigScintDigiProducer::configure(Parameters& parameters) {
@@ -27,10 +25,11 @@ namespace ldmx {
         inputCollection_  = parameters.getParameter< std::string >("input_collection");
         outputCollection_ = parameters.getParameter< std::string >("output_collection");
 
-
-        random_ = new TRandom3(parameters.getParameter< int >("randomSeed"));
-        detID_ = new DefaultDetectorID();
-        noiseGenerator_ = new NoiseGenerator(meanNoise_,false); 
+        random_ = std::make_unique<TRandom3>(parameters.getParameter< int >("randomSeed"));
+        
+        detID_ = std::make_unique<DefaultDetectorID>();
+        
+        noiseGenerator_ = std::make_unique<NoiseGenerator>(meanNoise_, false); 
         noiseGenerator_->setNoiseThreshold(1); 
     }
 
