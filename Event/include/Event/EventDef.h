@@ -50,28 +50,28 @@ namespace ldmx {
      * TODO: Dynamically (pre-processor) set the EventBusPassenger object to be the objects being used in the run.
      */
     typedef std::variant< 
-        ClusterAlgoResult ,
-        DigiCollection ,
-        EcalDigiCollection ,
-        EcalVetoResult ,
-        EventHeader ,
-        HcalVetoResult ,
-        NonFidEcalVetoResult ,
-        PnWeightResult ,
-        TrackerVetoResult ,
-        TriggerResult ,
+        ClusterAlgoResult,
+        DigiCollection,
+        EcalDigiCollection,
+        EcalVetoResult,
+        EventHeader,
+        HcalVetoResult,
+        NonFidEcalVetoResult,
+        PnWeightResult,
+        TrackerVetoResult,
+        TriggerResult,
         TrigScintHit,
-        std::vector < CalorimeterHit > ,
-        std::vector < EcalCluster > ,
-        std::vector < EcalHit > ,
-        std::vector < FindableTrackResult > ,
-        std::vector < HcalHit > ,
+        std::vector < CalorimeterHit >,
+        std::vector < EcalCluster >,
+        std::vector < EcalHit >,
+        std::vector < FindableTrackResult >,
+        std::vector < HcalHit >,
         std::vector < RawHit >, 
-        std::vector < SimCalorimeterHit > ,
-        std::vector < SiStripHit > ,
-        std::vector < SimTrackerHit > ,
-        std::vector < TrigScintHit >
-        std::map< int , SimParticle > ,
+        std::vector < SimCalorimeterHit >,
+        std::vector < SiStripHit >,
+        std::vector < SimTrackerHit >,
+        std::vector < TrigScintHit >,
+        std::map< int , SimParticle >
     > EventBusPassenger;
 
 }
