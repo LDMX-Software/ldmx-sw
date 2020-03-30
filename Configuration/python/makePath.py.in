@@ -22,5 +22,5 @@ def makeBDTPath( BDTname ) :
 # return full path to ECal cell XY txt file
 #   TODO remove need for cellxy.txt file
 def makeCellXYPath() :
-    fullPath = '@CMAKE_INSTALL_PREFIX@/data/config/cellxy.txt'
+    fullPath = '@CMAKE_INSTALL_PREFIX@/data/Configuration/cellxy.txt'
     return fullPath
