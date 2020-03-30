@@ -15,7 +15,7 @@ simulator = ldmxcfg.Producer("simulator", "ldmx::Simulator")
 # Otherwise, you can provide the full path yourself.
 #
 from LDMX.Detectors.makePath import *
-simulator.parameters["detector"] = makeDetectorPath( "ldmx-det-full-v9-fieldmap-magnet" )
+simulator.parameters["detector"] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
 
 
 #

@@ -34,7 +34,6 @@
 #include "G4GenericBiasingPhysics.hh"
 #include "G4VModularPhysicsList.hh"
 #include "G4ParallelWorldPhysics.hh"
-#include "G4PhysListFactory.hh"
 #include "G4ProcessTable.hh"
 
 namespace ldmx {
@@ -43,9 +42,6 @@ namespace ldmx {
 
         parameters_ = parameters; 
 
-        // Setup messenger for physics list.
-        physicsListFactory_ = new G4PhysListFactory;
-
         // Set whether the ROOT primary generator should use the persisted seed.
         auto rootPrimaryGenUseSeed{parameters.getParameter< bool >("rootPrimaryGenUseSeed")}; 
         setUseRootSeed(rootPrimaryGenUseSeed); 
@@ -53,12 +49,11 @@ namespace ldmx {
     }
 
     RunManager::~RunManager() {
-        delete physicsListFactory_; 
     }
 
     void RunManager::setupPhysics() {
 
-        auto pList{physicsListFactory_->GetReferencePhysList("FTFP_BERT")};
+        auto pList{physicsListFactory_.GetReferencePhysList("FTFP_BERT")};
         
         parallelWorldPath_ = parameters_.getParameter<std::string>("scoringPlanes");
         isPWEnabled_ = (not parallelWorldPath_.empty());
