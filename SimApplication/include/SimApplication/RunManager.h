@@ -18,13 +18,12 @@
 //   Geant4   //
 //------------//
 #include "G4RunManager.hh"
+#include "G4PhysListFactory.hh"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Parameters.h" 
-
-class G4PhysListFactory; 
 
 namespace ldmx {
 
@@ -94,7 +93,7 @@ namespace ldmx {
             /**
              * Factory class for instantiating the physics list.
              */
-            G4PhysListFactory* physicsListFactory_{nullptr};
+            G4PhysListFactory physicsListFactory_;
 
             /** 
              * Flag indicating whether a parallel world should be 
