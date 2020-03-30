@@ -9,10 +9,13 @@ from LDMX.SimApplication import simcfg
 simulator = ldmxcfg.Producer("simulator", "ldmx::Simulator")
 
 #
-# Set the path to the detector to use.  The path will usually point to a soft
-# link.
+# Set the path to the detector to use.
 #
-simulator.parameters["detector"] = "detector.gdml"
+# The detectors installed with ldmx-sw can be accessed using the makeDetectorPath function.
+# Otherwise, you can provide the full path yourself.
+#
+from LDMX.Detectors.makePath import *
+simulator.parameters["detector"] = makeDetectorPath( "ldmx-det-full-v9-fieldmap-magnet" )
 
 
 #
@@ -26,14 +29,16 @@ simulator.parameters["beamspotSmear"] = [20., 80.]
 #
 # Fire an electron upstream of the tagger tracker
 #
-simulator.parameters['generators'] = ['gun']
-simulator.parameters['gun.particle'] = 'e-'
-simulator.parameters['gun.energy'] = 4.0
-simulator.parameters['gun.position'] = [0., 0., -1.2]
-simulator.parameters['gun.direction'] = [0., 0., 4.]
+# A 4GeV single electron generator is so common that you
+# can pull it in from the generators module.
+#
+from LDMX.SimApplication import generators
+simulator.parameters['generators'] = [ generators.farUpstreamSingle4GeVElectron() ]
 
 #
 # Enable the scoring planes 
+#
+# Same comments about path to gdml as for the detectors
 #
 #simulator.parameters["scoringPlanes"] = "detectors/scoring_planes/detector.gdml"
 
