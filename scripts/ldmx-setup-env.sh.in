@@ -3,7 +3,10 @@
 #
 # This file is configured by CMake and installed into the 'bin' directory.
 #
+# It was configured for the installation at LDMXSW_DIR
+#
 # @author Jeremy McCormick, SLAC
+# @author Tom Eichlersmith, University of Minnesota
 ###############################################################################
 
 # set env var pointing to install dir
