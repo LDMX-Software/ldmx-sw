@@ -126,7 +126,7 @@ namespace ldmx {
 	histograms_->get("id_"+padName_)->Fill(hit.getID()>>4 );
 	  
 	totalPE += hit.getPE();  
-	if ( hit.isNoise()>0 ) {
+	if ( hit.getNoise()>0 ) {
 	  noiseHitCount++;
 	  histograms_->get("pe_noise_"+padName_)->Fill(hit.getPE()); 
 	  histograms_->get("id_noise_"+padName_)->Fill(hit.getID()>>4 );
