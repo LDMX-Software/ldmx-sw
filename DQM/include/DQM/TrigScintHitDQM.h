@@ -47,7 +47,6 @@ namespace ldmx {
              * 
              * @param pSet Set of parameters used to configure this processor.
              */
-	    //            void configure(const ParameterSet &pSet);
             void configure(Parameters &pSet);
  
             /**
@@ -65,9 +64,6 @@ namespace ldmx {
             /** Singleton used to access histograms. */
             HistogramPool* histograms_{nullptr}; 
 
-            /** The maximum PE threshold used for the veto. */
-            float maxPEThreshold_{5}; 
-            
             /** Name of trigger pad hit  collection. */
             std::string hitCollectionName_{"TriggerPadUpDigiHits"}; 
 	    std::string padName_{"_up"}; 
