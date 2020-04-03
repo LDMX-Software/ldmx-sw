@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
       
   <define>
+
+    &constants;   
+      
     <variable name="x" value="1"/>
     <variable name="xx" value="1"/>
     <variable name="xxx" value="1"/>
@@ -11,38 +17,31 @@
     <variable name="gap" value="0.3"/>
     <variable name="number_of_bars" value="25"/>
 
-    <!-- define center position and identity rotation -->
-    <position name="center" x="0" y="0" z="0"/>
-    <rotation name="identity" x="0" y="0" z="0"/>
-    
-    <!-- dimension of world box side -->
-    <constant name="world_dim" value="10.0*m"/>
-            
+    <!-- tagger position -->    
+    <constant name="tagger_z_offset" value="7.0*mm"/>
+    <constant name="tagger_thickness" value="85.725*cm - tagger_z_offset"/>
+    <variable name="tagger_pos_z" value="-(tagger_thickness/2) - tagger_z_offset"/>
+
     <!-- target parameters -->
     <constant name="target_dim_x" value="4.0*cm"/>
     <constant name="target_dim_y" value="10.0*cm"/>
     <!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
     <constant name="target_thickness" value="0.3504*mm"/>
     <constant name="target_z" value="0.0*mm"/>
-       
-    <!-- tagger position -->    
-    <constant name="tagger_z_offset" value="7.0*mm"/>
-    <constant name="tagger_thickness" value="85.725*cm - tagger_z_offset"/>
-    <variable name="tagger_pos_z" value="-(tagger_thickness/2) - tagger_z_offset"/>
-    
-    <!-- recoil position -->
-    <variable name="recoil_z_offset" value="7.0*mm"/>
-    <variable name="recoil_thickness" value="20.0*cm - recoil_z_offset"/>
-    <variable name="recoil_pos_z" value="recoil_thickness/2 + recoil_z_offset"/>
 
     <!-- trigger pad parameters -->
     <variable name="trigger_pad_dim_x" value="target_dim_x"/>
     <variable name="trigger_pad_dim_y" value="target_dim_y"/>
     <variable name="trigger_pad_thickness" value="4.5*mm"/>
     <variable name="trigger_pad_zclear" value="0.001*mm"/>
-    <variable name="trigger_pad_down_z" value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + trigger_pad_zclear"/>
-    <variable name="trigger_pad_up_z"   value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - trigger_pad_zclear"/>
-    <variable name="trigger_pad_tag_z"   value="target_z + tagger_pos_z - tagger_thickness/2. - trigger_pad_thickness/2. - trigger_pad_zclear - 5."/>
+    <variable name="trigger_pad_down_z" value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + clearance"/>
+    <variable name="trigger_pad_up_z"   value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - clearance"/>
+    <variable name="trigger_pad_tag_z"   value="target_z + tagger_pos_z - tagger_thickness/2. - trigger_pad_thickness/2. - clearance - 5."/>
+
+    
+    <!-- recoil position -->
+    <variable name="recoil_pos_z" value="trigger_pad_down_z + trigger_pad_thickness/2 + recoil_envelope_z/2 + clearance"/>
+
 
     <!-- distance from target to ecal face -->
     <constant name="ecal_front_z" value="22.0*cm"/>
@@ -341,10 +340,10 @@
       <auxiliary auxtype="Visible" auxvalue="true"/>
     </auxiliary>    
     <auxiliary auxtype="VisAttributes" auxvalue="TargetVis">
-      <auxiliary auxtype="R" auxvalue="0.75"/>
-      <auxiliary auxtype="G" auxvalue="0.75"/>
-      <auxiliary auxtype="B" auxvalue="0.75"/>
-      <auxiliary auxtype="A" auxvalue="0.8"/>
+      <auxiliary auxtype="R" auxvalue="1.0"/>
+      <auxiliary auxtype="G" auxvalue="0.0"/>
+      <auxiliary auxtype="B" auxvalue="0.0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
       <auxiliary auxtype="Style" auxvalue="solid"/>
       <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
       <auxiliary auxtype="Visible" auxvalue="true"/>
