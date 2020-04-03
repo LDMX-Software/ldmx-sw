@@ -12,9 +12,9 @@
 # errors out if the file does not exist
 import os, sys
 def makeBDTPath( BDTname ) :
-    fullPath = '@CMAKE_INSTALL_PREFIX@/data/Configuration/' + BDTname + '.pkl'
+    fullPath = '@CMAKE_INSTALL_PREFIX@/data/Configuration/' + BDTname + '.onnx'
     if not os.path.isfile( fullPath ) :
-        print 'ERROR: Pickle file \'%s\' does not exist.' % ( fullPath )
+        print 'ERROR: ONNX model file \'%s\' does not exist.' % ( fullPath )
         sys.exit(1)
 
     return fullPath

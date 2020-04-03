@@ -12,6 +12,12 @@ endif()
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 
+# option to print extra module information during CMake config
+option(MODULE_DEBUG "Print extra module information during CMake config" OFF)
+
+# add dir with extra CMake modules 
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
+
 # find XercesC installation
 if(XercesC_DIR)
   set(XercesC_INCLUDE_DIR "${XercesC_DIR}/include")
@@ -50,18 +56,18 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
+# find ONNXRuntime installation
+# specify location with -DONNXRUNTIME_ROOT=<location-of-onnxruntime-prefix>
+find_package(ONNXRuntime REQUIRED)
+message(STATUS "ONNXRuntime libs found at: ${ONNXRUNTIME_LIBRARIES}")
+message(STATUS "ONNXRuntime include dir found at: ${ONNXRUNTIME_INCLUDE_DIRS}")
+
 # mag field map installation
 option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
 message(STATUS "MagFieldMap installation: ${INSTALL_FIELDMAP}")
 if(INSTALL_FIELDMAP)
   install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Scripts/InstallMagFieldMap.cmake")
 endif()
-
-# option to print extra module information during CMake config
-option(MODULE_DEBUG "Print extra module information during CMake config" OFF)
-
-# add dir with extra CMake modules 
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 
 # import macro for declaring modules
 include(MacroModule)

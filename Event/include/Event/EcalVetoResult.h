@@ -1,6 +1,6 @@
 /**
  * @file EcalVetoResult.h
- * @brief Class used to encapsulate the results obtained from 
+ * @brief Class used to encapsulate the results obtained from
  *        EcalVetoProcessor.
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
@@ -44,7 +44,7 @@ namespace ldmx {
                     int deepestLayerHit,
                     float summedDet,
                     float summedTightIso,
-                    float maxCellDep, 
+                    float maxCellDep,
                     float showerRMS,
                     float xStd,
                     float yStd,
@@ -58,9 +58,9 @@ namespace ldmx {
                     std::vector<int>   outsideContainmentNHits,
                     std::vector<float> outsideContainmentXStd,
                     std::vector<float> outsideContainmentYStd,
-                    
+
                     std::vector<float> EcalLayerEdepReadout,
-                    std::vector<double> recoilP, 
+                    std::vector<double> recoilP,
                     std::vector<float> recoilPos
             );
 
@@ -71,82 +71,82 @@ namespace ldmx {
             void Print() const;
 
             /** Checks if the event passes the Ecal veto. */
-            bool passesVeto() {
+            bool passesVeto() const {
                 return passesVeto_;
             }
             float getDisc() const {
                 return discValue_;
             }
-        
-            int getDeepestLayerHit() {
+
+            int getDeepestLayerHit() const {
                 return deepestLayerHit_;
             }
-        
-            int getNReadoutHits() {
+
+            int getNReadoutHits() const {
                 return nReadoutHits_;
             }
 
-            float getSummedDet() {
+            float getSummedDet() const {
                 return summedDet_;
             }
 
-            float getSummedTightIso() {
+            float getSummedTightIso() const {
                 return summedTightIso_;
             }
-        
-            float getMaxCellDep() {
+
+            float getMaxCellDep() const {
                 return maxCellDep_;
             }
-        
-            float getShowerRMS() {
+
+            float getShowerRMS() const {
                 return showerRMS_;
             }
-        
-            float getXStd() {
+
+            float getXStd() const {
                 return xStd_;
             }
-        
-            float getYStd() {
+
+            float getYStd() const {
                 return yStd_;
             }
-        
-            float getAvgLayerHit() {
+
+            float getAvgLayerHit() const {
                 return avgLayerHit_;
             }
-        
-            float getStdLayerHit() {
+
+            float getStdLayerHit() const {
                 return stdLayerHit_;
             }
 
-            float getEcalBackEnergy() {
+            float getEcalBackEnergy() const {
                 return ecalBackEnergy_;
             }
 
-            std::vector<float> getElectronContainmentEnergy() {
+            const std::vector<float>& getElectronContainmentEnergy() const {
                 return electronContainmentEnergy_;
             }
-        
-            std::vector<float> getPhotonContainmentEnergy() {
+
+            const std::vector<float>& getPhotonContainmentEnergy() const {
                 return photonContainmentEnergy_;
             }
-        
-            std::vector<float> getOutsideContainmentEnergy() {
+
+            const std::vector<float>& getOutsideContainmentEnergy() const {
                 return outsideContainmentEnergy_;
             }
-        
-            std::vector<int> getOutsideContainmentNHits() {
+
+            const std::vector<int>& getOutsideContainmentNHits() const {
                 return outsideContainmentNHits_;
             }
-        
-            std::vector<float> getOutsideContainmentXStd() {
+
+            const std::vector<float>& getOutsideContainmentXStd() const {
                 return outsideContainmentXStd_;
             }
-        
-            std::vector<float> getOutsideContainmentYStd() {
+
+            const std::vector<float>& getOutsideContainmentYStd() const {
                 return outsideContainmentYStd_;
             }
-        
-            std::vector<float> getEcalLayerEdepReadout() {
+
+            const std::vector<float>& getEcalLayerEdepReadout() const {
                 return ecalLayerEdepReadout_;
             }
 
@@ -158,13 +158,13 @@ namespace ldmx {
             }
 
             /** Return the momentum of the recoil at the Ecal face. */
-            std::vector<double> getRecoilMomentum() { return { recoilPx_, recoilPy_, recoilPz_ }; }; 
+            std::vector<double> getRecoilMomentum() { return { recoilPx_, recoilPy_, recoilPz_ }; };
 
             /** Return the x position of the recoil at the Ecal face. */
-            double getRecoilX() { return recoilX_; }; 
+            double getRecoilX() const { return recoilX_; };
 
             /** Return the y position of the recoil at the Ecal face. */
-            double getRecoilY() { return recoilY_; };
+            double getRecoilY() const { return recoilY_; };
 
         private:
 
@@ -173,7 +173,7 @@ namespace ldmx {
 
             int nReadoutHits_{0};
             int deepestLayerHit_{0};
-        
+
             float summedDet_{0};
             float summedTightIso_{0};
             float maxCellDep_{0};
@@ -190,23 +190,23 @@ namespace ldmx {
             std::vector<int>   outsideContainmentNHits_;
             std::vector<float> outsideContainmentXStd_;
             std::vector<float> outsideContainmentYStd_;
-        
+
             float discValue_{0};
-            
+
             /** px of recoil electron at the Ecal face. */
             double recoilPx_{-9999};
-            
+
             /** py of recoil electron at the Ecal face. */
             double recoilPy_{-9999};
-            
+
             /** py of recoil electron at the Ecal face. */
             double recoilPz_{-9999};
-            
+
             /** x position of recoil electron at the Ecal face. */
-            float recoilX_{-9999}; 
-            
+            float recoilX_{-9999};
+
             /** y position of recoil electron at the Ecal face. */
-            float recoilY_{-9999}; 
+            float recoilY_{-9999};
 
             std::vector<float> ecalLayerEdepReadout_;
 
