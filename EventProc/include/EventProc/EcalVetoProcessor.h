@@ -7,46 +7,19 @@
 #ifndef EVENTPROC_ECALVETOPROCESSOR_H_
 #define EVENTPROC_ECALVETOPROCESSOR_H_
 
-// ROOT
-#include "TString.h"
-#include "TFile.h"
-#include "TTree.h"
-
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
 #include "DetDescr/EcalDetectorID.h"
 #include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/Parameters.h" 
+#include "Framework/Parameters.h"
+#include "Tools/ONNXRuntime.h"
 
 //C++
 #include <map>
 #include <memory>
 
 namespace ldmx {
-
-    /**
-     * @class BDTHelper
-     * @brief Runs the Boost Decision Tree (BDT) on EcalVetoResult objects using TPython
-     */
-    class BDTHelper {
-
-        public:
-
-            BDTHelper(TString importBDTFile);
-
-            virtual ~BDTHelper() {
-            }
-
-            void buildFeatureVector(std::vector<float>& bdtFeatures,
-                    ldmx::EcalVetoResult& result);
-
-            float getSinglePred(std::vector<float> bdtFeatures);
-
-        private:
-
-            TString vectorToPredCMD(std::vector<float> bdtFeatures);
-    };
 
     /**
      * @class EcalVetoProcessor
@@ -67,13 +40,13 @@ namespace ldmx {
             }
 
             virtual ~EcalVetoProcessor() { }
-            
-            /** 
+
+            /**
              * Configure the processor using the given user specified parameters.
-             * 
+             *
              * @param parameters Set of parameters used to configure this processor.
              */
-            void configure(Parameters& parameters) final override; 
+            void configure(Parameters& parameters) final override;
 
             void produce(Event& event);
 
@@ -119,8 +92,9 @@ namespace ldmx {
 
             std::vector<XYCoords> getTrajectory(std::vector<double> momentum, std::vector<float> position);
 
-        private:
+            void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
 
+        private:
             std::vector<std::map<int, float>> cellMap_;
             std::vector<std::map<int, float>> cellMapTightIso_;
 
@@ -136,7 +110,7 @@ namespace ldmx {
             int nReadoutHits_{0};
             int deepestLayerHit_{0};
             int doBdt_{0};
-	    
+
 
             double summedDet_{0};
             double summedTightIso_{0};
@@ -147,7 +121,7 @@ namespace ldmx {
             double avgLayerHit_{0};
             double stdLayerHit_{0};
             double ecalBackEnergy_{0};
-        
+
             double bdtCutVal_{0};
 
             EcalDetectorID detID_;
@@ -158,11 +132,11 @@ namespace ldmx {
 
             std::string bdtFileName_;
             std::string cellFileNamexy_;
-            std::unique_ptr<BDTHelper> BDTHelper_;
             std::vector<float> bdtFeatures_;
+            std::unique_ptr<Ort::ONNXRuntime> rt_;
 
             /** Name of the collection which will containt the results. */
-            std::string collectionName_{"EcalVeto"}; 
+            std::string collectionName_{"EcalVeto"};
 
     };
 
