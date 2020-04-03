@@ -1,10 +1,10 @@
 
 ####################################################################
-# Template for studying PN interactions in ECal
+# Template for studying PN interactions in Target
 # Import with:
-#   from LDMX.Biasing.ecal_pn import ecal_pn
+#   from LDMX.Biasing.target_pn import target_pn
 # Use:
-#   myEcalPNSim = ecal_pn.get()
+#   myTargetPNSim = target_pn.get()
 
 from LDMX.Framework import ldmxcfg
 from LDMX.Detector.makePath import * #both detector and scoring planes path
@@ -28,7 +28,6 @@ def get( ) :
     #
     from LDMX.Detectors.makePath import *
     simulator.parameters["detector"] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
-    
     
     #
     # Set run parameters
@@ -59,7 +58,7 @@ def get( ) :
     simulator.parameters['biasing.enabled'] = True
     simulator.parameters['biasing.particle'] = 'gamma'
     simulator.parameters['biasing.process'] = 'photonNuclear'
-    simulator.parameters['biasing.volume'] = 'ecal'
+    simulator.parameters['biasing.volume'] = 'target'
     simulator.parameters['biasing.threshold'] = 2500.
     simulator.parameters['biasing.factor'] = 450
     
@@ -74,9 +73,10 @@ def get( ) :
     #
     # Only consider events where a photonuclear reaction happens in the target 
     #
-    ecal_process_filter = simcfg.UserAction("ecalProcess", "ldmx::EcalProcessFilter")
-    ecal_process_filter.parameters['process'] = 'photonNuclear'
-    ecal_process_filter.parameters['volume'] = 'ecal'
+    target_process_filter = simcfg.UserAction("targetProcess", "ldmx::TargetProcessFilter")
+    target_process_filter.parameters['process'] = 'photonNuclear'
+    target_process_filter.parameters['volume'] = 'target'
+    #target_process_filter.parameters['photonThreshold'] = 2500 #MeV NOT IMPLEMENTED
     
     #
     # Save tracks of particles created in the photonuclear reaction
@@ -87,6 +87,6 @@ def get( ) :
     #
     # Configure the sequence in which user actions should be called.
     #
-    simulator.parameters["actions"] = [target_brem_filter, ecal_process_filter, track_process_filter]
+    simulator.parameters["actions"] = [target_brem_filter, target_process_filter, track_process_filter]
 
     return simulator
