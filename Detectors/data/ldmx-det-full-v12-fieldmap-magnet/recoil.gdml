@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
       xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
+
   <define>      
            
-      <!-- offset in Z from target and trigger pad -->
-      <variable name="recoil_z_offset" value="3.0*mm"/>
-     
       <!-- 
           Recoil envelope dimensions. These are set 5 mm smaller than the
           magnet gap defined in magnet.gdml in order to avoid overlaps.
           The magnet gaps were extracted from the drawing of the magnet
           obtained from JLab.
        -->
-      <variable name="recoil_envelope_x" value="425*mm"/>
-      <variable name="recoil_envelope_y" value="345*mm"/>
-      <variable name="recoil_envelope_z" value="200*mm - recoil_z_offset"/>
+
+      &constants;
 
       <!-- separation between sensors in a layer -->
       <variable name="recoil_sensor_L1_4_sep" value="3.0*mm"/>
@@ -30,15 +30,16 @@
       <variable name="recoil_stereo_angle" value="0.1*radian"/>
       
       <!-- layering start position in envelope volume -->
-      <variable name="recoil_z_start" value="-(recoil_envelope_z/2) - recoil_z_offset"/>
+      <variable name="recoil_z_start" value="-(recoil_envelope_z/2)" />
 
-      <!-- layer Z positions relative to target -->
-      <variable name="recoil_L1_target_z" value="7.5*mm"/>
-      <variable name="recoil_L2_target_z" value="22.5*mm"/>
-      <variable name="recoil_L3_target_z" value="37.5*mm"/>
-      <variable name="recoil_L4_target_z" value="52.5*mm"/>
-      <variable name="recoil_L5_target_z" value="90.0*mm"/>
-      <variable name="recoil_L6_target_z" value="180.0*mm"/>
+      <!-- layer Z positions relative to the parent volume -->
+
+      <variable name="recoil_L1_target_z" value="4.5*mm"/>
+      <variable name="recoil_L2_target_z" value="19.5*mm"/>
+      <variable name="recoil_L3_target_z" value="34.5*mm"/>
+      <variable name="recoil_L4_target_z" value="49.5*mm"/>
+      <variable name="recoil_L5_target_z" value="87.0*mm"/>
+      <variable name="recoil_L6_target_z" value="177.0*mm"/>
 
       <!-- position of each layer in local coordinates of envelope volume -->
       
