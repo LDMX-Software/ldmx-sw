@@ -95,7 +95,9 @@ macro(MODULE)
     add_library(${MODULE_NAME} SHARED ${sources} ${MODULE_EXTRA_SOURCES})
    
     # add link libs
-    target_link_libraries(${MODULE_NAME} ${MODULE_LIBRARIES})
+    # need to add linking to boost libraries
+    # https://stackoverflow.com/a/40016057
+    target_link_libraries(${MODULE_NAME} ${MODULE_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_LOG_LIBRARY})
   
     # install the library
     install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

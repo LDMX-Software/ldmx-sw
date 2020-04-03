@@ -44,7 +44,7 @@ message(STATUS "ROOT found at: ${ROOT_DIR}")
 
 # find boost headers
 # specify location with -DBOOST_ROOT=<location-of-boost-prefix>
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system log)
 message(STATUS "Boost lib found at: ${Boost_LIBRARY_DIRS}")
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})

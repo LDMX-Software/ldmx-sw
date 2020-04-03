@@ -107,83 +107,24 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    try {
-        
-        Logger theLog;
+    //open up the log
+    logging::open( 3 , 3 ); //input actual parameters
 
-        //translation from ldmx-sw verbosity ratings to spdlog levels
-        std::unordered_map< int , log::level::level_enum > inputToSpdLog = {
-            { 1 , log::level::warn  }, //keep warnings and more severe messages (e.g. errors)
-            { 2 , log::level::info  }, //keep info and more severe
-            { 3 , log::level::trace }  //keep debug and more severe
-        };
-    
-        //configure the sinks (i.e. output of logger)
-        std::vector< log::sink_ptr > sinks;
-        if ( termVerbosity > 0 ) { 
-            //make and configure terminal sink
-            //  get here with ldmx-app -v [1-3] config.py OR ldmx-app config.py
-            auto termSink = std::make_shared<log::sinks::stdout_color_sink_mt>();
-            termSink->set_level( inputToSpdLog.at( std::min( 3 , termVerbosity ) ) );
-            sinks.push_back( termSink );
-            //termSink->set_pattern("[multi_sink_example] [%^%l%$] %v");
-            //termSink->set_pattern(".."); //compiles pattern into runtime faster version
-        }
-        
-        if ( fileVerbosity > 0 ) {
-            //make and configure file sink
-            //  get here with ldmx-app -f [1-3] config.py
-            auto fileSink = std::make_shared<log::sinks::basic_file_sink_mt>("logs/multisink.txt", true);
-            fileSink->set_level( inputToSpdLog.at( std::min( 3 , fileVerbosity ) ) );
-            sinks.push_back( fileSink );
-            //fileSink->set_pattern("[multi_sink_example] [%^%l%$] %v");
-            //fileSink->set_pattern(".."); //compiles pattern into runtime faster version
-        }
-        
-        if ( sinks.empty() ) {
-            //neither --> batch run
-            //  get here with ldmx-app -v 0 config.py
-            sinks.push_back( std::make_shared<log::sinks::null_sink_mt>() );
-        }
-    
-        //make logger
-        //  this constructor needs to be called BEFORE any calls to info, warn, etc..
-        theLog = std::make_shared<log::logger>( LDMXSW_LOGGER_NAME , begin(sinks) , end(sinks) );
-        //  needs to be set to max level to allow some sinks to work at max while others not
-        theLog->set_level( log::level::debug ); 
-        //  need to register with spdlog so it is available globally
-        log::register_logger( theLog );
-        //  set the default logger as our logger so we can use it everywhere with log::warn, log::info, etc..
-        log::set_default_logger( theLog );
-    } catch ( const log::spdlog_ex &ex ) {
-        std::cerr << "Log Setup Error: " << ex.what() << std::endl;
-        return 1;
-    }
+    ldmx::logging::logger lg;
 
     Process* p { 0 };
     try {
-#ifdef spdlog_FOUND
-        log::info( "----- {0:27s} -----" , "Loading configuration file" );
-#else
-        std::cout << "----- LDMXSW: Loading configuration file -----" << std::endl;
-#endif //spdlog_FOUND
+        BOOST_LOG(lg) << "----- LDMXSW: Loading configuration file -----"
         
         ConfigurePython cfg(argv[ptrpy], argv + ptrpy + 1, argc - ptrpy);
         p = cfg.makeProcess();
 
-#ifdef spdlog_FOUND
-        log::info( "----- {0:27s} -----" , "Configuration load complete" );
-#else
-        std::cout << "----- LDMXSW: Configuration load complete -----" << std::endl;
-#endif //spdlog_FOUND
+        std::cout << "----- LDMXSW: Configuration load complete -----"
 
         // If Ctrl-c is used, immediately exit the application.
         struct sigaction act;
         memset (&act, '\0', sizeof(act));
         if (sigaction(SIGINT, &act, NULL) < 0) {
-#ifdef spdlog_FOUND
-            log::critical( "ldmx-app killed by system." );
-#endif //spdlog_FOUND
             perror ("sigaction");
             return 1;
         }
@@ -195,35 +136,24 @@ int main(int argc, char* argv[]) {
         /* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not sa_handler. */
         //act.sa_flags = SA_SIGINFO;
 
-#ifdef spdlog_FOUND
-        log::info( "----- {0:27s} -----" , "Starting event processing" );
-#else
         std::cout << "----- LDMXSW: Starting event processing -----" << std::endl;
-#endif //spdlog_FOUND
         
         p->run();
         
-#ifdef spdlog_FOUND
-        log::info( "----- {0:27s} -----" , "Event processing complete" );
-#else
         std::cout << "----- LDMXSW: Event processing complete -----" << std::endl;
-#endif //spdlog_FOUND
 
     } catch (Exception& e) {
-#ifdef spdlog_FOUND
-        log::critical( "[ {} ] : {} at {}:{} in {}" , 
-                e.name() , e.message() , e.module() , e.line() , e.function() );
-#else
         std::cerr << "ERROR [ " << e.name() << " ] : " << e.message()
             << " at " << e.module() << ":" << e.line() << " in " << e.function() << std::endl;
-#endif //spdlog_FOUND
     }
+
+    //close up any loose ends in log
+    logging::close();
 
     return 0;
 }
 
 void printUsage() {
-#ifdef spdlog_FOUND
     printf( "Usage: ldmx-app [-v,--verbosity [0-3]] [-f,--fileLog [0-3]] [-h,--help] {config_script.py} [arguments to configuration script]\n" );
     printf( "  -v,--verbosity    Set the verbosity of the logging.\n" );
     printf( "                      0 ==> batch (no logging)\n" );
@@ -236,9 +166,6 @@ void printUsage() {
     printf( "                      2 ==> info, warnings, and errors\n" );
     printf( "                      3 ==> everything (debug, info, warnings and errors; default without following int)\n" );
     printf( "  -h,--help         Print this help message.\n" );
-#else
-    printf( "Usage: ldmx-app {config_script.py} [arguments to configuration script]\n" );
-#endif //spdlog_FOUND
     printf( "  config_script.py  Configuration script to tell ldmx-app what processors to run.\n" );
     printf( "                    Everything after the config_script is assumed to be arguments to that python script.\n" );
     return;
