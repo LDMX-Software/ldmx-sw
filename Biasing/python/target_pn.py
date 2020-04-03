@@ -9,7 +9,7 @@
 from LDMX.Framework import ldmxcfg
 from LDMX.Detector.makePath import * #both detector and scoring planes path
 from LDMX.SimApplication import generators
-from LDMX.SimApplication import simcfg
+from LDMX.Biasing import event_filters, track_filters
 
 def get( ) :
     
@@ -18,7 +18,7 @@ def get( ) :
     # the simulator needs to be loaded.  This is usually done from the top level
     # configure file.
     #
-    simulator = ldmxcfg.Producer("simulator", "ldmx::Simulator")
+    simulator = ldmxcfg.Producer("targetPN", "ldmx::Simulator")
     
     #
     # Set the path to the detector to use.
@@ -26,7 +26,6 @@ def get( ) :
     # The detectors installed with ldmx-sw can be accessed using the makeDetectorPath function.
     # Otherwise, you can provide the full path yourself.
     #
-    from LDMX.Detectors.makePath import *
     simulator.parameters["detector"] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
     
     #
@@ -63,22 +62,6 @@ def get( ) :
     simulator.parameters['biasing.factor'] = 450
     
     #
-    # Only consider events with a hard brem
-    # 
-    target_brem_filter = simcfg.UserAction("targetBrem", "ldmx::TargetBremFilter")
-    target_brem_filter.parameters['volume'] = 'target_PV'
-    target_brem_filter.parameters['recoilEnergyThreshold'] = 1500.
-    target_brem_filter.parameters['bremEnergyThreshold'] = 2500.
-    
-    #
-    # Only consider events where a photonuclear reaction happens in the target 
-    #
-    target_process_filter = simcfg.UserAction("targetProcess", "ldmx::TargetProcessFilter")
-    target_process_filter.parameters['process'] = 'photonNuclear'
-    target_process_filter.parameters['volume'] = 'target'
-    #target_process_filter.parameters['photonThreshold'] = 2500 #MeV NOT IMPLEMENTED
-    
-    #
     # Save tracks of particles created in the photonuclear reaction
     #
     track_process_filter = simcfg.UserAction('trackProcessFilter', 'ldmx::TrackProcessFilter')
@@ -87,6 +70,10 @@ def get( ) :
     #
     # Configure the sequence in which user actions should be called.
     #
-    simulator.parameters["actions"] = [target_brem_filter, target_process_filter, track_process_filter]
+    simulator.parameters["actions"] = [
+            event_filters.targetBremFilter(), #only consider events where a hard brem occurs
+            event_filters.targetPNFilter(),   #only consider events where a PN reaction happnes in the target
+            track_filters.keepPNTracks()      #keep all PN children
+            ]
 
     return simulator

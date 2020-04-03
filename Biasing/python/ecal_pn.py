@@ -9,7 +9,7 @@
 from LDMX.Framework import ldmxcfg
 from LDMX.Detector.makePath import * #both detector and scoring planes path
 from LDMX.SimApplication import generators
-from LDMX.SimApplication import simcfg
+from LDMX.Biasing import event_filters, track_filters
 
 def get( ) :
     
@@ -18,7 +18,7 @@ def get( ) :
     # the simulator needs to be loaded.  This is usually done from the top level
     # configure file.
     #
-    simulator = ldmxcfg.Producer("simulator", "ldmx::Simulator")
+    simulator = ldmxcfg.Producer("ecal_pn", "ldmx::Simulator")
     
     #
     # Set the path to the detector to use.
@@ -26,9 +26,7 @@ def get( ) :
     # The detectors installed with ldmx-sw can be accessed using the makeDetectorPath function.
     # Otherwise, you can provide the full path yourself.
     #
-    from LDMX.Detectors.makePath import *
     simulator.parameters["detector"] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
-    
     
     #
     # Set run parameters
@@ -64,29 +62,13 @@ def get( ) :
     simulator.parameters['biasing.factor'] = 450
     
     #
-    # Only consider events with a hard brem
-    # 
-    target_brem_filter = simcfg.UserAction("targetBrem", "ldmx::TargetBremFilter")
-    target_brem_filter.parameters['volume'] = 'target_PV'
-    target_brem_filter.parameters['recoilEnergyThreshold'] = 1500.
-    target_brem_filter.parameters['bremEnergyThreshold'] = 2500.
-    
-    #
-    # Only consider events where a photonuclear reaction happens in the target 
-    #
-    ecal_process_filter = simcfg.UserAction("ecalProcess", "ldmx::EcalProcessFilter")
-    ecal_process_filter.parameters['process'] = 'photonNuclear'
-    ecal_process_filter.parameters['volume'] = 'ecal'
-    
-    #
-    # Save tracks of particles created in the photonuclear reaction
-    #
-    track_process_filter = simcfg.UserAction('trackProcessFilter', 'ldmx::TrackProcessFilter')
-    track_process_filter.parameters['process'] = ['photonNuclear']
-    
-    #
     # Configure the sequence in which user actions should be called.
+    #   the order is important, it is the order they will be called in, so put event filters first
     #
-    simulator.parameters["actions"] = [target_brem_filter, ecal_process_filter, track_process_filter]
+    simulator.parameters["actions"] = [
+            event_filters.targetBremFilter(), #only consider events with a hard brem
+            event_filters.ecalPNFilter()    , #only consider events with a PN reaction in the ECal
+            track_filters.keepPNTracks()      #make sure to keep tracks created by PN reaction
+            ]
 
     return simulator
