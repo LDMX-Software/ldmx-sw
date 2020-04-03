@@ -81,13 +81,52 @@ def gps( name ) :
     return simcfg.PrimaryGenerator( name , "ldmx::GeneralParticleSource" )
 
 #############################################################
-# @function farUpstreamSingleElectron
+# @function farUpstreamSingle8GeVElectron
+# @return a ParticleGun with a single 8GeV electron fired from far upstream of target
+#############################################################
+def farUpstreamSingle8GeVElectron() :
+    farUpstreamElectron = gun( "farUpstreamSingle8GeVElectron" )
+    farUpstreamElectron.parameters[ 'particle'  ] = 'e-'
+    farUpstreamElectron.parameters[ 'position'  ] = [ -14.292 , 0 , -700 ] #mm
+    farUpstreamElectron.parameters[ 'direction' ] = [ 0.34895509892 , 0, 7.99238577265 ] #unitless
+    farUpstreamElectron.parameters[ 'energy'    ] = 8.0000000 #GeV
+    return farUpstreamElectron
+
+#############################################################
+# @function farUpstreamSingle4GeVElectron
 # @return a ParticleGun with a single 4GeV electron fired from far upstream of target
 #############################################################
 def farUpstreamSingle4GeVElectron() :
-    farUpstreamElectron = gun( "farUpstreamSingleElectron" )
+    farUpstreamElectron = gun( "farUpstreamSingle4GeVElectron" )
     farUpstreamElectron.parameters[ 'particle'  ] = 'e-'
     farUpstreamElectron.parameters[ 'position'  ] = [ -27.926, 5, -700 ] #mm
     farUpstreamElectron.parameters[ 'direction' ] = [ 313.8 / 4000 , 0, 3987.7/4000 ] #unitless
     farUpstreamElectron.parameters[ 'energy'    ] = 4.0000000 #GeV
     return farUpstreamElectron
+
+#############################################################
+# @function farUpstreamSingle1p2GeVElectron
+# @return a ParticleGun with a single 1.2GeV electron fired from far upstream of target
+#############################################################
+def farUpstreamSingle1p2GeVElectron() :
+    farUpstreamElectron = gun( "farUpstreamSingle1.2GeVElectron" )
+    farUpstreamElectron.parameters[ 'particle'  ] = 'e-'
+    farUpstreamElectron.parameters[ 'position'  ] = [ -36.387, 5, -700 ] #mm
+    farUpstreamElectron.parameters[ 'direction' ] = [ 0.2292 / 1.2 , 0, 1.1779 / 1.2 ] #unitless
+    farUpstreamElectron.parameters[ 'energy'    ] = 1.200000 #GeV
+    return farUpstreamElectron
+
+#############################################################
+# @function slacBeam
+# @return a MultiParticleGun with Poisson variation around 2 interactions
+#   This generator is meant to mimic the beam at SLAC
+#   NOT VERY REALISTIC RIGHT NOW
+#############################################################
+def farUpstreamSingle4GeVElectron() :
+    beam = mpg( "slacBeam" )
+    beam.parameters[ 'nInteractions'  ] = 2
+    beam.parameters[ 'enablePoisson' ] = True
+    beam.parameters[ 'pdgID'    ] = 11
+    beam.parameters[ 'vertex'   ] = [ -28.06 , 0 , -865.0 ] #mm
+    beam.parameters[ 'momentum' ] = [ 313.8 , 0. , 3987.7 ] #MeV
+    return beam
