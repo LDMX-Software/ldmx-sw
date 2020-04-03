@@ -9,11 +9,29 @@
 
 namespace ldmx {
 
-    MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator():
-        random_ (new TRandom) {
+    MultiParticleGunPrimaryGenerator::MultiParticleGunPrimaryGenerator(const std::string& name, Parameters& parameters )
+        : PrimaryGenerator( name , parameters ), random_ (new TRandom) {
+
+        auto stlVertex{parameters_.getParameter< std::vector<double> >( "vertex" )};
+        auto stlMomentum{parameters_.getParameter< std::vector<double> >( "momentum" )};
+        mpgNParticles_ = parameters.getParameter< int >( "nParticles" );
+        mpgPdgID_      = parameters.getParameter< int >( "pdgID" );
+        mpgEnablePoisson_ = parameters.getParameter< bool >( "enablePoisson" );
+
+        if ( stlVertex.size() != 3 or stlMomentum.size() != 3 or mpgNParticles_ <= 0 ) {
+            EXCEPTION_RAISE(
+                    "InvalideConfig",
+                    "Parameters pass to '" + name_ + "' are not valid."
+                    );
+        }
+
+        mpgVertex_ = G4ThreeVector( stlVertex.at(0)*mm , stlVertex.at(1)*mm , stlVertex.at(2)*mm );
+        mpgMomentum_ = G4ThreeVector( stlMomentum.at(0)*MeV , stlMomentum.at(1)*MeV , stlMomentum.at(2)*MeV );
+
     }
 
     MultiParticleGunPrimaryGenerator::~MultiParticleGunPrimaryGenerator() {
+        delete random_;
     }
 
     void MultiParticleGunPrimaryGenerator::GeneratePrimaryVertex(G4Event* anEvent) {
@@ -41,7 +59,8 @@ namespace ldmx {
             // curvertex->SetPosition(0. * mm,0. * mm,-10. * mm);
             curvertex->SetWeight(1.);
             
-            G4PrimaryParticle* primary = new G4PrimaryParticle(cur_mpg_pdgid,cur_mpg_momentum.x(),cur_mpg_momentum.y(),cur_mpg_momentum.z());
+            G4PrimaryParticle* primary = new G4PrimaryParticle(cur_mpg_pdgid,
+                    cur_mpg_momentum.x(),cur_mpg_momentum.y(),cur_mpg_momentum.z());
 
             UserPrimaryParticleInformation* primaryInfo = new UserPrimaryParticleInformation();
             primaryInfo->setHepEvtStatus(1.);
@@ -52,4 +71,7 @@ namespace ldmx {
 
         }      
     }
-}
+
+} //ldmx
+
+DECLARE_GENERATOR( ldmx , MultiParticleGunPrimaryGenerator )

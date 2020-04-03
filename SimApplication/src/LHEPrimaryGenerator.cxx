@@ -1,21 +1,32 @@
+/**
+ * @file LHEPrimaryGenerator.cxx
+ * @brief Implementation file for LHEPrimaryGenerator
+ * @author Jeremy McCormick, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
+ */
+
 #include "SimApplication/LHEPrimaryGenerator.h"
 
 // Geant4
 #include "G4Event.hh"
 #include "G4IonTable.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4PhysicalConstants.hh"
+#include "G4RunManager.hh"
 
 // LDMX
 #include "SimApplication/UserPrimaryParticleInformation.h"
+#include "Framework/Parameters.h"
 #include "Exception/Exception.h"
-
-// Geant4
-#include "G4SystemOfUnits.hh"
-#include "G4PhysicalConstants.hh"
 
 namespace ldmx {
 
-    LHEPrimaryGenerator::LHEPrimaryGenerator(LHEReader* theReader) :
-            reader_(theReader) {
+    LHEPrimaryGenerator::LHEPrimaryGenerator(const std::string& name , Parameters& parameters)
+        : PrimaryGenerator( name , parameters ) {
+
+        std::string filePath = parameters_.getParameter< std::string >( "filePath" );
+        reader_ = new LHEReader( filePath );
+
     }
 
     LHEPrimaryGenerator::~LHEPrimaryGenerator() {
@@ -96,3 +107,5 @@ namespace ldmx {
     }
 
 }
+
+DECLARE_GENERATOR( ldmx , LHEPrimaryGenerator )

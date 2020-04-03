@@ -13,7 +13,6 @@
 #include "SimApplication/CalorimeterSD.h"
 
 // ROOT
-#include "TH2Poly.h"
 #include "TMath.h"
 
 // Geant4

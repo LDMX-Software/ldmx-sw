@@ -88,7 +88,6 @@ namespace ldmx {
 
             /// A map of all registered user actions to their corresponding info.
             std::map < std::string, ActionInfo > actionInfo_; 
-
             
             /// Private constructor to prevent instatiation 
             UserActionManager(); 

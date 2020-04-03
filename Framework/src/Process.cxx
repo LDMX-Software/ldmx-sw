@@ -1,3 +1,8 @@
+/**
+ * @file Process.cxx
+ * Implementation file for Process class
+ */
+
 #include <iostream>
 #include "TFile.h"
 #include "TROOT.h"
@@ -7,6 +12,7 @@
 #include "Framework/Process.h"
 #include "Framework/NtupleManager.h"
 #include "Event/RunHeader.h"
+#include "Exception/Exception.h"
 
 namespace ldmx {
 
@@ -292,8 +298,13 @@ namespace ldmx {
     TDirectory* Process::openHistoFile() {
         TDirectory* owner{nullptr}; 
         
-        if (histoFilename_.empty()) owner = gROOT; 
-        else if (histoTFile_ == nullptr) { 
+        if (histoFilename_.empty()) {
+            //trying to write histograms/ntuples but no file defined
+            EXCEPTION_RAISE(
+                    "NoHistFileName",
+                    "You did not provide the necessary histogram file name to put your histograms (or ntuples) in.\n    Provide this name in the python configuration with 'p.histogramFile = \"myHistFile.root\"' where p is the Process object."
+                    );
+        } else if (histoTFile_ == nullptr) { 
             histoTFile_ = new TFile(histoFilename_.c_str(), "RECREATE");
             owner = histoTFile_;
         } else owner = histoTFile_; 

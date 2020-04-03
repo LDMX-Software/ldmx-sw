@@ -1,0 +1,26 @@
+#############################################################################################
+# Helpful python configuration functions for getting the path to installed
+#  configuration files. Right now, the files mainly used are the BDT ones.
+#
+# This file was configured by cmake for the installation of ldmx-sw at
+#   @CMAKE_INSTALL_PREFIX@
+#
+# @author Tom Eichlersmith, University of Minnesota
+#############################################################################################
+
+# return full path to BDT pickle file with given name
+# errors out if the file does not exist
+import os, sys
+def makeBDTPath( BDTname ) :
+    fullPath = '@CMAKE_INSTALL_PREFIX@/data/Configuration/' + BDTname + '.pkl'
+    if not os.path.isfile( fullPath ) :
+        print 'ERROR: Pickle file \'%s\' does not exist.' % ( fullPath )
+        sys.exit(1)
+
+    return fullPath
+
+# return full path to ECal cell XY txt file
+#   TODO remove need for cellxy.txt file
+def makeCellXYPath() :
+    fullPath = '@CMAKE_INSTALL_PREFIX@/data/Configuration/cellxy.txt'
+    return fullPath

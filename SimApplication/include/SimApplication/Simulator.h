@@ -28,6 +28,7 @@
 #include "Event/EventDef.h"
 
 class G4UImanager;
+class G4UIsession;
 class G4RunManager;
 class G4GDMLParser; 
 class G4GDMLMessenger; 
@@ -136,17 +137,11 @@ namespace ldmx {
             /// User interface handle
             G4UImanager* uiManager_{nullptr};
 
-            /// GDML parser 
-            std::unique_ptr<G4GDMLParser> parser_;
-
-            /// LDMX Object that constructs our detector
-            std::unique_ptr<DetectorConstruction> detectorConstruction_;
-
             /// PersistencyManager 
             std::unique_ptr<RootPersistencyManager> persistencyManager_;
 
-            /// The parameters used to configure the simulation
-            Parameters parameters_;   
+            /// Handle to the G4Session -> how to deal with G4cout and G4cerr
+            std::unique_ptr<G4UIsession> sessionHandle_;
 
             /// Commands not allowed to be passed from python config file
             ///     This is because Simulator already runs them.
@@ -156,74 +151,11 @@ namespace ldmx {
              * Python Configuration Parameters
              *********************************************************/
 
-            /// Short Description of Simulation for Run Header
-            std::string description_;
-            
-            /// Path to detector description
-            std::string detectorPath_;
-
-            /// Run Number for this Sim Run
-            int runNumber_;
+            /// The parameters used to configure the simulation
+            Parameters parameters_;   
 
             /// Vebosity for the simulation
             int verbosity_{1};
-
-            /// Should the simulation save individual hit contributions to ECal Hits?
-            bool enableHitContribs_{true};
-
-            /// Should the simulation compress hit contributions by pdgID?
-            bool compressHitContribs_{true};
-
-            /// Collections to drop from simulation (usually scoring plane collections)
-            //TODO deprecate this when functional dropping is merged in
-            std::vector< std::string > dropCollections_;
-            
-            /// Path to scoring planes description
-            std::string scoringPlanesPath_;
-
-            /// Vector of Random Seeds to use for this run.
-            std::vector< int > randomSeeds_;
-
-            /// Path to LHE file to generate primary particles from
-            std::string lheFilePath_;
-
-            /// Path to ROOT file to generate primary particles from
-            std::string rootReSimPath_;
-
-            /// How should the simulation interpret the information from the input root file?
-            /// Options: 0 (from ECal SP) and 1 (total regen)
-            int rootPrimaryGenRunMode_{1};
-
-            /// Should the sim use the random number seeds in the root file?
-            bool rootPrimaryGenUseSeed_{false};
-
-            /// Number of particles to use in the multi particle gun
-            ///     Negative values turn it off
-            int mpgNparticles_{-1};
-
-            /// Whether to enable poisson variation in the multi particle gun
-            bool mpgEnablePoisson_{false};
-
-            /// PDG ID of the particle shot by the multi particle gun
-            int mpgPdgID_{11};
-
-            /// Starting position of the particles shot by the multi particle gun [mm]
-            std::vector<double> mpgVertex_{0.,0.,0.};
-
-            /// Starting momentum of the particles shot by the multi particle gun [MeV]
-            std::vector<double> mpgMomentum_{0.,0.,4000.0};
-
-            /// Should a general particle source be turned on?
-            bool enableGeneralParticleSource_{false};
-
-            /// Vector to use as beamspot smearing
-            std::vector< double > beamspotSmear_;
-            
-            /// Vector of Geant4 Commands to Run before /run/initialize
-            std::vector< std::string > preInitCommands_;
-            
-            /// Vector of Geant4 Commands to Run after /run/initialize
-            std::vector< std::string > postInitCommands_;
 
     };
 }

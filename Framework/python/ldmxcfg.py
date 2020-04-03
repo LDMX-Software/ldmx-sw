@@ -14,20 +14,19 @@ class Producer:
         self.histograms.append(h.histogram1D(name, xlabel, bins, xmin, xmax))
         return self
 
-    def printMe(self):
-        printMe(self,"")
-
-    def printMe(self,prex):
-        print "%sProducer(%s of class %s)"%(prex,self.instanceName,self.className)
+    def __str__(self) :
+        msg = "\n  Producer(%s of class %s)"%(self.instanceName,self.className)
         if len(self.parameters)>0:
-            print "%s Parameters:"%(prex)
+            msg += "\n   Parameters:"
             for k, v in self.parameters.items():
-                print prex,"  ",k," : ",v
+                msg += "\n    " + str(k) + " : " + str(v)
 
         if self.histograms:
-            print "Creating the following histograms:" 
+            msg += "\n   Creating the following histograms:" 
             for histo in self.histograms: 
-                histo.Print()
+                msg += '\n    ' + str(histo)
+
+        return msg
 
 class Analyzer:
     def __init__(self, instanceName, className):
@@ -41,22 +40,22 @@ class Analyzer:
         self.histograms.append(h.histogram1D(name, xlabel, bins, xmin, xmax))
         return self
 
-    def printMe(self):
-        printMe(self,"")
-    
-    def printMe(self,prex):
-        print "%sAnalyzer(%s of class %s)"%(prex,self.instanceName,self.className)        
+    def __str__(self) :
+        msg = "\n  Analyzer(%s of class %s)"%(self.instanceName,self.className)
         if len(self.parameters)>0:
-            print "%s Parameters:"%(prex)
+            msg += "\n   Parameters:"
             for k, v in self.parameters.items():
-                print prex,"  ",k," : ",v
-        
+                msg += "\n    " + str(k) + " : " + str(v)
+
         if self.histograms:
-            print "%sHistograms:" % prex
+            msg += "\n   Creating the following histograms:" 
             for histo in self.histograms: 
-                histo.Print()
+                msg += '\n    ' + str(histo)
+
+        return msg
                 
 class Process:
+
     lastProcess=None
     
     def __init__(self, passName):
@@ -87,42 +86,44 @@ class Process:
         self.skimRules.append(namePat)
         self.skimRules.append(labelPat)
 
-    def printMe(self):
-        print "Process with pass name '%s'"%(self.passName)
-        if (self.run>0): print " using run number %d"%(self.run)
-        if (self.maxEvents>0): print " Maximum events to process: %d"%(self.maxEvents)
-        else: " No limit on maximum events to process"
-        print "Processor sequence:"
+    def __str__(self):
+        msg = "Process with pass name '%s'"%(self.passName)
+        if (self.run>0): msg += "\n using run number %d"%(self.run)
+        if (self.maxEvents>0): msg += "\n Maximum events to process: %d"%(self.maxEvents)
+        else: msg += "\n No limit on maximum events to process"
+        msg += "\n Processor sequence:"
         for proc in self.sequence:
-            proc.printMe("  ")
+            msg += str(proc)
         if len(self.inputFiles) > 0:
             if len(self.outputFiles)==len(self.inputFiles):
-                print "Files:"
+                msg += "\n Files:"
                 for i in range(0,len(self.inputFiles)):
-                    print "   '%s' -> '%s'"%(self.inputFiles[i],self.outputFiles[i])
+                    msg += "\n  '%s' -> '%s'"%(self.inputFiles[i],self.outputFiles[i])
             else:
-                print "Input files:"
+                msg += "\n Input files:"
                 for afile in self.inputFiles:
-                    print "   %s"%(afile)
+                    msg += '\n  ' + afile
                 if len(self.outputFiles) > 0:
-                    print "Output file:", self.outputFiles[0]
+                    msg += "\n Output file: " + self.outputFiles[0]
         elif len(self.outputFiles) > 0:
-            print "Output file:", self.outputFiles[0]
-        print "Skim rules:"
-        if self.skimDefaultIsKeep: print " Default: keep the event"
-        else: print " Default: drop the event"
+            msg += "\n Output file: " + self.outputFiles[0]
+        msg += "\n Skim rules:"
+        if self.skimDefaultIsKeep: msg += "\n  Default: keep the event"
+        else: msg += "\n  Default: drop the event"
         for i in range(0,len(self.skimRules)-1,2):
             if self.skimRules[i+1]=="": 
-                print " Listen to hints from processors with names matching '%s'"%(self.skimRules[i])
+                msg += "\n  Listen to hints from processors with names matching '%s'"%(self.skimRules[i])
             else:
-                print " Listen to hints with labels matching '%s' from processors with names matching '%s'"%(self.skimRules[i+1],self.skimRules[i])
+                msg += "\n  Listen to hints with labels matching '%s' from processors with names matching '%s'"%(self.skimRules[i+1],self.skimRules[i])
         if len(self.keep) > 0:
-            print "Rules for keeping previous products:"
+            msg += "\n Rules for keeping previous products:"
             for arule in self.keep:
-                print "   %s"%(arule)
+                msg += '\n  ' + arule
         if len(self.libraries) > 0:
-            print "Shared libraries to load:"
+            msg += "\n Shared libraries to load:"
             for afile in self.libraries:
-                print "   %s"%(afile)
+                msg += '\n  ' + afile
+
+        return msg
 
     
