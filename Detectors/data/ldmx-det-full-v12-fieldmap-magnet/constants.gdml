@@ -1,0 +1,19 @@
+
+<!-- Constant defining the clearance between volumes --> 
+<constant name="clearance" value="0.001*mm" />
+
+<!-- define center position and identity rotation -->
+<position name="center" x="0" y="0" z="0"/>
+<rotation name="identity" x="0" y="0" z="0"/>
+
+<!-- dimensions of world volume -->
+<constant name="world_dim" value="12.0*m"/>
+
+<!-- 
+  Recoil trakcer parent volume dimensions. In x/y, these are set 5 mm smaller 
+  than the magnet gap defined in magnet.gdml in order to avoid overlaps. The 
+  magnet gaps were extracted from the drawing of the magnet obtained from JLab.
+-->
+<constant name="recoil_envelope_x" value="425*mm" />
+<constant name="recoil_envelope_y" value="345*mm" />
+<constant name="recoil_envelope_z" value="200*mm" />
