@@ -1,10 +1,10 @@
 
 ####################################################################
-# Template for studying PN interactions in ECal
+# Template for studying EN interactions in Target
 # Import with:
-#   from LDMX.Biasing.ecal_pn import ecal_pn
+#   from LDMX.Biasing.target_en import target_en
 # Use:
-#   myEcalPNSim = ecal_pn.get()
+#   myTargetENSim = target_en.get()
 
 from LDMX.Framework import ldmxcfg
 from LDMX.Detector.makePath import * #both detector and scoring planes path
@@ -29,12 +29,11 @@ def get( ) :
     from LDMX.Detectors.makePath import *
     simulator.parameters["detector"] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
     
-    
     #
     # Set run parameters
     #
     simulator.parameters["runNumber"] = 0
-    simulator.parameters["description"] = "ECal photo-nuclear, xsec bias 450"
+    simulator.parameters["description"] = "Target electron-nuclear, xsec bias 1e8"
     simulator.parameters["randomSeeds"] = [ 1, 2 ]
     simulator.parameters["beamspotSmear"] = [20., 80.]
     
@@ -57,36 +56,28 @@ def get( ) :
     # Enable and configure the biasing
     #
     simulator.parameters['biasing.enabled'] = True
-    simulator.parameters['biasing.particle'] = 'gamma'
-    simulator.parameters['biasing.process'] = 'photonNuclear'
-    simulator.parameters['biasing.volume'] = 'ecal'
-    simulator.parameters['biasing.threshold'] = 2500.
-    simulator.parameters['biasing.factor'] = 450
+    simulator.parameters['biasing.particle'] = 'e-'
+    simulator.parameters['biasing.process'] = 'electronNuclear'
+    simulator.parameters['biasing.volume'] = 'target'
+    simulator.parameters['biasing.factor'] = 1e8
     
     #
-    # Only consider events with a hard brem
-    # 
-    target_brem_filter = simcfg.UserAction("targetBrem", "ldmx::TargetBremFilter")
-    target_brem_filter.parameters['volume'] = 'target_PV'
-    target_brem_filter.parameters['recoilEnergyThreshold'] = 1500.
-    target_brem_filter.parameters['bremEnergyThreshold'] = 2500.
+    # Only consider events where a electronNuclear interaction happens in the target
+    #
+    target_process_filter = simcfg.UserAction("targetProcess", "ldmx::TargetENProcessFilter")
+    target_process_filter.parameters['process'] = 'electronNuclear'
+    target_process_filter.parameters['volume'] = 'target'
+    target_process_filter.parameters['recoilThreshold'] = 4000 #MeV
     
     #
-    # Only consider events where a photonuclear reaction happens in the target 
-    #
-    ecal_process_filter = simcfg.UserAction("ecalProcess", "ldmx::EcalProcessFilter")
-    ecal_process_filter.parameters['process'] = 'photonNuclear'
-    ecal_process_filter.parameters['volume'] = 'ecal'
-    
-    #
-    # Save tracks of particles created in the photonuclear reaction
+    # Save tracks of particles created in the electronNuclear reaction
     #
     track_process_filter = simcfg.UserAction('trackProcessFilter', 'ldmx::TrackProcessFilter')
-    track_process_filter.parameters['process'] = ['photonNuclear']
+    track_process_filter.parameters['process'] = ['electronNuclear']
     
     #
     # Configure the sequence in which user actions should be called.
     #
-    simulator.parameters["actions"] = [target_brem_filter, ecal_process_filter, track_process_filter]
+    simulator.parameters["actions"] = [target_process_filter, track_process_filter]
 
     return simulator
