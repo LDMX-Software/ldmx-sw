@@ -40,6 +40,8 @@
 #include "Event/EventConstants.h"
 #include "Event/EventHeader.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
+#include "SimApplication/PrimaryGenerator.h"
+#include "Framework/Parameters.h"
 
 namespace ldmx {
 
@@ -47,12 +49,24 @@ namespace ldmx {
      * @class MultiParticleGunPrimaryGenerator
      * @brief Generates a Geant4 event from particle gun, but can have many particles
      */
-    class MultiParticleGunPrimaryGenerator : public G4VPrimaryGenerator {
+    class MultiParticleGunPrimaryGenerator : public PrimaryGenerator {
 
         public:
 
-            /** Constructor */
-            MultiParticleGunPrimaryGenerator();
+            /** 
+             * Constructor 
+             *
+             * @param name the name of this generator
+             * @param parameters the configuration parameters
+             *
+             * Parameters:
+             *  vertex        : Position to shoot from (mm)
+             *  momentum      : 3-vector mometum of particles (MeV)
+             *  nParticles    : number of particles to shoot (mean if Poisson enabled)
+             *  pdgID         : pdgID of particle to shoot
+             *  enablePoisson : whether to poisson distribute the number of particles
+             */
+            MultiParticleGunPrimaryGenerator(const std::string& name, Parameters& parameters);
 
             /** Destructor */
             virtual ~MultiParticleGunPrimaryGenerator();
@@ -63,34 +77,6 @@ namespace ldmx {
              * @param anEvent The Geant4 event.
              */
             void GeneratePrimaryVertex(G4Event* anEvent);
-
-            /** 
-             * When enabled, the number of incident particles is Poisson 
-             * distributed.
-             */
-            void enablePoisson(){ mpgEnablePoisson_ = true; }
-
-            /** Set the PDG ID of the particle to be used by this gun. */
-            void setMpgPdgId( int iPdgid ){ mpgPdgID_ = iPdgid; }
-
-            /** Set the number of particles. */
-            void setMpgNparticles( double iNPar ){ mpgNParticles_ = iNPar; }
-
-            /** 
-             * Set the vertex position from which to fire the particles from.
-             *
-             * @param Three vector containing the vertex position of the 
-             *        particles.
-             */
-            void setMpgVertex( G4ThreeVector iVert ){ mpgVertex_ = iVert; }
-
-            /** 
-             * Set the initial momentum of the particles.
-             *
-             * @param Three vector containing the initial momentum of the 
-             *        particle.
-             */
-            void setMpgMomentum( G4ThreeVector iMom ){ mpgMomentum_ = iMom; }
 
         private:        
             

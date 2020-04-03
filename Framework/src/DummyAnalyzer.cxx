@@ -59,7 +59,7 @@ namespace ldmx {
              * 
              * @param pSet Set of parameters used to configure this processor.
              */
-            void configure(Parameters parameters) { 
+            void configure(Parameters& parameters) final override { 
                 caloCol_ = parameters.getParameter< std::string >("caloHitCollection");  
             }
 

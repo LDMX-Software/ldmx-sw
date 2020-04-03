@@ -6,22 +6,19 @@
 #   from LDMX.SimApplication.darkBremOn import darkBremOn
 # Still Need to Define:
 #   1. path to dark brem input LHE file ('darkbrem.madgraphfilepath')
-#   2. detector description ('detector')
-#   3. mass of A' in MeV ('APrimeMass')
+#   2. mass of A' in MeV ('APrimeMass')
 
 from LDMX.Framework import ldmxcfg
-from LDMX.SimApplication import simcfg
 
 darkBremOn = ldmxcfg.Producer( "darkBremOn", "ldmx::Simulator")
 
 darkBremOn.parameters[ "description" ] = "One e- fired far upstream with Dark Brem turned on and biased up in target"
 
-darkBremOn.parameters[ "generators" ] = [ 'gun' ]
-darkBremOn.parameters[ "gun.particle" ] = 'e-'
-darkBremOn.parameters[ "gun.position" ] = [ -27.926, 5, -700 ] #mm
-darkBremOn.parameters[ "gun.time"     ] = 0. #ns
-darkBremOn.parameters[ "gun.energy"   ] = 4.0 #GeV
-darkBremOn.parameters[ "gun.direction"] = [ 313.8 / 4000.0 , 0, 3987.7 / 4000.0 ] #unit less
+from LDMX.Detector.makePath import makeDetectorPath
+darkBremOn.parameters[ "detector" ] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
+
+from LDMX.SimApplication import generators
+darkBremOn.parameters[ "generators" ] = [ farUpstreamSingleElectron() ]
 
 # Bias the electron dark brem process inside of the target
 #   These commands allow us to restrict the dark brem process to a given volume.
@@ -40,9 +37,10 @@ target_darkbrem_filter = simcfg.UserAction("targetDarkBrem", "ldmx::DarkBremFilt
 target_darkbrem_filter.parameters['volume'] = 'target_PV' # volume to look inside of
 target_darkbrem_filter.parameters['verbosity'] = 2
 
-# Keep A' no matter what
-#keepAPrime = simcfg.UserAction("keepAPrime" , "ldmx::TrackFilter" )
+# Keep Dark Brem children no matter what
+keepDarkBremParticles = simcfg.UserAction("keepDarkBremParticles" , "ldmx::TrackProcessFilter" )
+keepDarkBremParticles.parameters[ "process" ] = [ "eDBrem" ]
 
 # Then give the UserAction to the simulation so that it knows to use it
-darkBremOn.parameters['actions'] = [ target_darkbrem_filter ]
+darkBremOn.parameters['actions'] = [ target_darkbrem_filter , keepDarkBremParticles ]
 

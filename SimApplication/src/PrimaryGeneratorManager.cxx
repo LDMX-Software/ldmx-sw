@@ -2,6 +2,7 @@
  * @file PrimaryGeneratorManager.cxx
  * @brief Class that manages the generators used to fire particles. 
  * @author Omar Moreno, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "SimApplication/PrimaryGeneratorManager.h"
@@ -12,104 +13,38 @@
 #include <algorithm> 
 #include <string>
 #include <vector>
+#include <dlfcn.h>
 
 /*~~~~~~~~~~~~~~~*/
 /*   Exception   */
 /*~~~~~~~~~~~~~~~*/
 #include "Exception/Exception.h" 
 
-/*~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~*/
-#include "SimApplication/GeneralParticleSource.h"
-#include "SimApplication/LHEPrimaryGenerator.h"
-#include "SimApplication/LHEReader.h"
-#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
-#include "SimApplication/RootPrimaryGenerator.h"
-#include "SimApplication/ParticleGun.h"
+ldmx::PrimaryGeneratorManager ldmx::PrimaryGeneratorManager::instance_ __attribute__((init_priority(300)));
 
 namespace ldmx { 
 
-    PrimaryGeneratorManager::PrimaryGeneratorManager(Parameters& parameters) {
+    PrimaryGeneratorManager& PrimaryGeneratorManager::getInstance() { return instance_; }
 
-        // Initialize the primary generators 
-        initialize(parameters); 
+    void PrimaryGeneratorManager::registerGenerator(const std::string& className , PrimaryGeneratorBuilder* builder) {
+
+        GeneratorInfo info;
+        info.className_ = className;
+        info.builder_   = builder;
+
+        generatorMap_[className] = info;
     }
 
-    PrimaryGeneratorManager::~PrimaryGeneratorManager() {}
-
-    void PrimaryGeneratorManager::initialize(Parameters& parameters) {
-    
-        // Get the list of generators to initialize
-        auto genList{parameters.getParameter< std::vector < std::string > >("generators")};
-     
-        // If the list of generators is empty, throw an exception.
-        if (genList.empty()) { 
-            EXCEPTION_RAISE("MissingGenerator", "A generator needs to be specified."); 
+    void PrimaryGeneratorManager::createGenerator(const std::string& className , const std::string& instanceName, Parameters& parameters) {
+        auto it{generatorMap_.find(className)};
+        if ( it == generatorMap_.end()) {
+            EXCEPTION_RAISE( "CreateGenerator" , "Failed to create generator '" + className + "'." );
         }
 
-        std::for_each( genList.begin(), genList.end(), 
-                [&parameters, this] (auto gen) {
-                    if (gen.compare("gun") == 0) {
-                        generators_.push_back(new ParticleGun(parameters));  
-                    } else if (gen.compare("lhe") == 0) {
-                        auto lheFilePath{parameters.getParameter< std::string >("lheFilePath")}; 
-                        generators_.push_back( new LHEPrimaryGenerator( new LHEReader(lheFilePath) )); 
-                    } else if (gen.compare("root") == 0) {
-                        
-                        auto rootResimPath{parameters.getParameter< std::string >("rootResimPath")}; 
-                        auto rpg{new RootPrimaryGenerator(rootResimPath)}; 
-                        generators_.push_back(rpg);
-            
-                        //TODO break up root resim into two different generators
-                        auto rootPrimaryGenRunMode{parameters.getParameter< int >("rootPrimaryGenRunMode")}; 
-                        if (rootPrimaryGenRunMode < 0) rootPrimaryGenRunMode = 1; 
-                        rpg->setRunMode( rootPrimaryGenRunMode ); //default 1
+        auto generator{it->second.builder_(instanceName, parameters)};
 
-                    } else if (gen.compare("gps") == 0) {
-
-                        // TODO: There are too many GPS commands to port into 
-                        //       the framework.  For now, the config should 
-                        //       be put into a macro.   
-                        generators_.push_back(new GeneralParticleSource());
-
-                    } else if (gen.compare("multi") == 0) {
-                         
-                        //Multi Particle Gun
-                        if (auto mpgNparticles{parameters.getParameter< int >("mpg.nParticles")}; 
-                                mpgNparticles > 0) {
-                            auto mpg{new MultiParticleGunPrimaryGenerator()}; 
-                            mpg->setMpgNparticles(mpgNparticles); 
-                            
-                            if (auto enablePoisson{parameters.getParameter< bool >("mpg.enablePoisson")}; 
-                                    enablePoisson) mpg->enablePoisson(); 
-
-                            if (auto mpgPdgID{parameters.getParameter< int >("mpg.pdgID")};
-                                   mpgPdgID > 0) mpg->setMpgPdgId( mpgPdgID );
-
-                            if (auto mpgVertex{parameters.getParameter< std::vector< double > >("mpg.vertex")};   
-                                    !mpgVertex.empty()) { 
-                                mpg->setMpgVertex(G4ThreeVector( mpgVertex[0]*mm , mpgVertex[1]*mm , mpgVertex[2]*mm )); 
-                            }
-
-                            if (auto mpgMomentum{ parameters.getParameter< std::vector< double > >("mpg.p")};
-                                    !mpgMomentum.empty()) {
-                                mpg->setMpgMomentum( G4ThreeVector( mpgMomentum[0]*MeV , mpgMomentum[1]*MeV , mpgMomentum[2]*MeV )); 
-                            }
-
-                            generators_.push_back(mpg); 
-
-                        }
-                    } else if (gen.compare("stdhep") == 0) { 
-                        EXCEPTION_RAISE("NotImplemented", 
-                                "Generator has not been implemented."); 
-                    }
-                    else {
-                        EXCEPTION_RAISE("UnknownGenerator", 
-                                "A generator of type " + gen + " doesn't exists."); 
-                    }
-                }
-        );
+        //now that the generator is built --> put it on active list
+        generators_.push_back( generator );
     }
 
 } // ldmx

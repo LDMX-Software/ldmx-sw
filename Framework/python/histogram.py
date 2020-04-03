@@ -8,7 +8,7 @@ class histogram1D:
         self.xmin   = xmin
         self.xmax   = xmax
 
-    def Print(self):
+    def __str__(self):
         
-        print "\t Name: %s x Label: %s Bins: %s Range: (%s, %s)" % (self.name, 
+        return "\tName: %s x Label: %s Bins: %s Range: (%s, %s)" % (self.name, 
                 self.xlabel, self.bins, self.xmin, self.xmax)
