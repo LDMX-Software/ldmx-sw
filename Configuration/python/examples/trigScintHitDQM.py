@@ -13,25 +13,14 @@ p=ldmxcfg.Process("plot")
 # loaded.  In future, we do not expect this be necessary
 p.libraries.append("libDQM.so")            # dqm processors                                     
 
-
-trigScintUp = ldmxcfg.Analyzer("TrigScintHitDQMUp", "ldmx::TrigScintHitDQM")
-trigScintUp.parameters["hit_collection"] = "trigScintDigis"
-trigScintUp.parameters["pad"] = "up"
-
-trigScintTag = ldmxcfg.Analyzer("TrigScintHitDQMTag", "ldmx::TrigScintHitDQM")
-trigScintTag.parameters["hit_collection"] = "trigScintDigisTag"
-trigScintTag.parameters["pad"] = "tag"
-
-trigScintDown = ldmxcfg.Analyzer("TrigScintHitDQMDown", "ldmx::TrigScintHitDQM")
-trigScintDown.parameters["hit_collection"] = "trigScintDigisDn"
-trigScintDown.parameters["pad"] = "down"
-
-# set the maximum number of events to process 
-#p.maxEvents=1000
-
+# import template DQM analyzers
+from LDMX.DQM import triggerPad
 
 # Define the sequence of event processors to be run
-p.sequence=[trigScintTag,trigScintUp,trigScintDown]
+#   triggerPad.digis() returns a list of analyzers to put into sequence
+#   since there aren't any other analyzers, we can just set the sequence
+#   equal to this list
+p.sequence = triggerPad.digis()
 
 # Provide the list of output files to produce
 # if it can all be in one sequence, no input file is needed
@@ -47,8 +36,7 @@ if len(sys.argv) > 2 :
 else:
     p.histogramFile = p.inputFiles[0].replace( '.root' , '_simDQM.root' ) # this, however, can't be!! then there is a no-clue segfault
 
-print p.histogramFile[0]
-
+print p.histogramFile
 
 # Utility function to interpret and print out the configuration to the screen
-p.printMe()
+print p
