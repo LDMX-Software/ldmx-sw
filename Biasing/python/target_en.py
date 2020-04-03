@@ -9,7 +9,7 @@
 from LDMX.Framework import ldmxcfg
 from LDMX.Detector.makePath import * #both detector and scoring planes path
 from LDMX.SimApplication import generators
-from LDMX.SimApplication import simcfg
+from LDMX.Biasing import event_filters, track_filters
 
 def get( ) :
     
@@ -18,7 +18,7 @@ def get( ) :
     # the simulator needs to be loaded.  This is usually done from the top level
     # configure file.
     #
-    simulator = ldmxcfg.Producer("simulator", "ldmx::Simulator")
+    simulator = ldmxcfg.Producer("targetEN", "ldmx::Simulator")
     
     #
     # Set the path to the detector to use.
@@ -62,22 +62,11 @@ def get( ) :
     simulator.parameters['biasing.factor'] = 1e8
     
     #
-    # Only consider events where a electronNuclear interaction happens in the target
-    #
-    target_process_filter = simcfg.UserAction("targetProcess", "ldmx::TargetENProcessFilter")
-    target_process_filter.parameters['process'] = 'electronNuclear'
-    target_process_filter.parameters['volume'] = 'target'
-    target_process_filter.parameters['recoilThreshold'] = 4000 #MeV
-    
-    #
-    # Save tracks of particles created in the electronNuclear reaction
-    #
-    track_process_filter = simcfg.UserAction('trackProcessFilter', 'ldmx::TrackProcessFilter')
-    track_process_filter.parameters['process'] = ['electronNuclear']
-    
-    #
     # Configure the sequence in which user actions should be called.
     #
-    simulator.parameters["actions"] = [target_process_filter, track_process_filter]
+    simulator.parameters["actions"] = [
+            event_filters.targetENFilter(), #only consider events where an EN interaction happens in the target
+            track_filters.keepENTracks()    #keep all EN children
+            ]
 
     return simulator
