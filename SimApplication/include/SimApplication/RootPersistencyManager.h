@@ -111,44 +111,6 @@ namespace ldmx {
             void Initialize();
 
             /**
-             * Enable or disable hit contribution output for SimCalorimeterHits.
-             * This is enabled by default.
-             * @param enableHitContribs True to enable hit contributions.
-             */
-            void setEnableHitContribs(bool enableHitContribs) {
-                // Pass this flag to the ECal IO helper.
-                ecalHitIO_.setEnableHitContribs(enableHitContribs);
-            }
-
-            /**
-             * Enable or disable compression of hit contribution output by finding
-             * matching SimParticle and PDG codes and updating the existing record.
-             * This is enabled by default.
-             * @param compressHitContribs True to compress hit contributions.
-             */
-            void setCompressHitContribs(bool compressHitContribs) {
-                // Pass this flag to the ECal IO helper.
-                ecalHitIO_.setCompressHitContribs(compressHitContribs);
-            }
-
-            /** 
-             * Drop the hits associated with the specified collection.
-             *
-             * @param collectionName The name of the collection whose hits
-             *                       should be dropped.
-             */
-            void dropCollection(std::string collectionName) { 
-                dropCollectionNames_.push_back(collectionName);  
-            }  
-
-            /**
-             * Set the run number. 
-             *
-             * @param runNumber The run number.
-             */
-            void setRunNumber(int runNumber) { runNumber_ = runNumber; } 
-
-            /**
              * Set the current ldmx-sw event.  This is used by the persistency
              * manager to retrieve and fill the containers that will be 
              * persisted. 
@@ -206,9 +168,6 @@ namespace ldmx {
              * in the run header. 
              */ 
             std::string description_{""};
-
-            /// List of collections whose hits should be droppped.
-            std::vector<std::string> dropCollectionNames_; 
 
             /// Run number
             int runNumber_{0}; 

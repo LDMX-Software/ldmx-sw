@@ -11,9 +11,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Parameters.h" 
-
-// Forward Declarations
-class G4VPrimaryGenerator; 
+#include "SimApplication/PrimaryGenerator.h"
 
 namespace ldmx { 
 
@@ -25,30 +23,50 @@ namespace ldmx {
 
         public: 
 
-            /// Constructor
-            PrimaryGeneratorManager(Parameters& parameters); 
-
-            /// Destructor
-            ~PrimaryGeneratorManager();
+            /// @return the global PrimaryGeneratorManager instance
+            static PrimaryGeneratorManager& getInstance();
 
             /**
              * Get the collection of all enabled generators
              */
-            std::vector< G4VPrimaryGenerator* > getGenerators() const { return generators_; }; 
+            std::vector< PrimaryGenerator* > getGenerators() const { return generators_; }; 
+
+            /**
+             * Attach a new generator to the list of generators
+             */
+            void registerGenerator(const std::string& className, PrimaryGeneratorBuilder* builder);
+
+            /**
+             * Create a new generate and attach it to the list of generators
+             */
+            void createGenerator(const std::string& className, const std::string& instanceName, Parameters& parameters);
 
         private:
 
+            /// PrimaryGeneratorManager instance
+            static PrimaryGeneratorManager instance_;
+
+            /// Constructor - private to prevent initialization
+            PrimaryGeneratorManager() { }
+
             /**
-             * Initialize and configure the primary generators.
-             *
-             * @param parameters The parameters used to determine which 
-             *                   generators are initialized and how they are 
-             *                   configured. 
-             */ 
-            void initialize(Parameters& parameters); 
-            
+             * @struct GeneratorInfo
+             * @brief Holds necessary information to create a generator
+             */
+            struct GeneratorInfo {
+
+                /// Name of the Class
+                std::string className_;
+
+                /// Class builder
+                PrimaryGeneratorBuilder* builder_;
+            };
+
+            /// A map of all register generators
+            std::map< std::string , GeneratorInfo > generatorMap_;
+
             /// Cointainer for all generators to be used by the simulation
-            std::vector< G4VPrimaryGenerator* > generators_;
+            std::vector< PrimaryGenerator* > generators_;
 
     }; // PrimaryGeneratorManager
 

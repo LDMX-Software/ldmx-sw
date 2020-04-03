@@ -18,13 +18,12 @@
 //   Geant4   //
 //------------//
 #include "G4RunManager.hh"
+#include "G4PhysListFactory.hh"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Parameters.h" 
-
-class G4PhysListFactory; 
 
 namespace ldmx {
 
@@ -76,14 +75,6 @@ namespace ldmx {
              */
             DetectorConstruction* getDetectorConstruction(); 
 
-            /** Enable a parallel world. */
-            void enableParallelWorld(bool isPWEnabled) { isPWEnabled_ = isPWEnabled; }
-
-            /** Set the path to the GDML description of the parallel world. */
-            void setParallelWorldPath(std::string parallelWorldPath) { 
-                parallelWorldPath_ = parallelWorldPath; 
-            }
-
             /**
              * Tell RunManager to use the seed from the root file.
              */
@@ -102,7 +93,7 @@ namespace ldmx {
             /**
              * Factory class for instantiating the physics list.
              */
-            G4PhysListFactory* physicsListFactory_{nullptr};
+            G4PhysListFactory physicsListFactory_;
 
             /** 
              * Flag indicating whether a parallel world should be 

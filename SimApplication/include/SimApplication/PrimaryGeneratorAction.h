@@ -21,9 +21,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-//#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
 #include "SimApplication/PrimaryGeneratorManager.h" 
-//#include "SimApplication/RootPrimaryGenerator.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -35,8 +33,6 @@ class G4Event;
 class TRandom3;
 
 namespace ldmx {
-
-    class ParticleGun; 
 
     /**
      * @class PrimaryGeneratorAction
@@ -65,37 +61,6 @@ namespace ldmx {
              */
             void GeneratePrimaries(G4Event* event) final override;
 
-            /**
-             * Enable beamspot smearing.
-             * @param bool
-             */
-            void setUseBeamspot(bool usebs) { useBeamspot_ = usebs; };
-
-            /**
-             * Set beamspot size in x.
-             * @param beamspot size
-             */
-            void setBeamspotXSize(double bssize){ beamspotXSize_ = bssize; };
-            
-            /**
-             * Set beamspot size in y.
-             * @param beamspot size
-             */
-            void setBeamspotYSize(double bssize){ beamspotYSize_ = bssize; };
-
-            /**
-             * Set beamspot size in z.
-             * @param beamspot size
-             */
-            void setBeamspotZSize(double bssize){ beamspotZSize_ = bssize; };
-
-            /** 
-             * Get the index of the last generator in the list of 
-             * generators.
-             */
-            int getIndexMPG(){ return indexMpg_; }
-            int getIndexRPG(){ return indexRpg_; }
-
         private:
 
             /**
@@ -104,8 +69,22 @@ namespace ldmx {
              */
             void smearingBeamspot(G4Event* event);
 
+            /**
+             * Set UserInformation for primary vertices if they haven't been set before.
+             *
+             * Some features downstream of the primaries require certain user info to function
+             * properly. This ensures that it happens.
+             *
+             * Makes sure that each particle on each primary vertex has
+             *  1. A defined UserPrimaryParticleInformation member
+             *  2. The HepEvtStatus for this primary info is non-zero
+             *
+             * @param event Geant4 event to go through primaries
+             */
+            void setUserPrimaryInfo(G4Event* event);
+
             /// Manager of all generators used by the event
-            std::unique_ptr< PrimaryGeneratorManager > manager_;
+            PrimaryGeneratorManager &manager_;
 
             /// Random number generator
             std::unique_ptr< TRandom3 > random_;
@@ -127,10 +106,6 @@ namespace ldmx {
 
             /** Extent of the beamspot in y. */
             double beamspotZSize_{0.};   
-
-            /** The index of the last generator in the list of generators. */ 
-            int indexMpg_{-1};          
-            int indexRpg_{-1};          
 
     };  // PrimaryGeneratorAction
 

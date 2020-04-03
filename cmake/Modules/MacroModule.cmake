@@ -71,7 +71,9 @@ macro(MODULE)
     
   # add include directories of module dependencies
   foreach(dependency ${MODULE_DEPENDENCIES})
-    include_directories(${${dependency}_INCLUDE_DIR})
+    if ( EXISTS "${${dependency}_INCLUDE_DIR}" )
+      include_directories(${${dependency}_INCLUDE_DIR})
+    endif()
   endforeach()
   
   # setup external dependencies
