@@ -122,7 +122,7 @@ def farUpstreamSingle1p2GeVElectron() :
 #   This generator is meant to mimic the beam at SLAC
 #   NOT VERY REALISTIC RIGHT NOW
 #############################################################
-def farUpstreamSingle4GeVElectron() :
+def slacBeam() :
     beam = mpg( "slacBeam" )
     beam.parameters[ 'nInteractions'  ] = 2
     beam.parameters[ 'enablePoisson' ] = True
