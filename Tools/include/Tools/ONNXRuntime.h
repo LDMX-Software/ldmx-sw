@@ -8,6 +8,8 @@
  *      Author: Huilin Qu
  */
 
+#ifdef LDMX_USE_ONNXRUNTIME
+
 #ifndef TOOLS_ONNXRUNTIME_H_
 #define TOOLS_ONNXRUNTIME_H_
 
@@ -64,3 +66,5 @@ namespace ldmx::Ort {
 }  // namespace ldmx::Ort
 
 #endif /* TOOLS_ONNXRUNTIME_H_ */
+
+#endif /* LDMX_USE_ONNXRUNTIME */
