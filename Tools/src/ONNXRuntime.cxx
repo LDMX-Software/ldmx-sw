@@ -5,6 +5,8 @@
  *      Author: Huilin Qu
  */
 
+#ifdef LDMX_USE_ONNXRUNTIME
+
 #include "Tools/ONNXRuntime.h"
 
 #include <cassert>
@@ -160,3 +162,5 @@ namespace ldmx::Ort {
   }
 
 } /* namespace ldmx::Ort */
+
+#endif /* LDMX_USE_ONNXRUNTIME */

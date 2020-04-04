@@ -13,7 +13,10 @@
 #include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h"
+
+#ifdef LDMX_USE_ONNXRUNTIME
 #include "Tools/ONNXRuntime.h"
+#endif
 
 //C++
 #include <map>
@@ -133,10 +136,13 @@ namespace ldmx {
             std::string bdtFileName_;
             std::string cellFileNamexy_;
             std::vector<float> bdtFeatures_;
-            std::unique_ptr<Ort::ONNXRuntime> rt_;
 
             /** Name of the collection which will containt the results. */
             std::string collectionName_{"EcalVeto"};
+
+#ifdef LDMX_USE_ONNXRUNTIME
+            std::unique_ptr<Ort::ONNXRuntime> rt_;
+#endif
 
     };
 
