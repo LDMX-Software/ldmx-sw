@@ -58,9 +58,14 @@ endif()
 
 # find ONNXRuntime installation
 # specify location with -DONNXRUNTIME_ROOT=<location-of-onnxruntime-prefix>
-find_package(ONNXRuntime REQUIRED)
-message(STATUS "ONNXRuntime libs found at: ${ONNXRUNTIME_LIBRARIES}")
-message(STATUS "ONNXRuntime include dir found at: ${ONNXRUNTIME_INCLUDE_DIRS}")
+find_package(ONNXRuntime)
+if(ONNXRUNTIME_FOUND)
+  message(STATUS "ONNXRuntime libs found at: ${ONNXRUNTIME_LIBRARIES}")
+  message(STATUS "ONNXRuntime include dir found at: ${ONNXRUNTIME_INCLUDE_DIRS}")
+  add_definitions(-DLDMX_USE_ONNXRUNTIME)
+else()
+  message(WARNING "Cannot find ONNXRuntime: will not be able to run EcalVeto BDT or DNN")
+endif()
 
 # mag field map installation
 option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
