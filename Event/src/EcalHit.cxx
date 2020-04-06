@@ -11,10 +11,10 @@ namespace ldmx {
         CalorimeterHit::Clear(); 
     }
 
-    void EcalHit::Print() const {
-        std::cout << "EcalHit { " << "id: " << std::hex << getID() << std::dec
-                << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
-                << "ns, amplitude: " << getAmplitude() << "}" << std::endl;
+    void EcalHit::Print(std::ostream& o) const {
+        o << "EcalHit { " << "id: " << std::hex << getID() << std::dec
+          << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
+          << "ns, amplitude: " << getAmplitude() << "}";
 
     }
 

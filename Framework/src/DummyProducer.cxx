@@ -7,7 +7,7 @@
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
-#include <iostream>
+#include <sstream>
 #include <vector>
 
 /*~~~~~~~~~~*/
@@ -45,35 +45,38 @@ namespace ldmx {
             }
 
             virtual void produce(Event& event) {
-                BOOST_LOG_SEV(theLog_,level::debug) << "DummyProducer: Analyzing an event!";
+                ldmx_log(debug) << "DummyProducer: Analyzing an event!";
 
                 int iEvent = event.getEventHeader().getEventNumber();
                 int np = nParticles_*iEvent;
                 std::vector<CalorimeterHit> caloHits;
+                std::stringstream ss;
                 for (int i = 0; i < np; i++) {
                     caloHits.emplace_back();
                     caloHits.back().setAmplitude( i );
-                    caloHits.back().Print();
+                    caloHits.back().Print(ss);
+                    if ( i+1 < np ) ss << "\n";
                 }
+                ldmx_log(debug) << ss.str();
 
                 event.add("caloHits", caloHits );
 
             }
 
             virtual void onFileOpen() {
-                BOOST_LOG_SEV(theLog_,level::debug) << "DummyProducer: Opening a file!";
+                ldmx_log(debug) << "DummyProducer: Opening a file!";
             }
 
             virtual void onFileClose() {
-                BOOST_LOG_SEV(theLog_,level::debug) << "DummyProducer: Closing a file!";
+                ldmx_log(debug) << "DummyProducer: Closing a file!";
             }
 
             virtual void onProcessStart() {
-                BOOST_LOG_SEV(theLog_,level::debug) << "DummyProducer: Starting processing!";
+                ldmx_log(debug) << "DummyProducer: Starting processing!";
             }
 
             virtual void onProcessEnd() {
-                BOOST_LOG_SEV(theLog_,level::debug) << "DummyProducer: Finishing processing!";
+                ldmx_log(debug) << "DummyProducer: Finishing processing!";
             }
 
         private:

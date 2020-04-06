@@ -13,7 +13,7 @@
 // STL
 #include <stdint.h> //32bit words
 #include <vector> //vector lists
-#include <iostream> //Print method
+#include <ostream> //Print method
 
 namespace ldmx {
 
@@ -57,7 +57,7 @@ namespace ldmx {
              *
              * Prints out the lengths of the stored vectors and the number of samples per digi setting.
              */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /**
              * Get number of samples per digi 

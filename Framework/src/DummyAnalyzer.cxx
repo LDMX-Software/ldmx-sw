@@ -75,8 +75,8 @@ namespace ldmx {
              */
             void analyze(const ldmx::Event& event) final override {
 
-                BOOST_LOG_SEV(theLog_,level::debug) << "Analyzing an event!";
-                BOOST_LOG_SEV(theLog_,level::debug) << "Retreiving '" << caloCol_ << "' hits collection.";
+                ldmx_log(debug) << "Analyzing an event!";
+                ldmx_log(debug) << "Retreiving '" << caloCol_ << "' hits collection.";
                 
                 // Get the collection of calorimeter hits from the event.
                 auto tca = event.getCollection<CalorimeterHit>(caloCol_);  
@@ -99,7 +99,7 @@ namespace ldmx {
                     auto pts = event.getProducts();
                     for (const auto &j : pts) ss << "\t" << j << "\n";
                    
-                    BOOST_LOG_SEV(theLog_,level::debug) 
+                    ldmx_log(debug) 
                         << "Demonstration of printing out all the event contents.\n" << ss.str();
                 }
 
@@ -110,7 +110,7 @@ namespace ldmx {
                     auto pts = event.searchProducts("","sim","");
                     for (const auto &j : pts) ss << "\t" << j << "\n";
                    
-                    BOOST_LOG_SEV(theLog_,level::debug) 
+                    ldmx_log(debug) 
                         << "Demonstration of searching for all products with pass name 'sim'.\n" << ss.str();
                     
                 }
@@ -123,7 +123,7 @@ namespace ldmx {
                     auto pts = event.searchProducts(".*cal.*","","");
                     for (const auto &j : pts) ss << "\t" << j << "\n";
 
-                    BOOST_LOG_SEV(theLog_,level::debug) 
+                    ldmx_log(debug) 
                         << "Demonstration of searching for all products with 'cal' anywhere in the product name.\n" << ss.str();
                 }
                 
@@ -135,7 +135,7 @@ namespace ldmx {
              *  opened. 
              */
             void onFileOpen(EventFile& eventFile) final override {
-                BOOST_LOG_SEV(theLog_,level::debug) << "Opening " << eventFile.getFileName() << "!";
+                ldmx_log(debug) << "Opening " << eventFile.getFileName() << "!";
             }
 
             /**
@@ -143,7 +143,7 @@ namespace ldmx {
              *  has been closed. 
              */
             void onFileClose(EventFile& eventFile) final override {
-                BOOST_LOG_SEV(theLog_,level::debug) << " Closing " 
+                ldmx_log(debug) << " Closing " 
                           << eventFile.getFileName() << "!";
             }
 
@@ -152,7 +152,7 @@ namespace ldmx {
              * processing of events begins. 
              */
             void onProcessStart() final override {
-                BOOST_LOG_SEV(theLog_,level::debug) << "Starting processing!";
+                ldmx_log(debug) << "Starting processing!";
                
                 // Get the ntuple manager
                 ntuple_ = NtupleManager::getInstance(); 
@@ -178,7 +178,7 @@ namespace ldmx {
              * of all events has ended. 
              */
             void onProcessEnd() final override {
-                BOOST_LOG_SEV(theLog_,level::debug) << "Finishing processing!";
+                ldmx_log(debug) << "Finishing processing!";
             }
 
         private:

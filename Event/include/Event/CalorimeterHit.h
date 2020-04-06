@@ -10,6 +10,9 @@
 // ROOT
 #include "TObject.h" //For ClassDef
 
+// STL
+#include <ostream> //for Print
+
 namespace ldmx {
 
     /**
@@ -44,7 +47,7 @@ namespace ldmx {
             /**
              * Print out the object.
              */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /**
              * Get the detector ID.

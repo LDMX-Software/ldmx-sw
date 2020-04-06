@@ -44,7 +44,7 @@ namespace ldmx {
                             "No input files or output files were given."
                             );
                 } else if ( outputFiles_.size() > 1 ) {
-                    BOOST_LOG_SEV(theLog_,level::warn)
+                    ldmx_log(warn)
                         << "Several output files given with no input files. "
                         << "Only the first output file '" << outputFiles_.at(0) << "' will be used.";
                 }
@@ -69,7 +69,7 @@ namespace ldmx {
 
                     if ( getLogFrequency() > 0 and (eh.getEventNumber() % getLogFrequency() == 0 ) ) {
                         TTimeStamp t;
-                        BOOST_LOG_SEV(theLog_,level::info)
+                        ldmx_log(info)
                             << "Processing " << n_events_processed + 1 
                             << " Run " << theEvent.getEventHeader().getRun() 
                             << " Event " << theEvent.getEventHeader().getEventNumber() 
@@ -121,7 +121,7 @@ namespace ldmx {
 
                     EventFile inFile(infilename);
 
-                    BOOST_LOG_SEV(theLog_,level::info) << "Opening file " << infilename;
+                    ldmx_log(info) << "Opening file " << infilename;
 
                     for (auto module : sequence_) module->onFileOpen(inFile);
                     
@@ -175,7 +175,7 @@ namespace ldmx {
                             wasRun = theEvent.getEventHeader().getRun();
                             try {
                                 const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
-                                BOOST_LOG_SEV(theLog_,level::info)
+                                ldmx_log(info)
                                     << "Got new run header from '" << masterFile->getFileName() << "' ...";
                                 //TODO print run header to log
                                 //runHeader.Print();
@@ -183,14 +183,14 @@ namespace ldmx {
                                     module->onNewRun(runHeader);
                                 }
                             } catch (const Exception&) {
-                                BOOST_LOG_SEV(theLog_,level::warn)
+                                ldmx_log(warn)
                                     << "Run header for run " << wasRun << " was not found!";
                             }
                         }
 
                         if ( (logFrequency_ != -1) && ((n_events_processed + 1)%logFrequency_ == 0)) { 
                             TTimeStamp t;
-                            BOOST_LOG_SEV(theLog_,level::info)
+                            ldmx_log(info)
                                       << "Processing " << n_events_processed + 1 
                                       << " Run " << theEvent.getEventHeader().getRun() 
                                       << " Event " << theEvent.getEventHeader().getEventNumber() 
@@ -217,15 +217,15 @@ namespace ldmx {
                     } //loop through events
 
                     if (eventLimit_ > 0 && n_events_processed == eventLimit_) {
-                        BOOST_LOG_SEV(theLog_,level::info) << "Reached event limit of " << eventLimit_ << " events.";
+                        ldmx_log(info) << "Reached event limit of " << eventLimit_ << " events.";
                     }
 
                     if (eventLimit_ == 0 && n_events_processed > eventLimit_) {
-                        BOOST_LOG_SEV(theLog_,level::warn) << "Processing interrupted.";
+                        ldmx_log(warn) << "Processing interrupted.";
                     }
 
 
-                    BOOST_LOG_SEV(theLog_,level::info) << "Closing file " << infilename;
+                    ldmx_log(info) << "Closing file " << infilename;
 
                     for (auto module : sequence_) module->onFileClose(inFile);
 
@@ -263,7 +263,7 @@ namespace ldmx {
             }
 
         } catch (Exception& e) {
-            BOOST_LOG_SEV(theLog_,level::error) 
+            ldmx_log(error) 
                 << "[" << e.name() << "] : " << e.message() << std::endl
                 << "  at " << e.module() << ":" << e.line() << " in " << e.function();
         }

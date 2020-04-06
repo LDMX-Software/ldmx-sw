@@ -11,12 +11,13 @@ namespace ldmx {
         Clear();
     }
 
-    void ClusterAlgoResult::Print() const {
+    void ClusterAlgoResult::Print(std::ostream& o) const {
 
-        std::cout << "ClusterAlgoResult { " << "name: " << name_ << " }" << std::endl;
+        o << "ClusterAlgoResult { " << "name: " << name_ << " }\n";
 
         for (int i = 0; i < variables_.GetSize(); ++i) {
-            std::cout << "Element " << i << " : " << variables_[i] << std::endl;
+            o << "\tElement " << i << " : " << variables_[i];
+            if ( i+1 < variables_.GetSize() ) o << '\n';
         }
     }
 

@@ -10,6 +10,8 @@
 // LDMX
 #include "Event/CalorimeterHit.h"
 
+#include <ostream>
+
 namespace ldmx {
 
     /**
@@ -44,7 +46,7 @@ namespace ldmx {
             /**
              * Print out the object.
              */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /**
              * Get the number of photoelectrons estimated for this hit.

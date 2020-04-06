@@ -12,7 +12,7 @@
 #include "TString.h"
 
 // STL
-#include <iostream>
+#include <ostream>
 #include <set>
 
 // ldmx-sw
@@ -42,7 +42,7 @@ namespace ldmx {
             /**
              * Print a description of this object.
              */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /**
              * Reset the EcalCluster object.

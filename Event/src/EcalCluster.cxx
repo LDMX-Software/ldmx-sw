@@ -12,9 +12,9 @@ namespace ldmx {
         Clear();
     }
 
-    void EcalCluster::Print() const {
+    void EcalCluster::Print(std::ostream& o) const {
 
-        std::cout << "EcalCluster { " << "Energy: " << energy_ << ", " << "Number of hits: " << nHits_ << " }" << std::endl;
+        o << "EcalCluster { " << "Energy: " << energy_ << ", " << "Number of hits: " << nHits_ << " }";
 
         //for (int iHit = 0; iHit < hits_->GetEntries(); ++iHit) {
         //    EcalHit* aHit = (EcalHit*) hits_->At(iHit);

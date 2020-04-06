@@ -108,7 +108,7 @@ namespace ldmx {
         ecalLayerEdepReadout_ = EcalLayerEdepReadout;
     }
 
-    void EcalVetoResult::Print() const {
-        std::cout << "[ EcalVetoResult ]:\n" << "\t Passes veto : " << passesVeto_ << "\n" << std::endl;
+    void EcalVetoResult::Print(std::ostream &o) const {
+        o << "EcalVetoResult {Passes veto : " << std::boolalpha << passesVeto_ << "}";
     }
 }

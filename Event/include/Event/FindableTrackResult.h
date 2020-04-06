@@ -11,7 +11,7 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <iostream>
+#include <ostream>
 #include <map>
 
 //----------//
@@ -101,7 +101,7 @@ namespace ldmx {
             void Clear(); 
             
             /** Print out the object */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /** Sort by track ID of particle causing track */
             bool operator < ( const FindableTrackResult &rhs ) const {

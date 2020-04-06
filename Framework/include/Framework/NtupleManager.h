@@ -114,7 +114,7 @@ namespace ldmx {
                 // doesn't, warn the user and don't try to set the variable 
                 // value. 
                 if (variables_.count(vname) == 0) { 
-                    BOOST_LOG_SEV(theLog_,level::warn) 
+                    ldmx_log(warn) 
                         << "The variable '" << vname << "' does not exist in the tree.";
                     return; 
                 }

@@ -1,8 +1,5 @@
 #include "Event/CalorimeterHit.h"
 
-// STL
-#include <iostream>
-
 ClassImp(ldmx::CalorimeterHit)
 
 namespace ldmx {
@@ -20,10 +17,10 @@ namespace ldmx {
 
     }
 
-    void CalorimeterHit::Print() const {
-        std::cout << "CalorimeterHit { " << "id: " << std::hex << id_ << std::dec
-                << ",  energy: " << energy_ << "MeV, time: " << time_
-                << "ns, amplitude: " << amplitude_ << "}" << std::endl;
+    void CalorimeterHit::Print(std::ostream &o) const {
+        o << "CalorimeterHit { " << "id: " << std::hex << id_ << std::dec
+          << ",  energy: " << energy_ << "MeV, time: " << time_
+          << "ns, amplitude: " << amplitude_ << "}";
     }
 
     int CalorimeterHit::getLayer() const {

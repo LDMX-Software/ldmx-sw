@@ -51,16 +51,16 @@ namespace ldmx {
         is3sFindable_   = false;
     }
 
-    void FindableTrackResult::Print() const { 
-        std::cout << "[ FindableTrackResult ]: "
-                  << "Sim particle Track ID: " 
-                  << particleTrackID_ << "\n" 
-                  << "\t4s Findable: "   << is4sFindable_    << "\n" 
-                  << "\t3s1a Findable: " << is3s1aFindable_  << "\n"
-                  << "\t2s2a Findable: " << is2s2aFindable_  << "\n"
-                  << "\t2a Findable: "   << is2aFindable_  << "\n"
-                  << "\t2s Findable: "   << is2sFindable_  << "\n"
-                  << "\t3s Findable: "   << is3sFindable_  << "\n"
-                  << std::endl;
+    void FindableTrackResult::Print(std::ostream& o) const { 
+        o << "FindableTrackResult {"
+          << "SimParticle Track ID: " 
+          << particleTrackID_ << std::boolalpha
+          << ", 4s Findable: "   << is4sFindable_
+          << ", 3s1a Findable: " << is3s1aFindable_
+          << ", 2s2a Findable: " << is2s2aFindable_
+          << ", 2a Findable: "   << is2aFindable_
+          << ", 2s Findable: "   << is2sFindable_
+          << ", 3s Findable: "   << is3sFindable_
+          << "}";
     }
 }

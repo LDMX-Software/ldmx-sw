@@ -10,11 +10,8 @@ namespace ldmx {
         }
     }
 
-    void Event::Print(int verbosity) const {
-        for ( const auto &keyVal : passengers_ ) {
-            if ( verbosity > 1 ) std::cout << keyVal.first << std::endl;
-            std::visit( printPassenger(verbosity) , keyVal.second );
-        }
+    void Event::Print() const {
+        ldmx_log(warn) << "Printing not implented for Event Bus.";
     }
 
     void Event::addDrop( const std::string &exp ) {

@@ -25,7 +25,7 @@ namespace ldmx {
         for (const EcalHit &hit : hits ) {
             
             // Print the hit
-            hit.Print(); 
+            hit.Print(std::cout); 
         }
     }
 } // ldmx

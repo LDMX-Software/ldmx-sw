@@ -14,7 +14,7 @@
 #include "TArrayD.h"
 
 // STL
-#include <iostream>
+#include <ostream> //for Print
 
 namespace ldmx {
 
@@ -39,7 +39,7 @@ namespace ldmx {
             /**
              * Print a description of this object.
              */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /**
              * Reset the ClusterAlgoResult object.

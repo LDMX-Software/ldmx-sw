@@ -34,7 +34,7 @@ namespace ldmx {
             void Clear(); 
             
             /** Print out the object */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /** Checks if the event passes the Hcal veto. */
             bool passesVeto() const { return passesVeto_; };

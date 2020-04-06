@@ -12,6 +12,8 @@
 //----------//
 #include "Event/CalorimeterHit.h"
 
+#include <ostream>
+
 namespace ldmx {
 
     /**
@@ -36,7 +38,7 @@ namespace ldmx {
             void Clear();
 
             /** Print a text representation of this object. */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /**
              * Get the cell of the hit from the ID.

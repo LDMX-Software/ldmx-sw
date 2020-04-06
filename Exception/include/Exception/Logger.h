@@ -88,4 +88,12 @@ namespace ldmx {
 
 } //ldmx
 
+/**
+ * @macro logging in ldmx
+ *
+ * Assumes to have access to a variable named theLog_
+ * of type logger. Input logging level (without namespace or enum).
+ */
+#define ldmx_log(lvl) BOOST_LOG_SEV(theLog_,level::lvl)
+
 #endif //EXCEPTION_LOGGER_H

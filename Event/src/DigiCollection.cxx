@@ -17,11 +17,11 @@ namespace ldmx {
         return;
     }
 
-    void DigiCollection::Print() const {
+    void DigiCollection::Print(std::ostream &o) const {
 
-        printf( "Num Channel IDs:      %d\n" , channelIDs_.size() );
-        printf( "Num Samples:          %d\n" , samples_.size() );
-        printf( "Num Samples Per Digi: %d\n" , numSamplesPerDigi_ );
+        o << "DigiCollection { Num Channel IDs: " << channelIDs_.size()
+          << ", Num Samples: " << samples_.size()
+          << ", Num Samples Per Digi: " << numSamplesPerDigi_ << "}";
 
         return;
     }
