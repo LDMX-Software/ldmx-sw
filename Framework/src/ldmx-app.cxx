@@ -36,6 +36,8 @@ if (p) p->requestFinish();
  * @func printUsage()
  * Print usage for this application
  *
+ * TODO update me
+ *
  * This function uses printf and _not_ the logger
  * because it is run before the logger is configured.
  */
@@ -61,8 +63,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    int fileVerbosity = 0; //default to off
-    int termVerbosity = 1; //default to warnings/errors only
     /**
      * Scan for python file
      *
@@ -70,6 +70,7 @@ int main(int argc, char* argv[]) {
      * Need to know what level to log for the terminal and for the file
      */
     int ptrpy = 1;
+    std::vector<std::string> loggingArgs;
     for (ptrpy = 1; ptrpy < argc; ptrpy++) {
         std::string currArg(argv[ptrpy]);
         if (strstr(argv[ptrpy], ".py")) {
@@ -80,21 +81,9 @@ int main(int argc, char* argv[]) {
             //print Usage message
             printUsage();
             return 0;
-        } else if ( currArg == "-f" or currArg == "--fileLog" ) {
-            //print ldmx-sw logging messages to a file
-            if ( ptrpy+1 < argc and isdigit(argv[ptrpy+1][0]) ) {
-                fileVerbosity = atoi( argv[ptrpy+1] );
-            } else {
-                fileVerbosity = 3; //maximum
-            }
-        } else if ( currArg == "-v" or currArg == "--verbosity" ) {
-            //check for next arg being verbosity integer
-            if ( ptrpy+1 < argc and isdigit(argv[ptrpy+1][0]) ) {
-                termVerbosity = atoi( argv[ptrpy+1] );
-            } else {
-                termVerbosity = 3; //maximum
-            }
         } 
+
+        loggingArgs.push_back( currArg );
     }
 
     /**
@@ -108,18 +97,20 @@ int main(int argc, char* argv[]) {
     }
 
     //open up the log
-    logging::open( 3 , 3 ); //input actual parameters
+    // this function initializes the backend of the boost logging library
+    // using the parameters passed on the command line before the python config file
+    logging::open( loggingArgs );
 
-    ldmx::logging::logger lg;
+    ldmx::logging::logger lg = logging::makeLogger( "ldmx-app" );
 
     Process* p { 0 };
     try {
-        BOOST_LOG(lg) << "----- LDMXSW: Loading configuration file -----"
+        BOOST_LOG_SEV(lg,level::info) << "----- LDMXSW: Loading configuration file -----";
         
         ConfigurePython cfg(argv[ptrpy], argv + ptrpy + 1, argc - ptrpy);
         p = cfg.makeProcess();
 
-        std::cout << "----- LDMXSW: Configuration load complete -----"
+        BOOST_LOG_SEV(lg,level::info) << "----- LDMXSW: Configuration load complete -----";
 
         // If Ctrl-c is used, immediately exit the application.
         struct sigaction act;
@@ -136,15 +127,15 @@ int main(int argc, char* argv[]) {
         /* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not sa_handler. */
         //act.sa_flags = SA_SIGINFO;
 
-        std::cout << "----- LDMXSW: Starting event processing -----" << std::endl;
+        BOOST_LOG_SEV(lg,level::info) << "----- LDMXSW: Starting event processing -----";
         
         p->run();
         
-        std::cout << "----- LDMXSW: Event processing complete -----" << std::endl;
+        BOOST_LOG_SEV(lg,level::info) << "----- LDMXSW: Event processing complete -----";
 
     } catch (Exception& e) {
-        std::cerr << "ERROR [ " << e.name() << " ] : " << e.message()
-            << " at " << e.module() << ":" << e.line() << " in " << e.function() << std::endl;
+        BOOST_LOG_SEV(lg,level::error) << "[ " << e.name() << " ] : " << e.message()
+            << " at " << e.module() << ":" << e.line() << " in " << e.function();
     }
 
     //close up any loose ends in log
@@ -154,17 +145,18 @@ int main(int argc, char* argv[]) {
 }
 
 void printUsage() {
-    printf( "Usage: ldmx-app [-v,--verbosity [0-3]] [-f,--fileLog [0-3]] [-h,--help] {config_script.py} [arguments to configuration script]\n" );
-    printf( "  -v,--verbosity    Set the verbosity of the logging.\n" );
-    printf( "                      0 ==> batch (no logging)\n" );
-    printf( "                      1 ==> warnings and errors only (default without -v)\n" );
-    printf( "                      2 ==> info, warnings, and errors\n" );
-    printf( "                      3 ==> everything (debug, info, warnings and errors; default without following int)\n" );
+    printf( "Usage: ldmx-app [-v,--verbosity [0-5]] [-f,--fileLog [0-5] [fileName]] [-h,--help] {config_script.py} [arguments to configuration script]\n" );
+    printf( "  -v,--verbosity    Set the verbosity of the logging.\n"
     printf( "  -f,--fileLog      Print the logs to a file as well as the terminal screen.\n" );
-    printf( "                      0 ==> batch (no logging, default without -f)\n" );
-    printf( "                      1 ==> warnings and errors only\n" );
-    printf( "                      2 ==> info, warnings, and errors\n" );
-    printf( "                      3 ==> everything (debug, info, warnings and errors; default without following int)\n" );
+    printf( "                      fileName ==> name of file to print log to (must end in '.log', default is 'ldmx_app.log')\n");
+    printf( "                    The levels for logging are listed below.\n" );
+    printf( "                    When you provide a level, everything equal to it and above will be printed.\n" );
+    printf( "                      5 ==> batch (no logging at all; default for file without -f)\n" );
+    printf( "                      4 ==> fatals\n" );
+    printf( "                      3 ==> errors\n" );
+    printf( "                      2 ==> warnings (default for terminal without -v)\n" );
+    printf( "                      1 ==> info\n" );
+    printf( "                      0 ==> debug (default for file/terminal if given -f/-v without trailing digit)\n");
     printf( "  -h,--help         Print this help message.\n" );
     printf( "  config_script.py  Configuration script to tell ldmx-app what processors to run.\n" );
     printf( "                    Everything after the config_script is assumed to be arguments to that python script.\n" );
