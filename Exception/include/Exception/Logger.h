@@ -62,7 +62,11 @@ namespace ldmx {
          * Gets a logger for the user
          *
          * Returns a logger type with some extra initialization procedures done.
-         * Should _only be called ONCE_ during a run.
+         * Should _only be called ONCE_ during a run for a given logging channel.
+         *
+         * For example:
+         *  DO: Make a member variable and call this function in the constructor of a processor
+         *  DO NOT: Call this function once per event.
          *
          * @param name name of this logging channel (e.g. processor name)
          * @return logger with the input channel name
