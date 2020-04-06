@@ -183,8 +183,8 @@ namespace ldmx {
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};
 
-            /** Logging object for this class */
-            logging::logger theLog_{logging::makeLogger("Process")};
+            /** Allow logging for this class and tag its messages with 'Process' */
+            enableLogging( "Process" )
     };
 }
 

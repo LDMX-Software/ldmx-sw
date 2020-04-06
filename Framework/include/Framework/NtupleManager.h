@@ -141,7 +141,7 @@ namespace ldmx {
             std::unordered_map< std::string, vtype > variables_; 
 
             /// Logger
-            logging::logger theLog_{logging::makeLogger("NtupleManager")};
+            enableLogging( "NtupleManager" )
 
             /// Map from variable type to string representation used by ROOT.
             const std::map< const char*, std::string, cmpStr> rtype_ = 

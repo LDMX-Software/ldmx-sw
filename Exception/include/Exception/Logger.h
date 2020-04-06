@@ -89,10 +89,22 @@ namespace ldmx {
 } //ldmx
 
 /**
- * @macro logging in ldmx
+ * @macro enableLogging
+ * Enables logging in a class.
  *
- * Assumes to have access to a variable named theLog_
- * of type logger. Input logging level (without namespace or enum).
+ * Should be put in the 'private' section of the class
+ * and before the closing bracket '};'
+ *
+ * Defines the member variable theLog_ with the input
+ * name as the channel name.
+ */
+#define enableLogging(name) logging::logger theLog_{logging::makeLogger(name)};
+
+/**
+ * @macro ldmx_log
+ *
+ * Assumes to have access to a variable named theLog_ of type logger. 
+ * Input logging level (without namespace or enum).
  */
 #define ldmx_log(lvl) BOOST_LOG_SEV(theLog_,level::lvl)
 

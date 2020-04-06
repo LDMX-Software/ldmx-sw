@@ -167,7 +167,7 @@ namespace ldmx {
             std::vector<ProcessorClass> sequence_;
 
             /** logging object for this class */
-            logging::logger theLog_{logging::makeLogger("ConfigurePython")};
+            enableLogging( "ConfigurePython" )
 
     };  // ConfigurePython
 
