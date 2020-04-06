@@ -44,8 +44,9 @@ namespace ldmx {
                             "No input files or output files were given."
                             );
                 } else if ( outputFiles_.size() > 1 ) {
-                    std::cout << "[ Process ] : Several output files given with no input files. "
-                        << "Only the first output file '" << outputFiles_.at(0) << "' will be used." << std::endl;
+                    BOOST_LOG_SEV(theLog_,level::warn)
+                        << "Several output files given with no input files. "
+                        << "Only the first output file '" << outputFiles_.at(0) << "' will be used.";
                 }
                 std::string outputFileName = outputFiles_.at(0);
                 
@@ -68,10 +69,11 @@ namespace ldmx {
 
                     if ( getLogFrequency() > 0 and (eh.getEventNumber() % getLogFrequency() == 0 ) ) {
                         TTimeStamp t;
-                        std::cout << "[ Process ] : Processing " << n_events_processed + 1 
+                        BOOST_LOG_SEV(theLog_,level::info)
+                            << "Processing " << n_events_processed + 1 
                             << " Run " << theEvent.getEventHeader().getRun() 
                             << " Event " << theEvent.getEventHeader().getEventNumber() 
-                            << "  (" << t.AsString("lc") << ")" << std::endl;
+                            << "  (" << t.AsString("lc") << ")";
                     }
 
                     bool eventAborted = false;
@@ -119,7 +121,7 @@ namespace ldmx {
 
                     EventFile inFile(infilename);
 
-                    std::cout << "[ Process ] : Opening file " << infilename << std::endl;
+                    BOOST_LOG_SEV(theLog_,level::info) << "Opening file " << infilename;
 
                     for (auto module : sequence_) module->onFileOpen(inFile);
                     
@@ -173,22 +175,26 @@ namespace ldmx {
                             wasRun = theEvent.getEventHeader().getRun();
                             try {
                                 const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
-                                std::cout << "[ Process ] : got new run header from '" << masterFile->getFileName() << "' ..." << std::endl;
-                                runHeader.Print();
+                                BOOST_LOG_SEV(theLog_,level::info)
+                                    << "Got new run header from '" << masterFile->getFileName() << "' ...";
+                                //TODO print run header to log
+                                //runHeader.Print();
                                 for (auto module : sequence_) {
                                     module->onNewRun(runHeader);
                                 }
                             } catch (const Exception&) {
-                                std::cout << "[ Process ] : [WARNING] Run header for run " << wasRun << " was not found!" << std::endl;
+                                BOOST_LOG_SEV(theLog_,level::warn)
+                                    << "Run header for run " << wasRun << " was not found!";
                             }
                         }
 
                         if ( (logFrequency_ != -1) && ((n_events_processed + 1)%logFrequency_ == 0)) { 
                             TTimeStamp t;
-                            std::cout << "[ Process ] :  Processing " << n_events_processed + 1 
+                            BOOST_LOG_SEV(theLog_,level::info)
+                                      << "Processing " << n_events_processed + 1 
                                       << " Run " << theEvent.getEventHeader().getRun() 
                                       << " Event " << theEvent.getEventHeader().getEventNumber() 
-                                      << "  (" << t.AsString("lc") << ")" << std::endl;
+                                      << "  (" << t.AsString("lc") << ")";
                         }
 
                         eventAborted = false;
@@ -211,15 +217,15 @@ namespace ldmx {
                     } //loop through events
 
                     if (eventLimit_ > 0 && n_events_processed == eventLimit_) {
-                        std::cout << "[ Process ] : Reached event limit of " << eventLimit_ << " events\n";
+                        BOOST_LOG_SEV(theLog_,level::info) << "Reached event limit of " << eventLimit_ << " events.";
                     }
 
                     if (eventLimit_ == 0 && n_events_processed > eventLimit_) {
-                        std::cout << "[ Process ] : Processing interrupted\n";
+                        BOOST_LOG_SEV(theLog_,level::warn) << "Processing interrupted.";
                     }
 
 
-                    std::cout << "[ Process ] : Closing file " << infilename << std::endl;
+                    BOOST_LOG_SEV(theLog_,level::info) << "Closing file " << infilename;
 
                     for (auto module : sequence_) module->onFileClose(inFile);
 
@@ -257,8 +263,9 @@ namespace ldmx {
             }
 
         } catch (Exception& e) {
-            std::cerr << "Framework Error [" << e.name() << "] : " << e.message() << std::endl;
-            std::cerr << "  at " << e.module() << ":" << e.line() << " in " << e.function() << std::endl;
+            BOOST_LOG_SEV(theLog_,level::error) 
+                << "[" << e.name() << "] : " << e.message() << std::endl
+                << "  at " << e.module() << ":" << e.line() << " in " << e.function();
         }
     }
 

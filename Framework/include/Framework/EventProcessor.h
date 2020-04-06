@@ -11,6 +11,7 @@
 /*   Event   */
 /*~~~~~~~~~~~*/
 #include "Exception/Exception.h"
+#include "Exception/Logger.h"
 #include "Event/RunHeader.h"
 
 /*~~~~~~~~~~~~~~~*/
@@ -175,6 +176,9 @@ namespace ldmx {
 
             /** Handle to the Process. */
             Process& process_;
+
+            /** The logger object for this processor */
+            logging::logger theLog_;
 
         private:
 

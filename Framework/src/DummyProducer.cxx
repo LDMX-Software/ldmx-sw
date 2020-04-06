@@ -45,7 +45,7 @@ namespace ldmx {
             }
 
             virtual void produce(Event& event) {
-                std::cout << "DummyProducer: Analyzing an event!" << std::endl;
+                BOOST_LOG_SEV(theLog_,level::debug) << "DummyProducer: Analyzing an event!";
 
                 int iEvent = event.getEventHeader().getEventNumber();
                 int np = nParticles_*iEvent;
@@ -61,19 +61,19 @@ namespace ldmx {
             }
 
             virtual void onFileOpen() {
-                std::cout << "DummyProducer: Opening a file!" << std::endl;
+                BOOST_LOG_SEV(theLog_,level::debug) << "DummyProducer: Opening a file!";
             }
 
             virtual void onFileClose() {
-                std::cout << "DummyProducer: Closing a file!" << std::endl;
+                BOOST_LOG_SEV(theLog_,level::debug) << "DummyProducer: Closing a file!";
             }
 
             virtual void onProcessStart() {
-                std::cout << "DummyProducer: Starting processing!" << std::endl;
+                BOOST_LOG_SEV(theLog_,level::debug) << "DummyProducer: Starting processing!";
             }
 
             virtual void onProcessEnd() {
-                std::cout << "DummyProducer: Finishing processing!" << std::endl;
+                BOOST_LOG_SEV(theLog_,level::debug) << "DummyProducer: Finishing processing!";
             }
 
         private:

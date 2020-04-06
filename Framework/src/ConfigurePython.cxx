@@ -163,7 +163,7 @@ namespace ldmx {
 
         pylist = PyObject_GetAttrString(pProcess, "keep");
         if (!PyList_Check(pylist)) {
-            std::cerr << "keep is not a python list as expected.\n";
+            BOOST_LOG_SEV(theLog_,level::error) << "keep is not a python list as expected.";
             return;
         }
         for (Py_ssize_t i = 0; i < PyList_Size(pylist); i++) {
@@ -175,7 +175,7 @@ namespace ldmx {
         skimDefaultIsKeep_=intMember(pProcess, "skimDefaultIsKeep");
         pylist = PyObject_GetAttrString(pProcess, "skimRules");
         if (!PyList_Check(pylist)) {
-            std::cerr << "skimRules is not a python list as expected.\n";
+            BOOST_LOG_SEV(theLog_,level::error) << "skimRules is not a python list as expected.";
             return;
         }
         for (Py_ssize_t i = 0; i < PyList_Size(pylist); i++) {
@@ -186,7 +186,7 @@ namespace ldmx {
 
         pylist = PyObject_GetAttrString(pProcess, "inputFiles");
         if (!PyList_Check(pylist)) {
-            std::cerr << "inputFiles is not a python list as expected.\n";
+            BOOST_LOG_SEV(theLog_,level::error) << "inputFiles is not a python list as expected.";
             return;
         }
         for (Py_ssize_t i = 0; i < PyList_Size(pylist); i++) {
@@ -197,7 +197,7 @@ namespace ldmx {
 
         pylist = PyObject_GetAttrString(pProcess, "outputFiles");
         if (!PyList_Check(pylist)) {
-            std::cerr << "outputFiles is not a python list as expected.\n";
+            BOOST_LOG_SEV(theLog_,level::error) << "outputFiles is not a python list as expected.";
             return;
         }
         for (Py_ssize_t i = 0; i < PyList_Size(pylist); i++) {
@@ -208,7 +208,7 @@ namespace ldmx {
 
         pylist = PyObject_GetAttrString(pProcess, "libraries");
         if (!PyList_Check(pylist)) {
-            std::cerr << "libraries is not a python list as expected.\n";
+            BOOST_LOG_SEV(theLog_,level::error) << "libraries is not a python list as expected.";
             return;
         }
         for (Py_ssize_t i = 0; i < PyList_Size(pylist); i++) {

@@ -9,6 +9,7 @@
 
 // LDMX
 #include "Exception/Exception.h"
+#include "Exception/Logger.h"
 #include "Framework/StorageControl.h"
 
 // STL
@@ -181,6 +182,9 @@ namespace ldmx {
 
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};
+
+            /** Logging object for this class */
+            logging::logger theLog_{logging::makeLogger("Process")};
     };
 }
 

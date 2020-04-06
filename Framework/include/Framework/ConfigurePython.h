@@ -17,6 +17,7 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
+#include "Exception/Logger.h"
 #include "Framework/FrameworkDef.h" 
 
 /*~~~~~~~~~~~~~~~~*/
@@ -165,6 +166,8 @@ namespace ldmx {
             /** The sequence of EventProcessor objects to be executed in order. */
             std::vector<ProcessorClass> sequence_;
 
+            /** logging object for this class */
+            logging::logger theLog_{logging::makeLogger("ConfigurePython")};
 
     };  // ConfigurePython
 

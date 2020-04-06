@@ -28,6 +28,7 @@
 /*   Core   */
 /*~~~~~~~~~~*/
 #include "Exception/Exception.h" 
+#include "Exception/Logger.h" 
 
 typedef boost::variant< short, int, float, double, long > vtype; 
 
@@ -113,8 +114,8 @@ namespace ldmx {
                 // doesn't, warn the user and don't try to set the variable 
                 // value. 
                 if (variables_.count(vname) == 0) { 
-                    std::cout << "[ NtupleManager ]: Warning! The variable " 
-                              << vname << " does not exist in the tree." << std::endl;
+                    BOOST_LOG_SEV(theLog_,level::warn) 
+                        << "The variable '" << vname << "' does not exist in the tree.";
                     return; 
                 }
                 
@@ -139,6 +140,9 @@ namespace ldmx {
             /// Container for tree leaves 
             std::unordered_map< std::string, vtype > variables_; 
 
+            /// Logger
+            logging::logger theLog_{logging::makeLogger("NtupleManager")};
+
             /// Map from variable type to string representation used by ROOT.
             const std::map< const char*, std::string, cmpStr> rtype_ = 
             { 
@@ -150,7 +154,7 @@ namespace ldmx {
             };
 
             /// Private constructor to prevent instantiation 
-            NtupleManager(); 
+            NtupleManager();
 
     };  // NtupleManager 
 

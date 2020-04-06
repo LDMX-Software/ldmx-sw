@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
 
 void printUsage() {
     printf( "Usage: ldmx-app [-v,--verbosity [0-5]] [-f,--fileLog [0-5] [fileName]] [-h,--help] {config_script.py} [arguments to configuration script]\n" );
-    printf( "  -v,--verbosity    Set the verbosity of the logging.\n"
+    printf( "  -v,--verbosity    Set the verbosity of the logging.\n");
     printf( "  -f,--fileLog      Print the logs to a file as well as the terminal screen.\n" );
     printf( "                      fileName ==> name of file to print log to (must end in '.log', default is 'ldmx_app.log')\n");
     printf( "                    The levels for logging are listed below.\n" );

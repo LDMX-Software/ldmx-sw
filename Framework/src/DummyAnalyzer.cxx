@@ -11,6 +11,7 @@
 #include <any>
 #include <iostream>
 #include <variant>
+#include <sstream>
 
 /*~~~~~~~~~~*/
 /*   ROOT   */ 
@@ -74,14 +75,15 @@ namespace ldmx {
              */
             void analyze(const ldmx::Event& event) final override {
 
-                std::cout << "[ DummyAnalyzer]: Analyzing an event!" << std::endl;
+                BOOST_LOG_SEV(theLog_,level::debug) << "Analyzing an event!";
+                BOOST_LOG_SEV(theLog_,level::debug) << "Retreiving '" << caloCol_ << "' hits collection.";
                 
                 // Get the collection of calorimeter hits from the event.
-                auto tca = event.getCollection<EcalHit>(caloCol_);  
+                auto tca = event.getCollection<CalorimeterHit>(caloCol_);  
                 
                 // Loop through the collection and fill both the histogram and 
                 // ntuple.
-                for (const EcalHit &hit : tca) {  
+                for (const auto&hit : tca) {  
                     
                     // Fill the histogram
                     hEnergy->Fill(hit.getEnergy());
@@ -93,30 +95,36 @@ namespace ldmx {
                 // Print out all of the product tags in the event.
                 if (ievt == 0) {
                     
-                    std::cout << "[ DummyAnalyzer ]: Demonstration of printing out all the event contents." << std::endl;
-                    
+                    std::stringstream ss;
                     auto pts = event.getProducts();
-                    for (const auto &j : pts) std::cout << "\t" << j << std::endl;
+                    for (const auto &j : pts) ss << "\t" << j << "\n";
+                   
+                    BOOST_LOG_SEV(theLog_,level::debug) 
+                        << "Demonstration of printing out all the event contents.\n" << ss.str();
                 }
 
                 // Search for all of the products with the pass name 'sim' 
                 if (ievt == 1) {
                     
-                    std::cout << "[ DummyAnalyzer ]: Demonstration of searching for all products with pass name 'sim'." << std::endl;
-                    
+                    std::stringstream ss;
                     auto pts = event.searchProducts("","sim","");
-                    for (const auto &j : pts) std::cout << "\t" << j << std::endl;
+                    for (const auto &j : pts) ss << "\t" << j << "\n";
+                   
+                    BOOST_LOG_SEV(theLog_,level::debug) 
+                        << "Demonstration of searching for all products with pass name 'sim'.\n" << ss.str();
+                    
                 }
 
                 //  Search for all of the products with the 'cal' in the product
                 //  name. 
                 if (ievt == 2) {
                     
-                    std::cout << "[ DummyAnalyzer ]: Demonstration of searching for all products with 'cal' anywhere in the product name"
-                              << std::endl;
-                    
+                    std::stringstream ss;
                     auto pts = event.searchProducts(".*cal.*","","");
-                    for (const auto &j : pts) std::cout << "\t" << j << std::endl;
+                    for (const auto &j : pts) ss << "\t" << j << "\n";
+
+                    BOOST_LOG_SEV(theLog_,level::debug) 
+                        << "Demonstration of searching for all products with 'cal' anywhere in the product name.\n" << ss.str();
                 }
                 
                 ++ievt;
@@ -127,8 +135,7 @@ namespace ldmx {
              *  opened. 
              */
             void onFileOpen(EventFile& eventFile) final override {
-                std::cout << "[ DummyAnalyzer ]: Opening " 
-                          << eventFile.getFileName() << "!" << std::endl;
+                BOOST_LOG_SEV(theLog_,level::debug) << "Opening " << eventFile.getFileName() << "!";
             }
 
             /**
@@ -136,8 +143,8 @@ namespace ldmx {
              *  has been closed. 
              */
             void onFileClose(EventFile& eventFile) final override {
-                std::cout << "[ DummyAnalyzer ]: Closing " 
-                          << eventFile.getFileName() << "!" << std::endl;
+                BOOST_LOG_SEV(theLog_,level::debug) << " Closing " 
+                          << eventFile.getFileName() << "!";
             }
 
             /**
@@ -145,7 +152,7 @@ namespace ldmx {
              * processing of events begins. 
              */
             void onProcessStart() final override {
-                std::cout << "[ DummyAnalyzer ]: Starting processing!" << std::endl;
+                BOOST_LOG_SEV(theLog_,level::debug) << "Starting processing!";
                
                 // Get the ntuple manager
                 ntuple_ = NtupleManager::getInstance(); 
@@ -171,7 +178,7 @@ namespace ldmx {
              * of all events has ended. 
              */
             void onProcessEnd() final override {
-                std::cout << "[ DummyAnalyzer ]: Finishing processing!" << std::endl;
+                BOOST_LOG_SEV(theLog_,level::debug) << "Finishing processing!";
             }
 
         private:
