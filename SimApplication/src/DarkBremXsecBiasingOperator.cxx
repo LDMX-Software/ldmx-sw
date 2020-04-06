@@ -49,13 +49,8 @@ namespace ldmx {
             dbXsecUnbiased_ = 1./interactionLength;
             dbXsecBiased_ = dbXsecUnbiased_*xsecFactor_; 
 
-            if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
-                std::cout << "[ DarkBremXsecBiasingOperator ]: Unbiased DBrem xsec: "
-                          << dbXsecUnbiased_ << std::endl;
-    
-                std::cout << "[ DarkBremXsecBiasingOperator ]: In volume biased DBrem xsec: "
-                          << dbXsecBiased_ << std::endl;
-            }
+            ldmx_log(debug) << "Unbiased DBrem xsec: " << dbXsecUnbiased_ 
+                            << ", In volume biased DBrem xsec: " << dbXsecBiased_;
 
             //xsecOperation is a protected member variable of XsecBiasingOperator
             //  it is set in XsecBiasingOperator::StartRun()

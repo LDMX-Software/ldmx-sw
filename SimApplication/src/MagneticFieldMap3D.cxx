@@ -25,12 +25,12 @@ namespace ldmx {
             EXCEPTION_RAISE( "FileDNE" , "The field map file '" + std::string(filename) + "' does not exist!" );
         }
 
-        G4cout << "-----------------------------------------------------------" << G4endl;
-        G4cout << "    Magnetic Field Map 3D" << G4endl;
-        G4cout << "-----------------------------------------------------------" << G4endl<< G4endl;
+        ldmx_log(debug) << "-----------------------------------------------------------" ;
+        ldmx_log(debug) << "    Magnetic Field Map 3D" ;
+        ldmx_log(debug) << "-----------------------------------------------------------" ;
 
-        G4cout << "Reading the field grid from " << filename << " ... " << endl;
-        G4cout << "  Offsets: " << xOffset << " " << yOffset << " " << zOffset << G4endl;
+        ldmx_log(debug) << "Reading the field grid from " << filename << " ... " << endl;
+        ldmx_log(debug) << "  Offsets: " << xOffset << " " << yOffset << " " << zOffset ;
 
         // Ignore first blank line
         char buffer[256];
@@ -39,7 +39,7 @@ namespace ldmx {
         // Read table dimensions 
         file >> nx_ >> ny_ >> nz_; // Note dodgy order
 
-        G4cout << "  Number of values: " << nx_ << " " << ny_ << " " << nz_ << G4endl;
+        ldmx_log(debug) << "  Number of values: " << nx_ << " " << ny_ << " " << nz_ ;
 
         // Set up storage space for table
         xField_.resize(nx_);
@@ -87,12 +87,12 @@ namespace ldmx {
         maxy_ = yval;
         maxz_ = zval;
 
-        G4cout << "  ... done reading " << G4endl<< G4endl;
-        G4cout << "Read values of field from file " << filename << G4endl;
-        G4cout << "  Assumed the order: x, y, z, Bx, By, Bz" << G4endl;
-        G4cout << "  Min values: " << minx_ << " " << miny_ << " " << minz_ << " mm " << G4endl;
-        G4cout << "  Max values: " << maxx_ << " " << maxy_ << " " << maxz_ << " mm " << G4endl;
-        G4cout << "  Field offsets: " << xOffset_ << " " << yOffset_ << " " << zOffset_ << " mm " << G4endl<< G4endl;
+        ldmx_log(debug) << "  ... done reading " ;
+        ldmx_log(debug) << "Read values of field from file " << filename ;
+        ldmx_log(debug) << "  Assumed the order: x, y, z, Bx, By, Bz" ;
+        ldmx_log(debug) << "  Min values: " << minx_ << " " << miny_ << " " << minz_ << " mm " ;
+        ldmx_log(debug) << "  Max values: " << maxx_ << " " << maxy_ << " " << maxz_ << " mm " ;
+        ldmx_log(debug) << "  Field offsets: " << xOffset_ << " " << yOffset_ << " " << zOffset_ << " mm " ;
 
         // Should really check that the limits are not the wrong way around.
         if (maxx_ < minx_) {
@@ -108,17 +108,17 @@ namespace ldmx {
             invertZ_ = true;
         }
 
-        G4cout << "After reordering if necessary" << G4endl;
-        G4cout << "  Min values: " << minx_ << " " << miny_ << " " << minz_ << " mm " << G4endl;
-        G4cout << "  Max values: " << maxx_ << " " << maxy_ << " " << maxz_ << " mm " << G4endl;;
+        ldmx_log(debug) << "After reordering if necessary" ;
+        ldmx_log(debug) << "  Min values: " << minx_ << " " << miny_ << " " << minz_ << " mm " ;
+        ldmx_log(debug) << "  Max values: " << maxx_ << " " << maxy_ << " " << maxz_ << " mm " ;;
 
         dx_ = maxx_ - minx_;
         dy_ = maxy_ - miny_;
         dz_ = maxz_ - minz_;
 
-        G4cout << "  Range of values: " << dx_ << " " << dy_ << " " << dz_ << " mm" << G4endl<< G4endl;
-        G4cout << "Done loading field map" << G4endl<< G4endl;
-        G4cout << "-----------------------------------------------------------" << G4endl<< G4endl;
+        ldmx_log(debug) << "  Range of values: " << dx_ << " " << dy_ << " " << dz_ << " mm" ;
+        ldmx_log(debug) << "Done loading field map" ;
+        ldmx_log(debug) << "-----------------------------------------------------------" ;
     }
 
     void MagneticFieldMap3D::GetFieldValue(const double point[4], double *bfield) const {
@@ -164,8 +164,8 @@ namespace ldmx {
             int zindex = static_cast<int>(zdindex);
 
 #ifdef DEBUG_INTERPOLATING_FIELD
-            G4cout << "Local x,y,z: " << xlocal << " " << ylocal << " " << zlocal << G4endl;
-            G4cout << "Index x,y,z: " << xindex << " " << yindex << " " << zindex << G4endl;
+            ldmx_log(debug) << "Local x,y,z: " << xlocal << " " << ylocal << " " << zlocal ;
+            ldmx_log(debug) << "Index x,y,z: " << xindex << " " << yindex << " " << zindex ;
             double valx0z0, mulx0z0, valx1z0, mulx1z0;
             double valx0z1, mulx0z1, valx1z1, mulx1z1;
             valx0z0= table[xindex ][0][zindex]; mulx0z0= (1-xlocal) * (1-zlocal);

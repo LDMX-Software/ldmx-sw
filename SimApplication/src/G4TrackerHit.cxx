@@ -37,7 +37,7 @@ namespace ldmx {
                 << ", " "position: (" << this->position_[0] << ", " << this->position_[1] << ", " << this->position_[2] << "), "
                 <<  "layerID: " << this->layerID_ << ", "
                 << "momentum: (" << this->momentum_[0] << ", " << this->momentum_[1] << ", " << this->momentum_[2] << "), "
-                << "pathLength: " << this->pathLength_ << ", " << "time: " << this->time_ << " }" << std::endl;
+                << "pathLength: " << this->pathLength_ << ", " << "time: " << this->time_ << " }";
         return os;
     }
 

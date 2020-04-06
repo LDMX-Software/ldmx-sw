@@ -8,6 +8,7 @@
 #define SIMAPPLICATION_HCALSD_H_
 
 // LDMX
+#include "Exception/Logger.h"
 #include "SimApplication/CalorimeterSD.h"
 #include "DetDescr/HcalID.h"
 
@@ -35,6 +36,9 @@ namespace ldmx {
         private:
           double birksc1_;
           double birksc2_;    
+
+          /** enable logging macro */
+          enableLogging( "HcalSD" )
     };
 
 }

@@ -67,19 +67,9 @@ namespace ldmx {
          * Verbosity and Logging
          *************************************************/
 
-        verbosity_ = parameters_.getParameter< int >("verbosity");
-        auto loggingPrefix = parameters_.getParameter< std::string >("loggingPrefix");
-        if ( verbosity_ > 0 or verbosity_ == std::numeric_limits<int>::min() ) {
-            // non-zero verbosity ==> log geant4 comments in files
-            //  can input different log file names into this constructor
-            if ( loggingPrefix.empty() )
-                sessionHandle_ = std::make_unique<LoggedSession>();
-            else
-                sessionHandle_ = std::make_unique<LoggedSession>( loggingPrefix + "_G4cout.log" , loggingPrefix + "_G4cerr.log" );
-        } else {
-            // zero verbosity ==> batch run
-            sessionHandle_ = std::make_unique<BatchSession>();
-        }
+        // non-zero verbosity ==> log geant4 comments in files
+        //  forward Geant4 messages to logger with channel name 'Geant4'
+        sessionHandle_ = std::make_unique<LoggedSession>();
         uiManager_->SetCoutDestination( sessionHandle_.get() ); //re-direct the G4 messaging service
 
         /*************************************************
@@ -110,15 +100,10 @@ namespace ldmx {
         
         // Parse the detector geometry
         std::string detectorPath = parameters_.getParameter<std::string>("detector");
-        if ( verbosity_ > 0 ) {
-            std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath << "'... " << std::flush;
-        }
+        ldmx_log(info) << "Reading in geometry from '" << detectorPath << "'... ";
         G4GeometryManager::GetInstance()->OpenGeometry();
         parser->Read( detectorPath );
         runManager_->DefineWorldVolume( parser->GetWorldVolume() );
-        if ( verbosity_ > 0 ) {
-            std::cout << "done" << std::endl;
-        }
 
         auto preInitCommands = parameters_.getParameter< std::vector< std::string > >("preInitCommands" ); 
         for ( const std::string& cmd : preInitCommands ) {
@@ -161,7 +146,7 @@ namespace ldmx {
         
         if ( process_.getLogFrequency() > 0 and event.getEventHeader().getEventNumber() % process_.getLogFrequency() == 0 ) {
             //print according to log frequency and verbosity
-            if ( verbosity_ > 1 ) std::cout << "[ Simulator ] : Printing event contents:" << std::endl;
+            ldmx_log(debug) << "Printing event contents:";
             event.Print();
         }
 

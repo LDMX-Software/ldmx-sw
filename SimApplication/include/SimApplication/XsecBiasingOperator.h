@@ -9,6 +9,8 @@
 #ifndef BIASING_XSECBIASINGOPERATOR_H_
 #define BIASING_XSECBIASINGOPERATOR_H_
 
+#include "Exception/Logger.h"
+
 //------------//
 //   Geant4   //
 //------------//
@@ -120,6 +122,9 @@ namespace ldmx {
 
             G4VBiasingOperation* ProposeNonPhysicsBiasingOperation(const G4Track*,
                     const G4BiasingProcessInterface*) { return nullptr; }
+
+            /** enable logging for this class and any inheriters */
+            enableLogging("XsecBiasingOperator")
 
     };  // XsecBiasingOperator
 }

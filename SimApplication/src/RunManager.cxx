@@ -58,7 +58,7 @@ namespace ldmx {
         parallelWorldPath_ = parameters_.getParameter<std::string>("scoringPlanes");
         isPWEnabled_ = (not parallelWorldPath_.empty());
         if ( isPWEnabled_ ) {
-            std::cout << "[ RunManager ]: Parallel worlds physics list has been registered." << std::endl;
+            ldmx_log(info) << "Parallel worlds physics list has been registered.";
             pList->RegisterPhysics(new G4ParallelWorldPhysics("ldmxParallelWorld"));
         }
 
@@ -69,7 +69,7 @@ namespace ldmx {
         if (biasingEnabled) {
 
             auto biasedParticle{parameters_.getParameter< std::string >("biasing.particle")}; 
-            std::cout << "RunManager::setupPhysics : Enabling biasing of particle type " << biasedParticle << std::endl;
+            ldmx_log(info) << "Enabling biasing of particle type " << biasedParticle;
 
             // Instantiate the constructor used when biasing
             G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
@@ -91,7 +91,7 @@ namespace ldmx {
         // The parallel world needs to be registered before the mass world is
         // constructed i.e. before G4RunManager::Initialize() is called. 
         if (isPWEnabled_) {
-            std::cout << "[ RunManager ]: Parallel worlds have been enabled." << std::endl;
+            ldmx_log(info) << "Parallel worlds have been enabled.";
 
             G4GDMLParser* pwParser = new G4GDMLParser();
             pwParser->Read(parallelWorldPath_);
@@ -137,8 +137,7 @@ namespace ldmx {
         bool active = true;
         ptable->SetProcessActivation(pname,active);    
         if ( this->GetVerboseLevel() > 1 ) {
-            std::cout << "[ RunManager ] : "
-                << "Reset the dark brem process (if it was activated)." << std::endl;
+            ldmx_log(debug) << "Reset the dark brem process (if it was activated).";
         }
         ptable->SetVerboseLevel(verbosity);
 

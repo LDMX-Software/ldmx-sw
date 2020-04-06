@@ -51,9 +51,7 @@ namespace ldmx {
 
         // Skip steps with no energy dep which come from non-Geantino particles.
         if (edep == 0.0 && !isGeantino) {
-            if (verboseLevel > 2) {
-                std::cout << "CalorimeterSD skipping step with zero edep." << std::endl << std::endl;
-            }
+            ldmx_log(debug) << "CalorimeterSD skipping step with zero edep."  ;
             return false;
         }
 
@@ -86,11 +84,7 @@ namespace ldmx {
         // Set the PDG code from the track.
         hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
 
-        if (this->verboseLevel > 2) {
-            std::cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << subdet_ << " and layer " << layerNumber << " ..." << std::endl;
-            hit->Print();
-            std::cout << std::endl;
-        }
+        ldmx_log(debug) << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << subdet_ << " and layer " << layerNumber;
 
         hitsCollection_->insert(hit);
 
@@ -99,16 +93,7 @@ namespace ldmx {
 
     void CalorimeterSD::EndOfEvent(G4HCofThisEvent*) {
         // Print number of hits.
-        if (this->verboseLevel > 0) {
-            std::cout << GetName() << " had " << hitsCollection_->entries() << " hits in event" << std::endl;
-        }
-
-        // Print each hit in hits collection.
-        if (this->verboseLevel > 1) {
-            for (unsigned iHit = 0; iHit < hitsCollection_->GetSize(); iHit++) {
-                (*hitsCollection_)[iHit]->Print();
-            }
-        }
+        ldmx_log(debug) << GetName() << " had " << hitsCollection_->entries() << " hits in event" ;
     }
 
 }

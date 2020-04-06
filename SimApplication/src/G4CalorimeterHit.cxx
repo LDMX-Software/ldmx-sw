@@ -32,7 +32,7 @@ namespace ldmx {
     }
 
     std::ostream& G4CalorimeterHit::print(std::ostream& os) {
-        os << "G4CalorimeterHit { " << "edep: " << this->edep_ << ", " << "position: " << position_ << ", " << "time: " << this->time_ << " }" << std::endl;
+        os << "G4CalorimeterHit { " << "edep: " << this->edep_ << ", " << "position: " << position_ << ", " << "time: " << this->time_ << " }";
         return os;
     }
 

@@ -87,6 +87,9 @@ namespace ldmx {
             
             /// The set of parameters used to configure this class
             Parameters parameters_; 
+
+            ///enable logging
+            enableLogging( "DetectorConstruction" )
     };
 
 }

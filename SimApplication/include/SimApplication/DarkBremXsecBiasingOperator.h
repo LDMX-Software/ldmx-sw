@@ -12,6 +12,7 @@
 //----------//
 //   LDMX   //
 //----------//
+#include "Exception/Logger.h"
 #include "SimApplication/XsecBiasingOperator.h"
 
 class G4Track;

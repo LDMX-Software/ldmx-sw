@@ -11,6 +11,9 @@
 // Geant4
 #include "G4MagneticField.hh"
 
+// LDMX
+#include "Exception/Logger.h"
+
 // STL
 #include <vector>
 using std::vector;
@@ -110,6 +113,11 @@ namespace ldmx {
              * Flags for inverting dimensions.
              */
             bool invertX_, invertY_, invertZ_;
+
+            /**
+             * Logging macro
+             */
+            enableLogging("MagneticFieldMap3D")
     };
 
 }

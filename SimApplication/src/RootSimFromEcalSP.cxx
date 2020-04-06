@@ -54,7 +54,7 @@ namespace ldmx {
         //go to next event
         //  if there isn't another event ==> EventFile::nextEvent returns false
         if ( not ifile_->nextEvent() ) {
-            std::cout << "[ RootSimFromEcalSP ]: End of file reached." << std::endl;
+            ldmx_log(warn) << "End of file reached.";
             G4RunManager::GetRunManager()->AbortRun(true);
             anEvent->SetEventAborted();
         }

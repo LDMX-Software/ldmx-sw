@@ -98,7 +98,7 @@ namespace ldmx {
             anEvent->AddPrimaryVertex(vertex);
 
         } else {
-            std::cout << "[ LHEPrimaryGenerator ] : Ran out of input events so run will be aborted!" << std::endl;
+            ldmx_log(warn) << "[ LHEPrimaryGenerator ] : Ran out of input events so run will be aborted!";
             G4RunManager::GetRunManager()->AbortRun(true);
             anEvent->SetEventAborted();
         }

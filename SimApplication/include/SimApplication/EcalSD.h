@@ -11,6 +11,7 @@
 #include "DetDescr/EcalDetectorID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "SimApplication/CalorimeterSD.h"
+#include "Exception/Logger.h"
 
 // ROOT
 #include "TMath.h"
@@ -72,6 +73,9 @@ namespace ldmx {
              * Map of polygonal layers for getting Z positions.
              */
             std::map<G4VSolid*, G4Polyhedron*> polyMap_;
+
+            /** Allow for logging */
+            enableLogging( "EcalSD" )
     };
 
 }

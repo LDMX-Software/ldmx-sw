@@ -38,9 +38,7 @@ namespace ldmx {
 
         // Skip steps with no energy dep which come from non-Geantino particles.
         if (edep == 0.0 && !isGeantino) {
-            if (verboseLevel > 2) {
-                std::cout << "CalorimeterSD skipping step with zero edep." << std::endl << std::endl;
-            }
+            ldmx_log(debug) << "CalorimeterSD skipping step with zero edep.";
             return false;
         }
 
@@ -145,13 +143,10 @@ namespace ldmx {
         // elseif (section==HcalSection::LEFT || section==HcalSection::RIGHT) hit->setPosition(volumePosition.x(),position[1] , position[2]);        
 
 
-        if (this->verboseLevel > 2) {
-            std::cout << "Created new SimCalorimeterHit in detector " << this->GetName()
-                      << " subdet ID <" << subdet_ << ">, layer <" << layer << "> and section <" << section << ">, copynum <" << copyNum << ">"
-                      << std::endl;
-            hit->Print();
-            std::cout << std::endl;
-        }
+        ldmx_log(debug) 
+            << "Created new SimCalorimeterHit in detector " << this->GetName()
+            << " subdet ID <" << subdet_ << ">, layer <" << layer 
+            << "> and section <" << section << ">, copynum <" << copyNum << ">";
 
         // Insert the hit into the hits collection.
         hitsCollection_->insert(hit);

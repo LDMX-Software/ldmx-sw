@@ -6,7 +6,7 @@
 namespace ldmx {
 
     LHEReader::LHEReader(std::string& filename) {
-        std::cout << "Opening LHE file " << filename << std::endl;
+        ldmx_log(info) << "Opening LHE file " << filename;
         ifs_.open(filename.c_str(), std::ifstream::in);
     }
 
@@ -26,7 +26,7 @@ namespace ldmx {
         }
 
         if (!foundEventElement) {
-            std::cerr << "WARNING: No next <event> element was found by the LHE reader." << std::endl;
+            ldmx_log(warn) << "No next <event> element was found by the LHE reader.";
             return NULL;
         }
 

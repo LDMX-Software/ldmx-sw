@@ -26,12 +26,11 @@ namespace ldmx {
     G4VBiasingOperation* ElectroNuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
             const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
     
-        /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: "
+        ldmx_log(debug) 
                   << "Track ID: " << track->GetTrackID() << ", " 
                   << "Parent ID: " << track->GetParentID() << ", "
                   << "Created within " << track->GetLogicalVolumeAtVertex()->GetName() << ", " 
-                  << "Currently in volume " << track->GetVolume()->GetName()  
-                  << std::endl;*/
+                  << "Currently in volume " << track->GetVolume()->GetName() ;
 
         if (track->GetParentID() != 0) return 0;
 
@@ -40,26 +39,23 @@ namespace ldmx {
         G4StepPoint* preStepPoint = step->GetPreStepPoint();
         if (preStepPoint->GetStepStatus() != fGeomBoundary) return 0; 
 
-        /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: " 
+        ldmx_log(debug)
                   << "Calling process: " 
-                  << callingProcess->GetWrappedProcess()->GetProcessName() 
-                  << std::endl;*/
+                  << callingProcess->GetWrappedProcess()->GetProcessName() ;
         
         std::string currentProcess = callingProcess->GetWrappedProcess()->GetProcessName(); 
         if (currentProcess.compare(this->getProcessToBias()) == 0) { 
             
             G4double interactionLength = callingProcess->GetWrappedProcess()->GetCurrentInteractionLength();
-            /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: "
+            ldmx_log(debug)
                       << "EN Interaction length: " 
-                      << interactionLength << std::endl;*/
+                      << interactionLength;
 
             double enXsecUnbiased = 1./interactionLength;
-            /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: Unbiased EN xsec: "
-                      << enXsecUnbiased << std::endl;*/
 
             double enXsecBiased = enXsecUnbiased*xsecFactor_; 
-            /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: Biased EN xsec: "
-                      << enXsecBiased << std::endl;*/
+
+            ldmx_log(debug) << "Unbiased EN xsec: " << enXsecUnbiased << ", Biased EN xsec: " << enXsecBiased;
 
             xsecOperation->SetBiasedCrossSection(enXsecBiased);
             xsecOperation->Sample();

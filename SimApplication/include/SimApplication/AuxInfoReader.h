@@ -12,6 +12,7 @@
 
 // LDMX
 #include "DetDescr/DetectorHeader.h"
+#include "Exception/Logger.h"
 
 namespace ldmx {
 
@@ -119,6 +120,12 @@ namespace ldmx {
              * Detector header with name and version.
              */
             ldmx::DetectorHeader* detectorHeader_ {nullptr};
+
+            /**
+             * Enable logging for this class
+             */
+            enableLogging( "AuxInfoReader" )
+           
     };
 
 }

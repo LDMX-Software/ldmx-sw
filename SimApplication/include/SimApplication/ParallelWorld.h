@@ -20,6 +20,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
+#include "Exception/Logger.h"
 #include "SimApplication/AuxInfoReader.h"
 
 namespace ldmx { 
@@ -47,6 +48,9 @@ namespace ldmx {
             
             /** The auxiliary GDML info reader. */
             AuxInfoReader* auxInfoReader_{nullptr};
+
+            /** enable logging macro */
+            enableLogging("ParallelWorld")
 
     }; // ParallelWorld
 }

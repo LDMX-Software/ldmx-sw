@@ -9,6 +9,7 @@
 #define SIMAPPLICATION_LHEPRIMARYGENERATOR_H
 
 // LDMX
+#include "Exception/Logger.h"
 #include "SimApplication/PrimaryGenerator.h"
 #include "SimApplication/LHEReader.h"
 
@@ -49,6 +50,11 @@ namespace ldmx {
              * The LHE reader with the event data.
              */
             LHEReader* reader_;
+
+            /**
+             * Enable logging macro
+             */
+            enableLogging( "LHEPrimaryGenerator" )
     };
 
 }

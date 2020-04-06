@@ -16,6 +16,7 @@
 //------------//
 //   LDMX     //
 //------------//
+#include "Exception/Logger.h"
 #include "SimApplication/PrimaryGenerator.h"
 
 // Forward declarations
@@ -67,9 +68,9 @@ namespace ldmx {
             G4ParticleGun theGun_;
 
             /**
-             * LDMX Verbosity for this generator
+             * Enable logging
              */
-            int verbosity_;
+            enableLogging("ParticleGun")
 
     }; // ParticleGun 
 

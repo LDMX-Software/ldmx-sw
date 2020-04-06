@@ -23,6 +23,7 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
+#include "Exception/Logger.h"
 #include "Framework/Parameters.h" 
 
 namespace ldmx {
@@ -108,6 +109,9 @@ namespace ldmx {
              * Should we use random seed from root file?
              */
             bool useRootSeed_{false};
+
+            /** enable logging macro */
+            enableLogging("RunManager")
 
     }; // RunManager
 } // ldmx

@@ -8,6 +8,7 @@
 #define SIMAPPLICATION_LHEREADER_H_
 
 // LDMX
+#include "Exception/Logger.h"
 #include "SimApplication/LHEEvent.h"
 
 // STL
@@ -46,6 +47,11 @@ namespace ldmx {
              * The input file stream.
              */
             std::ifstream ifs_;
+
+            /**
+             * Enable logging macro
+             */
+            enableLogging("LHEReader")
     };
 
 }

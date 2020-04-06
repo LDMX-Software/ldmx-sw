@@ -89,6 +89,11 @@ namespace ldmx {
              * The depth to the layer volume.
              */
             int layerDepth_ {2};
+
+            /**
+             * Allow for logging in this class
+             */
+            enableLogging( "CalorimeterSD" )
     };
 
 }

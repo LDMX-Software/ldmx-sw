@@ -10,40 +10,13 @@
 
 namespace ldmx {
 
-    LoggedSession::LoggedSession( const std::string& coutFileName , const std::string& cerrFileName ) {
-        
-        coutFile_.open( coutFileName );
-        if ( not coutFile_.is_open() ) {
-            EXCEPTION_RAISE(
-                    "G4Logging",
-                    "Unable to open log file '" + coutFileName + "'."
-                    );
-        }
-
-        cerrFile_.open( cerrFileName );
-        if ( not cerrFile_.is_open() ) {
-            EXCEPTION_RAISE(
-                    "G4Logging",
-                    "Unable to open log file '" + cerrFileName + "'."
-                    );
-        }
-
-    }
-
-    LoggedSession::~LoggedSession() {
-        coutFile_.close();
-        cerrFile_.close();
-    }
-
     G4int LoggedSession::ReceiveG4cout(const G4String& message) {
-        coutFile_ << message;
-        coutFile_.flush();
+        ldmx_log(debug) << message.data();
         return 0; //0 return value == sucess
     }
 
     G4int LoggedSession::ReceiveG4cerr(const G4String& message) {
-        cerrFile_ << message;
-        cerrFile_.flush();
+        ldmx_log(info) << message.data();
         return 0; //0 return value == sucess
     }
 }

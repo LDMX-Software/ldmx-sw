@@ -31,46 +31,34 @@ namespace ldmx {
         PrimaryGenerator( name , parameters )
         {
 
-        verbosity_ = parameters.getParameter< int >("verbosity");
-
         auto particleTable{G4ParticleTable::GetParticleTable()};
         
         auto particle{parameters.getParameter< std::string >("particle")};
         if (auto particleDef{particleTable->FindParticle(particle)}; particleDef != 0) {
-            if ( verbosity_ > 1 ) {
-                std::cout << "[ ParticleGun ] : Firing particle of type " << particle << std::endl; 
-            }
+            ldmx_log(info) << "Firing particle of type " << particle;
             theGun_.SetParticleDefinition(particleDef); 
         }
 
         auto energy{parameters.getParameter< double >("energy")};
-        if ( verbosity_ > 1 ) {
-            std::cout << "[ ParticleGun ] : Setting energy to " << energy*GeV << std::endl;
-        }
+        ldmx_log(info) << "Setting energy to " << energy*GeV;
         theGun_.SetParticleEnergy(energy*GeV); 
 
         auto position{parameters.getParameter< std::vector<double> >("position")};
         if (!position.empty()) {
             G4ThreeVector pVec(position[0]*mm, position[1]*mm, position[2]*mm); 
-            if ( verbosity_ > 1 ) {
-                std::cout << "[ ParticleGun ] : position " << pVec << std::endl;
-            }
+            ldmx_log(info) << "position " << pVec;
             theGun_.SetParticlePosition(pVec);
         }
 
         auto time{parameters.getParameter< double >("time")}; 
         if (time < 0) time = 0.0; 
-        if ( verbosity_ > 1 ) {
-            std::cout << "[ ParticleGun ] : Setting particle time  to " << time << std::endl;
-        }
+        ldmx_log(info) << "Setting particle time  to " << time;
         theGun_.SetParticleTime(time*ns); 
 
         auto direction{parameters.getParameter< std::vector<double > >("direction")};
         if (!direction.empty()) { 
             G4ThreeVector dVec(direction[0], direction[1], direction[2]); 
-            if ( verbosity_ > 1 ) {
-                std::cout << "[ ParticleGun ] : direction " << dVec.unit() << std::endl;
-            }
+            ldmx_log(info) << "direction " << dVec.unit();
             theGun_.SetParticleMomentumDirection(dVec); 
         }
     } 

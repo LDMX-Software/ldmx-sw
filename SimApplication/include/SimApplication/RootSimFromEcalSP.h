@@ -26,6 +26,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
+#include "Exception/Logger.h"
 #include "Framework/EventFile.h"
 #include "Framework/Event.h"
 #include "SimApplication/PrimaryGenerator.h"
@@ -100,6 +101,9 @@ namespace ldmx {
              * The input ldmx event bus
              */
             Event ievent_;
+
+            /** enable logging macro */
+            enableLogging("RootSimFromEcalSP")
 
     };
 

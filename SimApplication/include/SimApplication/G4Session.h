@@ -7,8 +7,7 @@
 #ifndef SIMAPPLICATION_G4SESSION_H_
 #define SIMAPPLICATION_G4SESSION_H_
 
-#include <iostream>
-#include <fstream>
+#include "Exception/Logger.h"
 
 // Geant4
 #include "G4UIsession.hh"
@@ -29,14 +28,14 @@ namespace ldmx {
              *
              * Sets up output file streams for the cout and cerr paths.
              */
-            LoggedSession( const std::string& coutFileName = "G4cout.log" , const std::string& cerrFileName = "G4cerr.log" );
+            LoggedSession() { }
 
             /**
              * Destructor
              *
              * Closes the output files streams
              */
-            ~LoggedSession();
+            ~LoggedSession() { }
 
             /**
              * Required hook for Geant4
@@ -57,52 +56,11 @@ namespace ldmx {
 
         private:
 
-            /** cout log file */
-            std::ofstream coutFile_;
-
-            /** cerr log file */
-            std::ofstream cerrFile_;
+            /** enable logging macro */
+            enableLogging( "Geant4" )
 
     }; //LoggedSession
 
-    /**
-     * @class BatchSession
-     *
-     * Do _nothing_ with G4cout and G4cerr messages. This is made to improve performance.
-     */
-    class BatchSession : public G4UIsession {
-        
-        public:
-
-            /**
-             * Constructor
-             */
-            BatchSession() { }
-
-            /**
-             * Destructor
-             */
-            ~BatchSession() { }
-
-            /**
-             * Required hook for Geant4
-             *
-             * Does nothing
-             */
-            G4UIsession* SessionStart() { return nullptr; }
-
-            /**
-             * Does nothing with input
-             */
-            G4int ReceiveG4cout(const G4String&) { return 0; }
-
-            /**
-             * Does nothing with input
-             */
-            G4int ReceiveG4cerr(const G4String&) { return 0; }
-
-    };
-
-}
+} //ldmx
 
 #endif
