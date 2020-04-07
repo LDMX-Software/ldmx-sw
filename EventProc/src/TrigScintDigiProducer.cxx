@@ -39,7 +39,7 @@ namespace ldmx {
             tempID.setFieldValue(0,int(sec));
             tempID.setFieldValue(1,random_->Integer(stripsPerArray_));
         }else
-            std::cout << "WARNING [TrigScintDigiProducer::generateRandomID]: TrigScintSection is not known" << std::endl;
+            ldmx_log(warn) << "[generateRandomID]: TrigScintSection is not known";
 
         return tempID.pack();
     }
@@ -64,7 +64,7 @@ namespace ldmx {
             std::vector<float> position = simHit.getPosition();
 
             if (verbose_) {
-                std::cout << "section: " << detID_->getFieldValue("section") << "  layer: " << detID_->getFieldValue("layer") <<  "  strip: " << detID_->getFieldValue("strip") <<std::endl;
+                ldmx_log(debug) << "section: " << detID_->getFieldValue("section") << "  layer: " << detID_->getFieldValue("layer") <<  "  strip: " << detID_->getFieldValue("strip");
             }        
 
             // for now, we take am energy weighted average of the hit in each stip to simulate the hit position. 
@@ -134,14 +134,15 @@ namespace ldmx {
                 int subsection = detID_->getFieldValue("section");
                 int strip = detID_->getFieldValue("strip");
 
-                std::cout << "detID: " << detIDraw << std::endl;
-                std::cout << "Layer: " << layer << std::endl;
-                std::cout << "Subsection: " << subsection << std::endl;
-                std::cout << "Strip: " << strip << std::endl;
-                std::cout << "Edep: " << Edep[detIDraw] << std::endl;
-                std::cout << "numPEs: " << cellPEs[detIDraw] << std::endl;
-                std::cout << "time: " << Time[detIDraw] << std::endl;std::cout << "z: " << Zpos[detIDraw] << std::endl;
-                std::cout << "Layer: " << layer << "\t Strip: " << strip << "\t X: " << Xpos[detIDraw] <<  "\t Y: " << Ypos[detIDraw] <<  "\t Z: " << Zpos[detIDraw] << std::endl;
+                ldmx_log(debug)
+                    << "detID: " << detIDraw << ", "
+                    << "Layer: " << layer << ", "
+                    << "Subsection: " << subsection << ", "
+                    << "Strip: " << strip << ", "
+                    << "Edep: " << Edep[detIDraw] << ", "
+                    << "numPEs: " << cellPEs[detIDraw] << ", "
+                    << "time: " << Time[detIDraw] << ", " << "z: " << Zpos[detIDraw] << ", "
+                    << "Layer: " << layer << "\t Strip: " << strip << "\t X: " << Xpos[detIDraw] <<  "\t Y: " << Ypos[detIDraw] <<  "\t Z: " << Zpos[detIDraw];
             }        // end verbose            
         }
 

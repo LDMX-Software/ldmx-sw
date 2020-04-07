@@ -28,7 +28,7 @@ namespace ldmx {
         TString cmd = vectorToPredCMD(bdtFeatures, model_name);
         TPython::Exec("pred = " + cmd);
         float pred = TPython::Eval("pred");
-        std::cout << "  pred = " << pred << std::endl;
+        //std::cout << "  pred = " << pred << std::endl;
 
         return pred;
     }
@@ -181,8 +181,9 @@ namespace ldmx {
         const std::vector<EcalHit> ecalRecHits = event.getCollection<EcalHit>("EcalRecHits");
         int nEcalHits = ecalRecHits.size();
 
-        std::cout << "[ NonFidEcalVetoProcessor ] : Got " << nEcalHits << " ECal digis in event "
-                << event.getEventHeader().getEventNumber() << std::endl;
+        ldmx_log(debug) 
+            << "Got " << nEcalHits << " ECal digis in event "
+            << event.getEventHeader().getEventNumber();
 
         int globalCentroid = GetShowerCentroidIDAndRMS(ecalRecHits, showerRMS_);
         /* ~~ Fill the hit map ~~ O(n)  */

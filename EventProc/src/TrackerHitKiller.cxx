@@ -34,7 +34,7 @@ namespace ldmx {
         for ( const SimTrackerHit &simHit : recoilSimHits ) {
             
             if (random_->Integer(100) >= hitEff_) { 
-                std::cout << "[ TrackerHitKiller ]: Dropping hit." << std::endl;
+                ldmx_log(debug) << "[ TrackerHitKiller ]: Dropping hit.";
                 continue;
             } else {
                 // Get the SimTrackerHit from the collection of recoil sim hits.

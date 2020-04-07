@@ -50,7 +50,7 @@ namespace ldmx {
             tempID.setFieldValue(2,random_->Integer(2)+3);
             tempID.setFieldValue(3,random_->Integer(STRIPS_SIDE_LR_PER_LAYER_));            
 	    }else
-	    std::cout << "WARNING [HcalDigiProducer::generateRandomID]: HcalSection is not known" << std::endl;
+	        ldmx_log(warn) << "[HcalDigiProducer::generateRandomID]: HcalSection is not known";
 
         return tempID.pack();
     }
@@ -118,9 +118,10 @@ namespace ldmx {
             std::vector<float> position = simHit.getPosition();       
 
             if (verbose_) {
-                std::cout << "section: " << detID_.getFieldValue("section") 
+                ldmx_log(debug)
+                    << "section: " << detID_.getFieldValue("section") 
                     << "  layer: " << detID_.getFieldValue("layer") 
-                    <<  "  strip: " << detID_.getFieldValue("strip") <<std::endl;
+                    <<  "  strip: " << detID_.getFieldValue("strip");
             }        
 
             // re-assign the strip number based on super strip size -- ONLY FOR Back Hcal
@@ -175,7 +176,7 @@ namespace ldmx {
                 numSigHits_side_tb++;
             else if (curDetId.getSection() == HcalSection::LEFT || curDetId.getSection() == HcalSection::RIGHT)
                 numSigHits_side_lr++;
-	        else std::cout << "WARNING [HcalDigiProducer::produce]: HcalSection is not known" << std::endl;
+	        else ldmx_log(warn) << "[HcalDigiProducer::produce]: HcalSection is not known";
 
             // need to add in a weighting factor eventually, so keep it that way to make sure we don't forget about it
             double energy = depEnergy; 
@@ -268,19 +269,20 @@ namespace ldmx {
                 int subsection = detID_.getFieldValue("section");
                 int strip      = detID_.getFieldValue("strip");
 
-                std::cout << "detID     : " << detIDraw << std::endl;
-                std::cout << "Layer     : " << layer << std::endl;
-                std::cout << "Subsection: " << subsection << std::endl;
-                std::cout << "Strip: " << strip << std::endl;
-                std::cout << "Edep: " << hcaldetIDEdep[detIDraw] << std::endl;
-                std::cout << "numPEs: " << hcalLayerPEs[detIDraw] << std::endl;
-                std::cout << "time: " << hcaldetIDTime[detIDraw] << std::endl;
-                std::cout << "z: " << hcalZpos[detIDraw] << std::endl;
-                std::cout << "Layer: " << layer 
+                ldmx_log(debug)
+                    << "detID     : " << detIDraw << ", "
+                    << "Layer     : " << layer << ", "
+                    << "Subsection: " << subsection << ", "
+                    << "Strip: " << strip << ", "
+                    << "Edep: " << hcaldetIDEdep[detIDraw] << ", "
+                    << "numPEs: " << hcalLayerPEs[detIDraw] << ", "
+                    << "time: " << hcaldetIDTime[detIDraw] << ", "
+                    << "z: " << hcalZpos[detIDraw] << ", "
+                    << "Layer: " << layer 
                     << "\t Strip: " << strip 
                     << "\t X: " << hcalXpos[detIDraw] 
                     << "\t Y: " << hcalYpos[detIDraw] 
-                    << "\t Z: " << hcalZpos[detIDraw] << std::endl;
+                    << "\t Z: " << hcalZpos[detIDraw];
             }// end verbose            
         } //end loop over map of values
         
@@ -307,7 +309,7 @@ namespace ldmx {
             ctr_back_noise++;
 
         }
-        if (verbose_) std::cout << "numSigHits_back = " << numSigHits_back << ", ctr_back_noise = " << ctr_back_noise << std::endl;
+        if (verbose_) ldmx_log(debug) << "numSigHits_back = " << numSigHits_back << ", ctr_back_noise = " << ctr_back_noise;
 
         // simulate noise hits in side, top / bottom hcal
         noiseHits_PE = noiseGenerator_->generateNoiseHits((STRIPS_SIDE_TB_PER_LAYER_*NUM_SIDE_TB_HCAL_LAYERS_)*2-numSigHits_side_tb);
