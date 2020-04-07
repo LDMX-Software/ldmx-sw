@@ -66,8 +66,8 @@ namespace ldmx {
         processType_ = ProcessType::unknown;
     }
 
-    void SimParticle::Print() const {
-        std::cout << "SimParticle { " <<
+    void SimParticle::Print(std::ostream& o) const {
+        o << "SimParticle { " <<
                 "energy: " << energy_ << ", " <<
                 "PDG ID: " << pdgID_ << ", " <<
                 "genStatus: " << genStatus_ << ", " <<
@@ -80,7 +80,7 @@ namespace ldmx {
                 "nDaughters: " << getDaughterCount() << ", "
                 "nParents: " << getParentCount() << ", "
                 "processType: " << processType_ <<
-                " }" << std::endl;
+                " }";
     }
 
     SimParticle::ProcessType SimParticle::findProcessType(std::string processName) {

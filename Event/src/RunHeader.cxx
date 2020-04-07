@@ -6,11 +6,6 @@
 
 #include "Event/RunHeader.h"
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <iostream>
-
 namespace ldmx {
 
     RunHeader::RunHeader(int runNumber, std::string detectorName, 
@@ -20,27 +15,29 @@ namespace ldmx {
         description_(description) {
     }
 
-    void RunHeader::Print() const {
-        std::cout << "RunHeader { run: " << runNumber_
-                << ", detectorName: " << detectorName_
-                << ", description: " << description_
-                << std::endl;
-        std::cout << "  intParameters: " << std::endl;
-        for (auto entry : intParameters_) {
-            std::cout << "    " << entry.first
-                    << " = " << entry.second << std::endl;
+    void RunHeader::Print(std::ostream& o) const {
+        o << "RunHeader { run: " << runNumber_
+          << ", detectorName: " << detectorName_
+          << ", description: " << description_
+          << ", intParameters: [";
+        for (auto it = intParameters_.begin(); it != intParameters_.end(); ++it ) {
+            o << it->first << " = " << it->second;
+            if (std::next(it,1) == intParameters_.end()) o << "]";
+            else o << ", ";
         }
-        std::cout << "  floatParameters: " << std::endl;
-        for (auto entry : floatParameters_) {
-            std::cout << "    " << entry.first
-                    << " = " << entry.second << std::endl;
+        o << ", floatParameters: [";
+        for (auto it = floatParameters_.begin(); it != floatParameters_.end(); ++it ) {
+            o << it->first << " = " << it->second;
+            if (std::next(it,1) == floatParameters_.end()) o << "]";
+            else o << ", ";
         }
-        std::cout << "  stringParameters: " << std::endl;
-        for (auto entry : stringParameters_) {
-            std::cout << "    " << entry.first
-                    << " = " << entry.second << std::endl;
+        o << ", stringParameters: [";
+        for (auto it = stringParameters_.begin(); it != stringParameters_.end(); ++it ) {
+            o << it->first << " = " << it->second;
+            if (std::next(it,1) == stringParameters_.end()) o << "]";
+            else o << ", ";
         }
-        std::cout << "}" << std::endl;
+        o << "}";
     }
 
 }

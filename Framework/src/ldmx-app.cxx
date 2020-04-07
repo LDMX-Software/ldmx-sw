@@ -105,12 +105,12 @@ int main(int argc, char* argv[]) {
 
     Process* p { 0 };
     try {
-        BOOST_LOG_SEV(lg,level::info) << "----- LDMXSW: Loading configuration file -----";
+        BOOST_LOG_SEV(lg,logging::level::info) << "----- LDMXSW: Loading configuration file -----";
         
         ConfigurePython cfg(argv[ptrpy], argv + ptrpy + 1, argc - ptrpy);
         p = cfg.makeProcess();
 
-        BOOST_LOG_SEV(lg,level::info) << "----- LDMXSW: Configuration load complete -----";
+        BOOST_LOG_SEV(lg,logging::level::info) << "----- LDMXSW: Configuration load complete -----";
 
         // If Ctrl-c is used, immediately exit the application.
         struct sigaction act;
@@ -127,14 +127,14 @@ int main(int argc, char* argv[]) {
         /* The SA_SIGINFO flag tells sigaction() to use the sa_sigaction field, not sa_handler. */
         //act.sa_flags = SA_SIGINFO;
 
-        BOOST_LOG_SEV(lg,level::info) << "----- LDMXSW: Starting event processing -----";
+        BOOST_LOG_SEV(lg,logging::level::info) << "----- LDMXSW: Starting event processing -----";
         
         p->run();
         
-        BOOST_LOG_SEV(lg,level::info) << "----- LDMXSW: Event processing complete -----";
+        BOOST_LOG_SEV(lg,logging::level::info) << "----- LDMXSW: Event processing complete -----";
 
     } catch (Exception& e) {
-        BOOST_LOG_SEV(lg,level::error) << "[ " << e.name() << " ] : " << e.message()
+        BOOST_LOG_SEV(lg,logging::level::fatal) << "[ " << e.name() << " ] : " << e.message()
             << " at " << e.module() << ":" << e.line() << " in " << e.function();
     }
 

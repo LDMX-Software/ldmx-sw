@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <ostream>
 
 namespace ldmx {
 
@@ -70,7 +71,7 @@ namespace ldmx {
             /**
              * Print out information of this object.
              */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /**
              * Get the energy of the particle [MeV].

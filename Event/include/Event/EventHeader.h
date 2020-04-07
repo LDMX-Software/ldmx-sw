@@ -12,7 +12,7 @@
 #include "TTimeStamp.h"
 
 // STL
-#include <iostream>
+#include <ostream>
 #include <string>
 #include <map>
 
@@ -55,14 +55,12 @@ namespace ldmx {
             /**
              * Print this object.
              */
-            void Print(Option_t* = "") const {
-                std::cout << "EventHeader {" << " eventNumber: " << eventNumber_ << ", run: "
-                        << run_ << ", timestamp: " << timestamp_ << ", weight: " << weight_;
-                if (isRealData_)
-                    std::cout << ", DATA";
-                else
-                    std::cout << ", MC";
-                std::cout << " }" << std::endl;
+            void Print(std::ostream& o) const {
+                o << "EventHeader {" << " eventNumber: " << eventNumber_ << ", run: "
+                  << run_ << ", timestamp: " << timestamp_ << ", weight: " << weight_;
+                if (isRealData_) o << ", DATA";
+                else o << ", MC";
+                o << " }";
             }
 
             /**

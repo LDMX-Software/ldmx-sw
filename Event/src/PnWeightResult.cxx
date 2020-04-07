@@ -32,12 +32,11 @@ namespace ldmx {
         weight_ = 1.0; 
     }
 
-    void PnWeightResult::Print() const {
-        std::cout << "[ PnWeightResult ]:\n"
-                  << "\t Hardest nucleon KE: " << hardestNucleonKe_ << "\n"
-                  << "\t Hardest nucleon theta: " << hardestNucleonTheta_ << "\n"
-                  << "\t Hardest nucleon W: " << hardestNucleonW_ << "\n"
-                  << "\t PN Weight : "    << weight_ << "\n" 
-                  << std::endl;
+    void PnWeightResult::Print(std::ostream& o) const {
+        o << "PnWeightResult {"
+                  << "Hardest nucleon KE: " << hardestNucleonKe_ 
+                  << ", Hardest nucleon theta: " << hardestNucleonTheta_
+                  << ", Hardest nucleon W: " << hardestNucleonW_
+                  << ", PN Weight : "    << weight_ << "}";
     }
 }

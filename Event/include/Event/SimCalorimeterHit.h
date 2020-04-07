@@ -7,6 +7,8 @@
 #ifndef EVENT_SIMCALORIMETERHIT_H_
 #define EVENT_SIMCALORIMETERHIT_H_
 
+#include <ostream>
+
 // ROOT
 #include "TObject.h" //For ClassDef
 
@@ -61,7 +63,7 @@ namespace ldmx {
             /**
              * Print out the object.
              */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /**
              * Get the detector ID.

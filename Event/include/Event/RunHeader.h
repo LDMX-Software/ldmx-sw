@@ -17,6 +17,7 @@
 //----------------//
 #include <map>
 #include <string>
+#include <ostream>
 
 //-------------//
 //   ldmx-sw   //
@@ -124,7 +125,7 @@ namespace ldmx {
             }
 
             /** Print a string desciption of this object. */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
         private:
 

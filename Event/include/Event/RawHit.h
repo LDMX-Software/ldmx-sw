@@ -11,6 +11,7 @@
 //   C++ Standard Lib   //
 //----------------------//
 #include <vector>
+#include <ostream>
 
 //----------//
 //   ROOT   //
@@ -39,7 +40,7 @@ namespace ldmx {
              */
             float getTime() const { return time_; }
 
-            virtual void Print() const {;}
+            virtual void Print(std::ostream&) const {;}
 
             /**
              * Sort by time of hit

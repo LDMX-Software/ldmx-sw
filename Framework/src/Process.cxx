@@ -263,7 +263,7 @@ namespace ldmx {
             }
 
         } catch (Exception& e) {
-            ldmx_log(error) 
+            ldmx_log(fatal) 
                 << "[" << e.name() << "] : " << e.message() << std::endl
                 << "  at " << e.module() << ":" << e.line() << " in " << e.function();
         }

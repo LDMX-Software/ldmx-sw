@@ -11,7 +11,7 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <iostream>
+#include <ostream>
 #include <map>
 
 //----------//
@@ -62,7 +62,7 @@ namespace ldmx {
             void Clear();
 
             /** Print the object */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /** Checks if the event passes the Ecal veto. */
             std::vector<int> passesVeto() {

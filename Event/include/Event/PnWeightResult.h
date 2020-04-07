@@ -12,7 +12,7 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <iostream>
+#include <ostream>
 
 //----------//
 //   LDMX   //
@@ -91,7 +91,7 @@ namespace ldmx {
             void Clear();
 
             /** Print the object */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
         private:
 

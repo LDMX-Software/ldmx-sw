@@ -11,7 +11,10 @@ namespace ldmx {
     }
 
     void Event::Print() const {
-        ldmx_log(warn) << "Printing not implented for Event Bus.";
+        for ( auto passenger : passengers_ ) {
+            ldmx_log(debug) << passenger.first;
+            std::visit( printPassenger(theLog_) , passenger.second );
+        }
     }
 
     void Event::addDrop( const std::string &exp ) {

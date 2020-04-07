@@ -24,8 +24,7 @@ namespace ldmx {
         passesVeto_ = false;
     }    
 
-    void TrackerVetoResult::Print() const { 
-        std::cout << "[ TrackerVetoResult ]: Passes veto : " 
-                  << " Passes veto: " << passesVeto_ << std::endl;
+    void TrackerVetoResult::Print(std::ostream& o) const { 
+        o << "TrackerVetoResult {Passes veto : " << passesVeto_ <<  "}";
     }
 }

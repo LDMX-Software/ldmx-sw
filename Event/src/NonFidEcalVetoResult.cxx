@@ -96,8 +96,8 @@ namespace ldmx {
         FaceY_ = faceXY[1];
     }
 
-    void NonFidEcalVetoResult::Print() const {
-        std::cout << "[ NonFidEcalVetoResult ]:\n" << "\t Passes veto : " << passesVeto_[0] << "," << passesVeto_[1]
-	<< "," << passesVeto_[2] << "," << passesVeto_[3] << "," << passesVeto_[4] << "\n" << std::endl;
+    void NonFidEcalVetoResult::Print(std::ostream& o) const {
+        o << "NonFidEcalVetoResult {" << "Passes veto : " << passesVeto_[0] << "," << passesVeto_[1]
+	      << "," << passesVeto_[2] << "," << passesVeto_[3] << "," << passesVeto_[4] << "}";
     }
 }

@@ -8,6 +8,8 @@
 #ifndef _EVENT_TRACKER_VETO_RESULT_H_
 #define _EVENT_TRACKER_VETO_RESULT_H_
 
+#include <ostream>
+
 //----------//
 //   ROOT   //
 //----------//
@@ -29,7 +31,7 @@ namespace ldmx {
             void Clear(); 
             
             /** Print out the object */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /** Checks if the event passes the Hcal veto. */
             bool passesVeto() const { return passesVeto_; };
@@ -48,7 +50,7 @@ namespace ldmx {
             /** Flag indicating whether the event passes the Hcal veto. */
             bool passesVeto_{false};
 
-        ClassDef(TrackerVetoResult, 1); 
+            ClassDef(TrackerVetoResult, 1); 
 
     }; // TrackerVetoResult
 }

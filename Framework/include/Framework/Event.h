@@ -511,71 +511,71 @@ namespace ldmx {
         
             };
         
-//        
-//            /**
-//             * @class printPassenger
-//             * Printing of event objects.
-//             *
-//             * This method requires all event objects to have a Print method defined.
-//             */
-//            class printPassenger {
-//                public:
-//                    
-//                    /**
-//                     * Constructor
-//                     *
-//                     * Sets verbosity
-//                     */
-//                    printPassenger(logging::logger &log) : log_(log) { }
-//        
-//                    /**
-//                     * Prints size and contents of all vectors depending on verbosity.
-//                     */
-//                    template <typename T>
-//                    void operator()(const std::vector<T> &vec) const { 
-//                        std::stringstream ss;
-//                        ss << "Size: " << vec.size() << "\n";
-//                        ss << "Contents:\n"; 
-//                        for ( const T &obj : vec ) {
-//                            ss << "    ";
-//                            obj.Print(ss);
-//                            ss << "\n";
-//                        }
-//                        BOOST_LOG_SEV(log_,level::debug) << ss;
-//                    }
-//        
-//                    /**
-//                     * Prints size and contents of all maps depending on verbosity.
-//                     */
-//                    template <typename Key, typename Val>
-//                    void operator()(const std::map<Key,Val> &m) const { 
-//                        std::stringstream ss;
-//                        ss << "Size: " << m.size() << "\n";
-//                        ss << "Contents:\n"; 
-//                        for ( const auto &keyVal : m ) {
-//                            ss << "    " << keyVal.first << " -> ";
-//                            keyVal.second.Print(ss);
-//                            ss << "\n";
-//                        }
-//                        BOOST_LOG_SEV(log_,level::debug) << ss;
-//                    }
-//        
-//                    /**
-//                     * Just prints the object if verbosity is nonzero.
-//                     */
-//                    template <typename T>
-//                    void operator()(const T &obj) const { 
-//                        std::stringstream ss;
-//                        obj.Print(ss);
-//                        BOOST_LOG_SEV(log_,level::debug) << ss;
-//                    }
-//
-//                private:
-//
-//                    ///reference to Event log
-//                    logging::logger& log_;
-//        
-//            };
+        
+            /**
+             * @class printPassenger
+             * Printing of event objects.
+             *
+             * This method requires all event objects to have a Print method defined.
+             */
+            class printPassenger {
+                public:
+                    
+                    /**
+                     * Constructor
+                     *
+                     * Sets verbosity
+                     */
+                    printPassenger(logging::logger &log) : theLog_(log) { }
+        
+                    /**
+                     * Prints size and contents of all vectors depending on verbosity.
+                     */
+                    template <typename T>
+                    void operator()(const std::vector<T> &vec) const { 
+                        std::stringstream ss;
+                        ss << "Size: " << vec.size() << "\n";
+                        ss << "Contents:\n"; 
+                        for ( const T &obj : vec ) {
+                            ss << "    ";
+                            obj.Print(ss);
+                            ss << "\n";
+                        }
+                        ldmx_log(debug) << ss.str();
+                    }
+        
+                    /**
+                     * Prints size and contents of all maps depending on verbosity.
+                     */
+                    template <typename Key, typename Val>
+                    void operator()(const std::map<Key,Val> &m) const { 
+                        std::stringstream ss;
+                        ss << "Size: " << m.size() << "\n";
+                        ss << "Contents:\n"; 
+                        for ( const auto &keyVal : m ) {
+                            ss << "    " << keyVal.first << " -> ";
+                            keyVal.second.Print(ss);
+                            ss << "\n";
+                        }
+                        ldmx_log(debug) << ss.str();
+                    }
+        
+                    /**
+                     * Just prints the object if verbosity is nonzero.
+                     */
+                    template <typename T>
+                    void operator()(const T &obj) const { 
+                        std::stringstream ss;
+                        obj.Print(ss);
+                        ldmx_log(debug) << ss.str();
+                    }
+
+                private:
+
+                    ///reference to Event log
+                    logging::logger &theLog_;
+        
+            };
 
         private:
 

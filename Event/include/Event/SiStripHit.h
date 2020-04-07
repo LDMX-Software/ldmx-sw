@@ -10,7 +10,7 @@
 //----------------------//
 //   C++ Standard Lib   //
 //----------------------//
-#include <iostream>
+#include <ostream>
 #include <string>
 
 //----------//
@@ -51,7 +51,7 @@ namespace ldmx {
             const std::vector<SimTrackerHit> getSimTrackerHits() const { return simTrackerHits_; }
 
             /** Print a description of this object. */
-            void Print() const; 
+            void Print(std::ostream& o) const; 
 
             /** Reset this object. */
             void Clear();

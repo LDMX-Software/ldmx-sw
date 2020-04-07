@@ -20,10 +20,10 @@ namespace ldmx {
         setPE(0);
     }
 
-    void TrigScintHit::Print(Option_t *option) const {
-        std::cout << "TrigScintHit { " << "id: " << std::hex << getID() << std::dec
-                  << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
-                  << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE() << "}" << std::endl;
+    void TrigScintHit::Print(std::ostream& o) const {
+        o << "TrigScintHit { " << "id: " << std::hex << getID() << std::dec
+          << ",  energy: " << getEnergy() << "MeV, time: " << getTime()
+          << "ns, amplitude: " << getAmplitude() << ", pe: " << getPE() << "}";
     }
 
 }

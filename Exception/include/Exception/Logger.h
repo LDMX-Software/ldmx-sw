@@ -23,7 +23,8 @@
 #include <boost/log/sources/severity_channel_logger.hpp> //for the severity logger
 #include <boost/log/sources/global_logger_storage.hpp> //for global logger default
 #include <boost/log/expressions.hpp> //for attributes and expressions
-#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp> //for commong logging attributes (e.g. time stamp, message)
+#include <boost/log/support/date_time.hpp> //for TimeStamp
 
 //TODO check which headers are required
 #include <boost/log/utility/setup/file.hpp>
@@ -31,20 +32,37 @@
 
 namespace ldmx {
 
-    /**
-     * Severity/Logging levels
-     *
-     * Out in this namespace so its easier for everyone to use.
-     */
-    enum level {
-        debug = 0, //0
-        info,  //1
-        warn,  //2 -> default
-        error, //3
-        fatal  //4 
-    };
-
     namespace logging {
+
+        /**
+         * Severity/Logging levels
+         */
+        enum level {
+            debug = 0, //0
+            info,  //1
+            warn,  //2 -> default
+            error, //3
+            fatal  //4 
+        };
+
+        /**
+         * Severity level to human readable name map
+         *
+         * Human readable names are the same width in characters
+         *
+         * NOT IMPLEMENTED RIGHT NOW
+         * boost's extract returns some weird templated type that cannot
+         * be implicitly converted to level. 
+         * We _can_ stream the output to a string stream and use
+         * that as the key in our map, but that is lame.
+         */
+        const std::unordered_map< level , std::string > humanReadableLevel = {
+            { debug , "debug" },
+            { info  , "info " },
+            { warn  , "warn " },
+            { error , "error" },
+            { fatal , "fatal" }
+        };
 
         /**
          * Short names for boost namespaces
@@ -113,6 +131,6 @@ namespace ldmx {
  * Assumes to have access to a variable named theLog_ of type logger. 
  * Input logging level (without namespace or enum).
  */
-#define ldmx_log(lvl) BOOST_LOG_SEV(theLog_,level::lvl)
+#define ldmx_log(lvl) BOOST_LOG_SEV(theLog_,logging::level::lvl)
 
 #endif //EXCEPTION_LOGGER_H

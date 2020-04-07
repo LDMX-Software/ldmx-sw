@@ -28,9 +28,9 @@ namespace ldmx {
         time_ = 0;
     }
 
-    void SimCalorimeterHit::Print() const {
-        std::cout << "SimCalorimeterHit { " << "id: " << id_ << ",  edep: " << edep_ << ", "
-                "position: ( " << x_ << ", " << y_ << ", " << z_ << " ), num contribs: " << nContribs_ << " }" << std::endl;
+    void SimCalorimeterHit::Print(std::ostream& o) const {
+        o << "SimCalorimeterHit { " << "id: " << id_ << ",  edep: " << edep_ << ", "
+          << "position: ( " << x_ << ", " << y_ << ", " << z_ << " ), num contribs: " << nContribs_ << " }";
     }
 
     void SimCalorimeterHit::addContrib(int trackID, int pdgCode, float edep, float time) {

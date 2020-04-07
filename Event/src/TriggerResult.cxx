@@ -11,13 +11,8 @@ namespace ldmx {
         Clear();
     }
 
-    void TriggerResult::Print() const {
-
-        std::cout << "TriggerResult { " << "name: " << name_ << ", " << "pass: " << pass_ << " }" << std::endl;
-
-        for (int i = 0; i < variables_.GetSize(); ++i) {
-            std::cout << "Element " << i << " : " << variables_[i] << std::endl;
-        }
+    void TriggerResult::Print(std::ostream& o) const {
+        o << "TriggerResult { " << "name: " << name_ << ", " << "pass: " << pass_ << " }";
     }
 
     void TriggerResult::Clear() {

@@ -22,7 +22,6 @@ namespace ldmx {
 
         logger makeLogger( const std::string& name ) {
             logger lg( log::keywords::channel = name); //already has severity built in
-            //lg.add_attribute("StopWatch",boost::make_shared< log::attributes::timer >()); //add timing attribute
             return boost::move(lg);
         }
 
@@ -36,14 +35,14 @@ namespace ldmx {
                 std::string currArg = *it;
                 if ( currArg == "-f" or currArg == "--fileLog" ) {
                     //print ldmx-sw logging messages to a file
-                    auto nextArg = it+1;
+                    auto nextArg = std::next(it,1);
                     if ( nextArg != loggingArgs.end() and not nextArg->empty() ) {
                         //next argument exists
                         if ( strstr( nextArg->c_str() , ".log" ) ) fileName = *nextArg;
                         else if ( isdigit( (*nextArg)[0] ) ) fileLevelInt = atoi( nextArg->c_str() );
 
                         //second argument to -f exists ==> check if log file name
-                        auto nextNextArg = nextArg+1;
+                        auto nextNextArg = std::next(it,2);
                         if ( nextNextArg != loggingArgs.end() 
                                 and not nextNextArg->empty() 
                                 and strstr( nextArg->c_str() , ".log" ) ) fileName = *nextNextArg;
@@ -53,7 +52,7 @@ namespace ldmx {
                     }
                 } else if ( currArg == "-v" or currArg == "--verbosity" ) {
                     //check for next arg being verbosity integer
-                    auto nextArg = it+1;
+                    auto nextArg = std::next(it,1);
                     //next argument could be the integer level for terminal logging
                     if ( nextArg != loggingArgs.end() 
                             and not nextArg->empty() 
@@ -94,56 +93,54 @@ namespace ldmx {
                         log::expressions::attr<level>("Severity") >= level(fileLevelInt)
                         );
     
-                //TODO change format to something helpful
                 //Currently:
-                //  [ Channel ](int severity) : message
+                //  TimeStamp [ Channel ] severity : message
                 fileSink->set_formatter(
                     [](const log::record_view &view, log::formatting_ostream &os ) {
-                        os << "[ " 
-                           << view.attribute_values()["Channel"].extract<std::string>() << " ]("
-                           << view.attribute_values()["Severity"].extract<level>() << ") : "
-                           << view.attribute_values()["Message"].extract<std::string>();
+                        os 
+                            << log::extract<boost::posix_time::ptime>( "TimeStamp" , view )
+                            << " [ " << log::extract<std::string>( "Channel", view ) << " ] "
+                            << /*humanReadableLevel.at*/(log::extract<level>( "Severity" , view ))
+                            << " : " << view[log::expressions::smessage];
                     }
                 );
 
                 core->add_sink(fileSink);
             } //file set to pass something
 
-            if ( termLevelInt < 5 ) {
-        
-                //terminal sink is always created
-                boost::shared_ptr< ourSinkBack_t > termBack = boost::make_shared< ourSinkBack_t >();
-                termBack->add_stream(
-                    boost::shared_ptr< std::ostream >(
-                        &std::cout, //point this stream to std::cout
-                        boost::null_deleter() //don't let boost delete std::cout
-                        )
-                    );
-                //flushes message to screen **after each message**
-                termBack->auto_flush( true );
-    
-                boost::shared_ptr< ourSinkFront_t > termSink 
-                    = boost::make_shared< ourSinkFront_t >( termBack );
-    
-                //translate integer level to enum
-                termSink->set_filter(
-                        log::expressions::attr<level>("Severity") >= level(termLevelInt)
-                        );
-    
-                //TODO change format to something helpful
-                //Currently:
-                //  [ Channel ](int severity) : message
-                termSink->set_formatter(
-                    [](const log::record_view &view, log::formatting_ostream &os ) {
-                        os << "[ " 
-                           << view.attribute_values()["Channel"].extract<std::string>() << " ]("
-                           << view.attribute_values()["Severity"].extract<level>() << ") : "
-                           << view.attribute_values()["Message"].extract<std::string>();
-                    }
+            //terminal sink is always created
+            boost::shared_ptr< ourSinkBack_t > termBack = boost::make_shared< ourSinkBack_t >();
+            termBack->add_stream(
+                boost::shared_ptr< std::ostream >(
+                    &std::cout, //point this stream to std::cout
+                    boost::null_deleter() //don't let boost delete std::cout
+                    )
                 );
-    
-                core->add_sink(termSink);
-            } //terminal set to pass something
+            //flushes message to screen **after each message**
+            termBack->auto_flush( true );
+
+            boost::shared_ptr< ourSinkFront_t > termSink 
+                = boost::make_shared< ourSinkFront_t >( termBack );
+
+            //translate integer level to enum
+            level passingLevel = termLevelInt > 4 ? fatal : level(termLevelInt);
+            termSink->set_filter(
+                    log::expressions::attr<level>("Severity") >= passingLevel
+                    );
+
+            //Currently:
+            //  TimeStamp [ Channel ] severity : message
+            termSink->set_formatter(
+                [](const log::record_view &view, log::formatting_ostream &os ) {
+                    os 
+                        << log::extract<boost::posix_time::ptime>( "TimeStamp" , view )
+                        << " [ " << log::extract<std::string>( "Channel", view ) << " ] "
+                        << /*humanReadableLevel.at*/(log::extract<level>( "Severity" , view ))
+                        << " : " << view[log::expressions::smessage];
+                }
+            );
+
+            core->add_sink(termSink);
     
             return;
 

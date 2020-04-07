@@ -13,7 +13,7 @@
 #include "TArrayD.h"
 
 // STL
-#include <iostream>
+#include <ostream>
 
 namespace ldmx {
 
@@ -38,7 +38,7 @@ namespace ldmx {
             /**
              * Print a description of this object.
              */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /**
              * Reset the TriggerResult object.

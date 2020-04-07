@@ -12,7 +12,7 @@
 #include "TObject.h" //For ClassDef
 
 // STL
-#include <iostream>
+#include <ostream>
 
 namespace ldmx {
 
@@ -37,7 +37,7 @@ namespace ldmx {
             /**
              * Print a description of this object.
              */
-            void Print() const;
+            void Print(std::ostream& o) const;
 
             /**
              * Reset the SimTrackerHit object.

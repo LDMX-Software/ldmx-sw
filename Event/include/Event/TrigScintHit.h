@@ -7,6 +7,8 @@
 #ifndef EVENT_TRIGSCINTHIT_H
 #define EVENT_TRIGSCINTHIT_H
 
+#include <ostream>
+
 /*~~~~~~~~~~~*/
 /*   Event   */
 /*~~~~~~~~~~~*/
@@ -43,7 +45,7 @@ namespace ldmx {
             /**
              * Print out the object.
              */
-            void Print(Option_t *option = "") const;
+            void Print(std::ostream& o) const;
 
             /// Decode the section associated with the hit from the ID. 
             int getSection() const final override { return (getID() & 0x7000) >> 12; }

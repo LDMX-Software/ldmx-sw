@@ -13,16 +13,15 @@ namespace ldmx {
         Clear();
     }
 
-    void SiStripHit::Print() const { 
-        
-        std::cout << "[ SiStripHit ]:\n" 
-                  << "\t ADC Values: [ ";  
+    void SiStripHit::Print(std::ostream& o) const { 
+        o << "SiStripHit {" 
+          << "ADC Values: [ ";  
         for (auto const& adcValue : adcValues_) { 
-            std::cout << adcValue << ", "; 
+            o << adcValue;
+            if (&adcValue == &adcValues_.back()) o << "]";
+            else o << ", ";
         }
-        std::cout << " ]\n"  
-                  << "\t Time: " << time_ << std::endl;
-
+        o << ", Time: " << time_ << "}";
     }
 
     void SiStripHit::Clear() { 
