@@ -183,7 +183,7 @@ namespace ldmx {
         // photo-nuclear reaction.
         auto pnGamma{Analysis::getRecoilPNGamma(particleMap)};
         if (pnGamma == nullptr) { 
-            std::cout << "[ EcalPN ]: PN Daughter is lost, skipping." << std::endl;
+            ldmx_log(warn) << "PN Daughter is lost, skipping.";
             return;
         }
 
