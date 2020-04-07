@@ -101,7 +101,7 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
     ptable->SetProcessActivation(pname,state);
 
     if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
-        std::cout << "[ G4eDarkBremsstrahlungModel ] : A dark brem occurred!" << std::endl;
+        G4cout << "[ G4eDarkBremsstrahlungModel ] : A dark brem occurred!" << G4endl;
     }
 
     G4double E0 = primary->GetTotalEnergy();
@@ -126,9 +126,9 @@ void G4eDarkBremsstrahlungModel::SampleSecondaries(std::vector<G4DynamicParticle
             PhiAcc = data.electron.Phi();
 
             if(i > maxIterations_) {
-                std::cout << "[ G4eDarkBremsstrahlungModel ] : "
+                G4cerr << "[ G4eDarkBremsstrahlungModel ] : "
                     << "Did not manage to simulate with E0 = " << E0
-                    << " and EAcc = " << EAcc << std::endl;
+                    << " and EAcc = " << EAcc << G4endl;
                 break;
             }
         }
@@ -302,7 +302,7 @@ void G4eDarkBremsstrahlungModel::SetParticle(const G4ParticleDefinition* p) {
 void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
     //TODO: use already written LHE parser?
     if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 0 ) {
-        std::cout << "[ G4eDarkBremsstrahlungModel ] : Parsing LHE file '" << fname << "'" << std::endl;
+        G4cout << "[ G4eDarkBremsstrahlungModel ] : Parsing LHE file '" << fname << "'" << G4endl;
     }
     std::ifstream ifile;
     ifile.open(fname.c_str());

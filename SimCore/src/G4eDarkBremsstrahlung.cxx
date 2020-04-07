@@ -38,8 +38,8 @@ void G4eDarkBremsstrahlung::PrintInfo() {
         method = "cm_scaling";
     }
 
-    std::cout << "\tInterpretation Method: " + method << std::endl;
-    std::cout << "\tMad Graph Data File  : " + madGraphFile_ << std::endl;
+    G4cout << "\tInterpretation Method: " + method << G4endl;
+    G4cout << "\tMad Graph Data File  : " + madGraphFile_ << G4endl;
 
 }
 
