@@ -99,20 +99,20 @@ namespace ldmx {
         cellR_      = (2./sqrt(3.))*cellr_;
         lengthWide_ = nCellsWide*2.*cellr_;
         if(verbose_>0){
-            std::cout << std::endl << "[EcalHexReadout] Verbosity set in header to " << verbose_ << std::endl;
-            std::cout << TString::Format("Building module map with gap %.2f, lengthWide %.2f, nCellsWide %d ",gap_,lengthWide_,nCellsWide_) << std::endl;
-            std::cout << TString::Format("  min/max radii of cell %.2f %.2f and module %.2f %.2f",cellr_,cellR_,moduler_,moduleR_) << std::endl;
+            ldmx_log(debug) << "Verbosity set in header to " << verbose_;
+            ldmx_log(debug) << TString::Format("Building module map with gap %.2f, lengthWide %.2f, nCellsWide %d ",gap_,lengthWide_,nCellsWide_).Data();
+            ldmx_log(debug) << TString::Format("  min/max radii of cell %.2f %.2f and module %.2f %.2f",cellr_,cellR_,moduler_,moduleR_).Data();
         }
 
         buildModuleMap();
         buildCellMap();
         buildCellModuleMap();
         buildNeighborMaps();
-        if(verbose_>0){ std::cout << std::endl; }
+        if(verbose_>0){ ldmx_log(debug) ; }
     }
 
     void EcalHexReadout::buildModuleMap(){
-        if(verbose_>0) std::cout << std::endl << "[buildModuleMap] Building module position map for module min r of " << moduler_ << std::endl;
+        if(verbose_>0) ldmx_log(debug)  << "[buildModuleMap] Building module position map for module min r of " << moduler_ ;
         // module IDs are 0 for ecal center, 1 at 12 o'clock, and clockwise till 6 at 11 o'clock.
         double C_PI = 3.14159265358979323846; // or TMath::Pi(), #define, atan(), ...
         modulePositionMap_[0] = std::pair<double,double>(0.,0.);
@@ -120,13 +120,13 @@ namespace ldmx {
             double x = (2.*moduler_+gap_)*sin( (id-1)*(C_PI/3.) );
             double y = (2.*moduler_+gap_)*cos( (id-1)*(C_PI/3.) );
             modulePositionMap_[id] = std::pair<double,double>(x,y);
-            if(verbose_>2) std::cout << TString::Format("   id %d is at (%.2f, %.2f)",id,x,y) << std::endl;
+            if(verbose_>2) ldmx_log(debug) << TString::Format("   id %d is at (%.2f, %.2f)",id,x,y).Data();
         }
-        if(verbose_>0) std::cout << std::endl;
+        if(verbose_>0) ldmx_log(debug) ;
     }
 
     void EcalHexReadout::buildCellModuleMap(){
-        if(verbose_>0) std::cout << std::endl << "[buildCellModuleMap] Building cellModule position map" << std::endl;
+        if(verbose_>0) ldmx_log(debug)  << "[buildCellModuleMap] Building cellModule position map" ;
         for(auto const& module : modulePositionMap_) {
             int moduleID = module.first;
             double moduleX = module.second.first;
@@ -141,7 +141,7 @@ namespace ldmx {
                 cellModulePositionMap_[cellModuleID] = std::pair<double,double>(x,y);
             }
         }
-        if(verbose_>0) std::cout << "  contained " << cellModulePositionMap_.size() << " entries. " << std::endl;
+        if(verbose_>0) ldmx_log(debug) << "  contained " << cellModulePositionMap_.size() << " entries. " ;
     }
 
     void EcalHexReadout::buildCellMap(){
@@ -163,11 +163,11 @@ namespace ldmx {
         gridMap.Honeycomb( -gridWidth/2, -gridHeight/2, cellR_, gridCellsWide, gridCellsWide);
 
         if(verbose_>0){
-            std::cout << std::endl;
-            std::cout << TString::Format("[buildCellMap] cell rmin/max %.2f %.2f yield columnDistance_ %.2f, rowDistance_ %.2f",
-                                                                      cellr_, cellR_, columnDistance_, rowDistance_) << std::endl;
-            std::cout << TString::Format("[buildCellMap] gridCellsWide %d, gridWidth %.2f, gridHeight %.2f",
-                                                                      gridCellsWide, gridWidth, gridHeight) << std::endl;
+            ldmx_log(debug) ;
+            ldmx_log(debug) << TString::Format("[buildCellMap] cell rmin/max %.2f %.2f yield columnDistance_ %.2f, rowDistance_ %.2f",
+                                                                      cellr_, cellR_, columnDistance_, rowDistance_).Data();
+            ldmx_log(debug) << TString::Format("[buildCellMap] gridCellsWide %d, gridWidth %.2f, gridHeight %.2f",
+                                                                      gridCellsWide, gridWidth, gridHeight).Data();
         }
 
         // copy cells lying within module boundaries to a module grid
@@ -182,13 +182,13 @@ namespace ldmx {
             double y = (polyBin->GetYMax() + polyBin->GetYMin()) / 2.;
             poly = (TGraph*)polyBin->GetPolygon();
 
-            if(verbose_>1) std::cout << TString::Format("[buildCellMap] Grid cell center ID=%d, XY=(%.2f,%.2f)",id,x,y) << std::endl;
+            if(verbose_>1) ldmx_log(debug) << TString::Format("[buildCellMap] Grid cell center ID=%d, XY=(%.2f,%.2f)",id,x,y).Data();
             if(verbose_>2){
-              std::cout << "[buildCellMap] Cell vertices" << std::endl;
+              ldmx_log(debug) << "[buildCellMap] Cell vertices" ;
               double tmpx=0, tmpy=0;
               for(unsigned i = 0 ; i < poly->GetN() ; i++){
-                  std::cout << "     vtx # " << poly->GetPoint(i,tmpx,tmpy) << std::endl;
-                  std::cout << "     vtx x,y " << tmpx << " " << tmpy << std::endl;
+                  ldmx_log(debug) << "     vtx # " << poly->GetPoint(i,tmpx,tmpy) ;
+                  ldmx_log(debug) << "     vtx x,y " << tmpx << " " << tmpy ;
               }
             }
 
@@ -197,9 +197,9 @@ namespace ldmx {
             bool addPoly = isInside(x/(lengthWide_/2.), y/(lengthWide_/2.)); // NB lengthWide, not gridWidth!
 
             if(addPoly){
-                if(verbose_>1) std::cout << TString::Format("[buildCellMap] Copying poly with ID %d and (x,y) (%.2f,%.2f)", id, x, y) << std::endl;
+                if(verbose_>1) ldmx_log(debug) << TString::Format("[buildCellMap] Copying poly with ID %d and (x,y) (%.2f,%.2f)", id, x, y).Data();
                 bool isCopied = (std::find(std::begin(cellIdCopied), std::end(cellIdCopied), id) != cellIdCopied.end());
-                if(verbose_>1 && isCopied) std::cout << "    cell was used already! not copying." << std::endl;
+                if(verbose_>1 && isCopied) ldmx_log(debug) << "    cell was used already! not copying." ;
                 if(!isCopied){
                     //ecalMap_ needs to have its own copy of the polygon TGraph
                     //  otherwise we get a segfault in ~EcalHexReadout because the polygon that
@@ -212,7 +212,7 @@ namespace ldmx {
             }
         }
 
-        if(verbose_>0) std::cout << std::endl;
+        if(verbose_>0) ldmx_log(debug) ;
         return;
     }
 
@@ -228,7 +228,7 @@ namespace ldmx {
          *   (NNN) Center within [3*cellr_, 4.5*cellr_]
          *   Chosen b/c in ideal case, centers are at 2*cell_ (NN), and at 3*cellR_=3.46*cellr_ and 4*cellr_ (NNN).
          */
-        if(verbose_>0) std::cout << std::endl << TString::Format("[buildNeighborMap] Building with %d cells wide", nCellsWide_) << std::endl;
+        if(verbose_>0) ldmx_log(debug)  << TString::Format("[buildNeighborMap] Building with %d cells wide", nCellsWide_).Data();
 
         NNMap_.clear();
         NNNMap_.clear();
@@ -244,27 +244,27 @@ namespace ldmx {
                 if(      dist > 1*cellr_  && dist <= 3.*cellr_)  { NNMap_[centerID].push_back(probeID); }
                 else if( dist > 3.*cellr_ && dist <= 4.5*cellr_) {NNNMap_[centerID].push_back(probeID); }
             }
-            if(verbose_>1) std::cout << TString::Format("Found %d NN and %d NNN for cellModuleID %d with x,y (%.2f,%.2f)",
-                                                        NNMap_[centerID].size(), NNNMap_[centerID].size(), centerID, centerX, centerY) << std::endl;
+            if(verbose_>1) ldmx_log(debug) << TString::Format("Found %d NN and %d NNN for cellModuleID %d with x,y (%.2f,%.2f)",
+                                                        NNMap_[centerID].size(), NNNMap_[centerID].size(), centerID, centerX, centerY).Data();
         }
         if(verbose_>2){
             double specialX = 0.5*moduleR_ - 0.5*cellr_; // center of cell which is upper-right corner of center module
             double specialY = moduler_ - 0.5*cellR_;
             int specialCellModuleID = getCellModuleID(specialX,specialY);
-            std::cout << "The neighbors of the bin in the upper-right corner of the center module, with cellModuleID " 
-                      << specialCellModuleID << " include " << std::endl;
+            ldmx_log(debug) << "The neighbors of the bin in the upper-right corner of the center module, with cellModuleID " 
+                      << specialCellModuleID << " include " ;
             for(auto centerNN : NNMap_.at(specialCellModuleID)){
-                std::cout << TString::Format(" NN ID %d (x,y) (%.2f, %.2f)",
-                             centerNN,getCellCenterAbsolute(centerNN).first,getCellCenterAbsolute(centerNN).second) << std::endl;
+                ldmx_log(debug) << TString::Format(" NN ID %d (x,y) (%.2f, %.2f)",
+                             centerNN,getCellCenterAbsolute(centerNN).first,getCellCenterAbsolute(centerNN).second).Data();
             }
             for(auto centerNNN : NNNMap_.at(specialCellModuleID)){
-                std::cout << TString::Format(" NNN ID %d (x,y) (%.2f, %.2f)",
-                             centerNNN,getCellCenterAbsolute(centerNNN).first,getCellCenterAbsolute(centerNNN).second) << std::endl;
+                ldmx_log(debug) << TString::Format(" NNN ID %d (x,y) (%.2f, %.2f)",
+                             centerNNN,getCellCenterAbsolute(centerNNN).first,getCellCenterAbsolute(centerNNN).second).Data();
             }
-            std::cout << TString::Format("This bin is a distance of %.2f away from a module edge. Decision isEdge %d.",
-                         distanceToEdge(specialCellModuleID),isEdgeCell(specialCellModuleID)) << std::endl;
+            ldmx_log(debug) << TString::Format("This bin is a distance of %.2f away from a module edge. Decision isEdge %d.",
+                         distanceToEdge(specialCellModuleID),isEdgeCell(specialCellModuleID)).Data();
         }
-        if(verbose_>0) std::cout << std::endl;
+        if(verbose_>0) ldmx_log(debug) ;
         return;
     }
 
@@ -282,16 +282,16 @@ namespace ldmx {
     }
 
     bool EcalHexReadout::isInside(double normX, double normY) const {
-        if(verbose_>2) std::cout << TString::Format("[isInside] Checking if normXY=(%.2f,%.2f) is inside.",normX,normY) << std::endl;
+        if(verbose_>2) ldmx_log(debug) << TString::Format("[isInside] Checking if normXY=(%.2f,%.2f) is inside.",normX,normY).Data();
         normX = fabs(normX), normY = fabs(normY);
         double xvec = -1,  yvec = -1./sqrt(3);
         double xref = 0.5, yref = sqrt(3)/2.;
         if( (normX > 1.) || (normY > yref) ){
-            if(verbose_>2) std::cout << "[isInside]   they are outside quadrant." << std::endl;
+            if(verbose_>2) ldmx_log(debug) << "[isInside]   they are outside quadrant." ;
             return false;
         }
         double dotProd = (xvec*(normX-xref) + yvec*(normY-yref));
-        if(verbose_>2) std::cout << TString::Format("[isInside] they are inside quadrant. Dot product (>0 is inside): %.2f ", dotProd) << std::endl;
+        if(verbose_>2) ldmx_log(debug) << TString::Format("[isInside] they are inside quadrant. Dot product (>0 is inside): %.2f ", dotProd).Data();
         return (dotProd > 0.);
     }
 

@@ -16,7 +16,6 @@
 //------------//
 //   LDMX     //
 //------------//
-#include "Exception/Logger.h"
 #include "SimApplication/PrimaryGenerator.h"
 
 // Forward declarations
@@ -66,11 +65,6 @@ namespace ldmx {
              * The actual Geant4 implementation of the ParticleGun
              */
             G4ParticleGun theGun_;
-
-            /**
-             * Enable logging
-             */
-            enableLogging("ParticleGun")
 
     }; // ParticleGun 
 

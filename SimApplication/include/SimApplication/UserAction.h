@@ -18,6 +18,7 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
+#include "Exception/Logger.h"
 #include "Framework/Parameters.h" 
 
 // Forward Declarations
@@ -171,6 +172,9 @@ namespace ldmx {
             
             /// The set of parameters used to configure this class
             Parameters parameters_; 
+
+            /// the log variable
+            mutable logging::logger theLog_;
 
     }; // UserAction
 

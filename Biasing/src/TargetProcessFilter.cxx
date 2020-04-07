@@ -28,9 +28,9 @@ namespace ldmx {
             const G4Track* track, 
             const G4ClassificationOfNewTrack& currentTrackClass) {
 
-        /*std::cout << "********************************" << std::endl; 
-        std::cout << "*   Track pushed to the stack  *" << std::endl;
-        std::cout << "********************************" << std::endl;*/
+        /*ldmx_log(debug) << "********************************" << std::endl; 
+        ldmx_log(debug) << "*   Track pushed to the stack  *" << std::endl;
+        ldmx_log(debug) << "********************************" << std::endl;*/
 
         // get the PDGID of the track.
         //G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
@@ -38,14 +38,14 @@ namespace ldmx {
         // Get the particle type.
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
 
-        /*std::cout << "[ TargetBremFilter ]: " << "\n" 
+        /*ldmx_log(debug) << "[ TargetBremFilter ]: " << "\n" 
                     << "\tParticle " << particleName << " ( PDG ID: " << pdgID << " ) : " << "\n"
                     << "\tTrack ID: " << track->GetTrackID() << "\n" 
                     << std::endl;*/
 
         if (track == currentTrack_) {
             currentTrack_ = nullptr; 
-            //std::cout << "[ TargetBremFilter ]: Pushing track to waiting stack." << std::endl;
+            //ldmx_log(debug) << "[ TargetBremFilter ]: Pushing track to waiting stack." << std::endl;
             return fWaiting; 
         }
 
@@ -80,9 +80,9 @@ namespace ldmx {
         // If the particle isn't in the target, don't continue with the processing.
         if (volumeName.compareTo(volumeName_) != 0) return;
 
-        /*std::cout << "*******************************" << std::endl; 
-        std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;
-        std::cout << "********************************" << std::endl;*/
+        /*ldmx_log(debug) << "*******************************" << std::endl; 
+        ldmx_log(debug) << "*   Step " << track->GetCurrentStepNumber() << std::endl;
+        ldmx_log(debug) << "********************************" << std::endl;*/
 
         // Get the particle type.
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
@@ -90,7 +90,7 @@ namespace ldmx {
         // Get the kinetic energy of the particle.
         //double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
 
-        /*std::cout << "[ TargetProcessFilter ]: " << "\n" 
+        /*ldmx_log(debug) << "[ TargetProcessFilter ]: " << "\n" 
                     << "\tTotal energy of " << particleName      << " ( PDG ID: " << pdgID
                     << " ) : " << incidentParticleEnergy       << "\n"
                     << "\tTrack ID: " << track->GetTrackID()     << "\n" 
@@ -100,7 +100,7 @@ namespace ldmx {
         // 
         std::vector<G4Track*> bremGammaList = TargetBremFilter::getBremGammaList();
         if (std::find(bremGammaList.begin(), bremGammaList.end(), track) == bremGammaList.end()) { 
-            /*std::cout << "[ TargetProcessFilter ]: "
+            /*ldmx_log(debug) << "[ TargetProcessFilter ]: "
                       << "Brem list doesn't contain track." << std::endl;*/
             currentTrack_ = track; 
             track->SetTrackStatus(fSuspend);
@@ -114,7 +114,7 @@ namespace ldmx {
         // processing the rest of the event. 
         if (secondaries->size() == 0) {
 
-            /*std::cout << "[ TargetProcessFilter ]: "
+            /*ldmx_log(debug) << "[ TargetProcessFilter ]: "
                         << "Brem photon did not interact in the target. --> Postponing tracks."
                         << std::endl;*/
             
@@ -134,7 +134,7 @@ namespace ldmx {
        
             G4String processName = secondaries->at(0)->GetCreatorProcess()->GetProcessName(); 
             
-            /*std::cout << "[ TargetProcessFilter ]: "
+            /*ldmx_log(debug) << "[ TargetProcessFilter ]: "
                       << "Brem photon produced " << secondaries->size() 
                       << " particle via " << processName << " process." 
                       << std::endl;*/
@@ -142,7 +142,7 @@ namespace ldmx {
             // Only record the process that is being biased
             if (!processName.contains(process_)) {
 
-                /*std::cout << "[ TargetProcessFilter ]: "
+                /*ldmx_log(debug) << "[ TargetProcessFilter ]: "
                           << "Process was not " << BiasingMessenger::getProcess() << "--> Killing all tracks!" 
                           << std::endl;*/
                 
@@ -159,10 +159,9 @@ namespace ldmx {
                 }
             }
 
-            std::cout << "[ TargetProcessFilter ]: "
+            ldmx_log(debug) << "[ TargetProcessFilter ]: "
                       << "Brem photon produced " << secondaries->size() 
-                      << " particle via " << processName << " process." 
-                      << std::endl;
+                      << " particle via " << processName << " process.";
             TargetBremFilter::removeBremFromList(track);
             //BiasingMessenger::setEventWeight(track->GetWeight());
             reactionOccurred_ = true;

@@ -14,6 +14,7 @@
 
 // LDMX
 #include "Exception/Exception.h"
+#include "Exception/Logger.h"
 #include "DetDescr/EcalDetectorID.h"
 
 // STL
@@ -326,6 +327,11 @@ namespace ldmx {
              * Needs to be mutable because ROOT doesn't have good const handling
              */
             mutable TH2Poly ecalMap_;
+
+            /**
+             * Enable Logging in this class
+             */
+            enableLogging( "EcalHexReadout" )
     };
 
 }

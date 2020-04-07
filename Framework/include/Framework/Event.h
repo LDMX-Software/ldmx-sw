@@ -652,7 +652,7 @@ namespace ldmx {
             /**
              * The logging object
              */
-            mutable enableLogging( "Event" )
+            enableLogging( "Event" )
     }; 
 }
 

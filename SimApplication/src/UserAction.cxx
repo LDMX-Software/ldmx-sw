@@ -19,6 +19,7 @@ namespace ldmx {
     UserAction::UserAction(const std::string& name, Parameters& parameters) { 
         name_ = name; 
         parameters_ = parameters; 
+        theLog_ = logging::makeLogger(name_);
     }
 
     UserAction::~UserAction() {} 

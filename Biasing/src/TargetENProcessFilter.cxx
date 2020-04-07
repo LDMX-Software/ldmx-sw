@@ -93,10 +93,9 @@ namespace ldmx {
                     return; 
             }
 
-            std::cout << "[ TargetENProcessFilter ]: "
+            ldmx_log(debug) << "[ TargetENProcessFilter ]: "
                       << "Electronuclear reaction resulted in " << secondaries->size() 
-                      << " particles via " << processName << " process." 
-                      << std::endl;
+                      << " particles via " << processName << " process." ;
             //BiasingMessenger::setEventWeight(track->GetWeight());
             reactionOccurred_ = true;
         }

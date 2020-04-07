@@ -220,10 +220,9 @@ namespace ldmx {
                 }
             }
             
-            std::cout << "[ EcalProcessFilter ]: "
+            ldmx_log(debug) << "[ EcalProcessFilter ]: "
                       << "Brem photon produced " << secondaries->size() 
-                      << " particle via " << processName << " process." 
-                      << std::endl;
+                      << " particle via " << processName << " process." ;
             TargetBremFilter::removeBremFromList(track);
             //BiasingMessenger::setEventWeight(track->GetWeight());
             photonGammaID_ = track->GetTrackID(); 

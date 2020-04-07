@@ -101,8 +101,11 @@ namespace ldmx {
  *
  * Defines the member variable theLog_ with the input
  * name as the channel name.
+ *
+ * Makes theLog_ mutable so that the log can be used
+ * in any class functions.
  */
-#define enableLogging(name) logging::logger theLog_{logging::makeLogger(name)};
+#define enableLogging(name) mutable logging::logger theLog_{logging::makeLogger(name)};
 
 /**
  * @macro ldmx_log

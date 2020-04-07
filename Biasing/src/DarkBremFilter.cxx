@@ -41,7 +41,7 @@ namespace ldmx {
 
         if (track->GetTrackID() == 1 && pdgID == 11) {
             if ( verbosity_ > 2 ) {
-                std::cout << "[ DarkBremFilter ]: Pushing track to waiting stack." << std::endl;
+                ldmx_log(debug) << "[ DarkBremFilter ]: Pushing track to waiting stack.";
             }
             return fWaiting; 
         }
@@ -82,9 +82,8 @@ namespace ldmx {
             if (secondaries->size() == 0) { 
                 // If the particle didn't produce any secondaries, stop processing the event.
                 if ( verbosity_ > 1 ) {
-                    std::cout << "[ DarkBremFilter ]: "
-                                << "Primary did not produce secondaries --> Killing primary track!" 
-                                << std::endl;
+                    ldmx_log(debug) << "[ DarkBremFilter ]: "
+                                << "Primary did not produce secondaries --> Killing primary track!";
                 }
                 
                 track->SetTrackStatus(fKillTrackAndSecondaries);
@@ -93,9 +92,8 @@ namespace ldmx {
             } else if (not hasAPrime(secondaries)) { 
                 // If the particle din't produce an A Prime, stop processing the event
                 if ( verbosity_ > 1 ) {
-                    std::cout << "[ DarkBremFilter ]: "
-                                << "No dark brem in " << volumeName_ << " --> Aborting event."
-                                << std::endl;
+                    ldmx_log(debug) << "[ DarkBremFilter ]: "
+                                << "No dark brem in " << volumeName_ << " --> Aborting event.";
                 }
                 
                 track->SetTrackStatus(fKillTrackAndSecondaries);
@@ -109,9 +107,8 @@ namespace ldmx {
             if(not hasAPrime( secondaries )){
                 // If the particle din't produce an A Prime, stop processing the event
                 if ( verbosity_ > 1 ) {
-                    std::cout << "[ DarkBremFilter ]: "
-                              << "Electron never made it out of the " << volumeName_ << " --> Killing all tracks!"
-                              << std::endl;
+                    ldmx_log(debug) << "[ DarkBremFilter ]: "
+                              << "Electron never made it out of the " << volumeName_ << " --> Killing all tracks!";
                 }
 
                 track->SetTrackStatus(fKillTrackAndSecondaries);
