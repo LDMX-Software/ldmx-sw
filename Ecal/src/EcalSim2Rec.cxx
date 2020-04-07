@@ -78,15 +78,15 @@ namespace ldmx {
 
         // Calculate the noise RMS based on the properties of the readout pad
         noiseRMS_ = this->calculateNoise(padCapacitance_, noiseIntercept_, noiseSlope_);  
-        //std::cout << "[ EcalSim2Rec ]: Noise RMS: " << noiseRMS_ << " e-" << std::endl;
+        ldmx_log(debug) << "Noise RMS: " << noiseRMS_ << " e-";
 
         // Convert the noise RMS in electrons to energy
         noiseRMS_ = noiseRMS_*(MIP_SI_RESPONSE/ELECTRONS_PER_MIP); 
-        //std::cout << "[ EcalSim2Rec ]: Noise RMS: " << noiseRMS_ << " MeV" << std::endl;
+        ldmx_log(debug) << "Noise RMS: " << noiseRMS_ << " MeV";
 
         // Calculate the readout threhsold
         readoutThreshold_ = ps.getParameter<double>("readoutThreshold")*noiseRMS_;
-        //std::cout << "[ EcalSim2Rec ]: Readout threshold: " << readoutThreshold_ << " MeV" << std::endl;
+        ldmx_log(debug) << "Readout threshold: " << readoutThreshold_ << " MeV";
 
         secondOrderEnergyCorrection_ = ps.getParameter<double>( "secondOrderEnergyCorrection" );
 
@@ -103,9 +103,9 @@ namespace ldmx {
         std::vector<SimCalorimeterHit> ecalSimHits = event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS);
         std::vector<EcalHit> ecalRecHits;
 
-        //std::cout << "[ EcalSim2Rec ] : Got " << numEcalSimHits 
-        //          << " ECal hits in event " << event.getEventHeader()->getEventNumber()
-        //          << std::endl;
+        ldmx_log(debug) 
+            << "Got " << ecalSimHits.size()
+            << " ECal hits in event " << event.getEventHeader().getEventNumber();
 
         //First we simulate noise injection into each hit and store layer-wise 
         // max cell ids
@@ -134,11 +134,11 @@ namespace ldmx {
         // number of noise hits above the readout threshold and randomly 
         // assign them to Ecal cells
         int emptyChannels = TOTAL_CELLS - ecalRecHits.size();
-        //std::cout << "[ EcalSim2Rec ]: Total number of empty channels: " << emptyChannels << std::endl;
+        ldmx_log(debug) << "Total number of empty channels: " << emptyChannels;
         std::vector<double> noiseHits = noiseGenerator_->generateNoiseHits(emptyChannels);
-        //std::cout << "[ EcalSim2Rec ]: Total number of noise hits: " << noiseHits.size() << std::endl; 
+        ldmx_log(debug) << "Total number of noise hits: " << noiseHits.size();
         for (double noiseHit : noiseHits) { 
-            //std::cout << "[ EcalSim2Rec ]: Noise hit amplitude: " << noiseHit << std::endl;
+            ldmx_log(debug) << "Noise hit amplitude: " << noiseHit;
 
             // Construct a hit in the ith position
             EcalHit recHit;
@@ -148,11 +148,12 @@ namespace ldmx {
 
             // Generate a random ID and pack it
             int layerID = noiseInjector_->Integer(NUM_ECAL_LAYERS); 
-            //std::cout << "[ EcalSim2Rec ]: Random layer ID: " << layerID << std::endl;
             int moduleID = noiseInjector_->Integer(HEX_MODULES_PER_LAYER); 
-            //std::cout << "[ EcalSim2Rec ]: Random module ID: " << moduleID << std::endl;
             int cellID = noiseInjector_->Integer(CELLS_PER_HEX_MODULE); 
-            //std::cout << "[ EcalSim2Rec ]: Random cell ID: " << cellID << std::endl;
+            ldmx_log(debug)
+                << "Random layer ID: " << layerID
+                << ", Random module ID: " << moduleID
+                << ", Random cell ID: " << cellID;
             detID_.setFieldValue(1, layerID); 
             detID_.setFieldValue(2, moduleID); 
             detID_.setFieldValue(3, cellID); 

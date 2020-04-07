@@ -132,7 +132,7 @@ namespace ldmx {
             double tut = pulseFunc_.GetX(readoutThreshold_, timeInWindow, nADCs_*EcalDigiProducer::CLOCK_CYCLE);
             double tot = tut - toa;
 
-            //printf( "%6.4f MeV at %6.4f ns --> %6.2f TOT %6.2f TOA %6.2f TUT\n", energyInWindow , timeInWindow , tot, toa, tut );
+            ldmx_log(debug) << energyInWindow << " MeV at " << timeInWindow << " ns --> " << tot << " TOT " << toa << " TOA " << tut << " TUT";
 
             int    hitID     = simHit.getID();
             simHitIDs.insert( hitID );
@@ -146,7 +146,7 @@ namespace ldmx {
             digiToAdd[0].tot_     = totalClockCounts % 1024; //clock counts since last trigger clock (25ns clock)
             digiToAdd[0].toa_     = toa * (1024/25.); //conversion from ns to clock counts
 
-            //printf( "%6d TOT --> %6d Clocks and %6d tot\n" , totalClockCounts , digiToAdd[0].adc_t_ , digiToAdd[0].tot_ );
+            ldmx_log(debug) << totalClockCounts << " TOT --> " << digiToAdd[0].adc_t_ << " Clocks and " << digiToAdd[0].tot_ << " TOT";
 
             ecalDigis.addDigi( digiToAdd );
 

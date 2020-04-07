@@ -125,7 +125,7 @@ namespace ldmx {
             //  the amplitude of the pulse is related to the energy deposited
             //  TODO actually have mutliple samples instead of having adc_t_ count number of samples over threshold
             siEnergy = convertTOT( sample.adc_t_*1024 + sample.tot_ );
-            //printf( "%6d Clocks and %6d tot --> %6.2f MeV\n" , sample.adc_t_ , sample.tot_ , siEnergy );
+            ldmx_log(debug) << sample.adc_t_ << "Clocks and " << sample.tot_ << " tot --> " << siEnergy << " MeV";
             
             //incorporate layer weights
             detID_.setRawValue( rawID );
