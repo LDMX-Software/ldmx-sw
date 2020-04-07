@@ -29,6 +29,7 @@ namespace ldmx {
 
     void G4CalorimeterHit::Print() {
         print(std::cout);
+        std::cout << std::endl;
     }
 
     std::ostream& G4CalorimeterHit::print(std::ostream& os) {

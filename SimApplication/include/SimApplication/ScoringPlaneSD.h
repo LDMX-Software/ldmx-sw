@@ -82,6 +82,9 @@ namespace ldmx {
             /** The subdetector ID. */
             int subDetID_{0};
 
+            /** enable logging in this class */
+            enableLogging( "ScoringPlaneSD" )
+
     }; // ScoringPlaneSD
 } // ldmx
 

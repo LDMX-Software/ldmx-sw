@@ -30,6 +30,7 @@ namespace ldmx {
 
     void G4TrackerHit::Print() {
         print(std::cout);
+        std::cout << std::endl;
     }
 
     std::ostream& G4TrackerHit::print(std::ostream& os) {

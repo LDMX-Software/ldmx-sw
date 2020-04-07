@@ -85,6 +85,9 @@ namespace ldmx {
              * The detector ID.
              */
             DetectorID* detID_{new TrackerID};
+
+            /** enable logging here */
+            enableLogging("TrackerSD")
     };
 
 }

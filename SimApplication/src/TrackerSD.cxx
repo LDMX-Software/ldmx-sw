@@ -47,7 +47,7 @@ namespace ldmx {
         // Skip steps with no energy dep which come from non-Geantino particles.
         if (edep == 0.0 && !isGeantino) {
             if (verboseLevel > 2) {
-                std::cout << "TrackerSD skipping step with zero edep" << std::endl << std::endl;
+                ldmx_log(debug) << "TrackerSD skipping step with zero edep";
             }
             return false;
         }
@@ -116,11 +116,12 @@ namespace ldmx {
          * Debug print.
          */
         if (this->verboseLevel > 2) {
-            std::cout << "Created SimTrackerHit in '" << this->GetName() << "' with subdet <" << subdetID_ 
-                      << ">, copyNum <" << copyNum << ">, layer <" << layer << ">, module <" << module << ">" 
-                      << std::endl;
-            hit->Print();
-            std::cout << std::endl;
+            std::stringstream ss;
+            hit->print(ss);
+            ldmx_log(debug) 
+                << "Created SimTrackerHit in '" << this->GetName() << "' with subdet <" << subdetID_ 
+                << ">, copyNum <" << copyNum << ">, layer <" << layer << ">, module <" << module << "> "
+                << ss.str();
         }
 
         // Insert hit into current hits collection.
@@ -141,14 +142,17 @@ namespace ldmx {
 
         // Print number of hits.
         if (this->verboseLevel > 0) {
-            std::cout << GetName() << " had " << hitsCollection_->entries() << " hits in event" << std::endl;
+            ldmx_log(info) << GetName() << " had " << hitsCollection_->entries() << " hits in event";
         }
 
         // Print each hit in hits collection.
         if (this->verboseLevel > 1) {
+            std::stringstream ss;
             for (unsigned iHit = 0; iHit < hitsCollection_->GetSize(); iHit++) {
-                (*hitsCollection_)[iHit]->Print();
+                (*hitsCollection_)[iHit]->print(ss); //TODO print method that goes to log
+                ss << "\n\t";
             }
+            ldmx_log(debug) << ss.str();
         }
     }
 

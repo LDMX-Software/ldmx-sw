@@ -81,8 +81,9 @@ namespace ldmx {
          * Debug print.
          */
         if (this->verboseLevel > 2) {
-            hit->Print();
-            std::cout << std::endl;
+            std::stringstream ss;
+            hit->print(ss);
+            ldmx_log(debug) << ss.str();
         }
 
         // Insert hit into current hits collection.
@@ -103,14 +104,17 @@ namespace ldmx {
 
         // Print number of hits.
         if (this->verboseLevel > 0) {
-            std::cout << GetName() << " had " << hitsCollection_->entries() << " hits in event" << std::endl;
+            ldmx_log(debug) << GetName() << " had " << hitsCollection_->entries() << " hits in event";
         }
 
         // Print each hit in hits collection.
         if (this->verboseLevel > 1) {
+            std::stringstream ss;
             for (unsigned iHit = 0; iHit < hitsCollection_->GetSize(); iHit++) {
-                (*hitsCollection_)[iHit]->Print();
+                (*hitsCollection_)[iHit]->print(ss);
+                ss << "\n\t";
             }
+            ldmx_log(debug) << ss.str();
         }
     }
 }

@@ -354,9 +354,9 @@ void G4eDarkBremsstrahlungModel::ParseLHE (std::string fname) {
     //Add the energy to the list, with a random offset between 0 and the total number of entries.
     ifile.close();
     if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 0 ) {
-        printf( "[ G4eDarkBremsstrahlungModel ] : Parsed LHE file '%s':\n", fname.c_str() );
+        G4cout << "[ G4eDarkBremsstrahlungModel ] : Parsed LHE file '" << fname << "':\n";
         for ( const auto &kV : madGraphData_ ) {
-            printf( "                               : %6.4f GeV Beam -> %lu Events\n", kV.first , kV.second.size() );
+            G4cout <<  "                               : " << kV.first << " GeV Beam -> " << kV.second.size() << " Events\n";
         }
     }
 }
