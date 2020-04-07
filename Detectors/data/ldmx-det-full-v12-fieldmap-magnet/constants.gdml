@@ -2,12 +2,17 @@
 <!-- Constant defining the clearance between volumes --> 
 <constant name="clearance" value="0.001*mm" />
 
-<!-- define center position and identity rotation -->
+<!-- Define center position and identity rotation -->
 <position name="center" x="0" y="0" z="0"/>
 <rotation name="identity" x="0" y="0" z="0"/>
 
-<!-- dimensions of world volume -->
+<!-- Dimensions of world volume -->
 <constant name="world_dim" value="12.0*m"/>
+
+<!-- Position of the target -->
+<constant name="target_z" value="0.0*mm" />
+<!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
+<constant name="target_thickness" value="0.3504*mm" />
 
 <!-- 
   Recoil trakcer parent volume dimensions. In x/y, these are set 5 mm smaller 
@@ -17,3 +22,9 @@
 <constant name="recoil_envelope_x" value="425*mm" />
 <constant name="recoil_envelope_y" value="345*mm" />
 <constant name="recoil_envelope_z" value="200*mm" />
+
+<!-- Trigger scintillator positions --> 
+<variable name="trigger_pad_thickness" value="4.5*mm" />
+<variable name="trigger_pad_down_z"    
+          value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + clearance" />
+
