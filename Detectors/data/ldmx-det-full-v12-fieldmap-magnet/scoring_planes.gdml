@@ -7,7 +7,13 @@
 
     <define>
 
-        &constants;   
+        &constants;  
+
+        <variable name="x"  value="0" /> 
+        <variable name="x2" value="1" />
+        <variable name="x3" value="1" /> 
+        <variable name="x4" value="0" />
+        <variable name="x5" value="1" /> 
 
         <!-- Thickness of the scoring planes -->
         <constant name="sp_thickness" value="0.001*mm"/>
@@ -60,48 +66,53 @@
         <variable name="target_box_y" value="magnet_gap_y - (sp_thickness/2)" />
 
         <!-- Surround the target with scoring planes --> 
-        
-        <variable name="sp_target_up_z"   value="target_z - (target_thickness/2)" />
-        <position name="sp_target_up_pos" x="0.0" y="0.0" z="sp_target_up_z - (sp_thickness/2)" />
-        
-        <variable name="sp_target_down_z" value="target_z + (target_thickness/2)" />
-        <position name="sp_target_down_pos" x="0.0" y="0.0" z="sp_target_down_z + (sp_thickness/2)" />
+        <variable name="sp_target_down_z" value="target_z + target_thickness/2 + sp_thickness/2" />
+        <variable name="sp_target_up_z"   value="target_z - target_thickness/2 - sp_thickness/2" />
         
         <!-- Place scoring planes downstream of each trigger scintillator array --> 
-        <variable name="sp_trigger_pad_down_l1_z" value="trigger_pad_down_z - trigger_pad_gap/2" />
-        <position name="sp_trigger_pad_down_l1_pos" x="0.0" y="0.0" z="sp_trigger_pad_down_l1_z + (sp_thickness/2)" />
+        <variable name="sp_trigger_pad_down_l1_z" 
+                  value="trigger_pad_down_z - trigger_pad_bar_gap/2 + sp_thickness/2" />
         <variable name="sp_trigger_pad_down_l2_z" 
-                  value="trigger_pad_down_z + trigger_pad_gap/2 + trigger_pad_bar_thickness" />
-        <position name="sp_trigger_pad_down_l2_pos" x="0.0" y="0.0" z="sp_trigger_pad_down_l2_z + (sp_thickness/2)" />     
-        <variable name="sp_trigger_pad_up_l1_z" value="trigger_pad_up_z - trigger_pad_gap/2" />
-        <position name="sp_trigger_pad_up_l1_pos" x="0.0" y="0.0" z="sp_trigger_pad_up_l1_z + (sp_thickness/2)" />
+                  value="trigger_pad_down_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2" />
+        <variable name="sp_trigger_pad_up_l1_z" 
+                  value="trigger_pad_up_z - trigger_pad_bar_gap/2 + sp_thickness/2" />
         <variable name="sp_trigger_pad_up_l2_z" 
-                  value="trigger_pad_up_z + trigger_pad_gap/2 + trigger_pad_bar_thickness" />
-        <position name="sp_trigger_pad_up_l2_pos" x="0.0" y="0.0" z="sp_trigger_pad_up_l2_z + (sp_thickness/2)" />     
-        
+                 value="trigger_pad_up_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2" />
+
+        <!-- Matrix with target area positions --> 
+        <matrix name="sp_target_pos" coldim="3" values="0 0 sp_target_down_z
+                                                        0 0 sp_target_up_z 
+                                                        0 0 sp_trigger_pad_down_l1_z  
+                                                        0 0 sp_trigger_pad_down_l2_z  
+                                                        0 0 sp_trigger_pad_up_l1_z  
+                                                        0 0 sp_trigger_pad_up_l2_z" />  
+
+
               
         <!-- Place scoring planes at each of the recoil tracker layers -->
-        <!-- layer Z positions relative to target -->
-        <variable name="recoil_z_start" 
-                  value="trigger_pad_down_z + trigger_pad_thickness/2 + clearance" />
-        <variable name="recoil_l1_z" value="recoil_z_start + recoil_l1_parent_z"/>
-        <variable name="recoil_l2_z" value="recoil_z_start + recoil_l2_parent_z"/>
-        <variable name="recoil_l3_z" value="recoil_z_start + recoil_l3_parent_z"/>
-        <variable name="recoil_l4_z" value="recoil_z_start + recoil_l4_parent_z"/>
-        <variable name="recoil_l5_z" value="recoil_z_start + recoil_l5_parent_z"/>
-        <variable name="recoil_l6_z" value="recoil_z_start + recoil_l6_parent_z"/>
+        <variable name="recoil_z_start" value="trigger_pad_down_z + trigger_pad_thickness/2 + clearance" />
+        <variable name="sp_recoil_l1_z" 
+            value="recoil_z_start + recoil_layer_pos[1] + recoil_sensor_l1_4_sep + recoil_sensor_thickness/2 + sp_thickness/2"/>
+        <variable name="sp_recoil_l2_z" 
+            value="recoil_z_start + recoil_layer_pos[2] + recoil_sensor_l1_4_sep + recoil_sensor_thickness/2 + sp_thickness/2"/>
+        <variable name="sp_recoil_l3_z" 
+            value="recoil_z_start + recoil_layer_pos[3] + recoil_sensor_l1_4_sep + recoil_sensor_thickness/2 + sp_thickness/2"/>
+        <variable name="sp_recoil_l4_z" 
+            value="recoil_z_start + recoil_layer_pos[4] + recoil_sensor_l1_4_sep + recoil_sensor_thickness/2 + sp_thickness/2"/>
+        <variable name="sp_recoil_l5_z" 
+            value="recoil_z_start + recoil_layer_pos[5] + recoil_sensor_l5_6_sep + recoil_sensor_thickness/2 + sp_thickness/2"/>
+        <variable name="sp_recoil_l6_z" 
+            value="recoil_z_start + recoil_layer_pos[6] + recoil_sensor_l5_6_sep + recoil_sensor_thickness/2 + sp_thickness/2"/>
+        <matrix name="sp_recoil_layer_z" coldim="1" values="sp_recoil_l1_z
+                                                            sp_recoil_l2_z
+                                                            sp_recoil_l3_z
+                                                            sp_recoil_l4_z
+                                                            sp_recoil_l5_z
+                                                            sp_recoil_l6_z" />
 
         <!-- Dimensions of recoil box -->
         <variable name="recoil_box_x" value="magnet_gap_x - (sp_thickness/2)" />
         <variable name="recoil_box_y" value="magnet_gap_y - (sp_thickness/2)" />
-
-        <!-- layer Z positions relative to target -->
-        <position name="sp_recoil_l1_pos" x="0.0" y="0.0" z="recoil_l1_z"/>
-        <position name="sp_recoil_l2_pos" x="0.0" y="0.0" z="recoil_l2_z"/>
-        <position name="sp_recoil_l3_pos" x="0.0" y="0.0" z="recoil_l3_z"/>
-        <position name="sp_recoil_l4_pos" x="0.0" y="0.0" z="recoil_l4_z"/>
-        <position name="sp_recoil_l5_pos" x="0.0" y="0.0" z="recoil_l5_z"/>
-        <position name="sp_recoil_l6_pos" x="0.0" y="0.0" z="recoil_l6_z"/>
 
     </define>
 
@@ -132,32 +143,30 @@
         <box name="sp_hcal_left_box"    x="sp_thickness" y="hcal_box_y" z="hcal_box_z" />
         <box name="sp_hcal_right_box"   x="sp_thickness" y="hcal_box_y" z="hcal_box_z" />
 
-        <box name="sp_target_up_box" x="target_box_x" y="target_box_y" z="sp_thickness" />
-        <box name="sp_target_down_box"  x="target_box_x" y="target_box_y" z="sp_thickness" />
+        <box name="sp_target_box" x="target_box_x" y="target_box_y" z="sp_thickness" />
 
-        <box name="sp_recoil_l1_box"  x="recoil_box_x" y="recoil_box_y" z="sp_thickness" />
-        <box name="sp_recoil_l2_box"  x="recoil_box_x" y="recoil_box_y" z="sp_thickness" />
-        <box name="sp_recoil_l3_box"  x="recoil_box_x" y="recoil_box_y" z="sp_thickness" />
-        <box name="sp_recoil_l4_box"  x="recoil_box_x" y="recoil_box_y" z="sp_thickness" />
-        <box name="sp_recoil_l5_box"  x="recoil_box_x" y="recoil_box_y" z="sp_thickness" />
-        <box name="sp_recoil_l6_box"  x="recoil_box_x" y="recoil_box_y" z="sp_thickness" />
+        <box name="sp_recoil_box"  x="recoil_box_x" y="recoil_box_y" z="sp_thickness" />
     </solids>
 
     <structure>
 
         <!-- Define the target and scoring plane volumes --> 
-        <volume name="sp_target_up">
-            <materialref ref="Vacuum" />
-            <solidref ref="sp_target_up_box" />
-            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
-            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
-        </volume> 
-        <volume name="sp_target_down">
-            <materialref ref="Vacuum" />
-            <solidref ref="sp_target_down_box" />
-            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
-            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
-        </volume>
+        <loop for="x" to="6" step="1" >
+            <volume name="sp_target">
+                <solidref ref="sp_target_box" />
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+                <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+            </volume> 
+        </loop>
+
+        <loop for="x4" to="5" step="1" > 
+            <volume name="sp_recoil"> 
+                <materialref ref="Vacuum" />
+                <solidref ref="sp_recoil_box" />
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
+                <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+            </volume> 
+        </loop> 
 
         <!-- Define the magnet volumes --> 
         <volume name="sp_magnet_gap_top">
@@ -182,44 +191,6 @@
             <materialref ref="Vacuum" />
             <solidref ref="sp_magnet_gap_left_right_box" />
             <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD0" />
-            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
-        </volume>
-
-
-        <volume name="sp_recoil_l1">
-            <materialref ref="Vacuum" />
-            <solidref ref="sp_recoil_l1_box" />
-            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
-            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
-        </volume>
-        <volume name="sp_recoil_l2">
-            <materialref ref="Vacuum" />
-            <solidref ref="sp_recoil_l2_box" />
-            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
-            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
-        </volume>
-        <volume name="sp_recoil_l3">
-            <materialref ref="Vacuum" />
-            <solidref ref="sp_recoil_l3_box" />
-            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
-            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
-        </volume>
-        <volume name="sp_recoil_l4">
-            <materialref ref="Vacuum" />
-            <solidref ref="sp_recoil_l4_box" />
-            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
-            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
-        </volume>
-        <volume name="sp_recoil_l5">
-            <materialref ref="Vacuum" />
-            <solidref ref="sp_recoil_l5_box" />
-            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
-            <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
-        </volume>
-        <volume name="sp_recoil_l6">
-            <materialref ref="Vacuum" />
-            <solidref ref="sp_recoil_l6_box" />
-            <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
             <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
         </volume>
 
@@ -380,47 +351,21 @@
                 <positionref ref="sp_hcal_right_pos" />
                 <rotationref ref="identity" />
             </physvol> --> 
-            <physvol copynumber="1">
-                <volumeref ref="sp_target_up" />
-                <positionref ref="sp_target_up_pos" />
-                <rotationref ref="identity" />
-            </physvol>
-            <physvol copynumber="2">
-                <volumeref ref="sp_target_down" />
-                <positionref ref="sp_target_down_pos" />
-                <rotationref ref="identity" />
-            </physvol> 
-            <!--  <physvol copynumber="1">
-                <volumeref ref="sp_recoil_l1" />
-                <positionref ref="sp_recoil_l1_pos" />
-                <rotationref ref="identity" />
-            </physvol>
-            <physvol copynumber="2">
-                <volumeref ref="sp_recoil_l2" />
-                <positionref ref="sp_recoil_l2_pos" />
-                <rotationref ref="identity" />
-            </physvol>
-            <physvol copynumber="3">
-                <volumeref ref="sp_recoil_l3" />
-                <positionref ref="sp_recoil_l3_pos" />
-                <rotationref ref="identity" />
-            </physvol>
-            <physvol copynumber="4">
-                <volumeref ref="sp_recoil_l4" />
-                <positionref ref="sp_recoil_l4_pos" />
-                <rotationref ref="identity" />
-            </physvol>
-            <physvol copynumber="5">
-                <volumeref ref="sp_recoil_l5" />
-                <positionref ref="sp_recoil_l5_pos" />
-                <rotationref ref="identity" />
-            </physvol>
-            <physvol copynumber="6">
-                <volumeref ref="sp_recoil_l6" />
-                <positionref ref="sp_recoil_l6_pos" />
-                <rotationref ref="identity" />
-            </physvol> 
-            --> 
+            <loop for="x2" to="6" step="1">
+                <physvol copynumber="x2">
+                    <volumeref ref="sp_target" />
+                    <position x="sp_target_pos[x2, 1]" y="sp_target_pos[x2, 2]" z="sp_target_pos[x2, 3]" /> 
+                    <rotationref ref="identity" />
+                </physvol>
+            </loop>
+            <loop for="x5" to="6" step="1">
+                <physvol copynumber="x5">
+                    <volumeref ref="sp_recoil" />
+                    <position x="0.0" y="0.0" z="sp_recoil_layer_z[x5]" /> 
+                    <rotationref ref="identity" />
+                </physvol>
+            </loop>
+
         </volume>
     </structure>
 
