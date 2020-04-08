@@ -8,24 +8,8 @@
 
   <define>      
            
-      <!-- 
-          Recoil envelope dimensions. These are set 5 mm smaller than the
-          magnet gap defined in magnet.gdml in order to avoid overlaps.
-          The magnet gaps were extracted from the drawing of the magnet
-          obtained from JLab.
-       -->
-
       &constants;
 
-      <!-- separation between sensors in a layer -->
-      <variable name="recoil_sensor_l1_4_sep" value="3.0*mm"/>
-      <variable name="recoil_sensor_L5_6_sep" value="1.0*mm"/>
-      
-      <!-- module and sensor dimensions -->
-      <variable name="recoil_si_thickness" value="0.32*mm"/>
-      <variable name="recoil_carbon_thickness" value="0.2*mm"/>
-      <variable name="recoil_sensor_thickness" value="recoil_si_thickness + recoil_carbon_thickness"/>
-      
       <!-- stereo angle -->
       <variable name="recoil_stereo_angle" value="0.1*radian"/>
       
@@ -34,29 +18,29 @@
 
       <!-- position of each layer in local coordinates of envelope volume -->
       
-      <variable name="recoil_l1_z" value="recoil_z_start + recoil_l1_parent_z"/>
+      <variable name="recoil_l1_z"  value="recoil_z_start + recoil_layer_pos[1]"/>
       <variable name="recoil_l1_z1" value="recoil_l1_z - recoil_sensor_l1_4_sep"/>
       <variable name="recoil_l1_z2" value="recoil_l1_z + recoil_sensor_l1_4_sep"/>
       
-      <variable name="recoil_l2_z" value="recoil_z_start + recoil_l2_parent_z"/>
+      <variable name="recoil_l2_z"  value="recoil_z_start + recoil_layer_pos[2]"/>
       <variable name="recoil_l2_z1" value="recoil_l2_z - recoil_sensor_l1_4_sep"/>
       <variable name="recoil_l2_z2" value="recoil_l2_z + recoil_sensor_l1_4_sep"/>
       
-      <variable name="recoil_l3_z" value="recoil_z_start + recoil_l3_parent_z"/>
+      <variable name="recoil_l3_z"  value="recoil_z_start + recoil_layer_pos[3]"/>
       <variable name="recoil_l3_z1" value="recoil_l3_z - recoil_sensor_l1_4_sep"/>
       <variable name="recoil_l3_z2" value="recoil_l3_z + recoil_sensor_l1_4_sep"/>
       
-      <variable name="recoil_l4_z" value="recoil_z_start + recoil_l4_parent_z"/>
+      <variable name="recoil_l4_z"  value="recoil_z_start + recoil_layer_pos[4]"/>
       <variable name="recoil_l4_z1" value="recoil_l4_z - recoil_sensor_l1_4_sep"/>
       <variable name="recoil_l4_z2" value="recoil_l4_z + recoil_sensor_l1_4_sep"/>
       
-      <variable name="recoil_l5_z" value="recoil_z_start + recoil_l5_parent_z"/>
-      <variable name="recoil_l5_z1" value="recoil_l5_z - recoil_sensor_L5_6_sep"/>
-      <variable name="recoil_l5_z2" value="recoil_l5_z + recoil_sensor_L5_6_sep"/>
+      <variable name="recoil_l5_z"  value="recoil_z_start + recoil_layer_pos[5]"/>
+      <variable name="recoil_l5_z1" value="recoil_l5_z - recoil_sensor_l5_6_sep"/>
+      <variable name="recoil_l5_z2" value="recoil_l5_z + recoil_sensor_l5_6_sep"/>
       
-      <variable name="recoil_l6_z" value="recoil_z_start + recoil_l6_parent_z"/>
-      <variable name="recoil_l6_z1" value="recoil_l6_z - recoil_sensor_L5_6_sep"/>
-      <variable name="recoil_l6_z2" value="recoil_l6_z + recoil_sensor_L5_6_sep"/>
+      <variable name="recoil_l6_z"  value="recoil_z_start + recoil_layer_pos[6]"/>
+      <variable name="recoil_l6_z1" value="recoil_l6_z - recoil_sensor_l5_6_sep"/>
+      <variable name="recoil_l6_z2" value="recoil_l6_z + recoil_sensor_l5_6_sep"/>
       
   </define>
     
