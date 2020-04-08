@@ -24,12 +24,21 @@
 <constant name="recoil_envelope_z" value="200*mm" />
 
 <!-- Recoil tracker z positions relative to the parent volume --> 
-<variable name="recoil_l1_parent_z" value="4.5*mm"/>
-<variable name="recoil_l2_parent_z" value="19.5*mm"/>
-<variable name="recoil_l3_parent_z" value="34.5*mm"/>
-<variable name="recoil_l4_parent_z" value="49.5*mm"/>
-<variable name="recoil_l5_parent_z" value="87.0*mm"/>
-<variable name="recoil_l6_parent_z" value="177.0*mm"/>
+<matrix name="recoil_layer_pos" coldim="1" values="4.5*mm
+                                                   19.5*mm
+                                                   34.5*mm
+                                                   49.5*mm
+                                                   87.0*mm
+                                                   177.0*mm" />
+
+<!-- Separation between sensors in a layer -->
+<variable name="recoil_sensor_l1_4_sep" value="3.0*mm"/>
+<variable name="recoil_sensor_l5_6_sep" value="1.0*mm"/>
+
+<!-- module and sensor dimensions -->
+<variable name="recoil_si_thickness" value="0.32*mm"/>
+<variable name="recoil_carbon_thickness" value="0.2*mm"/>
+<variable name="recoil_sensor_thickness" value="recoil_si_thickness + recoil_carbon_thickness"/>
 
 <!-- Trigger scintillator positions --> 
 <variable name="trigger_pad_thickness"      value="4.5*mm" />
