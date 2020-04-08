@@ -60,24 +60,36 @@
         <variable name="target_box_y" value="magnet_gap_y - (sp_thickness/2)" />
 
         <!-- Surround the target with scoring planes --> 
+        
         <variable name="sp_target_up_z"   value="target_z - (target_thickness/2)" />
-        <variable name="sp_target_down_z" value="target_z + (target_thickness/2)" />
-
-
-        <!-- Place scoring planes downstream of each trigger scintillator --> 
-        <variable name="trigger_pad_zclear" value="0.002*mm"/>
-
         <position name="sp_target_up_pos" x="0.0" y="0.0" z="sp_target_up_z - (sp_thickness/2)" />
+        
+        <variable name="sp_target_down_z" value="target_z + (target_thickness/2)" />
         <position name="sp_target_down_pos" x="0.0" y="0.0" z="sp_target_down_z + (sp_thickness/2)" />
-
+        
+        <!-- Place scoring planes downstream of each trigger scintillator array --> 
+        <variable name="sp_trigger_pad_down_l1_z" value="trigger_pad_down_z - trigger_pad_gap/2" />
+        <position name="sp_trigger_pad_down_l1_pos" x="0.0" y="0.0" z="sp_trigger_pad_down_l1_z + (sp_thickness/2)" />
+        <variable name="sp_trigger_pad_down_l2_z" 
+                  value="trigger_pad_down_z + trigger_pad_gap/2 + trigger_pad_bar_thickness" />
+        <position name="sp_trigger_pad_down_l2_pos" x="0.0" y="0.0" z="sp_trigger_pad_down_l2_z + (sp_thickness/2)" />     
+        <variable name="sp_trigger_pad_up_l1_z" value="trigger_pad_up_z - trigger_pad_gap/2" />
+        <position name="sp_trigger_pad_up_l1_pos" x="0.0" y="0.0" z="sp_trigger_pad_up_l1_z + (sp_thickness/2)" />
+        <variable name="sp_trigger_pad_up_l2_z" 
+                  value="trigger_pad_up_z + trigger_pad_gap/2 + trigger_pad_bar_thickness" />
+        <position name="sp_trigger_pad_up_l2_pos" x="0.0" y="0.0" z="sp_trigger_pad_up_l2_z + (sp_thickness/2)" />     
+        
+              
         <!-- Place scoring planes at each of the recoil tracker layers -->
         <!-- layer Z positions relative to target -->
-        <variable name="recoil_l1_z" value="7.5*mm"/>
-        <variable name="recoil_l2_z" value="22.5*mm"/>
-        <variable name="recoil_l3_z" value="37.5*mm"/>
-        <variable name="recoil_l4_z" value="52.5*mm"/>
-        <variable name="recoil_l5_z" value="90.0*mm"/>
-        <variable name="recoil_l6_z" value="180.0*mm"/>
+        <variable name="recoil_z_start" 
+                  value="trigger_pad_down_z + trigger_pad_thickness/2 + clearance" />
+        <variable name="recoil_l1_z" value="recoil_z_start + recoil_l1_parent_z"/>
+        <variable name="recoil_l2_z" value="recoil_z_start + recoil_l2_parent_z"/>
+        <variable name="recoil_l3_z" value="recoil_z_start + recoil_l3_parent_z"/>
+        <variable name="recoil_l4_z" value="recoil_z_start + recoil_l4_parent_z"/>
+        <variable name="recoil_l5_z" value="recoil_z_start + recoil_l5_parent_z"/>
+        <variable name="recoil_l6_z" value="recoil_z_start + recoil_l6_parent_z"/>
 
         <!-- Dimensions of recoil box -->
         <variable name="recoil_box_x" value="magnet_gap_x - (sp_thickness/2)" />
