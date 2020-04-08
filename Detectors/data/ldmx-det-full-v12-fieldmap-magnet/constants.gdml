@@ -15,7 +15,7 @@
 <constant name="target_thickness" value="0.3504*mm" />
 
 <!-- 
-  Recoil trakcer parent volume dimensions. In x/y, these are set 5 mm smaller 
+  Recoil tracker parent volume dimensions. In x/y, these are set 5 mm smaller 
   than the magnet gap defined in magnet.gdml in order to avoid overlaps. The 
   magnet gaps were extracted from the drawing of the magnet obtained from JLab.
 -->
@@ -23,8 +23,20 @@
 <constant name="recoil_envelope_y" value="345*mm" />
 <constant name="recoil_envelope_z" value="200*mm" />
 
+<!-- Recoil tracker z positions relative to the parent volume --> 
+<variable name="recoil_l1_parent_z" value="4.5*mm"/>
+<variable name="recoil_l2_parent_z" value="19.5*mm"/>
+<variable name="recoil_l3_parent_z" value="34.5*mm"/>
+<variable name="recoil_l4_parent_z" value="49.5*mm"/>
+<variable name="recoil_l5_parent_z" value="87.0*mm"/>
+<variable name="recoil_l6_parent_z" value="177.0*mm"/>
+
 <!-- Trigger scintillator positions --> 
-<variable name="trigger_pad_thickness" value="4.5*mm" />
+<variable name="trigger_pad_thickness"      value="4.5*mm" />
+<variable name="trigger_pad_bar_thickness"  value="2*mm" />
+<variable name="trigger_pad_bar_gap"        value="0.3*mm" />
+<variable name="trigger_pad_up_z"      
+          value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - clearance" />
 <variable name="trigger_pad_down_z"    
           value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + clearance" />
 
