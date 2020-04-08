@@ -219,6 +219,9 @@ namespace ldmx {
     }
 
     ConfigurePython::~ConfigurePython() {
+        //MEMORY 'Use of uninitialised value of size 8'
+        //  Trickles down from here to PyObject_Free
+        //  Missing a PyObject_Free earlier? Move this to end of constructor?
         Py_Finalize();
     }
 
