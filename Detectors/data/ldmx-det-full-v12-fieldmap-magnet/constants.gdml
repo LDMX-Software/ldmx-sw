@@ -24,6 +24,18 @@
 <constant name="recoil_envelope_z" value="200*mm" />
 
 <!-- Recoil tracker z positions relative to the parent volume --> 
+<!-- Layer distance from target: 
+    1: 6.1772 mm
+    2: 12.1772 mm
+    3: 21.1772 mm
+    4: 27.1772 mm
+    5: 36.1772 mm
+    6: 42.1772 mm
+    7: 51.1772 mm
+    8: 57.1772 mm
+    9: 91.6772 mm
+   10: 181.6772 mm
+--> 
 <matrix name="recoil_layer_pos" coldim="1" values="4.5*mm
                                                    19.5*mm
                                                    34.5*mm
@@ -46,6 +58,116 @@
 <variable name="trigger_pad_bar_gap"        value="0.3*mm" />
 <variable name="trigger_pad_up_z"      
           value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - clearance" />
+<!-- trigger pad distance from the target is 2.462 mm --> 
 <variable name="trigger_pad_down_z"    
           value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + clearance" />
 
+
+<!--
+    ECal 
+--> 
+
+<!-- ECal layer thicknesses --> 
+<variable name="Wthick_A_dz" value="0.75"/>
+<variable name="W_A_dz" value="0.75"/>
+<variable name="Wthick_B_dz" value="2.25"/>
+<variable name="W_B_dz" value="1.5"/>
+<variable name="Wthick_C_dz" value="3.5"/>
+<variable name="W_C_dz" value="1.75"/>
+<variable name="Wthick_D_dz" value="7.0"/>
+<variable name="W_D_dz" value="3.5"/>
+<variable name="CFMix_dz" value="0.05"/>
+<variable name="CFMixThick_dz" value="0.2"/>
+<variable name="PCB_dz" value="1.5"/>
+<variable name="Si_dz" value="0.5"/>
+<variable name="C_dz" value="0.5"/>
+<variable name="Al_dz" value="2.0"/>
+
+<!-- 
+    Air separating sheets of Al or W with PCB motherboard, limited by 
+    construction abilities 
+-->
+<variable name="FrontTolerance" value="0.5"/> 
+
+<!-- Gap between layers -->
+<variable name="BackTolerance" value="0.5"/> 
+
+<!-- Air separting PCBs from PCB MotherBoards -->
+<variable name="PCB_Motherboard_Gap" value="2.3"/>
+
+<!-- Air separating Carbon sheets in the middle of a layer-->
+<variable name="CoolingAirGap" value="4.0"/>
+
+<!-- Preshower thickness is 20.1 mm --> 
+<variable name="preshower_Thickness" 
+          value="Al_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
+                + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + CoolingAirGap 
+                + 2.*C_dz + CFMixThick_dz + Si_dz + CFMix_dz + PCB_dz 
+                + PCB_Motherboard_Gap + PCB_dz + BackTolerance" />
+
+<!-- Layer A thickness is 20.35 mm --> 
+<variable name="layer_A_Thickness" 
+          value="Wthick_A_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
+                + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_A_dz + C_dz 
+                + CoolingAirGap + C_dz + W_A_dz + CFMixThick_dz + Si_dz 
+                + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
+                + BackTolerance"/>
+
+<!-- Layer B thickness is 22.35 mm --> 
+<variable name="layer_B_Thickness" 
+          value="Wthick_B_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
+                 + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_B_dz + C_dz 
+                 + CoolingAirGap + C_dz + W_B_dz + CFMixThick_dz + Si_dz 
+                 + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
+                 + BackTolerance"/>
+
+<!-- Layer C thickness is 25.1 mm --> 
+<variable name="layer_C_Thickness" 
+          value="Wthick_C_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
+                + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_C_dz + C_dz 
+                + CoolingAirGap + C_dz + W_C_dz + CFMixThick_dz + Si_dz 
+                + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
+                + BackTolerance"/>
+
+<!-- Layer C thickness is 32.1 mm --> 
+<variable name="layer_D_Thickness" 
+          value="Wthick_D_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
+                + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_D_dz + C_dz 
+                + CoolingAirGap + C_dz + W_D_dz + CFMixThick_dz + Si_dz 
+                + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
+                + BackTolerance"/>
+
+<!-- Number of layers --> 
+<variable name="ecal_A_layers" value="1"/>
+<variable name="ecal_B_layers" value="1"/>
+<variable name="ecal_C_layers" value="9"/>
+<variable name="ecal_D_layers" value="5"/>    
+
+<!-- ECal thickness is 449.2 mm -->  
+<!-- July 22, 2019, calculated to be 445.1mm -->
+<variable name="ECal_dz" 
+         value="preshower_Thickness 
+                + layer_A_Thickness*ecal_A_layers
+                + layer_B_Thickness*ecal_B_layers 
+                + layer_C_Thickness*ecal_C_layers
+                + layer_D_Thickness*ecal_D_layers" />
+
+
+<!-- constants -->
+<variable name="sqrt3" value="1.73205080757"/>
+
+<!-- transverse definitions -->
+<variable name="hexagon_gap" value="1.0"/>
+<variable name="Hex_radius" value="85."/>
+
+<!-- ECal width and height -->
+<variable name="ECal_dx" value="Hex_radius*10./sqrt3 + sqrt3*hexagon_gap"/>
+<variable name="ECal_dy" value="Hex_radius*6. + hexagon_gap*2."/>
+
+<!-- 
+    Dimensions of ECal parent volume. The size is set to be 1 mm larger than 
+    the thickness of the ECal calculated above.
+--> 
+<constant name="ecal_envelope_x" value="ECal_dx + 1" /> 
+<constant name="ecal_envelope_y" value="ECal_dy + 1" /> 
+<constant name="ecal_envelope_z" value="ECal_dz + 1" /> 
