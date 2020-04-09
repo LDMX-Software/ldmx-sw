@@ -77,18 +77,21 @@ namespace ldmx {
                 std::cout << "[ DummyAnalyzer]: Analyzing an event!" << std::endl;
                 
                 // Get the collection of calorimeter hits from the event.
-                auto tca = event.getCollection<EcalHit>(caloCol_);  
+                auto tca = event.getCollection<CalorimeterHit>(caloCol_);  
                 
-                // Loop through the collection and fill both the histogram and 
-                // ntuple.
-                for (const EcalHit &hit : tca) {  
+                // Loop through the collection and fill the histogram
+                float maxEnergyHit = -1.;
+                for (const CalorimeterHit &hit : tca) {  
                     
                     // Fill the histogram
                     hEnergy->Fill(hit.getEnergy());
 
                     // Fill the ntuple
-                    ntuple_->setVar<float>("energy", hit.getEnergy()); 
+                    if ( hit.getEnergy() > maxEnergyHit ) maxEnergyHit = hit.getEnergy();
                 }
+                
+                // set the ntuple variable
+                ntuple_->setVar<float>("energy", maxEnergyHit);
 
                 // Print out all of the product tags in the event.
                 if (ievt == 0) {
