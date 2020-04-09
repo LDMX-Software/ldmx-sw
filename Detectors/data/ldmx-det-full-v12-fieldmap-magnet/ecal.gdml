@@ -1,63 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
   <define>
 
-    <!-- constants -->
-    <variable name="sqrt3" value="1.73205080757"/>
+    &constants;
+    
 
-    <!-- transverse definitions -->
-
-    <variable name="hexagon_gap" value="1.0"/>
-    <variable name="Hex_radius" value="85."/>
-
-        <!-- loop variables for stacks -->
+    <!-- loop variables for stacks -->
     <variable name="h_ps" value="1"/>  
 
     <!-- longitudinal definitions -->
 
-        <!-- loop variables for layers in sections -->
+    <!-- loop variables for layers in sections -->
     <variable name="a" value="1"/>  
     <variable name="b" value="1"/>  
     <variable name="c" value="1"/>  
     <variable name="d" value="1"/>  
-
-
-    <!-- 
-        If you change any of these heights, you will need to update the 
-        hard-coded length of the ECAL in the hcal.gdml and detector.gdml
-        files. This is necessary because Geant4 cannot pass constants/variables
-        from one gdml file to another.
-        Thickness with current values is 450.2
-    -->
-    <variable name="Wthick_A_dz" value="0.75"/>
-    <variable name="W_A_dz" value="0.75"/>
-
-    <variable name="Wthick_B_dz" value="2.25"/>
-    <variable name="W_B_dz" value="1.5"/>
-
-    <variable name="Wthick_C_dz" value="3.5"/>
-    <variable name="W_C_dz" value="1.75"/>
-
-    <variable name="Wthick_D_dz" value="7.0"/>
-    <variable name="W_D_dz" value="3.5"/>
-
-    <variable name="CFMix_dz" value="0.05"/>
-    <variable name="CFMixThick_dz" value="0.2"/>
-    <variable name="PCB_dz" value="1.5"/>
-    <variable name="Si_dz" value="0.5"/>
-    <variable name="C_dz" value="0.5"/>
-    <variable name="Al_dz" value="2.0"/>
-
-    <variable name="FrontTolerance" value="0.5"/> <!-- Air separating sheets of Al or W with PCB motherboard, limited by construction abilities -->
-    <variable name="BackTolerance" value="0.5"/> <!-- Gap between layers -->
-    <variable name="PCB_Motherboard_Gap" value="2.3"/> <!-- Air separting PCBs from PCB MotherBoards -->
-    <variable name="CoolingAirGap" value="4.0"/> <!-- Air separating Carbon sheets in the middle of a layer-->
-
-    <variable name="ecal_A_layers" value="1"/>
-    <variable name="ecal_B_layers" value="1"/>
-    <variable name="ecal_C_layers" value="9"/>
-    <variable name="ecal_D_layers" value="5"/>    
 
     <!-- 
          Size of FPGA Readout Chip 
@@ -71,28 +32,10 @@
     <variable name="RO_dist_from_edge" value="10.0"/> <!-- distance from edge of Readout PCB to edge of MB -->
 
     <!-- Calculate variables -->
-    <variable name="ECal_dx" value="Hex_radius*10./sqrt3+sqrt3*hexagon_gap"/>
-    <variable name="ECal_dy" value="Hex_radius*6.+hexagon_gap*2."/>
-    <!-- ECal_dz calculated below after calculating the layer thicknesses -->
-
     <variable name="RO_Top_y" value="(0.5)*ECal_dy+(-1.0)*RO_dist_from_edge+(-0.5)*Readout_dy"/>
     <variable name="RO_Bot_y" value="(-0.5)*ECal_dy+RO_dist_from_edge+(0.5)*Readout_dy"/>
     <variable name="RO_Right_x" value="(0.5)*ECal_dx+(-1.0)*RO_dist_from_edge+(-0.5)*Readout_dx"/>
     <variable name="RO_Left_x" value="(-0.5)*ECal_dx+RO_dist_from_edge+(0.5)*Readout_dx"/>
-
-    <!-- 
-         These expressions could be shortened but I left them like this 
-         so it is easy to see the order of sheets in each layer and how the layer 
-         thickness is calculated from the constants above.
-    -->
-    <variable name="preshower_Thickness" value="Al_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+CoolingAirGap+2.*C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz+BackTolerance"/>
-    <variable name="layer_A_Thickness" value="Wthick_A_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_A_dz+C_dz+CoolingAirGap+C_dz+W_A_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz+BackTolerance"/>
-    <variable name="layer_B_Thickness" value="Wthick_B_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_B_dz+C_dz+CoolingAirGap+C_dz+W_B_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz+BackTolerance"/>
-    <variable name="layer_C_Thickness" value="Wthick_C_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_C_dz+C_dz+CoolingAirGap+C_dz+W_C_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz+BackTolerance"/>
-    <variable name="layer_D_Thickness" value="Wthick_D_dz+FrontTolerance+PCB_dz+PCB_Motherboard_Gap+PCB_dz+CFMix_dz+Si_dz+CFMixThick_dz+W_D_dz+C_dz+CoolingAirGap+C_dz+W_D_dz+CFMixThick_dz+Si_dz+CFMix_dz+PCB_dz+PCB_Motherboard_Gap+PCB_dz+BackTolerance"/>
-
-    <!-- July 22, 2019, calculated to be 445.1mm -->
-    <variable name="ECal_dz" value="preshower_Thickness+layer_A_Thickness*ecal_A_layers+layer_B_Thickness*ecal_B_layers+layer_C_Thickness*ecal_C_layers+layer_D_Thickness*ecal_D_layers"/>
 
     <variable name="ECal_start_pos" value="(-0.5)*ECal_dz"/>
 
