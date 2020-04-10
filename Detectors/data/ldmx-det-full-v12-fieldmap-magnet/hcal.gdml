@@ -1,43 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
   <define>
-    
+
+    &constants; 
+
     <!-- loop variables - must be dedfined here -->
     <variable name="xsTB" value="1"/> 
     <variable name="xsLR" value="1"/> 
     <variable name="xb1"  value="1"/> 
     <variable name="xb2"  value="1"/> 
-    <variable name="xb3"  value="1"/> 
-    
-    <!--common varibles -->
-    <variable name="air_thick"         value="2."/>
-    <variable name="scint_thick"       value="20."/>
-
-    <!-- Back HCal Layer component widths -->
-    <!-- layer 1 has no absorber, layers 2 and 3 have absorber -->
-    <variable name="back_numLayers1"   value="0"/>        
-    <variable name="back_numLayers2"   value="100"/>        
-    <variable name="back_numLayers3"   value="0"/>        
-    <variable name="back_abso2_thick"  value="25"/>
-    <variable name="back_abso3_thick"  value="50"/>
-    <variable name="back_dx"           value="3100."/>
-    <variable name="back_dy"           value="3100."/>    
-    <variable name="back_layer1_thick" value="scint_thick + air_thick"/>
-    <variable name="back_layer2_thick" value="back_abso2_thick + scint_thick + 2.0*air_thick"/>
-    <variable name="back_layer3_thick" value="back_abso3_thick + scint_thick + 2.0*air_thick"/>
-    <variable name="back_dz1"          value="back_numLayers1*back_layer1_thick"/>
-    <variable name="back_dz2"          value="back_numLayers2*back_layer2_thick"/>
-    <variable name="back_dz3"          value="back_numLayers3*back_layer3_thick"/>
-    <variable name="back_dz"           value="back_dz1+back_dz2+back_dz3"/>
-     
+    <variable name="xb3"  value="1"/>  
+ 
     <!-- side HCal Layer component widths -->
     <!-- side_Ecal_dx and dy have to be greater than the Ecal_dx and dy values in ecal.gdml -->
-    <!-- side_dz has to be greater than the Ecal_dz values in ecal.gdml -->
     <!-- side_layers = int ((back_dx-side_Ecal_dx)/2.0/side_layer_thick) -->
     <variable name="side_Ecal_dx"      value="800."/>
     <variable name="side_Ecal_dy"      value="600."/>
-    <variable name="side_dz"           value="600"/>        
     <variable name="sideTB_layers"     value="28"/>
     <variable name="sideLR_layers"     value="26"/>
     <variable name="side_abso_thick"   value="20."/>
@@ -45,8 +27,10 @@
     <variable name="sideTB_dx"         value="(back_dx+side_Ecal_dx)/2.0"/>
     <variable name="sideLR_dy"         value="(back_dy+side_Ecal_dy)/2.0"/>
     
-        
-    <!-- Starting positions of steel / scintillator bach HCal w.r.t center of the hcal mother volume, put absorber first if present -->        
+    <!-- 
+        Starting positions of steel / scintillator of the back HCal w.r.t 
+        center of the HCal mother volume, put absorber first if present.
+    -->        
     <variable name="back_start1"       value="side_dz/2.0 - back_dz/2.0"/>
     <variable name="back_start2"       value="side_dz/2.0 - back_dz/2.0 + back_dz1"/>
     <variable name="back_start3"       value="side_dz/2.0 - back_dz/2.0 + back_dz1 + back_dz2"/>
@@ -56,7 +40,10 @@
     <variable name="back_start3_abso"  value="back_start3 + air_thick + back_abso3_thick/2.0"/>
     <variable name="back_start3_scint" value="back_start3 + air_thick + back_abso3_thick + air_thick + scint_thick/2.0 "/>
     
-    <!-- Starting positions of steel / scintillator of side HCal w.r.t center of the hcal mother volume, put absorber first if present -->        
+    <!-- 
+        Starting positions of steel / scintillator of side HCal w.r.t center of
+        the hcal mother volume, put absorber first if present.
+    -->        
     <variable name="sideTB_hcal_x0"       value="(sideTB_dx-side_Ecal_dx)/2.0"/>
     <variable name="sideTB_hcal_abso_y0"  value="side_Ecal_dy/2.0 + air_thick + side_abso_thick/2.0"/>
     <variable name="sideTB_hcal_scint_y0" value="side_Ecal_dy/2.0 + 2.0*air_thick + side_abso_thick + scint_thick/2.0"/>
@@ -352,8 +339,6 @@
 
      </volume>
   </structure>
-
-
 
   <setup name="Default" version="1.0">
     <world ref="hadronic_calorimeter"/>
