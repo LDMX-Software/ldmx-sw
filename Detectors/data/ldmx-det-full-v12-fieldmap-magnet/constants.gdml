@@ -25,23 +25,29 @@
 
 <!-- Recoil tracker z positions relative to the parent volume --> 
 <!-- Layer distance from target: 
-    1: 6.1772 mm
-    2: 12.1772 mm
-    3: 21.1772 mm
-    4: 27.1772 mm
-    5: 36.1772 mm
-    6: 42.1772 mm
-    7: 51.1772 mm
-    8: 57.1772 mm
-    9: 91.6772 mm
-   10: 181.6772 mm
---> 
-<matrix name="recoil_layer_pos" coldim="1" values="4.5*mm
-                                                   19.5*mm
-                                                   34.5*mm
-                                                   49.5*mm
-                                                   87.0*mm
-                                                   177.0*mm" />
+    1: 6 mm
+    2: 12 mm
+    3: 21 mm
+    4: 27 mm
+    5: 36 mm
+    6: 42 mm
+    7: 51 mm
+    8: 57 mm
+    9: 91.5 mm
+   10: 181.5 mm
+-->
+<variable name="recoil_l1_mid_z" value="4.5   - target_thickness/2 - 2*clearance" />  
+<variable name="recoil_l2_mid_z" value="19.5  - target_thickness/2 - 2*clearance" />  
+<variable name="recoil_l3_mid_z" value="34.5  - target_thickness/2 - 2*clearance" />  
+<variable name="recoil_l4_mid_z" value="49.5  - target_thickness/2 - 2*clearance" />  
+<variable name="recoil_l5_mid_z" value="87.0  - target_thickness/2 - 2*clearance" />  
+<variable name="recoil_l6_mid_z" value="177.0 - target_thickness/2 - 2*clearance" />  
+<matrix name="recoil_layer_pos" coldim="1" values="recoil_l1_mid_z
+                                                   recoil_l2_mid_z
+                                                   recoil_l3_mid_z
+                                                   recoil_l4_mid_z
+                                                   recoil_l5_mid_z
+                                                   recoil_l6_mid_z" />
 
 <!-- Separation between sensors in a layer -->
 <variable name="recoil_sensor_l1_4_sep" value="3.0*mm"/>
