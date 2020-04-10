@@ -168,7 +168,7 @@
     Distance from target to the ECal parent volume.  The calorimeter 
     is an additional .5 mm downstream at 220.5 mm.
 -->
-<constant name="ecal_front_z" value="22.0*cm"/>
+<constant name="ecal_front_z" value="24.0*cm"/>
 
 <!-- 
     Dimensions of ECal parent volume. The size is set to be 1 mm larger than 
