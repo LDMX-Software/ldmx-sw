@@ -172,6 +172,14 @@ namespace ldmx {
              */
             void copyRunHeaders();
 
+            /**
+             * Copy TTree addresses from new parent_ to our tree_.
+             *
+             * This is copied from TTree::CopyAddresses where edits
+             * have been made to skip over Warnings that are expected.
+             */
+            void copyAddresses(TTree* parentTree);
+
         private:
 
             /** The number of entries in the tree. */
@@ -203,6 +211,23 @@ namespace ldmx {
 
             /** Pointer to run header from input file. */
             RunHeader* runHeader_{nullptr};
+
+            /**
+             * Pre-clone rules.
+             *
+             * The series of rules to call before cloning/copying the
+             * parent tree.
+             */
+            std::vector< std::pair< std::string , bool > > preCloneRules_;
+
+            /** 
+             * Vector of drop rules that have been parsed and
+             * need to be used to reactivate these branches on the input tree
+             *
+             * The branches were initial deactivated so they don't get cloned 
+             * to output tree.
+             */
+            std::vector< std::string > reactivateRules_;
 
             /** Map of run numbers to RunHeader objects read from the input file. */
             std::map<int, RunHeader*> runMap_;

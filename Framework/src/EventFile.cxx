@@ -57,8 +57,14 @@ namespace ldmx {
             EXCEPTION_RAISE("FileError", "File '" + filename + "' is not readable or does not exist.");
         }
 
-        parent_->tree_->SetBranchStatus("*", 0); //turn everything off
-        parent_->tree_->SetBranchStatus( (EventConstants::EVENT_HEADER + "*").c_str() , 1); //turn EventHeader on
+        //turn everything off
+        parent_->tree_->SetBranchStatus("*",0); 
+
+        //except EventHeader (copies over to output)
+        parent_->tree_->SetBranchStatus( EventConstants::EVENT_HEADER.c_str() , 1 ); 
+
+        //reactivate all branches so default behavior is drop
+        reactivateRules_.push_back( "*" );
 
         if (isOutputFile_) {
             file_->SetCompressionLevel(compressionLevel);
@@ -117,37 +123,25 @@ namespace ldmx {
             //turn both the input and output tree's on
             //root needs . removed otherwise it gets cranky
             srule.erase( std::remove( srule.begin(), srule.end(), '.' ) , srule.end() );
-            if ( parent_ ) parent_->tree_->SetBranchStatus(srule.c_str(),1);
-            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),1);
+            preCloneRules_.emplace_back( srule , true );
+            //this branch will then be copied over into output tree and be active
         } else if( isIgnore ) {
             //don't even read it from the input file
             //root needs . removed otherwise it gets cranky
             srule.erase( std::remove( srule.begin(), srule.end(), '.' ) , srule.end() );
-            if ( parent_ ) parent_->tree_->SetBranchStatus(srule.c_str(),0);
-            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),0);
+            preCloneRules_.emplace_back( srule , false );
+            //these branches won't be copied over into output tree
         } else if ( isDrop ) {
             //drop means allowing it on reading but not writing
-            // pass these regex to event bus
+            // pass these regex to event bus so Event::add knows
             event_->addDrop( srule ); //requires event_ to be set
 
             //root needs . removed otherwise it gets cranky
             srule.erase( std::remove( srule.begin(), srule.end(), '.' ) , srule.end() );
-
-            if ( parent_ ) {
-                if ( not tree_ ) {
-                    //deactivate this branch before clone
-                    parent_->tree_->SetBranchStatus(srule.c_str(),0);
-                    tree_ = parent_->tree_->CloneTree(0);
-                }
-                //reactivate the read-in branch
-                parent_->tree_->SetBranchStatus(srule.c_str(),1);
-            }
-
-            //deactivate branch on output tree
-            unsigned int f = 0; //look at this ROOT nonsense 
-            // ==> the third parameter *must* be an address to an unsigned int
-            // apparently Rene has never heard of pass by reference ¯\_(ツ)_/¯
-            if ( tree_ ) tree_->SetBranchStatus(srule.c_str(),0,&f);//third parameter suppresses warning message
+            preCloneRules_.emplace_back( srule , false );
+            //these branches won't be copied over into output tree
+            //reactivate input branch after clone
+            reactivateRules_.push_back( srule );
         }
     }
 
@@ -162,8 +156,20 @@ namespace ldmx {
             //  1) There is no tree setup yet (first input file)
             //  2) This is not single output (new input file --> new output file)
             if ( !tree_ or !isSingleOutput_ ) {
-                //TODO this may mean that collecitons aren't dropped after first file
+                //clones parent_->tree_ to our tree_ keeping drop/keep rules in mind
+                //clone tree (only copies over branches that are active on input tree)
+                
+                file_->cd(); //go into output file
+
+                for ( auto const& rulePair : preCloneRules_ )
+                    parent_->tree_->SetBranchStatus( rulePair.first.c_str() , rulePair.second );
+
                 tree_ = parent_->tree_->CloneTree(0);
+        
+                //reactivate any drop branches (drop) on input tree
+                for ( auto const& rule : reactivateRules_ ) 
+                    parent_->tree_->SetBranchStatus( rule.c_str(), 1 );
+
             }
             event_->setInputTree( parent_->tree_ );
             event_->setOutputTree( tree_ );
@@ -243,33 +249,24 @@ namespace ldmx {
             
             //Enter output file
             file_->cd();
+
+            //need to deactivate any drop rules from input parent...
+            for ( auto const& rulePair : preCloneRules_ )
+                parent_->tree_->SetBranchStatus( rulePair.first.c_str() , rulePair.second );
             
             //Copy over addresses from the new parent
-            //  Taken from TTree::CopyAddresses but removed warning when branch not found
-            //  The outBranch may not exist for each inBranch because we may be using some drop/ignore rules
-            TObjArray *branches = parentTree->GetListOfBranches();
-            int nbranches = branches->GetEntriesFast();
-            for ( int iBr = 0; iBr < nbranches; iBr++ ) {
-                TBranch *inBranch = (TBranch *)branches->At(iBr);
-                if ( inBranch->TestBit(kDoNotProcess) ) {
-                    continue; //parent tree has this inBranch turned off ==> skip
-                }
-                char* addr = inBranch->GetAddress();
-                TBranch *outBranch = tree_->GetBranch( inBranch->GetName() );
-                if ( outBranch ) {
-                    //if outTree has this branch -> reset address
-                    outBranch->SetAddress( addr );
-                    if ( outBranch->InheritsFrom(TBranchElement::Class()) ) {
-                        ((TBranchElement*)outBranch)->ResetDeleteObject();
-                    } //reset object if more complicated
-                } //if outBranch was found
-            } //loop through parentTree branches
+            copyAddresses( parentTree );
 
+            //and reactivate them
+            for ( auto const& rule : reactivateRules_ )
+                parent_->tree_->SetBranchStatus( rule.c_str() , 1 );
+            
             //Reset the entry index with the new parent index
             ientry_ = parent_->ientry_;
         }
 
         //copy over run headers and recreate run map
+        //TODO untested
         copyRunHeaders();
         createRunMap();
 
@@ -348,6 +345,108 @@ namespace ldmx {
                 file_->Flush();
             }
         }
+    }
+
+    void EventFile::copyAddresses(TTree* parentTree) {
+        //  Taken from TTree::CopyAddresses but removed warning when branch not found
+        //  The outBranch may not exist for each inBranch because we may be using some drop/ignore rules
+        //  Also removed option to 'undo' address copy
+        TObjArray* branches = parentTree->GetListOfBranches();
+        Int_t nbranches = branches->GetEntriesFast();
+        for (Int_t i = 0; i < nbranches; ++i) {
+            TBranch* branch = (TBranch*) branches->UncheckedAt(i);
+            if (branch->TestBit(kDoNotProcess)) {
+                //skip deactivated branches
+                continue;
+            }
+            char* addr = branch->GetAddress();
+            if (!addr) {
+                if (branch->IsA() == TBranch::Class()) {
+                    // If the branch was created using a leaflist, the branch itself may not have
+                    // an address but the leaf might already.
+                    TLeaf *firstleaf = (TLeaf*)branch->GetListOfLeaves()->At(0);
+                    if (!firstleaf || firstleaf->GetValuePointer()) {
+                        // Either there is no leaf (and thus no point in copying the address)
+                        // or the leaf has an address but we can not copy it via the branche
+                        // this will be copied via the next loop (over the leaf).
+                        continue;
+                    }
+                }
+                // Note: This may cause an object to be allocated.
+                branch->SetAddress(0);
+                addr = branch->GetAddress();
+            }
+            // FIXME: The GetBranch() function is braindead and may
+            //        not find the branch!
+            TBranch* br = tree_->GetBranch(branch->GetName());
+            if (br) {
+                br->SetAddress(addr);
+                // The copy does not own any object allocated by SetAddress().
+                if (br->InheritsFrom(TBranchElement::Class())) {
+                    ((TBranchElement*) br)->ResetDeleteObject();
+                }
+            } //else //warning here in TTree::CopyAddresses
+        } //loop through parentTree branches
+
+        // Copy branch addresses starting from leaves.
+        TObjArray* tleaves = tree_->GetListOfLeaves();
+        Int_t ntleaves = tleaves->GetEntriesFast();
+        for (Int_t i = 0; i < ntleaves; ++i) {
+            TLeaf* tleaf = (TLeaf*) tleaves->UncheckedAt(i);
+            TBranch* tbranch = tleaf->GetBranch();
+            TBranch* branch = parentTree->GetBranch(tbranch->GetName());
+            if (!branch) {
+                continue;
+            }
+            TLeaf* leaf = branch->GetLeaf(tleaf->GetName());
+            if (!leaf) {
+                continue;
+            }
+            if (branch->TestBit(kDoNotProcess)) {
+                continue;
+            }
+            TBranchElement *mother = dynamic_cast<TBranchElement*>(leaf->GetBranch()->GetMother());
+            if (leaf->GetLeafCount() && (leaf->TestBit(TLeaf::kNewValue) || !leaf->GetValuePointer() || (mother && mother->IsObjectOwner())) && tleaf->GetLeafCount())
+            {
+                // If it is an array and it was allocated by the leaf itself,
+                // let's make sure it is large enough for the incoming data.
+                if (leaf->GetLeafCount()->GetMaximum() < tleaf->GetLeafCount()->GetMaximum()) {
+                    leaf->GetLeafCount()->IncludeRange( tleaf->GetLeafCount() );
+                    if (leaf->GetValuePointer()) {
+                        if (leaf->IsA() == TLeafElement::Class() && mother)
+                            mother->ResetAddress();
+                        else
+                            leaf->SetAddress(nullptr);
+                    }
+                }
+            }
+            if (!branch->GetAddress() && !leaf->GetValuePointer()) {
+                // We should attempts to set the address of the branch.
+                // something like:
+                //(TBranchElement*)branch->GetMother()->SetAddress(0)
+                //plus a few more subtilities (see TBranchElement::GetEntry).
+                //but for now we go the simplest route:
+                //
+                // Note: This may result in the allocation of an object.
+                branch->SetupAddresses();
+            }
+            if (branch->GetAddress()) {
+                tree_->SetBranchAddress(branch->GetName(), (void*) branch->GetAddress());
+                TBranch* br = tree_->GetBranch(branch->GetName());
+                if (br) {
+                    // The copy does not own any object allocated by SetAddress().
+                    // FIXME: We do too much here, br may not be a top-level branch.
+                    if (br->InheritsFrom(TBranchElement::Class())) {
+                        ((TBranchElement*) br)->ResetDeleteObject();
+                    }
+                } //else //would be warning here from TTree::CopyAddresses
+            } else {
+                tleaf->SetAddress(leaf->GetValuePointer());
+            }
+        }
+
+        //end copy of TTree::CopyAddresses
+        return;
     }
 
 }
