@@ -58,10 +58,10 @@ namespace ldmx {
         }
 
         //turn everything off
-        parent_->tree_->SetBranchStatus("*",0); 
+        preCloneRules_.emplace_back( "*" , true );
 
         //except EventHeader (copies over to output)
-        parent_->tree_->SetBranchStatus( EventConstants::EVENT_HEADER.c_str() , 1 ); 
+        preCloneRules_.emplace_back( "EventHeader*" , true );
 
         //reactivate all branches so default behavior is drop
         reactivateRules_.push_back( "*" );
@@ -165,6 +165,7 @@ namespace ldmx {
                     parent_->tree_->SetBranchStatus( rulePair.first.c_str() , rulePair.second );
 
                 tree_ = parent_->tree_->CloneTree(0);
+                tree_->AddFriend( parent_->tree_ );
         
                 //reactivate any drop branches (drop) on input tree
                 for ( auto const& rule : reactivateRules_ ) 
