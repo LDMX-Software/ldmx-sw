@@ -13,14 +13,8 @@
         <variable name="xxx" value="1"/>
         <variable name="dx" value="40"/>
         <variable name="dy" value="3"/>		
-        <!-- <variable name="dz" value="2"/> 
-        <variable name="gap" value="0.3"/> --> 
         <variable name="number_of_bars" value="25"/>
 
-        <!-- tagger position -->    
-        <constant name="tagger_z_offset" value="7.0*mm"/>
-        <constant name="tagger_thickness" value="85.725*cm - tagger_z_offset"/>
-        <variable name="tagger_pos_z" value="-(tagger_thickness/2) - tagger_z_offset"/>
 
         <!-- target parameters -->
         <constant name="target_dim_x" value="4.0*cm"  />
@@ -31,20 +25,30 @@
                   value="(target_dim_y - (number_of_bars*dy + (number_of_bars - 1)*trigger_pad_bar_gap))/2" />
         <variable name="trigger_pad_dim_x"     value="target_dim_x" />
         <variable name="trigger_pad_dim_y"     value="target_dim_y" />
-        <variable name="trigger_pad_tag_z"     
-                  value="target_z + tagger_pos_z - tagger_thickness/2. - trigger_pad_thickness/2. - clearance - 5." />
 
-        <!-- recoil position -->
+        <!-- 
+            Tagger tracker parent volume position relative to the target 
+            -433.1772 mm. The end of the parent volume relative to the target
+            is at -4.6772. This gives a 0.001 mm clearance between the upstream
+            trigger scintillator and the tagger tracker parent volume. 
+        --> 
+        <variable name="tagger_pos_z" value="trigger_pad_up_z - trigger_pad_thickness/2 - tagger_envelope_z/2 - clearance" /> 
+
+        <!-- 
+            Recoil tracker parent volume position relative to the target is at
+            104.6772 mm.  The beginning of the parent volume relative to the
+            target is at 4.6772.  This gives a 0.001 mm clerance between the
+            downstream trigger scintillator and the recoil tracker parent 
+            volume.
+        -->
         <variable name="recoil_pos_z" value="trigger_pad_down_z + trigger_pad_thickness/2 + recoil_envelope_z/2 + clearance"/>
 
-        <!-- distance from target to ecal face -->
-        <constant name="ecal_front_z" value="22.0*cm"/>
+        <!--<variable name="trigger_pad_tag_z"     
+                  value="target_z + tagger_pos_z - tagger_thickness/2. - trigger_pad_thickness/2. - clearance - 5." /> --> 
 
         <!-- position of calorimeter mother -->
-        <constant name="em_calorimeter_thickness" value="450.2*mm" />
-        <constant name="em_calorimeter_pos_z" value="ecal_front_z + em_calorimeter_thickness/2." />
-        <constant name="hadron_calorimeter_thickness" value="5500*mm" />
-        <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hadron_calorimeter_thickness/2." />
+        <constant name="em_calorimeter_pos_z" value="ecal_front_z + ecal_envelope_z/2." />
+        <constant name="hadron_calorimeter_pos_z" value="ecal_front_z + hcal_dz/2." />
 
         <!-- magnet position -->
         <constant name="magnet_pos_z" value="-40*cm" />
@@ -54,7 +58,7 @@
         <position name="target_pos" x="0.0" y="0.0" z="target_z"/>
         <position name="trigger_pad_down_pos" x="0.0" y="0.0" z="trigger_pad_down_z"/>
         <position name="trigger_pad_up_pos"   x="0.0" y="0.0" z="trigger_pad_up_z"/>
-        <position name="trigger_pad_tag_pos" x="0.0" y="0.0" z="trigger_pad_tag_z"/>
+        <!-- <position name="trigger_pad_tag_pos" x="0.0" y="0.0" z="trigger_pad_tag_z"/> --> 
         <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
         <position name="em_calorimeter_pos" x="0.0" y="0.0" z="em_calorimeter_pos_z"/>
         <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="hadron_calorimeter_pos_z"/>
@@ -124,7 +128,7 @@
         <box lunit="mm" name="target_box" x="target_dim_x" y="target_dim_y" z="target_thickness"/>
         <box lunit="mm" name="trigger_pad_down_box" x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>
         <box lunit="mm" name="trigger_pad_up_box"   x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>
-        <box lunit="mm" name="trigger_pad_tag_box"   x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>
+        <!-- <box lunit="mm" name="trigger_pad_tag_box"   x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/> --> 
         <box lunit="mm" name="trigger_bar_box" x="dx" y="dy" z="trigger_pad_bar_thickness" />
     </solids>
 
@@ -164,12 +168,13 @@
         <volume name="World">
             <materialref ref="Vacuum"/>
             <solidref ref="world_box"/>
-            <!-- <physvol copynumber="1">
+            <physvol copynumber="1">
                 <file name="tagger.gdml"/>
                 <positionref ref="tagger_pos"/>
                 <rotationref ref="identity"/>
-            </physvol> --> 
+            </physvol> 
 
+            <!-- 
             <loop for="x" to="number_of_bars" step="1">
                 <physvol copynumber="2*x">
                     <volumeref ref="trigger_pad_tag_bar_volume"/>
@@ -188,7 +193,7 @@
                     <rotationref ref="identity"/>
                 </physvol>
             </loop>
-
+        -->
 
             <loop for="xxx" to="number_of_bars" step="1">
                 <physvol copynumber="2*xxx">
@@ -228,9 +233,9 @@
                               z="trigger_pad_down_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
                     <rotationref ref="identity" />
                 </physvol>
-            </loop>
+            </loop> 
 
-            <!-- <physvol copynumber="5">
+            <physvol copynumber="5">
                 <file name="recoil.gdml"/>
                 <positionref ref="recoil_pos"/>
                 <rotationref ref="identity"/>
@@ -240,7 +245,7 @@
                 <file name="ecal.gdml"/> 
                 <positionref ref="em_calorimeter_pos"/> 
                 <rotationref ref="identity"/> 
-            </physvol> 
+            </physvol>  
             <physvol copynumber="7"> 
                 <file name="hcal.gdml"/> 
                 <positionref ref="hadron_calorimeter_pos"/> 
@@ -250,7 +255,7 @@
                 <file name="magnet.gdml"/> 
                 <positionref ref="magnet_pos"/> 
                 <rotationref ref="identity"/> 
-            </physvol> -->
+            </physvol> 
             <auxiliary auxtype="DetElem" auxvalue="Top"/>
         </volume>
     </structure>
@@ -414,8 +419,8 @@
             <auxiliary auxtype="B" auxvalue="0.75"/>
             <auxiliary auxtype="A" auxvalue="0.8"/>
             <auxiliary auxtype="Style" auxvalue="wireframe"/>
-            <auxiliary auxtype="DaughtersInvisible" auxvalue="true"/>
-            <auxiliary auxtype="Visible" auxvalue="false"/>
+            <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+            <auxiliary auxtype="Visible" auxvalue="true"/>
             <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
         </auxiliary>    
     </userinfo>  
