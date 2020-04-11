@@ -15,6 +15,15 @@
 <constant name="target_thickness" value="0.3504*mm" />
 
 <!-- 
+    Recoil tracker.
+-->
+
+<!-- module and sensor dimensions -->
+<variable name="si_sensor_thickness" value="0.32*mm"/>
+<variable name="carbon_fiber_thickness" value="0.2*mm"/>
+<variable name="half_module_thickness" value="si_sensor_thickness + carbon_fiber_thickness"/>
+
+<!-- 
   Recoil tracker parent volume dimensions. In x/y, these are set 5 mm smaller 
   than the magnet gap defined in magnet.gdml in order to avoid overlaps. The 
   magnet gaps were extracted from the drawing of the magnet obtained from JLab.
@@ -25,23 +34,27 @@
 
 <!-- Recoil tracker z positions relative to the parent volume --> 
 <!-- Layer distance from target: 
-    1: 6 mm
-    2: 12 mm
-    3: 21 mm
-    4: 27 mm
-    5: 36 mm
-    6: 42 mm
-    7: 51 mm
-    8: 57 mm
-    9: 91.5 mm
-   10: 181.5 mm
+    1: 7 mm
+    2: 13 mm
+    3: 22 mm
+    4: 28 mm
+    5: 37 mm
+    6: 43 mm
+    7: 52 mm
+    8: 58 mm
+    9: 92 mm
+   10: 182 mm
 -->
-<variable name="recoil_l1_mid_z" value="4.5   - target_thickness/2 - 2*clearance" />  
-<variable name="recoil_l2_mid_z" value="19.5  - target_thickness/2 - 2*clearance" />  
-<variable name="recoil_l3_mid_z" value="34.5  - target_thickness/2 - 2*clearance" />  
-<variable name="recoil_l4_mid_z" value="49.5  - target_thickness/2 - 2*clearance" />  
-<variable name="recoil_l5_mid_z" value="87.0  - target_thickness/2 - 2*clearance" />  
-<variable name="recoil_l6_mid_z" value="177.0 - target_thickness/2 - 2*clearance" />  
+<constant name="recoil_delta_l1_l4" value="15" />
+<constant name="recoil_delta_l4_l5" value="37" />
+<constant name="recoil_delta_l5_l6" value="90" />
+<variable name="recoil_l1_mid_z" value="5.5   - target_thickness/2 - 2*clearance" />  
+<variable name="recoil_l2_mid_z" value="recoil_l1_mid_z + recoil_delta_l1_l4"  />  
+<variable name="recoil_l3_mid_z" value="recoil_l2_mid_z + recoil_delta_l1_l4"  />  
+<variable name="recoil_l4_mid_z" value="recoil_l3_mid_z + recoil_delta_l1_l4" />  
+<variable name="recoil_l5_mid_z" value="recoil_l4_mid_z + recoil_delta_l4_l5" />  
+<variable name="recoil_l6_mid_z" value="recoil_l5_mid_z + recoil_delta_l5_l6" />  
+
 <matrix name="recoil_layer_pos" coldim="1" values="recoil_l1_mid_z
                                                    recoil_l2_mid_z
                                                    recoil_l3_mid_z
@@ -53,18 +66,49 @@
 <variable name="recoil_sensor_l1_4_sep" value="3.0*mm"/>
 <variable name="recoil_sensor_l5_6_sep" value="1.0*mm"/>
 
-<!-- module and sensor dimensions -->
-<variable name="recoil_si_thickness" value="0.32*mm"/>
-<variable name="recoil_carbon_thickness" value="0.2*mm"/>
-<variable name="recoil_sensor_thickness" value="recoil_si_thickness + recoil_carbon_thickness"/>
+<!--
+    Tagger Tracker 
+-->
 
+<!-- Tracker tracker distances relative to the parent volume -->
+<!-- 
+    20 cm between recoil l1 mid and tagget l7 mid
+    Distance from target to mid point of a module. 
+    Layer 1: 10 mm
+    Layer 2: 110 mm
+    Layer 3: 210 mm
+    Layer 4: 310 mm
+    Layer 5: 410 mm
+    Layer 6: 510 mm
+    Layer 7: 610 mm
+ --> 
+<constant name="tagger_delta_layer" value="100" />
+<variable name="tagger_l7_mid_z" value="5.5 - target_thickness/2 - 2*clearance"/>
+<variable name="tagger_l6_mid_z" value="tagger_l7_mid_z + tagger_delta_layer"/>
+<variable name="tagger_l5_mid_z" value="tagger_l6_mid_z + tagger_delta_layer"/>
+<variable name="tagger_l4_mid_z" value="tagger_l5_mid_z + tagger_delta_layer"/>
+<variable name="tagger_l3_mid_z" value="tagger_l4_mid_z + tagger_delta_layer"/>
+<variable name="tagger_l2_mid_z" value="tagger_l3_mid_z + tagger_delta_layer"/>
+<variable name="tagger_l1_mid_z" value="tagger_l2_mid_z + tagger_delta_layer"/>
+
+<!-- offset in Z between stereo sensors -->
+<variable name="tagger_layer_offset" value="3.0*mm"/>
+
+<variable name="tagger_envelope_x" value="425*mm" />
+<variable name="tagger_envelope_y" value="345*mm" />
+<variable name="tagger_envelope_z" value="tagger_l1_mid_z + tagger_layer_offset + clearance" />
+
+<!--
+    Trigger Scintillator 
+--> 
 <!-- Trigger scintillator positions --> 
 <variable name="trigger_pad_thickness"      value="4.5*mm" />
 <variable name="trigger_pad_bar_thickness"  value="2*mm" />
 <variable name="trigger_pad_bar_gap"        value="0.3*mm" />
+<!-- Trigger pad distance from the target is -2.4262 --> 
 <variable name="trigger_pad_up_z"      
           value="target_z - (target_thickness/2) - (trigger_pad_thickness/2) - clearance" />
-<!-- trigger pad distance from the target is 2.462 mm --> 
+<!-- trigger pad distance from the target is 2.4262 mm --> 
 <variable name="trigger_pad_down_z"    
           value="target_z + (target_thickness/2) + (trigger_pad_thickness/2) + clearance" />
 
