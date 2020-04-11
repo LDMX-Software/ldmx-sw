@@ -110,17 +110,17 @@
         <!-- Place scoring planes at each of the recoil tracker layers -->
         <variable name="recoil_z_start" value="trigger_pad_down_z + trigger_pad_thickness/2 + clearance" />
         <variable name="sp_recoil_l1_z" 
-            value="recoil_z_start + recoil_layer_pos[1] + recoil_sensor_l1_4_sep + recoil_sensor_thickness/2 + sp_thickness/2"/>
+            value="recoil_z_start + recoil_layer_pos[1] + recoil_sensor_l1_4_sep + half_module_thickness/2 + sp_thickness/2"/>
         <variable name="sp_recoil_l2_z" 
-            value="recoil_z_start + recoil_layer_pos[2] + recoil_sensor_l1_4_sep + recoil_sensor_thickness/2 + sp_thickness/2"/>
+            value="recoil_z_start + recoil_layer_pos[2] + recoil_sensor_l1_4_sep + half_module_thickness/2 + sp_thickness/2"/>
         <variable name="sp_recoil_l3_z" 
-            value="recoil_z_start + recoil_layer_pos[3] + recoil_sensor_l1_4_sep + recoil_sensor_thickness/2 + sp_thickness/2"/>
+            value="recoil_z_start + recoil_layer_pos[3] + recoil_sensor_l1_4_sep + half_module_thickness/2 + sp_thickness/2"/>
         <variable name="sp_recoil_l4_z" 
-            value="recoil_z_start + recoil_layer_pos[4] + recoil_sensor_l1_4_sep + recoil_sensor_thickness/2 + sp_thickness/2"/>
+            value="recoil_z_start + recoil_layer_pos[4] + recoil_sensor_l1_4_sep + half_module_thickness/2 + sp_thickness/2"/>
         <variable name="sp_recoil_l5_z" 
-            value="recoil_z_start + recoil_layer_pos[5] + recoil_sensor_l5_6_sep + recoil_sensor_thickness/2 + sp_thickness/2"/>
+            value="recoil_z_start + recoil_layer_pos[5] + recoil_sensor_l5_6_sep + half_module_thickness/2 + sp_thickness/2"/>
         <variable name="sp_recoil_l6_z" 
-            value="recoil_z_start + recoil_layer_pos[6] + recoil_sensor_l5_6_sep + recoil_sensor_thickness/2 + sp_thickness/2"/>
+            value="recoil_z_start + recoil_layer_pos[6] + recoil_sensor_l5_6_sep + half_module_thickness/2 + sp_thickness/2"/>
         <matrix name="sp_recoil_layer_z" coldim="1" values="sp_recoil_l1_z
                                                             sp_recoil_l2_z
                                                             sp_recoil_l3_z
