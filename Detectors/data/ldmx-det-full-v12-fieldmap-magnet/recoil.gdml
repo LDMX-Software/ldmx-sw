@@ -10,9 +10,6 @@
            
       &constants;
 
-      <!-- stereo angle -->
-      <variable name="recoil_stereo_angle" value="0.1*radian"/>
-      
       <!-- layering start position in envelope volume -->
       <variable name="recoil_z_start" value="-(recoil_envelope_z/2)" />
 
@@ -133,7 +130,7 @@
       <physvol copynumber="20" name="recoil_l1_stereo">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="LDMXRecoilL14ModuleVolume_physvol16_pos" unit="mm" x="0" y="0" z="recoil_l1_z2"/>
-        <rotation name="LDMXRecoilL14ModuleVolume_physvol16_rot" unit="deg" x="0" y="0" z="recoil_stereo_angle"/>
+        <rotation name="LDMXRecoilL14ModuleVolume_physvol16_rot" unit="deg" x="0" y="0" z="stereo_angle"/>
       </physvol>
 
       <physvol copynumber="30" name="recoil_l2_axial">
@@ -143,7 +140,7 @@
       <physvol copynumber="40" name="recoil_l2_stereo">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="LDMXRecoilL14ModuleVolume_physvol18_pos" unit="mm" x="0" y="0" z="recoil_l2_z2"/>
-        <rotation name="LDMXRecoilL14ModuleVolume_physvol18_rot" unit="deg" x="0" y="0" z="-recoil_stereo_angle"/>
+        <rotation name="LDMXRecoilL14ModuleVolume_physvol18_rot" unit="deg" x="0" y="0" z="-stereo_angle"/>
       </physvol>
       
       <physvol copynumber="50" name="recoil_l3_axial">
@@ -153,7 +150,7 @@
       <physvol copynumber="60" name="recoil_l3_stereo">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="LDMXRecoilL14ModuleVolume_physvol20_pos" unit="mm" x="0" y="0" z="recoil_l3_z2"/>
-        <rotation name="LDMXRecoilL14ModuleVolume_physvol20_rot" unit="deg" x="0" y="0" z="recoil_stereo_angle"/>
+        <rotation name="LDMXRecoilL14ModuleVolume_physvol20_rot" unit="deg" x="0" y="0" z="stereo_angle"/>
       </physvol>
       
       <physvol copynumber="70" name="recoil_l4_axial">
@@ -163,7 +160,7 @@
       <physvol copynumber="80" name="recoil_l4_stereo">
         <volumeref ref="LDMXRecoilL14ModuleVolume"/>
         <position name="LDMXRecoilL14ModuleVolume_physvol22_pos" unit="mm" x="0" y="0" z="recoil_l4_z2"/>
-        <rotation name="LDMXRecoilL14ModuleVolume_physvol22_rot" unit="deg" x="0" y="0" z="-recoil_stereo_angle"/>
+        <rotation name="LDMXRecoilL14ModuleVolume_physvol22_rot" unit="deg" x="0" y="0" z="-stereo_angle"/>
       </physvol>
       
       <physvol copynumber="90" name="recoil_l5_sensor1">
