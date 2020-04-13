@@ -17,7 +17,6 @@
       <variable name="recoil_z_start" value="-(recoil_envelope_z/2)" />
 
       <!-- position of each layer in local coordinates of envelope volume -->
-      
       <variable name="recoil_l1_z"  value="recoil_z_start + recoil_layer_pos[1]"/>
       <variable name="recoil_l1_z1" value="recoil_l1_z - recoil_sensor_l1_4_sep"/>
       <variable name="recoil_l1_z2" value="recoil_l1_z + recoil_sensor_l1_4_sep"/>
