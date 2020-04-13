@@ -32,9 +32,14 @@ namespace ldmx {
     void produce(Event& event);
 
   private:
+    /**
+     * Make inputs to the DNN from ECAL RecHits.
+     * @param ecalRecHits The EcalHit collection.
+     */
     void make_inputs(const std::vector<EcalHit>& ecalRecHits);
 
   private:
+    /** Maximum number of hits allowed in ECAL. Events with more hits will be marked as BKG directly without running the DNN. */
     constexpr static unsigned int max_num_hits_ = 50;
 
     constexpr static unsigned int n_coordinate_dim_ = 3;
