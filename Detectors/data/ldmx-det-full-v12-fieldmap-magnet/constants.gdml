@@ -18,6 +18,9 @@
     Recoil tracker.
 -->
 
+<!-- Stereo Angle = 100 mrad = 5.72 degrees -->
+<variable name="stereo_angle" value="5.72957795130823"/>
+
 <!-- module and sensor dimensions -->
 <variable name="si_sensor_thickness" value="0.32*mm"/>
 <variable name="carbon_fiber_thickness" value="0.2*mm"/>
