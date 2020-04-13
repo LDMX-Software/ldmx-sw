@@ -97,6 +97,8 @@ namespace ldmx {
         // so reset branch listing before starting
         products_.clear();
         branchNames_.clear();
+        branches_.clear();
+        passengers_.clear();
 
         // put in EventHeader (only one without pass name)
 	    products_.emplace_back(EventConstants::EVENT_HEADER,"","ldmx::EventHeader");
