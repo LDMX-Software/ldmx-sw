@@ -42,7 +42,7 @@ def electronNuclear( ) :
     simulator.parameters["runNumber"] = 0
     simulator.parameters["description"] = "Ecal electron-nuclear, xsec bias 1e8"
     simulator.parameters["randomSeeds"] = [ 1, 2 ]
-    simulator.parameters["beamspotSmear"] = [20., 80.]
+    simulator.parameters["beamSpotSmear"] = [20., 80., 0.]
     
     #
     # Fire an electron upstream of the tagger tracker
@@ -108,7 +108,7 @@ def photonNuclear( ) :
     simulator.parameters["runNumber"] = 0
     simulator.parameters["description"] = "ECal photo-nuclear, xsec bias 450"
     simulator.parameters["randomSeeds"] = [ 1, 2 ]
-    simulator.parameters["beamspotSmear"] = [20., 80.]
+    simulator.parameters["beamSpotSmear"] = [20., 80., 0.]
     
     #
     # Fire an electron upstream of the tagger tracker
