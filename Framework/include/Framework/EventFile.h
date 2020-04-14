@@ -169,14 +169,6 @@ namespace ldmx {
              */
             void copyRunHeaders();
 
-            /**
-             * Copy TTree addresses from new parent_ to our tree_.
-             *
-             * This is copied from TTree::CopyAddresses where edits
-             * have been made to skip over Warnings that are expected.
-             */
-            void copyAddresses(TTree* parentTree);
-
         private:
 
             /** The number of entries in the tree. */
