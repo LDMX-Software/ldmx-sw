@@ -107,7 +107,6 @@ namespace ldmx {
         TObjArray* branches = inputTree_->GetListOfBranches();
         for (int i = 0; i < branches->GetEntriesFast(); i++) {
     	    std::string brname=branches->At(i)->GetName();
-            std::cout << brname << std::endl;
     	    if (brname!=EventConstants::EVENT_HEADER) {
         		size_t j=brname.find("_");
         		std::string iname=brname.substr(0,j);
