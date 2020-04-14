@@ -165,7 +165,7 @@ namespace ldmx {
                     parent_->tree_->SetBranchStatus( rulePair.first.c_str() , rulePair.second );
 
                 tree_ = parent_->tree_->CloneTree(0);
-                tree_->AddFriend( parent_->tree_ );
+                //tree_->AddFriend( parent_->tree_ );
         
                 //reactivate any drop branches (drop) on input tree
                 for ( auto const& rule : reactivateRules_ ) 
@@ -251,14 +251,15 @@ namespace ldmx {
             //Enter output file
             file_->cd();
 
-            //need to deactivate any drop rules from input parent...
+            //need to turn on/off the same branches as in the initial setup...
             for ( auto const& rulePair : preCloneRules_ )
                 parent_->tree_->SetBranchStatus( rulePair.first.c_str() , rulePair.second );
             
             //Copy over addresses from the new parent
-            copyAddresses( parentTree );
+            parentTree->CopyAddresses( tree_ );
+            //copyAddresses( parentTree );
 
-            //and reactivate them
+            //and reactivate any dropping rules
             for ( auto const& rule : reactivateRules_ )
                 parent_->tree_->SetBranchStatus( rule.c_str() , 1 );
             

@@ -149,7 +149,6 @@ namespace ldmx {
                             for ( auto rule : dropKeepRules_ ) outFile->addDrop(rule);
 
                         } else {
-
                             //all other input files
                             outFile->updateParent( &inFile );
                             masterFile = outFile;
