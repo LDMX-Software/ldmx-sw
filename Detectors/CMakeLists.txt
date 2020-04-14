@@ -11,23 +11,23 @@ foreach(detector_dir ${detector_dirs})
     # read in detector.gdml contents
     file(READ ${detector_file} detector_contents)
     # get matches for other gdml files
-    string(REGEX MATCHALL \"[A-Za-z_]*.gdml\" gdml_module_matches ${detector_contents})
+    string(REGEX MATCHALL \"[A-Za-z_]*.gdml\" gdml_module_matches "${detector_contents}")
     foreach (gdml_module_match ${gdml_module_matches}) 
       #replace relative paths to absolute install paths for these gdml
       string(REPLACE "\"" "" gdml_module ${gdml_module_match})
       set(gdml_module_path ${CMAKE_INSTALL_PREFIX}/data/detectors/${detector_dir}/${gdml_module})
-      string(REPLACE ${gdml_module} ${gdml_module_path} detector_contents ${detector_contents})
+      string(REPLACE ${gdml_module} ${gdml_module_path} detector_contents "${detector_contents}")
     endforeach()
     # get matche(s) for the magnetic field map
-    string(REGEX MATCHALL \"Bmap.*dat\" mag_map_matches ${detector_contents})
+    string(REGEX MATCHALL \"Bmap.*dat\" mag_map_matches "${detector_contents}")
     foreach (mag_map_match ${mag_map_matches})
       #replace relative paths to absolute install paths for these mag field maps
       string(REPLACE "\"" "" mag_map_name ${mag_map_match})
       set(mag_map_path ${CMAKE_INSTALL_PREFIX}/data/fieldmap/${mag_map_name})
-      string(REPLACE ${mag_map_name} ${mag_map_path} detector_contents ${detector_contents})
+      string(REPLACE ${mag_map_name} ${mag_map_path} detector_contents "${detector_contents}")
     endforeach()
     # done searching and replacing --> write out file and install the new copy
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/data/${detector_dir}/detector.gdml ${detector_contents})
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/data/${detector_dir}/detector.gdml "${detector_contents}")
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/data/${detector_dir}/detector.gdml DESTINATION data/detectors/${detector_dir} 
         PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE WORLD_READ)
     # install other gdml files without any modifications
