@@ -137,7 +137,7 @@
 
 <variable name="tagger_envelope_x" value="425*mm" />
 <variable name="tagger_envelope_y" value="345*mm" />
-<variable name="tagger_envelope_z" value="tagger_l1_mid_z + tagger_layer_offset + clearance + trigger_pad_thickness + clearance" />
+<variable name="tagger_envelope_z" value="tagger_l1_mid_z + tagger_layer_offset + clearance + trigger_pad_thickness + clearance + 5" />
 
 <!--
     ECal 
