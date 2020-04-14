@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
 <gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
     <define>
+
+        &constants; 
 
         <!-- Magnet dimensions -->
         <variable name="magnet_x" value="2095.5*mm" />
@@ -15,8 +20,6 @@
         <variable name="magnet_box_z" value="1225*mm" />
 
         <!-- Magnet gap dimensions -->
-        <variable name="magnet_gap_x" value="430*mm"/>
-        <variable name="magnet_gap_y" value="350*mm"/>
         <variable name="magnet_gap_z" value="magnet_box_z + 1"/>
 
         <!-- Shim dimenisions -->
