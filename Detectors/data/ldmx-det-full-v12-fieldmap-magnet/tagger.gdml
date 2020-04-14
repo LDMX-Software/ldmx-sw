@@ -211,14 +211,14 @@
             </physvol>
 
             <loop for="x" to="number_of_bars" step="1">
-                <physvol copynumber="2*x + 400">
+                <physvol copynumber="2*x">
                     <volumeref ref="trigger_pad_tag_bar_volume"/>
                     <position name="trigger_pad_tag_bar_layer1_pos" unit="mm" x="-21.318" 
                               y="-target_dim_y/2 + trigger_bar_dy*(x-0.5) + trigger_pad_bar_gap*(x-1) + trigger_pad_offset" 
                               z="trigger_pad_tag_z-trigger_pad_bar_thickness/2-trigger_pad_bar_gap/2" />
                     <rotationref ref="identity"/>
                 </physvol>
-                <physvol copynumber="2*x+500">
+                <physvol copynumber="2*x + 1">
                     <volumeref ref="trigger_pad_tag_bar_volume"/>
                     <position name="trigger_pad_tag_bar_layer2_pos" unit="mm" x="-21.318" 
                               y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x-1) + trigger_pad_offset" 
