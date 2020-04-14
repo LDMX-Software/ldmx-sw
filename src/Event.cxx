@@ -107,6 +107,7 @@ namespace ldmx {
         TObjArray* branches = inputTree_->GetListOfBranches();
         for (int i = 0; i < branches->GetEntriesFast(); i++) {
     	    std::string brname=branches->At(i)->GetName();
+            std::cout << brname << std::endl;
     	    if (brname!=EventConstants::EVENT_HEADER) {
         		size_t j=brname.find("_");
         		std::string iname=brname.substr(0,j);
@@ -116,6 +117,7 @@ namespace ldmx {
     	    }
             branchNames_.push_back(brname);
         }
+
     }
 
     bool Event::nextEvent() {
@@ -145,6 +147,9 @@ namespace ldmx {
         passengers_.clear(); //reset event bus
         branches_.clear(); //reset branches
         if ( outputTree_ ) outputTree_->ResetBranchAddresses(); //reset addresses for output branch
+        if ( inputTree_ ) inputTree_ = nullptr; //detach old inputTree (owned by EventFile)
+        ientry_ = -1; //reset current entry and total entries
+        entries_ = -1;
     }
 
     bool Event::shouldDrop(const std::string &branchName) const {

@@ -89,7 +89,6 @@ namespace ldmx {
                     }
                     
                     outFile.nextEvent( eventAborted ? false : m_storageController.keepEvent() /*ignore storage control if event aborted*/);
-                    theEvent.Clear();
                     n_events_processed++;
                 }
 
@@ -224,7 +223,7 @@ namespace ldmx {
 
                     inFile.close();
 
-                    // Reset the event in case of single output mode.
+                    // Reset the event in case of multiple input files
                     theEvent.onEndOfFile();
 
                     if ( outFile and !singleOutput ) {
