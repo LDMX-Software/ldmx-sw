@@ -140,6 +140,39 @@
 <variable name="tagger_envelope_z" value="tagger_l1_mid_z + tagger_layer_offset + clearance + trigger_pad_thickness + clearance + 5" />
 
 <!--
+    HCal 
+--> 
+
+<!-- Width and height of the back HCal --> 
+<variable name="hcal_back_dx" value="3100."/>
+<variable name="hcal_back_dy" value="3100."/>   
+
+<!-- Common HCal components --> 
+<variable name="air_thick"   value="2."/>
+<variable name="scint_thick" value="20."/>
+
+<!-- Back HCal Layer component widths -->
+<!-- layer 1 has no absorber, layers 2 and 3 have absorber -->
+<variable name="back_numLayers1"   value="0"/>        
+<variable name="back_numLayers2"   value="100"/>        
+<variable name="back_numLayers3"   value="0"/>        
+<variable name="back_abso2_thick"  value="25"/>
+<variable name="back_abso3_thick"  value="50"/>
+<variable name="back_layer1_thick" value="scint_thick + air_thick"/>
+<variable name="back_layer2_thick" value="back_abso2_thick + scint_thick + 2.0*air_thick"/>
+<variable name="back_layer3_thick" value="back_abso3_thick + scint_thick + 2.0*air_thick"/>
+<variable name="hcal_back_dz1" value="back_numLayers1*back_layer1_thick"/>
+<variable name="hcal_back_dz2" value="back_numLayers2*back_layer2_thick"/>
+<variable name="hcal_back_dz3" value="back_numLayers3*back_layer3_thick"/>
+<variable name="hcal_back_dz"  value="hcal_back_dz1 + hcal_back_dz2 + hcal_back_dz3"/>
+ 
+<!-- side_dz has to be greater than the Ecal_dz. -->
+<variable name="hcal_side_dz" value="600"/>        
+
+<!-- Total calorimeter thickness -->         
+<constant name="hcal_dz" value="hcal_back_dz + hcal_side_dz" />
+
+<!--
     ECal 
 --> 
 
@@ -245,43 +278,14 @@
 -->
 <constant name="ecal_front_z" value="24.0*cm"/>
 
+<variable name="side_Ecal_dx" value="800."/>
+<variable name="side_Ecal_dy" value="600."/>
+
 <!-- 
     Dimensions of ECal parent volume. The size is set to be 1 mm larger than 
     the thickness of the ECal calculated above.
 --> 
-<constant name="ecal_envelope_x" value="ECal_dx + 1" /> 
-<constant name="ecal_envelope_y" value="ECal_dy + 1" /> 
+<constant name="ecal_envelope_x" value="side_Ecal_dx" /> 
+<constant name="ecal_envelope_y" value="side_Ecal_dy" /> 
 <constant name="ecal_envelope_z" value="ECal_dz + 1" /> 
 
-<!--
-    HCal 
---> 
-
-<!-- Width and height of the back HCal --> 
-<variable name="hcal_back_dx" value="3100."/>
-<variable name="hcal_back_dy" value="3100."/>   
-
-<!-- Common HCal components --> 
-<variable name="air_thick"   value="2."/>
-<variable name="scint_thick" value="20."/>
-
-<!-- Back HCal Layer component widths -->
-<!-- layer 1 has no absorber, layers 2 and 3 have absorber -->
-<variable name="back_numLayers1"   value="0"/>        
-<variable name="back_numLayers2"   value="100"/>        
-<variable name="back_numLayers3"   value="0"/>        
-<variable name="back_abso2_thick"  value="25"/>
-<variable name="back_abso3_thick"  value="50"/>
-<variable name="back_layer1_thick" value="scint_thick + air_thick"/>
-<variable name="back_layer2_thick" value="back_abso2_thick + scint_thick + 2.0*air_thick"/>
-<variable name="back_layer3_thick" value="back_abso3_thick + scint_thick + 2.0*air_thick"/>
-<variable name="hcal_back_dz1" value="back_numLayers1*back_layer1_thick"/>
-<variable name="hcal_back_dz2" value="back_numLayers2*back_layer2_thick"/>
-<variable name="hcal_back_dz3" value="back_numLayers3*back_layer3_thick"/>
-<variable name="hcal_back_dz"  value="hcal_back_dz1 + hcal_back_dz2 + hcal_back_dz3"/>
- 
-<!-- side_dz has to be greater than the Ecal_dz. -->
-<variable name="hcal_side_dz" value="600"/>        
-
-<!-- Total calorimeter thickness -->         
-<constant name="hcal_dz" value="hcal_back_dz + hcal_side_dz" />
