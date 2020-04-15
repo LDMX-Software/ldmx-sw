@@ -18,8 +18,6 @@
         <!-- side HCal Layer component widths -->
         <!-- side_Ecal_dx and dy have to be greater than the Ecal_dx and dy values in ecal.gdml -->
         <!-- side_layers = int ((hcal_back_dx-side_Ecal_dx)/2.0/side_layer_thick) -->
-        <variable name="side_Ecal_dx"      value="800."/>
-        <variable name="side_Ecal_dy"      value="600."/>
         <variable name="sideTB_layers"     value="28"/>
         <variable name="sideLR_layers"     value="26"/>
         <variable name="side_abso_thick"   value="20."/>
