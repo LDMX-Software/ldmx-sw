@@ -178,8 +178,8 @@ def darkBrem( massAPrime , lheFile )
     
     darkBremOn.parameters[ "darkbrem.method" ] = 1 #Forward only
 
-    darkBremOn.parameters[ "MassAPrime" ] = massAPrime #MeV
-    darkBremOn.parameters[ "darkbrem.madGraphFilePath" ] = lheFile
+    darkBremOn.parameters[ "APrimeMass" ] = massAPrime #MeV
+    darkBremOn.parameters[ "darkbrem.madgraphfilepath" ] = lheFile
     
     # Then give the UserAction to the simulation so that it knows to use it
     darkBremOn.parameters['actions'] = [ 
