@@ -33,7 +33,6 @@ def electronNuclear( ) :
     # The detectors installed with ldmx-sw can be accessed using the makeDetectorPath function.
     # Otherwise, you can provide the full path yourself.
     #
-    from LDMX.Detectors.makePath import *
     simulator.parameters["detector"] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
     
     #
@@ -178,8 +177,8 @@ def darkBrem( massAPrime , lheFile )
     
     darkBremOn.parameters[ "darkbrem.method" ] = 1 #Forward only
 
-    darkBremOn.parameters[ "MassAPrime" ] = massAPrime #MeV
-    darkBremOn.parameters[ "darkbrem.madGraphFilePath" ] = lheFile
+    darkBremOn.parameters[ "APrimeMass" ] = massAPrime #MeV
+    darkBremOn.parameters[ "darkbrem.madgraphfilepath" ] = lheFile
     
     # Then give the UserAction to the simulation so that it knows to use it
     darkBremOn.parameters['actions'] = [ 
