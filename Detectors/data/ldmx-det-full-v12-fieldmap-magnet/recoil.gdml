@@ -3,255 +3,255 @@
 <!ENTITY constants SYSTEM "constants.gdml">
 ]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+    xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
 
-  <define>      
-           
-      &constants;
+    <define>      
 
-      <!-- layering start position in envelope volume -->
-      <variable name="recoil_z_start" value="-(recoil_envelope_z/2)" />
+        &constants;
 
-      <!-- position of each layer in local coordinates of envelope volume -->
-      <variable name="recoil_l1_z"  value="recoil_z_start + recoil_layer_pos[1]"/>
-      <variable name="recoil_l1_z1" value="recoil_l1_z - recoil_sensor_l1_4_sep"/>
-      <variable name="recoil_l1_z2" value="recoil_l1_z + recoil_sensor_l1_4_sep"/>
-      
-      <variable name="recoil_l2_z"  value="recoil_z_start + recoil_layer_pos[2]"/>
-      <variable name="recoil_l2_z1" value="recoil_l2_z - recoil_sensor_l1_4_sep"/>
-      <variable name="recoil_l2_z2" value="recoil_l2_z + recoil_sensor_l1_4_sep"/>
-      
-      <variable name="recoil_l3_z"  value="recoil_z_start + recoil_layer_pos[3]"/>
-      <variable name="recoil_l3_z1" value="recoil_l3_z - recoil_sensor_l1_4_sep"/>
-      <variable name="recoil_l3_z2" value="recoil_l3_z + recoil_sensor_l1_4_sep"/>
-      
-      <variable name="recoil_l4_z"  value="recoil_z_start + recoil_layer_pos[4]"/>
-      <variable name="recoil_l4_z1" value="recoil_l4_z - recoil_sensor_l1_4_sep"/>
-      <variable name="recoil_l4_z2" value="recoil_l4_z + recoil_sensor_l1_4_sep"/>
-      
-      <variable name="recoil_l5_z"  value="recoil_z_start + recoil_layer_pos[5]"/>
-      <variable name="recoil_l5_z1" value="recoil_l5_z - recoil_sensor_l5_6_sep"/>
-      <variable name="recoil_l5_z2" value="recoil_l5_z + recoil_sensor_l5_6_sep"/>
-      
-      <variable name="recoil_l6_z"  value="recoil_z_start + recoil_layer_pos[6]"/>
-      <variable name="recoil_l6_z1" value="recoil_l6_z - recoil_sensor_l5_6_sep"/>
-      <variable name="recoil_l6_z2" value="recoil_l6_z + recoil_sensor_l5_6_sep"/>
-      
-  </define>
-    
-  <materials/>
+        <!-- layering start position in envelope volume -->
+        <variable name="recoil_z_start" value="-(recoil_envelope_z/2)" />
 
-  <solids>
-    <box lunit="mm" name="LDMXRecoilL14ModuleVolume_component0Sensor0Box" x="38.3399" y="98.33" z="0.32"/>
-    <box lunit="mm" name="LDMXRecoilL14ModuleVolume_component0Box" x="40.34" y="100" z="0.32"/>
-    <box lunit="mm" name="LDMXRecoilL14ModuleVolume_component1Box" x="40.34" y="100" z="0.2"/>
-    <box lunit="mm" name="LDMXRecoilL14ModuleBox" x="40.34" y="100" z="0.52"/>
-    <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component0Sensor0Box" x="48" y="78" z="0.32"/>
-    <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component0Box" x="50" y="80" z="0.32"/>
-    <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component1Box" x="50" y="80" z="0.2"/>
-    <box lunit="mm" name="LDMXRecoilL56ModuleBox" x="50" y="80" z="0.52"/>
-    <box lunit="mm" name="recoil_box" x="recoil_envelope_x" y="recoil_envelope_y" z="recoil_envelope_z"/>
-  </solids>
+        <!-- position of each layer in local coordinates of envelope volume -->
+        <variable name="recoil_l1_z"  value="recoil_z_start + recoil_layer_pos[1]"/>
+        <variable name="recoil_l1_z1" value="recoil_l1_z - recoil_sensor_l1_4_sep"/>
+        <variable name="recoil_l1_z2" value="recoil_l1_z + recoil_sensor_l1_4_sep"/>
 
-  <structure>
-    <volume name="LDMXRecoilL14ModuleVolume_component0Sensor0">
-      <materialref ref="Silicon"/>
-      <solidref ref="LDMXRecoilL14ModuleVolume_component0Sensor0Box"/>
-      <auxiliary auxtype="SensDet" auxvalue="RecoilSD"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-    </volume>
-    <volume name="LDMXRecoilL14ModuleVolume_component0">
-      <materialref ref="Silicon"/>
-      <solidref ref="LDMXRecoilL14ModuleVolume_component0Box"/>
-      <physvol name="LDMXRecoilL14ModuleVolume_component0Sensor0_physvol">
-        <volumeref ref="LDMXRecoilL14ModuleVolume_component0Sensor0"/>
-      </physvol>
-      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-    </volume>
-    <volume name="LDMXRecoilL14ModuleVolume_component1">
-      <materialref ref="Carbon"/>
-      <solidref ref="LDMXRecoilL14ModuleVolume_component1Box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-    </volume>
-    <volume name="LDMXRecoilL14ModuleVolume">
-      <materialref ref="Vacuum"/>
-      <solidref ref="LDMXRecoilL14ModuleBox"/>
-      <physvol name="LDMXRecoilL14ModuleVolume_component0_physvol">
-        <volumeref ref="LDMXRecoilL14ModuleVolume_component0"/>
-        <position name="LDMXRecoilL14ModuleVolume_component0_physvol_pos" unit="mm" x="0" y="0" z="-0.1"/>
-      </physvol>
-      <physvol copynumber="1" name="LDMXRecoilL14ModuleVolume_component1_physvol1">
-        <volumeref ref="LDMXRecoilL14ModuleVolume_component1"/>
-        <position name="LDMXRecoilL14ModuleVolume_component1_physvol1_pos" unit="mm" x="0" y="0" z="0.16"/>
-      </physvol>
-      <auxiliary auxtype="VisAttributes" auxvalue="RecoilVis"/>
-    </volume>
-    <volume name="LDMXRecoilL56ModuleVolume_component0Sensor0">
-      <materialref ref="Silicon"/>
-      <solidref ref="LDMXRecoilL56ModuleVolume_component0Sensor0Box"/>
-      <auxiliary auxtype="SensDet" auxvalue="RecoilSD"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-    </volume>
-    <volume name="LDMXRecoilL56ModuleVolume_component0">
-      <materialref ref="Silicon"/>
-      <solidref ref="LDMXRecoilL56ModuleVolume_component0Box"/>
-      <physvol name="LDMXRecoilL56ModuleVolume_component0Sensor0_physvol">
-        <volumeref ref="LDMXRecoilL56ModuleVolume_component0Sensor0"/>
-      </physvol>
-      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-    </volume>
-    <volume name="LDMXRecoilL56ModuleVolume_component1">
-      <materialref ref="Carbon"/>
-      <solidref ref="LDMXRecoilL56ModuleVolume_component1Box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
-    </volume>
-    <volume name="LDMXRecoilL56ModuleVolume">
-      <materialref ref="Vacuum"/>
-      <solidref ref="LDMXRecoilL56ModuleBox"/>
-      <physvol name="LDMXRecoilL56ModuleVolume_component0_physvol">
-        <volumeref ref="LDMXRecoilL56ModuleVolume_component0"/>
-        <position name="LDMXRecoilL56ModuleVolume_component0_physvol_pos" unit="mm" x="0" y="0" z="-0.1"/>
-      </physvol>
-      <physvol copynumber="1" name="LDMXRecoilL56ModuleVolume_component1_physvol1">
-        <volumeref ref="LDMXRecoilL56ModuleVolume_component1"/>
-        <position name="LDMXRecoilL56ModuleVolume_component1_physvol1_pos" unit="mm" x="0" y="0" z="0.16"/>
-      </physvol>
-      <auxiliary auxtype="VisAttributes" auxvalue="RecoilVis"/>
-    </volume>        
-    <volume name="recoil">
-      <materialref ref="Vacuum"/>
-      <solidref ref="recoil_box"/>
+        <variable name="recoil_l2_z"  value="recoil_z_start + recoil_layer_pos[2]"/>
+        <variable name="recoil_l2_z1" value="recoil_l2_z - recoil_sensor_l1_4_sep"/>
+        <variable name="recoil_l2_z2" value="recoil_l2_z + recoil_sensor_l1_4_sep"/>
 
-      <physvol copynumber="10" name="recoil_l1_axial">
-        <volumeref ref="LDMXRecoilL14ModuleVolume"/>
-        <position name="LDMXRecoilL14ModuleVolume_physvol15_pos" unit="mm" x="0" y="0" z="recoil_l1_z1"/>
-      </physvol>
-      <physvol copynumber="20" name="recoil_l1_stereo">
-        <volumeref ref="LDMXRecoilL14ModuleVolume"/>
-        <position name="LDMXRecoilL14ModuleVolume_physvol16_pos" unit="mm" x="0" y="0" z="recoil_l1_z2"/>
-        <rotation name="LDMXRecoilL14ModuleVolume_physvol16_rot" unit="deg" x="0" y="0" z="stereo_angle"/>
-      </physvol>
+        <variable name="recoil_l3_z"  value="recoil_z_start + recoil_layer_pos[3]"/>
+        <variable name="recoil_l3_z1" value="recoil_l3_z - recoil_sensor_l1_4_sep"/>
+        <variable name="recoil_l3_z2" value="recoil_l3_z + recoil_sensor_l1_4_sep"/>
 
-      <physvol copynumber="30" name="recoil_l2_axial">
-        <volumeref ref="LDMXRecoilL14ModuleVolume"/>
-        <position name="LDMXRecoilL14ModuleVolume_physvol17_pos" unit="mm" x="0" y="0" z="recoil_l2_z1"/>
-      </physvol>
-      <physvol copynumber="40" name="recoil_l2_stereo">
-        <volumeref ref="LDMXRecoilL14ModuleVolume"/>
-        <position name="LDMXRecoilL14ModuleVolume_physvol18_pos" unit="mm" x="0" y="0" z="recoil_l2_z2"/>
-        <rotation name="LDMXRecoilL14ModuleVolume_physvol18_rot" unit="deg" x="0" y="0" z="-stereo_angle"/>
-      </physvol>
-      
-      <physvol copynumber="50" name="recoil_l3_axial">
-        <volumeref ref="LDMXRecoilL14ModuleVolume"/>
-        <position name="LDMXRecoilL14ModuleVolume_physvol19_pos" unit="mm" x="0" y="0" z="recoil_l3_z1"/>
-      </physvol>
-      <physvol copynumber="60" name="recoil_l3_stereo">
-        <volumeref ref="LDMXRecoilL14ModuleVolume"/>
-        <position name="LDMXRecoilL14ModuleVolume_physvol20_pos" unit="mm" x="0" y="0" z="recoil_l3_z2"/>
-        <rotation name="LDMXRecoilL14ModuleVolume_physvol20_rot" unit="deg" x="0" y="0" z="stereo_angle"/>
-      </physvol>
-      
-      <physvol copynumber="70" name="recoil_l4_axial">
-        <volumeref ref="LDMXRecoilL14ModuleVolume"/>
-        <position name="LDMXRecoilL14ModuleVolume_physvol21_pos" unit="mm" x="0" y="0" z="recoil_l4_z1"/>
-      </physvol>
-      <physvol copynumber="80" name="recoil_l4_stereo">
-        <volumeref ref="LDMXRecoilL14ModuleVolume"/>
-        <position name="LDMXRecoilL14ModuleVolume_physvol22_pos" unit="mm" x="0" y="0" z="recoil_l4_z2"/>
-        <rotation name="LDMXRecoilL14ModuleVolume_physvol22_rot" unit="deg" x="0" y="0" z="-stereo_angle"/>
-      </physvol>
-      
-      <physvol copynumber="90" name="recoil_l5_sensor1">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol23_pos" unit="mm" x="96" y="40" z="recoil_l5_z2"/>
-      </physvol>
-      <physvol copynumber="91" name="recoil_l5_sensor2">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol24_pos" unit="mm" x="48" y="40" z="recoil_l5_z1"/>
-      </physvol>
-      <physvol copynumber="92" name="recoil_l5_sensor3">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol25_pos" unit="mm" x="0" y="40" z="recoil_l5_z2"/>
-      </physvol>
-      <physvol copynumber="93" name="recoil_l5_sensor4">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol26_pos" unit="mm" x="-48" y="40" z="recoil_l5_z1"/>
-      </physvol>
-      <physvol copynumber="94" name="recoil_l5_sensor5">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol27_pos" unit="mm" x="-96" y="40" z="recoil_l5_z2" />
-      </physvol>
-      <physvol copynumber="95" name="recoil_l5_sensor6">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol28_pos" unit="mm" x="96" y="-40" z="recoil_l5_z2"/>
-      </physvol>
-      <physvol copynumber="96" name="recoil_l5_sensor7">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol29_pos" unit="mm" x="48" y="-40" z="recoil_l5_z1"/>
-      </physvol>
-      <physvol copynumber="97" name="recoil_l5_sensor8">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol30_pos" unit="mm" x="0" y="-40" z="recoil_l5_z2"/>
-      </physvol>
-      <physvol copynumber="98" name="recoil_l5_sensor9">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol31_pos" unit="mm" x="-48" y="-40" z="recoil_l5_z1"/>
-      </physvol>
-      <physvol copynumber="99" name="recoil_l5_sensor10">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol32_pos" unit="mm" x="-96" y="-40" z="recoil_l5_z2"/>
-      </physvol>
-      
-      <physvol copynumber="100" name="recoil_l6_sensor1">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol33_pos" unit="mm" x="96" y="40" z="recoil_l6_z2"/>
-      </physvol>
-      <physvol copynumber="101" name="recoil_l6_sensor2">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol34_pos" unit="mm" x="48" y="40" z="recoil_l6_z1"/>
-      </physvol>
-      <physvol copynumber="102" name="recoil_l6_sensor3">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol35_pos" unit="mm" x="0" y="40" z="recoil_l6_z2"/>
-      </physvol>
-      <physvol copynumber="103" name="recoil_l6_sensor4">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol36_pos" unit="mm" x="-48" y="40" z="recoil_l6_z1"/>
-      </physvol>
-      <physvol copynumber="104" name="recoil_l6_sensor5">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol37_pos" unit="mm" x="-96" y="40" z="recoil_l6_z2" />
-      </physvol>
-      <physvol copynumber="105" name="recoil_l6_sensor6">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol38_pos" unit="mm" x="96" y="-40" z="recoil_l6_z2"/>
-      </physvol>
-      <physvol copynumber="106" name="recoil_l6_sensor7">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol39_pos" unit="mm" x="48" y="-40" z="recoil_l6_z1"/>
-      </physvol>
-      <physvol copynumber="107" name="recoil_l6_sensor8">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol40_pos" unit="mm" x="0" y="-40" z="recoil_l6_z2"/>
-      </physvol>
-      <physvol copynumber="108" name="recoil_l6_sensor9">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol41_pos" unit="mm" x="-48" y="-40" z="recoil_l6_z1"/>
-      </physvol>
-      <physvol copynumber="109" name="recoil_l6_sensor10">
-        <volumeref ref="LDMXRecoilL56ModuleVolume"/>
-        <position name="LDMXRecoilL56ModuleVolume_physvol42_pos" unit="mm" x="-96" y="-40" z="recoil_l6_z2"/>
-      </physvol>
-      
-      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-      <auxiliary auxtype="DetElem" auxvalue="RecoilTracker"/>      
-    </volume>    
-  </structure>
+        <variable name="recoil_l4_z"  value="recoil_z_start + recoil_layer_pos[4]"/>
+        <variable name="recoil_l4_z1" value="recoil_l4_z - recoil_sensor_l1_4_sep"/>
+        <variable name="recoil_l4_z2" value="recoil_l4_z + recoil_sensor_l1_4_sep"/>
 
-  <setup name="Default" version="1.0">
-    <world ref="recoil"/>
-  </setup>
+        <variable name="recoil_l5_z"  value="recoil_z_start + recoil_layer_pos[5]"/>
+        <variable name="recoil_l5_z1" value="recoil_l5_z - recoil_sensor_l5_6_sep"/>
+        <variable name="recoil_l5_z2" value="recoil_l5_z + recoil_sensor_l5_6_sep"/>
+
+        <variable name="recoil_l6_z"  value="recoil_z_start + recoil_layer_pos[6]"/>
+        <variable name="recoil_l6_z1" value="recoil_l6_z - recoil_sensor_l5_6_sep"/>
+        <variable name="recoil_l6_z2" value="recoil_l6_z + recoil_sensor_l5_6_sep"/>
+
+    </define>
+
+    <materials/>
+
+    <solids>
+        <box lunit="mm" name="LDMXRecoilL14ModuleVolume_component0Sensor0Box" x="38.3399" y="98.33" z="0.32"/>
+        <box lunit="mm" name="LDMXRecoilL14ModuleVolume_component0Box" x="40.34" y="100" z="0.32"/>
+        <box lunit="mm" name="LDMXRecoilL14ModuleVolume_component1Box" x="40.34" y="100" z="0.2"/>
+        <box lunit="mm" name="LDMXRecoilL14ModuleBox" x="40.34" y="100" z="0.52"/>
+        <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component0Sensor0Box" x="48" y="78" z="0.32"/>
+        <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component0Box" x="50" y="80" z="0.32"/>
+        <box lunit="mm" name="LDMXRecoilL56ModuleVolume_component1Box" x="50" y="80" z="0.2"/>
+        <box lunit="mm" name="LDMXRecoilL56ModuleBox" x="50" y="80" z="0.52"/>
+        <box lunit="mm" name="recoil_box" x="recoil_envelope_x" y="recoil_envelope_y" z="recoil_envelope_z"/>
+    </solids>
+
+    <structure>
+        <volume name="LDMXRecoilL14ModuleVolume_component0Sensor0">
+            <materialref ref="Silicon"/>
+            <solidref ref="LDMXRecoilL14ModuleVolume_component0Sensor0Box"/>
+            <auxiliary auxtype="SensDet" auxvalue="RecoilSD"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
+        </volume>
+        <volume name="LDMXRecoilL14ModuleVolume_component0">
+            <materialref ref="Silicon"/>
+            <solidref ref="LDMXRecoilL14ModuleVolume_component0Box"/>
+            <physvol name="LDMXRecoilL14ModuleVolume_component0Sensor0_physvol">
+                <volumeref ref="LDMXRecoilL14ModuleVolume_component0Sensor0"/>
+            </physvol>
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
+        </volume>
+        <volume name="LDMXRecoilL14ModuleVolume_component1">
+            <materialref ref="Carbon"/>
+            <solidref ref="LDMXRecoilL14ModuleVolume_component1Box"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
+        </volume>
+        <volume name="LDMXRecoilL14ModuleVolume">
+            <materialref ref="Vacuum"/>
+            <solidref ref="LDMXRecoilL14ModuleBox"/>
+            <physvol name="LDMXRecoilL14ModuleVolume_component0_physvol">
+                <volumeref ref="LDMXRecoilL14ModuleVolume_component0"/>
+                <position name="LDMXRecoilL14ModuleVolume_component0_physvol_pos" unit="mm" x="0" y="0" z="-0.1"/>
+            </physvol>
+            <physvol copynumber="1" name="LDMXRecoilL14ModuleVolume_component1_physvol1">
+                <volumeref ref="LDMXRecoilL14ModuleVolume_component1"/>
+                <position name="LDMXRecoilL14ModuleVolume_component1_physvol1_pos" unit="mm" x="0" y="0" z="0.16"/>
+            </physvol>
+            <auxiliary auxtype="VisAttributes" auxvalue="RecoilVis"/>
+        </volume>
+        <volume name="LDMXRecoilL56ModuleVolume_component0Sensor0">
+            <materialref ref="Silicon"/>
+            <solidref ref="LDMXRecoilL56ModuleVolume_component0Sensor0Box"/>
+            <auxiliary auxtype="SensDet" auxvalue="RecoilSD"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
+        </volume>
+        <volume name="LDMXRecoilL56ModuleVolume_component0">
+            <materialref ref="Silicon"/>
+            <solidref ref="LDMXRecoilL56ModuleVolume_component0Box"/>
+            <physvol name="LDMXRecoilL56ModuleVolume_component0Sensor0_physvol">
+                <volumeref ref="LDMXRecoilL56ModuleVolume_component0Sensor0"/>
+            </physvol>
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
+        </volume>
+        <volume name="LDMXRecoilL56ModuleVolume_component1">
+            <materialref ref="Carbon"/>
+            <solidref ref="LDMXRecoilL56ModuleVolume_component1Box"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
+        </volume>
+        <volume name="LDMXRecoilL56ModuleVolume">
+            <materialref ref="Vacuum"/>
+            <solidref ref="LDMXRecoilL56ModuleBox"/>
+            <physvol name="LDMXRecoilL56ModuleVolume_component0_physvol">
+                <volumeref ref="LDMXRecoilL56ModuleVolume_component0"/>
+                <position name="LDMXRecoilL56ModuleVolume_component0_physvol_pos" unit="mm" x="0" y="0" z="-0.1"/>
+            </physvol>
+            <physvol copynumber="1" name="LDMXRecoilL56ModuleVolume_component1_physvol1">
+                <volumeref ref="LDMXRecoilL56ModuleVolume_component1"/>
+                <position name="LDMXRecoilL56ModuleVolume_component1_physvol1_pos" unit="mm" x="0" y="0" z="0.16"/>
+            </physvol>
+            <auxiliary auxtype="VisAttributes" auxvalue="RecoilVis"/>
+        </volume>        
+        <volume name="recoil">
+            <materialref ref="Vacuum"/>
+            <solidref ref="recoil_box"/>
+
+            <physvol copynumber="10" name="recoil_l1_axial">
+                <volumeref ref="LDMXRecoilL14ModuleVolume"/>
+                <position name="LDMXRecoilL14ModuleVolume_physvol15_pos" unit="mm" x="0" y="0" z="recoil_l1_z1"/>
+            </physvol>
+            <physvol copynumber="20" name="recoil_l1_stereo">
+                <volumeref ref="LDMXRecoilL14ModuleVolume"/>
+                <position name="LDMXRecoilL14ModuleVolume_physvol16_pos" unit="mm" x="0" y="0" z="recoil_l1_z2"/>
+                <rotation name="LDMXRecoilL14ModuleVolume_physvol16_rot" unit="deg" x="0" y="0" z="stereo_angle"/>
+            </physvol>
+
+            <physvol copynumber="30" name="recoil_l2_axial">
+                <volumeref ref="LDMXRecoilL14ModuleVolume"/>
+                <position name="LDMXRecoilL14ModuleVolume_physvol17_pos" unit="mm" x="0" y="0" z="recoil_l2_z1"/>
+            </physvol>
+            <physvol copynumber="40" name="recoil_l2_stereo">
+                <volumeref ref="LDMXRecoilL14ModuleVolume"/>
+                <position name="LDMXRecoilL14ModuleVolume_physvol18_pos" unit="mm" x="0" y="0" z="recoil_l2_z2"/>
+                <rotation name="LDMXRecoilL14ModuleVolume_physvol18_rot" unit="deg" x="0" y="0" z="-stereo_angle"/>
+            </physvol>
+
+            <physvol copynumber="50" name="recoil_l3_axial">
+                <volumeref ref="LDMXRecoilL14ModuleVolume"/>
+                <position name="LDMXRecoilL14ModuleVolume_physvol19_pos" unit="mm" x="0" y="0" z="recoil_l3_z1"/>
+            </physvol>
+            <physvol copynumber="60" name="recoil_l3_stereo">
+                <volumeref ref="LDMXRecoilL14ModuleVolume"/>
+                <position name="LDMXRecoilL14ModuleVolume_physvol20_pos" unit="mm" x="0" y="0" z="recoil_l3_z2"/>
+                <rotation name="LDMXRecoilL14ModuleVolume_physvol20_rot" unit="deg" x="0" y="0" z="stereo_angle"/>
+            </physvol>
+
+            <physvol copynumber="70" name="recoil_l4_axial">
+                <volumeref ref="LDMXRecoilL14ModuleVolume"/>
+                <position name="LDMXRecoilL14ModuleVolume_physvol21_pos" unit="mm" x="0" y="0" z="recoil_l4_z1"/>
+            </physvol>
+            <physvol copynumber="80" name="recoil_l4_stereo">
+                <volumeref ref="LDMXRecoilL14ModuleVolume"/>
+                <position name="LDMXRecoilL14ModuleVolume_physvol22_pos" unit="mm" x="0" y="0" z="recoil_l4_z2"/>
+                <rotation name="LDMXRecoilL14ModuleVolume_physvol22_rot" unit="deg" x="0" y="0" z="-stereo_angle"/>
+            </physvol>
+
+            <physvol copynumber="90" name="recoil_l5_sensor1">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol23_pos" unit="mm" x="96" y="40" z="recoil_l5_z2"/>
+            </physvol>
+            <physvol copynumber="91" name="recoil_l5_sensor2">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol24_pos" unit="mm" x="48" y="40" z="recoil_l5_z1"/>
+            </physvol>
+            <physvol copynumber="92" name="recoil_l5_sensor3">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol25_pos" unit="mm" x="0" y="40" z="recoil_l5_z2"/>
+            </physvol>
+            <physvol copynumber="93" name="recoil_l5_sensor4">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol26_pos" unit="mm" x="-48" y="40" z="recoil_l5_z1"/>
+            </physvol>
+            <physvol copynumber="94" name="recoil_l5_sensor5">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol27_pos" unit="mm" x="-96" y="40" z="recoil_l5_z2" />
+            </physvol>
+            <physvol copynumber="95" name="recoil_l5_sensor6">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol28_pos" unit="mm" x="96" y="-40" z="recoil_l5_z2"/>
+            </physvol>
+            <physvol copynumber="96" name="recoil_l5_sensor7">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol29_pos" unit="mm" x="48" y="-40" z="recoil_l5_z1"/>
+            </physvol>
+            <physvol copynumber="97" name="recoil_l5_sensor8">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol30_pos" unit="mm" x="0" y="-40" z="recoil_l5_z2"/>
+            </physvol>
+            <physvol copynumber="98" name="recoil_l5_sensor9">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol31_pos" unit="mm" x="-48" y="-40" z="recoil_l5_z1"/>
+            </physvol>
+            <physvol copynumber="99" name="recoil_l5_sensor10">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol32_pos" unit="mm" x="-96" y="-40" z="recoil_l5_z2"/>
+            </physvol>
+
+            <physvol copynumber="100" name="recoil_l6_sensor1">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol33_pos" unit="mm" x="96" y="40" z="recoil_l6_z2"/>
+            </physvol>
+            <physvol copynumber="101" name="recoil_l6_sensor2">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol34_pos" unit="mm" x="48" y="40" z="recoil_l6_z1"/>
+            </physvol>
+            <physvol copynumber="102" name="recoil_l6_sensor3">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol35_pos" unit="mm" x="0" y="40" z="recoil_l6_z2"/>
+            </physvol>
+            <physvol copynumber="103" name="recoil_l6_sensor4">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol36_pos" unit="mm" x="-48" y="40" z="recoil_l6_z1"/>
+            </physvol>
+            <physvol copynumber="104" name="recoil_l6_sensor5">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol37_pos" unit="mm" x="-96" y="40" z="recoil_l6_z2" />
+            </physvol>
+            <physvol copynumber="105" name="recoil_l6_sensor6">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol38_pos" unit="mm" x="96" y="-40" z="recoil_l6_z2"/>
+            </physvol>
+            <physvol copynumber="106" name="recoil_l6_sensor7">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol39_pos" unit="mm" x="48" y="-40" z="recoil_l6_z1"/>
+            </physvol>
+            <physvol copynumber="107" name="recoil_l6_sensor8">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol40_pos" unit="mm" x="0" y="-40" z="recoil_l6_z2"/>
+            </physvol>
+            <physvol copynumber="108" name="recoil_l6_sensor9">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol41_pos" unit="mm" x="-48" y="-40" z="recoil_l6_z1"/>
+            </physvol>
+            <physvol copynumber="109" name="recoil_l6_sensor10">
+                <volumeref ref="LDMXRecoilL56ModuleVolume"/>
+                <position name="LDMXRecoilL56ModuleVolume_physvol42_pos" unit="mm" x="-96" y="-40" z="recoil_l6_z2"/>
+            </physvol>
+
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+            <auxiliary auxtype="DetElem" auxvalue="RecoilTracker"/>      
+        </volume>    
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="recoil"/>
+    </setup>
 
 </gdml>
