@@ -205,7 +205,7 @@
                 + CFMix_dz + PCB_dz + PCB_Motherboard_Gap + PCB_dz 
                 + BackTolerance"/>
 
-<!-- Layer C thickness is 32.1 mm --> 
+<!-- Layer D thickness is 32.1 mm --> 
 <variable name="layer_D_Thickness" 
           value="Wthick_D_dz + FrontTolerance + PCB_dz + PCB_Motherboard_Gap 
                 + PCB_dz + CFMix_dz + Si_dz + CFMixThick_dz + W_D_dz + C_dz 
@@ -220,7 +220,6 @@
 <variable name="ecal_D_layers" value="5"/>    
 
 <!-- ECal thickness is 449.2 mm -->  
-<!-- July 22, 2019, calculated to be 445.1mm -->
 <variable name="ECal_dz" 
          value="preshower_Thickness 
                 + layer_A_Thickness*ecal_A_layers
