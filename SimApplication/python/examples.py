@@ -19,7 +19,6 @@ def basicOneElectron() :
     sim = ldmxcfg.Producer( "basicOneElectron" , "ldmx::Simulator" )
     sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
     sim.parameters[ "runNumber" ] = 1
-    sim.parameters[ "verbosity" ] = 3
     sim.parameters[ "description"] = "One 4GeV electron shot from far upstream."
     sim.parameters[ "generators" ] = [ generators.farUpstreamSingle4GeVElectron() ]
     return sim
@@ -70,7 +69,7 @@ def gpsExample( ) :
 # @func multiExample
 # @return a simulator using the MPG generator
 ################################################################################################
-def multiExample( lheFile ) :
+def multiExample( ) :
     sim = ldmxcfg.Producer( "mpgExample" , "ldmx::Simulator" )
     sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
     sim.parameters[ "runNumber" ] = 1
