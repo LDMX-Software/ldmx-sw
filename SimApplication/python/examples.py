@@ -17,7 +17,7 @@ from LDMX.SimApplication import generators
 ################################################################################################
 def basicOneElectron() :
     sim = ldmxcfg.Producer( "basicOneElectron" , "ldmx::Simulator" )
-    sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
+    sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-v12" )
     sim.parameters[ "runNumber" ] = 1
     sim.parameters[ "description"] = "One 4GeV electron shot from far upstream."
     sim.parameters[ "generators" ] = [ generators.farUpstreamSingle4GeVElectron() ]
@@ -30,7 +30,7 @@ def basicOneElectron() :
 ################################################################################################
 def lheExample( lheFile ) :
     sim = ldmxcfg.Producer( "lheSimulation" , "ldmx::Simulator" )
-    sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
+    sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-v12" )
     sim.parameters[ "runNumber" ] = 1
     sim.parameters[ "verbosity" ] = 3
     sim.parameters[ "description"] = "Example of how to use LHE generator"
@@ -43,7 +43,7 @@ def lheExample( lheFile ) :
 ################################################################################################
 def gpsExample( ) :
     sim = ldmxcfg.Producer( "gpsExample" , "ldmx::Simulator" )
-    sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
+    sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-v12" )
     sim.parameters[ "runNumber" ] = 1
     sim.parameters[ "verbosity" ] = 3
     sim.parameters[ "description"] = "Example of how to use GPS generator"
@@ -71,7 +71,7 @@ def gpsExample( ) :
 ################################################################################################
 def multiExample( ) :
     sim = ldmxcfg.Producer( "mpgExample" , "ldmx::Simulator" )
-    sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
+    sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-v12" )
     sim.parameters[ "runNumber" ] = 1
     sim.parameters[ "verbosity" ] = 3
     sim.parameters[ "description"] = "Example of how to use MPG generator"

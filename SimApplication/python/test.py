@@ -18,7 +18,7 @@ from LDMX.SimApplication import generators
 ################################################################################################
 def geometry() :
     sim = ldmxcfg.Producer( "testGeometry" , "ldmx::Simulator" )
-    sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-full-v12-fieldmap-magnet" )
+    sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-v12" )
     sim.parameters[ "runNumber" ] = 1
     sim.parameters[ "verbosity" ] = 3
     sim.parameters[ "description"] = "One 4GeV electron shot from far upstream."
