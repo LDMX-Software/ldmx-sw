@@ -10,7 +10,7 @@ trigScintDigis.parameters["number_of_arrays"] = 1
 trigScintDigis.parameters["mev_per_mip"] = 0.4
 trigScintDigis.parameters["pe_per_mip"] = 10.
 trigScintDigis.parameters["input_collection"]="TriggerPadUpSimHits"
-trigScintDigis.parameters["output_collection"]="trigScintDigisDn"
+trigScintDigis.parameters["output_collection"]="trigScintDigisUp"
 
 trigScintDigisDn = ldmxcfg.Producer("trigScintDigis", "ldmx::TrigScintDigiProducer")
 
