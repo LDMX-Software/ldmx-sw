@@ -46,4 +46,4 @@ p.inputFiles = [sys.argv[1]]
 p.outputFiles = ["recon.root"]
 
 # Utility function to interpret and print out the configuration to the screen
-p.printMe()
+print p
