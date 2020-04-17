@@ -202,8 +202,8 @@ namespace ldmx {
                 if(verbose_>1 && isCopied) std::cout << "    cell was used already! not copying." << std::endl;
                 if(!isCopied){
                     //ecalMap_ needs to have its own copy of the polygon TGraph
-                    //  otherwise, we get a seg fault when EcalHexReadout is destructed
-                    //  because the polygon that was copied over from gridMap is deleted at the end of this function
+                    //  otherwise we get a segfault in ~EcalHexReadout because the polygon that
+                    //  was copied over is destroyed at the end of this function
                     ecalMap_.AddBin( poly->GetN() , poly->GetX() , poly->GetY() );
                     cellPositionMap_[ecalMapID] = std::pair<double,double>(x,y);
                     ecalMapID++;
