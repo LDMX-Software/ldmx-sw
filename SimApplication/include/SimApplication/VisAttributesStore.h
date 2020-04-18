@@ -60,7 +60,6 @@ namespace ldmx {
              * Cleans up G4VisAttributes
              */
             ~VisAttributesStore() {
-                std::cout << "~VisAttributesStore" << std::endl;
                 for ( auto &nameAtt : visAttributesMap_ ) {
                     delete nameAtt.second;
                 }

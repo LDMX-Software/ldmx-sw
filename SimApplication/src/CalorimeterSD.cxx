@@ -26,7 +26,6 @@ namespace ldmx {
     }
 
     CalorimeterSD::~CalorimeterSD() {
-        std::cout << "~CalorimeterSD" << std::endl;
         delete detID_;
     }
 

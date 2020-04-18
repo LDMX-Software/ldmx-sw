@@ -84,7 +84,7 @@ namespace ldmx {
             /**
              * Class destructor.
              */
-            virtual ~EventProcessor() { std::cout << "~EventProcessor\t" << name_ << std::endl; }
+            virtual ~EventProcessor() { }
 
             /**
              * Callback for the EventProcessor to configure itself from the 

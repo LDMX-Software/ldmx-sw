@@ -33,7 +33,6 @@ namespace ldmx {
     }
 
     APrimePhysics::~APrimePhysics() {
-        std::cout << "~APrimePhysics" << std::endl;
     }
 
     void APrimePhysics::ConstructParticle() { 

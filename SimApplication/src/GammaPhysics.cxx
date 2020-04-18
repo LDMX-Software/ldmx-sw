@@ -15,7 +15,6 @@ namespace ldmx {
     }
 
     GammaPhysics::~GammaPhysics() {
-        std::cout << "~GammaPhysics" << std::endl;
     }
 
 // needed for GEANT4 10.3.0 and later

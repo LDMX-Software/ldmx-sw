@@ -29,7 +29,6 @@ namespace ldmx {
     }
 
     TrackerSD::~TrackerSD() {
-        std::cout << "~TrackerSD" << std::endl;
         delete detID_;
     }
 

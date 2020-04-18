@@ -30,7 +30,6 @@ namespace ldmx {
     }
 
     LHEPrimaryGenerator::~LHEPrimaryGenerator() {
-        std::cout << "~LHEPrimaryGenerator" << std::endl;
         delete reader_;
     }
 

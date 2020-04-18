@@ -38,7 +38,6 @@ namespace ldmx {
     }
 
     AuxInfoReader::~AuxInfoReader() {
-        std::cout << "~AuxInfoReader" << std::endl;
         delete eval_;
         delete detectorHeader_;
     }

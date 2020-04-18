@@ -59,7 +59,6 @@ namespace ldmx {
              * Cleans up all stored G4MagneticFields
              */
             ~MagneticFieldStore() {
-                std::cout << "~MagneticFieldStore" << std::endl;
                 for ( auto &nameField : magFields_ ) {
                     delete nameField.second;
                 }

@@ -13,7 +13,6 @@ namespace ldmx {
     }
 
     DetectorConstruction::~DetectorConstruction() {
-        std::cout << "~DetectorConstruction" << std::endl;
         delete auxInfoReader_;
     }
 

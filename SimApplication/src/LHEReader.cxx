@@ -11,7 +11,6 @@ namespace ldmx {
     }
 
     LHEReader::~LHEReader() {
-        std::cout << "~LHEReader" << std::endl;
         ifs_.close();
     }
 
