@@ -12,7 +12,6 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/HistogramPool.h"
-#include "Framework/Process.h"
 #include "Framework/EventProcessorFactory.h"
 
 /*~~~~~~~~~~~~~~~~*/
@@ -222,9 +221,9 @@ namespace ldmx {
         Py_Finalize();
     }
 
-    Process* ConfigurePython::makeProcess() {
+    ProcessHandle ConfigurePython::makeProcess() {
 
-        auto process{std::make_unique<Process>(passname_)};  
+        ProcessHandle process{std::make_unique<Process>(passname_)};  
 
         process->setHistogramFileName(histoOutFile_);
         process->setEventLimit(eventLimit_);
@@ -266,7 +265,7 @@ namespace ldmx {
         if (run_ > 0)
             process->setRunNumber(run_);
 
-        return process.release();
+        return process;
     }
 
     std::map< std::string, std::any > ConfigurePython::getParameters(PyObject* dictionary) { 

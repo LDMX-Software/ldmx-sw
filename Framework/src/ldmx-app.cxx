@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    Process* p { 0 };
+    ProcessHandle p;
     try {
         std::cout << "---- LDMXSW: Loading configuration --------" << std::endl;
         
