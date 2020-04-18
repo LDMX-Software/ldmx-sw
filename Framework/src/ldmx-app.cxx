@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    Process* p { 0 };
+    ProcessHandle p;
     try {
         std::cout << "---- LDMXSW: Loading configuration --------" << std::endl;
         
@@ -92,8 +92,6 @@ int main(int argc, char* argv[]) {
         p->run();
         
         std::cout << "---- LDMXSW: Event processing complete  --------" << std::endl;
-
-        delete p; //ConfigurePython::makeProcess returns a newly allocated object that we need to delete
 
     } catch (Exception& e) {
         std::cerr << "Framework Error [" << e.name() << "] : " << e.message() << std::endl;
