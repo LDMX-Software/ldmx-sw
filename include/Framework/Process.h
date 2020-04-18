@@ -13,7 +13,7 @@
 
 // STL
 #include <vector>
-
+#include <memory>
 
 class TFile;
 class TDirectory;
@@ -182,6 +182,13 @@ namespace ldmx {
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};
     };
+
+    /**
+     * A handle to the current process
+     * Used to pass a process from ConfigurePython
+     * to ldmx-app.
+     */
+    typedef std::unique_ptr<Process> ProcessHandle;
 }
 
 #endif
