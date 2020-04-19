@@ -18,7 +18,7 @@ from LDMX.Biasing import event_filters, track_filters
 # User:
 #   myTargetENSim = target.electronNuclear()
 ###############################################################################
-def electronNuclear( ) :
+def electro_nuclear( detector ) :
     
     #
     # Instantiate the simulator.  Before doing this, the shared library containing
@@ -33,7 +33,7 @@ def electronNuclear( ) :
     # The detectors installed with ldmx-sw can be accessed using the makeDetectorPath function.
     # Otherwise, you can provide the full path yourself.
     #
-    simulator.parameters["detector"] = makeDetectorPath( "ldmx-det-v12" )
+    simulator.parameters["detector"] = makeDetectorPath( detector )
     
     #
     # Set run parameters
@@ -56,7 +56,7 @@ def electronNuclear( ) :
     #
     # Same comments about path to gdml as for the detectors
     #
-    simulator.parameters["scoringPlanes"] = makeScoringPlanesPath( "ldmx-det-v12" )
+    simulator.parameters["scoringPlanes"] = makeScoringPlanesPath( detector )
     
     #
     # Enable and configure the biasing
@@ -84,7 +84,7 @@ def electronNuclear( ) :
 # User:
 #   myTargetPNSim = target.photonNuclear()
 ###############################################################################
-def photonNuclear( ) :
+def photo_nuclear( detector ) :
     
     #
     # Instantiate the simulator.  Before doing this, the shared library containing
@@ -99,7 +99,7 @@ def photonNuclear( ) :
     # The detectors installed with ldmx-sw can be accessed using the makeDetectorPath function.
     # Otherwise, you can provide the full path yourself.
     #
-    simulator.parameters["detector"] = makeDetectorPath( "ldmx-det-v12" )
+    simulator.parameters["detector"] = makeDetectorPath( detector )
     
     #
     # Set run parameters
@@ -122,7 +122,7 @@ def photonNuclear( ) :
     #
     # Same comments about path to gdml as for the detectors
     #
-    simulator.parameters["scoringPlanes"] = makeScoringPlanesPath( "ldmx-det-v12" )
+    simulator.parameters["scoringPlanes"] = makeScoringPlanesPath( detector )
     
     #
     # Enable and configure the biasing
@@ -160,12 +160,12 @@ def photonNuclear( ) :
 #   where massAPrime is the mass of the A' in MeV and lheFile is the path
 #   to the LHE file to use as vertices of the dark brem
 ###############################################################################
-def darkBrem( massAPrime , lheFile ) :
+def darkBrem( massAPrime , lheFile, detector ) :
     darkBremOn = ldmxcfg.Producer( "darkBrem_" + str(massAPrime) + "_MeV" , "ldmx::Simulator")
     
     darkBremOn.parameters[ "description" ] = "One e- fired far upstream with Dark Brem turned on and biased up in target"
-    darkBremOn.parameters[ "detector" ] = makeDetectorPath( "ldmx-det-v12" )
-    darkBremOn.parameters[ "scoringPlanes" ] = makeScoringPlanesPath( "ldmx-det-v12" )
+    darkBremOn.parameters[ "detector" ] = makeDetectorPath( detector )
+    darkBremOn.parameters[ "scoringPlanes" ] = makeScoringPlanesPath( detector )
     darkBremOn.parameters[ "generators" ] = [ generators.farUpstreamSingle4GeVElectron() ]
     
     # Bias the electron dark brem process inside of the target
