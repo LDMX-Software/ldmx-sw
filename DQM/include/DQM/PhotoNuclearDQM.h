@@ -1,11 +1,5 @@
-/**
- * @file EcalPN.h
- * @brief Analyzer used for ECal PN DQM. 
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
-#ifndef _DQM_ECAL_PN_H_
-#define _DQM_ECAL_PN_H_
+#ifndef DQM_PHOTONUCLEARDQM_H
+#define DQM_PHOTONUCLEARDQM_H
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -23,31 +17,32 @@ namespace ldmx {
     class Process;
     class SimParticle;
 
-    class EcalPN : public Analyzer { 
+    class PhotoNuclearDQM : public Analyzer { 
     
         public: 
 
-            /** Constructor */
-            EcalPN(const std::string &name, Process &process);
+            /// Constructor
+            PhotoNuclearDQM(const std::string &name, Process &process);
 
-            /** Destructor */
-            ~EcalPN();
+            /// Destructor
+            ~PhotoNuclearDQM();
 
             /** 
-             * Configure the processor using the given user specified parameters.
+             * Configure this analyzer using the user specified parameters.
              * 
-             * @param parameters Set of parameters used to configure this processor.
+             * @param parameters Set of parameters used to configure this 
+             *                   analyzer.
              */
             void configure(Parameters& parameters) final override; 
  
             /**
-             * Process the event and make histograms ro summaries.
+             * Process the event and create the histogram summaries.
              *
              * @param event The event to analyze.
              */
-            void analyze(const Event& event);
+            void analyze(const Event& event) final override;
 
-            /** Method executed before processing of events begins. */
+            /// Method executed before processing of events begins. 
             void onProcessStart();
 
         private:
@@ -58,11 +53,9 @@ namespace ldmx {
             /** Method used to classify events in a compact manner. */
             int classifyCompactEvent(const SimParticle* particle, const std::map<int,SimParticle> &particleMap, double threshold); 
 
-            /** Singleton used to access histograms. */
+            /// Singleton used to access histograms.
             HistogramPool* histograms_{nullptr}; 
 
-            /** Name of ECal veto collection. */
-            std::string ecalVetoCollectionName_{"EcalVeto"}; 
     };    
     
 } // ldmx
