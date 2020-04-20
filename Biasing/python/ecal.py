@@ -1,4 +1,4 @@
-""" Example configurations for producing biases interactions in the ECal. 
+""" Example configurations for producing biased interactions in the ECal. 
 
     Example
     -------
@@ -96,7 +96,7 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     This configures the simulator to fire a 4 GeV electron upstream of the 
     tagger tracker.  The electron is allowed to propagate into the ECal where 
-    The dark-photon production cross-section is biased up.  Only events that 
+    the dark-photon production cross-section is biased up.  Only events that 
     result in a dark-photon being produced in the ECal are kept. 
 
     Parameters
