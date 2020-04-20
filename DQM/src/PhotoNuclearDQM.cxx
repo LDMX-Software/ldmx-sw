@@ -59,23 +59,8 @@ namespace ldmx {
 
         std::vector<TH1*> hists = { 
             histograms_->get("event_type"),
-            histograms_->get("event_type_track_veto"),
-            histograms_->get("event_type_bdt"),
-            histograms_->get("event_type_hcal"),
-            histograms_->get("event_type_track_bdt"),
-            histograms_->get("event_type_vetoes"),
             histograms_->get("event_type_500mev"),
-            histograms_->get("event_type_500mev_track_veto"),
-            histograms_->get("event_type_500mev_bdt"),
-            histograms_->get("event_type_500mev_hcal"),
-            histograms_->get("event_type_500mev_track_bdt"),
-            histograms_->get("event_type_500mev_vetoes"),
             histograms_->get("event_type_2000mev"),
-            histograms_->get("event_type_2000mev_track_veto"),
-            histograms_->get("event_type_2000mev_bdt"),
-            histograms_->get("event_type_2000mev_hcal"),
-            histograms_->get("event_type_2000mev_track_bdt"),
-            histograms_->get("event_type_2000mev_vetoes"),
 
         };
 
@@ -152,8 +137,14 @@ namespace ldmx {
 
     void PhotoNuclearDQM::analyze(const Event& event) { 
  
+        std::cout << "Event <<<< " << std::endl;
+
         // Get the collection of simulated particles from the event
         auto particleMap{event.getMap<int,SimParticle>("SimParticles")};
+
+        for( auto const& [key, val] : particleMap ) {
+            val.Print(); 
+        }
       
         // Use the recoil electron to retrieve the gamma that underwent a 
         // photo-nuclear reaction.
