@@ -9,6 +9,7 @@
 from LDMX.Framework import ldmxcfg
 from LDMX.Detectors.makePath import *
 from LDMX.SimApplication import generators
+from LDMX.SimApplication import simcfg
 from LDMX.Biasing import event_filters, track_filters
 
 def photo_nuclear( detector ) :
@@ -60,7 +61,7 @@ def photo_nuclear( detector ) :
     #
     # A 4GeV single electron generator is so common that you
     # can pull it in from the generators module.
-    simulator.parameters['generators'] = [ generators.farUpstreamSingle4GeVElectron() ]
+    simulator.parameters['generators'] = [ generators.single_4gev_e_upstream_tagger() ]
     
     # Enable the scoring planes 
     #
@@ -77,7 +78,7 @@ def photo_nuclear( detector ) :
     
     # Save tracks of particles created in the photo-nuclear reaction
     track_process_filter = simcfg.UserAction('trackProcessFilter', 'ldmx::TrackProcessFilter')
-    track_process_filter.parameters['process'] = ['photonNuclear']
+    track_process_filter.parameters['process'] = 'photonNuclear'
     
     # Configure the sequence in which user actions should be called.
     simulator.parameters["actions"] = [
@@ -85,9 +86,9 @@ def photo_nuclear( detector ) :
             event_filters.targetBremFilter(), 
             # Only consider events where a PN reaction happnes in the ECal
             event_filters.ecalPNFilter(),     
-            # Tag all photo-nuclear tracks are persist them to the event.
-            track_filters.keepPNTracks()      
-            ]
+            # Tag all photo-nuclear tracks to persist them to the event.
+            track_process_filter        
+    ]
 
     return simulator
 
