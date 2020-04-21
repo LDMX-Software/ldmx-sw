@@ -1,9 +1,3 @@
-/**
- * @file Parameters.h
- * @brief Class encapsulating parameters for configuring a processor.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #ifndef FRAMEWORK_PARAMETERS_H
 #define FRAMEWORK_PARAMETERS_H
 
@@ -15,6 +9,7 @@
 #include <limits>
 #include <map>
 #include <string>
+#include <typeinfo> 
 #include <type_traits>
 #include <vector>
 
@@ -26,7 +21,7 @@
 namespace ldmx {
 
     /**
-     *
+     * Class encapsulating parameters for configuring a processor. 
      */
     class Parameters {
         
@@ -41,14 +36,21 @@ namespace ldmx {
             /**
              * Set the mapping of parameter names to value.
              *
-             * @param mapping between parameter names and the corresponding value.
+             * @param [in, out] parameters mapping between parameter names and
+             *      the corresponding value.
              */
             void setParameters(std::map < std::string, std::any > parameters) { 
                 parameters_ = parameters; 
             }
 
             /**
+             * Retrieve the parameter of the given name.
              *
+             * @tparam T the data type to cast the parameter to.
+             * 
+             * @param name the name of the parameter value to retrieve.
+             *
+             * @return The user specified parameter.
              */
             template <typename T> 
             T getParameter(const std::string& name) { 
@@ -67,7 +69,7 @@ namespace ldmx {
                     parameter = std::any_cast< T >(parameters_[name]);
                 } catch(const std::bad_any_cast& e) {
                     EXCEPTION_RAISE("Parameters::getParameter", 
-                                    "Parameter is being cast to incorrect type."); 
+                                    "Parameter " + name + " is being cast to incorrect type ( " + typeid(T).name() + ")."); 
                 }
 
                return parameter; 
