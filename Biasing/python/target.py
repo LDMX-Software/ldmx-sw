@@ -67,6 +67,9 @@ def electro_nuclear( detector ) :
     simulator.parameters['biasing.process'] = 'electronNuclear'
     simulator.parameters['biasing.volume'] = 'target'
     simulator.parameters['biasing.factor'] = 1e8
+
+    tagger_veto_filter = simcfg.UserAction("tagger_veto_filter", "ldmx::TaggerVetoFilter")
+    tagger_veto_filter.parameters['threshold'] = 3800.
    
     # Save tracks of particles created in the photo-nuclear reaction
     track_process_filter = simcfg.UserAction('trackProcessFilter', 'ldmx::TrackProcessFilter')
@@ -74,6 +77,7 @@ def electro_nuclear( detector ) :
 
     # Configure the sequence in which user actions should be called.
     simulator.parameters["actions"] = [
+            tagger_veto_filter,
             event_filters.targetENFilter(), #only consider events where an EN interaction happens in the target
             # Tag all electro-nuclear tracks to persist them to the event.
             track_process_filter        
@@ -143,13 +147,17 @@ def photo_nuclear( detector ) :
     simulator.parameters['biasing.volume'] = 'target'
     simulator.parameters['biasing.threshold'] = 2500.
     simulator.parameters['biasing.factor'] = 450
-    
+   
+    tagger_veto_filter = simcfg.UserAction("tagger_veto_filter", "ldmx::TaggerVetoFilter")
+    tagger_veto_filter.parameters['threshold'] = 3800.
+
     # Save tracks of particles created in the photo-nuclear reaction
     track_process_filter = simcfg.UserAction('trackProcessFilter', 'ldmx::TrackProcessFilter')
     track_process_filter.parameters['process'] = 'photonNuclear'
     
     # Configure the sequence in which user actions should be called.
     simulator.parameters["actions"] = [
+            tagger_veto_filter, 
             event_filters.targetBremFilter(), 
             event_filters.targetPNFilter(),   
             # Tag all photo-nuclear tracks to persist them to the event.
