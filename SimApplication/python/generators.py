@@ -92,17 +92,28 @@ def farUpstreamSingle8GeVElectron() :
     farUpstreamElectron.parameters[ 'energy'    ] = 8.0000000 #GeV
     return farUpstreamElectron
 
-#############################################################
-# @function farUpstreamSingle4GeVElectron
-# @return a ParticleGun with a single 4GeV electron fired from far upstream of target
-#############################################################
-def farUpstreamSingle4GeVElectron() :
-    farUpstreamElectron = gun( "farUpstreamSingle4GeVElectron" )
-    farUpstreamElectron.parameters[ 'particle'  ] = 'e-'
-    farUpstreamElectron.parameters[ 'position'  ] = [ -27.926, 5, -700 ] #mm
-    farUpstreamElectron.parameters[ 'direction' ] = [ 313.8 / 4000 , 0, 3987.7/4000 ] #unitless
-    farUpstreamElectron.parameters[ 'energy'    ] = 4.0000000 #GeV
-    return farUpstreamElectron
+
+def single_4gev_e_upstream_tagger() :
+    """Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
+
+    The position and direction are set such that the electron will be bent by 
+    the field and arrive at the target at approximately [0, 0, 0] (assuming 
+    it's not smeared).
+    
+    Returns
+    -------
+    Instance of a particle gun configured to fire a single 4 Gev electron 
+    directly upstream of the tagger tracker.  
+
+    """
+
+    particle_gun = gun('single_4gev_e_upstream_tagger')
+    particle_gun.parameters[ 'particle'  ] = 'e-'
+    particle_gun.parameters[ 'position'  ] = [ -27.926 , 5 , -700 ] # mm
+    particle_gun.parameters[ 'direction' ] = [ 313.8 / 4000 , 0, 3987.7/4000 ]
+    particle_gun.parameters[ 'energy'    ] = 4.0000000 # GeV
+
+    return particle_gun
 
 #############################################################
 # @function farUpstreamSingle1p2GeVElectron
@@ -115,6 +126,7 @@ def farUpstreamSingle1p2GeVElectron() :
     farUpstreamElectron.parameters[ 'direction' ] = [ 0.2292 / 1.2 , 0, 1.1779 / 1.2 ] #unitless
     farUpstreamElectron.parameters[ 'energy'    ] = 1.200000 #GeV
     return farUpstreamElectron
+
 
 #############################################################
 # @function slacBeam
