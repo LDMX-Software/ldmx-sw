@@ -227,6 +227,7 @@
                 </physvol>
             </loop> 
 
+            <auxiliary auxtype="Region" auxvalue="tagger" />
             <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
             <auxiliary auxtype="DetElem" auxvalue="Tagger"/>
         </volume>       
