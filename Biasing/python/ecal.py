@@ -75,13 +75,18 @@ def photo_nuclear( detector ) :
     simulator.parameters['biasing.volume'] = 'ecal'
     simulator.parameters['biasing.threshold'] = 2500.
     simulator.parameters['biasing.factor'] = 450
-    
+   
+    # Veto off-energy electrons
+    tagger_veto_filter = simcfg.UserAction("tagger_veto_filter", "ldmx::TaggerVetoFilter")
+    tagger_veto_filter.parameters['threshold'] = 3800.
+
     # Save tracks of particles created in the photo-nuclear reaction
     track_process_filter = simcfg.UserAction('trackProcessFilter', 'ldmx::TrackProcessFilter')
     track_process_filter.parameters['process'] = 'photonNuclear'
     
     # Configure the sequence in which user actions should be called.
     simulator.parameters["actions"] = [
+            tagger_veto_filter,
             # Only consider events where a hard brem occurs
             event_filters.targetBremFilter(), 
             # Only consider events where a PN reaction happnes in the ECal
