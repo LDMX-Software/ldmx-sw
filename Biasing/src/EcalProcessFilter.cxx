@@ -58,44 +58,29 @@ namespace ldmx {
         } 
         
         // Get the track associated with this step.
-        G4Track* track = step->GetTrack();
-
+        auto track{step->GetTrack()};
+        
         // Only process tracks whose parent is the primary particle
         if (track->GetParentID() != 1) return; 
 
-        // get the PDGID of the track.
-        G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
-
-        // Make sure that the particle being processed is an electron.
-        // TODO: At some point all particle types should be allowed.
-        if (pdgID != 22) return; 
+        // Get the PDG ID of the track and make sure it's a photon. If 
+        // another particle type is found, thrown an exception. 
+        if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()}; pdgID != 22) return; 
 
         // Get the volume the particle is in.
-        G4VPhysicalVolume* volume = track->GetVolume();
-        G4String volumeName = volume->GetName();
+        //G4VPhysicalVolume* volume = track->GetVolume();
+        //G4String volumeName = volume->GetName();
 
-        //std::cout << "*******************************" << std::endl;
-        //std::cout << "*   Step " << track->GetCurrentStepNumber() << std::endl;
-        //std::cout << "********************************" << std::endl;
-        
         // Get the particle type.
-        G4String particleName = track->GetParticleDefinition()->GetParticleName();
+        //G4String particleName = track->GetParticleDefinition()->GetParticleName();
         
-        // Get the kinetic energy of the particle.
-        //double incidentParticleEnergy = step->GetPreStepPoint()->GetTotalEnergy();
-
-        //std::cout << "[ EcalProcessFilter ]:\n" 
-        //            << "\tTotal energy of " << particleName  << ": " << incidentParticleEnergy << " MeV \n"
-        //            << "\tPDG ID: " << pdgID << "\n"
-        //            << "\tTrack ID: " << track->GetTrackID() << "\n" 
-        //            << "\tStep #: " << track->GetCurrentStepNumber() << "\n"
-        //            << "\tParent ID: " << track->GetParentID() << "\n"
-        //            << "\tParticle currently in " << volumeName  << std::endl;
-
         // If the particle isn't in the specified volume, stop processing the 
         // event.
         std::vector<G4Track*> bremGammaList = TargetBremFilter::getBremGammaList();
-        if (std::find(std::begin(volumes_), std::end(volumes_), volumeName) == std::end(volumes_)) {
+        // Get the region the particle is currently in.  Continue processing
+        // the particle only if it's in the target region. 
+        if (auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
+                region.compareTo("CalorimeterRegion") != 0) { 
 
             //std::cout << "[ EcalProcessFilter ]: "
             //            << "Brem is in " << volumeName  << std::endl;
@@ -156,7 +141,7 @@ namespace ldmx {
             //            << std::endl;   
         
             // If the particle is exiting the bounding volume, kill it.
-            if (!boundVolumes_.empty() && step->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) {
+            /*if (!boundVolumes_.empty() && step->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) {
                 if (std::find(std::begin(boundVolumes_), std::end(boundVolumes_), volumeName) != std::end(boundVolumes_)) {
 
                     //std::cout << "[ EcalProcessFilter ]: "
@@ -181,8 +166,8 @@ namespace ldmx {
                         return;
                     }
                 }
-            }
-
+            }*/
+            return; 
         } else {
 
             // If the brem gamma interacts and produces secondaries, get the 
