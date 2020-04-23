@@ -229,7 +229,7 @@
 
             <auxiliary auxtype="Region" auxvalue="tagger" />
             <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-            <auxiliary auxtype="DetElem" auxvalue="Tagger"/>
+            <auxiliary auxtype="DetElem" auxvalue="tagger"/>
         </volume>       
 
     </structure>

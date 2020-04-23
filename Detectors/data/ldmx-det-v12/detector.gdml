@@ -218,7 +218,10 @@
             <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
         </auxiliary>
         <auxiliary auxtype="Region" auxvalue="tagger" >
-            <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
+            <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
+        </auxiliary>
+        <auxiliary auxtype="Region" auxvalue="target" >
+            <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
         </auxiliary>
 
 
