@@ -7,22 +7,10 @@
 #include "Exception/catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
 
 #include "Framework/Process.h"
+#include "Framework/EventProcessor.h"
+#include "Framework/EventProcessorFactory.h"
 
-/**
- * Make and configure a dummy producer
- * Owned and deleted by Process
- */
-EventProcessor* getDummyProducer() {
-    EventProcessor *dP = EventProcessorFactory::getInstance().createEventProcessor( "ldmx::DummyProducer" , "test_DummyProducer" );
-    Parameters parameters;
-    parameters.setParameters({
-            { "nParticles" , 1 },
-            { "aveEnergy" , 10. },
-            { "direction" , { 0., 0., 0. }}
-            });
-    dP->configure( parameters );
-    return dP;
-}
+using namespace ldmx;
 
 /**
  * Test for ldmx-app function
@@ -36,92 +24,105 @@ TEST_CASE( "Process Functionality Test" , "[Framework][functionality]" ) {
 
     REQUIRE( p.getPassName() == "test" );
 
-    SECTION( "Exceptions" ) {
+    EventProcessor *dP = EventProcessorFactory::getInstance().createEventProcessor( "ldmx::DummyProducer" , "DummyProducer_TEST" , p );
+    REQUIRE_FALSE( dP == nullptr );
+    std::map< std::string , std::any > params;
+    params[ "nParticles" ] = 1;
+    params[ "aveEnergy" ] = 10.;
+    std::vector<double> dir;
+    params[ "direction" ] = dir;
+    Parameters parameters;
+    parameters.setParameters( params );
+    dP->configure( parameters );
 
-        SECTION( "Not input/output files" ) {
-            //should throw an exception that
-            //nothing has been setup
-            CHECK_THROWS( p.run() );
-        }
-
-        SECTION( "Only output file without number of events" ) {
-            p.addOutputFileName( "test_out.root" );
-    
-            //should throw that no events
-            //to run over
-            CHECK_THROWS( p.run() );
-        }
-
-        SECTION( "Input file doesn't exist." ) {
-            p.addInputFileName( "test_in_does_not_exist.root" );
-    
-            CHECK_THROWS( p.run() );
-        }
-
-        SECTION( "Mis-matching Input and Output file numbers." ) {
-            p.addOutFileName( "test_out_0.root" );
-            p.addOutFileName( "test_out_1.root" );
-            p.addOutFileName( "test_out_2.root" );
-
-            p.addInputFileName( "test_in.root" );
-
-            CHECK_THROWS( p.run() );
-        }
-
-    }
+    EventProcessor *dA = EventProcessorFactory::getInstance().createEventProcessor( "ldmx::DummyAnalyzer" , "DummyAnalyzer_TEST" , p );
+    REQUIRE_FALSE( dA == nullptr );
+    params.clear();
+    params[ "caloHitCollection" ] = std::string("caloHits");
+    parameters.setParameters( params );
+    dA->configure( parameters );
 
     SECTION( "Production Mode" ) {
         //no input files, only output files
 
         p.setOutputFileName( "test_out.root" );
         p.setEventLimit( 5 );
-        p.addToSequence( getDummyProducer() );
+        p.addToSequence( dP );
 
         CHECK_NOTHROW( p.run() );
         
         SECTION( "with Analyses" ) {
 
+            p.addToSequence( dA );
+
+            CHECK_NOTHROW( p.run() );
         }
 
         SECTION( "with drop/keep rules" ) {
+
+            p.addDropKeepRule( "drop .*Hits.*" );
+
+            CHECK_NOTHROW( p.run() );
 
         }
 
     }
 
-    SECTION( "Analysis Mode" ) {
-        //no output files, only histogram output
+    SECTION( "Need Input Files" ) {
 
-        SECTION( "with drop/keep rules" ) {
+        p.addToSequence( dP );
 
+        p.setOutputFileName( "test_input0.root" );
+        p.setEventLimit( 5 );
+        
+        CHECK_NOTHROW( p.run() );
+
+        p.setOutputFileName( "test_input1.root" );
+        p.setEventLimit( 10 );
+        
+        CHECK_NOTHROW( p.run() );
+    
+        p.setOutputFileName( "test_input2.root" );
+        p.setEventLimit( 15 );
+        
+        CHECK_NOTHROW( p.run() );
+
+        SECTION( "Analysis Mode" ) {
+            //no output files, only histogram output
+
+            Process anap("TESTana");
+            anap.addToSequence( dA );
+            anap.setHistogramFileName( "test_histo.root" );
+            anap.addFileToProcess( "test_input0.root" );
+
+            anap.run();
         }
-
-    }
-
-    SECTION( "Merge Mode" ) {
-        //many input files to one output file
-
-        SECTION( "with Analyses" ) {
-
+    
+        SECTION( "Merge Mode" ) {
+            //many input files to one output file
+    
+            SECTION( "with Analyses" ) {
+    
+            }
+    
+            SECTION( "with drop/keep rules" ) {
+    
+            }
+    
         }
-
-        SECTION( "with drop/keep rules" ) {
-
+    
+        SECTION( "N to N Mode" ) {
+            //many input files to many output files
+    
+            SECTION( "with Analyses" ) {
+    
+            }
+    
+            SECTION( "with drop/keep rules" ) {
+    
+            }
+    
         }
-
-    }
-
-    SECTION( "N to N Mode" ) {
-        //many input files to many output files
-
-        SECTION( "with Analyses" ) {
-
-        }
-
-        SECTION( "with drop/keep rules" ) {
-
-        }
-
     }
 
 }
