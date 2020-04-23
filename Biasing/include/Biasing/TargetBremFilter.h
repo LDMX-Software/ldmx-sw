@@ -83,17 +83,14 @@ namespace ldmx {
             
             static std::vector<G4Track*> bremGammaTracks_; 
 
-            /// The volume that the filter will be applied to. 
-            G4String volumeName_{"target_PV"};
-
             /// Recoil electron threshold.  
-            double recoilEnergyThreshold_{1500}; // MeV
+            double recoilMaxPThreshold_{1500}; // MeV
 
             /// Brem gamma energy treshold
-            double bremEnergyThreshold_{0}; 
+            double bremEnergyThreshold_{2500}; 
 
             /// Flag indicating if the recoil electron track should be killed
-            bool killRecoilElectron_{false};
+            bool killRecoil_{false};
 
 
     }; // TargetBremFilter
