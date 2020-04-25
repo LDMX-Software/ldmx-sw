@@ -1,6 +1,8 @@
 #ifndef SIMCORE_USEREVENTINFORMATION_H
 #define SIMCORE_USEREVENTINFORMATION_H 
 
+#include "G4VUserEventInformation.hh"
+
 namespace ldmx { 
 
     /**
@@ -36,7 +38,7 @@ namespace ldmx {
             /// Total number of brem candidates in the event
             int bremCandidateCount_{0};
 
-            /// The event weight 
+            /// The event weight
             double eventWeight_{1.}; 
     };
 }
