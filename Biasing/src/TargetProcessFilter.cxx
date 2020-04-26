@@ -120,7 +120,10 @@ namespace ldmx {
                       << "Brem photon produced " << secondaries->size() 
                       << " particle via " << processName << " process." 
                       << std::endl;
-            //BiasingMessenger::setEventWeight(track->GetWeight());
+            trackInfo->tagBremCandidate(false);   
+            eventInfo->decBremCandidateCount(); 
+            eventInfo->setWeight(track->GetWeight());  
+        
         }
     }    
 

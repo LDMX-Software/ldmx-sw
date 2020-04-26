@@ -1,9 +1,3 @@
-/*
- * @file EcalProcessFilter.cxx
- * @brief User action plugin that biases Geant4 to only process events which
- *        involve a photonuclear reaction in the ECal.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
 
 #include "Biasing/EcalProcessFilter.h"
 
@@ -12,6 +6,8 @@
 /*~~~~~~~~~~~~*/
 #include "G4RunManager.hh"
 #include "G4EventManager.hh"
+#include "G4Step.hh"
+#include "G4Track.hh" 
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
@@ -167,8 +163,8 @@ namespace ldmx {
                       << " particle via " << processName << " process." 
                       << std::endl;
             trackInfo->tagBremCandidate(false);   
-            eventInfo->decBremCandidateCount();  
-            //BiasingMessenger::setEventWeight(track->GetWeight());
+            eventInfo->decBremCandidateCount(); 
+            eventInfo->setWeight(track->GetWeight());  
         }
 
     }

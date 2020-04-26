@@ -7,11 +7,6 @@
 #include <algorithm>
 
 /*~~~~~~~~~~~~~*/
-/*   Biasing   */
-/*~~~~~~~~~~~~~*/
-#include "Biasing/TargetBremFilter.h"
-
-/*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/UserAction.h"
@@ -20,6 +15,10 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Parameters.h" 
+
+// Forward declaration
+class G4Step; 
+class G4Track; 
 
 namespace ldmx {
 
