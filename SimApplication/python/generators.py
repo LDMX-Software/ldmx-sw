@@ -63,34 +63,12 @@ def ecalSP( name , filePath ) :
     return sim
 
 #############################################################
-# @function stdhep
-# @param name name of StdHepPrimaryGenerator
-# @return PrimaryGenerator of class ldmx::StdHepPrimaryGenerator
-#############################################################
-import sys
-def stdhep( name ) :
-    print "stdhep PrimaryGenerator Not Implemented yet"
-    sys.exit(1)
-
-#############################################################
 # @function gps
 # @param name name of GeneralParticleSource
 # @return PrimaryGenerator of class ldmx::GeneralParticleSource
 #############################################################
 def gps( name ) :
     return simcfg.PrimaryGenerator( name , "ldmx::GeneralParticleSource" )
-
-#############################################################
-# @function farUpstreamSingle8GeVElectron
-# @return a ParticleGun with a single 8GeV electron fired from far upstream of target
-#############################################################
-def farUpstreamSingle8GeVElectron() :
-    farUpstreamElectron = gun( "farUpstreamSingle8GeVElectron" )
-    farUpstreamElectron.parameters[ 'particle'  ] = 'e-'
-    farUpstreamElectron.parameters[ 'position'  ] = [ -14.292 , 0 , -700 ] #mm
-    farUpstreamElectron.parameters[ 'direction' ] = [ 0.34895509892 , 0, 7.99238577265 ] #unitless
-    farUpstreamElectron.parameters[ 'energy'    ] = 8.0000000 #GeV
-    return farUpstreamElectron
 
 
 def single_4gev_e_upstream_tagger() :
@@ -115,6 +93,28 @@ def single_4gev_e_upstream_tagger() :
 
     return particle_gun
 
+def single_4gev_e_upstream_target() :
+    """Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
+
+    The position and direction are set such that the electron will be bent by 
+    the field and arrive at the target at approximately [0, 0, 0] (assuming 
+    it's not smeared).
+    
+    Returns
+    -------
+    Instance of a particle gun configured to fire a single 4 Gev electron 
+    directly upstream of the tagger tracker.  
+
+    """
+
+    particle_gun = gun('single_4gev_e_upstream_target')
+    particle_gun.parameters[ 'particle'  ] = 'e-'
+    particle_gun.parameters[ 'position'  ] = [ 0., 0., -1.2 ] # mm
+    particle_gun.parameters[ 'direction' ] = [ 0., 0., 1]
+    particle_gun.parameters[ 'energy'    ] = 4.0000000 # GeV
+
+    return particle_gun
+
 #############################################################
 # @function farUpstreamSingle1p2GeVElectron
 # @return a ParticleGun with a single 1.2GeV electron fired from far upstream of target
@@ -126,19 +126,3 @@ def farUpstreamSingle1p2GeVElectron() :
     farUpstreamElectron.parameters[ 'direction' ] = [ 0.2292 / 1.2 , 0, 1.1779 / 1.2 ] #unitless
     farUpstreamElectron.parameters[ 'energy'    ] = 1.200000 #GeV
     return farUpstreamElectron
-
-
-#############################################################
-# @function slacBeam
-# @return a MultiParticleGun with Poisson variation around 2 interactions
-#   This generator is meant to mimic the beam at SLAC
-#   NOT VERY REALISTIC RIGHT NOW
-#############################################################
-def slacBeam() :
-    beam = mpg( "slacBeam" )
-    beam.parameters[ 'nInteractions'  ] = 2
-    beam.parameters[ 'enablePoisson' ] = True
-    beam.parameters[ 'pdgID'    ] = 11
-    beam.parameters[ 'vertex'   ] = [ -28.06 , 0 , -865.0 ] #mm
-    beam.parameters[ 'momentum' ] = [ 313.8 , 0. , 3987.7 ] #MeV
-    return beam
