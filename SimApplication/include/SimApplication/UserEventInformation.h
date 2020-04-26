@@ -28,6 +28,18 @@ namespace ldmx {
             void decBremCandidateCount() { bremCandidateCount_ -= 1; } 
 
             /**
+             * Set the event weight.
+             *
+             * @param[in] weight the event weight
+             */
+            void setWeight(double weight) { weight_ = weight; }
+
+            /**
+             * @return The event weight
+             */
+            double getWeight() { return weight_; }
+
+            /**
              * @return The total number of brem candidates that this event 
              *      contains.
              */
@@ -39,7 +51,7 @@ namespace ldmx {
             int bremCandidateCount_{0};
 
             /// The event weight
-            double eventWeight_{1.}; 
+            double weight_{1.}; 
     };
 }
 
