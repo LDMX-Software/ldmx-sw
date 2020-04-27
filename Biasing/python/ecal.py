@@ -12,7 +12,7 @@ from LDMX.SimApplication import generators
 from LDMX.SimApplication import simcfg
 from LDMX.Biasing import event_filters, track_filters
 
-def photo_nuclear( detector ) :
+def photo_nuclear( detector, generator ) :
     """Example configuration for producing photo-nuclear reactions in the ECal.  
        
     In this particular example, 4 GeV electrons are fired upstream of the 
@@ -61,7 +61,7 @@ def photo_nuclear( detector ) :
     #
     # A 4GeV single electron generator is so common that you
     # can pull it in from the generators module.
-    simulator.parameters['generators'] = [ generators.single_4gev_e_upstream_tagger() ]
+    simulator.parameters['generators'] = [ generator ]
     
     # Enable the scoring planes 
     #
@@ -80,15 +80,24 @@ def photo_nuclear( detector ) :
     tagger_veto_filter = simcfg.UserAction("tagger_veto_filter", "ldmx::TaggerVetoFilter")
     tagger_veto_filter.parameters['threshold'] = 3800.
 
+    target_brem_filter = simcfg.UserAction("target_brem_filter", "ldmx::TargetBremFilter")
+    target_brem_filter.parameters['recoil_max_p_threshold']    = 1500.
+    target_brem_filter.parameters['brem_energy_threshold'] = 2500.
+
+
     # Save tracks of particles created in the photo-nuclear reaction
     track_process_filter = simcfg.UserAction('trackProcessFilter', 'ldmx::TrackProcessFilter')
     track_process_filter.parameters['process'] = 'photonNuclear'
+
+    step_printer = simcfg.UserAction('step_action', 'ldmx::StepPrinter')
+    step_printer.parameters['track_id'] = 1
     
     # Configure the sequence in which user actions should be called.
     simulator.parameters["actions"] = [
+            #step_printer, 
             tagger_veto_filter,
             # Only consider events where a hard brem occurs
-            event_filters.targetBremFilter(), 
+            target_brem_filter,
             # Only consider events where a PN reaction happnes in the ECal
             event_filters.ecalPNFilter(),     
             # Tag all photo-nuclear tracks to persist them to the event.
