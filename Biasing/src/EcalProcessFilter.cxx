@@ -30,20 +30,9 @@ namespace ldmx {
             const G4Track* track, 
             const G4ClassificationOfNewTrack& currentTrackClass) {
 
-        /*std::cout << "********************************" << std::endl;*/ 
-        /*std::cout << "*   Track pushed to the stack  *" << std::endl;*/
-        /*std::cout << "********************************" << std::endl;*/
-
-        // get the PDGID of the track.
-        //G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
-
         // Get the particle type.
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
 
-        /*std::cout << "[ TargetBremFilter ]: " << "\n" 
-                    << "\tParticle " << particleName << " ( PDG ID: " << pdgID << " ) : " << "\n"
-                    << "\tTrack ID: " << track->GetTrackID() << "\n" 
-                    << std::endl;*/
 
         if (track == currentTrack_) {
             currentTrack_ = nullptr; 
@@ -102,39 +91,23 @@ namespace ldmx {
         }
 
         // If the particle doesn't interact, then move on to the next step.
-        if (secondaries->size() == 0) { 
-            
-            //std::cout << "[ EcalProcessFilter ]: "
-            //            << "Brem photon did not interact --> Continue propogating track."
-            //            << std::endl;   
-        
-            // If the particle is exiting the bounding volume, kill it.
-            /*if (!boundVolumes_.empty() && step->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) {
-                if (std::find(std::begin(boundVolumes_), std::end(boundVolumes_), volumeName) != std::end(boundVolumes_)) {
+        if (secondaries->size() == 0) {
 
-                    //std::cout << "[ EcalProcessFilter ]: "
-                    //            << "Brem photon is exiting the volume --> particle will be killed or suspended."
-                    //            << std::endl;  
-                    
-                    if (bremGammaList.size() == 1) { 
-                        track->SetTrackStatus(fKillTrackAndSecondaries);
-                        G4RunManager::GetRunManager()->AbortEvent();
-                        currentTrack_ = nullptr;
-                        //std::cout << "[ EcalProcessFilter ]: " 
-                        //            << " Brem list is empty --> Killing all tracks!"
-                        //            << std::endl;
-                        return;
-                    } else { 
-                        currentTrack_ = track; 
-                        track->SetTrackStatus(fSuspend);
-                        TargetBremFilter::removeBremFromList(track);
-                        //std::cout << "[ EcalProcessFilter ]: " 
-                        //            << " Other tracks still need to be processed --> Suspending track!"
-                        //            << std::endl;
-                        return;
-                    }
+
+            // Check if the electron will be exiting the target        
+            if (auto volume{track->GetNextVolume()->GetName()}; volume.compareTo("hcal_PV") == 0) {
+                if (eventInfo->bremCandidateCount() == 1) {
+                    track->SetTrackStatus(fKillTrackAndSecondaries);
+                    G4RunManager::GetRunManager()->AbortEvent();
+                    currentTrack_ = nullptr;
+                } else { 
+                    currentTrack_ = track; 
+                    track->SetTrackStatus(fSuspend);
+                    eventInfo->decBremCandidateCount();
+                    trackInfo->tagBremCandidate(false);   
                 }
-            }*/
+            }
+            
             return; 
         } else {
 
@@ -168,27 +141,6 @@ namespace ldmx {
         }
 
     }
-
-    /*
-    void EcalProcessFilter::PostUserTrackingAction(const G4Track* track) { 
-       
-        if (track->GetParentID() == photonGammaID_) { 
-            UserTrackInformation* userInfo 
-              = dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
-            userInfo->setSaveFlag(true); 
-            // get the PDGID of the track.
-            //G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
-            G4ThreeVector pvec = track->GetMomentum();
-            std::cout << "[ EcalProcessFilter ]:\n" 
-                        << "\tPDG ID: " << pdgID << "\n"
-                        << "\tTrack ID: " << track->GetTrackID() << "\n" 
-                        << "\tStep #: " << track->GetCurrentStepNumber() << "\n"
-                        << "\tParent ID: " << track->GetParentID() << "\n"
-                        << "\t p: [ " << pvec[0] << ", " << pvec[1] << ", " << pvec[2] << " ]" << std::endl;
-        }
-    }
-
-    */    
 }
 
 DECLARE_ACTION(ldmx, EcalProcessFilter)
