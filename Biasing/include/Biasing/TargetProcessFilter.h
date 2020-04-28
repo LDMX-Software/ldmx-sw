@@ -64,12 +64,6 @@ namespace ldmx {
             /** Pointer to the current track being processed. */
             G4Track* currentTrack_{nullptr};
 
-            /** The volume name of the LDMX target. */
-            std::string volumeName_{"target_PV"};
-
-            /** Brem photon energy threshold. */
-            double photonEnergyThreshold_{2500}; // MeV
-
             /** Flag indicating if the reaction of intereset occurred. */
             bool reactionOccurred_{false};
 
