@@ -26,8 +26,6 @@ namespace ldmx {
     TargetProcessFilter::TargetProcessFilter(const std::string& name, Parameters& parameters) 
         : UserAction(name, parameters) {
         
-        volumeName_ = parameters.getParameter< std::string >("volume");
-        photonEnergyThreshold_ = parameters.getParameter< double >("photonThreshold"); 
         process_ = parameters.getParameter< std::string >("process");  
     }
 
