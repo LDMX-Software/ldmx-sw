@@ -130,6 +130,12 @@ namespace ldmx {
         for (int ilabel{1}; ilabel < n_labels.size(); ++ilabel) { 
             hist->GetXaxis()->SetBinLabel(ilabel, n_labels[ilabel-1].c_str());
         }
+
+        histograms_->create< TH2F >("recoil_vertex_x:recoil_vertex_y", 
+                                    "Recoil electron vertex x (mm)", 
+                                    40, -40, 40, 
+                                    "Recoil electron vertex y (mm)", 
+                                    80, -80, 80);
        
     }
 
@@ -144,7 +150,10 @@ namespace ldmx {
         auto recoil{Analysis::getRecoilPNGamma(particleMap)}; 
         histograms_->get("recoil_vertex_x")->Fill(recoil->getVertex()[0]); 
         histograms_->get("recoil_vertex_y")->Fill(recoil->getVertex()[1]); 
-        histograms_->get("recoil_vertex_z")->Fill(recoil->getVertex()[2]); 
+        histograms_->get("recoil_vertex_z")->Fill(recoil->getVertex()[2]);
+        histograms_->get("recoil_vertex_x:recoil_vertex_y")->Fill( 
+                         recoil->getVertex()[0], 
+                         recoil->getVertex()[1]);  
 
         // Use the recoil electron to retrieve the gamma that underwent a 
         // photo-nuclear reaction.
