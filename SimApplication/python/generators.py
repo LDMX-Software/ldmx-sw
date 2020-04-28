@@ -76,7 +76,7 @@ def single_4gev_e_upstream_target() :
 
     return particle_gun
 
-def single_1.2gev_e_upstream_tagger(): 
+def single_1pt2gev_e_upstream_tagger(): 
     """Configure a particle gun to fire a 1.2 GeV electron upstream of the tagger tracker.
 
     This is used to study the rejection of off energy electrons in the tagger
