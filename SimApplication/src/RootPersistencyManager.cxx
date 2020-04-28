@@ -25,6 +25,7 @@
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RunManager.h"
+#include "SimApplication/UserEventInformation.h" 
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -115,13 +116,13 @@ namespace ldmx {
         EventHeader& eventHeader = event_->getEventHeader();
 
         // Set the event weight
-        //if (BiasingMessenger::isBiasingEnabled()) { 
-        //    eventHeader.setWeight(BiasingMessenger::getEventWeight());
-        if (anEvent->GetPrimaryVertex(0)) { 
-        //} else if (anEvent->GetPrimaryVertex(0)) { 
-            eventHeader.setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
-            
+        double weight{1}; 
+        if (anEvent->GetUserInformation() != nullptr) { 
+            weight = static_cast<UserEventInformation*>(anEvent->GetUserInformation())->getWeight(); 
+        } else if (anEvent->GetPrimaryVertex(0)) {
+            weight = anEvent->GetPrimaryVertex(0)->GetWeight(); 
         }
+        eventHeader.setWeight(weight); 
 
         // Set the seeds used for this event
         std::string seedString = getEventSeeds();
