@@ -24,7 +24,6 @@ namespace ldmx {
     }
 
     void RecoilTrackerDQM::configure(Parameters& parameters) {
-        ecalVetoCollectionName_ = parameters.getParameter< std::string >("ecal_veto_collection");
     }
 
     void RecoilTrackerDQM::analyze(const Event & event) { 
@@ -112,63 +111,6 @@ namespace ldmx {
             histograms_->get("tpx_track_veto")->Fill(px); 
             histograms_->get("tpy_track_veto")->Fill(py); 
             histograms_->get("tpz_track_veto")->Fill(pz); 
-        }
-
-        // Get the collection of ECal veto results if it exist
-        float bdtProb{-1}; 
-        bool passesBDT{false};  
-        if (event.exists(ecalVetoCollectionName_)) {
-            const EcalVetoResult veto = event.getObject<EcalVetoResult>(ecalVetoCollectionName_);
-       
-            // Get the BDT probability  
-            bdtProb = veto.getDisc();
-    
-            // Fill the histograms if the event passes the ECal veto
-            if (bdtProb >= .99) {
-        
-                histograms_->get("tp_bdt")->Fill(p);
-                histograms_->get("tpt_bdt")->Fill(pt); 
-                histograms_->get("tpx_bdt")->Fill(px); 
-                histograms_->get("tpy_bdt")->Fill(py); 
-                histograms_->get("tpz_bdt")->Fill(pz); 
-                passesBDT = true; 
-            }
-        }
-
-        if (passesTrackVeto && passesBDT) { 
-            histograms_->get("tp_track_bdt")->Fill(p);
-            histograms_->get("tpt_track_bdt")->Fill(pt); 
-            histograms_->get("tpx_track_bdt")->Fill(px); 
-            histograms_->get("tpy_track_bdt")->Fill(py); 
-            histograms_->get("tpz_track_bdt")->Fill(pz); 
-        }
-
-        bool passesHcalVeto{false}; 
-        // Check if the HcalVeto result exists
-        if (event.exists("HcalVeto")) {
-        
-            // Get the collection of HCalDQM digitized hits if the exists 
-            const HcalVetoResult hcalVeto = event.getObject<HcalVetoResult>("HcalVeto");
-
-            if (hcalVeto.passesVeto()) {
-                
-                histograms_->get("tp_hcal")->Fill(p);
-                histograms_->get("tpt_hcal")->Fill(pt); 
-                histograms_->get("tpx_hcal")->Fill(px); 
-                histograms_->get("tpy_hcal")->Fill(py); 
-                histograms_->get("tpz_hcal")->Fill(pz); 
-                passesHcalVeto = true;
-            }
-        }
-
-
-
-        if (passesTrackVeto and passesBDT and passesHcalVeto) { 
-            histograms_->get("tp_vetoes")->Fill(p);
-            histograms_->get("tpt_vetoes")->Fill(pt); 
-            histograms_->get("tpx_vetoes")->Fill(px); 
-            histograms_->get("tpy_vetoes")->Fill(py); 
-            histograms_->get("tpz_vetoes")->Fill(pz); 
         }
     }
 
