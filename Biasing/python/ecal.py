@@ -10,7 +10,7 @@ from LDMX.Framework import ldmxcfg
 from LDMX.Detectors.makePath import *
 from LDMX.SimApplication import generators
 from LDMX.SimApplication import simcfg
-from LDMX.Biasing import event_filters, track_filters
+from LDMX.Biasing import filters
 
 def photo_nuclear( detector, generator ) :
     """Example configuration for producing photo-nuclear reactions in the ECal.  
@@ -57,10 +57,6 @@ def photo_nuclear( detector, generator ) :
     simulator.parameters["randomSeeds"] = [ 1, 2 ]
     simulator.parameters["beamSpotSmear"] = [20., 80., 0.]
     
-    # Fire an electron upstream of the tagger tracker
-    #
-    # A 4GeV single electron generator is so common that you
-    # can pull it in from the generators module.
     simulator.parameters['generators'] = [ generator ]
     
     # Enable the scoring planes 
@@ -75,33 +71,16 @@ def photo_nuclear( detector, generator ) :
     simulator.parameters['biasing.volume'] = 'ecal'
     simulator.parameters['biasing.threshold'] = 2500.
     simulator.parameters['biasing.factor'] = 450
-   
-    # Veto off-energy electrons
-    tagger_veto_filter = simcfg.UserAction("tagger_veto_filter", "ldmx::TaggerVetoFilter")
-    tagger_veto_filter.parameters['threshold'] = 3800.
 
-    target_brem_filter = simcfg.UserAction("target_brem_filter", "ldmx::TargetBremFilter")
-    target_brem_filter.parameters['recoil_max_p_threshold']    = 1500.
-    target_brem_filter.parameters['brem_energy_threshold'] = 2500.
-
-
-    # Save tracks of particles created in the photo-nuclear reaction
-    track_process_filter = simcfg.UserAction('trackProcessFilter', 'ldmx::TrackProcessFilter')
-    track_process_filter.parameters['process'] = 'photonNuclear'
-
-    step_printer = simcfg.UserAction('step_action', 'ldmx::StepPrinter')
-    step_printer.parameters['track_id'] = 1
-    
     # Configure the sequence in which user actions should be called.
     simulator.parameters["actions"] = [
-            #step_printer, 
-            tagger_veto_filter,
+            filters.tagger_veto_filter(),
             # Only consider events where a hard brem occurs
-            target_brem_filter,
+            filters.target_brem_filter(),
             # Only consider events where a PN reaction happnes in the ECal
-            event_filters.ecalPNFilter(),     
+            filters.ecal_pn_filter(),     
             # Tag all photo-nuclear tracks to persist them to the event.
-            track_process_filter        
+            filters.pn_track_filter()
     ]
 
     return simulator
@@ -140,7 +119,7 @@ def dark_brem( ap_mass , lhe, detector ) :
     simulator.parameters[ "description" ] = "One e- fired far upstream with Dark Brem turned on and biased up in ECal"
     simulator.parameters[ "detector" ] = makeDetectorPath( detector )
     simulator.parameters[ "scoringPlanes" ] = makeScoringPlanesPath( detector )
-    simulator.parameters[ "generators" ] = [ generators.farUpstreamSingle4GeVElectron() ]
+    simulator.parameters[ "generators" ] = [ generators.single_4gev_e_upstream_tagger()]
     
     # Bias the electron dark brem process inside of the ECal
     # These commands allow us to restrict the dark brem process to a given 
@@ -160,9 +139,9 @@ def dark_brem( ap_mass , lhe, detector ) :
     # Then give the UserAction to the simulation so that it knows to use it
     simulator.parameters['actions'] = [ 
             # Only keep events when a dark brem happens in the target
-            event_filters.targetDarkFilter() , 
+            filters.target_ap_filter() , 
             # Keep all of the dark brem daughters. 
-            track_filters.keepDarkTracks()     
-            ]
+            filters.ap_track_filter()     
+    ]
     
     return simulator
