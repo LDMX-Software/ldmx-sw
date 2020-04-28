@@ -67,8 +67,6 @@ namespace ldmx {
             /** The maximum PE threshold used for the veto. */
             float maxPEThreshold_{5}; 
             
-            /** Name of ECal veto collection. */
-            std::string ecalVetoCollectionName_{"EcalVeto"}; 
     };    
     
 } // ldmx
