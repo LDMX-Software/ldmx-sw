@@ -1,10 +1,3 @@
-/**
- * @file TargetProcessFilter.h
- * @brief Class defining a UserActionPlugin that biases Geant4 to only process events which
- *        involve a photonuclear reaction in the target
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #ifndef BIASING_TARGETPROCESSFILTER_H
 #define BIASING_TARGETPROCESSFILTER_H
 
@@ -12,6 +5,16 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/UserAction.h"
+
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
+#include "Framework/Parameters.h" 
+
+// Forward declaration
+class G4Event; 
+class G4Step; 
+class G4Track; 
 
 namespace ldmx {
 
@@ -60,12 +63,6 @@ namespace ldmx {
 
             /** Pointer to the current track being processed. */
             G4Track* currentTrack_{nullptr};
-
-            /** The volume name of the LDMX target. */
-            std::string volumeName_{"target_PV"};
-
-            /** Brem photon energy threshold. */
-            double photonEnergyThreshold_{2500}; // MeV
 
             /** Flag indicating if the reaction of intereset occurred. */
             bool reactionOccurred_{false};

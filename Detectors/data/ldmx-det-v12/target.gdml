@@ -115,8 +115,9 @@
                 <rotationref ref="identity"/>
             </physvol>
 
+            <auxiliary auxtype="Region" auxvalue="target" />
             <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-            <auxiliary auxtype="DetElem" auxvalue="Tagger"/>
+            <auxiliary auxtype="DetElem" auxvalue="target"/>
 
         </volume>
 
