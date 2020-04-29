@@ -4,8 +4,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef ECAL_ECALDIGIVERIFIER_H
-#define ECAL_ECALDIGIVERIFIER_H
+#ifndef DQM_ECALDIGIVERIFIER_H
+#define DQM_ECALDIGIVERIFIER_H
 
 //STL
 #include <map>
@@ -95,4 +95,4 @@ namespace ldmx {
     };
 }
 
-#endif /* ECAL_ECALDIGIVERIFIER_H */
+#endif /* DQM_ECALDIGIVERIFIER_H */
