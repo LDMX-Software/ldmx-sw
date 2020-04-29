@@ -4,7 +4,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "Ecal/EcalDigiVerifier.h"
+#include "DQM/EcalDigiVerifier.h"
 
 namespace ldmx {
 
@@ -13,7 +13,7 @@ namespace ldmx {
         ecalSimHitColl_ = ps.getParameter<std::string>( "ecalSimHitColl" );
         ecalSimHitPass_ = ps.getParameter<std::string>( "ecalSimHitPass" );
         ecalRecHitColl_ = ps.getParameter<std::string>( "ecalRecHitColl" );
-        ecalRecHitPass_ = ps.getParameter<std::string>( "ecalSimHitPass" );
+        ecalRecHitPass_ = ps.getParameter<std::string>( "ecalRecHitPass" );
 
         if ( ecalSimHitColl_.empty() ) ecalSimHitColl_ = "EcalSimHits";
         if ( ecalRecHitColl_.empty() ) ecalRecHitColl_ = "EcalRecHits";
