@@ -104,6 +104,8 @@ namespace ldmx {
              */
             std::vector<double> getVertex() const { return {x_, y_, z_}; }
 
+            std::string getVertexVolume() const { return vertexVolume_; }
+
             /**
              * Get the endpoint of the particle where it was destroyed
              * or left the detector [mm].
@@ -173,6 +175,8 @@ namespace ldmx {
                 y_ = y;
                 z_ = z;
             }
+
+            void setVertexVolume(const std::string vertexVolume) { vertexVolume_ = vertexVolume; }
 
             /**
              * Set the end point of the particle [mm].
@@ -330,12 +334,15 @@ namespace ldmx {
             /** Encoding of Geant4 process type. */
             int processType_{-1};
 
+            /// Volume the track was created in.
+            std::string vertexVolume_{""}; 
+
             static ProcessTypeMap PROCESS_MAP;
 
             /**
              * ROOT class definition.
              */
-            ClassDef(SimParticle, 6);
+            ClassDef(SimParticle, 7);
     };
 
 }
