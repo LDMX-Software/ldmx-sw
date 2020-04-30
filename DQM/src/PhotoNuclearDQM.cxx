@@ -141,13 +141,15 @@ namespace ldmx {
 
     void PhotoNuclearDQM::configure(Parameters& parameters) { }
 
-    void PhotoNuclearDQM::analyze(const Event& event) { 
- 
+    void PhotoNuclearDQM::analyze(const Event& event) {
+
+
         // Get the collection of simulated particles from the event
         auto particleMap{event.getMap<int,SimParticle>("SimParticles")};
 
         // Get the recoil electron
-        auto recoil{Analysis::getRecoilPNGamma(particleMap)}; 
+        auto [ trackID, recoil ] = Analysis::getRecoil(particleMap);
+
         histograms_->get("recoil_vertex_x")->Fill(recoil->getVertex()[0]); 
         histograms_->get("recoil_vertex_y")->Fill(recoil->getVertex()[1]); 
         histograms_->get("recoil_vertex_z")->Fill(recoil->getVertex()[2]);
@@ -157,7 +159,7 @@ namespace ldmx {
 
         // Use the recoil electron to retrieve the gamma that underwent a 
         // photo-nuclear reaction.
-        auto pnGamma{recoil};
+        auto pnGamma{Analysis::getRecoilPNGamma(event.getMap<int, SimParticle>("SimParticles"))};
         if (pnGamma == nullptr) { 
             std::cout << "[ PhotoNuclearDQM ]: PN Daughter is lost, skipping." << std::endl;
             return;
