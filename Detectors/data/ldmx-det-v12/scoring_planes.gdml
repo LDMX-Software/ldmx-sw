@@ -24,7 +24,7 @@
         <constant name="sp_thickness" value="0.001*mm"/>
 
         <!-- Surround the ecal with scoring planes -->
-        <variable name="sp_ecal_front_z" value="ecal_front_z + (ecal_envelope_z - ECal_dz)/2 - sp_thickness/2" /> 
+        <variable name="sp_ecal_front_z" value="ecal_front_z + (ecal_envelope_z - ECal_dz)/2 - sp_thickness/2 + clearance" /> 
         <variable name="sp_ecal_back_z"  value="ecal_front_z + ECal_dz + (ecal_envelope_z - ECal_dz)/2 + sp_thickness/2" />
         <variable name="sp_ecal_top_y"   value="ECal_dy/2 + sp_thickness/2" />
         <variable name="sp_ecal_bot_y"   value="-ECal_dy/2 - sp_thickness/2" />
@@ -60,7 +60,7 @@
                 
 
         <!-- Surround the Hcal with scoring planes -->
-        <variable name="sp_hcal_front_z"  value="ecal_front_z - sp_thickness/2" />
+        <variable name="sp_hcal_front_z"  value="ecal_front_z - sp_thickness/2 + clearance" />
         <variable name="sp_hcal_back_z"   value="ecal_front_z + hcal_back_dz + hcal_side_dz + sp_thickness/2" />
         <variable name="sp_hcal_top_y"    value="hcal_back_dy/2 + sp_thickness/2" /> 
         <variable name="sp_hcal_bot_y"    value="-hcal_back_dy/2 - sp_thickness/2" /> 
@@ -84,18 +84,18 @@
         <variable name="target_box_y" value="magnet_gap_dy - (sp_thickness/2)" />
 
         <!-- Surround the target with scoring planes --> 
-        <variable name="sp_target_down_z" value="target_z + target_thickness/2 + sp_thickness/2" />
-        <variable name="sp_target_up_z"   value="target_z - target_thickness/2 - sp_thickness/2" />
+        <variable name="sp_target_down_z" value="target_z + target_thickness/2 + sp_thickness/2 + clearance" />
+        <variable name="sp_target_up_z"   value="target_z - target_thickness/2 - sp_thickness/2 - clearance" />
         
         <!-- Place scoring planes downstream of each trigger scintillator array --> 
         <variable name="sp_trigger_pad_down_l1_z" 
-                  value="trigger_pad_down_z - trigger_pad_bar_gap/2 + sp_thickness/2" />
+                  value="trigger_pad_down_z - trigger_pad_bar_gap/2 + sp_thickness/2 + clearance" />
         <variable name="sp_trigger_pad_down_l2_z" 
-                  value="trigger_pad_down_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2" />
+                  value="trigger_pad_down_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
         <variable name="sp_trigger_pad_up_l1_z" 
-                  value="trigger_pad_up_z - trigger_pad_bar_gap/2 + sp_thickness/2" />
+                  value="trigger_pad_up_z - trigger_pad_bar_gap/2 + sp_thickness/2 + clearance" />
         <variable name="sp_trigger_pad_up_l2_z" 
-                 value="trigger_pad_up_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2" />
+                 value="trigger_pad_up_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
 
         <!-- Matrix with target area positions --> 
         <matrix name="sp_target_pos" coldim="3" values="0 0 sp_target_down_z
@@ -110,17 +110,23 @@
         <!-- Place scoring planes at each of the recoil tracker layers -->
         <variable name="recoil_z_start" value="trigger_pad_down_z + trigger_pad_thickness/2 + clearance" />
         <variable name="sp_recoil_l1_z" 
-            value="recoil_z_start + recoil_layer_pos[1] + recoil_sensor_l1_4_sep + half_module_thickness/2 + sp_thickness/2"/>
+            value="recoil_z_start + recoil_layer_pos[1] + recoil_sensor_l1_4_sep 
+                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
         <variable name="sp_recoil_l2_z" 
-            value="recoil_z_start + recoil_layer_pos[2] + recoil_sensor_l1_4_sep + half_module_thickness/2 + sp_thickness/2"/>
+            value="recoil_z_start + recoil_layer_pos[2] + recoil_sensor_l1_4_sep 
+                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
         <variable name="sp_recoil_l3_z" 
-            value="recoil_z_start + recoil_layer_pos[3] + recoil_sensor_l1_4_sep + half_module_thickness/2 + sp_thickness/2"/>
+            value="recoil_z_start + recoil_layer_pos[3] + recoil_sensor_l1_4_sep
+                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
         <variable name="sp_recoil_l4_z" 
-            value="recoil_z_start + recoil_layer_pos[4] + recoil_sensor_l1_4_sep + half_module_thickness/2 + sp_thickness/2"/>
+            value="recoil_z_start + recoil_layer_pos[4] + recoil_sensor_l1_4_sep
+                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
         <variable name="sp_recoil_l5_z" 
-            value="recoil_z_start + recoil_layer_pos[5] + recoil_sensor_l5_6_sep + half_module_thickness/2 + sp_thickness/2"/>
+            value="recoil_z_start + recoil_layer_pos[5] + recoil_sensor_l5_6_sep 
+                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
         <variable name="sp_recoil_l6_z" 
-            value="recoil_z_start + recoil_layer_pos[6] + recoil_sensor_l5_6_sep + half_module_thickness/2 + sp_thickness/2"/>
+            value="recoil_z_start + recoil_layer_pos[6] + recoil_sensor_l5_6_sep 
+                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
         <matrix name="sp_recoil_layer_z" coldim="1" values="sp_recoil_l1_z
                                                             sp_recoil_l2_z
                                                             sp_recoil_l3_z
@@ -138,7 +144,7 @@
         <material name="Vacuum" Z="1" state="gas">
             <D unit="g/cm3" value="1e-12"/>
             <atom unit="g/mole" value="1" />
-        </material>
+        </material> 
     </materials>
 
     <solids>
