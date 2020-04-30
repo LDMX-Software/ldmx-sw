@@ -64,6 +64,7 @@ namespace ldmx {
         mass_ = 0;
         charge_ = 0;
         processType_ = ProcessType::unknown;
+        vertexVolume_ = ""; 
     }
 
     void SimParticle::Print() const {
@@ -77,9 +78,10 @@ namespace ldmx {
                 "momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " ), " <<
                 "endPointMomentum: ( " << endpx_ << ", " << endpy_ << ", " << endpz_ << " ), " <<
                 "mass: " << mass_ << ", " <<
-                "nDaughters: " << getDaughterCount() << ", "
-                "nParents: " << getParentCount() << ", "
-                "processType: " << processType_ <<
+                "nDaughters: " << getDaughterCount() << ", " <<
+                "nParents: " << getParentCount() << ", " <<
+                "processType: " << processType_ << ", "<< 
+                "vertex volume: " << vertexVolume_ << 
                 " }" << std::endl;
     }
 
