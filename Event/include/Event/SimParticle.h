@@ -1,22 +1,14 @@
-/**
- * @file SimParticle.h
- * @brief Class which implements an MC particle that stores information about 
- *        tracks from the simulation
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
+#ifndef EVENT_SIMPARTICLE_H
+#define EVENT_SIMPARTICLE_H
 
-#ifndef EVENT_SIMPARTICLE_H_
-#define EVENT_SIMPARTICLE_H_
+/*~~~~~~~~~~*/
+/*   ROOT   */
+/*~~~~~~~~~~*/
+#include "TObject.h" 
 
-//----------//
-//   ROOT   //
-//----------//
-#include "TObject.h" //For ClassDef
-
-//----------------//
-//   C++ StdLib   //
-//----------------//
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
 #include <map>
 #include <string>
 #include <vector>
@@ -24,8 +16,9 @@
 namespace ldmx {
 
     /**
-     * @class SimParticle
-     * @brief Represents MC particle information from a track in the simulation
+     * Class representing a simulated particle. 
+     *
+     * The particles are created from the tracks produced by simulation.
      */
     class SimParticle {
 
@@ -47,128 +40,155 @@ namespace ldmx {
                 photonNuclear,
                 GammaToMuPair,
                 eDarkBrem,
-                /* Only add additional processes to the end of this list! */
+                // Only add additional processes to the end of this list!
             };
 
+            /// Typedef for process map.
             typedef std::map<std::string, ProcessType> ProcessTypeMap;
 
-            /**
-             * Class constructor.
-             */
+            /// Constructor 
             SimParticle();
 
-            /**
-             * Class destructor.
-             */
-            virtual ~SimParticle();
+            /// Destructor 
+            ~SimParticle();
 
-            /**
-             * Clear the data in this object.
-             */
+            /// Reset an instance of this class by clearing all of its data.
             void Clear();
 
-            /**
-             * Print out information of this object.
-             */
+            /// Print a string representation of this object.
             void Print() const;
 
             /**
-             * Get the energy of the particle [MeV].
-             * @return The energy of the particle.
+             * Get the energy of this particle [MeV].
+             *
+             * @return The energy of this particle.
              */
             double getEnergy() const { return energy_; }
 
             /**
-             * Get the PDG code of the particle.
-             * @return The PDG code of the particle.
+             * Get the PDG ID of this particle.
+             *
+             * @return The PDG ID of this particle.
              */
             int getPdgID() const { return pdgID_; }
 
             /**
-             * Get the generator status of the particle.
-             * A non-zero status indicates that the particle originates from
-             * an event generator source like an input LHE file.
+             * Get the generator status of this particle.  A non-zero status 
+             * indicates that this particle originates from an external 
+             * generator (e.g. LHE).
+             * 
              * @return The generator status.
              */
             int getGenStatus() const { return genStatus_; }
 
             /**
-             * Get the global time of the particle's creation [ns].
-             * @return The global time of the particle's creation.
+             * Get the global time of this particle's creation [ns].
+             *
+             * @return The global time of this particle's creation.
              */
             double getTime() const { return time_; }
 
             /**
-             * Get the XYZ vertex of the particle's creation [mm].
-             * @return The vertex of the particle.
+             * Get a vector containing the vertex of this particle in mm.  
+             *
+             * In this case, the vertex refers to the position where the 
+             * particle is first created in the simulation.   For a particle
+             * with generator status equal to 1, this will equal the position 
+             * from which this particle is fired from.
+             *
+             * @return The vertex of this particle.
              */
             std::vector<double> getVertex() const { return {x_, y_, z_}; }
 
+            /**
+             * Get the volume name in which this particle was created in.
+             *
+             * The volumes names are set in the GDML detector description. 
+             *
+             * @return The volume name in which this particle was created in. 
+             */
             std::string getVertexVolume() const { return vertexVolume_; }
 
             /**
-             * Get the endpoint of the particle where it was destroyed
-             * or left the detector [mm].
-             * @return The endpoint of the particle
+             * Get the endpoint of this particle where it was destroyed
+             * or left the world volume [mm].
+             *
+             * @return The endpoint of this particle
              */
             std::vector<double> getEndPoint() const { return {endX_, endY_, endZ_}; }
 
             /**
-             * Get the XYZ momentum of the particle [MeV].
-             * @return The momentum of the particle.
+             * Get a vector containing the momentum of this particle [MeV].
+             *
+             * The momentum of this particle is set at the time of its creation.
+             *
+             * @return The momentum of this particle.
              */
             std::vector<double> getMomentum() const { return {px_, py_, pz_}; }
 
             /**
-             * Get the mass of the particle [GeV].
-             * @return The mass of the particle.
+             * Get the mass of this particle [GeV].
+             *
+             * @return The mass of this particle in GeV. 
              */
             double getMass() const { return mass_; }
 
-            /** @return The charge of the particle. */
+            /** 
+             * Get the charge of this particle. 
+             * 
+             * @return The charge of this particle. 
+             */
             double getCharge() const { return charge_; }
 
-            /** @return A reference to all daughter particles. */
+            /** 
+             * Get a vector containing the track IDs of all daughter particles.
+             *
+             * @return A vector containing the track IDs of all daughter 
+             *      particles. 
+             */
             std::vector<int> getDaughters() const { return daughters_; }
 
-            /** @return The number of daughter particles. */
-            int getDaughterCount() const { return daughters_.size(); }
-
-            /** @return A reference to all of the parent particles. */
+            /** 
+             * Get a vector containing the track IDs of the parent particles.
+             *
+             * @return A vector containing the track IDs the parent particles. 
+             */
             std::vector<int> getParents() const { return parents_; }
             
-            /** @return The number of parent particles. */
-            int getParentCount() const { return parents_.size(); }
-
             /**
-             * Set the energy of the particle [MeV].
-             * @param energy The energy of the particle.
+             * Set the energy of this particle [MeV].
+             *
+             * @param[in] energy the energy of this particle.
              */
             void setEnergy(const double& energy) { energy_ = energy; }
 
             /**
-             * Set the PDG code of the hit.
-             * @param pdgID The PDG code of the hit.
+             * Set the PDG ID of this particle.
+             *
+             * @param[in] pdgID the PDG ID of the hit.
              */
             void setPdgID(const int& pdgID) { pdgID_ = pdgID; }
 
             /**
-             * Set the generator status of the hit.
-             * @param genStatus The generator status of the hit.
+             * Set the generator status of this particle.
+             *
+             * @param[in] genStatus the generator status of the hit.
              */
             void setGenStatus(const int& genStatus) { genStatus_ = genStatus; }
 
             /**
-             * Set the global time of the particle's creation [ns].
-             * @param time The global time of the particle's creation.
+             * Set the global time of this particle's creation [ns].
+             *
+             * @param[in] time The global time of this particle's creation.
              */
             void setTime(const double& time) { time_ = time; }
 
             /**
-             * Set the vertex of the particle [mm].
-             * @param x The vertex X position.
-             * @param y The vertex Y position.
-             * @param z The vertex Z position.
+             * Set the vertex of this particle [mm].
+             * 
+             * @param[in] x The vertex x position.
+             * @param[in] y The vertex y position.
+             * @param[in] z The vertex z position.
              */
             void setVertex(const double& x, const double& y, const double& z) {
                 x_ = x;
@@ -176,13 +196,20 @@ namespace ldmx {
                 z_ = z;
             }
 
-            void setVertexVolume(const std::string vertexVolume) { vertexVolume_ = vertexVolume; }
+            /**
+             * Set the name of the volume that this particle was created in. 
+             *
+             * @param[in] vertexVolume volume name that this particle was 
+             *      created in. 
+             */
+            void setVertexVolume(const std::string& vertexVolume) { vertexVolume_ = vertexVolume; }
 
             /**
-             * Set the end point of the particle [mm].
-             * @param endX The X end point.
-             * @param endY The Y end point.
-             * @param endZ The Z end point.
+             * Set the end point position of this particle [mm].
+             *
+             * @param[in] endX The x position of the end point.
+             * @param[in] endY The y position of the end point.
+             * @param[in] endZ The z position of the end point.
              */
             void setEndPoint(const double& endX, const double& endY, const double& endZ) {
                 endX_ = endX;
@@ -191,10 +218,11 @@ namespace ldmx {
             }
 
             /**
-             * Set the momentum of the particle [MeV].
-             * @param px The X momentum.
-             * @param py The Y momentum.
-             * @param pz The Z momentum.
+             * Set the momentum of this particle [MeV].
+             *
+             * @param[in] px The x momentum component.
+             * @param[in] py The y momentum component.
+             * @param[in] pz The z momentum component.
              */
             void setMomentum(const double& px, const double& py, const double& pz) {
                 px_ = px;
@@ -203,49 +231,56 @@ namespace ldmx {
             }
 
             /**
-             * Set the mass of the particle [GeV].
-             * @param mass The mass of the particle.
+             * Set the mass of this particle [GeV].
+             *
+             * @param[in] mass The mass of this particle.
              */
             void setMass(const double& mass) { mass_ = mass; }
 
             /**
-             * Set the charge of the particle.
-             * @param charge The charge of the particle.
+             * Set the charge of this particle.
+             *
+             * @param[in] charge The charge of this particle.
              */
             void setCharge(const double& charge) { charge_ = charge; }
 
             /**
-             * Add a daughter particle.
-             * @param daughter The daughter particle.
+             * Add a reference to a daughter particle by its track ID.
+             *
+             * This adds the track ID of the daughter particle to the vector of
+             * daughter particle IDs.
+             *
+             * @param[in] daughterTrackID The daughter particle track ID.
              */
-            void addDaughter(int daughterTrackID ) { daughters_.push_back( daughterTrackID ); }
+            void addDaughter(const int& daughterTrackID ) { daughters_.push_back( daughterTrackID ); }
 
             /**
-             * Add a parent particle.
-             * @param parent The parent particle.
+             * Add a reference to a parent particle by its track ID.
+             *
+             * @param[in] parentTrackID The track ID of the parent particle.
              */
-            void addParent(int parentTrackID ) { parents_.push_back( parentTrackID ); }
+            void addParent(const int& parentTrackID ) { parents_.push_back( parentTrackID ); }
 
             /**
              * Get the creator process type of this particle.
-             * This corresponds to the value returned by <i>G4VProcess::GetProcessSubType()</i>
-             * e.g. 121 for products of photonuclear reactions.
+             *
              * @return The creator process type of this particle.
              */
             int getProcessType() const { return processType_; }
 
             /**
              * Set the creator process type of this particle.
-             * This is set from the value of <i>G4VProcess::GetProcessSubType()</i>.
-             * @param processType The creator process type of this particle.
+             *
+             * @param[in] processType the creator process type of this particle.
              */
             void setProcessType(const int& processType) { processType_ = processType; }
 
             /**
-             * Set the momentum at the particle's end point.
-             * @param endpx The X momentum.
-             * @param endpy The Y momentum.
-             * @param endpz The Z momentum.
+             * Set the momentum at this particle's end point.
+             *
+             * @param[in] endpx The x component of the momentum.
+             * @param[in] endpy The y component of the momentum.
+             * @param[in] endpz The z component of the momentum.
              */ 
             void setEndPointMomentum(const double& endpx, const double& endpy, const double& endpz) {
                 endpx_ = endpx;
@@ -254,13 +289,15 @@ namespace ldmx {
             }
 
             /**
-             * Get the momentum at the particle's end point.
-             * @return The momentum at the particle's end point as a vector.
+             * Get the momentum at this particle's end point.
+             *
+             * @return The momentum at this particle's end point as a vector.
              */
             std::vector<double> getEndPointMomentum() const { return {endpx_, endpy_, endpz_}; }
 
             /**
              * Get the process type enum from a G4VProcess name.
+             *
              * @return The process type from the string.
              */
             static ProcessType findProcessType(std::string processName); 
@@ -271,80 +308,79 @@ namespace ldmx {
 
         private:
 
-            /** The energy of the particle. */
+            /// The energy of this particle. 
             double energy_{0};
 
-            /** The PDG code of the particle. */
+            /// The PDG ID of this particle. 
             int pdgID_{0};
 
-            /** The generator status. */
+            /// The generator status. 
             int genStatus_{-1};
 
-            /** The global creation time. */
+            /// The global creation time. 
             double time_{0};
 
-            /** The X vertex. */
+            /// The x component of the vertex. 
             double x_{0};
 
-            /** The Y vertex. */
+            /// The y component of the vertex. 
             double y_{0};
 
-            /** The Z vertex. */
+            /// The z component of the vertex. 
             double z_{0};
 
-            /** The X end point. */
+            /// The x component of the end point. 
             double endX_{0};
 
-            /** The Y end point. */
+            /// The y component of the end point. 
             double endY_{0};
 
-            /** The Z end point. */
+            /// The z component of the end point. 
             double endZ_{0};
 
-            /** The X momentum.*/
+            /// The x component of the momentum.
             double px_{0};
 
-            /** The Y momentum. */
+            /// The y component of the momentum. 
             double py_{0};
 
-            /** The Z momentum. */
+            /// The z component of the momentum. 
             double pz_{0};
 
-            /** The X momentum.*/
+            /// The x component of the endpoint momentum.
             double endpx_{0};
 
-            /** The Y momentum. */
+            /// The y component of the endpoint momentum. 
             double endpy_{0};
 
-            /** The Z momentum. */
+            /// The z component of the endpoint momentum. 
             double endpz_{0};
 
-            /** The particle's mass. */
+            /// The particle's mass. 
             double mass_{0};
 
-            /** The particle's charge. */
+            /// The particle's charge. 
             double charge_{0};
 
-            /** The list of daughter particles. */
+            /// The list of daughter particle track IDs. 
             std::vector<int> daughters_;
 
-            /** The list of parent particles. */
+            /// The list of parent particles track IDs. 
             std::vector<int> parents_;
 
-            /** Encoding of Geant4 process type. */
+            /// Encoding of Geant4 process type. 
             int processType_{-1};
 
             /// Volume the track was created in.
             std::string vertexVolume_{""}; 
 
+            /// Map containing the process types. 
             static ProcessTypeMap PROCESS_MAP;
 
-            /**
-             * ROOT class definition.
-             */
             ClassDef(SimParticle, 7);
-    };
 
-}
+    }; // SimParticle
 
-#endif
+} // ldmx
+
+#endif // EVENT_SIMPARTICLE_H
