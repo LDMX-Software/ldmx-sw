@@ -194,6 +194,8 @@ namespace ldmx {
                 return endPointMomentum_;
             }
 
+            std::string getVertexVolume() const { return vertexVolume_; }
+
         private:
 
             /** The list of trajectory points. */
@@ -228,6 +230,9 @@ namespace ldmx {
 
             /** The particle's vertex position. */
             G4ThreeVector vertexPosition_;
+
+            /// The particle's creation volume
+            std::string vertexVolume_;
 
             /** The type of the process which created the track. */
             int processType_;
