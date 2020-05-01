@@ -65,6 +65,35 @@ namespace ldmx {
             const std::string& getDescription() const { return description_; }
 
             /**
+             * Get the start time of the run in seconds since epoch.
+             *
+             * @return The start time of the run. 
+             *
+             */
+            const int getRunStart() const { return runStart_; }
+
+            /**
+             * Set the run start time in seconds since epoch. 
+             *
+             * @param[in] runStart the start time of the run. 
+             */
+            void setRunStart(const int runStart) { runStart_ = runStart; }
+
+            /**
+             * Get the end time of the run in seconds since epoch. 
+             *
+             * @return The end time of the run. 
+             */
+            const int getRunEnd() const { return runEnd_; }
+
+            /**
+             * Set the end time of the run in seconds since epoch
+             *
+             * @param[in] runEnd the end time of the run. 
+             */
+            void setRunEnd(const int runEnd) { runEnd_ = runEnd; }
+
+            /**
              * Get an int parameter value.
              *
              * @param name The name of the parameter.
@@ -136,6 +165,12 @@ namespace ldmx {
 
             /** Run description. */
             std::string description_{""};
+
+            /// Run start in seconds since epoch
+            int runStart_{0}; 
+
+            /// Run end in seconds since epoch
+            int runEnd_{0}; 
 
             /** 
              * git SHA-1 hash associated with the software tag used to generate
