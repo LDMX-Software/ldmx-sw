@@ -1,16 +1,8 @@
-/**
- * @file SimParticle.cxx
- * @brief Class which implements an MC particle that stores information about 
- *        tracks from the simulation
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #include "Event/SimParticle.h"
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
 #include <iostream>
 
 ClassImp(ldmx::SimParticle)
@@ -19,17 +11,28 @@ namespace ldmx {
 
     SimParticle::ProcessTypeMap SimParticle::createProcessTypeMap() {
         ProcessTypeMap procMap;
-        procMap["eBrem"] = ProcessType::eBrem; /* electron brem */
-        procMap["conv"] = ProcessType::conv; /* gamma to e+e- */
-        procMap["annihil"] = ProcessType::annihil; /* positron annihilation */
-        procMap["compt"] = ProcessType::compt; /* compton scattering */
-        procMap["phot"] = ProcessType::phot; /* photoelectric */
-        procMap["eIoni"] = ProcessType::eIoni; /* electron ionization */
-        procMap["msc"] = ProcessType::msc; /* multiple coulomb scattering */
-        procMap["photonNuclear"] = ProcessType::photonNuclear; /* photonuclear */
-        procMap["electronNuclear"] = ProcessType::electronNuclear; /* electronuclear*/
-        procMap["GammaToMuPair"] = ProcessType::GammaToMuPair; /* gamma to mu+mu- */
-        procMap["eDBrem"] = ProcessType::eDarkBrem; /* e- --> A' + e- */
+        /// e Z --> e Z gamma
+        procMap["eBrem"] = ProcessType::eBrem; 
+        /// gamma --> e+ e-
+        procMap["conv"] = ProcessType::conv; 
+        /// e+ e- --> gamma gamma 
+        procMap["annihil"] = ProcessType::annihil;
+        /// gamma e --> gamma e
+        procMap["compt"] = ProcessType::compt;
+        /// gamma Z --> e- Z 
+        procMap["phot"] = ProcessType::phot;
+        /// Electron ionization
+        procMap["eIoni"] = ProcessType::eIoni;
+        /// Multiple scattering
+        procMap["msc"] = ProcessType::msc; 
+        /// gamma Z --> Z + X  
+        procMap["photonNuclear"] = ProcessType::photonNuclear; 
+        /// e Z --> e Z + X
+        procMap["electronNuclear"] = ProcessType::electronNuclear; 
+        /// gamma --> mu+ mu-
+        procMap["GammaToMuPair"] = ProcessType::GammaToMuPair;
+        /// e- Z --> e- Z A' 
+        procMap["eDBrem"] = ProcessType::eDarkBrem; 
         return procMap;
     }
 
@@ -78,8 +81,8 @@ namespace ldmx {
                 "momentum: ( " << px_ << ", " << py_ << ", " << pz_ << " ), " <<
                 "endPointMomentum: ( " << endpx_ << ", " << endpy_ << ", " << endpz_ << " ), " <<
                 "mass: " << mass_ << ", " <<
-                "nDaughters: " << getDaughterCount() << ", " <<
-                "nParents: " << getParentCount() << ", " <<
+                "nDaughters: " << daughters_.size() << ", " <<
+                "nParents: " << parents_.size() << ", " <<
                 "processType: " << processType_ << ", "<< 
                 "vertex volume: " << vertexVolume_ << 
                 " }" << std::endl;
