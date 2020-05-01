@@ -95,7 +95,9 @@ namespace ldmx {
                         if (secondary_track->GetUserInformation() == nullptr) {
                             secondary_track->SetUserInformation(new UserTrackInformation()); 
                         }
-                        static_cast< UserTrackInformation* >(secondary_track->GetUserInformation())->tagBremCandidate(); 
+                        auto trackInfo{static_cast< UserTrackInformation* >(secondary_track->GetUserInformation())};
+                        trackInfo->tagBremCandidate(); 
+                        trackInfo->setVertexVolume(secondary_track->GetVolume()->GetName()); 
 
                         auto event{G4EventManager::GetEventManager()}; 
                         if (event->GetUserInformation() == nullptr) { 
