@@ -206,6 +206,9 @@ namespace ldmx {
 
             /** Map of run numbers to RunHeader objects read from the input file. */
             std::map<int, RunHeader*> runMap_;
+
+            /// Time at which processing of events starts in seconds since epoch
+            int processStart_{0}; 
     };
 }
 
