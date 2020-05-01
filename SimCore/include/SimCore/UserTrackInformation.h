@@ -71,7 +71,13 @@ namespace ldmx {
              */ 
             void setInitialMomentum(const G4ThreeVector& p) { 
                 initialMomentum_.set(p.x(), p.y(), p.z()); 
-            } 
+            }
+
+            void setVertexVolume(const std::string vertexVolume) {
+                vertexVolume_ = vertexVolume; 
+            }
+
+            std::string getVertexVolume() const { return vertexVolume_; }
         
         private:
 
@@ -79,7 +85,10 @@ namespace ldmx {
             bool saveFlag_{false};
 
             /// Flag indicating whether this track is a brem candidate
-            bool isBremCandidate_{false}; 
+            bool isBremCandidate_{false};
+
+            /// Volume the track was created in.
+            std::string vertexVolume_{""};  
 
             /// The initial momentum of the track.
             G4ThreeVector initialMomentum_;
