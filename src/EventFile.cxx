@@ -1,3 +1,5 @@
+#include <ctime> 
+
 // LDMX
 #include "Framework/EventFile.h"
 #include "Framework/Event.h"
@@ -35,6 +37,8 @@ namespace ldmx {
 
         // Create run map from tree in this file.
         createRunMap();
+
+        processStart_ = std::time(nullptr); 
     }
 
     EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :
@@ -65,6 +69,8 @@ namespace ldmx {
 
         // Create run header map.
         createRunMap();
+        
+        processStart_ = std::time(nullptr); 
     }
 
     EventFile::~EventFile() {
@@ -299,6 +305,9 @@ namespace ldmx {
         auto runBranch{runTree->GetBranch("RunHeader")};
         if (!runBranch) 
             runTree->Branch("RunHeader", EventConstants::RUN_HEADER.c_str(), &runHeader, 32000, 3);
+
+        runHeader->setRunStart(processStart_); 
+        runHeader->setRunEnd(std::time(nullptr)); 
 
         // Fill the tree and write it to the file. 
         runTree->Fill();
