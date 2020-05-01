@@ -187,7 +187,7 @@ namespace ldmx {
             return;
         }
 
-        histograms_->get("pn_particle_mult")->Fill(pnGamma->getDaughterCount());
+        histograms_->get("pn_particle_mult")->Fill(pnGamma->getDaughters().size());
         histograms_->get("pn_gamma_energy")->Fill(pnGamma->getEnergy()); 
         histograms_->get("pn_gamma_int_z")->Fill(pnGamma->getEndPoint()[2]); 
         histograms_->get("pn_gamma_vertex_z")->Fill(pnGamma->getVertex()[2]);  
@@ -332,7 +332,7 @@ namespace ldmx {
                 histograms_->get("event_type_compact_bdt")->Fill(eventTypeComp);
                 histograms_->get("event_type_compact_500mev_bdt")->Fill(eventTypeComp500MeV);
                 histograms_->get("event_type_compact_2000mev_bdt")->Fill(eventTypeComp2000MeV);
-                histograms_->get("pn_particle_mult_bdt")->Fill(pnGamma->getDaughterCount());
+                histograms_->get("pn_particle_mult_bdt")->Fill(pnGamma->getDaughters().size());
                 histograms_->get("pn_gamma_energy_bdt")->Fill(pnGamma->getEnergy());
                 histograms_->get("1n_neutron_energy_bdt")->Fill(nEnergy);  
                 histograms_->get("1n_energy_diff_bdt")->Fill(energyDiff);
@@ -355,7 +355,7 @@ namespace ldmx {
                 histograms_->get("event_type_compact_hcal")->Fill(eventTypeComp);
                 histograms_->get("event_type_compact_500mev_hcal")->Fill(eventTypeComp500MeV);
                 histograms_->get("event_type_compact_2000mev_hcal")->Fill(eventTypeComp2000MeV);
-                histograms_->get("pn_particle_mult_hcal")->Fill(pnGamma->getDaughterCount());
+                histograms_->get("pn_particle_mult_hcal")->Fill(pnGamma->getDaughters().size());
                 histograms_->get("pn_gamma_energy_hcal")->Fill(pnGamma->getEnergy()); 
                 histograms_->get("1n_neutron_energy_hcal")->Fill(nEnergy);  
                 histograms_->get("1n_energy_diff_hcal")->Fill(energyDiff);
@@ -382,7 +382,7 @@ namespace ldmx {
                 histograms_->get("event_type_compact_track_veto")->Fill(eventTypeComp);
                 histograms_->get("event_type_compact_500mev_track_veto")->Fill(eventTypeComp500MeV);
                 histograms_->get("event_type_compact_2000mev_track_veto")->Fill(eventTypeComp2000MeV);
-                histograms_->get("pn_particle_mult_track_veto")->Fill(pnGamma->getDaughterCount());    
+                histograms_->get("pn_particle_mult_track_veto")->Fill(pnGamma->getDaughters().size());    
                 histograms_->get("pn_gamma_energy_track_veto")->Fill(pnGamma->getEnergy());
                 histograms_->get("1n_neutron_energy_track_veto")->Fill(nEnergy);  
                 histograms_->get("1n_energy_diff_track_veto")->Fill(energyDiff);
@@ -398,7 +398,7 @@ namespace ldmx {
             histograms_->get("event_type_compact_track_bdt")->Fill(eventTypeComp);
             histograms_->get("event_type_compact_500mev_track_bdt")->Fill(eventTypeComp500MeV);
             histograms_->get("event_type_compact_2000mev_track_bdt")->Fill(eventTypeComp2000MeV);
-            histograms_->get("pn_particle_mult_track_bdt")->Fill(pnGamma->getDaughterCount());
+            histograms_->get("pn_particle_mult_track_bdt")->Fill(pnGamma->getDaughters().size());
             histograms_->get("pn_gamma_energy_track_bdt")->Fill(pnGamma->getEnergy());
             histograms_->get("1n_neutron_energy_track_bdt")->Fill(nEnergy);  
             histograms_->get("1n_energy_diff_track_bdt")->Fill(energyDiff);
@@ -412,7 +412,7 @@ namespace ldmx {
             histograms_->get("event_type_compact_vetoes")->Fill(eventTypeComp);
             histograms_->get("event_type_compact_500mev_vetoes")->Fill(eventTypeComp500MeV);
             histograms_->get("event_type_compact_2000mev_vetoes")->Fill(eventTypeComp2000MeV);
-            histograms_->get("pn_particle_mult_vetoes")->Fill(pnGamma->getDaughterCount());
+            histograms_->get("pn_particle_mult_vetoes")->Fill(pnGamma->getDaughters().size());
             histograms_->get("pn_gamma_energy_vetoes")->Fill(pnGamma->getEnergy()); 
             histograms_->get("1n_neutron_energy_vetoes")->Fill(nEnergy);  
             histograms_->get("1n_energy_diff_vetoes")->Fill(energyDiff);
@@ -564,7 +564,7 @@ namespace ldmx {
         if (kp != 0) return 1; 
         if (neutral_kaons != 0) return 2; 
         if (n_t == 2) return 3; 
-        if (soft == particle->getDaughterCount()) return 4; 
+        if (soft == particle->getDaughters().size()) return 4; 
 
         return 5; 
     
