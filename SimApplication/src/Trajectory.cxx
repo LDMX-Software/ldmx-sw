@@ -37,8 +37,14 @@ namespace ldmx {
             processType_ = SimParticle::ProcessType::unknown;
         }
 
+        // Get the track information. This is used to set the track vertex 
+        // volume and initial momentum. 
+        auto trackInfo{dynamic_cast<UserTrackInformation*>(aTrack->GetUserInformation())};
+       
+        // Set the vertex volume
+        vertexVolume_ = trackInfo->getVertexVolume(); 
+
         // Set initial momentum from track information.
-        UserTrackInformation* trackInfo = dynamic_cast<UserTrackInformation*>(aTrack->GetUserInformation());
         const G4ThreeVector& p = trackInfo->getInitialMomentum();
         initialMomentum_.set(p.x(), p.y(), p.z());
 

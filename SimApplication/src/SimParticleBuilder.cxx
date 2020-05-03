@@ -51,6 +51,7 @@ namespace ldmx {
             simParticle->setEnergy(traj->getEnergy());
             simParticle->setTime(traj->getGlobalTime());
             simParticle->setProcessType(traj->getProcessType());
+            simParticle->setVertexVolume(traj->getVertexVolume()); 
     
             const G4ThreeVector& vertex = traj->getVertexPosition();
             simParticle->setVertex(vertex[0], vertex[1], vertex[2]);

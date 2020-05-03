@@ -165,7 +165,7 @@ namespace ldmx {
             return;
         }
 
-        histograms_->get("pn_particle_mult")->Fill(pnGamma->getDaughterCount());
+        histograms_->get("pn_particle_mult")->Fill(pnGamma->getDaughters().size());
         histograms_->get("pn_gamma_energy")->Fill(pnGamma->getEnergy()); 
         histograms_->get("pn_gamma_int_z")->Fill(pnGamma->getEndPoint()[2]); 
         histograms_->get("pn_gamma_vertex_z")->Fill(pnGamma->getVertex()[2]);  
@@ -436,7 +436,7 @@ namespace ldmx {
         if (kp != 0) return 1; 
         if (neutral_kaons != 0) return 2; 
         if (n_t == 2) return 3; 
-        if (soft == particle->getDaughterCount()) return 4; 
+        if (soft == particle->getDaughters().size()) return 4; 
 
         return 5; 
     

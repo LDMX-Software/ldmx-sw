@@ -86,6 +86,7 @@ namespace ldmx {
             auto trackInfo = new UserTrackInformation;
             trackInfo->setInitialMomentum(track->GetMomentum());
             const_cast<G4Track*>(track)->SetUserInformation(trackInfo);
+            trackInfo->setVertexVolume(track->GetVolume()->GetName()); 
         }
 
         // Check if trajectory storage should be turned on or off from the region info.
