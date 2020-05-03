@@ -86,7 +86,7 @@ namespace ldmx {
              *
              * @param event The event to process. 
              */
-            virtual void produce(ldmx::Event &event);
+            virtual void produce(ldmx::Event &event) final override;
 
             /**
              *  Callback for the EventProcessor to take any necessary action 
@@ -94,7 +94,7 @@ namespace ldmx {
              *
              *  @param eventFile  The input/output file.  
              */
-            void onFileOpen(EventFile& eventFile);
+            void onFileOpen(EventFile& eventFile) final override;
 
             /**
              * Callback for the EventProcessor to take any necessary action
@@ -102,7 +102,7 @@ namespace ldmx {
              *
              * @param eventFile The intput/output file. 
              */
-            void onFileClose(EventFile& eventFile);  
+            void onFileClose(EventFile& eventFile) final override;  
 
             /**
              * Initialization of simulation
@@ -112,12 +112,11 @@ namespace ldmx {
              *
              * This function runs the post init setup commands.
              */
-            virtual void onProcessStart(); 
+            void onProcessStart() final override; 
 
-            /**
-             * Tying up of loose ends
-             */
-            virtual void onProcessEnd();
+            
+            /// Callback called once processing is complete. 
+            void onProcessEnd() final override;
 
         private:
 
