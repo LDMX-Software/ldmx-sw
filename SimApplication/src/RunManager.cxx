@@ -43,7 +43,9 @@ namespace ldmx {
         parameters_ = parameters; 
 
         // Set whether the ROOT primary generator should use the persisted seed.
-        auto rootPrimaryGenUseSeed{parameters.getParameter< bool >("rootPrimaryGenUseSeed")}; 
+        auto rootPrimaryGenUseSeed{parameters.getParameter< bool >("rootPrimaryGenUseSeed")};
+        
+        // Validate the geometry if specified. 
         setUseRootSeed(rootPrimaryGenUseSeed); 
     
     }
@@ -93,8 +95,9 @@ namespace ldmx {
         if (isPWEnabled_) {
             std::cout << "[ RunManager ]: Parallel worlds have been enabled." << std::endl;
 
+            auto validateGeometry_{parameters_.getParameter< bool >("validate_detector")};
             G4GDMLParser* pwParser = new G4GDMLParser();
-            pwParser->Read(parallelWorldPath_);
+            pwParser->Read(parallelWorldPath_, validateGeometry_);
             this->getDetectorConstruction()->RegisterParallelWorld(new ParallelWorld(pwParser, "ldmxParallelWorld"));
         }
 
