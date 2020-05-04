@@ -1,8 +1,3 @@
-/**
- * @file RootPersistencyManager.cxx
- * @brief Class used to manage ROOT based persistency.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
 
 #include "SimApplication/RootPersistencyManager.h"
 
@@ -48,8 +43,8 @@ namespace ldmx {
         description_ = parameters.getParameter< std::string >("description"); 
         runNumber_   = parameters.getParameter< int >("runNumber");
         
-        ecalHitIO_.setEnableHitContribs(parameters.getParameter< bool >("enableHitContribs")); 
-        ecalHitIO_.setCompressHitContribs(parameters.getParameter< bool >("compressHitContribs"));
+        ecalHitIO_.setEnableHitContribs(parameters.getParameter< bool >("enableHitContribs", true)); 
+        ecalHitIO_.setCompressHitContribs(parameters.getParameter< bool >("compressHitContribs", true));
 
     }
 

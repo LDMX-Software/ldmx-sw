@@ -1,9 +1,3 @@
-/**
- * @file RootPersistencyManager.h
- * @brief Class used to manage ROOT based persistency.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #ifndef SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H
 #define SIMAPPLICATION_ROOTPERSISTENCYMANAGER_H
 
