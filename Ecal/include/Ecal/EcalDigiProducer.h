@@ -107,25 +107,28 @@ namespace ldmx {
             //Python Configuration Parameters
             
             /** The gain in ADC units per MeV. */
-            double gain_{2000.};
+            double gain_;
 
             /** The pedestal in ADC units */
-            double pedestal_{1100.};
+            double pedestal_;
 
             /** Set the noise (in electrons) when the capacitance is 0. */
-            double noiseIntercept_{900.};
+            double noiseIntercept_;
 
             /** Set the capacitative noise slope (electrons/pF). */
-            double noiseSlope_{22.}; 
+            double noiseSlope_; 
 
             /** Capacitance per cell pad. */
-            double padCapacitance_{27.56}; // pF 
+            double padCapacitance_; // pF 
 
             /** Depth of ADC buffer. */
-            int nADCs_{10}; 
+            int nADCs_; 
+
+            /** Index for the Sample Of Interest in the list of digi samples */
+            int iSOI_;
 
             /** Should we make and fill configuration histograms? */
-            bool makeConfigHists_{false};
+            bool makeConfigHists_;
 
             //Member Variables that are used for each event
 

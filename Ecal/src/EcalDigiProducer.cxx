@@ -33,6 +33,7 @@ namespace ldmx {
         noiseSlope_      = ps.getParameter<double>("noiseSlope");
         padCapacitance_  = ps.getParameter<double>("padCapacitance");
         nADCs_           = ps.getParameter<int>("nADCs");
+        iSOI_            = ps.getParameter<int>("iSOI");
 
         // Calculate the noise RMS based on the properties of the readout pad
         noiseRMS_ = this->calculateNoise(padCapacitance_, noiseIntercept_, noiseSlope_);  
@@ -87,14 +88,15 @@ namespace ldmx {
         //  the class EcalHitIO in the SimApplication module handles the translation from G4CalorimeterHits to SimCalorimeterHits
         //  this class ensures that only one SimCalorimeterHit is generated per cell, but
         //  multiple "contributions" are still handled within SimCalorimeterHit 
-        std::vector<SimCalorimeterHit> ecalSimHits = event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS);
+        auto ecalSimHits{event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS)};
 
         //Empty collection to be filled
         EcalDigiCollection ecalDigis;
         //TODO: number samples per digi probably more than 1
-        ecalDigis.setNumSamplesPerDigi( 1 ); 
+        ecalDigis.setNumSamplesPerDigi( nADCs_ ); 
+        ecalDigis.setSampleOfInterestIndex( iSOI_ );
 
-        std::vector<EcalDigiSample> digiToAdd( 1 , EcalDigiSample() );
+        std::vector<EcalDigiSample> digiToAdd( nADCs_ , EcalDigiSample() );
         std::set<int> simHitIDs;
         for (const SimCalorimeterHit &simHit : ecalSimHits ) {
             
@@ -140,11 +142,11 @@ namespace ldmx {
             int totalClockCounts = tot*(1024/25.); //conversion from ns to clock counts (converting to int implicitly)
 
             //TODO currently using adc_t_ to count number of samples that clock is over threshold
-            digiToAdd[0].rawID_   = hitID;
-            digiToAdd[0].adc_t_   = totalClockCounts / 1024; //Place Holder - not actually how response works
-            digiToAdd[0].adc_tm1_ = -1; //NOT IMPLEMENTED
-            digiToAdd[0].tot_     = totalClockCounts % 1024; //clock counts since last trigger clock (25ns clock)
-            digiToAdd[0].toa_     = toa * (1024/25.); //conversion from ns to clock counts
+            digiToAdd[iSOI_].rawID_   = hitID;
+            digiToAdd[iSOI_].adc_t_   = totalClockCounts / 1024; //Place Holder - not actually how response works
+            digiToAdd[iSOI_].adc_tm1_ = -1; //NOT IMPLEMENTED
+            digiToAdd[iSOI_].tot_     = totalClockCounts % 1024; //clock counts since last trigger clock (25ns clock)
+            digiToAdd[iSOI_].toa_     = toa * (1024/25.); //conversion from ns to clock counts
 
             //printf( "%6d TOT --> %6d Clocks and %6d tot\n" , totalClockCounts , digiToAdd[0].adc_t_ , digiToAdd[0].tot_ );
 
@@ -185,11 +187,11 @@ namespace ldmx {
             int totalClockCounts = tot*(1024/25.); //conversion from ns to clock counts (converting to int implicitly)
 
             //TODO currently using adc_t_ to count number of samples that clock is over threshold
-            digiToAdd[0].rawID_   = noiseID;
-            digiToAdd[0].adc_t_   = totalClockCounts / 1024; //Place Holder - not actually how response works
-            digiToAdd[0].adc_tm1_ = -1; //NOT IMPLEMENTED
-            digiToAdd[0].tot_     = totalClockCounts % 1024; //clock counts since last trigger clock (25ns clock)
-            digiToAdd[0].toa_     = toa * (1024/25.); //conversion from ns to clock counts
+            digiToAdd[iSOI_].rawID_   = noiseID;
+            digiToAdd[iSOI_].adc_t_   = totalClockCounts / 1024; //Place Holder - not actually how response works
+            digiToAdd[iSOI_].adc_tm1_ = -1; //NOT IMPLEMENTED
+            digiToAdd[iSOI_].tot_     = totalClockCounts % 1024; //clock counts since last trigger clock (25ns clock)
+            digiToAdd[iSOI_].toa_     = toa * (1024/25.); //conversion from ns to clock counts
 
             ecalDigis.addDigi( digiToAdd );
         }
