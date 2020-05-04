@@ -44,25 +44,26 @@ namespace ldmx {
             }
 
             /**
-             * Retrieve the parameter of the given name.
+             * Retrieve the parameter of the given name.  
              *
-             * @tparam T the data type to cast the parameter to.
+             * If the parameter isn't found and a default is specified, that is
+             * returned instead. If a default isn't specified, the default for
+             * the parameter type is returned. 
+             *
+             * @param T the data type to cast the parameter to.
              * 
-             * @param name the name of the parameter value to retrieve.
+             * @param[in] name the name of the parameter value to retrieve.
+             * @param[in] defaultParam the value the parameter should take on 
+             *      if it's not found in the list of parameters.  
              *
-             * @return The user specified parameter.
+             * @return The user specified parameter of type T.
              */
             template <typename T> 
-            T getParameter(const std::string& name) { 
+            T getParameter(const std::string& name, T defaultParam = T()) { 
                 
                 // Check if the variable exists in the map.  If it doesn't, 
                 // warn the user and set a default.
-                if (parameters_.count(name) == 0) { 
-               
-                    if constexpr (std::numeric_limits<T>::is_integer || std::is_floating_point<T>::value) {
-                        return std::numeric_limits<T>::lowest(); 
-                    } else return {};  
-                }
+                if (parameters_.count(name) == 0) return defaultParam; 
 
                 T parameter; 
                 try { 
@@ -73,7 +74,7 @@ namespace ldmx {
                 }
 
                return parameter; 
-            }                
+            }               
 
         private:
 
