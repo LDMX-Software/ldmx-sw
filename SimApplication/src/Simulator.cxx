@@ -59,22 +59,22 @@ namespace ldmx {
         int runNumber = parameters_.getParameter< int >( "runNumber" );
         process_.setRunNumber( runNumber );
 
-        // Set the verbosity level
+        // Set the verbosity level.  The default level  is 0.
         verbosity_ = parameters_.getParameter< int >("verbosity");
 
+        // If the verbosity level is set to 0, 
         // If the verbosity level is > 1, log everything to a file. Otherwise,
         // dump the output. If a prefix has been specified, append it ot the 
         // log message. 
         auto loggingPrefix = parameters_.getParameter< std::string >("logging_prefix");
-        if ( verbosity_ > 1 ) {
+        if ( verbosity_ == 0 ) sessionHandle_ = std::make_unique<BatchSession>();
+        else if ( verbosity_ > 1 ) {
             
             if ( loggingPrefix.empty() ) sessionHandle_ = std::make_unique<LoggedSession>();
             else sessionHandle_ = std::make_unique<LoggedSession>( loggingPrefix + "_G4cout.log" , loggingPrefix + "_G4cerr.log" );
 
-        } else {
-            sessionHandle_ = std::make_unique<BatchSession>();
         }
-        uiManager_->SetCoutDestination( sessionHandle_.get() ); 
+        if (sessionHandle_ != nullptr) uiManager_->SetCoutDestination( sessionHandle_.get() ); 
 
         // Instantiate the run manager.  
         runManager_ = std::make_unique<RunManager>(parameters);
@@ -93,17 +93,15 @@ namespace ldmx {
         // Store the random numbers used to generate an event. 
         runManager_->SetRandomNumberStore( true );
 
-        // Parse the detector geometry
-        std::string detectorPath = parameters_.getParameter<std::string>("detector");
+        // Parse the detector geometry and validate if specified.
+        auto detectorPath{parameters_.getParameter< std::string >("detector")};
+        auto validateGeometry{parameters_.getParameter< bool >("validate_detector")}; 
         if ( verbosity_ > 0 ) {
             std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath << "'... " << std::flush;
         }
         G4GeometryManager::GetInstance()->OpenGeometry();
-        parser->Read( detectorPath );
+        parser->Read( detectorPath, validateGeometry );
         runManager_->DefineWorldVolume( parser->GetWorldVolume() );
-        if ( verbosity_ > 0 ) {
-            std::cout << "done" << std::endl;
-        }
 
         auto preInitCommands = parameters_.getParameter< std::vector< std::string > >("preInitCommands" ); 
         for ( const std::string& cmd : preInitCommands ) {
