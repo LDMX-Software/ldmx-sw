@@ -19,9 +19,11 @@ namespace ldmx {
 
     void EcalDigiCollection::Print() const {
 
-        printf( "Num Channel IDs:      %d\n" , channelIDs_.size() );
-        printf( "Num Samples:          %d\n" , samples_.size() );
-        printf( "Num Samples Per Digi: %d\n" , numSamplesPerDigi_ );
+        std::cout << "EcalDigiCollection { Num Channel IDs: " << channelIDs_.size()
+            << ", Num Samples: " << samples_.size()
+            << ", Samples Per Digi: " << numSamplesPerDigi_
+            << ", Index for SOI: " << sampleOfInterest_
+            << "}" << std::endl;
 
         return;
     }
