@@ -133,10 +133,9 @@ namespace ldmx {
 
         histograms_->create< TH2F >("recoil_vertex_x:recoil_vertex_y", 
                                     "Recoil electron vertex x (mm)", 
-                                    40, -40, 40, 
+                                    160, -40, 40, 
                                     "Recoil electron vertex y (mm)", 
-                                    80, -80, 80);
-       
+                                    320, -80, 80);
     }
 
     void PhotoNuclearDQM::configure(Parameters& parameters) { }
@@ -168,6 +167,8 @@ namespace ldmx {
         histograms_->get("pn_particle_mult")->Fill(pnGamma->getDaughters().size());
         histograms_->get("pn_gamma_energy")->Fill(pnGamma->getEnergy()); 
         histograms_->get("pn_gamma_int_z")->Fill(pnGamma->getEndPoint()[2]); 
+        histograms_->get("pn_gamma_vertex_x")->Fill(pnGamma->getVertex()[0]);  
+        histograms_->get("pn_gamma_vertex_y")->Fill(pnGamma->getVertex()[1]);  
         histograms_->get("pn_gamma_vertex_z")->Fill(pnGamma->getVertex()[2]);  
 
         double lke{-1},   lt{-1}; 
