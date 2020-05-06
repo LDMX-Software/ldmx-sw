@@ -98,7 +98,7 @@ namespace ldmx {
 
         std::vector<EcalDigiSample> digiToAdd( nADCs_ , EcalDigiSample() );
         std::set<int> simHitIDs;
-        for (const SimCalorimeterHit &simHit : ecalSimHits ) {
+        for (auto const& simHit : ecalSimHits ) {
             
             //First we emulate the ROC response by constructing
             //  a pulse from the timing/energy info and then measuring
