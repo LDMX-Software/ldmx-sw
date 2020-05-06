@@ -1,10 +1,5 @@
-/**
- * @file EcalPN.cxx
- * @brief Analyzer used for ECal PN DQM.
- * @author Omar Moreno, SLAC National Accelerator
- */
 
-#include "DQM/EcalPN.h" 
+#include "DQM/PhotoNuclearDQM.h" 
 
 //----------//
 //   ROOT   //
@@ -27,14 +22,13 @@
 
 namespace ldmx { 
 
-    EcalPN::EcalPN(const std::string &name, Process &process) : 
-        Analyzer(name, process) { }
+    PhotoNuclearDQM::PhotoNuclearDQM(const std::string &name, Process &process) 
+        : Analyzer(name, process) { }
 
-    EcalPN::~EcalPN() {}
+    PhotoNuclearDQM::~PhotoNuclearDQM() {}
 
-    void EcalPN::onProcessStart() {
+    void PhotoNuclearDQM::onProcessStart() {
       
-
         // Get an instance of the histogram pool  
         histograms_ = HistogramPool::getInstance();    
 
@@ -65,23 +59,8 @@ namespace ldmx {
 
         std::vector<TH1*> hists = { 
             histograms_->get("event_type"),
-            histograms_->get("event_type_track_veto"),
-            histograms_->get("event_type_bdt"),
-            histograms_->get("event_type_hcal"),
-            histograms_->get("event_type_track_bdt"),
-            histograms_->get("event_type_vetoes"),
             histograms_->get("event_type_500mev"),
-            histograms_->get("event_type_500mev_track_veto"),
-            histograms_->get("event_type_500mev_bdt"),
-            histograms_->get("event_type_500mev_hcal"),
-            histograms_->get("event_type_500mev_track_bdt"),
-            histograms_->get("event_type_500mev_vetoes"),
             histograms_->get("event_type_2000mev"),
-            histograms_->get("event_type_2000mev_track_veto"),
-            histograms_->get("event_type_2000mev_bdt"),
-            histograms_->get("event_type_2000mev_hcal"),
-            histograms_->get("event_type_2000mev_track_bdt"),
-            histograms_->get("event_type_2000mev_vetoes"),
 
         };
 
@@ -104,23 +83,8 @@ namespace ldmx {
 
         hists = {
             histograms_->get("event_type_compact"),
-            histograms_->get("event_type_compact_track_veto"),
-            histograms_->get("event_type_compact_bdt"),
-            histograms_->get("event_type_compact_hcal"),
-            histograms_->get("event_type_compact_track_bdt"),
-            histograms_->get("event_type_compact_vetoes"),
             histograms_->get("event_type_compact_500mev"),
-            histograms_->get("event_type_compact_500mev_track_veto"),
-            histograms_->get("event_type_compact_500mev_bdt"),
-            histograms_->get("event_type_compact_500mev_hcal"),
-            histograms_->get("event_type_compact_500mev_track_bdt"),
-            histograms_->get("event_type_compact_500mev_vetoes"),
             histograms_->get("event_type_compact_2000mev"),
-            histograms_->get("event_type_compact_2000mev_track_veto"),
-            histograms_->get("event_type_compact_2000mev_bdt"),
-            histograms_->get("event_type_compact_2000mev_hcal"),
-            histograms_->get("event_type_compact_2000mev_track_bdt"),
-            histograms_->get("event_type_compact_2000mev_vetoes"),
         };
 
         for (int ilabel{1}; ilabel < labels.size(); ++ilabel) { 
@@ -166,30 +130,45 @@ namespace ldmx {
         for (int ilabel{1}; ilabel < n_labels.size(); ++ilabel) { 
             hist->GetXaxis()->SetBinLabel(ilabel, n_labels[ilabel-1].c_str());
         }
-       
+
+        histograms_->create< TH2F >("recoil_vertex_x:recoil_vertex_y", 
+                                    "Recoil electron vertex x (mm)", 
+                                    160, -40, 40, 
+                                    "Recoil electron vertex y (mm)", 
+                                    320, -80, 80);
     }
 
-    void EcalPN::configure(Parameters& parameters) {
-        ecalVetoCollectionName_ = parameters.getParameter< std::string >("ecal_veto_collection");
-    }
+    void PhotoNuclearDQM::configure(Parameters& parameters) { }
 
-    void EcalPN::analyze(const Event & event) { 
- 
+    void PhotoNuclearDQM::analyze(const Event& event) {
+
 
         // Get the collection of simulated particles from the event
         auto particleMap{event.getMap<int,SimParticle>("SimParticles")};
-      
+
+        // Get the recoil electron
+        auto [ trackID, recoil ] = Analysis::getRecoil(particleMap);
+
+        histograms_->get("recoil_vertex_x")->Fill(recoil->getVertex()[0]); 
+        histograms_->get("recoil_vertex_y")->Fill(recoil->getVertex()[1]); 
+        histograms_->get("recoil_vertex_z")->Fill(recoil->getVertex()[2]);
+        histograms_->get("recoil_vertex_x:recoil_vertex_y")->Fill( 
+                         recoil->getVertex()[0], 
+                         recoil->getVertex()[1]);  
+
         // Use the recoil electron to retrieve the gamma that underwent a 
         // photo-nuclear reaction.
-        auto pnGamma{Analysis::getRecoilPNGamma(particleMap)};
+        auto pnGamma{Analysis::getRecoilPNGamma(event.getMap<int, SimParticle>("SimParticles"))};
         if (pnGamma == nullptr) { 
-            std::cout << "[ EcalPN ]: PN Daughter is lost, skipping." << std::endl;
+            std::cout << "[ PhotoNuclearDQM ]: PN Daughter is lost, skipping." << std::endl;
             return;
         }
 
         histograms_->get("pn_particle_mult")->Fill(pnGamma->getDaughters().size());
         histograms_->get("pn_gamma_energy")->Fill(pnGamma->getEnergy()); 
         histograms_->get("pn_gamma_int_z")->Fill(pnGamma->getEndPoint()[2]); 
+        histograms_->get("pn_gamma_vertex_x")->Fill(pnGamma->getVertex()[0]);  
+        histograms_->get("pn_gamma_vertex_y")->Fill(pnGamma->getVertex()[1]);  
         histograms_->get("pn_gamma_vertex_z")->Fill(pnGamma->getVertex()[2]);  
 
         double lke{-1},   lt{-1}; 
@@ -314,115 +293,9 @@ namespace ldmx {
             histograms_->get("1n_event_type")->Fill(nEventType); 
 
         } 
-
-        // Get the collection of ECal veto results if it exist
-        float bdtProb{-1}; 
-        bool passesBDT{false};  
-        if (event.exists(ecalVetoCollectionName_)) {
-            const EcalVetoResult ecalVeto = event.getObject<EcalVetoResult>(ecalVetoCollectionName_);
-       
-            // Get the BDT probability  
-            bdtProb = ecalVeto.getDisc();
-            
-            // Fill the histograms if the event passes the ECal veto
-            if (bdtProb >= .99) {
-                histograms_->get("event_type_bdt")->Fill(eventType);
-                histograms_->get("event_type_500mev_bdt")->Fill(eventType500MeV);
-                histograms_->get("event_type_2000mev_bdt")->Fill(eventType2000MeV); 
-                histograms_->get("event_type_compact_bdt")->Fill(eventTypeComp);
-                histograms_->get("event_type_compact_500mev_bdt")->Fill(eventTypeComp500MeV);
-                histograms_->get("event_type_compact_2000mev_bdt")->Fill(eventTypeComp2000MeV);
-                histograms_->get("pn_particle_mult_bdt")->Fill(pnGamma->getDaughters().size());
-                histograms_->get("pn_gamma_energy_bdt")->Fill(pnGamma->getEnergy());
-                histograms_->get("1n_neutron_energy_bdt")->Fill(nEnergy);  
-                histograms_->get("1n_energy_diff_bdt")->Fill(energyDiff);
-                histograms_->get("1n_energy_frac_bdt")->Fill(energyFrac); 
-                passesBDT = true; 
-            }
-        }
-
-        bool passesHcalVeto{false}; 
-        // Check if the HcalVeto result exists
-        if (event.exists("HcalVeto")) {
-        
-            // Get the collection of HCalDQM digitized hits if the exists 
-            const HcalVetoResult hcalVeto = event.getObject<HcalVetoResult>("HcalVeto");
-
-            if (hcalVeto.passesVeto()) {
-                histograms_->get("event_type_hcal")->Fill(eventType);
-                histograms_->get("event_type_500mev_hcal")->Fill(eventType500MeV);
-                histograms_->get("event_type_2000mev_hcal")->Fill(eventType2000MeV);
-                histograms_->get("event_type_compact_hcal")->Fill(eventTypeComp);
-                histograms_->get("event_type_compact_500mev_hcal")->Fill(eventTypeComp500MeV);
-                histograms_->get("event_type_compact_2000mev_hcal")->Fill(eventTypeComp2000MeV);
-                histograms_->get("pn_particle_mult_hcal")->Fill(pnGamma->getDaughters().size());
-                histograms_->get("pn_gamma_energy_hcal")->Fill(pnGamma->getEnergy()); 
-                histograms_->get("1n_neutron_energy_hcal")->Fill(nEnergy);  
-                histograms_->get("1n_energy_diff_hcal")->Fill(energyDiff);
-                histograms_->get("1n_energy_frac_hcal")->Fill(energyFrac); 
-                passesHcalVeto = true;
-            }
-        }
-
-        bool passesTrackVeto{false};
-        // Check if the TrackerVeto result exists
-        if (event.exists("TrackerVeto")) { 
-
-            // Get the collection of trackerVeto results
-            const TrackerVetoResult trackerVeto = event.getObject<TrackerVetoResult>("TrackerVeto");
-
-            // Check if the event passes the tracker veto
-            if (trackerVeto.passesVeto()) { 
-                
-                passesTrackVeto = true; 
-                
-                histograms_->get("event_type_track_veto")->Fill(eventType);
-                histograms_->get("event_type_500mev_track_veto")->Fill(eventType500MeV);
-                histograms_->get("event_type_2000mev_track_veto")->Fill(eventType2000MeV); 
-                histograms_->get("event_type_compact_track_veto")->Fill(eventTypeComp);
-                histograms_->get("event_type_compact_500mev_track_veto")->Fill(eventTypeComp500MeV);
-                histograms_->get("event_type_compact_2000mev_track_veto")->Fill(eventTypeComp2000MeV);
-                histograms_->get("pn_particle_mult_track_veto")->Fill(pnGamma->getDaughters().size());    
-                histograms_->get("pn_gamma_energy_track_veto")->Fill(pnGamma->getEnergy());
-                histograms_->get("1n_neutron_energy_track_veto")->Fill(nEnergy);  
-                histograms_->get("1n_energy_diff_track_veto")->Fill(energyDiff);
-                histograms_->get("1n_energy_frac_track_veto")->Fill(energyFrac); 
-
-            }
-        }
-        
-        if (passesTrackVeto && passesBDT) { 
-            histograms_->get("event_type_track_bdt")->Fill(eventType);
-            histograms_->get("event_type_500mev_track_bdt")->Fill(eventType500MeV);
-            histograms_->get("event_type_2000mev_track_bdt")->Fill(eventType2000MeV); 
-            histograms_->get("event_type_compact_track_bdt")->Fill(eventTypeComp);
-            histograms_->get("event_type_compact_500mev_track_bdt")->Fill(eventTypeComp500MeV);
-            histograms_->get("event_type_compact_2000mev_track_bdt")->Fill(eventTypeComp2000MeV);
-            histograms_->get("pn_particle_mult_track_bdt")->Fill(pnGamma->getDaughters().size());
-            histograms_->get("pn_gamma_energy_track_bdt")->Fill(pnGamma->getEnergy());
-            histograms_->get("1n_neutron_energy_track_bdt")->Fill(nEnergy);  
-            histograms_->get("1n_energy_diff_track_bdt")->Fill(energyDiff);
-            histograms_->get("1n_energy_frac_track_bdt")->Fill(energyFrac); 
-        }
-
-        if (passesTrackVeto && passesHcalVeto && passesBDT) { 
-            histograms_->get("event_type_vetoes")->Fill(eventType);
-            histograms_->get("event_type_500mev_vetoes")->Fill(eventType500MeV);
-            histograms_->get("event_type_2000mev_vetoes")->Fill(eventType2000MeV);
-            histograms_->get("event_type_compact_vetoes")->Fill(eventTypeComp);
-            histograms_->get("event_type_compact_500mev_vetoes")->Fill(eventTypeComp500MeV);
-            histograms_->get("event_type_compact_2000mev_vetoes")->Fill(eventTypeComp2000MeV);
-            histograms_->get("pn_particle_mult_vetoes")->Fill(pnGamma->getDaughters().size());
-            histograms_->get("pn_gamma_energy_vetoes")->Fill(pnGamma->getEnergy()); 
-            histograms_->get("1n_neutron_energy_vetoes")->Fill(nEnergy);  
-            histograms_->get("1n_energy_diff_vetoes")->Fill(energyDiff);
-            histograms_->get("1n_energy_frac_vetoes")->Fill(energyFrac); 
-                
-        
-        }
     }
 
-    int EcalPN::classifyEvent(const SimParticle* particle, const std::map<int,SimParticle> &particleMap, double threshold) {
+    int PhotoNuclearDQM::classifyEvent(const SimParticle* particle, const std::map<int,SimParticle> &particleMap, double threshold) {
 
         short n{0}, p{0}, pi{0}, pi0{0}, exotic{0}, k0l{0}, kp{0}, k0s{0}, 
               lambda{0};
@@ -524,7 +397,7 @@ namespace ldmx {
         return 20;
     }
 
-    int EcalPN::classifyCompactEvent(const SimParticle* particle, const std::map<int,SimParticle> &particleMap, double threshold) {
+    int PhotoNuclearDQM::classifyCompactEvent(const SimParticle* particle, const std::map<int,SimParticle> &particleMap, double threshold) {
    
         short n{0}, n_t{0}, k0l{0}, kp{0}, k0s{0}, soft{0};
 
@@ -572,4 +445,4 @@ namespace ldmx {
 
 } // ldmx
 
-DECLARE_ANALYZER_NS(ldmx, EcalPN)
+DECLARE_ANALYZER_NS(ldmx, PhotoNuclearDQM)
