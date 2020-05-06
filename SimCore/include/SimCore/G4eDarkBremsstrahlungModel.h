@@ -226,7 +226,7 @@ class G4eDarkBremsstrahlungModel : public G4VEmModel {
          * Integrate diffcross from 0 to \f$min(1-m_e/E_0,1-m_A/E_0)\f$
          *
          * Total cross section is given by
-         * \f[ \sigma = 4 (\text{GeV to pb conversion}) \alpha_{EW}^3 \int \chi(t)dt \int \frac{d\sigma}{dx}(x)dx \f]
+         * \f[ \sigma = 4 \frac{pb}{GeV}\alpha_{EW}^3 \int \chi(t)dt \int \frac{d\sigma}{dx}(x)dx \f]
          *
          * @param E0 energy of beam (incoming particle)
          * @param Z atomic number of atom
