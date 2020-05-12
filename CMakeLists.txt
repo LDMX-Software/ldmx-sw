@@ -37,7 +37,7 @@ message(STATUS "XercesC include dir found at: ${XercesC_INCLUDE_DIRS}")
 get_filename_component(XercesC_LIBRARY_DIR ${XercesC_LIBRARIES} DIRECTORY)
 
 # find Geant4 installation
-find_package(Geant4 REQUIRED ui_all vis_all)
+find_package(Geant4 REQUIRED ui_all vis_all gdml)
 message(STATUS "Geant4 found at: ${Geant4_DIR}")
 
 # find Python installation
