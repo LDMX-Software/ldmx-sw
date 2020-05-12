@@ -41,7 +41,7 @@ find_package(Geant4 REQUIRED ui_all vis_all gdml)
 message(STATUS "Geant4 found at: ${Geant4_DIR}")
 
 # find Python installation
-if (PYTHON3)
+if(PYTHON3)
     find_package(PythonLibs 3 REQUIRED EXACT)
 else()
     find_package(PythonLibs 2 REQUIRED EXACT)

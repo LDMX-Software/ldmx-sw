@@ -75,9 +75,9 @@ namespace ldmx {
                 Py_DECREF(tmpstr);
             }
             std::cout << "Set Python Args" << std::endl;
-            PySys_SetArgvEx(nargs+1, targs,1);
+            PySys_SetArgvEx(nargs-1, targs, 1);
             std::cout << "Free Memory" << std::endl;
-            for(int i=0;i<nargs; i++) PyMem_RawFree(targs[i]);
+            //for(int i=1;i<nargs; i++) PyMem_RawFree(targs[i]);
             delete[] targs;
             std::cout << "Free Memory Succeed" << std::endl;
         }
