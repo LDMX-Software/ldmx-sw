@@ -1,6 +1,8 @@
 # minimum cmake version
 cmake_minimum_required(VERSION 3.1)
 
+project("ldmx-sw")
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 17)
@@ -35,7 +37,7 @@ message(STATUS "XercesC include dir found at: ${XercesC_INCLUDE_DIRS}")
 get_filename_component(XercesC_LIBRARY_DIR ${XercesC_LIBRARIES} DIRECTORY)
 
 # find Geant4 installation
-find_package(Geant4 REQUIRED ui_all vis_all)
+find_package(Geant4 REQUIRED ui_all vis_all gdml)
 message(STATUS "Geant4 found at: ${Geant4_DIR}")
 
 # find Python installation
