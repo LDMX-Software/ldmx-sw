@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import histogram as h
+import LDMX.Framework.histogram as h
 
 class Producer:
     def __init__(self, instanceName, className):
