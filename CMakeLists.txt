@@ -2,5 +2,5 @@
 module(
   NAME SimApplication
   DEPENDENCIES Exception Event Framework DetDescr SimCore 
-  EXTERNAL_DEPENDENCIES Geant4 ROOT Python
+  EXTERNAL_DEPENDENCIES Geant4 ROOT Python XercesC
 )
