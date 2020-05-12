@@ -24,6 +24,366 @@
 /*~~~~~~~~~~*/
 #include "TH1F.h"
 
+#if PY_MAJOR_VERSION >= 3
+namespace ldmx {
+
+    static std::string stringMember(PyObject* owner, const std::string& name) {
+        std::string retval;
+        PyObject* temp = PyObject_GetAttrString(owner, name.c_str());
+        if (temp != 0) {
+            PyObject* pyStr = PyUnicode_AsEncodedString(temp, "utf-8","Error ~");
+            retval = PyBytes_AS_STRING(pyStr);
+            Py_XDECREF(pyStr);
+            Py_XDECREF(temp);
+        }
+        return retval;
+    }
+
+    static long intMember(PyObject* owner, const std::string& name) {
+        long retval;
+        PyObject* temp = PyObject_GetAttrString(owner, name.c_str());
+        if (temp != 0) {
+            retval = PyLong_AsLong(temp);
+            Py_DECREF(temp);
+        }
+        return retval;
+    }
+
+    ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[], int nargs) {
+        std::string path(".");
+        std::string cmd = pythonScript;
+
+        // if a path was specified, get that out
+        if (pythonScript.rfind("/") != std::string::npos) {
+            path = pythonScript.substr(0, pythonScript.rfind("/"));
+            cmd = pythonScript.substr(pythonScript.rfind("/") + 1);
+        }
+        cmd = cmd.substr(0, cmd.find(".py"));
+
+        Py_Initialize();
+        if (nargs > 0) {
+            wchar_t** targs = new wchar_t*[nargs];
+            std::cout << "nargs: " << nargs << std::endl;
+            std::cout << "Load Python Script Name " << pythonScript.c_str() << std::endl;
+            PyObject *tmpstr = PyUnicode_FromString(pythonScript.c_str());
+            targs[0] = PyUnicode_AsWideCharString(tmpstr,NULL);
+            Py_DECREF(tmpstr);
+            for (int i = 0; i < nargs - 1; i++){
+                std::cout << "Load arg " << i << "   " << args[i] << std::endl;
+                tmpstr = PyUnicode_FromString(args[i]);
+                targs[i+1] = PyUnicode_AsWideCharString(tmpstr,NULL);
+                Py_DECREF(tmpstr);
+            }
+            std::cout << "Set Python Args" << std::endl;
+            PySys_SetArgvEx(nargs+1, targs,1);
+            std::cout << "Free Memory" << std::endl;
+            for(int i=0;i<nargs; i++) PyMem_RawFree(targs[i]);
+            delete[] targs;
+            std::cout << "Free Memory Succeed" << std::endl;
+        }
+
+        PyObject* script, *temp, *process, *pMain, *pylist;
+        std::cout << "Load cmd string " << cmd.c_str() << std::endl;
+        temp = PyUnicode_FromString(cmd.c_str());
+        script = PyImport_ImportModule(cmd.c_str());
+        Py_DECREF(temp);
+
+        if (script == 0) {
+            PyErr_Print();
+            EXCEPTION_RAISE("ConfigureError", "Problem loading python script");
+        }
+
+        PyObject* pCMod = PyObject_GetAttrString(script, "ldmxcfg");
+        if (pCMod == 0) {
+            PyErr_Print();
+            EXCEPTION_RAISE("ConfigureError", "Problem loading python script");
+        }
+
+        PyObject* pProcessClass = PyObject_GetAttrString(pCMod, "Process");
+        Py_DECREF(pCMod);
+        if (pProcessClass == 0) {
+            PyErr_Print();
+            EXCEPTION_RAISE("ConfigureError", 
+                    "Process object not defined. This object is required to run ldmx-app."
+                    );
+        }
+
+        PyObject* pProcess = PyObject_GetAttrString(pProcessClass, "lastProcess");
+        Py_DECREF(pProcessClass);
+        if (pProcess == 0) {
+            //wasn't able to get lastProcess class member
+            PyErr_Print();
+            EXCEPTION_RAISE("ConfigureError", 
+                    "Process object not defined. This object is required to run ldmx-app."
+                    );
+        } else if ( pProcess == Py_None ) {
+            //lasProcess was left undefined
+            EXCEPTION_RAISE("ConfigureError", 
+                    "Process object not defined. This object is required to run ldmx-app."
+                    );
+        }
+
+        passname_ = stringMember(pProcess, "passName");
+        eventLimit_ = intMember(pProcess, "maxEvents");
+        run_ = intMember(pProcess, "run");
+        histoOutFile_ = stringMember(pProcess, "histogramFile");
+
+        // Get the print frequency
+        logFrequency_ = intMember(pProcess, "logFrequency"); 
+
+        PyObject* pysequence = PyObject_GetAttrString(pProcess, "sequence");
+        if (!PyList_Check(pysequence)) {
+            EXCEPTION_RAISE("ConfigureError", "sequence is not a python list as expected.");
+        }
+
+        for (auto i{0}; i < PyList_Size(pysequence); ++i) {
+
+            auto processor{PyList_GetItem(pysequence, i)}; 
+
+            ProcessorClass pc; 
+            pc.className_ = stringMember(processor, "className");
+            pc.instanceName_ = stringMember(processor, "instanceName");
+
+            auto histos{PyObject_GetAttrString(processor, "histograms")};
+
+            for (auto ihisto{0}; ihisto < PyList_Size(histos); ++ihisto) {
+
+                auto histogram{PyList_GetItem(histos, ihisto)};
+
+                HistogramInfo histInfo; 
+                histInfo.name_   = stringMember(histogram, "name"); 
+                histInfo.xLabel_ = stringMember(histogram, "xlabel"); 
+                histInfo.bins_   = intMember(histogram, "bins"); 
+                histInfo.xmin_   = intMember(histogram, "xmin"); 
+                histInfo.xmax_   = intMember(histogram, "xmax");  
+
+                pc.histograms_.push_back(histInfo); 
+            }
+            Py_DECREF(histos);
+
+            auto parameters{PyObject_GetAttrString(processor, "parameters")};
+            if (parameters != 0 && PyDict_Check(parameters)) {
+
+                PyObject *key(0), *value(0);
+                Py_ssize_t pos = 0;
+
+                auto params{getParameters(parameters)}; 
+
+                pc.params_.setParameters(params); 
+            }
+
+            sequence_.push_back(pc);
+        }
+        Py_DECREF(pysequence);
+
+        pylist = PyObject_GetAttrString(pProcess, "keep");
+        if (!PyList_Check(pylist)) {
+            std::cerr << "keep is not a python list as expected.\n";
+            return;
+        }
+        for (Py_ssize_t i = 0; i < PyList_Size(pylist); i++) {
+            PyObject* elem = PyList_GetItem(pylist, i);
+            PyObject* pyStr = PyUnicode_AsEncodedString(elem, "utf-8","Error ~");
+            keepRules_.push_back(PyBytes_AS_STRING(pyStr));
+            Py_XDECREF(pyStr);
+            Py_XDECREF(elem);
+        }
+        Py_DECREF(pylist);
+
+        skimDefaultIsKeep_=intMember(pProcess, "skimDefaultIsKeep");
+        pylist = PyObject_GetAttrString(pProcess, "skimRules");
+        if (!PyList_Check(pylist)) {
+            std::cerr << "skimRules is not a python list as expected.\n";
+            return;
+        }
+        for (Py_ssize_t i = 0; i < PyList_Size(pylist); i++) {
+            PyObject* elem = PyList_GetItem(pylist, i);
+            PyObject* pyStr = PyUnicode_AsEncodedString(elem, "utf-8","Error ~");
+            skimRules_.push_back(PyBytes_AS_STRING(pyStr));
+            Py_XDECREF(pyStr);
+            Py_XDECREF(elem);
+        }
+        Py_DECREF(pylist);
+
+        pylist = PyObject_GetAttrString(pProcess, "inputFiles");
+        if (!PyList_Check(pylist)) {
+            std::cerr << "inputFiles is not a python list as expected.\n";
+            return;
+        }
+        for (Py_ssize_t i = 0; i < PyList_Size(pylist); i++) {
+            PyObject* elem = PyList_GetItem(pylist, i);
+            PyObject* pyStr = PyUnicode_AsEncodedString(elem, "utf-8","Error ~");
+            inputFiles_.push_back(PyBytes_AS_STRING(pyStr));
+            Py_XDECREF(pyStr);
+            Py_XDECREF(elem);
+        }
+        Py_DECREF(pylist);
+
+        pylist = PyObject_GetAttrString(pProcess, "outputFiles");
+        if (!PyList_Check(pylist)) {
+            std::cerr << "outputFiles is not a python list as expected.\n";
+            return;
+        }
+        for (Py_ssize_t i = 0; i < PyList_Size(pylist); i++) {
+            PyObject* elem = PyList_GetItem(pylist, i);
+            PyObject* pyStr = PyUnicode_AsEncodedString(elem, "utf-8","Error ~");
+            outputFiles_.push_back(PyBytes_AS_STRING(pyStr));
+            Py_XDECREF(pyStr);
+            Py_XDECREF(elem);
+        }
+        Py_DECREF(pylist);
+
+        pylist = PyObject_GetAttrString(pProcess, "libraries");
+        if (!PyList_Check(pylist)) {
+            std::cerr << "libraries is not a python list as expected.\n";
+            return;
+        }
+        for (Py_ssize_t i = 0; i < PyList_Size(pylist); i++) {
+            PyObject* elem = PyList_GetItem(pylist, i);
+            PyObject* pyStr = PyUnicode_AsEncodedString(elem, "utf-8","Error ~");
+            libraries_.push_back(PyBytes_AS_STRING(pyStr));
+            Py_XDECREF(pyStr);
+            Py_XDECREF(elem);
+        }
+        Py_DECREF(pylist);
+    }
+
+    ConfigurePython::~ConfigurePython() {
+        Py_Finalize();
+    }
+
+    Process* ConfigurePython::makeProcess() {
+
+        auto process{std::make_unique<Process>(passname_)};  
+
+        process->setHistogramFileName(histoOutFile_);
+        process->setEventLimit(eventLimit_);
+        process->setLogFrequency(logFrequency_); 
+
+        std::for_each(libraries_.begin(), libraries_.end(), 
+                [](auto& lib) { EventProcessorFactory::getInstance().loadLibrary(lib);}
+                ); 
+
+        for (auto proc : sequence_) {
+            EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(proc.className_, proc.instanceName_, *process);
+            if (ep == 0) {
+                EXCEPTION_RAISE("UnableToCreate", "Unable to create instance '" + proc.instanceName_ + "' of class '" + proc.className_ + "'");
+            }
+
+            if (!proc.histograms_.empty()) {
+                HistogramPool* histograms = HistogramPool::getInstance(); 
+                ep->getHistoDirectory();
+                for (const auto& hist : proc.histograms_) { 
+                    histograms->create<TH1F>(hist.name_, hist.xLabel_, hist.bins_, hist.xmin_, hist.xmax_); 
+                } 
+            }
+            ep->configure(proc.params_);
+            process->addToSequence(ep);
+        }
+        for (auto file : inputFiles_) {
+            process->addFileToProcess(file);
+        }
+        for (auto file : outputFiles_) {
+            process->addOutputFileName(file);
+        }
+        for (auto rule : keepRules_) {
+            process->addDropKeepRule(rule);
+        }
+        process->getStorageController().setDefaultKeep(skimDefaultIsKeep_);
+        for (size_t i=0; i<skimRules_.size(); i+=2) {
+            process->getStorageController().addRule(skimRules_[i],skimRules_[i+1]);
+        }
+        if (run_ > 0)
+            process->setRunNumber(run_);
+
+        return process.release();
+    }
+
+    std::map< std::string, std::any > ConfigurePython::getParameters(PyObject* dictionary) { 
+
+        PyObject *key(0), *value(0);
+        Py_ssize_t pos = 0;
+
+        std::map < std::string, std::any > params; 
+
+        while (PyDict_Next(dictionary, &pos, &key, &value)) {
+
+            PyObject* pyStr = PyUnicode_AsEncodedString(key, "utf-8","Error ~");
+            std::string skey{PyBytes_AS_STRING(pyStr)};
+            Py_XDECREF(pyStr);
+
+            if (PyLong_Check(value)) {
+                if (PyBool_Check(value)) {
+                    params[skey] = bool(PyLong_AsLong(value)); 
+                } else { 
+                    params[skey] = int(PyLong_AsLong(value));
+                }
+            } else if (PyFloat_Check(value)) {
+                params[skey] = PyFloat_AsDouble(value);  
+            } else if (PyUnicode_Check(value)) {
+                PyObject* pyStr = PyUnicode_AsEncodedString(value, "utf-8","Error ~");
+                params[skey] = std::string(PyBytes_AS_STRING(pyStr));
+                Py_XDECREF(pyStr);
+            } else if (PyList_Check(value)) { // assume everything is same value as first value
+                if (PyList_Size(value) > 0) {
+
+                    auto vec0{PyList_GetItem(value, 0)};
+
+                    if (PyLong_Check(vec0)) {
+                        std::vector<int> vals;
+
+                        for (auto j{0}; j < PyList_Size(value); j++)
+                            vals.push_back(PyLong_AsLong(PyList_GetItem(value, j)));
+
+                        params[skey] = vals;
+
+                    } else if (PyFloat_Check(vec0)) {
+                        std::vector<double> vals;
+
+                        for (auto j{0}; j < PyList_Size(value); j++)
+                            vals.push_back(PyFloat_AsDouble(PyList_GetItem(value, j)));
+
+                        params[skey] = vals;
+
+                    } else if (PyUnicode_Check(vec0)) {
+                        std::vector<std::string> vals;
+                        for (Py_ssize_t j = 0; j < PyList_Size(value); j++){
+                            PyObject* pyStr = PyUnicode_AsEncodedString(PyList_GetItem(value, j), "utf-8","Error ~");
+                            vals.push_back( PyBytes_AS_STRING(pyStr));
+                            Py_XDECREF(pyStr);
+                        }
+
+                        params[skey] = vals;
+
+                    } else { 
+
+                        // If the objects stored in the list doesn't 
+                        // satisfy any of the above conditions, just
+                        // create a vector of Class objects.
+                        std::vector< Class > vals;
+                        for (auto j{0}; j < PyList_Size(value); ++j) {
+
+                            auto object{PyList_GetItem( value, j )}; 
+                            Class c; 
+                            c.className_    = stringMember(object, "class_name");
+                            c.instanceName_ = stringMember(object, "instance_name");  
+
+                            auto dict{PyObject_GetAttrString(object, "parameters")};
+                            auto classParams{getParameters(dict)}; 
+                            c.params_.setParameters(classParams); 
+
+                            vals.push_back(c);
+                        } 
+                        params[skey] = vals;
+                    }
+                }
+            }
+        }
+
+        return params; 
+    }
+}
+#else
 namespace ldmx {
 
     static std::string stringMember(PyObject* owner, const std::string& name) {
@@ -152,7 +512,7 @@ namespace ldmx {
                 Py_ssize_t pos = 0;
 
                 auto params{getParameters(parameters)}; 
-                
+
                 pc.params_.setParameters(params); 
             }
 
@@ -281,7 +641,7 @@ namespace ldmx {
         while (PyDict_Next(dictionary, &pos, &key, &value)) {
 
             std::string skey{PyString_AsString(key)};
-    
+
             if (PyInt_Check(value)) {
                 if (PyBool_Check(value)) {
                     params[skey] = bool(PyInt_AsLong(value)); 
@@ -328,7 +688,7 @@ namespace ldmx {
                         // create a vector of Class objects.
                         std::vector< Class > vals;
                         for (auto j{0}; j < PyList_Size(value); ++j) {
-                            
+
                             auto object{PyList_GetItem( value, j )}; 
                             Class c; 
                             c.className_    = stringMember(object, "class_name");
@@ -349,4 +709,4 @@ namespace ldmx {
         return params; 
     }
 }
-
+#endif
