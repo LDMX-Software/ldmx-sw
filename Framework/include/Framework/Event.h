@@ -52,10 +52,18 @@ namespace ldmx {
 
             /**
              * Get the event header.
-             * @return A constant copy of the event header.
+             * @return A reference to the event header.
              */
             EventHeader &getEventHeader() {
                 return eventHeader_;
+            }
+
+            /**
+             * Get the event number.
+             * @return the event index/number
+             */
+            int getEventNumber() const {
+                return eventHeader_.getEventNumber();
             }
 
             /**
