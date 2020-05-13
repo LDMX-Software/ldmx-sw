@@ -1,11 +1,5 @@
-/**
- * @file CalorimeterSD.h
- * @brief Class providing a basic calorimeter sensitive detector
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
-
-#ifndef SIMAPPLICATION_CALORIMETERSD_H_
-#define SIMAPPLICATION_CALORIMETERSD_H_
+#ifndef SIMAPPLICATION_CALORIMETERSD_H
+#define SIMAPPLICATION_CALORIMETERSD_H
 
 // Geant4
 #include "G4VSensitiveDetector.hh"
@@ -54,7 +48,7 @@ namespace ldmx {
              * @param aStep The step information
              * @param ROhist The readout history.
              */
-            G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
+            virtual G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) = 0;
 
             /**
              * Initialize the sensitive detector.
