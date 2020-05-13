@@ -136,8 +136,6 @@ namespace ldmx {
         } else if (sdType == "HcalSD") {
             detID = new HcalID();
             sd = new HcalSD(theSensDetName, hcName, subdetID, detID);
-        } else if (sdType == "CalorimeterSD") {
-            sd = new CalorimeterSD(theSensDetName, hcName, subdetID, detID);
         } else if (sdType == "ScoringPlaneSD") { 
             sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID, detID); 
         } else {
