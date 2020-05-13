@@ -6,6 +6,7 @@
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/EcalSD.h"
 #include "SimApplication/HcalSD.h"
+#include "SimApplication/TrigScintSD.h" 
 #include "SimApplication/ScoringPlaneSD.h"
 #include "SimApplication/MagneticFieldStore.h"
 #include "SimApplication/MagneticFieldMap3D.h"
@@ -138,6 +139,8 @@ namespace ldmx {
             sd = new HcalSD(theSensDetName, hcName, subdetID, detID);
         } else if (sdType == "ScoringPlaneSD") { 
             sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID, detID); 
+        } else if (sdType == "TrigScintSD") { 
+            sd = new TrigScintSD(theSensDetName, hcName, subdetID, detID);
         } else {
             EXCEPTION_RAISE( "DetType" , "Unknown SensitiveDetector type: " + sdType );
         }
