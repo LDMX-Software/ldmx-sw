@@ -26,7 +26,6 @@ namespace ldmx {
     }
 
     CalorimeterSD::~CalorimeterSD() {
-        delete detID_;
     }
 
     void CalorimeterSD::Initialize(G4HCofThisEvent* hce) {
