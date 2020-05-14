@@ -12,8 +12,8 @@
 
 namespace ldmx {
 
-    CalorimeterSD::CalorimeterSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
-            G4VSensitiveDetector(name), hitsCollection_(0), subdet_(subdetID), detID_(detID) {
+    CalorimeterSD::CalorimeterSD(G4String name, G4String theCollectionName, int subdetID) :
+            G4VSensitiveDetector(name), hitsCollection_(0), subdet_(subdetID) {
 
         // Add the collection name to vector of names.
         this->collectionName.push_back(theCollectionName);
