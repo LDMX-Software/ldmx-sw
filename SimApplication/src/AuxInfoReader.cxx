@@ -132,15 +132,13 @@ namespace ldmx {
         if (sdType == "TrackerSD") {
             sd = new TrackerSD(theSensDetName, hcName, subdetID, detID);
         } else if (sdType == "EcalSD") {
-            detID = new EcalDetectorID();
-            sd = new EcalSD(theSensDetName, hcName, subdetID, detID);
+            sd = new EcalSD(theSensDetName, hcName, subdetID);
         } else if (sdType == "HcalSD") {
-            detID = new HcalID();
-            sd = new HcalSD(theSensDetName, hcName, subdetID, detID);
+            sd = new HcalSD(theSensDetName, hcName, subdetID);
         } else if (sdType == "ScoringPlaneSD") { 
             sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID, detID); 
         } else if (sdType == "TrigScintSD") { 
-            sd = new TrigScintSD(theSensDetName, hcName, subdetID, detID);
+            sd = new TrigScintSD(theSensDetName, hcName, subdetID);
         } else {
             EXCEPTION_RAISE( "DetType" , "Unknown SensitiveDetector type: " + sdType );
         }
