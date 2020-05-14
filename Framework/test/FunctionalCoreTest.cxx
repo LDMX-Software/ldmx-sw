@@ -10,7 +10,9 @@
 #include <cstdio> //for remove
 #include "TH1F.h" //for test histogram
 #include "TFile.h" //to open and check root files
+#include "TTreeReader.h" //to check output event files
 
+#include "Event/EventDef.h"
 #include "Framework/Process.h"
 #include "Framework/EventProcessor.h"
 
@@ -89,7 +91,7 @@ class TestAnalyzer : public Analyzer {
             REQUIRE_NOTHROW(caloHits = event.getCollection<CalorimeterHit>( "TestCollection" ));
 
             CHECK( caloHits.size() == i_event );
-            for ( int i = 0; i < caloHits.size(); i++ ) {
+            for ( unsigned int i = 0; i < caloHits.size(); i++ ) {
                 CHECK( caloHits.at(i).getID() == i_event*10 + i );
                 test_hist_->Fill( caloHits.at(i).getID() );
             }
@@ -137,7 +139,48 @@ void closeHistogramFile( const int &correct_num_entries ) {
 
     file.Close();
 
-    //CHECK( remove( TEST_HISTOGRAM_FILENAME ) == 0 ); //delete file
+    CHECK( remove( TEST_HISTOGRAM_FILENAME ) == 0 ); //delete file
+
+    return;
+}
+
+/**
+ * @func checkEventFile
+ *
+ * Looks through output Events ttree and checks that the TestCollection,
+ * TestObject, and EventHeader follow the structure that the producer
+ * made.
+ *
+ * @param[in] filename name of event file to check
+ * @param[in] passname name of pass to check
+ * @param[in] correct_num_entries that the event file should have
+ */
+void checkEventFile( const std::string &filename , const std::string &passname, const int &correct_num_entries ) {
+
+    TFile f( filename.c_str() );
+
+    TTreeReader r( "LDMX_Events" , &f );
+
+    //TODO check if tree loaded
+    //CHECK( r.GetEntryStatus() != TTreeReader::EEntryStatus::kEntryNoTree );
+
+    TTreeReaderValue<std::vector<CalorimeterHit>> collection( r , ("TestCollection_"+passname).c_str() );
+    TTreeReaderValue<HcalVetoResult> object( r , ("TestObject_"+passname).c_str() );
+    TTreeReaderValue<EventHeader> header( r , "EventHeader" );
+
+    //TODO check if tree actually has these branches
+
+    CHECK( r.GetEntries(true) == correct_num_entries );
+
+    while( r.Next() ) {
+        CHECK( collection->size() == header->getEventNumber() );
+        CHECK( object->getMaxPEHit().getID() == header->getEventNumber() );
+        for ( unsigned int i = 0; i < collection->size(); i++ ) {
+            CHECK( collection->at(i).getID() == header->getEventNumber()*10+i );
+        }
+    }
+     
+    f.Close();
 
     return;
 }
@@ -159,8 +202,8 @@ void closeHistogramFile( const int &correct_num_entries ) {
  *  - Analysis Mode (no output event files, only output histogram file)
  *  - Merge Mode (several input files to one output file)
  *  - N-to-N Mode (several input files to several output files)
- *  - PROG writing histogram to a file
- *  - TODO Writing to an output file
+ *  - writing histogram to a file
+ *  - Writing to an output file
  *  - TODO drop/keep rules for event bus passengers
  *  - TODO writing and reading run headers
  *  - TODO skimming events (only keeping events meeting a certain criteria)
@@ -188,15 +231,14 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
             CHECK_NOTHROW( p.run() );
         }
         
-        /* TODO uncomment this section after histogram file patch is merged in
         SECTION( "with Analyses" ) {
             p.setHistogramFileName( TEST_HISTOGRAM_FILENAME );
             p.addToSequence( anaHdl );
             CHECK_NOTHROW( p.run() );
             closeHistogramFile( 1+2+3 );
         }
-        */
 
+        checkEventFile( "test_out.root" , "test" , 3 );
         CHECK( remove( "test_out.root" ) == 0 );
     }//Production Mode
 
@@ -219,10 +261,10 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
         makeInputs.setEventLimit( 4 );
         CHECK_NOTHROW( makeInputs.run() );
     
-        //TODO check for existence of input files
-
-        //TODO remove this after drop/keep rules update is merged in
-        p.addDropKeepRule( "keep *" );
+        //check that input files were created fine
+        checkEventFile( "test_input0.root" , "makeInputs" , 2 );
+        checkEventFile( "test_input1.root" , "makeInputs" , 3 );
+        checkEventFile( "test_input2.root" , "makeInputs" , 4 );
 
         SECTION( "Analysis Mode" ) {
             //no output files, only histogram output
@@ -238,7 +280,6 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
             }
 
             
-            /*TODO uncomment this section after drop/keep rules update is merged in
             SECTION( "multiple input files" ) {
                 p.addFileToProcess( "test_input0.root" );
                 p.addFileToProcess( "test_input1.root" );
@@ -247,7 +288,6 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
                 closeHistogramFile( 1+2+1+2+3+1+2+3+4 );
             }
-            */
 
         }//Analysis Mode
 
@@ -276,9 +316,13 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
             SECTION( "with producers" ) {
                 p.addToSequence( proHdl );
                 p.run();
+
+                checkEventFile( "test_merge.root" , "test" , 2+3+4 );
             }
 
-            CHECK( remove( "test_merge.root" ) == 0 );
+            //checks that input collections were copied over correctly
+            checkEventFile( "test_merge.root" , "makeInputs" , 2+3+4 );
+            //CHECK( remove( "test_merge.root" ) == 0 );
         } //Merge Mode
 
         SECTION( "N-to-N Mode" ) {
@@ -307,11 +351,22 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
             SECTION( "with producers" ) {
                 p.addToSequence( proHdl );
                 p.run();
+
+                //checks that produced objects were written correctly
+                checkEventFile( "test_output0.root" , "test" , 2 );
+                checkEventFile( "test_output1.root" , "test" , 3 );
+                checkEventFile( "test_output2.root" , "test" , 4 );
             }
 
-            CHECK( remove( "test_output0.root" ) == 0 );
-            CHECK( remove( "test_output1.root" ) == 0 );
-            CHECK( remove( "test_output2.root" ) == 0 );
+            //checks that input pass was copied over correctly
+            checkEventFile( "test_output0.root" , "makeInputs" , 2 );
+            //CHECK( remove( "test_output0.root" ) == 0 );
+
+            checkEventFile( "test_output1.root" , "makeInputs" , 3 );
+            //CHECK( remove( "test_output1.root" ) == 0 );
+
+            checkEventFile( "test_output2.root" , "makeInputs" , 4 );
+            //CHECK( remove( "test_output2.root" ) == 0 );
 
         } // N-to-N Mode
 
