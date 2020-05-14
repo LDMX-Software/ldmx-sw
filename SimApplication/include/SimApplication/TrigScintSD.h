@@ -12,9 +12,6 @@ class G4TouchableHistory;
 
 namespace ldmx {
 
-    // Forward declarations within the ldmx namespace 
-    class DetectorID; 
-
     /**
      * Class defining a sensitive detector of type trigger scintillator.
      */
@@ -30,7 +27,7 @@ namespace ldmx {
              * @param[in] subdet The subdetector ID.
              * @param[in] detID The detector ID.
              */
-            TrigScintSD(G4String name, G4String theCollectionName, int subdet, DetectorID* detID);
+            TrigScintSD(G4String name, G4String collectionName, int subDetID); 
 
             /// Destructor
             ~TrigScintSD();

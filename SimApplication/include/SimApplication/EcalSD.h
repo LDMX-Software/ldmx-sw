@@ -35,7 +35,7 @@ namespace ldmx {
              * @param subdet The subdetector ID.
              * @param detID The detector ID (defaults to ECal ID).
              */
-            EcalSD(G4String name, G4String theCollectionName, int subdet, DetectorID* detID = new EcalDetectorID);
+            EcalSD(G4String name, G4String theCollectionName, int subdet);
 
             /**
              * Class destructor.
