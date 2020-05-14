@@ -8,10 +8,17 @@
 #include "G4Geantino.hh"
 #include "G4ChargedGeantino.hh"
 
+/*~~~~~~~~~~~~~~*/
+/*   DetDescr   */
+/*~~~~~~~~~~~~~~*/
+#include "DetDescr/EcalDetectorID.h" 
+
 namespace ldmx {
 
-    EcalSD::EcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
-            CalorimeterSD(name, theCollectionName, subdetID, detID) {
+    EcalSD::EcalSD(G4String name, G4String theCollectionName, int subdetID) :
+            CalorimeterSD(name, theCollectionName, subdetID) {
+
+        detID_ = new EcalDetectorID(); 
 
         // These are the v12 parameters
         //  all distances in mm
@@ -66,6 +73,7 @@ namespace ldmx {
     }
 
     EcalSD::~EcalSD() {
+        delete detID_;  
     }
 
     G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
