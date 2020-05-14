@@ -28,7 +28,7 @@ namespace ldmx {
              * @param subdet The subdetector ID.
              * @param detID The detector ID.
              */
-            CalorimeterSD(G4String name, G4String theCollectionName, int subdet, DetectorID* detID);
+            CalorimeterSD(G4String name, G4String theCollectionName, int subdet);
 
             /**
              * Class destructor.
