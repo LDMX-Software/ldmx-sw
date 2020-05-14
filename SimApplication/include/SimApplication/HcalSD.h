@@ -1,42 +1,58 @@
-/**
- * @file HcalSD.h
- * @brief Class defining an HCal sensitive detector
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
+#ifndef SIMAPPLICATION_HCALSD_H
+#define SIMAPPLICATION_HCALSD_H
 
-#ifndef SIMAPPLICATION_HCALSD_H_
-#define SIMAPPLICATION_HCALSD_H_
-
-// LDMX
+/*~~~~~~~~~~~~~~*/
+/*   DetDescr   */
+/*~~~~~~~~~~~~~~*/
 #include "SimApplication/CalorimeterSD.h"
-#include "DetDescr/HcalID.h"
+
+
+// Forward declarations
+class G4Step;
+class G4TouchableHistory; 
 
 namespace ldmx {
 
+    
     /**
-     * @class HcalSD
-     * @brief HCal sensitive detector
-     *
-     * @note
-     * This class basically doesn't do anything right now.
-     *
-     * @todo Add actual custom hit processing for HCal detector.
+     * Class defining a sensitive detector of type HCal. 
      */
     class HcalSD : public CalorimeterSD {
 
         public:
 
-            HcalSD(G4String name, G4String theCollectionName, int subdet, DetectorID* detID = new HcalID);
 
-            virtual ~HcalSD();
+            /**
+             * Class constructor.
+             *
+             * @param[in] name The namme of the sensitive detector.
+             * @param[in] collectionName Name of the colleciton of hits.
+             * #param[in] subDetID The subdetectorID
+             */
+            HcalSD(G4String name, G4String collectionName, int subDetID);
+            
+            /// Destructor 
+            ~HcalSD();
 
+            /**
+             * Create a hit out of the energy deposition deposited during a
+             * step. 
+             *
+             * @param[in] step The current step. 
+             * @param[in] history The readout history.
+             */
             G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
             
         private:
-          double birksc1_;
-          double birksc2_;    
-    };
 
-}
+            // TODO: document!
+            double birksc1_;
+            
+            // TODO: document!
+            double birksc2_;    
+    
+    }; // HcalSD
 
-#endif
+} // ldmx
+
+#endif // SIMAPPLICATION_HCALSD_H
