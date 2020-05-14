@@ -24,6 +24,7 @@ namespace ldmx {
         pePerMip_         = parameters.getParameter< double >("pe_per_mip");
         inputCollection_  = parameters.getParameter< std::string >("input_collection");
         outputCollection_ = parameters.getParameter< std::string >("output_collection");
+        verbose_          = parameters.getParameter< bool >("verbose");
 
         random_ = std::make_unique<TRandom3>(parameters.getParameter< int >("randomSeed"));
         
@@ -48,13 +49,14 @@ namespace ldmx {
 
         std::map<unsigned int, int>   cellPEs;
         std::map<unsigned int, int>   cellMinPEs;
-        std::map<unsigned int, float> Xpos, Ypos, Zpos, Edep, Time;
+        std::map<unsigned int, float> Xpos, Ypos, Zpos, Edep, Time, beamFrac;
         std::unordered_set<unsigned int> noiseHitIDs;
 
         auto numRecHits{0};
 
         // looper over sim hits and aggregate energy depositions for each detID
         const auto simHits{event.getCollection< SimCalorimeterHit >(inputCollection_, "sim")};
+        auto particleMap{event.getMap< int, SimParticle >("SimParticles")};
 
         for (const auto& simHit : simHits) {          
 
@@ -64,11 +66,27 @@ namespace ldmx {
             std::vector<float> position = simHit.getPosition();
 
             if (verbose_) {
-                std::cout << "section: " << detID_->getFieldValue("section") << "  layer: " << detID_->getFieldValue("layer") <<  "  strip: " << detID_->getFieldValue("strip") <<std::endl;
+                std::cout << "  layer: " << detID_->getFieldValue("layer") << std::endl;
             }        
 
+            // check if hits is from beam electron and, if so, add to beamFrac
+            for( int i = 0 ; i < simHit.getNumberOfContribs() ; i++){
+                auto contrib = simHit.getContrib(i);
+                if( verbose_ ){
+                    std::cout << "contrib " << i << " trackID: " << contrib.trackID << " pdgID: " << contrib.pdgCode << " edep: " << contrib.edep << std::endl;
+                    std::cout << "\t particle id: " << particleMap[contrib.trackID].getPdgID() << " particle status: " << particleMap[contrib.trackID].getGenStatus() << std::endl;
+                }
+                if( particleMap[contrib.trackID].getPdgID() == 11 && particleMap[contrib.trackID].getGenStatus() == 1 ){
+                    if( beamFrac.find(detIDraw) == beamFrac.end() )
+                        beamFrac[detIDraw]=contrib.edep;
+                    else
+                        beamFrac[detIDraw]+=contrib.edep;                          
+                }
+            }
+
             // for now, we take am energy weighted average of the hit in each stip to simulate the hit position. 
-            // will use strip TOF and light yield between strips to estimate position.            
+            // AJW: these should be dropped, they are likely to lead to a problem since we can't measure them anyway
+            // except roughly y and z, which is encoded in the ids.
             if (Edep.find(detIDraw) == Edep.end()) {
 
                 // first hit, initialize
@@ -122,26 +140,22 @@ namespace ldmx {
                 hit.setYpos(Ypos[detIDraw]); 
                 hit.setZpos(Zpos[detIDraw]);
                 hit.setNoise(false);
+                hit.setBeamEfrac(beamFrac[detIDraw]/depEnergy);
 
                 trigScintHits.push_back(hit); 
-
             }
 
             if (verbose_) {
                 detID_->setRawValue(detIDraw);
                 detID_->unpack();
                 int layer = detID_->getFieldValue("layer");
-                int subsection = detID_->getFieldValue("section");
-                int strip = detID_->getFieldValue("strip");
 
                 std::cout << "detID: " << detIDraw << std::endl;
                 std::cout << "Layer: " << layer << std::endl;
-                std::cout << "Subsection: " << subsection << std::endl;
-                std::cout << "Strip: " << strip << std::endl;
                 std::cout << "Edep: " << Edep[detIDraw] << std::endl;
                 std::cout << "numPEs: " << cellPEs[detIDraw] << std::endl;
                 std::cout << "time: " << Time[detIDraw] << std::endl;std::cout << "z: " << Zpos[detIDraw] << std::endl;
-                std::cout << "Layer: " << layer << "\t Strip: " << strip << "\t X: " << Xpos[detIDraw] <<  "\t Y: " << Ypos[detIDraw] <<  "\t Z: " << Zpos[detIDraw] << std::endl;
+                std::cout << "Layer: " << layer << "\t X: " << Xpos[detIDraw] <<  "\t Y: " << Ypos[detIDraw] <<  "\t Z: " << Zpos[detIDraw] << std::endl;
             }        // end verbose            
         }
 
@@ -172,6 +186,7 @@ namespace ldmx {
             hit.setYpos(0.);
             hit.setZpos(0.);
             hit.setNoise(true);
+            hit.setBeamEfrac(0.);
 
             trigScintHits.push_back(hit); 
         }
