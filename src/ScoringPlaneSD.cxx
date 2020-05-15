@@ -1,17 +1,24 @@
-/**
- * @file ScoringPlaneSD.cxx
- * @brief Class defining a basic sensitive detector for scoring planes.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
 
 #include "SimApplication/ScoringPlaneSD.h"
 
+/*----------------*/
+/*   C++ StdLib   */
+/*----------------*/
+#include <iostream>
+
+/*~~~~~~~~~~~~*/   
+/*   Geant4   */
+/*~~~~~~~~~~~~*/   
+#include "G4Geantino.hh"
+#include "G4ChargedGeantino.hh"
+#include "G4SDManager.hh"
+#include "G4Step.hh"
+#include "G4StepPoint.hh"
+
 namespace ldmx {
 
-    ScoringPlaneSD::ScoringPlaneSD(G4String name, G4String colName, int subDetID, DetectorID* detID) :
-            G4VSensitiveDetector(name),
-            detID_(detID),
-            subDetID_(subDetID) { 
+    ScoringPlaneSD::ScoringPlaneSD(G4String name, G4String colName, int subDetID) :
+            G4VSensitiveDetector(name) { 
 
         // Add the collection name to vector of names.
         this->collectionName.push_back(colName);
@@ -20,7 +27,7 @@ namespace ldmx {
         G4SDManager::GetSDMpointer()->AddNewDetector(this);
 
         // Set the subdet ID as it will always be the same for every hit.
-        detID_->setFieldValue("subdet", subDetID_);
+        detID_->setFieldValue("subdet", subDetID);
     }
 
     ScoringPlaneSD::~ScoringPlaneSD() {
