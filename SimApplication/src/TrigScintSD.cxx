@@ -16,19 +16,14 @@
 
 namespace ldmx { 
 
-    TrigScintSD::TrigScintSD(G4String name, G4String theCollectionName, int subdet) 
-        : CalorimeterSD(name, theCollectionName, subdet) {
+    TrigScintSD::TrigScintSD(G4String name, G4String theCollectionName, int subDetID) 
+        : CalorimeterSD(name, theCollectionName) {
     
-        // Add the collection name to vector of names.
-        collectionName.push_back(theCollectionName);
-
-        // Register this SD with the manager.
-        G4SDManager::GetSDMpointer()->AddNewDetector(this);
-
-        detID_ = new TrigScintID(); 
+        detID_ = new TrigScintID();
 
         // Set the subdet ID as it will always be the same for every hit.
-        detID_->setFieldValue("module", subdet_); 
+        detID_->setFieldValue("module", subDetID); 
+
     }
 
     TrigScintSD::~TrigScintSD() {
@@ -65,8 +60,8 @@ namespace ldmx {
         hit->setTime(track->GetGlobalTime());
 
         // Set the ID on the hit.
-        auto layerNumber{track->GetVolume()->GetCopyNo()};
-        detID_->setFieldValue(1, layerNumber);
+        auto bar{track->GetVolume()->GetCopyNo()};
+        detID_->setFieldValue("bar", bar);
         hit->setID(detID_->pack());
 
         // Set the track ID on the hit.
