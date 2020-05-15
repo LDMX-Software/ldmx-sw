@@ -1,37 +1,30 @@
-/**
- * @file ScoringPlaneSD.h
- * @brief Class defining a basic sensitive detector for scoring planes.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
+#ifndef SIMAPPLICATION_SCORINGPLANESD_H
+#define SIMAPPLICATION_SCORINGPLANESD_H
 
-#ifndef SIMAPPLICATION_SCORINGPLANESD_H_
-#define SIMAPPLICATION_SCORINGPLANESD_H_
-
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <iostream>
-
-//------------//   
-//   Geant4   //
-//------------//   
-#include "G4Geantino.hh"
-#include "G4ChargedGeantino.hh"
+/*~~~~~~~~~~~~*/   
+/*   Geant4   */
+/*~~~~~~~~~~~~*/   
 #include "G4VSensitiveDetector.hh"
-#include "G4SDManager.hh"
-#include "G4Step.hh"
-#include "G4StepPoint.hh"
 
-//----------//
-//   LDMX   //
-//----------//
+/*~~~~~~~~~~~~~~*/
+/*   DetDescr   */
+/*~~~~~~~~~~~~~~*/
 #include "DetDescr/DetectorID.h"
-#include "DetDescr/IDField.h"
-#include "Framework/Event.h"
+#include "DetDescr/DefaultDetectorID.h"
+
+/*~~~~~~~~~~~~~~~~~~~~*/
+/*   SimApplication   */
+/*~~~~~~~~~~~~~~~~~~~~*/
 #include "SimApplication/G4TrackerHit.h"
+
+// Forward declaration
+class G4Step; 
 
 namespace ldmx { 
 
+    /**
+     * Class defining a basic sensitive detector for scoring planes.
+     */
     class ScoringPlaneSD : public G4VSensitiveDetector { 
     
         public: 
@@ -42,9 +35,8 @@ namespace ldmx {
              * @param name The name of the sensitive detector.
              * @param collectionID The name of the hits collection.
              * @param subDetID The subdetector ID.
-             * @param detID The detector ID.
              */
-            ScoringPlaneSD(G4String name, G4String colName, int subDetID, DetectorID* detID);
+            ScoringPlaneSD(G4String name, G4String colName, int subDetID);
 
             /** Destructor */
             ~ScoringPlaneSD(); 
@@ -77,12 +69,10 @@ namespace ldmx {
             G4TrackerHitsCollection* hitsCollection_{nullptr};
             
             /** The detector ID. */
-            DetectorID* detID_{nullptr};
+            DetectorID* detID_{new DefaultDetectorID()};
             
-            /** The subdetector ID. */
-            int subDetID_{0};
-
     }; // ScoringPlaneSD
+
 } // ldmx
 
 #endif // SIMAPPLICATION_SCORINGPLANESD_H_
