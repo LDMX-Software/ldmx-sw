@@ -1,6 +1,6 @@
 /**
  * @file EcalDigiCollection.h
- * @brief Class that represents a digitized hit in a calorimeter cell within the detector
+ * @brief Class that represents a digitized hit in a calorimeter cell within the ECal
  * @author Cameron Bravo, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
  */
@@ -8,8 +8,13 @@
 #ifndef EVENT_ECALDIGICOLLECTION_H_
 #define EVENT_ECALDIGICOLLECTION_H_
 
-// LDMX
-#include "Event/DigiCollection.h"
+// ROOT
+#include "TObject.h" //for ClassDef
+
+// STL
+#include <stdint.h> //32bit words
+#include <vector> //vector lists
+#include <iostream> //Print method
 
 namespace ldmx {
 
@@ -40,29 +45,71 @@ namespace ldmx {
      * @class EcalDigiCollection
      * @brief Represents a collection of the ECal digi hits
      *
-     * @note This class represents the digitized hit information
-     * from the Ecal
+     * @note This class represents the digitized signal information
+     * in the form of a series of samples for each channel of readout.
+     * Each channel is represented by an ID integer and each sample is a 32-bit word.
+     * The number of samples for each digi is configurable, but is required to be
+     * the same for all channels.
+     *
+     * Each digi corresponds to a one channel ID and numSamplesPerDigi_ samples.
      */
-    class EcalDigiCollection : public DigiCollection {
+    class EcalDigiCollection {
 
         public:
 
             /**
              * Class constructor.
              */
-            EcalDigiCollection() {
-            }
+            EcalDigiCollection() { }
 
             /**
              * Class destructor.
              */
-            virtual ~EcalDigiCollection() {
-            }
+            virtual ~EcalDigiCollection() { }
 
+            /**
+             * Clear the data in the object.
+             *
+             * Clears the vectors of channel IDs and samples, but does not change the number of samples per digi setting.
+             */
+            void Clear();
+
+            /**
+             * Print out the object.
+             *
+             * Prints out the lengths of the stored vectors and the number of samples per digi setting.
+             */
+            void Print() const;
+
+            /**
+             * Get number of samples per digi 
+             */
+            unsigned int getNumSamplesPerDigi() const { return numSamplesPerDigi_; }
+
+            /**
+             * Set number of samples for each digi
+             */
+            void setNumSamplesPerDigi( unsigned int n ) { numSamplesPerDigi_ = n; return; }
+
+            /**
+             * Get index of sample of interest
+             */
+            unsigned int getSampleOfInterestIndex() const { return sampleOfInterest_; }
+
+            /**
+             * Set index of sample of interest
+             */
+            void setSampleOfInterestIndex( unsigned int n ) { sampleOfInterest_ = n; return; }
+            
             /**
              * Get samples for the input digi index
              */
             std::vector< EcalDigiSample > getDigi( unsigned int digiIndex ) const;
+
+            /**
+             * Get total number of digis
+             */
+            unsigned int getNumDigis() const { return channelIDs_.size(); }
 
             /**
              * Translate and add samples to collection
@@ -89,10 +136,19 @@ namespace ldmx {
             /** Bit position of second measurement */
             static const int SECONMEAS_POS = 10;
 
-            /**
-             * Get and Translate sample to the four measurements that could be encoded
-             */
-            EcalDigiSample getSample( unsigned int digiIndex , unsigned int sampleIndex ) const;
+        private:
+
+            /** list of channel IDs that we have digis for */
+            std::vector< int > channelIDs_;
+
+            /** list of samples that we have been given */
+            std::vector< int32_t > samples_;
+
+            /** number of samples for each digi */
+            unsigned int numSamplesPerDigi_{1};
+
+            /** index for the sample of interest in the samples list */
+            unsigned int sampleOfInterest_{0};
 
             /**
              * The ROOT class definition.
