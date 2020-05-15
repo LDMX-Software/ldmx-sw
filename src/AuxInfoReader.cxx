@@ -115,16 +115,6 @@ namespace ldmx {
         }
 
         /*
-         * Use the default detector ID or create one from information supplied in the userinfo block, if present.
-         */
-        DetectorID* detID = new DefaultDetectorID();
-        if (idName != "") {
-            detID = DetectorIDStore::getInstance()->getID(idName);
-            if (!detID) {
-                EXCEPTION_RAISE( "MissingInfo" , "The Detector ID " + std::string(idName.data()) + " does not exist. Is it defined before the SensDet in userinfo?" );
-            }
-        }
-        /*
          * Build the Sensitive Detector, and re-assign the detID if applicable
          */
         G4VSensitiveDetector* sd = 0;
