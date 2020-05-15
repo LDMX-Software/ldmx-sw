@@ -1,18 +1,19 @@
-/**
- * @file TrackerSD.h
- * @brief Class defining a basic sensitive detector for trackers
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
+#ifndef SIMAPPLICATION_TRACKERSD_H
+#define SIMAPPLICATION_TRACKERSD_H
 
-#ifndef SIMAPPLICATION_TRACKERSD_H_
-#define SIMAPPLICATION_TRACKERSD_H_
-
-// Geant4
+/*~~~~~~~~~~~~*/
+/*   Geant4   */
+/*~~~~~~~~~~~~*/
 #include "G4VSensitiveDetector.hh"
 
-// LDMX
-#include "Framework/Event.h"
+/*~~~~~~~~~~~~~~*/
+/*   DetDescr   */
+/*~~~~~~~~~~~~~~*/
 #include "DetDescr/TrackerID.h"
+
+/*~~~~~~~~~~~~~~~~~~~~*/
+/*   SimApplication   */
+/*~~~~~~~~~~~~~~~~~~~~*/
 #include "SimApplication/G4TrackerHit.h"
 
 namespace ldmx {
@@ -30,32 +31,22 @@ namespace ldmx {
 
             /**
              * Class constructor.
-             * @param name The name of the sensitive detector.
-             * @param theCollectionName The name of the hits collection.
-             * @param subdetID The subdetector ID.
-             * @param detID The detector ID.
+             * @param[in] name The name of the sensitive detector.
+             * @param[in] collectionName The name of the hits collection.
+             * @param[in] subDetID The subdetector ID.
              */
-            TrackerSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID);
+            TrackerSD(G4String name, G4String collectionName, int subDetID);
 
-            /**
-             * Class destructor.
-             */
-            virtual ~TrackerSD();
-
-            /**
-             * Set the detector ID.
-             * @param detID The detector ID.
-             */
-            void setDetectorID(DetectorID* detID) {
-                this->detID_ = detID;
-            }
+            /// Destructor
+            ~TrackerSD();
 
             /**
              * Process a step by creating a hit.
-             * @param aStep The step information
-             * @param ROhist The readout history.
+             *
+             * @param step The step information
+             * @param history The readout history.
              */
-            G4bool ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist);
+            G4bool ProcessHits(G4Step* step, G4TouchableHistory* history);
 
             /**
              * Initialize the sensitive detector.
@@ -71,22 +62,17 @@ namespace ldmx {
 
         private:
 
-            /**
-             * The output hits collection of G4TrackerHits.
-             */
+            /// The output hits collection of G4TrackerHits.
             G4TrackerHitsCollection* hitsCollection_;
 
-            /**
-             * The subdetector ID.
-             */
-            int subdetID_;
+            /// The subdetector ID
+            int subDetID_;
 
-            /**
-             * The detector ID.
-             */
-            DetectorID* detID_{new TrackerID};
-    };
+            /// The detector ID
+            DetectorID* detID_{new TrackerID()};
+    
+    }; // TrackerID
 
-}
+} // ldmx
 
-#endif
+#endif // SIMAPPLICATION_TRACKERSD_H

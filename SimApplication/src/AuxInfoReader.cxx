@@ -130,7 +130,7 @@ namespace ldmx {
         G4VSensitiveDetector* sd = 0;
 
         if (sdType == "TrackerSD") {
-            sd = new TrackerSD(theSensDetName, hcName, subdetID, detID);
+            sd = new TrackerSD(theSensDetName, hcName, subdetID);
         } else if (sdType == "EcalSD") {
             sd = new EcalSD(theSensDetName, hcName, subdetID);
         } else if (sdType == "HcalSD") {
