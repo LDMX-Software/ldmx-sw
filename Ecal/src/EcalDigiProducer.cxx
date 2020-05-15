@@ -44,6 +44,7 @@ namespace ldmx {
         // Calculate the readout threhsold
         readoutThreshold_ = ps.getParameter<double>("readoutThreshold")*noiseRMS_;
 
+        //TODO are these the correct interpretation of the noise parameters?
         noiseGenerator_->setNoise(noiseRMS_); 
         noiseGenerator_->setPedestal(0); 
         noiseGenerator_->setNoiseThreshold(readoutThreshold_); 
