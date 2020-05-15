@@ -114,76 +114,153 @@ class TestAnalyzer : public Analyzer {
 };//TestAnalyzer
 
 /**
- * Name for the test histogram file to be shared everywhere in
- * the ldmx-test executable
+ * @class isGoodHistogramFile
+ *
+ * Runs a variety of checks to make sure the
+ * histogram in the input filename is what we expect it to be.
+ *
+ * Does NOT check that the entries in the histogram are correct,
+ * just makes sure that there is the correct number.
+ *
+ * Does check:
+ * - The input file name is readable
+ * - The input file has the directory "TestAnalyzer"
+ * - The directory has the histogram "test_hist_"
+ * - The histogram ahs the correct number of entries
  */
-const char * TEST_HISTOGRAM_FILENAME = "test_histo.root";
+class isGoodHistogramFile : public Catch::MatcherBase<std::string> {
+    private:
+        /// Correct number of entries
+        int correctGetEntries_;
+
+    public:
+
+        /**
+         * Constructor
+         *
+         * Sets the correct event indices
+         */
+        isGoodHistogramFile( int const& n ) : correctGetEntries_(n) { }
+
+        /**
+         * Performs the test for this matcher
+         *
+         * Opens up the histogram file and makes sure of a few things.
+         * - The histogram 'test_hist_' is in the 'TestAnalyzer' directory
+         * - The histogram has the correct number of entries
+         */
+        bool match( const std::string& filename ) const override {
+            
+            //Open file
+            TFile *f = TFile::Open( filename.c_str() );
+            if (!f) return false;
+            TDirectory *d = (TDirectory*)f->Get( "TestAnalyzer" );
+            if (!d) return false;
+            TH1F* h = (TH1F*)d->Get("test_hist_");
+            if (!h) return false;
+
+            return ( h->GetEntries() == correctGetEntries_ );
+        }
+
+        /**
+         * Describe this matcher in a helpful, human-readable way.
+         *
+         * This string is written as if stating a fact about
+         * the object it is matching.
+         */
+        virtual std::string describe() const override {
+            std::ostringstream ss;
+            ss << "has the histogram 'TestAnalyzer/test_hist_' with the number of entries " << correctGetEntries_;
+            return ss.str();
+        }
+}; //isGoodHistogramFile
 
 /**
- * @func closeHistogramFile
- *
- * @param[in] correct_num_entries in the histogram
- *
- * Runs a variety of CHECKs to make sure the
- * histogram is what we expect it to be.
- */
-void closeHistogramFile( const int &correct_num_entries ) {
-    
-    TFile file( TEST_HISTOGRAM_FILENAME );
-    TDirectory *d = (TDirectory*)file.Get( "TestAnalyzer" );
-    REQUIRE( d != nullptr ); //unable to get directory
-    TH1F* h = (TH1F*)d->Get("test_hist_");
-    REQUIRE( h != nullptr ); //unable to get the histogram
-    
-    CHECK( h->GetEntries() == correct_num_entries );
-
-    file.Close();
-
-    CHECK( remove( TEST_HISTOGRAM_FILENAME ) == 0 ); //delete file
-
-    return;
-}
-
-/**
- * @func checkEventFile
+ * @class isGoodEventFile
  *
  * Looks through output Events ttree and checks that the TestCollection,
  * TestObject, and EventHeader follow the structure that the producer
  * made.
  *
- * @param[in] filename name of event file to check
- * @param[in] passname name of pass to check
- * @param[in] correct_num_entries that the event file should have
  */
-void checkEventFile( const std::string &filename , const std::string &passname, const int &correct_num_entries ) {
+class isGoodEventFile : public Catch::MatcherBase<std::string> {
+    private:
+        /// pass name to check the collection and/or object for
+        std::string pass_;
 
-    TFile f( filename.c_str() );
+        /// correct number of entries in the event ttree
+        int entries_;
 
-    TTreeReader r( "LDMX_Events" , &f );
+        /// should we check for the collection?
+        bool checkCollection_;
 
-    //TODO check if tree loaded
-    //CHECK( r.GetEntryStatus() != TTreeReader::EEntryStatus::kEntryNoTree );
+        /// should we check for the object?
+        bool checkObject_;
 
-    TTreeReaderValue<std::vector<CalorimeterHit>> collection( r , ("TestCollection_"+passname).c_str() );
-    TTreeReaderValue<HcalVetoResult> object( r , ("TestObject_"+passname).c_str() );
-    TTreeReaderValue<EventHeader> header( r , "EventHeader" );
+    public:
 
-    //TODO check if tree actually has these branches
+        /**
+         * Constructor
+         *
+         * Sets the correct number of entries and the other checking parameters
+         */
+        isGoodEventFile( const std::string& pass , const int& entries , bool checkColl = true , bool checkObj = true )
+            : pass_(pass), entries_(entries), checkCollection_(checkColl), checkObject_(checkObj) { }
 
-    CHECK( r.GetEntries(true) == correct_num_entries );
+        /**
+         * Actually do the matching
+         *
+         * @param[in] filename name of event file to check
+         */
+        bool match(const std::string& filename ) const override {
 
-    while( r.Next() ) {
-        CHECK( collection->size() == header->getEventNumber() );
-        CHECK( object->getMaxPEHit().getID() == header->getEventNumber() );
-        for ( unsigned int i = 0; i < collection->size(); i++ ) {
-            CHECK( collection->at(i).getID() == header->getEventNumber()*10+i );
+            TFile *f = TFile::Open( filename.c_str() );
+            if (!f) return false;
+        
+            TTreeReader r( "LDMX_Events" , f );
+        
+            //TODO check if tree loaded
+            
+            if ( r.GetEntries(true) != entries_ ) { f->Close(); return false; }
+
+            //Event tree should _always_ have the EventHeader
+            TTreeReaderValue<EventHeader> header( r , "EventHeader" );
+        
+            if ( checkCollection_ ) {
+                TTreeReaderValue<std::vector<CalorimeterHit>> collection( r , ("TestCollection_"+pass_).c_str() );
+                while ( r.Next() ) {
+                    if ( collection->size() != header->getEventNumber() ) { f->Close(); return false; }
+                    for ( unsigned int i = 0; i < collection->size(); i++ )
+                        if ( collection->at(i).getID() != header->getEventNumber()*10+i ) { f->Close(); return false; }
+                }
+                //restart in case checking object as well
+                r.Restart();
+            }
+
+            if ( checkObject_ ) {
+                TTreeReaderValue<HcalVetoResult> object( r , ("TestObject_"+pass_).c_str() );
+                while( r.Next() ) {
+                    if ( object->getMaxPEHit().getID() != header->getEventNumber() ) { f->Close(); return false; }
+                }
+            }
+             
+            f->Close();
+            
+            return true;
         }
-    }
-     
-    f.Close();
 
-    return;
-}
+        /**
+         * Human-readable true-fact statement for any match that is true.
+         */
+        virtual std::string describe() const override {
+            std::ostringstream ss;
+            ss << "can be opened and has the correct number of entries in the event tree.";
+            if ( checkCollection_ ) ss << " TestCollection_" << pass_ << " was verified."; 
+            if ( checkObject_     ) ss << " TestObject_"     << pass_ << " was verified."; 
+            return ss.str();
+        }
+
+}; //isGoodEventFile
 
 /**
  * Test for C++ Framework processing.
@@ -223,7 +300,8 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
     SECTION( "Production Mode" ) {
         //no input files, only output files
 
-        p.setOutputFileName( "test_out.root" );
+        const char *event_file_path = "test_productionmode_events.root";
+        p.setOutputFileName( event_file_path );
         p.setEventLimit( 3 );
         p.addToSequence( proHdl );
 
@@ -232,14 +310,16 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
         }
         
         SECTION( "with Analyses" ) {
-            p.setHistogramFileName( TEST_HISTOGRAM_FILENAME );
+            const char *hist_file_path = "test_productionmode_withanalyses_hists.root";
+            p.setHistogramFileName( hist_file_path );
             p.addToSequence( anaHdl );
             CHECK_NOTHROW( p.run() );
-            closeHistogramFile( 1+2+3 );
+            CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+3 ) );
+            CHECK( remove( hist_file_path ) == 0 );
         }
 
-        checkEventFile( "test_out.root" , "test" , 3 );
-        CHECK( remove( "test_out.root" ) == 0 );
+        CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 ) );
+        CHECK( remove( event_file_path ) == 0 );
     }//Production Mode
 
     SECTION( "Need Input Files" ) {
@@ -249,44 +329,48 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
         auto inputProHdl = &inputPro;
         makeInputs.addToSequence( inputProHdl );
     
-        makeInputs.setOutputFileName( "test_input0.root" );
+        const char * input_file_2_events = "test_needinputfiles_2_events.root";
+        makeInputs.setOutputFileName( input_file_2_events );
         makeInputs.setEventLimit( 2 );
-        CHECK_NOTHROW( makeInputs.run() );
+        REQUIRE_NOTHROW( makeInputs.run() );
+        REQUIRE_THAT( input_file_2_events , isGoodEventFile( "makeInputs" , 2 ) );
     
-        makeInputs.setOutputFileName( "test_input1.root" );
+        const char * input_file_3_events = "test_needinputfiles_3_events.root";
+        makeInputs.setOutputFileName( input_file_3_events );
         makeInputs.setEventLimit( 3 );
-        CHECK_NOTHROW( makeInputs.run() );
+        REQUIRE_NOTHROW( makeInputs.run() );
+        REQUIRE_THAT( input_file_3_events , isGoodEventFile( "makeInputs" , 3 ) );
        
-        makeInputs.setOutputFileName( "test_input2.root" );
+        const char * input_file_4_events = "test_needinputfiles_4_events.root";
+        makeInputs.setOutputFileName( input_file_4_events );
         makeInputs.setEventLimit( 4 );
-        CHECK_NOTHROW( makeInputs.run() );
+        REQUIRE_NOTHROW( makeInputs.run() );
+        REQUIRE_THAT( input_file_4_events , isGoodEventFile( "makeInputs" , 4 ) );
     
-        //check that input files were created fine
-        checkEventFile( "test_input0.root" , "makeInputs" , 2 );
-        checkEventFile( "test_input1.root" , "makeInputs" , 3 );
-        checkEventFile( "test_input2.root" , "makeInputs" , 4 );
-
         SECTION( "Analysis Mode" ) {
             //no output files, only histogram output
 
             p.addToSequence( anaHdl );
-            p.setHistogramFileName( TEST_HISTOGRAM_FILENAME );
+
+            const char *hist_file_path = "test_analysismode_hists.root";
+            p.setHistogramFileName( hist_file_path );
 
             SECTION( "one input file" ) {
-                p.addFileToProcess( "test_input0.root" );
+                p.addFileToProcess( input_file_2_events );
                 p.run();
 
-                closeHistogramFile( 1+2 );
+                CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2 ) );
+                CHECK( remove( hist_file_path ) == 0 );
             }
-
             
             SECTION( "multiple input files" ) {
-                p.addFileToProcess( "test_input0.root" );
-                p.addFileToProcess( "test_input1.root" );
-                p.addFileToProcess( "test_input2.root" );
+                p.addFileToProcess( input_file_2_events );
+                p.addFileToProcess( input_file_3_events );
+                p.addFileToProcess( input_file_4_events );
                 p.run();
 
-                closeHistogramFile( 1+2+1+2+3+1+2+3+4 );
+                CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
+                CHECK( remove( hist_file_path ) == 0 );
             }
 
         }//Analysis Mode
@@ -294,46 +378,55 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
         SECTION( "Merge Mode" ) {
             //many input files to one output file
             
-            p.addFileToProcess( "test_input0.root" );
-            p.addFileToProcess( "test_input1.root" );
-            p.addFileToProcess( "test_input2.root" );
+            p.addFileToProcess( input_file_2_events );
+            p.addFileToProcess( input_file_3_events );
+            p.addFileToProcess( input_file_4_events );
 
-            p.setOutputFileName( "test_merge.root" );
+            const char *event_file_path = "test_mergemode_events.root";
+            p.setOutputFileName( event_file_path );
 
             SECTION( "no processors" ) {
                 p.run();
             }
     
             SECTION( "with analyzers" ) {
+
                 p.addToSequence( anaHdl );
-                p.setHistogramFileName( TEST_HISTOGRAM_FILENAME );
+
+                const char *hist_file_path = "test_mergemode_withanalyzers_hists.root";
+                p.setHistogramFileName( hist_file_path );
     
                 p.run();
 
-                closeHistogramFile( 1+2 + 1+2+3 + 1+2+3+4 );
+                CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
+                CHECK( remove( hist_file_path ) == 0 );
             }
     
             SECTION( "with producers" ) {
                 p.addToSequence( proHdl );
                 p.run();
 
-                checkEventFile( "test_merge.root" , "test" , 2+3+4 );
+                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 2+3+4 ) );
             }
 
             //checks that input collections were copied over correctly
-            checkEventFile( "test_merge.root" , "makeInputs" , 2+3+4 );
-            //CHECK( remove( "test_merge.root" ) == 0 );
+            CHECK_THAT( event_file_path , isGoodEventFile( "makeInputs" , 2+3+4 ) );
+            CHECK( remove( event_file_path ) == 0 );
+
         } //Merge Mode
 
         SECTION( "N-to-N Mode" ) {
             //many input files to many output files
-            p.addFileToProcess( "test_input0.root" );
-            p.addFileToProcess( "test_input1.root" );
-            p.addFileToProcess( "test_input2.root" );
+            p.addFileToProcess( input_file_2_events );
+            p.addFileToProcess( input_file_3_events );
+            p.addFileToProcess( input_file_4_events );
 
-            p.addOutputFileName( "test_output0.root" );
-            p.addOutputFileName( "test_output1.root" );
-            p.addOutputFileName( "test_output2.root" );
+            const char * output_2_events = "test_NtoNmode_output_2_events.root";
+            const char * output_3_events = "test_NtoNmode_output_3_events.root";
+            const char * output_4_events = "test_NtoNmode_output_4_events.root";
+            p.addOutputFileName( output_2_events );
+            p.addOutputFileName( output_3_events );
+            p.addOutputFileName( output_4_events );
 
             SECTION( "no processors" ) {
                 p.run();
@@ -341,11 +434,14 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
             SECTION( "with analyzer" ) {
                 p.addToSequence( anaHdl );
-                p.setHistogramFileName( TEST_HISTOGRAM_FILENAME );
+
+                const char *hist_file_path = "test_NtoNmode_withanalyzer_hists.root";
+                p.setHistogramFileName( hist_file_path );
     
                 p.run();
 
-                closeHistogramFile( 1+2+1+2+3+1+2+3+4 );
+                CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
+                CHECK( remove( hist_file_path ) == 0 );
             }
     
             SECTION( "with producers" ) {
@@ -353,29 +449,29 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 p.run();
 
                 //checks that produced objects were written correctly
-                checkEventFile( "test_output0.root" , "test" , 2 );
-                checkEventFile( "test_output1.root" , "test" , 3 );
-                checkEventFile( "test_output2.root" , "test" , 4 );
+                CHECK_THAT( output_2_events , isGoodEventFile( "test" , 2 ) );
+                CHECK_THAT( output_3_events , isGoodEventFile( "test" , 3 ) );
+                CHECK_THAT( output_4_events , isGoodEventFile( "test" , 4 ) );
             }
 
             //checks that input pass was copied over correctly
-            checkEventFile( "test_output0.root" , "makeInputs" , 2 );
-            //CHECK( remove( "test_output0.root" ) == 0 );
+            CHECK_THAT( output_2_events , isGoodEventFile( "makeInputs" , 2 ) );
+            CHECK( remove( output_2_events ) == 0 );
 
-            checkEventFile( "test_output1.root" , "makeInputs" , 3 );
-            //CHECK( remove( "test_output1.root" ) == 0 );
+            CHECK_THAT( output_3_events , isGoodEventFile( "makeInputs" , 3 ) );
+            CHECK( remove( output_3_events ) == 0 );
 
-            checkEventFile( "test_output2.root" , "makeInputs" , 4 );
-            //CHECK( remove( "test_output2.root" ) == 0 );
+            CHECK_THAT( output_4_events , isGoodEventFile( "makeInputs" , 4 ) );
+            CHECK( remove( output_4_events ) == 0 );
 
         } // N-to-N Mode
 
         //cleanup
         //  delete any files that this test produced
         //  test_out.root, test_input{0,1,2}.root, test_merge.root, test_histo.root
-        CHECK( remove( "test_input0.root" ) == 0 );
-        CHECK( remove( "test_input1.root" ) == 0 );
-        CHECK( remove( "test_input2.root" ) == 0 );
+        CHECK( remove( input_file_2_events ) == 0 );
+        CHECK( remove( input_file_3_events ) == 0 );
+        CHECK( remove( input_file_4_events ) == 0 );
 
     } //need input files
 
