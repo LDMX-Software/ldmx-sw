@@ -15,10 +15,11 @@
 
 namespace ldmx {
 
-    EcalSD::EcalSD(G4String name, G4String theCollectionName, int subdetID) :
-            CalorimeterSD(name, theCollectionName, subdetID) {
+    EcalSD::EcalSD(G4String name, G4String theCollectionName, int subDetID) :
+            CalorimeterSD(name, theCollectionName) {
 
         detID_ = new EcalDetectorID(); 
+        detID_->setFieldValue("subdet", subDetID);
 
         // These are the v12 parameters
         //  all distances in mm

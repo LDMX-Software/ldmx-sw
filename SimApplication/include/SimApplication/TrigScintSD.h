@@ -25,7 +25,6 @@ namespace ldmx {
              * @param[in] name The name of the sensitive detector.
              * @param[in] theCollectionName The name of the hits collection.
              * @param[in] subdet The subdetector ID.
-             * @param[in] detID The detector ID.
              */
             TrigScintSD(G4String name, G4String collectionName, int subDetID); 
 
