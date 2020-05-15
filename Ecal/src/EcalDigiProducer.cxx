@@ -18,12 +18,21 @@ namespace ldmx {
 
     EcalDigiProducer::EcalDigiProducer(const std::string& name, Process& process) :
         Producer(name, process) {
+
+        //noise generator by default uses a Gausian model for noise
+        //  i.e. It assumes the noise is distributed around a mean (setPedestal)
+        //  with a certain RMS (setNoise) and then calculates
+        //  how many hits should be generated for a given number of empty
+        //  channels and a minimum readout value (setNoiseThreshold)
         noiseGenerator_ = std::make_unique<NoiseGenerator>();
+
+        //The noise injector is used to place smearing on top
+        //of energy depositions and hit times before doing
+        //the digitization procedure.
         noiseInjector_ = std::make_unique<TRandom3>(time(nullptr));
     }
 
-    EcalDigiProducer::~EcalDigiProducer() {
-    }
+    EcalDigiProducer::~EcalDigiProducer() { }
 
     void EcalDigiProducer::configure(Parameters& ps) {
 
@@ -42,12 +51,12 @@ namespace ldmx {
         noiseRMS_ = noiseRMS_*(MIP_SI_RESPONSE/ELECTRONS_PER_MIP); 
 
         // Calculate the readout threhsold
+        //  the input readoutThreshold is assumed to be multiples of the noiseRMS
         readoutThreshold_ = ps.getParameter<double>("readoutThreshold")*noiseRMS_;
 
-        //TODO are these the correct interpretation of the noise parameters?
-        noiseGenerator_->setNoise(noiseRMS_); 
-        noiseGenerator_->setPedestal(0); 
-        noiseGenerator_->setNoiseThreshold(readoutThreshold_); 
+        noiseGenerator_->setNoise(noiseRMS_); //rms noise in MeV
+        noiseGenerator_->setPedestal(0); //mean noise amplitude (if using Gaussian Model for the noise) in MeV
+        noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in MeV
 
         noiseInjector_->SetSeed(0);
 
@@ -184,18 +193,21 @@ namespace ldmx {
             //TODO choose the width of the timing jitter more realistically --> python parameter?
             timeInWindow   += noiseInjector_->Gaus( 0.0 , EcalDigiProducer::CLOCK_CYCLE / 100. ); 
 
-            //skip the hit if the total energy after noise is less than readoutThreshold_
-            if ( gain_*energyInWindow < readoutThreshold_  ) return false; 
-
             //set time in the window to zero if noise pushed it below zero
             //TODO better (more physical) method for handling this case?
             if ( timeInWindow   < 0. ) timeInWindow = 0.;
 
+            //setup up pulse by changing the amplitude and timing parameters
             pulseFunc_.SetParameter( 0 , gain_*energyInWindow ); //set amplitude to gain * energy
             pulseFunc_.SetParameter( 4 , timeInWindow ); //set time of peak to simulated hit time
 
+            //skip the hit if the peak of the pulse after noise is less than readoutThreshold_
+            //TODO do ADC counts in this case instead of skipping it
+            if ( pulseFunc_.Eval( timeInWindow ) < readoutThreshold_  ) return false; 
+
             //measure time of arrival (TOA) and time under threshold (TUT) from pulse
-            //  should be earliest possible measure for crossing threshold line
+            //  TOA: earliest possible measure for crossing threshold line
+            //  TUT: latest possible measure for crossing threshold line
             
             double toa(0.);
             // check if first half is just always above readout
