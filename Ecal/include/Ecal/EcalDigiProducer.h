@@ -80,6 +80,27 @@ namespace ldmx {
                 return noiseIntercept + noiseSlope*capacitance;
             } 
 
+            /**
+             * Construct the DIGIs from energy and time simulated data.
+             *
+             * Right now, it adds up the energies and finds an
+             * energy-weighted average of the times. These digis are
+             * then inserted into digiToAdd.
+             *
+             * energies and times must be the same size.
+             * NO CHECKING IS DONE FOR THIS.
+             *
+             * The ID of the digi samples is not set in this function.
+             * It is only meant to make the energy+time --> digis translation consistent and isolated.
+             *
+             * @param energies simulated energy depositions
+             * @param times simulated times of energy depositions
+             * @param digiToAdd vector of EcalDigiSamples that will be filled with constructed digis
+             * @return true if digiToAdd was actually filled with something
+             */
+            bool constructDigis(const std::vector<double> &energies, const std::vector<double> &times, std::vector<EcalDigiSample> &digiToAdd);
+
+
             //Universal Constants
             //  Won't be changed by python configuration
             
@@ -107,25 +128,28 @@ namespace ldmx {
             //Python Configuration Parameters
             
             /** The gain in ADC units per MeV. */
-            double gain_{2000.};
+            double gain_;
 
             /** The pedestal in ADC units */
-            double pedestal_{1100.};
+            double pedestal_;
 
             /** Set the noise (in electrons) when the capacitance is 0. */
-            double noiseIntercept_{900.};
+            double noiseIntercept_;
 
             /** Set the capacitative noise slope (electrons/pF). */
-            double noiseSlope_{22.}; 
+            double noiseSlope_; 
 
             /** Capacitance per cell pad. */
-            double padCapacitance_{27.56}; // pF 
+            double padCapacitance_; // pF 
 
             /** Depth of ADC buffer. */
-            int nADCs_{10}; 
+            int nADCs_; 
+
+            /** Index for the Sample Of Interest in the list of digi samples */
+            int iSOI_;
 
             /** Should we make and fill configuration histograms? */
-            bool makeConfigHists_{false};
+            bool makeConfigHists_;
 
             //Member Variables that are used for each event
 

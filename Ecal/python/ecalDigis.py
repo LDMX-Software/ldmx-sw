@@ -17,9 +17,10 @@ ecalDigis.parameters[ "noiseSlope" ] = 25.;
 # capacitance of individual cells
 ecalDigis.parameters[ "padCapacitance" ] = 0.1;
 
-# number of ADC samples to have per digi
-#   MULTIPLE SAMPLES PER DIGI NOT IMPLEMENTED YET
-ecalDigis.parameters[ "nADCs" ] = 10;
+# MULTIPLE SAMPLES PER DIGI NOT IMPLEMENTED YET
+# Just putting all info into SOI
+ecalDigis.parameters[ "nADCs" ] = 10; # number of ADC samples to have per digi
+ecalDigis.parameters[ "iSOI"  ] = 0; #index for the sample of interest
 
 # threshold in multiples of noiseRMS as minimum to be readout
 ecalDigis.parameters[ "readoutThreshold" ] = 4.;

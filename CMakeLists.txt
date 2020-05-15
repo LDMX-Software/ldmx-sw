@@ -96,7 +96,7 @@ foreach(module ${MODULES})
 endforeach()
 
 # build and install test executable ldmx-test
-option(BUILD_TESTS "Build and link ldmx-test executable." ON)
+option(BUILD_TESTS "Build and link ldmx-test executable." OFF)
 if(BUILD_TESTS)
   include(TestExecutable)
 endif()

@@ -6,7 +6,6 @@
 
 #include "Event/CalorimeterHit.h"
 #include "Event/ClusterAlgoResult.h"
-#include "Event/DigiCollection.h" 
 #include "Event/EcalCluster.h"
 #include "Event/EcalHit.h"
 #include "Event/EcalDigiCollection.h"
@@ -51,7 +50,6 @@ namespace ldmx {
      */
     typedef std::variant< 
         ClusterAlgoResult,
-        DigiCollection,
         EcalDigiCollection,
         EcalVetoResult,
         EventHeader,
