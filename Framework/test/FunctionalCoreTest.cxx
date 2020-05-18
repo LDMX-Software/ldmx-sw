@@ -75,6 +75,8 @@ class TestProducer : public Producer {
 
             events_ = i_event;
 
+            if ( res.passesVeto() ) setStorageHint( StorageControlHit::hint_mustKeep );
+
             return;
         }
 
@@ -160,7 +162,7 @@ class TestAnalyzer : public Analyzer {
  * - The input file name is readable
  * - The input file has the directory "TestAnalyzer"
  * - The directory has the histogram "test_hist_"
- * - The histogram ahs the correct number of entries
+ * - The histogram has the correct number of entries
  */
 class isGoodHistogramFile : public Catch::MatcherBase<std::string> {
     private:
@@ -216,8 +218,8 @@ class isGoodHistogramFile : public Catch::MatcherBase<std::string> {
  * - Event File exists and is readable
  * - Has the LDMX_Events TTree
  * - Events tree has correct number of entries
- * - if checkCollection: looks through collections on the event tree to make sure they have the same form as set by TestProducer
- * - if checkObject: looks through objects on event tree to make sure they have the same form as set by TestProducer
+ * - if existCollection: looks through collections on the event tree to make sure they have the same form as set by TestProducer
+ * - if existObject: looks through objects on event tree to make sure they have the same form as set by TestProducer
  * - Has the LDMX_Run TTree
  * - Run tree has correct number of entries
  * - RunHeaders in RunTree have matching RunNumbers and EventCounts
@@ -270,9 +272,9 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
             //Event tree should _always_ have the EventHeader
             TTreeReaderValue<EventHeader> header( events , "EventHeader" );
         
-            TTreeReaderValue<std::vector<CalorimeterHit>> collection( events , ("TestCollection_"+pass_).c_str() );
             if ( existCollection_ ) {
                 //make sure collection matches pattern
+                TTreeReaderValue<std::vector<CalorimeterHit>> collection( events , ("TestCollection_"+pass_).c_str() );
                 while ( events.Next() ) {
                     if ( collection->size() != header->getEventNumber() ) { f->Close(); return false; }
                     for ( unsigned int i = 0; i < collection->size(); i++ )
@@ -282,20 +284,20 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
                 events.Restart();
             } else {
                 //check to make sure collection is NOT there
-                //TODO not sure if this is valid?
-                if ( collection.GetSetupStatus() >= 0 ) { f->Close(); return false; }
+                auto t{(TTree*)f->Get("LDMX_Events")};
+                if (t and t->GetBranch( ("TestCollection_"+pass_).c_str() ) ) { f->Close(); return false; }
             }
 
-            TTreeReaderValue<HcalVetoResult> object( events , ("TestObject_"+pass_).c_str() );
             if ( existObject_ ) {
                 //make sure object matches pattern
+                TTreeReaderValue<HcalVetoResult> object( events , ("TestObject_"+pass_).c_str() );
                 while( events.Next() ) {
                     if ( object->getMaxPEHit().getID() != header->getEventNumber() ) { f->Close(); return false; }
                 }
             } else {
                 //check to make sure object is NOT there
-                //TODO not sure if this is valid?
-                if ( object.GetSetupStatus() >= 0 ) { f->Close(); return false; }
+                auto t{(TTree*)f->Get("LDMX_Events")};
+                if (t and t->GetBranch( ("TestObject_"+pass_).c_str() ) ) { f->Close(); return false; }
             }
 
             TTreeReader runs( "LDMX_Run" , f );
@@ -342,7 +344,7 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
  * maybe we can make the removal optional?
  */
 bool removeFile(const char * filepath) {
-    return remove( filepath ) == 0;
+    return true; //remove( filepath ) == 0;
 }
 
 /**
@@ -351,6 +353,9 @@ bool removeFile(const char * filepath) {
  * This test is aimed at checking that core functionalities are operational.
  * Python configuration, Simulation, and other add-on functionalities
  * are tested separately.
+ *
+ * This test does not check complicated combinations for drop/keep rules
+ * or skimming rules. TODO write a more full test for these parts of the framework.
  *
  * Assumptions:
  *  - Any vector of objects behaves like a vector of CalorimeterHits when viewed from core
@@ -369,7 +374,7 @@ bool removeFile(const char * filepath) {
  *  - writing histogram to a file
  *  - writing to an output file
  *  - writing and reading run headers
- *  - TODO drop/keep rules for event bus passengers
+ *  - drop/keep rules for event bus passengers
  *  - TODO skimming events (only keeping events meeting a certain criteria)
  */
 TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
@@ -396,19 +401,40 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
         p.setRunNumber( 3 );
 
         SECTION( "only producers" ) {
-            CHECK_NOTHROW( p.run() );
+            
+            SECTION( "no drop/keep rules" ) {
+                p.run();
+                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 , 1 ) );
+            }
+            
+            SECTION( "drop TestCollection" ) {
+                p.addDropKeepRule( "drop .*Collection.*" );
+                p.run();
+                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 , 1 , false ) );
+            }
+
         }
         
         SECTION( "with Analyses" ) {
             const char *hist_file_path = "test_productionmode_withanalyses_hists.root";
             p.setHistogramFileName( hist_file_path );
             p.addToSequence( anaHdl );
-            CHECK_NOTHROW( p.run() );
+
+            SECTION( "no drop/keep rules" ) {
+                p.run();
+                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 , 1 ) );
+            }
+
+            SECTION( "drop TestCollection" ) {
+                p.addDropKeepRule( "drop .*Collection.*" );
+                p.run();
+                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 , 1 , false ) );
+            }
+
             CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+3 ) );
             CHECK( removeFile( hist_file_path ) );
         }
 
-        CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 , 1 ) );
         CHECK( removeFile( event_file_path ) );
     }//Production Mode
 
@@ -451,6 +477,7 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
             SECTION( "one input file" ) {
                 p.addFileToProcess( input_file_2_events );
+
                 p.run();
 
                 CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2 ) );
@@ -480,7 +507,17 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
             p.setOutputFileName( event_file_path );
 
             SECTION( "no processors" ) {
-                p.run();
+
+                SECTION( "no drop/keep rules" ) {
+                    p.run();
+                    CHECK_THAT( event_file_path , isGoodEventFile( "makeInputs" , 2+3+4 , 3 ) );
+                }
+
+                SECTION( "drop TestCollection" ) {
+                    p.addDropKeepRule( "drop .*Collection.*" );
+                    p.run();
+                    CHECK_THAT( event_file_path , isGoodEventFile( "makeInputs" , 2+3+4 , 3 , false ) );
+                }
             }
     
             SECTION( "with analyzers" ) {
@@ -490,7 +527,16 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 const char *hist_file_path = "test_mergemode_withanalyzers_hists.root";
                 p.setHistogramFileName( hist_file_path );
     
-                p.run();
+                SECTION( "no drop/keep rules" ) {
+                    p.run();
+                    CHECK_THAT( event_file_path , isGoodEventFile( "makeInputs" , 2+3+4 , 3 ) );
+                }
+
+                SECTION( "drop TestCollection" ) {
+                    p.addDropKeepRule( "drop .*Collection.*" );
+                    p.run();
+                    CHECK_THAT( event_file_path , isGoodEventFile( "makeInputs" , 2+3+4 , 3 , false ) );
+                }
 
                 CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
                 CHECK( removeFile( hist_file_path ) );
@@ -500,17 +546,9 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 p.addToSequence( proHdl );
                 p.run();
 
-                //TODO: patch copying of RunHeaders in Merge Mode
-                //  currently only one run header is being copied over on this branch
-                //  the third argument to isGoodEventFile should be 3
                 CHECK_THAT( event_file_path , isGoodEventFile( "test" , 2+3+4 , 3 ) );
             }
 
-            //checks that input collections were copied over correctly
-            //TODO: patch copying of RunHeaders in Merge Mode
-            //  currently only one run header is being copied over on this branch
-            //  the third argument to isGoodEventFile should be 3
-            CHECK_THAT( event_file_path , isGoodEventFile( "makeInputs" , 2+3+4 , 3 ) );
             CHECK( removeFile( event_file_path ) );
 
         } //Merge Mode
@@ -529,7 +567,21 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
             p.addOutputFileName( output_4_events );
 
             SECTION( "no processors" ) {
-                p.run();
+                
+                SECTION( "no drop/keep rules" ) {
+                    p.run();
+                    CHECK_THAT( output_2_events , isGoodEventFile( "makeInputs" , 2 , 1 ) );
+                    CHECK_THAT( output_3_events , isGoodEventFile( "makeInputs" , 3 , 1 ) );
+                    CHECK_THAT( output_4_events , isGoodEventFile( "makeInputs" , 4 , 1 ) );
+                }
+
+                SECTION( "drop TestCollection" ) {
+                    p.addDropKeepRule( "drop .*Collection.*" );
+                    p.run();
+                    CHECK_THAT( output_2_events , isGoodEventFile( "makeInputs" , 2 , 1 , false ) );
+                    CHECK_THAT( output_3_events , isGoodEventFile( "makeInputs" , 3 , 1 , false ) );
+                    CHECK_THAT( output_4_events , isGoodEventFile( "makeInputs" , 4 , 1 , false ) );
+                }
             }
 
             SECTION( "with analyzer" ) {
@@ -538,7 +590,20 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 const char *hist_file_path = "test_NtoNmode_withanalyzer_hists.root";
                 p.setHistogramFileName( hist_file_path );
     
-                p.run();
+                SECTION( "no drop/keep rules" ) {
+                    p.run();
+                    CHECK_THAT( output_2_events , isGoodEventFile( "makeInputs" , 2 , 1 ) );
+                    CHECK_THAT( output_3_events , isGoodEventFile( "makeInputs" , 3 , 1 ) );
+                    CHECK_THAT( output_4_events , isGoodEventFile( "makeInputs" , 4 , 1 ) );
+                }
+
+                SECTION( "drop TestCollection" ) {
+                    p.addDropKeepRule( "drop .*Collection.*" );
+                    p.run();
+                    CHECK_THAT( output_2_events , isGoodEventFile( "makeInputs" , 2 , 1 , false ) );
+                    CHECK_THAT( output_3_events , isGoodEventFile( "makeInputs" , 3 , 1 , false ) );
+                    CHECK_THAT( output_4_events , isGoodEventFile( "makeInputs" , 4 , 1 , false ) );
+                }
 
                 CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
                 CHECK( removeFile( hist_file_path ) );
@@ -554,14 +619,8 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 CHECK_THAT( output_4_events , isGoodEventFile( "test" , 4 , 1 ) );
             }
 
-            //checks that input pass was copied over correctly
-            CHECK_THAT( output_2_events , isGoodEventFile( "makeInputs" , 2 , 1 ) );
             CHECK( removeFile( output_2_events ) );
-
-            CHECK_THAT( output_3_events , isGoodEventFile( "makeInputs" , 3 , 1 ) );
             CHECK( removeFile( output_3_events ) );
-
-            CHECK_THAT( output_4_events , isGoodEventFile( "makeInputs" , 4 , 1 ) );
             CHECK( removeFile( output_4_events ) );
 
         } // N-to-N Mode
