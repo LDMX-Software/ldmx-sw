@@ -34,6 +34,7 @@ using namespace ldmx;
  * Checks 
  * - Event::add function does not throw any errors.
  * - Writes and adds a run header where the run number and the number of events are the same.
+ * - sets a storage hint
  */
 class TestProducer : public Producer {
 
@@ -75,7 +76,7 @@ class TestProducer : public Producer {
 
             events_ = i_event;
 
-            if ( res.passesVeto() ) setStorageHint( StorageControlHit::hint_mustKeep );
+            if ( res.passesVeto() ) setStorageHint( hint_mustKeep );
 
             return;
         }
@@ -344,7 +345,7 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
  * maybe we can make the removal optional?
  */
 bool removeFile(const char * filepath) {
-    return true; //remove( filepath ) == 0;
+    return remove( filepath ) == 0;
 }
 
 /**
@@ -354,8 +355,9 @@ bool removeFile(const char * filepath) {
  * Python configuration, Simulation, and other add-on functionalities
  * are tested separately.
  *
- * This test does not check complicated combinations for drop/keep rules
- * or skimming rules. TODO write a more full test for these parts of the framework.
+ * This test does not check complicated combinations for drop/keep rules and skimming rules. 
+ * I (Tom E) avoided this because this test is already very large and complicated.
+ * TODO write a more full (and separate) test for these parts of the framework.
  *
  * Assumptions:
  *  - Any vector of objects behaves like a vector of CalorimeterHits when viewed from core
@@ -375,7 +377,7 @@ bool removeFile(const char * filepath) {
  *  - writing to an output file
  *  - writing and reading run headers
  *  - drop/keep rules for event bus passengers
- *  - TODO skimming events (only keeping events meeting a certain criteria)
+ *  - skimming events (only keeping events meeting a certain criteria)
  */
 TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
@@ -413,6 +415,13 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 , 1 , false ) );
             }
 
+            SECTION( "skim for even indexed events" ) {
+                p.getStorageController().setDefaultKeep( false );
+                p.getStorageController().addRule( "TestProducer" , "" );
+                p.run();
+                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 1 , 1 ) );
+            }
+
         }
         
         SECTION( "with Analyses" ) {
@@ -429,6 +438,13 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 p.addDropKeepRule( "drop .*Collection.*" );
                 p.run();
                 CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 , 1 , false ) );
+            }
+
+            SECTION( "skim for even indexed events" ) {
+                p.getStorageController().setDefaultKeep( false );
+                p.getStorageController().addRule( "TestProducer" , "" );
+                p.run();
+                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 1 , 1 ) );
             }
 
             CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+3 ) );
@@ -544,9 +560,19 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
     
             SECTION( "with producers" ) {
                 p.addToSequence( proHdl );
-                p.run();
 
-                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 2+3+4 , 3 ) );
+                SECTION( "not listening to storage hints" ) {
+                    p.run();
+                    CHECK_THAT( event_file_path , isGoodEventFile( "test" , 2+3+4 , 3 ) );
+                }
+
+                SECTION( "skim for even indexed events" ) {
+                    p.getStorageController().setDefaultKeep( false );
+                    p.getStorageController().addRule( "TestProducer" , "" );
+                    p.run();
+                    CHECK_THAT( event_file_path , isGoodEventFile( "test" , 1+1+2 , 3 ) );
+                }
+
             }
 
             CHECK( removeFile( event_file_path ) );
@@ -611,12 +637,24 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
     
             SECTION( "with producers" ) {
                 p.addToSequence( proHdl );
-                p.run();
 
-                //checks that produced objects were written correctly
-                CHECK_THAT( output_2_events , isGoodEventFile( "test" , 2 , 1 ) );
-                CHECK_THAT( output_3_events , isGoodEventFile( "test" , 3 , 1 ) );
-                CHECK_THAT( output_4_events , isGoodEventFile( "test" , 4 , 1 ) );
+                SECTION( "not listening to storage hints" ) {
+                    p.run();
+    
+                    //checks that produced objects were written correctly
+                    CHECK_THAT( output_2_events , isGoodEventFile( "test" , 2 , 1 ) );
+                    CHECK_THAT( output_3_events , isGoodEventFile( "test" , 3 , 1 ) );
+                    CHECK_THAT( output_4_events , isGoodEventFile( "test" , 4 , 1 ) );
+                }
+
+                SECTION( "skimming for even-indexed events" ) {
+                    p.getStorageController().setDefaultKeep( false );
+                    p.getStorageController().addRule( "TestProducer" , "" );
+                    p.run();
+                    CHECK_THAT( output_2_events , isGoodEventFile( "test" , 1 , 1 ) );
+                    CHECK_THAT( output_3_events , isGoodEventFile( "test" , 1 , 1 ) );
+                    CHECK_THAT( output_4_events , isGoodEventFile( "test" , 2 , 1 ) );
+                }
             }
 
             CHECK( removeFile( output_2_events ) );
