@@ -1,5 +1,7 @@
 #include <ctime> 
 
+#include "TTreeReader.h"
+
 // LDMX
 #include "Framework/EventFile.h"
 #include "Framework/Event.h"
@@ -35,8 +37,7 @@ namespace ldmx {
             entries_ = tree_->GetEntriesFast();
         }
 
-        // Create run map from tree in this file.
-        createRunMap();
+        importRunHeaders();
 
         processStart_ = std::time(nullptr); 
     }
@@ -70,19 +71,12 @@ namespace ldmx {
             file_->SetCompressionLevel(compressionLevel);
         }
 
-        // Copy run headers from parent to output file.
-        copyRunHeaders();
-
-        // Create run header map.
-        createRunMap();
+        importRunHeaders();
         
         processStart_ = std::time(nullptr); 
     }
 
     EventFile::~EventFile() {
-        for (auto entry : runMap_) {
-            delete entry.second;
-        }
         runMap_.clear();
     }
 
@@ -265,10 +259,8 @@ namespace ldmx {
             ientry_ = parent_->ientry_;
         }
 
-        //copy over run headers and recreate run map
-        //TODO untested
-        copyRunHeaders();
-        createRunMap();
+        //import run headers from new input file
+        importRunHeaders();
 
         return;
     }
@@ -276,74 +268,84 @@ namespace ldmx {
     void EventFile::close() {
         
         // Before an output file, the Event tree needs to be written. 
-        if (isOutputFile_) tree_->Write();
+        if (isOutputFile_) {
+            tree_->Write();
+            //store the run map into the output tree
+
+            // Check for the existence of the run tree in the file. 
+            // If it already exists, throw an exception.
+            // TODO: Tree name shouldn't be hardcoded. Is this check really necessary?
+            auto runTree{static_cast<TTree*>(file_->Get("LDMX_Run"))};
+            if (runTree) {
+                EXCEPTION_RAISE(
+                        "RunTree",
+                        "RunTree 'LDMX_Run' already exists in output file '" + fileName_ + "'."
+                        );
+            }
+                
+            runTree = new TTree("LDMX_Run", "LDMX run header");
+    
+            //create the branch on this tree
+            RunHeader *theHandle = nullptr;
+            runTree->Branch("RunHeader", EventConstants::RUN_HEADER.c_str(), &theHandle, 32000, 3);
+
+            //copy over the run headers into the tree
+            for( auto& runTuple : runMap_ ) {
+                theHandle = &(runTuple.second);
+                runTree->Fill();
+            }
+
+            runTree->Write();
+        }
 
         // Close the file
         file_->Close();
     }
 
-    void EventFile::writeRunHeader(RunHeader* runHeader) {
+    void EventFile::writeRunHeader(RunHeader& runHeader) {
     
-        // Before writing the event header, make sure the file is an output
-        // file.  TODO: Is checking whether the file is writable good enough?  
-        if (!isOutputFile_) {
-            EXCEPTION_RAISE("FileError", "Output file '" + fileName_ + "' is not writable.");
+        int runNumber = runHeader.getRunNumber();
+
+        if ( runMap_.find(runNumber) != runMap_.end() ) {
+            EXCEPTION_RAISE( "RunMap" , 
+                    "Run map already contains a run with number '" + std::to_string(runNumber)
+                    + "'." );
         }
-        
-        // Check for the existence of the run tree in the file.  If it doesn't
-        // exists, create it. 
-        // TODO: Tree name shouldn't be hardcoded. Is this check really necessary?
-        auto runTree{static_cast<TTree*>(file_->Get("LDMX_Run"))};
-        if (!runTree) runTree = new TTree("LDMX_Run", "LDMX run header");
 
-        // Check for the existence of the "RunHeader" branch in the tree.  If
-        // it doesn't exists, crate it. 
-        // TODO: Is this check really necessary?
-        auto runBranch{runTree->GetBranch("RunHeader")};
-        if (!runBranch) 
-            runTree->Branch("RunHeader", EventConstants::RUN_HEADER.c_str(), &runHeader, 32000, 3);
+        runHeader.setRunStart(processStart_);
+        runHeader.setRunEnd(std::time(nullptr));
 
-        runHeader->setRunStart(processStart_); 
-        runHeader->setRunEnd(std::time(nullptr)); 
+        runMap_[runNumber] = runHeader;
 
-        // Fill the tree and write it to the file. 
-        runTree->Fill();
-        runTree->Write();
+        return;
     }
 
     const RunHeader& EventFile::getRunHeader(int runNumber) {
         if (runMap_.find(runNumber) != runMap_.end()) {
-            return *(runMap_[runNumber]);
+            return runMap_[runNumber];
         } else {
-            EXCEPTION_RAISE("DataError", "No run header exists for " + std::to_string(runNumber) + " in the input file.");
+            EXCEPTION_RAISE("DataError", "No run header exists for " + std::to_string(runNumber) + " in the run map.");
         }
     }
 
-    void EventFile::createRunMap() {
-        TTree* runTree = (TTree*) file_->Get("LDMX_Run");
-        if (runTree) {
-            RunHeader* aRunHeader = nullptr;
-            runTree->SetBranchAddress("RunHeader", &aRunHeader);
-            for (int iEntry = 0; iEntry < runTree->GetEntriesFast(); iEntry++) {
-                runTree->GetEntry(iEntry);
-                RunHeader* newRunHeader = new RunHeader();
-                *newRunHeader = *aRunHeader; //copy over run header
-                runMap_[newRunHeader->getRunNumber()] = newRunHeader;
-            }
-            runTree->ResetBranchAddresses();
-        }
-    }
+    void EventFile::importRunHeaders() {
 
-    void EventFile::copyRunHeaders() {
-        if (parent_ && parent_->file_) {
-            TTree* oldtree = (TTree*)parent_->file_->Get("LDMX_Run");
-            if (oldtree && !file_->Get("LDMX_Run")) {
-                oldtree->SetBranchStatus("RunHeader", 1);
-                file_->cd();
-                TTree* newtree = oldtree->CloneTree();
-                file_->Write();
-                file_->Flush();
+        //choose which file to import from
+        auto theImportFile{file_}; //if this is an input file
+        if ( isOutputFile_ and parent_ and parent_->file_ ) 
+            theImportFile = parent_->file_;
+
+        if (theImportFile) {
+            //the file exist
+            TTreeReader oldRunTree( "LDMX_Run" , theImportFile );
+            TTreeReaderValue<RunHeader> oldRunHeader( oldRunTree , "RunHeader" );
+            //TODO check that setup went correctly
+            while( oldRunTree.Next() ) {
+                //copy input run tree into run map
+                runMap_[ oldRunHeader->getRunNumber() ] = *oldRunHeader;
             }
         }
+
+        return;
     }
 }
