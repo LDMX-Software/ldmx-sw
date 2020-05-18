@@ -127,21 +127,23 @@ namespace ldmx {
 
             /**
              * Close the file, writing the tree to disk if creating an output file.
+             *
+             * @throw Exception if run tree already exists in output file.
              */
             void close();
 
             /**
-             * Write the run header into a separate tree in the output file.
-             * @param runHeader The run header to write into the output file.
-             * @throw Exception if file is not writable.
+             * Write the run header into the run map
+             * @param runHeader The run header to write into the map
+             * @throw Exception if run number is already in run map
              */
-            void writeRunHeader(RunHeader* runHeader);
+            void writeRunHeader(RunHeader& runHeader);
 
             /**
              * Get the RunHeader for a given run, if it exists in the input file.
              * @param runNumber The run number.
              * @return The RunHeader from the input file.
-             * @throw Exception if there is no RunHeader in the file with the given run number.
+             * @throw Exception if there is no RunHeader in the map with the given run number.
              */
             const RunHeader& getRunHeader(int runNumber);
 
@@ -149,25 +151,21 @@ namespace ldmx {
                 return fileName_;
             }
 
-            const std::map<int, RunHeader*>& getRunMap() {
-                return runMap_;
-            }
-
         private:
 
             /**
              * Fill the internal map of run numbers to RunHeader objects from the input file.
              *
-             * @note This is called automatically the first time nextEvent() is
-             * activated.  If there are no run headers in the input file (e.g. for
-             * a new simulation file) the run map will not be filled.
+             * If this file is an output file and parent_ and parent_->file_ are valid
+             * pointers, then the run headers are imported from parent_->file_.
+             * 
+             * Otherwise, we try to import run headers from file_.
+             *
+             * Does not check if any run headers are getting overwritten!
+             *
+             * @note This function does nothing if parent_->file_ and file_ are nullptrs.
              */
-            void createRunMap();
-
-            /**
-             * Copy run header tree from parent to output file.
-             */
-            void copyRunHeaders();
+            void importRunHeaders();
 
         private:
 
@@ -198,9 +196,6 @@ namespace ldmx {
             /** The object containing the actual event data (trees and branches). */
             Event* event_{nullptr};
 
-            /** Pointer to run header from input file. */
-            RunHeader* runHeader_{nullptr};
-
             /**
              * Pre-clone rules.
              *
@@ -219,7 +214,7 @@ namespace ldmx {
             std::vector< std::string > reactivateRules_;
 
             /** Map of run numbers to RunHeader objects read from the input file. */
-            std::map<int, RunHeader*> runMap_;
+            std::map<int, RunHeader> runMap_;
 
             /// Time at which processing of events starts in seconds since epoch
             int processStart_{0}; 
