@@ -24,9 +24,16 @@ using namespace ldmx;
  * Bare producer that creates a collection and an object and puts them 
  * on the event bus.
  *
- * Checks that the Event::add function does not throw any errors.
- * Writes and adds a run header where the run number and
- * the number of events are the same.
+ * The pattern this producer creates is the following:
+ * - The vector of Calorimeter hits has the same number of entries as the event number
+ * - The IDs of the calorimeter hits are set to 10*eventNumber+their_index
+ * - The input object is an HcalVetoResult where events with an event index pass
+ * - The max PE hit in the HcalVetoResult has an ID equal to the event index
+ * - If a run header is created, the event count and the run number are equal
+ *
+ * Checks 
+ * - Event::add function does not throw any errors.
+ * - Writes and adds a run header where the run number and the number of events are the same.
  */
 class TestProducer : public Producer {
 
@@ -75,14 +82,12 @@ class TestProducer : public Producer {
 
             if ( not createRunHeader_ ) return;
 
-            RunHeader* runHeader = new RunHeader( events_ , "No Detector" , "Test Run" );
-            runHeader->setIntParameter( "Event Count" , events_ );
+            RunHeader runHeader( events_ , "No Detector" , "Test Run" );
+            runHeader.setIntParameter( "Event Count" , events_ );
 
             //stores run header to runtree in output file
             eventFile.writeRunHeader( runHeader );
 
-            delete runHeader;
-            
             return;
         }
 };//TestProducer
@@ -91,8 +96,9 @@ class TestProducer : public Producer {
  * @class TestAnalyzer
  * Bare analyzer that looks for objects matching what the TestProducer put in.
  *
- * Checks for the correct number and contents.
- * Checks that Event::getCollection and Event::getObject don't throw errors.
+ * Checks
+ * - the correct number and contents following the pattern produced by TestProducer.
+ * - Event::getCollection and Event::getObject don't throw errors.
  */
 class TestAnalyzer : public Analyzer {
 
@@ -227,11 +233,11 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
         /// correct number of runs
         int runs_;
 
-        /// should we check for the collection?
-        bool checkCollection_;
+        /// collection should exist in file
+        bool existCollection_;
 
-        /// should we check for the object?
-        bool checkObject_;
+        /// object should exist in file
+        bool existObject_;
 
     public:
 
@@ -241,11 +247,14 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
          * Sets the correct number of entries and the other checking parameters
          */
         isGoodEventFile( 
-                const std::string& pass , const int& entries , const int& runs , bool checkColl = true , bool checkObj = true )
-            : pass_(pass), entries_(entries), runs_(runs), checkCollection_(checkColl), checkObject_(checkObj) { }
+                const std::string& pass , const int& entries , const int& runs , bool existColl = true , bool existObj = true )
+            : pass_(pass), entries_(entries), runs_(runs), existCollection_(existColl), existObject_(existObj) { }
 
         /**
          * Actually do the matching
+         *
+         * The event and run tree names are hardcoded.
+         * The branchnames are also hardcoded.
          *
          * @param[in] filename name of event file to check
          */
@@ -256,15 +265,14 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
         
             TTreeReader events( "LDMX_Events" , f );
         
-            //TODO check if tree loaded
-            
             if ( events.GetEntries(true) != entries_ ) { f->Close(); return false; }
 
             //Event tree should _always_ have the EventHeader
             TTreeReaderValue<EventHeader> header( events , "EventHeader" );
         
-            if ( checkCollection_ ) {
-                TTreeReaderValue<std::vector<CalorimeterHit>> collection( events , ("TestCollection_"+pass_).c_str() );
+            TTreeReaderValue<std::vector<CalorimeterHit>> collection( events , ("TestCollection_"+pass_).c_str() );
+            if ( existCollection_ ) {
+                //make sure collection matches pattern
                 while ( events.Next() ) {
                     if ( collection->size() != header->getEventNumber() ) { f->Close(); return false; }
                     for ( unsigned int i = 0; i < collection->size(); i++ )
@@ -272,13 +280,22 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
                 }
                 //restart in case checking object as well
                 events.Restart();
+            } else {
+                //check to make sure collection is NOT there
+                //TODO not sure if this is valid?
+                if ( collection.GetSetupStatus() >= 0 ) { f->Close(); return false; }
             }
 
-            if ( checkObject_ ) {
-                TTreeReaderValue<HcalVetoResult> object( events , ("TestObject_"+pass_).c_str() );
+            TTreeReaderValue<HcalVetoResult> object( events , ("TestObject_"+pass_).c_str() );
+            if ( existObject_ ) {
+                //make sure object matches pattern
                 while( events.Next() ) {
                     if ( object->getMaxPEHit().getID() != header->getEventNumber() ) { f->Close(); return false; }
                 }
+            } else {
+                //check to make sure object is NOT there
+                //TODO not sure if this is valid?
+                if ( object.GetSetupStatus() >= 0 ) { f->Close(); return false; }
             }
 
             TTreeReader runs( "LDMX_Run" , f );
@@ -297,17 +314,36 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
         }
 
         /**
-         * Human-readable true-fact statement for any match that is true.
+         * Human-readable statement for any match that is true.
          */
         virtual std::string describe() const override {
             std::ostringstream ss;
             ss << "can be opened and has the correct number of entries in the event tree and the run tree.";
-            if ( checkCollection_ ) ss << " TestCollection_" << pass_ << " was verified."; 
-            if ( checkObject_     ) ss << " TestObject_"     << pass_ << " was verified."; 
+
+            ss << " TestCollection_" << pass_ << " was verified to "; 
+            if ( existCollection_ ) ss << " be the correct pattern.";
+            else                    ss << " not be in the file.";
+
+            ss << " TestObject_" << pass_ << " was verified to "; 
+            if ( existObject_ ) ss << " be the correct pattern.";
+            else                ss << " not be in the file.";
+
             return ss.str();
         }
 
 }; //isGoodEventFile
+
+/**
+ * @func removeFile
+ * Deletes the file and returns whether the deletion was successful.
+ *
+ * This is just a helper function during development.
+ * Sometimes it is helpful to leave the generated files, so
+ * maybe we can make the removal optional?
+ */
+bool removeFile(const char * filepath) {
+    return remove( filepath ) == 0;
+}
 
 /**
  * Test for C++ Framework processing.
@@ -315,6 +351,10 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
  * This test is aimed at checking that core functionalities are operational.
  * Python configuration, Simulation, and other add-on functionalities
  * are tested separately.
+ *
+ * Assumptions:
+ *  - Any vector of objects behaves like a vector of CalorimeterHits when viewed from core
+ *  - Any object behaves like a HcalVetoResult when viewed from core 
  *
  * What does this even test?
  *  - Event::add an object and a vector of objects (changing size and content)
@@ -365,11 +405,11 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
             p.addToSequence( anaHdl );
             CHECK_NOTHROW( p.run() );
             CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+3 ) );
-            CHECK( remove( hist_file_path ) == 0 );
+            CHECK( removeFile( hist_file_path ) );
         }
 
         CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 , 1 ) );
-        //CHECK( remove( event_file_path ) == 0 );
+        CHECK( removeFile( event_file_path ) );
     }//Production Mode
 
     SECTION( "Need Input Files" ) {
@@ -414,7 +454,7 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 p.run();
 
                 CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2 ) );
-                //CHECK( remove( hist_file_path ) == 0 );
+                CHECK( removeFile( hist_file_path ) );
             }
             
             SECTION( "multiple input files" ) {
@@ -424,7 +464,7 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 p.run();
 
                 CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
-                //CHECK( remove( hist_file_path ) == 0 );
+                CHECK( removeFile( hist_file_path ) );
             }
 
         }//Analysis Mode
@@ -453,7 +493,7 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 p.run();
 
                 CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
-                //CHECK( remove( hist_file_path ) == 0 );
+                CHECK( removeFile( hist_file_path ) );
             }
     
             SECTION( "with producers" ) {
@@ -463,15 +503,15 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 //TODO: patch copying of RunHeaders in Merge Mode
                 //  currently only one run header is being copied over on this branch
                 //  the third argument to isGoodEventFile should be 3
-                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 2+3+4 , 1 ) );
+                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 2+3+4 , 3 ) );
             }
 
             //checks that input collections were copied over correctly
             //TODO: patch copying of RunHeaders in Merge Mode
             //  currently only one run header is being copied over on this branch
             //  the third argument to isGoodEventFile should be 3
-            CHECK_THAT( event_file_path , isGoodEventFile( "makeInputs" , 2+3+4 , 1 ) );
-            //CHECK( remove( event_file_path ) == 0 );
+            CHECK_THAT( event_file_path , isGoodEventFile( "makeInputs" , 2+3+4 , 3 ) );
+            CHECK( removeFile( event_file_path ) );
 
         } //Merge Mode
 
@@ -501,7 +541,7 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 p.run();
 
                 CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
-                //CHECK( remove( hist_file_path ) == 0 );
+                CHECK( removeFile( hist_file_path ) );
             }
     
             SECTION( "with producers" ) {
@@ -516,24 +556,21 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
             //checks that input pass was copied over correctly
             CHECK_THAT( output_2_events , isGoodEventFile( "makeInputs" , 2 , 1 ) );
-            //CHECK( remove( output_2_events ) == 0 );
+            CHECK( removeFile( output_2_events ) );
 
             CHECK_THAT( output_3_events , isGoodEventFile( "makeInputs" , 3 , 1 ) );
-            //CHECK( remove( output_3_events ) == 0 );
+            CHECK( removeFile( output_3_events ) );
 
             CHECK_THAT( output_4_events , isGoodEventFile( "makeInputs" , 4 , 1 ) );
-            //CHECK( remove( output_4_events ) == 0 );
+            CHECK( removeFile( output_4_events ) );
 
         } // N-to-N Mode
 
         //cleanup
-        //  delete any files that this test produced
-        //  test_out.root, test_input{0,1,2}.root, test_merge.root, test_histo.root
-        //CHECK( remove( input_file_2_events ) == 0 );
-        //CHECK( remove( input_file_3_events ) == 0 );
-        //CHECK( remove( input_file_4_events ) == 0 );
+        CHECK( removeFile( input_file_2_events ) );
+        CHECK( removeFile( input_file_3_events ) );
+        CHECK( removeFile( input_file_4_events ) );
 
     } //need input files
-
 
 }//process test
