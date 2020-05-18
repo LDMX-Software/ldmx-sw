@@ -61,6 +61,7 @@ namespace ldmx {
             double pe_per_mip_{13.5};
             double strip_attenuation_length_{100.};
             double strip_position_resolution_{150.};
+            std::string sim_hit_pass_name_;
             int    readoutThreshold_{2};
             int    STRIPS_BACK_PER_LAYER_{60};    
             int    NUM_BACK_HCAL_LAYERS_{150};
