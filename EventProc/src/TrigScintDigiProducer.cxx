@@ -23,6 +23,7 @@ namespace ldmx {
         mevPerMip_        = parameters.getParameter< double >("mev_per_mip");
         pePerMip_         = parameters.getParameter< double >("pe_per_mip");
         inputCollection_  = parameters.getParameter< std::string >("input_collection");
+        inputPassName_    = parameters.getParameter< std::string >("input_pass_name" );
         outputCollection_ = parameters.getParameter< std::string >("output_collection");
 
         random_ = std::make_unique<TRandom3>(parameters.getParameter< int >("randomSeed"));
@@ -54,7 +55,7 @@ namespace ldmx {
         auto numRecHits{0};
 
         // looper over sim hits and aggregate energy depositions for each detID
-        const auto simHits{event.getCollection< SimCalorimeterHit >(inputCollection_, "sim")};
+        const auto simHits{event.getCollection< SimCalorimeterHit >(inputCollection_,inputPassName_)};
 
         for (const auto& simHit : simHits) {          
 

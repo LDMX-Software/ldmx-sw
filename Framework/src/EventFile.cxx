@@ -266,6 +266,11 @@ namespace ldmx {
     }
 
     void EventFile::close() {
+        //MEMORY 'Conditional jump or move depends on uninitialised values' when closing TFile and/or writing TTree
+        //  TFile::Close --> TDirectoryFile::Close --> ~TTree
+        //MEMORY 'Syscall param write(buf) points to uninitialised byte(s)'
+        //  when writing TTree below
+        //  From filling TTree in nextEvent
         
         // Before an output file, the Event tree needs to be written. 
         if (isOutputFile_) {

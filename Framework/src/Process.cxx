@@ -20,6 +20,12 @@ namespace ldmx {
             passname_ {passname} {
     }
 
+    Process::~Process() {
+        for ( EventProcessor *ep : sequence_ ) {
+            delete ep;
+        }
+    }
+
     void Process::run() {
 
         try {
@@ -87,6 +93,10 @@ namespace ldmx {
                             break;
                         }
                     }
+
+                    //fill any Ntuples that have been created
+                    if ( not eventAborted ) NtupleManager::getInstance()->fill(); 
+                    NtupleManager::getInstance()->clear(); 
                     
                     outFile.nextEvent( eventAborted ? false : m_storageController.keepEvent() /*ignore storage control if event aborted*/);
                     n_events_processed++;
@@ -203,8 +213,9 @@ namespace ldmx {
                             }
                         }
 
-                        NtupleManager::getInstance()->fill(); 
+                        if ( not eventAborted ) NtupleManager::getInstance()->fill(); 
                         NtupleManager::getInstance()->clear(); 
+
                         n_events_processed++;
                     } //loop through events
 
@@ -242,11 +253,13 @@ namespace ldmx {
                     outFile = nullptr;
                 }
 
-                if (histoTFile_) {
-                    histoTFile_->Write();
-                    delete histoTFile_;
-                    histoTFile_ = 0;
-                }
+            } //are there input files? if-else tree
+
+            //close up histogram file if anything was put into it
+            if (histoTFile_) {
+                histoTFile_->Write();
+                delete histoTFile_;
+                histoTFile_ = 0;
             }
 
             // finally, notify everyone that we are stopping
