@@ -321,7 +321,7 @@ namespace ldmx {
             static const std::vector<double> defaultLayerZPositions_; //defined in src
 
             /**
-             * Honeycomb binning from ROOT
+             * Honeycomb Binning from ROOT
              *
              * Needs to be mutable because ROOT doesn't have good const handling
              */

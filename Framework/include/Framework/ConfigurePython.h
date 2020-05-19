@@ -17,6 +17,7 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
+#include "Framework/Process.h"
 #include "Framework/FrameworkDef.h" 
 
 /*~~~~~~~~~~~~~~~~*/
@@ -62,9 +63,6 @@ namespace ldmx {
 
     };
 
-    // Forward declaration within the ldmx namespace 
-    class Process;
-
     /**
      * @class ConfigurePython
      * @brief Utility class which reads/executes a python script and creates a 
@@ -95,7 +93,7 @@ namespace ldmx {
             /**
              * Create a process object based on the python file information
              */
-            Process* makeProcess();
+            ProcessHandle makeProcess();
 
         private:
 

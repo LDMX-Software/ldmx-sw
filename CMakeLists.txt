@@ -1,6 +1,8 @@
 # minimum cmake version
 cmake_minimum_required(VERSION 3.1)
 
+project(ldmx-sw)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 17)
@@ -11,6 +13,12 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
+
+# option to print extra module information during CMake config
+option(MODULE_DEBUG "Print extra module information during CMake config" OFF)
+
+# add dir with extra CMake modules 
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 
 # find XercesC installation
 if(XercesC_DIR)
@@ -50,18 +58,23 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
+# find ONNXRuntime installation
+# specify location with -DONNXRUNTIME_ROOT=<location-of-onnxruntime-prefix>
+find_package(ONNXRuntime)
+if(ONNXRUNTIME_FOUND)
+  message(STATUS "ONNXRuntime libs found at: ${ONNXRUNTIME_LIBRARIES}")
+  message(STATUS "ONNXRuntime include dir found at: ${ONNXRUNTIME_INCLUDE_DIRS}")
+  add_definitions(-DLDMX_USE_ONNXRUNTIME)
+else()
+  message(WARNING "Cannot find ONNXRuntime: will not be able to run EcalVeto BDT or DNN")
+endif()
+
 # mag field map installation
 option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
 message(STATUS "MagFieldMap installation: ${INSTALL_FIELDMAP}")
 if(INSTALL_FIELDMAP)
   install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Scripts/InstallMagFieldMap.cmake")
 endif()
-
-# option to print extra module information during CMake config
-option(MODULE_DEBUG "Print extra module information during CMake config" OFF)
-
-# add dir with extra CMake modules 
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 
 # import macro for declaring modules
 include(MacroModule)
@@ -85,7 +98,7 @@ foreach(module ${MODULES})
 endforeach()
 
 # build and install test executable ldmx-test
-option(BUILD_TESTS "Build and link ldmx-test executable." ON)
+option(BUILD_TESTS "Build and link ldmx-test executable." OFF)
 if(BUILD_TESTS)
   include(TestExecutable)
 endif()

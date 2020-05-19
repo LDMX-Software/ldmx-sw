@@ -35,11 +35,24 @@ namespace ldmx {
             }
 
             /**
+             * Destructor
+             *
+             * Cleans up all stored G4MagneticFields
+             */
+            ~MagneticFieldStore() {
+                for ( auto &nameField : magFields_ ) {
+                    delete nameField.second;
+                }
+                magFields_.clear();
+            }
+
+
+            /**
              * Get a magnetic field by name.
              * @param name The name of the magnetic field.
              */
             G4MagneticField* getMagneticField(const std::string& name) {
-                return magFields_[name];
+                return magFields_.at(name);
             }
 
             /**

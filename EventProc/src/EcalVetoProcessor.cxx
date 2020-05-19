@@ -1,11 +1,5 @@
 #include "EventProc/EcalVetoProcessor.h"
 
-// ROOT
-#include "TString.h"
-#include "TFile.h"
-#include "TTree.h"
-#include "TPython.h"
-
 // LDMX
 #include "Event/EcalHit.h"
 #include "Event/EventConstants.h"
@@ -13,7 +7,7 @@
 /*~~~~~~~~~~~*/
 /*   Tools   */
 /*~~~~~~~~~~~*/
-#include "Tools/AnalysisUtils.h" 
+#include "Tools/AnalysisUtils.h"
 
 // C++
 #include <algorithm>
@@ -33,87 +27,53 @@ namespace ldmx {
     const std::vector<double> radius68_thetagt20 = {4.0754238481177705, 4.193693485630508, 5.14209420056253, 6.114996249971468, 7.7376807326481645, 8.551663213602291, 11.129110612057813, 13.106293737495639, 17.186617323282082, 19.970887612094604, 25.04088272634407, 28.853696411302344, 34.72538105333071, 40.21218694947545, 46.07344239520299, 50.074953583805346, 62.944045771758645, 61.145621459396814, 69.86940198299047, 74.82378572939959, 89.4528387422834, 93.18228303096758, 92.51751129204555, 98.80228884380018, 111.17537347472128, 120.89712563907408, 133.27021026999518, 142.99196243434795, 155.36504706526904, 165.08679922962185, 177.45988386054293, 187.18163602489574, 199.55472065581682, 209.2764728201696};
 
 
-
-    BDTHelper::BDTHelper(TString importBDTFile) {
-
-        // Import the python packages and load the features into xgboost.
-        TPython::Exec("print 'Loading xgboost BDT'"); 
-        TPython::Exec("import xgboost as xgb");
-        TPython::Exec("import numpy as np");
-        TPython::Exec("import pickle as pkl");
-        TPython::Exec("model = pkl.load(open('" + importBDTFile + "','r'))");
-    }
-
-    void BDTHelper::buildFeatureVector(std::vector<float>& bdtFeatures, ldmx::EcalVetoResult& result) {
-        bdtFeatures.push_back(result.getNReadoutHits());
-        bdtFeatures.push_back(result.getSummedDet());
-        bdtFeatures.push_back(result.getSummedTightIso());
-        bdtFeatures.push_back(result.getMaxCellDep());
-        bdtFeatures.push_back(result.getShowerRMS());
-        bdtFeatures.push_back(result.getXStd());
-        bdtFeatures.push_back(result.getYStd());
-        bdtFeatures.push_back(result.getAvgLayerHit());
-        bdtFeatures.push_back(result.getDeepestLayerHit());
-        bdtFeatures.push_back(result.getStdLayerHit());
+    void EcalVetoProcessor::buildBDTFeatureVector(const ldmx::EcalVetoResult& result) {
+        bdtFeatures_.clear();
+        bdtFeatures_.push_back(result.getNReadoutHits());
+        bdtFeatures_.push_back(result.getSummedDet());
+        bdtFeatures_.push_back(result.getSummedTightIso());
+        bdtFeatures_.push_back(result.getMaxCellDep());
+        bdtFeatures_.push_back(result.getShowerRMS());
+        bdtFeatures_.push_back(result.getXStd());
+        bdtFeatures_.push_back(result.getYStd());
+        bdtFeatures_.push_back(result.getAvgLayerHit());
+        bdtFeatures_.push_back(result.getDeepestLayerHit());
+        bdtFeatures_.push_back(result.getStdLayerHit());
         for(int ireg = 0; ireg < result.getElectronContainmentEnergy().size(); ++ireg) {
-            bdtFeatures.push_back(result.getElectronContainmentEnergy()[ireg]);
+            bdtFeatures_.push_back(result.getElectronContainmentEnergy()[ireg]);
         }
         for(int ireg = 0; ireg < result.getPhotonContainmentEnergy().size(); ++ireg) {
-            bdtFeatures.push_back(result.getPhotonContainmentEnergy()[ireg]);
+            bdtFeatures_.push_back(result.getPhotonContainmentEnergy()[ireg]);
         }
         for(int ireg = 0; ireg < result.getOutsideContainmentEnergy().size(); ++ireg) {
-            bdtFeatures.push_back(result.getOutsideContainmentEnergy()[ireg]);
+            bdtFeatures_.push_back(result.getOutsideContainmentEnergy()[ireg]);
         }
         for(int ireg = 0; ireg < result.getOutsideContainmentNHits().size(); ++ireg) {
-            bdtFeatures.push_back(result.getOutsideContainmentNHits()[ireg]);
+            bdtFeatures_.push_back(result.getOutsideContainmentNHits()[ireg]);
         }
         for(int ireg = 0; ireg < result.getOutsideContainmentXStd().size(); ++ireg) {
-            bdtFeatures.push_back(result.getOutsideContainmentXStd()[ireg]);
+            bdtFeatures_.push_back(result.getOutsideContainmentXStd()[ireg]);
         }
         for(int ireg = 0; ireg < result.getOutsideContainmentYStd().size(); ++ireg) {
-            bdtFeatures.push_back(result.getOutsideContainmentYStd()[ireg]);
+            bdtFeatures_.push_back(result.getOutsideContainmentYStd()[ireg]);
         }
-        bdtFeatures.push_back(result.getEcalBackEnergy());
-    }
-
-    float BDTHelper::getSinglePred(std::vector<float> bdtFeatures) {
-        TString cmd = vectorToPredCMD(bdtFeatures);
-        TPython::Exec("pred = " + cmd);
-        float pred = TPython::Eval("pred");
-        //std::cout << "  pred = " << pred << std::endl;
-
-        return pred;
-    }
-
-    TString BDTHelper::vectorToPredCMD(std::vector<float> bdtFeatures) {
-        TString featuresStrVector = "[[";
-        for (int i = 0; i < bdtFeatures.size(); i++) {
-            featuresStrVector += std::to_string(bdtFeatures[i]);
-            if (i < bdtFeatures.size() - 1)
-                featuresStrVector += ",";
-        }
-        featuresStrVector += "]]";
-        TString cmd = "float(model.predict(xgb.DMatrix(np.array(" + featuresStrVector + ")))[0])";
-
-        return cmd;
+        bdtFeatures_.push_back(result.getEcalBackEnergy());
     }
 
     void EcalVetoProcessor::configure(Parameters& parameters) {
         doBdt_ = parameters.getParameter< bool >("do_bdt");
         if (doBdt_){
-            // Config and init the BDT.
-            bdtFileName_ = parameters.getParameter< std::string >("bdt_file");
-            if (!std::ifstream(bdtFileName_).good()) {
-                EXCEPTION_RAISE("EcalVetoProcessor",
-                        "The specified BDT file '" + bdtFileName_ + "' does not exist!");
-            }
-
-            BDTHelper_ = std::make_unique<BDTHelper>(bdtFileName_);
+#ifdef LDMX_USE_ONNXRUNTIME
+            rt_ = std::make_unique<Ort::ONNXRuntime>(parameters.getParameter<std::string>("bdt_file"));
+#else
+            EXCEPTION_RAISE("EcalVetoProcessor",
+                            "Cannot run BDT because ONNXRuntime is not installed.");
+#endif
         }
 
         cellFileNamexy_ = parameters.getParameter< std::string >("cellxy_file");
         if (!std::ifstream(cellFileNamexy_).good()) {
-            EXCEPTION_RAISE("NonFidEcalVetoProcessor",
+            EXCEPTION_RAISE("EcalVetoProcessor",
                             "The specified x,y cell file '" + cellFileNamexy_ + "' does not exist!");
         } else {
             std::ifstream cellxyfile(cellFileNamexy_);
@@ -187,7 +147,7 @@ namespace ldmx {
         cellMapTightIso_.resize(nEcalLayers_, std::map<int, float>());
 
         // Set the collection name as defined in the configuration
-        collectionName_ = parameters.getParameter< std::string >("collection_name"); 
+        collectionName_ = parameters.getParameter< std::string >("collection_name");
     }
 
     void EcalVetoProcessor::clearProcessor(){
@@ -236,24 +196,24 @@ namespace ldmx {
 
             // Get the collection of simulated particles from the event
             auto particleMap{event.getMap< int, SimParticle >("SimParticles")};
-            
-            // Search for the recoil electron 
+
+            // Search for the recoil electron
             auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
-            
+
             // Find ECAL SP hit for recoil electron
             auto ecalSpHits{event.getCollection< SimTrackerHit >( "EcalScoringPlaneHits" )};
             float pmax = 0;
             for ( SimTrackerHit &spHit : ecalSpHits ) {
-                
-                if (spHit.getLayerID() != 1 || spHit.getMomentum()[2] <= 0) continue;
-                
-                if (spHit.getTrackID() == recoilTrackID) { 
+
+                if (spHit.getLayerID() != 31 || spHit.getMomentum()[2] <= 0) continue;
+
+                if (spHit.getTrackID() == recoilTrackID) {
                     if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {
                         recoilP = spHit.getMomentum();
                         recoilPos = spHit.getPosition();
                         pmax = sqrt(pow(recoilP[0],2) + pow(recoilP[1],2) + pow(recoilP[2],2));
                     }
-                } 
+                }
             }
 
             // Find target SP hit for recoil electron
@@ -261,16 +221,16 @@ namespace ldmx {
                 std::vector< SimTrackerHit > targetSpHits = event.getCollection< SimTrackerHit >( "TargetScoringPlaneHits" );
                 pmax = 0;
                 for ( SimTrackerHit &spHit : targetSpHits ) {
-                    
-                    if (spHit.getLayerID() != 2 || spHit.getMomentum()[2] <= 0) continue;
-                    
-                    if (spHit.getTrackID() == recoilTrackID) { 
+
+                    if (spHit.getLayerID() != 1 || spHit.getMomentum()[2] <= 0) continue;
+
+                    if (spHit.getTrackID() == recoilTrackID) {
                         if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {
                             recoilPAtTarget = spHit.getMomentum();
                             recoilPosAtTarget = spHit.getPosition();
                             pmax = sqrt(pow(recoilPAtTarget[0],2) + pow(recoilPAtTarget[1],2) + pow(recoilPAtTarget[2],2));
                         }
-                    } 
+                    }
                 }
             }
         }
@@ -278,7 +238,7 @@ namespace ldmx {
 
         // Get projected trajectories for electron and photon
         std::vector<XYCoords> ele_trajectory, photon_trajectory;
-        if(recoilP.size() > 0) { 
+        if(recoilP.size() > 0) {
             ele_trajectory = getTrajectory(recoilP, recoilPos);
             std::vector<double> pvec = recoilPAtTarget.size() ? recoilPAtTarget : std::vector<double>{0.0, 0.0, 0.0};
             std::vector<float>  posvec = recoilPosAtTarget.size() ? recoilPosAtTarget : std::vector<float>{0.0, 0.0, 0.0};
@@ -296,7 +256,7 @@ namespace ldmx {
         std::vector<double> photon_radii = radius68_thetalt10_plt500;
 
 
-        // Get the collection of digitized Ecal hits from the event. 
+        // Get the collection of digitized Ecal hits from the event.
         const std::vector< EcalHit > ecalRecHits = event.getCollection< EcalHit >( "EcalRecHits" );
 
         int globalCentroid = GetShowerCentroidIDAndRMS( ecalRecHits , showerRMS_);
@@ -322,7 +282,7 @@ namespace ldmx {
         std::vector<float> outsideContainmentYmean (nregions, 0.0);
         std::vector<float> outsideContainmentXstd (nregions, 0.0);
         std::vector<float> outsideContainmentYstd (nregions, 0.0);
-        
+
         for ( const EcalHit &hit : ecalRecHits ) {
             //Layer-wise quantities
             LayerCellPair hit_pair = hitToPair(hit);
@@ -360,7 +320,7 @@ namespace ldmx {
                 }
             }
         }
-        
+
         for (int iLayer = 0; iLayer < ecalLayerEdepReadout_.size(); iLayer++) {
             for (auto cell : cellMapTightIso_[iLayer]) {
                 if (cell.second > 0) {
@@ -370,7 +330,7 @@ namespace ldmx {
             ecalLayerTime_[iLayer] = ecalLayerTime_[iLayer] / ecalLayerEdepReadout_[iLayer];
             summedDet_ += ecalLayerEdepReadout_[iLayer];
         }
-        
+
         if (nReadoutHits_ > 0) {
             avgLayerHit_ /= nReadoutHits_;
             wavgLayerHit /= summedDet_;
@@ -408,7 +368,7 @@ namespace ldmx {
                 }
             }
         }
-        
+
         if (nReadoutHits_ > 0) {
             xStd_ = sqrt (xStd_ / summedDet_);
             yStd_ = sqrt (yStd_ / summedDet_);
@@ -418,7 +378,7 @@ namespace ldmx {
             yStd_ = 0;
             stdLayerHit_ = 0;
         }
-        
+
         for(unsigned int ireg = 0; ireg < nregions; ireg++) {
             if(outsideContainmentEnergy[ireg] > 0) {
                 outsideContainmentXstd[ireg] = sqrt(outsideContainmentXstd[ireg]/outsideContainmentEnergy[ireg]);
@@ -430,9 +390,9 @@ namespace ldmx {
 
 
         /* Code for fiducial region below */
-        
+
         std::vector<float> faceXY(2);
-        
+
         if (!recoilP.empty() && recoilP[2] != 0) {
             faceXY[0] = ((223.8 - 220.0) * (recoilP[0] / recoilP[2])) + recoilPos[0];
             faceXY[1] = ((223.8 - 220.0) * (recoilP[1] / recoilP[2])) + recoilPos[1];
@@ -440,43 +400,43 @@ namespace ldmx {
             faceXY[0] = -9999.0;
             faceXY[1] = -9999.0;
         }
-        
+
         int inside = 0;
         int up = 0;
         int step = 0;
         int index;
         float cell_radius = 5.0;
-        
+
         std::vector<float>::iterator it;
         it = std::lower_bound(mapsx.begin(), mapsx.end(), faceXY[0]);
-        
+
         index = std::distance( mapsx.begin(), it);
-        
+
         if (index == mapsx.size()) {
             index += -1;
         }
-        
+
         if (!recoilP.empty() && faceXY[0] != -9999.0) {
             while (true) {
                 std::vector<double> dis(2);
-                
+
                 dis[0] = faceXY[0] - mapsx[index + step];
                 dis[1] = faceXY[1] - mapsy[index + step];
-                
+
                 float celldis = sqrt (pow(dis[0],2) + pow(dis[1],2));
-                
+
                 if (celldis <= cell_radius) {
                     inside = 1;
                     break;
                 }
-                
+
                 if ((abs(dis[0]) > 5 && up == 0) || index + step == mapsx.size()-1) {
                     up = 1;
                     step = 0;
                 } else if ((abs(dis[0]) > 5 && up == 1) || (index + step == 0 && up == 1)) {
                     break;
                 }
-                
+
                 if (up == 0) {
                     step += 1;
                 } else {
@@ -487,23 +447,26 @@ namespace ldmx {
 
         result.setVariables(nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
             showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_, electronContainmentEnergy, photonContainmentEnergy, outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd, outsideContainmentYstd, ecalLayerEdepReadout_, recoilP, recoilPos);
-        
+
+#ifdef LDMX_USE_ONNXRUNTIME
         if (doBdt_) {
-            BDTHelper_->buildFeatureVector(bdtFeatures_, result );
-            float pred = BDTHelper_->getSinglePred(bdtFeatures_);
+            buildBDTFeatureVector(result);
+            Ort::FloatArrays inputs({bdtFeatures_});
+            float pred = rt_->run({"features"}, inputs, {"probabilities"})[0].at(1);
             result.setVetoResult(pred > bdtCutVal_);
             result.setDiscValue(pred);
             //std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
-        
-            // If the event passes the veto, keep it. Otherwise, 
+
+            // If the event passes the veto, keep it. Otherwise,
             // drop the event.
-            if (result.passesVeto() && inside) { 
-                setStorageHint(hint_shouldKeep); 
-            } else { 
+            if (result.passesVeto() && inside) {
+                setStorageHint(hint_shouldKeep);
+            } else {
                 setStorageHint(hint_shouldDrop);
             }
         }
-        
+#endif
+
         if (inside) {
             setStorageHint(hint_shouldKeep);
         } else {

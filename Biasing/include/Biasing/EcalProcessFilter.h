@@ -1,10 +1,3 @@
-/**
- * @file EcalProcessFilter.h
- * @brief User action plugin that biases Geant4 to only process events which
- *        involve a photonuclear reaction in the ECal.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #ifndef BIASING_ECALPROCESSFILTER_H
 #define BIASING_ECALPROCESSFILTER_H
 
@@ -13,31 +6,26 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <algorithm>
 
-/*~~~~~~~~~~~~*/
-/*   Geant4   */
-/*~~~~~~~~~~~~*/
-#include "G4VPhysicalVolume.hh"
-#include "G4PhysicalVolumeStore.hh"
-#include "G4RunManager.hh"
-
-/*~~~~~~~~~~~~~*/
-/*   Biasing   */
-/*~~~~~~~~~~~~~*/
-#include "Biasing/TargetBremFilter.h"
-
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/UserAction.h"
-#include "SimCore/UserTrackInformation.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Parameters.h" 
 
+// Forward declaration
+class G4Step; 
+class G4Track; 
+
 namespace ldmx {
 
+    /**
+     * User action plugin that filters events that don't see a hard brem from 
+     * the target undergo a photo-nuclear reaction in the ECal. 
+     */
     class EcalProcessFilter : public UserAction {
 
         public:
@@ -52,7 +40,7 @@ namespace ldmx {
 
             void stepping(const G4Step* step) final override;
 
-            void PostUserTrackingAction(const G4Track*) final override; 
+            //void PostUserTrackingAction(const G4Track*) final override; 
 
             /**
              * Classify a new track which postpones track processing.
@@ -63,23 +51,9 @@ namespace ldmx {
             G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* aTrack, 
                     const G4ClassificationOfNewTrack& currentTrackClass) final override;
 
-            /** 
-             * Add a volume to apply the filter to.
-             *
-             * @param Volume name
-             */
-            void addVolume(std::string volume);
-
-            /** 
-             * Add a volume to bound the particle of interest to.
-             *
-             * @param Volume name
-             */
-            void addBoundingVolume(std::string volume);
-
             /// Retrieve the type of actions this class defines
             std::vector< TYPE > getTypes() final override { 
-                return { TYPE::TRACKING, TYPE::STACKING, TYPE::STEPPING }; 
+                return { TYPE::STACKING, TYPE::STEPPING }; 
             } 
 
         private:
@@ -87,17 +61,8 @@ namespace ldmx {
             /** Pointer to the current track being processed. */
             G4Track* currentTrack_{nullptr};
 
-            /** List of volumes to apply filter to. */
-            std::vector<std::string> volumes_; 
-
-            /** List of volumes to bound the particle to. */
-            std::vector<std::string> boundVolumes_;
-
             /// Process to filter
             std::string process_{""}; 
-
-            /** PN gamma parent ID. */
-            double photonGammaID_{-1}; 
 
     }; // EcalProcessFilter 
 }

@@ -1,8 +1,3 @@
-/**
- * @file RootPersistencyManager.cxx
- * @brief Class used to manage ROOT based persistency.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
 
 #include "SimApplication/RootPersistencyManager.h"
 
@@ -25,6 +20,7 @@
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RunManager.h"
+#include "SimApplication/UserEventInformation.h" 
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -47,8 +43,8 @@ namespace ldmx {
         description_ = parameters.getParameter< std::string >("description"); 
         runNumber_   = parameters.getParameter< int >("runNumber");
         
-        ecalHitIO_.setEnableHitContribs(parameters.getParameter< bool >("enableHitContribs")); 
-        ecalHitIO_.setCompressHitContribs(parameters.getParameter< bool >("compressHitContribs"));
+        ecalHitIO_.setEnableHitContribs(parameters.getParameter< bool >("enableHitContribs", true)); 
+        ecalHitIO_.setCompressHitContribs(parameters.getParameter< bool >("compressHitContribs", true));
 
     }
 
@@ -115,13 +111,13 @@ namespace ldmx {
         EventHeader& eventHeader = event_->getEventHeader();
 
         // Set the event weight
-        //if (BiasingMessenger::isBiasingEnabled()) { 
-        //    eventHeader.setWeight(BiasingMessenger::getEventWeight());
-        if (anEvent->GetPrimaryVertex(0)) { 
-        //} else if (anEvent->GetPrimaryVertex(0)) { 
-            eventHeader.setWeight(anEvent->GetPrimaryVertex(0)->GetWeight());
-            
+        double weight{1}; 
+        if (anEvent->GetUserInformation() != nullptr) { 
+            weight = static_cast<UserEventInformation*>(anEvent->GetUserInformation())->getWeight(); 
+        } else if (anEvent->GetPrimaryVertex(0)) {
+            weight = anEvent->GetPrimaryVertex(0)->GetWeight(); 
         }
+        eventHeader.setWeight(weight); 
 
         // Set the seeds used for this event
         std::string seedString = getEventSeeds();

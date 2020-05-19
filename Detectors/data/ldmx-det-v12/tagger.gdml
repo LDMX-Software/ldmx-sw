@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
+
+    <define>
+
+        &constants;   
+
+        <variable name="x" value="1"/>
+
+        <!-- tagger module and sensor dimensions -->
+        <variable name="tagger_module_x" value="40.34*mm"/>
+        <variable name="tagger_module_y" value="100.0*mm"/>
+        <variable name="tagger_sensor_x" value="38.3399*mm"/>
+        <variable name="tagger_sensor_y" value="98.33*mm"/>
+
+
+        <!-- layer X positions assuming a 1.5 T field. -->
+        <variable name="tagger_l1_x" value="-20.955*mm"/>
+        <variable name="tagger_l2_x" value="-14.643*mm"/>
+        <variable name="tagger_l3_x" value="-9.461*mm"/>
+        <variable name="tagger_l4_x" value="-5.407*mm"/>
+        <variable name="tagger_l5_x" value="-2.481*mm"/>
+        <variable name="tagger_l6_x" value="-0.681*mm"/>
+        <variable name="tagger_l7_x" value="-0.006*mm"/>
+
+        <!-- layer Z start position -->
+        <variable name="tagger_z_start" value="tagger_envelope_z/2"/>
+
+        <!-- position of each layer in local coordinates of envelope volume -->
+        <variable name="tagger_l1_z" value="tagger_z_start - tagger_l1_mid_z"/>
+        <variable name="tagger_l1_z1" value="tagger_l1_z - tagger_layer_offset"/>
+        <variable name="tagger_l1_z2" value="tagger_l1_z + tagger_layer_offset"/>
+
+        <variable name="tagger_l2_z" value="tagger_z_start - tagger_l2_mid_z"/>
+        <variable name="tagger_l2_z1" value="tagger_l2_z - tagger_layer_offset"/>
+        <variable name="tagger_l2_z2" value="tagger_l2_z + tagger_layer_offset"/>
+
+        <variable name="tagger_l3_z" value="tagger_z_start - tagger_l3_mid_z"/>
+        <variable name="tagger_l3_z1" value="tagger_l3_z - tagger_layer_offset"/>
+        <variable name="tagger_l3_z2" value="tagger_l3_z + tagger_layer_offset"/>
+
+        <variable name="tagger_l4_z" value="tagger_z_start - tagger_l4_mid_z"/>
+        <variable name="tagger_l4_z1" value="tagger_l4_z - tagger_layer_offset"/>
+        <variable name="tagger_l4_z2" value="tagger_l4_z + tagger_layer_offset"/>
+
+        <variable name="tagger_l5_z" value="tagger_z_start - tagger_l5_mid_z"/>
+        <variable name="tagger_l5_z1" value="tagger_l5_z - tagger_layer_offset"/>
+        <variable name="tagger_l5_z2" value="tagger_l5_z + tagger_layer_offset"/>
+
+        <variable name="tagger_l6_z" value="tagger_z_start - tagger_l6_mid_z"/>
+        <variable name="tagger_l6_z1" value="tagger_l6_z - tagger_layer_offset"/>
+        <variable name="tagger_l6_z2" value="tagger_l6_z + tagger_layer_offset"/>
+
+        <variable name="tagger_l7_z" value="tagger_z_start - tagger_l7_mid_z"/>
+        <variable name="tagger_l7_z1" value="tagger_l7_z - tagger_layer_offset"/>
+        <variable name="tagger_l7_z2" value="tagger_l7_z + tagger_layer_offset"/>
+
+        <!-- Position of parent volume of trigger pad upstream of tagger tracker. --> 
+        <variable name="trigger_pad_tag_z"    
+                  value="tagger_l1_z1 - clearance - trigger_pad_thickness/2 - 3" />
+
+    </define>
+
+    <materials>
+        
+        <!-- Scintillator -->
+        <material name="Polyvinyltoluene">
+            <D type="density" value="1.023" unit="g/cm3"/>
+            <composite n="27" ref="C"/>
+            <composite n="30" ref="H"/>
+        </material>
+
+    </materials>
+
+    <solids>
+        <box lunit="mm" name="LDMXTaggerModuleVolume_component0Sensor0Box" x="tagger_sensor_x" y="tagger_sensor_y" z="si_sensor_thickness"/>
+        <box lunit="mm" name="LDMXTaggerModuleVolume_component0Box" x="tagger_module_x" y="tagger_module_y" z="si_sensor_thickness"/>
+        <box lunit="mm" name="LDMXTaggerModuleVolume_component1Box" x="tagger_module_x" y="tagger_module_y" z="carbon_fiber_thickness"/>
+        <box lunit="mm" name="LDMXTaggerModuleBox" x="tagger_module_x" y="tagger_module_y" z="half_module_thickness"/>            
+        <box lunit="mm" name="tagger_box" x="tagger_envelope_x" y="tagger_envelope_y" z="tagger_envelope_z"/> 
+    
+        <!-- Trigger scintillator --> 
+        <box lunit="mm" name="trigger_pad_tag_box"   x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>  
+        <box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" /> 
+
+    </solids>
+
+    <structure>
+
+        <!-- define tagger volumes --> 
+        <volume name="LDMXTaggerModuleVolume_component0Sensor0">
+            <materialref ref="Silicon"/>
+            <solidref ref="LDMXTaggerModuleVolume_component0Sensor0Box"/>
+            <auxiliary auxtype="SensDet" auxvalue="TaggerSD"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
+        </volume>
+        <volume name="LDMXTaggerModuleVolume_component0">
+            <materialref ref="Silicon"/>
+            <solidref ref="LDMXTaggerModuleVolume_component0Box"/>
+            <physvol name="LDMXTaggerModuleVolume_component0Sensor0_physvol">
+                <volumeref ref="LDMXTaggerModuleVolume_component0Sensor0"/>
+            </physvol>
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
+        </volume>
+        <volume name="LDMXTaggerModuleVolume_component1">
+            <materialref ref="Carbon"/>
+            <solidref ref="LDMXTaggerModuleVolume_component1Box"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
+        </volume>
+        <volume name="LDMXTaggerModuleVolume">
+            <materialref ref="Vacuum"/>
+            <solidref ref="LDMXTaggerModuleBox"/>
+            <physvol name="LDMXTaggerModuleVolume_component0_physvol">
+                <volumeref ref="LDMXTaggerModuleVolume_component0"/>
+                <position name="LDMXTaggerModuleVolume_component0_physvol_pos" unit="mm" x="0" y="0" z="-(carbon_fiber_thickness/2)"/>
+            </physvol>
+            <physvol copynumber="1" name="LDMXTaggerModuleVolume_component1_physvol1">
+                <volumeref ref="LDMXTaggerModuleVolume_component1"/>
+                <position name="LDMXTaggerModuleVolume_component1_physvol1_pos" unit="mm" x="0" y="0" z="si_sensor_thickness/2"/>
+            </physvol>
+            <auxiliary auxtype="VisAttributes" auxvalue="TaggerVis"/>
+        </volume>
+        
+        <volume name="trigger_pad_tag_bar_volume">
+            <materialref ref="Polyvinyltoluene"/>
+            <solidref ref="trigger_bar_box"/>
+            <auxiliary auxtype="SensDet" auxvalue="TriggerPadTaggerSD"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+            <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
+        </volume>  
+
+        <!-- define tagger physical volumes inside envelope volume -->
+        <volume name="tagger">
+            <materialref ref="Vacuum"/>
+            <solidref ref="tagger_box"/>
+
+            <!-- layer 1 -->
+            <physvol copynumber="10" name="LDMXTaggerModuleVolume_physvol1">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol1_pos" unit="mm" x="tagger_l1_x" y="0" z="tagger_l1_z1"/>
+            </physvol>
+            <physvol copynumber="20" name="LDMXTaggerModuleVolume_physvol2">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol2_pos" unit="mm" x="tagger_l1_x" y="0" z="tagger_l1_z2"/>
+                <rotation name="LDMXTaggerModuleVolume_physvol2_rot" unit="deg" x="0" y="0" z="stereo_angle"/>
+            </physvol>
+
+            <physvol copynumber="30" name="LDMXTaggerModuleVolume_physvol3">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol3_pos" unit="mm" x="tagger_l2_x" y="0" z="tagger_l2_z1"/>
+            </physvol>
+            <physvol copynumber="40" name="LDMXTaggerModuleVolume_physvol4">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol4_pos" unit="mm" x="tagger_l2_x" y="0" z="tagger_l2_z2"/>
+                <rotation name="LDMXTaggerModuleVolume_physvol4_rot" unit="deg" x="0" y="0" z="-stereo_angle"/>
+            </physvol>
+
+            <physvol copynumber="50" name="LDMXTaggerModuleVolume_physvol5">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol5_pos" unit="mm" x="tagger_l3_x" y="0" z="tagger_l3_z1"/>
+            </physvol>
+            <physvol copynumber="60" name="LDMXTaggerModuleVolume_physvol6">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol6_pos" unit="mm" x="tagger_l3_x" y="0" z="tagger_l3_z2"/>
+                <rotation name="LDMXTaggerModuleVolume_physvol6_rot" unit="deg" x="0" y="0" z="stereo_angle"/>
+            </physvol>
+
+            <physvol copynumber="70" name="LDMXTaggerModuleVolume_physvol7">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol7_pos" unit="mm" x="tagger_l4_x" y="0" z="tagger_l4_z1"/>
+            </physvol>
+            <physvol copynumber="80" name="LDMXTaggerModuleVolume_physvol8">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol8_pos" unit="mm" x="tagger_l4_x" y="0" z="tagger_l4_z2"/>
+                <rotation name="LDMXTaggerModuleVolume_physvol8_rot" unit="deg" x="0" y="0" z="-stereo_angle"/>
+            </physvol>
+
+            <physvol copynumber="90" name="LDMXTaggerModuleVolume_physvol9">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol9_pos" unit="mm" x="tagger_l5_x" y="0" z="tagger_l5_z1"/>
+            </physvol>
+            <physvol copynumber="100" name="LDMXTaggerModuleVolume_physvol10">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol10_pos" unit="mm" x="tagger_l5_x" y="0" z="tagger_l5_z2"/>
+                <rotation name="LDMXTaggerModuleVolume_physvol10_rot" unit="deg" x="0" y="0" z="stereo_angle"/>
+            </physvol>
+
+            <physvol copynumber="110" name="LDMXTaggerModuleVolume_physvol11">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol11_pos" unit="mm" x="tagger_l6_x" y="0" z="tagger_l6_z1"/>
+            </physvol>
+            <physvol copynumber="120" name="LDMXTaggerModuleVolume_physvol12">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol12_pos" unit="mm" x="tagger_l6_x" y="0" z="tagger_l6_z2"/>
+                <rotation name="LDMXTaggerModuleVolume_physvol12_rot" unit="deg" x="0" y="0" z="-stereo_angle"/>
+            </physvol>
+
+            <physvol copynumber="130" name="LDMXTaggerModuleVolume_physvol13">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol13_pos" unit="mm" x="tagger_l7_x" y="0" z="tagger_l7_z1"/>
+            </physvol>
+            <physvol copynumber="140" name="LDMXTaggerModuleVolume_physvol14">
+                <volumeref ref="LDMXTaggerModuleVolume"/>
+                <position name="LDMXTaggerModuleVolume_physvol14_pos" unit="mm" x="tagger_l7_x" y="0" z="tagger_l7_z2"/>
+                <rotation name="LDMXTaggerModuleVolume_physvol14_rot" unit="deg" x="0" y="0" z="stereo_angle"/>
+            </physvol>
+
+            <loop for="x" to="number_of_bars" step="1">
+                <physvol copynumber="2*x">
+                    <volumeref ref="trigger_pad_tag_bar_volume"/>
+                    <position name="trigger_pad_tag_bar_layer1_pos" unit="mm" x="-21.318" 
+                              y="-target_dim_y/2 + trigger_bar_dy*(x-0.5) + trigger_pad_bar_gap*(x-1) + trigger_pad_offset" 
+                              z="trigger_pad_tag_z-trigger_pad_bar_thickness/2-trigger_pad_bar_gap/2" />
+                    <rotationref ref="identity"/>
+                </physvol>
+                <physvol copynumber="2*x + 1">
+                    <volumeref ref="trigger_pad_tag_bar_volume"/>
+                    <position name="trigger_pad_tag_bar_layer2_pos" unit="mm" x="-21.318" 
+                              y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x-1) + trigger_pad_offset" 
+                              z="trigger_pad_tag_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+                    <rotationref ref="identity"/>
+                </physvol>
+            </loop> 
+
+            <auxiliary auxtype="Region" auxvalue="tagger" />
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+            <auxiliary auxtype="DetElem" auxvalue="tagger"/>
+        </volume>       
+
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="tagger"/>
+    </setup>
+
+</gdml>
