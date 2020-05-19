@@ -20,6 +20,12 @@ namespace ldmx {
             passname_ {passname} {
     }
 
+    Process::~Process() {
+        for ( EventProcessor *ep : sequence_ ) {
+            delete ep;
+        }
+    }
+
     void Process::run() {
 
         try {
