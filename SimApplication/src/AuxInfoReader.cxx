@@ -347,15 +347,15 @@ namespace ldmx {
             }
 
             // Create new 3D field map.
-            G4MagneticField* fieldMap = new MagneticFieldMap3D(fileName.c_str(), offsetX, offsetY, offsetZ);
+            magField = new MagneticFieldMap3D(fileName.c_str(), offsetX, offsetY, offsetZ);
 
             // Assign field map as global field.
             G4FieldManager* fieldMgr = G4TransportationManager::GetTransportationManager()->GetFieldManager();
             if (fieldMgr->GetDetectorField() != nullptr) {
                 EXCEPTION_RAISE( "MisAssign" , "Global mag field was already assigned." );
             }
-            fieldMgr->SetDetectorField(fieldMap);
-            fieldMgr->CreateChordFinder(fieldMap);
+            fieldMgr->SetDetectorField(magField);
+            fieldMgr->CreateChordFinder(magField);
 
         } else {
             EXCEPTION_RAISE( "UnknownType" , "Unknown MagFieldType '" + std::string(magFieldType.data()) + "' in auxiliary info." );
