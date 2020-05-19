@@ -1,0 +1,62 @@
+
+name: Generate and Depoly the Docs
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the input branch
+# This action takes less than a minute right now, so I think it makes sense for it
+# to run on every push to master.
+on:
+  push:
+    branches: [ iss741 ] # TODO change to master 
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  generate:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    # Defaults to current branch
+    - uses: actions/checkout@v2
+
+    # Runs doxygen doxygen.conf in the docs/ directory
+    - name: Run Doxygen
+      uses: mattnotmitt/doxygen-action@v1.1.0
+      with:
+        doxyfile-path: doxygen.conf #relative to working directory
+        working-directory: docs #docs subdirectory
+
+    # Save documentation to the repo, maybe don't do this and just deploy?
+    # By default, commits ALL changed/new files
+    #   Since we have only run doxygen since checking out master, this is what we want
+    # We might need to do some permission configuring to get this to work
+#    - name: Save new docs
+#      uses: stefanzweifel/git-auto-commit-action@v4.1.6
+#      with:
+#          commit_message: Automatically updating documentation.
+#          #branch: master # optional, could have a separate branch for the docs and gh-pages
+#          # can put it author and username if necessary
+#          # can put it an glob pattern to pick out files, might be necessary?
+    
+    # Could have this action publish the docs to our github pages repo
+    # If we use this, we will probably need to do some configuring since our
+    # repos are private right now.
+    # After getting this setup correctly, we could clean out the docs/ directory
+    # and just have the configuration file there for people to generate a local
+    # copy if they want.
+    - name: Deploy the Docs
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }} #requires setup to connect ldmx-sw and ldmx-sw.github.io
+        commit_message: ${{ github.event.head_commit.message }}
+        external_repository: LDMX-Software/ldmx-software.github.io
+        publish_branch: action-test #TODO change to master #docs say this necessarily needs to be master
+        publish_dir: ./_pages
+        enable_jekyll: true #allow github pages to process using jekyll
+        keep_files: true #keep old files (by default, clears publish_dir before deploying to it)
+
