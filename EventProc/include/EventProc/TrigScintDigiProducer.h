@@ -85,6 +85,9 @@ namespace ldmx {
             /// Name of the input collection containing the sim hits
 	        std::string inputCollection_;
 
+            /// Name of the pass that the input collection is on (empty string means take any pass)
+            std::string inputPassName_;
+
             /// Name of the output collection that will be used to stored the
             /// digitized trigger scintillator hits
 	        std::string outputCollection_;

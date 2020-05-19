@@ -1,6 +1,8 @@
 # minimum cmake version
 cmake_minimum_required(VERSION 3.1)
 
+project(ldmx-sw)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 17)
@@ -96,7 +98,7 @@ foreach(module ${MODULES})
 endforeach()
 
 # build and install test executable ldmx-test
-option(BUILD_TESTS "Build and link ldmx-test executable." ON)
+option(BUILD_TESTS "Build and link ldmx-test executable." OFF)
 if(BUILD_TESTS)
   include(TestExecutable)
 endif()

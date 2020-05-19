@@ -13,7 +13,7 @@
 
 // STL
 #include <vector>
-
+#include <memory>
 
 class TFile;
 class TDirectory;
@@ -37,6 +37,14 @@ namespace ldmx {
              * @param passname Processing pass label
              */
             Process(const std::string& passname);
+
+            /**
+             * Class Destructor
+             *
+             * Cleans up sequence of EventProcessors.
+             * These processors were created by ConfigurePython and should be deleted.
+             */
+            ~Process();
 
             /**
              * Get the processing pass label.
@@ -182,6 +190,13 @@ namespace ldmx {
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};
     };
+
+    /**
+     * A handle to the current process
+     * Used to pass a process from ConfigurePython
+     * to ldmx-app.
+     */
+    typedef std::unique_ptr<Process> ProcessHandle;
 }
 
 #endif
