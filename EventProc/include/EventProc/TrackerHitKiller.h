@@ -5,24 +5,17 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENTPROC_TRACKERHITKILLER_H_
-#define EVENTPROC_TRACKERHITKILLER_H_
+#ifndef EVENTPROC_TRACKERHITKILLER_H
+#define EVENTPROC_TRACKERHITKILLER_H
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <time.h>
-
-//----------//
-//   ROOT   //
-//----------//
+/*~~~~~~~~~~*/
+/*   ROOT   */
+/*~~~~~~~~~~*/
 #include "TRandom3.h"
 
-//----------//
-//   LDMX   //
-//----------//
-#include "Event/SimTrackerHit.h"
-#include "Event/SiStripHit.h"
+/*~~~~~~~~~~~~~~~*/
+/*   Framework   */
+/*~~~~~~~~~~~~~~~*/
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h" 
 
@@ -61,12 +54,11 @@ namespace ldmx {
              */
             std::unique_ptr<TRandom3> random_;
 
-            /** 
-             * Hit efficiency. For now, this is an integer in the range 0-100.
-             */
-            int hitEff_{99};
+            /// Hit efficiency
+            double hitEff_{99};
 
     }; // TrackerHitKiller
-}
+
+} // ldmx
 
 #endif // EVENTPROC_TRACKERHITKILLER_H_

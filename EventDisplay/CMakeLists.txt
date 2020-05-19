@@ -7,8 +7,8 @@ module(
   EXTERNAL_DEPENDENCIES ROOT Python
 )
 
-# generate ROOT dictionary for Event classes 
-root_generate_dictionary(EventDisplayDict ${EventDisplay_INCLUDE_DIR}/EventDisplay/EventDisplayDef.h MODULE ${PROJECT_NAME} LINKDEF ${EventDisplay_INCLUDE_DIR}/EventDisplay/EventDisplayLinkDef.h)
+# generate ROOT dictionary for Event classes
+root_generate_dictionary(${PROJECT_NAME}Dict ${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}Def.h LINKDEF ${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}LinkDef.h)
 
 # install ROOT pcm file
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib${PROJECT_NAME}_rdict.pcm DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib${PROJECT_NAME}Dict_rdict.pcm DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

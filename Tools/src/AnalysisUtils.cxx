@@ -39,7 +39,7 @@ namespace ldmx {
             for ( const auto &sp : particleMap ) {
                 
                if ( (sp.second.getPdgID() == 0 ) //particle is a photon
-                    and (sp.second.getDaughterCount() > 0) //has offspring
+                    and (sp.second.getDaughters().size() > 0) //has offspring
                   ) {
 
                    std::vector<int> daughterTrackIDs = sp.second.getDaughters();

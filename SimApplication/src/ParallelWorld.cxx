@@ -6,7 +6,8 @@ ldmx::ParallelWorld::ParallelWorld(G4GDMLParser* parser, G4String worldName)
       auxInfoReader_(new AuxInfoReader(parser)) {
 }
 
-ldmx::ParallelWorld::~ParallelWorld() { 
+ldmx::ParallelWorld::~ParallelWorld() {
+   delete auxInfoReader_;  
 }
 
 void ldmx::ParallelWorld::Construct() {

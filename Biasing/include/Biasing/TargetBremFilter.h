@@ -1,11 +1,3 @@
-/**
- * @file TargetBremFilter.h
- * @class TargetBremFilter
- * @brief Class defining a UserActionPlugin that allows a user to filter out 
- *        events that don't result in a brem within the target.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #ifndef BIASING_TARGETBREMFILTER_H
 #define BIASING_TARGETBREMFILTER_H
 
@@ -13,11 +5,6 @@
 //   C++ StdLib   //
 //----------------//
 #include <algorithm>
-
-//------------//
-//   Geant4   //
-//------------//
-#include "G4RunManager.hh"
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
@@ -31,6 +18,10 @@
 
 namespace ldmx {
 
+    /**
+     * User action that allows a user to filter out events that don't result in
+     * a brem within the target. 
+     */
     class TargetBremFilter : public UserAction {
 
         public:
@@ -63,16 +54,6 @@ namespace ldmx {
             G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* aTrack, 
                 const G4ClassificationOfNewTrack& currentTrackClass) final override;
 
-            /**
-             *
-             */
-            static std::vector<G4Track*> getBremGammaList() { return bremGammaTracks_; }
-
-            /**
-             *
-             */
-            static void removeBremFromList(G4Track* track);
-
 
             /// Retrieve the type of actions this class defines
             std::vector< TYPE > getTypes() final override { 
@@ -81,19 +62,14 @@ namespace ldmx {
 
         private:
             
-            static std::vector<G4Track*> bremGammaTracks_; 
-
-            /// The volume that the filter will be applied to. 
-            G4String volumeName_{"target_PV"};
-
             /// Recoil electron threshold.  
-            double recoilEnergyThreshold_{1500}; // MeV
+            double recoilMaxPThreshold_{1500}; // MeV
 
             /// Brem gamma energy treshold
-            double bremEnergyThreshold_{0}; 
+            double bremEnergyThreshold_{2500}; 
 
             /// Flag indicating if the recoil electron track should be killed
-            bool killRecoilElectron_{false};
+            bool killRecoil_{false};
 
 
     }; // TargetBremFilter

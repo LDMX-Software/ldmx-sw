@@ -69,9 +69,6 @@ namespace ldmx {
             /** Singleton used to access histograms. */
             HistogramPool* histograms_{nullptr}; 
 
-            /** Name of ECal veto collection. */
-            std::string ecalVetoCollectionName_{"EcalVeto"}; 
-    
     }; // RecoilTrackerDQM 
     
 } // ldmx

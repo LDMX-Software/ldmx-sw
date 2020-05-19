@@ -29,4 +29,4 @@ p.skimConsider("simpleTrigger")
 p.inputFiles = [sys.argv[1]]
 p.outputFiles = ["ldmx_skim_digi_events.root"]
 
-p.printMe()
+print p
