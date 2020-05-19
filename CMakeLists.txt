@@ -142,9 +142,6 @@ if(INSTALL_DOC)
   #    message(FATAL_ERROR "The dot executable was not found.")
   #endif()
   
-  # configure doxygen file
-  configure_file(${PROJECT_SOURCE_DIR}/docs/doxygen.conf.in ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)
-
   # generate the documentation
   install(CODE 
       "execute_process(COMMAND doxygen ${PROJECT_SOURCE_DIR}/docs/doxygen.conf WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})")
