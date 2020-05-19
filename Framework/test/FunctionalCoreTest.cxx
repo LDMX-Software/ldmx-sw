@@ -385,11 +385,9 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
     REQUIRE( p.getPassName() == "test" );
 
-    TestProducer pro( p );
-    TestAnalyzer ana( p );
-
-    auto proHdl = &pro;
-    auto anaHdl = &ana;
+    //Process owns and deletes the processors
+    auto proHdl = new TestProducer( p );
+    auto anaHdl = new TestAnalyzer( p );
 
     SECTION( "Production Mode" ) {
         //no input files, only output files
@@ -457,8 +455,7 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
     SECTION( "Need Input Files" ) {
 
         Process makeInputs( "makeInputs" );
-        TestProducer inputPro( makeInputs );
-        auto inputProHdl = &inputPro;
+        auto inputProHdl = new TestProducer( makeInputs );
         makeInputs.addToSequence( inputProHdl );
         inputProHdl->shouldMakeRunHeader( true );
     
