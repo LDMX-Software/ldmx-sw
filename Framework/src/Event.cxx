@@ -97,6 +97,8 @@ namespace ldmx {
         // so reset branch listing before starting
         products_.clear();
         branchNames_.clear();
+        branches_.clear();
+        passengers_.clear();
 
         // put in EventHeader (only one without pass name)
 	    products_.emplace_back(EventConstants::EVENT_HEADER,"","ldmx::EventHeader");
@@ -114,6 +116,7 @@ namespace ldmx {
     	    }
             branchNames_.push_back(brname);
         }
+
     }
 
     bool Event::nextEvent() {
@@ -143,6 +146,9 @@ namespace ldmx {
         passengers_.clear(); //reset event bus
         branches_.clear(); //reset branches
         if ( outputTree_ ) outputTree_->ResetBranchAddresses(); //reset addresses for output branch
+        if ( inputTree_ ) inputTree_ = nullptr; //detach old inputTree (owned by EventFile)
+        ientry_ = -1; //reset current entry and total entries
+        entries_ = -1;
     }
 
     bool Event::shouldDrop(const std::string &branchName) const {

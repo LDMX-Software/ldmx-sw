@@ -30,6 +30,7 @@ namespace ldmx {
         pe_per_mip_                = parameters.getParameter< double >("pe_per_mip");
         strip_attenuation_length_  = parameters.getParameter< double >("strip_attenuation_length");
         strip_position_resolution_ = parameters.getParameter< double >("strip_position_resolution");
+        sim_hit_pass_name_         = parameters.getParameter< std::string >("sim_hit_pass_name");
         noiseGenerator_ = std::make_unique<NoiseGenerator>(meanNoise_,false);
         noiseGenerator_->setNoiseThreshold(1); // hard-code this number, create noise hits for non-zero PEs! 
     }
@@ -105,7 +106,7 @@ namespace ldmx {
         }
         
         // looper over sim hits and aggregate energy depositions for each detID
-        const std::vector<SimCalorimeterHit> hcalHits = event.getCollection<SimCalorimeterHit>(EventConstants::HCAL_SIM_HITS, "sim");
+        auto hcalHits{event.getCollection<SimCalorimeterHit>(EventConstants::HCAL_SIM_HITS,sim_hit_pass_name_)};
 
         for (const SimCalorimeterHit &simHit : hcalHits ) {
             

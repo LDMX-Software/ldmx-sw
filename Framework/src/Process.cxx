@@ -20,6 +20,12 @@ namespace ldmx {
             passname_ {passname} {
     }
 
+    Process::~Process() {
+        for ( EventProcessor *ep : sequence_ ) {
+            delete ep;
+        }
+    }
+
     void Process::run() {
 
         try {
@@ -87,9 +93,12 @@ namespace ldmx {
                             break;
                         }
                     }
+
+                    //fill any Ntuples that have been created
+                    if ( not eventAborted ) NtupleManager::getInstance()->fill(); 
+                    NtupleManager::getInstance()->clear(); 
                     
                     outFile.nextEvent( eventAborted ? false : m_storageController.keepEvent() /*ignore storage control if event aborted*/);
-                    theEvent.Clear();
                     n_events_processed++;
                 }
 
@@ -149,7 +158,6 @@ namespace ldmx {
                             for ( auto rule : dropKeepRules_ ) outFile->addDrop(rule);
 
                         } else {
-
                             //all other input files
                             outFile->updateParent( &inFile );
                             masterFile = outFile;
@@ -205,8 +213,9 @@ namespace ldmx {
                             }
                         }
 
-                        NtupleManager::getInstance()->fill(); 
+                        if ( not eventAborted ) NtupleManager::getInstance()->fill(); 
                         NtupleManager::getInstance()->clear(); 
+
                         n_events_processed++;
                     } //loop through events
 
@@ -225,7 +234,7 @@ namespace ldmx {
 
                     inFile.close();
 
-                    // Reset the event in case of single output mode.
+                    // Reset the event in case of multiple input files
                     theEvent.onEndOfFile();
 
                     if ( outFile and !singleOutput ) {
@@ -244,11 +253,13 @@ namespace ldmx {
                     outFile = nullptr;
                 }
 
-                if (histoTFile_) {
-                    histoTFile_->Write();
-                    delete histoTFile_;
-                    histoTFile_ = 0;
-                }
+            } //are there input files? if-else tree
+
+            //close up histogram file if anything was put into it
+            if (histoTFile_) {
+                histoTFile_->Write();
+                delete histoTFile_;
+                histoTFile_ = 0;
             }
 
             // finally, notify everyone that we are stopping
