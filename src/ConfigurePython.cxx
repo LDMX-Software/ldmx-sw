@@ -117,6 +117,13 @@ namespace ldmx {
 
         Py_Initialize();
         if (nargs > 0) {
+#if PY_MAJOR_VERSION < 3
+            char** targs = new char*[nargs + 1];
+            targs[0] = (char*) pythonScript.c_str();
+            for (int i = 0; i < nargs; i++)
+                targs[i + 1] = args[i];
+            PySys_SetArgvEx(nargs, targs, 1);
+#else
             wchar_t** targs = new wchar_t*[nargs];
             std::cout << "nargs: " << nargs << std::endl;
             std::cout << "Load Python Script Name " << pythonScript.c_str() << std::endl;
@@ -132,15 +139,7 @@ namespace ldmx {
             std::cout << "Set Python Args" << std::endl;
             PySys_SetArgvEx(nargs-1, targs, 1);
             std::cout << "Free Memory" << std::endl;
-
-            /* OLD WAY
-            char** targs = new char*[nargs + 1];
-            targs[0] = (char*) pythonScript.c_str();
-            for (int i = 0; i < nargs; i++)
-                targs[i + 1] = args[i];
-            PySys_SetArgvEx(nargs, targs, 1);
-            */
-            
+#endif
             delete[] targs;
             std::cout << "Free Memory Succeed" << std::endl;
         }
