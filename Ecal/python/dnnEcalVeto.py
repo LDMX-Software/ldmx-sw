@@ -1,7 +1,7 @@
 
 from LDMX.Framework import ldmxcfg
 
-from LDMX.Configuration.makePath import *
+from LDMX.Ecal.makePath import *
 
 dnnEcalVeto = ldmxcfg.Producer("DNNEcalVeto", "ldmx::DNNEcalVetoProcessor")
 dnnEcalVeto.parameters["debug"] = False
