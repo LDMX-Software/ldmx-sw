@@ -211,7 +211,7 @@
             </physvol>
 
             <loop for="x" to="number_of_bars" step="1">
-                <physvol copynumber="2*x">
+                <physvol copynumber="2*x-2">
                     <volumeref ref="trigger_pad_tag_bar_volume"/>
                     <position name="trigger_pad_tag_bar_layer1_pos" unit="mm" x="-21.318" 
                               y="-target_dim_y/2 + trigger_bar_dy*(x-0.5) + trigger_pad_bar_gap*(x-1) + trigger_pad_offset" 

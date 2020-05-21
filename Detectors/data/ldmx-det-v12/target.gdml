@@ -79,7 +79,7 @@
             <solidref ref="target_area_box" />
 
             <loop for="x" to="number_of_bars" step="1">
-                <physvol copynumber="2*x">
+                <physvol copynumber="2*x-2">
                     <volumeref ref="trigger_pad_up_bar_volume" />
                     <position name="trigger_pad_up_bar_layer1_pos" unit="mm" x="0" 
                               y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
@@ -93,7 +93,7 @@
                               z="trigger_pad_up_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
                     <rotationref ref="identity" />
                 </physvol>
-                <physvol copynumber="2*x">
+                <physvol copynumber="2*x-2">
                     <volumeref ref="trigger_pad_dn_bar_volume" />
                     <position name="trigger_pad_dn_bar_layer1_pos" unit="mm" x="0" 
                               y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
