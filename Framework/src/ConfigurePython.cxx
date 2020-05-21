@@ -208,6 +208,7 @@ namespace ldmx {
         for (int i = 0; i < nargs; i++)
             targs[i+1] = args[i];
         PySys_SetArgvEx(nargs+1, targs, 1);
+        delete [ ] targs; //1D array because args is owned by main
 #else
         //PySys_SetArgvEx uses wchar_t instead of char in python3
         wchar_t** targs = new wchar_t*[nargs+1];
@@ -215,11 +216,11 @@ namespace ldmx {
         for (int i = 0; i < nargs;  i++)
             targs[i+1] = getWC(args[i]);
         PySys_SetArgvEx(nargs+1, targs, 1);
-#endif
         //clean up the 2D character array
         for ( int i = 0; i < nargs+1; i++ )
             delete [] targs[i];
         delete [] targs;
+#endif
 
         //the following line is what actually runs the script
         PyObject* script = PyImport_ImportModule(cmd.c_str());
@@ -324,7 +325,12 @@ namespace ldmx {
         Py_DECREF(pysequence);
 
         //all done with python nonsense
+#if PY_MAJOR_VERSION < 3
+        //do nothing for some reason
+        //  too lazy to figure out how to close up python2 well
+#else
         Py_Finalize();
+#endif
     }
 
     Process* ConfigurePython::makeProcess() {
