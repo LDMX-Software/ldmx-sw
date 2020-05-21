@@ -43,7 +43,6 @@ message(STATUS "Geant4 found at: ${Geant4_DIR}")
 # find Python installation
 find_package(PythonLibs 3)
 if(NOT ${PYTHONLIBS_FOUND})
-  set(USE_PYTHON2 "YES")
   message(WARNING "Python2 support will be removed in upcoming ldmx-sw versions.")
   find_package(PythonLibs 2 REQUIRED)
 endif()
