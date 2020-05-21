@@ -51,6 +51,19 @@ namespace ldmx { namespace test {
 
     };
 
+
+/**
+ * @func removeFile
+ * Deletes the file and returns whether the deletion was successful.
+ *
+ * This is just a helper function during development.
+ * Sometimes it is helpful to leave the generated files, so
+ * maybe we can make the removal optional?
+ */
+static bool removeFile(const char * filepath) {
+    return remove( filepath ) == 0;
+}
+
 } //test
 } //ldmx
 
@@ -60,11 +73,11 @@ DECLARE_PRODUCER_NS(ldmx::test, TestConfig)
  * Test for Configure Python class
  *
  * Checks:
- * - TODO pass parameters to Process object
- * - TODO pass parameters to EventProcessors
+ * - pass parameters to Process object
+ * - pass parameters to EventProcessors
+ * - pass parameters to python script on command line
  * - TODO pass histogram info to EventProcessors
  * - TODO pass class objects to EventProcessors
- * - TODO pass parameters to python script on command line
  */
 TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
 
@@ -96,15 +109,24 @@ TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
     ProcessHandle p;
 
     int correctLogFreq{9};
-//
-//    SECTION( "no arguments to python script" ) {
-//
-//        testPyScript.close();
-//
-//        ConfigurePython cfg( configFileName , args , 0 );
-//
-//        p = cfg.makeProcess();
-//    }
+
+    /*
+     * Python seg faults when trying to run more than once.
+     * Both this SECTION and the un-commented SECTION
+     * run fine alone, but a segfault is produced
+     * upon starting the next section.
+     *
+     * I'm not sure how to get around this, so I am
+     * just going to leave the more rigorous test in place.
+    SECTION( "no arguments to python script" ) {
+
+        testPyScript.close();
+
+        ConfigurePython cfg( configFileName , args , 0 );
+
+        p = cfg.makeProcess();
+    }
+     */
 
     SECTION( "one argument to python script" ) {
 
@@ -122,4 +144,6 @@ TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
 
     CHECK( p->getPassName() == "test" );
     CHECK( p->getLogFrequency() == correctLogFreq );
+
+    CHECK( test::removeFile( configFileName.c_str() ) );
 }
