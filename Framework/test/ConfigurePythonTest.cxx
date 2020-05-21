@@ -16,12 +16,31 @@ namespace ldmx { namespace test {
 
         public:
 
+            /**
+             * Constructor
+             *
+             * Follows the standard form for a ldmx::Producer.
+             *
+             * Checks that the passed name is the same as
+             * what is written to the python config script.
+             */
             TestConfig(const std::string& name, Process& process) :
                 Producer(name, process) {
 
                     CHECK( name == "testInstance" );
             }
 
+            /**
+             * Configure function
+             *
+             * Checks:
+             * - int parameter
+             * - double parameter
+             * - string parameter
+             * - vector of ints parameter
+             * - vector of doubles parameter
+             * - vector of strings parameter
+             */ 
             void configure(Parameters& parameters) final override {
             
                 CHECK( parameters.getParameter< int >("testInt") == 9 );
@@ -81,6 +100,10 @@ DECLARE_PRODUCER_NS(ldmx::test, TestConfig)
  */
 TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
 
+#if PY_MAJOR_VERSION < 3
+    std::cerr << "Python2 doesn't play nice with Catch!" << std::endl;
+    CHECK(false);
+#else
     const std::string configFileName{"test_config_script.py"};
     
     std::ofstream testPyScript( configFileName );
@@ -146,4 +169,5 @@ TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
     CHECK( p->getLogFrequency() == correctLogFreq );
 
     CHECK( test::removeFile( configFileName.c_str() ) );
+#endif
 }
