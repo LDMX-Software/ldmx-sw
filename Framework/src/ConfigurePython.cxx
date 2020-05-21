@@ -333,7 +333,7 @@ namespace ldmx {
 #endif
     }
 
-    Process* ConfigurePython::makeProcess() {
+    ProcessHandle ConfigurePython::makeProcess() {
 
         //no python nonsense happens in here,
         //this just takes the parameters determined earlier
@@ -381,7 +381,7 @@ namespace ldmx {
         if (run_ > 0)
             process->setRunNumber(run_);
 
-        return process.release();
+        return process;
     }
 
     std::map< std::string, std::any > ConfigurePython::getParameters(PyObject* dictionary) { 
