@@ -34,10 +34,10 @@ namespace ldmx {
         noiseGenerator_->setNoiseThreshold(1); 
     }
 
-    unsigned int TrigScintDigiProducer::generateRandomID(TrigScintSection sec){
+    unsigned int TrigScintDigiProducer::generateRandomID(int module) {
         TrigScintID tempID;
-        if ( sec < TrigScintSection::NUM_SECTIONS ) {
-            tempID.setFieldValue("module", int(sec));
+        if ( module < TrigScintSection::NUM_SECTIONS ) {
+            tempID.setFieldValue("module", module);
             tempID.setFieldValue("bar", random_->Integer(stripsPerArray_));
         } else { 
             // Throw an exception
@@ -59,15 +59,21 @@ namespace ldmx {
         // looper over sim hits and aggregate energy depositions for each detID
         const auto simHits{event.getCollection< SimCalorimeterHit >(inputCollection_,inputPassName_)};
 
+        int module{-1}; 
         for (const auto& simHit : simHits) {          
 
             int detIDRaw{simHit.getID()};
             detID_->setRawValue(detIDRaw);
             detID_->unpack();
+
+            // Just set the module ID to use for noise hits here.  Given that
+            // we are currently processing a single module at a time, setting
+            // it within the loop shouldn't matter.
+            module = detID_->getFieldValue("module"); 
             std::vector<float> position = simHit.getPosition();
 
             if (verbose_) {
-                std::cout << "Module: " << detID_->getFieldValue("module") 
+                std::cout << "Module: " << module 
                           << " Bar: " << detID_->getFieldValue("bar") 
                           << std::endl; 
             }        
@@ -135,10 +141,9 @@ namespace ldmx {
             if (verbose_) {
                 detID_->setRawValue(detIDRaw);
                 detID_->unpack();
-                auto module{detID_->getFieldValue("module")};
                 auto bar{detID_->getFieldValue("bar")};
 
-                std::cout << "Module: " << module << " Bar: " << bar << std::endl; 
+                std::cout << "Module: " << detID_->getFieldValue("module") << " Bar: " << bar << std::endl; 
                 std::cout << "Edep: " << Edep[detIDRaw] << std::endl;
                 std::cout << "numPEs: " << cellPEs[detIDRaw] << std::endl;
                 std::cout << "time: " << Time[detIDRaw] << std::endl;std::cout << "z: " << Zpos[detIDRaw] << std::endl;
@@ -157,7 +162,7 @@ namespace ldmx {
 
             // generate random ID from remoaining cells
             do {
-                tempID = generateRandomID(TrigScintSection::UPSTREAM_TARGET);
+                tempID = generateRandomID(module);
             } while( Edep.find(tempID) != Edep.end() || 
                     noiseHitIDs.find(tempID) != noiseHitIDs.end() );
 
