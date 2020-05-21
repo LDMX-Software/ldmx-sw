@@ -34,7 +34,7 @@ namespace ldmx {
         noiseGenerator_->setNoiseThreshold(1); 
     }
 
-    unsigned int TrigScintDigiProducer::generateRandomID(int module) {
+   unsigned int TrigScintDigiProducer::generateRandomID(int module) {
         TrigScintID tempID;
         if ( module < TrigScintSection::NUM_SECTIONS ) {
             tempID.setFieldValue("module", module);
@@ -132,6 +132,8 @@ namespace ldmx {
                 hit.setXpos(Xpos[detIDRaw]); 
                 hit.setYpos(Ypos[detIDRaw]); 
                 hit.setZpos(Zpos[detIDRaw]);
+                hit.setModuleID(module);
+                hit.setBarID(detID_->getFieldValue("bar"));
                 hit.setNoise(false);
 
                 trigScintHits.push_back(hit); 
@@ -143,7 +145,7 @@ namespace ldmx {
                 detID_->unpack();
                 auto bar{detID_->getFieldValue("bar")};
 
-                std::cout << "Module: " << detID_->getFieldValue("module") << " Bar: " << bar << std::endl; 
+                std::cout << "Module: " << module << " Bar: " << bar << std::endl; 
                 std::cout << "Edep: " << Edep[detIDRaw] << std::endl;
                 std::cout << "numPEs: " << cellPEs[detIDRaw] << std::endl;
                 std::cout << "time: " << Time[detIDRaw] << std::endl;std::cout << "z: " << Zpos[detIDRaw] << std::endl;
@@ -154,13 +156,13 @@ namespace ldmx {
         // ------------------------------- Noise simulation -------------------------------
         int numEmptyCells = stripsPerArray_ - numRecHits; // only simulating for single array until all arrays are merged into one collection
         std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits( numEmptyCells );
-        int tempID;
+	int tempID;
 
         for (auto& noiseHitPE : noiseHits_PE) {
 
             TrigScintHit hit;
 
-            // generate random ID from remoaining cells
+            // generate random ID from remaining cells
             do {
                 tempID = generateRandomID(module);
             } while( Edep.find(tempID) != Edep.end() || 
@@ -175,6 +177,11 @@ namespace ldmx {
             hit.setXpos(0.);
             hit.setYpos(0.);
             hit.setZpos(0.);
+	    hit.setModuleID(module);
+	    TrigScintID noiseID;
+	    noiseID.setRawValue(tempID);
+            noiseID.unpack();
+            hit.setBarID(noiseID.getFieldValue("bar"));
             hit.setNoise(true);
 
             trigScintHits.push_back(hit); 

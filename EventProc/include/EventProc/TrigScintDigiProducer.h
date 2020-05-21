@@ -65,8 +65,8 @@ namespace ldmx {
 
             void produce(Event& event);
 
-            unsigned int generateRandomID(int module);
-
+	    unsigned int generateRandomID(int module);
+            
         private:
 
             /// Random number generator 
