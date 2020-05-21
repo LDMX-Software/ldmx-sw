@@ -117,7 +117,7 @@ namespace ldmx {
             Ypos[detIDRaw]      = Ypos[detIDRaw] / Edep[detIDRaw];
             Zpos[detIDRaw]      = Zpos[detIDRaw] / Edep[detIDRaw];
             double meanPE       = depEnergy / mevPerMip_ * pePerMip_;
-            cellPEs[detIDRaw]   = random_->Poisson(meanPE);
+            cellPEs[detIDRaw]   = random_->Poisson(meanPE + meanNoise_);
 
 
             // If a cell has a PE count above threshold, persit the hit.
