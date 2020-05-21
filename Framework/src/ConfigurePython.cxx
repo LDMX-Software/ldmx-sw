@@ -326,7 +326,7 @@ namespace ldmx {
 
         //all done with python nonsense
 #if PY_MAJOR_VERSION < 3
-        //do nothing for some reason
+        //do nothing for some reason ¯\_(ツ)_/¯
         //  too lazy to figure out how to close up python2 well
 #else
         Py_Finalize();
