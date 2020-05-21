@@ -65,7 +65,7 @@ namespace ldmx {
 
             void produce(Event& event);
 
-            unsigned int generateRandomID(TrigScintSection sec);
+            unsigned int generateRandomID(int module);
 
         private:
 
