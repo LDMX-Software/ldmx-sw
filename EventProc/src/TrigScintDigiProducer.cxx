@@ -25,6 +25,7 @@ namespace ldmx {
         inputCollection_  = parameters.getParameter< std::string >("input_collection");
         inputPassName_    = parameters.getParameter< std::string >("input_pass_name" );
         outputCollection_ = parameters.getParameter< std::string >("output_collection");
+	verbose_          = parameters.getParameter< int >("verbose");
 
         random_ = std::make_unique<TRandom3>(parameters.getParameter< int >("randomSeed"));
         
