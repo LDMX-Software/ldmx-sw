@@ -1,12 +1,60 @@
-/**
- * @file DetectorIDTest.cxx
- * @brief Test the operation of DetectorID class
- */
 #include "Exception/catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
 
 #include "Framework/ConfigurePython.h" //headers defining what we will be testing
+#include "Framework/Process.h"
+#include "Framework/EventProcessor.h"
 
-using namespace ldmx;
+#include <fstream>
+
+namespace ldmx { namespace test {
+
+    /**
+     * @class TestConfig
+     * @brief Defines a dummy Producer to test the passing of configuration variables
+     */
+    class TestConfig : public Producer {
+
+        public:
+
+            TestConfig(const std::string& name, Process& process) :
+                Producer(name, process) {
+
+                    CHECK( name == "testInstance" );
+            }
+
+            void configure(Parameters& parameters) final override {
+            
+                CHECK( parameters.getParameter< int >("testInt") == 9 );
+                CHECK( parameters.getParameter< double >("testDouble") == Approx( 7.7 ) );
+                CHECK( parameters.getParameter< std::string >("testString") == "Yay!" );
+
+                std::vector<int> correctIntVec = { 1 , 2 , 3 };
+                auto testIntVec{parameters.getParameter<std::vector<int>>("testIntVec")};
+                REQUIRE( testIntVec.size() == correctIntVec.size() );
+                for(std::size_t i{0}; i < testIntVec.size(); i++) CHECK( testIntVec.at(i) == correctIntVec.at(i) );
+
+                std::vector<double> correctDoubleVec = { 0.1 , 0.2 , 0.3 };
+                auto testDoubleVec{parameters.getParameter<std::vector<double>>("testDoubleVec")};
+                REQUIRE( testDoubleVec.size() == correctDoubleVec.size() );
+                for(std::size_t i{0}; i < testDoubleVec.size(); i++) CHECK( testDoubleVec.at(i) == correctDoubleVec.at(i) );
+
+                std::vector<std::string> correctStringVec = { "first" , "second" , "third" };
+                auto testStringVec{parameters.getParameter<std::vector<std::string>>("testStringVec")};
+                REQUIRE( testStringVec.size() == correctStringVec.size() );
+                for(std::size_t i{0}; i < testStringVec.size(); i++) CHECK( testStringVec.at(i) == correctStringVec.at(i) );
+            }
+
+            /**
+             * I don't do anything.
+             */
+            virtual void produce(Event&) { }
+
+    };
+
+} //test
+} //ldmx
+
+DECLARE_PRODUCER_NS(ldmx::test, TestConfig)
 
 /**
  * Test for Configure Python class
@@ -16,15 +64,62 @@ using namespace ldmx;
  * - TODO pass parameters to EventProcessors
  * - TODO pass histogram info to EventProcessors
  * - TODO pass class objects to EventProcessors
+ * - TODO pass parameters to python script on command line
  */
 TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
+
+    const std::string configFileName{"test_config_script.py"};
     
-    std::ofstream testPyScript( "test_config_script.py" );
+    std::ofstream testPyScript( configFileName );
 
     testPyScript << "from LDMX.Framework import ldmxcfg" << std::endl;
-    testPyScript << "testProcess    = ldmxcfg.Process( \"test\" )" << std::endl;
-    testPyScript << "testProcess.inputFiles = [ \"input1\" , \"input2\" ]" << std::endl;
+
+    testPyScript << "testProcess    = ldmxcfg.Process( 'test' )" << std::endl;
+    testPyScript << "testProcess.inputFiles = [ 'input1' , 'input2' ]" << std::endl;
     testPyScript << "testProcess.logFrequency = 9" << std::endl;
     testPyScript << "testProcess.skimDefaultIsKeep = False" << std::endl;
-    testPyScript << "testProccessor = ldmxcfg.Producer( \"testInstance\" , \"TestClassName\" )" << std::endl;
+
+    testPyScript << "testProcessor = ldmxcfg.Producer( 'testInstance' , 'ldmx::test::TestConfig' )" << std::endl;
+    testPyScript << "testProcessor.parameters['testInt'] = 9" << std::endl;
+    testPyScript << "testProcessor.parameters['testDouble'] = 7.7" << std::endl;
+    testPyScript << "testProcessor.parameters['testString'] = 'Yay!'" << std::endl;
+    testPyScript << "testProcessor.parameters['testIntVec'] = [ 1 , 2 , 3 ]" << std::endl;
+    testPyScript << "testProcessor.parameters['testDoubleVec'] = [ 0.1 , 0.2 , 0.3 ]" << std::endl;
+    testPyScript << "testProcessor.parameters['testStringVec'] = [ 'first' , 'second' , 'third' ]" << std::endl;
+
+    testPyScript << "testProcess.sequence = [ testProcessor ]" << std::endl;
+
+    using namespace ldmx;
+
+    char *args[1];
+
+    ProcessHandle p;
+
+    int correctLogFreq{9};
+//
+//    SECTION( "no arguments to python script" ) {
+//
+//        testPyScript.close();
+//
+//        ConfigurePython cfg( configFileName , args , 0 );
+//
+//        p = cfg.makeProcess();
+//    }
+
+    SECTION( "one argument to python script" ) {
+
+        testPyScript << "import sys" << std::endl;
+        testPyScript << "testProcess.logFrequency = int(sys.argv[1])" << std::endl;
+        testPyScript.close();
+
+        args[0] = "9000";
+        correctLogFreq = 9000;
+
+        ConfigurePython cfg( configFileName , args , 1 );
+
+        p = cfg.makeProcess();
+    }
+
+    CHECK( p->getPassName() == "test" );
+    CHECK( p->getLogFrequency() == correctLogFreq );
 }
