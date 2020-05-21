@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
     try {
         std::cout << "---- LDMXSW: Loading configuration --------" << std::endl;
         
-        ConfigurePython cfg(argv[ptrpy], argv + ptrpy + 1, argc - ptrpy);
+        ConfigurePython cfg(argv[ptrpy], argv + ptrpy + 1, argc - ptrpy - 1);
         p = cfg.makeProcess();
 
         std::cout << "---- LDMXSW: Configuration load complete  --------" << std::endl;
