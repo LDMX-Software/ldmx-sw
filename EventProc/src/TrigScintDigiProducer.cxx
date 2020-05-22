@@ -123,6 +123,10 @@ namespace ldmx {
             // If a cell has a PE count above threshold, persit the hit.
             if( cellPEs[detIDRaw] >= 1 ){ 
                 
+                detID_->setRawValue(detIDRaw);
+                detID_->unpack();
+		auto bar{detID_->getFieldValue("bar")};
+
                 TrigScintHit hit; 
                 hit.setID(detIDRaw);
                 hit.setPE(cellPEs[detIDRaw]);
@@ -134,7 +138,7 @@ namespace ldmx {
                 hit.setYpos(Ypos[detIDRaw]); 
                 hit.setZpos(Zpos[detIDRaw]);
                 hit.setModuleID(module);
-                hit.setBarID(detID_->getFieldValue("bar"));
+                hit.setBarID(detID_->getBarID() ); //getFieldValue("bar"));
                 hit.setNoise(false);
 
                 trigScintHits.push_back(hit); 
@@ -169,6 +173,10 @@ namespace ldmx {
             } while( Edep.find(tempID) != Edep.end() || 
                     noiseHitIDs.find(tempID) != noiseHitIDs.end() );
 
+	    TrigScintID noiseID;
+	    noiseID.setRawValue(tempID);
+            noiseID.unpack();
+
             hit.setID(tempID);
             hit.setPE(noiseHitPE);
             hit.setMinPE(noiseHitPE);
@@ -179,9 +187,6 @@ namespace ldmx {
             hit.setYpos(0.);
             hit.setZpos(0.);
 	    hit.setModuleID(module);
-	    TrigScintID noiseID;
-	    noiseID.setRawValue(tempID);
-            noiseID.unpack();
             hit.setBarID(noiseID.getFieldValue("bar"));
             hit.setNoise(true);
 
