@@ -25,7 +25,7 @@ namespace ldmx {
         inputCollection_  = parameters.getParameter< std::string >("input_collection");
         inputPassName_    = parameters.getParameter< std::string >("input_pass_name" );
         outputCollection_ = parameters.getParameter< std::string >("output_collection");
-	verbose_          = parameters.getParameter< int >("verbose");
+	verbose_          = parameters.getParameter< bool >("verbose");
 
         random_ = std::make_unique<TRandom3>(parameters.getParameter< int >("randomSeed"));
         
@@ -125,7 +125,7 @@ namespace ldmx {
                 
                 detID_->setRawValue(detIDRaw);
                 detID_->unpack();
-		auto bar{detID_->getFieldValue("bar")};
+                auto bar{detID_->getFieldValue("bar")};
 
                 TrigScintHit hit; 
                 hit.setID(detIDRaw);
