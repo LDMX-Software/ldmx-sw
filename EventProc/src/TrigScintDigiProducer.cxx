@@ -25,7 +25,7 @@ namespace ldmx {
         inputCollection_  = parameters.getParameter< std::string >("input_collection");
         inputPassName_    = parameters.getParameter< std::string >("input_pass_name" );
         outputCollection_ = parameters.getParameter< std::string >("output_collection");
-	verbose_          = parameters.getParameter< bool >("verbose");
+        verbose_          = parameters.getParameter< bool >("verbose");
 
         random_ = std::make_unique<TRandom3>(parameters.getParameter< int >("randomSeed"));
         
@@ -175,8 +175,8 @@ namespace ldmx {
             } while( Edep.find(tempID) != Edep.end() || 
                     noiseHitIDs.find(tempID) != noiseHitIDs.end() );
 
-	          TrigScintID noiseID;
-	          noiseID.setRawValue(tempID);
+            TrigScintID noiseID;
+            noiseID.setRawValue(tempID);
             noiseID.unpack();
 
             hit.setID(tempID);
@@ -188,7 +188,7 @@ namespace ldmx {
             hit.setXpos(0.);
             hit.setYpos(0.);
             hit.setZpos(0.);
-	          hit.setModuleID(module);
+            hit.setModuleID(module);
             hit.setBarID(noiseID.getFieldValue("bar"));
             hit.setNoise(true);
 
