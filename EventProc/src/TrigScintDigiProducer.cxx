@@ -35,7 +35,8 @@ namespace ldmx {
         noiseGenerator_->setNoiseThreshold(1); 
     }
 
-   unsigned int TrigScintDigiProducer::generateRandomID(int module) {
+    unsigned int TrigScintDigiProducer::generateRandomID(int module) {
+
         TrigScintID tempID;
         if ( module < TrigScintSection::NUM_SECTIONS ) {
             tempID.setFieldValue("module", module);
@@ -120,6 +121,7 @@ namespace ldmx {
             cellPEs[detIDRaw]   = random_->Poisson(meanPE + meanNoise_);
 
 
+
             // If a cell has a PE count above threshold, persit the hit.
             if( cellPEs[detIDRaw] >= 1 ){ 
                 
@@ -161,20 +163,20 @@ namespace ldmx {
         // ------------------------------- Noise simulation -------------------------------
         int numEmptyCells = stripsPerArray_ - numRecHits; // only simulating for single array until all arrays are merged into one collection
         std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits( numEmptyCells );
-	int tempID;
+
+        int tempID;
 
         for (auto& noiseHitPE : noiseHits_PE) {
 
             TrigScintHit hit;
-
             // generate random ID from remaining cells
             do {
                 tempID = generateRandomID(module);
             } while( Edep.find(tempID) != Edep.end() || 
                     noiseHitIDs.find(tempID) != noiseHitIDs.end() );
 
-	    TrigScintID noiseID;
-	    noiseID.setRawValue(tempID);
+	          TrigScintID noiseID;
+	          noiseID.setRawValue(tempID);
             noiseID.unpack();
 
             hit.setID(tempID);
@@ -186,7 +188,7 @@ namespace ldmx {
             hit.setXpos(0.);
             hit.setYpos(0.);
             hit.setZpos(0.);
-	    hit.setModuleID(module);
+	          hit.setModuleID(module);
             hit.setBarID(noiseID.getFieldValue("bar"));
             hit.setNoise(true);
 
@@ -196,7 +198,6 @@ namespace ldmx {
 
         event.add(outputCollection_, trigScintHits);
     }
-
 }
 
 DECLARE_PRODUCER_NS(ldmx, TrigScintDigiProducer);
