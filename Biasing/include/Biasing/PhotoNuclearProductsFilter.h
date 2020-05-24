@@ -48,7 +48,7 @@ namespace ldmx {
         private:
     
             /// Container to hold the PDG IDs of products of interest
-            std::vector< int > productsPdgID; 
+            std::vector< int > productsPdgID_; 
 
     }; // PhotoNuclearProductsFilter
 
