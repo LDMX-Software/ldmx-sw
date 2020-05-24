@@ -30,7 +30,7 @@ namespace ldmx {
         // Get the track info and check if this track is the photon that 
         // underwent a photo-nuclear reaction.
         auto trackInfo{static_cast< UserTrackInformation* >(track->GetUserInformation())};
-        //if ((trackInfo != nullptr) && !trackInfo->isPNGamma()) return;
+        if ((trackInfo != nullptr) && !trackInfo->isPNGamma()) return;
 
         // Get the particles daughters.
         auto secondaries{step->GetSecondary()};
