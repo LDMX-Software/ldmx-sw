@@ -15,7 +15,8 @@
 namespace ldmx { 
 
     PhotoNuclearProductsFilter::PhotoNuclearProductsFilter(const std::string& name, Parameters& parameters) 
-        : UserAction(name, parameters) { 
+        : UserAction(name, parameters) {
+        productsPdgID_ = parameters.getParameter< std::vector< int >  >("pdg_ids");
      }
 
     PhotoNuclearProductsFilter::~PhotoNuclearProductsFilter() { 
@@ -43,7 +44,7 @@ namespace ldmx {
             auto pdgID{secondary->GetParticleDefinition()->GetPDGEncoding()};
             
             // Check if the PDG ID is in the list of products of interest
-            if (std::find(productsPdgID.begin(), productsPdgID.end(), pdgID) != productsPdgID.end()) {
+            if (std::find(productsPdgID_.begin(), productsPdgID_.end(), pdgID) != productsPdgID_.end()) {
                 productFound = true; 
                 break; 
             }
@@ -56,5 +57,7 @@ namespace ldmx {
             G4RunManager::GetRunManager()->AbortEvent();
             return;
         }
+
+        std::cout << "Kaon event found." << std::endl;
     }
 }
