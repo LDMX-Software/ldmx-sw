@@ -1,4 +1,17 @@
-#!/usr/bin/python
+"""Configuration for the EcalRecProducer
+
+This file contains the layer weights for the different ecal geometries.
+Currently, the v12 layer weights are used.
+
+It is not advised to edit this file, it would be better to copy
+the layer weights and second order energy correct to your personal
+python configuration file if you want to use a different geometry's parameters.
+
+Examples
+--------
+>>> from LDMX.Ecal.ecalRecon import ecalRecon
+>>> p.sequence.append( ecalRecon )
+"""
 
 from LDMX.Framework import ldmxcfg
 
