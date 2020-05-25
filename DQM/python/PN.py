@@ -1,3 +1,15 @@
+"""Configured PhotoNuclearDQM python object
+
+Contains an instance of PhotoNuclearDQM that
+has already been configured.
+
+Builds the necessary histograms as well.
+
+Examples
+--------
+    from LDMX.DQM.PN import photo_nuclear
+"""
+
 
 from LDMX.Framework import ldmxcfg
 
