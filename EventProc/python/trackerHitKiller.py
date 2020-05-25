@@ -1,3 +1,12 @@
+"""Configuration for TrackerhitKiller
+
+Sets all parameters to reasonable defaults.
+
+Examples
+--------
+>>> from LDMX.EventProc.trackerHitKiller import trackerHitKiller
+>>> p.sequence.append( trackerHitKiller )
+"""
 #!/usr/bin/python
 
 from LDMX.Framework import ldmxcfg

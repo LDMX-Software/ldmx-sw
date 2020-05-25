@@ -1,3 +1,12 @@
+"""Configuration for TrigScintDigiProducers
+
+Sets all parameters to reasonable defaults.
+
+Examples
+--------
+>>> from LDMX.EventProc.trigScintDigis import *
+>>> p.sequence.extend([ trigScintDigis , trigScintDigisDn , trigScintDigisTag ])
+"""
 #!/usr/bin/python
 
 from LDMX.Framework import ldmxcfg
