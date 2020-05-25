@@ -1,3 +1,10 @@
+"""Configuration for Ecal veto
+
+Examples
+--------
+>>> from LDMX.Ecal.ecalVeto import ecalVeto
+>>> p.sequence.append( ecalVeto )
+"""
 
 from LDMX.Framework import ldmxcfg
 
