@@ -1,9 +1,28 @@
+"""Examples of using different primary generators"""
 
 from LDMX.Framework import ldmxcfg
 from LDMX.Detectors.makePath import makeDetectorPath
 from LDMX.SimApplication import generators
 
 def inclusive_single_e() :
+    """Get a basic un-biased, inclusive single electron simulation
+
+    This function is mainly helpful for testing that your install
+    works with this primary generator. You can look at the 
+    source code for this function for ideas on how to implement your own
+    verison.
+
+    Returns
+    -------
+    ldmxcfg.Producer
+        that will simulate un-biased, inclusive single electrons
+        fired from upstream of the tagger into the v12 ldmx geometry
+
+    Example
+    -------
+    >>> bkgd_sim = examples.inclusive_single_e()
+    """
+
     sim = ldmxcfg.Producer( "inclusive_single_e" , "ldmx::Simulator" )
     sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-v12" )
     sim.parameters[ "runNumber" ] = 1
@@ -12,6 +31,29 @@ def inclusive_single_e() :
     return sim
 
 def lheExample( lheFile ) :
+    """An example simulator of how to use the LHE generator
+
+    This function is mainly helpful for testing that your install
+    works with this primary generator. You can look at the 
+    source code for this function for ideas on how to implement your own
+    verison.
+
+    Parameters
+    ----------
+    lheFile : str
+        The LHE file to use a primary vertices
+
+    Returns
+    -------
+    ldmxcfg.Producer
+        that will simulate the v12 detector using the 
+        input LHE file with high verbosity.
+
+    Example
+    -------
+    >>> lhe_sim = examples.lheExample( thePathToMyLHEFile )
+    """
+
     sim = ldmxcfg.Producer( "lheSimulation" , "ldmx::Simulator" )
     sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-v12" )
     sim.parameters[ "runNumber" ] = 1
@@ -21,6 +63,26 @@ def lheExample( lheFile ) :
     return sim
 
 def gpsExample( ) :
+    """An example simulator of how to use the General Particle Source.
+
+    This function is mainly helpful for testing that your install
+    works with this primary generator. You can look at the 
+    source code for this function for ideas on how to implement your own
+    verison.
+
+    Returns
+    -------
+    ldmxcfg.Producer
+        that will simulate the v12 detector with
+        high verbosity and an electron smeared across the target
+        with a cos angular dependence and a linear energy dependence
+        between 3 and 4 GeV.
+
+    Example
+    -------
+    >>> gps_sim = examples.gpsExample()
+    """
+
     sim = ldmxcfg.Producer( "gpsExample" , "ldmx::Simulator" )
     sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-v12" )
     sim.parameters[ "runNumber" ] = 1
@@ -45,6 +107,25 @@ def gpsExample( ) :
     return sim
 
 def multiExample( ) :
+    """An example simulator of how to use the Multi-Primary Particle Gun
+
+    This function is mainly helpful for testing that your install
+    works with this primary generator. You can look at the 
+    source code for this function for ideas on how to implement your own
+
+    Returns
+    -------
+    ldmxcfg.Producer
+        Simulator in the v12 geometry with high verbosity and 4GeV electrons
+        fired from within the target where the number of electrons is
+        Poisson-distributed around an average of 2
+
+    Example
+    -------
+    >>> mpg_sim = exampls.multiExample()
+    """
+
+    verison.
     sim = ldmxcfg.Producer( "mpgExample" , "ldmx::Simulator" )
     sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-v12" )
     sim.parameters[ "runNumber" ] = 1
