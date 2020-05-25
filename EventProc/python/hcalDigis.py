@@ -1,4 +1,12 @@
-#!/usr/bin/python
+"""Configuration for HcalDigiProducer
+
+Sets all parameters to reasonable defaults.
+
+Examples
+--------
+>>> from LDMX.EventProc.hcalDigis import hcalDigis
+>>> p.sequence.append( hcalDigis )
+"""
 
 from LDMX.Framework import ldmxcfg
 
