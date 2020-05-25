@@ -1,19 +1,79 @@
+"""Primary Generator templates for use throughout ldmx-sw
 
+Mainly focused on reducing the number of places that certain parameter and class names
+are hardcoded into the python configuration.
+"""
 
 from LDMX.SimApplication import simcfg
 
 def gun( name ) :
+    """New basic particle gun primary generator
+
+    Parameters
+    ----------
+    name : str
+        name of new primary generator
+
+    Returns
+    -------
+    simcfg.PrimaryGenerator
+        configured to be a ParticleGun without any of its parameters set
+    """
+
     return simcfg.PrimaryGenerator( name , "ldmx::ParticleGun" )
 
 def multi( name ) :
+    """New multi particle gun primary generator
+
+    Parameters
+    ----------
+    name : str
+        name of new primary generator
+
+    Returns
+    -------
+    simcfg.PrimaryGenerator
+        configured to be a MultiParticleGun without any of its parameters set
+    """
+
     return simcfg.PrimaryGenerator( name , "ldmx::MultiParticleGunPrimaryGenerator" )
 
 def lhe( name , filePath ) :
+    """New LHE file primary generator
+
+    Parameters
+    ----------
+    name : str
+        name of new primary generator
+    filePath : str
+        path to LHE file containing the primary vertices
+
+    Returns
+    -------
+    simcfg.PrimaryGenerator
+        configured to be a LHEPrimaryGenerator with the input file given to it
+    """
+
     sim = simcfg.PrimaryGenerator( name , "ldmx::LHEPrimaryGenerator" )
     sim.parameters[ "filePath" ] = filePath
     return sim
 
 def completeReSim( name , filePath ) :
+    """New complete re-simprimary generator
+
+    Parameters
+    ----------
+    name : str
+        name of new primary generator
+    filePath : str
+        path to ROOT file containing the SimParticles to re-simulate
+
+    Returns
+    -------
+    simcfg.PrimaryGenerator
+        configured to be a RootCompleteReSim with the input file given to it
+    """
+
     sim = simcfg.PrimaryGenerator( name , "ldmx::RootCompleteReSim" )
     sim.parameters[ "filePath" ] = filePath
     sim.parameters[ "simParticleCollName" ] = "SimParticles"
@@ -21,6 +81,21 @@ def completeReSim( name , filePath ) :
     return sim
 
 def ecalSP( name , filePath ) :
+    """New ecal scoring planes primary generator
+
+    Parameters
+    ----------
+    name : str
+        name of new primary generator
+    filePath : str
+        path to ROOT file containing the EcalScoringPlanes to re-simulate
+
+    Returns
+    -------
+    simcfg.PrimaryGenerator
+        configured to be a RootSimFromEcalSP with the input file given to it
+    """
+
     sim = simcfg.PrimaryGenerator( name , "ldmx::RootSimFromEcalSP" )
     sim.parameters[ "filePath" ] = filePath
     sim.parameters[ "ecalSPHitsCollName" ] = "EcalScoringPlaneHits"
@@ -29,8 +104,19 @@ def ecalSP( name , filePath ) :
     return sim
 
 def gps( name ) :
-    return simcfg.PrimaryGenerator( name , "ldmx::GeneralParticleSource" )
+    """New general particle source
 
+    Parameters
+    ----------
+    name : str
+        name of new primary generator
+
+    Returns
+    -------
+    simcfg.PrimaryGenerator
+        configured to be a GeneralParticleSource without any of its parameters set
+    """
+    return simcfg.PrimaryGenerator( name , "ldmx::GeneralParticleSource" )
 
 def single_4gev_e_upstream_tagger() :
     """Configure a particle gun to fire a 4 GeV electron upstream of the tagger tracker.
