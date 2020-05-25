@@ -1,4 +1,10 @@
-#!/usr/bin/python
+"""Configuration for the EcalDigiProducer
+
+Examples
+--------
+>>> from LDMX.Ecal.ecalDigis import ecalDigis
+>>> p.sequence.append( ecalDigis )
+"""
 
 from LDMX.Framework import ldmxcfg
 
