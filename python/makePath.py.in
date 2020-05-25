@@ -1,17 +1,31 @@
-#############################################################################################
-# Helpful python configuration functions for getting the path to installed
-#  configuration files. Right now, the files mainly used are the BDT ones.
-#
-# This file was configured by cmake for the installation of ldmx-sw at
-#   @CMAKE_INSTALL_PREFIX@
-#
-# @author Tom Eichlersmith, University of Minnesota
-#############################################################################################
+"""Helpful python configuration functions for getting the path to installed data files. 
 
-# return full path to BDT pickle file with given name
-# errors out if the file does not exist
+This file was configured by cmake for the installation of ldmx-sw at
+   @CMAKE_INSTALL_PREFIX@
+"""
+
 import os, sys
+
 def makeBDTPath( BDTname ) :
+    """Get the full path to the installed BDT files
+
+    Exits entire python script if file does not exist.
+
+    Parameters
+    ----------
+    BDTname : str
+        Name of BDT file to make path for (no extension)
+
+    Returns
+    -------
+    str
+        full path to installed data file
+
+    Examples
+    --------
+    >>> ecalVeto.parameters['bdt_file'] = makeBDTPath( 'gabrielle' )
+    """
+
     fullPath = '@CMAKE_INSTALL_PREFIX@/data/Ecal/' + BDTname + '.onnx'
     if not os.path.isfile( fullPath ) :
         print 'ERROR: ONNX model file \'%s\' does not exist.' % ( fullPath )
@@ -19,8 +33,23 @@ def makeBDTPath( BDTname ) :
 
     return fullPath
 
-# return full path to ECal cell XY txt file
-#   TODO remove need for cellxy.txt file
 def makeCellXYPath() :
+    """Get the full path to the installed cell xy text file
+
+    Returns
+    -------
+    str
+        full path to installed data file
+
+    Warnings
+    --------
+    - The need for the cellxy.txt file will be remove in upcoming ldmx-sw versions.
+    - No checking is done on whether the file exists.
+
+    Examples
+    --------
+    >>> ecalVeto.parameters['cellxy_file'] = makeCellXYPath()
+    """
+
     fullPath = '@CMAKE_INSTALL_PREFIX@/data/Ecal/cellxy.txt'
     return fullPath
