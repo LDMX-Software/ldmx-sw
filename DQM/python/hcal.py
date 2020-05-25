@@ -1,3 +1,15 @@
+"""Configured HCalDQM python object
+
+Contains an instance of HCalDQM that
+has already been configured.
+
+Builds the necessary histograms as well.
+
+Examples
+--------
+    from LDMX.DQM.hcal import hcal
+"""
+
 
 from LDMX.Framework import ldmxcfg
 

@@ -1,3 +1,15 @@
+"""Configured RecoilTrackerDQM python object
+
+Contains an instance of RecoilTrackerDQM that
+has already been configured.
+
+Builds the necessary histograms as well.
+
+Examples
+--------
+    from LDMX.DQM.recoilTracker import recoilTracker
+"""
+
 
 
 from LDMX.Framework import ldmxcfg

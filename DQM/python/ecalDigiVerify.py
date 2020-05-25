@@ -1,3 +1,12 @@
+"""Configured EcalDigiVerifier python object
+
+Contains an instance of EcalDigiVerifier that
+has already been configured.
+
+Examples
+--------
+    from LDMX.DQM.ecalDigiVerify import exalDigiVerify
+"""
 
 from LDMX.Framework import ldmxcfg
 
