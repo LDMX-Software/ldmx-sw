@@ -1,4 +1,5 @@
-"""Histogram configuration objects
+"""@package histogram
+Histogram configuration objects
 
 These histogram objects are passed to the HistogramPool to be
 created for processors that they are grouped with.
