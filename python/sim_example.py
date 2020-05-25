@@ -1,3 +1,4 @@
+"""A short run-ready example for a basic, unbiased simulation"""
 
 from LDMX.Framework import ldmxcfg
 from LDMX.SimApplication import examples
