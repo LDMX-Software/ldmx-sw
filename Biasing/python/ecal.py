@@ -1,4 +1,5 @@
-""" Example configurations for producing biased interactions in the ECal. 
+""" @package ecal
+Example configurations for producing biased interactions in the ECal. 
 
     Example
     -------

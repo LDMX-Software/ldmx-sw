@@ -1,4 +1,5 @@
-""" Examples of how each filter is configured for biased MC generation. 
+""" @package filters
+Examples of how each filter is configured for biased MC generation. 
 
     The configurations below reflect the nominal values currently being used 
     for large scale production.  When debugging, it's best to create these

@@ -1,3 +1,7 @@
+/** @file ldmx-app.cxx
+ * Definition of ldmx-app executable main
+ */
+
 //----------------//
 //   C++ StdLib   //
 //----------------//
