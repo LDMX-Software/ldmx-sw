@@ -7,23 +7,19 @@ class Producer:
 
     This object contains the parameters that are necessary for a ldmx::Producer to be configured.
 
-    Attributes
+    Parameters
     ----------
     instanceName : str
         Name of this copy of the producer object
     className : str
         Name (including namespace) of the C++ class that this producer should be
+
+    Attributes
+    ----------
     parameters : dict
         python dictionary that will be passed to the C++ object during the configure method
-    histograms : list
+    histograms : list of histogram1D objects
         List of histogram configure objects for the HistogramPool to make for this producer
-
-    Parameters
-    ----------
-    instanceName : str
-        string to set the instanceName to
-    className : str
-        string to set the className to
 
     Example
     -------
@@ -79,27 +75,23 @@ class Analyzer:
 
     This object contains the parameters that are necessary for a ldmx::Analyzer to be configured.
 
-    Attributes
+    Parameters
     ----------
     instanceName : str
         Name of this copy of the analyzer object
     className : str
         Name (including namespace) of the C++ class that this analyzer should be
+
+    Attributes
+    ----------
     parameters : dict
         python dictionary that will be passed to the C++ object during the configure method
     histograms : list
         List of histogram configure objects for the HistogramPool to make for this analyzer
 
-    Parameters
-    ----------
-    instanceName : str
-        string to set the instanceName to
-    className : str
-        string to set the className to
-
     Example
     -------
-    >>> dumPro = ldmxcfg.Analyzer( 'thisIsADummyAnalyzer' , 'ldmx::DummyAnalyzer' )
+    >>> dumAna = ldmxcfg.Analyzer( 'thisIsADummyAnalyzer' , 'ldmx::DummyAnalyzer' )
 
     See Also
     --------
@@ -155,12 +147,15 @@ class Process:
     Upon construction, the class-wide reference lastProcess is set
     and the rest of the attributes are set to sensible defaults.
 
+    Parameters
+    ----------
+    passName : str
+        Short reference name for this run of the process
+
     Attributes
     ----------
     lastProcess : Process
         Class-wide reference to the last Process object to be constructed
-    passName : str
-        Short reference name for this run of the process
     maxEvents : int
         Maximum number events to process
     run : int
@@ -181,11 +176,6 @@ class Process:
         List of skimming rules for which processors the process should listen to when deciding whether to keep an event
     logFrequency : int
         Print the event number whenever its modulus with this frequency is zero
-
-    Parameters
-    ----------
-    passName : str
-        string to the the pass name to
 
     See Also
     --------

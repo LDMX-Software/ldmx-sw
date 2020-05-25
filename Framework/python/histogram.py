@@ -1,5 +1,4 @@
-"""@package histogram
-Histogram configuration objects
+"""Histogram configuration objects
 
 These histogram objects are passed to the HistogramPool to be
 created for processors that they are grouped with.
@@ -11,7 +10,7 @@ class histogram1D:
     This histogram object will be passed to the HistogramPool and created,
     so that it is available to the processor who created it
 
-    Attributes
+    Parameters
     ----------
     name : str
         pointer name of histogram (like you are defining a variable)
