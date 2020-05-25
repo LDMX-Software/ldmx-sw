@@ -8,12 +8,15 @@ their own python classes.
 class UserAction: 
     """Object that stores parameters for a UserAction
 
-    Attributes
+    Parameters
     ----------
     instance_name : str
-        Unique name for this particular instance of a UserAction set by constructor
+        Unique name for this particular instance of a UserAction
     class_name : str
-        Name of C++ class that this UserAction should be set by constructor
+        Name of C++ class that this UserAction should be
+
+    Attributes
+    ----------
     parameters : dict
         Python dictionary passed to C++ UserAction to be used to configure it
     """
@@ -53,12 +56,16 @@ class UserAction:
 class PrimaryGenerator: 
     """Object that stores parameters for a PrimaryGenerator
 
-    Attributes
+    Parameters
     ----------
     instance_name : str
-        Unique name for this particular instance of a PrimaryGenerator set by constructor
+        Unique name for this particular instance of a PrimaryGenerator
     class_name : str
-        Name of C++ class that this PrimaryGenerator should be set by constructor
+        Name of C++ class that this PrimaryGenerator should be
+
+
+    Attributes
+    ----------
     parameters : dict
         Python dictionary passed to C++ PrimaryGenerator to be used to configure it
     """
