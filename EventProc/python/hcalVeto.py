@@ -1,3 +1,12 @@
+"""Configuration for HcalVetoProcessor
+
+Sets all parameters to reasonable defaults.
+
+Examples
+--------
+>>> from LDMX.EventProc.hcalVeto import hcalVeto
+>>> p.sequence.append( hcalVeto )
+"""
 
 from LDMX.Framework import ldmxcfg 
 
