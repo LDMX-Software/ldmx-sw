@@ -57,13 +57,13 @@ namespace ldmx {
 
         // If the product of interest was not found, kill the track and abort 
         // the event. 
-        if (!productFound) { 
+        if (!productFound) {
             track->SetTrackStatus(fKillTrackAndSecondaries);
             G4RunManager::GetRunManager()->AbortEvent();
             return;
         }
 
-        std::cout << "Kaon event found." << std::endl;
+        trackInfo->tagPNGamma(false); 
     }
 }
 
