@@ -96,7 +96,20 @@ class Process:
 
         Look at ROOT's documentation for TFile to learn more
         about the different compression algorithms and levels available
-        (as well as what integers to use).
+        (as well as what integers to use). There is a summary table
+        below.
+
+        Algorithm           |int| root version
+        --------------------|---|-------------
+        ROOT global default | 0 | root-6.16
+        ZLIB                | 1 | root-6.16
+        LZMA                | 2 | root-6.16
+        Old (ROOT 5)        | 3 | root-6.16
+        LZ4                 | 4 | root-6.16
+        ZSTD                | 5 | root-6.20
+
+        Level 0 : no compression is applied
+        Level 9 : maximum amount of compression available from algorithm
 
         Parameters
         ----------
