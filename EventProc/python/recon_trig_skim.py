@@ -8,7 +8,7 @@ from LDMX.Framework import ldmxcfg
 
 # Setup producers with default templates
 from LDMX.Ecal.ecalSim2Rec import ecalSim2Rec
-from LDMX.EventProc.ecalVeto import ecalVeto
+from LDMX.Ecal.ecalVeto import ecalVeto
 from LDMX.EventProc.hcalDigis import hcalDigis
 from LDMX.EventProc.hcalVeto import hcalVeto
 from LDMX.EventProc.simpleTrigger import simpleTrigger
