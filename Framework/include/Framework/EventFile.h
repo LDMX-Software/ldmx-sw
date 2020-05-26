@@ -85,7 +85,7 @@ namespace ldmx {
             /**
              * Class destructor.
              */
-            virtual ~EventFile() { }
+            ~EventFile() = default;
 
             /**
              * Add a rule for dropping collections from the output.
