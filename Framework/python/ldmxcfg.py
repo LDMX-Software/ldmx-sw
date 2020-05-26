@@ -357,6 +357,25 @@ class Process:
 
         self.compressionSetting = algorithm*100 + level
 
+    def inputDir(self, indir) :
+        """Scan the input directory and make a list of input root files to read from it
+
+        Lists all files ending in '.root' in the input directory (not recursive).
+        Extends the inputFiles list by these files.
+
+        Parameters
+        ----------
+        indir : str
+            Path to directory of event files to read in
+        """
+
+        import os
+        fullPathDir = os.path.realpath(indir)
+        self.inputFiles.extend([ os.path.join(fullPathDir,f) 
+                for f in os.listdir(fullPathDir) 
+                if os.path.isfile(os.path.join(fullPathDir,f)) and f.endswith('.root') 
+                ])
+
     def __str__(self):
         """Stringify this object into a human readable, helpful form.
 
