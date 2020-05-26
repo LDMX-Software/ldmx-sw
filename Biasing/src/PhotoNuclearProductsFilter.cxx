@@ -1,5 +1,10 @@
 #include "Biasing/PhotoNuclearProductsFilter.h" 
 
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <cmath> 
+
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
 /*~~~~~~~~~~~~*/
@@ -41,7 +46,7 @@ namespace ldmx {
         for (const auto& secondary : *secondaries) { 
             
             // Get the PDG ID of the track
-            auto pdgID{secondary->GetParticleDefinition()->GetPDGEncoding()};
+            auto pdgID{std::abs(secondary->GetParticleDefinition()->GetPDGEncoding())};
             
             // Check if the PDG ID is in the list of products of interest
             if (std::find(productsPdgID_.begin(), productsPdgID_.end(), pdgID) != productsPdgID_.end()) {
@@ -61,3 +66,5 @@ namespace ldmx {
         std::cout << "Kaon event found." << std::endl;
     }
 }
+
+DECLARE_ACTION(ldmx, PhotoNuclearProductsFilter)
