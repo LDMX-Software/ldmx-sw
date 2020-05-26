@@ -28,7 +28,7 @@ def makeBDTPath( BDTname ) :
 
     fullPath = '@CMAKE_INSTALL_PREFIX@/data/Ecal/' + BDTname + '.onnx'
     if not os.path.isfile( fullPath ) :
-        print 'ERROR: ONNX model file \'%s\' does not exist.' % ( fullPath )
+        print('ERROR: ONNX model file \'%s\' does not exist.' % ( fullPath ))
         sys.exit(1)
 
     return fullPath
@@ -44,7 +44,6 @@ def makeCellXYPath() :
     Warnings
     --------
     - The need for the cellxy.txt file will be remove in upcoming ldmx-sw versions.
-    - No checking is done on whether the file exists.
 
     Examples
     --------
@@ -52,4 +51,8 @@ def makeCellXYPath() :
     """
 
     fullPath = '@CMAKE_INSTALL_PREFIX@/data/Ecal/cellxy.txt'
+    if not os.path.isfile( fullPath ) :
+        print('ERROR: Cell xy text file \'%s\' does not exist.' % ( fullPath ))
+        sys.exit(1)
+
     return fullPath
