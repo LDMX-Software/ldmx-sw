@@ -55,7 +55,7 @@ namespace ldmx {
                 }
                 std::string outputFileName = outputFiles_.at(0);
                 
-                EventFile outFile(outputFileName, true);
+                EventFile outFile(outputFileName, compressionSetting_);
 
                 for (auto module : sequence_) module->onFileOpen(outFile);
 
@@ -141,7 +141,7 @@ namespace ldmx {
                         // 2) this is the first input file
                         if ( !singleOutput or ifile == 0 ) {
                             //setup new output file
-                            outFile = new EventFile(outputFiles_[ifile], &inFile, singleOutput );
+                            outFile = new EventFile(outputFiles_[ifile], &inFile, singleOutput, compressionSetting_ );
                             ifile++;
 
                             //setup theEvent we will iterate over
