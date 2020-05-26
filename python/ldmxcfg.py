@@ -87,8 +87,25 @@ class Process:
         self.skimRules.append(namePat)
         self.skimRules.append(labelPat)
 
-    def setCompression(self,algorithm,level=9)
-        # this is how ROOT encodes the algo + level combination
+    def setCompression(self,algorithm,level=9):
+        """set the compression settings for any output files in this process
+
+        We combine the compression settings here in the same way that ROOT
+        does. This allows the compression settings to be passed along as
+        one integer rather than two without any loss of generality.
+
+        Look at ROOT's documentation for TFile to learn more
+        about the different compression algorithms and levels available
+        (as well as what integers to use).
+
+        Parameters
+        ----------
+        algorithm : int
+            flag for the algorithm to use
+        level : int
+            flag for the level of compression to use
+        """
+
         self.compressionSetting = algorithm*100 + level
 
     def __str__(self):
