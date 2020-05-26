@@ -87,6 +87,10 @@ class Process:
         self.skimRules.append(namePat)
         self.skimRules.append(labelPat)
 
+    def setCompression(self,algorithm,level=9)
+        # this is how ROOT encodes the algo + level combination
+        self.compressionSetting = algorithm*100 + level
+
     def __str__(self):
         msg = "Process with pass name '%s'"%(self.passName)
         if (self.run>0): msg += "\n using run number %d"%(self.run)
