@@ -79,6 +79,18 @@ namespace ldmx {
              *
              * This method contains all the parsing and execution of the python script.
              *
+             * @throw Exception if any necessary components of the python configuration
+             * are missing. e.g. The Process class or the different members of 
+             * the lastProcess object.
+             *
+             * The basic premis of this constructor is to execute the python
+             * configuration script by loading it into python as a module.
+             * Then, **after the script has been executed**, all of the parameters
+             * for the Process and EventProcessors are gathered from python.
+             * The fact that the script has been executed means that the user
+             * can get up to a whole lot of nonsense that can help them
+             * make their work more efficient.
+             *
              * @param pythonScript Filename location of the python script.
              * @param args Commandline arguments to be passed to the python script.
              * @param nargs Number of commandline arguments.
@@ -87,11 +99,17 @@ namespace ldmx {
 
             /**
              * Class destructor.
+             *
+             * Does nothing at the moment.
              */
-            ~ConfigurePython();
+            ~ConfigurePython() { }
 
             /**
              * Create a process object based on the python file information
+             *
+             * No python parsing actually happens in this function.
+             * All of the parsing is done in the constructor, this just
+             * copies that information into the Process object.
              */
             ProcessHandle makeProcess();
 
@@ -99,6 +117,12 @@ namespace ldmx {
 
             /**
              * Extract parameter array from a python object.
+             *
+             * Assumes that the input PyObject is a python dictionary.
+             *
+             * Iterates through the dictionary and translates the objects inside
+             * of it into the type-specified C++ equivalents, then puts these
+             * objects into a STL map that can be passed to the Parameters class.
              *
              * @param dictionary Python dictionary class.
              * @return Mapping between parameter name and value. 

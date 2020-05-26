@@ -1,4 +1,4 @@
-#include "EventProc/DNNEcalVetoProcessor.h"
+#include "Ecal/DNNEcalVetoProcessor.h"
 
 // LDMX
 #include "Event/EcalHit.h"
