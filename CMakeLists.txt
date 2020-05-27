@@ -126,35 +126,6 @@ foreach(script_file ${script_files})
     install(FILES ${script_file} DESTINATION bin PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endforeach()
 
-# configure and generate documentation using doxygen
-option(INSTALL_DOC "Set to ON to generate documentation using doxygen" OFF)
-message(STATUS "Doxygen documentation: ${INSTALL_DOC}")
-if(INSTALL_DOC)
-
-  # message that documentation is off for this build
-  message(STATUS "Doxygen documentation will be generated")
-
-  # find doxygen
-  find_program(DOXYGEN_EXECUTABLE doxygen ${PATH})
-  if(DOXYGEN_EXECUTABLE-NOTFOUND)
-      message(FATAL_ERROR "The doxygen executable was not found")
-  endif()
-
-  # find dot
-  #find_program(DOT_EXECUTABLE dot ${PATH})
-  #if(DOT_EXECUTABLE-NOTFOUND)
-  #    message(FATAL_ERROR "The dot executable was not found.")
-  #endif()
-  
-  # generate the documentation
-  install(CODE 
-      "execute_process(COMMAND doxygen ${PROJECT_SOURCE_DIR}/docs/doxygen.conf WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})")
-
-  # documentation generation target 
-  add_custom_target(doc COMMAND doxygen ${PROJECT_SOURCE_DIR}/docs/doxygen.conf)
-
-endif()
-
 # option for dumping full CMake env
 option(DUMP_CMAKE_VARIABLES OFF)
 if(DUMP_CMAKE_VARIABLES)
