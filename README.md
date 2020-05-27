@@ -20,7 +20,7 @@ For information on how to install the framework, examples and more, see the [ldm
 ## Status
 
 ## Documentation 
-The full documentation for **ldmx-sw** is available on [github pages](https://ldmx-software.github.io/ldmx-sw/html/index.html).
+The full documentation for **ldmx-sw** is available on [github pages](https://ldmx-software.github.io/).
 
 ## Contributing
 

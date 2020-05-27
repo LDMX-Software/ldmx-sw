@@ -7,12 +7,11 @@ You need to install both of them for your local documentation generation to work
 
 ## [doxygen](http://doxygen.nl/)
 This is the tool we use to generate the C++ documentation.
-After it is installed, all you have to do is run the following command.
+After it is installed, all you have to do is run the following command inside the `docs` directory (this directory).
 ```bash
-# inside of the docs/ directory
 doxygen doxygen.conf
 ```
-This will generate the C++ API documentation and put it in the `docs/html` directory.
+This will generate the C++ API documentation and put it in the `docs/html/_doxygen` directory.
 
 ## [sphinx](https://www.sphinx-doc.org/en/stable/)
 This is the tool to generate the python documentation.
@@ -37,3 +36,4 @@ Then we can build the python html docs.
 ```
 sphinx-build sphinx.conf html/_sphinx
 ```
+which will produce the documentation in `docs/html/_sphinx`.
