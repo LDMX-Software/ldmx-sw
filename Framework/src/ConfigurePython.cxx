@@ -412,7 +412,7 @@ namespace ldmx {
 
                     auto vec0{PyList_GetItem(value, 0)};
 
-                    if (PyLong_Check(vec0)) {
+                    if (isPyInt(vec0)) {
                         std::vector<int> vals;
 
                         for (auto j{0}; j < PyList_Size(value); j++)
