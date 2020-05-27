@@ -28,7 +28,7 @@ jobs:
     - name: Run Doxygen
       uses: mattnotmitt/doxygen-action@v1.1.0
       with:
-        doxyfile-path: doxygen.conf #relative to working directory
+        doxyfile-path: doxygen.conf/doxyfile #relative to working directory
         working-directory: docs #docs subdirectory
 
     # "Install" all the python modules into a temporary location
