@@ -9,7 +9,7 @@ You need to install both of them for your local documentation generation to work
 This is the tool we use to generate the C++ documentation.
 After it is installed, all you have to do is run the following command inside the `docs` directory (this directory).
 ```bash
-doxygen doxygen.conf
+doxygen doxygen.conf/doxyfile
 ```
 This will generate the C++ API documentation and put it in the `docs/html/_doxygen` directory.
 
