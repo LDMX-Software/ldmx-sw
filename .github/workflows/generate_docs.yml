@@ -31,6 +31,28 @@ jobs:
         doxyfile-path: doxygen.conf #relative to working directory
         working-directory: docs #docs subdirectory
 
+    # "Install" all the python modules into a temporary location
+    #   Maybe instead of building and installing all of ldmx-sw,
+    #   we can mimix that procedure by "installing" only the python
+    #   modules
+#    - name: Python Module Install
+#      run: |
+
+
+    # Runs sphinx-apidoc and sphinx-build in the docs/ directory
+    #   sphinx-apidoc requires the python files to be packaged together
+    #   like a python module would be. The simplest way to achieve
+    #   this form is to build and install ldmx-sw.
+    #
+    #   There is almost certainly a way to do this without having to build
+    #   and install ldmx-sw, but we might as well check that we can build
+    #   ldmx-sw. 
+#    - name: Run Sphinx
+#      run: |
+#          pip install Sphinx groundwork-sphinx-theme
+#          sphinx-apidoc -f -T -o sphinx.conf/ <path-to-python-module>
+#          sphinx-build sphinx.conf html/_sphinx
+
     # Save documentation to the repo, maybe don't do this and just deploy?
     # By default, commits ALL changed/new files
     #   Since we have only run doxygen since checking out master, this is what we want

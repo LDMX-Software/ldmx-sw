@@ -123,24 +123,18 @@ macro(MODULE)
   set(PYTHON_INSTALL_DIR lib/python/LDMX/${MODULE_NAME})
 
   # install python scripts
-  file(GLOB py_scripts "${${MODULE_NAME}_PYTHON_DIR}/[!_]*.py")
-  foreach(pyscript ${py_scripts})
-    install(FILES ${pyscript} DESTINATION ${PYTHON_INSTALL_DIR})
-  endforeach()
-
-  # configure and install python scripts that need cmake variables
-  file(GLOB need_config_py_scripts "${${MODULE_NAME}_PYTHON_DIR}/[!_]*.in")
-  foreach(script ${need_config_py_scripts})
-    string(REPLACE ".in" "" script_output ${script})
-    get_filename_component(script_output ${script_output} NAME)
-    configure_file(${script} ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output})
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output} DESTINATION ${PYTHON_INSTALL_DIR})
-  endforeach()
-
-  # write an __init__ file for this python module (if any python scripts are installed)
-  if(py_scripts OR need_config_py_scripts)
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# python package")
+  file(GLOB py_scripts "${${MODULE_NAME}_PYTHON_DIR}/[!_]*.py*")
+  if(py_scripts)
+    # write an __init__ file for this python module (if any python scripts are installed)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py 
+        "\"\"\"Python module to configure the LDMX module ${MODULE_NAME}\"\"\"")
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION ${PYTHON_INSTALL_DIR})
+    foreach(pyscript ${py_scripts})
+      string(REPLACE ".in" "" script_output ${pyscript})
+      get_filename_component(script_output ${script_output} NAME)
+      configure_file(${pyscript} ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output})
+      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output} DESTINATION ${PYTHON_INSTALL_DIR})
+    endforeach()
   endif()
 
   # install anything in the data directory to data/${MODULE}
