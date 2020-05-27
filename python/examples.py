@@ -18,8 +18,8 @@ def inclusive_single_e() :
         that will simulate un-biased, inclusive single electrons
         fired from upstream of the tagger into the v12 ldmx geometry
 
-    Example
-    -------
+    Examples
+    --------
     >>> bkgd_sim = examples.inclusive_single_e()
     """
 
@@ -125,7 +125,6 @@ def multiExample( ) :
     >>> mpg_sim = exampls.multiExample()
     """
 
-    verison.
     sim = ldmxcfg.Producer( "mpgExample" , "ldmx::Simulator" )
     sim.parameters[ "detector"  ] = makeDetectorPath( "ldmx-det-v12" )
     sim.parameters[ "runNumber" ] = 1
