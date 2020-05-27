@@ -181,6 +181,11 @@ namespace ldmx {
              */
             std::vector<std::string> outputFiles_;
 
+            /**
+             * Compression setting for the output files taken from python file.
+             */
+            int compressionSetting_;
+
             /** Histogram output file name */
             std::string histoOutFile_{""};
 

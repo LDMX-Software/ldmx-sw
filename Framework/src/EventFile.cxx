@@ -11,74 +11,67 @@
 
 namespace ldmx {
 
-    EventFile::EventFile(const std::string& filename, std::string treeName, bool isOutputFile, int compressionLevel) :
-                fileName_(filename), isOutputFile_(isOutputFile) {
+    EventFile::EventFile(const std::string& filename, EventFile* parent, bool isOutputFile, bool isSingleOutput, int compressionSetting) : 
+                fileName_(filename), parent_(parent), isOutputFile_(isOutputFile), isSingleOutput_(isSingleOutput) {
 
         if (isOutputFile_) {
-            file_ = new TFile(filename.c_str(), "RECREATE");
-            if (!file_->IsWritable()) {
-                EXCEPTION_RAISE("FileError", "Output file '" + filename + "' is not writable");
+            //we are writting out so open the file and make sure it is writable
+            file_ = new TFile(fileName_.c_str(), "RECREATE");
+            if (!file_->IsOpen() or !file_->IsWritable()) {
+                EXCEPTION_RAISE("FileError", "Output file '" + fileName_ + "' is not writable.");
             }
 
+            //set compression settings
+            //  Check out the TFile constructor for explanation of how this integer is built
+            //  Short Reference: setting = 100*algorithem + level
+            //  algorithm = 0 ==> use global default
+            file_->SetCompressionSettings(compressionSetting);
+
+            if( parent_ ) {
+                //output file when there are input files
+                //  might be drop/keep rules, so we should have these rules to make sure it works
+
+                //turn everything on
+                //  hypothetically could turn everything off? Doesn't work for some reason?
+                preCloneRules_.emplace_back( "*" , true );
+        
+                //except EventHeader (copies over to output)
+                preCloneRules_.emplace_back( "EventHeader*" , true );
+        
+                //reactivate all branches so default behavior is drop
+                reactivateRules_.push_back( "*" );
+            }
         } else {
-            file_ = new TFile(filename.c_str());
-        }
+            //open file with only reading enabled
+            file_ = new TFile(fileName_.c_str());
+            //double check that file is open
+            if (!file_->IsOpen()) {
+                EXCEPTION_RAISE("FileError", "Input file '" + fileName_ + "' is not readable or does not exist.");
+            }
 
-        if (!file_->IsOpen()) {
-            EXCEPTION_RAISE("FileError", "File '" + filename + "' is not readable or does not exist.");
-        }
-
-        if (isOutputFile_) {
-            file_->SetCompressionLevel(compressionLevel);
-        }
-
-        if (!isOutputFile_) {
-            tree_ = (TTree*) (file_->Get(treeName.c_str()));
+            tree_ = (TTree*) (file_->Get( EventConstants::EVENT_TREE_NAME.c_str() ));
+            if (!tree_) {
+                EXCEPTION_RAISE("FileError" ,
+                        "File '" + fileName_ + "' does not have a TTree named '"
+                        + EventConstants::EVENT_TREE_NAME + "' in it." );
+            }
             entries_ = tree_->GetEntriesFast();
         }
 
         importRunHeaders();
 
-        processStart_ = std::time(nullptr); 
+        processStart_ = std::time(nullptr);
+
     }
 
-    EventFile::EventFile(const std::string& filename, bool isOutputFile, int compressionLevel) :
-                EventFile(filename, EventConstants::EVENT_TREE_NAME, isOutputFile, compressionLevel) {
-    }
+    EventFile::EventFile(const std::string& filename) :
+        EventFile(filename,nullptr,false,false,-1) { }
 
-    EventFile::EventFile(const std::string& filename, EventFile* cloneParent, bool isSingleOutput, int compressionLevel) :
-                fileName_(filename), isOutputFile_(true), isSingleOutput_(isSingleOutput), parent_(cloneParent) {
+    EventFile::EventFile(const std::string& filename, int compressionSetting) :
+        EventFile(filename,nullptr,true,true,compressionSetting) { }
 
-        file_ = new TFile(filename.c_str(), "RECREATE");
-        if (!file_->IsWritable()) {
-            EXCEPTION_RAISE("FileError", "Output file '" + filename + "' is not writable");
-        }
-
-        if (!file_->IsOpen()) {
-            EXCEPTION_RAISE("FileError", "File '" + filename + "' is not readable or does not exist.");
-        }
-
-        //turn everything off
-        preCloneRules_.emplace_back( "*" , true );
-
-        //except EventHeader (copies over to output)
-        preCloneRules_.emplace_back( "EventHeader*" , true );
-
-        //reactivate all branches so default behavior is drop
-        reactivateRules_.push_back( "*" );
-
-        if (isOutputFile_) {
-            file_->SetCompressionLevel(compressionLevel);
-        }
-
-        importRunHeaders();
-        
-        processStart_ = std::time(nullptr); 
-    }
-
-    EventFile::~EventFile() {
-        runMap_.clear();
-    }
+    EventFile::EventFile(const std::string& filename, EventFile* parent, bool isSingleOutput, int compressionSetting) :
+        EventFile(filename,parent,true,isSingleOutput,compressionSetting) { }
 
     void EventFile::addDrop(const std::string& rule) {
 
