@@ -13,7 +13,7 @@
 
 // STL
 #include <vector>
-
+#include <memory>
 
 class TFile;
 class TDirectory;
@@ -37,6 +37,14 @@ namespace ldmx {
              * @param passname Processing pass label
              */
             Process(const std::string& passname);
+
+            /**
+             * Class Destructor
+             *
+             * Cleans up sequence of EventProcessors.
+             * These processors were created by ConfigurePython and should be deleted.
+             */
+            ~Process();
 
             /**
              * Get the processing pass label.
@@ -84,6 +92,14 @@ namespace ldmx {
              * @param filenameOut Output ROOT event file name
              */
             void addOutputFileName(const std::string& filenameOut);
+
+            /**
+             * Set the compression setting to give to the output file(s).
+             * @param set setting to give to the TFile as the compression
+             */
+            void setCompressionSetting(int set) { 
+                compressionSetting_ = set;
+            }
 
             /**
              * Set the name for a histogram file to contain histograms created by EventProcessor 
@@ -170,6 +186,15 @@ namespace ldmx {
             /** List of output file names.  If empty, no output file will be created. */
             std::vector<std::string> outputFiles_;
 
+            /** Compression setting to pass to output files
+             *
+             * Look at the documentation for the TFile constructor if you
+             * want to learn more details. Essentially,
+             * setting = 100*algo + level
+             * with algo = 0 being the global default.
+             */
+            int compressionSetting_;
+
             /** Set of drop/keep rules. */
             std::vector<std::string> dropKeepRules_;
 
@@ -182,6 +207,13 @@ namespace ldmx {
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};
     };
+
+    /**
+     * A handle to the current process
+     * Used to pass a process from ConfigurePython
+     * to ldmx-app.
+     */
+    typedef std::unique_ptr<Process> ProcessHandle;
 }
 
 #endif

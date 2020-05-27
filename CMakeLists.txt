@@ -1,6 +1,8 @@
 # minimum cmake version
 cmake_minimum_required(VERSION 3.1)
 
+project(ldmx-sw)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 17)
@@ -35,11 +37,15 @@ message(STATUS "XercesC include dir found at: ${XercesC_INCLUDE_DIRS}")
 get_filename_component(XercesC_LIBRARY_DIR ${XercesC_LIBRARIES} DIRECTORY)
 
 # find Geant4 installation
-find_package(Geant4 REQUIRED ui_all vis_all)
+find_package(Geant4 REQUIRED ui_all vis_all gdml)
 message(STATUS "Geant4 found at: ${Geant4_DIR}")
 
 # find Python installation
-find_package(PythonLibs 2 REQUIRED EXACT)
+find_package(PythonLibs 3)
+if(NOT ${PYTHONLIBS_FOUND})
+  message(WARNING "Python2 support will be removed in upcoming ldmx-sw versions.")
+  find_package(PythonLibs 2 REQUIRED)
+endif()
 message(STATUS "Python lib found at: ${PYTHON_LIBRARIES}")
 message(STATUS "Python include dir found at: ${PYTHON_INCLUDE_DIRS}")
 get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
@@ -96,7 +102,7 @@ foreach(module ${MODULES})
 endforeach()
 
 # build and install test executable ldmx-test
-option(BUILD_TESTS "Build and link ldmx-test executable." ON)
+option(BUILD_TESTS "Build and link ldmx-test executable." OFF)
 if(BUILD_TESTS)
   include(TestExecutable)
 endif()

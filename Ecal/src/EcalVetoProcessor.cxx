@@ -1,4 +1,4 @@
-#include "EventProc/EcalVetoProcessor.h"
+#include "Ecal/EcalVetoProcessor.h"
 
 // LDMX
 #include "Event/EcalHit.h"
@@ -205,7 +205,7 @@ namespace ldmx {
             float pmax = 0;
             for ( SimTrackerHit &spHit : ecalSpHits ) {
 
-                if (spHit.getLayerID() != 1 || spHit.getMomentum()[2] <= 0) continue;
+                if (spHit.getLayerID() != 31 || spHit.getMomentum()[2] <= 0) continue;
 
                 if (spHit.getTrackID() == recoilTrackID) {
                     if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {
@@ -222,7 +222,7 @@ namespace ldmx {
                 pmax = 0;
                 for ( SimTrackerHit &spHit : targetSpHits ) {
 
-                    if (spHit.getLayerID() != 2 || spHit.getMomentum()[2] <= 0) continue;
+                    if (spHit.getLayerID() != 1 || spHit.getMomentum()[2] <= 0) continue;
 
                     if (spHit.getTrackID() == recoilTrackID) {
                         if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {

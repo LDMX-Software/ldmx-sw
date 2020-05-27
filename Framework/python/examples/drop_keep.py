@@ -12,8 +12,8 @@ from LDMX.Ecal.ecalDigis import ecalDigis
 from LDMX.Ecal.ecalRecon import ecalRecon
 
 p.keep = [ 
-            "keep .*SimHits.*" #keep all SimHits
-            , "drop .*EcalSimHits.*" #except those in the ECal
+            "drop .*SimHits.*" #drop all sim hits
+            ,"keep EcalSimHits.*" #except the ones in the ECal
          ]
 
 p.sequence=[ hcalDigis, ecalDigis, ecalRecon ]

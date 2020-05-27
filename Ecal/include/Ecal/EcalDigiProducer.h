@@ -80,6 +80,27 @@ namespace ldmx {
                 return noiseIntercept + noiseSlope*capacitance;
             } 
 
+            /**
+             * Construct the DIGIs from energy and time simulated data.
+             *
+             * Right now, it adds up the energies and finds an
+             * energy-weighted average of the times. These digis are
+             * then inserted into digiToAdd.
+             *
+             * energies and times must be the same size.
+             * NO CHECKING IS DONE FOR THIS.
+             *
+             * The ID of the digi samples is not set in this function.
+             * It is only meant to make the energy+time --> digis translation consistent and isolated.
+             *
+             * @param energies simulated energy depositions
+             * @param times simulated times of energy depositions
+             * @param digiToAdd vector of EcalDigiSamples that will be filled with constructed digis
+             * @return true if digiToAdd was actually filled with something
+             */
+            bool constructDigis(const std::vector<double> &energies, const std::vector<double> &times, std::vector<EcalDigiSample> &digiToAdd);
+
+
             //Universal Constants
             //  Won't be changed by python configuration
             

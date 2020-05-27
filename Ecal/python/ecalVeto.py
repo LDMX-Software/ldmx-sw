@@ -1,7 +1,14 @@
+"""Configuration for Ecal veto
+
+Examples
+--------
+>>> from LDMX.Ecal.ecalVeto import ecalVeto
+>>> p.sequence.append( ecalVeto )
+"""
 
 from LDMX.Framework import ldmxcfg
 
-from LDMX.Configuration.makePath import *
+from LDMX.Ecal.makePath import *
 
 ecalVeto = ldmxcfg.Producer("EcalVeto","ldmx::EcalVetoProcessor")
 ecalVeto.parameters["num_ecal_layers"] = 34
