@@ -30,37 +30,62 @@ namespace ldmx {
     class EventFile {
 
         public:
+            
+            /**
+             * Constructor to make a general file.
+             *
+             * This is not used directly, but it is called in the more
+             * specialised constructors. This method is mainly focused on
+             * reducing code copying.
+             *
+             * @param[in] filename the name of the file to read/write
+             * @param[in] parent a pointer to the parent file to copy
+             * @param[in] isOutputFile true if this file is written out
+             * @param[in] isSingleOutput true if only one output file is being written to
+             * @param[in] compressionSetting the compression setting for the TFile (100*algo+level)
+             */
+            EventFile(const std::string& filename, EventFile* parent, bool isOutputFile, bool isSingleOutput, int compressionSetting);
 
             /**
-             * Class constructor to make a file with a custom tree name.
+             * Class constructor to make a file to read in an event root file.
+             *
+             * This is used for all input files.
+             *
              * @param fileName The file name.
-             * @param treeName The name of the tree containing event data.
-             * @param isOutputFile True if this file is written out.
-             * @param compressionLevel The compression level.
              */
-            EventFile(const std::string& fileName, std::string treeName, bool isOutputFile = false, int compressionLevel = 9);
+            EventFile(const std::string& fileName);
 
             /**
-             * Class constructor to make a file with the default tree name.
+             * Constructor to make an output file that has no parent input file.
+             *
+             * This is for an output file in Production Mode.
+             *
+             * isSingleOutput is set to true.
+             * This may or may not be necessary, but it is the single output in Production Mode, so it
+             * is a good default.
+             *
              * @param fileName The file name.
-             * @param isOutputFile True if this file is written out.
-             * @param compressionLevel The compression level.
+             * @param compressionSetting the compression setting for the TFile (100*algo+level)
              */
-            EventFile(const std::string& fileName, bool isOutputFile = false, int compressionLevel = 9);
+            EventFile(const std::string& fileName, int compressionSetting);
 
             /**
              * Class constructor for cloning data from a "parent" file.
+             *
+             * This is used for output files when there is an input file.
+             * (OR for files with a parent EventFile to clone)
+             *
              * @param fileName The file name.
-             * @param cloneParent Parent file for cloning data tree.
+             * @param parent Parent file for cloning data tree.
              * @param isSingleOutput boolean check if only one output file is being written to
-             * @param compressionLevel The compression level.
+             * @param compressionSetting the compression setting for the TFile (100*algo+level)
              */
-            EventFile(const std::string& fileName, EventFile* cloneParent, bool isSingleOutput = false, int compressionLevel = 9);
+            EventFile(const std::string& fileName, EventFile* parent, bool isSingleOutput = false, int compressionSetting = 9);
 
             /**
              * Class destructor.
              */
-            virtual ~EventFile();
+            ~EventFile() = default;
 
             /**
              * Add a rule for dropping collections from the output.

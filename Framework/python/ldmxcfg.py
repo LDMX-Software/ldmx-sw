@@ -197,6 +197,7 @@ class Process:
         self.skimDefaultIsKeep=True
         self.skimRules=[]
         self.logFrequency=-1
+        self.compressionSetting=9
         Process.lastProcess=self
 
     def skimDefaultIsSave(self):
@@ -259,6 +260,40 @@ class Process:
         """
         self.skimRules.append(namePat)
         self.skimRules.append(labelPat)
+
+    def setCompression(self,algorithm,level=9):
+        """set the compression settings for any output files in this process
+
+        We combine the compression settings here in the same way that ROOT
+        does. This allows the compression settings to be passed along as
+        one integer rather than two without any loss of generality.
+
+        Look at ROOT's documentation for TFile to learn more
+        about the different compression algorithms and levels available
+        (as well as what integers to use). There is a summary table
+        below.
+
+        Algorithm           |int| root version
+        --------------------|---|-------------
+        ROOT global default | 0 | root-6.16
+        ZLIB                | 1 | root-6.16
+        LZMA                | 2 | root-6.16
+        Old (ROOT 5)        | 3 | root-6.16
+        LZ4                 | 4 | root-6.16
+        ZSTD                | 5 | root-6.20
+
+        Level 0 : no compression is applied
+        Level 9 : maximum amount of compression available from algorithm
+
+        Parameters
+        ----------
+        algorithm : int
+            flag for the algorithm to use
+        level : int
+            flag for the level of compression to use
+        """
+
+        self.compressionSetting = algorithm*100 + level
 
     def __str__(self):
         """Stringify this object into a human readable, helpful form.

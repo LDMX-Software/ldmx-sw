@@ -34,6 +34,7 @@ if(test_sources)
     include(${external_lib}) # include all external libs
   endforeach()
   target_link_libraries(${executable} PUBLIC ${EXT_DEP_LIBRARIES})
+  include_directories(${EXT_DEP_INCLUDE_DIRS})
   if(MODULE_DEBUG)
     message("${executable} linked with: ${EXT_DEP_LIBRARIES}")
   endif()
