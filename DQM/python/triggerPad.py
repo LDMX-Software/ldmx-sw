@@ -32,7 +32,7 @@ def sim() :
     trigScintDown.parameters["hit_collection"] = "TriggerPadDownSimHits"
     trigScintDown.parameters["pad"] = "down"
 
-    return [ trigScintUp , tricScintTag , trigScintDown ]
+    return [ trigScintUp , trigScintTag , trigScintDown ]
 
 def digis() :
     """Analyzers focusing on digitized hits of trigger pads
@@ -64,4 +64,4 @@ def digis() :
     trigScintDown.parameters["hit_collection"] = "trigScintDigisDn"
     trigScintDown.parameters["pad"] = "down"
 
-    return [ trigScintUp , tricScintTag , trigScintDown ]
+    return [ trigScintUp , trigScintTag , trigScintDown ]
