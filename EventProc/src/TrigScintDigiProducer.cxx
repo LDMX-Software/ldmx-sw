@@ -1,5 +1,3 @@
-#include "TClonesArray.h"
-
 #include "EventProc/TrigScintDigiProducer.h"
 
 #include <iostream>
