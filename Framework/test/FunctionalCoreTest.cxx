@@ -17,7 +17,7 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/EventFile.h"
 
-using namespace ldmx;
+namespace ldmx { namespace test {
 
 /**
  * @class TestProducer
@@ -344,9 +344,12 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
  * Sometimes it is helpful to leave the generated files, so
  * maybe we can make the removal optional?
  */
-bool removeFile(const char * filepath) {
+static bool removeFile(const char * filepath) {
     return remove( filepath ) == 0;
 }
+
+} //test
+} //ldmx
 
 /**
  * Test for C++ Framework processing.
@@ -381,13 +384,15 @@ bool removeFile(const char * filepath) {
  */
 TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
+    using namespace ldmx;
+
     Process p("test");
 
     REQUIRE( p.getPassName() == "test" );
 
     //Process owns and deletes the processors
-    auto proHdl = new TestProducer( p );
-    auto anaHdl = new TestAnalyzer( p );
+    auto proHdl = new test::TestProducer( p );
+    auto anaHdl = new test::TestAnalyzer( p );
 
     SECTION( "Production Mode" ) {
         //no input files, only output files
@@ -404,20 +409,20 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
             
             SECTION( "no drop/keep rules" ) {
                 p.run();
-                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 , 1 ) );
+                CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 3 , 1 ) );
             }
             
             SECTION( "drop TestCollection" ) {
                 p.addDropKeepRule( "drop .*Collection.*" );
                 p.run();
-                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 , 1 , false ) );
+                CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 3 , 1 , false ) );
             }
 
             SECTION( "skim for even indexed events" ) {
                 p.getStorageController().setDefaultKeep( false );
                 p.getStorageController().addRule( "TestProducer" , "" );
                 p.run();
-                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 1 , 1 ) );
+                CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 1 , 1 ) );
             }
 
         }
@@ -429,33 +434,33 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
             SECTION( "no drop/keep rules" ) {
                 p.run();
-                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 , 1 ) );
+                CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 3 , 1 ) );
             }
 
             SECTION( "drop TestCollection" ) {
                 p.addDropKeepRule( "drop .*Collection.*" );
                 p.run();
-                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 3 , 1 , false ) );
+                CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 3 , 1 , false ) );
             }
 
             SECTION( "skim for even indexed events" ) {
                 p.getStorageController().setDefaultKeep( false );
                 p.getStorageController().addRule( "TestProducer" , "" );
                 p.run();
-                CHECK_THAT( event_file_path , isGoodEventFile( "test" , 1 , 1 ) );
+                CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 1 , 1 ) );
             }
 
-            CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+3 ) );
-            CHECK( removeFile( hist_file_path ) );
+            CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2+3 ) );
+            CHECK( test::removeFile( hist_file_path ) );
         }
 
-        CHECK( removeFile( event_file_path ) );
+        CHECK( test::removeFile( event_file_path ) );
     }//Production Mode
 
     SECTION( "Need Input Files" ) {
 
         Process makeInputs( "makeInputs" );
-        auto inputProHdl = new TestProducer( makeInputs );
+        auto inputProHdl = new test::TestProducer( makeInputs );
         makeInputs.addToSequence( inputProHdl );
         inputProHdl->shouldMakeRunHeader( true );
     
@@ -464,21 +469,21 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
         makeInputs.setEventLimit( 2 );
         makeInputs.setRunNumber( 2 );
         REQUIRE_NOTHROW( makeInputs.run() );
-        REQUIRE_THAT( input_file_2_events , isGoodEventFile( "makeInputs" , 2 , 1) );
+        REQUIRE_THAT( input_file_2_events , test::isGoodEventFile( "makeInputs" , 2 , 1) );
     
         const char * input_file_3_events = "test_needinputfiles_3_events.root";
         makeInputs.setOutputFileName( input_file_3_events );
         makeInputs.setEventLimit( 3 );
         makeInputs.setRunNumber( 3 );
         REQUIRE_NOTHROW( makeInputs.run() );
-        REQUIRE_THAT( input_file_3_events , isGoodEventFile( "makeInputs" , 3 , 1) );
+        REQUIRE_THAT( input_file_3_events , test::isGoodEventFile( "makeInputs" , 3 , 1) );
        
         const char * input_file_4_events = "test_needinputfiles_4_events.root";
         makeInputs.setOutputFileName( input_file_4_events );
         makeInputs.setEventLimit( 4 );
         makeInputs.setRunNumber( 4 );
         REQUIRE_NOTHROW( makeInputs.run() );
-        REQUIRE_THAT( input_file_4_events , isGoodEventFile( "makeInputs" , 4 , 1) );
+        REQUIRE_THAT( input_file_4_events , test::isGoodEventFile( "makeInputs" , 4 , 1) );
     
         SECTION( "Analysis Mode" ) {
             //no output files, only histogram output
@@ -493,8 +498,8 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
                 p.run();
 
-                CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2 ) );
-                CHECK( removeFile( hist_file_path ) );
+                CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2 ) );
+                CHECK( test::removeFile( hist_file_path ) );
             }
             
             SECTION( "multiple input files" ) {
@@ -503,8 +508,8 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 p.addFileToProcess( input_file_4_events );
                 p.run();
 
-                CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
-                CHECK( removeFile( hist_file_path ) );
+                CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
+                CHECK( test::removeFile( hist_file_path ) );
             }
 
         }//Analysis Mode
@@ -523,13 +528,13 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
                 SECTION( "no drop/keep rules" ) {
                     p.run();
-                    CHECK_THAT( event_file_path , isGoodEventFile( "makeInputs" , 2+3+4 , 3 ) );
+                    CHECK_THAT( event_file_path , test::isGoodEventFile( "makeInputs" , 2+3+4 , 3 ) );
                 }
 
                 SECTION( "drop TestCollection" ) {
                     p.addDropKeepRule( "drop .*Collection.*" );
                     p.run();
-                    CHECK_THAT( event_file_path , isGoodEventFile( "makeInputs" , 2+3+4 , 3 , false ) );
+                    CHECK_THAT( event_file_path , test::isGoodEventFile( "makeInputs" , 2+3+4 , 3 , false ) );
                 }
             }
     
@@ -542,17 +547,17 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
     
                 SECTION( "no drop/keep rules" ) {
                     p.run();
-                    CHECK_THAT( event_file_path , isGoodEventFile( "makeInputs" , 2+3+4 , 3 ) );
+                    CHECK_THAT( event_file_path , test::isGoodEventFile( "makeInputs" , 2+3+4 , 3 ) );
                 }
 
                 SECTION( "drop TestCollection" ) {
                     p.addDropKeepRule( "drop .*Collection.*" );
                     p.run();
-                    CHECK_THAT( event_file_path , isGoodEventFile( "makeInputs" , 2+3+4 , 3 , false ) );
+                    CHECK_THAT( event_file_path , test::isGoodEventFile( "makeInputs" , 2+3+4 , 3 , false ) );
                 }
 
-                CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
-                CHECK( removeFile( hist_file_path ) );
+                CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
+                CHECK( test::removeFile( hist_file_path ) );
             }
     
             SECTION( "with producers" ) {
@@ -560,19 +565,19 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
                 SECTION( "not listening to storage hints" ) {
                     p.run();
-                    CHECK_THAT( event_file_path , isGoodEventFile( "test" , 2+3+4 , 3 ) );
+                    CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 2+3+4 , 3 ) );
                 }
 
                 SECTION( "skim for even indexed events" ) {
                     p.getStorageController().setDefaultKeep( false );
                     p.getStorageController().addRule( "TestProducer" , "" );
                     p.run();
-                    CHECK_THAT( event_file_path , isGoodEventFile( "test" , 1+1+2 , 3 ) );
+                    CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 1+1+2 , 3 ) );
                 }
 
             }
 
-            CHECK( removeFile( event_file_path ) );
+            CHECK( test::removeFile( event_file_path ) );
 
         } //Merge Mode
 
@@ -593,17 +598,17 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                 
                 SECTION( "no drop/keep rules" ) {
                     p.run();
-                    CHECK_THAT( output_2_events , isGoodEventFile( "makeInputs" , 2 , 1 ) );
-                    CHECK_THAT( output_3_events , isGoodEventFile( "makeInputs" , 3 , 1 ) );
-                    CHECK_THAT( output_4_events , isGoodEventFile( "makeInputs" , 4 , 1 ) );
+                    CHECK_THAT( output_2_events , test::isGoodEventFile( "makeInputs" , 2 , 1 ) );
+                    CHECK_THAT( output_3_events , test::isGoodEventFile( "makeInputs" , 3 , 1 ) );
+                    CHECK_THAT( output_4_events , test::isGoodEventFile( "makeInputs" , 4 , 1 ) );
                 }
 
                 SECTION( "drop TestCollection" ) {
                     p.addDropKeepRule( "drop .*Collection.*" );
                     p.run();
-                    CHECK_THAT( output_2_events , isGoodEventFile( "makeInputs" , 2 , 1 , false ) );
-                    CHECK_THAT( output_3_events , isGoodEventFile( "makeInputs" , 3 , 1 , false ) );
-                    CHECK_THAT( output_4_events , isGoodEventFile( "makeInputs" , 4 , 1 , false ) );
+                    CHECK_THAT( output_2_events , test::isGoodEventFile( "makeInputs" , 2 , 1 , false ) );
+                    CHECK_THAT( output_3_events , test::isGoodEventFile( "makeInputs" , 3 , 1 , false ) );
+                    CHECK_THAT( output_4_events , test::isGoodEventFile( "makeInputs" , 4 , 1 , false ) );
                 }
             }
 
@@ -615,21 +620,21 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
     
                 SECTION( "no drop/keep rules" ) {
                     p.run();
-                    CHECK_THAT( output_2_events , isGoodEventFile( "makeInputs" , 2 , 1 ) );
-                    CHECK_THAT( output_3_events , isGoodEventFile( "makeInputs" , 3 , 1 ) );
-                    CHECK_THAT( output_4_events , isGoodEventFile( "makeInputs" , 4 , 1 ) );
+                    CHECK_THAT( output_2_events , test::isGoodEventFile( "makeInputs" , 2 , 1 ) );
+                    CHECK_THAT( output_3_events , test::isGoodEventFile( "makeInputs" , 3 , 1 ) );
+                    CHECK_THAT( output_4_events , test::isGoodEventFile( "makeInputs" , 4 , 1 ) );
                 }
 
                 SECTION( "drop TestCollection" ) {
                     p.addDropKeepRule( "drop .*Collection.*" );
                     p.run();
-                    CHECK_THAT( output_2_events , isGoodEventFile( "makeInputs" , 2 , 1 , false ) );
-                    CHECK_THAT( output_3_events , isGoodEventFile( "makeInputs" , 3 , 1 , false ) );
-                    CHECK_THAT( output_4_events , isGoodEventFile( "makeInputs" , 4 , 1 , false ) );
+                    CHECK_THAT( output_2_events , test::isGoodEventFile( "makeInputs" , 2 , 1 , false ) );
+                    CHECK_THAT( output_3_events , test::isGoodEventFile( "makeInputs" , 3 , 1 , false ) );
+                    CHECK_THAT( output_4_events , test::isGoodEventFile( "makeInputs" , 4 , 1 , false ) );
                 }
 
-                CHECK_THAT( hist_file_path , isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
-                CHECK( removeFile( hist_file_path ) );
+                CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
+                CHECK( test::removeFile( hist_file_path ) );
             }
     
             SECTION( "with producers" ) {
@@ -639,31 +644,31 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
                     p.run();
     
                     //checks that produced objects were written correctly
-                    CHECK_THAT( output_2_events , isGoodEventFile( "test" , 2 , 1 ) );
-                    CHECK_THAT( output_3_events , isGoodEventFile( "test" , 3 , 1 ) );
-                    CHECK_THAT( output_4_events , isGoodEventFile( "test" , 4 , 1 ) );
+                    CHECK_THAT( output_2_events , test::isGoodEventFile( "test" , 2 , 1 ) );
+                    CHECK_THAT( output_3_events , test::isGoodEventFile( "test" , 3 , 1 ) );
+                    CHECK_THAT( output_4_events , test::isGoodEventFile( "test" , 4 , 1 ) );
                 }
 
                 SECTION( "skimming for even-indexed events" ) {
                     p.getStorageController().setDefaultKeep( false );
                     p.getStorageController().addRule( "TestProducer" , "" );
                     p.run();
-                    CHECK_THAT( output_2_events , isGoodEventFile( "test" , 1 , 1 ) );
-                    CHECK_THAT( output_3_events , isGoodEventFile( "test" , 1 , 1 ) );
-                    CHECK_THAT( output_4_events , isGoodEventFile( "test" , 2 , 1 ) );
+                    CHECK_THAT( output_2_events , test::isGoodEventFile( "test" , 1 , 1 ) );
+                    CHECK_THAT( output_3_events , test::isGoodEventFile( "test" , 1 , 1 ) );
+                    CHECK_THAT( output_4_events , test::isGoodEventFile( "test" , 2 , 1 ) );
                 }
             }
 
-            CHECK( removeFile( output_2_events ) );
-            CHECK( removeFile( output_3_events ) );
-            CHECK( removeFile( output_4_events ) );
+            CHECK( test::removeFile( output_2_events ) );
+            CHECK( test::removeFile( output_3_events ) );
+            CHECK( test::removeFile( output_4_events ) );
 
         } // N-to-N Mode
 
         //cleanup
-        CHECK( removeFile( input_file_2_events ) );
-        CHECK( removeFile( input_file_3_events ) );
-        CHECK( removeFile( input_file_4_events ) );
+        CHECK( test::removeFile( input_file_2_events ) );
+        CHECK( test::removeFile( input_file_3_events ) );
+        CHECK( test::removeFile( input_file_4_events ) );
 
     } //need input files
 
