@@ -94,6 +94,14 @@ namespace ldmx {
             void addOutputFileName(const std::string& filenameOut);
 
             /**
+             * Set the compression setting to give to the output file(s).
+             * @param set setting to give to the TFile as the compression
+             */
+            void setCompressionSetting(int set) { 
+                compressionSetting_ = set;
+            }
+
+            /**
              * Set the name for a histogram file to contain histograms created by EventProcessor 
              * objects.  If this name is not set, any such histograms will be created in memory.
              * @param filenameHisto Output histogram ROOT file name
@@ -177,6 +185,15 @@ namespace ldmx {
 
             /** List of output file names.  If empty, no output file will be created. */
             std::vector<std::string> outputFiles_;
+
+            /** Compression setting to pass to output files
+             *
+             * Look at the documentation for the TFile constructor if you
+             * want to learn more details. Essentially,
+             * setting = 100*algo + level
+             * with algo = 0 being the global default.
+             */
+            int compressionSetting_;
 
             /** Set of drop/keep rules. */
             std::vector<std::string> dropKeepRules_;

@@ -273,6 +273,7 @@ namespace ldmx {
         eventLimit_   = intMember( pProcess , "maxEvents" );
         run_          = intMember( pProcess , "run" );
         logFrequency_ = intMember( pProcess , "logFrequency" ); 
+        compressionSetting_ = intMember( pProcess , "compressionSetting" );
         histoOutFile_ = stringMember( pProcess , "histogramFile" );
         passname_     = stringMember( pProcess , "passName" );
 
@@ -371,6 +372,7 @@ namespace ldmx {
         for (auto file : outputFiles_) {
             process->addOutputFileName(file);
         }
+        process->setCompressionSetting(compressionSetting_);
         for (auto rule : keepRules_) {
             process->addDropKeepRule(rule);
         }
