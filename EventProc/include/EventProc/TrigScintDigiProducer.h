@@ -18,7 +18,7 @@
 #include "TRandom3.h"
 
 // LDMX
-#include "DetDescr/DefaultDetectorID.h"
+#include "DetDescr/TrigScintID.h"
 #include "Event/EventConstants.h"
 #include "Event/TrigScintHit.h"
 #include "Event/SimCalorimeterHit.h"
@@ -33,7 +33,7 @@
 namespace ldmx {
 
     enum TrigScintSection{
-        UPSTREAM_TAGGER,
+        UPSTREAM_TAGGER = 1,
         UPSTREAM_TARGET,
         DOWNSTREAM_TARGET,
         NUM_SECTIONS
@@ -65,7 +65,7 @@ namespace ldmx {
 
             void produce(Event& event);
 
-            unsigned int generateRandomID(TrigScintSection sec);
+            unsigned int generateRandomID(int module);
 
         private:
 
@@ -73,7 +73,7 @@ namespace ldmx {
             std::unique_ptr<TRandom3> random_; 
             
             /// Detector ID 
-            std::unique_ptr<DefaultDetectorID> detID_;
+            std::unique_ptr<TrigScintID> detID_;
             
             /// Generate noise hits given the number of channels and mean noise.
             std::unique_ptr<NoiseGenerator> noiseGenerator_;
@@ -84,6 +84,9 @@ namespace ldmx {
 
             /// Name of the input collection containing the sim hits
 	        std::string inputCollection_;
+
+            /// Name of the pass that the input collection is on (empty string means take any pass)
+            std::string inputPassName_;
 
             /// Name of the output collection that will be used to stored the
             /// digitized trigger scintillator hits

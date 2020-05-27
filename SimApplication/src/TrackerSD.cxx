@@ -15,8 +15,8 @@
 
 namespace ldmx {
 
-    TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
-            G4VSensitiveDetector(name), hitsCollection_(0), subdetID_(subdetID), detID_(detID) {
+    TrackerSD::TrackerSD(G4String name, G4String theCollectionName, int subDetID) :
+            G4VSensitiveDetector(name), hitsCollection_(0) {
 
         // Add the collection name to vector of names.
         this->collectionName.push_back(theCollectionName);
@@ -25,7 +25,7 @@ namespace ldmx {
         G4SDManager::GetSDMpointer()->AddNewDetector(this);
 
         // Set the subdet ID as it will always be the same for every hit.
-        detID_->setFieldValue("subdet", subdetID_);
+        detID_->setFieldValue("subdet", subDetID);
     }
 
     TrackerSD::~TrackerSD() {
@@ -116,11 +116,7 @@ namespace ldmx {
          * Debug print.
          */
         if (this->verboseLevel > 2) {
-            std::cout << "Created SimTrackerHit in '" << this->GetName() << "' with subdet <" << subdetID_ 
-                      << ">, copyNum <" << copyNum << ">, layer <" << layer << ">, module <" << module << ">" 
-                      << std::endl;
             hit->Print();
-            std::cout << std::endl;
         }
 
         // Insert hit into current hits collection.

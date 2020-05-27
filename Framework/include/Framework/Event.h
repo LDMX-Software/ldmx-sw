@@ -52,10 +52,18 @@ namespace ldmx {
 
             /**
              * Get the event header.
-             * @return A constant copy of the event header.
+             * @return A reference to the event header.
              */
             EventHeader &getEventHeader() {
                 return eventHeader_;
+            }
+
+            /**
+             * Get the event number.
+             * @return the event index/number
+             */
+            int getEventNumber() const {
+                return eventHeader_.getEventNumber();
             }
 
             /**
@@ -129,6 +137,9 @@ namespace ldmx {
                             );
                 }
                 branchesFilled_.insert(branchName);
+                //MEMORY add is leaking memory when given a vector (possible upon destruction of Event?)
+                //MEMORY add is 'conditional jump or move depends on uninitialised values' for all types of objects
+                //  TTree::BranchImpRef or TTree::BronchExec
                 if (passengers_.find(branchName) == passengers_.end()) { 
                     // create a new branch for this collection
                     //TODO check if input type is listed as an EventBusPassenger?

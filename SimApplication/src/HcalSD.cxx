@@ -1,5 +1,10 @@
 #include "SimApplication/HcalSD.h"
 
+/*~~~~~~~~~~~~~~*/
+/*   DetDescr   */
+/*~~~~~~~~~~~~~~*/
+#include "DetDescr/HcalID.h" 
+
 // STL
 #include <iostream>
 
@@ -15,14 +20,18 @@
 
 namespace ldmx {
 
-    HcalSD::HcalSD(G4String name, G4String theCollectionName, int subdetID, DetectorID* detID) :
-            CalorimeterSD(name, theCollectionName, subdetID, detID),
+    HcalSD::HcalSD(G4String name, G4String collectionName, int subDetID) :
+            CalorimeterSD(name, collectionName),
             birksc1_(1.29e-2),
-            birksc2_(9.59e-6)
-    {
+            birksc2_(9.59e-6) {
+        
+        detID_ = new HcalID(); 
+        detID_->setFieldValue("subdet", subDetID);
     }
 
-    HcalSD::~HcalSD() {}
+    HcalSD::~HcalSD() {
+        delete detID_; 
+    }
 
     G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
 

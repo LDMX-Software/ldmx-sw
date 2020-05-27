@@ -6,6 +6,7 @@
 #include "SimApplication/CalorimeterSD.h"
 #include "SimApplication/EcalSD.h"
 #include "SimApplication/HcalSD.h"
+#include "SimApplication/TrigScintSD.h" 
 #include "SimApplication/ScoringPlaneSD.h"
 #include "SimApplication/MagneticFieldStore.h"
 #include "SimApplication/MagneticFieldMap3D.h"
@@ -70,7 +71,7 @@ namespace ldmx {
 
     void AuxInfoReader::createSensitiveDetector(G4String theSensDetName, const G4GDMLAuxListType* auxInfoList) {
 
-        G4cout << "Creating SensitiveDetector " << theSensDetName << G4endl;
+        //G4cout << "Creating SensitiveDetector " << theSensDetName << G4endl;
 
         G4String sdType("");
         G4String hcName("");
@@ -84,7 +85,7 @@ namespace ldmx {
             G4String auxVal = iaux->value;
             G4String auxUnit = iaux->unit;
 
-            G4cout << "auxType: " << auxType << ", auxVal: " << auxVal << ", auxUnit: " << auxUnit << G4endl;
+            //G4cout << "auxType: " << auxType << ", auxVal: " << auxVal << ", auxUnit: " << auxUnit << G4endl;
 
             if (auxType == "SensDetType") {
                 sdType = auxVal;
@@ -114,32 +115,20 @@ namespace ldmx {
         }
 
         /*
-         * Use the default detector ID or create one from information supplied in the userinfo block, if present.
-         */
-        DetectorID* detID = new DefaultDetectorID();
-        if (idName != "") {
-            detID = DetectorIDStore::getInstance()->getID(idName);
-            if (!detID) {
-                EXCEPTION_RAISE( "MissingInfo" , "The Detector ID " + std::string(idName.data()) + " does not exist. Is it defined before the SensDet in userinfo?" );
-            }
-        }
-        /*
          * Build the Sensitive Detector, and re-assign the detID if applicable
          */
         G4VSensitiveDetector* sd = 0;
 
         if (sdType == "TrackerSD") {
-            sd = new TrackerSD(theSensDetName, hcName, subdetID, detID);
+            sd = new TrackerSD(theSensDetName, hcName, subdetID);
         } else if (sdType == "EcalSD") {
-            detID = new EcalDetectorID();
-            sd = new EcalSD(theSensDetName, hcName, subdetID, detID);
+            sd = new EcalSD(theSensDetName, hcName, subdetID);
         } else if (sdType == "HcalSD") {
-            detID = new HcalID();
-            sd = new HcalSD(theSensDetName, hcName, subdetID, detID);
-        } else if (sdType == "CalorimeterSD") {
-            sd = new CalorimeterSD(theSensDetName, hcName, subdetID, detID);
+            sd = new HcalSD(theSensDetName, hcName, subdetID);
         } else if (sdType == "ScoringPlaneSD") { 
-            sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID, detID); 
+            sd = new ScoringPlaneSD(theSensDetName, hcName, subdetID); 
+        } else if (sdType == "TrigScintSD") { 
+            sd = new TrigScintSD(theSensDetName, hcName, subdetID);
         } else {
             EXCEPTION_RAISE( "DetType" , "Unknown SensitiveDetector type: " + sdType );
         }
@@ -149,11 +138,10 @@ namespace ldmx {
          */
         if (sdType != "TrackerSD" && layerDepth != -1) {
             ((CalorimeterSD*) sd)->setLayerDepth(layerDepth);
-            G4cout << "Layer depth set to " << layerDepth << G4endl;
         }
         sd->SetVerboseLevel(verbose);
 
-        G4cout << "Created " << sdType << " " << theSensDetName << " with hits collection " << hcName << " and verbose level " << verbose << G4endl << G4endl;
+        //G4cout << "Created " << sdType << " " << theSensDetName << " with hits collection " << hcName << " and verbose level " << verbose << G4endl << G4endl;
     }
 
     void AuxInfoReader::assignAuxInfoToVolumes() {
@@ -176,7 +164,7 @@ namespace ldmx {
                         G4VSensitiveDetector* sd = G4SDManager::GetSDMpointer()->FindSensitiveDetector(sdName);
                         if (sd != NULL) {
                             lv->SetSensitiveDetector(sd);
-                            G4cout << "Assigned SD " << sd->GetName() << " to " << lv->GetName() << G4endl;
+                            //G4cout << "Assigned SD " << sd->GetName() << " to " << lv->GetName() << G4endl;
                         } else {
                             EXCEPTION_RAISE( "MissingInfo" , "Unknown SensDet in volume's auxiliary info: " + std::string(sdName.data()) );
                         }
@@ -186,7 +174,7 @@ namespace ldmx {
                         if (magField != NULL) {
                             G4FieldManager* mgr = new G4FieldManager(magField);
                             lv->SetFieldManager(mgr, true /* FIXME: hard-coded to force field manager to daughters */);
-                            G4cout << "Assigned magnetic field " << magFieldName << " to volume " << lv->GetName() << G4endl;
+                            //G4cout << "Assigned magnetic field " << magFieldName << " to volume " << lv->GetName() << G4endl;
                         } else {
                             EXCEPTION_RAISE( "MissingInfo" , "Unknown MagneticField ref in volume's auxiliary info: " + std::string(magFieldName.data()) );
                         }
@@ -195,7 +183,7 @@ namespace ldmx {
                         G4Region* region = G4RegionStore::GetInstance()->GetRegion(regionName);
                         if (region != NULL) {
                             region->AddRootLogicalVolume(lv);
-                            G4cout << "Added volume " << lv->GetName() << " to region " << regionName << G4endl;
+                            //G4cout << "Added volume " << lv->GetName() << " to region " << regionName << G4endl;
                         } else {
                             EXCEPTION_RAISE( "MissingInfo" , "Reference region '" + std::string(regionName.data()) + "' was not found!" );
                         }
@@ -204,7 +192,7 @@ namespace ldmx {
                         G4VisAttributes* visAttributes = VisAttributesStore::getInstance()->getVisAttributes(visName);
                         if (visAttributes != NULL) {
                             lv->SetVisAttributes(visAttributes);
-                            G4cout << "Assigned VisAttributes " << visName << " to volume " << lv->GetName() << G4endl;
+                            //G4cout << "Assigned VisAttributes " << visName << " to volume " << lv->GetName() << G4endl;
                         } else {
                             EXCEPTION_RAISE( "MissingInfo" , "Referenced VisAttributes '" + std::string(visName.data()) + "' was not found!" );
                         }
@@ -216,7 +204,7 @@ namespace ldmx {
 
     void AuxInfoReader::createDetectorID(G4String idName, const G4GDMLAuxListType* auxInfoList) {
 
-        G4cout << "Creating DetectorID " << idName << G4endl;
+        //G4cout << "Creating DetectorID " << idName << G4endl;
         IDField::IDFieldList* fieldList = new IDField::IDFieldList();
 
         // iterate fields
@@ -232,7 +220,7 @@ namespace ldmx {
 
                 string fieldName = auxVal;
 
-                G4cout << "Creating IDField " << fieldName << G4endl;
+                //G4cout << "Creating IDField " << fieldName << G4endl;
 
                 int startBit, endBit = -1;
 
@@ -259,7 +247,7 @@ namespace ldmx {
 
                 fieldList->push_back(new IDField(fieldName, fieldIndex, startBit, endBit));
 
-                G4cout << "Added IDField " << fieldName << " with StartBit = " << startBit << ", EndBit = " << endBit << ", Index = " << fieldIndex << G4endl;
+                //G4cout << "Added IDField " << fieldName << " with StartBit = " << startBit << ", EndBit = " << endBit << ", Index = " << fieldIndex << G4endl;
 
                 // Increment field index which is assigned automatically based on element ordering.
                 fieldIndex++;
@@ -268,7 +256,7 @@ namespace ldmx {
 
         DetectorID* id = new DetectorID(fieldList);
         DetectorIDStore::getInstance()->addID(idName, id);
-        G4cout << "Created detector ID " << idName << G4endl << G4endl;
+        //G4cout << "Created detector ID " << idName << G4endl << G4endl;
     }
 
     void AuxInfoReader::createMagneticField(G4String magFieldName, const G4GDMLAuxListType* auxInfoList) {
@@ -315,7 +303,7 @@ namespace ldmx {
             G4ThreeVector fieldComponents(bx, by, bz);
             magField = new G4UniformMagField(fieldComponents);
 
-            G4cout << "Created G4UniformMagField " << magFieldName << " with field components " << fieldComponents << G4endl << G4endl;
+            //G4cout << "Created G4UniformMagField " << magFieldName << " with field components " << fieldComponents << G4endl << G4endl;
 
             // Create a global 3D field map by reading from a data file.
         } else if (magFieldType == "MagneticFieldMap3D") {
@@ -347,15 +335,15 @@ namespace ldmx {
             }
 
             // Create new 3D field map.
-            G4MagneticField* fieldMap = new MagneticFieldMap3D(fileName.c_str(), offsetX, offsetY, offsetZ);
+            magField = new MagneticFieldMap3D(fileName.c_str(), offsetX, offsetY, offsetZ);
 
             // Assign field map as global field.
             G4FieldManager* fieldMgr = G4TransportationManager::GetTransportationManager()->GetFieldManager();
             if (fieldMgr->GetDetectorField() != nullptr) {
                 EXCEPTION_RAISE( "MisAssign" , "Global mag field was already assigned." );
             }
-            fieldMgr->SetDetectorField(fieldMap);
-            fieldMgr->CreateChordFinder(fieldMap);
+            fieldMgr->SetDetectorField(magField);
+            fieldMgr->CreateChordFinder(magField);
 
         } else {
             EXCEPTION_RAISE( "UnknownType" , "Unknown MagFieldType '" + std::string(magFieldType.data()) + "' in auxiliary info." );
@@ -386,7 +374,7 @@ namespace ldmx {
         G4Region* region = new G4Region(name);
         region->SetUserInformation(regionInfo);
 
-        G4cout << "Created new detector region " << region->GetName() << G4endl << G4endl;
+        //G4cout << "Created new detector region " << region->GetName() << G4endl << G4endl;
     }
 
     void AuxInfoReader::createVisAttributes(G4String name, const G4GDMLAuxListType* auxInfoList) {
@@ -454,7 +442,7 @@ namespace ldmx {
         visAttributes->SetLineStyle(lineStyle);
         VisAttributesStore::getInstance()->addVisAttributes(name, visAttributes);
 
-        G4cout << "Created VisAttributes " << name << G4endl << (*visAttributes) << G4endl << G4endl;
+        //G4cout << "Created VisAttributes " << name << G4endl << (*visAttributes) << G4endl << G4endl;
     }
 
     void AuxInfoReader::createDetectorHeader(G4String auxValue, const G4GDMLAuxListType* auxInfoList) {
@@ -482,13 +470,13 @@ namespace ldmx {
 
         detectorHeader_ = new DetectorHeader(detectorName, detectorVersion, description, author);
 
-        G4cout << G4endl;
+        /*G4cout << G4endl;
         G4cout << "Read detector header from userinfo: " << G4endl;
         G4cout << "  DetectorName: " << detectorHeader_->getName() << G4endl;
         G4cout << "  DetectorVersion: " << detectorHeader_->getVersion() << G4endl;
         G4cout << "  Author: " << detectorHeader_->getAuthor() << G4endl;
         G4cout << "  Description: " << detectorHeader_->getDescription() << G4endl;
-        G4cout << G4endl;
+        G4cout << G4endl;*/
 
     }
 

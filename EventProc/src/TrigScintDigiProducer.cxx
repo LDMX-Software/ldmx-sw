@@ -23,24 +23,28 @@ namespace ldmx {
         mevPerMip_        = parameters.getParameter< double >("mev_per_mip");
         pePerMip_         = parameters.getParameter< double >("pe_per_mip");
         inputCollection_  = parameters.getParameter< std::string >("input_collection");
+        inputPassName_    = parameters.getParameter< std::string >("input_pass_name" );
         outputCollection_ = parameters.getParameter< std::string >("output_collection");
         verbose_          = parameters.getParameter< bool >("verbose");
 
         random_ = std::make_unique<TRandom3>(parameters.getParameter< int >("randomSeed"));
         
-        detID_ = std::make_unique<DefaultDetectorID>();
+        detID_ = std::make_unique<TrigScintID>();
         
         noiseGenerator_ = std::make_unique<NoiseGenerator>(meanNoise_, false); 
         noiseGenerator_->setNoiseThreshold(1); 
     }
 
-    unsigned int TrigScintDigiProducer::generateRandomID(TrigScintSection sec){
-        DefaultDetectorID tempID;
-        if( sec < TrigScintSection::NUM_SECTIONS ){
-            tempID.setFieldValue(0,int(sec));
-            tempID.setFieldValue(1,random_->Integer(stripsPerArray_));
-        }else
+    unsigned int TrigScintDigiProducer::generateRandomID(int module) {
+
+        TrigScintID tempID;
+        if ( module < TrigScintSection::NUM_SECTIONS ) {
+            tempID.setFieldValue("module", module);
+            tempID.setFieldValue("bar", random_->Integer(stripsPerArray_));
+        } else { 
+            // Throw an exception
             std::cout << "WARNING [TrigScintDigiProducer::generateRandomID]: TrigScintSection is not known" << std::endl;
+        }
 
         return tempID.pack();
     }
@@ -55,18 +59,26 @@ namespace ldmx {
         auto numRecHits{0};
 
         // looper over sim hits and aggregate energy depositions for each detID
-        const auto simHits{event.getCollection< SimCalorimeterHit >(inputCollection_, "sim")};
+        const auto simHits{event.getCollection< SimCalorimeterHit >(inputCollection_,inputPassName_)};
         auto particleMap{event.getMap< int, SimParticle >("SimParticles")};
 
+        int module{-1}; 
         for (const auto& simHit : simHits) {          
 
-            int detIDraw = simHit.getID();
-            detID_->setRawValue(detIDraw);
+            int detIDRaw{simHit.getID()};
+            detID_->setRawValue(detIDRaw);
             detID_->unpack();
+
+            // Just set the module ID to use for noise hits here.  Given that
+            // we are currently processing a single module at a time, setting
+            // it within the loop shouldn't matter.
+            module = detID_->getFieldValue("module"); 
             std::vector<float> position = simHit.getPosition();
 
             if (verbose_) {
-                std::cout << "  layer: " << detID_->getFieldValue("layer") << std::endl;
+                std::cout << "Module: " << module 
+                          << " Bar: " << detID_->getFieldValue("bar") 
+                          << std::endl; 
             }        
 
             // check if hits is from beam electron and, if so, add to beamFrac
@@ -77,35 +89,35 @@ namespace ldmx {
                     std::cout << "\t particle id: " << particleMap[contrib.trackID].getPdgID() << " particle status: " << particleMap[contrib.trackID].getGenStatus() << std::endl;
                 }
                 if( particleMap[contrib.trackID].getPdgID() == 11 && particleMap[contrib.trackID].getGenStatus() == 1 ){
-                    if( beamFrac.find(detIDraw) == beamFrac.end() )
-                        beamFrac[detIDraw]=contrib.edep;
+                    if( beamFrac.find(detIDRaw) == beamFrac.end() )
+                        beamFrac[detIDRaw]=contrib.edep;
                     else
-                        beamFrac[detIDraw]+=contrib.edep;                          
+                        beamFrac[detIDRaw]+=contrib.edep;                          
                 }
             }
 
             // for now, we take am energy weighted average of the hit in each stip to simulate the hit position. 
             // AJW: these should be dropped, they are likely to lead to a problem since we can't measure them anyway
             // except roughly y and z, which is encoded in the ids.
-            if (Edep.find(detIDraw) == Edep.end()) {
+            if (Edep.find(detIDRaw) == Edep.end()) {
 
                 // first hit, initialize
-                Edep[detIDraw] = simHit.getEdep();
-                Time[detIDraw] = simHit.getTime() * simHit.getEdep();
-                Xpos[detIDraw] = position[0]* simHit.getEdep();
-                Ypos[detIDraw] = position[1]* simHit.getEdep();
-                Zpos[detIDraw] = position[2]* simHit.getEdep();
+                Edep[detIDRaw] = simHit.getEdep();
+                Time[detIDRaw] = simHit.getTime() * simHit.getEdep();
+                Xpos[detIDRaw] = position[0]* simHit.getEdep();
+                Ypos[detIDRaw] = position[1]* simHit.getEdep();
+                Zpos[detIDRaw] = position[2]* simHit.getEdep();
                 numRecHits++;
 
             } else {
 
                 // not first hit, aggregate, and store the largest radius hit
-                Xpos[detIDraw] += position[0]* simHit.getEdep();
-                Ypos[detIDraw] += position[1]* simHit.getEdep();
-                Zpos[detIDraw] += position[2]* simHit.getEdep();
-                Edep[detIDraw] += simHit.getEdep();
+                Xpos[detIDRaw] += position[0]* simHit.getEdep();
+                Ypos[detIDRaw] += position[1]* simHit.getEdep();
+                Zpos[detIDRaw] += position[2]* simHit.getEdep();
+                Edep[detIDRaw] += simHit.getEdep();
                 // AJW: need to figure out a better way to model this...
-                Time[detIDraw] += simHit.getTime() * simHit.getEdep();
+                Time[detIDRaw] += simHit.getTime() * simHit.getEdep();
             }
 
         }
@@ -116,67 +128,75 @@ namespace ldmx {
         // loop over detIDs and simulate number of PEs
         int ihit = 0;        
         for (std::map<unsigned int, float>::iterator it = Edep.begin(); it != Edep.end(); ++it) {
-            int detIDraw = it->first;
-            double depEnergy    = Edep[detIDraw];
-            Time[detIDraw]      = Time[detIDraw] / Edep[detIDraw];
-            Xpos[detIDraw]      = Xpos[detIDraw] / Edep[detIDraw];
-            Ypos[detIDraw]      = Ypos[detIDraw] / Edep[detIDraw];
-            Zpos[detIDraw]      = Zpos[detIDraw] / Edep[detIDraw];
+            int detIDRaw = it->first;
+            double depEnergy    = Edep[detIDRaw];
+            Time[detIDRaw]      = Time[detIDRaw] / Edep[detIDRaw];
+            Xpos[detIDRaw]      = Xpos[detIDRaw] / Edep[detIDRaw];
+            Ypos[detIDRaw]      = Ypos[detIDRaw] / Edep[detIDRaw];
+            Zpos[detIDRaw]      = Zpos[detIDRaw] / Edep[detIDRaw];
             double meanPE       = depEnergy / mevPerMip_ * pePerMip_;
-            cellPEs[detIDraw]   = random_->Poisson(meanPE);
+            cellPEs[detIDRaw]   = random_->Poisson(meanPE + meanNoise_);
+
 
 
             // If a cell has a PE count above threshold, persit the hit.
-            if( cellPEs[detIDraw] >= 1 ){ 
+            if( cellPEs[detIDRaw] >= 1 ){ 
                 
+                detID_->setRawValue(detIDRaw);
+                detID_->unpack();
+                auto bar{detID_->getFieldValue("bar")};
+
                 TrigScintHit hit; 
-                hit.setID(detIDraw);
-                hit.setPE(cellPEs[detIDraw]);
-                hit.setMinPE(cellMinPEs[detIDraw]);
-                hit.setAmplitude(cellPEs[detIDraw]);
+                hit.setID(detIDRaw);
+                hit.setPE(cellPEs[detIDRaw]);
+                hit.setMinPE(cellMinPEs[detIDRaw]);
+                hit.setAmplitude(cellPEs[detIDRaw]);
                 hit.setEnergy(depEnergy);
-                hit.setTime(Time[detIDraw]);
-                hit.setXpos(Xpos[detIDraw]); 
-                hit.setYpos(Ypos[detIDraw]); 
-                hit.setZpos(Zpos[detIDraw]);
+                hit.setTime(Time[detIDRaw]);
+                hit.setXpos(Xpos[detIDRaw]); 
+                hit.setYpos(Ypos[detIDRaw]); 
+                hit.setZpos(Zpos[detIDRaw]);
+                hit.setModuleID(module);
+                hit.setBarID(detID_->getBarID() ); //getFieldValue("bar"));
                 hit.setNoise(false);
-                hit.setBeamEfrac(beamFrac[detIDraw]/depEnergy);
+                hit.setBeamEfrac(beamFrac[detIDRaw]/depEnergy);
 
                 trigScintHits.push_back(hit); 
             }
 
             if (verbose_) {
-                detID_->setRawValue(detIDraw);
+                detID_->setRawValue(detIDRaw);
                 detID_->unpack();
-                int layer = detID_->getFieldValue("layer");
+                auto bar{detID_->getFieldValue("bar")};
 
-                std::cout << "detID: " << detIDraw << std::endl;
-                std::cout << "Layer: " << layer << std::endl;
-                std::cout << "Edep: " << Edep[detIDraw] << std::endl;
-                std::cout << "numPEs: " << cellPEs[detIDraw] << std::endl;
-                std::cout << "time: " << Time[detIDraw] << std::endl;std::cout << "z: " << Zpos[detIDraw] << std::endl;
-                std::cout << "Layer: " << layer << "\t X: " << Xpos[detIDraw] <<  "\t Y: " << Ypos[detIDraw] <<  "\t Z: " << Zpos[detIDraw] << std::endl;
+                std::cout << "Module: " << module << " Bar: " << bar << std::endl; 
+                std::cout << "Edep: " << Edep[detIDRaw] << std::endl;
+                std::cout << "numPEs: " << cellPEs[detIDRaw] << std::endl;
+                std::cout << "time: " << Time[detIDRaw] << std::endl;std::cout << "z: " << Zpos[detIDRaw] << std::endl;
+                std::cout << "\t X: " << Xpos[detIDRaw] <<  "\t Y: " << Ypos[detIDRaw] <<  "\t Z: " << Zpos[detIDRaw] << std::endl;
             }        // end verbose            
         }
 
         // ------------------------------- Noise simulation -------------------------------
         int numEmptyCells = stripsPerArray_ - numRecHits; // only simulating for single array until all arrays are merged into one collection
         std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits( numEmptyCells );
-        int detIDraw, tempID;
+
+        int tempID;
 
         for (auto& noiseHitPE : noiseHits_PE) {
 
             TrigScintHit hit;
-
-            // generate random ID from remoaining cells
-            detIDraw=2;  // for now subdet is alwways 2
+            // generate random ID from remaining cells
             do {
-                tempID = random_->Integer(stripsPerArray_);
+                tempID = generateRandomID(module);
             } while( Edep.find(tempID) != Edep.end() || 
                     noiseHitIDs.find(tempID) != noiseHitIDs.end() );
-            detIDraw ^= tempID<<4;
 
-            hit.setID(detIDraw);
+            TrigScintID noiseID;
+            noiseID.setRawValue(tempID);
+            noiseID.unpack();
+
+            hit.setID(tempID);
             hit.setPE(noiseHitPE);
             hit.setMinPE(noiseHitPE);
             hit.setAmplitude(noiseHitPE);
@@ -185,6 +205,8 @@ namespace ldmx {
             hit.setXpos(0.);
             hit.setYpos(0.);
             hit.setZpos(0.);
+            hit.setModuleID(module);
+            hit.setBarID(noiseID.getFieldValue("bar"));
             hit.setNoise(true);
             hit.setBeamEfrac(0.);
 
@@ -194,7 +216,6 @@ namespace ldmx {
 
         event.add(outputCollection_, trigScintHits);
     }
-
 }
 
 DECLARE_PRODUCER_NS(ldmx, TrigScintDigiProducer);

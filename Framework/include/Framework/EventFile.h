@@ -30,37 +30,62 @@ namespace ldmx {
     class EventFile {
 
         public:
+            
+            /**
+             * Constructor to make a general file.
+             *
+             * This is not used directly, but it is called in the more
+             * specialised constructors. This method is mainly focused on
+             * reducing code copying.
+             *
+             * @param[in] filename the name of the file to read/write
+             * @param[in] parent a pointer to the parent file to copy
+             * @param[in] isOutputFile true if this file is written out
+             * @param[in] isSingleOutput true if only one output file is being written to
+             * @param[in] compressionSetting the compression setting for the TFile (100*algo+level)
+             */
+            EventFile(const std::string& filename, EventFile* parent, bool isOutputFile, bool isSingleOutput, int compressionSetting);
 
             /**
-             * Class constructor to make a file with a custom tree name.
+             * Class constructor to make a file to read in an event root file.
+             *
+             * This is used for all input files.
+             *
              * @param fileName The file name.
-             * @param treeName The name of the tree containing event data.
-             * @param isOutputFile True if this file is written out.
-             * @param compressionLevel The compression level.
              */
-            EventFile(const std::string& fileName, std::string treeName, bool isOutputFile = false, int compressionLevel = 9);
+            EventFile(const std::string& fileName);
 
             /**
-             * Class constructor to make a file with the default tree name.
+             * Constructor to make an output file that has no parent input file.
+             *
+             * This is for an output file in Production Mode.
+             *
+             * isSingleOutput is set to true.
+             * This may or may not be necessary, but it is the single output in Production Mode, so it
+             * is a good default.
+             *
              * @param fileName The file name.
-             * @param isOutputFile True if this file is written out.
-             * @param compressionLevel The compression level.
+             * @param compressionSetting the compression setting for the TFile (100*algo+level)
              */
-            EventFile(const std::string& fileName, bool isOutputFile = false, int compressionLevel = 9);
+            EventFile(const std::string& fileName, int compressionSetting);
 
             /**
              * Class constructor for cloning data from a "parent" file.
+             *
+             * This is used for output files when there is an input file.
+             * (OR for files with a parent EventFile to clone)
+             *
              * @param fileName The file name.
-             * @param cloneParent Parent file for cloning data tree.
+             * @param parent Parent file for cloning data tree.
              * @param isSingleOutput boolean check if only one output file is being written to
-             * @param compressionLevel The compression level.
+             * @param compressionSetting the compression setting for the TFile (100*algo+level)
              */
-            EventFile(const std::string& fileName, EventFile* cloneParent, bool isSingleOutput = false, int compressionLevel = 9);
+            EventFile(const std::string& fileName, EventFile* parent, bool isSingleOutput = false, int compressionSetting = 9);
 
             /**
              * Class destructor.
              */
-            virtual ~EventFile();
+            ~EventFile() = default;
 
             /**
              * Add a rule for dropping collections from the output.
@@ -75,8 +100,7 @@ namespace ldmx {
              *      keep   ==> any branch with name matching exp is read in from the input (if exists) and written to output (if exists)
              *      drop   ==> any branch with name matching exp is read in from the input (if exists) and NOT written to output
              *
-             * The default behavior for branches read in from the input file is drop.
-             * The default behavior for branches added during processing is keep.
+             * The default behavior for all branches is keep.
              *
              * ROOT uses the internal TRegexp to match branch names to the passed
              * expression and set the status of the branch (whether it will be read or not).
@@ -85,20 +109,18 @@ namespace ldmx {
              * Additionally, the rules you pass are analyzed in succession, so you can go from something more general
              * to something more specific.
              *
-             * For example, to keep all SimHits except EcalSimHits, you could
-             *      keep .*SimHits.*
+             * For example to drop all EcalSimHits.*
              *      drop EcalSimHits.*
              *
-             * @note In order to make sure that the output tree doesn't copy over information from the input tree
-             * in the "drop" case, we need to clone the tree when any "drop" command is passed. This means that
-             * using "ignore" or "keep" after a "drop" leads to undefined behavior.
+             * or drop scoring plane collections
+             *      drop .*ScoringPlane.*
+             *
+             * or drop scoring plane collections but keep EcalScoringPlane collection
+             *      drop .*ScoringPlane.*
+             *      keep EcalScoringPlane.*
              *
              * @note The Event::getImpl overrides any ignore rules for the input file in order to avoid any seg faults.
              * The items accessed will still be dropped.
-             *
-             * @note Following a "drop <collection>" by a "keep <collection>" will drop collections matching <collection>.
-             *
-             * @note Following a "drop <collection>" by a "ignore <collection>" will ignore collections matching <collection>.
              *
              * @param rule The rule for dropping collections.
              */
@@ -130,21 +152,23 @@ namespace ldmx {
 
             /**
              * Close the file, writing the tree to disk if creating an output file.
+             *
+             * @throw Exception if run tree already exists in output file.
              */
             void close();
 
             /**
-             * Write the run header into a separate tree in the output file.
-             * @param runHeader The run header to write into the output file.
-             * @throw Exception if file is not writable.
+             * Write the run header into the run map
+             * @param runHeader The run header to write into the map
+             * @throw Exception if run number is already in run map
              */
-            void writeRunHeader(RunHeader* runHeader);
+            void writeRunHeader(RunHeader& runHeader);
 
             /**
              * Get the RunHeader for a given run, if it exists in the input file.
              * @param runNumber The run number.
              * @return The RunHeader from the input file.
-             * @throw Exception if there is no RunHeader in the file with the given run number.
+             * @throw Exception if there is no RunHeader in the map with the given run number.
              */
             const RunHeader& getRunHeader(int runNumber);
 
@@ -152,25 +176,21 @@ namespace ldmx {
                 return fileName_;
             }
 
-            const std::map<int, RunHeader*>& getRunMap() {
-                return runMap_;
-            }
-
         private:
 
             /**
              * Fill the internal map of run numbers to RunHeader objects from the input file.
              *
-             * @note This is called automatically the first time nextEvent() is
-             * activated.  If there are no run headers in the input file (e.g. for
-             * a new simulation file) the run map will not be filled.
+             * If this file is an output file and parent_ and parent_->file_ are valid
+             * pointers, then the run headers are imported from parent_->file_.
+             * 
+             * Otherwise, we try to import run headers from file_.
+             *
+             * Does not check if any run headers are getting overwritten!
+             *
+             * @note This function does nothing if parent_->file_ and file_ are nullptrs.
              */
-            void createRunMap();
-
-            /**
-             * Copy run header tree from parent to output file.
-             */
-            void copyRunHeaders();
+            void importRunHeaders();
 
         private:
 
@@ -201,11 +221,25 @@ namespace ldmx {
             /** The object containing the actual event data (trees and branches). */
             Event* event_{nullptr};
 
-            /** Pointer to run header from input file. */
-            RunHeader* runHeader_{nullptr};
+            /**
+             * Pre-clone rules.
+             *
+             * The series of rules to call before cloning/copying the
+             * parent tree.
+             */
+            std::vector< std::pair< std::string , bool > > preCloneRules_;
+
+            /** 
+             * Vector of drop rules that have been parsed and
+             * need to be used to reactivate these branches on the input tree
+             *
+             * The branches were initial deactivated so they don't get cloned 
+             * to output tree.
+             */
+            std::vector< std::string > reactivateRules_;
 
             /** Map of run numbers to RunHeader objects read from the input file. */
-            std::map<int, RunHeader*> runMap_;
+            std::map<int, RunHeader> runMap_;
 
             /// Time at which processing of events starts in seconds since epoch
             int processStart_{0}; 

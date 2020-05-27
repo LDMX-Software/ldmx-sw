@@ -22,7 +22,7 @@ def sim() :
     trigScintDown.parameters["hit_collection"] = "TriggerPadDownSimHits"
     trigScintDown.parameters["pad"] = "down"
 
-    return [ trigScintUp , tricScintTag , trigScintDown ]
+    return [ trigScintUp , trigScintTag , trigScintDown ]
 
 ################################################################################
 # @func digis
@@ -41,4 +41,4 @@ def digis() :
     trigScintDown.parameters["hit_collection"] = "trigScintDigisDn"
     trigScintDown.parameters["pad"] = "down"
 
-    return [ trigScintUp , tricScintTag , trigScintDown ]
+    return [ trigScintUp , trigScintTag , trigScintDown ]

@@ -70,18 +70,17 @@ namespace ldmx {
             = static_cast<RunManager*>(RunManager::GetRunManager())->getDetectorConstruction();
 
         // Create the run header.
-        auto runHeader  
-            = std::make_unique<RunHeader>(runNumber_, detector->getDetectorHeader()->getName(), description_);
+        RunHeader runHeader( runNumber_ , detector->getDetectorHeader()->getName(), description_ );
 
         // Set parameter value with number of events processed.
-        runHeader->setIntParameter("Event count", aRun->GetNumberOfEvent());
+        runHeader.setIntParameter("Event count", aRun->GetNumberOfEvent());
 
         // Set a string parameter with the Geant4 SHA-1.
         G4String g4Version{G4RunManagerKernel::GetRunManagerKernel()->GetVersionString()};
-        runHeader->setStringParameter("Geant4 revision", g4Version); 
+        runHeader.setStringParameter("Geant4 revision", g4Version); 
 
         // Write the header to the file.
-        file_.writeRunHeader(runHeader.get());  
+        file_.writeRunHeader(runHeader);
 
         return true;
     }
