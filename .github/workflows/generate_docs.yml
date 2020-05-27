@@ -55,8 +55,8 @@ jobs:
         personal_token: ${{ secrets.LDMX_ORG_TOKEN }} #requires setup to connect ldmx-sw and ldmx-sw.github.io
         commit_message: ${{ github.event.head_commit.message }}
         external_repository: LDMX-Software/ldmx-software.github.io
-        publish_branch: action-test #TODO change to master #docs say this necessarily needs to be master
-        publish_dir: ./_pages
+        publish_branch: master #TODO change to master #docs say this necessarily needs to be master
+        publish_dir: ./_doxygen
         enable_jekyll: true #allow github pages to process using jekyll
         keep_files: true #keep old files (by default, clears publish_dir before deploying to it)
 
