@@ -23,9 +23,12 @@ Install sphinx and the theme we use:
 pip install -U Sphinx groundwork-sphinx-theme
 ```
 
-We need our python code to be packaged together like a more normal python package, the simplest way to do that is to build and install ldmx-sw as normal.
+We need our python code to be packaged together like a more normal python package, 
+the simplest way to do that is to build and install ldmx-sw as normal.
+This runs through the cmake-magic that puts all the python modules together into one python package.
 
-Inside of the `docs` directory (this directory), we can generate the python API documentation by referencing the installed python package.
+Inside of the `docs` directory (this directory), we can generate the python API documentation by 
+referencing the installed python package.
 ```
 sphinx-apidoc -f -T -o sphinx.conf <path-to-ldmx-sw-install>/lib/python/LDMX
 ```
