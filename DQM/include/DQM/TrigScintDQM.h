@@ -26,8 +26,10 @@
 #include "Framework/Event.h"
 #include "Framework/HistogramPool.h"
 #include "Framework/EventProcessor.h"
+#include "DetDescr/TrigScintID.h"
 #include "Tools/AnalysisUtils.h"
 #include "Event/EventDef.h"
+
 
 namespace ldmx { 
 
@@ -62,6 +64,9 @@ namespace ldmx {
 
             /** Singleton used to access histograms. */
             HistogramPool* histograms_{nullptr}; 
+
+            /// Detector ID                                                                                                                       
+            std::unique_ptr<TrigScintID> detID_;
 
             
             /** Name of trigger pad hit  collection. */
