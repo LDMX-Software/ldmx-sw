@@ -75,11 +75,6 @@ namespace ldmx {
                                   "Photoelectrons in a TrigScint bar", 1500, 0, 1500,
                                   "Earliest time of TrigScint hit above threshold (ns)", 1600, -100, 1500);
 
-
-
-	// TODO: implement getting a list of the constructed histograms, to iterate through and set overflow boolean. 
-
-
     }
 
     void TrigScintDQM::configure(Parameters& ps) {
@@ -87,6 +82,8 @@ namespace ldmx {
       padName_ = ps.getParameter< std::string >("pad");
 
       std::cout << "In TrigScintDQM::configure, got parameters " << hitCollectionName_ << " and " << padName_ << std::endl;
+
+      detID_= std::make_unique<TrigScintID>();
 
     }
 
@@ -108,11 +105,16 @@ namespace ldmx {
       
       double totalEnergy{0};  
 
+
       for (const SimCalorimeterHit &hit : TrigScintHits ) {
 	
+	int detIDRaw{hit.getID()};
+	detID_->setRawValue( hit.getID() ); 
+	detID_->unpack();
+
 	histograms_->get("energy_"+padName_)->Fill(hit.getEdep()); 
 	histograms_->get("hit_time_"+padName_)->Fill(hit.getTime());
-	histograms_->get("id_"+padName_)->Fill(hit.getID()>>4 );
+	histograms_->get("id_"+padName_)->Fill( bar );
 	
 	std::vector<float> posvec = hit.getPosition();
 	histograms_->get("x_"+padName_)->Fill( posvec.at(0) );
