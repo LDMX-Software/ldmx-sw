@@ -111,6 +111,8 @@ namespace ldmx {
 	int detIDRaw{hit.getID()};
 	detID_->setRawValue( hit.getID() ); 
 	detID_->unpack();
+	int bar = detID_->getFieldValue("bar");
+
 
 	histograms_->get("energy_"+padName_)->Fill(hit.getEdep()); 
 	histograms_->get("hit_time_"+padName_)->Fill(hit.getTime());
