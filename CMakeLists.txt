@@ -51,7 +51,12 @@ message(STATUS "Python include dir found at: ${PYTHON_INCLUDE_DIRS}")
 get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
 
 # find ROOT installation
-find_package(ROOT REQUIRED COMPONENTS Core RIO PyROOT Geom Eve Gui)
+option(BUILD_EVE "Build the event display application. This requires more components of ROOT." ON)
+if(BUILD_EVE)
+    find_package(ROOT 6 REQUIRED COMPONENTS Core RIO PyROOT Geom Eve Gui)
+else()
+    find_package(ROOT 6 REQUIRED COMPONENTS Core RIO PyROOT)
+endif()
 message(STATUS "ROOT found at: ${ROOT_DIR}")
 
 # find boost headers
