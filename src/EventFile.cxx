@@ -331,7 +331,9 @@ namespace ldmx {
         //choose which file to import from
         auto theImportFile{file_}; //if this is an input file
         if ( isOutputFile_ and parent_ and parent_->file_ ) 
-            theImportFile = parent_->file_;
+            theImportFile = parent_->file_; //output file with input parent to read from
+        else if ( isOutputFile_ )
+            return; //output file, no input parent to read from
 
         if (theImportFile) {
             //the file exist
