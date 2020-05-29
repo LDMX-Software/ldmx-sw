@@ -326,12 +326,11 @@ namespace ldmx {
         Py_DECREF(pysequence);
 
         //all done with python nonsense
-#if PY_MAJOR_VERSION < 3
         //do nothing for some reason ¯\_(ツ)_/¯
-        //  too lazy to figure out how to close up python2 well
-#else
-        Py_Finalize();
-#endif
+        //  too lazy to figure out how to close up python well
+        //  calling the below function leads to a seg fault on
+        //  some machines
+        //Py_Finalize();
     }
 
     ProcessHandle ConfigurePython::makeProcess() {
