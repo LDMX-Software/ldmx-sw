@@ -41,7 +41,8 @@ A user may set ``ONNXRUNTIME_ROOT`` to a ONNXRuntime installation root to
 tell this module where to look.  
 #]=======================================================================]
 
-set(_ONNXRUNTIME_SEARCHES)
+# add the path in the docker container here
+set(_ONNXRUNTIME_SEARCHES "/deps/onnxruntime")
 
 # Search ONNXRUNTIME_ROOT first if it is set.
 if(ONNXRUNTIME_ROOT)
