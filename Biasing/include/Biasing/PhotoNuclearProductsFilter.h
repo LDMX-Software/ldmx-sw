@@ -18,7 +18,14 @@ namespace ldmx {
 
     /**
      * User action used to filter out photo-nuclear events that don't see 
-     * the photo-nuclear gamma produce specific products. 
+     * the photo-nuclear gamma produce specific products.
+     *
+     * This user action will only process steps whose associated track 
+     * has been tagged as a "PN Gamma".  This tag is currently only set in 
+     * ECalProcessFilter and needs to be placed in the UserAction pipeline
+     * before this class. The desired products are passed to this class 
+     * through the parameter vector<int> parameter "pdg_ids".  
+     *
      */
     class PhotoNuclearProductsFilter : public UserAction { 
     
@@ -36,7 +43,11 @@ namespace ldmx {
             ~PhotoNuclearProductsFilter();
 
             /**
+             * Callback that allows a user to take some actions at the end of
+             * a step.  
              *
+             * @param[in] step The Geant4 step containing transient information
+             *      about the step taken by a track.  
              */
             void stepping(const G4Step* step) final override; 
             
