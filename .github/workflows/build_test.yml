@@ -31,4 +31,6 @@ jobs:
       run: docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build make -j install
 
     - name: Test the build
-      run: docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/install ./bin/ldmx-test
+      run: |
+          export LDMX_BASE=$(pwd) &&
+          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $(pwd)/install ./bin/ldmx-test
