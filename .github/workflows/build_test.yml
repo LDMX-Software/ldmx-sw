@@ -21,17 +21,20 @@ jobs:
     # Setup our ldmx development environment
     - name: Setup ldmx environment
       run: |
-          cd $GITHUB_WORKSPACE &&
-          source scripts/ldmx-env.sh
+          cd $GITHUB_WORKSPACE && cd .. &&
+          source scripts/ldmx-env.sh 
     
     - name: Configure the build
       run: |
+          cd $GITHUB_WORKSPACE &&
           mkdir build &&
           cd build &&
-          ldmx cmake -DCMAKE_INSTALL_PREFIX=../install ..
+          docker run -i -e LDMX_BASE -v $LDMX_BASE:$LDMX_BASE ${_docker_hub_repo}:$LDMX_DOCKER_TAG $(pwd) cmake -DCMAKE_INSTALL_PREFIX=../install -DBUILD_TESTS=ON ..
 
     - name: Build and Install
-      run: make -j install
+      run: |
+          cd $GITHUB_WORKSPACE/build &&
+          docker run -i -e LDMX_BASE -v $LDMX_BASE:$LDMX_BASE ${_docker_hub_repo}:$LDMX_DOCKER_TAG $(pwd) make -j install
 
     - name: Test the build
-      run: cd ../install && ./bin/ldmx-test
+      run: cd $GITHUB_WORKSPACE/install && ./bin/ldmx-test
