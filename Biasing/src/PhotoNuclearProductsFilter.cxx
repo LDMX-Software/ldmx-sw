@@ -32,16 +32,21 @@ namespace ldmx {
         // Get the track associated with this step.
         auto track{step->GetTrack()};
 
-        // Get the track info and check if this track is the photon that 
-        // underwent a photo-nuclear reaction.
+        // Get the track info and check if this track has been tagged as the
+        // photon that underwent a photo-nuclear reaction. Only those tracks 
+        // tagged as PN photos will be processed. The track is currently only 
+        // tagged by the UserAction ECalProcessFilter which needs to be run 
+        // before this UserAction.  
         auto trackInfo{static_cast< UserTrackInformation* >(track->GetUserInformation())};
         if ((trackInfo != nullptr) && !trackInfo->isPNGamma()) return;
 
-        // Get the particles daughters.
+        // Get the PN photon daughters.
         auto secondaries{step->GetSecondary()};
 
         // Loop through all of the secondaries and check for the product of
-        // interest
+        // interest.  This is done by getting the PDG ID of a daughter and
+        // checking that it's in the vector of PDG IDs passed to this 
+        // UserAction. 
         bool productFound{false}; 
         for (const auto& secondary : *secondaries) { 
             
@@ -63,8 +68,10 @@ namespace ldmx {
             return;
         }
 
+        // Once the PN gamma has been procesed, untag it so its not reprocessed 
+        // again. 
         trackInfo->tagPNGamma(false); 
     }
-}
+} // ldmx
 
 DECLARE_ACTION(ldmx, PhotoNuclearProductsFilter)
