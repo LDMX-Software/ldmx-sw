@@ -1,0 +1,35 @@
+
+name: Build ldmx-sw and Run ldmx-test
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ docker ] #TODO change to master
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    container: ldmx/dev:latest #run inside of the development container
+
+    steps:
+    # check out ldmx-sw in the workspace
+    - uses: actions/checkout@v2
+
+    # Configure, build, and install ldmx-sw
+    - name: Build ldmx-sw
+      run: |
+          cd ..; #go out of deps directory
+          mkdir build;
+          cd build;
+          cmake -DXercesC_DIR=$XercesC_DIR -DONNXRUNTIME_ROOT=$ONNX_DIR -DCMAKE_INSTALL_PREFIX=../install ..
+          make install
+    
+    # go to the install and run ldmx-test
+    - name: Run ldmx-test
+      run: |
+          cd ../install;
+          ./bin/ldmx-test
