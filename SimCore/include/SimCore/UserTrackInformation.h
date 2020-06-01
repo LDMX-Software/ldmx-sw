@@ -46,13 +46,33 @@ namespace ldmx {
             bool isBremCandidate() { return isBremCandidate_; }
 
             /**
-             * Tag this flag as a brem candidate by the biasing filters. 
+             * Tag this track as a brem candidate by the biasing filters. 
              *
              * @param[in] isBremCandidate flag indicating whether this track is
              *      a candidate or not. 
              */
             void tagBremCandidate(bool isBremCandidate = true) { 
                 isBremCandidate_ = isBremCandidate;
+            }
+
+            /**
+             * Check whether this track is a photon that has undergone a 
+             * photo-nuclear reaction. 
+             *
+             * @return True if this track is a photon that has undergone a 
+             * photo-nuclear reaction, false otherwise. 
+             */
+            bool isPNGamma() { return isPNGamma_; }
+
+            /**
+             * Tag this track as a photon that has undergone a photo-nuclear
+             * reaction. 
+             *
+             * @param[in] isPNGamma flag indicating whether this track has 
+             *      undergone a photo-nuclear reaction or not.
+             */
+            void tagPNGamma(bool isPNGamma = true) { 
+                isPNGamma_ = isPNGamma; 
             }
 
             /**
@@ -86,6 +106,12 @@ namespace ldmx {
 
             /// Flag indicating whether this track is a brem candidate
             bool isBremCandidate_{false};
+
+            /** 
+             * Flag indicating whether this track has undergone a photo-nuclear
+             * reaction.
+             */
+            bool isPNGamma_{false}; 
 
             /// Volume the track was created in.
             std::string vertexVolume_{""};  
