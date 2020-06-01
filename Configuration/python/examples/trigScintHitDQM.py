@@ -34,7 +34,7 @@ else:
 if len(sys.argv) > 2 :
     p.histogramFile= sys.argv[2]
 else:
-    p.histogramFile = p.inputFiles[0].replace( '.root' , '_simDQM.root' ) # this, however, can't be!! then there is a no-clue segfault
+    p.histogramFile = p.inputFiles[0].replace( '.root' , '_hitDQM.root' ) # this, however, can't be!! then there is a no-clue segfault
 
 print p.histogramFile
 
