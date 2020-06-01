@@ -22,7 +22,7 @@ jobs:
     - name: Setup ldmx environment
       run: |
           cd $GITHUB_WORKSPACE && cd .. &&
-          source scripts/ldmx-env.sh 
+          source ldmx-sw/scripts/ldmx-env.sh 
     
     - name: Configure the build
       run: |
