@@ -1,0 +1,7 @@
+#ignore non-code related files
+**README.md
+.git**
+
+#ignore generated directories
+build**
+install**
