@@ -17,7 +17,7 @@ p.libraries.append("libDQM.so")            # dqm processors
 from LDMX.DQM import triggerPad
 
 # Define the sequence of event processors to be run
-#   triggerPad.digis() returns a list of analyzers to put into sequence
+#   triggerPad.sim() returns a list of analyzers to put into sequence
 #   since there aren't any other analyzers, we can just set the sequence
 #   equal to this list
 p.sequence = triggerPad.sim()
