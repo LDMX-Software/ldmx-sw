@@ -136,6 +136,7 @@ namespace ldmx {
                       << " particle via " << processName << " process." 
                       << std::endl;
             trackInfo->tagBremCandidate(false);   
+            trackInfo->tagPNGamma(); 
             eventInfo->decBremCandidateCount(); 
             eventInfo->setWeight(track->GetWeight());  
         }
