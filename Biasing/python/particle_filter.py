@@ -14,7 +14,7 @@ def kaon_filter():
     Instance of configured PhotoNuclearProductsFilter
 
     """
-    particle_filter = simcfg.UserAction("particle_filter", "ldmx::PhotoNuclearProductsFilter")
+    particle_filter = simcfg.UserAction("kaon_filter", "ldmx::PhotoNuclearProductsFilter")
     particle_filter.parameters['pdg_ids'] = [
             130, # K_L^0
             310, # K_S^0

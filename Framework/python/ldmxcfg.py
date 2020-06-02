@@ -34,7 +34,6 @@ class EventProcessor:
     def __init__(self, instanceName, className):
         self.instanceName=instanceName
         self.className=className
-        self.parameters=dict()
         self.histograms=[]
 
     def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None):
@@ -262,6 +261,31 @@ class Process:
         self.compressionSetting=9
         Process.lastProcess=self
 
+    def addLibrary(lib) :
+        """Add a library to the list of dynamically loaded libraries
+
+        A process object must already have been created.
+
+        Parameters
+        ----------
+        lib : str
+            name of library to load 
+
+        Warnings
+        --------
+        - Will exit the script if a process object hasn't been defined yet.
+
+        Examples
+        --------
+            addLibrary( 'libSimApplication.so' )
+        """
+
+        if ( Process.lastProcess is not None ) :
+            Process.lastProcess.libraries.append( lib )
+        else :
+            print( "[ Process.addLibrary ]: No Process object defined yet!" )
+            sys.exit(1)
+
     def skimDefaultIsSave(self):
         """Configure the process to by default keep every event."""
 
@@ -285,9 +309,9 @@ class Process:
 
         Example
         -------
-        >>> ecalVeto = ldmxcfg.Producer( 'ecalVeto' , 'EcalVetoProcessor' )
-        >>> # Setup of other parameters for the veto
-        >>> p.skimConsider( 'ecalVeto' )
+            ecalVeto = ldmxcfg.Producer( 'ecalVeto' , 'EcalVetoProcessor' )
+            # Setup of other parameters for the veto
+            p.skimConsider( 'ecalVeto' )
 
         See Also
         --------
@@ -375,6 +399,16 @@ class Process:
                 for f in os.listdir(fullPathDir) 
                 if os.path.isfile(os.path.join(fullPathDir,f)) and f.endswith('.root') 
                 ])
+
+    def pause(self) :
+        """Print this Process and wait for user confirmation to continue
+
+        Prints the process through the print function, and then
+        waits for the user to press Enter to continue.
+        """
+
+        print(self)
+        input("Press Enter to continue...")
 
     def __str__(self):
         """Stringify this object into a human readable, helpful form.

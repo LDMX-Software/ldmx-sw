@@ -1,5 +1,4 @@
-""" @package ecal
-Example configurations for producing biased interactions in the ECal. 
+"""Example configurations for producing biased interactions in the ECal. 
 
     Example
     -------
@@ -7,10 +6,8 @@ Example configurations for producing biased interactions in the ECal.
         from LDMX.Biasing import ecal
 """
 
-from LDMX.Framework import ldmxcfg
-from LDMX.Detectors.makePath import *
+from LDMX.SimApplication import simulator
 from LDMX.SimApplication import generators
-from LDMX.SimApplication import simcfg
 from LDMX.Biasing import filters
 
 def photo_nuclear( detector, generator ) :
@@ -41,40 +38,30 @@ def photo_nuclear( detector, generator ) :
     """
 
 
-    # Instantiate the simulator.  Before doing this, the shared library 
-    # containing the simulator needs to be loaded.  This is usually done from
-    # the top level configure file.
-    simulator = ldmxcfg.Producer("photo-nuclear", "ldmx::Simulator")
+    # Instantiate the simulator. 
+    sim = simulator.simulator("photo-nuclear")
     
     # Set the path to the detector to use.
-    #
-    # The detectors installed with ldmx-sw can be accessed using the
-    # makeDetectorPath function.
-    simulator.parameters["detector"] = makeDetectorPath( detector )
+    #   the second parameter says we want to include scoring planes
+    sim.setDetector( detector , True )
     
     # Set run parameters
-    simulator.parameters["runNumber"] = 0
-    simulator.parameters["description"] = "ECal photo-nuclear, xsec bias 450"
-    simulator.parameters["randomSeeds"] = [ 1, 2 ]
-    simulator.parameters["beamSpotSmear"] = [20., 80., 0.]
+    sim.setRunNumber(0)
+    sim.setDescription("ECal photo-nuclear, xsec bias 450")
+    sim.setRandomSeeds([ 1, 2 ])
+    sim.setBeamSpotSmear([20., 80., 0.]) #mm
     
-    simulator.parameters['generators'] = [ generator ]
-    
-    # Enable the scoring planes 
-    #
-    # Same comments about path to gdml as for the detectors
-    simulator.parameters["scoringPlanes"] = makeScoringPlanesPath( detector )
+    sim.generators().append( generator )
     
     # Enable and configure the biasing
-    simulator.parameters['biasing.enabled'] = True
-    simulator.parameters['biasing.particle'] = 'gamma'
-    simulator.parameters['biasing.process'] = 'photonNuclear'
-    simulator.parameters['biasing.volume'] = 'ecal'
-    simulator.parameters['biasing.threshold'] = 2500.
-    simulator.parameters['biasing.factor'] = 450
+    sim.biasingOn()
+    sim.biasingConfigure( 'photonNuclear' , 'ecal' , 2500. , 450 )
 
+    # the following filters are in a library that needs to be included
+    from LDMX.Framework.ldmxcfg import Process
+    Process.addLibrary( 'libBiasing.so' )
     # Configure the sequence in which user actions should be called.
-    simulator.parameters["actions"] = [
+    sim.actions().extend([
             filters.tagger_veto_filter(),
             # Only consider events where a hard brem occurs
             filters.target_brem_filter(),
@@ -82,9 +69,9 @@ def photo_nuclear( detector, generator ) :
             filters.ecal_pn_filter(),     
             # Tag all photo-nuclear tracks to persist them to the event.
             filters.pn_track_filter()
-    ]
+    ])
 
-    return simulator
+    return sim
 
 def dark_brem( ap_mass , lhe, detector ) :
     """Example configuration for producing dark brem interactions in the ECal. 
@@ -115,34 +102,31 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     """
     
-    simulator = ldmxcfg.Producer( "darkBrem_%sMeV" % str(massAPrime), "ldmx::Simulator")
+    sim = simulator.simulator( "darkBrem_%sMeV" % str(massAPrime) )
     
-    simulator.parameters[ "description" ] = "One e- fired far upstream with Dark Brem turned on and biased up in ECal"
-    simulator.parameters[ "detector" ] = makeDetectorPath( detector )
-    simulator.parameters[ "scoringPlanes" ] = makeScoringPlanesPath( detector )
-    simulator.parameters[ "generators" ] = [ generators.single_4gev_e_upstream_tagger()]
+    sim.setDescription( "One e- fired far upstream with Dark Brem turned on and biased up in ECal" )
+    sim.setDetector( detector , True )
+    sim.generators().append( generators.single_4gev_e_upstream_tagger() )
     
     # Bias the electron dark brem process inside of the ECal
     # These commands allow us to restrict the dark brem process to a given 
     # volume.
-    simulator.parameters[ "biasing.enabled" ] = True
-    simulator.parameters[ "biasing.particle"] = "e-"
-    simulator.parameters[ "biasing.process" ] = "eDBrem"
-    # Options: target, ECal
-    simulator.parameters[ "biasing.volume"  ] = "ecal"
-    simulator.parameters[ "biasing.factor"  ] = 1000000 
+    sim.biasingOn()
+    sim.biasingConfigure( 'eDBrem' , 'ecal' , 0. , 100000 )
     
-    simulator.parameters[ "darkbrem.method" ] = 1 #Forward only
-
-    simulator.parameters[ "APrimeMass" ] = massAPrime #MeV
-    simulator.parameters[ "darkbrem.madgraphfilepath" ] = lheFile
+    sim.darkBremOn( massAPrime #MeV
+            , lheFile 
+            , 1 ) #Forward Only
     
+    # the following filters are in a library that needs to be included
+    from LDMX.Framework.ldmxcfg import Process
+    Process.addLibrary( 'libBiasing.so' )
     # Then give the UserAction to the simulation so that it knows to use it
-    simulator.parameters['actions'] = [ 
+    sim.actions().extend([ 
             # Only keep events when a dark brem happens in the target
             filters.target_ap_filter() , 
             # Keep all of the dark brem daughters. 
             filters.ap_track_filter()     
-    ]
+    ])
     
-    return simulator
+    return sim
