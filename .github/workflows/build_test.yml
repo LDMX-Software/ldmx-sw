@@ -5,7 +5,7 @@ name: Build ldmx-sw and Run ldmx-test
 # events but only for the master branch
 on:
   push:
-    branches: [ docker ] #TODO change to master
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
