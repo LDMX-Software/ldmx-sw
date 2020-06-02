@@ -11,7 +11,17 @@ class simulator(Producer):
 
     This class is derived from ldmxcfg.Producer and is mainly
     focused on providing helper functions that can be used instead
-    of accessing the parameters member directly
+    of accessing the parameters member directly.
+
+    The parameters that are lists ('preInitCommands', 'postInitCommands', 'actions', and 'generators')
+    are initialized as empty lists so that we can append to them later.
+
+    The ECal hit conbtibutions are enabled and compressed by default.
+
+    Parameters
+    ----------
+    instance_name : str
+        Name of this instance of the Simulator
     """
 
     def __init__(self, instance_name ) :
@@ -26,6 +36,11 @@ class simulator(Producer):
         # turn on default ECal Hit behavior
         self.enableHitContribs()
         self.compressHitContribs()
+
+        # add necessary library to the list to load
+        #   requires a process object to have been defined
+        from LDMX.Framework.ldmxcfg import Process
+        Process.addLibrary( 'libSimApplication.so' )
 
     def setDetector(self, det_name , include_scoring_planes = False ) :
         """Set the detector description with the option to include the scoring planes
@@ -79,6 +94,20 @@ class simulator(Producer):
         """
 
         self.parameters['randomSeeds'] = seeds
+
+    def setBeamSpotSmear(self,smear) :
+        """Set how much to smear primary vertices by
+
+        This smearing affects ALL primary vertices across
+        ALL primary generators.
+
+        Parameters
+        ----------
+        smear : list of floats
+            2 (x,y) or 3 (x,y,z) of widths to smear vertices by in mm
+        """
+
+        self.parameters['beamSpotSmear'] = smear
 
     def enableHitContribs(self,yes=True):
         """Allow for the ECal to store the different contributors to its sim hits
