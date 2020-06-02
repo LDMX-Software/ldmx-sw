@@ -17,7 +17,6 @@ set -e
 #   ONNX_DIR         - install of onnx runtime
 #   ROOTDIR          - install of root
 #   G4DIR            - install of Geant4
-#   LDMX_BASE        - base directory where all ldmx-sw/ldmx-analysis code is
 
 source $ROOTDIR/bin/thisroot.sh
 source $G4DIR/bin/geant4.sh
@@ -33,6 +32,6 @@ export CMAKE_PREFIX_PATH=$XercesC_DIR:$ROOTDIR:$G4DIR:$ONNX_DIR:/usr/local
 # go to first argument
 cd "$1"
 
-# execute the rest as a one-liner command
+# execute the rest as arguments to ldmx-sw's app
 app "${@:2}"
 
