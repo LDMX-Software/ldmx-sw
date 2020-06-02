@@ -49,5 +49,5 @@ docker pull ${_docker_hub_repo}:${LDMX_DOCKER_TAG}
 #   the container runs the users command from the same place that the user
 #   intended.
 ###############################################################################
-alias ldmx='docker run -i -e LDMX_BASE -v $LDMX_BASE:$LDMX_BASE ${_docker_hub_repo}:$LDMX_DOCKER_TAG $(pwd)'
+alias ldmx='docker run -i -e LDMX_BASE -v $LDMX_BASE:$LDMX_BASE -u $(id -u ${USER}):$(id -g ${USER}) ${_docker_hub_repo}:$LDMX_DOCKER_TAG $(pwd)'
 
