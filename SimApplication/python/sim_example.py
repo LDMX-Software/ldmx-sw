@@ -1,18 +1,41 @@
 """A short run-ready example for a basic, unbiased simulation"""
 
-from LDMX.Framework import ldmxcfg
-from LDMX.SimApplication import examples
+def process() :
+    """Get the process to run
 
-p=ldmxcfg.Process("sim")
+    This constructs a process for a short simulation to run.
 
-p.libraries.append("libSimApplication.so")
-p.libraries.append("libBiasing.so")
+    Returns
+    -------
+    Process
+        A process with a simple inclusive, unbiased electron
+        simulation in the v12 geometry.
 
-single_e = examples.inclusive_single_e()
+    Examples
+    --------
+    Put the following in an empy python script named 'config.py':
+        from LDMX.SimApplication import sim_example
+        myProc = sim_example.process()
+    
+    Then you can run it using
+        fire config.py
+    
+    Or if you are in the docker container environment:
+        ldmx fire config.py
+    """
 
-p.sequence=[single_e]
+    from LDMX.Framework import ldmxcfg
+    from LDMX.SimApplication import examples
+    
+    p=ldmxcfg.Process("egsim")
+    
+    single_e = examples.inclusive_single_e()
+    
+    p.sequence=[single_e]
+    
+    p.outputFiles=['single_test.root']
+    
+    p.maxEvents = 10
+    p.logFrequency = 1
 
-p.outputFiles=['single_test.root']
-
-p.maxEvents = 10
-p.logFrequency = 1
+    return p
