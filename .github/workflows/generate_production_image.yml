@@ -1,0 +1,25 @@
+
+name: Generate the docker production image
+
+# Generate a new production image when there is a release
+on:
+  release:
+    types: [ published, released ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  generate-image:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Deploy to Docker
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }} #needs to be added into repo settings
+        password: ${{ secrets.DOCKER_PASSWORD }} #needs to be added into repo settings
+        repository: ldmx/pro
+        tag_with_ref: true #convert branch ref to a docker tag
+        tag_with_sha: true #also tag with git sha
+        tags: latest #add latest tag as well
+

@@ -115,21 +115,18 @@ namespace ldmx {
       int noiseHitCount = 0;
       
       // Loop through all TrigScint hits in the event
-      // Get non-noise generated hits into new vector for sorting
-      
-      //skip for now, until we know what we want to filter on and check 
-      //        std::vector<const TrigScintHit *> filteredHits;
+
       for (const TrigScintHit &hit : TrigScintHits ) {
 	
 	histograms_->get("pe_"+padName_)->Fill(hit.getPE());  
 	histograms_->get("hit_time_"+padName_)->Fill(hit.getTime());
-	histograms_->get("id_"+padName_)->Fill(hit.getID()>>4 );
+	histograms_->get("id_"+padName_)->Fill(hit.getBarID() );
 	  
 	totalPE += hit.getPE();  
 	if ( hit.getNoise()>0 ) {
 	  noiseHitCount++;
 	  histograms_->get("pe_noise_"+padName_)->Fill(hit.getPE()); 
-	  histograms_->get("id_noise_"+padName_)->Fill(hit.getID()>>4 );
+	  histograms_->get("id_noise_"+padName_)->Fill(hit.getBarID() );
 	}
 	else {  //x, y, z not set for noise hits 
 	  histograms_->get("x_"+padName_)->Fill( hit.getX() );
@@ -137,36 +134,10 @@ namespace ldmx {
 	  histograms_->get("z_"+padName_)->Fill( hit.getZ() );
 	}
 
-	//            if ( hit.getTime() > -999. ) { filteredHits.push_back( &hit ); }
-
       }
         
       histograms_->get("total_pe_"+padName_)->Fill(totalPE); 
       histograms_->get("n_hits_noise_"+padName_)->Fill(noiseHitCount); 
-
-      /* from hcal dqm, keep for later, tweak for trigscint
-
-      // Sort the array by hit time
-      std::sort (filteredHits.begin(), filteredHits.end(), [ ](const auto& lhs, const auto& rhs) 
-      {
-      return lhs->getTime() < rhs->getTime(); 
-      });
-        
-      //get first time and PE of hit over threshold
-      double minTime{-1}; 
-      double minTimePE{-1}; 
-      for (const auto& hit : filteredHits) { 
-      if (hit->getPE() < maxPEThreshold_) continue; 
-      minTime = hit->getTime(); 
-      minTimePE = hit->getPE(); 
-      break;
-      } 
-
-      histograms_->get("min_time_hit_above_thresh_"+padName_)->Fill(minTime); 
-      histograms_->get("min_time_hit_above_thresh:pe_"+padName_)->Fill(minTimePE, minTime);  
-
-      */
-
 
     }
 

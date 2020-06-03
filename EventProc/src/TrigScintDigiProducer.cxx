@@ -1,5 +1,3 @@
-#include "TClonesArray.h"
-
 #include "EventProc/TrigScintDigiProducer.h"
 
 #include <iostream>
@@ -25,6 +23,7 @@ namespace ldmx {
         inputCollection_  = parameters.getParameter< std::string >("input_collection");
         inputPassName_    = parameters.getParameter< std::string >("input_pass_name" );
         outputCollection_ = parameters.getParameter< std::string >("output_collection");
+        verbose_          = parameters.getParameter< bool >("verbose");
 
         random_ = std::make_unique<TRandom3>(parameters.getParameter< int >("randomSeed"));
         
@@ -35,6 +34,7 @@ namespace ldmx {
     }
 
     unsigned int TrigScintDigiProducer::generateRandomID(int module) {
+
         TrigScintID tempID;
         if ( module < TrigScintSection::NUM_SECTIONS ) {
             tempID.setFieldValue("module", module);
@@ -51,13 +51,14 @@ namespace ldmx {
 
         std::map<unsigned int, int>   cellPEs;
         std::map<unsigned int, int>   cellMinPEs;
-        std::map<unsigned int, float> Xpos, Ypos, Zpos, Edep, Time;
+        std::map<unsigned int, float> Xpos, Ypos, Zpos, Edep, Time, beamFrac;
         std::unordered_set<unsigned int> noiseHitIDs;
 
         auto numRecHits{0};
 
         // looper over sim hits and aggregate energy depositions for each detID
         const auto simHits{event.getCollection< SimCalorimeterHit >(inputCollection_,inputPassName_)};
+        auto particleMap{event.getMap< int, SimParticle >("SimParticles")};
 
         int module{-1}; 
         for (const auto& simHit : simHits) {          
@@ -78,8 +79,24 @@ namespace ldmx {
                           << std::endl; 
             }        
 
+            // check if hits is from beam electron and, if so, add to beamFrac
+            for( int i = 0 ; i < simHit.getNumberOfContribs() ; i++){
+                auto contrib = simHit.getContrib(i);
+                if( verbose_ ){
+                    std::cout << "contrib " << i << " trackID: " << contrib.trackID << " pdgID: " << contrib.pdgCode << " edep: " << contrib.edep << std::endl;
+                    std::cout << "\t particle id: " << particleMap[contrib.trackID].getPdgID() << " particle status: " << particleMap[contrib.trackID].getGenStatus() << std::endl;
+                }
+                if( particleMap[contrib.trackID].getPdgID() == 11 && particleMap[contrib.trackID].getGenStatus() == 1 ){
+                    if( beamFrac.find(detIDRaw) == beamFrac.end() )
+                        beamFrac[detIDRaw]=contrib.edep;
+                    else
+                        beamFrac[detIDRaw]+=contrib.edep;                          
+                }
+            }
+
             // for now, we take am energy weighted average of the hit in each stip to simulate the hit position. 
-            // will use strip TOF and light yield between strips to estimate position.            
+            // AJW: these should be dropped, they are likely to lead to a problem since we can't measure them anyway
+            // except roughly y and z, which is encoded in the ids.
             if (Edep.find(detIDRaw) == Edep.end()) {
 
                 // first hit, initialize
@@ -116,12 +133,17 @@ namespace ldmx {
             Ypos[detIDRaw]      = Ypos[detIDRaw] / Edep[detIDRaw];
             Zpos[detIDRaw]      = Zpos[detIDRaw] / Edep[detIDRaw];
             double meanPE       = depEnergy / mevPerMip_ * pePerMip_;
-            cellPEs[detIDRaw]   = random_->Poisson(meanPE);
+            cellPEs[detIDRaw]   = random_->Poisson(meanPE + meanNoise_);
+
 
 
             // If a cell has a PE count above threshold, persit the hit.
             if( cellPEs[detIDRaw] >= 1 ){ 
                 
+                detID_->setRawValue(detIDRaw);
+                detID_->unpack();
+                auto bar{detID_->getFieldValue("bar")};
+
                 TrigScintHit hit; 
                 hit.setID(detIDRaw);
                 hit.setPE(cellPEs[detIDRaw]);
@@ -132,10 +154,12 @@ namespace ldmx {
                 hit.setXpos(Xpos[detIDRaw]); 
                 hit.setYpos(Ypos[detIDRaw]); 
                 hit.setZpos(Zpos[detIDRaw]);
+                hit.setModuleID(module);
+                hit.setBarID(detID_->getBarID() ); //getFieldValue("bar"));
                 hit.setNoise(false);
+                hit.setBeamEfrac(beamFrac[detIDRaw]/depEnergy);
 
                 trigScintHits.push_back(hit); 
-
             }
 
             if (verbose_) {
@@ -143,7 +167,7 @@ namespace ldmx {
                 detID_->unpack();
                 auto bar{detID_->getFieldValue("bar")};
 
-                std::cout << "Module: " << detID_->getFieldValue("module") << " Bar: " << bar << std::endl; 
+                std::cout << "Module: " << module << " Bar: " << bar << std::endl; 
                 std::cout << "Edep: " << Edep[detIDRaw] << std::endl;
                 std::cout << "numPEs: " << cellPEs[detIDRaw] << std::endl;
                 std::cout << "time: " << Time[detIDRaw] << std::endl;std::cout << "z: " << Zpos[detIDRaw] << std::endl;
@@ -154,17 +178,21 @@ namespace ldmx {
         // ------------------------------- Noise simulation -------------------------------
         int numEmptyCells = stripsPerArray_ - numRecHits; // only simulating for single array until all arrays are merged into one collection
         std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits( numEmptyCells );
+
         int tempID;
 
         for (auto& noiseHitPE : noiseHits_PE) {
 
             TrigScintHit hit;
-
-            // generate random ID from remoaining cells
+            // generate random ID from remaining cells
             do {
                 tempID = generateRandomID(module);
             } while( Edep.find(tempID) != Edep.end() || 
                     noiseHitIDs.find(tempID) != noiseHitIDs.end() );
+
+            TrigScintID noiseID;
+            noiseID.setRawValue(tempID);
+            noiseID.unpack();
 
             hit.setID(tempID);
             hit.setPE(noiseHitPE);
@@ -175,7 +203,10 @@ namespace ldmx {
             hit.setXpos(0.);
             hit.setYpos(0.);
             hit.setZpos(0.);
+            hit.setModuleID(module);
+            hit.setBarID(noiseID.getFieldValue("bar"));
             hit.setNoise(true);
+            hit.setBeamEfrac(0.);
 
             trigScintHits.push_back(hit); 
         }
@@ -183,7 +214,6 @@ namespace ldmx {
 
         event.add(outputCollection_, trigScintHits);
     }
-
 }
 
 DECLARE_PRODUCER_NS(ldmx, TrigScintDigiProducer);

@@ -124,6 +124,11 @@ def single_4gev_e_upstream_tagger() :
     The position and direction are set such that the electron will be bent by 
     the field and arrive at the target at approximately [0, 0, 0] (assuming 
     it's not smeared).
+
+    The gun position below requires the particles to be fired at 4.5 degrees.
+    The direction vector is calculated as follows: 
+    
+    dir_vector = [ sin(4.5) = .3138/4, 0, cos(4.5) = 3.9877/4 ] 
     
     Returns
     -------
@@ -131,12 +136,11 @@ def single_4gev_e_upstream_tagger() :
     directly upstream of the tagger tracker.  
 
     """
-
     particle_gun = gun('single_4gev_e_upstream_tagger')
     particle_gun.parameters[ 'particle'  ] = 'e-'
-    particle_gun.parameters[ 'position'  ] = [ -27.926 , 5 , -700 ] # mm
+    particle_gun.parameters[ 'position'  ] = [ -27.926 , 0 , -700 ] # mm
     particle_gun.parameters[ 'direction' ] = [ 313.8 / 4000 , 0, 3987.7/4000 ]
-    particle_gun.parameters[ 'energy'    ] = 4.0000000 # GeV
+    particle_gun.parameters[ 'energy'    ] = 4.0 # GeV
 
     return particle_gun
 
@@ -158,7 +162,7 @@ def single_4gev_e_upstream_target() :
     particle_gun.parameters[ 'particle'  ] = 'e-'
     particle_gun.parameters[ 'position'  ] = [ 0., 0., -1.2 ] # mm
     particle_gun.parameters[ 'direction' ] = [ 0., 0., 1]
-    particle_gun.parameters[ 'energy'    ] = 4.0000000 # GeV
+    particle_gun.parameters[ 'energy'    ] = 4.0 # GeV
 
     return particle_gun
 
@@ -169,6 +173,12 @@ def single_1pt2gev_e_upstream_tagger():
     tracker. The position and direction are set such that the electron will be 
     bent by  the field and arrive at the target at approximately [0, 0, 0]
     (assuming it's not smeared).
+
+    The gun position below requires the particles to be fired at 11.011 degrees.
+    The direction vector is calculated as follows: 
+    
+    dir_vector = [ sin(11.011) = .2292/1.2, 0, cos(11.011) = 1.1779/1.2 ] 
+
     
     Returns
     -------
@@ -178,7 +188,37 @@ def single_1pt2gev_e_upstream_tagger():
     """
     particle_gun = gun( "single_1.2gev_e_upstream_tagger" )
     particle_gun.parameters[ 'particle'  ] = 'e-'
-    particle_gun.parameters[ 'position'  ] = [ -36.387, 5, -700 ] #mm
+    particle_gun.parameters[ 'position'  ] = [ -36.387, 0, -700 ] #mm
     particle_gun.parameters[ 'direction' ] = [ 0.2292 / 1.2 , 0, 1.1779 / 1.2 ] #unitless
-    particle_gun.parameters[ 'energy'    ] = 1.200000 #GeV
+    particle_gun.parameters[ 'energy'    ] = 1.2 #GeV
+    
+    return particle_gun
+
+
+def single_8gev_e_upstream_tagger(): 
+    """Configure a particle gun to fire a 8 GeV electron upstream of the tagger tracker.
+
+    This is used to study the rejection of off energy electrons in the tagger
+    tracker. The position and direction are set such that the electron will be 
+    bent by  the field and arrive at the target at approximately [0, 0, 0]
+    (assuming it's not smeared).
+
+    The gun position below requires the particles to be fired at 2.5 degrees.
+    The direction vector is calculated as follows: 
+    
+    dir_vector = [ 8.*sin(2.5) = .349, 0, 8.*cos(2.5) = 7.9924 ] 
+
+    
+    Returns
+    -------
+    Instance of a particle gun configured to fire a single 8 Gev electron 
+    directly upstream of the tagger tracker.  
+
+    """
+    particle_gun = gun( "single_1.2gev_e_upstream_tagger" )
+    particle_gun.parameters[ 'particle'  ] = 'e-'
+    particle_gun.parameters[ 'position'  ] = [ -14.292, 0, -700 ] #mm
+    particle_gun.parameters[ 'direction' ] = [ 0.349 / 8. , 0, 7.9924 / 8. ] #unitless
+    particle_gun.parameters[ 'energy'    ] = 8.0 #GeV
+    
     return particle_gun

@@ -1,0 +1,48 @@
+
+name: Build ldmx-sw and Run ldmx-test
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # check out ldmx-sw in the workspace
+    - uses: actions/checkout@v2
+
+    # Setup our ldmx development environment
+    - name: Setup ldmx environment
+      run: docker pull ldmx/dev
+    
+    - name: Configure the build
+      run: |
+          mkdir build &&
+          docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build cmake -DCMAKE_INSTALL_PREFIX=../install -DBUILD_TESTS=ON ..
+
+    - name: Build and Install
+      run: docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build make -j install
+
+    - name: Test the build
+      run: |
+          cd ../ &&
+          export LDMX_BASE=$(pwd) &&
+          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $LDMX_BASE/ldmx-sw/install ./bin/ldmx-test
+    
+#    - name: Deploy to Docker
+#      uses: docker/build-push-action@v1
+#      if: ${{ github.event_name == 'push' }} #UNTESTED - want to only do this when master branch changes
+#      with:
+#        username: ${{ secrets.DOCKER_USERNAME }} #needs to be added into repo settings
+#        password: ${{ secrets.DOCKER_PASSWORD }} #needs to be added into repo settings
+#        repository: ldmx/pro
+#        tag_with_ref: true #convert branch ref to a docker tag
+#        tag_with_sha: true #also tag with git sha
+
