@@ -53,7 +53,7 @@ def digis() :
     """
 
     trigScintUp = ldmxcfg.Analyzer("TrigScintHitDQMUp", "ldmx::TrigScintHitDQM")
-    trigScintUp.parameters["hit_collection"] = "trigScintDigis"
+    trigScintUp.parameters["hit_collection"] = "trigScintDigisUp"
     trigScintUp.parameters["pad"] = "up"
     
     trigScintTag = ldmxcfg.Analyzer("TrigScintHitDQMTag", "ldmx::TrigScintHitDQM")

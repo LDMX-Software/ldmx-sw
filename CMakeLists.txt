@@ -8,11 +8,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
+if(NOT EXISTS /.dockerenv)
+  message(WARNING "You are not inside a docker container; you may be working in an untested environment.")
+endif()
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-
 
 # option to print extra module information during CMake config
 option(MODULE_DEBUG "Print extra module information during CMake config" OFF)
@@ -51,7 +54,12 @@ message(STATUS "Python include dir found at: ${PYTHON_INCLUDE_DIRS}")
 get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
 
 # find ROOT installation
-find_package(ROOT REQUIRED COMPONENTS Core RIO PyROOT Geom Eve Gui)
+option(BUILD_EVE "Build the event display application. This requires more components of ROOT." OFF)
+if(BUILD_EVE)
+    find_package(ROOT 6 REQUIRED COMPONENTS Core RIO PyROOT Geom Eve Gui)
+else()
+    find_package(ROOT 6 REQUIRED COMPONENTS Core RIO PyROOT)
+endif()
 message(STATUS "ROOT found at: ${ROOT_DIR}")
 
 # find boost headers

@@ -17,10 +17,10 @@ p.libraries.append("libDQM.so")            # dqm processors
 from LDMX.DQM import triggerPad
 
 # Define the sequence of event processors to be run
-#   triggerPad.digis() returns a list of analyzers to put into sequence
+#   triggerPad.sim() returns a list of analyzers to put into sequence
 #   since there aren't any other analyzers, we can just set the sequence
 #   equal to this list
-p.sequence = triggerPad.digis()
+p.sequence = triggerPad.sim()
 
 # Provide the list of output files to produce
 # if it can all be in one sequence, no input file is needed
@@ -34,7 +34,7 @@ else:
 if len(sys.argv) > 2 :
     p.histogramFile= sys.argv[2]
 else:
-    p.histogramFile = p.inputFiles[0].replace( '.root' , '_hitDQM.root' ) # this, however, can't be!! then there is a no-clue segfault
+    p.histogramFile = p.inputFiles[0].replace( '.root' , '_simDQM.root' ) # this, however, can't be!! then there is a no-clue segfault
 
 print p.histogramFile
 
