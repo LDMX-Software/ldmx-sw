@@ -59,8 +59,8 @@ jobs:
     #   ldmx-sw. 
     - name: Run Sphinx to build python Docs
       run: |
-          pip install Sphinx groundwork-sphinx-theme
-          sphinx-apidoc -f -T -o sphinx.conf/ install/lib/python
+          pip install -U Sphinx sphinxcontrib-apidoc groundwork-sphinx-theme
+          sphinx-apidoc --force --no-toc -o sphinx.conf/ install/lib/python
           sphinx-build sphinx.conf html/_sphinx
 
     - name: Deploy the Docs
