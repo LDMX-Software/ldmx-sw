@@ -1,3 +1,12 @@
+"""Configuration for TriggerProcessor
+
+Sets all parameters to reasonable defaults.
+
+Examples
+--------
+>>> from LDMX.EventProc.simpleTrigger import simpleTrigger
+>>> p.sequence.append( simpleTrigger )
+"""
 #!/usr/bin/python
 
 from LDMX.Framework import ldmxcfg

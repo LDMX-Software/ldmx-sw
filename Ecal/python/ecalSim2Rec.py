@@ -1,4 +1,13 @@
-#!/usr/bin/python
+"""Configuration for the EcalSim2Rec
+
+This is a legacy producer that skips the more realistic
+digi pipeline. It will be removed in later ldmx-sw versions.
+
+Examples
+--------
+>>> from LDMX.Ecal.ecalSim2Rec import ecalSim2Rec
+>>> p.sequence.append( ecalSim2Rec )
+"""
 
 from LDMX.Framework import ldmxcfg
 
