@@ -1,4 +1,10 @@
-#!/usr/bin/python
+"""Configuration for the EcalClusterProducer
+
+Examples
+--------
+>>> from LDMX.Ecal.ecalClusters import ecalClusters
+>>> p.sequence.append( ecalClusters )
+"""
 
 import sys
 import os
