@@ -28,7 +28,8 @@ function ldmx_docker_tags() {
 
 _ldmx_base="$1"
 if [ -z ${_ldmx_base} ]; then
-    _ldmx_base=$(pwd)
+    _dir_name_of_script=$( dirname ${BASH_SOURCE[0]} )
+    _ldmx_base="${_dir_name_of_script}/../../" #back out of ldmx-sw/scripts
 elif [ ${_ldmx_base} = "help" ]; then
     echo "Environment setup script for ldmx."
     echo "  Usage: source ldmx-sw/scripts/ldmx-env.sh [ldmx_base] [image_tag]"
