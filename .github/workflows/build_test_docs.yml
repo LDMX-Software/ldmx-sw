@@ -1,0 +1,90 @@
+
+name: Build ldmx-sw, Run ldmx-test, and Update Docs
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ iss741 ] #master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # check out ldmx-sw in the workspace
+    - uses: actions/checkout@v2
+
+    # Setup our ldmx development environment
+    - name: Setup ldmx environment
+      run: docker pull ldmx/dev
+    
+    # configure ldmx-sw using the docker environment
+    - name: Configure the build
+      run: |
+          mkdir build &&
+          docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build cmake -DCMAKE_INSTALL_PREFIX=../install -DBUILD_TESTS=ON ..
+
+    # build ldmx-sw using the docker environment
+    - name: Build and Install
+      run: docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build make -j install
+
+    # run ldmx-test using the docker environment
+    - name: Test the build
+      run: |
+          cd ../ &&
+          export LDMX_BASE=$(pwd) &&
+          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $LDMX_BASE/ldmx-sw/install ./bin/ldmx-test
+
+    # The rest of the steps are building docs
+    #   Since the build is made and tested above,
+    #   the docs are only updated if the build passes
+
+    # Runs doxygen doxygen.conf in the docs/ directory
+    - name: Run Doxygen to build C++ Docs
+      uses: mattnotmitt/doxygen-action@v1.1.0
+      with:
+        doxyfile-path: doxygen.conf/doxyfile #relative to working directory
+        working-directory: docs #docs subdirectory
+
+    # Runs sphinx-apidoc and sphinx-build in the docs/ directory
+    #   sphinx-apidoc requires the python files to be packaged together
+    #   like a python module would be. The simplest way to achieve
+    #   this form is to build and install ldmx-sw.
+    #
+    #   There is almost certainly a way to do this without having to build
+    #   and install ldmx-sw, but we might as well check that we can build
+    #   ldmx-sw. 
+    - name: Run Sphinx to build python Docs
+      run: |
+          pip install Sphinx groundwork-sphinx-theme
+          sphinx-apidoc -f -T -o sphinx.conf/ install/lib/python
+          sphinx-build sphinx.conf html/_sphinx
+
+    - name: Deploy the Docs
+      if: ${{ github.event_name == 'push' }} #only deploy when the master actually changes
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        personal_token: ${{ secrets.LDMX_ORG_TOKEN }} #requires setup to connect ldmx-sw and ldmx-sw.github.io
+        commit_message: ${{ github.event.head_commit.message }}
+        external_repository: LDMX-Software/ldmx-software.github.io
+        publish_branch: master 
+        publish_dir: ./docs/html
+        enable_jekyll: true #allow github pages to process using jekyll
+        keep_files: true #keep old files (by default, clears publish_dir before deploying to it)
+
+     # Do we want to make a new production image every time a push to master happens?
+     # It may be nice to have a latest production image which matches master perfectly
+     # and then other production tags for the different releases
+#    - name: Deploy to Docker
+#      uses: docker/build-push-action@v1
+#      if: ${{ github.event_name == 'push' }} #UNTESTED - want to only do this when master branch changes
+#      with:
+#        username: ${{ secrets.DOCKER_USERNAME }} #needs to be added into repo settings
+#        password: ${{ secrets.DOCKER_PASSWORD }} #needs to be added into repo settings
+#        repository: ldmx/pro
+#        tag_with_ref: true #convert branch ref to a docker tag
+#        tag_with_sha: true #also tag with git sha
+
