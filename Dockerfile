@@ -7,6 +7,6 @@ FROM ldmx/dev:latest
 COPY . /code
 RUN /bin/bash /code/scripts/docker_install.sh
 
-COPY ./scripts/docker_app.sh /home/docker_app.sh
-RUN chmod 755 /home/docker_app.sh
-ENTRYPOINT ["/home/docker_app.sh"]
+COPY ./scripts/docker_entrypoint.sh /home/docker_entrypoint.sh
+RUN chmod 755 /home/docker_entrypoint.sh
+ENTRYPOINT ["/home/docker_entrypoint.sh"]

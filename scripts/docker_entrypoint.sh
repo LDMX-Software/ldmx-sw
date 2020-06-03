@@ -6,7 +6,7 @@ set -e
 # Entry point for the ldmx production container
 #   The basic idea is that we want to go into the container,
 #   setup the ldmx-sw working environment, and then
-#   run ldmx-app with any provided arguments.
+#   run the application with any provided arguments.
 #
 #   We mount and run inside the present working directory.
 ###############################################################################
@@ -26,12 +26,9 @@ export LD_LIBRARY_PATH=$ONNX_DIR/lib:/usr/local/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=/usr/local/lib/python:$PYTHONPATH
 export PATH=/usr/local/bin:$PATH
 
-# helps simplify any cmake nonsense
-export CMAKE_PREFIX_PATH=$XercesC_DIR:$ROOTDIR:$G4DIR:$ONNX_DIR:/usr/local
-
 # go to first argument
 cd "$1"
 
-# execute the rest as arguments to ldmx-sw's app
-app "${@:2}"
+# execute the rest as arguments to the application
+fire "${@:2}"
 
