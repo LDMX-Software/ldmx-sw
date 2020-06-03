@@ -326,12 +326,11 @@ namespace ldmx {
         Py_DECREF(pysequence);
 
         //all done with python nonsense
-#if PY_MAJOR_VERSION < 3
         //do nothing for some reason ¯\_(ツ)_/¯
-        //  too lazy to figure out how to close up python2 well
-#else
-        Py_Finalize();
-#endif
+        //  too lazy to figure out how to close up python well
+        //  calling the below function leads to a seg fault on
+        //  some machines
+        //Py_Finalize();
     }
 
     ProcessHandle ConfigurePython::makeProcess() {
@@ -412,7 +411,7 @@ namespace ldmx {
 
                     auto vec0{PyList_GetItem(value, 0)};
 
-                    if (PyLong_Check(vec0)) {
+                    if (isPyInt(vec0)) {
                         std::vector<int> vals;
 
                         for (auto j{0}; j < PyList_Size(value); j++)
