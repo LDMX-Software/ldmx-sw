@@ -18,6 +18,7 @@
 ## Status
 
 ## Documentation 
+The full documentation for **ldmx-sw** is available on [github pages](https://ldmx-software.github.io/ldmx-sw/html/index.html).
 
 ## Contributing
 

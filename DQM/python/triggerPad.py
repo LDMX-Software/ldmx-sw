@@ -1,15 +1,25 @@
-################################################################################
-# @file triggerPad.py
-# Define analyzers for DQM of trigger pad
-################################################################################
+"""Configured TricScintDQM python objects"""
 
 from LDMX.Framework import ldmxcfg
 
-################################################################################
-# @func sim
-# Analyzers focusing on simulated hits of trigger pads
-################################################################################
 def sim() :
+    """Analyzers focusing on simulated hits of trigger pads
+
+    Defines three instances of TrigScintDQM Analyzers corresponding
+    to the three trigger pads.
+
+    Returns
+    -------
+    list of ldmxcfg.Analyzer s
+        Configured to be TrigScintDQMs for the three trigger pads
+
+    Examples
+    --------
+    Import and make histograms for the simulated trigger pad hits:
+    >>> from LDMX.DQM import triggerPad
+    >>> p.sequenc.extend(triggerPad.sim())
+    """
+
     trigScintUp = ldmxcfg.Analyzer("TrigScintSimDQMUp", "ldmx::TrigScintDQM")
     trigScintUp.parameters["hit_collection"] = "TriggerPadUpSimHits"
     trigScintUp.parameters["pad"] = "up"
@@ -24,11 +34,24 @@ def sim() :
 
     return [ trigScintUp , trigScintTag , trigScintDown ]
 
-################################################################################
-# @func digis
-# Analyzers focusing on digitized hits of trigger pads
-################################################################################
 def digis() :
+    """Analyzers focusing on digitized hits of trigger pads
+
+    Defines three instances of TrigScintDQM Analyzers corresponding
+    to the three trigger pads.
+
+    Returns
+    -------
+    list of ldmxcfg.Analyzer s
+        Configured to be TrigScintDQMs for the three trigger pads
+
+    Examples
+    --------
+    Import and make histograms for the digitized trigger pad hits:
+    >>> from LDMX.DQM import triggerPad
+    >>> p.sequenc.extend(triggerPad.digis())
+    """
+
     trigScintUp = ldmxcfg.Analyzer("TrigScintHitDQMUp", "ldmx::TrigScintHitDQM")
     trigScintUp.parameters["hit_collection"] = "trigScintDigisUp"
     trigScintUp.parameters["pad"] = "up"

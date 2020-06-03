@@ -1,4 +1,5 @@
-""" Example configurations for producing biased interactions in the target. 
+""" @package target
+Example configurations for producing biased interactions in the target. 
 
     Example
     -------
@@ -159,7 +160,7 @@ def dark_brem( ap_mass , lhe, detector ) :
     lhe : str
         The path to the LHE file to use as vertices of the dark brem. 
     detector : str
-        Path to the detector.
+        Name of detector to simulate in
 
     Return
     ------

@@ -1,17 +1,39 @@
+"""Internal configuration module for simulation objects
 
-#######################################################
-# @class UserAction
-# @brief Class to pass parameters into a UserAction
-# @author Omar Moreno, SLAC
+The simulation requires a lot more detailed configuration than
+the other processors, so we have two extra objects that require
+their own python classes.
+"""
+
 class UserAction: 
+    """Object that stores parameters for a UserAction
+
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this particular instance of a UserAction
+    class_name : str
+        Name of C++ class that this UserAction should be
+
+    Attributes
+    ----------
+    parameters : dict
+        Python dictionary passed to C++ UserAction to be used to configure it
+    """
 
     def __init__(self, instance_name, class_name):
-
         self.class_name    = class_name
         self.instance_name = instance_name
         self.parameters    = dict() 
 
     def __str__(self): 
+        """Stringify this UserAction
+
+        Returns
+        -------
+        str
+            A human-readable version of this UserAction printing all its attributes
+        """
 
         string = "UserAction (" + self.__repr__() + ")\n"
         string += " Parameters: \n"
@@ -21,21 +43,48 @@ class UserAction:
         return string
 
     def __repr__(self):
+        """A shorter string representation of this UserAction
+
+        Returns
+        -------
+        str
+            Just printing its instance and class names
+        """
+
         return '%s of class %s' % (self.instance_name, self.class_name)
 
-#######################################################
-# @class PrimaryGenerator
-# @brief Class to pass parameters into a PrimaryGenerator
-# @author Tom Eichlersmith, University of Minnesota
 class PrimaryGenerator: 
+    """Object that stores parameters for a PrimaryGenerator
+
+    Parameters
+    ----------
+    instance_name : str
+        Unique name for this particular instance of a PrimaryGenerator
+    class_name : str
+        Name of C++ class that this PrimaryGenerator should be
+
+
+    Attributes
+    ----------
+    parameters : dict
+        Python dictionary passed to C++ PrimaryGenerator to be used to configure it
+    """
+
 
     def __init__(self, instance_name, class_name):
-
         self.class_name    = class_name
         self.instance_name = instance_name
         self.parameters    = dict() 
 
     def __str__(self): 
+        """Stringify this PrimaryGenerator
+
+        Returns
+        -------
+        str
+            A human-readable version of this PrimaryGenerator printing all its attributes
+        """
+
 
         string = "PrimaryGenerator (" + self.__repr__() + ")\n" 
         string += " Parameters: \n"
@@ -45,4 +94,12 @@ class PrimaryGenerator:
         return string
 
     def __repr__(self):
+        """A shorter string representation of this PrimaryGenerator
+
+        Returns
+        -------
+        str
+            Just printing its instance and class names
+        """
+
         return '%s of class %s' % (self.instance_name, self.class_name)

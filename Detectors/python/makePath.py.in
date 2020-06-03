@@ -1,20 +1,37 @@
-#############################################################################################
-# Helpful python configuration functions for getting the path to installed
-#  detector descriptions.
-#
-# makePath is meant to be internal to this module, but there is no reason a user
-# could alter its behavior if desired.
-#
-# This file was configured by cmake for the installation of ldmx-sw at
-#   @CMAKE_INSTALL_PREFIX@
-#
-# @author Tom Eichlersmith, University of Minnesota
-#############################################################################################
+"""Helpful python configuration functions for getting the path to installed detector descriptions.
 
-# return full path to detector description with the input names
-# errors out if the file does not exist
+makePath is meant to be internal to this module, 
+but there is no reason a user could use it for a different purpose if desired
+
+This file was configured by cmake for the installation of ldmx-sw at
+   @CMAKE_INSTALL_PREFIX@
+"""
+
 import os, sys
+
 def makePath( detName , fileName ) :
+    """Return a path to the installed data directory for the input detector and file names.
+
+    Assumes the detectors are installed in the 'data/detectors' directory in the installation directory.
+    Errors out the python script if the created full path does exist. 
+    This could happen because
+    - The inputs were spelled wrong
+    - The detector gdml files were not installed
+    - The detector or file you want doesn't exist
+
+    Parameters
+    ----------
+    detName : str
+        Name of detector to get a path for (should match the name of one of the detector directories)
+    fileName : str
+        Name of the detector gdml file to get a path for (should match the name -- no extension -- of one of the gdml files)
+
+    Returns
+    -------
+    str
+        full path to installed detector gdml description
+    """
+
     fullPath = '@CMAKE_INSTALL_PREFIX@/data/detectors/' + detName + '/' + fileName + '.gdml'
     if not os.path.isfile( fullPath ) :
         print('GDML file \'%s\' does not exist.' % ( fullPath ))
@@ -22,10 +39,46 @@ def makePath( detName , fileName ) :
 
     return fullPath
 
-# return the detector description
 def makeDetectorPath( detName ) :
+    """Get the full path to the installed ldmx detector description
+
+    Parameters
+    ----------
+    detName : str
+        Name of detector to get a path for (should match the name of one of the detector directories)
+
+    Returns
+    -------
+    str
+        full path to the installed detector gdml description
+
+    Examples
+    --------
+    Useful for use with the simulator producer:
+    >>> from LDMX.Detector.makePath import *
+    >>> mySimulator.parameters['detector'] = makeDetectorPath( 'ldmx-det-v12' )
+    """
+
     return makePath( detName , 'detector' )
 
-# return the scoring_planes description
 def makeScoringPlanesPath( detName ) :
+    """Get the full path to the installed ldmx scoring planes description
+
+    Parameters
+    ----------
+    detName : str
+        Name of detector to get a path for (should match the name of one of the detector directories)
+
+    Returns
+    -------
+    str
+        full path to the installed scoring planes gdml description
+
+    Examples
+    --------
+    Useful for use with the simulator producer:
+    >>> from LDMX.Detector.makePath import *
+    >>> mySimulator.parameters['scoring_planes'] = makeScoringPlanesPath( 'ldmx-det-v12' )
+    """
+
     return makePath( detName , 'scoring_planes' )
