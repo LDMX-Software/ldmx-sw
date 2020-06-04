@@ -49,6 +49,12 @@ jobs:
         doxyfile-path: doxygen.conf/doxyfile #relative to working directory
         working-directory: docs #docs subdirectory
 
+    # sphinx is a python package, so we need to setup python on this runner
+    - name: Setup Python for Sphinx
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+    
     # Runs sphinx-apidoc and sphinx-build in the docs/ directory
     #   sphinx-apidoc requires the python files to be packaged together
     #   like a python module would be. The simplest way to achieve
@@ -59,7 +65,8 @@ jobs:
     #   ldmx-sw. 
     - name: Run Sphinx to build python Docs
       run: |
-          pip install -U Sphinx sphinxcontrib-apidoc groundwork-sphinx-theme
+          python3 -m pip install -U pip
+          python3 -m pip install Sphinx Pillow groundwork-sphinx-theme
           sphinx-apidoc --force --no-toc -o sphinx.conf/ install/lib/python
           sphinx-build sphinx.conf html/_sphinx
 
