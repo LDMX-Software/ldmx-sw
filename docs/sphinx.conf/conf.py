@@ -19,8 +19,8 @@ sys.path.insert(0, os.path.abspath('../../install/lib/python/'))
 # -- Project information -----------------------------------------------------
 
 project = u'ldmx-sw python'
-copyright = u'2020, Tom Eichlersmith'
-author = u'Tom Eichlersmith'
+copyright = u'2020, LDMX Collaboration'
+author = u'LDMX Collaboration'
 
 # The short X.Y version
 version = u''
