@@ -180,27 +180,27 @@ namespace ldmx {
 
         // Loop through all of the PN daughters and extract kinematic 
         // information.
-        for (int &daughterTrackID : pnGamma->getDaughters() ) {
+        for (const auto& daughterTrackID : pnGamma->getDaughters() ) {
 
             //skip daughters that weren't saved
-            if ( particleMap.count( daughterTrackID ) == 0 ) { continue; }
+            if ( particleMap.count( daughterTrackID ) == 0 ) continue; 
 
-            const SimParticle* daughter = &(particleMap.at(daughterTrackID));
+            auto daughter{&(particleMap.at(daughterTrackID))};
 
             // Get the PDG ID
-            int pdgID = daughter->getPdgID();
+            auto pdgID{daughter->getPdgID()};
 
             // Ignore photons and nuclei
             if (pdgID == 22 || pdgID > 10000) continue;
 
             // Calculate the kinetic energy
-            double ke = daughter->getEnergy() - daughter->getMass();
+            double ke{daughter->getEnergy() - daughter->getMass()};
 
-            std::vector<double> vec = daughter->getMomentum(); 
+            std::vector<double> vec{daughter->getMomentum()}; 
             TVector3 pvec(vec[0], vec[1], vec[2]); 
 
             //  Calculate the polar angle
-            double theta = pvec.Theta()*(180/3.14159);
+            auto theta{pvec.Theta()*(180/3.14159)};
  
             if (lke < ke) { lke = ke; lt = theta; }  
             
@@ -227,13 +227,13 @@ namespace ldmx {
         histograms_->get("hardest_pi_theta")->Fill(lpit); 
 
         // Classify the event
-        int eventType = classifyEvent(pnGamma, particleMap, 200); 
-        int eventType500MeV = classifyEvent(pnGamma, particleMap, 500); 
-        int eventType2000MeV = classifyEvent(pnGamma, particleMap, 2000);
+        auto eventType{classifyEvent(pnDaughters, 200)};
+        auto eventType500MeV{classifyEvent(pnDaughters, 500)};
+        auto eventType2000MeV{classifyEvent(pnDaughters, 2000)};
 
-        int eventTypeComp = classifyCompactEvent(pnGamma, particleMap, 200);  
-        int eventTypeComp500MeV = classifyCompactEvent(pnGamma, particleMap, 500);  
-        int eventTypeComp2000MeV = classifyCompactEvent(pnGamma, particleMap, 2000);  
+        auto eventTypeComp{classifyCompactEvent(pnGamma, pnDaughters, 200)}; 
+        auto eventTypeComp500MeV{classifyCompactEvent(pnGamma, pnDaughters, 200)}; 
+        auto eventTypeComp2000MeV{classifyCompactEvent(pnGamma, pnDaughters, 200)}; 
 
         histograms_->get("event_type")->Fill(eventType);
         histograms_->get("event_type_500mev")->Fill(eventType500MeV);
@@ -295,27 +295,23 @@ namespace ldmx {
         } 
     }
 
-    int PhotoNuclearDQM::classifyEvent(const SimParticle* particle, const std::map<int,SimParticle> &particleMap, double threshold) {
+    int PhotoNuclearDQM::classifyEvent(const std::vector< const SimParticle*> daughters, double threshold) {
 
         short n{0}, p{0}, pi{0}, pi0{0}, exotic{0}, k0l{0}, kp{0}, k0s{0}, 
               lambda{0};
 
         // Loop through all of the PN daughters and extract kinematic 
         // information.
-        for (int daughterTrackID : particle->getDaughters() ) {
-
-            if ( particleMap.count( daughterTrackID ) == 0 ) continue; //daughter wasn't stored
-
-            const SimParticle &daughter = particleMap.find(daughterTrackID)->second;
+        for (const auto& daughter : daughters ) {
 
             // Calculate the kinetic energy
-            double ke = daughter.getEnergy() - daughter.getMass();
+            auto ke{daughter->getEnergy() - daughter->getMass()};
             
             // If the kinetic energy is below threshold, continue
             if (ke <= threshold) continue;
 
             // Get the PDG ID
-            int pdgID = abs(daughter.getPdgID());
+            auto pdgID{abs(daughter->getPdgID())};
 
             if (pdgID == 2112) n++;
             else if (pdgID == 2212) p++;
@@ -397,30 +393,26 @@ namespace ldmx {
         return 20;
     }
 
-    int PhotoNuclearDQM::classifyCompactEvent(const SimParticle* particle, const std::map<int,SimParticle> &particleMap, double threshold) {
+    int PhotoNuclearDQM::classifyCompactEvent(const SimParticle* pnGamma, const std::vector< const SimParticle*> daughters, double threshold) {
    
         short n{0}, n_t{0}, k0l{0}, kp{0}, k0s{0}, soft{0};
 
         // Loop through all of the PN daughters and extract kinematic 
         // information.
-        for (int daughterTrackID : particle->getDaughters() ) {
-
-            if ( particleMap.count( daughterTrackID) == 0 ) continue; //daughter wasn't stored
-
-            const SimParticle &daughter = particleMap.find( daughterTrackID )->second;
+        for (const auto& daughter : daughters ) {
 
             // Calculate the kinetic energy
-            double ke = daughter.getEnergy() - daughter.getMass();
+            auto ke{daughter->getEnergy() - daughter->getMass()};
             
             // Get the PDG ID
-            int pdgID = abs(daughter.getPdgID());
+            auto pdgID{abs(daughter->getPdgID())};
 
             if (ke < 500) { 
                 soft++;
                 continue; 
             } 
             
-            if (ke >= 0.8*particle->getEnergy()) {
+            if (ke >= 0.8*pnGamma->getEnergy()) {
                 if (pdgID == 2112) n++;
                 else if (pdgID == 130) k0l++; 
                 else if (pdgID == 321) kp++; 
@@ -437,7 +429,7 @@ namespace ldmx {
         if (kp != 0) return 1; 
         if (neutral_kaons != 0) return 2; 
         if (n_t == 2) return 3; 
-        if (soft == particle->getDaughters().size()) return 4; 
+        if (soft == daughters.size()) return 4; 
 
         return 5; 
     
