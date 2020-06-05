@@ -142,7 +142,6 @@ namespace ldmx {
 
     void PhotoNuclearDQM::analyze(const Event& event) {
 
-
         // Get the collection of simulated particles from the event
         auto particleMap{event.getMap<int,SimParticle>("SimParticles")};
 
@@ -244,7 +243,8 @@ namespace ldmx {
         histograms_->get("event_type_compact_2000mev")->Fill(eventTypeComp2000MeV);
 
         double slke{-9999};
-        double nEnergy{-9999}, energyDiff{-9999}, energyFrac{-9999}; 
+        double nEnergy{-9999}, energyDiff{-9999}, energyFrac{-9999};
+         
         if (eventType == 1 || eventType == 17 || eventType == 16 || eventType == 18 || eventType == 2) {
 
             std::sort (pnDaughters.begin(), pnDaughters.end(), [] (const auto& lhs, const auto& rhs) 
@@ -256,7 +256,8 @@ namespace ldmx {
            
 
             nEnergy = pnDaughters[0]->getEnergy() - pnDaughters[0]->getMass(); 
-            slke = pnDaughters[1]->getEnergy() - pnDaughters[1]->getMass();
+            slke = -9999; 
+            if (pnDaughters.size() > 1) slke = pnDaughters[1]->getEnergy() - pnDaughters[1]->getMass();
             energyDiff = pnGamma->getEnergy() - nEnergy; 
             energyFrac = nEnergy/pnGamma->getEnergy(); 
 
@@ -283,8 +284,8 @@ namespace ldmx {
                 histograms_->get("1k0_energy_frac")->Fill(energyFrac); 
             }
 
-            int nPdgID = abs(pnDaughters[1]->getPdgID());
-            int nEventType = -10; 
+            auto nPdgID{abs(pnDaughters[0]->getPdgID())};
+            auto nEventType{-10}; 
             if (nPdgID == 2112) nEventType = 1; 
             else if (nPdgID == 2212) nEventType = 2; 
             else if (nPdgID == 211) nEventType = 3;
@@ -292,7 +293,7 @@ namespace ldmx {
        
             histograms_->get("1n_event_type")->Fill(nEventType); 
 
-        } 
+        }
     }
 
     int PhotoNuclearDQM::classifyEvent(const std::vector< const SimParticle*> daughters, double threshold) {
