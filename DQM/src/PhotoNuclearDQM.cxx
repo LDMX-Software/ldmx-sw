@@ -1,6 +1,11 @@
 
 #include "DQM/PhotoNuclearDQM.h" 
 
+/*~~~~~~~~~~~~~~~~*/
+/*   C++ StdLib   */
+/*~~~~~~~~~~~~~~~~*/
+#include <algorithm> 
+
 //----------//
 //   ROOT   //
 //----------//
@@ -434,6 +439,53 @@ namespace ldmx {
 
         return 5; 
     
+    }
+
+    void PhotoNuclearDQM::printParticleTree(std::map< int, SimParticle > particleMap) { 
+    
+        std::vector< int > printedParticles; 
+
+        // Loop through the particle map 
+        for ( auto const& [trackID, simParticle] : particleMap ) { 
+
+            // Print the particle only if it has daughters
+            if ((simParticle.getDaughters().size() != 0) 
+                    & (std::find(printedParticles.begin(), 
+                                 printedParticles.end(), trackID) == printedParticles.end())) {
+                simParticle.Print();
+                printedParticles.push_back(trackID); 
+                
+                // Print the daughters
+                std::vector < int > printedDaugthers = printDaughters(particleMap, simParticle, 1);  
+                printedParticles.insert(printedParticles.end(), printedDaugthers.begin(), printedDaugthers.end()); 
+            }
+        } 
+    }
+
+    std::vector< int > PhotoNuclearDQM::printDaughters(std::map< int, SimParticle > particleMap, 
+            const SimParticle particle, int depth) { 
+      
+        std::vector< int > printedParticles; 
+ 
+        // Don't print anything if a particle doesn't have any daughters
+        if (particle.getDaughters().size() == 0) return printedParticles;
+
+        // Generate the prefix
+        std::string prefix{""}; 
+        for (auto i{0}; i < depth; ++i) prefix += "\t"; 
+        
+        // Loop through all of the daughter particles and print them
+        for (const auto& daughter : particle.getDaughters()) { 
+        
+            // Print the ith daughter particle
+            std::cout << prefix; 
+            particleMap[daughter].Print();
+            printedParticles.push_back(daughter); 
+
+            // Print the Daughters
+            std::vector< int > printedDaugthers = printDaughters(particleMap, particleMap[daughter], depth + 1);
+            printedParticles.insert(printedParticles.end(), printedDaugthers.begin(), printedDaugthers.end()); 
+        }
     }
 
 } // ldmx
