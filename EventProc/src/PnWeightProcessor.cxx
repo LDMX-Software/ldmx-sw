@@ -50,15 +50,17 @@ namespace ldmx {
 
     void PnWeightProcessor::produce(Event& event) {
         
-        // Get the collection of sim particles from the event.  If the 
-        // collection of sim particles is empty, don't process the
-        // event.
-        const std::map<int,SimParticle> simParticleMap = event.getMap<int,SimParticle>("SimParticles");
-        if (simParticleMap.size() == 0) return; 
+        // Get the particle map from the event.  If the particle map is empty,
+        // don't process the event.
+        auto particleMap{event.getMap<int,SimParticle>("SimParticles")};
+        if (particleMap.size() == 0) return; 
 
-        // Search for the PN gamma that is a daughter of the recoil electron
-        // and use it to get the PN daughters.
-        const SimParticle* pnGamma = Analysis::getRecoilPNGamma( simParticleMap );
+        // Get the recoil electron
+        auto [ trackID, recoil ] = Analysis::getRecoil(particleMap);
+
+        // Use the recoil electron to retrieve the gamma that underwent a 
+        // photo-nuclear reaction.
+        auto pnGamma{Analysis::getPNGamma(particleMap, recoil, 2500.)};
 
         // For PN biased events, there should always be a gamma that
         // underwent a PN reaction.
@@ -77,8 +79,8 @@ namespace ldmx {
            
             // Get a daughter of the PN gamma 
             const SimParticle *pnDaughter;
-            if ( simParticleMap.count( daughterTrackID ) > 0 ) {
-                pnDaughter = &( simParticleMap.at( daughterTrackID ) );
+            if ( particleMap.count( daughterTrackID ) > 0 ) {
+                pnDaughter = &( particleMap.at( daughterTrackID ) );
             } else {
                 //pnDaughter not stored in particle map
                 EXCEPTION_RAISE(
