@@ -147,8 +147,10 @@ namespace ldmx {
 
     void PhotoNuclearDQM::analyze(const Event& event) {
 
-        // Get the collection of simulated particles from the event
+        // Get the particle map from the event.  If the particle map is empty,
+        // don't process the event.
         auto particleMap{event.getMap<int,SimParticle>("SimParticles")};
+        if (particleMap.size() == 0) return; 
 
         // Get the recoil electron
         auto [ trackID, recoil ] = Analysis::getRecoil(particleMap);
@@ -162,7 +164,7 @@ namespace ldmx {
 
         // Use the recoil electron to retrieve the gamma that underwent a 
         // photo-nuclear reaction.
-        auto pnGamma{Analysis::getRecoilPNGamma(event.getMap<int, SimParticle>("SimParticles"))};
+        auto pnGamma{Analysis::getPNGamma(particleMap, recoil, 2500.)};
         if (pnGamma == nullptr) { 
             std::cout << "[ PhotoNuclearDQM ]: PN Daughter is lost, skipping." << std::endl;
             return;
@@ -456,8 +458,8 @@ namespace ldmx {
                 printedParticles.push_back(trackID); 
                 
                 // Print the daughters
-                std::vector < int > printedDaugthers = printDaughters(particleMap, simParticle, 1);  
-                printedParticles.insert(printedParticles.end(), printedDaugthers.begin(), printedDaugthers.end()); 
+                std::vector < int > printedDaughters = printDaughters(particleMap, simParticle, 1);  
+                printedParticles.insert(printedParticles.end(), printedDaughters.begin(), printedDaughters.end()); 
             }
         } 
     }
@@ -483,8 +485,8 @@ namespace ldmx {
             printedParticles.push_back(daughter); 
 
             // Print the Daughters
-            std::vector< int > printedDaugthers = printDaughters(particleMap, particleMap[daughter], depth + 1);
-            printedParticles.insert(printedParticles.end(), printedDaugthers.begin(), printedDaugthers.end()); 
+            std::vector< int > printedDaughters = printDaughters(particleMap, particleMap[daughter], depth + 1);
+            printedParticles.insert(printedParticles.end(), printedDaughters.begin(), printedDaughters.end()); 
         }
     }
 
