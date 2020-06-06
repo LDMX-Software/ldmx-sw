@@ -34,62 +34,34 @@ namespace ldmx {
             return {1, &(particleMap.at(1))};
         }
 
-        const SimParticle* getPNGamma(const std::map<int,SimParticle> &particleMap) {
-            
-            for ( const auto &sp : particleMap ) {
-                
-               if ( (sp.second.getPdgID() == 0 ) //particle is a photon
-                    and (sp.second.getDaughters().size() > 0) //has offspring
-                  ) {
+        const SimParticle* getPNGamma(const std::map< int, SimParticle >& particleMap, 
+                const SimParticle* recoil, const float& energyThreshold) {
+           
+            // Get all of the daughter track IDs
+            auto daughterTrackIDs{recoil->getDaughters()};
 
-                   std::vector<int> daughterTrackIDs = sp.second.getDaughters();
-                   for ( const int &trackID : daughterTrackIDs ) {
-                        
-                        if ( particleMap.count(trackID) > 0 and //daughter exists in particleMap
-                             particleMap.at(trackID).getProcessType() == SimParticle::ProcessType::photonNuclear //daughter came from PN
-                           ) { return &(sp.second); }
+            auto pit = std::find_if(daughterTrackIDs.begin(), daughterTrackIDs.end(), 
+                    [energyThreshold, particleMap] (const int& id) {
+                    
+                // Get the SimParticle from the map
+                auto daughter{particleMap.at(id)};
 
-                   } //loop through daughter track IDs
+                // If the particle doesn't have any daughters, return false
+                if (daughter.getDaughters().size() == 0) return false;
 
-               } //current particle is a photon and has offspring
-            } //loop through particle map
-
-            //no particles satisfy
-            //  1) Is a photon
-            //  2) Has a daughter with origin process PN
-            return nullptr;
-        }
-
-        const SimParticle* getRecoilPNGamma(const std::map<int,SimParticle> &particleMap) {
-
-            // Search for and rretrieve the recoil electron 
-            auto [trackID, recoilElectron] = Analysis::getRecoil(particleMap);
-
-            // If the recoil electron was found, continue to search for the 
-            // PN gamma. If not, return null. 
-            if ( recoilElectron ) {
-            
-               auto daughterTrackIDs{recoilElectron->getDaughters()};
-
-               auto pit = std::find_if(daughterTrackIDs.begin(), daughterTrackIDs.end(), [particleMap] (const int& id) {
-                       
-                            // If the particle doesn't have any daughters, return false
-                            if (particleMap.at(id).getDaughters().size() == 0) return false;
-
-                            // If the particle has daughters that were a result
-                            // of a photo-nuclear reaction, then tag it as the 
-                            // PN gamma. 
-                            return (particleMap.at(particleMap.at(id).getDaughters().front()).getProcessType() 
-                                    == SimParticle::ProcessType::photonNuclear); 
-                            });
+                // If the particle has daughters that were a result of a 
+                // photo-nuclear reaction, and its energy is above threshold, 
+                // then tag it as the PN gamma. 
+                return ((particleMap.at(daughter.getDaughters().front()).getProcessType() 
+                            == SimParticle::ProcessType::photonNuclear) 
+                        && (daughter.getEnergy() >= energyThreshold));
+            });
              
-                // If a PN daughter was found, return it.   
-                if (pit != daughterTrackIDs.end()) return &particleMap.at(*pit); 
+            // If a PN daughter was found, return it.   
+            if (pit != daughterTrackIDs.end()) return &particleMap.at(*pit); 
 
-            } 
-            
             return nullptr;
-        }
+        } 
 
         TrackMaps getFindableTrackMaps(const std::vector<FindableTrackResult> &tracks) { 
        
