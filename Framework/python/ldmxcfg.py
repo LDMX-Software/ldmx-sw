@@ -326,12 +326,12 @@ class Process:
             """
 
             if isinstance( o , list ) :
-                return [ getParam(ival) for ival in o ]
+                return [ extractParameters(ival) for ival in o ]
             elif isinstance( o , (simcfg.UserAction,simcfg.PrimaryGenerator,Producer,Analyzer)) :
                 params = dict()
                 for key in o.parameters :
                     # Need to do this loop, so we can recursively get parameters
-                    params[ key ] = getParam(o.parameters[key])
+                    params[ key ] = extractParameters(o.parameters[key])
                 #loop over parameters
                 return params
             else :
