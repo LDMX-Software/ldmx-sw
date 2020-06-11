@@ -296,7 +296,7 @@ class Process:
         self.compressionSetting = algorithm*100 + level
 
     def parameterDump(self) :
-        """Dump the parameters of the processors in this sequence to a json file of the input name
+        """Dump all the parameters into one super-dictionary
 
         Returns
         -------
