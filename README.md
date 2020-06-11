@@ -1,4 +1,6 @@
-<h3 align="center">ldmx-sw</h3>
+<p align="center">
+    <img src="https://github.com/LDMX-Software/ldmx-software.github.io/blob/master/img/ldmx_logo_dark.png" width="500">
+</p>
 
 <p align="center">
     Simulation and reconstruction framework for the Light Dark Matter eXperiment.  
