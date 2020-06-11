@@ -301,63 +301,56 @@ class Process:
         Returns
         -------
         meta_data : dict
-            Dictionary of processor parameters to their values
+            Dictionary of all parameters set in python config to their values
 
         Warnings
         --------
         - Only includes the parameters set in the python and the processors in the sequence.
-        - Skips any parameters that are empty lists.
         """
-
-        meta_data = {
-                'passName' : self.passName ,
-                'maxEvents' : self.maxEvents,
-                'run' : self.run,
-                'skimDefaultIsKeep' : self.skimDefaultIsKeep,
-                'compressionSetting' : self.compressionSetting
-                }
-
-        for i in range(len(self.inputFiles)) :
-            meta_data[ 'inputFile'+str(i) ] = self.inputFiles[i]
-
-        for i in range(len(self.outputFiles)) :
-            meta_data[ 'outputFile'+str(i) ] = self.outputFiles[i]
-
-        for i in range(len(self.skimRules)) :
-            meta_data[ 'skimRule'+str(i) ] = self.skimRules[i]
-
-        for i in range(len(self.keep)) :
-            meta_data[ 'keep'+str(i) ] = self.keep[i]
 
         # for checking for stuff with sub-parameters
         from LDMX.SimApplication import simcfg
 
-        def getParam( o ) :
-            """Check if input is special and if it is, return dictionary of its own parameters
+        def extractParameters( o ) :
+            """Get parameters from objects that may have their own parameters
 
-            If the input is a list, then call this function on each member and return a list of the results.
-            If the input is a UserAction or PrimaryGenerator, get the dictionary of parameters and return that.
-            If the input is anything else, just return it.
+            If the input is a list, 
+                then call this function on each member and return a list of the results.
+            If the input is an object with its own parameters, 
+                get the dictionary of parameters and 
+                return a dictionary of the keys to this function on each value
+            If the input is anything else, 
+                just return it.
+
+            Recursion is a hell of a drug.
             """
 
             if isinstance( o , list ) :
                 return [ getParam(ival) for ival in o ]
-            elif isinstance( o , (simcfg.UserAction,simcfg.PrimaryGenerator)) :
+            elif isinstance( o , (simcfg.UserAction,simcfg.PrimaryGenerator,Producer,Analyzer)) :
                 params = dict()
                 for key in o.parameters :
+                    # Need to do this loop, so we can recursively get parameters
                     params[ key ] = getParam(o.parameters[key])
                 #loop over parameters
                 return params
             else :
                 # not special object
                 return o
+        #done with def of extractParameters
 
-        for ep in self.sequence :
-            proc_name = ep.instanceName
-            for key in ep.parameters :
-                meta_data[proc_name+'::'+key] = getParam(ep.parameters[key])
-            #end loop over keys in processor's parameters
-        #end loop over processors in sequence
+        meta_data = {
+                'passName' : self.passName ,
+                'maxEvents' : self.maxEvents,
+                'run' : self.run,
+                'skimDefaultIsKeep' : self.skimDefaultIsKeep,
+                'compressionSetting' : self.compressionSetting ,
+                'inputFiles' : self.inputFiles , 
+                'outputFiles' : self.outputFiles ,
+                'skimRules' : self.skimRules ,
+                'keep' : self.keep ,
+                'sequence' : extractParameters(self.sequence)
+                }
 
         return meta_data
 
