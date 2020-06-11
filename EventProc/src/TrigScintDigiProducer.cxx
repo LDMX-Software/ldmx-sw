@@ -21,9 +21,9 @@ namespace ldmx {
         mevPerMip_        = parameters.getParameter< double >("mev_per_mip");
         pePerMip_         = parameters.getParameter< double >("pe_per_mip");
         inputCollection_  = parameters.getParameter< std::string >("input_collection");
-        inputPassName_    = parameters.getParameter< std::string >("input_pass_name" );
+        inputPassName_    = parameters.getParameter< std::string >("input_pass_name" , "" );
         outputCollection_ = parameters.getParameter< std::string >("output_collection");
-        verbose_          = parameters.getParameter< bool >("verbose");
+        verbose_          = parameters.getParameter< bool >("verbose" , false );
 
         random_ = std::make_unique<TRandom3>(parameters.getParameter< int >("randomSeed"));
         

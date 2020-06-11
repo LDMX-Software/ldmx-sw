@@ -24,7 +24,7 @@ class UserAction:
     def __init__(self, instance_name, class_name):
         self.class_name    = class_name
         self.instance_name = instance_name
-        self.parameters    = dict() 
+        self.parameters    = {'name':instance_name,'class':class_name}
 
     def __str__(self): 
         """Stringify this UserAction
@@ -74,7 +74,7 @@ class PrimaryGenerator:
     def __init__(self, instance_name, class_name):
         self.class_name    = class_name
         self.instance_name = instance_name
-        self.parameters    = dict() 
+        self.parameters    = {'name':instance_name,'class':class_name}
 
     def __str__(self): 
         """Stringify this PrimaryGenerator

@@ -40,7 +40,7 @@ namespace ldmx {
         G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 
         // Set the description 
-        description_ = parameters.getParameter< std::string >("description"); 
+        description_ = parameters.getParameter< std::string >("description","I didn't set a description!"); 
         runNumber_   = parameters.getParameter< int >("runNumber");
         
         ecalHitIO_.setEnableHitContribs(parameters.getParameter< bool >("enableHitContribs", true)); 

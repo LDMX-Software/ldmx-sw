@@ -13,6 +13,7 @@ from LDMX.Framework import ldmxcfg
 
 trigScintDigis = ldmxcfg.Producer("trigScintDigis", "ldmx::TrigScintDigiProducer")
 
+trigScintDigis.parameters["randomSeed"] = 1
 trigScintDigis.parameters["mean_noise"] = 0.02
 trigScintDigis.parameters["number_of_strips"] = 50
 trigScintDigis.parameters["number_of_arrays"] = 1
@@ -23,6 +24,7 @@ trigScintDigis.parameters["output_collection"]="trigScintDigisUp"
 
 trigScintDigisDn = ldmxcfg.Producer("trigScintDigis", "ldmx::TrigScintDigiProducer")
 
+trigScintDigisDn.parameters["randomSeed"] = 1
 trigScintDigisDn.parameters["mean_noise"] = 0.02
 trigScintDigisDn.parameters["number_of_strips"] = 50
 trigScintDigisDn.parameters["number_of_arrays"] = 1
@@ -33,6 +35,7 @@ trigScintDigisDn.parameters["output_collection"]="trigScintDigisDn"
 
 trigScintDigisTag = ldmxcfg.Producer("trigScintDigis", "ldmx::TrigScintDigiProducer")
 
+trigScintDigisTag.parameters["randomSeed"] = 1
 trigScintDigisTag.parameters["mean_noise"] = 0.02
 trigScintDigisTag.parameters["number_of_strips"] = 50
 trigScintDigisTag.parameters["number_of_arrays"] = 1

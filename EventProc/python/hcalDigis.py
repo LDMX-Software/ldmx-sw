@@ -12,6 +12,8 @@ from LDMX.Framework import ldmxcfg
 
 hcalDigis = ldmxcfg.Producer("hcalDigis", "ldmx::HcalDigiProducer")
 
+hcalDigis.parameters["sim_hit_pass_name"] = ""
+hcalDigis.parameters["randomSeed"] = 1
 hcalDigis.parameters["meanNoise"] = 0.02
 hcalDigis.parameters["readoutThreshold"]= 1
 hcalDigis.parameters["strips_side_lr_per_layer"] = 12

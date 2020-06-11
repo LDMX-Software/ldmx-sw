@@ -31,7 +31,7 @@ namespace ldmx {
         PrimaryGenerator( name , parameters )
         {
 
-        verbosity_ = parameters.getParameter< int >("verbosity");
+        verbosity_ = parameters.getParameter< int >("verbosity" , 0);
 
         auto particleTable{G4ParticleTable::GetParticleTable()};
         
@@ -58,7 +58,7 @@ namespace ldmx {
             theGun_.SetParticlePosition(pVec);
         }
 
-        auto time{parameters.getParameter< double >("time")}; 
+        auto time{parameters.getParameter< double >("time",0)}; 
         if (time < 0) time = 0.0; 
         if ( verbosity_ > 1 ) {
             std::cout << "[ ParticleGun ] : Setting particle time  to " << time << std::endl;

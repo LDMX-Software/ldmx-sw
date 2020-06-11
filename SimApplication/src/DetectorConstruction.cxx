@@ -24,7 +24,7 @@ namespace ldmx {
 
     void DetectorConstruction::ConstructSDandField() {
 
-        auto biasingEnabled{parameters_.getParameter< bool >("biasing.enabled")};
+        auto biasingEnabled{parameters_.getParameter< bool >("biasing.enabled",false)};
         if (biasingEnabled) {
 
             auto biasingProcess{parameters_.getParameter< std::string >("biasing.process")}; 

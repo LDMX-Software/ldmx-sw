@@ -43,7 +43,7 @@ namespace ldmx {
         parameters_ = parameters; 
 
         // Set whether the ROOT primary generator should use the persisted seed.
-        auto rootPrimaryGenUseSeed{parameters.getParameter< bool >("rootPrimaryGenUseSeed")};
+        auto rootPrimaryGenUseSeed{parameters.getParameter< bool >("rootPrimaryGenUseSeed",false)};
         
         // Validate the geometry if specified. 
         setUseRootSeed(rootPrimaryGenUseSeed); 
@@ -57,7 +57,7 @@ namespace ldmx {
 
         auto pList{physicsListFactory_.GetReferencePhysList("FTFP_BERT")};
         
-        parallelWorldPath_ = parameters_.getParameter<std::string>("scoringPlanes");
+        parallelWorldPath_ = parameters_.getParameter<std::string>("scoringPlanes","");
         isPWEnabled_ = !parallelWorldPath_.empty();
         if ( isPWEnabled_ ) {
             std::cout << "[ RunManager ]: Parallel worlds physics list has been registered." << std::endl;
@@ -67,7 +67,7 @@ namespace ldmx {
         pList->RegisterPhysics(new GammaPhysics);
         pList->RegisterPhysics(new APrimePhysics( parameters_ ));
        
-        auto biasingEnabled{parameters_.getParameter< bool >("biasing.enabled")}; 
+        auto biasingEnabled{parameters_.getParameter< bool >("biasing.enabled",false)};
         if (biasingEnabled) {
 
             auto biasedParticle{parameters_.getParameter< std::string >("biasing.particle")}; 
@@ -114,7 +114,7 @@ namespace ldmx {
         auto actions{actionManager.getActions()};
        
         // Create all user actions
-        auto userActions{parameters_.getParameter< std::vector< Class > >("actions")}; 
+        auto userActions{parameters_.getParameter< std::vector< Class > >("actions",{})}; 
         std::for_each(userActions.begin(), userActions.end(), 
                 [&actionManager](auto& userAction) { 
                     actionManager.createAction(userAction.className_, userAction.instanceName_, userAction.params_); 

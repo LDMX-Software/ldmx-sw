@@ -39,7 +39,7 @@ namespace ldmx {
         random_->SetSeed( CLHEP::HepRandom::getTheSeed() );
 
         // Check whether a beamspot should be used or not.
-        auto beamSpot{parameters.getParameter< std::vector< double > >("beamSpotSmear")};
+        auto beamSpot{parameters.getParameter< std::vector< double > >("beamSpotSmear",{})};
         if (!beamSpot.empty()) {
             useBeamspot_ = true;
             beamspotXSize_ = beamSpot[0];

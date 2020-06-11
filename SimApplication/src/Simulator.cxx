@@ -60,13 +60,13 @@ namespace ldmx {
         process_.setRunNumber( runNumber );
 
         // Set the verbosity level.  The default level  is 0.
-        verbosity_ = parameters_.getParameter< int >("verbosity");
+        verbosity_ = parameters_.getParameter< int >("verbosity",0);
 
         // If the verbosity level is set to 0, 
         // If the verbosity level is > 1, log everything to a file. Otherwise,
         // dump the output. If a prefix has been specified, append it ot the 
         // log message. 
-        auto loggingPrefix = parameters_.getParameter< std::string >("logging_prefix");
+        auto loggingPrefix = parameters_.getParameter< std::string >("logging_prefix","");
         if ( verbosity_ == 0 ) sessionHandle_ = std::make_unique<BatchSession>();
         else if ( verbosity_ > 1 ) {
             
@@ -95,7 +95,7 @@ namespace ldmx {
 
         // Parse the detector geometry and validate if specified.
         auto detectorPath{parameters_.getParameter< std::string >("detector")};
-        auto validateGeometry{parameters_.getParameter< bool >("validate_detector")}; 
+        auto validateGeometry{parameters_.getParameter< bool >("validate_detector",false)}; 
         if ( verbosity_ > 0 ) {
             std::cout << "[ Simulator ] : Reading in geometry from '" << detectorPath << "'... " << std::flush;
         }
@@ -103,7 +103,7 @@ namespace ldmx {
         parser->Read( detectorPath, validateGeometry );
         runManager_->DefineWorldVolume( parser->GetWorldVolume() );
 
-        auto preInitCommands = parameters_.getParameter< std::vector< std::string > >("preInitCommands" ); 
+        auto preInitCommands = parameters_.getParameter< std::vector< std::string > >("preInitCommands",{}); 
         for ( const std::string& cmd : preInitCommands ) {
             if ( allowed(cmd) ) {
                 int g4Ret = uiManager_->ApplyCommand( cmd );
@@ -160,7 +160,7 @@ namespace ldmx {
         //initialize run
         runManager_->Initialize();
 
-        auto randomSeeds = parameters_.getParameter<std::vector<int>>("randomSeeds");
+        auto randomSeeds = parameters_.getParameter<std::vector<int>>("randomSeeds",{});
         if ( randomSeeds.size() > 1 ) {
             //Geant4 allows for random seeds from 2 to 100
             std::string cmd( "/random/setSeeds " );
@@ -171,7 +171,7 @@ namespace ldmx {
         }
 
         // Get the extra simulation configuring commands
-        auto postInitCommands = parameters_.getParameter< std::vector< std::string > >("postInitCommands");
+        auto postInitCommands = parameters_.getParameter< std::vector< std::string > >("postInitCommands",{});
         for ( const std::string& cmd : postInitCommands ) {
             if ( allowed(cmd) ) {
                 int g4Ret = uiManager_->ApplyCommand( cmd );
