@@ -1,9 +1,3 @@
-/**
- * @file HistogramPool.h
- * @brief Singleton class used to create and pool histograms.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
 #ifndef __FRAMEWORK_HISTOGRAM_POOL_H__
 #define __FRAMEWORK_HISTOGRAM_POOL_H__
 
@@ -19,6 +13,14 @@ class TH1;
 
 namespace ldmx { 
 
+
+    /**
+     * @class HistogramPool
+     *
+     * Singleton class used to create and pool histograms.
+     * 
+     * Helpful for managing all those TH1 pointers by name instead of using variables.
+     */
     class HistogramPool {
 
         private: 
@@ -26,18 +28,80 @@ namespace ldmx {
             /** Container for all histograms. */
             std::unordered_map< std::string, TH1* > histograms_;
 
-            /** HistogramPool singlenton. */
-            static HistogramPool* instance;
-
-            /** Private constructor to prevent instantiation */
-            HistogramPool(); 
+            /** 
+             * Private constructor to prevent instantiation 
+             *
+             * Sets some style options as well.
+             */
+            HistogramPool();
 
         public: 
 
-            static HistogramPool* getInstance();  
+            /// Hide copy constructor
+            HistogramPool(HistogramPool const&) = delete;
+
+            /// Hide assignment operator
+            void operator=(HistogramPool const&) = delete;
+
+            /// Access the single instance of HistogramPool by reference
+            static HistogramPool& getInstance();  
 
             /**
-             * Create a ROOT 1D histogram of type T and pool it for later use.
+             * Insert a histogram into the pool
+             *
+             * @note Does not check for any doubling of names!
+             */
+            void insert(const std::string& name, TH1* hist) {
+                histograms_[name] = hist;
+            }
+
+            /** 
+             * Get a histogram using its name.
+             *
+             * Checks if histogram exists.
+             *
+             * @return Retrieve the histogram named "name" from the pool. 
+             */
+            TH1* get(const std::string& name);
+
+    }; // HistogramPool
+
+    /**
+     * @class HistogramHelper
+     *
+     * Interface class between an EventProcessor and the HistogramPool
+     */
+    class HistogramHelper {
+
+        private:
+
+            /// The weight to fill histograms with
+            double theWeight_{1.};
+
+            /// The name of the processor that this helper is assigned to
+            std::string name_;
+
+            /// Handle to EventProcessor for creating histogram directories in histogram file
+            EventProcessor* processor_;
+
+        public:
+
+            /**
+             * Constructor
+             *
+             * Sets the name
+             */
+            HistogramHelper(const std::string& name, EventProcessor* ep) : name_(name),processor_(ep) { }
+
+            /**
+             * Set the weight for filling the histograms
+             */
+            void setWeight(double w) { theWeight_ = w; }
+
+            /**
+             * Create a ROOT 1D histogram of type TH1F and pool it for later use.
+             *
+             * @note Does not check if another histogram of the same name is in use.
              *
              * @param name Name of the histogram. This will also be used as a 
              *             title.
@@ -46,26 +110,25 @@ namespace ldmx {
              * @param xmin The lower histogram limit.
              * @param xmax The upper histogram limit.
              */
-            template <typename T>
             void create(const std::string& name, const std::string& xLabel, 
-                        const int& bins, const int& xmin, const int& xmax) {
-                
-                // Create a histogram of type T
-                T* hist = new T(name.c_str(), name.c_str(), bins, xmin, xmax);
-
-                // Set the title
-                hist->SetTitle(""); 
-
-                // Set the x-axis label
-                hist->GetXaxis()->SetTitle(xLabel.c_str()); 
-                hist->GetXaxis()->CenterTitle(); 
-
-                // Insert it into the pool of histograms for later use
-                histograms_[name] = hist; 
-            }
+                        const double& bins, const double& xmin, const double& xmax);
 
             /**
-             * Create a ROOT 2D histogram of type T and pool it for later use.
+             * Create a ROOT 1D histogram of type TH1F and pool it for later use.
+             *
+             * @note Does not check if another histogram of the same name is in use.
+             *
+             * @param name Name of the histogram. This will also be used as a 
+             *             title.
+             * @param xLabel Title of the x axis.
+             * @param bins vector of bin edges
+             */
+            void create(const std::string& name, const std::string& xLabel, const std::vector<double>& bins );
+
+            /**
+             * Create a ROOT 2D histogram of type TH2F and pool it for later use.
+             *
+             * @note Does not check if another histogram of the same name is in use.
              *
              * @param name Name of the histogram. This will also be used as a 
              *             title.
@@ -78,37 +141,45 @@ namespace ldmx {
              * @param ymin The lower histogram limit in y.
              * @param ymax The upper histogram limit in y.
              */
-            template <typename T>
             void create(const std::string& name, const std::string& xLabel, 
-                        const int& xbins, const int& xmin, const int& xmax,
+                        const double& xbins, const double& xmin, const double& xmax,
                         const std::string& yLabel, 
-                        const int& ybins, const int& ymin, const int& ymax) {
-                
-                // Create a histogram of type T
-                T* hist = new T(name.c_str(), name.c_str(), xbins, xmin, xmax, ybins, ymin, ymax);
+                        const double& ybins, const double& ymin, const double& ymax);
 
-                // Set the title
-                hist->SetTitle(""); 
-
-                // Set the x-axis label
-                hist->GetXaxis()->SetTitle(xLabel.c_str()); 
-                hist->GetXaxis()->CenterTitle(); 
-
-                // Set the x-axis label
-                hist->GetYaxis()->SetTitle(yLabel.c_str()); 
-                hist->GetYaxis()->CenterTitle(); 
-
-                // Insert it into the pool of histograms for later use
-                histograms_[name] = hist; 
+            /**
+             * Fill a 1D histogram
+             *
+             * Uses the current setting of theWeight_.
+             *
+             * @param name name of the histogram to fill
+             * @param val value to fill
+             */
+            void fill(const std::string& name, const double& val) {
+                dynamic_cast<TH1F*>(this->get(name))->Fill( val , theWeight_ );
             }
 
-            /** 
-             * @return Retrieve the histogram named "name" from the pool. 
+            /**
+             * Fill a 2D histogram
+             *
+             * Uses the current setting of theWeight_.
+             *
+             * @param name name of the histogram to fill
+             * @param valx x value to fill
+             * @param valy y value to fill
              */
-            TH1* get(const std::string& name);
+            void fill(const std::string& name, const double& valx , const double& valy) {
+                dynamic_cast<TH2F*>(this->get(name))->Fill( valx , valy , theWeight_ );
+            }
 
-    }; // HistogramPool
-
+            /**
+             * Get a pointer to a histogram by name
+             *
+             * @param name name of the histogram to get
+             */
+            TH1* get(const std::string& name) {
+                return HistogramPool.getInstance().get( name_+"_"+name );
+            }
+    }
 } // ldmx
 
 #endif // __FRAMEWORK_HISTOGRAM_POOL_H__

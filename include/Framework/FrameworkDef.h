@@ -20,6 +20,29 @@
 namespace ldmx { 
 
     /**
+     * @struct HistogramInfo
+     * @brief Encapsulates the information required to create a histogram 
+     */
+    struct HistogramInfo { 
+     
+        /// Name of the histogram 
+        std::string name_;
+
+        /// X axis label
+        std::string xLabel_;  
+
+        /// The number of bins
+        int bins_; 
+
+        /// The minimum value of the histogram axis
+        int xmin_;
+
+        /// The maximum value of the histogram axis 
+        int xmax_;
+
+    };
+
+    /**
      * @struct Class 
      * @brief Encapsualtes the information required to create a class 
      *        of type className_ 
