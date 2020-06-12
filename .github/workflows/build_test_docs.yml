@@ -5,7 +5,7 @@ name: Build ldmx-sw, Run ldmx-test, and Update Docs
 # events but only for the master branch
 on:
   push:
-    branches: [ iss741 ] #master ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
