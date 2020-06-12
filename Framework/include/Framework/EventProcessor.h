@@ -136,13 +136,16 @@ namespace ldmx {
             virtual void onProcessEnd() {
             }
 
-            /** Access/create a directory in the histogram file for this event
+            /** 
+             * Access/create a directory in the histogram file for this event
              * processor to create histograms and analysis tuples.
+             *
              * @note This method makes the returned directory the current directory
              *     so that newly created objects should go into that directory
+             *
+             * @return TDirectory* reference to directory in histogram file
              */
             TDirectory* getHistoDirectory();
-
 
             /** Mark the current event as having the given storage control hint from this module
              * @param controlhint The storage control hint to apply for the given event
@@ -163,6 +166,12 @@ namespace ldmx {
              * @param classtype The class type of the processor (1 for Producer, 2 for Analyzer).
              */
             static void declare(const std::string& classname, int classtype, EventProcessorMaker*);
+
+            /**
+             * Internal function which is used to create histograms passed from the python configuration
+             * @parma histos vector of HistogramInfos to create
+             */
+            void createHistograms(const std::vector<HistogramInfo>& histos);
       
         protected:
 
@@ -175,6 +184,9 @@ namespace ldmx {
 
             /** Handle to the Process. */
             Process& process_;
+
+            /// Interface class for making and filling histograms
+            HistogramHelper histograms_;
 
         private:
 
