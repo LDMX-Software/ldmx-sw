@@ -6,7 +6,11 @@
     Simulation and reconstruction framework for the Light Dark Matter eXperiment.  
 </p>
 
-[![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](http://perso.crans.org/besson/LICENSE.html)
+<p align="center">
+    <a href="http://perso.crans.org/besson/LICENSE.html" alt="GPLv3 license">
+        <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
+    </a>
+</p>
 
 ## Quick Start 
 
