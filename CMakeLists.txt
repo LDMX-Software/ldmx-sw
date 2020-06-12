@@ -117,25 +117,10 @@ if(BUILD_TESTS)
   include(TestExecutable)
 endif()
 
-# configure scripts and copy to installation dir 
-file(GLOB config_scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.in)
-foreach(config_script ${config_scripts})
-  string(REPLACE ".in" "" config_script_output ${config_script})
-  get_filename_component(config_script_output ${config_script_output} NAME)
-  configure_file(${config_script} ${CMAKE_CURRENT_BINARY_DIR}/${config_script_output})
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${config_script_output} DESTINATION bin PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-endforeach()
-
 # install python init file for top-level LDMX module
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py 
     "\"\"\"Python package to configure ldmx-sw\"\"\"")
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION lib/python/LDMX)
-
-# install scripts to bin dir
-file(GLOB script_files ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.sh ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.py)
-foreach(script_file ${script_files}) 
-    install(FILES ${script_file} DESTINATION bin PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-endforeach()
 
 # option for dumping full CMake env
 option(DUMP_CMAKE_VARIABLES OFF)
