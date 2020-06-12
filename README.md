@@ -6,6 +6,8 @@
     Simulation and reconstruction framework for the Light Dark Matter eXperiment.  
 </p>
 
+[![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](http://perso.crans.org/besson/LICENSE.html)
+
 ## Quick Start 
 
 - [Install the docker engine](https://docs.docker.com/engine/install/)
@@ -25,5 +27,3 @@ The full documentation for **ldmx-sw** is available on [github pages](https://ld
 ## Contributing
 
 ## Maintainer 
-
-## Copyright and license
