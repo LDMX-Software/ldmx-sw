@@ -11,7 +11,6 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/HistogramPool.h"
 #include "Framework/EventProcessorFactory.h"
 
 /*~~~~~~~~~~~~~~~~*/
@@ -354,15 +353,10 @@ namespace ldmx {
             if (ep == 0) {
                 EXCEPTION_RAISE("UnableToCreate", "Unable to create instance '" + proc.instanceName_ + "' of class '" + proc.className_ + "'");
             }
-
-            if (!proc.histograms_.empty()) {
-                HistogramPool* histograms = HistogramPool::getInstance(); 
-                ep->getHistoDirectory();
-                for (const auto& hist : proc.histograms_) { 
-                    histograms->create<TH1F>(hist.name_, hist.xLabel_, hist.bins_, hist.xmin_, hist.xmax_); 
-                } 
-            }
+            //configure processor using passed parameters
             ep->configure(proc.params_);
+            //create histograms passed from python (if they exist)
+            ep->createHistograms( proc.histograms_ );
             process->addToSequence(ep);
         }
         for (auto file : inputFiles_) {
