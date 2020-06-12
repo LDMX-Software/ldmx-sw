@@ -17,6 +17,12 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
+#this piece of cmake nonsense allows us to change the default
+#   installation location
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX $ENV{LDMX_BASE}/ldmx-sw/install CACHE PATH "..." FORCE)
+endif()
+
 # option to print extra module information during CMake config
 option(MODULE_DEBUG "Print extra module information during CMake config" OFF)
 
