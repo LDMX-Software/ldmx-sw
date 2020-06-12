@@ -8,8 +8,11 @@
 #include <unordered_map>
 #include <iostream>
 
-// Forward declarations
-class TH1; 
+//----------//
+//   ROOT   //
+//----------//
+#include "TH2F.h"
+#include "TH1F.h"
 
 namespace ldmx { 
 
@@ -81,9 +84,6 @@ namespace ldmx {
             /// The name of the processor that this helper is assigned to
             std::string name_;
 
-            /// Handle to EventProcessor for creating histogram directories in histogram file
-            EventProcessor* processor_;
-
         public:
 
             /**
@@ -91,7 +91,7 @@ namespace ldmx {
              *
              * Sets the name
              */
-            HistogramHelper(const std::string& name, EventProcessor* ep) : name_(name),processor_(ep) { }
+            HistogramHelper(const std::string& name) : name_(name) { }
 
             /**
              * Set the weight for filling the histograms
@@ -177,9 +177,9 @@ namespace ldmx {
              * @param name name of the histogram to get
              */
             TH1* get(const std::string& name) {
-                return HistogramPool.getInstance().get( name_+"_"+name );
+                return HistogramPool::getInstance().get( name_+"_"+name );
             }
-    }
+    };
 } // ldmx
 
 #endif // __FRAMEWORK_HISTOGRAM_POOL_H__
