@@ -293,7 +293,16 @@ namespace ldmx {
              */
             void buildNeighborMaps();
 
-            int verbose_{0}; // 0 to 3
+            /**
+             * Constructs list of trigger groups.
+             *
+             * The list of trigger groups uses the index as the cell ID and the value as the ID of
+             * the trigger group.
+             *
+             * For the ECal, cells are grouped into 3x3 "squares" and integrated over for the trigger.
+             * This function builds a list for finding which trigger group a cell is in.
+             */
+            void buildTriggerGroup();
 
             /** 
              * MUST SYNC MINR AND GAP WITH ECAL.GDML. May change cell count here for eg granularity studies.
@@ -309,21 +318,54 @@ namespace ldmx {
             unsigned nCellsWide_{0};
             double lengthWide_{0};
             double gap_{1};
+
+            /// Center-to-Corner Radius of cell hexagon [mm]
             double cellr_{0};
+
+            /// Center-to-Corner Radius of module hexagon [mm]
             double moduler_{0};
+
+            /// Center-to-Flat-Side Radius of cell hexagon [mm]
             double cellR_{0};
+
+            /// Center-to-Flat-Side Radius of module hexagon [mm]
             double moduleR_{0};
+
+            /// Number of cells across the center line of a module (must be odd)
+            unsigned nCellsWide_{0};
+
+            /// Width of center line across module [mm]
+            double lengthWide_{0};
+
+            /// Separation between columns of cells in a module [mm]
             double columnDistance_{0};
+
+            /// Separation between rows of cells in a module [mm]
             double rowDistance_{0};
+
+            /// Front of ECal relative to world geometry [mm]
             double ecalFrontZ_{0};
 
-            /** The layer Z postions are with respect to the front of the ECal */
+            /// The layer Z postions are with respect to the front of the ECal [mm]
             std::vector<double> layerZPositions_;
+
+            /// Postion of module centers relative to world geometry (uses module ID as key)
             std::map<int, XYCoords> modulePositionMap_;
+
+            /// Position of cell centers relative to module (uses cell ID as key)
             std::map<int, XYCoords> cellPositionMap_;
+
+            /// Position of cell centers relative to world geometry (uses combined cell and module ID as key)
             std::map<int, XYCoords> cellModulePositionMap_;
+
+            /// Map of cell ID to neighboring cells
             std::map<int, std::vector<int> > NNMap_;
+
+            /// Map of cell ID to neighbors of neighbor cells
             std::map<int, std::vector<int> > NNNMap_;
+
+            /// List of Trigger Group IDs (index is cell ID)
+            std::vector<int> triggerGroups_;
 
             /**
              * Honeycomb Binning from ROOT
