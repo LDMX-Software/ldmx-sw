@@ -1,8 +1,3 @@
-/**
- * @file HCalDQM.cxx
- * @brief Analyzer used for HCal DQM. 
- * @author Omar Moreno, SLAC National Accelerator
- */
 
 #include "DQM/HCalDQM.h" 
 
@@ -14,26 +9,24 @@ namespace ldmx {
     HCalDQM::~HCalDQM() {}
 
     void HCalDQM::onProcessStart() {
-       
-        // Get an instance of the histogram pool  
-        histograms_ = HistogramPool::getInstance();    
 
-        // Move into the HCal directory
         getHistoDirectory();
 
-        histograms_->create<TH2F>("bdt_n_hits", "BDT discriminant", 200, 0, 1, 
-                                  "HCal hit multiplicity", 300, 0, 300);
+        histograms_.create("bdt_n_hits", 
+                           "BDT discriminant", 200, 0, 1, 
+                           "HCal hit multiplicity", 300, 0, 300);
 
-        histograms_->create<TH2F>("max_pe:time", 
-                                  "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                                  "HCal max PE hit time (ns)", 1500, 0, 1500);
-        histograms_->create<TH2F>("max_pe:time_hcal_veto", 
-                                  "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                                  "HCal max PE hit time (ns)", 1500, 0, 1500);
+        histograms_.create("max_pe:time", 
+                           "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                           "HCal max PE hit time (ns)", 1500, 0, 1500);
 
-        histograms_->create<TH2F>("min_time_hit_above_thresh:pe", 
-                                  "Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                                  "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500);
+        histograms_.create("max_pe:time_hcal_veto", 
+                           "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                           "HCal max PE hit time (ns)", 1500, 0, 1500);
+
+        histograms_.create("min_time_hit_above_thresh:pe", 
+                           "Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                           "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500);
          
     }
 
@@ -51,7 +44,7 @@ namespace ldmx {
      
         // Get the total hit count
         int hitCount = hcalHits.size();  
-        histograms_->get("n_hits")->Fill(hitCount); 
+        histograms_.fill("n_hits",hitCount); 
 
         double totalPE{0};  
 
@@ -60,15 +53,15 @@ namespace ldmx {
         std::vector<const HcalHit *> filteredHits;
         for (const HcalHit &hit : hcalHits ) {
 
-            histograms_->get("pe")->Fill(hit.getPE());
-            histograms_->get("hit_time")->Fill(hit.getTime());
+            histograms_.fill("pe",hit.getPE());
+            histograms_.fill("hit_time",hit.getTime());
            
             totalPE += hit.getPE();
 
             if ( hit.getTime() > -999. ) { filteredHits.push_back( &hit ); }
         }
         
-        histograms_->get("total_pe")->Fill(totalPE); 
+        histograms_.fill("total_pe",totalPE); 
 
         // Sort the array by hit time
         std::sort (filteredHits.begin(), filteredHits.end(), [ ](const auto& lhs, const auto& rhs) 
@@ -86,8 +79,8 @@ namespace ldmx {
             break;
         } 
 
-        histograms_->get("min_time_hit_above_thresh")->Fill(minTime); 
-        histograms_->get("min_time_hit_above_thresh:pe")->Fill(minTimePE, minTime);  
+        histograms_.fill("min_time_hit_above_thresh",minTime); 
+        histograms_.fill("min_time_hit_above_thresh:pe",minTimePE, minTime);  
 
         float maxPE{-1};
         float maxPETime{-1};
@@ -104,17 +97,17 @@ namespace ldmx {
             maxPE = maxPEHit.getPE();
             maxPETime = maxPEHit.getTime();
             
-            histograms_->get("max_pe")->Fill(maxPE);
-            histograms_->get("hit_time_max_pe")->Fill(maxPETime); 
-            histograms_->get("max_pe:time")->Fill(maxPE, maxPETime);
-            histograms_->get("veto")->Fill(hcalVeto.passesVeto());   
+            histograms_.fill("max_pe",maxPE);
+            histograms_.fill("hit_time_max_pe",maxPETime); 
+            histograms_.fill("max_pe:time",maxPE, maxPETime);
+            histograms_.fill("veto",hcalVeto.passesVeto());   
 
             if (hcalVeto.passesVeto()) {
-                histograms_->get("max_pe_hcal_veto")->Fill(maxPE);
-                histograms_->get("hit_time_max_pe_hcal_veto")->Fill(maxPETime); 
-                histograms_->get("max_pe:time_hcal_veto")->Fill(maxPE, maxPETime);
-                histograms_->get("total_pe_hcal_veto")->Fill(totalPE); 
-                histograms_->get("n_hits_hcal_veto")->Fill(hitCount); 
+                histograms_.fill("max_pe_hcal_veto",maxPE);
+                histograms_.fill("hit_time_max_pe_hcal_veto",maxPETime); 
+                histograms_.fill("max_pe:time_hcal_veto",maxPE, maxPETime);
+                histograms_.fill("total_pe_hcal_veto",totalPE); 
+                histograms_.fill("n_hits_hcal_veto",hitCount); 
                 passesHcalVeto = true;
             }
         }
