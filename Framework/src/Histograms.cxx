@@ -1,10 +1,5 @@
-/**
- * @file HistogramPool.h
- * @brief Singleton class used to create and pool histograms.
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
 
-#include "Framework/HistogramPool.h"
+#include "Framework/Histograms.h"
 #include "Exception/Exception.h"
 
 //----------------//
@@ -64,9 +59,6 @@ namespace ldmx {
         
         std::string fullName = name_+"_"+name;
 
-        //go to correct directory before creating new histogram
-        processor_->getHistoDirectory();
-
         // Create a histogram of type T
         auto hist = new TH1F(fullName.c_str(), fullName.c_str(), bins, xmin, xmax);
 
@@ -92,9 +84,6 @@ namespace ldmx {
         for(unsigned int iBin = 0; iBin < bins.size(); iBin++ )
             binEdges[iBin] = bins.at(iBin);
 
-        //go to correct directory before creating new histogram
-        processor_->getHistoDirectory();
-
         auto hist = new TH1F( fullName.c_str(), fullName.c_str(), nbins , binEdges );
 
         delete [] binEdges; //cleanup
@@ -116,9 +105,6 @@ namespace ldmx {
                 const double& ybins, const double& ymin, const double& ymax) {
         
         std::string fullName = name_+"_"+name;
-
-        //go to correct directory before creating new histogram
-        processor_->getHistoDirectory();
 
         // Create a histogram of type T
         auto hist = new TH2F(fullName.c_str(), fullName.c_str(), xbins, xmin, xmax, ybins, ymin, ymax);

@@ -22,7 +22,6 @@
 #include "Event/HcalVetoResult.h"
 #include "Event/SimParticle.h"
 #include "Event/TrackerVetoResult.h"
-#include "Framework/HistogramPool.h"
 #include "Tools/AnalysisUtils.h"
 
 namespace ldmx { 
@@ -34,9 +33,6 @@ namespace ldmx {
 
     void PhotoNuclearDQM::onProcessStart() {
       
-        // Get an instance of the histogram pool  
-        histograms_ = HistogramPool::getInstance();    
-
         std::vector<std::string> labels = {"", 
             "Nothing hard", // 0  
             "1 n", // 1
@@ -63,9 +59,9 @@ namespace ldmx {
         };
 
         std::vector<TH1*> hists = { 
-            histograms_->get("event_type"),
-            histograms_->get("event_type_500mev"),
-            histograms_->get("event_type_2000mev"),
+            histograms_.get("event_type"),
+            histograms_.get("event_type_500mev"),
+            histograms_.get("event_type_2000mev"),
 
         };
 
@@ -87,9 +83,9 @@ namespace ldmx {
         };
 
         hists = {
-            histograms_->get("event_type_compact"),
-            histograms_->get("event_type_compact_500mev"),
-            histograms_->get("event_type_compact_2000mev"),
+            histograms_.get("event_type_compact"),
+            histograms_.get("event_type_compact_500mev"),
+            histograms_.get("event_type_compact_2000mev"),
         };
 
         for (int ilabel{1}; ilabel < labels.size(); ++ilabel) { 
@@ -101,23 +97,23 @@ namespace ldmx {
         // Move into the ECal PN directory
         getHistoDirectory();
 
-        histograms_->create<TH2F>("h_ke_h_theta", 
+        histograms_.create("h_ke_h_theta", 
                             "Kinetic Energy Hardest Photo-nuclear Particle (MeV)",
                             400, 0, 4000, 
                             "#theta of Hardest Photo-nuclear Particle (Degrees)",
                             360, 0, 180);
 
-        histograms_->create<TH2F>("1n_ke:2nd_h_ke", 
+        histograms_.create("1n_ke:2nd_h_ke", 
                             "Kinetic Energy of Leading Neutron (MeV)",
                             400, 0, 4000, 
                             "Kinetic Energy of 2nd Hardest Particle",
                             400, 0, 4000);
-        histograms_->create<TH2F>("1kp_ke:2nd_h_ke", 
+        histograms_.create("1kp_ke:2nd_h_ke", 
                             "Kinetic Energy of Leading Charged Kaon (MeV)",
                             400, 0, 4000, 
                             "Kinetic Energy of 2nd Hardest Particle",
                             400, 0, 4000);
-        histograms_->create<TH2F>("1k0_ke:2nd_h_ke", 
+        histograms_.create("1k0_ke:2nd_h_ke", 
                             "Kinetic Energy of Leading K0 (MeV)",
                             400, 0, 4000, 
                             "Kinetic Energy of 2nd Hardest Particle",
@@ -131,16 +127,16 @@ namespace ldmx {
             ""
         };
 
-        TH1* hist = histograms_->get("1n_event_type"); 
+        TH1* hist = histograms_.get("1n_event_type"); 
         for (int ilabel{1}; ilabel < n_labels.size(); ++ilabel) { 
             hist->GetXaxis()->SetBinLabel(ilabel, n_labels[ilabel-1].c_str());
         }
 
-        histograms_->create< TH2F >("recoil_vertex_x:recoil_vertex_y", 
-                                    "Recoil electron vertex x (mm)", 
-                                    160, -40, 40, 
-                                    "Recoil electron vertex y (mm)", 
-                                    320, -80, 80);
+        histograms_.create("recoil_vertex_x:recoil_vertex_y", 
+                           "Recoil electron vertex x (mm)", 
+                           160, -40, 40, 
+                           "Recoil electron vertex y (mm)", 
+                           320, -80, 80);
     }
 
     void PhotoNuclearDQM::configure(Parameters& parameters) { }
@@ -155,10 +151,10 @@ namespace ldmx {
         // Get the recoil electron
         auto [ trackID, recoil ] = Analysis::getRecoil(particleMap);
 
-        histograms_->get("recoil_vertex_x")->Fill(recoil->getVertex()[0]); 
-        histograms_->get("recoil_vertex_y")->Fill(recoil->getVertex()[1]); 
-        histograms_->get("recoil_vertex_z")->Fill(recoil->getVertex()[2]);
-        histograms_->get("recoil_vertex_x:recoil_vertex_y")->Fill( 
+        histograms_.fill("recoil_vertex_x",recoil->getVertex()[0]); 
+        histograms_.fill("recoil_vertex_y",recoil->getVertex()[1]); 
+        histograms_.fill("recoil_vertex_z",recoil->getVertex()[2]);
+        histograms_.fill("recoil_vertex_x:recoil_vertex_y", 
                          recoil->getVertex()[0], 
                          recoil->getVertex()[1]);  
 
@@ -170,12 +166,12 @@ namespace ldmx {
             return;
         }
 
-        histograms_->get("pn_particle_mult")->Fill(pnGamma->getDaughters().size());
-        histograms_->get("pn_gamma_energy")->Fill(pnGamma->getEnergy()); 
-        histograms_->get("pn_gamma_int_z")->Fill(pnGamma->getEndPoint()[2]); 
-        histograms_->get("pn_gamma_vertex_x")->Fill(pnGamma->getVertex()[0]);  
-        histograms_->get("pn_gamma_vertex_y")->Fill(pnGamma->getVertex()[1]);  
-        histograms_->get("pn_gamma_vertex_z")->Fill(pnGamma->getVertex()[2]);  
+        histograms_.fill("pn_particle_mult",pnGamma->getDaughters().size());
+        histograms_.fill("pn_gamma_energy",pnGamma->getEnergy()); 
+        histograms_.fill("pn_gamma_int_z",pnGamma->getEndPoint()[2]); 
+        histograms_.fill("pn_gamma_vertex_x",pnGamma->getVertex()[0]);  
+        histograms_.fill("pn_gamma_vertex_y",pnGamma->getVertex()[1]);  
+        histograms_.fill("pn_gamma_vertex_z",pnGamma->getVertex()[2]);  
 
         double lke{-1},   lt{-1}; 
         double lpke{-1},  lpt{-1};
@@ -222,15 +218,15 @@ namespace ldmx {
             pnDaughters.push_back(daughter); 
         }
 
-        histograms_->get("hardest_ke")->Fill(lke); 
-        histograms_->get("hardest_theta")->Fill(lt);
-        histograms_->get("h_ke_h_theta")->Fill(lke, lt); 
-        histograms_->get("hardest_p_ke")->Fill(lpke); 
-        histograms_->get("hardest_p_theta")->Fill(lpt); 
-        histograms_->get("hardest_n_ke")->Fill(lnke); 
-        histograms_->get("hardest_n_theta")->Fill(lnt); 
-        histograms_->get("hardest_pi_ke")->Fill(lpike); 
-        histograms_->get("hardest_pi_theta")->Fill(lpit); 
+        histograms_.fill("hardest_ke",lke); 
+        histograms_.fill("hardest_theta",lt);
+        histograms_.fill("h_ke_h_theta",lke, lt); 
+        histograms_.fill("hardest_p_ke",lpke); 
+        histograms_.fill("hardest_p_theta",lpt); 
+        histograms_.fill("hardest_n_ke",lnke); 
+        histograms_.fill("hardest_n_theta",lnt); 
+        histograms_.fill("hardest_pi_ke",lpike); 
+        histograms_.fill("hardest_pi_theta",lpit); 
 
         // Classify the event
         auto eventType{classifyEvent(pnDaughters, 200)};
@@ -241,13 +237,13 @@ namespace ldmx {
         auto eventTypeComp500MeV{classifyCompactEvent(pnGamma, pnDaughters, 200)}; 
         auto eventTypeComp2000MeV{classifyCompactEvent(pnGamma, pnDaughters, 200)}; 
 
-        histograms_->get("event_type")->Fill(eventType);
-        histograms_->get("event_type_500mev")->Fill(eventType500MeV);
-        histograms_->get("event_type_2000mev")->Fill(eventType2000MeV);
+        histograms_.fill("event_type",eventType);
+        histograms_.fill("event_type_500mev",eventType500MeV);
+        histograms_.fill("event_type_2000mev",eventType2000MeV);
 
-        histograms_->get("event_type_compact")->Fill(eventTypeComp);
-        histograms_->get("event_type_compact_500mev")->Fill(eventTypeComp500MeV);
-        histograms_->get("event_type_compact_2000mev")->Fill(eventTypeComp2000MeV);
+        histograms_.fill("event_type_compact",eventTypeComp);
+        histograms_.fill("event_type_compact_500mev",eventTypeComp500MeV);
+        histograms_.fill("event_type_compact_2000mev",eventTypeComp2000MeV);
 
         double slke{-9999};
         double nEnergy{-9999}, energyDiff{-9999}, energyFrac{-9999};
@@ -269,26 +265,26 @@ namespace ldmx {
             energyFrac = nEnergy/pnGamma->getEnergy(); 
 
             if (eventType == 1) { 
-                histograms_->get("1n_ke:2nd_h_ke")->Fill(nEnergy, slke);
-                histograms_->get("1n_neutron_energy")->Fill(nEnergy);  
-                histograms_->get("1n_energy_diff")->Fill(energyDiff);
-                histograms_->get("1n_energy_frac")->Fill(energyFrac); 
+                histograms_.fill("1n_ke:2nd_h_ke",nEnergy, slke);
+                histograms_.fill("1n_neutron_energy",nEnergy);  
+                histograms_.fill("1n_energy_diff",energyDiff);
+                histograms_.fill("1n_energy_frac",energyFrac); 
             } else if (eventType == 2) { 
-                histograms_->get("2n_n2_energy")->Fill(slke); 
+                histograms_.fill("2n_n2_energy",slke); 
                 auto energyFrac2n = (nEnergy + slke)/pnGamma->getEnergy();
-                histograms_->get("2n_energy_frac")->Fill(energyFrac2n);
-                histograms_->get("2n_energy_other")->Fill(pnGamma->getEnergy() - energyFrac2n); 
+                histograms_.fill("2n_energy_frac",energyFrac2n);
+                histograms_.fill("2n_energy_other",pnGamma->getEnergy() - energyFrac2n); 
                   
             } else if (eventType == 17) { 
-                histograms_->get("1kp_ke:2nd_h_ke")->Fill(nEnergy, slke);
-                histograms_->get("1kp_energy")->Fill(nEnergy);  
-                histograms_->get("1kp_energy_diff")->Fill(energyDiff);
-                histograms_->get("1kp_energy_frac")->Fill(energyFrac); 
+                histograms_.fill("1kp_ke:2nd_h_ke",nEnergy, slke);
+                histograms_.fill("1kp_energy",nEnergy);  
+                histograms_.fill("1kp_energy_diff",energyDiff);
+                histograms_.fill("1kp_energy_frac",energyFrac); 
             } else if (eventType == 16 || eventType == 18) { 
-                histograms_->get("1k0_ke:2nd_h_ke")->Fill(nEnergy, slke);
-                histograms_->get("1k0_energy")->Fill(nEnergy);  
-                histograms_->get("1k0_energy_diff")->Fill(energyDiff);
-                histograms_->get("1k0_energy_frac")->Fill(energyFrac); 
+                histograms_.fill("1k0_ke:2nd_h_ke",nEnergy, slke);
+                histograms_.fill("1k0_energy",nEnergy);  
+                histograms_.fill("1k0_energy_diff",energyDiff);
+                histograms_.fill("1k0_energy_frac",energyFrac); 
             }
 
             auto nPdgID{abs(pnDaughters[0]->getPdgID())};
@@ -298,7 +294,7 @@ namespace ldmx {
             else if (nPdgID == 211) nEventType = 3;
             else if (nPdgID == 111) nEventType = 4; 
        
-            histograms_->get("1n_event_type")->Fill(nEventType); 
+            histograms_.fill("1n_event_type",nEventType); 
 
         }
     }

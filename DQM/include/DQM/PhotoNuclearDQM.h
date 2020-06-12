@@ -7,8 +7,6 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h" 
 
-class TH1; 
-
 namespace ldmx { 
 
     // Forward declarations within the ldmx workspace
@@ -72,9 +70,6 @@ namespace ldmx {
             /** Method used to classify events in a compact manner. */
             int classifyCompactEvent(const SimParticle* pnGamma, 
                                      const std::vector< const SimParticle* > daughters, double threshold); 
-
-            /// Singleton used to access histograms.
-            HistogramPool* histograms_{nullptr}; 
 
     };    
     

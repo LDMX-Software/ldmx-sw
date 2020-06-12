@@ -14,17 +14,9 @@
 #include <algorithm>
 
 //----------//
-//   ROOT   //
-//----------//
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TVector3.h"
-
-//----------//
 //   LDMX   //
 //----------//
 #include "Framework/Event.h"
-#include "Framework/HistogramPool.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/AnalysisUtils.h"
 #include "Event/EventDef.h"
@@ -61,12 +53,9 @@ namespace ldmx {
 
         private:
 
-            /** Singleton used to access histograms. */
-            HistogramPool* histograms_{nullptr}; 
-
             /** Name of trigger pad hit  collection. */
             std::string hitCollectionName_{"TriggerPadUpDigiHits"}; 
-	    std::string padName_{"_up"}; 
+	        std::string padName_{"_up"}; 
 
     };    
     

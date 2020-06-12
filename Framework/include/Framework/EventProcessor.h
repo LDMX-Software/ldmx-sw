@@ -20,6 +20,7 @@
 #include "Framework/FrameworkDef.h"
 #include "Framework/Parameters.h" 
 #include "Framework/StorageControl.h"
+#include "Framework/Histograms.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */

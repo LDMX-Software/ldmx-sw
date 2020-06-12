@@ -17,6 +17,8 @@ namespace ldmx {
     void TrigScintDQM::onProcessStart() {
 
         std::cout << "Process starts!" << std::endl;
+
+        getHistoDirectory();
     
         histograms_.create("id", "Channel ID of sim hit", 100, 0, 100);
         histograms_.create("total_energy", "Total energy deposition in the pad/event", 3000, 0, 3000);

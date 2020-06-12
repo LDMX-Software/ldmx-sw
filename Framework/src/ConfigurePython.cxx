@@ -356,7 +356,10 @@ namespace ldmx {
             //configure processor using passed parameters
             ep->configure(proc.params_);
             //create histograms passed from python (if they exist)
-            ep->createHistograms( proc.histograms_ );
+            if ( not proc.histograms_.empty() ) {
+                ep->getHistoDirectory();
+                ep->createHistograms( proc.histograms_ );
+            }
             process->addToSequence(ep);
         }
         for (auto file : inputFiles_) {
