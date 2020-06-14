@@ -28,6 +28,11 @@
 ## Documentation 
 The full documentation for **ldmx-sw** is available on [github pages](https://ldmx-software.github.io/).
 
-## Contributing
-
 ## Maintainer 
+
+## Contributors
+
+<a href="https://github.com/LDMX-Software/ldmx-sw/graphs/contributors">
+  <img src="https://contributors-img.web.app/image?repo=LDMX-Software/ldmx-sw" />
+</a>
+
