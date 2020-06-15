@@ -10,6 +10,8 @@
     <a href="http://perso.crans.org/besson/LICENSE.html" alt="GPLv3 license">
         <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
     </a>
+    <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Generate%20the%20docker%20production%20image/badge.svg" />
+    <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Build%20ldmx-sw,%20Run%20ldmx-test,%20and%20Update%20Docs/badge.svg" />
 </p>
 
 ## Quick Start 
@@ -22,8 +24,6 @@
 - Configure the build: `ldmx cmake -DCMAKE_INSTALL_PREFIX=../install ..`
 - Build and Install: `ldmx make install -j2`
 - Now you can run any processor in _ldmx-sw_ through `ldmx fire myconfig.py`
-
-## Status
 
 ## Documentation 
 The full documentation for **ldmx-sw** is available on [github pages](https://ldmx-software.github.io/).
