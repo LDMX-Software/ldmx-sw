@@ -1,6 +1,13 @@
 """ Example configurations for filtering out PN events by the properties of 
     of the reaction products.
 
+    Warnings
+    --------
+    These filters are in the Biasing library, so you need to include the biasing library to use them.
+
+        from LDMX.Biasing import include as includeBiasing
+        includeBiasing.library()
+
 """
 
 from LDMX.SimApplication import simcfg
