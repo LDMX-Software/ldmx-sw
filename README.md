@@ -10,8 +10,8 @@
     <a href="http://perso.crans.org/besson/LICENSE.html" alt="GPLv3 license">
         <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
     </a>
-    <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Generate%20the%20docker%20production%20image/badge.svg" />
-    <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Build%20ldmx-sw,%20Run%20ldmx-test,%20and%20Update%20Docs/badge.svg" />
+    <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Docker%20Image/badge.svg" />
+    <img src="https://github.com/LDMX-Software/ldmx-sw/workflows/Tests/badge.svg" />
 </p>
 
 ## Quick Start 
