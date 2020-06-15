@@ -9,6 +9,7 @@
 from LDMX.SimApplication import simulator
 from LDMX.SimApplication import generators
 from LDMX.Biasing import filters
+from LDMX.Biasing import include as includeBiasing
 
 def photo_nuclear( detector, generator ) :
     """Example configuration for producing photo-nuclear reactions in the ECal.  
@@ -58,8 +59,8 @@ def photo_nuclear( detector, generator ) :
     sim.biasingConfigure( 'photonNuclear' , 'ecal' , 2500. , 450 )
 
     # the following filters are in a library that needs to be included
-    from LDMX.Framework.ldmxcfg import Process
-    Process.addLibrary( 'libBiasing.so' )
+    includeBiasing.library()
+
     # Configure the sequence in which user actions should be called.
     sim.actions().extend([
             filters.tagger_veto_filter(),
@@ -119,8 +120,8 @@ def dark_brem( ap_mass , lhe, detector ) :
             , 1 ) #Forward Only
     
     # the following filters are in a library that needs to be included
-    from LDMX.Framework.ldmxcfg import Process
-    Process.addLibrary( 'libBiasing.so' )
+    includeBiasing.library()
+
     # Then give the UserAction to the simulation so that it knows to use it
     sim.actions().extend([ 
             # Only keep events when a dark brem happens in the target
