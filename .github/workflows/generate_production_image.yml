@@ -1,5 +1,5 @@
 
-name: Generate the docker production image
+name: Docker Image
 
 # Generate a new production image when there is a release
 on:
