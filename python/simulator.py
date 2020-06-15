@@ -39,8 +39,8 @@ class simulator(Producer):
 
         # add necessary library to the list to load
         #   requires a process object to have been defined
-        from LDMX.Framework.ldmxcfg import Process
-        Process.addLibrary( 'libSimApplication.so' )
+        from LDMX.SimApplication import include
+        include.library()
 
     def setDetector(self, det_name , include_scoring_planes = False ) :
         """Set the detector description with the option to include the scoring planes
