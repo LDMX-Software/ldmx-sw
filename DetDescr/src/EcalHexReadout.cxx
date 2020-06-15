@@ -257,25 +257,25 @@ namespace ldmx {
         return (dotProd > 0.);
     }
 
-    void buildTriggerGroupMap() {
-
-        /*
-         * Assumptions
-         *  - Scanning from right to left, bottom to top of module hexagon (behavior default to TH2Poly)
-         *  - Ignoring cell at exact center of module (putting it into it's own trigger group)
-         */
-
-        //calculate total number of cells in the hexagon
-        int n = (nCellsWide-1)/2;
-        int totalNumCells = 1 + 3n(n+1);
-        
-        triggerGroups_.resize(totalNumCells);
-
-        //loop through all cells, assigning them to a trigger group
-        int rowNum{0}, collNum{0};
-        for ( unsigned int cellID = 0; cellID < triggerGroups_.size(); cellID++ ) {
-            
-        }
-    }
+//    void EcalHexReadout::buildTriggerGroups() {
+//
+//        /*
+//         * Assumptions
+//         *  - Scanning from right to left, bottom to top of module hexagon (behavior default to TH2Poly)
+//         *  - Ignoring cell at exact center of module (putting it into it's own trigger group)
+//         */
+//
+//        //calculate total number of cells in the hexagon
+//        int n = (nCellsWide_-1)/2;
+//        int totalNumCells = 1 + 3n(n+1);
+//        
+//        triggerGroups_.resize(totalNumCells);
+//
+//        //loop through all cells, assigning them to a trigger group
+//        int rowNum{0}, collNum{0};
+//        for ( unsigned int cellID = 0; cellID < triggerGroups_.size(); cellID++ ) {
+//            
+//        }
+//    }
 
 }
