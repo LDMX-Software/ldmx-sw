@@ -3,6 +3,9 @@
 
 #include "TCanvas.h" //for dumping map to file
 #include "TStyle.h" //for no stats box
+#include "TLine.h" //for module hex border
+
+#include <math.h>
 
 /**
  * @app ldmx-print-ecal-hex-readout
@@ -75,10 +78,31 @@ int main() {
     TCanvas *c = new TCanvas( "c" , "c" , 900 , 800 ); //make square canvas
     c->SetMargin( 0.1 , 0.1 , 0.1 , 0.1 );
     gStyle->SetOptStat(0); //no stat box
-    polyMap->SetTitle( "Cell ID to Cell Position Map;X Position Relative to Module [mm];Y Position Relative to Module [mm]" );
+    polyMap->SetTitle( "Local Cell ID to Local Cell Position Map;X Position Relative to Module [mm];Y Position Relative to Module [mm]" );
     polyMap->GetXaxis()->SetTickLength(0.);
     polyMap->GetYaxis()->SetTickLength(0.);
     polyMap->Draw( "TEXT" ); //print with bin context labeled as text
+
+    double hexCornerRadius = 85.0*(2/sqrt(3));
+    std::vector< std::pair< double,double> > hexCorners = {
+        std::make_pair<double,double>(+1.*hexCornerRadius , 0.),
+        std::make_pair<double,double>(+1.*hexCornerRadius*cos(M_PI/3),+1.*hexCornerRadius*sin(M_PI/3)),
+        std::make_pair<double,double>(-1.*hexCornerRadius*cos(M_PI/3),+1.*hexCornerRadius*sin(M_PI/3)),
+        std::make_pair<double,double>(-1.*hexCornerRadius,0.),
+        std::make_pair<double,double>(-1.*hexCornerRadius*cos(M_PI/3),-1.*hexCornerRadius*sin(M_PI/3)),
+        std::make_pair<double,double>(+1.*hexCornerRadius*cos(M_PI/3),-1.*hexCornerRadius*sin(M_PI/3)),
+        std::make_pair<double,double>(+1.*hexCornerRadius , 0.)
+    };
+    TLine moduleHexBorder;
+    moduleHexBorder.SetLineColor( kRed );
+    moduleHexBorder.SetLineWidth( 2 );
+    for ( int i = 1; i < hexCorners.size(); i++ ) {
+        moduleHexBorder.DrawLine(
+                hexCorners.at(i-1).first , hexCorners.at(i-1).second , 
+                hexCorners.at(i).first , hexCorners.at(i).second 
+                );
+    }
+
     c->Update();
     c->SaveAs( "Cell_ID_Cell_Position_Map.pdf" );
 
