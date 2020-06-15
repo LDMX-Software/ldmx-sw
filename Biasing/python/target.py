@@ -9,6 +9,7 @@
 from LDMX.SimApplication import generators
 from LDMX.SimApplication import simulator
 from LDMX.Biasing import filters
+from LDMX.Biasing import include as includeBiasing
 
 def electro_nuclear( detector, generator ) :
     """Example configuration for producing electro-nuclear reactions in the target.  
@@ -54,8 +55,8 @@ def electro_nuclear( detector, generator ) :
     sim.biasingConfigure( 'electronNuclear' , 'target' , 0. , 1e8 )
 
     # the following filters are in a library that needs to be included
-    from LDMX.Framework.ldmxcfg import Process
-    Process.addLibrary( 'libBiasing.so' )
+    includeBiasing.library()
+
     # Configure the sequence in which user actions should be called.
     sim.actions().extend([
             filters.tagger_veto_filter(),
@@ -117,8 +118,7 @@ def photo_nuclear( detector, generator ) :
             )
    
     # the following filters are in a library that needs to be included
-    from LDMX.Framework.ldmxcfg import Process
-    Process.addLibrary( 'libBiasing.so' )
+    includeBiasing.library()
 
     # Configure the sequence in which user actions should be called.
     sim.actions().extend([
@@ -184,8 +184,7 @@ def dark_brem( ap_mass , lhe, detector ) :
             )
     
     # the following filters are in a library that needs to be included
-    from LDMX.Framework.ldmxcfg import Process
-    Process.addLibrary( 'libBiasing.so' )
+    includeBiasing.library()
 
     # Then give the UserAction to the simulation so that it knows to use it
     sim.actions().extend([ 

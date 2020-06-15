@@ -5,6 +5,13 @@ Examples of how each filter is configured for biased MC generation.
     for large scale production.  When debugging, it's best to create these
     generators directly. 
 
+    Warnings
+    --------
+    These filters are in the Biasing library, so you need to include the biasing library to use them.
+
+        from LDMX.Biasing import include as includeBiasing
+        includeBiasing.library()
+
 """
 
 from LDMX.SimApplication import simcfg
