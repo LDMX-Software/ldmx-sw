@@ -404,7 +404,9 @@ def single_4gev_e_upstream_tagger() :
     particle_gun = gun('single_4gev_e_upstream_tagger')
     particle_gun.particle('e-')
     particle_gun.position([ -27.926 , 0 , -700 ]) # mm
-    particle_gun.direction([ 313.8 / 4000 , 0, 3987.7/4000 ]) #unitless
+    import math
+    theta = math.radians(4.5)
+    particle_gun.direction([ math.sin(theta) , 0, math.cos(theta) ]) #unitless
     particle_gun.energy(4.0) # GeV
 
     return particle_gun
@@ -454,7 +456,9 @@ def single_1pt2gev_e_upstream_tagger():
     particle_gun = gun( "single_1.2gev_e_upstream_tagger" )
     particle_gun.particle( 'e-' )
     particle_gun.position( [ -36.387, 0, -700 ] )#mm
-    particle_gun.direction( [ 0.2292 / 1.2 , 0, 1.1779 / 1.2 ] )#unitless
+    import math
+    theta = math.radians(11.011)
+    particle_gun.direction( [ math.sin(theta) , 0, math.cos(theta) ] )#unitless
     particle_gun.energy( 1.2 )#GeV
     
     return particle_gun
@@ -483,7 +487,9 @@ def single_8gev_e_upstream_tagger():
     particle_gun = gun( "single_1.2gev_e_upstream_tagger" )
     particle_gun.particle( 'e-' )
     particle_gun.position( [ -14.292, 0, -700 ] )#mm
-    particle_gun.direction( [ 0.349 / 8. , 0, 7.9924 / 8. ] )#unitless
+    import math
+    theta = math.radians(2.5)
+    particle_gun.direction( [ math.sin(theta) , 0, math.cos(theta) ] )#unitless
     particle_gun.energy( 8.0 )#GeV
     
     return particle_gun
