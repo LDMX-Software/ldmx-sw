@@ -37,8 +37,12 @@ class EventProcessor:
         self.parameters=dict()
         self.histograms=[]
 
-    def buildHistogram(self, name, xlabel, bins, xmin, xmax):
-        """Make a 1D histogram with uniform binning
+    def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None):
+        """Make a 1D histogram 
+
+        If xmin and xmax are not provided, bins is assumed to be
+        the bin edges on the x-axis. If they are both provided,
+        bins is assumed to be the number of bins on the x-axis.
 
         Parameters
         ----------
@@ -46,8 +50,8 @@ class EventProcessor:
             variable name of histogram
         xlabel : str
             title of x-axis of histogram
-        bins : int
-            Number of bins on x-axis
+        bins : int OR list of floats
+            Number of bins on x-axis OR bin edges on x-axis
         xmin : float
             Minimum edge of bins on x-axis
         xmax : float
@@ -59,30 +63,20 @@ class EventProcessor:
         """
 
         import LDMX.Framework.histogram as h
-        self.histograms.append(h.histogram(name, xlabel,h.uniform_binning(bins,xmin,xmax)))
+        theBinEdges = bins
+        if xmin is not None and xmax is not None :
+            theBinEdges = h.uniform_binning(bins,xmin,xmax)
 
-    def buildHistogram(self, name, xlabel, xbins):
-        """Make a 1D histogram with variable binning
+        self.histograms.append(h.histogram(name, xlabel,theBinEdges))
 
-        Parameters
-        ----------
-        name : str
-            variable name of histogram
-        xlabel : str
-            title of x-axis of histogram
-        xbins : list of floats
-            list of bin edges on x-axis
+    def build2DHistogram(self, name, 
+            xlabel = 'X Axis', xbins = 1, xmin = None, xmax = None, 
+            ylabel = 'Y Axis', ybins = 1, ymin = None, ymax = None) :
+        """Create a 2D histogram
 
-        See Also
-        --------
-        LDMX.Framework.histogram.histogram : histogram configuration object
-        """
-
-        import LDMX.Framework.histogram as h
-        self.histograms.append(h.histogram(name, xlabel,xbins))
-
-    def buildHistogram(name, xlabel, xnbins, xmin, xmax, ylabel, ynbins, ymin, ymax) :
-        """Create a 2D histogram with uniform binning on both axes
+        If {x,y}min or {x,y}max are not provided, {x,y}bins is assumed
+        to be the bin edges on the {x,y}-axis. If they are both provided,
+        {x,y}-bins is assumed to be the number of bins on the {x,y}-axis.
 
         Parameters
         ----------
@@ -90,83 +84,51 @@ class EventProcessor:
             variable name of histogram
         xlabel : str
             title of x-axis of histogram
-        xnbins : int
-            Number of bins on x-axis
+        xbins : int OR list of floats
+            Number of bins on x-axis OR list of bin edges on x-axis
         xmin : float
             Minimum edge of bins on x-axis
         xmax : float
             Maximum edge of bins on x-axis
         ylabel : str
             title of y-axis of histogram
-        ynbins : int
-            Number of bins on y-axis
+        ybins : int OR list of floats
+            Number of bins on y-axis OR list of bin edges on y-axis
         ymin : float
             Minimum edge of bins on y-axis
         ymay : float
             Mayimum edge of bins on y-axis
-        
+
         See Also
         --------
         LDMX.Framework.histogram.histogram : histogram configuration object
+
+        Examples
+        --------
+
+        When doing all uniform binning, you can specify the arguments by position.
+            myProcessor.build2DHistogram( 'dummy' ,
+                'My X Axis' , 20 , 0. , 1. ,
+                'My Y Axis' , 60 , 0. , 10. )
+
+        When using variable binning, you have to use the parameter names.
+            myProcessor.build2DHistogram( 'dummy2' ,
+                xlabel='My X Axis', xbins=[0.,1.,2.],
+                ylabel='My Y Axis', ybins=60, ymin=0., ymax=10. )
         """
 
         import LDMX.Framework.histogram as h
+        theBinEdgesX = xbins
+        if xmin is not None and xmax is not None :
+            theBinEdgesX = h.uniform_binning(xbins,xmin,xmax)
+
+        theBinEdgesY = ybins
+        if ymin is not None and ymax is not None :
+            theBinEdgesY = h.uniform_binning(ybins,ymin,ymax)
+
         self.histograms.append(
-                h.histogram(name,
-                    xlabel,h.uniform_binning(xnbins,xmin,xmax),
-                    ylabel,h.uniform_binning(ynbins,ymin,ymax))
+                h.histogram(name, xlabel,theBinEdgesX, ylabel,theBinEdgesY)
                 )
-
-    def buildHistogram(name, xlabel, xnbins_or_xbins, xmin_or_ylabel, xmax_or_ynbins, ylabel_or_ymin, ybins_or_ymax) :
-        """Create a 2D histogram with uniform binning on one axis
-
-        We need to do some type checking to figure out which axis to put uniform bins on.
-
-        Parameters
-        ----------
-        name : str
-            Name of histogram for ROOT reference (no spaces)
-        xlabel : str
-            title of x-axis
-        xnbins_or_nbins : int OR list of floats
-            number of uniform bins on x-axis OR list of bin edges on x-axis
-        xmin_or_ylabel : float OR str
-            minimum edge on x-axis OR title of y-axis
-        xmax_or_ynbins : float OR int
-            maximum edge on x-axis OR number of uniform bins on y-axis
-        ylabel_or_ymin : str OR float
-            title of y-axis OR minimum edge on y-axis
-        ybins_or_ymax : list of floats OR float
-            list of bin edges on y-axis OR maximum edge on y-axis
-        """
-
-        import LDMX.Framework.histogram as h
-        if ( isinstance(xnbins_or_xbins,list) ) :
-            #xnbins_or_xbins is a list ==> assume user wants non-uniform binning on x-axis
-            # non necessary but helps show choice
-            xbins = xnbins_or_xbins
-            ylabel = xmin_or_ylabel
-            ynbins = xmax_or_ynbins
-            ymin   = ylabel_or_ymin
-            ymax   = ybins_or_ymax 
-            self.histograms.append(
-                    h.histogram(name,
-                        xlabel,xbins,
-                        ylabel,h.uniform_binning(ynbins,ymin,ymax))
-                    )
-        else:
-            #xnbins_or_xbins is NOT a list ==> assume user wants uniform binning on x-axis
-            # non necessary but helps show choice
-            xnbins = xnbins_or_xbins
-            xmin   = xmin_or_ylabel
-            xmax   = xmax_or_ynbins
-            ylabel = ylabel_or_ymin
-            ybins  = ybins_or_ymax 
-            self.histograms.append(
-                    h.histogram(name,
-                        xlabel,h.uniform_binning(xnbins,xmin,xmax),
-                        ylabel,ybins)
-                    )
 
 class Producer(EventProcessor):
     """A producer object.
