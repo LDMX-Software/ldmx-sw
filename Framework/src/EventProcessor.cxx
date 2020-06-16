@@ -30,7 +30,13 @@ namespace ldmx {
 
     void EventProcessor::createHistograms(const std::vector<HistogramInfo>& histos) {
         for ( auto const& h : histos ) {
-            histograms_.create( h.name_ , h.xLabel_ , h.bins_ , h.xmin_ , h.xmax_ );
+            if ( h.ybins_.empty() ) {
+                //assume 1D histogram
+                histograms_.create( h.name_ , h.xLabel_ , h.xbins_ );
+            } else {
+                //assume 2D histogram
+                histograms_.create( h.name_ , h.xLabel_ , h.xbins_ , h.yLabel_ , h.ybins_ );
+            }
         }
     }
 
