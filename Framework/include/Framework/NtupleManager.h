@@ -47,7 +47,7 @@ namespace ldmx {
         public:
 
             /// @return The NtupleManager instance 
-            static NtupleManager* getInstance(); 
+            static NtupleManager& getInstance(); 
 
             /**
              * Create a ROOT tree to hold the ntuple variables (ROOT leaves). 
@@ -128,10 +128,13 @@ namespace ldmx {
             /// Reset all of the variables to their limits.
             void clear(); 
 
-        private: 
+            /// Hide Copy Constructor
+            NtupleManager(const NtupleManager&) = delete;
 
-            /// NtupleManager instance
-            static NtupleManager* instance_;  
+            /// Hide Assignment Operator
+            void operator=(const NtupleManager&) = delete;
+
+        private: 
 
             /// Container for ROOT trees 
             std::unordered_map< std::string, TTree* > trees_; 

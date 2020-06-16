@@ -21,6 +21,7 @@
 #include "Framework/Parameters.h" 
 #include "Framework/StorageControl.h"
 #include "Framework/Histograms.h"
+#include "Framework/NtupleManager.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -188,6 +189,9 @@ namespace ldmx {
 
             /// Interface class for making and filling histograms
             HistogramHelper histograms_;
+
+            /// Manager for any ntuples
+            NtupleManager& ntuple_{NtupleManager::getInstance()};
 
         private:
 
