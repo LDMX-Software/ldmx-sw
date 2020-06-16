@@ -95,8 +95,8 @@ namespace ldmx {
                     }
 
                     //fill any Ntuples that have been created
-                    if ( not eventAborted ) NtupleManager::getInstance()->fill(); 
-                    NtupleManager::getInstance()->clear(); 
+                    if ( not eventAborted ) NtupleManager::getInstance().fill(); 
+                    NtupleManager::getInstance().clear(); 
                     
                     outFile.nextEvent( eventAborted ? false : m_storageController.keepEvent() /*ignore storage control if event aborted*/);
                     n_events_processed++;
@@ -213,8 +213,8 @@ namespace ldmx {
                             }
                         }
 
-                        if ( not eventAborted ) NtupleManager::getInstance()->fill(); 
-                        NtupleManager::getInstance()->clear(); 
+                        if ( not eventAborted ) NtupleManager::getInstance().fill(); 
+                        NtupleManager::getInstance().clear(); 
 
                         n_events_processed++;
                     } //loop through events

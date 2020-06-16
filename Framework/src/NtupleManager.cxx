@@ -3,16 +3,14 @@
 
 namespace ldmx {
 
-    NtupleManager* NtupleManager::instance_ = nullptr;
-
     NtupleManager::NtupleManager() { } 
 
-    NtupleManager* NtupleManager::getInstance() {
+    NtupleManager& NtupleManager::getInstance() {
         
         // Create an instance of the NtupleManager if needed
-        if (!instance_) instance_ = new NtupleManager; 
+        static NtupleManager instance;
         
-        return instance_; 
+        return instance; 
     }
 
     void NtupleManager::create(const std::string& name) {

@@ -87,12 +87,13 @@ namespace ldmx {
                     // Fill the histogram
                     hEnergy->Fill(hit.getEnergy());
 
-                    // Fill the ntuple
+                    // Check if this hits energy is bigger
                     if ( hit.getEnergy() > maxEnergyHit ) maxEnergyHit = hit.getEnergy();
                 }
                 
                 // set the ntuple variable
-                ntuple_->setVar<float>("energy", maxEnergyHit);
+                //  the ntuple is filled at the end of each event
+                ntuple_.setVar<float>("energy", maxEnergyHit);
 
                 // Print out all of the product tags in the event.
                 if (ievt == 0) {
@@ -151,9 +152,6 @@ namespace ldmx {
             void onProcessStart() final override {
                 std::cout << "[ DummyAnalyzer ]: Starting processing!" << std::endl;
                
-                // Get the ntuple manager
-                ntuple_ = NtupleManager::getInstance(); 
-
                 // Create a tree.  Note that the openHistoFile method needs to 
                 // be called first.  By doing so, the histogram file is opened
                 // if it hasn't been by another process and the current 
@@ -161,8 +159,9 @@ namespace ldmx {
                 process_.openHistoFile(); 
 
                 // Create a tree and add variable to it 
-                ntuple_->create("Dummy");
-                ntuple_->addVar<float>("Dummy", /* tree name */ 
+                //    the ntuple_ member variable is inherited from EventProcessor
+                ntuple_.create("Dummy");
+                ntuple_.addVar<float>("Dummy", /* tree name */ 
                                       "energy"); 
 
                 // Create all histograms needed by the analyzer  
@@ -179,9 +178,6 @@ namespace ldmx {
             }
 
         private:
-
-            /// Instance of NtupleManager
-            NtupleManager* ntuple_{nullptr}; 
 
             /// Histogram of the calorimeter energy
             TH1* hEnergy{nullptr};
