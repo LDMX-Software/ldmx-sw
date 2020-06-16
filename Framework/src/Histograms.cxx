@@ -123,4 +123,44 @@ namespace ldmx {
         // Insert it into the pool of histograms for later use
         HistogramPool::getInstance().insert( fullName , hist );
     }
+
+    void HistogramHelper::create(const std::string& name, 
+                const std::string& xLabel, const std::vector<double>& xbins,
+                const std::string& yLabel, const std::vector<double>& ybins) {
+
+        std::string fullName = name_+"_"+name;
+
+        //copy bin edges into a C98 form acceptable by ROOT
+        int xNBins = xbins.size()-1;
+        double* xBinEdges = new double[xbins.size()];
+        for(unsigned int iBin = 0; iBin < xbins.size(); iBin++ )
+            xBinEdges[iBin] = xbins.at(iBin);
+
+        int yNBins = ybins.size()-1;
+        double* yBinEdges = new double[ybins.size()];
+        for(unsigned int iBin = 0; iBin < ybins.size(); iBin++ )
+            yBinEdges[iBin] = ybins.at(iBin);
+
+        auto hist = new TH2F( fullName.c_str(), fullName.c_str(), 
+                xNBins, xBinEdges,
+                yNBins, yBinEdges
+                );
+
+        delete [] xBinEdges; //cleanup
+        delete [] yBinEdges; //cleanup
+
+        // Set the title
+        hist->SetTitle(""); 
+
+        // Set the x-axis label
+        hist->GetXaxis()->SetTitle(xLabel.c_str()); 
+        hist->GetXaxis()->CenterTitle(); 
+
+        // Set the x-axis label
+        hist->GetYaxis()->SetTitle(yLabel.c_str()); 
+        hist->GetYaxis()->CenterTitle(); 
+
+        // Insert it into the pool of histograms for later use
+        HistogramPool::getInstance().insert( fullName , hist );
+    }
 }

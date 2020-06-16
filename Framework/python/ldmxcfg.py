@@ -1,33 +1,34 @@
-"""@package ldmxcfg
-Basic python configuration for ldmx-app
+"""ldmxcfg
+
+Basic python configuration for ldmx-sw application
 """
 
-class Producer:
-    """A producer object.
+class EventProcessor:
+    """An EventProcessor object
 
-    This object contains the parameters that are necessary for a ldmx::Producer to be configured.
+    This object contains the parameters that are necessary for a ldmx::EventProcessor to be configured.
+
+    You should NOT use this class directly. Use one of the derived classes Producer or Analyzer for clarity.
 
     Parameters
     ----------
     instanceName : str
         Name of this copy of the producer object
     className : str
-        Name (including namespace) of the C++ class that this producer should be
+        Name (including namespace) of the C++ class that this processor should be
 
     Attributes
     ----------
     parameters : dict
         python dictionary that will be passed to the C++ object during the configure method
     histograms : list of histogram1D objects
-        List of histogram configure objects for the HistogramPool to make for this producer
-
-    Example
-    -------
-    >>> dumPro = ldmxcfg.Producer( 'thisIsADummyProducer' , 'ldmx::DummyProducer' )
+        List of histogram configure objects for the HistogramPool to make for this processor
 
     See Also
     --------
-    LDMX.Framework.histograms.histogram1D : histogram configure object
+    LDMX.Framework.ldmxcfg.Producer : Producer configuration object
+    LDMX.Framework.ldmxcfg.Analyzer : Analyzer configuration object
+    LDMX.Framework.histogram.histogram : histogram configuration object
     """
 
     def __init__(self, instanceName, className):
@@ -36,17 +37,149 @@ class Producer:
         self.parameters=dict()
         self.histograms=[]
 
-    def build1DHistogram(self, name, xlabel, bins, xmin, xmax):
-        """Make a histogram for this producer to fill.
+    def buildHistogram(self, name, xlabel, bins, xmin, xmax):
+        """Make a 1D histogram with uniform binning
+
+        Parameters
+        ----------
+        name : str
+            variable name of histogram
+        xlabel : str
+            title of x-axis of histogram
+        bins : int
+            Number of bins on x-axis
+        xmin : float
+            Minimum edge of bins on x-axis
+        xmax : float
+            Maximum edge of bins on x-axis
 
         See Also
         --------
-        LDMX.Framework.histograms.histogram1D : histogram configuration object
+        LDMX.Framework.histogram.histogram : histogram configuration object
         """
 
         import LDMX.Framework.histogram as h
-        self.histograms.append(h.histogram1D(name, xlabel, bins, xmin, xmax))
-        return self
+        self.histograms.append(h.histogram(name, xlabel,h.uniform_binning(bins,xmin,xmax)))
+
+    def buildHistogram(self, name, xlabel, xbins):
+        """Make a 1D histogram with variable binning
+
+        Parameters
+        ----------
+        name : str
+            variable name of histogram
+        xlabel : str
+            title of x-axis of histogram
+        xbins : list of floats
+            list of bin edges on x-axis
+
+        See Also
+        --------
+        LDMX.Framework.histogram.histogram : histogram configuration object
+        """
+
+        import LDMX.Framework.histogram as h
+        self.histograms.append(h.histogram(name, xlabel,xbins))
+
+    def buildHistogram(name, xlabel, xnbins, xmin, xmax, ylabel, ynbins, ymin, ymax) :
+        """Create a 2D histogram with uniform binning on both axes
+
+        Parameters
+        ----------
+        name : str
+            variable name of histogram
+        xlabel : str
+            title of x-axis of histogram
+        xnbins : int
+            Number of bins on x-axis
+        xmin : float
+            Minimum edge of bins on x-axis
+        xmax : float
+            Maximum edge of bins on x-axis
+        ylabel : str
+            title of y-axis of histogram
+        ynbins : int
+            Number of bins on y-axis
+        ymin : float
+            Minimum edge of bins on y-axis
+        ymay : float
+            Mayimum edge of bins on y-axis
+        
+        See Also
+        --------
+        LDMX.Framework.histogram.histogram : histogram configuration object
+        """
+
+        import LDMX.Framework.histogram as h
+        self.histograms.append(
+                h.histogram(name,
+                    xlabel,h.uniform_binning(xnbins,xmin,xmax),
+                    ylabel,h.uniform_binning(ynbins,ymin,ymax))
+                )
+
+    def buildHistogram(name, xlabel, xnbins_or_xbins, xmin_or_ylabel, xmax_or_ynbins, ylabel_or_ymin, ybins_or_ymax) :
+        """Create a 2D histogram with uniform binning on one axis
+
+        We need to do some type checking to figure out which axis to put uniform bins on.
+
+        Parameters
+        ----------
+        name : str
+            Name of histogram for ROOT reference (no spaces)
+        xlabel : str
+            title of x-axis
+        xnbins_or_nbins : int OR list of floats
+            number of uniform bins on x-axis OR list of bin edges on x-axis
+        xmin_or_ylabel : float OR str
+            minimum edge on x-axis OR title of y-axis
+        xmax_or_ynbins : float OR int
+            maximum edge on x-axis OR number of uniform bins on y-axis
+        ylabel_or_ymin : str OR float
+            title of y-axis OR minimum edge on y-axis
+        ybins_or_ymax : list of floats OR float
+            list of bin edges on y-axis OR maximum edge on y-axis
+        """
+
+        import LDMX.Framework.histogram as h
+        if ( isinstance(xnbins_or_xbins,list) ) :
+            #xnbins_or_xbins is a list ==> assume user wants non-uniform binning on x-axis
+            # non necessary but helps show choice
+            xbins = xnbins_or_xbins
+            ylabel = xmin_or_ylabel
+            ynbins = xmax_or_ynbins
+            ymin   = ylabel_or_ymin
+            ymax   = ybins_or_ymax 
+            self.histograms.append(
+                    h.histogram(name,
+                        xlabel,xbins,
+                        ylabel,h.uniform_binning(ynbins,ymin,ymax))
+                    )
+        else:
+            #xnbins_or_xbins is NOT a list ==> assume user wants uniform binning on x-axis
+            # non necessary but helps show choice
+            xnbins = xnbins_or_xbins
+            xmin   = xmin_or_ylabel
+            xmax   = xmax_or_ynbins
+            ylabel = ylabel_or_ymin
+            ybins  = ybins_or_ymax 
+            self.histograms.append(
+                    h.histogram(name,
+                        xlabel,h.uniform_binning(xnbins,xmin,xmax),
+                        ylabel,ybins)
+                    )
+
+class Producer(EventProcessor):
+    """A producer object.
+
+    This object contains the parameters that are necessary for a ldmx::Producer to be configured.
+
+    See Also
+    --------
+    LDMX.Framwork.ldmxcfg.EventProcessor : base class
+    """
+
+    def __init__(self, instanceName, className):
+        super().__init__(instanceName,className)
 
     def __str__(self) :
         """Stringify this Producer, creates a message with all the internal parameters.
@@ -70,51 +203,18 @@ class Producer:
 
         return msg
 
-class Analyzer:
+class Analyzer(EventProcessor):
     """A analyzer object.
 
     This object contains the parameters that are necessary for a ldmx::Analyzer to be configured.
 
-    Parameters
-    ----------
-    instanceName : str
-        Name of this copy of the analyzer object
-    className : str
-        Name (including namespace) of the C++ class that this analyzer should be
-
-    Attributes
-    ----------
-    parameters : dict
-        python dictionary that will be passed to the C++ object during the configure method
-    histograms : list
-        List of histogram configure objects for the HistogramPool to make for this analyzer
-
-    Example
-    -------
-    >>> dumAna = ldmxcfg.Analyzer( 'thisIsADummyAnalyzer' , 'ldmx::DummyAnalyzer' )
-
     See Also
     --------
-    LDMX.Framework.histograms.histogram1D : histogram configure object
+    LDMX.Framework.ldmxcfg.EventProcessor : base class
     """
 
     def __init__(self, instanceName, className):
-        self.instanceName=instanceName
-        self.className=className
-        self.parameters=dict()
-        self.histograms=[]
-   
-    def build1DHistogram(self, name, xlabel, bins, xmin, xmax):
-        """Make a histogram for this analyzer to fill.
-
-        See Also
-        --------
-        LDMX.Framework.histograms.histogram1D : histogram configuration object
-        """
-
-        import LDMX.Framework.histogram as h
-        self.histograms.append(h.histogram1D(name, xlabel, bins, xmin, xmax))
-        return self
+        super().__init__(instanceName,className)
 
     def __str__(self) :
         """Stringify this Analyzer, creates a message with all the internal parameters.

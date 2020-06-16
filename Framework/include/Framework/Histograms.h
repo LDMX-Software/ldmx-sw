@@ -147,6 +147,22 @@ namespace ldmx {
                         const double& ybins, const double& ymin, const double& ymax);
 
             /**
+             * Create a ROOT 2D histogram of type TH2F and pool it for later use.
+             *
+             * @note Does not check if another histogram of the same name is in use.
+             *
+             * @param name Name of the histogram. This will also be used as a 
+             *             title.
+             * @param xLabel Title of the x axis.
+             * @param xbins Bin edges on x axis
+             * @param yLabel Title of the y axis.
+             * @param ybins Bin edges on y axis
+             */
+            void create(const std::string& name, 
+                        const std::string& xLabel, const std::vector<double>& xbins,
+                        const std::string& yLabel, const std::vector<double>& ybins);
+
+            /**
              * Fill a 1D histogram
              *
              * Uses the current setting of theWeight_.

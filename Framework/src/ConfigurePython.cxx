@@ -180,6 +180,35 @@ namespace ldmx {
         return std::move(list);
     }
 
+    /**
+     * Get a double list member of the input owner.
+     *
+     * @throw Exception if input name does not reference a python list object
+     *
+     * @param[in] owner python object to look for the list member
+     * @param[in] name name of list member of python object
+     * @return vector of doubles containing the entries in the python member list
+     */
+    static std::vector<double> doubleListMember(PyObject* owner, const char * listname ) {
+        auto pylist = PyObject_GetAttrString( owner , listname );
+        if ( !PyList_Check(pylist) ) {
+            EXCEPTION_RAISE(
+                    "BadType",
+                    "'" + std::string(listname) + "' is not a python list as expected."
+                    );
+        }
+
+        std::vector<double> list;
+        for ( Py_ssize_t i = 0; i < PyList_Size(pylist); i++ ) {
+            PyObject *elem = PyList_GetItem(pylist , i );
+            list.push_back( PyFloat_AsDouble(elem) );
+            Py_DECREF( elem );
+        }
+        Py_DECREF(pylist);
+
+        return std::move(list);
+    }
+
     ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[], int nargs) {
 
         //assumes that nargs >= 0
@@ -299,9 +328,9 @@ namespace ldmx {
                 HistogramInfo histInfo; 
                 histInfo.name_   = stringMember(histogram, "name"); 
                 histInfo.xLabel_ = stringMember(histogram, "xlabel"); 
-                histInfo.bins_   = intMember(histogram, "bins"); 
-                histInfo.xmin_   = intMember(histogram, "xmin"); 
-                histInfo.xmax_   = intMember(histogram, "xmax");  
+                histInfo.xbins_  = doubleListMember(histogram, "xbins");
+                histInfo.yLabel_ = stringMember(histogram, "ylabel"); 
+                histInfo.ybins_  = doubleListMember(histogram, "ybins");
 
                 pc.histograms_.push_back(histInfo); 
 
