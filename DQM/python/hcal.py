@@ -18,13 +18,13 @@ hcal.parameters["ecal_veto_collection"] = "EcalVeto"
 
 titles = ['', '_track_veto', '_bdt', '_hcal_veto', '_track_bdt', '_vetoes']
 for t in titles: 
-    hcal.build1DHistogram("max_pe%s" % t, "Max Photoelectrons in an HCal Module", 1500, 0, 1500)
-    hcal.build1DHistogram("total_pe%s" % t, "Total Photoelectrons", 3000, 0, 3000)
-    hcal.build1DHistogram("n_hits%s" % t, "HCal hit multiplicity", 300, 0, 300)
-    hcal.build1DHistogram("hit_time_max_pe%s" % t, "Max PE hit time (ns)", 1600, -100, 1500)
-    hcal.build1DHistogram("min_time_hit_above_thresh%s" % t, "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
+    hcal.buildHistogram("max_pe%s" % t, "Max Photoelectrons in an HCal Module", 1500, 0, 1500)
+    hcal.buildHistogram("total_pe%s" % t, "Total Photoelectrons", 3000, 0, 3000)
+    hcal.buildHistogram("n_hits%s" % t, "HCal hit multiplicity", 300, 0, 300)
+    hcal.buildHistogram("hit_time_max_pe%s" % t, "Max PE hit time (ns)", 1600, -100, 1500)
+    hcal.buildHistogram("min_time_hit_above_thresh%s" % t, "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
 
-hcal.build1DHistogram("pe", "Photoelectrons in an HCal Module", 1500, 0, 1500)
-hcal.build1DHistogram("hit_time", "HCal hit time (ns)", 1600, -100, 1500)
-hcal.build1DHistogram("veto", "Passes Veto", 4, -1, 3)
+hcal.buildHistogram("pe", "Photoelectrons in an HCal Module", 1500, 0, 1500)
+hcal.buildHistogram("hit_time", "HCal hit time (ns)", 1600, -100, 1500)
+hcal.buildHistogram("veto", "Passes Veto", 4, -1, 3)
 
