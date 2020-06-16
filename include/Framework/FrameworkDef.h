@@ -31,14 +31,14 @@ namespace ldmx {
         /// X axis label
         std::string xLabel_;  
 
-        /// The number of bins
-        int bins_; 
+        /// Bin Edges for X axis
+        std::vector<double> xbins_; 
 
-        /// The minimum value of the histogram axis
-        int xmin_;
+        /// Y axis label
+        std::string yLabel_;  
 
-        /// The maximum value of the histogram axis 
-        int xmax_;
+        /// Bin Edges for Y axis (non-empty ==> 2D histogram)
+        std::vector<double> ybins_; 
 
     };
 
