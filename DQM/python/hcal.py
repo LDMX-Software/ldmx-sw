@@ -28,3 +28,20 @@ hcal.build1DHistogram("pe", "Photoelectrons in an HCal Module", 1500, 0, 1500)
 hcal.build1DHistogram("hit_time", "HCal hit time (ns)", 1600, -100, 1500)
 hcal.build1DHistogram("veto", "Passes Veto", 4, -1, 3)
 
+
+hcal.build2DHistogram("bdt_n_hits", 
+                   "BDT discriminant", 200, 0, 1, 
+                   "HCal hit multiplicity", 300, 0, 300)
+
+hcal.build2DHistogram("max_pe:time", 
+                   "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                   "HCal max PE hit time (ns)", 1500, 0, 1500)
+
+hcal.build2DHistogram("max_pe:time_hcal_veto", 
+                   "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                   "HCal max PE hit time (ns)", 1500, 0, 1500)
+
+hcal.build2DHistogram("min_time_hit_above_thresh:pe", 
+                   "Photoelectrons in an HCal Module", 1500, 0, 1500, 
+                   "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500)
+ 

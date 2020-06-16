@@ -16,8 +16,6 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TH1F.h"
-#include "TH2F.h"
 #include "TVector3.h"
 
 //----------//
@@ -28,7 +26,6 @@
 #include "DetDescr/TrigScintID.h"
 #include "Tools/AnalysisUtils.h"
 #include "Event/EventDef.h"
-
 
 namespace ldmx { 
 

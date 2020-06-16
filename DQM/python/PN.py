@@ -55,3 +55,32 @@ photo_nuclear.build1DHistogram("hardest_n_theta",  "#theta of Hardest Photo-nucl
 photo_nuclear.build1DHistogram("hardest_pi_ke",    "Kinetic Energy Hardest Photo-nuclear #pi (MeV)", 400, 0, 4000)
 photo_nuclear.build1DHistogram("hardest_pi_theta", "#theta of Hardest Photo-nuclear #pi (Degrees)", 360, 0, 180)
 
+photo_nuclear.build2DHistogram("h_ke_h_theta", 
+                    "Kinetic Energy Hardest Photo-nuclear Particle (MeV)",
+                    400, 0, 4000, 
+                    "#theta of Hardest Photo-nuclear Particle (Degrees)",
+                    360, 0, 180)
+
+photo_nuclear.build2DHistogram("1n_ke:2nd_h_ke", 
+                    "Kinetic Energy of Leading Neutron (MeV)",
+                    400, 0, 4000, 
+                    "Kinetic Energy of 2nd Hardest Particle",
+                    400, 0, 4000)
+
+photo_nuclear.build2DHistogram("1kp_ke:2nd_h_ke", 
+                    "Kinetic Energy of Leading Charged Kaon (MeV)",
+                    400, 0, 4000, 
+                    "Kinetic Energy of 2nd Hardest Particle",
+                    400, 0, 4000)
+
+photo_nuclear.build2DHistogram("1k0_ke:2nd_h_ke", 
+                    "Kinetic Energy of Leading K0 (MeV)",
+                    400, 0, 4000, 
+                    "Kinetic Energy of 2nd Hardest Particle",
+                    400, 0, 4000)
+
+photo_nuclear.build2DHistogram("recoil_vertex_x:recoil_vertex_y", 
+                   "Recoil electron vertex x (mm)", 
+                   160, -40, 40, 
+                   "Recoil electron vertex y (mm)", 
+                   320, -80, 80)
