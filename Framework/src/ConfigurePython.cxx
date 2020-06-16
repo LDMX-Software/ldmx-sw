@@ -129,7 +129,6 @@ namespace ldmx {
         PyObject* temp = PyObject_GetAttrString(owner, name.c_str());
         if (temp != 0) {
             retval = getPyString(temp);
-            Py_DECREF(temp);
         }
         return retval;
     }
@@ -146,7 +145,6 @@ namespace ldmx {
         PyObject* temp = PyObject_GetAttrString(owner, name.c_str());
         if (temp != 0) {
             retval = getPyInt(temp);
-            Py_DECREF(temp);
         }
         return retval;
     }
@@ -175,7 +173,6 @@ namespace ldmx {
             list.push_back( getPyString( elem ) );
             Py_DECREF( elem );
         }
-        Py_DECREF(pylist);
 
         return std::move(list);
     }
@@ -204,7 +201,6 @@ namespace ldmx {
             list.push_back( PyFloat_AsDouble(elem) );
             Py_DECREF( elem );
         }
-        Py_DECREF(pylist);
 
         return std::move(list);
     }
@@ -334,9 +330,7 @@ namespace ldmx {
 
                 pc.histograms_.push_back(histInfo); 
 
-                Py_DECREF(histogram);
             }
-            Py_DECREF(histos);
 
             PyObject* parameters{PyObject_GetAttrString(processor, "parameters")};
             if (parameters != 0 && PyDict_Check(parameters)) {
@@ -345,13 +339,12 @@ namespace ldmx {
 
                 pc.params_.setParameters(params); 
             }
-            Py_DECREF(parameters);
 
             sequence_.push_back(pc);
 
-            Py_DECREF(processor);
         }
-        Py_DECREF(pysequence);
+
+        Py_DECREF(pProcess); //owns all member python objects
 
         //all done with python nonsense
         //do nothing for some reason ¯\_(ツ)_/¯
