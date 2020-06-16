@@ -70,7 +70,7 @@ class histogram:
         """
         
         if len(self.ybins) > 0 :
-            return "\t2D Histogram: %s x Label: %s y Label: " % (self.name, self.xlabel, self.ylabel)
+            return "\t2D Histogram: %s x Label: %s y Label: %s" % (self.name, self.xlabel, self.ylabel)
         else :
             return "\t1D Histogram: %s x Label: %s" % ( self.name , self.xlabel )
 

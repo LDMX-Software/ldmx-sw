@@ -1,8 +1,3 @@
-/**
- * @file EcalDigiVerifier.cxx
- * @brief Generate histograms to check digi performance
- * @author Tom Eichlersmith, University of Minnesota
- */
 
 #include "DQM/EcalDigiVerifier.h"
 
@@ -14,9 +9,6 @@ namespace ldmx {
         ecalSimHitPass_ = ps.getParameter<std::string>( "ecalSimHitPass" );
         ecalRecHitColl_ = ps.getParameter<std::string>( "ecalRecHitColl" );
         ecalRecHitPass_ = ps.getParameter<std::string>( "ecalRecHitPass" );
-
-        if ( ecalSimHitColl_.empty() ) ecalSimHitColl_ = "EcalSimHits";
-        if ( ecalRecHitColl_.empty() ) ecalRecHitColl_ = "EcalRecHits";
 
         return;
     }
@@ -63,53 +55,19 @@ namespace ldmx {
                 }
             }
 
-            h_NumSimHitsPerCell_->Fill( numSimHits );
-
-            h_SimEDep_RecAmplitude_->Fill( totalSimEDep , recHit.getAmplitude() );
+            histograms_.fill( "num_sim_hits_per_cell"   , numSimHits );
+            histograms_.fill( "sim_edep__rec_amplitude" , totalSimEDep , recHit.getAmplitude() );
 
             totalRecEnergy += recHit.getEnergy();
         }
 
-        h_TotalRecEnergy_->Fill( totalRecEnergy );
+        histograms_.fill( "total_rec_energy" , totalRecEnergy );
 
         if ( totalRecEnergy > 6000. ) {
             setStorageHint( hint_shouldKeep );
         } else {
             setStorageHint( hint_shouldDrop );
         }
-
-        return;
-    }
-    
-    void EcalDigiVerifier::onProcessStart() {
-
-        getHistoDirectory();
-
-        h_SimEDep_RecAmplitude_ = new TH2F(
-                "h_SimEDep_RecAmplitude_",
-                "Total Energy Deposited in ECal Cell;Simulated [MeV];Reconstructed [MeV];Count",
-                100,0,50.,
-                100,0,50.
-                );
-
-        h_TotalRecEnergy_ = new TH1F(
-                "h_TotalRecEnergy_",
-                ";Total Reconstructed Energy in ECal [MeV];Count",
-                800,0,8000.
-                );
-        h_TotalRecEnergy_->SetCanExtend( TH1::kXaxis );
-
-        h_NumSimHitsPerCell_ = new TH1F(
-                "h_NumSimHitsPerCell_",
-                ";Number SimHits per ECal Cell (excluding empty rec cells);Count",
-                20,0,20
-                );
-        h_NumSimHitsPerCell_->SetCanExtend( TH1::kXaxis );
-
-        return;
-    }
-
-    void EcalDigiVerifier::onProcessEnd() {
 
         return;
     }
