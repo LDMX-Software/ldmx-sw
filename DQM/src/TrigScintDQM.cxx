@@ -35,8 +35,8 @@ namespace ldmx {
                            "TrigScint max PE hit time (ns)", 1500, 0, 1500);
     
         histograms_.create("min_time_hit_above_thresh:pe", 
-                                 "Photoelectrons in a TrigScint bar", 1500, 0, 1500, 
-                                 "Earliest time of TrigScint hit above threshold (ns)", 1600, -100, 1500);
+                           "Photoelectrons in a TrigScint bar", 1500, 0, 1500, 
+                           "Earliest time of TrigScint hit above threshold (ns)", 1600, -100, 1500);
 
     }
 

@@ -17,10 +17,10 @@ def uniform_binning( nbins , minedge , maxedge ) :
         Upper edge of binning
     """
 
-    bin_width = (maxedge-minedge)/nbins
+    bin_width = float(maxedge-minedge)/float(nbins)
 
-    #range does not include upper limit, so we need to add an extra bin width
-    return range( minedge , maxedge+bin_width , bin_width )
+    #range does not include upper limit, so we need to add an extra bin at end
+    return [ bin_width*ibin+minedge for ibin in range(nbins+1) ]
 
 class histogram: 
     """Object to hold parameters for a one-dimensional root histogram
@@ -45,7 +45,7 @@ class histogram:
         bin edges along y-axis
     """
     
-    def __init__(self, name, xlabel, xbins, ylabel='', ybins=[])
+    def __init__(self, name, xlabel, xbins, ylabel='', ybins=[]) :
         self.name   = name
         self.xlabel = xlabel
         self.xbins  = xbins
@@ -69,7 +69,7 @@ class histogram:
             "The histogram in my processor is %s" % ( myHistogram )
         """
         
-        if len(ybins) > 0 :
+        if len(self.ybins) > 0 :
             return "\t2D Histogram: %s x Label: %s y Label: " % (self.name, self.xlabel, self.ylabel)
         else :
             return "\t1D Histogram: %s x Label: %s" % ( self.name , self.xlabel )
