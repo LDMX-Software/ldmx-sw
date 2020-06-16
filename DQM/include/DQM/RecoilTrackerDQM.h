@@ -30,7 +30,6 @@ namespace ldmx {
 
     class RecoilTrackerDQM : public Analyzer { 
 
-
         public: 
 
             /** Constructor */

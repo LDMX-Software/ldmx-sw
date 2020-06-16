@@ -31,7 +31,7 @@ namespace ldmx {
             HCalDQM(const std::string &name, Process &process);
 
             /** Destructor */
-            ~HCalDQM();
+            ~HCalDQM() { }
 
             /** 
              * Configure the processor using the given user specified parameters.
@@ -46,9 +46,6 @@ namespace ldmx {
              * @param event The event to analyze.
              */
             void analyze(const Event& event);
-
-            /** Method executed before processing of events begins. */
-            void onProcessStart();
 
         private:
 
