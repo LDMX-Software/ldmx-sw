@@ -6,30 +6,6 @@ namespace ldmx {
     HCalDQM::HCalDQM(const std::string &name, Process &process) : 
         Analyzer(name, process) { }
 
-    HCalDQM::~HCalDQM() {}
-
-    void HCalDQM::onProcessStart() {
-
-        getHistoDirectory();
-
-        histograms_.create("bdt_n_hits", 
-                           "BDT discriminant", 200, 0, 1, 
-                           "HCal hit multiplicity", 300, 0, 300);
-
-        histograms_.create("max_pe:time", 
-                           "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                           "HCal max PE hit time (ns)", 1500, 0, 1500);
-
-        histograms_.create("max_pe:time_hcal_veto", 
-                           "Max Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                           "HCal max PE hit time (ns)", 1500, 0, 1500);
-
-        histograms_.create("min_time_hit_above_thresh:pe", 
-                           "Photoelectrons in an HCal Module", 1500, 0, 1500, 
-                           "Earliest time of HCal hit above threshold (ns)", 1600, -100, 1500);
-         
-    }
-
     void HCalDQM::configure(Parameters& parameters) {
     }
 

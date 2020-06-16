@@ -11,8 +11,6 @@ namespace ldmx {
 
     // Forward declarations within the ldmx workspace
     class Event;
-    class HistogramPool; 
-    class Process;
     class SimParticle;
 
     class PhotoNuclearDQM : public Analyzer { 

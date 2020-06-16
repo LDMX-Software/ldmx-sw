@@ -94,31 +94,6 @@ namespace ldmx {
             }
         }
 
-        // Move into the ECal PN directory
-        getHistoDirectory();
-
-        histograms_.create("h_ke_h_theta", 
-                            "Kinetic Energy Hardest Photo-nuclear Particle (MeV)",
-                            400, 0, 4000, 
-                            "#theta of Hardest Photo-nuclear Particle (Degrees)",
-                            360, 0, 180);
-
-        histograms_.create("1n_ke:2nd_h_ke", 
-                            "Kinetic Energy of Leading Neutron (MeV)",
-                            400, 0, 4000, 
-                            "Kinetic Energy of 2nd Hardest Particle",
-                            400, 0, 4000);
-        histograms_.create("1kp_ke:2nd_h_ke", 
-                            "Kinetic Energy of Leading Charged Kaon (MeV)",
-                            400, 0, 4000, 
-                            "Kinetic Energy of 2nd Hardest Particle",
-                            400, 0, 4000);
-        histograms_.create("1k0_ke:2nd_h_ke", 
-                            "Kinetic Energy of Leading K0 (MeV)",
-                            400, 0, 4000, 
-                            "Kinetic Energy of 2nd Hardest Particle",
-                            400, 0, 4000);
-
         std::vector<std::string> n_labels = {"", "",
             "nn", // 1
             "pn", // 2
@@ -132,11 +107,6 @@ namespace ldmx {
             hist->GetXaxis()->SetBinLabel(ilabel, n_labels[ilabel-1].c_str());
         }
 
-        histograms_.create("recoil_vertex_x:recoil_vertex_y", 
-                           "Recoil electron vertex x (mm)", 
-                           160, -40, 40, 
-                           "Recoil electron vertex y (mm)", 
-                           320, -80, 80);
     }
 
     void PhotoNuclearDQM::configure(Parameters& parameters) { }
