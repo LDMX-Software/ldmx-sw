@@ -2,32 +2,32 @@
 
 Examples
 --------
->>> from LDMX.Ecal.ecalClusters import ecalClusters
->>> p.sequence.append( ecalClusters )
+    from LDMX.Ecal.ecalClusters import ecalClusters
+    p.sequence.append( ecalClusters )
 """
 
-import sys
-import os
-
-# we need the ldmx configuration package to construct the object
 from LDMX.Framework import ldmxcfg
 
-ecalClusters = ldmxcfg.Producer("ecalClusters", "ldmx::EcalClusterProducer")
+class EcalClusterProducer(ldmxcfg.Producer) :
+    """Configure the clustering"""
 
-# Cluster weight cutoff in appropriate units
-ecalClusters.parameters["cutoff"] = 10.0 
+    def __init__(self,name) :
+        super().__init__(name,"ldmx::EcalClusterProducer")
 
-# Seed threshold for clustering
-ecalClusters.parameters["seedThreshold"] = 100.0 # MeV
+        self.cutoff = 10.-
+        self.seedThreshold = 100.0 #MeV
 
-# Pass name for ecal digis
-ecalClusters.parameters["digisPassName"] = "recon"
+        # Pass name for ecal digis
+        self.digisPassName = "recon"
 
-# Name of the algo to save to the root file 
-ecalClusters.parameters["algoName"] = "MyClusterAlgo"
+        # Name of the algo to save to the root file 
+        self.algoName = "MyClusterAlgo"
 
-# Name of the cluster collection to make
-ecalClusters.parameters["clusterCollName"] = "ecalClusters"
+        # Name of the cluster collection to make
+        self.clusterCollName = "ecalClusters"
 
-# Name of the cluster algo collection to make
-ecalClusters.parameters["algoCollName"] = "ClusterAlgoResult"
+        # Name of the cluster algo collection to make
+        self.algoCollName = "ClusterAlgoResult"
+
+
+ecalClusters = EcalClusterProducer("ecalClusters")
