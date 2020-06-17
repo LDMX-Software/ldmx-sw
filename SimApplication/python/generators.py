@@ -71,7 +71,7 @@ class multi(simcfg.PrimaryGenerator) :
     """
 
     def __init__(self,name) :
-        super().__init__(self,name,'ldmx::MultiParticleGunPrimaryGenerator')
+        super().__init__(name,'ldmx::MultiParticleGunPrimaryGenerator')
 
         #turn off Poisson by default
         self.enablePoisson = False
@@ -93,7 +93,7 @@ class lhe(simcfg.PrimaryGenerator) :
     """
 
     def __init__(self,name,filePath):
-        super().__init__(self,name,'ldmx::LHEPrimaryGenerator')
+        super().__init__(name,'ldmx::LHEPrimaryGenerator')
 
         self.filePath = filePath
 
@@ -147,7 +147,7 @@ class ecalSP(simcfg.PrimaryGenerator) :
     """
 
     def __init__(self,name,filePath) :
-        super().__init__( self, name , 'ldmx::RootSimFromEcalSP' )
+        super().__init__( name , 'ldmx::RootSimFromEcalSP' )
 
         self.filePath = filePath
         self.collection_name = 'EcalScoringPlaneHits'
@@ -190,7 +190,7 @@ class gps(simcfg.PrimaryGenerator) :
     """
 
     def __init__(self,name,initCommands) :
-        super().__init__(self,name,'ldmx::GeneralParticleSource')
+        super().__init__(name,'ldmx::GeneralParticleSource')
         self.initCommands = initCommands
 
 def single_4gev_e_upstream_tagger() :

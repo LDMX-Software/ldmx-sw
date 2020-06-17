@@ -55,8 +55,8 @@ def makeDetectorPath( detName ) :
     Examples
     --------
     Useful for use with the simulator producer:
-    >>> from LDMX.Detector.makePath import *
-    >>> mySimulator.parameters['detector'] = makeDetectorPath( 'ldmx-det-v12' )
+        from LDMX.Detector.makePath import *
+        mySimulator.detector = makeDetectorPath( 'ldmx-det-v12' )
     """
 
     return makePath( detName , 'detector' )
@@ -77,8 +77,8 @@ def makeScoringPlanesPath( detName ) :
     Examples
     --------
     Useful for use with the simulator producer:
-    >>> from LDMX.Detector.makePath import *
-    >>> mySimulator.parameters['scoring_planes'] = makeScoringPlanesPath( 'ldmx-det-v12' )
+        from LDMX.Detector.makePath import *
+        mySimulator.scoringPlanes = makeScoringPlanesPath( 'ldmx-det-v12' )
     """
 
     return makePath( detName , 'scoring_planes' )
