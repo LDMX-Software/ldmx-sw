@@ -1,10 +1,3 @@
-/**
- * @file ConfigurePython.cxx
- * @brief Utility class that reads/executes a python script and creates a 
- *        Process object based on the input.
- * @author Jeremy Mans, University of Minnesota
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
 
 #include "Framework/ConfigurePython.h"
 
@@ -13,9 +6,17 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/EventProcessorFactory.h"
 
+/*~~~~~~~~~~~~*/
+/*   python   */
+/*~~~~~~~~~~~~*/
+#include "Python.h"
+
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
+#include <any>
+#include <string>
+#include <vector>
 #include <iostream>
 #include <cstring>
 
@@ -25,57 +26,6 @@
 #include "TH1F.h" //for creating histograms
 
 namespace ldmx {
-
-    /**
-     * Converts a char string to a wide char string.
-     *
-     * @note
-     * Newly allocates the returned object,
-     * so make sure to cleanup.
-     *
-     * @param[in] cstr char string to translate
-     * @return newly allocated wide char string
-     */
-    static wchar_t* getWC(const char *cstr) {
-        const size_t cSize = mbstowcs(NULL,cstr,0)+1;
-        wchar_t* wc = new wchar_t[cSize];
-        mbstowcs( wc , cstr , cSize );
-        return wc;
-    }
-
-    /**
-     * Check if the input python object is a string
-     *
-     * Simple enough, only a function to isolate the
-     * if-else compile-time macro.
-     *
-     * @param[in] python object
-     * @return true if a string python object
-     */
-    static bool isPyString(PyObject* pyObj) {
-#if PY_MAJOR_VERSION < 3
-        return PyString_Check(pyObj);
-#else
-        return PyUnicode_Check(pyObj);
-#endif
-    }
-
-    /**
-     * Check if the input python object is an integer
-     *
-     * Simple enough, only a function to isolate the
-     * if-else compile-time macro.
-     *
-     * @param[in] python object
-     * @return true if an integer python object
-     */
-    static bool isPyInt(PyObject* pyObj) {
-#if PY_MAJOR_VERSION < 3
-        return PyInt_Check(pyObj);
-#else
-        return PyLong_Check(pyObj);
-#endif
-    }
 
     /**
      * Turn the input python string object into a C++ string.
@@ -88,31 +38,9 @@ namespace ldmx {
      */
     static std::string getPyString(PyObject* pyObj) {
         std::string retval;
-#if PY_MAJOR_VERSION < 3
-        retval = PyString_AsString(pyObj);
-#else
         PyObject* pyStr = PyUnicode_AsEncodedString(pyObj, "utf-8","Error ~");
         retval = PyBytes_AS_STRING(pyStr);
         Py_XDECREF(pyStr);
-#endif
-        return retval;
-    }
-
-    /**
-     * Turn the input python int object into a C++ int.
-     *
-     * Only a function to isolate the if-else compile-time macro.
-     *
-     * @param[in] python object assumed to be an int python object
-     * @return the value stored in it
-     */
-    static int getPyInt(PyObject* pyObj) {
-        int retval(0);
-#if PY_MAJOR_VERSION < 3
-        retval = PyInt_AsLong(pyObj);
-#else
-        retval = PyLong_AsLong(pyObj);
-#endif
         return retval;
     }
 
@@ -126,8 +54,16 @@ namespace ldmx {
      * This function is recursive. If a non-base type is encountered,
      * we pass it back along to this function to translate it's own dictionary.
      *
-     * @note We rely completely on python being awesome. For all higher level class objects,
+     * We rely completely on python being awesome. For all higher level class objects,
      * python keeps track of all of its member variables in the member dictionary __dict__.
+     *
+     * No Py_DECREF calls are made because all of the members of an object
+     * are borrowed references, meaning that when we destory that object, it handles
+     * the other members. We destroy the one parent object pProcess at the end
+     * of ConfigurePython::ConfigurePython.
+     *
+     * @note Not sure if this is not leaking memory, kinda just trusting
+     * the Python / C API docs on this one.
      *
      * @param object Python object to get members from
      * @return Mapping between member name and value. 
@@ -145,7 +81,7 @@ namespace ldmx {
 
             std::string skey{getPyString(key)};
 
-            if (isPyInt(value)) {
+            if (PyLong_Check(value)) {
                 if (PyBool_Check(value)) {
                     params[skey] = bool(PyLong_AsLong(value)); 
                 } else { 
@@ -153,14 +89,14 @@ namespace ldmx {
                 }
             } else if (PyFloat_Check(value)) {
                 params[skey] = PyFloat_AsDouble(value);  
-            } else if (isPyString(value)) {
+            } else if (PyUnicode_Check(value)) {
                 params[skey] = getPyString(value);
             } else if (PyList_Check(value)) { // assume everything is same value as first value
                 if (PyList_Size(value) > 0) {
 
                     auto vec0{PyList_GetItem(value, 0)};
 
-                    if (isPyInt(vec0)) {
+                    if (PyLong_Check(vec0)) {
                         std::vector<int> vals;
 
                         for (auto j{0}; j < PyList_Size(value); j++)
@@ -176,7 +112,7 @@ namespace ldmx {
 
                         params[skey] = vals;
 
-                    } else if (isPyString(vec0)) {
+                    } else if (PyUnicode_Check(vec0)) {
                         std::vector<std::string> vals;
                         for (Py_ssize_t j = 0; j < PyList_Size(value); j++){
                             PyObject* elem = PyList_GetItem(value , j );
@@ -204,10 +140,21 @@ namespace ldmx {
 
                     } //type of object in python list
                 } //python list has non-zero size
+            } else {
+                //object got here, so we assume
+                //it is a higher level object 
+                //(same logic as last option for a list)
+
+                // RECURSION zoinks!
+                Parameters val;
+                val.setParameters( getMembers(value) );
+
+                params[skey] = val;
+
             } //python object type
         } //loop through python dictionary
 
-        return params; 
+        return std::move(params); 
     }
 
     ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[], int nargs) {
@@ -220,39 +167,36 @@ namespace ldmx {
             cmd = pythonScript.substr(pythonScript.rfind("/") + 1);
         }
         cmd = cmd.substr(0, cmd.find(".py"));
-
-        Py_Initialize();
-
+        
         //python needs the argument list as if you are on the command line
         //  targs = [ script , arg0 , arg1 , ... ] ==> len(targs) = nargs+1
-        
+        //PySys_SetArgvEx uses wchar_t instead of char in python3
+        wchar_t** targs = new wchar_t*[nargs+1];
+        targs[0] = Py_DecodeLocale(pythonScript.c_str(), NULL);
+        for (int i = 0; i < nargs;  i++)
+            targs[i+1] = Py_DecodeLocale(args[i], NULL);
+
+        //name our program after the script that is being run
+        Py_SetProgramName(targs[0]);
+
+        //start up python interpreter
+        Py_Initialize();
+
         //The third argument to PySys_SetArgvEx tells python to import
         //the args and add the directory of the first argument to
         //the PYTHONPATH
         //This way, the command to import the module just needs to be
         //the name of the python script
-#if PY_MAJOR_VERSION < 3
-        char** targs = new char*[nargs+1];
-        targs[0] = (char*) pythonScript.c_str();
-        for (int i = 0; i < nargs; i++)
-            targs[i+1] = args[i];
         PySys_SetArgvEx(nargs+1, targs, 1);
-        delete [ ] targs; //1D array because args is owned by main
-#else
-        //PySys_SetArgvEx uses wchar_t instead of char in python3
-        wchar_t** targs = new wchar_t*[nargs+1];
-        targs[0] = getWC(pythonScript.c_str());
-        for (int i = 0; i < nargs;  i++)
-            targs[i+1] = getWC(args[i]);
-        PySys_SetArgvEx(nargs+1, targs, 1);
-        //clean up the 2D character array
-        for ( int i = 0; i < nargs+1; i++ )
-            delete [] targs[i];
-        delete [] targs;
-#endif
 
         //the following line is what actually runs the script
         PyObject* script = PyImport_ImportModule(cmd.c_str());
+
+        // script has been run so we can
+        // free up arguments to python script
+        for(int i = 0; i < nargs+1; i++)
+            PyMem_RawFree(targs[i]);
+        delete [] targs;
 
         if (script == 0) {
             PyErr_Print();
@@ -281,12 +225,12 @@ namespace ldmx {
             //wasn't able to get lastProcess class member
             PyErr_Print();
             EXCEPTION_RAISE("ConfigureError", 
-                    "Process object not defined. This object is required to run ldmx-app."
+                    "Process object not defined. This object is required to run."
                     );
         } else if ( pProcess == Py_None ) {
             //lastProcess was left undefined
             EXCEPTION_RAISE("ConfigureError", 
-                    "Process object not defined. This object is required to run ldmx-app."
+                    "Process object not defined. This object is required to run."
                     );
         }
 
@@ -297,13 +241,17 @@ namespace ldmx {
         configuration_.setParameters(getMembers(pProcess));
 
         //all done with python nonsense
-        //do nothing for some reason ¯\_(ツ)_/¯
-        //  too lazy to figure out how to close up python well
-        //  calling the below function leads to a seg fault on
-        //  some machines
-        Py_DECREF(pProcess);
+        //delete one parent python object
+        //MEMORY still not sure if this is enough, but not super worried about it 
+        //  because this only happens once per run
+        Py_DECREF(pProcess); 
+        //close up python interpreter
         if ( Py_FinalizeEx() < 0 ) {
-            std::cerr << "Error closing up python!" << std::endl;
+            PyErr_Print();
+            EXCEPTION_RAISE(
+                    "PyError",
+                    "I wasn't able to close up the python interpreter!"
+                    );
         }
     }
 

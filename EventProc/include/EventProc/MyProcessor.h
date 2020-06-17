@@ -35,6 +35,10 @@ namespace ldmx {
 
             /** 
              * Configure the processor using the given user specified parameters.
+             *
+             * The user specified parameters that are availabed are defined 
+             * in the python configuration class. Look at the my_processor.py
+             * module of the EventProc python for the python structure.
              * 
              * @param parameters Set of parameters used to configure this processor.
              */
