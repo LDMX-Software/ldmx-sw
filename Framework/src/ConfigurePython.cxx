@@ -181,7 +181,6 @@ namespace ldmx {
                         for (Py_ssize_t j = 0; j < PyList_Size(value); j++){
                             PyObject* elem = PyList_GetItem(value , j );
                             vals.push_back(getPyString(elem));
-                            Py_DECREF(elem);
                         }
 
                         params[skey] = vals;
@@ -200,17 +199,12 @@ namespace ldmx {
                             vals.emplace_back();
                             vals.back().setParameters( getMembers(obj) );
 
-                            Py_DECREF(obj);
                         } 
                         params[skey] = vals;
 
                     } //type of object in python list
                 } //python list has non-zero size
             } //python object type
-
-            Py_XDECREF( key );
-            Py_XDECREF(value);
-
         } //loop through python dictionary
 
         return params; 
@@ -307,7 +301,10 @@ namespace ldmx {
         //  too lazy to figure out how to close up python well
         //  calling the below function leads to a seg fault on
         //  some machines
-        //if ( Py_FinalizeEx() < 0 ) error
+        Py_DECREF(pProcess);
+        if ( Py_FinalizeEx() < 0 ) {
+            std::cerr << "Error closing up python!" << std::endl;
+        }
     }
 
     ProcessHandle ConfigurePython::makeProcess() {

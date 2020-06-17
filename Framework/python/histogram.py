@@ -52,6 +52,20 @@ class histogram:
         self.ylabel = ylabel
         self.ybins  = ybins
 
+    def __repr__(self):
+        """Represent this object to the human user
+
+        Returns
+        -------
+        A string representation of the histogram displaying its properties.
+        """
+
+        if len(self.ybins) > 0 :
+            return "Name: %s x Label: %s y Label: %s" % (self.name, 
+                self.xlabel, self.ylabel)
+        else :
+            return "Name: %s x Label: %s" % (self.name,self.xlabel)     
+
     def __str__(self):
         """Stringify this object. 
         
@@ -69,8 +83,4 @@ class histogram:
             "The histogram in my processor is %s" % ( myHistogram )
         """
         
-        if len(self.ybins) > 0 :
-            return "\t2D Histogram: %s x Label: %s y Label: %s" % (self.name, self.xlabel, self.ylabel)
-        else :
-            return "\t1D Histogram: %s x Label: %s" % ( self.name , self.xlabel )
-
+        return self.__repr__()
