@@ -115,15 +115,17 @@ TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
     testPyScript << "testProcess.logFrequency = 9" << std::endl;
     testPyScript << "testProcess.skimDefaultIsKeep = False" << std::endl;
 
-    testPyScript << "testProcessor = ldmxcfg.Producer( 'testInstance' , 'ldmx::test::TestConfig' )" << std::endl;
-    testPyScript << "testProcessor.parameters['testInt'] = 9" << std::endl;
-    testPyScript << "testProcessor.parameters['testDouble'] = 7.7" << std::endl;
-    testPyScript << "testProcessor.parameters['testString'] = 'Yay!'" << std::endl;
-    testPyScript << "testProcessor.parameters['testIntVec'] = [ 1 , 2 , 3 ]" << std::endl;
-    testPyScript << "testProcessor.parameters['testDoubleVec'] = [ 0.1 , 0.2 , 0.3 ]" << std::endl;
-    testPyScript << "testProcessor.parameters['testStringVec'] = [ 'first' , 'second' , 'third' ]" << std::endl;
+    testPyScript << "class TestProcessor(ldmxcfg.Producer):" << std::endl;
+    testPyScript << "    def __init__(self):" << std::endl;
+    testPyScript << "        super().__init__( 'testInstance' , 'ldmx::test::TestConfig' )" << std::endl;
+    testPyScript << "        self.testInt = 9" << std::endl;
+    testPyScript << "        self.testDouble = 7.7" << std::endl;
+    testPyScript << "        self.testString = 'Yay!'" << std::endl;
+    testPyScript << "        self.testIntVec = [ 1 , 2 , 3 ]" << std::endl;
+    testPyScript << "        self.testDoubleVec = [ 0.1 , 0.2 , 0.3 ]" << std::endl;
+    testPyScript << "        self.testStringVec = [ 'first' , 'second' , 'third' ]" << std::endl;
 
-    testPyScript << "testProcess.sequence = [ testProcessor ]" << std::endl;
+    testPyScript << "testProcess.sequence = [ TestProcessor() ]" << std::endl;
 
     using namespace ldmx;
 
