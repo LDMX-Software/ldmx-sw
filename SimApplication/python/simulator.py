@@ -22,20 +22,98 @@ class simulator(Producer):
     ----------
     instance_name : str
         Name of this instance of the Simulator
+
+    Attributes
+    ----------
+    generators : list of PrimaryGenerator
+        Generators to use to make primaries
+    detector : str
+        Full path to detector description gdml (suggested to use setDetector)
+    runNumber : int
+        Identifier for this run
+    description : str
+        Describe this run in a human-readable way
+    scoringPlanes : str, optional
+        Full path to the scoring planes gdml (suggested to use setDetector)
+    randomSeeds : list of int, optional
+        Random seeds to pass to Geant4
+    beamSpotSmear : list of float, optional
+        2 (x,y) or 3 (x,y,z) widths to smear ALL primary vertices by [mm]
+    enableHitContribs : bool, optional
+        Should the simulation save contributions to Ecal sim hits?
+    compressHitContribs : bool, optional
+        Should the simulation compress contributions to Ecal sim hits by PDG ID?
+    preInitCommands : list of str, optional
+        Geant4 commands to run before the run is initialized
+    postInitCommands : list of str, optional
+        Geant4 commands to run after run is initialized (but before run starts)
+    actions : list of UserAction, optional
+        Special User-defined actions to take during the simulation
+    biasing_enabled : bool, optional
+        Should the simulation configure and use biasing?
+    biasing_process : str, optional
+        Geant4 process to bias
+    biaising_volume : str, optional
+        Geant4 volume to bias inside of
+    biasing_particle : str, optional
+        Geant4 particle to bias
+    biasing_all : bool, optional
+        Bias all particles of the input type (only used by some biasing operators)
+    biasing_incident : bool, optional
+        Bias only the primary particle of the input type (only used by some biasing operators)
+    biasing_disableEMBiasing : bool, optional
+        Turn off down-biasing of normal EM shower (only used by some biasing operators)
+    biasing_threshold : float, optional
+        Minimum energy [MeV] for a particle to be biased (only used by some biasing operators)
+    biasing_factor : int, optional
+        Factor to bias process by
+    APrimeMass : float, optional
+        Mass of A' to simulation [MeV]
+    darkbrem_madgraphfilepath : str, optional
+        Full path to LHE file to use as dark brem vertices
+    darkbrem_method : int, optional
+        Integer flag to decide how to interpret dark brem vertices
+    darkbrem_globalxsecfactor : float, optional
+        Bias the dark brem process everywhere by this factor
     """
 
     def __init__(self, instance_name ) :
         super().__init__( instance_name , "ldmx::Simulator" )
 
-        # make sure the lists are the correct type
-        self.parameters['preInitCommands' ] = [ ]
-        self.parameters['postInitCommands'] = [ ]
-        self.parameters['actions'         ] = [ ]
-        self.parameters['generators'      ] = [ ]
+        #######################################################################
+        # Required Parameters
+        self.generators = [ ]
+        self.detector = ''
+        self.runNumber = -1
+        self.description = ''
 
-        # turn on default ECal Hit behavior
-        self.enableHitContribs()
-        self.compressHitContribs()
+        #######################################################################
+        # Optional Parameters (with helpful defaults)
+        self.scoringPlanes = ''
+        self.randomSeeds = [ ] 
+        self.beamSpotSmear = [ ]
+        self.enableHitContribs   = True
+        self.compressHitContribs = True
+        self.preInitCommands = [ ]
+        self.postInitCommands = [ ]
+        self.actions = [ ]
+
+        # Biasing stuff
+        self.biasing_enabled = False
+        self.biasing_process = ''
+        self.biasing_volume = ''
+        self.biasing_particle = ''
+        self.biasing_all = True
+        self.biasing_incident = True
+        self.biasing_disableEMBiasing = False
+        self.biasing_threshold = 0.
+        self.biasing_factor = 1
+
+        # Dark Brem stuff
+        self.APrimeMass = 0. #required if want to use dark brem [MeV]
+        self.darkbrem_madgraphfilepath = '' #required if want to use dark brem
+        self.darkbrem_method = 0
+        self.darkbrem_globalxsecfactor = 1.
 
         # add necessary library to the list to load
         #   requires a process object to have been defined
@@ -58,86 +136,9 @@ class simulator(Producer):
         """
 
         from LDMX.Detectors import makePath as mP
-        self.parameters['detector'] = mP.makeDetectorPath( det_name )
+        self.detector = mP.makeDetectorPath( det_name )
         if include_scoring_planes :
-            self.parameters['scoringPlanes'] = mP.makeScoringPlanesPath( det_name )
-
-    def setRunNumber(self, num ) :
-        """Set the run number for this simulation
-
-        Parameters
-        ----------
-        num : int
-            run number for this simulation
-        """
-
-        self.parameters['runNumber'] = num
-
-    def setDescription(self,desc) :
-        """Set the description of this simulation
-
-        Parameters
-        ----------
-        desc : str
-            description of this simulation
-        """
-
-        self.parameters['description'] = desc
-
-    def setRandomSeeds(self,seeds) :
-        """Set the random seeds for this simulation
-
-        Parameters
-        ----------
-        seeds : list of ints
-            list of random seeds to pass to Geant4
-        """
-
-        self.parameters['randomSeeds'] = seeds
-
-    def setBeamSpotSmear(self,smear) :
-        """Set how much to smear primary vertices by
-
-        This smearing affects ALL primary vertices across
-        ALL primary generators.
-
-        Parameters
-        ----------
-        smear : list of floats
-            2 (x,y) or 3 (x,y,z) of widths to smear vertices by in mm
-        """
-
-        self.parameters['beamSpotSmear'] = smear
-
-    def enableHitContribs(self,yes=True):
-        """Allow for the ECal to store the different contributors to its sim hits
-
-        If you aren't doing ECal studies and don't care about the ECal digi
-        pipeline, it might help you save space and time if you call this
-        with False as the input.
-
-        Parameters
-        ----------
-        yes : bool
-            we should allow ECal to store the hit contributors
-        """
-
-        self.parameters['enableHitContribs'] = yes
-
-    def compressHitContribs(self,yes=True) : 
-        """Compress the ECal hit contribs by PDG ID
-
-        If you are really focused on ECal studies and don't care
-        about space or time requirements, you can call this
-        with False as the input.
-
-        Parameters
-        ----------
-        yes : bool
-            we should compress the hit contribs by PDG ID
-        """
-
-        self.parameters['compressHitContribs'] = yes
+            self.scoringPlanes = mP.makeScoringPlanesPath( det_name )
 
     def biasingOn(self,yes=True):
         """Turn biasing on in the simulation
@@ -148,7 +149,7 @@ class simulator(Producer):
             we should turn the biasing on
         """
 
-        self.parameters['biasing.enabled'] = yes
+        self.biasing_enabled = yes
 
     def biasingConfigure(self,process,volume,threshold,factor,allPtl=True,incidentOnly=True,disableEMBiasing=False) :
         """Configure the biasing for this simulation
@@ -181,14 +182,14 @@ class simulator(Producer):
             'electronNuclear' : 'e-'
             }
 
-        self.parameters['biasing.process'         ] = process
-        self.parameters['biasing.volume'          ] = volume
-        self.parameters['biasing.particle'        ] = processToParticle[process]
-        self.parameters['biasing.all'             ] = allPtl
-        self.parameters['biasing.incident'        ] = incidentOnly
-        self.parameters['biasing.disableEMBiasing'] = disableEMBiasing
-        self.parameters['biasing.threshold'       ] = threshold
-        self.parameters['biasing.factor'          ] = factor
+        self.biasing_process = process
+        self.biasing_volume = volume
+        self.biasing_particle
+        self.biasing_all = allPtl
+        self.biasing_incident = incidentOnly
+        self.biasing_disableEMBiasing = disableEMBiasing
+        self.biasing_threshold = threshold
+        self.biasing_factor = factor
 
     def darkBremOn(self,ap_mass,lhe_file_path,method=1,globalxsecfactor=1.) :
         """Configure the dark brem simulation
@@ -209,23 +210,7 @@ class simulator(Producer):
             Bias the dark brem process globally by the input factor
         """
 
-        self.parameters['APrimeMass'] = ap_mass
-        self.parameters['darkbrem.madgraphfilepath'] = lhe_file_path
-        self.parameters['darkbrem.method'          ] = method
-        self.parameters['darkbrem.globalxsecfactor'] = globalxsecfactor
-
-    def preInitCommands(self) :
-        """Access the pre- run initialization Geant4 commands list"""
-        return self.parameters['preInitCommands']
-
-    def postInitCommands(self) :
-        """Access the post- run initialization Geant4 commands list"""
-        return self.parameters['postInitCommands']
-
-    def actions(self) :
-        """Access the list of UserActions attached to this simulation"""
-        return self.parameters['actions']
-
-    def generators(self) :
-        """Access the list of PrimaryGenerators attached to this simulation"""
-        return self.parameters['generators']
+        self.APrimeMass = ap_mass
+        self.darkbrem_madgraphfilepath = lhe_file_path
+        self.darkbrem_method = method
+        self.darkbrem_globalxsecfactor = globalxsecfactor

@@ -32,8 +32,8 @@ namespace ldmx {
         ifile_ = std::make_unique<EventFile>( filename );
         ifile_->setupEvent( &ievent_ );
 
-        simParticleCollName_ = parameters.getParameter<std::string>( "simParticleCollName" );
-        simParticlePassName_ = parameters.getParameter<std::string>( "simParticlePassName" );
+        simParticleCollName_ = parameters.getParameter<std::string>( "collection_name" );
+        simParticlePassName_ = parameters.getParameter<std::string>( "pass_name" );
     }
 
     RootCompleteReSim::~RootCompleteReSim() { 
