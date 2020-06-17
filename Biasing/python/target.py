@@ -59,9 +59,9 @@ def electro_nuclear( detector, generator ) :
 
     # Configure the sequence in which user actions should be called.
     sim.actions().extend([
-            filters.tagger_veto_filter(),
-            filters.target_en_filter(),
-            filters.en_track_filter()      
+            filters.TaggerVetoFilter(),
+            filters.TargetENFilter(),
+            filters.TrackProcessFilter.electro_nuclear()      
     ])
 
     return sim
@@ -122,12 +122,12 @@ def photo_nuclear( detector, generator ) :
 
     # Configure the sequence in which user actions should be called.
     sim.actions().extend([
-            filters.tagger_veto_filter(),
+            filters.TaggerVetoFilter(),
             # Only consider events where a hard brem occurs
-            filters.target_brem_filter(),
-            filters.target_pn_filter(),   
+            filters.TargetBremFilter(),
+            filters.TargetPNFilter(),   
             # Tag all photo-nuclear tracks to persist them to the event.
-            filters.pn_track_filter()
+            filters.TrackProcessFilter.photo_nuclear()
     ])
 
     return sim
@@ -188,8 +188,8 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     # Then give the UserAction to the simulation so that it knows to use it
     sim.actions().extend([ 
-            filters.target_ap_filter(), 
-            filters.ap_track_filter()     
+            filters.DarkBremFilter(), 
+            filters.TrackProcessFilter.dark_brem()     
     ])
     
     return sim
