@@ -19,8 +19,6 @@ class EventProcessor:
 
     Attributes
     ----------
-    parameters : dict
-        python dictionary that will be passed to the C++ object during the configure method
     histograms : list of histogram1D objects
         List of histogram configure objects for the HistogramPool to make for this processor
 
@@ -152,15 +150,10 @@ class Producer(EventProcessor):
         """
 
         msg = "\n  Producer(%s of class %s)"%(self.instanceName,self.className)
-        if len(self.parameters)>0:
+        if len(self.__dict__)>0:
             msg += "\n   Parameters:"
-            for k, v in self.parameters.items():
+            for k, v in self.__dict__.items():
                 msg += "\n    " + str(k) + " : " + str(v)
-
-        if self.histograms:
-            msg += "\n   Creating the following histograms:" 
-            for histo in self.histograms: 
-                msg += '\n    ' + str(histo)
 
         return msg
 
@@ -187,15 +180,10 @@ class Analyzer(EventProcessor):
         """
 
         msg = "\n  Analyzer(%s of class %s)"%(self.instanceName,self.className)
-        if len(self.parameters)>0:
+        if len(self.__dict__)>0:
             msg += "\n   Parameters:"
-            for k, v in self.parameters.items():
+            for k, v in self.__dict__.items():
                 msg += "\n    " + str(k) + " : " + str(v)
-
-        if self.histograms:
-            msg += "\n   Creating the following histograms:" 
-            for histo in self.histograms: 
-                msg += '\n    ' + str(histo)
 
         return msg
                 

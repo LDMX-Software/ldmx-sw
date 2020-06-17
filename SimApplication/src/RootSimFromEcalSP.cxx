@@ -38,10 +38,10 @@ namespace ldmx {
         ifile_ = std::make_unique<EventFile>( filename );
         ifile_->setupEvent( &ievent_ );
 
-        timeCutoff_ = parameters_.getParameter< double >( "timeCutoff" );
+        timeCutoff_ = parameters_.getParameter< double >( "time_cutoff" );
 
-        ecalSPHitsCollName_ = parameters_.getParameter< std::string >( "ecalSPHitsCollName" );
-        ecalSPHitsPassName_ = parameters_.getParameter< std::string >( "ecalSPHitsPassName" );
+        ecalSPHitsCollName_ = parameters_.getParameter< std::string >( "collection_name" );
+        ecalSPHitsPassName_ = parameters_.getParameter< std::string >( "pass_name" );
     }
 
     RootSimFromEcalSP::~RootSimFromEcalSP() { 
