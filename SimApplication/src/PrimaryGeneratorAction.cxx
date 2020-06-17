@@ -17,7 +17,6 @@
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/PrimaryGeneratorManager.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
-#include "Framework/FrameworkDef.h"
 
 /*~~~~~~~~~~*/
 /*   ROOT   */
@@ -47,7 +46,7 @@ namespace ldmx {
             beamspotZSize_ = beamSpot[2];
         }
 
-        auto generators{parameters_.getParameter< std::vector< Class > >("generators")};
+        auto generators{parameters_.getParameter< std::vector< Parameters > >("generators")};
         if ( generators.size() == 0 ) {
             EXCEPTION_RAISE(
                     "MissingGenerator",
@@ -56,7 +55,10 @@ namespace ldmx {
         }
 
         for ( auto& generator : generators ) {
-            manager_.createGenerator(generator.className_, generator.instanceName_, generator.params_);
+            manager_.createGenerator(
+                    generator.getParameter<std::string>("class_name"), 
+                    generator.getParameter<std::string>("instance_name"),
+                    generator);
         }
         
     }

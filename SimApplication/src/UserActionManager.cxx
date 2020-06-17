@@ -48,7 +48,6 @@ namespace ldmx {
     }
 
     void UserActionManager::createAction(const std::string& className, const std::string& instanceName, Parameters& parameters) { 
-    
         auto it{actionInfo_.find(className)}; 
         if (it == actionInfo_.end()) {
             EXCEPTION_RAISE("UserActionException", "Failed to create " + className); 

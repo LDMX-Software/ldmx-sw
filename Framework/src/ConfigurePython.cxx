@@ -19,10 +19,10 @@
 #include <iostream>
 #include <cstring>
 
-/*~~~~~~~~~~*/
-/*   ROOT   */
-/*~~~~~~~~~~*/
-#include "TH1F.h"
+/*~~~~~~~~~~~~~~~~*/
+/*     ROOT       */
+/*~~~~~~~~~~~~~~~~*/
+#include "TH1F.h" //for creating histograms
 
 namespace ldmx {
 
@@ -117,92 +117,103 @@ namespace ldmx {
     }
 
     /**
-     * Get a string object member of the input owner.
-     * Otherwise, return the empty string.
+     * Extract members from a python object.
      *
-     * @param[in] owner python object to look for the string member
-     * @param[in] name name of string member of python object
-     * @return value of string member
+     * Iterates through the object's dictionary and translates the objects inside
+     * of it into the type-specified C++ equivalents, then puts these
+     * objects into a STL map that can be passed to the Parameters class.
+     *
+     * This function is recursive. If a non-base type is encountered,
+     * we pass it back along to this function to translate it's own dictionary.
+     *
+     * @note We rely completely on python being awesome. For all higher level class objects,
+     * python keeps track of all of its member variables in the member dictionary __dict__.
+     *
+     * @param object Python object to get members from
+     * @return Mapping between member name and value. 
      */
-    static std::string stringMember(PyObject* owner, const std::string& name) {
-        std::string retval;
-        PyObject* temp = PyObject_GetAttrString(owner, name.c_str());
-        if (temp != 0) {
-            retval = getPyString(temp);
-        }
-        return retval;
-    }
+    static std::map< std::string, std::any > getMembers(PyObject* object) {
+        
+        PyObject* dictionary{PyObject_GetAttrString(object, "__dict__")};
 
-    /**
-     * Get a integer member of the input owner.
-     *
-     * @param[in] owner python object to look for the integer member
-     * @param[in] name name of integer member of python object
-     * @return value of integer member
-     */
-    static long intMember(PyObject* owner, const std::string& name) {
-        long retval(0);
-        PyObject* temp = PyObject_GetAttrString(owner, name.c_str());
-        if (temp != 0) {
-            retval = getPyInt(temp);
-        }
-        return retval;
-    }
+        PyObject *key(0), *value(0);
+        Py_ssize_t pos = 0;
 
-    /**
-     * Get a string list member of the input owner.
-     * 
-     * @throw Exception if input name does not reference a python list object.
-     *
-     * @param[in] owner python object to look for the list member
-     * @param[in] name name of list member of python object
-     * @return vector of strings containing the entries in the python member list
-     */
-    static std::vector<std::string> stringListMember(PyObject* owner, const char * listname ) {
-        auto pylist = PyObject_GetAttrString( owner , listname );
-        if ( !PyList_Check(pylist) ) {
-            EXCEPTION_RAISE(
-                    "BadType",
-                    "'" + std::string(listname) + "' is not a python list as expected."
-                    );
-        }
+        std::map < std::string, std::any > params; 
 
-        std::vector<std::string> list;
-        for ( Py_ssize_t i = 0; i < PyList_Size(pylist); i++ ) {
-            PyObject *elem = PyList_GetItem(pylist , i );
-            list.push_back( getPyString( elem ) );
-            Py_DECREF( elem );
-        }
+        while (PyDict_Next(dictionary, &pos, &key, &value)) {
 
-        return std::move(list);
-    }
+            std::string skey{getPyString(key)};
 
-    /**
-     * Get a double list member of the input owner.
-     *
-     * @throw Exception if input name does not reference a python list object
-     *
-     * @param[in] owner python object to look for the list member
-     * @param[in] name name of list member of python object
-     * @return vector of doubles containing the entries in the python member list
-     */
-    static std::vector<double> doubleListMember(PyObject* owner, const char * listname ) {
-        auto pylist = PyObject_GetAttrString( owner , listname );
-        if ( !PyList_Check(pylist) ) {
-            EXCEPTION_RAISE(
-                    "BadType",
-                    "'" + std::string(listname) + "' is not a python list as expected."
-                    );
-        }
+            if (isPyInt(value)) {
+                if (PyBool_Check(value)) {
+                    params[skey] = bool(PyLong_AsLong(value)); 
+                } else { 
+                    params[skey] = int(PyLong_AsLong(value));
+                }
+            } else if (PyFloat_Check(value)) {
+                params[skey] = PyFloat_AsDouble(value);  
+            } else if (isPyString(value)) {
+                params[skey] = getPyString(value);
+            } else if (PyList_Check(value)) { // assume everything is same value as first value
+                if (PyList_Size(value) > 0) {
 
-        std::vector<double> list;
-        for ( Py_ssize_t i = 0; i < PyList_Size(pylist); i++ ) {
-            PyObject *elem = PyList_GetItem(pylist , i );
-            list.push_back( PyFloat_AsDouble(elem) );
-            Py_DECREF( elem );
-        }
+                    auto vec0{PyList_GetItem(value, 0)};
 
-        return std::move(list);
+                    if (isPyInt(vec0)) {
+                        std::vector<int> vals;
+
+                        for (auto j{0}; j < PyList_Size(value); j++)
+                            vals.push_back(PyLong_AsLong(PyList_GetItem(value, j)));
+
+                        params[skey] = vals;
+
+                    } else if (PyFloat_Check(vec0)) {
+                        std::vector<double> vals;
+
+                        for (auto j{0}; j < PyList_Size(value); j++)
+                            vals.push_back(PyFloat_AsDouble(PyList_GetItem(value, j)));
+
+                        params[skey] = vals;
+
+                    } else if (isPyString(vec0)) {
+                        std::vector<std::string> vals;
+                        for (Py_ssize_t j = 0; j < PyList_Size(value); j++){
+                            PyObject* elem = PyList_GetItem(value , j );
+                            vals.push_back(getPyString(elem));
+                            Py_DECREF(elem);
+                        }
+
+                        params[skey] = vals;
+
+                    } else { 
+
+                        // RECURSION zoinks!
+                        // If the objects stored in the list doesn't 
+                        // satisfy any of the above conditions, just
+                        // create a vector of parameters objects
+                        std::vector< Parameters > vals;
+                        for (auto j{0}; j < PyList_Size(value); ++j) {
+
+                            auto obj{PyList_GetItem( value, j )}; 
+
+                            vals.emplace_back();
+                            vals.back().setParameters( getMembers(obj) );
+
+                            Py_DECREF(obj);
+                        } 
+                        params[skey] = vals;
+
+                    } //type of object in python list
+                } //python list has non-zero size
+            } //python object type
+
+            Py_XDECREF( key );
+            Py_XDECREF(value);
+
+        } //loop through python dictionary
+
+        return params; 
     }
 
     ConfigurePython::ConfigurePython(const std::string& pythonScript, char* args[], int nargs) {
@@ -279,7 +290,7 @@ namespace ldmx {
                     "Process object not defined. This object is required to run ldmx-app."
                     );
         } else if ( pProcess == Py_None ) {
-            //lasProcess was left undefined
+            //lastProcess was left undefined
             EXCEPTION_RAISE("ConfigureError", 
                     "Process object not defined. This object is required to run ldmx-app."
                     );
@@ -289,69 +300,14 @@ namespace ldmx {
         //to the last Process object defined in the script.
         //We can now look at pProcess and get all of our parameters out of it.
 
-        keepRules_    = stringListMember( pProcess , "keep" );
-        skimRules_    = stringListMember( pProcess , "skimRules" );
-        inputFiles_   = stringListMember( pProcess , "inputFiles" );
-        outputFiles_  = stringListMember( pProcess , "outputFiles" );
-        libraries_    = stringListMember( pProcess , "libraries" );
-        eventLimit_   = intMember( pProcess , "maxEvents" );
-        run_          = intMember( pProcess , "run" );
-        logFrequency_ = intMember( pProcess , "logFrequency" ); 
-        compressionSetting_ = intMember( pProcess , "compressionSetting" );
-        histoOutFile_ = stringMember( pProcess , "histogramFile" );
-        passname_     = stringMember( pProcess , "passName" );
-
-        skimDefaultIsKeep_ = bool(intMember(pProcess, "skimDefaultIsKeep"));
-
-        //Now the more complicated paramter: sequence
-        //  we need to go through this list and attach all of the parameters
-        //  of each processor to itself as well
-        PyObject* pysequence = PyObject_GetAttrString( pProcess , "sequence" );
-        for (auto i{0}; i < PyList_Size(pysequence); ++i) {
-
-            PyObject* processor{PyList_GetItem(pysequence, i)}; 
-
-            ProcessorClass pc; 
-            pc.className_ = stringMember(processor, "className");
-            pc.instanceName_ = stringMember(processor, "instanceName");
-
-            PyObject* histos{PyObject_GetAttrString(processor, "histograms")};
-
-            for (auto ihisto{0}; ihisto < PyList_Size(histos); ++ihisto) {
-
-                PyObject* histogram{PyList_GetItem(histos, ihisto)};
-
-                HistogramInfo histInfo; 
-                histInfo.name_   = stringMember(histogram, "name"); 
-                histInfo.xLabel_ = stringMember(histogram, "xlabel"); 
-                histInfo.xbins_  = doubleListMember(histogram, "xbins");
-                histInfo.yLabel_ = stringMember(histogram, "ylabel"); 
-                histInfo.ybins_  = doubleListMember(histogram, "ybins");
-
-                pc.histograms_.push_back(histInfo); 
-
-            }
-
-            PyObject* parameters{PyObject_GetAttrString(processor, "parameters")};
-            if (parameters != 0 && PyDict_Check(parameters)) {
-
-                auto params{getParameters(parameters)}; 
-
-                pc.params_.setParameters(params); 
-            }
-
-            sequence_.push_back(pc);
-
-        }
-
-        Py_DECREF(pProcess); //owns all member python objects
+        configuration_.setParameters(getMembers(pProcess));
 
         //all done with python nonsense
         //do nothing for some reason ¯\_(ツ)_/¯
         //  too lazy to figure out how to close up python well
         //  calling the below function leads to a seg fault on
         //  some machines
-        //Py_Finalize();
+        //if ( Py_FinalizeEx() < 0 ) error
     }
 
     ProcessHandle ConfigurePython::makeProcess() {
@@ -360,135 +316,67 @@ namespace ldmx {
         //this just takes the parameters determined earlier
         //and puts them into the Process + EventProcessor framework
 
-        auto process{std::make_unique<Process>(passname_)};  
+        auto process{std::make_unique<Process>(
+                configuration_.getParameter<std::string>("passName")
+                )};  
 
-        process->setHistogramFileName(histoOutFile_);
-        process->setEventLimit(eventLimit_);
-        process->setLogFrequency(logFrequency_); 
+        process->setHistogramFileName(configuration_.getParameter<std::string>("histogramFile"));
+        process->setEventLimit(configuration_.getParameter<int>("maxEvents"));
+        process->setLogFrequency(configuration_.getParameter<int>("logFrequency")); 
+        process->setCompressionSetting(configuration_.getParameter<int>("compressionSetting"));
 
-        std::for_each(libraries_.begin(), libraries_.end(), 
+        auto run{configuration_.getParameter<int>("run")};
+        if ( run > 0 ) process->setRunNumber(run);
+
+        auto libs{configuration_.getParameter<std::vector<std::string>>("libraries")};
+        std::for_each(libs.begin(), libs.end(), 
                 [](auto& lib) { EventProcessorFactory::getInstance().loadLibrary(lib);}
                 ); 
 
-        for (auto proc : sequence_) {
-            EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(proc.className_, proc.instanceName_, *process);
-            if (ep == 0) {
-                EXCEPTION_RAISE("UnableToCreate", "Unable to create instance '" + proc.instanceName_ + "' of class '" + proc.className_ + "'");
-            }
-            //configure processor using passed parameters
-            ep->configure(proc.params_);
-            //create histograms passed from python (if they exist)
-            if ( not proc.histograms_.empty() ) {
-                ep->getHistoDirectory();
-                ep->createHistograms( proc.histograms_ );
-            }
-            process->addToSequence(ep);
-        }
-        for (auto file : inputFiles_) {
+        auto inputFiles{configuration_.getParameter<std::vector<std::string>>("inputFiles")};
+        for (auto file : inputFiles ) {
             process->addFileToProcess(file);
         }
-        for (auto file : outputFiles_) {
+
+        auto outputFiles{configuration_.getParameter<std::vector<std::string>>("outputFiles")};
+        for (auto file : outputFiles) {
             process->addOutputFileName(file);
         }
-        process->setCompressionSetting(compressionSetting_);
-        for (auto rule : keepRules_) {
+
+        auto keepRules{configuration_.getParameter<std::vector<std::string>>("keep")};
+        for (auto rule : keepRules) {
             process->addDropKeepRule(rule);
         }
-        process->getStorageController().setDefaultKeep(skimDefaultIsKeep_);
-        for (size_t i=0; i<skimRules_.size(); i+=2) {
-            process->getStorageController().addRule(skimRules_[i],skimRules_[i+1]);
+
+        process->getStorageController().setDefaultKeep(
+                configuration_.getParameter<bool>("skimDefaultIsKeep")
+                );
+        auto skimRules{configuration_.getParameter<std::vector<std::string>>("skimRules")};
+        for (size_t i=0; i<skimRules.size(); i+=2) {
+            process->getStorageController().addRule(skimRules[i],skimRules[i+1]);
         }
-        if (run_ > 0)
-            process->setRunNumber(run_);
+
+        auto sequence{configuration_.getParameter<std::vector<Parameters>>("sequence")};
+        for (auto proc : sequence) {
+            auto className{proc.getParameter<std::string>("className")};
+            auto instanceName{proc.getParameter<std::string>("instanceName")};
+            EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(
+                    className, instanceName, *process);
+            if (ep == 0) {
+                EXCEPTION_RAISE("UnableToCreate", 
+                        "Unable to create instance '" + instanceName + "' of class '" + className 
+                        + "'. Did you load the library that this class is apart of?");
+            }
+            auto histograms{proc.getParameter<std::vector<Parameters>>("histograms")};
+            if (!histograms.empty()) {
+                ep->getHistoDirectory();
+                ep->createHistograms( histograms );
+            }
+            ep->configure(proc);
+            process->addToSequence(ep);
+        }
 
         return process;
     }
 
-    std::map< std::string, std::any > ConfigurePython::getParameters(PyObject* dictionary) { 
-
-        PyObject *key(0), *value(0);
-        Py_ssize_t pos = 0;
-
-        std::map < std::string, std::any > params; 
-
-        while (PyDict_Next(dictionary, &pos, &key, &value)) {
-
-            std::string skey{getPyString(key)};
-
-            if (isPyInt(value)) {
-                if (PyBool_Check(value)) {
-                    params[skey] = bool(PyLong_AsLong(value)); 
-                } else { 
-                    params[skey] = int(PyLong_AsLong(value));
-                }
-            } else if (PyFloat_Check(value)) {
-                params[skey] = PyFloat_AsDouble(value);  
-            } else if (isPyString(value)) {
-                params[skey] = getPyString(value);
-            } else if (PyList_Check(value)) { // assume everything is same value as first value
-                if (PyList_Size(value) > 0) {
-
-                    auto vec0{PyList_GetItem(value, 0)};
-
-                    if (isPyInt(vec0)) {
-                        std::vector<int> vals;
-
-                        for (auto j{0}; j < PyList_Size(value); j++)
-                            vals.push_back(PyLong_AsLong(PyList_GetItem(value, j)));
-
-                        params[skey] = vals;
-
-                    } else if (PyFloat_Check(vec0)) {
-                        std::vector<double> vals;
-
-                        for (auto j{0}; j < PyList_Size(value); j++)
-                            vals.push_back(PyFloat_AsDouble(PyList_GetItem(value, j)));
-
-                        params[skey] = vals;
-
-                    } else if (isPyString(vec0)) {
-                        std::vector<std::string> vals;
-                        for (Py_ssize_t j = 0; j < PyList_Size(value); j++){
-                            PyObject* elem = PyList_GetItem(value , j );
-                            vals.push_back(getPyString(elem));
-                            Py_DECREF(elem);
-                        }
-
-                        params[skey] = vals;
-
-                    } else { 
-
-                        // If the objects stored in the list doesn't 
-                        // satisfy any of the above conditions, just
-                        // create a vector of Class objects.
-                        std::vector< Class > vals;
-                        for (auto j{0}; j < PyList_Size(value); ++j) {
-
-                            auto object{PyList_GetItem( value, j )}; 
-                            Class c; 
-                            c.className_    = stringMember(object, "class_name");
-                            c.instanceName_ = stringMember(object, "instance_name");  
-
-                            auto dict{PyObject_GetAttrString(object, "parameters")};
-                            auto classParams{getParameters(dict)}; 
-                            c.params_.setParameters(classParams); 
-                            Py_DECREF(dict);
-
-                            vals.push_back(c);
-
-                            Py_DECREF(object);
-                        } 
-                        params[skey] = vals;
-
-                    } //type of object in python list
-                } //python list has non-zero size
-            } //python object type
-
-            Py_XDECREF( key );
-            Py_XDECREF(value);
-
-        } //loop through python dictionary
-
-        return params; 
-    }
 } //ldmx
