@@ -1,12 +1,5 @@
-/**
- * @file Simulator.h
- * @brief Run the G4 simulation inside of ldmx-app
- * @author Tom Eichlersmith, University of Minnesota
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
-
-#ifndef _SIMAPPLICATION_SIMULATOR_H_
-#define _SIMAPPLICATION_SIMULATOR_H_
+#ifndef SIMAPPLICATION_SIMULATOR_H
+#define SIMAPPLICATION_SIMULATOR_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -44,49 +37,44 @@ namespace ldmx {
 
     /**
      * @class Simulator
-     * @brief Producer that runs Geant4 simulation inside of ldmx-app
+     * @brief Producer that wraps the Geant4 simulation engine so it can be
+     *      run using the fire app.
      *
      * Most (if not all) of the heavy lifting is done in the classes in the 
      * Sim* modules.  This producer is mainly focused on calling appropriate
      * functions at the right time in the processing chain.
      */
-    class Simulator : public ldmx::Producer {
+    class Simulator : public Producer {
 
         public:
 
             /**
              * Constructor.
              *
-             * Blank Producer constructor
-             * Constructs object that are non-configurable.
-             *
-             * @param name Name for this instance of the class.
-             * @param process The Process class assocaited with EventProcessor, 
-             *                provided by the Framework. 
+             * @param[in] name Name for this instance of the class.
+             * @param[in] process The Process class assocaited with EventProcessor, 
+             *      provided by the Framework. 
              */
-            Simulator(const std::string& name, ldmx::Process& process);
+            Simulator(const std::string& name, Process& process);
 
-            /**
-             * Destructor.
-             *
-             * Deletes hanging pointers
-             */
+            /// Destructor
             ~Simulator();
 
             /**
              * Callback for the processor to configure itself from the given set
              * of parameters.
              * 
-             * @param parameters ParameterSet for configuration.
+             * @param parameters  The parameter set used to configure this 
+             *      processor.
              */
             void configure(Parameters& parameters) final override; 
 
             /**
-             * Run simulation and export results to output event.
+             * Run simulation and persist results to output event.
              *
              * @param event The event to process. 
              */
-            virtual void produce(ldmx::Event &event) final override;
+            virtual void produce(Event &event) final override;
 
             /**
              *  Callback for the EventProcessor to take any necessary action 
@@ -105,7 +93,7 @@ namespace ldmx {
             void onFileClose(EventFile& eventFile) final override;  
 
             /**
-             * Initialization of simulation
+             * Initialization of simulation.
              *
              * This uses the parameters set in the configure method to 
              * construct and initialize the simulation objects.
@@ -123,8 +111,9 @@ namespace ldmx {
             /**
              * Check if the input command is allowed to be run.
              *
-             * Looks for sub-strings matching the ones listed as an invalid command.
-             * These invalid commands are mostly commands where control has been handed over to Simulator.
+             * Looks for sub-strings matching the ones listed as an invalid 
+             * command. These invalid commands are mostly commands where control
+             * has been handed over to Simulator.
              */
             bool allowed(const std::string& command) const;
 
@@ -145,10 +134,6 @@ namespace ldmx {
             /// Commands not allowed to be passed from python config file
             ///     This is because Simulator already runs them.
             static const std::vector< std::string > invalidCommands_;
-
-            /*********************************************************
-             * Python Configuration Parameters
-             *********************************************************/
 
             /// The parameters used to configure the simulation
             Parameters parameters_;   
