@@ -40,7 +40,6 @@ namespace ldmx {
     // Forward declarations
     class UserAction; 
     
-    
     typedef UserAction* UserActionBuilder(const std::string& name, Parameters& parameters); 
 
     /**
