@@ -28,7 +28,12 @@ namespace ldmx {
     }
 
     void TrackMap::clear() {
-        trackIDMap_.clear();
+
+        for (const auto& [trackID, trajectory] : trajectoryMap_) { 
+            delete trajectory;
+        }
         trajectoryMap_.clear();
+
+        trackIDMap_.clear();
     }
 }
