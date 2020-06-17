@@ -24,9 +24,9 @@ def inclusive_single_e() :
 
     sim = simulator.simulator( "inclusive_single_e" )
     sim.setDetector( "ldmx-det-v12" )
-    sim.setRunNumber(1)
-    sim.setDescription("One 4GeV electron shot from far upstream.")
-    sim.generators().append(generators.single_4gev_e_upstream_tagger())
+    sim.runNumber = 1
+    sim.description = "One 4GeV electron shot from far upstream."
+    sim.generators.append(generators.single_4gev_e_upstream_tagger())
     return sim
 
 def lheExample( lheFile ) :
@@ -55,9 +55,9 @@ def lheExample( lheFile ) :
 
     sim = simulator.simulator( "lheSimulation" )
     sim.setDetector( "ldmx-det-v12" )
-    sim.setRunNumber(1)
-    sim.setDescription("Example of how to use LHE generator")
-    sim.generators().append(generators.lhe( "LHEExample" , lheFile ))
+    sim.runNumber = 1
+    sim.description = "Example of how to use LHE generator"
+    sim.generators.append(generators.lhe( "LHEExample" , lheFile ))
     return sim
 
 def gpsExample( ) :
@@ -83,8 +83,8 @@ def gpsExample( ) :
 
     sim = simulator.simulator( "gpsExample" )
     sim.setDetector( "ldmx-det-v12" )
-    sim.setRunNumber(1)
-    sim.setDescription("Example of how to use GPS generator")
+    sim.runNumber = 1
+    sim.description = "Example of how to use GPS generator"
     gpsGen = generators.gps( "GPSExample" , [
         "/gps/particle e-",
         "/gps/pos/type Plane",
@@ -99,7 +99,7 @@ def gpsExample( ) :
         "/gps/ene/gradient 1",
         "/gps/ene/intercept 1"
         ])
-    sim.generators().append(gpsGen)
+    sim.generators.append(gpsGen)
     return sim
 
 def multiExample( ) :
@@ -123,14 +123,14 @@ def multiExample( ) :
 
     sim = ldmxcfg.Producer( "mpgExample" , "ldmx::Simulator" )
     sim.setDetector( "ldmx-det-v12" )
-    sim.setRunNumber(1)
-    sim.setDescription("Example of how to use MPG generator")
+    sim.runNumber = 1
+    sim.description = "Example of how to use MPG generator"
     mpgGen = generators.multi( "MPGExample" )
-    mpgGen.vertex([ 0., 0., 0. ]) #mm
-    mpgGen.nParticles(2)
-    mpgGen.pdgID(11)
-    mpgGen.enablePoisson()
-    mpgGen.momentum([ 0., 0., 4000. ])#MeV
-    sim.generators().append(mpgGen)
+    mpgGen.vertex = [ 0., 0., 0. ] #mm
+    mpgGen.nParticles = 2
+    mpgGen.pdgID = 11
+    mpgGen.enablePoisson = True
+    mpgGen.momentum = [ 0., 0., 4000. ]#MeV
+    sim.generators.append(mpgGen)
     return sim
 
