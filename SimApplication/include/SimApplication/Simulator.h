@@ -117,6 +117,16 @@ namespace ldmx {
              */
             bool allowed(const std::string& command) const;
 
+
+            /**
+             * Set the seeds to be used by the Geant4 random engine. 
+             *
+             * @param[in] seeds A vector of seeds to pass to the G4 random 
+             *      engine.  The vector must contain at least 2 seeds otherwise 
+             *      an exception is thrown. 
+             */
+            void setSeeds(std::vector< int > seeds); 
+
         private:
 
             /// Manager controlling G4 simulation run 

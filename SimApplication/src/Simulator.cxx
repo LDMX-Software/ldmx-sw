@@ -29,6 +29,7 @@
 #include "G4CascadeParameters.hh"
 #include "G4GeometryManager.hh"
 #include "G4GDMLParser.hh"
+#include "Randomize.hh" 
 
 namespace ldmx {
 
@@ -160,16 +161,11 @@ namespace ldmx {
         //initialize run
         runManager_->Initialize();
 
-        auto randomSeeds = parameters_.getParameter<std::vector<int>>("randomSeeds");
-        if ( randomSeeds.size() > 1 ) {
-            //Geant4 allows for random seeds from 2 to 100
-            std::string cmd( "/random/setSeeds " );
-            for ( const int &seed : randomSeeds ) {
-                cmd += std::to_string(seed) + " ";
-            }
-            uiManager_->ApplyCommand( cmd );
-        }
-
+        // If specified, set the seeds.  The seed vector must contain at 
+        // least two seeds otherwise nothing will get set.
+        auto seeds{parameters_.getParameter< std::vector< int > >("randomSeeds")};
+        setSeeds(seeds); 
+        
         // Get the extra simulation configuring commands
         auto postInitCommands = parameters_.getParameter< std::vector< std::string > >("postInitCommands");
         for ( const std::string& cmd : postInitCommands ) {
@@ -246,6 +242,28 @@ namespace ldmx {
         }
         //checked all invalid commands ==> ALLOWED
         return true;
+    }
+
+    void Simulator::setSeeds(std::vector< int > seeds) {
+
+        // If no seeds have been specified then return immediately.
+        if (seeds.empty()) return;
+
+        // If seeds are specified, make sure that the container has at least 
+        // two seeds.  If not, throw an exception.  
+        if (seeds.size() == 1) { 
+            EXCEPTION_RAISE("ConfigurationException", "At least two seeds need to be specified.");
+        }
+
+        // Create the array of seeds and pass them to G4Random.  Currently, 
+        // only 100 seeds can be specified at a time.  If less than 100 
+        // seeds are specified, the remaining slots are set to 0. 
+        std::vector< long > seedVec(100, 0); 
+        for (std::size_t index{0}; index < seeds.size(); ++index) seedVec[index] = static_cast<long>(seeds[index]);
+
+        // Pass the array of seeds to the random engine.
+        G4Random::setTheSeeds(&seedVec[0]);  
+
     }
 
 }
