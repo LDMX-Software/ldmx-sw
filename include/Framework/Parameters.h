@@ -59,7 +59,7 @@ namespace ldmx {
              * @return The user specified parameter of type T.
              */
             template <typename T> 
-            T getParameter(const std::string& name, T defaultParam = T()) { 
+            T getParameter(const std::string& name, T defaultParam = T()) const { 
                 
                 // Check if the variable exists in the map.  If it doesn't, 
                 // warn the user and set a default.
@@ -67,7 +67,7 @@ namespace ldmx {
 
                 T parameter; 
                 try { 
-                    parameter = std::any_cast< T >(parameters_[name]);
+                    parameter = std::any_cast< T >(parameters_.at(name));
                 } catch(const std::bad_any_cast& e) {
                     EXCEPTION_RAISE("Parameters::getParameter", 
                                     "Parameter " + name + " is being cast to incorrect type ( " + typeid(T).name() + ")."); 

@@ -28,14 +28,19 @@ namespace ldmx {
         EventProcessorFactory::getInstance().registerEventProcessor(classname, classtype, maker);
     }
 
-    void EventProcessor::createHistograms(const std::vector<HistogramInfo>& histos) {
+    void EventProcessor::createHistograms(const std::vector<Parameters>& histos) {
         for ( auto const& h : histos ) {
-            if ( h.ybins_.empty() ) {
+            auto name{h.getParameter<std::string>("name")};
+            auto xLabel{h.getParameter<std::string("xlabel")};
+            auto xbins{h.getParameter<std::vector<double>>("xbins")};
+            auto yLabel{h.getParameter<std::string("ylabel")};
+            auto ybins{h.getParameter<std::vector<double>>("ybins")};
+            if ( ybins.empty() ) {
                 //assume 1D histogram
-                histograms_.create( h.name_ , h.xLabel_ , h.xbins_ );
+                histograms_.create( name , xLabel , xbins );
             } else {
                 //assume 2D histogram
-                histograms_.create( h.name_ , h.xLabel_ , h.xbins_ , h.yLabel_ , h.ybins_ );
+                histograms_.create( name , xLabel , xbins , yLabel , ybins );
             }
         }
     }

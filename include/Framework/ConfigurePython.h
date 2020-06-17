@@ -18,7 +18,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Process.h"
-#include "Framework/FrameworkDef.h" 
+#include "Framework/Parameters.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -28,17 +28,6 @@
 #include <vector>
 
 namespace ldmx {
-
-    /**
-     * @struct ProcessorClass
-     * @brief Represents the configuration of an EventProcessor in the job.
-     */
-    struct ProcessorClass : Class {
-
-        /// Histograms associated with this class    
-        std::vector<HistogramInfo> histograms_; 
-
-    };
 
     /**
      * @class ConfigurePython
@@ -91,84 +80,13 @@ namespace ldmx {
             ProcessHandle makeProcess();
 
         private:
-
-            /**
-             * Extract parameter array from a python object.
-             *
-             * Assumes that the input PyObject is a python dictionary.
-             *
-             * Iterates through the dictionary and translates the objects inside
-             * of it into the type-specified C++ equivalents, then puts these
-             * objects into a STL map that can be passed to the Parameters class.
-             *
-             * @param dictionary Python dictionary class.
-             * @return Mapping between parameter name and value. 
-             */
-            std::map< std::string, std::any > getParameters(PyObject* dictionary); 
             
-
-            /** The label for this processing pass. */
-            std::string passname_;
-
-            /** 
-             * The maximum number of events to process, if provided in python
-             * file. 
-             */
-            int eventLimit_ {-1};
-
-            /** 
-             * The run number to use when generating events (no input file), 
-             * if provided in python file. 
-             */
-            int run_ {-1};
-
-            /** The frequency with which event info is printed. */
-            int logFrequency_{-1}; 
-
-            /** 
-             * List of input ROOT files to process in the job, if provided in 
-             * python file. 
-             */
-            std::vector<std::string> inputFiles_;
-
-            /** 
-             * List of rules for keeping and dropping data products, if 
-             * provided in python file. 
-             */
-            std::vector<std::string> keepRules_;
-
-            /** Default sense for keeping events (keep or drop) */
-            bool skimDefaultIsKeep_;
-
-            /** 
-             * List of rules for keeping and dropping events, if provided in 
-             * python file. 
-             */
-            std::vector<std::string> skimRules_;
-
-            /** 
-             * List of rules for shared libraries to load, if provided in 
-             * python file. 
-             */
-            std::vector<std::string> libraries_;
-
-            /** 
-             * List of rules for output ROOT file names, if provided in python
-             * file. 
-             */
-            std::vector<std::string> outputFiles_;
-
             /**
-             * Compression setting for the output files taken from python file.
+             * The entire configuration for this process
+             *
+             * Contains all parameters that were passed in the python.
              */
-            int compressionSetting_;
-
-            /** Histogram output file name */
-            std::string histoOutFile_{""};
-
-            /** The sequence of EventProcessor objects to be executed in order. */
-            std::vector<ProcessorClass> sequence_;
-
+            Parameters configuration_;
 
     };  // ConfigurePython
 

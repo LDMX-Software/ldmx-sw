@@ -17,7 +17,6 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Event.h"
-#include "Framework/FrameworkDef.h"
 #include "Framework/Parameters.h" 
 #include "Framework/StorageControl.h"
 #include "Framework/Histograms.h"
@@ -171,9 +170,9 @@ namespace ldmx {
 
             /**
              * Internal function which is used to create histograms passed from the python configuration
-             * @parma histos vector of HistogramInfos to create
+             * @parma histos vector of Parameters that configure histograms to create
              */
-            void createHistograms(const std::vector<HistogramInfo>& histos);
+            void createHistograms(const std::vector<Parameters>& histos);
       
         protected:
 
