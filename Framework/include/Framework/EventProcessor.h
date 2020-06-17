@@ -90,8 +90,14 @@ namespace ldmx {
             /**
              * Callback for the EventProcessor to configure itself from the 
              * given set of parameters.
+             *
+             * The parameters a processor has access to are the member variables
+             * of the python class in the sequence that has className equal to
+             * the EventProcessor class name.
+             *
+             * For an example, look at MyProcessor.
              * 
-             * @param parameters ParameterSet for configuration.
+             * @param parameters Parameters for configuration.
              */
             virtual void configure(Parameters& parameters) { } 
 
