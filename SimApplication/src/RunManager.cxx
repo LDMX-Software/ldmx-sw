@@ -21,11 +21,6 @@
 #include "SimApplication/UserStackingAction.h"
 #include "SimApplication/UserTrackingAction.h"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/FrameworkDef.h" 
-
 //------------//
 //   Geant4   //
 //------------//
@@ -109,17 +104,20 @@ namespace ldmx {
 
         // Instantiate action manager
         auto actionManager{UserActionManager::getInstance()}; 
-
-        // Get instances of all G4 actions
-        auto actions{actionManager.getActions()};
        
+        // Get instances of all G4 actions
+        //      also create them in the action manager
+        auto actions{actionManager.getActions()};
+
         // Create all user actions
-        auto userActions{parameters_.getParameter< std::vector< Class > >("actions")}; 
-        std::for_each(userActions.begin(), userActions.end(), 
-                [&actionManager](auto& userAction) { 
-                    actionManager.createAction(userAction.className_, userAction.instanceName_, userAction.params_); 
-                }
-        );
+        auto userActions{parameters_.getParameter< std::vector< Parameters > >("actions")}; 
+        for ( auto& userAction : userActions ) {
+            actionManager.createAction(
+                    userAction.getParameter<std::string>("class_name"),
+                    userAction.getParameter<std::string>("instance_name"), 
+                    userAction
+                    ); 
+        }
 
         // Register all actions with the G4 engine
         for (const auto& [key, act] : actions) {
