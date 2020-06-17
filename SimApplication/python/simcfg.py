@@ -14,17 +14,11 @@ class UserAction:
         Unique name for this particular instance of a UserAction
     class_name : str
         Name of C++ class that this UserAction should be
-
-    Attributes
-    ----------
-    parameters : dict
-        Python dictionary passed to C++ UserAction to be used to configure it
     """
 
     def __init__(self, instance_name, class_name):
         self.class_name    = class_name
         self.instance_name = instance_name
-        self.parameters    = dict() 
 
     def __str__(self): 
         """Stringify this UserAction
@@ -37,7 +31,7 @@ class UserAction:
 
         string = "UserAction (" + self.__repr__() + ")\n"
         string += " Parameters: \n"
-        for k, v in self.parameters.items(): 
+        for k, v in self.__dict__.items(): 
             string += "  %s : %s \n" % (k, v)
 
         return string
@@ -62,19 +56,11 @@ class PrimaryGenerator:
         Unique name for this particular instance of a PrimaryGenerator
     class_name : str
         Name of C++ class that this PrimaryGenerator should be
-
-
-    Attributes
-    ----------
-    parameters : dict
-        Python dictionary passed to C++ PrimaryGenerator to be used to configure it
     """
-
 
     def __init__(self, instance_name, class_name):
         self.class_name    = class_name
         self.instance_name = instance_name
-        self.parameters    = dict() 
 
     def __str__(self): 
         """Stringify this PrimaryGenerator
@@ -88,7 +74,7 @@ class PrimaryGenerator:
 
         string = "PrimaryGenerator (" + self.__repr__() + ")\n" 
         string += " Parameters: \n"
-        for k, v in self.parameters.items(): 
+        for k, v in self.__dict__.items(): 
             string += "  %s : %s \n" % (k, v)
 
         return string
