@@ -444,7 +444,7 @@ class Process:
                 msg += '\n  ' + arule
         if len(self.libraries) > 0:
             msg += "\n Shared libraries to load:"
-            for afile in self.libraries:
+            for afile in set(self.libraries):
                 msg += '\n  ' + afile
 
         return msg
