@@ -114,13 +114,11 @@ namespace ldmx {
 
         }   
 
-        // forces Geant4 to use previous eventSeeds
-        // TODO remove this IO bottleneck
-        std::ofstream tmpout("tmpEvent.rndm");
-        std::string eventSeed = ievent_.getEventHeader().getStringParameter("eventSeed");
-        tmpout << eventSeed;
-        tmpout.close();
-
+        // Create an input stream with a copy of the event seed as content.
+        // The input stream is then passed to the random engine to restore 
+        // the state.
+        std::istringstream iss(ievent_.getEventHeader().getStringParameter("eventSeed"));
+        G4Random::restoreFullState(iss); 
     }
 
 } //ldmx
