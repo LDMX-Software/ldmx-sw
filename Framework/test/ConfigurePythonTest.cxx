@@ -94,16 +94,12 @@ DECLARE_PRODUCER_NS(ldmx::test, TestConfig)
  * Checks:
  * - pass parameters to Process object
  * - pass parameters to EventProcessors
- * - pass parameters to python script on command line
+ * - use arguments to python script on command line
  * - TODO pass histogram info to EventProcessors
  * - TODO pass class objects to EventProcessors
  */
 TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
 
-#if PY_MAJOR_VERSION < 3
-    std::cerr << "Python2 doesn't play nice with Catch!" << std::endl;
-    CHECK(false);
-#else
     const std::string configFileName{"test_config_script.py"};
     
     std::ofstream testPyScript( configFileName );
@@ -135,14 +131,6 @@ TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
 
     int correctLogFreq{9};
 
-    /*
-     * Python seg faults when trying to run more than once.
-     * Both this SECTION and the un-commented SECTION
-     * run fine alone, but a segfault is produced
-     * upon starting the next section.
-     *
-     * I'm not sure how to get around this, so I am
-     * just going to leave the more rigorous test in place.
     SECTION( "no arguments to python script" ) {
 
         testPyScript.close();
@@ -151,7 +139,6 @@ TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
 
         p = cfg.makeProcess();
     }
-     */
 
     SECTION( "one argument to python script" ) {
 
@@ -171,5 +158,4 @@ TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
     CHECK( p->getLogFrequency() == correctLogFreq );
 
     CHECK( test::removeFile( configFileName.c_str() ) );
-#endif
 }
