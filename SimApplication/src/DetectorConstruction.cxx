@@ -24,17 +24,17 @@ namespace ldmx {
 
     void DetectorConstruction::ConstructSDandField() {
 
-        auto biasingEnabled{parameters_.getParameter< bool >("biasing.enabled")};
+        auto biasingEnabled{parameters_.getParameter< bool >("biasing_enabled")};
         if (biasingEnabled) {
 
-            auto biasingProcess{parameters_.getParameter< std::string >("biasing.process")}; 
-            auto biasingVolume{parameters_.getParameter< std::string >("biasing.volume")};
-            auto biasingParticle{parameters_.getParameter< std::string >("biasing.particle")}; 
-            auto biasAll{parameters_.getParameter< bool >("biasing.all")}; 
-            auto biasIncident{parameters_.getParameter< bool >("biasing.incident")}; 
-            auto disableEMBiasing{parameters_.getParameter< bool >("biasing.disableEMBiasing")};
-            auto biasThreshold{parameters_.getParameter< double >("biasing.threshold")}; 
-            auto biasFactor{parameters_.getParameter< int >("biasing.factor")}; 
+            auto biasingProcess{parameters_.getParameter< std::string >("biasing_process")}; 
+            auto biasingVolume{parameters_.getParameter< std::string >("biasing_volume")};
+            auto biasingParticle{parameters_.getParameter< std::string >("biasing_particle")}; 
+            auto biasAll{parameters_.getParameter< bool >("biasing_all")}; 
+            auto biasIncident{parameters_.getParameter< bool >("biasing_incident")}; 
+            auto disableEMBiasing{parameters_.getParameter< bool >("biasing_disableEMBiasing")};
+            auto biasThreshold{parameters_.getParameter< double >("biasing_threshold")}; 
+            auto biasFactor{parameters_.getParameter< int >("biasing_factor")}; 
 
             // Instantiate the biasing operator
             // TODO: At some point, this should be more generic i.e. operators should be

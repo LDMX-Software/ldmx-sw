@@ -131,7 +131,7 @@ macro(MODULE)
 
   # write an include file for this module
   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/include.py
-      "\"\"\"Include this module\"\"\"\ndef library() :\n\ \ \ \ \"\"\"Attach the name of ${MODULE_NAME} library to the process\"\"\"\n\ \ \ \ from LDMX.Framework.ldmxcfg import Process\n\ \ \ \ Process.lastProcess.libraries.append('lib${MODULE_NAME}.so')")
+      "\"\"\"Include this module\"\"\"\ndef library() :\n\ \ \ \ \"\"\"Attach the name of ${MODULE_NAME} library to the process\"\"\"\n\ \ \ \ from LDMX.Framework.ldmxcfg import Process\n\ \ \ \ Process.addLibrary('${CMAKE_INSTALL_PREFIX}/lib/lib${MODULE_NAME}.so')")
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/include.py DESTINATION ${PYTHON_INSTALL_DIR})
   # install python scripts
   file(GLOB py_scripts "${${MODULE_NAME}_PYTHON_DIR}/[!_]*.py*")
