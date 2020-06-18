@@ -31,9 +31,9 @@ namespace ldmx {
     void EventProcessor::createHistograms(const std::vector<Parameters>& histos) {
         for ( auto const& h : histos ) {
             auto name{h.getParameter<std::string>("name")};
-            auto xLabel{h.getParameter<std::string("xlabel")};
+            auto xLabel{h.getParameter<std::string>("xlabel")};
             auto xbins{h.getParameter<std::vector<double>>("xbins")};
-            auto yLabel{h.getParameter<std::string("ylabel")};
+            auto yLabel{h.getParameter<std::string>("ylabel")};
             auto ybins{h.getParameter<std::vector<double>>("ybins")};
             if ( ybins.empty() ) {
                 //assume 1D histogram
