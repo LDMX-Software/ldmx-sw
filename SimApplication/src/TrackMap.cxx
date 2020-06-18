@@ -28,12 +28,17 @@ namespace ldmx {
     }
 
     void TrackMap::clear() {
-
+        /**
+         * MEMORY
+         * In some running cases, Geant4 deletes the Trajectories
+         * through its handle on the TrajectoryContainer.
+         * In others, we need to delete the trajectories.
+         * Not sure what is best, more investigation needed.
         for (const auto& [trackID, trajectory] : trajectoryMap_) { 
             delete trajectory;
         }
+        */
         trajectoryMap_.clear();
-
         trackIDMap_.clear();
     }
 }
