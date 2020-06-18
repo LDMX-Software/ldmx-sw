@@ -91,9 +91,6 @@ namespace ldmx {
         // from the GDML description. 
         runManager_->SetUserInitialization( new DetectorConstruction( parser , parameters ) );
 
-        // Store the random numbers used to generate an event. 
-        runManager_->SetRandomNumberStore( true );
-
         // Parse the detector geometry and validate if specified.
         auto detectorPath{parameters_.getParameter< std::string >("detector")};
         auto validateGeometry{parameters_.getParameter< bool >("validate_detector")}; 
