@@ -34,9 +34,6 @@ namespace ldmx {
         // Clear the global track map.
         UserTrackingAction::getUserTrackingAction()->getTrackMap()->clear();
 
-        if ( dynamic_cast<RunManager*>(G4RunManager::GetRunManager())->useRootSeed() )
-            G4Random::restoreEngineStatus("tmpEvent.rndm"); // this line will be needed to read in a set of seeds
-
         // Call user event actions
         for ( auto& eventAction : eventActions_ ) eventAction->BeginOfEventAction(event); 
     }
