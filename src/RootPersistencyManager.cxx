@@ -118,9 +118,12 @@ namespace ldmx {
         }
         eventHeader.setWeight(weight); 
 
-        // Set the seeds used for this event
-        std::string seedString = getEventSeeds();
-        eventHeader.setStringParameter("eventSeed", seedString);
+        // Save the state of the random engine to an output stream. A string
+        // is then extracted and saved to the event header.   
+        std::ostringstream stream;
+        G4Random::saveFullState(stream);
+        //std::cout << stream.str() << std::endl;
+        eventHeader.setStringParameter("eventSeed", stream.str());
     }
 
     std::string RootPersistencyManager::getEventSeeds(std::string fileName) {
