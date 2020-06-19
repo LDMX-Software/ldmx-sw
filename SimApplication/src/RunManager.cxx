@@ -110,7 +110,7 @@ namespace ldmx {
         auto actions{actionManager.getActions()};
 
         // Create all user actions
-        auto userActions{parameters_.getParameter< std::vector< Parameters > >("actions")}; 
+        auto userActions{parameters_.getParameter< std::vector< Parameters > >("actions",{})}; 
         for ( auto& userAction : userActions ) {
             actionManager.createAction(
                     userAction.getParameter<std::string>("class_name"),

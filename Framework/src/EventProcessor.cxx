@@ -34,7 +34,7 @@ namespace ldmx {
             auto xLabel{h.getParameter<std::string>("xlabel")};
             auto xbins{h.getParameter<std::vector<double>>("xbins")};
             auto yLabel{h.getParameter<std::string>("ylabel")};
-            auto ybins{h.getParameter<std::vector<double>>("ybins")};
+            auto ybins{h.getParameter<std::vector<double>>("ybins",{})};
             if ( ybins.empty() ) {
                 //assume 1D histogram
                 histograms_.create( name , xLabel , xbins );

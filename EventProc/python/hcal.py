@@ -9,11 +9,11 @@ class HcalDigiProducer(ldmxcfg.Producer) :
 
     Examples
     --------
-        from LDMX.EventProc.hcalDigis import hcalDigis
-        p.sequence.append( hcalDigis )
+        from LDMX.EventProc.hcal import HcalDigiProducer
+        p.sequence.append( HcalDigiProducer() )
     """
 
-    def __init__(self,name) :
+    def __init__(self,name = 'hcalDigis') :
         super().__init__(name,'ldmx::HcalDigiProducer')
 
         from LDMX.EventProc import include
@@ -32,8 +32,9 @@ class HcalDigiProducer(ldmxcfg.Producer) :
         self.pe_per_mip = 68. # PEs per MIP at 1m (assume 80% attentuation of 1m)
         self.strip_attenuation_length = 5. # this is in m
         self.strip_position_resolution = 150. # this is in mm
-
-hcalDigis = HcalDigiProducer('hcalDigis')
+        self.sim_hit_pass_name = '' #use any pass available
+        import time
+        self.randomSeed = int(time.time())
 
 class HcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for veto in HCal
@@ -42,11 +43,11 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
 
     Examples
     --------
-        from LDMX.EventProc.hcalVeto import hcalVeto
-        p.sequence.append( hcalVeto )
+        from LDMX.EventProc.hcal import HcalVetoProcessor
+        p.sequence.append( HcalVetoProcessor() )
     """
 
-    def __init__(self,name) :
+    def __init__(self,name = 'hcalVeto') :
         super().__init__(name,'ldmx::HcalVetoProcessor')
 
         from LDMX.EventProc import include
@@ -57,4 +58,3 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
         self.max_depth = 4000.0
         self.back_min_pe = 1.
 
-hcalVeto = ldmxcfg.Producer("HcalVeto", "ldmx::HcalVetoProcessor")

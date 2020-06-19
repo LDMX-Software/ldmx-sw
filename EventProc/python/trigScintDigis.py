@@ -4,8 +4,8 @@ Sets all parameters to reasonable defaults.
 
 Examples
 --------
->>> from LDMX.EventProc.trigScintDigis import *
->>> p.sequence.extend([ trigScintDigis , trigScintDigisDn , trigScintDigisTag ])
+    from LDMX.EventProc.trigScintDigis import TrigScintDigiProducer
+    p.sequence.extend([ TrigScintDigiProducer.up() , TrigScintDigiProducer.down() , TrigScintDigiProducer.tagger() ])
 """
 
 from LDMX.Framework import ldmxcfg
@@ -25,15 +25,30 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
         self.mev_per_mip = 0.4
         self.pe_per_mip = 10.
         self.input_collection="TriggerPadUpSimHits"
+        self.input_pass_name="" #take any pass
         self.output_collection="trigScintDigisUp"
+        import time
+        self.randomSeed = int(time.time())
+        self.verbose = False
 
+    def up() :
+        """Get the digitizer for the trigger pad upstream of target"""
+        digi = TrigScintDigiProducer( 'trigScintDigisUp' )
+        digi.input_collection = 'TriggerPadUpSimHits'
+        digi.output_collection= 'trigScintDigisUp'
+        return digi
 
-trigScintDigisUp  = TrigScintDigiProducer("trigScintDigisUp")
-trigScintDigisDn  = TrigScintDigiProducer("trigScintDigisDn")
-trigScintDigisDn.input_collection = "TriggerPadDownSimHits"
-trigScintDigisDn.output_collection = "trigScintDigisDn"
+    def down() :
+        """Get the digitizer for the trigger pad downstream of target"""
+        digi = TrigScintDigiProducer( 'trigScintDigisDn' )
+        digi.input_collection = 'TriggerPadDownSimHits'
+        digi.output_collection= 'trigScintDigisDn'
+        return digi
 
-trigScintDigisTag = TrigScintDigiProducer("trigScintDigisTag")
-trigScintDigisTag.input_collection = "TriggerPadTaggerSimHits"
-trigScintDigisTag.output_collection = "trigScintDigisTag"
+    def tagger() :
+        """Get the digitizer for the trigger pad upstream of tagger"""
+        digi = TrigScintDigiProducer( 'trigScintDigisTag' )
+        digi.input_collection = 'TriggerPadTaggerSimHits'
+        digi.output_collection= 'trigScintDigisTag'
+        return digi
 

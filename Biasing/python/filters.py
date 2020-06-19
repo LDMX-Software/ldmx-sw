@@ -22,6 +22,11 @@ class TargetBremFilter(simcfg.UserAction):
         Maximum momentum the recoil electron can have [MeV]
     brem_min_e : float
         Minimum energy the brem photon can have [MeV]
+
+    Attributes
+    ----------
+    kill_recoil_track : bool
+        Should we kill the recoil electron track for a worst case scenario?
     """
 
     def __init__(self,recoil_max_p = 1500.,brem_min_e = 2500.) :
@@ -32,6 +37,7 @@ class TargetBremFilter(simcfg.UserAction):
 
         self.recoil_max_p_threshold = recoil_max_p
         self.brem_min_energy_threshold = brem_min_e
+        self.kill_recoil_track = False
 
 class EcalProcessFilter(simcfg.UserAction):
     """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 
@@ -96,6 +102,7 @@ class DarkBremFilter(simcfg.UserAction):
         include.library()
 
         self.volume = vol
+        self.verbosity = 0
 
 class TaggerVetoFilter(simcfg.UserAction): 
     """ Configuration used to reject off-energy electrons in the tagger tracker.
