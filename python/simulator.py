@@ -29,6 +29,8 @@ class simulator(Producer):
         Generators to use to make primaries
     detector : str
         Full path to detector description gdml (suggested to use setDetector)
+    validate_detector : bool, optional
+        Should we have Geant4 validate that the gdml is correctly formatted?
     runNumber : int
         Identifier for this run
     description : str
@@ -75,6 +77,12 @@ class simulator(Producer):
         Integer flag to decide how to interpret dark brem vertices
     darkbrem_globalxsecfactor : float, optional
         Bias the dark brem process everywhere by this factor
+    logging_prefix : str, optional
+        Prefix to prepend any Geant4 logging files
+    rootPrimaryGenUseSeed : bool, optional
+        Use the seed stored in the EventHeader for random generation
+    verbosity : int, optional
+        Verbosity level to print
     """
 
     def __init__(self, instance_name ) :
@@ -97,6 +105,10 @@ class simulator(Producer):
         self.preInitCommands = [ ]
         self.postInitCommands = [ ]
         self.actions = [ ]
+        self.logging_prefix = ''
+        self.rootPrimaryGenUseSeed = False
+        self.validate_detector = False
+        self.verbosity = 0
 
         # Biasing stuff
         self.biasing_enabled = False
