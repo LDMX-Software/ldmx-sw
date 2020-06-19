@@ -38,7 +38,7 @@ namespace ldmx {
         random_->SetSeed( CLHEP::HepRandom::getTheSeed() );
 
         // Check whether a beamspot should be used or not.
-        auto beamSpot{parameters.getParameter< std::vector< double > >("beamSpotSmear")};
+        auto beamSpot{parameters.getParameter< std::vector< double > >("beamSpotSmear",{})};
         if (!beamSpot.empty()) {
             useBeamspot_ = true;
             beamspotXSize_ = beamSpot[0];
@@ -46,8 +46,8 @@ namespace ldmx {
             beamspotZSize_ = beamSpot[2];
         }
 
-        auto generators{parameters_.getParameter< std::vector< Parameters > >("generators")};
-        if ( generators.size() == 0 ) {
+        auto generators{parameters_.getParameter< std::vector< Parameters > >("generators",{})};
+        if ( generators.empty() ) {
             EXCEPTION_RAISE(
                     "MissingGenerator",
                     "Need to define some generator of primaries."

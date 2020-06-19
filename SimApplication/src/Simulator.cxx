@@ -103,7 +103,7 @@ namespace ldmx {
         parser->Read( detectorPath, validateGeometry );
         runManager_->DefineWorldVolume( parser->GetWorldVolume() );
 
-        auto preInitCommands = parameters_.getParameter< std::vector< std::string > >("preInitCommands" ); 
+        auto preInitCommands = parameters_.getParameter< std::vector< std::string > >("preInitCommands" ,{} ); 
         for ( const std::string& cmd : preInitCommands ) {
             if ( allowed(cmd) ) {
                 int g4Ret = uiManager_->ApplyCommand( cmd );
@@ -160,7 +160,7 @@ namespace ldmx {
         //initialize run
         runManager_->Initialize();
 
-        auto randomSeeds = parameters_.getParameter<std::vector<int>>("randomSeeds");
+        auto randomSeeds = parameters_.getParameter<std::vector<int>>("randomSeeds",{});
         if ( randomSeeds.size() > 1 ) {
             //Geant4 allows for random seeds from 2 to 100
             std::string cmd( "/random/setSeeds " );
@@ -171,7 +171,7 @@ namespace ldmx {
         }
 
         // Get the extra simulation configuring commands
-        auto postInitCommands = parameters_.getParameter< std::vector< std::string > >("postInitCommands");
+        auto postInitCommands = parameters_.getParameter< std::vector< std::string > >("postInitCommands",{});
         for ( const std::string& cmd : postInitCommands ) {
             if ( allowed(cmd) ) {
                 int g4Ret = uiManager_->ApplyCommand( cmd );
