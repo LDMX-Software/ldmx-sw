@@ -43,12 +43,12 @@ def electro_nuclear( detector, generator ) :
     sim.setDetector( detector , True )
     
     # Set run parameters
-    sim.setRunNumber(0)
-    sim.setDescription("Target electron-nuclear, xsec bias 1e8")
-    sim.setRandomSeeds([ 1, 2 ])
-    sim.setBeamSpotSmear([20., 80., 0.]) #mm
+    sim.runNumber = 0
+    sim.description = "Target electron-nuclear, xsec bias 1e8"
+    sim.randomSeeds = [ 1, 2 ]
+    sim.beamSpotSmear = [20., 80., 0.] #mm
     
-    sim.generators().append(generator)
+    sim.generators.append(generator)
     
     # Enable and configure the biasing
     sim.biasingOn()
@@ -58,7 +58,7 @@ def electro_nuclear( detector, generator ) :
     includeBiasing.library()
 
     # Configure the sequence in which user actions should be called.
-    sim.actions().extend([
+    sim.actions.extend([
             filters.TaggerVetoFilter(),
             filters.TargetENFilter(),
             filters.TrackProcessFilter.electro_nuclear()      
@@ -101,12 +101,12 @@ def photo_nuclear( detector, generator ) :
     sim.setDetector( detector , True )
     
     # Set run parameters
-    sim.setRunNumber(0)
-    sim.setDescription("ECal photo-nuclear, xsec bias 450")
-    sim.setRandomSeeds([ 1, 2 ])
-    sim.setBeamSpotSmear([20., 80., 0.])
+    sim.runNumber = 0
+    sim.description = "ECal photo-nuclear, xsec bias 450"
+    sim.randomSeeds = [ 1, 2 ]
+    sim.beamSpotSmear = [20., 80., 0.]
     
-    sim.generators().append(generator)
+    sim.generators.append(generator)
     
     # Enable and configure the biasing
     sim.biasingOn()
@@ -121,7 +121,7 @@ def photo_nuclear( detector, generator ) :
     includeBiasing.library()
 
     # Configure the sequence in which user actions should be called.
-    sim.actions().extend([
+    sim.actions.extend([
             filters.TaggerVetoFilter(),
             # Only consider events where a hard brem occurs
             filters.TargetBremFilter(),
@@ -162,9 +162,9 @@ def dark_brem( ap_mass , lhe, detector ) :
     """
     sim = simulator.simulator( "darkBrem_" + str(massAPrime) + "_MeV" )
     
-    sim.setDescription("One e- fired far upstream with Dark Brem turned on and biased up in target")
+    sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in target"
     sim.setDetector( detector , True )
-    sim.generators().append( generators.single_4gev_e_upstream_tagger() )
+    sim.generators.append( generators.single_4gev_e_upstream_tagger() )
     
     # Bias the electron dark brem process inside of the target
     # These commands allow us to restrict the dark brem process to a given 
@@ -187,7 +187,7 @@ def dark_brem( ap_mass , lhe, detector ) :
     includeBiasing.library()
 
     # Then give the UserAction to the simulation so that it knows to use it
-    sim.actions().extend([ 
+    sim.actions.extend([ 
             filters.DarkBremFilter(), 
             filters.TrackProcessFilter.dark_brem()     
     ])
