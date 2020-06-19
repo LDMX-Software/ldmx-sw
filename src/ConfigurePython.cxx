@@ -65,12 +65,24 @@ namespace ldmx {
      * @note Not sure if this is not leaking memory, kinda just trusting
      * the Python / C API docs on this one.
      *
+     * @note Empty lists are NOT read in because there is no way for us
+     * to know what type should be inside the list. This means list
+     * parameters that can be empty need to put in a default empty list
+     * value: {}.
+     *
      * @param object Python object to get members from
      * @return Mapping between member name and value. 
      */
     static std::map< std::string, std::any > getMembers(PyObject* object) {
         
         PyObject* dictionary{PyObject_GetAttrString(object, "__dict__")};
+
+        if ( dictionary == 0 ) {
+            EXCEPTION_RAISE(
+                    "ObjFail",
+                    "Python Object does not have __dict__ member"
+                    );
+        }
 
         PyObject *key(0), *value(0);
         Py_ssize_t pos = 0;
@@ -80,7 +92,7 @@ namespace ldmx {
         while (PyDict_Next(dictionary, &pos, &key, &value)) {
 
             std::string skey{getPyString(key)};
-
+            
             if (PyLong_Check(value)) {
                 if (PyBool_Check(value)) {
                     params[skey] = bool(PyLong_AsLong(value)); 
@@ -130,10 +142,10 @@ namespace ldmx {
                         std::vector< Parameters > vals;
                         for (auto j{0}; j < PyList_Size(value); ++j) {
 
-                            auto obj{PyList_GetItem( value, j )}; 
+                            auto elem{PyList_GetItem( value, j )}; 
 
                             vals.emplace_back();
-                            vals.back().setParameters( getMembers(obj) );
+                            vals.back().setParameters( getMembers(elem) );
 
                         } 
                         params[skey] = vals;
@@ -273,22 +285,22 @@ namespace ldmx {
         auto run{configuration_.getParameter<int>("run")};
         if ( run > 0 ) process->setRunNumber(run);
 
-        auto libs{configuration_.getParameter<std::vector<std::string>>("libraries")};
+        auto libs{configuration_.getParameter<std::vector<std::string>>("libraries",{})};
         std::for_each(libs.begin(), libs.end(), 
                 [](auto& lib) { EventProcessorFactory::getInstance().loadLibrary(lib);}
                 ); 
 
-        auto inputFiles{configuration_.getParameter<std::vector<std::string>>("inputFiles")};
+        auto inputFiles{configuration_.getParameter<std::vector<std::string>>("inputFiles",{})};
         for (auto file : inputFiles ) {
             process->addFileToProcess(file);
         }
 
-        auto outputFiles{configuration_.getParameter<std::vector<std::string>>("outputFiles")};
+        auto outputFiles{configuration_.getParameter<std::vector<std::string>>("outputFiles",{})};
         for (auto file : outputFiles) {
             process->addOutputFileName(file);
         }
 
-        auto keepRules{configuration_.getParameter<std::vector<std::string>>("keep")};
+        auto keepRules{configuration_.getParameter<std::vector<std::string>>("keep",{})};
         for (auto rule : keepRules) {
             process->addDropKeepRule(rule);
         }
@@ -296,12 +308,18 @@ namespace ldmx {
         process->getStorageController().setDefaultKeep(
                 configuration_.getParameter<bool>("skimDefaultIsKeep")
                 );
-        auto skimRules{configuration_.getParameter<std::vector<std::string>>("skimRules")};
+        auto skimRules{configuration_.getParameter<std::vector<std::string>>("skimRules",{})};
         for (size_t i=0; i<skimRules.size(); i+=2) {
             process->getStorageController().addRule(skimRules[i],skimRules[i+1]);
         }
 
-        auto sequence{configuration_.getParameter<std::vector<Parameters>>("sequence")};
+        auto sequence{configuration_.getParameter<std::vector<Parameters>>("sequence",{})};
+        if ( sequence.empty() ) {
+            EXCEPTION_RAISE(
+                    "NoSeq",
+                    "No sequence has been defined. What should I be doing?\nUse p.sequence to tell me what processors to run."
+                    );
+        }
         for (auto proc : sequence) {
             auto className{proc.getParameter<std::string>("className")};
             auto instanceName{proc.getParameter<std::string>("instanceName")};
@@ -312,7 +330,7 @@ namespace ldmx {
                         "Unable to create instance '" + instanceName + "' of class '" + className 
                         + "'. Did you load the library that this class is apart of?");
             }
-            auto histograms{proc.getParameter<std::vector<Parameters>>("histograms")};
+            auto histograms{proc.getParameter<std::vector<Parameters>>("histograms",{})};
             if (!histograms.empty()) {
                 ep->getHistoDirectory();
                 ep->createHistograms( histograms );

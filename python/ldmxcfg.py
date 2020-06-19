@@ -247,6 +247,7 @@ class Process:
         self.skimRules=[]
         self.logFrequency=-1
         self.compressionSetting=9
+        self.histogramFile=''
         Process.lastProcess=self
 
     def addLibrary(lib) :
