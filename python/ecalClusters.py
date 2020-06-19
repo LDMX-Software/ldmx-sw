@@ -14,7 +14,7 @@ class EcalClusterProducer(ldmxcfg.Producer) :
     def __init__(self,name) :
         super().__init__(name,"ldmx::EcalClusterProducer")
 
-        self.cutoff = 10.-
+        self.cutoff = 10.
         self.seedThreshold = 100.0 #MeV
 
         # Pass name for ecal digis
