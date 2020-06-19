@@ -46,35 +46,53 @@ namespace ldmx {
             /**
              * Retrieve the parameter of the given name.  
              *
-             * If the parameter isn't found and a default is specified, that is
-             * returned instead. If a default isn't specified, the default for
-             * the parameter type is returned. 
+             * @throw Exception if parameter of the given name isn't found
+             *
+             * @throw Exception if parameter is found but not of the input type
              *
              * @param T the data type to cast the parameter to.
              * 
              * @param[in] name the name of the parameter value to retrieve.
-             * @param[in] defaultParam the value the parameter should take on 
-             *      if it's not found in the list of parameters.  
              *
              * @return The user specified parameter of type T.
              */
             template <typename T> 
-            T getParameter(const std::string& name, T defaultParam = T()) const { 
+            T getParameter(const std::string& name) const { 
                 
                 // Check if the variable exists in the map.  If it doesn't, 
-                // warn the user and set a default.
-                if (parameters_.count(name) == 0) return defaultParam; 
+                // raise an exception.
+                if (parameters_.count(name) == 0) {
+                    EXCEPTION_RAISE( "NonExistParam",
+                            "Parameter '"+name+"' does not exist in list of parameters."
+                            );
+                }
 
                 T parameter; 
                 try { 
                     parameter = std::any_cast< T >(parameters_.at(name));
                 } catch(const std::bad_any_cast& e) {
-                    EXCEPTION_RAISE("Parameters::getParameter", 
-                                    "Parameter " + name + " is being cast to incorrect type ( " + typeid(T).name() + ")."); 
+                    EXCEPTION_RAISE( "BadTypeParam",
+                                    "Parameter '" + name + "' is being cast to incorrect type '" + typeid(T).name() + "'."); 
                 }
 
-               return parameter; 
-            }               
+                return parameter; 
+            }
+
+            /**
+             * Retrieve a parameter with a default specified.
+             *
+             * Return the input default if a parameter is not found in map.
+             *
+             * @return the user parameter of type T
+             */
+            template <typename T>
+            T getParameter(const std::string& name, const T& def ) const {
+
+                if ( parameters_.count(name) == 0 ) return def;
+
+                //get here knowing that name exists in parameters_
+                return getParameter<T>(name);
+            }
 
         private:
 
