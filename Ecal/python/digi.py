@@ -6,7 +6,7 @@ with helpful member functions.
 
 from LDMX.Framework.ldmxcfg import Producer
 
-class digitizer(Producer) :
+class EcalDigiProducer(Producer) :
     """Configuration for EcalDigiProducer
 
     Warnings
@@ -15,7 +15,7 @@ class digitizer(Producer) :
     
     """
 
-    def __init__(self, instance_name) :
+    def __init__(self, instance_name = 'ecalDigis') :
         super().__init__(instance_name , 'ldmx::EcalDigiProducer')
 
         from LDMX.Ecal.include import library
@@ -31,9 +31,7 @@ class digitizer(Producer) :
         self.nADCs = 10
         self.iSOI  = 0
 
-ecalDigis = digitizer( 'ecalDigis' )
-
-class reconstructor(Producer) :
+class EcalRecProducer(Producer) :
     """Configuration for the EcalRecProducer
 
     The layer weights and second order energy correction
@@ -42,7 +40,7 @@ class reconstructor(Producer) :
     and their associated layer weights.
     """
 
-    def __init__(self, instance_name) : 
+    def __init__(self, instance_name = 'ecalRecon') : 
         super().__init__(instance_name , 'ldmx::EcalRecProducer')
 
         from LDMX.Ecal.include import library
@@ -100,4 +98,3 @@ class reconstructor(Producer) :
             17.364, 8.990
             ]
 
-ecalRecon = reconstructor('ecalRecon')
