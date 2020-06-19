@@ -11,7 +11,7 @@ from LDMX.Framework import ldmxcfg
 class EcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for the ECal veto"""
 
-    def __init__(self,name) :
+    def __init__(self,name = 'ecalVeto') :
         super().__init__(name,"ldmx::EcalVetoProcessor")
 
         from LDMX.Ecal.makePath import makeBDTPath, makeCellXYPath
@@ -26,8 +26,6 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.collection_name = "EcalVeto"
 
 
-ecalVeto = EcalVetoProcessor("EcalVeto")
-
 class DNNEcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for DNN Ecal Veto
 
@@ -35,7 +33,7 @@ class DNNEcalVetoProcessor(ldmxcfg.Producer) :
     the user is forced to decide on the cut.
     """
 
-    def __init__(self,name) :
+    def __init__(self,name = 'dnnEcalVeto') :
         super().__init__(name,"ldmx::DNNEcalVetoProcessor")
 
         from LDMX.Ecal.include import library
@@ -47,4 +45,3 @@ class DNNEcalVetoProcessor(ldmxcfg.Producer) :
         self.disc_cut = -1.
         self.collection_name = "EcalVetoDNN"
 
-dnnEcalVeto = DNNEcalVetoProcessor("DNNEcalVeto")
