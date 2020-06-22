@@ -14,8 +14,8 @@
 --> 
 <!-- position -->
 <constant name="target_z" value="0.0*mm" />
-<!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
-<constant name="target_thickness" value="0.3504*mm" />
+<!-- LYSO X0 = 1.10 cm.  Target thickeness = .1X0 -->
+<constant name="target_thickness" value="1.1*mm"/>
 <!-- Target dimensions -->
 <constant name="target_dim_x" value="4.0*cm"  />
 <constant name="target_dim_y" value="10.0*cm" />
