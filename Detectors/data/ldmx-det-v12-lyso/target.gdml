@@ -52,19 +52,11 @@
     <structure>
 
         <volume name="target">
-            <materialref ref="Tungsten"/>
+            <materialref ref="LYSO"/>
             <solidref ref="target_box"/>
             <auxiliary auxtype="SensDet" auxvalue="TargetSD"/>
             <auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
             <auxiliary auxtype="DetElem" auxvalue="Target"/>
-        </volume>
-
-        <volume name="trigger_pad_up_bar_volume">
-            <materialref ref="Polyvinyltoluene"/>
-            <solidref ref="trigger_bar_box"/>
-            <auxiliary auxtype="SensDet" auxvalue="TriggerPadUpSD"/>
-            <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
-            <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
         </volume>
 
         <volume name="trigger_pad_dn_bar_volume">
@@ -79,21 +71,6 @@
             <materialref ref="Vacuum"/>
             <solidref ref="target_area_box" />
 
-            <loop for="x" to="number_of_bars" step="1">
-                <physvol copynumber="2*x-2">
-                    <volumeref ref="trigger_pad_up_bar_volume" />
-                    <position name="trigger_pad_up_bar_layer1_pos" unit="mm" x="0" 
-                              y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                              z="trigger_pad_up_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
-                    <rotationref ref="identity" />
-                </physvol>
-                <physvol copynumber="2*x - 1">
-                    <volumeref ref="trigger_pad_up_bar_volume" />
-                    <position name="trigger_pad_up_bar_layer2_pos" unit="mm" x="0" 
-                              y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                              z="trigger_pad_up_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
-                    <rotationref ref="identity" />
-                </physvol>
                 <physvol copynumber="2*x-2">
                     <volumeref ref="trigger_pad_dn_bar_volume" />
                     <position name="trigger_pad_dn_bar_layer1_pos" unit="mm" x="0" 
