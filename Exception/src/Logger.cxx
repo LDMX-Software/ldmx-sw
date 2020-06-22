@@ -20,8 +20,52 @@ namespace ldmx {
 
     namespace logging {
 
-        void open(int termV, int fileV, const std::string& fileName) {
-    
+        logger makeLogger( const std::string& name ) {
+            logger lg( log::keywords::channel = name); //already has severity built in
+            //lg.add_attribute("StopWatch",boost::make_shared< log::attributes::timer >()); //add timing attribute
+            return boost::move(lg);
+        }
+
+        void open(const std::vector<std::string>& loggingArgs) {
+
+            //parse the CLI parameters
+            //  defaults:
+            int termLevelInt = 2, fileLevelInt = 5;
+            std::string fileName = "ldmx_app.log"; 
+            for ( auto it = loggingArgs.begin(); it != loggingArgs.end(); it++ ) {
+                std::string currArg = *it;
+                if ( currArg == "-f" or currArg == "--fileLog" ) {
+                    //print ldmx-sw logging messages to a file
+                    auto nextArg = it+1;
+                    if ( nextArg != loggingArgs.end() and not nextArg->empty() ) {
+                        //next argument exists
+                        if ( strstr( nextArg->c_str() , ".log" ) ) fileName = *nextArg;
+                        else if ( isdigit( (*nextArg)[0] ) ) fileLevelInt = atoi( nextArg->c_str() );
+
+                        //second argument to -f exists ==> check if log file name
+                        auto nextNextArg = nextArg+1;
+                        if ( nextNextArg != loggingArgs.end() 
+                                and not nextNextArg->empty() 
+                                and strstr( nextArg->c_str() , ".log" ) ) fileName = *nextNextArg;
+                    } else {
+                        // no other args ==> set to maximum output
+                        fileLevelInt = 0;
+                    }
+                } else if ( currArg == "-v" or currArg == "--verbosity" ) {
+                    //check for next arg being verbosity integer
+                    auto nextArg = it+1;
+                    //next argument could be the integer level for terminal logging
+                    if ( nextArg != loggingArgs.end() 
+                            and not nextArg->empty() 
+                            and isdigit( (*nextArg)[0] ) ) termLevelInt = atoi( nextArg->c_str() );
+                    else termLevelInt = 0; //no setting number ==> set to maximum output
+                }
+            } //loop through command line args
+        
+            //check parameters
+            if ( termLevelInt < 0 ) termLevelInt = 0;
+            if ( fileLevelInt < 0 ) fileLevelInt = 0;
+
             //some helpful types
             typedef sinks::text_ostream_backend ourSinkBack_t;
             typedef sinks::synchronous_sink< ourSinkBack_t > ourSinkFront_t;
@@ -34,7 +78,7 @@ namespace ldmx {
 
             //file sink is optional
             //  don't even make it if no fileName is provided 
-            if ( not fileName.empty() ) {
+            if ( fileLevelInt < 5 ) {
                 boost::shared_ptr< ourSinkBack_t > fileBack = boost::make_shared< ourSinkBack_t >();
                 fileBack->add_stream(
                     boost::make_shared< std::ofstream >(
@@ -45,34 +89,61 @@ namespace ldmx {
                 boost::shared_ptr< ourSinkFront_t > fileSink 
                     = boost::make_shared< ourSinkFront_t >( fileBack );
     
-                //TODO translate fileV to boost style severities
+                //translate integer level to enum
+                fileSink->set_filter(
+                        log::expressions::attr<level>("Severity") >= level(fileLevelInt)
+                        );
     
                 //TODO change format to something helpful
-    
-                core->add_sink(fileSink);
-            }
-    
-            //terminal sink is always created
-            boost::shared_ptr< ourSinkBack_t > termBack = boost::make_shared< ourSinkBack_t >();
-            termBack->add_stream(
-                boost::shared_ptr< std::ostream >(
-                    &std::cout, //point this stream to std::cout
-                    boost::null_deleter() //don't let boost delete std::cout
-                    )
+                //Currently:
+                //  [ Channel ](int severity) : message
+                fileSink->set_formatter(
+                    [](const log::record_view &view, log::formatting_ostream &os ) {
+                        os << "[ " 
+                           << view.attribute_values()["Channel"].extract<std::string>() << " ]("
+                           << view.attribute_values()["Severity"].extract<level>() << ") : "
+                           << view.attribute_values()["Message"].extract<std::string>();
+                    }
                 );
-            //flushes message to screen **after each message**
-            termBack->auto_flush( true );
 
-            boost::shared_ptr< ourSinkFront_t > termSink 
-                = boost::make_shared< ourSinkFront_t >( termBack );
+                core->add_sink(fileSink);
+            } //file set to pass something
 
-            //TODO translate termV to boost style severities
-
-            //TODO change format to something helpful
-
-            core->add_sink(termSink);
-
-            //allow everything through to the sinks for their own filtering
+            if ( termLevelInt < 5 ) {
+        
+                //terminal sink is always created
+                boost::shared_ptr< ourSinkBack_t > termBack = boost::make_shared< ourSinkBack_t >();
+                termBack->add_stream(
+                    boost::shared_ptr< std::ostream >(
+                        &std::cout, //point this stream to std::cout
+                        boost::null_deleter() //don't let boost delete std::cout
+                        )
+                    );
+                //flushes message to screen **after each message**
+                termBack->auto_flush( true );
+    
+                boost::shared_ptr< ourSinkFront_t > termSink 
+                    = boost::make_shared< ourSinkFront_t >( termBack );
+    
+                //translate integer level to enum
+                termSink->set_filter(
+                        log::expressions::attr<level>("Severity") >= level(termLevelInt)
+                        );
+    
+                //TODO change format to something helpful
+                //Currently:
+                //  [ Channel ](int severity) : message
+                termSink->set_formatter(
+                    [](const log::record_view &view, log::formatting_ostream &os ) {
+                        os << "[ " 
+                           << view.attribute_values()["Channel"].extract<std::string>() << " ]("
+                           << view.attribute_values()["Severity"].extract<level>() << ") : "
+                           << view.attribute_values()["Message"].extract<std::string>();
+                    }
+                );
+    
+                core->add_sink(termSink);
+            } //terminal set to pass something
     
             return;
 
