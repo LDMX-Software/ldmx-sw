@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+    <define>
+
+        &constants;  
+
+        <variable name="x"  value="0" /> 
+        <variable name="x2" value="1" />
+        <variable name="x4" value="0" />
+        <variable name="x5" value="1" /> 
+        <variable name="x7" value="1" />
+        <variable name="x8" value="1" />
+        <variable name="x9" value="1" />
+        <variable name="x10" value="1" />
+        <variable name="x11" value="1" />
+        <variable name="x12" value="1" />
+
+        <!-- Thickness of the scoring planes -->
+        <constant name="sp_thickness" value="0.001*mm"/>
+
+        <!-- Surround the ecal with scoring planes -->
+        <variable name="sp_ecal_front_z" value="ecal_front_z + (ecal_envelope_z - ECal_dz)/2 - sp_thickness/2 + clearance" /> 
+        <variable name="sp_ecal_back_z"  value="ecal_front_z + ECal_dz + (ecal_envelope_z - ECal_dz)/2 + sp_thickness/2" />
+        <variable name="sp_ecal_top_y"   value="ECal_dy/2 + sp_thickness/2" />
+        <variable name="sp_ecal_bot_y"   value="-ECal_dy/2 - sp_thickness/2" />
+        <variable name="sp_ecal_left_x"  value="-ECal_dx/2 - sp_thickness/2" />
+        <variable name="sp_ecal_right_x" value="ECal_dx/2 + sp_thickness/2" />
+        <variable name="sp_ecal_mid_z"   value="ecal_front_z + ECal_dz/2 + (ecal_envelope_z - ECal_dz)/2" />
+        
+        <matrix name="sp_ecal_pos" coldim="3" values="0 0 sp_ecal_front_z
+                                                      0 0 sp_ecal_back_z
+                                                      0 sp_ecal_top_y sp_ecal_mid_z
+                                                      0 sp_ecal_bot_y sp_ecal_mid_z  
+                                                      sp_ecal_left_x 0 sp_ecal_mid_z
+                                                      sp_ecal_right_x 0 sp_ecal_mid_z" />   
+
+        <matrix name="ecal_box_dim" coldim="3" values="ECal_dx ECal_dy sp_thickness
+                                                       ECal_dx sp_thickness ECal_dz
+                                                       sp_thickness ECal_dy ECal_dz" /> 
+
+        <!-- Magnet gap dimensions -->
+        <variable name="magnet_gap_dx"         value="430*mm"  />
+        <variable name="magnet_gap_dy"         value="350*mm"  />
+        <variable name="magnet_gap_dz"         value="1068*mm" />
+        <variable name="sp_magnet_gap_top_y"   value="magnet_gap_dy/2 + sp_thickness/2" />
+        <variable name="sp_magnet_gap_bot_y"   value="-magnet_gap_dy/2 - sp_thickness/2" />
+        <variable name="sp_magnet_gap_left_x"  value="-magnet_gap_dx/2 - sp_thickness/2" />
+        <variable name="sp_magnet_gap_right_x" value="magnet_gap_dx/2 - sp_thickness/2" />
+        <variable name="sp_magnet_gap_mid_z"   value="-400*mm" />
+
+        <matrix name="sp_magnet_gap_pos" coldim="3" values="0 sp_magnet_gap_top_y sp_magnet_gap_mid_z
+                                                        0 sp_magnet_gap_bot_y sp_magnet_gap_mid_z
+                                                        sp_magnet_gap_left_x 0 sp_magnet_gap_mid_z
+                                                        sp_magnet_gap_right_x 0 sp_magnet_gap_mid_z" />
+                
+
+        <!-- Surround the Hcal with scoring planes -->
+        <variable name="sp_hcal_front_z"  value="ecal_front_z - sp_thickness/2 + clearance" />
+        <variable name="sp_hcal_back_z"   value="ecal_front_z + hcal_back_dz + hcal_side_dz + sp_thickness/2" />
+        <variable name="sp_hcal_top_y"    value="hcal_back_dy/2 + sp_thickness/2" /> 
+        <variable name="sp_hcal_bot_y"    value="-hcal_back_dy/2 - sp_thickness/2" /> 
+        <variable name="sp_hcal_left_x"   value="-hcal_back_dx/2 - sp_thickness/2" />
+        <variable name="sp_hcal_right_x"  value="hcal_back_dx/2 + sp_thickness/2" />
+        <variable name="sp_hcal_mid_z"    value="ecal_front_z + hcal_dz/2" />
+
+        <matrix name="sp_hcal_pos" coldim="3" values="0 0 sp_hcal_front_z
+                                                      0 0 sp_hcal_back_z
+                                                      0 sp_hcal_top_y sp_hcal_mid_z
+                                                      0 sp_hcal_bot_y sp_hcal_mid_z  
+                                                      sp_hcal_left_x 0 sp_hcal_mid_z
+                                                      sp_hcal_right_x 0 sp_hcal_mid_z" />   
+
+        <matrix name="hcal_box_dim" coldim="3" values="hcal_back_dx hcal_back_dy sp_thickness
+                                                       hcal_back_dx sp_thickness hcal_dz
+                                                       sp_thickness hcal_back_dy hcal_dz" /> 
+
+        <!-- Dimensions of target box -->
+        <variable name="target_box_x" value="magnet_gap_dx - (sp_thickness/2)" />
+        <variable name="target_box_y" value="magnet_gap_dy - (sp_thickness/2)" />
+
+        <!-- Surround the target with scoring planes --> 
+        <variable name="sp_target_down_z" value="target_z + target_thickness/2 + sp_thickness/2 + clearance" />
+        <variable name="sp_target_up_z"   value="target_z - target_thickness/2 - sp_thickness/2 - clearance" />
+        
+        <!-- Place scoring planes downstream of each trigger scintillator array --> 
+        <variable name="sp_trigger_pad_down_l1_z" 
+                  value="trigger_pad_down_z - trigger_pad_bar_gap/2 + sp_thickness/2 + clearance" />
+        <variable name="sp_trigger_pad_down_l2_z" 
+                  value="trigger_pad_down_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
+        <variable name="sp_trigger_pad_up_l1_z" 
+                  value="trigger_pad_up_z - trigger_pad_bar_gap/2 + sp_thickness/2 + clearance" />
+        <variable name="sp_trigger_pad_up_l2_z" 
+                 value="trigger_pad_up_z + trigger_pad_bar_gap/2 + trigger_pad_bar_thickness + sp_thickness/2 + clearance" />
+
+        <!-- Matrix with target area positions --> 
+        <matrix name="sp_target_pos" coldim="3" values="0 0 sp_target_down_z
+                                                        0 0 sp_target_up_z 
+                                                        0 0 sp_trigger_pad_down_l1_z  
+                                                        0 0 sp_trigger_pad_down_l2_z  
+                                                        0 0 sp_trigger_pad_up_l1_z  
+                                                        0 0 sp_trigger_pad_up_l2_z" />  
+
+
+              
+        <!-- Place scoring planes at each of the recoil tracker layers -->
+        <variable name="recoil_z_start" value="trigger_pad_down_z + trigger_pad_thickness/2 + clearance" />
+        <variable name="sp_recoil_l1_z" 
+            value="recoil_z_start + recoil_layer_pos[1] + recoil_sensor_l1_4_sep 
+                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
+        <variable name="sp_recoil_l2_z" 
+            value="recoil_z_start + recoil_layer_pos[2] + recoil_sensor_l1_4_sep 
+                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
+        <variable name="sp_recoil_l3_z" 
+            value="recoil_z_start + recoil_layer_pos[3] + recoil_sensor_l1_4_sep
+                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
+        <variable name="sp_recoil_l4_z" 
+            value="recoil_z_start + recoil_layer_pos[4] + recoil_sensor_l1_4_sep
+                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
+        <variable name="sp_recoil_l5_z" 
+            value="recoil_z_start + recoil_layer_pos[5] + recoil_sensor_l5_6_sep 
+                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
+        <variable name="sp_recoil_l6_z" 
+            value="recoil_z_start + recoil_layer_pos[6] + recoil_sensor_l5_6_sep 
+                    + half_module_thickness/2 + sp_thickness/2 + clearance"/>
+        <matrix name="sp_recoil_layer_z" coldim="1" values="sp_recoil_l1_z
+                                                            sp_recoil_l2_z
+                                                            sp_recoil_l3_z
+                                                            sp_recoil_l4_z
+                                                            sp_recoil_l5_z
+                                                            sp_recoil_l6_z" />
+
+        <!-- Dimensions of recoil box -->
+        <variable name="recoil_box_x" value="magnet_gap_dx - (sp_thickness/2)" />
+        <variable name="recoil_box_y" value="magnet_gap_dy - (sp_thickness/2)" />
+
+    </define>
+
+    <materials>
+        <material name="Vacuum" Z="1" state="gas">
+            <D unit="g/cm3" value="1e-12"/>
+            <atom unit="g/mole" value="1" />
+        </material> 
+    </materials>
+
+    <solids>
+        <box name="world_box" x="world_dim" y="world_dim" z="world_dim"/>
+
+        <box name="sp_ecal_front_back_box" x="ecal_box_dim[1, 1]" y="ecal_box_dim[1, 2]" z="ecal_box_dim[1, 3]" />
+        <box name="sp_ecal_top_bot_box"    x="ecal_box_dim[2, 1]" y="ecal_box_dim[2, 2]" z="ecal_box_dim[2, 3]" />
+        <box name="sp_ecal_left_right_box" x="ecal_box_dim[3, 1]" y="ecal_box_dim[3, 2]" z="ecal_box_dim[3, 3]" />
+        
+        <box name="sp_magnet_gap_top_bot_box"   x="magnet_gap_dx" y="sp_thickness" z="magnet_gap_dz" />
+        <box name="sp_magnet_gap_left_right_box"  x="sp_thickness" y="magnet_gap_dy" z="magnet_gap_dz" />
+
+        <box name="sp_hcal_front_back_box" x="hcal_box_dim[1, 1]" y="hcal_box_dim[1, 2]" z="hcal_box_dim[1, 3]" />
+        <box name="sp_hcal_top_bot_box"    x="hcal_box_dim[2, 1]" y="hcal_box_dim[2, 2]" z="hcal_box_dim[2, 3]" />
+        <box name="sp_hcal_left_right_box" x="hcal_box_dim[3, 1]" y="hcal_box_dim[3, 2]" z="hcal_box_dim[3, 3]" />
+
+        <box name="sp_target_box" x="target_box_x" y="target_box_y" z="sp_thickness" />
+
+        <box name="sp_recoil_box"  x="recoil_box_x" y="recoil_box_y" z="sp_thickness" />
+    </solids>
+
+    <structure>
+
+        <!-- Define the target and scoring plane volumes --> 
+        <loop for="x" to="6" step="1" >
+            <volume name="sp_target">
+                <materialref ref="Vacuum" />
+                <solidref ref="sp_target_box" />
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" />
+                <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+            </volume> 
+        </loop>
+
+        <loop for="x4" to="5" step="1" > 
+            <volume name="sp_recoil"> 
+                <materialref ref="Vacuum" />
+                <solidref ref="sp_recoil_box" />
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" />
+                <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+            </volume> 
+        </loop> 
+
+        <loop for="x11" to="2" step="1" > 
+            <volume name="sp_magnet_gap_top_bot"> 
+                <materialref ref="Vacuum" />
+                <solidref ref="sp_magnet_gap_top_bot_box" />
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+                <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+            </volume>
+            <volume name="sp_magnet_gap_left_right"> 
+                <materialref ref="Vacuum" />
+                <solidref ref="sp_magnet_gap_left_right_box" />
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+                <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+            </volume> 
+        </loop> 
+
+        <loop for="x7" to="2" step="1" > 
+            <volume name="sp_ecal_front_back"> 
+                <materialref ref="Vacuum" />
+                <solidref ref="sp_ecal_front_back_box" />
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+                <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+            </volume>  
+            <volume name="sp_ecal_top_bot"> 
+                <materialref ref="Vacuum" />
+                <solidref ref="sp_ecal_top_bot_box" />
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+                <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+            </volume>
+            <volume name="sp_ecal_left_right"> 
+                <materialref ref="Vacuum" />
+                <solidref ref="sp_ecal_left_right_box" />
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+                <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+            </volume> 
+        </loop>
+
+        <loop for="x9" to="2" step="1" > 
+            <volume name="sp_hcal_front_back"> 
+                <materialref ref="Vacuum" />
+                <solidref ref="sp_hcal_front_back_box" />
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+                <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+            </volume>  
+            <volume name="sp_hcal_top_bot"> 
+                <materialref ref="Vacuum" />
+                <solidref ref="sp_hcal_top_bot_box" />
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+                <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+            </volume>
+            <volume name="sp_hcal_left_right"> 
+                <materialref ref="Vacuum" />
+                <solidref ref="sp_hcal_left_right_box" />
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" />
+                <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
+            </volume> 
+        </loop>
+
+        <volume name="SP_World">
+            <materialref ref="Vacuum" />
+            <solidref ref="world_box" />
+            
+            <loop for="x2" to="6" step="1">
+                <physvol copynumber="x2">
+                    <volumeref ref="sp_target" />
+                    <position x="sp_target_pos[x2, 1]" y="sp_target_pos[x2, 2]" z="sp_target_pos[x2, 3]" /> 
+                    <rotationref ref="identity" />
+                </physvol>
+            </loop>
+
+            <loop for="x5" to="6" step="1">
+                <physvol copynumber="20 + x5">
+                    <volumeref ref="sp_recoil" />
+                    <position x="0.0" y="0.0" z="sp_recoil_layer_z[x5]" /> 
+                    <rotationref ref="identity" />
+                </physvol>
+            </loop>
+
+            <loop for="x12" to="2" step="1" > 
+                <physvol copynumber="50 + x8">
+                    <volumeref ref="sp_magnet_gap_top_bot" />
+                    <position x="sp_magnet_gap_pos[x12, 1]" y="sp_magnet_gap_pos[x12, 2]" z="sp_magnet_gap_pos[x12, 3]" />
+                    <rotationref ref="identity" />
+                </physvol>
+                <physvol copynumber="52 + x8">
+                    <volumeref ref="sp_magnet_gap_left_right" />
+                    <position x="sp_magnet_gap_pos[x12 + 2, 1]" y="sp_magnet_gap_pos[x12 + 2, 2]" z="sp_magnet_gap_pos[x12 + 2, 3]" />
+                    <rotationref ref="identity" />
+                </physvol> 
+            </loop> 
+
+            <loop for="x8" to="2" step="1" > 
+                <physvol copynumber="30 + x8">
+                    <volumeref ref="sp_ecal_front_back" />
+                    <position x="sp_ecal_pos[x8, 1]" y="sp_ecal_pos[x8, 2]" z="sp_ecal_pos[x8, 3]" />
+                    <rotationref ref="identity" />
+                </physvol> 
+                <physvol copynumber="32 + x8">
+                    <volumeref ref="sp_ecal_top_bot" />
+                    <position x="sp_ecal_pos[x8 + 2, 1]" y="sp_ecal_pos[x8 + 2, 2]" z="sp_ecal_pos[x8 + 2, 3]" />
+                    <rotationref ref="identity" />
+                </physvol>
+                <physvol copynumber="34 + x8">
+                    <volumeref ref="sp_ecal_left_right" />
+                    <position x="sp_ecal_pos[x8 + 4, 1]" y="sp_ecal_pos[x8 + 4, 2]" z="sp_ecal_pos[x8 + 4, 3]" />
+                    <rotationref ref="identity" />
+                </physvol> 
+            </loop> 
+            
+            <loop for="x10" to="2" step="1" > 
+                <physvol copynumber="40 + x10">
+                    <volumeref ref="sp_hcal_front_back" />
+                    <position x="sp_hcal_pos[x10, 1]" y="sp_hcal_pos[x10, 2]" z="sp_hcal_pos[x10, 3]" />
+                    <rotationref ref="identity" />
+                </physvol> 
+                <physvol copynumber="42 + x10">
+                    <volumeref ref="sp_hcal_top_bot" />
+                    <position x="sp_hcal_pos[x10 + 2, 1]" y="sp_hcal_pos[x10 + 2, 2]" z="sp_hcal_pos[x10 + 2, 3]" />
+                    <rotationref ref="identity" />
+                </physvol>
+                <physvol copynumber="44 + x10">
+                    <volumeref ref="sp_hcal_left_right" />
+                    <position x="sp_hcal_pos[x10 + 4, 1]" y="sp_hcal_pos[x10 + 4, 2]" z="sp_hcal_pos[x10 + 4, 3]" />
+                    <rotationref ref="identity" />
+                </physvol> 
+            </loop> 
+
+        </volume>
+    </structure>
+
+    <userinfo>
+        <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD0" >
+            <auxiliary auxtype="SensDetType"    auxvalue="ScoringPlaneSD" />
+            <auxiliary auxtype="HitsCollection" auxvalue="MagnetScoringPlaneHits" />
+            <auxiliary auxtype="SubdetID"       auxvalue="7" />
+            <auxiliary auxtype="Verbose"        auxvalue="0" />
+        </auxiliary>
+        <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD1" >
+            <auxiliary auxtype="SensDetType"    auxvalue="ScoringPlaneSD" />
+            <auxiliary auxtype="HitsCollection" auxvalue="TargetScoringPlaneHits" />
+            <auxiliary auxtype="SubdetID"       auxvalue="8" />
+            <auxiliary auxtype="Verbose"        auxvalue="0" />
+        </auxiliary>
+        <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD2" >
+            <auxiliary auxtype="SensDetType"    auxvalue="ScoringPlaneSD" />
+            <auxiliary auxtype="HitsCollection" auxvalue="TrackerScoringPlaneHits" />
+            <auxiliary auxtype="SubdetID"       auxvalue="9" />
+            <auxiliary auxtype="Verbose"        auxvalue="0" />
+        </auxiliary>
+        <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD3" >
+            <auxiliary auxtype="SensDetType"    auxvalue="ScoringPlaneSD" />
+            <auxiliary auxtype="HitsCollection" auxvalue="EcalScoringPlaneHits" />
+            <auxiliary auxtype="SubdetID"       auxvalue="10" />
+            <auxiliary auxtype="Verbose"        auxvalue="0" />
+        </auxiliary>
+        <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" >
+            <auxiliary auxtype="SensDetType"    auxvalue="ScoringPlaneSD" />
+            <auxiliary auxtype="HitsCollection" auxvalue="HcalScoringPlaneHits" />
+            <auxiliary auxtype="SubdetID"       auxvalue="11" />
+            <auxiliary auxtype="Verbose"        auxvalue="0" />
+        </auxiliary>
+        
+        <auxiliary auxtype="VisAttributes" auxvalue="SpVis">
+            <auxiliary auxtype="R" auxvalue="0.0"/>
+            <auxiliary auxtype="G" auxvalue="0.0"/>
+            <auxiliary auxtype="B" auxvalue="1.0"/>
+            <auxiliary auxtype="A" auxvalue="1.0"/>
+            <auxiliary auxtype="Style" auxvalue="wireframe"/>
+            <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+            <auxiliary auxtype="Visible" auxvalue="true"/>
+            <auxiliary auxtype="LineWidth" auxvalue="2.0"/>
+        </auxiliary>
+
+    </userinfo>
+
+    <setup name="Default" version="1.0">
+        <world ref="SP_World" />
+    </setup>
+</gdml>
