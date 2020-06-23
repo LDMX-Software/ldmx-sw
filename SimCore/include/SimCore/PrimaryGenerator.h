@@ -3,8 +3,8 @@
  * @brief Header file for PrimaryGenerator
  */
 
-#ifndef SIMAPPLICATION_PRIMARYGENERATOR_H
-#define SIMAPPLICATION_PRIMARYGENERATOR_H
+#ifndef SIMCORE_PRIMARYGENERATOR_H
+#define SIMCORE_PRIMARYGENERATOR_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */

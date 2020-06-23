@@ -2,8 +2,8 @@
  * 
  */
 
-#ifndef SIMAPPLICATION_PARALLELWORLD_H_
-#define SIMAPPLICATION_PARALLELWORLD_H_
+#ifndef SIMCORE_PARALLELWORLD_H_
+#define SIMCORE_PARALLELWORLD_H_
 
 //---------------//
 //   C++StdLib   //
@@ -51,5 +51,5 @@ namespace ldmx {
     }; // ParallelWorld
 }
 
-#endif // SIMAPPLICATION_PARALLELWORLD_H_
+#endif // SIMCORE_PARALLELWORLD_H_
 

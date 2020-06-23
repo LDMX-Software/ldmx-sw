@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_USEREVENTACTION_H
-#define SIMAPPLICATION_USEREVENTACTION_H
+#ifndef SIMCORE_USEREVENTACTION_H
+#define SIMCORE_USEREVENTACTION_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -74,4 +74,4 @@ namespace ldmx {
 
 }  // ldmx
 
-#endif // SIMAPPLICATION_USEREVENTACTION_H
+#endif // SIMCORE_USEREVENTACTION_H

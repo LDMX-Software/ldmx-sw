@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_TRACKERSD_H
-#define SIMAPPLICATION_TRACKERSD_H
+#ifndef SIMCORE_TRACKERSD_H
+#define SIMCORE_TRACKERSD_H
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -72,4 +72,4 @@ namespace ldmx {
 
 } // ldmx
 
-#endif // SIMAPPLICATION_TRACKERSD_H
+#endif // SIMCORE_TRACKERSD_H

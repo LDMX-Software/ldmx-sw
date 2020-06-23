@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_TRAJECTORY_H_
-#define SIMAPPLICATION_TRAJECTORY_H_
+#ifndef SIMCORE_TRAJECTORY_H_
+#define SIMCORE_TRAJECTORY_H_
 
 // Geant4
 #include "G4TrajectoryContainer.hh"

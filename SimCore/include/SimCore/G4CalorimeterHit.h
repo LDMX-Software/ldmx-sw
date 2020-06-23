@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_G4CALORIMETERHIT_H_
-#define SIMAPPLICATION_G4CALORIMETERHIT_H_
+#ifndef SIMCORE_G4CALORIMETERHIT_H_
+#define SIMCORE_G4CALORIMETERHIT_H_
 
 // Geant4
 #include "G4VHit.hh"

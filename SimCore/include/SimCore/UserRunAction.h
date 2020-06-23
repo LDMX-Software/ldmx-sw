@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_USERRUNACTION_H
-#define SIMAPPLICATION_USERRUNACTION_H
+#ifndef SIMCORE_USERRUNACTION_H
+#define SIMCORE_USERRUNACTION_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -72,4 +72,4 @@ namespace ldmx {
 
 } // ldmx
 
-#endif // SIMAPPLICATION_USERRUNACTION_H
+#endif // SIMCORE_USERRUNACTION_H

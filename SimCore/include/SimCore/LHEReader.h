@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_LHEREADER_H_
-#define SIMAPPLICATION_LHEREADER_H_
+#ifndef SIMCORE_LHEREADER_H_
+#define SIMCORE_LHEREADER_H_
 
 // LDMX
 #include "SimCore/LHEEvent.h"

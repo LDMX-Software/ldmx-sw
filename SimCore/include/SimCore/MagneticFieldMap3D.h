@@ -5,8 +5,8 @@
  * @author Norman Graf, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_MAGNETICFIELDMAP3D_H_
-#define SIMAPPLICATION_MAGNETICFIELDMAP3D_H_
+#ifndef SIMCORE_MAGNETICFIELDMAP3D_H_
+#define SIMCORE_MAGNETICFIELDMAP3D_H_
 
 // Geant4
 #include "G4MagneticField.hh"

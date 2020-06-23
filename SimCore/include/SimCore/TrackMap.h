@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_TRACKMAP_H_
-#define SIMAPPLICATION_TRACKMAP_H_
+#ifndef SIMCORE_TRACKMAP_H_
+#define SIMCORE_TRACKMAP_H_
 
 // Geant4
 #include "G4Event.hh"

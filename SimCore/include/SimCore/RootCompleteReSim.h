@@ -6,8 +6,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMAPPLICATION_ROOTCOMPLETERESIM_H
-#define SIMAPPLICATION_ROOTCOMPLETERESIM_H
+#ifndef SIMCORE_ROOTCOMPLETERESIM_H
+#define SIMCORE_ROOTCOMPLETERESIM_H
 
 //----------------//
 //   C++ StdLib   //
@@ -95,4 +95,4 @@ namespace ldmx {
 
 }
 
-#endif //SIMAPPLICATION_ROOTCOMPLETERESIM_H
+#endif //SIMCORE_ROOTCOMPLETERESIM_H

@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_DETECTORCONSTRUCTION_H_
-#define SIMAPPLICATION_DETECTORCONSTRUCTION_H_
+#ifndef SIMCORE_DETECTORCONSTRUCTION_H_
+#define SIMCORE_DETECTORCONSTRUCTION_H_
 
 // LDMX
 #include "AuxInfoReader.h"

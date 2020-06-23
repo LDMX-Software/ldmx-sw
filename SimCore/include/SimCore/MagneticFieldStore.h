@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_MAGNETICFIELDSTORE_H_
-#define SIMAPPLICATION_MAGNETICFIELDSTORE_H_
+#ifndef SIMCORE_MAGNETICFIELDSTORE_H_
+#define SIMCORE_MAGNETICFIELDSTORE_H_
 
 // Geant4
 #include "G4MagneticField.hh"

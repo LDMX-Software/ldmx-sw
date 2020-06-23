@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_LHEEVENT_H_
-#define SIMAPPLICATION_LHEEVENT_H_
+#ifndef SIMCORE_LHEEVENT_H_
+#define SIMCORE_LHEEVENT_H_
 
 // LDMX
 #include "SimCore/LHEParticle.h"

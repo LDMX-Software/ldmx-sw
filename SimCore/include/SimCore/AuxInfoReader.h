@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_AUXINFOREADER_H_
-#define SIMAPPLICATION_AUXINFOREADER_H_
+#ifndef SIMCORE_AUXINFOREADER_H_
+#define SIMCORE_AUXINFOREADER_H_
 
 // Geant4
 #include "G4GDMLParser.hh"

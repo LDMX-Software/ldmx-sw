@@ -5,8 +5,8 @@
  * @author Owen Colegro, UCSB
  */
 
-#ifndef SIMAPPLICATION_ECALHITIO_H_
-#define SIMAPPLICATION_ECALHITIO_H_
+#ifndef SIMCORE_ECALHITIO_H_
+#define SIMCORE_ECALHITIO_H_
 
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
