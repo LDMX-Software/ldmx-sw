@@ -1,12 +1,5 @@
-/**
- * @file Logger.h
- * Interface for ldmx-sw to boost logging
- *
- * @author Tom Eichlersmith, University of Minnesota
- */
-
-#ifndef EXCEPTION_LOGGER_H
-#define EXCEPTION_LOGGER_H
+#ifndef TOOLS_LOGGER_H
+#define TOOLS_LOGGER_H
 
 /**
  * Necessary to get linking to work?
@@ -88,4 +81,4 @@ namespace ldmx {
 
 } //ldmx
 
-#endif //EXCEPTION_LOGGER_H
+#endif //TOOLS_LOGGER_H
