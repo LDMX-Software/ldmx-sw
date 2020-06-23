@@ -53,18 +53,18 @@ namespace ldmx {
 
         auto simParticles{ievent_.getMap<int,SimParticle>( simParticleCollName_ , simParticlePassName_ )};
         std::vector<G4PrimaryVertex*> vertices; //vertices already put into Geant4
-        for (const auto& [ trackID , sp ] : simParticles ) {
+        for (const auto& particle : simParticles ) {
 
             // check if particle has status 1
             // skip if not primary gen status
-            if (sp.getGenStatus() != 1) continue;
+            if (particle.second.getGenStatus() != 1) continue;
 
             bool vertexExists = false;
             G4PrimaryVertex* curvertex = new G4PrimaryVertex();
             for (unsigned int iV = 0; iV < vertices.size(); ++iV) {
-                double cur_vx = sp.getVertex()[0];
-                double cur_vy = sp.getVertex()[1];
-                double cur_vz = sp.getVertex()[2];
+                double cur_vx = particle.second.getVertex()[0];
+                double cur_vy = particle.second.getVertex()[1];
+                double cur_vz = particle.second.getVertex()[2];
                 double i_vx = vertices.at(iV)->GetX0();
                 double i_vy = vertices.at(iV)->GetY0();
                 double i_vz = vertices.at(iV)->GetZ0();
@@ -74,15 +74,19 @@ namespace ldmx {
                 }
             }
             if (vertexExists == false) {
-                curvertex->SetPosition(sp.getVertex()[0], sp.getVertex()[1], sp.getVertex()[2]);
+                curvertex->SetPosition(particle.second.getVertex()[0], 
+                                       particle.second.getVertex()[1], 
+                                       particle.second.getVertex()[2]);
                 curvertex->SetWeight(1.);
                 anEvent->AddPrimaryVertex(curvertex);
             }
 
             G4PrimaryParticle* primary = new G4PrimaryParticle();
-            primary->SetPDGcode(sp.getPdgID());
-            primary->SetMomentum(sp.getMomentum()[0] * MeV, sp.getMomentum()[1] * MeV, sp.getMomentum()[2] * MeV);
-            primary->SetMass(sp.getMass() * MeV);
+            primary->SetPDGcode(particle.second.getPdgID());
+            primary->SetMomentum(particle.second.getMomentum()[0] * MeV, 
+                                 particle.second.getMomentum()[1] * MeV, 
+                                 particle.second.getMomentum()[2] * MeV);
+            primary->SetMass(particle.second.getMass() * MeV);
 
             curvertex->SetPrimary(primary);
 
