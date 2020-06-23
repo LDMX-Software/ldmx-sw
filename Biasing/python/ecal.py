@@ -9,8 +9,8 @@ Example configurations for producing biased interactions in the ECal.
 
 from LDMX.Framework import ldmxcfg
 from LDMX.Detectors.makePath import *
-from LDMX.SimApplication import generators
-from LDMX.SimApplication import simcfg
+from LDMX.SimCore import generators
+from LDMX.SimCore import simcfg
 from LDMX.Biasing import filters
 
 def photo_nuclear( detector, generator ) :

@@ -1,6 +1,6 @@
 # declare Biasing module
 module(
   NAME Biasing
-  DEPENDENCIES SimCore SimApplication Framework Exception
+  DEPENDENCIES SimCore Framework Exception
   EXTERNAL_DEPENDENCIES Geant4
 )
