@@ -1,11 +1,11 @@
 """A short run-ready example for a basic, unbiased simulation"""
 
 from LDMX.Framework import ldmxcfg
-from LDMX.SimApplication import examples
+from LDMX.SimCore import examples
 
 p=ldmxcfg.Process("sim")
 
-p.libraries.append("libSimApplication.so")
+p.libraries.append("libSimCore.so")
 p.libraries.append("libBiasing.so")
 
 single_e = examples.inclusive_single_e()

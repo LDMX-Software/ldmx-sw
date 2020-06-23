@@ -4,7 +4,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimApplication/UserEventAction.h"
+#include "SimCore/UserEventAction.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -14,11 +14,11 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimApplication/RootPersistencyManager.h"
-#include "SimApplication/RunManager.h"
-#include "SimApplication/TrackMap.h"
-#include "SimApplication/TrajectoryContainer.h"
-#include "SimApplication/UserTrackingAction.h"
+#include "SimCore/RootPersistencyManager.h"
+#include "SimCore/RunManager.h"
+#include "SimCore/TrackMap.h"
+#include "SimCore/TrajectoryContainer.h"
+#include "SimCore/UserTrackingAction.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */

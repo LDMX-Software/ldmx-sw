@@ -6,7 +6,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimApplication/RootCompleteReSim.h"
+#include "SimCore/RootCompleteReSim.h"
 
 //------------//
 //   Geant4   //

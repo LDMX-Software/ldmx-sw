@@ -1,4 +1,4 @@
-#include "SimApplication/MagneticFieldMap3D.h"
+#include "SimCore/MagneticFieldMap3D.h"
 #include "Exception/Exception.h"
 
 // STL

@@ -5,7 +5,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimApplication/ElectroNuclearXsecBiasingOperator.h" 
+#include "SimCore/ElectroNuclearXsecBiasingOperator.h" 
 
 namespace ldmx { 
 

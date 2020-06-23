@@ -2,7 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 from LDMX.Detectors.makePath import makeDetectorPath
-from LDMX.SimApplication import generators
+from LDMX.SimCore import generators
 
 def inclusive_single_e() :
     """Get a basic un-biased, inclusive single electron simulation

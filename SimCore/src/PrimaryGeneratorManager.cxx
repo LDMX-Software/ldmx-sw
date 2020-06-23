@@ -5,7 +5,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimApplication/PrimaryGeneratorManager.h"
+#include "SimCore/PrimaryGeneratorManager.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */

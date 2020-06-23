@@ -4,7 +4,7 @@ Mainly focused on reducing the number of places that certain parameter and class
 are hardcoded into the python configuration.
 """
 
-from LDMX.SimApplication import simcfg
+from LDMX.SimCore import simcfg
 
 def gun( name ) :
     """New basic particle gun primary generator

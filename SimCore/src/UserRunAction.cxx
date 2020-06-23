@@ -4,7 +4,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimApplication/UserRunAction.h"
+#include "SimCore/UserRunAction.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */

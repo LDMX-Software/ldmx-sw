@@ -4,22 +4,22 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimApplication/RunManager.h"
+#include "SimCore/RunManager.h"
 
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "SimApplication/APrimePhysics.h"
-#include "SimApplication/DetectorConstruction.h"
-#include "SimApplication/GammaPhysics.h"
-#include "SimApplication/ParallelWorld.h"
-#include "SimApplication/PrimaryGeneratorAction.h"
-#include "SimApplication/USteppingAction.h"
-#include "SimApplication/UserActionManager.h"
-#include "SimApplication/UserEventAction.h"
-#include "SimApplication/UserRunAction.h"
-#include "SimApplication/UserStackingAction.h"
-#include "SimApplication/UserTrackingAction.h"
+#include "SimCore/APrimePhysics.h"
+#include "SimCore/DetectorConstruction.h"
+#include "SimCore/GammaPhysics.h"
+#include "SimCore/ParallelWorld.h"
+#include "SimCore/PrimaryGeneratorAction.h"
+#include "SimCore/USteppingAction.h"
+#include "SimCore/UserActionManager.h"
+#include "SimCore/UserEventAction.h"
+#include "SimCore/UserRunAction.h"
+#include "SimCore/UserStackingAction.h"
+#include "SimCore/UserTrackingAction.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */

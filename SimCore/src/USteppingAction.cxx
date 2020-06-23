@@ -3,7 +3,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboraty
  */
 
-#include "SimApplication/USteppingAction.h" 
+#include "SimCore/USteppingAction.h" 
 
 namespace ldmx {
 

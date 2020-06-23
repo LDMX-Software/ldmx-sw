@@ -1,4 +1,4 @@
-#include "SimApplication/Trajectory.h"
+#include "SimCore/Trajectory.h"
 
 // LDMX
 #include "SimCore/UserTrackInformation.h"
