@@ -39,7 +39,7 @@ photo_nuclear.build1DHistogram("1k0_energy_frac"    , "E(K0)/E(#gamma_{PN}) (MeV
 
 photo_nuclear.build1DHistogram("recoil_vertex_x",   "Recoil e^{-} Vertex - x (mm)", 40, -40, 40)
 photo_nuclear.build1DHistogram("recoil_vertex_y",   "Recoil e^{-} Vertex - y (mm)", 80, -80, 80)
-photo_nuclear.build1DHistogram("recoil_vertex_z",   "Recoil e^{-} Vertex - z (mm)", 20, -650, -750)
+photo_nuclear.build1DHistogram("recoil_vertex_z",   "Recoil e^{-} Vertex - z (mm)", 20, -750, -650)
 
 photo_nuclear.build1DHistogram("pn_gamma_int_z",    "#gamma Interaction Vertex (mm)", 50, 200, 400)
 photo_nuclear.build1DHistogram("pn_gamma_vertex_z", "#gamma Vertex (mm)", 1000, -5,  5)
@@ -55,3 +55,32 @@ photo_nuclear.build1DHistogram("hardest_n_theta",  "#theta of Hardest Photo-nucl
 photo_nuclear.build1DHistogram("hardest_pi_ke",    "Kinetic Energy Hardest Photo-nuclear #pi (MeV)", 400, 0, 4000)
 photo_nuclear.build1DHistogram("hardest_pi_theta", "#theta of Hardest Photo-nuclear #pi (Degrees)", 360, 0, 180)
 
+photo_nuclear.build2DHistogram("h_ke_h_theta", 
+                    "Kinetic Energy Hardest Photo-nuclear Particle (MeV)",
+                    400, 0, 4000, 
+                    "#theta of Hardest Photo-nuclear Particle (Degrees)",
+                    360, 0, 180)
+
+photo_nuclear.build2DHistogram("1n_ke:2nd_h_ke", 
+                    "Kinetic Energy of Leading Neutron (MeV)",
+                    400, 0, 4000, 
+                    "Kinetic Energy of 2nd Hardest Particle",
+                    400, 0, 4000)
+
+photo_nuclear.build2DHistogram("1kp_ke:2nd_h_ke", 
+                    "Kinetic Energy of Leading Charged Kaon (MeV)",
+                    400, 0, 4000, 
+                    "Kinetic Energy of 2nd Hardest Particle",
+                    400, 0, 4000)
+
+photo_nuclear.build2DHistogram("1k0_ke:2nd_h_ke", 
+                    "Kinetic Energy of Leading K0 (MeV)",
+                    400, 0, 4000, 
+                    "Kinetic Energy of 2nd Hardest Particle",
+                    400, 0, 4000)
+
+photo_nuclear.build2DHistogram("recoil_vertex_x:recoil_vertex_y", 
+                   "Recoil electron vertex x (mm)", 
+                   160, -40, 40, 
+                   "Recoil electron vertex y (mm)", 
+                   320, -80, 80)

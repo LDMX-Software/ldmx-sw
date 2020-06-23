@@ -49,12 +49,12 @@ _dock_image="$2"
 if [ -z ${_dock_image} ]; then
     _dock_image="latest"
 fi
-export LDMX_DOCKER_TAG=${_dock_image}
+export LDMX_DOCKER_TAG="${_docker_hub_repo}:${_dock_image}"
 
 ###############################################################################
 # Make sure we have the latest docker container
 ###############################################################################
-docker pull ${_docker_hub_repo}:${LDMX_DOCKER_TAG}
+docker pull ${LDMX_DOCKER_TAG}
 
 ###############################################################################
 # ldmx
@@ -66,5 +66,5 @@ docker pull ${_docker_hub_repo}:${LDMX_DOCKER_TAG}
 #   the container runs the users command from the same place that the user
 #   intended.
 ###############################################################################
-alias ldmx='docker run -i -e LDMX_BASE -v $LDMX_BASE:$LDMX_BASE -u $(id -u ${USER}):$(id -g ${USER}) ${_docker_hub_repo}:$LDMX_DOCKER_TAG $(pwd)'
+alias ldmx='docker run -it -e LDMX_BASE -v $LDMX_BASE:$LDMX_BASE -u $(id -u ${USER}):$(id -g ${USER}) $LDMX_DOCKER_TAG $(pwd)'
 

@@ -11,7 +11,6 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/HistogramPool.h"
 #include "Framework/EventProcessorFactory.h"
 
 /*~~~~~~~~~~~~~~~~*/
@@ -130,7 +129,6 @@ namespace ldmx {
         PyObject* temp = PyObject_GetAttrString(owner, name.c_str());
         if (temp != 0) {
             retval = getPyString(temp);
-            Py_DECREF(temp);
         }
         return retval;
     }
@@ -147,7 +145,6 @@ namespace ldmx {
         PyObject* temp = PyObject_GetAttrString(owner, name.c_str());
         if (temp != 0) {
             retval = getPyInt(temp);
-            Py_DECREF(temp);
         }
         return retval;
     }
@@ -176,7 +173,34 @@ namespace ldmx {
             list.push_back( getPyString( elem ) );
             Py_DECREF( elem );
         }
-        Py_DECREF(pylist);
+
+        return std::move(list);
+    }
+
+    /**
+     * Get a double list member of the input owner.
+     *
+     * @throw Exception if input name does not reference a python list object
+     *
+     * @param[in] owner python object to look for the list member
+     * @param[in] name name of list member of python object
+     * @return vector of doubles containing the entries in the python member list
+     */
+    static std::vector<double> doubleListMember(PyObject* owner, const char * listname ) {
+        auto pylist = PyObject_GetAttrString( owner , listname );
+        if ( !PyList_Check(pylist) ) {
+            EXCEPTION_RAISE(
+                    "BadType",
+                    "'" + std::string(listname) + "' is not a python list as expected."
+                    );
+        }
+
+        std::vector<double> list;
+        for ( Py_ssize_t i = 0; i < PyList_Size(pylist); i++ ) {
+            PyObject *elem = PyList_GetItem(pylist , i );
+            list.push_back( PyFloat_AsDouble(elem) );
+            Py_DECREF( elem );
+        }
 
         return std::move(list);
     }
@@ -300,15 +324,13 @@ namespace ldmx {
                 HistogramInfo histInfo; 
                 histInfo.name_   = stringMember(histogram, "name"); 
                 histInfo.xLabel_ = stringMember(histogram, "xlabel"); 
-                histInfo.bins_   = intMember(histogram, "bins"); 
-                histInfo.xmin_   = intMember(histogram, "xmin"); 
-                histInfo.xmax_   = intMember(histogram, "xmax");  
+                histInfo.xbins_  = doubleListMember(histogram, "xbins");
+                histInfo.yLabel_ = stringMember(histogram, "ylabel"); 
+                histInfo.ybins_  = doubleListMember(histogram, "ybins");
 
                 pc.histograms_.push_back(histInfo); 
 
-                Py_DECREF(histogram);
             }
-            Py_DECREF(histos);
 
             PyObject* parameters{PyObject_GetAttrString(processor, "parameters")};
             if (parameters != 0 && PyDict_Check(parameters)) {
@@ -317,13 +339,12 @@ namespace ldmx {
 
                 pc.params_.setParameters(params); 
             }
-            Py_DECREF(parameters);
 
             sequence_.push_back(pc);
 
-            Py_DECREF(processor);
         }
-        Py_DECREF(pysequence);
+
+        Py_DECREF(pProcess); //owns all member python objects
 
         //all done with python nonsense
         //do nothing for some reason ¯\_(ツ)_/¯
@@ -354,15 +375,13 @@ namespace ldmx {
             if (ep == 0) {
                 EXCEPTION_RAISE("UnableToCreate", "Unable to create instance '" + proc.instanceName_ + "' of class '" + proc.className_ + "'");
             }
-
-            if (!proc.histograms_.empty()) {
-                HistogramPool* histograms = HistogramPool::getInstance(); 
-                ep->getHistoDirectory();
-                for (const auto& hist : proc.histograms_) { 
-                    histograms->create<TH1F>(hist.name_, hist.xLabel_, hist.bins_, hist.xmin_, hist.xmax_); 
-                } 
-            }
+            //configure processor using passed parameters
             ep->configure(proc.params_);
+            //create histograms passed from python (if they exist)
+            if ( not proc.histograms_.empty() ) {
+                ep->getHistoDirectory();
+                ep->createHistograms( proc.histograms_ );
+            }
             process->addToSequence(ep);
         }
         for (auto file : inputFiles_) {

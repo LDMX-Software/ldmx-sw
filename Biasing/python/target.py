@@ -9,7 +9,7 @@ Example configurations for producing biased interactions in the target.
 
 from LDMX.Framework import ldmxcfg
 from LDMX.Detectors.makePath import * 
-from LDMX.SimApplication import generators
+from LDMX.SimCore import generators
 from LDMX.Biasing import filters
 
 def electro_nuclear( detector, generator ) :

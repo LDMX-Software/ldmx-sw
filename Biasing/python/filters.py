@@ -7,7 +7,7 @@ Examples of how each filter is configured for biased MC generation.
 
 """
 
-from LDMX.SimApplication import simcfg
+from LDMX.SimCore import simcfg
 
 def target_brem_filter():
     """ Configuration for filtering events that don't see a hard brem in the target. 
