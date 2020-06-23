@@ -122,7 +122,6 @@ namespace ldmx {
         // is then extracted and saved to the event header.   
         std::ostringstream stream;
         G4Random::saveFullState(stream);
-        //std::cout << stream.str() << std::endl;
         eventHeader.setStringParameter("eventSeed", stream.str());
     }
 
