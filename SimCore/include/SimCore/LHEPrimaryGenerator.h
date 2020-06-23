@@ -5,8 +5,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMAPPLICATION_LHEPRIMARYGENERATOR_H
-#define SIMAPPLICATION_LHEPRIMARYGENERATOR_H
+#ifndef SIMCORE_LHEPRIMARYGENERATOR_H
+#define SIMCORE_LHEPRIMARYGENERATOR_H
 
 // LDMX
 #include "SimCore/PrimaryGenerator.h"
@@ -53,4 +53,4 @@ namespace ldmx {
 
 }
 
-#endif // SIMAPPLICATION_LHEPRIMARYGENERATOR_H
+#endif // SIMCORE_LHEPRIMARYGENERATOR_H

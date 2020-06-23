@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_HCALSD_H
-#define SIMAPPLICATION_HCALSD_H
+#ifndef SIMCORE_HCALSD_H
+#define SIMCORE_HCALSD_H
 
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */
@@ -55,4 +55,4 @@ namespace ldmx {
 
 } // ldmx
 
-#endif // SIMAPPLICATION_HCALSD_H
+#endif // SIMCORE_HCALSD_H

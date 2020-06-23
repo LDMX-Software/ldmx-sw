@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_SIMULATOR_H
-#define SIMAPPLICATION_SIMULATOR_H
+#ifndef SIMCORE_SIMULATOR_H
+#define SIMCORE_SIMULATOR_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -154,4 +154,4 @@ namespace ldmx {
     };
 }
 
-#endif /* SIMAPPLICATION_SIMULATOR_H */
+#endif /* SIMCORE_SIMULATOR_H */

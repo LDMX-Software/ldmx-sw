@@ -5,8 +5,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_GAMMAPHYSICS_H_
-#define SIMAPPLICATION_GAMMAPHYSICS_H 1_
+#ifndef SIMCORE_GAMMAPHYSICS_H_
+#define SIMCORE_GAMMAPHYSICS_H 1_
 
 //------------//
 //   Geant4   //

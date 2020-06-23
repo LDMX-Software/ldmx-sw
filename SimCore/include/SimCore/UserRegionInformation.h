@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_USERREGIONINFORMATION_H_
-#define SIMAPPLICATION_USERREGIONINFORMATION_H_
+#ifndef SIMCORE_USERREGIONINFORMATION_H_
+#define SIMCORE_USERREGIONINFORMATION_H_
 
 // Geant4
 #include "G4VUserRegionInformation.hh"

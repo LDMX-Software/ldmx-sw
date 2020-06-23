@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_TRIGSD_H
-#define SIMAPPLICATION_TRIGSD_H
+#ifndef SIMCORE_TRIGSD_H
+#define SIMCORE_TRIGSD_H
 
 /*~~~~~~~~~~~~~~~~~~~~*/
 /*   SimCore   */

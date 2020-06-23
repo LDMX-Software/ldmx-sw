@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_ECALSD_H_
-#define SIMAPPLICATION_ECALSD_H_
+#ifndef SIMCORE_ECALSD_H_
+#define SIMCORE_ECALSD_H_
 
 // LDMX
 #include "DetDescr/EcalDetectorID.h"

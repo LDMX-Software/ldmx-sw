@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_SIMPARTICLEBUILDER_H_
-#define SIMAPPLICATION_SIMPARTICLEBUILDER_H_
+#ifndef SIMCORE_SIMPARTICLEBUILDER_H_
+#define SIMCORE_SIMPARTICLEBUILDER_H_
 
 // LDMX
 #include "Event/EventConstants.h"

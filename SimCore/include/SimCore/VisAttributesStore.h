@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_VISATTRIBUTESSTORE_H_
-#define SIMAPPLICATION_VISATTRIBUTESSTORE_H_
+#ifndef SIMCORE_VISATTRIBUTESSTORE_H_
+#define SIMCORE_VISATTRIBUTESSTORE_H_
 
 // Geant4
 #include "G4VisAttributes.hh"

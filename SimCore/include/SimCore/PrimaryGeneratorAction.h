@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_PRIMARYGENERATORACTION_H
-#define SIMAPPLICATION_PRIMARYGENERATORACTION_H
+#ifndef SIMCORE_PRIMARYGENERATORACTION_H
+#define SIMCORE_PRIMARYGENERATORACTION_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -111,4 +111,4 @@ namespace ldmx {
 
 } // ldmx
 
-#endif // SIMAPPLICATION_PRIMARYGENERATORACTION_H
+#endif // SIMCORE_PRIMARYGENERATORACTION_H

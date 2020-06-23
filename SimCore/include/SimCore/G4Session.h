@@ -4,8 +4,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMAPPLICATION_G4SESSION_H_
-#define SIMAPPLICATION_G4SESSION_H_
+#ifndef SIMCORE_G4SESSION_H_
+#define SIMCORE_G4SESSION_H_
 
 #include <iostream>
 #include <fstream>

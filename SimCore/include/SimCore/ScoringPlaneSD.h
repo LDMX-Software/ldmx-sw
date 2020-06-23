@@ -1,5 +1,5 @@
-#ifndef SIMAPPLICATION_SCORINGPLANESD_H
-#define SIMAPPLICATION_SCORINGPLANESD_H
+#ifndef SIMCORE_SCORINGPLANESD_H
+#define SIMCORE_SCORINGPLANESD_H
 
 /*~~~~~~~~~~~~*/   
 /*   Geant4   */
@@ -75,5 +75,5 @@ namespace ldmx {
 
 } // ldmx
 
-#endif // SIMAPPLICATION_SCORINGPLANESD_H_
+#endif // SIMCORE_SCORINGPLANESD_H_
 

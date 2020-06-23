@@ -5,8 +5,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMAPPLICATION_APRIMEPHYSICS_H_
-#define SIMAPPLICATION_APRIMEPHYSICS_H_
+#ifndef SIMCORE_APRIMEPHYSICS_H_
+#define SIMCORE_APRIMEPHYSICS_H_
 
 // Geant4
 #include "G4VPhysicsConstructor.hh"

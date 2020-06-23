@@ -6,8 +6,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMAPPLICATION_ROOTSIMFROMECALSP_H
-#define SIMAPPLICATION_ROOTSIMFROMECALSP_H
+#ifndef SIMCORE_ROOTSIMFROMECALSP_H
+#define SIMCORE_ROOTSIMFROMECALSP_H
 
 //----------------//
 //   C++ StdLib   //
@@ -105,4 +105,4 @@ namespace ldmx {
 
 }
 
-#endif //SIMAPPLICATION_ROOTSIMFROMECALSP_H
+#endif //SIMCORE_ROOTSIMFROMECALSP_H

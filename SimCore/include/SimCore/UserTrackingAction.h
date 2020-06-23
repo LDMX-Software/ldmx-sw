@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_USERTRACKINGACTION_H_
-#define SIMAPPLICATION_USERTRACKINGACTION_H_
+#ifndef SIMCORE_USERTRACKINGACTION_H_
+#define SIMCORE_USERTRACKINGACTION_H_
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */

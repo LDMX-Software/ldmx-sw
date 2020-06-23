@@ -4,8 +4,8 @@
  * @author Jeremy McCormick, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_LHEPARTICLE_H_
-#define SIMAPPLICATION_LHEPARTICLE_H_
+#ifndef SIMCORE_LHEPARTICLE_H_
+#define SIMCORE_LHEPARTICLE_H_
 
 // STL
 #include <string>

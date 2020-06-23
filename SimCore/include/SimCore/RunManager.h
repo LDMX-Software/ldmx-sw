@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMAPPLICATION_RUNMANAGER_H
-#define SIMAPPLICATION_RUNMANAGER_H
+#ifndef SIMCORE_RUNMANAGER_H
+#define SIMCORE_RUNMANAGER_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -112,4 +112,4 @@ namespace ldmx {
     }; // RunManager
 } // ldmx
 
-#endif // _SIMAPPLICATION_RUNMANAGER_H_
+#endif // _SIMCORE_RUNMANAGER_H_
