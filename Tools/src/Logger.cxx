@@ -1,11 +1,4 @@
-/**
- * @file Logger.cxx
- * Interface for ldmx-sw to spdlog
- *
- * @author Tom Eichlersmith, University of Minnesota
- */
-
-#include "Exception/Logger.h"
+#include "Tools/Logger.h"
 
 // STL
 #include <fstream>
@@ -22,7 +15,6 @@ namespace ldmx {
 
         logger makeLogger( const std::string& name ) {
             logger lg( log::keywords::channel = name); //already has severity built in
-            //lg.add_attribute("StopWatch",boost::make_shared< log::attributes::timer >()); //add timing attribute
             return boost::move(lg);
         }
 
