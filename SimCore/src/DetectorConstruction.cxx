@@ -1,4 +1,4 @@
-#include "SimApplication/DetectorConstruction.h"
+#include "SimCore/DetectorConstruction.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Exception   */

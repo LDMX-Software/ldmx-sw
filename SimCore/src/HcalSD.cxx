@@ -1,4 +1,4 @@
-#include "SimApplication/HcalSD.h"
+#include "SimCore/HcalSD.h"
 
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */

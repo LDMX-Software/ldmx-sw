@@ -4,7 +4,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimApplication/PrimaryGeneratorAction.h"
+#include "SimCore/PrimaryGeneratorAction.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -15,8 +15,8 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimApplication/PrimaryGeneratorManager.h"
-#include "SimApplication/UserPrimaryParticleInformation.h"
+#include "SimCore/PrimaryGeneratorManager.h"
+#include "SimCore/UserPrimaryParticleInformation.h"
 #include "Framework/FrameworkDef.h"
 
 /*~~~~~~~~~~*/

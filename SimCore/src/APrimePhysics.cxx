@@ -5,7 +5,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimApplication/APrimePhysics.h"
+#include "SimCore/APrimePhysics.h"
 
 // LDMX
 #include "SimCore/G4APrime.h"

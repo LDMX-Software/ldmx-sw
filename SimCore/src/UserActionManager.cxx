@@ -2,7 +2,7 @@
  *
  */
 
-#include "SimApplication/UserActionManager.h"
+#include "SimCore/UserActionManager.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */

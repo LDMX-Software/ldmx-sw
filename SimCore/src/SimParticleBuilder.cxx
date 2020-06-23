@@ -1,4 +1,4 @@
-#include "SimApplication/SimParticleBuilder.h"
+#include "SimCore/SimParticleBuilder.h"
 
 #include <string>
 
@@ -6,9 +6,9 @@
 #include "Exception/Exception.h"
 #include "Framework/Event.h"
 #include "Event/EventConstants.h"
-#include "SimApplication/G4CalorimeterHit.h"
-#include "SimApplication/G4TrackerHit.h"
-#include "SimApplication/UserTrackingAction.h"
+#include "SimCore/G4CalorimeterHit.h"
+#include "SimCore/G4TrackerHit.h"
+#include "SimCore/UserTrackingAction.h"
 
 // Geant4
 #include "G4SystemOfUnits.hh"

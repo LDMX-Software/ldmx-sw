@@ -4,7 +4,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimApplication/GeneralParticleSource.h"
+#include "SimCore/GeneralParticleSource.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
