@@ -3,7 +3,7 @@
 
 """
 
-from LDMX.SimApplication import simcfg
+from LDMX.SimCore import simcfg
 
 def kaon_filter():
     """ Configuration for filtering photo-nuclear events whose products don't contain a kaon.

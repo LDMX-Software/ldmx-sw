@@ -11,7 +11,7 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserTrackInformation.h"
-#include "SimApplication/UserEventInformation.h" 
+#include "SimCore/UserEventInformation.h" 
 
 namespace ldmx { 
 
