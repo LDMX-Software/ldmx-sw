@@ -10,7 +10,19 @@ namespace ldmx {
     MyProcessor::~MyProcessor() { 
     }
 
-    void MyProcessor::configure(Parameters& parameters) { }
+    void MyProcessor::configure(Parameters& parameters) { 
+
+        /**
+         * You access configuration parameters set in the python
+         * by asking for the parameter with the same name as the
+         * python member variable.
+         */
+
+        int my_parameter = parameters.getParameter<int>("my_parameter");
+
+        std::cout << "MyProcessor has my_parameter = " 
+            << my_parameter << std::endl;
+    }
 
     void MyProcessor::produce(Event& event) { 
 

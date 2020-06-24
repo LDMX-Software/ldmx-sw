@@ -4,14 +4,22 @@ Sets all parameters to reasonable defaults.
 
 Examples
 --------
->>> from LDMX.EventProc.trackerHitKiller import trackerHitKiller
->>> p.sequence.append( trackerHitKiller )
+    from LDMX.EventProc.trackerHitKiller import trackerHitKiller
+    p.sequence.append( trackerHitKiller )
 """
-#!/usr/bin/python
 
 from LDMX.Framework import ldmxcfg
 
-trackerHitKiller = ldmxcfg.Producer("trackerHitKiller", "ldmx::TrackerHitKiller")
+class TrackerHitKiller(ldmxcfg.Producer) :
+    """Configuration for killing tracker hits"""
 
-# Configure
-trackerHitKiller.parameters['hitEfficiency'] = 99.0
+    def __init__(self,name,hitEfficiency) :
+        super().__init__(name,'ldmx::TrackerHitKiller')
+
+        from LDMX.EventProc import include
+        include.library()
+
+        self.hitEfficiency = hitEfficiency
+
+trackerHitKiller = TrackerHitKiller("trackerHitKiller", 99.0)
+

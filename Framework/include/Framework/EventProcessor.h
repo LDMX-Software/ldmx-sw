@@ -17,9 +17,10 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Event.h"
-#include "Framework/FrameworkDef.h"
 #include "Framework/Parameters.h" 
 #include "Framework/StorageControl.h"
+#include "Framework/Histograms.h"
+#include "Framework/NtupleManager.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -89,8 +90,14 @@ namespace ldmx {
             /**
              * Callback for the EventProcessor to configure itself from the 
              * given set of parameters.
+             *
+             * The parameters a processor has access to are the member variables
+             * of the python class in the sequence that has className equal to
+             * the EventProcessor class name.
+             *
+             * For an example, look at MyProcessor.
              * 
-             * @param parameters ParameterSet for configuration.
+             * @param parameters Parameters for configuration.
              */
             virtual void configure(Parameters& parameters) { } 
 
@@ -136,13 +143,16 @@ namespace ldmx {
             virtual void onProcessEnd() {
             }
 
-            /** Access/create a directory in the histogram file for this event
+            /** 
+             * Access/create a directory in the histogram file for this event
              * processor to create histograms and analysis tuples.
+             *
              * @note This method makes the returned directory the current directory
              *     so that newly created objects should go into that directory
+             *
+             * @return TDirectory* reference to directory in histogram file
              */
             TDirectory* getHistoDirectory();
-
 
             /** Mark the current event as having the given storage control hint from this module
              * @param controlhint The storage control hint to apply for the given event
@@ -163,6 +173,12 @@ namespace ldmx {
              * @param classtype The class type of the processor (1 for Producer, 2 for Analyzer).
              */
             static void declare(const std::string& classname, int classtype, EventProcessorMaker*);
+
+            /**
+             * Internal function which is used to create histograms passed from the python configuration
+             * @parma histos vector of Parameters that configure histograms to create
+             */
+            void createHistograms(const std::vector<Parameters>& histos);
       
         protected:
 
@@ -175,6 +191,12 @@ namespace ldmx {
 
             /** Handle to the Process. */
             Process& process_;
+
+            /// Interface class for making and filling histograms
+            HistogramHelper histograms_;
+
+            /// Manager for any ntuples
+            NtupleManager& ntuple_{NtupleManager::getInstance()};
 
         private:
 

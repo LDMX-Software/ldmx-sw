@@ -95,7 +95,9 @@ macro(MODULE)
     add_library(${MODULE_NAME} SHARED ${sources} ${MODULE_EXTRA_SOURCES})
    
     # add link libs
-    target_link_libraries(${MODULE_NAME} ${MODULE_LIBRARIES})
+    # need to add linking to boost libraries
+    # https://stackoverflow.com/a/40016057
+    target_link_libraries(${MODULE_NAME} ${MODULE_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_LOG_LIBRARY})
   
     # install the library
     install(TARGETS ${MODULE_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
@@ -122,20 +124,23 @@ macro(MODULE)
 
   set(PYTHON_INSTALL_DIR lib/python/LDMX/${MODULE_NAME})
 
+  # write an __init__ file for this python module (if any python scripts are installed)
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py 
+      "\"\"\"Python module to configure the LDMX module ${MODULE_NAME}\"\"\"")
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION ${PYTHON_INSTALL_DIR})
+
+  # write an include file for this module
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/include.py
+      "\"\"\"Include this module\"\"\"\ndef library() :\n\ \ \ \ \"\"\"Attach the name of ${MODULE_NAME} library to the process\"\"\"\n\ \ \ \ from LDMX.Framework.ldmxcfg import Process\n\ \ \ \ Process.addLibrary('${CMAKE_INSTALL_PREFIX}/lib/lib${MODULE_NAME}.so')")
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/include.py DESTINATION ${PYTHON_INSTALL_DIR})
   # install python scripts
   file(GLOB py_scripts "${${MODULE_NAME}_PYTHON_DIR}/[!_]*.py*")
-  if(py_scripts)
-    # write an __init__ file for this python module (if any python scripts are installed)
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py 
-        "\"\"\"Python module to configure the LDMX module ${MODULE_NAME}\"\"\"")
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION ${PYTHON_INSTALL_DIR})
-    foreach(pyscript ${py_scripts})
-      string(REPLACE ".in" "" script_output ${pyscript})
-      get_filename_component(script_output ${script_output} NAME)
-      configure_file(${pyscript} ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output})
-      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output} DESTINATION ${PYTHON_INSTALL_DIR})
-    endforeach()
-  endif()
+  foreach(pyscript ${py_scripts})
+    string(REPLACE ".in" "" script_output ${pyscript})
+    get_filename_component(script_output ${script_output} NAME)
+    configure_file(${pyscript} ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output} DESTINATION ${PYTHON_INSTALL_DIR})
+  endforeach()
 
   # install anything in the data directory to data/${MODULE}
   file(GLOB data_files "${${MODULE_NAME}_DATA_DIR}/*")

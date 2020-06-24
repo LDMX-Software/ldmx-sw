@@ -46,78 +46,53 @@ namespace ldmx {
             /**
              * Retrieve the parameter of the given name.  
              *
-             * @throw Exception if the parameter isn't found
-             * 
-             * @throw Exception if parameter is being cast to the wrong type
+             * @throw Exception if parameter of the given name isn't found
+             *
+             * @throw Exception if parameter is found but not of the input type
              *
              * @param T the data type to cast the parameter to.
              * 
              * @param[in] name the name of the parameter value to retrieve.
-             * @param[in] defaultParam the value the parameter should take on 
-             *      if it's not found in the list of parameters.  
              *
              * @return The user specified parameter of type T.
              */
             template <typename T> 
-            T getParameter(const std::string& name) { 
+            T getParameter(const std::string& name) const { 
                 
-                // Check if the variable exists in the map.
-                // If it doesn't, throw an exception.
+                // Check if the variable exists in the map.  If it doesn't, 
+                // raise an exception.
                 if (parameters_.count(name) == 0) {
-                    std::cerr << "[ WARN ] [ ParamName ] : "
-                        << "Parameter '" << name << "' was not passed in the python configuration. "
-                        << "The default constructor will be used."
-                        << std::endl;
-                    return T();
-                    /* Do we want to not run or just print a warning?
-                    EXCEPTION_RAISE( "ParamName",
-                            "Parameter '" + name + "' does not exist in python configuration parameters."
+                    EXCEPTION_RAISE( "NonExistParam",
+                            "Parameter '"+name+"' does not exist in list of parameters."
                             );
-                    */
                 }
 
                 T parameter; 
                 try { 
-                    parameter = std::any_cast< T >(parameters_[name]);
+                    parameter = std::any_cast< T >(parameters_.at(name));
                 } catch(const std::bad_any_cast& e) {
-                    EXCEPTION_RAISE("ParamType", 
-                                    "Parameter " + name + " is being cast to incorrect type ( " + typeid(T).name() + ")."); 
+                    EXCEPTION_RAISE( "BadTypeParam",
+                                    "Parameter '" + name + "' is being cast to incorrect type '" + typeid(T).name() + "'."); 
                 }
 
                 return parameter; 
             }
 
             /**
-             * Retrieve the parameter of the given name.  
+             * Retrieve a parameter with a default specified.
              *
-             * @note Setting a default in the C++ source for your processor
-             * will mean that the parameter doesn't need to be set in the
-             * python. Only the parameters set in the python are tracked
-             * in the meta-data, so use the default with caution.
+             * Return the input default if a parameter is not found in map.
              *
-             * If the parameter isn't found, the default is returned instead.
-             *
-             * @throw Exception if parameter is being cast to the wrong type
-             *
-             * @param T the data type to cast the parameter to.
-             * 
-             * @param[in] name the name of the parameter value to retrieve.
-             * @param[in] defaultParam the value the parameter should take on 
-             *      if it's not found in the list of parameters.  
-             *
-             * @return The user specified parameter of type T.
+             * @return the user parameter of type T
              */
-            template <typename T> 
-            T getParameter(const std::string& name, T defaultParam) { 
-                
-                // Check if the variable exists in the map.  If it doesn't, 
-                // warn the user and set a default.
-                if (parameters_.count(name) == 0) return defaultParam; 
+            template <typename T>
+            T getParameter(const std::string& name, const T& def ) const {
 
-                // we now know variable exists in map, so we can use
-                // the other get method
-                return getParameter<T>(name); 
-            }               
+                if ( parameters_.count(name) == 0 ) return def;
+
+                //get here knowing that name exists in parameters_
+                return getParameter<T>(name);
+            }
 
         private:
 

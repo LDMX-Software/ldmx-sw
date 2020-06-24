@@ -1,45 +1,54 @@
-"""Configuration for TrigScintDigiProducers
+"""Configuration for Trigger Scintillator digitization
 
 Sets all parameters to reasonable defaults.
 
 Examples
 --------
->>> from LDMX.EventProc.trigScintDigis import *
->>> p.sequence.extend([ trigScintDigis , trigScintDigisDn , trigScintDigisTag ])
+    from LDMX.EventProc.trigScintDigis import TrigScintDigiProducer
+    p.sequence.extend([ TrigScintDigiProducer.up() , TrigScintDigiProducer.down() , TrigScintDigiProducer.tagger() ])
 """
-#!/usr/bin/python
 
 from LDMX.Framework import ldmxcfg
 
-trigScintDigis = ldmxcfg.Producer("trigScintDigis", "ldmx::TrigScintDigiProducer")
+class TrigScintDigiProducer(ldmxcfg.Producer) :
+    """Configuration for digitizer for Trigger Scintillators"""
 
-trigScintDigis.parameters["randomSeed"] = 1
-trigScintDigis.parameters["mean_noise"] = 0.02
-trigScintDigis.parameters["number_of_strips"] = 50
-trigScintDigis.parameters["number_of_arrays"] = 1
-trigScintDigis.parameters["mev_per_mip"] = 0.4
-trigScintDigis.parameters["pe_per_mip"] = 10.
-trigScintDigis.parameters["input_collection"]="TriggerPadUpSimHits"
-trigScintDigis.parameters["output_collection"]="trigScintDigisUp"
+    def __init__(self,name) :
+        super().__init__(name,'ldmx::TrigScintDigiProducer')
 
-trigScintDigisDn = ldmxcfg.Producer("trigScintDigis", "ldmx::TrigScintDigiProducer")
+        from LDMX.EventProc import include
+        include.library()
 
-trigScintDigisDn.parameters["randomSeed"] = 1
-trigScintDigisDn.parameters["mean_noise"] = 0.02
-trigScintDigisDn.parameters["number_of_strips"] = 50
-trigScintDigisDn.parameters["number_of_arrays"] = 1
-trigScintDigisDn.parameters["mev_per_mip"] = 0.4
-trigScintDigisDn.parameters["pe_per_mip"] = 10.
-trigScintDigisDn.parameters["input_collection"]="TriggerPadDownSimHits"
-trigScintDigisDn.parameters["output_collection"]="trigScintDigisDn"
+        self.mean_noise = 0.02
+        self.number_of_strips = 50
+        self.number_of_arrays = 1
+        self.mev_per_mip = 0.4
+        self.pe_per_mip = 10.
+        self.input_collection="TriggerPadUpSimHits"
+        self.input_pass_name="" #take any pass
+        self.output_collection="trigScintDigisUp"
+        import time
+        self.randomSeed = int(time.time())
+        self.verbose = False
 
-trigScintDigisTag = ldmxcfg.Producer("trigScintDigis", "ldmx::TrigScintDigiProducer")
+    def up() :
+        """Get the digitizer for the trigger pad upstream of target"""
+        digi = TrigScintDigiProducer( 'trigScintDigisUp' )
+        digi.input_collection = 'TriggerPadUpSimHits'
+        digi.output_collection= 'trigScintDigisUp'
+        return digi
 
-trigScintDigisTag.parameters["randomSeed"] = 1
-trigScintDigisTag.parameters["mean_noise"] = 0.02
-trigScintDigisTag.parameters["number_of_strips"] = 50
-trigScintDigisTag.parameters["number_of_arrays"] = 1
-trigScintDigisTag.parameters["mev_per_mip"] = 0.4
-trigScintDigisTag.parameters["pe_per_mip"] = 10.
-trigScintDigisTag.parameters["input_collection"]="TriggerPadTaggerSimHits"
-trigScintDigisTag.parameters["output_collection"]="trigScintDigisTag"
+    def down() :
+        """Get the digitizer for the trigger pad downstream of target"""
+        digi = TrigScintDigiProducer( 'trigScintDigisDn' )
+        digi.input_collection = 'TriggerPadDownSimHits'
+        digi.output_collection= 'trigScintDigisDn'
+        return digi
+
+    def tagger() :
+        """Get the digitizer for the trigger pad upstream of tagger"""
+        digi = TrigScintDigiProducer( 'trigScintDigisTag' )
+        digi.input_collection = 'TriggerPadTaggerSimHits'
+        digi.output_collection= 'trigScintDigisTag'
+        return digi
+

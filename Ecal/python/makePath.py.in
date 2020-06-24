@@ -23,7 +23,7 @@ def makeBDTPath( BDTname ) :
 
     Examples
     --------
-    >>> ecalVeto.parameters['bdt_file'] = makeBDTPath( 'gabrielle' )
+        ecalVeto.bdt_file = makeBDTPath( 'gabrielle' )
     """
 
     fullPath = '@CMAKE_INSTALL_PREFIX@/data/Ecal/' + BDTname + '.onnx'
@@ -47,7 +47,7 @@ def makeCellXYPath() :
 
     Examples
     --------
-    >>> ecalVeto.parameters['cellxy_file'] = makeCellXYPath()
+        ecalVeto.cellxy_file = makeCellXYPath()
     """
 
     fullPath = '@CMAKE_INSTALL_PREFIX@/data/Ecal/cellxy.txt'

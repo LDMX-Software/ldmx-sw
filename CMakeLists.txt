@@ -45,10 +45,6 @@ message(STATUS "Geant4 found at: ${Geant4_DIR}")
 
 # find Python installation
 find_package(PythonLibs 3)
-if(NOT ${PYTHONLIBS_FOUND})
-  message(WARNING "Python2 support will be removed in upcoming ldmx-sw versions.")
-  find_package(PythonLibs 2 REQUIRED)
-endif()
 message(STATUS "Python lib found at: ${PYTHON_LIBRARIES}")
 message(STATUS "Python include dir found at: ${PYTHON_INCLUDE_DIRS}")
 get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
@@ -64,7 +60,7 @@ message(STATUS "ROOT found at: ${ROOT_DIR}")
 
 # find boost headers
 # specify location with -DBOOST_ROOT=<location-of-boost-prefix>
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system log)
 message(STATUS "Boost lib found at: ${Boost_LIBRARY_DIRS}")
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})

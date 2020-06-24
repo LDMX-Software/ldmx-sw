@@ -24,19 +24,11 @@
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/HistogramPool.h"
 #include "Framework/Parameters.h" 
-
-//----------//
-//   ROOT   //
-//----------//
-#include "TH1.h"
-#include "TVector3.h"
 
 namespace ldmx { 
 
     class RecoilTrackerDQM : public Analyzer { 
-
 
         public: 
 
@@ -62,12 +54,6 @@ namespace ldmx {
 
             /** Method executed before processing of events begins. */
             void onProcessStart();
-
-
-        private: 
-
-            /** Singleton used to access histograms. */
-            HistogramPool* histograms_{nullptr}; 
 
     }; // RecoilTrackerDQM 
     

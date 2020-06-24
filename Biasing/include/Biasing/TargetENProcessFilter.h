@@ -11,7 +11,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimApplication/UserAction.h"
+#include "SimCore/UserAction.h"
 
 // Forward Declarations 
 class G4Step; 

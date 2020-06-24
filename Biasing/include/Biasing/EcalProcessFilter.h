@@ -9,7 +9,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimApplication/UserAction.h"
+#include "SimCore/UserAction.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */

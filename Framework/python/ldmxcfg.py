@@ -1,52 +1,144 @@
-"""@package ldmxcfg
-Basic python configuration for ldmx-app
+"""ldmxcfg
+
+Basic python configuration for ldmx-sw application
 """
 
-class Producer:
-    """A producer object.
+class EventProcessor:
+    """An EventProcessor object
 
-    This object contains the parameters that are necessary for a ldmx::Producer to be configured.
+    This object contains the parameters that are necessary for a ldmx::EventProcessor to be configured.
+
+    You should NOT use this class directly. Use one of the derived classes Producer or Analyzer for clarity.
 
     Parameters
     ----------
     instanceName : str
         Name of this copy of the producer object
     className : str
-        Name (including namespace) of the C++ class that this producer should be
+        Name (including namespace) of the C++ class that this processor should be
 
     Attributes
     ----------
-    parameters : dict
-        python dictionary that will be passed to the C++ object during the configure method
     histograms : list of histogram1D objects
-        List of histogram configure objects for the HistogramPool to make for this producer
-
-    Example
-    -------
-    >>> dumPro = ldmxcfg.Producer( 'thisIsADummyProducer' , 'ldmx::DummyProducer' )
+        List of histogram configure objects for the HistogramPool to make for this processor
 
     See Also
     --------
-    LDMX.Framework.histograms.histogram1D : histogram configure object
+    LDMX.Framework.ldmxcfg.Producer : Producer configuration object
+    LDMX.Framework.ldmxcfg.Analyzer : Analyzer configuration object
+    LDMX.Framework.histogram.histogram : histogram configuration object
     """
 
     def __init__(self, instanceName, className):
         self.instanceName=instanceName
         self.className=className
-        self.parameters={ 'name' : instanceName , 'class' : className }
         self.histograms=[]
 
-    def build1DHistogram(self, name, xlabel, bins, xmin, xmax):
-        """Make a histogram for this producer to fill.
+    def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None):
+        """Make a 1D histogram 
+
+        If xmin and xmax are not provided, bins is assumed to be
+        the bin edges on the x-axis. If they are both provided,
+        bins is assumed to be the number of bins on the x-axis.
+
+        Parameters
+        ----------
+        name : str
+            variable name of histogram
+        xlabel : str
+            title of x-axis of histogram
+        bins : int OR list of floats
+            Number of bins on x-axis OR bin edges on x-axis
+        xmin : float
+            Minimum edge of bins on x-axis
+        xmax : float
+            Maximum edge of bins on x-axis
 
         See Also
         --------
-        LDMX.Framework.histograms.histogram1D : histogram configuration object
+        LDMX.Framework.histogram.histogram : histogram configuration object
         """
 
         import LDMX.Framework.histogram as h
-        self.histograms.append(h.histogram1D(name, xlabel, bins, xmin, xmax))
-        return self
+        theBinEdges = bins
+        if xmin is not None and xmax is not None :
+            theBinEdges = h.uniform_binning(bins,xmin,xmax)
+
+        self.histograms.append(h.histogram(name, xlabel,theBinEdges))
+
+    def build2DHistogram(self, name, 
+            xlabel = 'X Axis', xbins = 1, xmin = None, xmax = None, 
+            ylabel = 'Y Axis', ybins = 1, ymin = None, ymax = None) :
+        """Create a 2D histogram
+
+        If {x,y}min or {x,y}max are not provided, {x,y}bins is assumed
+        to be the bin edges on the {x,y}-axis. If they are both provided,
+        {x,y}-bins is assumed to be the number of bins on the {x,y}-axis.
+
+        Parameters
+        ----------
+        name : str
+            variable name of histogram
+        xlabel : str
+            title of x-axis of histogram
+        xbins : int OR list of floats
+            Number of bins on x-axis OR list of bin edges on x-axis
+        xmin : float
+            Minimum edge of bins on x-axis
+        xmax : float
+            Maximum edge of bins on x-axis
+        ylabel : str
+            title of y-axis of histogram
+        ybins : int OR list of floats
+            Number of bins on y-axis OR list of bin edges on y-axis
+        ymin : float
+            Minimum edge of bins on y-axis
+        ymay : float
+            Mayimum edge of bins on y-axis
+
+        See Also
+        --------
+        LDMX.Framework.histogram.histogram : histogram configuration object
+
+        Examples
+        --------
+
+        When doing all uniform binning, you can specify the arguments by position.
+            myProcessor.build2DHistogram( 'dummy' ,
+                'My X Axis' , 20 , 0. , 1. ,
+                'My Y Axis' , 60 , 0. , 10. )
+
+        When using variable binning, you have to use the parameter names.
+            myProcessor.build2DHistogram( 'dummy2' ,
+                xlabel='My X Axis', xbins=[0.,1.,2.],
+                ylabel='My Y Axis', ybins=60, ymin=0., ymax=10. )
+        """
+
+        import LDMX.Framework.histogram as h
+        theBinEdgesX = xbins
+        if xmin is not None and xmax is not None :
+            theBinEdgesX = h.uniform_binning(xbins,xmin,xmax)
+
+        theBinEdgesY = ybins
+        if ymin is not None and ymax is not None :
+            theBinEdgesY = h.uniform_binning(ybins,ymin,ymax)
+
+        self.histograms.append(
+                h.histogram(name, xlabel,theBinEdgesX, ylabel,theBinEdgesY)
+                )
+
+class Producer(EventProcessor):
+    """A producer object.
+
+    This object contains the parameters that are necessary for a ldmx::Producer to be configured.
+
+    See Also
+    --------
+    LDMX.Framwork.ldmxcfg.EventProcessor : base class
+    """
+
+    def __init__(self, instanceName, className):
+        super().__init__(instanceName,className)
 
     def __str__(self) :
         """Stringify this Producer, creates a message with all the internal parameters.
@@ -58,63 +150,25 @@ class Producer:
         """
 
         msg = "\n  Producer(%s of class %s)"%(self.instanceName,self.className)
-        if len(self.parameters)>0:
+        if len(self.__dict__)>0:
             msg += "\n   Parameters:"
-            for k, v in self.parameters.items():
+            for k, v in self.__dict__.items():
                 msg += "\n    " + str(k) + " : " + str(v)
-
-        if self.histograms:
-            msg += "\n   Creating the following histograms:" 
-            for histo in self.histograms: 
-                msg += '\n    ' + str(histo)
 
         return msg
 
-class Analyzer:
+class Analyzer(EventProcessor):
     """A analyzer object.
 
     This object contains the parameters that are necessary for a ldmx::Analyzer to be configured.
 
-    Parameters
-    ----------
-    instanceName : str
-        Name of this copy of the analyzer object
-    className : str
-        Name (including namespace) of the C++ class that this analyzer should be
-
-    Attributes
-    ----------
-    parameters : dict
-        python dictionary that will be passed to the C++ object during the configure method
-    histograms : list
-        List of histogram configure objects for the HistogramPool to make for this analyzer
-
-    Example
-    -------
-    >>> dumAna = ldmxcfg.Analyzer( 'thisIsADummyAnalyzer' , 'ldmx::DummyAnalyzer' )
-
     See Also
     --------
-    LDMX.Framework.histograms.histogram1D : histogram configure object
+    LDMX.Framework.ldmxcfg.EventProcessor : base class
     """
 
     def __init__(self, instanceName, className):
-        self.instanceName=instanceName
-        self.className=className
-        self.parameters={ 'name' : instanceName , 'class' : className }
-        self.histograms=[]
-   
-    def build1DHistogram(self, name, xlabel, bins, xmin, xmax):
-        """Make a histogram for this analyzer to fill.
-
-        See Also
-        --------
-        LDMX.Framework.histograms.histogram1D : histogram configuration object
-        """
-
-        import LDMX.Framework.histogram as h
-        self.histograms.append(h.histogram1D(name, xlabel, bins, xmin, xmax))
-        return self
+        super().__init__(instanceName,className)
 
     def __str__(self) :
         """Stringify this Analyzer, creates a message with all the internal parameters.
@@ -126,15 +180,10 @@ class Analyzer:
         """
 
         msg = "\n  Analyzer(%s of class %s)"%(self.instanceName,self.className)
-        if len(self.parameters)>0:
+        if len(self.__dict__)>0:
             msg += "\n   Parameters:"
-            for k, v in self.parameters.items():
+            for k, v in self.__dict__.items():
                 msg += "\n    " + str(k) + " : " + str(v)
-
-        if self.histograms:
-            msg += "\n   Creating the following histograms:" 
-            for histo in self.histograms: 
-                msg += '\n    ' + str(histo)
 
         return msg
                 
@@ -198,7 +247,33 @@ class Process:
         self.skimRules=[]
         self.logFrequency=-1
         self.compressionSetting=9
+        self.histogramFile=''
         Process.lastProcess=self
+
+    def addLibrary(lib) :
+        """Add a library to the list of dynamically loaded libraries
+
+        A process object must already have been created.
+
+        Parameters
+        ----------
+        lib : str
+            name of library to load 
+
+        Warnings
+        --------
+        - Will exit the script if a process object hasn't been defined yet.
+
+        Examples
+        --------
+            addLibrary( 'libSimCore.so' )
+        """
+
+        if ( Process.lastProcess is not None ) :
+            Process.lastProcess.libraries.append( lib )
+        else :
+            print( "[ Process.addLibrary ]: No Process object defined yet!" )
+            sys.exit(1)
 
     def skimDefaultIsSave(self):
         """Configure the process to by default keep every event."""
@@ -223,9 +298,9 @@ class Process:
 
         Example
         -------
-        >>> ecalVeto = ldmxcfg.Producer( 'ecalVeto' , 'EcalVetoProcessor' )
-        >>> # Setup of other parameters for the veto
-        >>> p.skimConsider( 'ecalVeto' )
+            ecalVeto = ldmxcfg.Producer( 'ecalVeto' , 'EcalVetoProcessor' )
+            # Setup of other parameters for the veto
+            p.skimConsider( 'ecalVeto' )
 
         See Also
         --------
@@ -295,64 +370,34 @@ class Process:
 
         self.compressionSetting = algorithm*100 + level
 
-    def parameterDump(self) :
-        """Dump all the parameters into one super-dictionary
+    def inputDir(self, indir) :
+        """Scan the input directory and make a list of input root files to read from it
 
-        Returns
-        -------
-        meta_data : dict
-            Dictionary of all parameters set in python config to their values
+        Lists all files ending in '.root' in the input directory (not recursive).
+        Extends the inputFiles list by these files.
 
-        Warnings
-        --------
-        - Only includes the parameters set in the python and the processors in the sequence.
+        Parameters
+        ----------
+        indir : str
+            Path to directory of event files to read in
         """
 
-        # for checking for stuff with sub-parameters
-        from LDMX.SimApplication import simcfg
+        import os
+        fullPathDir = os.path.realpath(indir)
+        self.inputFiles.extend([ os.path.join(fullPathDir,f) 
+                for f in os.listdir(fullPathDir) 
+                if os.path.isfile(os.path.join(fullPathDir,f)) and f.endswith('.root') 
+                ])
 
-        def extractParameters( o ) :
-            """Get parameters from objects that may have their own parameters
+    def pause(self) :
+        """Print this Process and wait for user confirmation to continue
 
-            If the input is a list, 
-                then call this function on each member and return a list of the results.
-            If the input is an object with its own parameters, 
-                get the dictionary of parameters and 
-                return a dictionary of the keys to this function on each value
-            If the input is anything else, 
-                just return it.
+        Prints the process through the print function, and then
+        waits for the user to press Enter to continue.
+        """
 
-            Recursion is a hell of a drug.
-            """
-
-            if isinstance( o , list ) :
-                return [ extractParameters(ival) for ival in o ]
-            elif isinstance( o , (simcfg.UserAction,simcfg.PrimaryGenerator,Producer,Analyzer)) :
-                params = dict()
-                for key in o.parameters :
-                    # Need to do this loop, so we can recursively get parameters
-                    params[ key ] = extractParameters(o.parameters[key])
-                #loop over parameters
-                return params
-            else :
-                # not special object
-                return o
-        #done with def of extractParameters
-
-        meta_data = {
-                'passName' : self.passName ,
-                'maxEvents' : self.maxEvents,
-                'run' : self.run,
-                'skimDefaultIsKeep' : self.skimDefaultIsKeep,
-                'compressionSetting' : self.compressionSetting ,
-                'inputFiles' : self.inputFiles , 
-                'outputFiles' : self.outputFiles ,
-                'skimRules' : self.skimRules ,
-                'keep' : self.keep ,
-                'sequence' : extractParameters(self.sequence)
-                }
-
-        return meta_data
+        print(self)
+        input("Press Enter to continue...")
 
     def __str__(self):
         """Stringify this object into a human readable, helpful form.
@@ -400,7 +445,7 @@ class Process:
                 msg += '\n  ' + arule
         if len(self.libraries) > 0:
             msg += "\n Shared libraries to load:"
-            for afile in self.libraries:
+            for afile in set(self.libraries):
                 msg += '\n  ' + afile
 
         return msg
