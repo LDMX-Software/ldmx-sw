@@ -17,7 +17,7 @@ class PnWeightProcessor(ldmxcfg.Producer) :
         super().__init__(name , 'ldmx::PnWeightProcessor')
 
         from LDMX.EventProc import include
-        include.librar()
+        include.library()
 
         self.w_threshold     = 1150.
         self.theta_threshold = 100.
