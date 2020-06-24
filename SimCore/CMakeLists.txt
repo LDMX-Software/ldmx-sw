@@ -1,6 +1,6 @@
 # declare SimCore module
 module(
   NAME SimCore
-  DEPENDENCIES Exception
-  EXTERNAL_DEPENDENCIES Geant4 ROOT
+  DEPENDENCIES Exception Event Framework DetDescr 
+  EXTERNAL_DEPENDENCIES Geant4 ROOT Python XercesC
 )
