@@ -7,6 +7,3 @@
 [submodule "SimCore"]
 	path = SimCore
 	url = git@github.com:LDMX-Software/SimCore.git
-[submodule "Ecal"]
-	path = Ecal
-	url = git@github.com:LDMX-Software/Ecal.git
