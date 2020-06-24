@@ -17,6 +17,30 @@ jobs:
     # check out ldmx-sw in the workspace
     - uses: actions/checkout@v2
 
+    - name: Checkout MagFieldMap repo
+      uses: actions/checkout@v2
+      with:
+        repository: LDMX-Software/MagFieldMap
+        path: MagFieldMap
+
+    - name: Checkout Framework repo
+      uses: actions/checkout@v2
+      with:
+        repository: LDMX-Software/Framework
+        path: Framework
+
+    - name: Checkout SimCore repo
+      uses: actions/checkout@v2
+      with:
+        repository: LDMX-Software/SimCore
+        path: SimCore
+
+    - name: Checkout Ecal repo
+      uses: actions/checkout@v2
+      with:
+        repository: LDMX-Software/Ecal
+        path: Ecal
+
     # Setup our ldmx development environment
     - name: Setup ldmx environment
       run: docker pull ldmx/dev
@@ -25,11 +49,11 @@ jobs:
     - name: Configure the build
       run: |
           mkdir build &&
-          docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build cmake -DCMAKE_INSTALL_PREFIX=../install -DBUILD_TESTS=ON ..
+          docker run -it -v $(pwd):$(pwd) ldmx/dev $(pwd)/build cmake -DBUILD_TESTS=ON ..
 
     # build ldmx-sw using the docker environment
     - name: Build and Install
-      run: docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build make -j install
+      run: docker run -it -v $(pwd):$(pwd) ldmx/dev $(pwd)/build make -j install
 
     # run ldmx-test using the docker environment
     - name: Test the build
