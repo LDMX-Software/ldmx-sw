@@ -1,6 +1,6 @@
 [submodule "MagFieldMap"]
 	path = MagFieldMap
-	url = git@github.com:LDMX-Software/MagFieldMap.git
+	url = https://github.com/LDMXAnalysis/MagFieldMap
 [submodule "Framework"]
 	path = Framework
 	url = git@github.com:LDMX-Software/Framework.git
