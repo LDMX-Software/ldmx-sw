@@ -4,6 +4,3 @@
 [submodule "Framework"]
 	path = Framework
 	url = git@github.com:LDMX-Software/Framework.git
-[submodule "SimCore"]
-	path = SimCore
-	url = git@github.com:LDMX-Software/SimCore.git
