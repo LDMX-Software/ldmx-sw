@@ -5,6 +5,8 @@
  * @author Alex Patterson, UCSB
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  * @note
+ * This processor is not used anymore and is only left here for documentation purposes.
+ *
  * PnWeightProcessor calculates an event weight which is persisted as a PnWeight
  * object. This weight is based on the kinematics of a photonuclear reaction and 
  * is intended to correct for the overproduction of events with high-momentum,
