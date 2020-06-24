@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
+
+    <define>
+
+        &constants;   
+        
+        <variable name="x" value="1"/>
+
+        <!-- Parent volume dimensions --> 
+        <constant name="target_area_envelope_x" value="magnet_gap_x - 5" />
+        <constant name="target_area_envelope_y" value="magnet_gap_y - 5" />
+        <constant name="target_area_envelope_z" value="2*(target_thickness/2 + 2*clearance + trigger_pad_thickness)" />
+
+    </define>
+
+    <solids>
+
+        <box lunit="mm" name="target_area_box" x="target_area_envelope_x" y="target_area_envelope_y" z="target_area_envelope_z" />
+        <box lunit="mm" name="target_box" x="target_dim_x" y="target_dim_y" z="target_thickness"/> 
+        <box lunit="mm" name="trigger_pad_box" x="trigger_pad_dim_x" y="trigger_pad_dim_y" z="trigger_pad_thickness"/>
+        <box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" /> 
+
+
+    </solids>
+
+    <materials>
+
+        <!-- Target --> 
+        <material formula="L1.86Y0.14Si05" name="LYSO" >
+            <D value="7.4" unit="g/cm3"   />
+            <fraction n="0.7297" ref="Lu" />
+            <fraction n="0.0279" ref="Y"  />
+            <fraction n="0.0630" ref="Si" />
+            <fraction n="0.1794" ref="O"  />
+        </material>
+
+        <!-- Scintillator -->
+        <material name="Polyvinyltoluene">
+            <D type="density" value="1.023" unit="g/cm3"/>
+            <composite n="27" ref="C"/>
+            <composite n="30" ref="H"/>
+        </material>
+
+    </materials>
+
+    <structure>
+
+        <volume name="target">
+            <materialref ref="LYSO"/>
+            <solidref ref="target_box"/>
+            <auxiliary auxtype="SensDet" auxvalue="TargetSD"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
+            <auxiliary auxtype="DetElem" auxvalue="Target"/>
+        </volume>
+
+        <volume name="trigger_pad_dn_bar_volume">
+            <materialref ref="Polyvinyltoluene"/>
+            <solidref ref="trigger_bar_box"/>
+            <auxiliary auxtype="SensDet" auxvalue="TriggerPadDownSD"/>
+            <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+            <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
+        </volume>
+
+        <volume name="trig_scint">
+            <materialref ref="Vacuum"/>
+            <solidref ref="target_area_box" />
+
+                <physvol copynumber="2*x-2">
+                    <volumeref ref="trigger_pad_dn_bar_volume" />
+                    <position name="trigger_pad_dn_bar_layer1_pos" unit="mm" x="0" 
+                              y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
+                              z="trigger_pad_down_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
+                    <rotationref ref="identity" />
+                </physvol>
+                <physvol copynumber="2*x - 1">
+                    <volumeref ref="trigger_pad_dn_bar_volume"/>
+                    <position name="trigger_pad_dn_bar_layer2_pos" unit="mm" x="0" 
+                              y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
+                              z="trigger_pad_down_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
+                    <rotationref ref="identity" />
+                </physvol>
+            </loop>
+
+            <physvol copynumber="3">
+                <volumeref ref="target"/>
+                <positionref ref="center"/>
+                <rotationref ref="identity"/>
+            </physvol>
+
+            <auxiliary auxtype="Region" auxvalue="target" />
+            <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+            <auxiliary auxtype="DetElem" auxvalue="target"/>
+
+        </volume>
+
+    </structure> 
+
+    <setup name="Default" version="1.0">
+        <world ref="trig_scint"/>
+    </setup>
+
+</gdml>
