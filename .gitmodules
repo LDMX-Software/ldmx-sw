@@ -1,12 +1,12 @@
 [submodule "MagFieldMap"]
 	path = MagFieldMap
-	url = git@github.com:LDMX-Software/MagFieldMap.git
+	url = https://github.com/LDMX-Software/MagFieldMap
 [submodule "Framework"]
 	path = Framework
-	url = git@github.com:LDMX-Software/Framework.git
+	url = https://github.com/LDMX-Software/Framework
 [submodule "SimCore"]
 	path = SimCore
-	url = git@github.com:LDMX-Software/SimCore.git
+	url = https://github.com/LDMX-Software/SimCore
 [submodule "Ecal"]
 	path = Ecal
-	url = git@github.com:LDMX-Software/Ecal.git
+	url = https://github.com/LDMX-Software/Ecal
