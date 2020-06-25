@@ -62,7 +62,7 @@ elif hash singularity &>/dev/null;  then
     mkdir -p ${SINGULARITY_CACHEDIR} #make sure cache directory exists
 
     # name the singularity image after the tag the user asked for
-    export LDMX_SINGULARITY_IMG=ldmx_dev_${_dock_image}.sif
+    export LDMX_SINGULARITY_IMG=.ldmx_dev_${_dock_image}.sif
 
     # build the docker container into the singularity image
     #   will prompt the user if the image already exists
