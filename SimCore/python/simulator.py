@@ -196,12 +196,12 @@ class simulator(Producer):
 
         self.biasing_process = process
         self.biasing_volume = volume
-        self.biasing_particle
+        self.biasing_particle = processToParticle[process]
         self.biasing_all = allPtl
         self.biasing_incident = incidentOnly
         self.biasing_disableEMBiasing = disableEMBiasing
         self.biasing_threshold = threshold
-        self.biasing_factor = factor
+        self.biasing_factor = int(factor)
 
     def darkBremOn(self,ap_mass,lhe_file_path,method=1,globalxsecfactor=1.) :
         """Configure the dark brem simulation
