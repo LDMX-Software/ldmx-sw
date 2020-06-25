@@ -14,30 +14,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Checkout MagFieldMap repo
-      uses: actions/checkout@v2
+    # recursively checkout submodules
+    - name: Checkout submodules
+      uses: srt32/git-actions@v0.0.3
       with:
-        repository: LDMX-Software/MagFieldMap
-        path: MagFieldMap
-
-    - name: Checkout Framework repo
-      uses: actions/checkout@v2
-      with:
-        repository: LDMX-Software/Framework
-        path: Framework
-
-    - name: Checkout SimCore repo
-      uses: actions/checkout@v2
-      with:
-        repository: LDMX-Software/SimCore
-        path: SimCore
-
-    - name: Checkout Ecal repo
-      uses: actions/checkout@v2
-      with:
-        repository: LDMX-Software/Ecal
-        path: Ecal
-
+        args: git submodule update --init --recursive
+    
     - name: Deploy to Docker
       uses: docker/build-push-action@v1
       with:
