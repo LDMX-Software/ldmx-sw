@@ -54,7 +54,23 @@ export LDMX_DOCKER_TAG="${_docker_hub_repo}:${_dock_image}"
 ###############################################################################
 # Make sure we have the latest docker container
 ###############################################################################
-docker pull ${LDMX_DOCKER_TAG}
+if hash docker &>/dev/null; then
+    docker pull ${LDMX_DOCKER_TAG}
+elif hash singularity &>/dev/null;  then
+    # change cache directory to be inside ldmx base directory
+    export SINGULARITY_CACHEDIR=${LDMX_BASE}/.singularity
+    mkdir -p ${SINGULARITY_CACHEDIR} #make sure cache directory exists
+
+    # name the singularity image after the tag the user asked for
+    export LDMX_SINGULARITY_IMG=ldmx_dev_${_dock_image}.sif
+
+    # build the docker container into the singularity image
+    #   will prompt the user if the image already exists
+    singularity build ${LDMX_BASE}/${LDMX_SINGULARITY_IMG} docker://${LDMX_DOCKER_TAG}
+else
+    echo "You don't have docker or singularity installed!"
+    return 1
+fi
 
 ###############################################################################
 # ldmx
@@ -62,9 +78,26 @@ docker pull ${LDMX_DOCKER_TAG}
 #   any argument along as a command to be executed.
 #
 #   The container is set up so that it goes to the first argument and then
-#   executes the rest. This alias sets the first argument to $(pwd) so that
+#   executes the rest.
+#   
+#   For docker, this alias sets the first argument to $(pwd) so that
 #   the container runs the users command from the same place that the user
 #   intended.
+#
+#   For singularity, this function stores the current working directory
+#   relative to the base and then goes to the ldmx base. singularity
+#   mounts the current working directory to the container, so we go to
+#   the base, mount it, and then inside the container go back to where we were.
 ###############################################################################
-alias ldmx='docker run -it -e LDMX_BASE -v $LDMX_BASE:$LDMX_BASE -u $(id -u ${USER}):$(id -g ${USER}) $LDMX_DOCKER_TAG $(pwd)'
+if hash docker &>/dev/null; then
+    alias ldmx='docker run -it -e LDMX_BASE -v $LDMX_BASE:$LDMX_BASE -u $(id -u ${USER}):$(id -g ${USER}) $LDMX_DOCKER_TAG $(pwd)'
+elif hash singularity &>/dev/null; then
+    function ldmx() {
+        _current_working_dir=${PWD##"${LDMX_BASE}/"} #store current working directory relative to ldmx base
+        cd ${LDMX_BASE} # go to ldmx base directory outside container
+        # actually run the singularity image stored in the base directory going to working directory inside container
+        singularity run --no-home ${LDMX_SINGULARITY_IMG} ${_current_working_dir} "$@"
+        cd - &> /dev/null #go back outside the container
+    }
+fi
 
