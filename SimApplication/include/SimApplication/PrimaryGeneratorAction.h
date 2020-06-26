@@ -19,7 +19,7 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/PrimaryGeneratorManager.h" 
 
