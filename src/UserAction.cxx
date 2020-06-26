@@ -1,10 +1,10 @@
 
-#include "SimApplication/UserAction.h"
+#include "SimCore/UserAction.h"
 
 /*~~~~~~~~~~~~~*/
-/*   SimApplication   */
+/*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimApplication/UserActionManager.h"
+#include "SimCore/UserActionManager.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */

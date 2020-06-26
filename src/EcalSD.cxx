@@ -1,4 +1,4 @@
-#include "SimApplication/EcalSD.h"
+#include "SimCore/EcalSD.h"
 
 // Geant4
 #include "G4Polyhedron.hh"

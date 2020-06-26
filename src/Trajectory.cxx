@@ -1,7 +1,7 @@
-#include "SimApplication/Trajectory.h"
+#include "SimCore/Trajectory.h"
 
 // LDMX
-#include "SimApplication/UserTrackInformation.h"
+#include "SimCore/UserTrackInformation.h"
 #include "Event/SimParticle.h"
 
 // Geant4

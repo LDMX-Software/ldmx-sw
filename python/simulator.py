@@ -129,7 +129,7 @@ class simulator(Producer):
 
         # add necessary library to the list to load
         #   requires a process object to have been defined
-        from LDMX.SimApplication import include
+        from LDMX.SimCore import include
         include.library()
 
     def setDetector(self, det_name , include_scoring_planes = False ) :

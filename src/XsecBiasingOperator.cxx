@@ -6,7 +6,7 @@
  *         SLAC National Accelerator Laboratory
  */
 
-#include "SimApplication/XsecBiasingOperator.h"
+#include "SimCore/XsecBiasingOperator.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Exception   */

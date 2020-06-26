@@ -2,7 +2,7 @@
 
 from LDMX.Framework import ldmxcfg
 from LDMX.Biasing import ecal
-from LDMX.SimApplication import generators
+from LDMX.SimCore import generators
 
 # We need to create a process
 #   this is the object that keeps track of all the files/processors/histograms/etc
@@ -11,7 +11,7 @@ p=ldmxcfg.Process("ecalpn")
 
 # We need to tell the process what libraries are required
 #   Here we are using a biased simulation, so we need both of those libraries
-p.libraries.append("libSimApplication.so")
+p.libraries.append("libSimCore.so")
 p.libraries.append("libBiasing.so")
 
 # We import the Ecal PN template, the two arguments allow you to specify the geometry

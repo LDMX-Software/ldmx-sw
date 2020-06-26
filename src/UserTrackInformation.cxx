@@ -1,4 +1,4 @@
-#include "SimApplication/UserTrackInformation.h"
+#include "SimCore/UserTrackInformation.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */

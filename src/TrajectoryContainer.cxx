@@ -1,4 +1,4 @@
-#include "SimApplication/TrajectoryContainer.h"
+#include "SimCore/TrajectoryContainer.h"
 
 namespace ldmx {
 

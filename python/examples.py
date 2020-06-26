@@ -1,7 +1,7 @@
 """Examples of using different primary generators"""
 
-from LDMX.SimApplication import generators
-from LDMX.SimApplication import simulator
+from LDMX.SimCore import generators
+from LDMX.SimCore import simulator
 
 def inclusive_single_e() :
     """Get a basic un-biased, inclusive single electron simulation
