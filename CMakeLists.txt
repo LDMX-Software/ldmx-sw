@@ -17,6 +17,12 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
+#this piece of cmake nonsense allows us to change the default
+#   installation location
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX $ENV{LDMX_BASE}/ldmx-sw/install CACHE PATH "..." FORCE)
+endif()
+
 # option to print extra module information during CMake config
 option(MODULE_DEBUG "Print extra module information during CMake config" OFF)
 
@@ -45,10 +51,6 @@ message(STATUS "Geant4 found at: ${Geant4_DIR}")
 
 # find Python installation
 find_package(PythonLibs 3)
-if(NOT ${PYTHONLIBS_FOUND})
-  message(WARNING "Python2 support will be removed in upcoming ldmx-sw versions.")
-  find_package(PythonLibs 2 REQUIRED)
-endif()
 message(STATUS "Python lib found at: ${PYTHON_LIBRARIES}")
 message(STATUS "Python include dir found at: ${PYTHON_INCLUDE_DIRS}")
 get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
@@ -64,7 +66,7 @@ message(STATUS "ROOT found at: ${ROOT_DIR}")
 
 # find boost headers
 # specify location with -DBOOST_ROOT=<location-of-boost-prefix>
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system log)
 message(STATUS "Boost lib found at: ${Boost_LIBRARY_DIRS}")
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
@@ -115,25 +117,10 @@ if(BUILD_TESTS)
   include(TestExecutable)
 endif()
 
-# configure scripts and copy to installation dir 
-file(GLOB config_scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.in)
-foreach(config_script ${config_scripts})
-  string(REPLACE ".in" "" config_script_output ${config_script})
-  get_filename_component(config_script_output ${config_script_output} NAME)
-  configure_file(${config_script} ${CMAKE_CURRENT_BINARY_DIR}/${config_script_output})
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${config_script_output} DESTINATION bin PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-endforeach()
-
 # install python init file for top-level LDMX module
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py 
     "\"\"\"Python package to configure ldmx-sw\"\"\"")
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION lib/python/LDMX)
-
-# install scripts to bin dir
-file(GLOB script_files ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.sh ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.py)
-foreach(script_file ${script_files}) 
-    install(FILES ${script_file} DESTINATION bin PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-endforeach()
 
 # option for dumping full CMake env
 option(DUMP_CMAKE_VARIABLES OFF)
