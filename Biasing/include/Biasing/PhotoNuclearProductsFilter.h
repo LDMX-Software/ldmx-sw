@@ -2,7 +2,7 @@
 #define BIASING_PHOTONUCLEARPRODUCTSFILTER_H 
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/UserAction.h"
 

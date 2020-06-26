@@ -7,9 +7,9 @@
 #include "G4VProcess.hh" 
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserTrackInformation.h"
+#include "SimApplication/UserTrackInformation.h"
 
 namespace ldmx { 
 

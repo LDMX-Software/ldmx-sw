@@ -4,7 +4,7 @@
 #include "SimApplication/UserAction.h" 
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/UserAction.h"
 
