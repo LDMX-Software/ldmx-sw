@@ -1,3 +1,6 @@
 [submodule "MagFieldMap"]
 	path = MagFieldMap
 	url = https://github.com/LDMXAnalysis/MagFieldMap
+[submodule "SimCore"]
+	path = SimCore
+	url = https://github.com/LDMX-Software/SimCore
