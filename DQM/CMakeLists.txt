@@ -1,4 +1,4 @@
-# declare SimApplication module
+# declare DQM module
 module(
   NAME DQM
   DEPENDENCIES Exception Event Framework Tools DetDescr

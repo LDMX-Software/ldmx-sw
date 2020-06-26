@@ -6,8 +6,8 @@
         from LDMX.Biasing import ecal
 """
 
-from LDMX.SimApplication import simulator
-from LDMX.SimApplication import generators
+from LDMX.SimCore import simulator
+from LDMX.SimCore import generators
 from LDMX.Biasing import filters
 from LDMX.Biasing import include as includeBiasing
 

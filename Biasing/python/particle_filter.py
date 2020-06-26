@@ -2,7 +2,7 @@
     of the reaction products.
 """
 
-from LDMX.SimApplication import simcfg
+from LDMX.SimCore import simcfg
 
 class PhotoNuclearProductsFilter(simcfg.UserAction) :
     """ Configuration for keeping events with specific products of PN interactions

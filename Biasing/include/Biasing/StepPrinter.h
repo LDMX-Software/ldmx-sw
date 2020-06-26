@@ -1,12 +1,12 @@
 #ifndef SIMCORE_STEPPRINTER_H
 #define SIMCORE_STEPPRINTER_H
 
-#include "SimApplication/UserAction.h" 
+#include "SimCore/UserAction.h" 
 
 /*~~~~~~~~~~~~~*/
-/*   SimApplication   */
+/*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimApplication/UserAction.h"
+#include "SimCore/UserAction.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */

@@ -266,7 +266,7 @@ class Process:
 
         Examples
         --------
-            addLibrary( 'libSimApplication.so' )
+            addLibrary( 'libSimCore.so' )
         """
 
         if ( Process.lastProcess is not None ) :
