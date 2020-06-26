@@ -196,7 +196,7 @@ class simulator(Producer):
 
         self.biasing_process = process
         self.biasing_volume = volume
-        self.biasing_particle
+        self.biasing_particle = processToParticle[ process ];
         self.biasing_all = allPtl
         self.biasing_incident = incidentOnly
         self.biasing_disableEMBiasing = disableEMBiasing
