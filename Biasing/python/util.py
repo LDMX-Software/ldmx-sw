@@ -1,6 +1,6 @@
 """Utility classes for Simulation"""
 
-from LDMX.SimApplication import simcfg
+from LDMX.SimCore import simcfg
 
 class StepPrinter(simcfg.UserAction) :
     """Print each step of the input track ID

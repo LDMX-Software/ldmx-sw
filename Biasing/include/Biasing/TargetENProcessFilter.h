@@ -9,9 +9,9 @@
 #define BIASING_TARGETENPROCESSFILTER_H
 
 /*~~~~~~~~~~~~~*/
-/*   SimApplication   */
+/*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimApplication/UserAction.h"
+#include "SimCore/UserAction.h"
 
 // Forward Declarations 
 class G4Step; 

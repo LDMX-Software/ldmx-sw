@@ -132,7 +132,7 @@ namespace ldmx {
         recoilSensorThickness_ = 0.52;
 
         //The following keys for the position and angle maps should correspond to the copynumber in the recoil.gdml file
-        //At writing, the layerIDs and moduleIDs are set in the simulation from this copy number (TrackerSD.cxx in SimApplication)
+        //At writing, the layerIDs and moduleIDs are set in the simulation from this copy number (TrackerSD.cxx in SimCore)
         
         std::vector<double> recoilStereoLayerZPos = {
             7.5, 22.5, 37.5, 52.5
