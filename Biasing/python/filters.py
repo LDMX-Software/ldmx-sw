@@ -62,17 +62,15 @@ class TargetENFilter(simcfg.UserAction) :
     Parameters
     ----------
     recoil_thresh : float
-        ????? [MeV]
+        Maximum energy recoil electron is allowed to have [MeV]
     """
 
-    def __init__(self,recoil_thresh = 4000) :
+    def __init__(self,recoil_thresh = 2500.) :
         super().__init__("target_en_process_filter","ldmx::TargetENProcessFilter")
 
         from LDMX.Biasing import include
         include.library()
 
-        self.process = 'electronNuclear'
-        self.volume  = 'target'
         self.recoilThreshold = recoil_thresh #MeV
 
 class TargetPNFilter(simcfg.UserAction) :
