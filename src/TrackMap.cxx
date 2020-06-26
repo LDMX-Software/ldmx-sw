@@ -1,11 +1,11 @@
-#include "SimApplication/TrackMap.h"
+#include "SimCore/TrackMap.h"
 
 // Geant4
 #include "G4EventManager.hh"
 #include "G4Event.hh"
 
 // LDMX
-#include "SimApplication/Trajectory.h"
+#include "SimCore/Trajectory.h"
 
 namespace ldmx {
 

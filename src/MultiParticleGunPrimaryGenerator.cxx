@@ -5,7 +5,7 @@
  * @author Nhan Tran, FNAL
  */
 
-#include "SimApplication/MultiParticleGunPrimaryGenerator.h"
+#include "SimCore/MultiParticleGunPrimaryGenerator.h"
 
 namespace ldmx {
 

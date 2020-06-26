@@ -1,4 +1,4 @@
-#include "SimApplication/TrigScintSD.h" 
+#include "SimCore/TrigScintSD.h" 
 
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */

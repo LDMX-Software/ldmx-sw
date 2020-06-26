@@ -5,9 +5,9 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimApplication/PrimaryGenerator.h"
+#include "SimCore/PrimaryGenerator.h"
 
-#include "SimApplication/PrimaryGeneratorManager.h"
+#include "SimCore/PrimaryGeneratorManager.h"
 
 namespace ldmx { 
 

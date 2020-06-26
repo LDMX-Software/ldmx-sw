@@ -1,5 +1,5 @@
 
-#include "SimApplication/ScoringPlaneSD.h"
+#include "SimCore/ScoringPlaneSD.h"
 
 /*----------------*/
 /*   C++ StdLib   */

@@ -5,7 +5,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimApplication/Simulator.h"
+#include "SimCore/Simulator.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -14,12 +14,12 @@
 #include "Event/Version.h" //for LDMX_INSTALL path
 
 /*~~~~~~~~~~~~~*/
-/*   SimApplication   */
+/*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimApplication/DetectorConstruction.h"
-#include "SimApplication/RootPersistencyManager.h" 
-#include "SimApplication/RunManager.h"
-#include "SimApplication/G4Session.h"
+#include "SimCore/DetectorConstruction.h"
+#include "SimCore/RootPersistencyManager.h" 
+#include "SimCore/RunManager.h"
+#include "SimCore/G4Session.h"
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */

@@ -5,7 +5,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "SimApplication/GammaPhysics.h"
+#include "SimCore/GammaPhysics.h"
 
 
 namespace ldmx {

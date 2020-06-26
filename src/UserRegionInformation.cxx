@@ -1,4 +1,4 @@
-#include "SimApplication/UserRegionInformation.h"
+#include "SimCore/UserRegionInformation.h"
 
 namespace ldmx {
 

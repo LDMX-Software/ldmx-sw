@@ -1,5 +1,5 @@
 
-#include "SimApplication/RootPersistencyManager.h"
+#include "SimCore/RootPersistencyManager.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -16,11 +16,11 @@
 #include "Event/SimTrackerHit.h" 
 
 /*~~~~~~~~~~~~~*/
-/*   SimApplication   */
+/*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimApplication/DetectorConstruction.h"
-#include "SimApplication/RunManager.h"
-#include "SimApplication/UserEventInformation.h" 
+#include "SimCore/DetectorConstruction.h"
+#include "SimCore/RunManager.h"
+#include "SimCore/UserEventInformation.h" 
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */

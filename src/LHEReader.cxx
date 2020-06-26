@@ -1,4 +1,4 @@
-#include "SimApplication/LHEReader.h"
+#include "SimCore/LHEReader.h"
 
 // STL
 #include <iostream>

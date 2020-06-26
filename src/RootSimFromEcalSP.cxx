@@ -6,7 +6,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimApplication/RootSimFromEcalSP.h"
+#include "SimCore/RootSimFromEcalSP.h"
 
 //----------------//
 //   C++ StdLib   //

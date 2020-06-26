@@ -5,10 +5,10 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimApplication/APrimePhysics.h"
+#include "SimCore/APrimePhysics.h"
 
 // LDMX
-#include "SimApplication/G4APrime.h"
+#include "SimCore/G4APrime.h"
 
 // Geant4
 #include "G4Electron.hh"

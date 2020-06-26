@@ -1,4 +1,4 @@
-#include "SimApplication/CalorimeterSD.h"
+#include "SimCore/CalorimeterSD.h"
 
 // STL
 #include <iostream>

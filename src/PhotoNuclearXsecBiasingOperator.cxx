@@ -6,7 +6,7 @@
  *         SLAC National Accelerator Laboratory
  */
 
-#include "SimApplication/PhotoNuclearXsecBiasingOperator.h"
+#include "SimCore/PhotoNuclearXsecBiasingOperator.h"
 
 namespace ldmx { 
 

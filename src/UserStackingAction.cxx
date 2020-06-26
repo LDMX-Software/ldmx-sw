@@ -1,4 +1,4 @@
-#include "SimApplication/UserStackingAction.h"
+#include "SimCore/UserStackingAction.h"
 
 namespace ldmx {
 

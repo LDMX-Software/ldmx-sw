@@ -1,4 +1,4 @@
-#include "SimApplication/EcalHitIO.h"
+#include "SimCore/EcalHitIO.h"
 
 // STL
 #include <map>

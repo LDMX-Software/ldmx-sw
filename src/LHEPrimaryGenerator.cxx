@@ -5,7 +5,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimApplication/LHEPrimaryGenerator.h"
+#include "SimCore/LHEPrimaryGenerator.h"
 
 // Geant4
 #include "G4Event.hh"
@@ -15,7 +15,7 @@
 #include "G4RunManager.hh"
 
 // LDMX
-#include "SimApplication/UserPrimaryParticleInformation.h"
+#include "SimCore/UserPrimaryParticleInformation.h"
 #include "Framework/Parameters.h"
 #include "Exception/Exception.h"
 

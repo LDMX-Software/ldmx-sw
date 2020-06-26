@@ -4,7 +4,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimApplication/G4Session.h"
+#include "SimCore/G4Session.h"
 
 #include "Exception/Exception.h"
 

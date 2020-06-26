@@ -4,7 +4,7 @@
  * @author Michael Revering, University of Minnesota
  */
 
-#include "SimApplication/G4APrime.h"
+#include "SimCore/G4APrime.h"
 
 #include "globals.hh"
 #include "G4ParticleTable.hh"

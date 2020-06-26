@@ -1,4 +1,4 @@
-#include "SimApplication/LHEParticle.h"
+#include "SimCore/LHEParticle.h"
 #include "Exception/Exception.h"
 
 // STL
