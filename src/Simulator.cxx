@@ -14,7 +14,7 @@
 #include "Event/Version.h" //for LDMX_INSTALL path
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RootPersistencyManager.h" 
