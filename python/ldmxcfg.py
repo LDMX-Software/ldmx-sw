@@ -389,6 +389,34 @@ class Process:
                 if os.path.isfile(os.path.join(fullPathDir,f)) and f.endswith('.root') 
                 ])
 
+    def parameterDump(self) :
+        """Recursively extract all configuration parameters for this process
+
+        Only includes objects somehow attached to the process.
+        """
+
+        keys_to_skip = [ 'histograms' , 'libraries' ]
+
+        from LDMX.SimCore import simcfg
+        from LDMX.Framework import histogram as h
+
+        def extract(obj):
+            """Extract the parameter from the input object"""
+
+            if isinstance(obj,list) :
+                return [ extract(o) for o in obj ]
+            elif isinstance(obj,(Process,EventProcessor,simcfg.PrimaryGenerator,simcfg.UserAction)) :
+                params = dict()
+                for k in obj.__dict__ :
+                    if k not in keys_to_skip :
+                        params[k] = extract(obj.__dict__[k])
+                return params
+            else :
+                return obj
+
+        return extract(self)
+
+
     def pause(self) :
         """Print this Process and wait for user confirmation to continue
 
