@@ -5,7 +5,7 @@
 #include "SimApplication/Trajectory.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"
 #include "SimApplication/UserRegionInformation.h"
-#include "SimCore/UserTrackInformation.h"
+#include "SimApplication/UserTrackInformation.h"
 
 // Geant4
 #include "G4PrimaryParticle.hh"

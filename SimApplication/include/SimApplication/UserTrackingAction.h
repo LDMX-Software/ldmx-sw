@@ -21,7 +21,7 @@
 #include "G4UserTrackingAction.hh"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/UserAction.h" 
 

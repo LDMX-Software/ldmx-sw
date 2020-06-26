@@ -16,7 +16,7 @@
 #include "Event/SimTrackerHit.h" 
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/DetectorConstruction.h"
 #include "SimApplication/RunManager.h"

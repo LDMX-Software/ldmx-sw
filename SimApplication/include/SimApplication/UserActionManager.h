@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef SIMCORE_USERACTIONMANAGER_H
-#define SIMCORE_USERACTIONMANAGER_H
+#ifndef SIMAPPLICATION_USERACTIONMANAGER_H
+#define SIMAPPLICATION_USERACTIONMANAGER_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -96,4 +96,4 @@ namespace ldmx {
 
 } // ldmx 
 
-#endif // SIMCORE_USERACTIONMANAGER_H
+#endif // SIMAPPLICATION_USERACTIONMANAGER_H

@@ -13,7 +13,7 @@
 #include "G4RunManager.hh"  // Needed for CLHEP
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/PrimaryGeneratorManager.h"
 #include "SimApplication/UserPrimaryParticleInformation.h"

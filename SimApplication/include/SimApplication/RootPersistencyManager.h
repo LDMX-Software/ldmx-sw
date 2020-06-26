@@ -14,7 +14,7 @@
 #include "Framework/Parameters.h" 
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/EcalHitIO.h"
 #include "SimApplication/G4CalorimeterHit.h"

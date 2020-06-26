@@ -3,8 +3,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMCORE_USTEPPINGACTION_H
-#define SIMCORE_USTEPPINGACTION_H
+#ifndef SIMAPPLICATION_USTEPPINGACTION_H
+#define SIMAPPLICATION_USTEPPINGACTION_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -17,7 +17,7 @@
 #include "G4UserSteppingAction.hh"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/UserAction.h" 
 
@@ -57,4 +57,4 @@ namespace ldmx {
 
 } // ldmx 
 
-#endif // SIMCORE_USTEPPINGACTION_H
+#endif // SIMAPPLICATION_USTEPPINGACTION_H

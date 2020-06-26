@@ -5,8 +5,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/G4eDarkBremsstrahlungModel.h"
-#include "SimCore/G4APrime.h"
+#include "SimApplication/G4eDarkBremsstrahlungModel.h"
+#include "SimApplication/G4APrime.h"
 #include "Exception/Exception.h"
 
 // Geant4

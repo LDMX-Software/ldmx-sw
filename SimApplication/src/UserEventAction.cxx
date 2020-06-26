@@ -12,7 +12,7 @@
 #include <iostream>
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/RootPersistencyManager.h"
 #include "SimApplication/RunManager.h"

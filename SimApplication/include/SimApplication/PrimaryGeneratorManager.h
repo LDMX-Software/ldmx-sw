@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef SIMCORE_PRIMARYGENERATORMANAGER_H
-#define SIMCORE_PRIMARYGENERATORMANAGER_H
+#ifndef SIMAPPLICATION_PRIMARYGENERATORMANAGER_H
+#define SIMAPPLICATION_PRIMARYGENERATORMANAGER_H
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -72,5 +72,5 @@ namespace ldmx {
 
 } // ldmx
 
-#endif // SIMCORE_PRIMARYGENERATORMANAGER_H
+#endif // SIMAPPLICATION_PRIMARYGENERATORMANAGER_H
 

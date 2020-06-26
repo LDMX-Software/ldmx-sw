@@ -1,6 +1,6 @@
 
-#ifndef SIMCORE_USERACTION_H
-#define SIMCORE_USERACTION_H
+#ifndef SIMAPPLICATION_USERACTION_H
+#define SIMAPPLICATION_USERACTION_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -177,4 +177,4 @@ namespace ldmx {
 
 #define DECLARE_ACTION(NS, CLASS) ldmx::UserAction* CLASS ## Builder (const std::string& name, ldmx::Parameters& parameters) { return new NS::CLASS(name, parameters); } __attribute((constructor(205))) static void CLASS ## Declare() { ldmx::UserAction::declare(std::string(#NS) + "::" + std::string(#CLASS), & CLASS ## Builder); } 
 
-#endif // SIMCORE_USERACTION_H
+#endif // SIMAPPLICATION_USERACTION_H

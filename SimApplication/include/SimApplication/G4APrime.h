@@ -4,8 +4,8 @@
  * @author Michael Revering, University of Minnesota
  */
 
-#ifndef SIMCORE_G4APRIME_H_
-#define SIMCORE_G4APRIME_H_
+#ifndef SIMAPPLICATION_G4APRIME_H_
+#define SIMAPPLICATION_G4APRIME_H_
 
 // Geant
 #include "G4ParticleDefinition.hh"
@@ -48,6 +48,6 @@ class G4APrime : public G4ParticleDefinition {
         static G4APrime* APrime(G4double theMass = 10.0*MeV);
 };
 
-#endif //SIMCORE_G4APRIME_H_
+#endif //SIMAPPLICATION_G4APRIME_H_
 
 

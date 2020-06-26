@@ -5,10 +5,10 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMCORE_G4EDARKBREMSSTRAHLUNG_H_
-#define SIMCORE_G4EDARKBREMSSTRAHLUNG_H_
+#ifndef SIMAPPLICATION_G4EDARKBREMSSTRAHLUNG_H_
+#define SIMAPPLICATION_G4EDARKBREMSSTRAHLUNG_H_
 
-#include "SimCore/G4eDarkBremsstrahlungModel.h"
+#include "SimApplication/G4eDarkBremsstrahlungModel.h"
 
 // Geant
 #include "G4VEnergyLossProcess.hh"
@@ -82,4 +82,4 @@ class G4eDarkBremsstrahlung : public G4VEnergyLossProcess {
 };
 
 
-#endif // SIMCORE_G4EDARKBREMSSTRAHLUNG_H_
+#endif // SIMAPPLICATION_G4EDARKBREMSSTRAHLUNG_H_

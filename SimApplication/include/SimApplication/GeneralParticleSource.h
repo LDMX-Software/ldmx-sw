@@ -4,8 +4,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMCORE_GENERALPARTICLESOURCE_H
-#define SIMCORE_GENERALPARTICLESOURCE_H
+#ifndef SIMAPPLICATION_GENERALPARTICLESOURCE_H
+#define SIMAPPLICATION_GENERALPARTICLESOURCE_H
 
 //------------//
 //   Geant4   //
@@ -66,4 +66,4 @@ namespace ldmx {
 
 } // ldmx
 
-#endif // SIMCORE_GENERALPARTICLESOURCE_H
+#endif // SIMAPPLICATION_GENERALPARTICLESOURCE_H

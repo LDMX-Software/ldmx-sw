@@ -5,8 +5,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef SIMCORE_PARTICLE_GUN_H
-#define SIMCORE_PARTICLE_GUN_H
+#ifndef SIMAPPLICATION_PARTICLE_GUN_H
+#define SIMAPPLICATION_PARTICLE_GUN_H
 
 //------------//
 //   Geant4   //
@@ -75,4 +75,4 @@ namespace ldmx {
 
 } // ldmx
 
-#endif // SIMCORE_PARTICLE_GUN_H
+#endif // SIMAPPLICATION_PARTICLE_GUN_H

@@ -13,7 +13,7 @@
 
 // LDMX
 #include "Framework/Parameters.h"
-#include "SimCore/G4eDarkBremsstrahlung.h"
+#include "SimApplication/G4eDarkBremsstrahlung.h"
 
 namespace ldmx {
 

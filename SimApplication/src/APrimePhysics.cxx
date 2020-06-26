@@ -8,7 +8,7 @@
 #include "SimApplication/APrimePhysics.h"
 
 // LDMX
-#include "SimCore/G4APrime.h"
+#include "SimApplication/G4APrime.h"
 
 // Geant4
 #include "G4Electron.hh"

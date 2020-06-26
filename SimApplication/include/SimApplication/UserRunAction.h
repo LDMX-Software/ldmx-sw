@@ -18,7 +18,7 @@
 #include "G4UserRunAction.hh"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/UserAction.h" 
 

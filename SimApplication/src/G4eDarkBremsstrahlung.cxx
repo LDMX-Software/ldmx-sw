@@ -5,8 +5,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "SimCore/G4eDarkBremsstrahlung.h"
-#include "SimCore/G4APrime.h"
+#include "SimApplication/G4eDarkBremsstrahlung.h"
+#include "SimApplication/G4APrime.h"
 
 #include "G4DynamicParticle.hh"
 #include "G4Electron.hh"

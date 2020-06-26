@@ -95,4 +95,4 @@ namespace ldmx {
         ldmx::PrimaryGenerator::declare(std::string(#NS) + "::" + std::string(#CLASS), & CLASS ## Builder); \
     } 
 
-#endif // SIMCORE_PRIMARYGENERATOR_H
+#endif // SIMAPPLICATION_PRIMARYGENERATOR_H
