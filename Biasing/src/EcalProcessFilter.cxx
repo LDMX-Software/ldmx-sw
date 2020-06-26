@@ -10,11 +10,11 @@
 #include "G4Track.hh" 
 
 /*~~~~~~~~~~~~~*/
-/*   SimApplication   */
+/*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimApplication/UserTrackInformation.h"
-#include "SimApplication/UserEventInformation.h" 
-#include "SimApplication/UserTrackInformation.h"
+#include "SimCore/UserTrackInformation.h"
+#include "SimCore/UserEventInformation.h" 
+#include "SimCore/UserTrackInformation.h"
 
 namespace ldmx { 
 

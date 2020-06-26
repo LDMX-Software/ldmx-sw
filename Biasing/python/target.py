@@ -6,8 +6,8 @@
         from LDMX.Biasing import target
 """
 
-from LDMX.SimApplication import generators
-from LDMX.SimApplication import simulator
+from LDMX.SimCore import generators
+from LDMX.SimCore import simulator
 from LDMX.Biasing import filters
 from LDMX.Biasing import include as includeBiasing
 

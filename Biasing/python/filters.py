@@ -6,7 +6,7 @@ Examples of how each filter is configured for biased MC generation.
     generators directly. 
 """
 
-from LDMX.SimApplication import simcfg
+from LDMX.SimCore import simcfg
 
 class TargetBremFilter(simcfg.UserAction):
     """ Configuration for filtering events that don't see a hard brem in the target. 
