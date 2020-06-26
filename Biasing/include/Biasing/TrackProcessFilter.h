@@ -7,7 +7,7 @@
 #include <string>
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/UserAction.h"
 

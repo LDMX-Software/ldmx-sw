@@ -8,9 +8,9 @@
 #include "G4EventManager.hh"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserTrackInformation.h"
+#include "SimApplication/UserTrackInformation.h"
 #include "SimApplication/UserEventInformation.h" 
 
 namespace ldmx { 
