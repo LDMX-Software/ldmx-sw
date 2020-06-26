@@ -9,7 +9,7 @@
 
 #include "Biasing/DarkBremFilter.h"
 
-#include "SimCore/G4APrime.h"
+#include "SimApplication/G4APrime.h"
 
 namespace ldmx { 
 

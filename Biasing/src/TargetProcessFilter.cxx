@@ -16,10 +16,10 @@
 #include "Biasing/TargetBremFilter.h"
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/UserEventInformation.h" 
-#include "SimCore/UserTrackInformation.h" 
+#include "SimApplication/UserTrackInformation.h" 
 
 namespace ldmx { 
 

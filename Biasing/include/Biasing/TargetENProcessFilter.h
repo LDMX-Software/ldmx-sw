@@ -9,7 +9,7 @@
 #define BIASING_TARGETENPROCESSFILTER_H
 
 /*~~~~~~~~~~~~~*/
-/*   SimCore   */
+/*   SimApplication   */
 /*~~~~~~~~~~~~~*/
 #include "SimApplication/UserAction.h"
 
