@@ -60,7 +60,7 @@ def electro_nuclear( detector, generator ) :
     # Configure the sequence in which user actions should be called.
     sim.actions.extend([
             filters.TaggerVetoFilter(),
-            filters.TargetENFilter(),
+            filters.TargetENFilter(2500.),
             filters.TrackProcessFilter.electro_nuclear()      
     ])
 

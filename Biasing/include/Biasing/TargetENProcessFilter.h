@@ -60,7 +60,7 @@ namespace ldmx {
             double recoilEnergyThreshold_{1500};
 
             /// Process to filter on 
-            std::string process_{""}; 
+            std::string process_{"electronNuclear"}; 
                 
     }; // TargetENProcessFilter
 

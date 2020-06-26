@@ -17,9 +17,8 @@ namespace ldmx {
     TargetENProcessFilter::TargetENProcessFilter(const std::string& name, Parameters& parameters) 
         : UserAction (name, parameters) {
         
-        volumeName_ = parameters.getParameter< std::string >("volume");
         recoilEnergyThreshold_ = parameters.getParameter< double >("recoilThreshold"); 
-        process_ = parameters.getParameter< std::string >("process");  
+
     }
 
     TargetENProcessFilter::~TargetENProcessFilter() {}
