@@ -99,7 +99,9 @@ namespace ldmx {
              * @param name The name of the parameter.
              * @return The parameter value.
              */
-            int getIntParameter(const std::string& name) { return intParameters_[name]; }
+            int getIntParameter(const std::string& name) const { 
+                return intParameters_.at(name); 
+            }
 
             /**
              * Set an int parameter value.
@@ -118,8 +120,8 @@ namespace ldmx {
              * @param name The name of the parameter.
              * @return value The parameter value.
              */
-            float getFloatParameter(const std::string& name) {
-                return floatParameters_[name];
+            float getFloatParameter(const std::string& name) const {
+                return floatParameters_.at(name);
             }
 
             /**
@@ -138,8 +140,8 @@ namespace ldmx {
              * @param name The name of the parameter.
              * @return value The parameter value.
              */
-            std::string getStringParameter(const std::string& name) {
-                return stringParameters_[name];
+            std::string getStringParameter(const std::string& name) const {
+                return stringParameters_.at(name);
             }
 
             /**
