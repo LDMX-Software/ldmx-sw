@@ -67,6 +67,14 @@ namespace ldmx {
             }
 
             /**
+             * Get the event weight
+             * @return weight from the EventHeader
+             */
+            double getEventWeight() const {
+                return eventHeader_.getWeight();
+            }
+
+            /**
              * Print event bus
              *
              * Only prints passengers that have been loaded into the member object.
