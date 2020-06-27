@@ -1,11 +1,6 @@
 
 #include "Framework/ConfigurePython.h"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/EventProcessorFactory.h"
-
 /*~~~~~~~~~~~~*/
 /*   python   */
 /*~~~~~~~~~~~~*/
@@ -19,11 +14,6 @@
 #include <vector>
 #include <iostream>
 #include <cstring>
-
-/*~~~~~~~~~~~~~~~~*/
-/*     ROOT       */
-/*~~~~~~~~~~~~~~~~*/
-#include "TH1F.h" //for creating histograms
 
 namespace ldmx {
 
@@ -273,73 +263,7 @@ namespace ldmx {
         //this just takes the parameters determined earlier
         //and puts them into the Process + EventProcessor framework
 
-        auto process{std::make_unique<Process>(
-                configuration_.getParameter<std::string>("passName")
-                )};  
-
-        process->setHistogramFileName(configuration_.getParameter<std::string>("histogramFile"));
-        process->setEventLimit(configuration_.getParameter<int>("maxEvents"));
-        process->setLogFrequency(configuration_.getParameter<int>("logFrequency")); 
-        process->setCompressionSetting(configuration_.getParameter<int>("compressionSetting"));
-
-        auto run{configuration_.getParameter<int>("run")};
-        if ( run > 0 ) process->setRunNumber(run);
-
-        auto libs{configuration_.getParameter<std::vector<std::string>>("libraries",{})};
-        std::for_each(libs.begin(), libs.end(), 
-                [](auto& lib) { EventProcessorFactory::getInstance().loadLibrary(lib);}
-                ); 
-
-        auto inputFiles{configuration_.getParameter<std::vector<std::string>>("inputFiles",{})};
-        for (auto file : inputFiles ) {
-            process->addFileToProcess(file);
-        }
-
-        auto outputFiles{configuration_.getParameter<std::vector<std::string>>("outputFiles",{})};
-        for (auto file : outputFiles) {
-            process->addOutputFileName(file);
-        }
-
-        auto keepRules{configuration_.getParameter<std::vector<std::string>>("keep",{})};
-        for (auto rule : keepRules) {
-            process->addDropKeepRule(rule);
-        }
-
-        process->getStorageController().setDefaultKeep(
-                configuration_.getParameter<bool>("skimDefaultIsKeep")
-                );
-        auto skimRules{configuration_.getParameter<std::vector<std::string>>("skimRules",{})};
-        for (size_t i=0; i<skimRules.size(); i+=2) {
-            process->getStorageController().addRule(skimRules[i],skimRules[i+1]);
-        }
-
-        auto sequence{configuration_.getParameter<std::vector<Parameters>>("sequence",{})};
-        if ( sequence.empty() ) {
-            EXCEPTION_RAISE(
-                    "NoSeq",
-                    "No sequence has been defined. What should I be doing?\nUse p.sequence to tell me what processors to run."
-                    );
-        }
-        for (auto proc : sequence) {
-            auto className{proc.getParameter<std::string>("className")};
-            auto instanceName{proc.getParameter<std::string>("instanceName")};
-            EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(
-                    className, instanceName, *process);
-            if (ep == 0) {
-                EXCEPTION_RAISE("UnableToCreate", 
-                        "Unable to create instance '" + instanceName + "' of class '" + className 
-                        + "'. Did you load the library that this class is apart of?");
-            }
-            auto histograms{proc.getParameter<std::vector<Parameters>>("histograms",{})};
-            if (!histograms.empty()) {
-                ep->getHistoDirectory();
-                ep->createHistograms( histograms );
-            }
-            ep->configure(proc);
-            process->addToSequence(ep);
-        }
-
-        return process;
+        return std::make_unique<Process>(configuration_);
     }
 
 } //ldmx

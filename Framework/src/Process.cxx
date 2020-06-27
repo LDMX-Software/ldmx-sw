@@ -7,6 +7,7 @@
 #include "TFile.h"
 #include "TROOT.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/EventProcessorFactory.h"
 #include "Framework/Event.h"
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
@@ -16,8 +17,61 @@
 
 namespace ldmx {
 
-    Process::Process(const std::string& passname) :
-            passname_ {passname} {
+    Process::Process(const Parameters& configuration) {
+
+        passname_      = configuration.getParameter<std::string>("passName");
+        histoFilename_ = configuration.getParameter<std::string>("histogramFile"); 
+
+        maxTries_           = configuration.getParameter<int>("maxTriesPerEvent");
+        eventLimit_         = configuration.getParameter<int>("maxEvents");
+        logFrequency_       = configuration.getParameter<int>("logFrequency"); 
+        compressionSetting_ = configuration.getParameter<int>("compressionSetting");
+
+        inputFiles_    = configuration.getParameter<std::vector<std::string>>("inputFiles" ,{});
+        outputFiles_   = configuration.getParameter<std::vector<std::string>>("outputFiles",{});
+        dropKeepRules_ = configuration.getParameter<std::vector<std::string>>("keep"       ,{});
+
+        auto run{configuration.getParameter<int>("run")};
+        if ( run > 0 ) runForGeneration_ = run;
+
+        auto libs{configuration.getParameter<std::vector<std::string>>("libraries",{})};
+        std::for_each(libs.begin(), libs.end(), 
+                [](auto& lib) { EventProcessorFactory::getInstance().loadLibrary(lib);}
+                ); 
+
+        m_storageController.setDefaultKeep(
+                configuration.getParameter<bool>("skimDefaultIsKeep")
+                );
+        auto skimRules{configuration.getParameter<std::vector<std::string>>("skimRules",{})};
+        for (size_t i=0; i<skimRules.size(); i+=2) {
+            m_storageController.addRule(skimRules[i],skimRules[i+1]);
+        }
+
+        auto sequence{configuration.getParameter<std::vector<Parameters>>("sequence",{})};
+        if ( sequence.empty() ) {
+            EXCEPTION_RAISE(
+                    "NoSeq",
+                    "No sequence has been defined. What should I be doing?\nUse p.sequence to tell me what processors to run."
+                    );
+        }
+        for (auto proc : sequence) {
+            auto className{proc.getParameter<std::string>("className")};
+            auto instanceName{proc.getParameter<std::string>("instanceName")};
+            EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(
+                    className, instanceName, *this);
+            if (ep == 0) {
+                EXCEPTION_RAISE("UnableToCreate", 
+                        "Unable to create instance '" + instanceName + "' of class '" + className 
+                        + "'. Did you load the library that this class is apart of?");
+            }
+            auto histograms{proc.getParameter<std::vector<Parameters>>("histograms",{})};
+            if (!histograms.empty()) {
+                ep->getHistoDirectory();
+                ep->createHistograms( histograms );
+            }
+            ep->configure(proc);
+            sequence_.push_back(ep);
+        }
     }
 
     Process::~Process() {
@@ -63,16 +117,19 @@ namespace ldmx {
                 
                 for ( auto rule : dropKeepRules_ ) outFile.addDrop(rule);
 
+                int numTries = 0; //number of tries for the current event number
                 while (n_events_processed < eventLimit_) {
                     EventHeader& eh = theEvent.getEventHeader();
                     eh.setRun(runForGeneration_);
                     eh.setEventNumber(n_events_processed + 1);
                     eh.setTimestamp(TTimeStamp());
 
+                    numTries++;
+
                     // reset the storage controller state
                     m_storageController.resetEventState();
 
-                    if ( getLogFrequency() > 0 and (eh.getEventNumber() % getLogFrequency() == 0 ) ) {
+                    if ( numTries <= 1 and getLogFrequency() > 0 and (eh.getEventNumber() % getLogFrequency() == 0 ) ) {
                         TTimeStamp t;
                         std::cout << "[ Process ] : Processing " << n_events_processed + 1 
                             << " Run " << theEvent.getEventHeader().getRun() 
@@ -93,13 +150,17 @@ namespace ldmx {
                             break;
                         }
                     }
-
-                    //fill any Ntuples that have been created
-                    if ( not eventAborted ) NtupleManager::getInstance().fill(); 
-                    NtupleManager::getInstance().clear(); 
                     
                     outFile.nextEvent( eventAborted ? false : m_storageController.keepEvent() /*ignore storage control if event aborted*/);
-                    n_events_processed++;
+
+                    if ( not eventAborted or numTries >= maxTries_ ) {
+                        n_events_processed++; //increment events made
+                        NtupleManager::getInstance().fill();  //fill ntuples
+                        numTries = 0; //reset try counter
+                    }
+
+                    NtupleManager::getInstance().clear(); 
+                    theEvent.Clear();
                 }
 
                 for (auto module : sequence_) module->onFileClose(outFile);
@@ -271,31 +332,6 @@ namespace ldmx {
             std::cerr << "Framework Error [" << e.name() << "] : " << e.message() << std::endl;
             std::cerr << "  at " << e.module() << ":" << e.line() << " in " << e.function() << std::endl;
         }
-    }
-
-    void Process::addToSequence(EventProcessor* mod) {
-        sequence_.push_back(mod);
-    }
-
-    void Process::addFileToProcess(const std::string& filename) {
-        inputFiles_.push_back(filename);
-    }
-
-    void Process::addDropKeepRule(const std::string& rule) {
-        dropKeepRules_.push_back(rule);
-    }
-
-    void Process::setOutputFileName(const std::string& filenameOut) {
-        outputFiles_.clear();
-        outputFiles_.push_back(filenameOut);
-    }
-
-    void Process::setHistogramFileName(const std::string& filenameOut) {
-        histoFilename_ = filenameOut;
-    }
-
-    void Process::addOutputFileName(const std::string& filenameOut) {
-        outputFiles_.push_back(filenameOut);
     }
 
     TDirectory* Process::makeHistoDirectory(const std::string& dirName) {

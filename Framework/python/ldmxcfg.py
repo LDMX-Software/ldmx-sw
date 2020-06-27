@@ -207,6 +207,9 @@ class Process:
         Class-wide reference to the last Process object to be constructed
     maxEvents : int
         Maximum number events to process
+    maxTriesPerEvent : int
+        Maximum number of attempts to make in a row before giving up on an event
+        Only used in Production Mode (no input files)
     run : int
         Run number for this process
     inputFiles : list of strings
@@ -237,6 +240,7 @@ class Process:
     def __init__(self, passName):
         self.passName=passName
         self.maxEvents=-1
+        self.maxTriesPerEvent=1
         self.run=-1
         self.inputFiles=[]
         self.outputFiles=[]
