@@ -133,12 +133,16 @@ namespace ldmx {
         persistencyManager_->setCurrentEvent( &event ); 
 
         // Generate and process a Geant4 event. 
+        numEventsBegan_++;
         runManager_->ProcessOneEvent( event.getEventHeader().getEventNumber() );
 
         // If a Geant4 event has been aborted, skip the rest of the processing
         // sequence. This will immediately force the simulation to move on to 
         // the next event. 
-        if ( runManager_->GetCurrentEvent()->IsAborted() ) { this->abortEvent(); }
+        if ( runManager_->GetCurrentEvent()->IsAborted() ) { 
+            runManager_->TerminateOneEvent(); //clean up event objects
+            this->abortEvent();  //get out of processors loop
+        }
         
         if ( process_.getLogFrequency() > 0 and event.getEventHeader().getEventNumber() % process_.getLogFrequency() == 0 ) {
             //print according to log frequency and verbosity
@@ -148,6 +152,7 @@ namespace ldmx {
 
         // Terminate the event.  This checks if an event is to be stored or 
         // stacked for later. 
+        numEventsCompleted_++;
         runManager_->TerminateOneEvent();
     
         return;
@@ -160,7 +165,7 @@ namespace ldmx {
 
         // If specified, set the seeds.  The seed vector must contain at 
         // least two seeds otherwise nothing will get set.
-        auto seeds{parameters_.getParameter< std::vector< int > >("randomSeeds")};
+        auto seeds{parameters_.getParameter< std::vector< int > >("randomSeeds",{})};
         setSeeds(seeds); 
         
         // Get the extra simulation configuring commands
@@ -200,6 +205,9 @@ namespace ldmx {
         // level > 0.  
         runManager_->TerminateEventLoop();
 
+        // Pass the **real** number of events to the persistency manager
+        persistencyManager_->setNumEvents( numEventsBegan_ , numEventsCompleted_ );
+
         // Persist any remaining events, call the end of run action and 
         // terminate the Geant4 kernel. 
         runManager_->RunTermination();
@@ -213,6 +221,11 @@ namespace ldmx {
     }
 
     void Simulator::onProcessEnd() {
+
+        std::cout << "[ Simulator ] : "
+            << "Started " << numEventsBegan_ << " events to produce "
+            << numEventsCompleted_ << " events."
+            << std::endl;
         
         // Delete Run Manager
         // From Geant4 Basic Example B01:
