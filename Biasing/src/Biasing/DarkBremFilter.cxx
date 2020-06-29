@@ -9,123 +9,160 @@
 
 #include "Biasing/DarkBremFilter.h"
 
-#include "SimCore/G4APrime.h"
+#include "SimCore/G4APrime.h" //checking if particles match A'
+#include "SimCore/UserTrackInformation.h" //make sure A' is saved
+#include "SimCore/UserEventInformation.h"
+
+#include "G4LogicalVolumeStore.hh" //for the store
 
 namespace ldmx { 
 
     DarkBremFilter::DarkBremFilter(const std::string& name, Parameters& parameters)
         : UserAction(name, parameters) {
-        volumeName_ = parameters.getParameter< std::string >("volume");
-        verbosity_  = parameters.getParameter< int         >("verbosity");
 
-        //re-set verbosity and volumes to reasonable defaults
-        if ( verbosity_ < 0 ) verbosity_ = 0;
-        if ( volumeName_.empty() ) volumeName_ = "target_PV";
-    }
-
-    DarkBremFilter::~DarkBremFilter() {
-    }
-
-    G4ClassificationOfNewTrack DarkBremFilter::ClassifyNewTrack(
-            const G4Track* track, 
-            const G4ClassificationOfNewTrack& currentTrackClass) {
-
-        // get the PDGID of the track.
-        G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
-
-        // Get the particle type.
-        G4String particleName = track->GetParticleDefinition()->GetParticleName();
-
-        // Use current classification by default so values from other plugins are not overridden.
-        G4ClassificationOfNewTrack classification = currentTrackClass;
-
-        if (track->GetTrackID() == 1 && pdgID == 11) {
-            if ( verbosity_ > 2 ) {
-                std::cout << "[ DarkBremFilter ]: Pushing track to waiting stack." << std::endl;
-            }
-            return fWaiting; 
-        }
-
-        return classification;
-    }
-
-    void DarkBremFilter::stepping(const G4Step* step) { 
-
-        // Get the track associated with this step.
-        G4Track* track = step->GetTrack();
-        
-        // Only process the primary electron track
-        if (track->GetParentID() != 0) return;
-
-        // get the PDGID of the track.
-        G4int pdgID = track->GetParticleDefinition()->GetPDGEncoding();
-        
-        // Make sure that the particle being processed is an electron.
-        if (pdgID != 11) return; 
-
-        // Get the volume the particle is in.
-        G4VPhysicalVolume* volume = track->GetVolume();
-        G4String volumeName = volume->GetName();
-
-        // If the particle isn't in the given volume, don't continue with the processing.
-        if (not volumeName.contains(volumeName_.c_str())) return;
-
-        // Get the particle type.
-        G4String particleName = track->GetParticleDefinition()->GetParticleName();
+        std::string desiredVolume = parameters.getParameter< std::string >("volume","target");
+        nGensFromPrimary_ = parameters.getParameter< int >("nGensFromPrimary",0);
+        minApEnergy_ = parameters.getParameter< double >("minApEnergy",0.);
  
-        if (step->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) { 
-            // primary electron is exiting the volume.
-           
-            // Get the particles daughters.
-            const G4TrackVector* secondaries = step->GetSecondary();
-           
-            if (secondaries->size() == 0) { 
-                // If the particle didn't produce any secondaries, stop processing the event.
-                if ( verbosity_ > 1 ) {
-                    std::cout << "[ DarkBremFilter ]: "
-                                << "Primary did not produce secondaries --> Killing primary track!" 
-                                << std::endl;
-                }
-                
-                track->SetTrackStatus(fKillTrackAndSecondaries);
-                G4RunManager::GetRunManager()->AbortEvent();
-                return;
-            } else if (not hasAPrime(secondaries)) { 
-                // If the particle din't produce an A Prime, stop processing the event
-                if ( verbosity_ > 1 ) {
-                    std::cout << "[ DarkBremFilter ]: "
-                                << "No dark brem in " << volumeName_ << " --> Aborting event."
-                                << std::endl;
-                }
-                
-                track->SetTrackStatus(fKillTrackAndSecondaries);
-                G4RunManager::GetRunManager()->AbortEvent();
-                return;
+        //TODO check if this needs to be updated when v12 geo updates are merged in
+        for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
+            G4String volumeName = volume->GetName();
+            if ((desiredVolume.compare("ecal") == 0) 
+                    and volumeName.contains("volume")
+                    and (volumeName.contains("Si") or volumeName.contains("W") or volumeName.contains("PCB")) 
+               ) {
+                volumes_.push_back( volume );
+            } else if (volumeName.contains(desiredVolume)) {
+                volumes_.push_back( volume );
             }
-
-        } else if (step->GetPostStepPoint()->GetKineticEnergy() == 0) { 
-            //primary electron stopped inside of volume
-            const G4TrackVector* secondaries = step->GetSecondary();
-            if(not hasAPrime( secondaries )){
-                // If the particle din't produce an A Prime, stop processing the event
-                if ( verbosity_ > 1 ) {
-                    std::cout << "[ DarkBremFilter ]: "
-                              << "Electron never made it out of the " << volumeName_ << " --> Killing all tracks!"
-                              << std::endl;
-                }
-
-                track->SetTrackStatus(fKillTrackAndSecondaries);
-                G4RunManager::GetRunManager()->AbortEvent();
-                return;
-            }
-        } //check if particle is leaving volume or stopped within it
-
-    }//stepping
-
-    bool DarkBremFilter::hasAPrime(const G4TrackVector *secondaries) const {
-        for (auto& secondary_track : *secondaries) {
-            if (secondary_track->GetParticleDefinition() == G4APrime::APrime()) return true;
         }
+
+        if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 0 ) {
+            std::cout << "[ DarkBremFilter ]: "
+                << "Looking for A' in: ";
+            for ( auto const& volume : volumes_ ) std::cout << volume->GetName() << ", ";
+            std::cout << std::endl;
+        }
+    }
+
+    void DarkBremFilter::BeginOfEventAction(const G4Event*) {
+        currentGen_ = 0;
+        foundAp_    = false;
+        return;
+    }
+
+    G4ClassificationOfNewTrack DarkBremFilter::ClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& ) {
+
+        if ( aTrack->GetParticleDefinition() == G4APrime::APrime() ) {
+            //there is an A'! Yay!
+            //  we need to check that it originated in the desired volume
+            //  keep A' in the current generation so that we can have it be processed
+            //  before the abort event check
+            if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
+                std::cout << "[ DarkBremFilter ]: "
+                          << "Found A', still need to check if it originated in requested volume." 
+                          << std::endl;
+            }
+            foundAp_ = true;
+            return fUrgent; 
+        }
+
+        return fWaiting;
+    }
+
+    void DarkBremFilter::NewStage() {
+
+        /**
+         * called when urgent stack is empty 
+         * since we are putting everything on waiting stack, 
+         * this is only called when a generation has been simulated 
+         * and we are starting the next one.
+         */
+
+        /* Check that generational stacking is working
+        std::cout << "[ DarkBremFilter ]: "
+            << "Closing up generation " << currentGen_ << " and starting a new one."
+            << std::endl;
+        */
+
+        //increment current generation
+        currentGen_++;
+
+        if ( currentGen_ > nGensFromPrimary_ ) {
+            //we finished the number of generations that are allowed to produce A'
+            //  check if A' was produced
+            if ( not foundAp_ ) {
+                //A' wasn't produced, abort event
+                if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
+                    std::cout << "[ DarkBremFilter ]: "
+                        << "A' wasn't produced, aborting event." 
+                        << std::endl;
+                }
+                G4RunManager::GetRunManager()->AbortEvent();
+            }
+        }
+        
+        return;
+    }
+
+    void DarkBremFilter::PostUserTrackingAction(const G4Track* track) {
+
+        /* Check that generational stacking is working
+        std::cout << "[ DarkBremFilter ]:"
+            << track->GetTrackID() << " " << track->GetParticleDefinition()->GetPDGEncoding()
+            << std::endl;
+        */
+
+        //add generation to UserTrackInformation
+        UserTrackInformation* userInfo 
+              = dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
+
+        userInfo->setGeneration( currentGen_ );
+        
+        if ( track->GetParticleDefinition() == G4APrime::APrime() ) {
+
+            //make sure A' is persisted into output file
+            userInfo->setSaveFlag(true); 
+            //we pushed A' through a generation early to make sure it gets
+            // processed before the final check, so its generation is later
+            userInfo->setGeneration( currentGen_+1 );
+
+            auto event{G4EventManager::GetEventManager()};
+            if ( !event->GetUserInformation() ) {
+                event->SetUserInformation(new UserEventInformation);
+            }
+            static_cast<UserEventInformation*>(event->GetUserInformation())->setWeight( track->GetWeight() );
+
+            //check if A' was made in the desired volume and has the minimum energy
+            if ( track->GetTotalEnergy() < minApEnergy_ or not inDesiredVolume(track) ) {
+                //abort event if A' wasn't in correct volume
+                if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
+                    std::cout << "[ DarkBremFilter ]: "
+                        << "A' wasn't produced inside of requested volume or was below requested energy, aborting event." 
+                        << " A' was produced in '" << track->GetLogicalVolumeAtVertex()->GetName() << "' and had energy "
+                        << track->GetTotalEnergy() << " MeV."
+                        << std::endl;
+                }
+                G4RunManager::GetRunManager()->AbortEvent();
+            } 
+
+        }//track is A'
+
+        return;
+    }
+
+    bool DarkBremFilter::inDesiredVolume(const G4Track* track) const {
+
+        /**
+         * Comparing the pointers to logical volumes isn't very robust.
+         * TODO find a better way to do this
+         */
+
+        auto inVol = track->GetLogicalVolumeAtVertex();
+        for ( auto const& volume : volumes_ ) {
+            if ( inVol == volume ) return true;
+        }
+
         return false;
     }
 }
