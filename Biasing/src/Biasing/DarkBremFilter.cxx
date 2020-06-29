@@ -20,18 +20,19 @@ namespace ldmx {
     DarkBremFilter::DarkBremFilter(const std::string& name, Parameters& parameters)
         : UserAction(name, parameters) {
 
-        std::string desiredVolume = parameters.getParameter< std::string >("volume","target");
-        nGensFromPrimary_ = parameters.getParameter< int >("nGensFromPrimary",0);
-        minApEnergy_ = parameters.getParameter< double >("minApEnergy",0.);
+        std::string desiredVolume = parameters.getParameter< std::string >("volume");
+        nGensFromPrimary_ = parameters.getParameter< int >("nGensFromPrimary");
+        minApEnergy_ = parameters.getParameter< double >("minApEnergy");
  
         //TODO check if this needs to be updated when v12 geo updates are merged in
         for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
             G4String volumeName = volume->GetName();
-            if ((desiredVolume.compare("ecal") == 0) 
-                    and volumeName.contains("volume")
-                    and (volumeName.contains("Si") or volumeName.contains("W") or volumeName.contains("PCB")) 
-               ) {
-                volumes_.push_back( volume );
+            if ((desiredVolume.compare("ecal") == 0) ) {
+                //looking for ecal volumes
+                if ( volumeName.contains("volume") and
+                    (volumeName.contains("Si") or volumeName.contains("W") or volumeName.contains("PCB")) 
+                ) { volumes_.push_back( volume ); }
+
             } else if (volumeName.contains(desiredVolume)) {
                 volumes_.push_back( volume );
             }

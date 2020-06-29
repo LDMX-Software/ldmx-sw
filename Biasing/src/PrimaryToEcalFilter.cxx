@@ -11,7 +11,7 @@ namespace ldmx {
 
     PrimaryToEcalFilter::PrimaryToEcalFilter(const std::string& name, Parameters& parameters) 
         : UserAction(name, parameters) {
-            threshold_ = parameters.getParameter< double >("threshold" , 0.); 
+            threshold_ = parameters.getParameter< double >("threshold"); 
     }
 
     PrimaryToEcalFilter::~PrimaryToEcalFilter() {
