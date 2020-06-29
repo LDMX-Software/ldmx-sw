@@ -174,14 +174,8 @@ namespace ldmx {
 
         private:
 
-            /* 
-             * Description of the current run.  The description is persisted 
-             * in the run header. 
-             */ 
-            std::string description_{""};
-
-            /// Run number
-            int runNumber_{0}; 
+            /// Configuration parameters passed to Simulator
+            Parameters parameters_;
 
             /// Number of events started on this production run
             int eventsBegan_{-1};
