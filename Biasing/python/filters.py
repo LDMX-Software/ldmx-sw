@@ -91,16 +91,57 @@ class DarkBremFilter(simcfg.UserAction):
     ----------
     vol : str
         Geant4 name of volume to filter for
+
+    Attributes
+    ----------
+    nGensFromPrimary : int
+        Number of particle generations to search before giving up on generating the A'
+    minApEnergy : float
+        Minimum A' energy to keep the event [MeV]
     """
 
-    def __init__(self,vol='target'):
+    def __init__(self,vol):
         super().__init__('%s_ap_filter'%vol,'ldmx::DarkBremFilter')
 
         from LDMX.Biasing import include
         include.library()
 
         self.volume = vol
-        self.verbosity = 0
+        self.nGensFromPrimary = 0
+        self.minApEnergy = 0.
+
+    def target(minApEnergy = 2000.) :
+        """Configure filter to look for dark brem in target
+
+        Sets number of generations from primary to 0,
+        meaning only allow primary to dark brem
+
+        Parameters
+        ----------
+        minApEnergy : float
+            Minimum A' energy [MeV] to keep event
+        """
+
+        f = DarkBremFilter('target')
+        f.nGensFromPrimary = 0 #only allow primary to dark brem
+        f.minApEnergy = minApEnergy
+        return f
+    
+    def ecal(minApEnergy = 2000., nGensFromPrimary = 3) :
+        """Configure filter to look for dark brem in ecal
+
+        Parameters
+        ----------
+        minApEnergy : float
+            Minimum A' energy [MeV] to keep event
+        nGensFromPrimary : int
+            Number of particle generations to look for A' for before giving up
+        """
+
+        f = DarkBremFilter('ecal')
+        f.nGensFromPrimary = nGensFromPrimary
+        f.minApEnergy = minApEnergy
+        return f
 
 class TaggerVetoFilter(simcfg.UserAction): 
     """ Configuration used to reject off-energy electrons in the tagger tracker.
@@ -113,6 +154,23 @@ class TaggerVetoFilter(simcfg.UserAction):
     
     def __init__(self,thresh=3800.) :
         super().__init__('tagger_veto_filter','ldmx::TaggerVetoFilter')
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.threshold = thresh
+
+class PrimaryToEcalFilter(simcfg.UserAction) :
+    """ Configuration used to reject events where the primary doesn't reach the ecal with a mimimum energy
+
+    Parameters
+    ----------
+    thresh : float
+        Minimum energy [MeV] that primary electron should have when hitting ecal
+    """
+
+    def __init__(self,thresh) :
+        super().__init__('primary_to_ecal_with_%d'%thresh,'ldmx::PrimaryToEcalFilter')
 
         from LDMX.Biasing import include
         include.library()
