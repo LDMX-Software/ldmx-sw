@@ -73,8 +73,9 @@ namespace ldmx {
         RunHeader runHeader( runNumber_ , detector->getDetectorHeader()->getName(), description_ );
 
         // Set parameter value with number of events processed.
-        runHeader.setIntParameter("Event count", aRun->GetNumberOfEvent());
-
+        runHeader.setIntParameter("Event Count", eventsCompleted_ );
+        runHeader.setIntParameter("Events Began" , eventsBegan_ );
+        
         // Set a string parameter with the Geant4 SHA-1.
         G4String g4Version{G4RunManagerKernel::GetRunManagerKernel()->GetVersionString()};
         runHeader.setStringParameter("Geant4 revision", g4Version); 
