@@ -39,9 +39,8 @@ namespace ldmx {
         G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
         G4PersistencyCenter::GetPersistencyCenter()->SetPersistencyManager(this, "RootPersistencyManager");
 
-        // Set the description 
-        description_ = parameters.getParameter< std::string >("description"); 
-        runNumber_   = parameters.getParameter< int >("runNumber");
+        // Set the parameters, used laster when printing run header
+        parameters_ = parameters;
         
         ecalHitIO_.setEnableHitContribs(parameters.getParameter< bool >("enableHitContribs")); 
         ecalHitIO_.setCompressHitContribs(parameters.getParameter< bool >("compressHitContribs"));
@@ -70,12 +69,31 @@ namespace ldmx {
             = static_cast<RunManager*>(RunManager::GetRunManager())->getDetectorConstruction();
 
         // Create the run header.
-        RunHeader runHeader( runNumber_ , detector->getDetectorHeader()->getName(), description_ );
+        RunHeader runHeader( 
+                parameters_.getParameter<int>("runNumber"),
+                detector->getDetectorHeader()->getName(), 
+                parameters_.getParameter<std::string>("description")
+                );
+
 
         // Set parameter value with number of events processed.
         runHeader.setIntParameter("Event Count", eventsCompleted_ );
         runHeader.setIntParameter("Events Began" , eventsBegan_ );
-        
+
+        runHeader.setIntParameter("Save ECal Hit Contribs" , parameters_.getParameter<bool>("enableHitContribs"));
+        runHeader.setIntParameter("Compress ECal Hit Contribs" , parameters_.getParameter<bool>("compressHitContribs"));
+
+        if ( parameters_.getParameter<bool>("biasing_enabled") ) {
+            runHeader.setStringParameter("Biasing Process"  , parameters_.getParameter<std::string>("biasing_process"));
+            runHeader.setStringParameter("Biasing Volume"   , parameters_.getParameter<std::string>("biasing_volume"));
+            runHeader.setStringParameter("Biasing Particle" , parameters_.getParameter<std::string>("biasing_particle"));
+            runHeader.setIntParameter(   "Biasing All"      , parameters_.getParameter<bool>(       "biasing_all" ));
+            runHeader.setIntParameter(   "Biasing Incident" , parameters_.getParameter<bool>(       "biasing_incident" ));
+            runHeader.setIntParameter(   "Biasing Disable EM",parameters_.getParameter<bool>(       "biasing_disableEMBiasing" ));
+            runHeader.setIntParameter(   "Biasing Factor"   , parameters_.getParameter<int>(        "biasing_factor" ));
+            runHeader.setFloatParameter( "Biasing Threshold", parameters_.getParameter<double>(     "biasing_threshold" ));
+        }
+
         // Set a string parameter with the Geant4 SHA-1.
         G4String g4Version{G4RunManagerKernel::GetRunManagerKernel()->GetVersionString()};
         runHeader.setStringParameter("Geant4 revision", g4Version); 
