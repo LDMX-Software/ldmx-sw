@@ -37,10 +37,19 @@ namespace ldmx {
              * @brief Information about a contribution to the hit in the associated cell
              */
             struct Contrib {
-                int parentID{-1};
+                /// trackID of incident particle that is an ancestory of the contributor
+                int incidentID{-1};
+
+                /// track ID of this contributor
                 int trackID{-1};
+
+                /// PDG ID of this contributor
                 int pdgCode{0};
+
+                /// Energy depostied by this contributor
                 float edep{0};
+
+                /// Time this contributor made the hit (global Geant4 time)
                 float time{0};
             };
 
@@ -142,13 +151,13 @@ namespace ldmx {
 
             /**
              * Add a hit contribution from a SimParticle.
-             * @param parentID the Geant4 track ID for the particle's parent incident on the Calorimeter region
+             * @param incidentID the Geant4 track ID for the particle's parent incident on the Calorimeter region
              * @param trackID the Geant4 track ID for the particle
              * @param pdgCode The PDG code of the actual track.
              * @param edep The energy deposition of the hit [MeV].
              * @param time The time of the hit [ns].
              */
-            void addContrib(int parentID, int trackID, int pdgCode, float edep, float time);
+            void addContrib(int incidentID, int trackID, int pdgCode, float edep, float time);
 
             /**
              * Get a hit contribution by index.
@@ -219,9 +228,9 @@ namespace ldmx {
             std::vector<int> trackIDContribs_;
 
             /**
-             * The list of parent IDs contributing to the hit
+             * The list of incident IDs contributing to the hit
              */
-            std::vector<int> parentIDContribs_;
+            std::vector<int> incidentIDContribs_;
 
             /**
              * The list of PDG codes contributing to the hit.
@@ -246,7 +255,7 @@ namespace ldmx {
             /**
              * ROOT class definition.
              */
-            ClassDef(SimCalorimeterHit, 2)
+            ClassDef(SimCalorimeterHit, 3)
     };
 
 }
