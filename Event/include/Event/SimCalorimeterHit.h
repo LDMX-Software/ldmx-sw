@@ -37,7 +37,17 @@ namespace ldmx {
              * @brief Information about a contribution to the hit in the associated cell
              */
             struct Contrib {
-                /// trackID of incident particle that is an ancestory of the contributor
+                /**
+                 * trackID of incident particle that is an ancestor of the contributor
+                 *
+                 * The incident ancestor is found in TrackMap::findIncident where the
+                 * ancestry is looped upwards until a particle is found that matches
+                 * the criteria.
+                 *      (1) particle will be saved to output file AND
+                 *      (2) particle originates in a region outside the CalorimeterRegion
+                 * If no particle is found matching these criteria, the primary particle
+                 * that is this trackID's ancestor is chosen.
+                 */
                 int incidentID{-1};
 
                 /// track ID of this contributor
