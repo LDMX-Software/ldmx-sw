@@ -9,22 +9,27 @@
 
 namespace ldmx {
 
-    G4VTrajectory* TrackMap::findTrajectory(G4int trackID) {
-        G4int currTrackID = trackID;
-        G4VTrajectory* traj = nullptr;
-        for (;;) {
-            traj = trajectoryMap_[currTrackID];
-            if (traj) {
-                break;
-            } else {
-                if (trackIDMap_.find(currTrackID) != trackIDMap_.end()) {
-                    currTrackID = trackIDMap_[currTrackID];
-                } else {
-                    break;
+    int TrackMap::findIncident(G4int trackID) {
+        int currTrackID = trackID;
+        bool foundIncident = false;
+        while ( not foundIncident ) {
+            if ( contains(currTrackID) ) {
+                //currTrackID is not a primary and has parent stored
+                currTrackID = getParent(currTrackID);
+                if ( hasTrajectory(currTrackID) ) {
+                    //curr track ID is being stored
+                    //TODO if ( originated outside CalorimterRegion ) {
+                        //curr track originated outside cal region
+                        foundIncident = true;
+                    //}
                 }
+            } else {
+                //curr Track ID is a primary and has already been
+                //checked above, give up
+                foundIncident = true;
             }
         }
-        return traj;
+        return currTrackID;
     }
 
     void TrackMap::clear() {
