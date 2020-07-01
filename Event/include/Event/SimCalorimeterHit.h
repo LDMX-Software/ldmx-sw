@@ -37,6 +37,7 @@ namespace ldmx {
              * @brief Information about a contribution to the hit in the associated cell
              */
             struct Contrib {
+                int parentID{-1};
                 int trackID{-1};
                 int pdgCode{0};
                 float edep{0};
@@ -141,12 +142,13 @@ namespace ldmx {
 
             /**
              * Add a hit contribution from a SimParticle.
+             * @param parentID the Geant4 track ID for the particle's parent incident on the Calorimeter region
              * @param trackID the Geant4 track ID for the particle
              * @param pdgCode The PDG code of the actual track.
              * @param edep The energy deposition of the hit [MeV].
              * @param time The time of the hit [ns].
              */
-            void addContrib(int trackID, int pdgCode, float edep, float time);
+            void addContrib(int parentID, int trackID, int pdgCode, float edep, float time);
 
             /**
              * Get a hit contribution by index.
@@ -215,6 +217,11 @@ namespace ldmx {
              * The list of track IDs contributing to the hit.
              */
             std::vector<int> trackIDContribs_;
+
+            /**
+             * The list of parent IDs contributing to the hit
+             */
+            std::vector<int> parentIDContribs_;
 
             /**
              * The list of PDG codes contributing to the hit.
