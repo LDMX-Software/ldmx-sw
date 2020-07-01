@@ -14,7 +14,7 @@ namespace ldmx {
 
     void SimCalorimeterHit::Clear() {
 
-        parentIDContribs_.clear();
+        incidentIDContribs_.clear();
         trackIDContribs_.clear();
         pdgCodeContribs_.clear();
         edepContribs_.clear();
@@ -34,8 +34,8 @@ namespace ldmx {
                 "position: ( " << x_ << ", " << y_ << ", " << z_ << " ), num contribs: " << nContribs_ << " }" << std::endl;
     }
 
-    void SimCalorimeterHit::addContrib(int parentID, int trackID, int pdgCode, float edep, float time) {
-        parentIDContribs_.push_back(parentID);
+    void SimCalorimeterHit::addContrib(int incidentID, int trackID, int pdgCode, float edep, float time) {
+        incidentIDContribs_.push_back(incidentID);
         trackIDContribs_.push_back(trackID);
         pdgCodeContribs_.push_back(pdgCode);
         edepContribs_.push_back(edep);
@@ -49,7 +49,7 @@ namespace ldmx {
 
     SimCalorimeterHit::Contrib SimCalorimeterHit::getContrib(int i) const {
         Contrib contrib;
-        contrib.parentID = parentIDContribs_.at(i);
+        contrib.incidentID = incidentIDContribs_.at(i);
         contrib.trackID = trackIDContribs_.at(i);
         contrib.edep = edepContribs_.at(i);
         contrib.time = timeContribs_.at(i);
