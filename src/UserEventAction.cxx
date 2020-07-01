@@ -17,7 +17,6 @@
 #include "SimCore/RootPersistencyManager.h"
 #include "SimCore/RunManager.h"
 #include "SimCore/TrackMap.h"
-#include "SimCore/TrajectoryContainer.h"
 #include "SimCore/UserTrackingAction.h"
 
 /*~~~~~~~~~~~~*/

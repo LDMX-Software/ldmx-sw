@@ -223,7 +223,7 @@ namespace ldmx {
 
             SimCalorimeterHit simHit;
             simHit.setID( g4hit->getID() );
-            simHit.addContrib( g4hit->getTrackID(), g4hit->getPdgCode(), g4hit->getEdep(), g4hit->getTime() );
+            simHit.addContrib( -1, g4hit->getTrackID(), g4hit->getPdgCode(), g4hit->getEdep(), g4hit->getTime() );
             simHit.setPosition( pos.x(), pos.y(), pos.z() );
 
             outputColl.push_back( simHit );

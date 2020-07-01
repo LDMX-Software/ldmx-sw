@@ -29,7 +29,7 @@ namespace ldmx {
     void SimParticleBuilder::buildSimParticles(ldmx::Event* outputEvent) {
 
         // Get the trajectory container for the event.
-        TrajectoryContainer* trajectories = (TrajectoryContainer*) (const_cast<G4Event*>(currentEvent_))->GetTrajectoryContainer();
+        auto trajectories{(const_cast<G4Event*>(currentEvent_))->GetTrajectoryContainer()};
 
         // Create empty SimParticle objects and create the map of track ID to particles.
         std::map< int , SimParticle > outputParticleMap;
