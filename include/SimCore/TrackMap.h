@@ -43,13 +43,14 @@ namespace ldmx {
             }
 
             /**
-             * Find a trajectory by its track ID.
-             * If this track ID does not have a trajectory, then the
-             * first trajectory found in its parentage is returned.
-             * @param anEvent The Geant4 event.
-             * @param trackkID The track ID of the trajectory to find.
+             * Find a trajectory's nearest parent that is incident on the calorimeter region
+             *
+             * If this track ID does not have such a trajectory, then the
+             * track ID of the primary in its parentage is returned.
+             *
+             * @param trackID The track ID of the trajectory to search its parentage for the incident
              */
-            G4VTrajectory* findTrajectory(G4int trackID);
+            int findIncident(G4int trackID);
 
             /**
              * Return true if the given track ID has an explicitly assigned trajectory.
@@ -58,7 +59,7 @@ namespace ldmx {
              * @note This method does <b>not</b> search through the track parentage for
              * the first available Trajectory.
              */
-            inline bool hasTrajectory(G4int trackID) {
+            inline bool hasTrajectory(G4int trackID) const {
                 return trajectoryMap_.find(trackID) != trajectoryMap_.end();
             }
 
@@ -71,11 +72,20 @@ namespace ldmx {
             }
 
             /**
-             * Return true if the track ID is in the map.
-             * @return True if the track ID is in the map.
+             * Return true if the track ID is in the ancestry map
+             * @return True if the track ID is in the ancestry map
              */
-            bool contains(G4int trackID) {
+            bool contains(G4int trackID) const {
                 return trackIDMap_.find(trackID) != trackIDMap_.end();
+            }
+
+            /**
+             * Get parent track id
+             * @param[in] track Id to get parent for
+             * @return track ID of parent track
+             */
+            int getParent(int trackID) const {
+                return trackIDMap_.at(trackID);
             }
 
             /**
@@ -84,9 +94,9 @@ namespace ldmx {
              * @note Does not search for a parent Trajectory if this
              * track ID is not assigned to a Trajectory.
              */
-            inline Trajectory* getTrajectory(G4int trackID) {
+            inline Trajectory* getTrajectory(G4int trackID) const {
                 if (hasTrajectory(trackID)) {
-                    return trajectoryMap_[trackID];
+                    return trajectoryMap_.at(trackID);
                 } else {
                     return nullptr;
                 }
