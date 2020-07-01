@@ -61,7 +61,6 @@ namespace ldmx {
 
     Trajectory::~Trajectory() {
         // Delete trajectory points and their container.
-        std::cout << "~Trajectory(" << trackID_ << ")" << std::endl;
         size_t i;
         for (i = 0; i < trajPoints_->size(); i++) {
             delete (*trajPoints_)[i];
