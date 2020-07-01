@@ -13,15 +13,16 @@ namespace ldmx {
         int currTrackID = trackID;
         bool foundIncident = false;
         while ( not foundIncident ) {
-            if ( contains(currTrackID) ) {
+            if ( this->contains(currTrackID) ) {
                 //currTrackID is not a primary and has parent stored
-                currTrackID = getParent(currTrackID);
-                if ( hasTrajectory(currTrackID) ) {
+                currTrackID = this->getParent(currTrackID);
+                if ( this->hasTrajectory(currTrackID) ) {
                     //curr track ID is being stored
-                    //TODO if ( originated outside CalorimterRegion ) {
+                    auto region{this->getTrajectory(currTrackID)->getVertexRegion()};
+                    if ( region.find("Calorimeter") == std::string::npos ) {
                         //curr track originated outside cal region
                         foundIncident = true;
-                    //}
+                    }
                 }
             } else {
                 //curr Track ID is a primary and has already been
