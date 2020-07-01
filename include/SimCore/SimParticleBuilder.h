@@ -13,7 +13,6 @@
 #include "Event/SimParticle.h"
 #include "SimCore/TrackMap.h"
 #include "SimCore/Trajectory.h"
-#include "SimCore/TrajectoryContainer.h"
 
 // Geant4
 #include "G4Event.hh"

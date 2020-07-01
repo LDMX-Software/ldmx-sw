@@ -64,7 +64,7 @@ namespace ldmx {
                 } else {
 
                     // Add a hit contrib because all steps are being saved or there is not an existing record.
-                    hitMap[hitID].addContrib(trackID, pdgCode, edep, time);
+                    hitMap[hitID].addContrib(-1,trackID, pdgCode, edep, time);
 
                 }
 
