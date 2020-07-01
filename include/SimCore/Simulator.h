@@ -156,6 +156,12 @@ namespace ldmx {
             ///     This is because Simulator already runs them.
             static const std::vector< std::string > invalidCommands_;
 
+            /// Number of events started
+            int numEventsBegan_{0};
+
+            /// Number of events completed
+            int numEventsCompleted_{0};
+
             /*********************************************************
              * Python Configuration Parameters
              *********************************************************/

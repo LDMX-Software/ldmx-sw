@@ -112,6 +112,23 @@ namespace ldmx {
              * @param event Event buffer for the current event. 
              */
             void setCurrentEvent(Event* event) { event_ = event; }
+            /**
+             * Set the number of events began and completed.
+             *
+             * These two numbers may or may not be equal
+             * depending on if the simulation ran with any filters
+             * that would abort events early.
+             *
+             * These numbers are helpful for evaluating filtering
+             * performance, so we put them both in the RunHeader.
+             *
+             * @param[in] began number of events that were started
+             * @param[in] completed number of events that were completed without an abort signal
+             */
+            void setNumEvents(int began, int completed) {
+                eventsBegan_ = began;
+                eventsCompleted_ = completed;
+            }
 
         public:
 
@@ -157,14 +174,14 @@ namespace ldmx {
 
         private:
 
-            /* 
-             * Description of the current run.  The description is persisted 
-             * in the run header. 
-             */ 
-            std::string description_{""};
+            /// Configuration parameters passed to Simulator
+            Parameters parameters_;
 
-            /// Run number
-            int runNumber_{0}; 
+            /// Number of events started on this production run
+            int eventsBegan_{-1};
+
+            /// Number of events completed without being aborted (due to filters)
+            int eventsCompleted_{-1};
 
             /// The output file. 
             EventFile &file_;
