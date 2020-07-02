@@ -15,7 +15,6 @@
 /*~~~~~~~~~~*/
 /*   ROOT   */ 
 /*~~~~~~~~~~*/
-#include "TClonesArray.h"
 #include "TH1.h"
 
 /*~~~~~~~~~~~*/
@@ -74,7 +73,9 @@ namespace ldmx {
              */
             void analyze(const ldmx::Event& event) final override {
 
-                std::cout << "[ DummyAnalyzer]: Analyzing an event!" << std::endl;
+                //All processors have access to the logger using
+                //the 'ldmx_log' macro.
+                ldmx_log(debug) << "[ DummyAnalyzer]: Analyzing an event!";
                 
                 // Get the collection of calorimeter hits from the event.
                 auto tca = event.getCollection<CalorimeterHit>(caloCol_);  
