@@ -5,7 +5,7 @@ name: Tests
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches: [ iss838 ] #master ]
   pull_request:
     branches: [ master ]
 
@@ -16,6 +16,7 @@ jobs:
     steps:
     # check out ldmx-sw in the workspace
     - uses: actions/checkout@v2
+    - uses: textbook/git-checkout-submodule-action@master
 
     # Setup our ldmx development environment
     - name: Setup ldmx environment
