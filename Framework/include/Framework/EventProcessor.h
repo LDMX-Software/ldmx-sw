@@ -21,6 +21,7 @@
 #include "Framework/StorageControl.h"
 #include "Framework/Histograms.h"
 #include "Framework/NtupleManager.h"
+#include "Framework/Logger.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -197,6 +198,9 @@ namespace ldmx {
 
             /// Manager for any ntuples
             NtupleManager& ntuple_{NtupleManager::getInstance()};
+
+            /// The logger for this EventProcessor
+            logging::logger theLog_;
 
         private:
 
