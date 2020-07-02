@@ -22,6 +22,7 @@
 /*   Core   */
 /*~~~~~~~~~~*/
 #include "Exception/Exception.h" 
+#include "Framework/Logger.h"
 
 namespace ldmx {
 
@@ -108,8 +109,8 @@ namespace ldmx {
                 // doesn't, warn the user and don't try to set the variable 
                 // value. 
                 if (variables_.count(vname) == 0) { 
-                    std::cout << "[ NtupleManager ]: Warning! The variable " 
-                              << vname << " does not exist in the tree." << std::endl;
+                    ldmx_log(warn) << "The variable " 
+                                   << vname << " does not exist in the tree.";
                     return; 
                 }
                 
@@ -148,6 +149,9 @@ namespace ldmx {
 
             /// Private constructor to prevent instantiation 
             NtupleManager(); 
+
+            /// Enable logging for this singleton
+            enableLogging("NtupleManager")
 
     };  // NtupleManager 
 
