@@ -105,6 +105,15 @@ namespace ldmx {
             /** The frequency with which event info is printed. */
             int logFrequency_; 
 
+            /** Integer form of logging level to print to terminal */
+            int termLevelInt_;
+
+            /** Integer form of logging level to print to file */
+            int fileLevelInt_;
+
+            /** Name of file to print logging to */
+            std::string logFileName_;
+
             /** Maximum number of attempts to make before giving up on an event */
             int maxTries_;
 
