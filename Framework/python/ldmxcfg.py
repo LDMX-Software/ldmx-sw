@@ -228,6 +228,12 @@ class Process:
         List of skimming rules for which processors the process should listen to when deciding whether to keep an event
     logFrequency : int
         Print the event number whenever its modulus with this frequency is zero
+    termLogLevel : int
+        Minimum severity of log messages to print to terminal: 0 (debug) - 4 (fatal)
+    fileLogLevel : int
+        Minimum severity of log messages to print to file: 0 (debug) - 4 (fatal)
+    logFileName : str
+        File to print log messages to, won't setup file logging if this parameter is not set
 
     See Also
     --------
@@ -250,6 +256,9 @@ class Process:
         self.skimDefaultIsKeep=True
         self.skimRules=[]
         self.logFrequency=-1
+        self.termLogLevel=2 #warnings and above
+        self.fileLogLevel=0 #print all messages
+        self.logFileName='' #won't setup log file
         self.compressionSetting=9
         self.histogramFile=''
         Process.lastProcess=self

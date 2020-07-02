@@ -12,6 +12,7 @@
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
 #include "Framework/NtupleManager.h"
+#include "Framework/Logger.h"
 #include "Event/RunHeader.h"
 #include "Exception/Exception.h"
 
@@ -21,11 +22,14 @@ namespace ldmx {
 
         passname_      = configuration.getParameter<std::string>("passName");
         histoFilename_ = configuration.getParameter<std::string>("histogramFile"); 
+        logFileName_   = configuration.getParameter<std::string>("logFileName");
 
         maxTries_           = configuration.getParameter<int>("maxTriesPerEvent");
         eventLimit_         = configuration.getParameter<int>("maxEvents");
         logFrequency_       = configuration.getParameter<int>("logFrequency"); 
         compressionSetting_ = configuration.getParameter<int>("compressionSetting");
+        termLevelInt_       = configuration.getParameter<int>("termLogLevel");
+        fileLevelInt_       = configuration.getParameter<int>("fileLogLevel");
 
         inputFiles_    = configuration.getParameter<std::vector<std::string>>("inputFiles" ,{});
         outputFiles_   = configuration.getParameter<std::vector<std::string>>("outputFiles",{});
@@ -82,6 +86,19 @@ namespace ldmx {
 
     void Process::run() {
 
+        // set up the logging for this run
+        logging::open(
+                logging::convertLevel(termLevelInt_),
+                logging::convertLevel(fileLevelInt_),
+                logFileName_ //if this is empty string, no file is logged to
+                );
+
+        // create a logger for this process
+        //      other objects will have their own channels
+        //      the ldmx_log macro uses a variable called theLog_,
+        //      so we are going to name it that for now.
+        auto theLog_{logging::makeLogger("Process")};
+
         try {
             
             // Counter to keep track of the number of events that have been 
@@ -104,8 +121,8 @@ namespace ldmx {
                             "No input files or output files were given."
                             );
                 } else if ( outputFiles_.size() > 1 ) {
-                    std::cout << "[ Process ] : Several output files given with no input files. "
-                        << "Only the first output file '" << outputFiles_.at(0) << "' will be used." << std::endl;
+                    ldmx_log(warn) << "Several output files given with no input files. "
+                        << "Only the first output file '" << outputFiles_.at(0) << "' will be used.";
                 }
                 std::string outputFileName = outputFiles_.at(0);
                 
@@ -131,10 +148,10 @@ namespace ldmx {
 
                     if ( numTries <= 1 and getLogFrequency() > 0 and (eh.getEventNumber() % getLogFrequency() == 0 ) ) {
                         TTimeStamp t;
-                        std::cout << "[ Process ] : Processing " << n_events_processed + 1 
+                        ldmx_log(info) << "Processing " << n_events_processed + 1 
                             << " Run " << theEvent.getEventHeader().getRun() 
                             << " Event " << theEvent.getEventHeader().getEventNumber() 
-                            << "  (" << t.AsString("lc") << ")" << std::endl;
+                            << "  (" << t.AsString("lc") << ")";
                     }
 
                     bool eventAborted = false;
@@ -189,7 +206,7 @@ namespace ldmx {
 
                     EventFile inFile(infilename);
 
-                    std::cout << "[ Process ] : Opening file " << infilename << std::endl;
+                    ldmx_log(info) << "Opening file " << infilename;
 
                     for (auto module : sequence_) module->onFileOpen(inFile);
                     
@@ -242,22 +259,22 @@ namespace ldmx {
                             wasRun = theEvent.getEventHeader().getRun();
                             try {
                                 const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
-                                std::cout << "[ Process ] : got new run header from '" << masterFile->getFileName() << "' ..." << std::endl;
-                                runHeader.Print();
+                                ldmx_log(info) << "Got new run header from '" << masterFile->getFileName() << "' ...";
+                                runHeader.Print(); //TODO print run header into log
                                 for (auto module : sequence_) {
                                     module->onNewRun(runHeader);
                                 }
                             } catch (const Exception&) {
-                                std::cout << "[ Process ] : [WARNING] Run header for run " << wasRun << " was not found!" << std::endl;
+                                ldmx_log(warn) << "Run header for run " << wasRun << " was not found!";
                             }
                         }
 
                         if ( (logFrequency_ != -1) && ((n_events_processed + 1)%logFrequency_ == 0)) { 
                             TTimeStamp t;
-                            std::cout << "[ Process ] :  Processing " << n_events_processed + 1 
+                            ldmx_log(info) << "Processing " << n_events_processed + 1 
                                       << " Run " << theEvent.getEventHeader().getRun() 
                                       << " Event " << theEvent.getEventHeader().getEventNumber() 
-                                      << "  (" << t.AsString("lc") << ")" << std::endl;
+                                      << "  (" << t.AsString("lc") << ")";
                         }
 
                         eventAborted = false;
@@ -281,15 +298,15 @@ namespace ldmx {
                     } //loop through events
 
                     if (eventLimit_ > 0 && n_events_processed == eventLimit_) {
-                        std::cout << "[ Process ] : Reached event limit of " << eventLimit_ << " events\n";
+                        ldmx_log(info) << "Reached event limit of " << eventLimit_ << " events";
                     }
 
                     if (eventLimit_ == 0 && n_events_processed > eventLimit_) {
-                        std::cout << "[ Process ] : Processing interrupted\n";
+                        ldmx_log(warn) << "Processing interrupted";
                     }
 
 
-                    std::cout << "[ Process ] : Closing file " << infilename << std::endl;
+                    ldmx_log(info) << "Closing file " << infilename;
 
                     for (auto module : sequence_) module->onFileClose(inFile);
 
@@ -329,9 +346,12 @@ namespace ldmx {
             }
 
         } catch (Exception& e) {
-            std::cerr << "Framework Error [" << e.name() << "] : " << e.message() << std::endl;
-            std::cerr << "  at " << e.module() << ":" << e.line() << " in " << e.function() << std::endl;
+            ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
+                            << "  at " << e.module() << ":" << e.line() << " in " << e.function();
         }
+
+        //we're done so let's close up the logging
+        logging::close();
     }
 
     TDirectory* Process::makeHistoDirectory(const std::string& dirName) {
