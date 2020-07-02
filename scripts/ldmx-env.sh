@@ -10,20 +10,19 @@
 if [ -z $3 ]
 then
     _repo_name="dev"
-    #this is the name of the dockerhub repository
-    #   it shouldn't change
-    # except it should when we want a production container
+    # this is the name of the dockerhub repository
+    # it should change when we want a production container 
     # also, if it's set to "local", skip downloading at all and attempt to use a locally built container
 else
     _repo_name="$3"
 fi
-export _docker_hub_repo="ldmx/$_repo_name"
+export _docker_hub_repo="ldmx/${_repo_name}"
+
 #compatibility tweak. we could also suggest that all local builds are named with prefix convention ldmx/local: instead of ldmx/dev:
 if [ ${_repo_name} = "local" ]
 then
     export _docker_hub_repo="ldmx/dev"
 fi
-echo $_docker_hub_repo
    
 
 ###############################################################################
@@ -72,9 +71,8 @@ export LDMX_DOCKER_TAG="${_docker_hub_repo}:${_dock_image}"
 # Make sure we have the latest docker container
 ###############################################################################
 if hash docker &>/dev/null; then
-    if [ "${_repo_name}" == "local" ]
-    then
-	echo "will assume locally built container: $_dock_image "
+    if [ "${_repo_name}" == "local" ]; then
+	echo "will assume locally built container: ${_dock_image} "
     else
 	docker pull ${LDMX_DOCKER_TAG}
     fi
