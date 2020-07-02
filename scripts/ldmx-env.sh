@@ -7,9 +7,24 @@
 #   2. Can run docker as a non-root user
 ###############################################################################
 
-#this is the name of the dockerhub repository
-#   it shouldn't change
-export _docker_hub_repo="ldmx/dev"
+if [ -z $3 ]
+then
+    _repo_name="dev"
+    #this is the name of the dockerhub repository
+    #   it shouldn't change
+    # except it should when we want a production container
+    # also, if it's set to "local", skip downloading at all and attempt to use a locally built container
+else
+    _repo_name="$3"
+fi
+export _docker_hub_repo="ldmx/$_repo_name"
+#compatibility tweak. we could also suggest that all local builds are named with prefix convention ldmx/local: instead of ldmx/dev:
+if [ ${_repo_name} = "local" ]
+then
+    export _docker_hub_repo="ldmx/dev"
+fi
+echo $_docker_hub_repo
+   
 
 ###############################################################################
 # Get the docker tags for the repository
@@ -30,11 +45,13 @@ _ldmx_base="$1"
 if [ -z ${_ldmx_base} ]; then
     _dir_name_of_script=$( dirname ${BASH_SOURCE[0]} )
     _ldmx_base="${_dir_name_of_script}/../../" #back out of ldmx-sw/scripts
-elif [ ${_ldmx_base} = "help" ]; then
+elif [[ "${_ldmx_base}" = *"help" || "${_ldmx_base}" == *"-h" ]]; then
     echo "Environment setup script for ldmx."
-    echo "  Usage: source ldmx-sw/scripts/ldmx-env.sh [ldmx_base] [image_tag]"
+    echo "  Usage: source ldmx-sw/scripts/ldmx-env.sh [ldmx_base] [image_tag] [repo-name]"
     echo "    ldmx_base : path to directory containing ldmx-sw (default: present working directory)"
     echo "    image_tag : name of tag of ldmx/dev image to pull down and use (default: latest)"
+    echo "    repo_name : name of repo  (ldmx/[repo_name]) to pull container from. "
+    echo "                Pass 'local' to use existing, locally built container (default: dev)"
     echo "The image_tag options you can input are:"
     echo $(ldmx_docker_tags)
     return 0
@@ -55,14 +72,19 @@ export LDMX_DOCKER_TAG="${_docker_hub_repo}:${_dock_image}"
 # Make sure we have the latest docker container
 ###############################################################################
 if hash docker &>/dev/null; then
-    docker pull ${LDMX_DOCKER_TAG}
+    if [ "${_repo_name}" == "local" ]
+    then
+	echo "will assume locally built container: $_dock_image "
+    else
+	docker pull ${LDMX_DOCKER_TAG}
+    fi
 elif hash singularity &>/dev/null;  then
     # change cache directory to be inside ldmx base directory
     export SINGULARITY_CACHEDIR=${LDMX_BASE}/.singularity
     mkdir -p ${SINGULARITY_CACHEDIR} #make sure cache directory exists
 
     # name the singularity image after the tag the user asked for
-    export LDMX_SINGULARITY_IMG=ldmx_dev_${_dock_image}.sif
+    export LDMX_SINGULARITY_IMG=ldmx_${_repo_name}_${_dock_image}.sif
 
     # build the docker container into the singularity image
     #   will prompt the user if the image already exists
