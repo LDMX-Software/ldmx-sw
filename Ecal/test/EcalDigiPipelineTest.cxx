@@ -27,7 +27,28 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
 
     using namespace ldmx;
 
-    Process dummyProcess( "dummyProcess" );
+    std::map< std::string , std::any > requiredProcessParams, dummyAnalyzer;
+    requiredProcessParams["passName"] = std::string("dummyProcess");
+    requiredProcessParams["histogramFile"] = std::string();
+    requiredProcessParams["maxTriesPerEvent"] = 1; 
+    requiredProcessParams["maxEvents"] = 1; 
+    requiredProcessParams["logFrequency"] = 1; 
+    requiredProcessParams["compressionSetting"] = 1; 
+    requiredProcessParams["run"] = 1; 
+    requiredProcessParams["skimDefaultIsKeep"] = false; 
+
+    dummyAnalyzer["instanceName"] = std::string("dummy");
+    dummyAnalyzer["className"] = std::string("ldmx::DummyAnalyzer");
+    dummyAnalyzer["caloHitCollection"] = std::string("dummy");
+    Parameters dummyConfig, dummyAna;
+    dummyAna.setParameters(dummyAnalyzer);
+    
+    std::vector<Parameters> seq = { dummyAna };
+    requiredProcessParams["sequence"] = seq;
+
+    dummyConfig.setParameters(requiredProcessParams);
+
+    Process dummyProcess( dummyConfig );
     Event testEventBus( "testEcalDigiPipeline" );
 
     std::vector<SimCalorimeterHit> pretendSimHits;
