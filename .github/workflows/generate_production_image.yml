@@ -4,7 +4,7 @@ name: Docker Image
 # Generate a new production image when there is a release
 on:
   push:
-    branches: [ iss838 , master ]
+    branches: [ master ]
   release:
     types: [ published, released ]
 

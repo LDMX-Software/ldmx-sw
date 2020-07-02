@@ -42,14 +42,16 @@ class TestProducer : public Producer {
         int events_;
 
         /// should we create the run header?
-        bool createRunHeader_{false};
+        bool createRunHeader_;
 
     public:
 
-        TestProducer(Process& p) : Producer( "TestProducer" , p ) { }
+        TestProducer(const std::string &name,Process& p) : Producer( name , p ) { }
         ~TestProducer() { }
 
-        void shouldMakeRunHeader(bool yes) { createRunHeader_ = yes; }
+        void configure(Parameters& p) final override {
+            createRunHeader_ = p.getParameter<bool>("createRunHeader");
+        }
 
         void produce(Event& event) final override {
 
@@ -95,6 +97,7 @@ class TestProducer : public Producer {
         }
 };//TestProducer
 
+
 /**
  * @class TestAnalyzer
  * Bare analyzer that looks for objects matching what the TestProducer put in.
@@ -107,7 +110,7 @@ class TestAnalyzer : public Analyzer {
 
     public:
 
-        TestAnalyzer(Process& p) : Analyzer( "TestAnalyzer" , p ) { }
+        TestAnalyzer(const std::string& name,Process& p) : Analyzer( name , p ) { }
         ~TestAnalyzer() { }
 
         void onProcessStart() final override {
@@ -344,12 +347,33 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
  * Sometimes it is helpful to leave the generated files, so
  * maybe we can make the removal optional?
  */
-static bool removeFile(const char * filepath) {
-    return remove( filepath ) == 0;
+static bool removeFile(const std::string& filepath) {
+    return true; //remove( filepath.c_str() ) == 0;
+}
+
+/**
+ * @func run the process for the input parameters
+ */
+static bool runProcess(const std::map<std::string,std::any> &parameters) {
+    Parameters configuration;
+    configuration.setParameters(parameters);
+    ProcessHandle p;
+    try {
+        p = std::make_unique<Process>(configuration);
+    } catch (Exception& e) {
+        std::cerr << "Config Error [" << e.name() << "] : " << e.message() << std::endl;
+        std::cerr << "  at " << e.module() << ":" << e.line() << " in " << e.function() << std::endl;
+        return false;
+    }
+    p->run();
+    return true;
 }
 
 } //test
 } //ldmx
+
+DECLARE_PRODUCER_NS(ldmx::test,TestProducer)
+DECLARE_ANALYZER_NS(ldmx::test,TestAnalyzer)
 
 /**
  * Test for C++ Framework processing.
@@ -386,128 +410,160 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
     using namespace ldmx;
 
-    Process p("test");
+    //these parameters aren't tested/changed, so we set them out here
+    std::map< std::string , std::any > process;
+    process["passName"] = std::string("test");
+    process["compressionSetting"] = 9; 
+    process["maxTriesPerEvent"] = 1; 
+    process["logFrequency"] = -1; 
 
-    REQUIRE( p.getPassName() == "test" );
+    process["histogramFile"] = std::string(""); //will be changed in some branches
+    process["maxEvents"] = 1;  //will be changed
+    process["skimDefaultIsKeep"] = true;  //will be changed in some branches
+    process["run"] = -1; //will be changed in some branches
 
-    //Process owns and deletes the processors
-    auto proHdl = new test::TestProducer( p );
-    auto anaHdl = new test::TestAnalyzer( p );
+    std::map< std::string , std::any > producerParameters;
+    producerParameters["className"] = std::string("ldmx::test::TestProducer");
+    producerParameters["instanceName"] = std::string("TestProducer");
+    producerParameters["createRunHeader"] = false;
+
+    std::map< std::string , std::any > analyzerParameters;
+    analyzerParameters["className"] = std::string("ldmx::test::TestAnalyzer");
+    analyzerParameters["instanceName"] = std::string("TestAnalyzer");
+
+    //parameters classes to wrap parameters in
+    Parameters processConfig, producerConfig, analyzerConfig; //parameters classes to wrap parameters in
+    analyzerConfig.setParameters(analyzerParameters);
+
+    //declare used and re-used types, not used in all branches
+    std::vector<Parameters> sequence;
+    std::vector<std::string> inputFiles, outputFiles;
 
     SECTION( "Production Mode" ) {
         //no input files, only output files
 
-        const char *event_file_path = "test_productionmode_events.root";
-        p.setOutputFileName( event_file_path );
-        p.setEventLimit( 3 );
-        p.addToSequence( proHdl );
+        outputFiles = { "test_productionmode_events.root" };
+        process["outputFiles"] = outputFiles;
+        process["maxEvents"] = 3;
+        process["run"] = 3;
+        
+        producerParameters["createRunHeader"] = true;
+        producerConfig.setParameters(producerParameters);
 
-        proHdl->shouldMakeRunHeader( true );
-        p.setRunNumber( 3 );
+        sequence = { producerConfig };
+        process["sequence"] = sequence;
 
         SECTION( "only producers" ) {
             
             SECTION( "no drop/keep rules" ) {
-                p.run();
-                CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 3 , 1 ) );
+                //Process owns and deletes the processors
+                REQUIRE( test::runProcess(process) );
+                CHECK_THAT( outputFiles.at(0) , test::isGoodEventFile( "test" , 3 , 1 ) );
             }
             
             SECTION( "drop TestCollection" ) {
-                p.addDropKeepRule( "drop .*Collection.*" );
-                p.run();
-                CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 3 , 1 , false ) );
+                std::vector<std::string> keep = { "drop .*Collection.*" };
+                process[ "keep" ] = keep;
+                REQUIRE( test::runProcess(process) );
+                CHECK_THAT( outputFiles.at(0) , test::isGoodEventFile( "test" , 3 , 1 , false ) );
             }
 
             SECTION( "skim for even indexed events" ) {
-                p.getStorageController().setDefaultKeep( false );
-                p.getStorageController().addRule( "TestProducer" , "" );
-                p.run();
-                CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 1 , 1 ) );
+                process["skimDefaultIsKeep"] = false;
+                std::vector<std::string> rules = { "TestProducer" , "" };
+                process["skimRules"] = rules;
+                REQUIRE( test::runProcess(process) );
+                CHECK_THAT( outputFiles.at(0) , test::isGoodEventFile( "test" , 1 , 1 ) );
             }
 
         }
         
         SECTION( "with Analyses" ) {
-            const char *hist_file_path = "test_productionmode_withanalyses_hists.root";
-            p.setHistogramFileName( hist_file_path );
-            p.addToSequence( anaHdl );
+            std::string hist_file_path = "test_productionmode_withanalyses_hists.root";
+
+            process["histogramFile"] = hist_file_path;
+
+            sequence.push_back( analyzerConfig );
+            process["sequence"] = sequence;
 
             SECTION( "no drop/keep rules" ) {
-                p.run();
-                CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 3 , 1 ) );
+                REQUIRE( test::runProcess(process) );
+                CHECK_THAT( outputFiles.at(0) , test::isGoodEventFile( "test" , 3 , 1 ) );
             }
 
             SECTION( "drop TestCollection" ) {
-                p.addDropKeepRule( "drop .*Collection.*" );
-                p.run();
-                CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 3 , 1 , false ) );
+                std::vector<std::string> keep = { "drop .*Collection.*" };
+                process[ "keep" ] = keep;
+                REQUIRE( test::runProcess(process) );
+                CHECK_THAT( outputFiles.at(0) , test::isGoodEventFile( "test" , 3 , 1 , false ) );
             }
 
             SECTION( "skim for even indexed events" ) {
-                p.getStorageController().setDefaultKeep( false );
-                p.getStorageController().addRule( "TestProducer" , "" );
-                p.run();
-                CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 1 , 1 ) );
+                process["skimDefaultIsKeep"] = false;
+                std::vector<std::string> rules = { "TestProducer" , "" };
+                process["skimRules"] = rules;
+                REQUIRE( test::runProcess(process) );
+                CHECK_THAT( outputFiles.at(0) , test::isGoodEventFile( "test" , 1 , 1 ) );
             }
 
             CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2+3 ) );
             CHECK( test::removeFile( hist_file_path ) );
         }
 
-        CHECK( test::removeFile( event_file_path ) );
+        CHECK( test::removeFile( outputFiles.at(0) ) );
     }//Production Mode
 
     SECTION( "Need Input Files" ) {
 
-        Process makeInputs( "makeInputs" );
-        auto inputProHdl = new test::TestProducer( makeInputs );
-        makeInputs.addToSequence( inputProHdl );
-        inputProHdl->shouldMakeRunHeader( true );
+        inputFiles = { 
+            "test_needinputfiles_2_events.root" 
+            ,"test_needinputfiles_3_events.root" 
+        };
+
+        producerParameters["createRunHeader"] = true;
+        producerConfig.setParameters(producerParameters);
+
+        sequence = { producerConfig };
+
+        auto makeInputs = process;
+        makeInputs["sequence"] = sequence;
+
+        outputFiles = { inputFiles.at(0) };
+        makeInputs["outputFiles"] = outputFiles;
+        makeInputs["maxEvents"] = 2;
+        makeInputs["run"] = 2;
+
+        REQUIRE( test::runProcess(makeInputs) );
+        REQUIRE_THAT( inputFiles.at(0) , test::isGoodEventFile( "test" , 2 , 1) );
     
-        const char * input_file_2_events = "test_needinputfiles_2_events.root";
-        makeInputs.setOutputFileName( input_file_2_events );
-        makeInputs.setEventLimit( 2 );
-        makeInputs.setRunNumber( 2 );
-        REQUIRE_NOTHROW( makeInputs.run() );
-        REQUIRE_THAT( input_file_2_events , test::isGoodEventFile( "makeInputs" , 2 , 1) );
-    
-        const char * input_file_3_events = "test_needinputfiles_3_events.root";
-        makeInputs.setOutputFileName( input_file_3_events );
-        makeInputs.setEventLimit( 3 );
-        makeInputs.setRunNumber( 3 );
-        REQUIRE_NOTHROW( makeInputs.run() );
-        REQUIRE_THAT( input_file_3_events , test::isGoodEventFile( "makeInputs" , 3 , 1) );
-       
-        const char * input_file_4_events = "test_needinputfiles_4_events.root";
-        makeInputs.setOutputFileName( input_file_4_events );
-        makeInputs.setEventLimit( 4 );
-        makeInputs.setRunNumber( 4 );
-        REQUIRE_NOTHROW( makeInputs.run() );
-        REQUIRE_THAT( input_file_4_events , test::isGoodEventFile( "makeInputs" , 4 , 1) );
-    
+        outputFiles = { inputFiles.at(1) };
+        makeInputs["outputFiles"] = outputFiles;
+        makeInputs["maxEvents"] = 3;
+        makeInputs["run"] = 3;
+
+        REQUIRE( test::runProcess(makeInputs) );
+        REQUIRE_THAT( inputFiles.at(1) , test::isGoodEventFile( "test" , 3 , 1) );
+
         SECTION( "Analysis Mode" ) {
             //no output files, only histogram output
 
-            p.addToSequence( anaHdl );
+            sequence = { analyzerConfig };
+            process["sequence"] = sequence;
 
-            const char *hist_file_path = "test_analysismode_hists.root";
-            p.setHistogramFileName( hist_file_path );
+            std::string hist_file_path = "test_analysismode_hists.root";
+            process["histogramFile"] = hist_file_path;
 
             SECTION( "one input file" ) {
-                p.addFileToProcess( input_file_2_events );
-
-                p.run();
-
+                std::vector<std::string> inputFile = { inputFiles.at(0) };
+                process["inputFiles"] = inputFile;
+                REQUIRE( test::runProcess(process) );
                 CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2 ) );
                 CHECK( test::removeFile( hist_file_path ) );
             }
             
             SECTION( "multiple input files" ) {
-                p.addFileToProcess( input_file_2_events );
-                p.addFileToProcess( input_file_3_events );
-                p.addFileToProcess( input_file_4_events );
-                p.run();
-
+                process["inputFiles"] = inputFiles;
+                REQUIRE( test::runProcess(process) );
                 CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
                 CHECK( test::removeFile( hist_file_path ) );
             }
@@ -517,42 +573,30 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
         SECTION( "Merge Mode" ) {
             //many input files to one output file
             
-            p.addFileToProcess( input_file_2_events );
-            p.addFileToProcess( input_file_3_events );
-            p.addFileToProcess( input_file_4_events );
+            process["inputFiles"] = inputFiles;
 
-            const char *event_file_path = "test_mergemode_events.root";
-            p.setOutputFileName( event_file_path );
-
-            SECTION( "no processors" ) {
-
-                SECTION( "no drop/keep rules" ) {
-                    p.run();
-                    CHECK_THAT( event_file_path , test::isGoodEventFile( "makeInputs" , 2+3+4 , 3 ) );
-                }
-
-                SECTION( "drop TestCollection" ) {
-                    p.addDropKeepRule( "drop .*Collection.*" );
-                    p.run();
-                    CHECK_THAT( event_file_path , test::isGoodEventFile( "makeInputs" , 2+3+4 , 3 , false ) );
-                }
-            }
+            std::string event_file_path = "test_mergemode_events.root";
+            outputFiles = { event_file_path };
+            process["outputFiles"] = outputFiles;
     
             SECTION( "with analyzers" ) {
 
-                p.addToSequence( anaHdl );
+                sequence = { analyzerConfig };
 
-                const char *hist_file_path = "test_mergemode_withanalyzers_hists.root";
-                p.setHistogramFileName( hist_file_path );
+                std::string hist_file_path = "test_mergemode_withanalyzers_hists.root";
+
+                process["sequence"] = sequence;
+                process["histogramFile"] = hist_file_path;
     
                 SECTION( "no drop/keep rules" ) {
-                    p.run();
+                    REQUIRE( test::runProcess(process) );
                     CHECK_THAT( event_file_path , test::isGoodEventFile( "makeInputs" , 2+3+4 , 3 ) );
                 }
 
                 SECTION( "drop TestCollection" ) {
-                    p.addDropKeepRule( "drop .*Collection.*" );
-                    p.run();
+                    std::vector<std::string> keep = { "drop .*Collection.*" };
+                    process["keep"] = keep;
+                    REQUIRE( test::runProcess(process) );
                     CHECK_THAT( event_file_path , test::isGoodEventFile( "makeInputs" , 2+3+4 , 3 , false ) );
                 }
 
@@ -561,17 +605,22 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
             }
     
             SECTION( "with producers" ) {
-                p.addToSequence( proHdl );
+                
+                producerConfig.setParameters(producerParameters);
+                sequence = { producerConfig };
+
+                process["sequence"] = sequence;
 
                 SECTION( "not listening to storage hints" ) {
-                    p.run();
+                    REQUIRE( test::runProcess(process) );
                     CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 2+3+4 , 3 ) );
                 }
 
                 SECTION( "skim for even indexed events" ) {
-                    p.getStorageController().setDefaultKeep( false );
-                    p.getStorageController().addRule( "TestProducer" , "" );
-                    p.run();
+                    process["skimDefaultIsKeep"] = false;
+                    std::vector<std::string> rules = { "TestProducer" , "" };
+                    process["skimRules"] = rules;
+                    REQUIRE( test::runProcess(process) );
                     CHECK_THAT( event_file_path , test::isGoodEventFile( "test" , 1+1+2 , 3 ) );
                 }
 
@@ -580,95 +629,6 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
             CHECK( test::removeFile( event_file_path ) );
 
         } //Merge Mode
-
-        SECTION( "N-to-N Mode" ) {
-            //many input files to many output files
-            p.addFileToProcess( input_file_2_events );
-            p.addFileToProcess( input_file_3_events );
-            p.addFileToProcess( input_file_4_events );
-
-            const char * output_2_events = "test_NtoNmode_output_2_events.root";
-            const char * output_3_events = "test_NtoNmode_output_3_events.root";
-            const char * output_4_events = "test_NtoNmode_output_4_events.root";
-            p.addOutputFileName( output_2_events );
-            p.addOutputFileName( output_3_events );
-            p.addOutputFileName( output_4_events );
-
-            SECTION( "no processors" ) {
-                
-                SECTION( "no drop/keep rules" ) {
-                    p.run();
-                    CHECK_THAT( output_2_events , test::isGoodEventFile( "makeInputs" , 2 , 1 ) );
-                    CHECK_THAT( output_3_events , test::isGoodEventFile( "makeInputs" , 3 , 1 ) );
-                    CHECK_THAT( output_4_events , test::isGoodEventFile( "makeInputs" , 4 , 1 ) );
-                }
-
-                SECTION( "drop TestCollection" ) {
-                    p.addDropKeepRule( "drop .*Collection.*" );
-                    p.run();
-                    CHECK_THAT( output_2_events , test::isGoodEventFile( "makeInputs" , 2 , 1 , false ) );
-                    CHECK_THAT( output_3_events , test::isGoodEventFile( "makeInputs" , 3 , 1 , false ) );
-                    CHECK_THAT( output_4_events , test::isGoodEventFile( "makeInputs" , 4 , 1 , false ) );
-                }
-            }
-
-            SECTION( "with analyzer" ) {
-                p.addToSequence( anaHdl );
-
-                const char *hist_file_path = "test_NtoNmode_withanalyzer_hists.root";
-                p.setHistogramFileName( hist_file_path );
-    
-                SECTION( "no drop/keep rules" ) {
-                    p.run();
-                    CHECK_THAT( output_2_events , test::isGoodEventFile( "makeInputs" , 2 , 1 ) );
-                    CHECK_THAT( output_3_events , test::isGoodEventFile( "makeInputs" , 3 , 1 ) );
-                    CHECK_THAT( output_4_events , test::isGoodEventFile( "makeInputs" , 4 , 1 ) );
-                }
-
-                SECTION( "drop TestCollection" ) {
-                    p.addDropKeepRule( "drop .*Collection.*" );
-                    p.run();
-                    CHECK_THAT( output_2_events , test::isGoodEventFile( "makeInputs" , 2 , 1 , false ) );
-                    CHECK_THAT( output_3_events , test::isGoodEventFile( "makeInputs" , 3 , 1 , false ) );
-                    CHECK_THAT( output_4_events , test::isGoodEventFile( "makeInputs" , 4 , 1 , false ) );
-                }
-
-                CHECK_THAT( hist_file_path , test::isGoodHistogramFile( 1+2+1+2+3+1+2+3+4 ) );
-                CHECK( test::removeFile( hist_file_path ) );
-            }
-    
-            SECTION( "with producers" ) {
-                p.addToSequence( proHdl );
-
-                SECTION( "not listening to storage hints" ) {
-                    p.run();
-    
-                    //checks that produced objects were written correctly
-                    CHECK_THAT( output_2_events , test::isGoodEventFile( "test" , 2 , 1 ) );
-                    CHECK_THAT( output_3_events , test::isGoodEventFile( "test" , 3 , 1 ) );
-                    CHECK_THAT( output_4_events , test::isGoodEventFile( "test" , 4 , 1 ) );
-                }
-
-                SECTION( "skimming for even-indexed events" ) {
-                    p.getStorageController().setDefaultKeep( false );
-                    p.getStorageController().addRule( "TestProducer" , "" );
-                    p.run();
-                    CHECK_THAT( output_2_events , test::isGoodEventFile( "test" , 1 , 1 ) );
-                    CHECK_THAT( output_3_events , test::isGoodEventFile( "test" , 1 , 1 ) );
-                    CHECK_THAT( output_4_events , test::isGoodEventFile( "test" , 2 , 1 ) );
-                }
-            }
-
-            CHECK( test::removeFile( output_2_events ) );
-            CHECK( test::removeFile( output_3_events ) );
-            CHECK( test::removeFile( output_4_events ) );
-
-        } // N-to-N Mode
-
-        //cleanup
-        CHECK( test::removeFile( input_file_2_events ) );
-        CHECK( test::removeFile( input_file_3_events ) );
-        CHECK( test::removeFile( input_file_4_events ) );
 
     } //need input files
 
