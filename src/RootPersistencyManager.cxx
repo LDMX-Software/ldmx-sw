@@ -21,6 +21,7 @@
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/RunManager.h"
 #include "SimCore/UserEventInformation.h" 
+#include "SimCore/UserTrackingAction.h" 
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -235,6 +236,10 @@ namespace ldmx {
 
     void RootPersistencyManager::writeCalorimeterHitsCollection(G4CalorimeterHitsCollection* hc, 
             std::vector<SimCalorimeterHit> &outputColl) {
+        
+        //get ancestral tracking information
+        auto trackMap{UserTrackingAction::getUserTrackingAction()->getTrackMap()};
+
         int nHits = hc->GetSize();
         for (int iHit = 0; iHit < nHits; iHit++) {
             G4CalorimeterHit* g4hit = (G4CalorimeterHit*) hc->GetHit(iHit);
@@ -242,7 +247,7 @@ namespace ldmx {
 
             SimCalorimeterHit simHit;
             simHit.setID( g4hit->getID() );
-            simHit.addContrib( g4hit->getTrackID(), g4hit->getPdgCode(), g4hit->getEdep(), g4hit->getTime() );
+            simHit.addContrib( trackMap->findIncident(g4hit->getTrackID()), g4hit->getTrackID(), g4hit->getPdgCode(), g4hit->getEdep(), g4hit->getTime() );
             simHit.setPosition( pos.x(), pos.y(), pos.z() );
 
             outputColl.push_back( simHit );

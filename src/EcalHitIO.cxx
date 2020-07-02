@@ -1,5 +1,7 @@
 #include "SimCore/EcalHitIO.h"
 
+#include "SimCore/UserTrackingAction.h" //to get handle on track map
+
 // STL
 #include <map>
 
@@ -10,6 +12,9 @@
 namespace ldmx {
 
     void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, std::vector<SimCalorimeterHit> &outputColl) {
+
+        //get ancestral mapping of tracks
+        auto trackMap{UserTrackingAction::getUserTrackingAction()->getTrackMap()};
 
         int nHits = hc->GetSize();
         std::map< int, SimCalorimeterHit > hitMap;
@@ -64,7 +69,7 @@ namespace ldmx {
                 } else {
 
                     // Add a hit contrib because all steps are being saved or there is not an existing record.
-                    hitMap[hitID].addContrib(trackID, pdgCode, edep, time);
+                    hitMap[hitID].addContrib(trackMap->findIncident(trackID),trackID, pdgCode, edep, time);
 
                 }
 

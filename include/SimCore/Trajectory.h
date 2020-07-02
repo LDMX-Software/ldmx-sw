@@ -195,6 +195,7 @@ namespace ldmx {
             }
 
             std::string getVertexVolume() const { return vertexVolume_; }
+            std::string getVertexRegion() const { return vertexRegion_; }
 
         private:
 
@@ -233,6 +234,13 @@ namespace ldmx {
 
             /// The particle's creation volume
             std::string vertexVolume_;
+
+            /**
+             * The particle's create region
+             * This variable is not stored in the output SimParticle event,
+             * but it is helpful for the TrackMap::findIncident function.
+             */
+            std::string vertexRegion_;
 
             /** The type of the process which created the track. */
             int processType_;
