@@ -9,7 +9,7 @@
 namespace ldmx {
 
     EventProcessor::EventProcessor(const std::string& name, Process& process) :
-        process_{process}, name_ {name} , histograms_{name} {
+        process_{process}, name_ {name} , histograms_{name} , theLog_{logging::makeLogger(name)} {
     }
 
     TDirectory* EventProcessor::getHistoDirectory() {
