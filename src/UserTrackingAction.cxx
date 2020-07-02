@@ -113,6 +113,6 @@ namespace ldmx {
         }
 
         // Save the association between track ID and its parent ID for all tracks in the event.
-        trackMap_.addSecondary(track->GetTrackID(), track->GetParentID());
+        if ( track->GetParentID() > 0 ) trackMap_.addSecondary(track->GetTrackID(), track->GetParentID());
     }
 }
