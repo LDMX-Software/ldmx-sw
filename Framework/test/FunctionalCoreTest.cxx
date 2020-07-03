@@ -16,7 +16,6 @@
 #include "Framework/Process.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/EventFile.h"
-#include "Framework/Logger.h"
 
 namespace ldmx { namespace test {
 
@@ -409,8 +408,6 @@ DECLARE_ANALYZER_NS(ldmx::test,TestAnalyzer)
  */
 TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
 
-    logging::open( logging::level::fatal , logging::level::fatal , "" );
-
     using namespace ldmx;
 
     //these parameters aren't tested/changed, so we set them out here
@@ -419,6 +416,9 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
     process["compressionSetting"] = 9; 
     process["maxTriesPerEvent"] = 1; 
     process["logFrequency"] = -1; 
+    process["termLogLevel"] = 4; 
+    process["fileLogLevel"] = 4; 
+    process["logFileName"] = std::string(); 
 
     process["histogramFile"] = std::string(""); //will be changed in some branches
     process["maxEvents"] = -1;  //will be changed
@@ -645,7 +645,5 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
         } //Merge Mode
 
     } //need input files
-
-    logging::close();
 
 }//process test
