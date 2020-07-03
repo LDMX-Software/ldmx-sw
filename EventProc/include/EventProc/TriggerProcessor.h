@@ -80,6 +80,13 @@ namespace ldmx {
             /** The name of the trigger algorithm used. */
             TString algoName_;
 
+
+            /** The name of the input collection (the Ecal hits). */
+            std::string inputColl_;
+
+            /** The name of the output collection (the trigger decision). */
+            std::string outputColl_;
+      
     };
 
 }
