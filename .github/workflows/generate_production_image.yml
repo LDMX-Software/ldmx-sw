@@ -22,7 +22,6 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }} #needs to be added into repo settings
         password: ${{ secrets.DOCKER_PASSWORD }} #needs to be added into repo settings
         repository: ldmx/pro
-        tag_with_ref: true #convert branch ref to a docker tag
-        tag_with_sha: true #also tag with git sha
+        tag_with_ref: ${{ ${GITHUB_REF##*/} != "master" }} #convert branch ref to a docker tag
         tags: latest #add latest tag as well
 
