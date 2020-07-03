@@ -13,6 +13,7 @@
 #include "Event/EventConstants.h"
 #include "Event/EventHeader.h"
 #include "Event/RunHeader.h"
+#include "Event/Version.h"
 #include "Event/SimTrackerHit.h" 
 
 /*~~~~~~~~~~~~~*/
@@ -90,7 +91,7 @@ namespace ldmx {
         auto threeVectorDump = [&runHeader](const std::string& name, const std::vector<double>& vec) {
             runHeader.setFloatParameter( name + " X" , vec.at(0) );
             runHeader.setFloatParameter( name + " Y" , vec.at(1) );
-            runHeader.setFloatParameter( name + " Y" , vec.at(2) );
+            runHeader.setFloatParameter( name + " Z" , vec.at(2) );
         };
 
         auto beamSpotSmear{parameters_.getParameter<std::vector<double>>("beamSpotSmear",{})};
@@ -167,6 +168,11 @@ namespace ldmx {
         // Set a string parameter with the Geant4 SHA-1.
         G4String g4Version{G4RunManagerKernel::GetRunManagerKernel()->GetVersionString()};
         runHeader.setStringParameter("Geant4 revision", g4Version); 
+        
+        runHeader.setStringParameter("ldmx-sw revision", GIT_SHA1);
+
+        //debug printout TODO add to logging
+        runHeader.Print();
 
         // Write the header to the file.
         file_.writeRunHeader(runHeader);
