@@ -9,6 +9,8 @@ namespace ldmx {
         mode_ = parameters.getParameter< int >("mode");
         startLayer_ = parameters.getParameter< int >("start_layer");
         endLayer_ = parameters.getParameter< int >("end_layer");
+        inputColl_ = parameters.getParameter< std::string >("input_collection");
+        outputColl_ = parameters.getParameter< std::string >("trigger_collection");
 
         if (mode_ == 0) {
             algoName_ = "LayerSumTrig";
@@ -20,7 +22,7 @@ namespace ldmx {
     void TriggerProcessor::produce(Event& event) {
 
         /** Grab the Ecal hit collection for the given event */
-        const std::vector<EcalHit> ecalRecHits = event.getCollection<EcalHit>("EcalRecHits");
+        const std::vector<EcalHit> ecalRecHits = event.getCollection<EcalHit>(inputColl_);
 
         std::vector<double> layerDigiE(100, 0.0); // big empty vector..
 
@@ -55,7 +57,7 @@ namespace ldmx {
         result.setAlgoVar(1, layerESumCut_);
         result.setAlgoVar(2, endLayer_ - startLayer_);
 
-        event.add("Trigger", result );
+        event.add(outputColl_, result );
 
         // mark the event
         if (pass) 
