@@ -60,7 +60,7 @@ namespace ldmx {
         return true;
     }
 
-    G4bool RootPersistencyManager::Store(const G4Run* aRun) {
+    G4bool RootPersistencyManager::Store(const G4Run*) {
       
         // NOTE: This method is called once the run is terminated through 
         // the run manager.  
@@ -86,24 +86,26 @@ namespace ldmx {
         runHeader.setIntParameter("Included Scoring Planes" , !parameters_.getParameter<std::string>("scoringPlanes").empty() );
         runHeader.setIntParameter("Use Random Seed from Event Header" , parameters_.getParameter<bool>("rootPrimaryGenUseSeed") );
 
+        //lambda function for dumping 3-vectors into the run header
+        auto threeVectorDump = [&runHeader](const std::string& name, const std::vector<double>& vec) {
+            runHeader.setFloatParameter( name + " X" , vec.at(0) );
+            runHeader.setFloatParameter( name + " Y" , vec.at(1) );
+            runHeader.setFloatParameter( name + " Y" , vec.at(2) );
+        };
+
         auto beamSpotSmear{parameters_.getParameter<std::vector<double>>("beamSpotSmear",{})};
-        if ( !beamSpotSmear.empty() ) {
-            runHeader.setFloatParameter("Smear Beam Spot X" , beamSpotSmear.at(0) );
-            runHeader.setFloatParameter("Smear Beam Spot Y" , beamSpotSmear.at(1) );
-            runHeader.setFloatParameter("Smear Beam Spot Z" , beamSpotSmear.at(2) );
-        }
+        if ( !beamSpotSmear.empty() ) threeVectorDump( "Smear Beam Spot [mm]" , beamSpotSmear );
 
-        auto preInitCmds{parameters_.getParameter<std::vector<std::string>>("preInitCommands",{})};
-        int counter = 0;
-        for ( auto const &cmd : preInitCmds ) {
-            runHeader.setStringParameter("Pre Init Command "+std::to_string(++counter) , cmd );
-        }
+        //lambda function for dumping vectors of strings to the run header
+        auto stringVectorDump = [&runHeader](const std::string& name, const std::vector<std::string>& vec ) {
+            int index = 0;
+            for ( auto const & val : vec ) {
+                runHeader.setStringParameter( name + " " + std::to_string(++index) , val );
+            }
+        };
 
-        auto postInitCmds{parameters_.getParameter<std::vector<std::string>>("postInitCommands",{})};
-        counter = 0;
-        for ( auto const &cmd : postInitCmds ) {
-            runHeader.setStringParameter("Post Init Command "+std::to_string(++counter) , cmd );
-        }
+        stringVectorDump( "Pre Init Command"  , parameters_.getParameter<std::vector<std::string>>("preInitCommands",{}) );
+        stringVectorDump( "Post Init Command" , parameters_.getParameter<std::vector<std::string>>("postInitCommands",{}) );
 
         if ( parameters_.getParameter<bool>("biasing_enabled") ) {
             runHeader.setStringParameter("Biasing Process"  , parameters_.getParameter<std::string>("biasing_process"));
@@ -125,7 +127,7 @@ namespace ldmx {
         }
 
         auto generators{parameters_.getParameter<std::vector<Parameters>>("generators")};
-        counter = 0;
+        int counter = 0;
         for ( auto const &gen : generators ) {
 
             std::string genID = "Gen " + std::to_string(++counter);
@@ -136,26 +138,14 @@ namespace ldmx {
                 runHeader.setFloatParameter( genID + " Time [ns]" , gen.getParameter<double>("time") );
                 runHeader.setFloatParameter( genID + " Energy [MeV]" , gen.getParameter<double>("energy") );
                 runHeader.setStringParameter( genID + " Particle" , gen.getParameter<std::string>("particle") );
-                auto position{gen.getParameter<std::vector<double>>("position")};
-                runHeader.setFloatParameter( genID + " Position X [mm]" , position.at(0) );
-                runHeader.setFloatParameter( genID + " Position Y [mm]" , position.at(1) );
-                runHeader.setFloatParameter( genID + " Position Z [mm]" , position.at(2) );
-                auto direction{gen.getParameter<std::vector<double>>("direction")};
-                runHeader.setFloatParameter( genID + " Direction X" , direction.at(0) );
-                runHeader.setFloatParameter( genID + " Direction Y" , direction.at(1) );
-                runHeader.setFloatParameter( genID + " Direction Z" , direction.at(2) );
+                threeVectorDump( genID + " Position [mm]" , gen.getParameter<std::vector<double>>("position") );
+                threeVectorDump( genID + " Direction" , gen.getParameter<std::vector<double>>("direction") );
             } else if ( className.find("ldmx::MultiParticleGunPrimaryGenerator") != std::string::npos ) {
                 runHeader.setIntParameter( genID + " Poisson Enabled" , gen.getParameter<bool>("enablePoisson") );
                 runHeader.setIntParameter( genID + " N Particles" , gen.getParameter<int>("nParticles") );
                 runHeader.setIntParameter( genID + " PDG ID" , gen.getParameter<int>("pdgID") );
-                auto vertex{gen.getParameter<std::vector<double>>("vertex")};
-                runHeader.setFloatParameter( genID + " Vertex X [mm]" , vertex.at(0) );
-                runHeader.setFloatParameter( genID + " Vertex Y [mm]" , vertex.at(1) );
-                runHeader.setFloatParameter( genID + " Vertex Z [mm]" , vertex.at(2) );
-                auto momentum{gen.getParameter<std::vector<double>>("momentum")};
-                runHeader.setFloatParameter( genID + " Momentum X [MeV]" , momentum.at(0) );
-                runHeader.setFloatParameter( genID + " Momentum Y [MeV]" , momentum.at(1) );
-                runHeader.setFloatParameter( genID + " Momentum Z [MeV]" , momentum.at(2) );
+                threeVectorDump( genID + " Vertex [mm]" , gen.getParameter<std::vector<double>>("vertex") );
+                threeVectorDump( genID + " Momentum [MeV]" , gen.getParameter<std::vector<double>>("momentum") );
             } else if ( className.find("ldmx::LHEPrimaryGenerator") != std::string::npos ) {
                 runHeader.setStringParameter( genID + " LHE File" , gen.getParameter<std::string>("lheFilePath") );
             } else if ( className.find("ldmx::RootCompleteReSim") != std::string::npos ) {
@@ -164,11 +154,7 @@ namespace ldmx {
                 runHeader.setStringParameter( genID + " ROOT File" , gen.getParameter<std::string>("filePath") );
                 runHeader.setFloatParameter( genID + " Time Cutoff [ns]" , gen.getParameter<double>("time_cutoff") );
             } else if ( className.find("ldmx::GeneralParticleSource") != std::string::npos ) {
-                auto initCommands{gen.getParameter<std::vector<std::string>>("initCommands")};
-                int cmd_counter = 0;
-                for ( auto const& cmd : initCommands ) {
-                    runHeader.setStringParameter( genID + " Init Cmd " + std::to_string(++cmd_counter) , cmd );
-                }
+                stringVectorDump( genID + " Init Cmd" , gen.getParameter<std::vector<std::string>>("initCommands") );
             } else  {
                 std::cerr << "[ RootPersistencyManager ] [WARN] : "
                     << "Unrecognized primary generator '" << className << "'. "
