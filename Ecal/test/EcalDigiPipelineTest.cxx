@@ -30,9 +30,12 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
     std::map< std::string , std::any > requiredProcessParams, dummyAnalyzer;
     requiredProcessParams["passName"] = std::string("dummyProcess");
     requiredProcessParams["histogramFile"] = std::string();
+    requiredProcessParams["logFileName"] = std::string();
     requiredProcessParams["maxTriesPerEvent"] = 1; 
     requiredProcessParams["maxEvents"] = 1; 
     requiredProcessParams["logFrequency"] = 1; 
+    requiredProcessParams["termLogLevel"] = 4; 
+    requiredProcessParams["fileLogLevel"] = 4; 
     requiredProcessParams["compressionSetting"] = 1; 
     requiredProcessParams["run"] = 1; 
     requiredProcessParams["skimDefaultIsKeep"] = false; 
@@ -64,7 +67,8 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
         SimCalorimeterHit currHit;
         currHit.setID( index++ );
         currHit.addContrib(
-                -1 // trackID
+                -1 //incidentID
+                , -1 // trackID
                 , 0 // pdg ID
                 , currEnergy // edep
                 , 1. //time
