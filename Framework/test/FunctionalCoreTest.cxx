@@ -348,7 +348,7 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
  * maybe we can make the removal optional?
  */
 static bool removeFile(const std::string& filepath) {
-    return true; //remove( filepath.c_str() ) == 0;
+    return remove( filepath.c_str() ) == 0;
 }
 
 /**
@@ -418,7 +418,7 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
     process["logFrequency"] = -1; 
 
     process["histogramFile"] = std::string(""); //will be changed in some branches
-    process["maxEvents"] = 1;  //will be changed
+    process["maxEvents"] = -1;  //will be changed
     process["skimDefaultIsKeep"] = true;  //will be changed in some branches
     process["run"] = -1; //will be changed in some branches
 
@@ -518,6 +518,7 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
         inputFiles = { 
             "test_needinputfiles_2_events.root" 
             ,"test_needinputfiles_3_events.root" 
+            ,"test_needinputfiles_4_events.root" 
         };
 
         producerParameters["createRunHeader"] = true;
@@ -526,6 +527,7 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
         sequence = { producerConfig };
 
         auto makeInputs = process;
+        makeInputs["passName"] = std::string("makeInputs");
         makeInputs["sequence"] = sequence;
 
         outputFiles = { inputFiles.at(0) };
@@ -534,7 +536,7 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
         makeInputs["run"] = 2;
 
         REQUIRE( test::runProcess(makeInputs) );
-        REQUIRE_THAT( inputFiles.at(0) , test::isGoodEventFile( "test" , 2 , 1) );
+        REQUIRE_THAT( inputFiles.at(0) , test::isGoodEventFile( "makeInputs" , 2 , 1) );
     
         outputFiles = { inputFiles.at(1) };
         makeInputs["outputFiles"] = outputFiles;
@@ -542,7 +544,15 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
         makeInputs["run"] = 3;
 
         REQUIRE( test::runProcess(makeInputs) );
-        REQUIRE_THAT( inputFiles.at(1) , test::isGoodEventFile( "test" , 3 , 1) );
+        REQUIRE_THAT( inputFiles.at(1) , test::isGoodEventFile( "makeInputs" , 3 , 1) );
+
+        outputFiles = { inputFiles.at(2) };
+        makeInputs["outputFiles"] = outputFiles;
+        makeInputs["maxEvents"] = 4;
+        makeInputs["run"] = 4;
+
+        REQUIRE( test::runProcess(makeInputs) );
+        REQUIRE_THAT( inputFiles.at(2) , test::isGoodEventFile( "makeInputs" , 4 , 1) );
 
         SECTION( "Analysis Mode" ) {
             //no output files, only histogram output
@@ -606,6 +616,7 @@ TEST_CASE( "Core Framework Functionality" , "[Framework][functionality]" ) {
     
             SECTION( "with producers" ) {
                 
+                producerParameters["createRunHeader"] = false;
                 producerConfig.setParameters(producerParameters);
                 sequence = { producerConfig };
 
