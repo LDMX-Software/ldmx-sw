@@ -30,7 +30,7 @@ jobs:
 
     # build ldmx-sw using the docker environment
     - name: Build and Install
-      run: docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build make -j install
+      run: docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build make install
 
     # run ldmx-test using the docker environment
     - name: Test the build
