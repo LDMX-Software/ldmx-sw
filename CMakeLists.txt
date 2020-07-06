@@ -58,9 +58,9 @@ get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARIES} DIRECTORY)
 # find ROOT installation
 option(BUILD_EVE "Build the event display application. This requires more components of ROOT." OFF)
 if(BUILD_EVE)
-    find_package(ROOT 6 REQUIRED COMPONENTS Core RIO PyROOT Geom Eve Gui)
+    find_package(ROOT 6 REQUIRED COMPONENTS Core RIO Geom Eve Gui)
 else()
-    find_package(ROOT 6 REQUIRED COMPONENTS Core RIO PyROOT)
+    find_package(ROOT 6 REQUIRED COMPONENTS Core RIO)
 endif()
 message(STATUS "ROOT found at: ${ROOT_DIR}")
 
