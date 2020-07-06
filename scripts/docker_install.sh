@@ -12,14 +12,15 @@ set -e
 source $G4DIR/bin/geant4.sh
 source $ROOTDIR/bin/thisroot.sh
 
-# go to source directory
+# go to where the Dockerfile put the code
 cd /code
 
+# make and enter a build directory
 mkdir build
 cd build
 
 # configure the build
-#   leave install prefix undefined so it ends up in PATH naturally
+#   install it to a path already in PATH
 cmake \
     -DXercesC_DIR=$XercesC_DIR \
     -DONNXRUNTIME_ROOT=$ONNX_DIR \
@@ -28,4 +29,8 @@ cmake \
 
 # build and install
 make install
+
+cd .. #back out of build directory
+cd .. #back out of code directory
+rm -rf code #delete all that nonsense
 
