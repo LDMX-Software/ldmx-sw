@@ -9,9 +9,9 @@
 #include "SimCore/XsecBiasingOperator.h"
 
 /*~~~~~~~~~~~~~~~*/
-/*   Exception   */
+/*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Exception/Exception.h" 
+#include "Framework/Exception.h" 
 
 namespace ldmx { 
 

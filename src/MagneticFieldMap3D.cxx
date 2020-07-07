@@ -1,5 +1,5 @@
 #include "SimCore/MagneticFieldMap3D.h"
-#include "Exception/Exception.h"
+#include "Framework/Exception.h"
 
 // STL
 #include <fstream>

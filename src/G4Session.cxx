@@ -6,7 +6,7 @@
 
 #include "SimCore/G4Session.h"
 
-#include "Exception/Exception.h"
+#include "Framework/Exception.h"
 
 namespace ldmx {
 

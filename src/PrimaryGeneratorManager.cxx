@@ -16,9 +16,9 @@
 #include <dlfcn.h>
 
 /*~~~~~~~~~~~~~~~*/
-/*   Exception   */
+/*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Exception/Exception.h" 
+#include "Framework/Exception.h" 
 
 ldmx::PrimaryGeneratorManager ldmx::PrimaryGeneratorManager::instance_ __attribute__((init_priority(300)));
 
