@@ -1,6 +1,6 @@
 # declare DQM module
 module(
   NAME DQM
-  DEPENDENCIES Exception Event Framework Tools DetDescr
+  DEPENDENCIES Event Framework Tools DetDescr
   EXTERNAL_DEPENDENCIES ROOT
 )

@@ -3,7 +3,7 @@ if(BUILD_EVE)
     module(
       NAME EventDisplay
       EXTRA_SOURCES EventDisplayDict.cxx
-      DEPENDENCIES Exception Event DetDescr Framework
+      DEPENDENCIES Event DetDescr Framework
       EXECUTABLES src/ldmx_eve.cxx
       EXTERNAL_DEPENDENCIES ROOT Python
     )

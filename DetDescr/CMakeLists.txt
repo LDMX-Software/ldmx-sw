@@ -1,6 +1,6 @@
 # declare DetDescr module
 module(
   NAME DetDescr
-  DEPENDENCIES Exception
+  DEPENDENCIES Framework
   EXTERNAL_DEPENDENCIES ROOT
 )
