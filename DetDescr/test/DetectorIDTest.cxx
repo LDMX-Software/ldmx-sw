@@ -2,7 +2,7 @@
  * @file DetectorIDTest.cxx
  * @brief Test the operation of DetectorID class
  */
-#include "Exception/catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
+#include "Framework/catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
 
 #include "DetDescr/DetectorID.h" //headers defining what we will be testing
 #include "DetDescr/DefaultDetectorID.h" //headers defining what we will be testing
