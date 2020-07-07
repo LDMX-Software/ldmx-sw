@@ -6,6 +6,6 @@ endif()
 # declare EventProc module
 module(
   NAME EventProc
-  DEPENDENCIES Exception Ecal Tools Event DetDescr Framework 
+  DEPENDENCIES Ecal Tools Event DetDescr Framework 
   EXTERNAL_DEPENDENCIES ${_LDMX_EVENTPROC_EXTERNAL_DEPENDENCIES}
 )

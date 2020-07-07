@@ -3,6 +3,6 @@
 module(
   NAME Framework  
   EXECUTABLES src/fire.cxx
-  DEPENDENCIES Exception Event DetDescr Tools
+  DEPENDENCIES Event 
   EXTERNAL_DEPENDENCIES ROOT Python
 )

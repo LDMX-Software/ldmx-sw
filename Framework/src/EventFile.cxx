@@ -5,7 +5,7 @@
 // LDMX
 #include "Framework/EventFile.h"
 #include "Framework/Event.h"
-#include "Exception/Exception.h"
+#include "Framework/Exception.h"
 #include "Event/EventConstants.h"
 #include "Event/RunHeader.h"
 

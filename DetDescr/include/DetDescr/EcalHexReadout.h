@@ -13,7 +13,7 @@
 #define DETDESCR_ECALHEXREADOUT_H_
 
 // LDMX
-#include "Exception/Exception.h"
+#include "Framework/Exception.h"
 #include "DetDescr/EcalDetectorID.h"
 
 // STL

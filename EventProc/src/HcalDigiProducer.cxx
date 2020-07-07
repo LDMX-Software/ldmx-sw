@@ -3,7 +3,7 @@
 #include "TTree.h"
 
 #include "EventProc/HcalDigiProducer.h"
-#include "Exception/Exception.h"
+#include "Framework/Exception.h"
 
 #include <iostream>
 #include <exception>

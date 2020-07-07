@@ -8,7 +8,7 @@
 #define LDMXSW_FRAMEWORK_PROCESS_H_
 
 // LDMX
-#include "Exception/Exception.h"
+#include "Framework/Exception.h"
 #include "Framework/StorageControl.h"
 #include "Framework/Parameters.h"
 

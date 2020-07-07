@@ -17,7 +17,7 @@
 //----------//
 #include "Event/FindableTrackResult.h"
 #include "Event/SimParticle.h"
-#include "Exception/Exception.h"
+#include "Framework/Exception.h"
 
 //----------//
 //   ROOT   //
