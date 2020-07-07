@@ -87,7 +87,7 @@ namespace ldmx {
             /**
              * This gets called automatically at the end of the run and is used to write out the run header
              * and close the writer.
-             * @param aRun The Geant4 run data.
+             * @param aRun The Geant4 run data (not used right now)
              * @return True if event is stored (function is hard-coded to return true).
              */
             G4bool Store(const G4Run* aRun);
@@ -144,12 +144,6 @@ namespace ldmx {
              * @param anEvent The Geant4 event.
              */
             void writeHeader(const G4Event* anEvent);
-
-            /**
-             * Write header info into the output event from Geant4.
-             * @param fileName The filename that stores temporary seeds.
-             */
-            std::string getEventSeeds(std::string fileName = "currentEvent.rndm");
 
             /**
              * Write hits collections from Geant4 into a ROOT event.
