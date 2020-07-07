@@ -14,7 +14,7 @@ endif()
 if(test_sources)
 
   # test executable must be compiled with all other test sources
-  set(executable_test_source Exception/test/ldmx_test.cxx)
+  set(executable_test_source Framework/test/ldmx_test.cxx)
   get_filename_component(executable ${executable_test_source} NAME)
   string(REPLACE ".cxx" "" executable ${executable})
   string(REPLACE "_" "-" executable ${executable})
