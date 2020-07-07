@@ -6,6 +6,6 @@ endif()
 # declare Ecal module
 module(
   NAME Ecal 
-  DEPENDENCIES Exception Tools Event DetDescr Framework 
+  DEPENDENCIES Tools Event DetDescr Framework 
   EXTERNAL_DEPENDENCIES ${_LDMX_TOOLS_EXTERNAL_DEPENDENCIES}
 )
