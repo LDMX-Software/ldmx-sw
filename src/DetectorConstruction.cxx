@@ -1,9 +1,9 @@
 #include "SimCore/DetectorConstruction.h"
 
 /*~~~~~~~~~~~~~~~*/
-/*   Exception   */
+/*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Exception/Exception.h" 
+#include "Framework/Exception.h" 
 
 namespace ldmx {
 

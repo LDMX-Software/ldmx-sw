@@ -7,7 +7,7 @@
 
 #include "SimCore/G4eDarkBremsstrahlungModel.h"
 #include "SimCore/G4APrime.h"
-#include "Exception/Exception.h"
+#include "Framework/Exception.h"
 
 // Geant4
 #include "G4PhysicalConstants.hh"
