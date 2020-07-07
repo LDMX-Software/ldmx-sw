@@ -4,7 +4,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "Exception/catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
+#include "Framework/catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
 
 #include "Framework/Event.h" //We need an event bus to pass through produce
 #include "Framework/Process.h" //We need a dummy process to link the event bus to
