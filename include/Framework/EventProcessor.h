@@ -10,7 +10,7 @@
 /*~~~~~~~~~~~*/
 /*   Event   */
 /*~~~~~~~~~~~*/
-#include "Exception/Exception.h"
+#include "Framework/Exception.h"
 #include "Event/RunHeader.h"
 
 /*~~~~~~~~~~~~~~~*/
