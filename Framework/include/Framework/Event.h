@@ -14,7 +14,7 @@
 
 // LDMX
 #include "Event/EventDef.h"
-#include "Exception/Exception.h"
+#include "Framework/Exception.h"
 
 // STL
 #include <algorithm> 

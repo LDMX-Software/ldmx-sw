@@ -14,7 +14,7 @@
 #include "Framework/NtupleManager.h"
 #include "Framework/Logger.h"
 #include "Event/RunHeader.h"
-#include "Exception/Exception.h"
+#include "Framework/Exception.h"
 
 namespace ldmx {
 
