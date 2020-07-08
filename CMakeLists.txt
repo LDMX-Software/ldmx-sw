@@ -29,21 +29,8 @@ option(MODULE_DEBUG "Print extra module information during CMake config" OFF)
 # add dir with extra CMake modules 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 
-# find XercesC installation
-if(XercesC_DIR)
-  set(XercesC_INCLUDE_DIR "${XercesC_DIR}/include")
-  set(XercesC_LIBRARY "${XercesC_DIR}/lib/libxerces-c.so")
-  if (NOT EXISTS "${XercesC_LIBRARY}")
-    message(FATAL_ERROR "Unable to guess location of Xerces lib.  Please specify using: -DXercesC_LIBRARY")
-  endif()
-  message(STATUS "XercesC dir set to: ${XercesC_DIR}")
-  message(STATUS "XercesC include dir set to: ${XercesC_INCLUDE_DIR}")
-  message(STATUS "XercesC library set to: ${XercesC_LIBRARY}")
-endif()
+# Find the XercesC package
 find_package(XercesC REQUIRED)
-message(STATUS "XercesC libs found at: ${XercesC_LIBRARIES}")
-message(STATUS "XercesC include dir found at: ${XercesC_INCLUDE_DIRS}")
-get_filename_component(XercesC_LIBRARY_DIR ${XercesC_LIBRARIES} DIRECTORY)
 
 # find Geant4 installation
 find_package(Geant4 REQUIRED ui_all vis_all gdml)
