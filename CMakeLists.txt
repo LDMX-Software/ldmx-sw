@@ -50,3 +50,5 @@ target_include_directories(SimCore PUBLIC ${PROJECT_SOURCE_DIR}/include)
 # Setup the libraries to link against
 target_link_libraries(SimCore PUBLIC Geant4::Interface)
 
+# Define an alias
+add_library(LDMX::SimCore ALIAS SimCore)
