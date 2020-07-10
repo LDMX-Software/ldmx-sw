@@ -38,7 +38,8 @@ include("${ROOT_DIR}/RootMacros.cmake")
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # Generate the ROOT dictionary
-root_generate_dictionary(EventDic ${PROJECT_SOURCE_DIR}/include/Event/EventDef.h LINKDEF ${PROJECT_SOURCE_DIR}/include/Event/EventLinkDef.h)
+root_generate_dictionary(EventDic ${PROJECT_SOURCE_DIR}/include/Event/EventDef.h 
+    LINKDEF ${PROJECT_SOURCE_DIR}/include/Event/EventLinkDef.h)
 
 # Install ROOT pcm file
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventDic_rdict.pcm DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
@@ -58,7 +59,7 @@ target_link_libraries(Event PUBLIC
 )
 
 # Define an alias 
-add_library(LDMX::EVENT ALIAS Event)
+add_library(LDMX::Event ALIAS Event)
 
 # Install the libraries and headers
 install(TARGETS Event
