@@ -42,7 +42,7 @@ target_link_libraries(Framework PUBLIC
 )
 
 # Define an alias 
-add_library(LDMX::Framework ALIAS Event)
+add_library(LDMX::Framework ALIAS Framework)
 
 # Install the libraries and headers
 install(TARGETS Framework
