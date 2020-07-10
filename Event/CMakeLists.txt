@@ -1,4 +1,13 @@
 
+# Set the minimum version of CMake that's required
+cmake_minimum_required(VERSION 3.12)
+
+# Set the project name
+project(Event VERSION 2.1.0
+              DESCRIPTION "Event classes used to persist LDMX simulation and physics objects." 
+              LANGUAGES CXX
+)
+
 # Execute the command to extract the SHA1 hash of the current git tag. 
 # The variable GIT_SHA1 will be set to contain the hash. 
 execute_process (
@@ -12,40 +21,56 @@ string(REGEX REPLACE "\n$" "" GIT_SHA1 "${GIT_SHA1}")
 # Copies the file 'Version.h.in', substitutes the value of GIT_SHA1 and
 # writes it out to Version.h.  
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/Event/Version.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/include/Event/Version.h
+    ${PROJECT_SOURCE_DIR}/include/Event/Version.h.in
+    ${PROJECT_SOURCE_DIR}/include/Event/Version.h
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/Event/Version.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Event/)
+#install(FILES ${PROJECT_SOURCE_DIR}/include/Event/Version.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Event/)
 
+# Search and configure ROOT
+find_package(ROOT 6.16 CONFIG REQUIRED)
+
+# Generate the ROOT dictionary.  The following allows the use of the macro 
+# used to generate the dictionary. 
+include("${ROOT_DIR}/RootMacros.cmake")
+
+# Unfortunately, the Event headers need to be included globably for the 
+# dictionary to be generated correctly. 
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+# Generate the ROOT dictionary
+root_generate_dictionary(EventDic ${PROJECT_SOURCE_DIR}/include/Event/EventDef.h LINKDEF ${PROJECT_SOURCE_DIR}/include/Event/EventLinkDef.h)
+
+# Install ROOT pcm file
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventDic_rdict.pcm DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
+# Find all of the source files we want to add to the Event library
+file(GLOB EVENT_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
+
+# Create the Event target
+add_library(Event SHARED EventDic.cxx ${EVENT_SRC_FILES})
+
+# Setup the include directories 
+target_include_directories(Event PUBLIC ${PROJECT_SOURCE_DIR}/include/)
+
+# Setup the libraries to link against 
+target_link_libraries(Event PUBLIC
+    ROOT::Core
+)
+
+# Define an alias 
+add_library(LDMX::EVENT ALIAS Event)
+
+# Install the libraries and headers
+install(TARGETS Event
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Event 
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+
+# If this is really needed, import a target instead.
 # Add the location of Version.h to the build. Also, set the variable
 # EXTRA_INC in the parent scope so the extra include directory can 
 # be added to the whole project not just this module.
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/include/)
-set(EXTRA_INC ${CMAKE_CURRENT_BINARY_DIR}/include/ PARENT_SCOPE)
-
-# Declare Event module
-module(
-  NAME Event
-  EXTRA_SOURCES EventDict.cxx
-  EXTERNAL_DEPENDENCIES ROOT
-)
-
-# copy over EventDef and EventLinkDef headers for dictionary generation
-configure_file(
-    include/${PROJECT_NAME}/${PROJECT_NAME}Def.h
-    ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}/${PROJECT_NAME}Def.h
-    )
-configure_file(
-    include/${PROJECT_NAME}/${PROJECT_NAME}LinkDef.h
-    ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}/${PROJECT_NAME}LinkDef.h
-    )
-
-# generate ROOT dictionary for Event classes using files at install location
-root_generate_dictionary(
-    ${PROJECT_NAME}Dict 
-    ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}/${PROJECT_NAME}Def.h 
-    LINKDEF ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}/${PROJECT_NAME}LinkDef.h
-    )
-
-# install ROOT pcm file
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib${PROJECT_NAME}Dict_rdict.pcm DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+#include_directories(${CMAKE_CURRENT_BINARY_DIR}/include/)
+#set(EXTRA_INC ${CMAKE_CURRENT_BINARY_DIR}/include/ PARENT_SCOPE)$
