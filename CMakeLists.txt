@@ -16,6 +16,17 @@ find_package(Geant4 REQUIRED gdml ui_all vis_all)
 # Export the Geant4 target if it hasn't been done yet.
 if( NOT TARGET Geant4::Interface) 
     
+    #Geant4_DEFINITIONS already include -D, this leads to the error 
+    # <command-line>:0:1: error: macro names must be identifiers
+    # if not removed.
+    SET(G4_DEF_TEMP "")
+    foreach(def ${Geant4_DEFINITIONS})
+      string(REPLACE "-D" "" def ${def})
+      LIST(APPEND G4_DEF_TEMP ${def})
+    endforeach()
+    SET(LDMX_Geant4_DEFINITIONS ${G4_DEF_TEMP})
+    UNSET(G4_DEF_TEMP)
+
     # Create the Geant4 target
     add_library(Geant4::Interface INTERFACE IMPORTED GLOBAL)
 
@@ -23,7 +34,7 @@ if( NOT TARGET Geant4::Interface)
     SET_TARGET_PROPERTIES(Geant4::Interface
         PROPERTIES
         INTERFACE_COMPILE_OPTIONS "${Geant4_Flags}"
-        INTERFACE_COMPILE_DEFINITIONS "${Geant4_DEFINITIONS}"
+        INTERFACE_COMPILE_DEFINITIONS "${LDMX_Geant4_DEFINITIONS}"
         INTERFACE_INCLUDE_DIRECTORIES "${Geant4_INCLUDE_DIRS}"
     )
 
@@ -48,7 +59,15 @@ set_target_properties(SimCore PROPERTIES
 target_include_directories(SimCore PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 # Setup the libraries to link against
-target_link_libraries(SimCore PUBLIC Geant4::Interface)
+target_link_libraries(SimCore PUBLIC Geant4::Interface LDMX::Framework)
 
 # Define an alias
 add_library(LDMX::SimCore ALIAS SimCore)
+
+# Install the libraries and headers
+install(TARGETS SimCore
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/SimCore
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+
