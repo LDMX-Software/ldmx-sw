@@ -3,9 +3,9 @@
 cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
-project(SimCore VERSION 2.1.0
-                DESCRIPTION "Framework used to define processing pipelines and modules."
-                LANGUAGES CXX
+project(Framework VERSION 2.1.0
+                  DESCRIPTION "Framework used to define processing pipelines and modules."
+                  LANGUAGES CXX
 )
 
 # Search for the Python3 library
@@ -13,6 +13,8 @@ find_package (Python3 COMPONENTS Interpreter Development)
 
 # Search and configure ROOT
 find_package(ROOT 6.16 CONFIG REQUIRED)
+
+find_package(Boost REQUIRED COMPONENTS system log)
 
 # Find all of the source files we want to add to the SimCore library
 file(GLOB FRAMEWORK_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
@@ -34,12 +36,26 @@ target_include_directories(Framework PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(Framework PUBLIC 
     Python3::Python
     ROOT::Hist
+    ROOT::TreePlayer
+    LDMX::Event
+    Boost::log
 )
 
-# declare Event module
-#module(
-#  NAME Framework  
-#  EXECUTABLES src/fire.cxx
-#  DEPENDENCIES Event 
-#  EXTERNAL_DEPENDENCIES ROOT Python
-#)
+# Define an alias 
+add_library(LDMX::Framework ALIAS Event)
+
+# Install the libraries and headers
+install(TARGETS Framework
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Framework
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+
+# Add the fire executable
+add_executable(fire ${PROJECT_SOURCE_DIR}/src/fire.cxx)
+
+# Link to the Framework library
+target_link_libraries(fire PRIVATE Framework)
+
+# Install the fire executable
+install(TARGETS fire DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
