@@ -37,10 +37,20 @@ fi
 ###############################################################################
 function ldmx-container-tags() {
     _repo_name="$1"
-    wget -q https://registry.hub.docker.com/v1/repositories/ldmx/${_repo_name}/tags -O -  |\
-        sed -e 's/[][]//g' -e 's/"//g' -e 's/ //g' |\
-        tr '}' '\n'  |\
-        awk -F: '{print $3}'
+    if [ "${_repo_name}" == "local" ] 
+    then
+        if hash docker &> /dev/null
+        then
+            docker images -q "ldmx/local"
+        else
+            ll ${LDMX_BASE} | grep ".*local.*sif"
+        fi
+    else
+        wget -q https://registry.hub.docker.com/v1/repositories/ldmx/${_repo_name}/tags -O -  |\
+            sed -e 's/[][]//g' -e 's/"//g' -e 's/ //g' |\
+            tr '}' '\n'  |\
+            awk -F: '{print $3}'
+    fi
 }
 
 ###############################################################################
@@ -61,13 +71,13 @@ function ldmx-container-tags() {
 #   so the build instruction would be
 #       docker build . -t ldmx/local:my-tag
 ###############################################################################
-if hash docker &>/dev/null
-then
-    function ldmx-container-pull() {
-        _repo_name="$1"
-        _tag="$2"
+function ldmx-container-pull() {
+    _repo_name="$1"
+    _image_tag="$2"
+    export LDMX_DOCKER_TAG="ldmx/${_repo_name}:${_image_tag}"
 
-        export LDMX_DOCKER_TAG="ldmx/${_repo_name}:${_tag}"
+    if hash docker &>/dev/null
+    then
         if [ "${_repo_name}" == "local" ]
         then
             if [ -z "$(docker images -q ${LDMX_DOCKER_TAG} 2> /dev/null)" ]
@@ -78,23 +88,19 @@ then
         else
             docker pull ${LDMX_DOCKER_TAG}
         fi
-    }
-elif hash singularity &>/dev/null
-then
-    function ldmx-container-pull() {
-        _repo_name="$1"
-        _tag="$2"
+
+    elif hash singularity &>/dev/null
+    then
 
         # change cache directory to be inside ldmx base directory
         export SINGULARITY_CACHEDIR=${LDMX_BASE}/.singularity
         mkdir -p ${SINGULARITY_CACHEDIR} #make sure cache directory exists
     
         # name the singularity image after the tag the user asked for
-        export LDMX_SINGULARITY_IMG=ldmx_${_repo_name}_${_tag}.sif
+        export LDMX_SINGULARITY_IMG=ldmx_${_repo_name}_${_image_tag}.sif
     
         # build the docker container into the singularity image
         #   will prompt the user if the image already exists
-        export LDMX_DOCKER_TAG="ldmx/${_repo_name}:${_tag}"
         if [ "${_repo_name}" == "local" ]
         then
             if [ ! -f "${LDMX_BASE}/${LDMX_SINGULARITY_IMG}" ]
@@ -103,10 +109,30 @@ then
                 return 1
             fi
         else
-            singularity build ${LDMX_BASE}/${LDMX_SINGULARITY_IMG} docker://${LDMX_DOCKER_TAG}
+            singularity build \
+                --force \
+                ${LDMX_BASE}/${LDMX_SINGULARITY_IMG} \
+                docker://${LDMX_DOCKER_TAG}
         fi
-    }
-fi
+    fi
+}
+
+###############################################################################
+# ldmx-container-config
+#   Print the configuration of the current setup
+###############################################################################
+function ldmx-container-config() {
+    echo "LDMX base directory: ${LDMX_BASE}"
+    if hash docker &> /dev/null
+    then
+        echo "Using $(docker --version)"
+        echo "Docker tag: ${LDMX_DOCKER_TAG}"
+    elif hash singularity &> /dev/null
+    then
+        echo "Using $(singularity --version)"
+        echo "Singularity Image: ${LDMX_BASE}/${LDMX_SINGULARITY_IMG}"
+    fi
+}
 
 ###############################################################################
 # ldmx
@@ -125,17 +151,26 @@ fi
 #   mounts the current working directory to the container, so we go to
 #   the base, mount it, and then inside the container go back to where we were.
 ###############################################################################
-if hash docker &>/dev/null; then
-    alias ldmx='docker run -it -e LDMX_BASE -v $LDMX_BASE:$LDMX_BASE -u $(id -u ${USER}):$(id -g ${USER}) $LDMX_DOCKER_TAG $(pwd)'
-elif hash singularity &>/dev/null; then
-    function ldmx() {
-        _current_working_dir=${PWD##"${LDMX_BASE}/"} #store current working directory relative to ldmx base
-        cd ${LDMX_BASE} # go to ldmx base directory outside container
-        # actually run the singularity image stored in the base directory going to working directory inside container
-        singularity run --no-home ${LDMX_SINGULARITY_IMG} ${_current_working_dir} "$@"
-        cd - &> /dev/null #go back outside the container
-    }
-fi
+function ldmx() {
+    #store current working directory relative to ldmx base
+    _current_working_dir=${PWD##"${LDMX_BASE}/"} 
+    cd ${LDMX_BASE} # go to ldmx base directory outside container
+    if hash docker &>/dev/null; then
+        docker run \
+            -it \
+            -e LDMX_BASE \
+            -v $LDMX_BASE:$LDMX_BASE \
+            -u $(id -u ${USER}):$(id -g ${USER}) \
+            $LDMX_DOCKER_TAG ${_current_working_dir} "$@"
+    elif hash singularity &>/dev/null; then
+        # actually run the singularity image stored in the base directory 
+        #  going to working directory inside container
+        singularity run \
+            --no-home \
+            ${LDMX_SINGULARITY_IMG} ${_current_working_dir} "$@"
+    fi
+    cd - &> /dev/null #go back outside the container
+}
 
 ###############################################################################
 # Parse CLI Arguments
@@ -145,25 +180,37 @@ fi
 #   $3 - docker image tag        (defaults to 'latest')
 ###############################################################################
 
-_ldmx_base="$1"
-if [ -z ${_ldmx_base} ]
-then
-    _dir_name_of_script=$( dirname ${BASH_SOURCE[0]} )
-    _ldmx_base="${_dir_name_of_script}/../../" #back out of ldmx-sw/scripts
-elif [[ "${_ldmx_base}" = *"help" || "${_ldmx_base}" == *"-h" ]]
+_ldmx_base="$( dirname ${BASH_SOURCE[0]} )/../../" #default backs out of ldmx-sw/scripts
+_repo_name="dev" #default repository name: ldmx/_repo_name
+_image_tag="latest" #default image tag in repository
+
+if [[ "$1" = *"help" || "$1" == *"-h" ]]
 then
     echo "Environment setup script for ldmx."
-    echo "  Usage: source ldmx-sw/scripts/ldmx-env.sh [ldmx_base] [repo-name] [image_tag]"
-    echo "    ldmx_base : path to directory containing ldmx-sw (default: present working directory)"
+    echo "  Usage: source ldmx-sw/scripts/ldmx-env.sh [ldmx_base] [repo_name] [image_tag]"
+    echo "    ldmx_base : path to directory containing ldmx-sw"
+    echo "                (default: $_ldmx_base)"
     echo "    repo_name : name of repo  (ldmx/[repo_name]) to pull container from. "
+    echo "                There are three options: 'dev', 'pro', and 'local'"
     echo "                Pass 'local' to use existing, locally built container (default: dev)"
-    echo "    image_tag : name of tag of ldmx/dev image to pull down and use (default: latest)"
-    echo "The image_tag options you can input are below."
-    echo "For the 'dev' repository:"
-    echo $(ldmx-container-tags "dev") 
-    echo "For the 'pro' repository:"
-    echo $(ldmx-container-tags "pro") 
+    echo "    image_tag : name of tag of ldmx image to pull down and use (default: latest)"
+    echo "                The options you can input depend on the repo:"
+    echo "                For repo_name == 'dev': $(ldmx-container-tags "dev")"
+    echo "                For repo_name == 'pro': $(ldmx-container-tags "pro")"
     return 0
+elif [ ! -z $1 ]
+then
+    _ldmx_base="$1"
+    # first parameter given is there a second?
+    if [ ! -z $2 ]
+    then
+        _repo_name="$2"
+        #second parameter given, is there a third?
+        if [ ! -z $3 ]
+        then
+            _image_tag="$3"
+        fi
+    fi
 fi
 
 # this makes sure we get the full path
@@ -171,30 +218,18 @@ cd ${_ldmx_base}
 export LDMX_BASE=$(pwd)
 cd - &> /dev/null
 
-_repo_name="$2"
-if [ -z $_repo_name ]
-then
-    _repo_name="dev"
-    # this is the name of the dockerhub repository
-    # it should change when we want a production container 
-    # also, if it's set to "local", skip downloading at all and attempt to use a locally built container
-fi
-
-_image_tag="$3"
-if [ -z $_image_tag ]; then
-    _image_tag="latest"
-fi
-
 # pull down the container if it doesn't exist on this computer yet
 if hash docker &> /dev/null
 then
-    if [ -z $(docker images -q ldmx/${_repo_name}:${_image_tag} 2> /dev/null) ]
+    export LDMX_DOCKER_TAG="ldmx/${_repo_name}:${_image_tag}"
+    if [ -z $(docker images -q ${LDMX_DOCKER_TAG} 2> /dev/null) ]
     then
         ldmx-container-pull ${_repo_name} ${_image_tag}
     fi
 elif hash singularity &> /dev/null 
 then
-    if [ ! -f "${LDMX_BASE}/ldmx_${_repo_name}_${image_tag}" ]
+    export LDMX_SINGULARITY_IMG="ldmx_${_repo_name}_${_image_tag}.sif"
+    if [ ! -f "${LDMX_BASE}/${LDMX_SINGULARITY_IMG}" ]
     then
         ldmx-container-pull ${_repo_name} ${_image_tag}
     fi
