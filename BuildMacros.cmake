@@ -44,12 +44,17 @@ endmacro()
 macro(setup_library)
 
     set(oneValueArgs name)
-    set(multiValueArgs dependencies)
+    set(multiValueArgs dependencies sources)
     cmake_parse_arguments(setup_library "${options}" "${oneValueArgs}"
                           "${multiValueArgs}" ${ARGN} )
 
     # Find all of the source files we want to add to the SimCore library
-    file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
+    if (NOT setup_library_sources)
+        message(STATUS "Setting up libraries")
+        file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
+    else()
+        set(SRC_FILES ${setup_library_sources})
+    endif()
 
     # Create the SimCore shared library
     add_library(${setup_library_name} SHARED ${SRC_FILES})
@@ -57,7 +62,6 @@ macro(setup_library)
     # Setup the include directories 
     target_include_directories(${setup_library_name} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-    message(STATUS ${setup_library_dependencies})
     # Setup the targets to link against 
     target_link_libraries(${setup_library_name} PUBLIC ${setup_library_dependencies})
 
