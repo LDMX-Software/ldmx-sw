@@ -44,12 +44,10 @@ Command | Purpose
 
 The environment script defines several other shell commands to help configure and debug the container environment.
 
-Command | Purpose
----|---
-`ldmx-container-tags repo` | List the container tags that you could use with the input repository: `dev`, `pro`, or `local`
-`ldmx-container-pull repo tag` | Setup the environment for the container 'ldmx/repo:tag' and pull down the newest version if the repo is remote
-`ldmx-container-config` | Print out how the container environment is currently configured
-`ldmx-has-required-engine` | Return 0 if computer has a supported container-running engine
+- `ldmx-container-tags repo` : List the container tags that you could use with the input repository: `dev`, `pro`, or `local`
+- `ldmx-container-pull repo tag` : Setup the environment for the container 'ldmx/repo:tag' and pull down the newest version if the repo is remote
+- `ldmx-container-config` : Print out how the container environment is currently configured
+- `ldmx-has-required-engine` : Return 0 if computer has a supported container-running engine
 
 ## Maintainer 
 
