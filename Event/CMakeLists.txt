@@ -24,7 +24,7 @@ configure_file(
     ${PROJECT_SOURCE_DIR}/include/Event/Version.h.in
     ${PROJECT_SOURCE_DIR}/include/Event/Version.h
 )
-#install(FILES ${PROJECT_SOURCE_DIR}/include/Event/Version.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Event/)
+install(FILES ${PROJECT_SOURCE_DIR}/include/Event/Version.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Event/)
 
 # Search and configure ROOT
 find_package(ROOT 6.16 CONFIG REQUIRED)
@@ -44,30 +44,14 @@ root_generate_dictionary(EventDic ${PROJECT_SOURCE_DIR}/include/Event/EventDef.h
 # Install ROOT pcm file
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventDic_rdict.pcm DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
-# Find all of the source files we want to add to the Event library
-file(GLOB EVENT_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
+# Need to define the sources here because of the addition of EventDic
+file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
 
-# Create the Event target
-add_library(Event SHARED EventDic.cxx ${EVENT_SRC_FILES})
-
-# Setup the include directories 
-target_include_directories(Event PUBLIC ${PROJECT_SOURCE_DIR}/include/)
-
-# Setup the libraries to link against 
-target_link_libraries(Event PUBLIC
-    ROOT::Core
+# Setup the library
+setup_library(name Event
+              dependencies ROOT::Core
+              sources EventDic.cxx ${SRC_FILES}
 )
-
-# Define an alias 
-add_library(LDMX::Event ALIAS Event)
-
-# Install the libraries and headers
-install(TARGETS Event
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-)
-
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Event 
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
 # If this is really needed, import a target instead.
 # Add the location of Version.h to the build. Also, set the variable
