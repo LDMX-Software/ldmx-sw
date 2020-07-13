@@ -46,10 +46,18 @@ function ldmx-container-tags() {
             ll ${LDMX_BASE} | grep ".*local.*sif"
         fi
     else
+        #line-by-line description
+        # download tag json
+        # strip unnecessary information
+        # break tags into their own lines
+        # pick out tags using : as separator
+        # put tags back onto same line
         wget -q https://registry.hub.docker.com/v1/repositories/ldmx/${_repo_name}/tags -O -  |\
             sed -e 's/[][]//g' -e 's/"//g' -e 's/ //g' |\
             tr '}' '\n'  |\
-            awk -F: '{print $3}'
+            awk -F: '{print $3}' |\
+            tr '\n' ' '
+        echo "" #new line
     fi
 }
 
