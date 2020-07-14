@@ -170,7 +170,8 @@ function ldmx-container-config() {
 ###############################################################################
 function ldmx() {
     #store current working directory relative to ldmx base
-    _current_working_dir=${PWD##"${LDMX_BASE}/"} 
+    _pwd=$(pwd -P)
+    _current_working_dir=${_pwd##"${LDMX_BASE}/"} 
     cd ${LDMX_BASE} # go to ldmx base directory outside container
     if hash docker &>/dev/null; then
         docker run \
@@ -273,7 +274,7 @@ done
 
 # this makes sure we get the full path
 cd ${_ldmx_base}
-export LDMX_BASE=$(pwd)
+export LDMX_BASE=$(pwd -P)
 cd - &> /dev/null
 
 # pull down the container if it doesn't exist on this computer yet
