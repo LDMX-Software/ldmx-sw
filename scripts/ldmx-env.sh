@@ -182,44 +182,73 @@ function ldmx() {
 
 ###############################################################################
 # Parse CLI Arguments
-#   $1 - base directory for your ldmx work
+#   -b - base directory for your ldmx work
 #        must be directory containing ldmx-sw and ldmx-analysis
-#   $2 - docker image repository (defaults to 'dev')
-#   $3 - docker image tag        (defaults to 'latest')
+#   -r - docker image repository (defaults to 'dev')
+#   -t - docker image tag        (defaults to 'latest')
+#   -h - print help message
 ###############################################################################
+
+function ldmx-help() {
+    echo "Environment setup script for ldmx."
+    echo "  Usage: source ldmx-sw/scripts/ldmx-env.sh [-h] [-f] [-b ldmx_base] [-r repo_name] [-t image_tag]"
+    echo "    -h : Print this help message"
+    echo "    -f : Force download and update of container even if it already exists"
+    echo "    -b : ldmx_base is path to directory containing ldmx-sw"
+    echo "         (default: $_ldmx_base)"
+    echo "    -r : name of repo  (ldmx/[repo_name]) to pull container from. "
+    echo "         There are three options: 'dev', 'pro', and 'local'"
+    echo "         Pass 'local' to use existing, locally built container (default: dev)"
+    echo "    -t : name of tag of ldmx image to pull down and use (default: latest)"
+    echo "         The options you can input depend on the repo:"
+    echo "         For repo_name == 'dev': $(ldmx-container-tags "dev")"
+    echo "         For repo_name == 'pro': $(ldmx-container-tags "pro")"
+    return 0
+}
 
 _ldmx_base="$( dirname ${BASH_SOURCE[0]} )/../../" #default backs out of ldmx-sw/scripts
 _repo_name="dev" #default repository name: ldmx/_repo_name
 _image_tag="latest" #default image tag in repository
+_force_update="OFF" #default to not force an update
 
-if [[ "$1" = *"help" || "$1" == *"-h" ]]
-then
-    echo "Environment setup script for ldmx."
-    echo "  Usage: source ldmx-sw/scripts/ldmx-env.sh [ldmx_base] [repo_name] [image_tag]"
-    echo "    ldmx_base : path to directory containing ldmx-sw"
-    echo "                (default: $_ldmx_base)"
-    echo "    repo_name : name of repo  (ldmx/[repo_name]) to pull container from. "
-    echo "                There are three options: 'dev', 'pro', and 'local'"
-    echo "                Pass 'local' to use existing, locally built container (default: dev)"
-    echo "    image_tag : name of tag of ldmx image to pull down and use (default: latest)"
-    echo "                The options you can input depend on the repo:"
-    echo "                For repo_name == 'dev': $(ldmx-container-tags "dev")"
-    echo "                For repo_name == 'pro': $(ldmx-container-tags "pro")"
-    return 0
-elif [ ! -z $1 ]
-then
-    _ldmx_base="$1"
-    # first parameter given is there a second?
-    if [ ! -z $2 ]
-    then
-        _repo_name="$2"
-        #second parameter given, is there a third?
-        if [ ! -z $3 ]
-        then
-            _image_tag="$3"
-        fi
-    fi
-fi
+echo "About to read in options... $@"
+while getopts "hfb:r:t:" option
+do
+    echo "$option"
+    case "$option" in
+        h)
+            ldmx-help
+            return 0
+            ;;
+        b)
+            _ldmx_base=$OPTARG
+            ;;
+        r)
+            echo "$OPTARG"
+            if [[ "$OPTARG" == "dev" || "$OPTARG" == "pro" || "$OPTARG" == "local" ]]
+            then
+                _repo_name="$OPTARG"
+            else
+                echo "ERROR: Unsupported repo name: '$OPTARG'"
+                ldmx-help
+                return 1
+            fi
+            ;;
+        t)
+            _image_tag=$OPTARG
+            ;;
+        f)
+            _force_update="ON"
+            ;;
+        \?)
+            echo "ERROR: '$option' is not a valid option!"
+            ldmx-help
+            return 1
+            ;;
+    esac
+done
+
+echo "Done reading in options..."
 
 # this makes sure we get the full path
 cd ${_ldmx_base}
@@ -230,14 +259,14 @@ cd - &> /dev/null
 if hash docker &> /dev/null
 then
     export LDMX_DOCKER_TAG="ldmx/${_repo_name}:${_image_tag}"
-    if [ -z $(docker images -q ${LDMX_DOCKER_TAG} 2> /dev/null) ]
+    if [[ $_force_update == *"ON"* || -z $(docker images -q ${LDMX_DOCKER_TAG} 2> /dev/null) ]]
     then
         ldmx-container-pull ${_repo_name} ${_image_tag}
     fi
 elif hash singularity &> /dev/null 
 then
     export LDMX_SINGULARITY_IMG="ldmx_${_repo_name}_${_image_tag}.sif"
-    if [ ! -f "${LDMX_BASE}/${LDMX_SINGULARITY_IMG}" ]
+    if [[ $_force_update == *"ON"* || ! -f "${LDMX_BASE}/${LDMX_SINGULARITY_IMG}" ]]
     then
         ldmx-container-pull ${_repo_name} ${_image_tag}
     fi
