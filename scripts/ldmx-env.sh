@@ -91,6 +91,10 @@ function ldmx-container-pull() {
             if [ -z "$(docker images -q ${LDMX_DOCKER_TAG} 2> /dev/null)" ]
             then
                 echo "No local docker image matching the name '${LDMX_DOCKER_TAG}'."
+                echo "  You can add another tag to your local image and match our required format:"
+                echo "      docker tag my-image-tag ldmx/local:my-image-tag"
+                echo "  Then you can use"
+                echo "      source ldmx-sw/scripts/ldmx-env.sh -r local -t my-image-tag"
                 return 1
             fi
         else
@@ -114,6 +118,11 @@ function ldmx-container-pull() {
             if [ ! -f "${LDMX_BASE}/${LDMX_SINGULARITY_IMG}" ]
             then
                 echo "No local singularity image at '${LDMX_BASE}/${LDMX_SINGULARITY_IMG}'."
+                echo "  You can point ldmx to your singularity image in the correct format using symlinks."
+                echo "      cd $LDMX_BASE"
+                echo "      ln -s <path-to-local-singularity-image>.sif ldmx_local_my-image-tag.sif"
+                echo "  Then you can use"
+                echo "      source ldmx-sw/scripts/ldmx-env.sh -r local -t my-image-tag"
                 return 1
             fi
         else
