@@ -169,7 +169,7 @@ function ldmx() {
             -e LDMX_BASE \
             -v $LDMX_BASE:$LDMX_BASE \
             -u $(id -u ${USER}):$(id -g ${USER}) \
-            $LDMX_DOCKER_TAG ${_current_working_dir} "$@"
+            $LDMX_DOCKER_TAG ${LDMX_BASE}/${_current_working_dir} "$@"
     elif hash singularity &>/dev/null; then
         # actually run the singularity image stored in the base directory 
         #  going to working directory inside container
@@ -182,27 +182,22 @@ function ldmx() {
 
 ###############################################################################
 # Parse CLI Arguments
-#   -b - base directory for your ldmx work
-#        must be directory containing ldmx-sw and ldmx-analysis
-#   -r - docker image repository (defaults to 'dev')
-#   -t - docker image tag        (defaults to 'latest')
-#   -h - print help message
 ###############################################################################
 
 function ldmx-help() {
     echo "Environment setup script for ldmx."
-    echo "  Usage: source ldmx-sw/scripts/ldmx-env.sh [-h] [-f] [-b ldmx_base] [-r repo_name] [-t image_tag]"
-    echo "    -h : Print this help message"
-    echo "    -f : Force download and update of container even if it already exists"
-    echo "    -b : ldmx_base is path to directory containing ldmx-sw"
-    echo "         (default: $_ldmx_base)"
-    echo "    -r : name of repo  (ldmx/[repo_name]) to pull container from. "
-    echo "         There are three options: 'dev', 'pro', and 'local'"
-    echo "         Pass 'local' to use existing, locally built container (default: dev)"
-    echo "    -t : name of tag of ldmx image to pull down and use (default: latest)"
-    echo "         The options you can input depend on the repo:"
-    echo "         For repo_name == 'dev': $(ldmx-container-tags "dev")"
-    echo "         For repo_name == 'pro': $(ldmx-container-tags "pro")"
+    echo "  Usage: source ldmx-sw/scripts/ldmx-env.sh [-h,--help] [-f,--force] [-b,--base ldmx_base] [-r,--repo repo_name] [-t,--tag image_tag]"
+    echo "    -h,--help  : Print this help message"
+    echo "    -f,--force : Force download and update of container even if it already exists"
+    echo "    -b,--base  : ldmx_base is path to directory containing ldmx-sw"
+    echo "                 (default: $_ldmx_base)"
+    echo "    -r,--repo  : name of repo  (ldmx/[repo_name]) to pull container from. "
+    echo "                 There are three options: 'dev', 'pro', and 'local'"
+    echo "                 Pass 'local' to use existing, locally built container (default: dev)"
+    echo "    -t,--tag   : name of tag of ldmx image to pull down and use (default: latest)"
+    echo "                 The options you can input depend on the repo:"
+    echo "                 For repo_name == 'dev': $(ldmx-container-tags "dev")"
+    echo "                 For repo_name == 'pro': $(ldmx-container-tags "pro")"
     return 0
 }
 
@@ -211,44 +206,53 @@ _repo_name="dev" #default repository name: ldmx/_repo_name
 _image_tag="latest" #default image tag in repository
 _force_update="OFF" #default to not force an update
 
-echo "About to read in options... $@"
-while getopts "hfb:r:t:" option
+while [[ $# -gt 0 ]] #while still have more options
 do
-    echo "$option"
+    option="$1"
     case "$option" in
-        h)
+        -h|--help)
             ldmx-help
             return 0
             ;;
-        b)
-            _ldmx_base=$OPTARG
+        -b|--base)
+            _ldmx_base="$2"
+            shift #move past flag
+            shift #move past argument
             ;;
-        r)
-            echo "$OPTARG"
-            if [[ "$OPTARG" == "dev" || "$OPTARG" == "pro" || "$OPTARG" == "local" ]]
+        -r|--repo)
+            if [[ "$2" == "dev" || "$2" == "pro" || "$2" == "local" ]]
             then
-                _repo_name="$OPTARG"
+                _repo_name="$2"
             else
-                echo "ERROR: Unsupported repo name: '$OPTARG'"
+                echo "ERROR: Unsupported repo name: '$2'"
                 ldmx-help
                 return 1
             fi
+            shift #move past flag
+            shift #move past argument
             ;;
-        t)
-            _image_tag=$OPTARG
+        -t|--tag)
+            if [ -z "$2" ]
+            then
+                echo "ERROR: Cannont specify empty tag!"
+                ldmx-help
+                return 1
+            fi
+            _image_tag="$2"
+            shift #move past flag
+            shift #move past argument
             ;;
-        f)
+        -f|--force)
             _force_update="ON"
+            shift #move past flag
             ;;
-        \?)
+        *)
             echo "ERROR: '$option' is not a valid option!"
             ldmx-help
             return 1
             ;;
     esac
 done
-
-echo "Done reading in options..."
 
 # this makes sure we get the full path
 cd ${_ldmx_base}
