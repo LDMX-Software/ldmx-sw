@@ -171,7 +171,6 @@ function ldmx-container-config() {
 function ldmx() {
     #store current working directory relative to ldmx base
     _pwd=$(pwd -P)
-    _current_working_dir=${_pwd##"${LDMX_BASE}/"} 
     cd ${LDMX_BASE} # go to ldmx base directory outside container
     if hash docker &>/dev/null; then
         docker run \
@@ -179,10 +178,11 @@ function ldmx() {
             -e LDMX_BASE \
             -v $LDMX_BASE:$LDMX_BASE \
             -u $(id -u ${USER}):$(id -g ${USER}) \
-            $LDMX_DOCKER_TAG ${LDMX_BASE}/${_current_working_dir} "$@"
+            $LDMX_DOCKER_TAG ${_pwd} "$@"
     elif hash singularity &>/dev/null; then
         # actually run the singularity image stored in the base directory 
         #  going to working directory inside container
+        _current_working_dir=${_pwd##"${LDMX_BASE}/"} 
         singularity run \
             --no-home \
             ${LDMX_SINGULARITY_IMG} ${_current_working_dir} "$@"
