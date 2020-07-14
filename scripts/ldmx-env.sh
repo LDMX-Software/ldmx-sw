@@ -193,7 +193,7 @@ function ldmx() {
 # Parse CLI Arguments
 ###############################################################################
 
-function ldmx-help() {
+function ldmx-env-help() {
     echo "Environment setup script for ldmx."
     echo "  Usage: source ldmx-sw/scripts/ldmx-env.sh [-h,--help] [-f,--force] [-b,--base ldmx_base] [-r,--repo repo_name] [-t,--tag image_tag]"
     echo "    -h,--help  : Print this help message"
@@ -217,7 +217,7 @@ _force_update="OFF" #default to not force an update
 
 function ldmx-env-fatal-error() {
     echo "ERROR: $@"
-    ldmx-help
+    ldmx-env-help
     return 1
 }
 
@@ -226,7 +226,7 @@ do
     option="$1"
     case "$option" in
         -h|--help)
-            ldmx-help
+            ldmx-env-help
             return 0
             ;;
         -b|--base)
