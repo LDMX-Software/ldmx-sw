@@ -215,6 +215,12 @@ _repo_name="dev" #default repository name: ldmx/_repo_name
 _image_tag="latest" #default image tag in repository
 _force_update="OFF" #default to not force an update
 
+function ldmx-env-fatal-error() {
+    echo "ERROR: $@"
+    ldmx-help
+    return 1
+}
+
 while [[ $# -gt 0 ]] #while still have more options
 do
     option="$1"
@@ -224,6 +230,11 @@ do
             return 0
             ;;
         -b|--base)
+            if [ -z "$2" ]
+            then
+                ldmx-env-fatal-error "The '-b','--base' flag requires an argument after it!"
+                return 1
+            fi
             _ldmx_base="$2"
             shift #move past flag
             shift #move past argument
@@ -233,9 +244,8 @@ do
             then
                 _repo_name="$2"
             else
-                echo "ERROR: Unsupported repo name: '$2'"
-                ldmx-help
-                return 1
+                ldmx-env-fatal-error "Unsupported repo name: '$2'"
+                return 2
             fi
             shift #move past flag
             shift #move past argument
@@ -243,9 +253,8 @@ do
         -t|--tag)
             if [ -z "$2" ]
             then
-                echo "ERROR: Cannont specify empty tag!"
-                ldmx-help
-                return 1
+                ldmx-env-fatal-error "The '-t','--tag' flag requires an argument after it!"
+                return 3
             fi
             _image_tag="$2"
             shift #move past flag
@@ -256,9 +265,8 @@ do
             shift #move past flag
             ;;
         *)
-            echo "ERROR: '$option' is not a valid option!"
-            ldmx-help
-            return 1
+            ldmx-env-fatal-error "'$option' is not a valid option!"
+            return 5
             ;;
     esac
 done
