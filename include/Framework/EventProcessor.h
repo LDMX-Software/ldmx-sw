@@ -172,13 +172,13 @@ namespace ldmx {
              * Get the current logging frequency from the process
              * @return int frequency logging should occurr
              */
-            int getLogFrequency() const { return process_.getLogFrequency(); }
+            int getLogFrequency() const;
 
             /**
              * Get the run number from the process
              * @return int run number
              */
-            int getRunNumber() const { return process_.getRunNumber(); }
+            int getRunNumber() const;
     
             /**
              * Internal function which is part of the EventProcessorFactory machinery.
