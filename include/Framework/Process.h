@@ -56,12 +56,10 @@ namespace ldmx {
             }
 
             /**
-             * Set the run number to be used when initiating new events from the job
-             * @param run Run number to use
+             * Get the run number to be used when initiating new events from the job
+             * @return int Run number
              */
-            void setRunNumber(int run) {
-                runForGeneration_=run;
-            }
+            int getRunNumber() const { return runForGeneration_; }
 
             /**
              * Get the frequency with which the event information is printed.
