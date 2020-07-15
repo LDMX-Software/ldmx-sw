@@ -54,8 +54,8 @@ namespace ldmx {
         //         Checked with a ruler - correct.
 
         gap_        = gap;
-        moduler_    = moduleR_*(sqrt(3)/2);
         moduleR_    = moduleMaxR;
+        moduler_    = moduleR_*(sqrt(3)/2);
         nCellsWide_ = nCellsWide;
         cellr_      = moduleR_/(nCellsWide - 1./3.);
         cellR_      = (2./sqrt(3.))*cellr_;
