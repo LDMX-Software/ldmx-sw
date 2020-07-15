@@ -10,22 +10,43 @@ project(LDMX_SW VERSION 2.1.0
 
 # If an install location hasn't been set via CMAKE_INSTALL_PREFIX, set it to 
 # a reasonable default ($PWD/install).  
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/install CACHE PATH "" FORCE)
     message(STATUS "Install directory set to ${CMAKE_INSTALL_PREFIX}")
 endif()
 
-if(NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
+# If a user is building outside of a Docker or Singularity environment, 
+# warn them. 
+if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
   message(WARNING "You are not inside a container; you may be working in an untested environment.")
 endif()
+
+# Load additional macro commands 
+list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
+message(STATUS ${CMAKE_MODULE_PATH})
+
+# Load the BuildMacros module. If loaded correctly, the variable 
+# 'build_macros_found' will be set to the path of the module.  Otherwise, it
+# is set to NOTFOUND.
+include(BuildMacros RESULT_VARIABLE build_macros_found)
 
 # Set the default release type to "Release". If a release type is specified 
 # at the command line, it's respected.
 set(default_build_type "Release")
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
   set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
 endif()
+
+# Add options to allow the following types of builds
+#
+# 1) Framework - Only the modules necessary to run the framework.  This 
+# is useful when running analysis using external analysis processors.
+# 2) Recon - In addition to building the framework, build the modules needed 
+# by the reconstruction.  
+# 3) Sim - Only build the modules necessary to run the simulation 
+#
+# By default, all modules are built.
 
 # These two modules are the minimum needed to build and run the framework.
 add_subdirectory(Event)
@@ -51,7 +72,7 @@ add_subdirectory(EventProc)
 add_subdirectory(Detectors)
 
 # 
-add_subdirectory(DQM)
+#add_subdirectory(DQM)
 
 option(BUILD_EVE "Build the event display application. This requires more components of ROOT." OFF)
 if(BUILD_EVE)
@@ -75,7 +96,7 @@ endif()
 option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
 message(STATUS "MagFieldMap installation: ${INSTALL_FIELDMAP}")
 if(INSTALL_FIELDMAP)
-  install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Scripts/InstallMagFieldMap.cmake")
+  install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/InstallMagFieldMap.cmake")
 endif()
 
 # build and install test executable ldmx-test

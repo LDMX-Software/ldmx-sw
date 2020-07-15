@@ -9,25 +9,5 @@ project(Tools VERSION 2.1.0
               LANGUAGES CXX
 )
 
-# Find all of the source files we want to add to the SimCore library
-file(GLOB TOOLS_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
-
-# Create the SimCore shared library
-add_library(Tools SHARED ${TOOLS_SRC_FILES})
-
-# Setup the include directories 
-target_include_directories(Tools PUBLIC ${PROJECT_SOURCE_DIR}/include)
-
-# Setup the libraries to link against
-target_link_libraries(Tools PUBLIC LDMX::Framework LDMX::Event)
-
-# Define an alias 
-add_library(LDMX::Tools ALIAS Tools)
-
-# Install the libraries and headers
-install(TARGETS Tools
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-)
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/Tools
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-
+setup_library(name Tools
+              dependencies LDMX::Framework LDMX::Event)
