@@ -167,6 +167,18 @@ namespace ldmx {
              * @param purposeString A purpose string which can be used in the skim control configuration
              */
             void setStorageHint(ldmx::StorageControlHint hint, const std::string& purposeString);
+
+            /**
+             * Get the current logging frequency from the process
+             * @return int frequency logging should occurr
+             */
+            int getLogFrequency() const;
+
+            /**
+             * Get the run number from the process
+             * @return int run number
+             */
+            int getRunNumber() const;
     
             /**
              * Internal function which is part of the EventProcessorFactory machinery.
@@ -190,9 +202,6 @@ namespace ldmx {
              */
             void abortEvent() { throw AbortEventException(); }
 
-            /** Handle to the Process. */
-            Process& process_;
-
             /// Interface class for making and filling histograms
             HistogramHelper histograms_;
 
@@ -203,6 +212,9 @@ namespace ldmx {
             logging::logger theLog_;
 
         private:
+
+            /** Handle to the Process. */
+            Process& process_;
 
             /** The name of the EventProcessor. */
             std::string name_;
