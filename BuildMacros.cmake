@@ -50,7 +50,6 @@ macro(setup_library)
 
     # Find all of the source files we want to add to the SimCore library
     if (NOT setup_library_sources)
-        message(STATUS "Setting up libraries")
         file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
     else()
         set(SRC_FILES ${setup_library_sources})
@@ -74,4 +73,36 @@ macro(setup_library)
     )
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/${setup_library_name}
             DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+
+    # If the python directory exists, initialize the package and copy over the 
+    # python modules.
+    if (EXISTS ${PROJECT_SOURCE_DIR}/python)
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py 
+             "\"\"\"Python module to configure the LDMX module ${setup_library_name}\"\"\"")
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py 
+                DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/python/LDMX/${setup_library_name})
+
+        # write an include file for this module
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/include.py
+             "\"\"\"Include this module\"\"\"\ndef library() :\n\ \ \ \ \"\"\"Attach the name of ${setup_library_name} library to the process\"\"\"\n\ \ \ \ from LDMX.Framework.ldmxcfg import Process\n\ \ \ \ Process.addLibrary('${CMAKE_INSTALL_PREFIX}/lib/lib${setup_library_name}.so')")
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/include.py DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/python/LDMX/${setup_library_name})
+        # install python scripts
+        file(GLOB py_scripts CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/python/*.py)
+        foreach(pyscript ${py_scripts})
+            string(REPLACE ".in" "" script_output ${pyscript})
+            get_filename_component(script_output ${script_output} NAME)
+            configure_file(${pyscript} ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output})
+            install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/python/LDMX/${setup_library_name})
+        endforeach()
+
+    endif()
+
+    # If the data directory exists, install it to the data directory
+    if (EXISTS ${PROJECT_SOURCE_DIR}/data)
+        file(GLOB data_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/data/*)
+        foreach(data_file ${data_files})
+            install(FILES ${data_file} DESTINATION ${CMAKE_INSTALL_PREFIX}/data/${setup_library_name})
+        endforeach()
+    endif()
+
 endmacro()
