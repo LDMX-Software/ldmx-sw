@@ -56,10 +56,6 @@ namespace ldmx {
         // parameters used to configure the simulation
         parameters_ = parameters; 
         
-        // Set the run number. If not specified, the run number is set to 0. 
-        int runNumber = parameters_.getParameter< int >( "runNumber" );
-        process_.setRunNumber( runNumber );
-
         // Set the verbosity level.  The default level  is 0.
         verbosity_ = parameters_.getParameter< int >("verbosity");
 
@@ -122,7 +118,7 @@ namespace ldmx {
 
     void Simulator::onFileOpen(EventFile &file) {
         // Initialize persistency manager and connect it to the current EventFile
-        persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_); 
+        persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_, this->getRunNumber()); 
         persistencyManager_->Initialize(); 
     }
 
@@ -144,7 +140,7 @@ namespace ldmx {
             this->abortEvent();  //get out of processors loop
         }
         
-        if ( process_.getLogFrequency() > 0 and event.getEventHeader().getEventNumber() % process_.getLogFrequency() == 0 ) {
+        if ( this->getLogFrequency() > 0 and event.getEventHeader().getEventNumber() % this->getLogFrequency() == 0 ) {
             //print according to log frequency and verbosity
             if ( verbosity_ > 1 ) std::cout << "[ Simulator ] : Printing event contents:" << std::endl;
             event.Print( verbosity_ );
