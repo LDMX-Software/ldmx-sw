@@ -33,7 +33,7 @@
 
 namespace ldmx {
 
-    RootPersistencyManager::RootPersistencyManager(EventFile &file, Parameters& parameters) :
+    RootPersistencyManager::RootPersistencyManager(EventFile &file, Parameters& parameters, const int& runNumber) :
         G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"),
         file_(file) {
 
@@ -47,6 +47,7 @@ namespace ldmx {
         ecalHitIO_.setEnableHitContribs(parameters.getParameter< bool >("enableHitContribs")); 
         ecalHitIO_.setCompressHitContribs(parameters.getParameter< bool >("compressHitContribs"));
 
+        run_ = runNumber;
     }
 
     G4bool RootPersistencyManager::Store(const G4Event* anEvent) {
@@ -72,7 +73,7 @@ namespace ldmx {
 
         // Create the run header.
         RunHeader runHeader( 
-                parameters_.getParameter<int>("runNumber"),
+                run_,
                 detector->getDetectorHeader()->getName(), 
                 parameters_.getParameter<std::string>("description")
                 );
