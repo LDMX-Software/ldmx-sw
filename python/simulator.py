@@ -31,8 +31,6 @@ class simulator(Producer):
         Full path to detector description gdml (suggested to use setDetector)
     validate_detector : bool, optional
         Should we have Geant4 validate that the gdml is correctly formatted?
-    runNumber : int
-        Identifier for this run
     description : str
         Describe this run in a human-readable way
     scoringPlanes : str, optional
@@ -92,7 +90,6 @@ class simulator(Producer):
         # Required Parameters
         self.generators = [ ]
         self.detector = ''
-        self.runNumber = -1
         self.description = ''
 
         #######################################################################
