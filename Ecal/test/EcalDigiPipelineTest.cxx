@@ -27,7 +27,7 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
 
     using namespace ldmx;
 
-    std::map< std::string , std::any > requiredProcessParams, dummyAnalyzer;
+    std::map< std::string , std::any > requiredProcessParams;
     requiredProcessParams["passName"] = std::string("dummyProcess");
     requiredProcessParams["histogramFile"] = std::string();
     requiredProcessParams["logFileName"] = std::string();
@@ -40,15 +40,25 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
     requiredProcessParams["run"] = 1; 
     requiredProcessParams["skimDefaultIsKeep"] = false; 
 
-    dummyAnalyzer["instanceName"] = std::string("dummy");
-    dummyAnalyzer["className"] = std::string("ldmx::DummyAnalyzer");
-    dummyAnalyzer["caloHitCollection"] = std::string("dummy");
-    Parameters dummyConfig, dummyAna;
-    dummyAna.setParameters(dummyAnalyzer);
+    std::map< std::string , std::any > actualParameters;
+    Parameters wrapperClass;
+    actualParameters[ "instanceName" ] = std::string("DummyEcalDigisWillNotRun");
+    actualParameters[ "className" ] = std::string("ldmx::EcalDigiProducer");
+    actualParameters[ "gain" ] = 2000.;
+    actualParameters[ "pedestal" ] = 1100.;
+    actualParameters[ "noiseIntercept" ] = 700.;
+    actualParameters[ "noiseSlope" ] = 25.;
+    actualParameters[ "padCapacitance" ] = 0.1;
+    actualParameters[ "nADCs" ] = 10; 
+    actualParameters[ "iSOI"  ] = 0; 
+    actualParameters[ "readoutThreshold" ] = 4.;
+    actualParameters[ "makeConfigHists" ] = false;
+    wrapperClass.setParameters( actualParameters );
     
-    std::vector<Parameters> seq = { dummyAna };
+    std::vector<Parameters> seq = { wrapperClass };
     requiredProcessParams["sequence"] = seq;
 
+    Parameters dummyConfig;
     dummyConfig.setParameters(requiredProcessParams);
 
     Process dummyProcess( dummyConfig );
@@ -80,10 +90,8 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
 
     testEventBus.add( "EcalSimHits" , pretendSimHits ); //needs to be correct collection name
 
-    std::map< std::string , std::any > actualParameters;
-    Parameters wrapperClass;
-
     EcalDigiProducer digis( "testDigis" , dummyProcess );
+    actualParameters.clear();
     actualParameters[ "gain" ] = 2000.;
     actualParameters[ "pedestal" ] = 1100.;
     actualParameters[ "noiseIntercept" ] = 700.;
