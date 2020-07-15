@@ -23,6 +23,14 @@ namespace ldmx {
     void EventProcessor::setStorageHint(ldmx::StorageControlHint hint, const std::string& purposeString) {
         process_.getStorageController().addHint(name_,hint,purposeString);
     }
+
+    int EventProcessor::getLogFrequency() const {
+        return process_.getLogFrequency();
+    }
+
+    int EventProcessor::getRunNumber() const {
+        return process_.getRunNumber();
+    }
   
     void EventProcessor::declare(const std::string& classname, int classtype,EventProcessorMaker* maker) {
         EventProcessorFactory::getInstance().registerEventProcessor(classname, classtype, maker);
