@@ -276,7 +276,7 @@
 <variable name="sqrt3" value="1.73205080757"/>
 
 <!-- transverse definitions -->
-<variable name="hexagon_gap" value="1.0"/>
+<variable name="hexagon_gap" value="1.5"/>
 <variable name="Hex_radius" value="85."/>
 
 <!-- ECal width and height -->
