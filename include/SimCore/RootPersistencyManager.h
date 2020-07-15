@@ -60,9 +60,11 @@ namespace ldmx {
             /**
              * Class constructor.
              *
-             * @param eventFile 
+             * @param eventFile file to put output events into
+             * @param parameters configuration parameters from Simulator
+             * @param runNumber current run identifer from Process
              */
-            RootPersistencyManager(EventFile &file, Parameters& parameters);
+            RootPersistencyManager(EventFile &file, Parameters& parameters, const int& runNumber);
 
             /// Destructor 
             virtual ~RootPersistencyManager() { }
@@ -170,6 +172,9 @@ namespace ldmx {
 
             /// Configuration parameters passed to Simulator
             Parameters parameters_;
+
+            /// Run Number, given to us by Simulator from Process
+            int run_;
 
             /// Number of events started on this production run
             int eventsBegan_{-1};
