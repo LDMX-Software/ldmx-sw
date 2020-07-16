@@ -24,7 +24,7 @@ setup_geant4_target()
 
 # Setup the library 
 setup_library(name SimCore 
-              dependencies Geant4::Interface LDMX::Framework LDMX::DetDescr)
+              dependencies Geant4::Interface DARK::Framework DARK::DetDescr)
 
 # Set some target properties
 set_target_properties(SimCore PROPERTIES 
