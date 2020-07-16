@@ -9,6 +9,6 @@ project(EventProc VERSION 2.1.0
 )
 
 setup_library(name EventProc
-              dependencies LDMX::Framework LDMX::Event LDMX::Tools 
-                           LDMX::DetDescr LDMX::Ecal)
+              dependencies DARK::Framework DARK::Event DARK::Tools 
+                           DARK::DetDescr DARK::Ecal)
 

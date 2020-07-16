@@ -10,4 +10,4 @@ project(Tools VERSION 2.1.0
 )
 
 setup_library(name Tools
-              dependencies LDMX::Framework LDMX::Event)
+              dependencies DARK::Framework DARK::Event)

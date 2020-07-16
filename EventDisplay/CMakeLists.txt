@@ -46,11 +46,11 @@ target_link_libraries(EventDisplay PUBLIC
     Python3::Python
     ROOT::Core
     ROOT::Rint
-    LDMX::DetDescr
+    DARK::DetDescr
 )
 
 # Define an alias 
-add_library(LDMX::EventDisplay ALIAS EventDisplay)
+add_library(DARK::EventDisplay ALIAS EventDisplay)
 
 # Install the libraries and headers
 install(TARGETS EventDisplay
