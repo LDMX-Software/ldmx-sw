@@ -7,10 +7,10 @@ include(CMakeParseArguments)
 #
 macro(setup_geant4_target)
 
-    # Configure Geant4
+    # Search for Geant4 and load its settings
     find_package(Geant4 REQUIRED gdml ui_all vis_all)
 
-    # Export the Geant4 target if it hasn't been done yet.
+    # Create an imported Geant4 target if it hasn't been done yet.
     if( NOT TARGET Geant4::Interface) 
     
         #Geant4_DEFINITIONS already include -D, this leads to the error 
@@ -41,6 +41,29 @@ macro(setup_geant4_target)
 
 endmacro()
 
+macro(setup_lcio_target)
+    
+    # Search for LCIO and load its settings
+    find_package(LCIO CONFIG REQUIRED)
+
+    # If it doesn't exists, create an imported target for LCIO
+    if ( NOT TARGET LCIO::Interface)
+        
+        # Create the LCIO target
+        add_library(LCIO::Interface INTERFACE IMPORTED GLOBAL)
+
+        # Set the target properties
+        set_target_properties(LCIO::Interface
+            PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${LCIO_INCLUDE_DIRS}"
+        )
+
+        message(STATUS "Found LCIO version ${LCIO_VERSION}")
+
+    endif()
+
+endmacro()
+
 macro(setup_library)
 
     set(oneValueArgs name)
@@ -65,7 +88,7 @@ macro(setup_library)
     target_link_libraries(${setup_library_name} PUBLIC ${setup_library_dependencies})
 
     # Define an alias
-    add_library(LDMX::${setup_library_name} ALIAS ${setup_library_name})
+    add_library(DARK::${setup_library_name} ALIAS ${setup_library_name})
 
     # Install the libraries and headers
     install(TARGETS ${setup_library_name}
