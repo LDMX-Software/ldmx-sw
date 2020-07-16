@@ -37,12 +37,12 @@ target_link_libraries(Framework PUBLIC
     Python3::Python
     ROOT::Hist
     ROOT::TreePlayer
-    LDMX::Event
+    DARK::Event
     Boost::log
 )
 
 # Define an alias 
-add_library(LDMX::Framework ALIAS Framework)
+add_library(DARK::Framework ALIAS Framework)
 
 # Install the libraries and headers
 install(TARGETS Framework
