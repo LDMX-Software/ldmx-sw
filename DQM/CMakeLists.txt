@@ -9,4 +9,4 @@ project(DQM VERSION 2.1.0
 )
 
 setup_library(name DQM
-              dependencies LDMX::Framework LDMX::Event LDMX::Tools LDMX::DetDescr)
+              dependencies DARK::Framework DARK::Event DARK::Tools DARK::DetDescr)

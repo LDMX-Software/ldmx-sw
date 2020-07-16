@@ -12,4 +12,4 @@ project(Biasing VERSION 2.1.0
 setup_geant4_target()
 
 setup_library(name Biasing
-              dependencies Geant4::Interface LDMX::Framework LDMX::SimCore)
+              dependencies Geant4::Interface DARK::Framework DARK::SimCore)
