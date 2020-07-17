@@ -23,7 +23,7 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
         self.number_of_strips = 50
         self.number_of_arrays = 1
         self.mev_per_mip = 0.4
-        self.pe_per_mip = 10.
+        self.pe_per_mip = 100.
         self.input_collection="TriggerPadUpSimHits"
         self.input_pass_name="" #take any pass
         self.output_collection="trigScintDigisUp"
