@@ -7,3 +7,6 @@
 [submodule "Framework"]
 	path = Framework
 	url = https://github.com/LDMX-Software/Framework.git
+[submodule "Ecal"]
+	path = Ecal
+	url = https://github.com/LDMX-Software/Ecal.git
