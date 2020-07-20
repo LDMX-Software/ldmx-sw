@@ -10,7 +10,7 @@
 
 namespace ldmx {
 
-    EcalHexReadout::EcalHexReadout(double moduleMaxR, double gap, unsigned nCellsWide, 
+    EcalHexReadout::EcalHexReadout(double moduleMinR, double gap, unsigned nCellsWide, 
             const std::vector<double> &layerZPositions, double ecalFrontZ) 
         : layerZPositions_(layerZPositions), ecalFrontZ_(ecalFrontZ) {
 
@@ -54,8 +54,8 @@ namespace ldmx {
         //         Checked with a ruler - correct.
 
         gap_        = gap;
-        moduleR_    = moduleMaxR;
-        moduler_    = moduleR_*(sqrt(3)/2);
+        moduleR_    = moduleMinR*(2/sqrt(3));
+        moduler_    = moduleMinR;
         nCellsWide_ = nCellsWide;
         cellr_      = moduleR_/(nCellsWide - 1./3.);
         cellR_      = (2./sqrt(3.))*cellr_;
