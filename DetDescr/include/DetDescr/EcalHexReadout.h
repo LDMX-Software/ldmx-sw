@@ -40,11 +40,11 @@ namespace ldmx {
 
             /**
              * Class constructor.
-             * @param moduleMaxR The center-to-corner radius of an ECal module [mm]. See comments in src.
+             * @param moduleMinR The center-to-flat radius of an ECal module [mm]. See comments in src.
              * @param gap air gap between edges of adjacent ECal modules [mm]
              * @param nCellsWide Total cell count in center horizontal row.
              */
-            EcalHexReadout(double moduleMaxR, double gap, unsigned nCellsWide,
+            EcalHexReadout(double moduleMinR, double gap, unsigned nCellsWide,
                     const std::vector<double> &layerZPositions, double ecalFrontZ);
 
             /**

@@ -275,7 +275,10 @@
 <!-- constants -->
 <variable name="sqrt3" value="1.73205080757"/>
 
-<!-- transverse definitions -->
+<!-- transverse definitions 
+    hexagon_gap is the flat-to-flat gap between modules in mm
+    Hex_radius is the center-to-flat radius of one module in mm
+-->
 <variable name="hexagon_gap" value="1.5"/>
 <variable name="Hex_radius" value="85."/>
 
