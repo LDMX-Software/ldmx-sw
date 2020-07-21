@@ -215,7 +215,6 @@ namespace ldmx {
                     digiToAdd[iADC].adc_t_   = pulseFunc_.Eval( measTime );
                     digiToAdd[iADC].adc_tm1_ = -1; //TODO set this up
                     digiToAdd[iADC].toa_     = toa * (1024/CLOCK_CYCLE);
-                    digiToAdd[iADC].tot_     = 0;
                     digiToAdd[iADC].tot_progress_ = false;
                     digiToAdd[iADC].tot_complete_ = false;
                 }
@@ -224,22 +223,22 @@ namespace ldmx {
                 // above TOT threshold -> do TOT readout mode
     
                 //measure time of arrival (TOA) and time under threshold (TUT) from pulse
-                //  TOA: earliest possible measure for crossing threshold line
-                //  TUT: latest possible measure for crossing threshold line
+                //  TOA: earliest possible measure for crossing TOT threshold line
+                //  TUT: latest possible measure for crossing TOT threshold line
+                //TODO make the TOT measurement more realistic
+                //  in reality, the pulse drastically changes shape when the chip goes
+                //  into saturation. The charge draining after saturation slows down
+                //  and makes the TOT <-> energy deposited conversion closer to linear
                 
-                double toa(0.);
+                double toa(0.); //default is earliest possible time
                 // check if first half is just always above readout
-                if ( pulseFunc_.Eval( -nADCs_*EcalDigiProducer::CLOCK_CYCLE ) > readoutThreshold_ ) 
-                    toa = -nADCs_*EcalDigiProducer::CLOCK_CYCLE; //always above --> toa is beginning of readout interval
-                else
-                    toa = pulseFunc_.GetX(readoutThreshold_, -nADCs_*EcalDigiProducer::CLOCK_CYCLE, timeInWindow);
+                if ( pulseFunc_.Eval(0.) < totThreshold_ ) 
+                    toa = pulseFunc_.GetX(totThreshold_, 0., timeInWindow);
     
-                double tut(0.);
+                double tut(nADCs_*CLOCK_CYCLE); //default is latest possible time
                 // check if second half is just always above readout
-                if ( pulseFunc_.Eval( nADCs_*EcalDigiProducer::CLOCK_CYCLE ) > readoutThreshold_ )
-                    tut = nADCs_*EcalDigiProducer::CLOCK_CYCLE; //always above --> tut is end of readout interval
-                else
-                    tut = pulseFunc_.GetX(readoutThreshold_, timeInWindow, nADCs_*EcalDigiProducer::CLOCK_CYCLE);
+                if ( pulseFunc_.Eval( nADCs_*CLOCK_CYCLE ) > totThreshold_ )
+                    tut = pulseFunc_.GetX(totThreshold_, timeInWindow, nADCs_*CLOCK_CYCLE);
     
                 double tot = tut - toa;
     
@@ -249,18 +248,25 @@ namespace ldmx {
                     << tot << " TOT " << toa << " TOA " << tut << " TUT" << std::endl;
                 */
     
-                //conversion from ns to clock counts (converting to int implicitly)
-                int totalClockCounts = tot*(1024/EcalDigiProducer::CLOCK_CYCLE); 
-    
-                //TODO: should expand digi response to multiple samples instead of just the SOI
-                //TODO currently using adc_t_ to count number of samples that clock is over threshold
-                //  this is NOT how it is actually done on the chip
-                digiToAdd[iSOI_].adc_t_   = totalClockCounts / 1024; //Place Holder - not actually how response works
-                digiToAdd[iSOI_].adc_tm1_ = -1; //NOT IMPLEMENTED
-                digiToAdd[iSOI_].tot_     = totalClockCounts % 1024; //clock counts since last trigger clock (25ns clock)
-                digiToAdd[iSOI_].toa_     = toa * (1024/EcalDigiProducer::CLOCK_CYCLE); //conversion from ns to clock counts
-                digitoAdd[iSOI_].tot_progress_ = false;
-                digitoAdd[iSOI_].tot_complete_ = true ;
+                for ( unsigned int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
+                    if ( tot > CLOCK_CYCLE or tot < 0 ) {
+                        //TOT still in progress or already completed
+                        double measTime = iADC*CLOCK_CYCLE; // + offset;
+                        digiToAdd[iADC].adc_t_   = pulseFunc_.Eval( measTime );
+                        digiToAdd[iADC].adc_tm1_ = -1; //TODO set this up
+                        digiToAdd[iADC].toa_     = toa*(1024/CLOCK_CYCLE);
+                        digitoAdd[iADC].tot_progress_ = true;
+                        digitoAdd[iADC].tot_complete_ = false;
+                    } else {
+                        //TOT complete
+                        digiToAdd[iADC].adc_tm1_ = -1; //TODO set this up
+                        digiToAdd[iADC].tot_     = tot*(1024/CLOCK_CYCLE);
+                        digiToAdd[iADC].toa_     = toa*(1024/CLOCK_CYCLE);
+                        digitoAdd[iADC].tot_progress_ = false;
+                        digitoAdd[iADC].tot_complete_ = true;
+                    }
+                    tot -= CLOCK_CYCLE; //decrement TOT
+                }
     
                 /*
                 std::cout << std::setw(6) << totalClockCounts
