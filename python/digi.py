@@ -19,10 +19,9 @@ class EcalDigiProducer(Producer) :
         super().__init__(instance_name , 'ldmx::EcalDigiProducer','Ecal')
 
         self.gain = 2000.
-        self.pedestal =1100.
-        self.makeConfigHists = False 
+        self.pedestal = 1100.
         self.nADCs = 10
-        self.iSOI  = 0
+        self.iSOI  = 0 
 
         import time
         self.randomSeed = int(time.time())
@@ -30,17 +29,19 @@ class EcalDigiProducer(Producer) :
         self.CLOCK_CYCLE = 25.0; #ns
         self.MIP_SI_RESPONSE = 0.130; #MeV
 
-        self.NUM_ECAL_LAYERS = 34;
-        self.NUM_HEX_MODULES_PER_LAYER = 7;
-        self.CELLS_PER_HEX_MODULE = 397;
+        self.NUM_ECAL_LAYERS = 34
+        self.NUM_HEX_MODULES_PER_LAYER = 7
+        self.CELLS_PER_HEX_MODULE = 397
 
-        self.noiseRMS = self.calculateNoise( 700. , 25. , 0.1 ) #MeV
+        self.noiseRMS = self.calculateNoise( 700. , 25. , 0.1 ) #MeV ~ 2.5e-3
         self.readoutThreshold = 4.*self.noiseRMS #MeV - readout threshold is 4sigma higher than noise average
 
-        self.toaThreshold = 5.*self.MIP_SI_RESPONSE #MeV - TOA Threshold is 5 MIPs
-        self.totThreshold = 50.*self.MIP_SI_RESPONSE #MeV - TOT Threshold is 50 MIPs
+        self.toaThreshold = 5.*self.MIP_SI_RESPONSE #MeV ~0.65MeV TOA Threshold is 5 MIPs
+        self.totThreshold = 50.*self.MIP_SI_RESPONSE #MeV ~6.5MeV TOT Threshold is 50 MIPs
 
         self.timingJitter =  self.CLOCK_CYCLE / 100. #ns - chosen pretty arbitrarily
+
+        self.makeConfigHists = False #should we make config hists
 
     def calculateNoise(self, noiseIntercept , noiseSlope , capacitance ) :
         """Calculate the Noise RMS (in units of MeV) from the capacitance of the readout pads.
@@ -60,6 +61,21 @@ class EcalDigiProducer(Producer) :
         """
 
         return (noiseIntercept + noiseSlope*capacitance)*(self.MIP_SI_RESPONSE/self.ELECTRONS_PER_MIP)
+
+    def makeConfigHists(self) :
+        """Turn on the creation and filling of configuration histograms"""
+
+        self.makeConfigHists = True
+        self.build2DHistogram( 'tot_SimE' ,
+                    xlabel = "TOT [ns]", 
+                    xbins = self.nADCs*self.CLOCK_CYCLE , xmin = 0 , xmax = self.nADCs*self.CLOCK_CYCLE,
+                    ylabel = "Sim E [MeV]" , 
+                    ybins = [ 0., 1e-3,
+                        1e-2, 2e-2, 3e-2, 4e-2, 5e-2, 6e-2, 7e-2, 8e-2, 9e-2,
+                        1e-1, 2e-1, 3e-1, 4e-1, 5e-1, 6e-1, 7e-1, 8e-1, 9e-1,
+                        1., 2., 3., 4., 5., 6., 7., 8., 9.,
+                        1e1, 2e1, 3e1, 4e1, 5e1 ] 
+                    )
 
 class EcalRecProducer(Producer) :
     """Configuration for the EcalRecProducer

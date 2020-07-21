@@ -28,6 +28,8 @@ namespace ldmx {
         pedestal_          = ps.getParameter<double>("pedestal");
         noiseRMS_          = ps.getParameter<double>("noiseRMS");
         readoutThreshold_  = ps.getParameter<double>("readoutThreshold");
+        toaThreshold_      = ps.getParameter<double>("toaThreshold");
+        totThreshold_      = ps.getParameter<double>("totThreshold");
         nADCs_             = ps.getParameter<int>("nADCs");
         iSOI_              = ps.getParameter<int>("iSOI");
         CLOCK_CYCLE        = ps.getParameter<double>("CLOCK_CYCLE");
@@ -68,23 +70,6 @@ namespace ldmx {
 
         //Option to make configuration histograms
         makeConfigHists_ = ps.getParameter<bool>("makeConfigHists");
-        if ( makeConfigHists_ ) {
-            getHistoDirectory();
-
-            int nbinsSimE = 33;
-            double binsSimE[34] = {
-                0.,
-                1e-3,
-                1e-2, 2e-2, 3e-2, 4e-2, 5e-2, 6e-2, 7e-2, 8e-2, 9e-2,
-                1e-1, 2e-1, 3e-1, 4e-1, 5e-1, 6e-1, 7e-1, 8e-1, 9e-1,
-                1., 2., 3., 4., 5., 6., 7., 8., 9.,
-                1e1, 2e1, 3e1, 4e1, 5e1
-            };
-            tot_SimE_ = new TH2F( "tot_SimE_" , ";TOT (Clock Counts);Sim E [MeV]",
-                    nADCs_*1024, 0 , nADCs_*1024,
-                    nbinsSimE , binsSimE
-                    );
-        }
     }
 
     void EcalDigiProducer::produce(Event& event) {
@@ -191,6 +176,13 @@ namespace ldmx {
             //setup up pulse by changing the amplitude and timing parameters
             //  amplitude is gain times number of electrons generated
             //  number of electrons is calculated by converting energy to MIPs and then MIPs to electrons
+            //Energy -> Volts converstion
+            //              (   1MIP   ) ( 37 ke- ) ( 0.162 fC ) (   1    )
+            // energy [MeV] (----------) (--------) (----------) (--------) = volts [mV]
+            //              ( 0.130MeV ) (  1MIP  ) (   1 ke-  ) ( 0.1 pF )
+            //
+            // (1/MIP_SI_RESPONSE)(ELECTRONS_PER_MIP)(charge of 1k electrons)(1/capacitance of readout pads)
+            // TODO update to include more than just the first two terms
             pulseFunc_.SetParameter( 0 , gain_*(ELECTRONS_PER_MIP/MIP_SI_RESPONSE)*energyInWindow ); 
             pulseFunc_.SetParameter( 4 , timeInWindow ); //set time of peak to simulated hit time
 
@@ -241,6 +233,8 @@ namespace ldmx {
                     tut = pulseFunc_.GetX(totThreshold_, timeInWindow, nADCs_*CLOCK_CYCLE);
     
                 double tot = tut - toa;
+
+                if ( makeConfigHists_ ) histograms_.fill( "tot_SimE" , tot , energyInWindow );
     
                 /*
                 std::cout << std::setw(6)
@@ -274,9 +268,6 @@ namespace ldmx {
                     << digiToAdd[iSOI_].tot_ << " tot" << std::endl;
                 */
     
-                if ( makeConfigHists_ ) {
-                    tot_SimE_->Fill( totalClockCounts , energyInWindow );
-                }
             }
 
             return true;
