@@ -1,12 +1,12 @@
 /**
- * @file EcalDigiCollection.h
+ * @file HgcrocDigiCollection.h
  * @brief Class that represents a digitized hit in a calorimeter cell within the ECal
  * @author Cameron Bravo, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef EVENT_ECALDIGICOLLECTION_H_
-#define EVENT_ECALDIGICOLLECTION_H_
+#ifndef EVENT_HGCROCDIGICOLLECTION_H_
+#define EVENT_HGCROCDIGICOLLECTION_H_
 
 // ROOT
 #include "TObject.h" //for ClassDef
@@ -19,7 +19,7 @@
 namespace ldmx {
 
     /**
-     * @class EcalDigiCollection
+     * @class HgcrocDigiCollection
      * @brief Represents a collection of the ECal digi hits
      *
      * @note This class represents the digitized signal information
@@ -30,7 +30,7 @@ namespace ldmx {
      *
      * Each digi corresponds to a one channel ID and numSamplesPerDigi_ samples.
      */
-    class EcalDigiCollection {
+    class HgcrocDigiCollection {
 
         public:
         
@@ -88,7 +88,7 @@ namespace ldmx {
                  * Any measurements that aren't used as indicated by the flags
                  * are ignored and not saved into the word.
                  *
-                 * @note This should only be used within EcalDigiCollection!
+                 * @note This should only be used within HgcrocDigiCollection!
                  */
                 int32_t encode() const;
 
@@ -109,7 +109,7 @@ namespace ldmx {
                  * Any measurements that aren't set becuase of the interpretation
                  * from the flags are left as their default value.
                  *
-                 * @note This should only be used within EcalDigiCollection!
+                 * @note This should only be used within HgcrocDigiCollection!
                  */
                 void decode(int32_t word);
 
@@ -120,12 +120,12 @@ namespace ldmx {
             /**
              * Class constructor.
              */
-            EcalDigiCollection() { }
+            HgcrocDigiCollection() { }
 
             /**
              * Class destructor.
              */
-            virtual ~EcalDigiCollection() { }
+            virtual ~HgcrocDigiCollection() { }
 
             /**
              * Clear the data in the object.
@@ -237,7 +237,7 @@ namespace ldmx {
             /**
              * The ROOT class definition.
              */
-            ClassDef(EcalDigiCollection, 1);
+            ClassDef(HgcrocDigiCollection, 1);
     };
 
 }

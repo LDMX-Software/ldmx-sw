@@ -1,15 +1,15 @@
 /**
- * @file EcalDigiCollection.cxx
+ * @file HgcrocDigiCollection.cxx
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "Event/EcalDigiCollection.h"
+#include "Event/HgcrocDigiCollection.h"
 
-ClassImp(ldmx::EcalDigiCollection)
+ClassImp(ldmx::HgcrocDigiCollection)
 
 namespace ldmx {
 
-    int32_t EcalDigiCollection::Sample::encode() const {
+    int32_t HgcrocDigiCollection::Sample::encode() const {
 
         int32_t word;
 
@@ -41,7 +41,7 @@ namespace ldmx {
         return std::move(word);
     }
 
-    void EcalDigiCollection::Sample::decode(int32_t word) {
+    void HgcrocDigiCollection::Sample::decode(int32_t word) {
 
         //this is where the word --> measurements translation occurs
 
@@ -76,7 +76,7 @@ namespace ldmx {
         return;
     }
 
-    void EcalDigiCollection::Clear() {
+    void HgcrocDigiCollection::Clear() {
 
         channelIDs_.clear();
         samples_.clear();
@@ -84,9 +84,9 @@ namespace ldmx {
         return;
     }
 
-    void EcalDigiCollection::Print() const {
+    void HgcrocDigiCollection::Print() const {
 
-        std::cout << "EcalDigiCollection { Num Channel IDs: " << channelIDs_.size()
+        std::cout << "HgcrocDigiCollection { Num Channel IDs: " << channelIDs_.size()
             << ", Num Samples: " << samples_.size()
             << ", Samples Per Digi: " << numSamplesPerDigi_
             << ", Index for SOI: " << sampleOfInterest_
@@ -95,12 +95,12 @@ namespace ldmx {
         return;
     }
 
-    std::vector< EcalDigiCollection::Sample > EcalDigiCollection::getDigi( unsigned int digiIndex ) const {
+    std::vector< HgcrocDigiCollection::Sample > HgcrocDigiCollection::getDigi( unsigned int digiIndex ) const {
         
-        std::vector< EcalDigiCollection::Sample > digi;
+        std::vector< HgcrocDigiCollection::Sample > digi;
         for ( unsigned int sampleIndex = 0; sampleIndex < this->getNumSamplesPerDigi(); sampleIndex++ ) {
     
-            EcalDigiCollection::Sample sample;
+            HgcrocDigiCollection::Sample sample;
     
             sample.rawID_ = channelIDs_.at( digiIndex );
             sample.decode( samples_.at( digiIndex*numSamplesPerDigi_ + sampleIndex ) );
@@ -111,10 +111,10 @@ namespace ldmx {
         return digi;
     }
 
-    void EcalDigiCollection::addDigi( std::vector< EcalDigiCollection::Sample > newSamples ) {
+    void HgcrocDigiCollection::addDigi( std::vector< HgcrocDigiCollection::Sample > newSamples ) {
 
         if ( newSamples.size() != this->getNumSamplesPerDigi() ) {
-            std::cerr << "[ WARN ] [ EcalDigiCollection ] Input list of samples has size '"
+            std::cerr << "[ WARN ] [ HgcrocDigiCollection ] Input list of samples has size '"
                 << newSamples.size() << "' that does not match the number of samples per digi '"
                 << this->getNumSamplesPerDigi() << "'!." << std::endl;
             return;
@@ -123,11 +123,8 @@ namespace ldmx {
         int channelID = newSamples.at(0).rawID_;
         channelIDs_.push_back( channelID );
 
-        for ( auto const &sample : newSamples ) {
-            
+        for ( auto const &sample : newSamples )
             samples_.push_back( sample.encode() );
-        }
-
 
         return;
     }
