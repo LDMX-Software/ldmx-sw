@@ -19,53 +19,6 @@
 namespace ldmx {
 
     /**
-     * @struct EcalDigiSample
-     * @brief One sample of an Ecal digi channel corresponding to one clock of the HGCROC chip
-     *
-     * Not all of these measurements are valid in each sample.
-     * The valid measurements depend on the tot_progress_ and tot_complete_ flags.
-     *
-     * The toa_ measurement is always valid and is inserted as the third measurement in the 32-bit word.
-     *
-     * If the TOT measurment is NOT complete, then the other
-     * two valid measurements (in order) are
-     *  1. ADC of the previous sample (adc_tm1_)
-     *  2. ADC of this sample (adc_t_)
-     *
-     * If the TOT is NOT in progress and the TOT is complete, then
-     *  1. ADC of the previous sample (adc_tm1_)
-     *  2. TOT measurement (tot_)
-     *
-     * If both flags are true, then
-     *  1. ADC of this sample (adc_t_)
-     *  2. TOT measurement (tot_)
-     *
-     * Usually several samples are used for each channel to re-construct the hit.
-     */
-    struct EcalDigiSample {
-        /** Raw integer ID of channel this sample is for */
-        int rawID_{-1};
-
-        /** ADC counts in this channel at this clock */
-        int adc_t_{-1};
-
-        /** ADC counts in this channel at the previous clock */
-        int adc_tm1_{-1};
-
-        /** Time counts over threshhold in this channel during this clock */
-        int tot_{-1};
-
-        /** Time counts when signal arrived in this channel during this clock */
-        int toa_{-1};
-
-        /** Is the TOT measurement in progress during this sample? */
-        bool tot_progress_{false};
-
-        /** Is the TOT measurement complete at this sample? */
-        bool tot_complete_{false};
-    };
-
-    /**
      * @class EcalDigiCollection
      * @brief Represents a collection of the ECal digi hits
      *
@@ -78,6 +31,89 @@ namespace ldmx {
      * Each digi corresponds to a one channel ID and numSamplesPerDigi_ samples.
      */
     class EcalDigiCollection {
+
+        public:
+        
+            /**
+             * @struct Sample
+             * @brief One sample of a digi channel corresponding to one clock of the HGCROC chip
+             *
+             * Not all of these measurements are valid in each sample.
+             * The valid measurements depend on the tot_progress_ and tot_complete_ flags.
+             *
+             * The toa_ measurement is always valid and is inserted as the third measurement in the 32-bit word.
+             *
+             * If the TOT measurment is NOT complete, then the other
+             * two valid measurements (in order) are
+             *  1. ADC of the previous sample (adc_tm1_)
+             *  2. ADC of this sample (adc_t_)
+             *
+             * If the TOT is NOT in progress and the TOT is complete, then
+             *  1. ADC of the previous sample (adc_tm1_)
+             *  2. TOT measurement (tot_)
+             *
+             * If both flags are true, then
+             *  1. ADC of this sample (adc_t_)
+             *  2. TOT measurement (tot_)
+             *
+             * Usually several samples are used for each channel to re-construct the hit.
+             */
+            struct Sample {
+                /** Raw integer ID of channel this sample is for */
+                int rawID_{-1};
+        
+                /** ADC counts in this channel at this clock */
+                int adc_t_{-1};
+        
+                /** ADC counts in this channel at the previous clock */
+                int adc_tm1_{-1};
+        
+                /** Time counts over threshhold in this channel during this clock */
+                int tot_{-1};
+        
+                /** Time counts when signal arrived in this channel during this clock */
+                int toa_{-1};
+        
+                /** Is the TOT measurement in progress during this sample? */
+                bool tot_progress_{false};
+        
+                /** Is the TOT measurement complete at this sample? */
+                bool tot_complete_{false};
+
+                /**
+                 * Encode this Sample into a 32-bit word.
+                 *
+                 * @note This is where the measurements to word translation occurs.
+                 *
+                 * Any measurements that aren't used as indicated by the flags
+                 * are ignored and not saved into the word.
+                 *
+                 * @note This should only be used within EcalDigiCollection!
+                 */
+                int32_t encode() const;
+
+                /**
+                 * Decode the input 32-bit word into the members of this sample.
+                 *
+                 * @note This is where the word to measurements translation occurs.
+                 *
+                 * The first two bits are interpreted as:
+                 *  1. Whether TOT measurement is in progress during this sample
+                 *  2. TOT measurement is complete at this sample
+                 *
+                 * After the first two bits, the next 30 bits are broken into 
+                 * three 10 bit measurements. The first two measurments depend
+                 * on the two flags above. The third measurement is set to be
+                 * the time of arrival measurement (TOA).
+                 *
+                 * Any measurements that aren't set becuase of the interpretation
+                 * from the flags are left as their default value.
+                 *
+                 * @note This should only be used within EcalDigiCollection!
+                 */
+                void decode(int32_t word);
+
+            }; //Sample
 
         public:
 
@@ -94,78 +130,75 @@ namespace ldmx {
             /**
              * Clear the data in the object.
              *
-             * Clears the vectors of channel IDs and samples, but does not change the number of samples per digi setting.
+             * Clears the vectors of channel IDs and samples, 
+             * but does not change the other settings of this collection.
              */
             void Clear();
 
             /**
              * Print out the object.
              *
-             * Prints out the lengths of the stored vectors and the number of samples per digi setting.
+             * Prints out the lengths of the stored vectors and 
+             * the other settings of this collection.
              */
             void Print() const;
 
             /**
              * Get number of samples per digi 
+             * @return unsigned int number of samples per digi
              */
             unsigned int getNumSamplesPerDigi() const { return numSamplesPerDigi_; }
 
             /**
              * Set number of samples for each digi
+             * @param[in] n number of samples per digi
              */
             void setNumSamplesPerDigi( unsigned int n ) { numSamplesPerDigi_ = n; return; }
 
             /**
              * Get index of sample of interest
+             * @return unsigned int index for SOI
              */
             unsigned int getSampleOfInterestIndex() const { return sampleOfInterest_; }
 
             /**
              * Set index of sample of interest
+             *
+             * @note Does not check if input is a valid index!
+             * (i.e. input less than numSamplesPerDigi_)
+             *
+             * @param[in] n index for the sample of interest
              */
             void setSampleOfInterestIndex( unsigned int n ) { sampleOfInterest_ = n; return; }
             
             /**
              * Get samples for the input digi index
              *
-             * @note This is where the 32-bit word to measurements translation occurs.
-             *
              * Each "digi" is numSamplesPerDigi_ samples.
              * The sample is a single 32-bit word that is then translated into
-             * a EcalDigiSample depending on the first two bits.
+             * a Sample depending on the first two bits.
              *
-             * The first two bits are interpreted as:
-             *  1. Whether TOT measurement is in progress during this sample
-             *  2. TOT measurement is complete at this sample
+             * @sa Sample for how the valid measurements depend on the flags.
              *
-             * After the first two bits, the next 30 bits are broken into 
-             * three 10 bit measurements. The first two measurments depend
-             * on the two flags above. The third measurement is set to be
-             * the time of arrival measurement (TOA).
-             *
-             * @sa EcalDigiSample for how the valid measurements depend on the flags.
-             *
-             * Any measurements that aren't set becuase of the interpretation
-             * from the flags are left as their default value.
+             * @param[in] digiIndex index of digi to decode
+             * @return vector of Sample represeting the decoded digis
              */
-            std::vector< EcalDigiSample > getDigi( unsigned int digiIndex ) const;
+            std::vector< Sample > getDigi( unsigned int digiIndex ) const;
 
             /**
              * Get total number of digis
+             * @return unsigned int number of digis
              */
             unsigned int getNumDigis() const { return channelIDs_.size(); }
 
             /**
              * Translate and add samples to collection
              *
-             * @note This is where the measurements to 32-bit word translation occurs.
+             * @sa Sample for how the valid measurements depend on the flags.
              *
-             * @sa EcalDigiSample for how the valid measurements depend on the flags.
-             *
-             * Any measurements that aren't used as indicated by the flags
-             * are ignored and not saved into the word.
+             * @param[in] newSamples collection of samples to insert as one more Digi
              */
-            void addDigi( std::vector< EcalDigiSample > newSamples );
+            void addDigi( std::vector< Sample > newSamples );
 
         private:
 
