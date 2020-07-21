@@ -1,6 +1,6 @@
 /**
  * @file HgcrocDigiCollection.h
- * @brief Class that represents a digitized hit in a calorimeter cell within the ECal
+ * @brief Class that represents a digitized hit in a calorimeter cell readout by an HGCROC
  * @author Cameron Bravo, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
  */
@@ -20,7 +20,7 @@ namespace ldmx {
 
     /**
      * @class HgcrocDigiCollection
-     * @brief Represents a collection of the ECal digi hits
+     * @brief Represents a collection of the digi hits readout by an HGCROC
      *
      * @note This class represents the digitized signal information
      * in the form of a series of samples for each channel of readout.
@@ -28,7 +28,7 @@ namespace ldmx {
      * The number of samples for each digi is configurable, but is required to be
      * the same for all channels.
      *
-     * Each digi corresponds to a one channel ID and numSamplesPerDigi_ samples.
+     * Each digi corresponds to one channel ID and numSamplesPerDigi_ samples.
      */
     class HgcrocDigiCollection {
 
