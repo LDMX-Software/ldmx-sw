@@ -25,18 +25,18 @@ namespace ldmx {
             firstMeas = adc_tm1_;
             seconMeas = tot_;
         } else /* both flags true */ {
-            firstMeas = adc_;
+            firstMeas = adc_t_;
             seconMeas = tot_;
         }
 
         //check if over largest number possible ==> set to largest if over (don't want wrapping)
         //and then do bit shifting nonsense to code the measurements into the 32-bit word
         //set last measurement to TOA
-        word = (sample.tot_progress_ << FIRSTFLAG_POS) 
-             + (sample.tot_complete_ << SECONFLAG_POS) 
+        word = (tot_progress_ << FIRSTFLAG_POS) 
+             + (tot_complete_ << SECONFLAG_POS) 
              + ( (( firstMeas > TEN_BIT_MASK ? TEN_BIT_MASK : firstMeas) & TEN_BIT_MASK) << FIRSTMEAS_POS ) 
              + ( (( seconMeas > TEN_BIT_MASK ? TEN_BIT_MASK : seconMeas) & TEN_BIT_MASK) << SECONMEAS_POS ) 
-             + ( (( sample.toa_ > TEN_BIT_MASK ? TEN_BIT_MASK : sample.toa_ ) & TEN_BIT_MASK) )
+             + ( (( toa_      > TEN_BIT_MASK ? TEN_BIT_MASK : toa_     ) & TEN_BIT_MASK) );
 
         return std::move(word);
     }
@@ -69,8 +69,8 @@ namespace ldmx {
             tot_     = seconMeas;
         } else /* both true */ {
             //Calibration Mode
-            adc_ = firstMeas;
-            tot_ = seconMeas;
+            adc_t_ = firstMeas;
+            tot_   = seconMeas;
         }
 
         return;
