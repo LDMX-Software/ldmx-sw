@@ -70,16 +70,6 @@ namespace ldmx {
 
         private:
 
-            /** 
-             * Calculate the noise in electrons given the pad capacitance. 
-             *
-             * @param capacitance capacitance in pF
-             * @return noise in electrons
-             */
-            double calculateNoise(const double capacitance, const double noiseIntercept, const double noiseSlope) { 
-                return noiseIntercept + noiseSlope*capacitance;
-            } 
-
             /**
              * Construct the DIGIs from energy and time simulated data.
              *
@@ -100,33 +90,28 @@ namespace ldmx {
              */
             bool constructDigis(const std::vector<double> &energies, const std::vector<double> &times, std::vector<EcalDigiSample> &digiToAdd);
 
-
-            //Universal Constants
-            //  Won't be changed by python configuration
-            
-            /** Electrons per MIP. */
-            static const double ELECTRONS_PER_MIP; 
-
-            /** MIP response in MeV. */
-            static const double MIP_SI_RESPONSE;
-
-            /** Time interval for chip clock */
-            static const double CLOCK_CYCLE;
-
-            /** Number of layers in ECal */
-            static const int NUM_ECAL_LAYERS;
-
-            /** Number of Hexagnonal modules per layer in ECal */
-            static const int NUM_HEX_MODULES_PER_LAYER;
-
-            /** Number of cells in each hex module */
-            static const int CELLS_PER_HEX_MODULE;
-
-            /** Total number of channels in entire ECal */
-            static const int TOTAL_NUM_CHANNELS;
+        private:
 
             //Python Configuration Parameters
             
+            /** Electrons per MIP. */
+            double ELECTRONS_PER_MIP; 
+
+            /** MIP response in MeV. */
+            double MIP_SI_RESPONSE;
+
+            /** Time interval for chip clock */
+            double CLOCK_CYCLE;
+
+            /** Number of layers in ECal */
+            int NUM_ECAL_LAYERS;
+
+            /** Number of Hexagnonal modules per layer in ECal */
+            int NUM_HEX_MODULES_PER_LAYER;
+
+            /** Number of cells in each hex module */
+            int CELLS_PER_HEX_MODULE;
+
             /** The gain in ADC units per MeV. */
             double gain_;
 
@@ -151,20 +136,15 @@ namespace ldmx {
             /** Should we make and fill configuration histograms? */
             bool makeConfigHists_;
 
-            //Member Variables that are used for each event
-
-            /** 
-             * Noise RMS in units of electrons. 
-             * Calculated using the python config parameters and calculateNoise
-             */
-            double noiseRMS_{0}; 
+            /** Noise RMS in units of electrons. */
+            double noiseRMS_; 
 
             /** 
              * Set the threshold for reading out a channel.
              * Units are multiples of RMS noise for python config
              * Set to value of input config parameter times noiseRMS_
              */
-            double readoutThreshold_{4.};
+            double readoutThreshold_;
 
             /**
              * Generates noise hits based off of number of cells that are not hit
@@ -191,7 +171,6 @@ namespace ldmx {
              *   p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
              */
             TF1 pulseFunc_;
-
 
             /**
              * Optional Histogram to be filled to help with configuring recon
