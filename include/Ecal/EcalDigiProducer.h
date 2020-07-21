@@ -94,66 +94,55 @@ namespace ldmx {
 
             //Python Configuration Parameters
             
-            /** Electrons per MIP. */
+            /// Number of Electrons Generated per MIP in 0.5mm thick Si
             double ELECTRONS_PER_MIP; 
 
-            /** MIP response in MeV. */
+            /// MIP response in Si in MeV.
             double MIP_SI_RESPONSE;
 
-            /** Time interval for chip clock */
+            /// Time interval for chip clock 
             double CLOCK_CYCLE;
 
-            /** Number of layers in ECal */
+            /// Number of layers in ECal 
             int NUM_ECAL_LAYERS;
 
-            /** Number of Hexagnonal modules per layer in ECal */
+            /// Number of Hexagnonal modules per layer in ECal 
             int NUM_HEX_MODULES_PER_LAYER;
 
-            /** Number of cells in each hex module */
+            /// Number of cells in each hex module 
             int CELLS_PER_HEX_MODULE;
 
-            /** The gain in ADC units per MeV. */
+            /// The gain in ADC units per MeV. 
             double gain_;
 
-            /** The pedestal in ADC units */
+            /// The pedestal in ADC units 
             double pedestal_;
 
-            /** Set the noise (in electrons) when the capacitance is 0. */
-            double noiseIntercept_;
-
-            /** Set the capacitative noise slope (electrons/pF). */
-            double noiseSlope_; 
-
-            /** Capacitance per cell pad. */
-            double padCapacitance_; // pF 
-
-            /** Depth of ADC buffer. */
+            /// Depth of ADC buffer. 
             int nADCs_; 
 
-            /** Index for the Sample Of Interest in the list of digi samples */
+            /// Index for the Sample Of Interest in the list of digi samples 
             int iSOI_;
 
-            /** Should we make and fill configuration histograms? */
+            /// Should we make and fill configuration histograms? 
             bool makeConfigHists_;
 
-            /** Noise RMS in units of electrons. */
+            /// Noise RMS in MeV
             double noiseRMS_; 
 
-            /** 
-             * Set the threshold for reading out a channel.
-             * Units are multiples of RMS noise for python config
-             * Set to value of input config parameter times noiseRMS_
-             */
+            /// Min threshold for reading out a channel in MeV
             double readoutThreshold_;
 
-            /**
-             * Generates noise hits based off of number of cells that are not hit
-             */
+            /// Min threshold for measuring TOA in MeV
+            double toaThreshold_;
+
+            /// Min threshold for measuring TOT in MeV
+            double totThreshold_;
+
+            /// Generates noise hits based off of number of cells that are not hit
             std::unique_ptr<NoiseGenerator> noiseGenerator_;
 
-            /**
-             * Generates Gaussian noise on top of real hits
-             */
+            /// Generates Gaussian noise on top of real hits
             std::unique_ptr<TRandom3> noiseInjector_;
 
             /**
@@ -171,11 +160,6 @@ namespace ldmx {
              *   p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
              */
             TF1 pulseFunc_;
-
-            /**
-             * Optional Histogram to be filled to help with configuring recon
-             */
-            TH2F *tot_SimE_{nullptr};
     };
 }
 
