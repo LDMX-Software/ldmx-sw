@@ -47,13 +47,27 @@ namespace ldmx {
             int  seconMeas = TEN_BIT_MASK & ( word >> SECONMEAS_POS );
             int  lastMeas  = TEN_BIT_MASK & ( word );
     
-            //the chip returns flags that determine what the three measurements are
-            //  I (Tom E) don't know right now what that mapping is, so I will not use them.
-    
-            sample.adc_t_ = firstMeas;
-            sample.tot_   = seconMeas;
-            sample.toa_   = lastMeas;
-            sample.adc_tm1_ = -99;
+            //the flags determine what the first and secon measurements should be interpreted as
+            sample.tot_progress_ = firstFlag;
+            sample.tot_complete_ = seconFlag;
+
+            //the last measurement is always TOA (might be set to zero if hit was under TOA threshold)
+            sample.toa_ = lastMeas;
+
+            if ( not sample.tot_complete_ ) {
+                //ADC Mode
+                //  whether or not TOT is in progress, just output the ADC counts
+                sample.adc_tm1_ = firstMeas;
+                sample.adc_t_   = seconMeas;
+            } else if ( not sample.tot_progress_ and sample.tot_complete_ ) {
+                //TOT measurement completed, output it
+                sample.adc_tm1_ = firstMeas;
+                sample.tot_     = seconMeas;
+            } else /* both true */ {
+                //Calibration Mode
+                sample.adc_ = firstMeas;
+                sample.tot_ = seconMeas;
+            }
 
             digi.push_back( sample );
         }
@@ -79,21 +93,28 @@ namespace ldmx {
 
             //this is where the measurements --> word translation occurs
 
-            //check if over largest number possible ==> set to largest if over
-            //  don't want wrapping
-            int adc_t = (sample.adc_t_ > TEN_BIT_MASK) ? TEN_BIT_MASK : sample.adc_t_;
-            int tot   = (sample.tot_   > TEN_BIT_MASK) ? TEN_BIT_MASK : sample.tot_;
-            int toa   = (sample.toa_   > TEN_BIT_MASK) ? TEN_BIT_MASK : sample.toa_;
+            //choose which measurements to put into first and second positions
+            //  based off of the flags passed
+            int firstMeas(0), seconMeas(0);
+            if ( not sample.tot_complete_ ) {
+                firstMeas = (sample.adc_tm1_ > TEN_BIT_MASK) ? TEN_BIT_MASK : sample.adc_tm1_;
+                seconMeas = (sample.adc_t_ > TEN_BIT_MASK) ? TEN_BIT_MASK : sample.adc_t_;
+            } else if ( not sample.tot_progress_ and sample.tot_complete_ ) {
+                firstMeas = (sample.adc_tm1_ > TEN_BIT_MASK) ? TEN_BIT_MASK : sample.adc_tm1_;
+                seconMeas = (sample.tot_ > TEN_BIT_MASK) ? TEN_BIT_MASK : sample.tot_;
+            } else /* both flags true */ {
+                firstMeas = (sample.adc_ > TEN_BIT_MASK) ? TEN_BIT_MASK : sample.adc_;
+                seconMeas = (sample.tot_ > TEN_BIT_MASK) ? TEN_BIT_MASK : sample.tot_;
+            }
 
-            //the chip returns flags that determine what the three measurements are
-            //  I (Tom E) don't know right now what that mapping is, so I will not use them.
-            //  Just hard-coding ADCt, TOT, and TOA right now
-
-            word = (1 << FIRSTFLAG_POS) 
-                 + (1 << SECONFLAG_POS) 
-                 + ( (adc_t & TEN_BIT_MASK) << FIRSTMEAS_POS ) 
-                 + ( (tot   & TEN_BIT_MASK) << SECONMEAS_POS ) 
-                 + ( toa & TEN_BIT_MASK );
+            //check if over largest number possible ==> set to largest if over (don't want wrapping)
+            //and then do bit shifting nonsense to code the measurements into the 32-bit word
+            //set last measurement to TOA
+            word = (sample.tot_progress_ << FIRSTFLAG_POS) 
+                 + (sample.tot_complete_ << SECONFLAG_POS) 
+                 + ( (( firstMeas > TEN_BIT_MASK ? TEN_BIT_MASK : firstMeas) & TEN_BIT_MASK) << FIRSTMEAS_POS ) 
+                 + ( (( seconMeas > TEN_BIT_MASK ? TEN_BIT_MASK : seconMeas) & TEN_BIT_MASK) << SECONMEAS_POS ) 
+                 + ( (( sample.toa_ > TEN_BIT_MASK ? TEN_BIT_MASK : sample.toa_ ) & TEN_BIT_MASK) )
             
             samples_.push_back( word );
         }

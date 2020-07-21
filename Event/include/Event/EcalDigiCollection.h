@@ -20,7 +20,11 @@ namespace ldmx {
 
     /**
      * @struct EcalDigiSample
-     * @brief One sample of an Ecal digi channel
+     * @brief One sample of an Ecal digi channel corresponding to one clock of the HGCROC chip
+     *
+     * Not all of these measurements are used in each sample.
+     * The measurements used depend on the tot_progress_ and tot_complete_ flags.
+     * @sa EcalDigiCollection::getDigi and EcalDigiCollection::addDigi for explanations.
      *
      * Usually several samples are used for each channel to re-construct the hit.
      */
@@ -28,17 +32,23 @@ namespace ldmx {
         /** Raw integer ID of channel this sample is for */
         int rawID_{-1};
 
-        /** ADC counts in this channel at this time */
+        /** ADC counts in this channel at this clock */
         int adc_t_{0};
 
-        /** ADC counts in this channel at the previous time */
+        /** ADC counts in this channel at the previous clock */
         int adc_tm1_{0};
 
-        /** Time counts over threshhold in this channel */
+        /** Time counts over threshhold in this channel during this clock */
         int tot_{0};
 
-        /** Time counts when signal arrived in this channel */
+        /** Time counts when signal arrived in this channel during this clock */
         int toa_{0};
+
+        /** Is the TOT measurement in progress during this sample? */
+        bool tot_progress_{false};
+
+        /** Is the TOT measurement complete at this sample? */
+        bool tot_complete_{false};
     };
 
     /**
