@@ -26,7 +26,7 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/EcalDigiCollection.h"
+#include "Event/HgcrocDigiCollection.h"
 #include "Event/EventConstants.h"
 #include "Event/SimCalorimeterHit.h"
 #include "DetDescr/EcalID.h"
@@ -162,7 +162,7 @@ namespace ldmx {
              * Shape parameters are hardcoded into the function currently.
              *  Pulse Shape:
              *   p[0]/(1.0+exp(p[1](t-p[2]+p[3]-p[4])))/(1.0+exp(p[5]*(t-p[6]+p[3]-p[4])))
-             *   p[0] = amplitude (related to E dep through gain_)
+             *   p[0] = amplitude (related to num electrons through gain_)
              *   p[1] = -0.345 shape parameter - rate of up slope
              *   p[2] = 70.6547 shape parameter - time of up slope relative to shape fit
              *   p[3] = 77.732 shape parameter - time of peak relative to shape fit
