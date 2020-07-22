@@ -273,6 +273,9 @@ namespace ldmx {
              */
             void buildTriggerGroup();
 
+            /// verbosity, not configurable but helpful if developing
+            int verbose_{0};
+
             /** 
              * MUST SYNC MINR AND GAP WITH ECAL.GDML. May change cell count here for eg granularity studies.
              * maxR = center-to-corner module hexagon radius, i.e. currently "Hex_radius" in gdml
@@ -284,9 +287,9 @@ namespace ldmx {
              *   Then N = 1 + 3n(n+1).
              *   E.g. c = 23 gives N = 397.
              */
-            unsigned nCellsWide_{0};
-            double lengthWide_{0};
-            double gap_{1};
+
+            /// flat-to-flat separation of module hexagons [mm]
+            double gap_;
 
             /// Center-to-Corner Radius of cell hexagon [mm]
             double cellr_{0};
