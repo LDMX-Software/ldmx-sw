@@ -43,19 +43,25 @@ endmacro()
 
 macro(setup_lcio_target)
     
-    # Search for LCIO and load its settings
-    find_package(LCIO CONFIG REQUIRED)
-
     # If it doesn't exists, create an imported target for LCIO
     if ( NOT TARGET LCIO::Interface)
-        
+    
+        # Search for LCIO and load its settings
+        find_package(LCIO CONFIG REQUIRED)
+
+        # If the LCIO package can't be found, error out.
+        if( NOT LCIO_FOUND)
+            message(FATAL_ERROR "Failed to find required dependency LCIO.")
+        endif()
+
         # Create the LCIO target
-        add_library(LCIO::Interface INTERFACE IMPORTED GLOBAL)
+        add_library(LCIO::Interface SHARED IMPORTED GLOBAL)
 
         # Set the target properties
         set_target_properties(LCIO::Interface
             PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${LCIO_INCLUDE_DIRS}"
+            IMPORTED_LOCATION "${LCIO_LIBRARY_DIRS}/liblcio.so"
         )
 
         message(STATUS "Found LCIO version ${LCIO_VERSION}")
