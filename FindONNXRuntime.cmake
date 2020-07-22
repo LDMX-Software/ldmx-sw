@@ -55,28 +55,31 @@ macro(download_onnxruntime version destination)
     set(ONNXRuntime_LIBRARIES "${destination}/${file_prefix}/lib" CACHE INTERNAL "")
     set(ONNXRuntime_VERSION ${version} CACHE INTERNAL "")
 
+endmacro()
+
+if( NOT TARGET ONNXRuntime::Interface) 
+    find_path(onnxruntime_include_dir
+              NAMES onnxruntime_cxx_api.h
+              PATHS ${ONNXRuntime_INCLUDE_DIRS}
+              PATH_SUFFIXES onnxruntime
+    )
+
+
+    # If onnxruntime isn't found, download it.
+    if(NOT onnxruntime_include_dir)  
+        download_onnxruntime(1.2.0 ${CMAKE_BINARY_DIR}/external) 
+    endif()
+    
     # Create the target
-    add_library(ONNXRuntime::Interface INTERFACE IMPORTED GLOBAL)
+    add_library(ONNXRuntime::Interface SHARED IMPORTED GLOBAL)
     set_target_properties(ONNXRuntime::Interface 
         PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${ONNXRuntime_INCLUDE_DIRS}"
+        IMPORTED_LOCATION "${ONNXRuntime_LIBRARIES}/libonnxruntime.so"
     )
 
-endmacro()
-
-find_path(onnxruntime_include_dir
-          NAMES onnxruntime_cxx_api.h
-          PATHS ${ONNXRuntime_INCLUDE_DIRS}
-          PATH_SUFFIXES onnxruntime
-)
-
-
-# If onnxruntime isn't found, download it.
-if(NOT onnxruntime_include_dir)  
-    download_onnxruntime(1.2.0 ${CMAKE_BINARY_DIR}/external) 
+    message(STATUS "Found ONNX Runtime version ${ONNXRuntime_VERSION}")
+    set(ONNXRuntime_FOUND TRUE)
 endif()
-
-message(STATUS "Found ONNX Runtime version ${ONNXRuntime_VERSION}")
-set(ONNXRuntime_FOUND TRUE)
 
 
