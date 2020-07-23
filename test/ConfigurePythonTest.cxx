@@ -1,4 +1,4 @@
-#include "Framework/catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
+#include "catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
 
 #include "Framework/ConfigurePython.h" //headers defining what we will be testing
 #include "Framework/Process.h"
