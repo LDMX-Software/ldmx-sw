@@ -77,7 +77,7 @@ macro(setup_library)
     cmake_parse_arguments(setup_library "${options}" "${oneValueArgs}"
                           "${multiValueArgs}" ${ARGN} )
 
-    # Find all of the source files we want to add to the SimCore library
+    # Find all of the source files we want to add to the library
     if (NOT setup_library_sources)
         file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
     else()
@@ -93,7 +93,7 @@ macro(setup_library)
     # Setup the targets to link against 
     target_link_libraries(${setup_library_name} PUBLIC ${setup_library_dependencies})
 
-    # Define an alias
+    # Define an alias. This is used to create the imported target.
     add_library(DARK::${setup_library_name} ALIAS ${setup_library_name})
 
     # Install the libraries and headers
@@ -133,5 +133,50 @@ macro(setup_library)
             install(FILES ${data_file} DESTINATION ${CMAKE_INSTALL_PREFIX}/data/${setup_library_name})
         endforeach()
     endif()
+
+endmacro()
+
+macro(setup_test)
+
+    set(multiValueArgs dependencies)
+    cmake_parse_arguments(setup_test "${options}" "${oneValueArgs}"
+                          "${multiValueArgs}" ${ARGN} )
+
+    # Find all the test
+    file(GLOB src_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/test/*.cxx)
+
+    # Add all test to the global list of test sources 
+    set(test_sources ${test_sources} ${src_files} CACHE INTERNAL "test_sources")
+
+    # Add all of the dependencies to the global list of dependencies 
+    set(test_dep ${test_dep} ${setup_test_dependencies} CACHE INTERNAL "test_dep")
+
+endmacro()
+
+macro(build_test)
+
+    # If test have been enabled, attempt to find catch.  If catch hasn't 
+    # found, it will be downloaded locally.
+    find_package(Catch2 2.13.0)
+
+    # Create the Catch2 main exectuable if it doesn't exist
+    if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/external/catch/run_test.cxx)
+    
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/external/catch/run_test.cxx
+             "#define CATCH_CONFIG_MAIN\n#include \"catch.hpp\""
+        )
+        
+        message(STATUS "Writing Catch2 main to: ${CMAKE_CURRENT_BINARY_DIR}/external/catch/run_test.cxx")
+    endif()
+
+    # Add the executable to run all test.  test_sources is a cached variable 
+    # that contains the test from the different modules.  Each of the modules
+    # needs to setup the test they want to run.
+    add_executable(run_test ${CMAKE_CURRENT_BINARY_DIR}/external/catch/run_test.cxx ${test_sources})
+    target_include_directories(run_test PRIVATE ${CATCH2_INCLUDE_DIR})
+    target_link_libraries(run_test PRIVATE Catch2::Interface ${test_dep})
+
+    # Install the run_test  executable
+    install(TARGETS run_test DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 endmacro()
