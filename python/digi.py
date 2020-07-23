@@ -18,32 +18,34 @@ class EcalDigiProducer(Producer) :
     def __init__(self, instance_name = 'ecalDigis') :
         super().__init__(instance_name , 'ldmx::EcalDigiProducer','Ecal')
 
-        self.gain = 2000.
-        self.pedestal = 1100.
+        self.gain = 2000. #???
+        self.pedestal = 1100. #???
+        self.clockCycle = 25.0 #ns
+        self.readoutPadCapacitance = 0.1 #pF
+        self.maxADCRange = 320. #fC
         self.nADCs = 10
         self.iSOI  = 0 
 
         import time
         self.randomSeed = int(time.time())
         self.ELECTRONS_PER_MIP = 37000.0; #e-
-        self.CLOCK_CYCLE = 25.0; #ns
         self.MIP_SI_RESPONSE = 0.130; #MeV
 
         self.NUM_ECAL_LAYERS = 34
         self.NUM_HEX_MODULES_PER_LAYER = 7
         self.CELLS_PER_HEX_MODULE = 397
 
-        self.noiseRMS = self.calculateNoise( 700. , 25. , 0.1 ) #MeV ~ 2.5e-3
+        self.noiseRMS = self.calculateNoise( 700. , 25. ) #MeV ~ 2.5e-3
         self.readoutThreshold = 4.*self.noiseRMS #MeV - readout threshold is 4sigma higher than noise average
 
         self.toaThreshold = 5.*self.MIP_SI_RESPONSE #MeV ~0.65MeV TOA Threshold is 5 MIPs
         self.totThreshold = 50.*self.MIP_SI_RESPONSE #MeV ~6.5MeV TOT Threshold is 50 MIPs
 
-        self.timingJitter =  self.CLOCK_CYCLE / 100. #ns - chosen pretty arbitrarily
+        self.timingJitter =  self.clockCycle / 100. #ns - chosen pretty arbitrarily
 
         self.makeConfigHists = False #should we make config hists
 
-    def calculateNoise(self, noiseIntercept , noiseSlope , capacitance ) :
+    def calculateNoise(self, noiseIntercept , noiseSlope ) :
         """Calculate the Noise RMS (in units of MeV) from the capacitance of the readout pads.
 
         Uses the conversion of a MIP to energy deposited in Si (MIP_SI_RESPONSE)
@@ -56,11 +58,9 @@ class EcalDigiProducer(Producer) :
             Noise when there is no capacitance
         noiseSlope : float
             Ratio of noise in electrons to capacitance in pF of pads
-        capacitance : float
-            Actual capacitance of readout pads in pF
         """
 
-        return (noiseIntercept + noiseSlope*capacitance)*(self.MIP_SI_RESPONSE/self.ELECTRONS_PER_MIP)
+        return (noiseIntercept + noiseSlope*self.readoutPadCapacitance)*(self.MIP_SI_RESPONSE/self.ELECTRONS_PER_MIP)
 
     def makeConfigHists(self) :
         """Turn on the creation and filling of configuration histograms"""

@@ -93,6 +93,7 @@ namespace ldmx {
 
         private:
 
+            ///////////////////////////////////////////////////////////////////////////////////////
             //Python Configuration Parameters
             
             /// Number of Electrons Generated per MIP in 0.5mm thick Si
@@ -101,8 +102,8 @@ namespace ldmx {
             /// MIP response in Si in MeV.
             double MIP_SI_RESPONSE;
 
-            /// Time interval for chip clock 
-            double CLOCK_CYCLE;
+            /// Time interval for chip clock in ns
+            double clockCycle_;
 
             /// Number of layers in ECal 
             int NUM_ECAL_LAYERS;
@@ -118,6 +119,12 @@ namespace ldmx {
 
             /// The pedestal in ADC units 
             double pedestal_;
+
+            /// Capacitance of readout pads in pF
+            double readoutPadCapacitance_;
+
+            /// Max ADC Count Setting [fC]
+            double maxADC_;
 
             /// Depth of ADC buffer. 
             int nADCs_; 
@@ -142,6 +149,21 @@ namespace ldmx {
 
             /// Jitter of timing mechanism in the chip [ns]
             double timingJitter_;
+
+            ///////////////////////////////////////////////////////////////////////////////////////
+            // Other member variables
+
+            /// Total number of channels in the ECal
+            int TOTAL_NUM_CHANNELS;
+
+            /// Conversion from time in ns to ticks of the internal clock
+            double ns_;
+
+            /// Conversion from energy in MeV to voltage in mV
+            double MeV_;
+
+            /// Conversion from mV to discrete ADC counts
+            double mV_;
 
             /// Generates noise hits based off of number of cells that are not hit
             std::unique_ptr<NoiseGenerator> noiseGenerator_;
