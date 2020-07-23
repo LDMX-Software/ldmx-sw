@@ -32,6 +32,7 @@ namespace ldmx {
         totThreshold_      = ps.getParameter<double>("totThreshold");
         nADCs_             = ps.getParameter<int>("nADCs");
         iSOI_              = ps.getParameter<int>("iSOI");
+        timingJitter_      = ps.getParameter<double>("timingJitter");
         CLOCK_CYCLE        = ps.getParameter<double>("CLOCK_CYCLE");
 
         // physical constants
@@ -42,7 +43,7 @@ namespace ldmx {
         // geometry constants
         //  These are used in the noise generation so that we can randomly
         //  distribute the noise uniformly throughout the ECal channels.
-        NUM_ECAL_LAYERS           = ps.getParaemter<int>("NUM_ECAL_LAYERS");
+        NUM_ECAL_LAYERS           = ps.getParameter<int>("NUM_ECAL_LAYERS");
         NUM_HEX_MODULES_PER_LAYER = ps.getParameter<int>("NUM_HEX_MODULES_PER_LAYER");
         CELLS_PER_HEX_MODULE      = ps.getParameter<int>("CELLS_PER_HEX_MODULE");
 
@@ -81,7 +82,7 @@ namespace ldmx {
         auto ecalSimHits{event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS)};
 
         //Empty collection to be filled
-        EcalDigiCollection ecalDigis;
+        HgcrocDigiCollection ecalDigis;
         ecalDigis.setNumSamplesPerDigi( nADCs_ ); 
         ecalDigis.setSampleOfInterestIndex( iSOI_ );
 
@@ -97,7 +98,7 @@ namespace ldmx {
             int hitID = simHit.getID();
             simHitIDs.insert( hitID );
 
-            std::vector<EcalDigiSample> digiToAdd;
+            std::vector<HgcrocDigiCollection::Sample> digiToAdd;
             if ( constructDigis( energyDepositions , simulatedTimes , digiToAdd ) ) {
                 for ( auto& sample : digiToAdd ) sample.rawID_ = hitID;
                 ecalDigis.addDigi( digiToAdd );
@@ -124,7 +125,7 @@ namespace ldmx {
             //get a time for this noise hit
             double hitTime = noiseInjector_->Uniform( EcalDigiProducer::CLOCK_CYCLE );
 
-            std::vector<EcalDigiSample> digiToAdd;
+            std::vector<HgcrocDigiCollection::Sample> digiToAdd;
             std::vector<double> noiseEnergies( 1 , noiseHit ), noiseTimes( 1 , hitTime );
             if ( constructDigis( noiseEnergies , noiseTimes , digiToAdd ) ) {
                 for ( auto& sample : digiToAdd ) sample.rawID_ = noiseID;
@@ -141,7 +142,7 @@ namespace ldmx {
     bool EcalDigiProducer::constructDigis(
             const std::vector<double> &energies, 
             const std::vector<double> &times, 
-            std::vector<EcalDigiSample> &digiToAdd) {
+            std::vector<HgcrocDigiCollection::Sample> &digiToAdd) {
 
             digiToAdd.clear(); //make sure it is clean
             digiToAdd.resize( nADCs_ ); //fill with required number of samples (default constructed)
@@ -249,15 +250,15 @@ namespace ldmx {
                         digiToAdd[iADC].adc_t_   = pulseFunc_.Eval( measTime );
                         digiToAdd[iADC].adc_tm1_ = -1; //TODO set this up
                         digiToAdd[iADC].toa_     = toa*(1024/CLOCK_CYCLE);
-                        digitoAdd[iADC].tot_progress_ = true;
-                        digitoAdd[iADC].tot_complete_ = false;
+                        digiToAdd[iADC].tot_progress_ = true;
+                        digiToAdd[iADC].tot_complete_ = false;
                     } else {
                         //TOT complete
                         digiToAdd[iADC].adc_tm1_ = -1; //TODO set this up
                         digiToAdd[iADC].tot_     = tot*(1024/CLOCK_CYCLE);
                         digiToAdd[iADC].toa_     = toa*(1024/CLOCK_CYCLE);
-                        digitoAdd[iADC].tot_progress_ = false;
-                        digitoAdd[iADC].tot_complete_ = true;
+                        digiToAdd[iADC].tot_progress_ = false;
+                        digiToAdd[iADC].tot_complete_ = true;
                     }
                     tot -= CLOCK_CYCLE; //decrement TOT
                 }

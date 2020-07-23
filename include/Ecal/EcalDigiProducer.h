@@ -85,10 +85,11 @@ namespace ldmx {
              *
              * @param energies simulated energy depositions
              * @param times simulated times of energy depositions
-             * @param digiToAdd vector of EcalDigiSamples that will be filled with constructed digis
+             * @param digiToAdd vector of HgcrocDigiCollection::Sample that will be filled with constructed digis
              * @return true if digiToAdd was actually filled with something
              */
-            bool constructDigis(const std::vector<double> &energies, const std::vector<double> &times, std::vector<EcalDigiSample> &digiToAdd);
+            bool constructDigis(const std::vector<double> &energies, const std::vector<double> &times, 
+                    std::vector<HgcrocDigiCollection::Sample> &digiToAdd);
 
         private:
 
@@ -138,6 +139,9 @@ namespace ldmx {
 
             /// Min threshold for measuring TOT in MeV
             double totThreshold_;
+
+            /// Jitter of timing mechanism in the chip [ns]
+            double timingJitter_;
 
             /// Generates noise hits based off of number of cells that are not hit
             std::unique_ptr<NoiseGenerator> noiseGenerator_;

@@ -31,13 +31,14 @@ namespace ldmx {
     void EcalRecProducer::produce(Event& event) {
 
         std::vector<EcalHit> ecalRecHits;
-        EcalDigiCollection ecalDigis = event.getObject<EcalDigiCollection>( digiCollName_ , digiPassName_ );
+        auto ecalDigis = event.getObject<HgcrocDigiCollection>( digiCollName_ , digiPassName_ );
         int numDigiHits = ecalDigis.getNumDigis();
         //loop through digis
         for ( unsigned int iDigi = 0; iDigi < numDigiHits; iDigi++ ) {
             
             //Right now, hard-coded to only use one sample in EcalDigiProducer
             //TODO: expand to multiple samples per digi
+
             EcalDigiSample sample = (ecalDigis.getDigi( iDigi )).at(0);
             EcalID id(sample.rawID_);
             
