@@ -13,3 +13,5 @@ file(GLOB DETDESCR_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
 setup_library(name DetDescr
               dependencies DARK::Framework)
 
+# Setup the test
+setup_test(dependencies DARK::DetDescr)
