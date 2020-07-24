@@ -46,6 +46,9 @@ target_link_libraries(EventDisplay PUBLIC
     Python3::Python
     ROOT::Core
     ROOT::Rint
+    ROOT::Geom
+    ROOT::Gui
+    ROOT::Eve
     DARK::DetDescr
 )
 
