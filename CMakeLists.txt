@@ -24,7 +24,9 @@ setup_geant4_target()
 
 # Setup the library 
 setup_library(name SimCore 
-              dependencies Geant4::Interface DARK::Framework DARK::DetDescr)
+              dependencies Geant4::Interface DARK::Framework DARK::DetDescr
+              python_install_path ${CMAKE_INSTALL_PREFIX}/python/LDMX
+)
 
 # Set some target properties
 set_target_properties(SimCore PROPERTIES 
