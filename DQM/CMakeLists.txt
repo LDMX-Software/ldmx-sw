@@ -9,4 +9,6 @@ project(DQM VERSION 2.1.0
 )
 
 setup_library(name DQM
-              dependencies DARK::Framework DARK::Event DARK::Tools DARK::DetDescr)
+              dependencies DARK::Framework DARK::Event DARK::Tools DARK::DetDescr
+              python_install_path ${CMAKE_INSTALL_PREFIX}/python/LDMX
+)

@@ -44,7 +44,7 @@ endforeach()
 
 # install python init file for this module
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "# Detectors python package")
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION lib/python/LDMX/Detectors)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION ${CMAKE_INSTALL_PREFIX}/python/LDMX/Detectors)
 
 # configure python scripts that need cmake variables
 file(GLOB config_scripts ${CMAKE_CURRENT_SOURCE_DIR}/python/*.in)
@@ -52,5 +52,5 @@ foreach(config_script ${config_scripts})
   string(REPLACE ".in" "" config_script_output ${config_script})
   get_filename_component(config_script_output ${config_script_output} NAME)
   configure_file(${config_script} ${CMAKE_CURRENT_BINARY_DIR}/python/${config_script_output})
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${config_script_output} DESTINATION lib/python/LDMX/Detectors)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${config_script_output} DESTINATION ${CMAKE_INSTALL_PREFIX}/python/LDMX/Detectors)
 endforeach()
