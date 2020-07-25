@@ -40,57 +40,73 @@ endif()
 
 # Add options to allow the following types of builds
 #
-# 1) Framework - Only the modules necessary to run the framework.  This 
-# is useful when running analysis using external analysis processors.
-# 2) Recon - In addition to building the framework, build the modules needed 
+# * Recon - In addition to building the framework, build the modules needed 
 # by the reconstruction.  
-# 3) Sim - Only build the modules necessary to run the simulation 
+# * Sim - Only build the modules necessary to run the simulation.
+# * Eve - Build the event display only.
 #
 # By default, all modules are built.
 
+option(BUILD_RECON_ONLY     "Build the modules necessary to run the reconstruction." OFF)
+option(BUILD_SIM_ONLY       "Build the modules necessary to run the simulation."     OFF)
+option(BUILD_EVE_ONLY       "Build the event display only."                          OFF)
+
+if(NOT BUILD_RECON_ONLY AND NOT BUILD_SIM_ONLY AND NOT BUILD_EVE_ONLY) 
+    set(BUILD_ALL ON)
+    message(STATUS "Building all modules.")
+endif()
+
 # These two modules are the minimum needed to build and run the framework.
+message(STATUS "Build the Framework.")
+
+# This modules contains the event model classes.
 add_subdirectory(Event)
+
+# The framework has all the backend code needed to run all processors.
 add_subdirectory(Framework)
 
-# To build SimCore, the DetDescr package is required
+# This module contains all detector service related code.
 add_subdirectory(DetDescr)
 
-# SimCore allows the simulation to be run without biasing
-add_subdirectory(SimCore)
+if(BUILD_ALL OR BUILD_RECON_ONLY)
 
-# Adding the Biasing module, allows the use of biasing in the simulation
-add_subdirectory(Biasing)
+    message(STATUS "Building the modules necessary for the reconstruction.")
 
-# Add the Tools module.
-add_subdirectory(Tools)
+    # The tools module contains tools generic enough to be used by other modules.
+    add_subdirectory(Tools)
 
-add_subdirectory(Ecal)
+    # This module contains ECal reconstruction code.
+    add_subdirectory(Ecal)
 
-add_subdirectory(EventProc)
+    # Currently, this module contains processors from several subsystems.
+    add_subdirectory(EventProc)
 
-# Add the Detectors submodule.  This has no dependecies.
-add_subdirectory(Detectors)
+    # Data quality management plots.
+    add_subdirectory(DQM)
 
-# 
-#add_subdirectory(DQM)
-
-option(BUILD_EVE "Build the event display application. This requires more components of ROOT." OFF)
-if(BUILD_EVE)
-    add_subdirectory(EventDisplay)
 endif()
-# add dir with extra CMake modules 
-#list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules/)
 
-# find ONNXRuntime installation
-# specify location with -DONNXRUNTIME_ROOT=<location-of-onnxruntime-prefix>
-#find_package(ONNXRuntime)
-#if(ONNXRUNTIME_FOUND)
-#  message(STATUS "ONNXRuntime libs found at: ${ONNXRUNTIME_LIBRARIES}")
-#  message(STATUS "ONNXRuntime include dir found at: ${ONNXRUNTIME_INCLUDE_DIRS}")
-#  add_definitions(-DLDMX_USE_ONNXRUNTIME)
-#else()
-#  message(WARNING "Cannot find ONNXRuntime: will not be able to run EcalVeto BDT or DNN")
-#endif()
+if(BUILD_ALL OR BUILD_SIM_ONLY)
+
+    message(STATUS "Building the modules necessary for the simulation.")
+
+    # SimCore allows the simulation to be run without biasing
+    add_subdirectory(SimCore)
+
+    # Adding the Biasing module, allows the use of biasing in the simulation
+    add_subdirectory(Biasing)
+
+    # Add the Detectors submodule.  This has no dependecies.
+    add_subdirectory(Detectors)
+
+endif()
+
+if(BUILD_EVE_ONLY)
+    
+    message(STATUS "Building the event display.")
+    add_subdirectory(EventDisplay)
+
+endif()
 
 # Magnetic field map installation
 option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
@@ -99,11 +115,12 @@ if(INSTALL_FIELDMAP)
   install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/InstallMagFieldMap.cmake")
 endif()
 
-# build and install test executable ldmx-test
-#option(BUILD_TESTS "Build and link ldmx-test executable." OFF)
-#if(BUILD_TESTS)
-#  include(TestExecutable)
-#endif()
+# If enabled, build all test.  The test are assumed to reside inside of the
+# directory "test" within each module.  The main
+option(BUILD_TESTS "Build and link the run-test executable." OFF)
+if(BUILD_TESTS)
+    build_test()
+endif()
 
 # install python init file for top-level LDMX module
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py 
