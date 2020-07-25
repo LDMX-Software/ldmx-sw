@@ -10,5 +10,6 @@ project(EventProc VERSION 2.1.0
 
 setup_library(name EventProc
               dependencies DARK::Framework DARK::Event DARK::Tools 
-                           DARK::DetDescr DARK::Ecal)
-
+                           DARK::DetDescr DARK::Ecal
+              python_install_path ${CMAKE_INSTALL_PREFIX}/python/LDMX
+)
