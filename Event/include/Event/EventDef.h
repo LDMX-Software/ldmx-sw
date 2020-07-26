@@ -26,7 +26,8 @@
 #include "Event/SimTrackerHit.h"
 #include "Event/TrackerVetoResult.h"
 #include "Event/TriggerResult.h"
-#include "Event/TrigScintHit.h" 
+#include "Event/TrigScintHit.h"
+#include "Event/HgcrocTrigDigi.h"
 
 #include <variant>
 
@@ -69,6 +70,7 @@ namespace ldmx {
         std::vector < SiStripHit >,
         std::vector < SimTrackerHit >,
         std::vector < TrigScintHit >,
+        HgcrocTrigDigiCollection,
         std::map< int , SimParticle >
     > EventBusPassenger;
 
