@@ -113,17 +113,24 @@ namespace ldmx {
                 TH1F voltageMeasurements( "voltageMeasurements" , "voltageMeasurements" ,
                         10.*clockCycle_ , 0. , 10.*clockCycle_ );
 
+                double maxMeas{0.};
                 int numWholeClocks{0};
                 for ( auto sample : digi ) {
                     double voltage = (sample.adc_t_ - pedestal_)*gain_; //mV
+                    if ( voltage > maxMeas ) maxMeas = voltage;
                     double time    = numWholeClocks*clockCycle_; //+ offestWithinClock; //ns
                     voltageMeasurements.Fill( time , voltage );
                 }
 
-                voltageMeasurements.Fit( &pulseFunc_ );
-
-                //get the silicon energy from the fitted voltage amplitude in mV
-                siEnergy = pulseFunc_.GetParameter( 0 )*mV_;
+                if ( false ) {
+                    //fit the voltage measurements with the pulse function
+                    voltageMeasurements.Fit( &pulseFunc_ , "QW" );
+                    //get the silicon energy from the fitted voltage amplitude in mV
+                    siEnergy = pulseFunc_.GetParameter( 0 )*mV_;
+                } else {
+                    //just use the maximum measured voltage
+                    siEnergy = maxMeas*mV_;
+                }
             }
             
             //incorporate layer weights
