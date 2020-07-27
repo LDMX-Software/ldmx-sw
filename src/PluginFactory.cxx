@@ -8,30 +8,45 @@ namespace ldmx {
 
     PluginFactory::PluginFactory() {
     }
-
+	
     void PluginFactory::registerEventProcessor(const std::string& classname, int classtype, EventProcessorMaker* maker) {
         auto ptr = moduleInfo_.find(classname);
         if (ptr != moduleInfo_.end()) {
             EXCEPTION_RAISE("ExistingEventProcessorDefinition", "Already have a module registered with the classname '" + classname + "'");
         }
-        EventProcessorInfo mi;
+        PluginInfo mi;
         mi.classname = classname;
         mi.classtype = classtype;
-        mi.maker = maker;
+        mi.ep_maker = maker;
+	mi.cop_maker = 0;
+        moduleInfo_[classname] = mi;
+    }
+    
+    void PluginFactory::registerConditionsObjectProvider(const std::string& classname, int classtype, ConditionsObjectProviderMaker* maker) {
+        auto ptr = moduleInfo_.find(classname);
+        if (ptr != moduleInfo_.end()) {
+            EXCEPTION_RAISE("ExistingEventProcessorDefinition", "Already have a module registered with the classname '" + classname + "'");
+        }
+        PluginInfo mi;
+        mi.classname = classname;
+        mi.classtype = classtype;
+        mi.cop_maker = maker;
+	mi.ep_maker = 0;
         moduleInfo_[classname] = mi;
     }
 
     std::vector<std::string> PluginFactory::getEventProcessorClasses() const {
         std::vector<std::string> classes;
         for (auto ptr : moduleInfo_) {
-            classes.push_back(ptr.first);
+	    if (ptr.second.ep_maker!=0)
+		classes.push_back(ptr.first);
         }
         return classes;
     }
 
     int PluginFactory::getEventProcessorClasstype(const std::string& ct) const {
         auto ptr = moduleInfo_.find(ct);
-        if (ptr == moduleInfo_.end()) {
+        if (ptr == moduleInfo_.end() || ptr->second.ep_maker==0) {
             return 0;
 
         } else {
@@ -41,10 +56,18 @@ namespace ldmx {
 
     EventProcessor* PluginFactory::createEventProcessor(const std::string& classname, const std::string& moduleInstanceName, Process& process) {
         auto ptr = moduleInfo_.find(classname);
-        if (ptr == moduleInfo_.end()) {
+        if (ptr == moduleInfo_.end() || ptr->second.ep_maker==0) {
             return 0;
         }
-        return ptr->second.maker(moduleInstanceName, process);
+        return ptr->second.ep_maker(moduleInstanceName, process);
+    }
+
+    ConditionsObjectProvider* PluginFactory::createConditionsObjectProvider(const std::string& classname, const std::string& moduleInstanceName, const Parameters& params, Process& process) {
+        auto ptr = moduleInfo_.find(classname);
+        if (ptr == moduleInfo_.end() || ptr->second.cop_maker==0) {
+            return 0;
+        }
+        return ptr->second.cop_maker(moduleInstanceName, params, process);
     }
 
     void PluginFactory::loadLibrary(const std::string& libname) {

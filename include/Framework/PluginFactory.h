@@ -9,6 +9,7 @@
 
 // LDMX
 #include "Framework/EventProcessor.h"
+#include "Framework/ConditionsObjectProvider.h"
 
 // STL
 #include <map>
@@ -42,6 +43,15 @@ namespace ldmx {
             void registerEventProcessor(const std::string& classname, int classtype, EventProcessorMaker* maker);
 
             /**
+             * Register a conditions object provider
+             * @param classname The name of the class associated with the conditions object provider.
+             * @param classtype The type of class associated with conditions object provider.
+             * @param maker TODO.
+             */
+            void registerConditionsObjectProvider(const std::string& classname, int classtype, ConditionsObjectProviderMaker* maker);
+
+      
+            /**
              * Get the classes associated with the processor.
              * @return a vector of strings corresponding to processor classes.
              */
@@ -57,9 +67,18 @@ namespace ldmx {
              * Make an event processor.
              * @param classname Class name of event processor.
              * @param moduleInstanceName TODO.
-             * @param process The process type to create.
+             * @param process The process handle
              */
             EventProcessor* createEventProcessor(const std::string& classname, const std::string& moduleInstanceName, Process& process);
+
+            /**
+	     * Make a conditions object provider
+             * @param classname Class name of conditions object provider
+             * @param moduleInstanceName 
+	     * @param params Parameters for the conditoons object provider
+             * @param process The process handle
+             */
+            ConditionsObjectProvider* createConditionsObjectProvider(const std::string& classname, const std::string& moduleInstanceName, const Parameters& params, Process& process);
 
             /**
              * Load a library.
@@ -75,22 +94,23 @@ namespace ldmx {
             PluginFactory();
 
             /**
-             * @struct EventProcessorInfo
+             * @struct PluginInfo
              * @brief Processor info container to hold classname, class type and maker.
              */
-            struct EventProcessorInfo {
+            struct PluginInfo {
                     std::string classname;
                     int classtype;
-                    EventProcessorMaker* maker;
+                    EventProcessorMaker* ep_maker;
+	            ConditionsObjectProviderMaker* cop_maker;
             };
 
             /** A map of names to processor containers. */
-            std::map<std::string, EventProcessorInfo> moduleInfo_;
+            std::map<std::string, PluginInfo> moduleInfo_;
 
             /** A set of names of loaded libraries. */
             std::set<std::string> librariesLoaded_;
 
-            /** Factor for creating the EventProcessor object. */
+            /** Factory for creating the plugin objects. */
             static PluginFactory theFactory_;
     };
 
