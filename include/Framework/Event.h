@@ -59,6 +59,15 @@ namespace ldmx {
             }
 
             /**
+             * Get the event header as a pointer
+             * @return A const pointer to the event header.
+             */
+            const EventHeader* getEventHeaderPtr() {
+                return &eventHeader_;
+            }
+
+      
+            /**
              * Get the event number.
              * @return the event index/number
              */

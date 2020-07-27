@@ -17,7 +17,8 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Event.h"
-#include "Framework/Parameters.h" 
+#include "Framework/Parameters.h"
+#include "Framework/Conditions.h" 
 #include "Framework/StorageControl.h"
 #include "Framework/Histograms.h"
 #include "Framework/NtupleManager.h"
@@ -144,6 +145,14 @@ namespace ldmx {
             virtual void onProcessEnd() {
             }
 
+
+            /** Access a conditions object for the current event
+            */
+            template <class T>
+            const T& getCondition(const std::string& condition_name) {
+      	        return getConditions().getCondition<T>(condition_name, getEventHeader());
+            }
+      
             /** 
              * Access/create a directory in the histogram file for this event
              * processor to create histograms and analysis tuples.
@@ -213,6 +222,15 @@ namespace ldmx {
 
         private:
 
+            /**
+             * Internal getter for conditions without exposing all of Process
+             */
+            Conditions& getConditions() const;
+      
+            /** Internal getter for EventHeader without exposing all of Process
+             */
+            const EventHeader& getEventHeader() const;
+            
             /** Handle to the Process. */
             Process& process_;
 
