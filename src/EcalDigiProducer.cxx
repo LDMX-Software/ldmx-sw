@@ -2,6 +2,7 @@
  * @file EcalDigiProducer.cxx
  * @brief Class that performs basic ECal digitization
  * @author Cameron Bravo, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #include "Ecal/EcalDigiProducer.h"
