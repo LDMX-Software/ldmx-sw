@@ -29,7 +29,7 @@ namespace ldmx {
              * are missing. e.g. The Process class or the different members of 
              * the lastProcess object.
              *
-             * The basic premis of this constructor is to execute the python
+             * The basic premise of this constructor is to execute the python
              * configuration script by loading it into python as a module.
              * Then, **after the script has been executed**, all of the parameters
              * for the Process and EventProcessors are gathered from python.

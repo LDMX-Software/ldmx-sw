@@ -18,7 +18,7 @@
 
 namespace ldmx {
 
-    Process::Process(const Parameters& configuration) {
+  Process::Process(const Parameters& configuration) : conditions_{*this} {
 
         passname_      = configuration.getParameter<std::string>("passName");
         histoFilename_ = configuration.getParameter<std::string>("histogramFile"); 
@@ -76,6 +76,15 @@ namespace ldmx {
             ep->configure(proc);
             sequence_.push_back(ep);
         }
+
+	auto conditionsObjectProviders{configuration.getParameter<std::vector<Parameters> >("conditionsObjectProviders",{})};
+	for (auto cop : conditionsObjectProviders) {
+            auto className{cop.getParameter<std::string>("className")};
+            auto instanceName{cop.getParameter<std::string>("instanceName")};
+
+	    conditions_.createConditionsObjectProvider(className, instanceName, cop);
+	    
+	}
     }
 
     Process::~Process() {
