@@ -1,5 +1,5 @@
 /**
- * @file EventProcessorFactory.h
+ * @file PluginFactory.h
  * @brief Class which provides a singleton module factory that creates EventProcessor objects
  * @author Jeremy Mans, University of Minnesota
  */
@@ -18,10 +18,10 @@
 namespace ldmx {
 
     /**
-     * @class EventProcessorFactory
+     * @class PluginFactory
      * @brief Singleton module factory that creates EventProcessor objects.
      */
-    class EventProcessorFactory {
+    class PluginFactory {
 
         public:
 
@@ -29,7 +29,7 @@ namespace ldmx {
              * Get the factory instance.
              * @return The factory.
              */
-            static EventProcessorFactory& getInstance() {
+            static PluginFactory& getInstance() {
                 return theFactory_;
             }
 
@@ -72,7 +72,7 @@ namespace ldmx {
             /**
              * Constructor
              */
-            EventProcessorFactory();
+            PluginFactory();
 
             /**
              * @struct EventProcessorInfo
@@ -91,7 +91,7 @@ namespace ldmx {
             std::set<std::string> librariesLoaded_;
 
             /** Factor for creating the EventProcessor object. */
-            static EventProcessorFactory theFactory_;
+            static PluginFactory theFactory_;
     };
 
 }

@@ -1,15 +1,15 @@
 #include "Framework/EventProcessor.h"
-#include "Framework/EventProcessorFactory.h"
+#include "Framework/PluginFactory.h"
 #include <dlfcn.h>
 
-ldmx::EventProcessorFactory ldmx::EventProcessorFactory::theFactory_ __attribute((init_priority(500)));
+ldmx::PluginFactory ldmx::PluginFactory::theFactory_ __attribute((init_priority(500)));
 
 namespace ldmx {
 
-    EventProcessorFactory::EventProcessorFactory() {
+    PluginFactory::PluginFactory() {
     }
 
-    void EventProcessorFactory::registerEventProcessor(const std::string& classname, int classtype, EventProcessorMaker* maker) {
+    void PluginFactory::registerEventProcessor(const std::string& classname, int classtype, EventProcessorMaker* maker) {
         auto ptr = moduleInfo_.find(classname);
         if (ptr != moduleInfo_.end()) {
             EXCEPTION_RAISE("ExistingEventProcessorDefinition", "Already have a module registered with the classname '" + classname + "'");
@@ -21,7 +21,7 @@ namespace ldmx {
         moduleInfo_[classname] = mi;
     }
 
-    std::vector<std::string> EventProcessorFactory::getEventProcessorClasses() const {
+    std::vector<std::string> PluginFactory::getEventProcessorClasses() const {
         std::vector<std::string> classes;
         for (auto ptr : moduleInfo_) {
             classes.push_back(ptr.first);
@@ -29,7 +29,7 @@ namespace ldmx {
         return classes;
     }
 
-    int EventProcessorFactory::getEventProcessorClasstype(const std::string& ct) const {
+    int PluginFactory::getEventProcessorClasstype(const std::string& ct) const {
         auto ptr = moduleInfo_.find(ct);
         if (ptr == moduleInfo_.end()) {
             return 0;
@@ -39,7 +39,7 @@ namespace ldmx {
         }
     }
 
-    EventProcessor* EventProcessorFactory::createEventProcessor(const std::string& classname, const std::string& moduleInstanceName, Process& process) {
+    EventProcessor* PluginFactory::createEventProcessor(const std::string& classname, const std::string& moduleInstanceName, Process& process) {
         auto ptr = moduleInfo_.find(classname);
         if (ptr == moduleInfo_.end()) {
             return 0;
@@ -47,7 +47,7 @@ namespace ldmx {
         return ptr->second.maker(moduleInstanceName, process);
     }
 
-    void EventProcessorFactory::loadLibrary(const std::string& libname) {
+    void PluginFactory::loadLibrary(const std::string& libname) {
         if (librariesLoaded_.find(libname) != librariesLoaded_.end()) {
             return; // already loaded
         }
