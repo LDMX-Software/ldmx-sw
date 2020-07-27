@@ -59,7 +59,7 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
 
     std::map<std::string,std::any> actualParameters;
     EcalDigiProducer digis( "testDigis" , dummyProcess );
-    actualParameters.clear();
+    std::map< std::string , std::any > actualParameters;
     actualParameters[ "randomSeed" ] = 1;
     actualParameters[ "gain" ] = 2000.;
     actualParameters[ "pedestal" ] = 1100.;
@@ -70,6 +70,7 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
     actualParameters[ "iSOI"  ] = 0; 
     actualParameters[ "readoutThreshold" ] = 4.;
     actualParameters[ "makeConfigHists" ] = false;
+
     Parameters ecalDigi;
     ecalDigi.setParameters( actualParameters );
     REQUIRE_NOTHROW( digis.configure( ecalDigi ) );
