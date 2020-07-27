@@ -38,38 +38,24 @@ namespace ldmx {
 
         // physical constants
         //  used to calculate unit conversions
-        maxADCRange_           = ps.getParameter<double>("maxADCRange");
-        readoutPadCapacitance_ = ps.getParameter<double>("readoutPadCapacitance");
-        ELECTRONS_PER_MIP      = ps.getParameter<double>("ELECTRONS_PER_MIP");
-        MIP_SI_RESPONSE        = ps.getParameter<double>("MIP_SI_RESPONSE");
+        MeV_ = ps.getParameter<double>("MeV");
 
         //Time -> clock counts conversion
         //  time [ns] * ( 2^10 / max time in ns ) = clock counts
         ns_ = 1024./clockCycle_;
 
-        //Energy -> Volts converstion
-        //              (   1MIP   ) ( 37 000 e- ) ( 0.162 fC ) (   1    )
-        // energy [MeV] (----------) (-----------) (----------) (--------) = volts [mV]
-        //              ( 0.130MeV ) (    1MIP   ) ( 1 000 e- ) ( 0.1 pF )
-        //   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
-        MeV_ = (1./MIP_SI_RESPONSE)*(ELECTRONS_PER_MIP)*(0.162/1000.)*(1./readoutPadCapacitance_);
-
-        //voltage -> ADC counts conversion
-        //  voltage [mV] * ( 2^10 / max ADC counts in fC ) * ( capacitance of readout pads in pF ) = ADC counts 
-        mV_ = (1024./maxADCRange_)*readoutPadCapacitance_;
-
         // geometry constants
         //  These are used in the noise generation so that we can randomly
         //  distribute the noise uniformly throughout the ECal channels.
-        NUM_ECAL_LAYERS           = ps.getParameter<int>("NUM_ECAL_LAYERS");
-        NUM_HEX_MODULES_PER_LAYER = ps.getParameter<int>("NUM_HEX_MODULES_PER_LAYER");
-        CELLS_PER_HEX_MODULE      = ps.getParameter<int>("CELLS_PER_HEX_MODULE");
-        TOTAL_NUM_CHANNELS = NUM_ECAL_LAYERS*NUM_HEX_MODULES_PER_LAYER*CELLS_PER_HEX_MODULE;
+        nEcalLayers_      = ps.getParameter<int>("nEcalLayers");
+        nModulesPerLayer_ = ps.getParameter<int>("nModulesPerLayer");
+        nCellsPerModule_  = ps.getParameter<int>("nCellsPerModule");
+        nTotalChannels_   = nEcalLayers_*nModulesPerLayer_*nCellsPerModule_;
 
         // Configure generator that will produce noise hits in empty channels
-        noiseGenerator_->setNoise(noiseRMS_); //rms noise in MeV
-        noiseGenerator_->setPedestal(0); //mean noise amplitude (if using Gaussian Model for the noise) in MeV
-        noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in MeV
+        noiseGenerator_->setNoise(noiseRMS_); //rms noise in mV
+        noiseGenerator_->setPedestal(gain_*pedestal_); //mean noise amplitude (if using Gaussian Model for the noise) in mV
+        noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in mV
 
         //The noise injector is used to place smearing on top
         //of energy depositions and hit times before doing
@@ -125,8 +111,10 @@ namespace ldmx {
         }
 
         //put noise into some empty channels
-        int numEmptyChannels = TOTAL_NUM_CHANNELS - ecalDigis.getNumDigis();
         EcalID detID;
+        int numEmptyChannels = nTotalChannels_ - ecalDigis.getNumDigis(); //minus number of channels with a hit
+        //noise generator gives us a list of noise amplitudes [mV] that randomly populate the empty
+        //channels and are above the readout threshold
         auto noiseHitAmplitudes{noiseGenerator_->generateNoiseHits(numEmptyChannels)};
         for ( double noiseHit : noiseHitAmplitudes ) {
 
@@ -134,9 +122,9 @@ namespace ldmx {
             //making sure that it is in an empty channel
             int noiseID;
             do {
-                int layerID = noiseInjector_->Integer(NUM_ECAL_LAYERS);
-                int moduleID= noiseInjector_->Integer(NUM_HEX_MODULES_PER_LAYER);
-                int cellID  = noiseInjector_->Integer(CELLS_PER_HEX_MODULE);
+                int layerID = noiseInjector_->Integer(nEcalLayers_);
+                int moduleID= noiseInjector_->Integer(nModulesPerLayer_);
+                int cellID  = noiseInjector_->Integer(nCellsPerModule_);
 		        detID=EcalID(layerID, moduleID, cellID);
                 noiseID = detID.raw();
             } while ( simHitIDs.find( noiseID ) != simHitIDs.end() );
@@ -144,8 +132,12 @@ namespace ldmx {
             //get a time for this noise hit
             double hitTime = noiseInjector_->Uniform( clockCycle_ );
 
+            //converting the amplitude to MeV and then using the same digitization emulation
+            //as real hits is a worse-case scenario. In reality, these noise hits would
+            //probably be randomly distributed throughout digi samples instead of forming
+            //a coherent (although small) pulse shape.
             std::vector<HgcrocDigiCollection::Sample> digiToAdd;
-            std::vector<double> noiseEnergies( 1 , noiseHit ), noiseTimes( 1 , hitTime );
+            std::vector<double> noiseEnergies( 1 , noiseHit/MeV_ ), noiseTimes( 1 , hitTime );
             if ( constructDigis( noiseEnergies , noiseTimes , digiToAdd ) ) {
                 for ( auto& sample : digiToAdd ) sample.rawID_ = noiseID;
                 ecalDigis.addDigi( digiToAdd );
@@ -184,10 +176,9 @@ namespace ldmx {
             }
             if ( energyInWindow > 0. ) timeInWindow /= energyInWindow; //energy weighted average
 
-            //put noise onto pulse parameters
-            //TODO this is putting noise ontop of noise, is this a problem? (I don't think so, but maybe)
-            energyInWindow += noiseInjector_->Gaus( 0.0 , noiseRMS_ );
-            timeInWindow   += noiseInjector_->Gaus( 0.0 , timingJitter_ );
+            // put noise onto timing
+            //TODO more physical way of simulating the timing jitter
+            timeInWindow += noiseInjector_->Gaus( 0. , timingJitter_ );
 
             //set time in the window to zero if noise pushed it below zero
             //TODO better (more physical) method for handling this case?
@@ -195,29 +186,39 @@ namespace ldmx {
 
             //setup up pulse by changing the amplitude and timing parameters
             //  amplitude is gain times input voltage
-            pulseFunc_.SetParameter( 0 , gain_*(energyInWindow*MeV_) ); 
+            double signalAmplitude = energyInWindow*MeV_; //now this is the amplitude in mV
+            pulseFunc_.SetParameter( 0 , signalAmplitude ); 
             pulseFunc_.SetParameter( 4 , timeInWindow ); //set time of peak to simulated hit time
 
+            //measure pulse with option to include noise on top
+            //  returns height of pulse in mV
+            //  this : pointer to this object so lambda function has access to its members
+            //  time : time [ns] to measure height of pulse func at
+            //  withNoise : true if you want to include Gaussian noise on top
+            auto measurePulse = [this](const double &time, bool withNoise) {
+                auto signal = gain_*pedestal_ + pulseFunc_.Eval(time);
+                if ( withNoise ) signal += noiseInjector_->Gaus( 0. , noiseRMS_ );
+                return signal;
+            };
+
             // choose readout mode
-            if ( energyInWindow < readoutThreshold_ ) {
+            if ( signalAmplitude < readoutThreshold_ ) {
                 //below readout threshold -> skip this hit
                 return false;
-            } else if ( energyInWindow < totThreshold_ ) {
+            } else if ( signalAmplitude < totThreshold_ ) {
                 //below TOT threshold -> do ADC readout mode
 
                 //measure time of arrival (TOA) using TOA threshold
                 double toa(0.);
-                // check if first half is just always above readout or if doesn't go above TOA threshold
-                if ( pulseFunc_.Eval(0.) > toaThreshold_*MeV_ or energyInWindow < toaThreshold_ ) 
-                    toa = 0.; //toa is beginning of readout interval
-                else
-                    toa = pulseFunc_.GetX(toaThreshold_*MeV_, 0., timeInWindow);
+                // make sure pulse crosses TOA threshold
+                if ( pulseFunc_.Eval(0.) < toaThreshold_ and signalAmplitude > toaThreshold_ ) 
+                    toa = pulseFunc_.GetX(toaThreshold_, 0., timeInWindow);
 
                 //measure ADCs
                 for ( unsigned int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
                     double measTime = iADC*clockCycle_; // + offset;
-                    digiToAdd[iADC].adc_t_   = pulseFunc_.Eval( measTime )*mV_;
-                    digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : 0.; //TODO pick a correct default
+                    digiToAdd[iADC].adc_t_   = measurePulse( measTime, true )/gain_;
+                    digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : pedestal_; 
                     digiToAdd[iADC].toa_     = toa * ns_;
                     digiToAdd[iADC].tot_progress_ = false;
                     digiToAdd[iADC].tot_complete_ = false;
@@ -236,13 +237,13 @@ namespace ldmx {
                 
                 double toa(0.); //default is earliest possible time
                 // check if first half is just always above readout
-                if ( pulseFunc_.Eval(0.) < totThreshold_*MeV_ ) 
-                    toa = pulseFunc_.GetX(totThreshold_*MeV_, 0., timeInWindow);
+                if ( pulseFunc_.Eval(0.) < totThreshold_ ) 
+                    toa = pulseFunc_.GetX(totThreshold_, 0., timeInWindow);
     
                 double tut(nADCs_*clockCycle_); //default is latest possible time
                 // check if second half is just always above readout
-                if ( pulseFunc_.Eval( nADCs_*clockCycle_ ) > totThreshold_*MeV_ )
-                    tut = pulseFunc_.GetX(totThreshold_*MeV_, timeInWindow, nADCs_*clockCycle_);
+                if ( pulseFunc_.Eval( nADCs_*clockCycle_ ) > totThreshold_ )
+                    tut = pulseFunc_.GetX(totThreshold_, timeInWindow, nADCs_*clockCycle_);
     
                 double tot = tut - toa;
 
@@ -258,14 +259,14 @@ namespace ldmx {
                     if ( tot > clockCycle_ or tot < 0 ) {
                         //TOT still in progress or already completed
                         double measTime = iADC*clockCycle_; // + offset;
-                        digiToAdd[iADC].adc_t_   = pulseFunc_.Eval( measTime )*mV_;
-                        digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : 0.; //TODO pick a correct default
+                        digiToAdd[iADC].adc_t_   = measurePulse( measTime, true )/gain_;
+                        digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : pedestal_;
                         digiToAdd[iADC].toa_     = toa*ns_;
                         digiToAdd[iADC].tot_progress_ = true;
                         digiToAdd[iADC].tot_complete_ = false;
                     } else {
                         //TOT complete
-                        digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : 0.; //TODO pick a correct default
+                        digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : pedestal_;
                         digiToAdd[iADC].tot_     = tot*ns_;
                         digiToAdd[iADC].toa_     = toa*ns_;
                         digiToAdd[iADC].tot_progress_ = false;

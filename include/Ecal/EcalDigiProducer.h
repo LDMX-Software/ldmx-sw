@@ -96,35 +96,23 @@ namespace ldmx {
             ///////////////////////////////////////////////////////////////////////////////////////
             //Python Configuration Parameters
             
-            /// Number of Electrons Generated per MIP in 0.5mm thick Si
-            double ELECTRONS_PER_MIP; 
+            /// Number of layers in ECal 
+            int nEcalLayers_;
 
-            /// MIP response in Si in MeV.
-            double MIP_SI_RESPONSE;
+            /// Number of Hexagnonal modules per layer in ECal 
+            int nModulesPerLayer_;
+
+            /// Number of cells in each hex module 
+            int nCellsPerModule_;
 
             /// Time interval for chip clock in ns
             double clockCycle_;
-
-            /// Number of layers in ECal 
-            int NUM_ECAL_LAYERS;
-
-            /// Number of Hexagnonal modules per layer in ECal 
-            int NUM_HEX_MODULES_PER_LAYER;
-
-            /// Number of cells in each hex module 
-            int CELLS_PER_HEX_MODULE;
 
             /// The gain in ADC units per MeV. 
             double gain_;
 
             /// The pedestal in ADC units 
             double pedestal_;
-
-            /// Capacitance of readout pads in pF
-            double readoutPadCapacitance_;
-
-            /// Max ADC Count Setting [fC]
-            double maxADC_;
 
             /// Depth of ADC buffer. 
             int nADCs_; 
@@ -150,20 +138,17 @@ namespace ldmx {
             /// Jitter of timing mechanism in the chip [ns]
             double timingJitter_;
 
+            /// Conversion from energy in MeV to voltage in mV
+            double MeV_;
+
             ///////////////////////////////////////////////////////////////////////////////////////
             // Other member variables
 
             /// Total number of channels in the ECal
-            int TOTAL_NUM_CHANNELS;
+            int nTotalChannels_;
 
             /// Conversion from time in ns to ticks of the internal clock
             double ns_;
-
-            /// Conversion from energy in MeV to voltage in mV
-            double MeV_;
-
-            /// Conversion from mV to discrete ADC counts
-            double mV_;
 
             /// Generates noise hits based off of number of cells that are not hit
             std::unique_ptr<NoiseGenerator> noiseGenerator_;
