@@ -203,16 +203,16 @@ namespace ldmx {
             };
 
             // choose readout mode
-            if ( signalAmplitude < readoutThreshold_ ) {
+            if ( measurePulse(timeInWindow,false) < readoutThreshold_ ) {
                 //below readout threshold -> skip this hit
                 return false;
-            } else if ( signalAmplitude < totThreshold_ ) {
+            } else if ( measurePulse(timeInWindow,false) < totThreshold_ ) {
                 //below TOT threshold -> do ADC readout mode
 
                 //measure time of arrival (TOA) using TOA threshold
                 double toa(0.);
                 // make sure pulse crosses TOA threshold
-                if ( pulseFunc_.Eval(0.) < toaThreshold_ and signalAmplitude > toaThreshold_ ) 
+                if ( measurePulse(0.,false) < toaThreshold_ and measurePulse(timeInWindow,false) > toaThreshold_ ) 
                     toa = pulseFunc_.GetX(toaThreshold_, 0., timeInWindow);
 
                 //measure ADCs
@@ -238,7 +238,7 @@ namespace ldmx {
                 
                 double toa(0.); //default is earliest possible time
                 // check if first half is just always above readout
-                if ( pulseFunc_.Eval(0.) < totThreshold_ ) 
+                if ( measurePulse(0.,false) < totThreshold_ ) 
                     toa = pulseFunc_.GetX(totThreshold_, 0., timeInWindow);
     
                 double tut(nADCs_*clockCycle_); //default is latest possible time
