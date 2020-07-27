@@ -58,12 +58,23 @@ namespace ldmx {
             }
 
             /**
-             * Get the run number to be used when initiating new events from the job
+             * Get the current run number or the run number to be used when initiating new events from the job
              * @return int Run number
              */
-            int getRunNumber() const { return runForGeneration_; }
+            int getRunNumber() const;
 
-            /**
+
+           /**
+             * Get the pointer to the current event header, if defined
+             */
+           const EventHeader* getEventHeader() const { return eventHeader_; }
+
+           /**
+             * Get a reference to the conditions system
+             */
+           Conditions& getConditions() { return conditions_; }
+
+           /**
              * Get the frequency with which the event information is printed.
              * @return integer log frequency (negative if turned off)
              */
@@ -171,6 +182,9 @@ namespace ldmx {
 
             /** Filename for histograms and other user products */
             std::string histoFilename_;
+
+            /** Pointer to the current EventHeader, used for Conditions information */
+            const EventHeader* eventHeader_;
 
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};

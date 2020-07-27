@@ -12,6 +12,9 @@ namespace ldmx {
         process_{process}, name_ {name} , histograms_{name} , theLog_{logging::makeLogger(name)} {
     }
 
+    Conditions& EventProcessor::getConditions() const { return process_.getConditions(); }
+    const EventHeader& EventProcessor::getEventHeader() const { return *(process_.getEventHeader()); }
+  
     TDirectory* EventProcessor::getHistoDirectory() {
         if (!histoDir_) {
             histoDir_=process_.makeHistoDirectory(name_);

@@ -14,6 +14,7 @@
 #include "Framework/NtupleManager.h"
 #include "Framework/Logger.h"
 #include "Event/RunHeader.h"
+#include "Event/EventHeader.h"
 #include "Framework/Exception.h"
 
 namespace ldmx {
@@ -34,6 +35,8 @@ namespace ldmx {
         inputFiles_    = configuration.getParameter<std::vector<std::string>>("inputFiles" ,{});
         outputFiles_   = configuration.getParameter<std::vector<std::string>>("outputFiles",{});
         dropKeepRules_ = configuration.getParameter<std::vector<std::string>>("keep"       ,{});
+
+	eventHeader_   = 0;
 
         auto run{configuration.getParameter<int>("run")};
         if ( run > 0 ) runForGeneration_ = run;
@@ -151,6 +154,9 @@ namespace ldmx {
                     eh.setEventNumber(n_events_processed + 1);
                     eh.setTimestamp(TTimeStamp());
 
+		    // event header pointer grab
+		    eventHeader_=theEvent.getEventHeaderPtr();
+		    
                     numTries++;
 
                     // reset the storage controller state
@@ -263,6 +269,9 @@ namespace ldmx {
                             && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
                         // clean up for storage control calculation
                         m_storageController.resetEventState();
+
+			// event header pointer grab
+			eventHeader_=theEvent.getEventHeaderPtr();
             
                         // notify for new run if necessary
                         if (theEvent.getEventHeader().getRun() != wasRun) {
@@ -364,6 +373,12 @@ namespace ldmx {
         logging::close();
     }
 
+
+    int Process::getRunNumber() const {
+	return (eventHeader_)?(eventHeader_->getRun()):(runForGeneration_);
+    }
+  
+  
     TDirectory* Process::makeHistoDirectory(const std::string& dirName) {
         auto owner{openHistoFile()}; 
         TDirectory* child = owner->mkdir((char*) dirName.c_str());
