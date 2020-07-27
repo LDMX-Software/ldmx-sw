@@ -181,7 +181,7 @@ namespace ldmx {
             int getRunNumber() const;
     
             /**
-             * Internal function which is part of the EventProcessorFactory machinery.
+             * Internal function which is part of the PluginFactory machinery.
              * @param classname The class name of the processor.
              * @param classtype The class type of the processor (1 for Producer, 2 for Analyzer).
              */
@@ -233,7 +233,7 @@ namespace ldmx {
 
         public:
 
-            /** Constant used to track EventProcessor types by the EventProcessorFactory */
+            /** Constant used to track EventProcessor types by the PluginFactory */
             static const int CLASSTYPE{1};
 
             /**
@@ -268,7 +268,7 @@ namespace ldmx {
 
         public:
 
-            /** Constant used to track EventProcessor types by the EventProcessorFactory */
+            /** Constant used to track EventProcessor types by the PluginFactory */
             static const int CLASSTYPE{2};
 
             /**

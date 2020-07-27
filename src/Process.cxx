@@ -7,7 +7,7 @@
 #include "TFile.h"
 #include "TROOT.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/EventProcessorFactory.h"
+#include "Framework/PluginFactory.h"
 #include "Framework/Event.h"
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
@@ -40,7 +40,7 @@ namespace ldmx {
 
         auto libs{configuration.getParameter<std::vector<std::string>>("libraries",{})};
         std::for_each(libs.begin(), libs.end(), 
-                [](auto& lib) { EventProcessorFactory::getInstance().loadLibrary(lib);}
+                [](auto& lib) { PluginFactory::getInstance().loadLibrary(lib);}
                 ); 
 
         m_storageController.setDefaultKeep(
@@ -61,7 +61,7 @@ namespace ldmx {
         for (auto proc : sequence) {
             auto className{proc.getParameter<std::string>("className")};
             auto instanceName{proc.getParameter<std::string>("instanceName")};
-            EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(
+            EventProcessor* ep = PluginFactory::getInstance().createEventProcessor(
                     className, instanceName, *this);
             if (ep == 0) {
                 EXCEPTION_RAISE("UnableToCreate", 

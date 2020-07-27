@@ -2,7 +2,7 @@
 
 // LDMX
 #include "Framework/Process.h"
-#include "Framework/EventProcessorFactory.h"
+#include "Framework/PluginFactory.h"
 #include "TDirectory.h"
 #include "Event/RunHeader.h"
 
@@ -33,7 +33,7 @@ namespace ldmx {
     }
   
     void EventProcessor::declare(const std::string& classname, int classtype,EventProcessorMaker* maker) {
-        EventProcessorFactory::getInstance().registerEventProcessor(classname, classtype, maker);
+        PluginFactory::getInstance().registerEventProcessor(classname, classtype, maker);
     }
 
     void EventProcessor::createHistograms(const std::vector<Parameters>& histos) {

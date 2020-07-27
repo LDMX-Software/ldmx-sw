@@ -15,6 +15,7 @@
 // STL
 #include <vector>
 #include <memory>
+#include <map>
 
 class TFile;
 class TDirectory;
@@ -22,6 +23,7 @@ class TDirectory;
 namespace ldmx {
 
     class EventProcessor;
+    class ConditionsProvider;
     class EventFile;
     class Event;
 
@@ -142,6 +144,12 @@ namespace ldmx {
 
             /** Ordered list of EventProcessors to execute. */
             std::vector<EventProcessor*> sequence_;
+
+	    /** Set of ConditionsProviders */
+	    std::vector<ConditionsProvider*> conditionsProviders_;
+
+	    /** Map between available conditions and providers */
+	    std::map<std::string,ConditionsProvider*> conditionsToProviders_;
 
             /** List of input files to process.  May be empty if this Process will generate new events. */
             std::vector<std::string> inputFiles_;
