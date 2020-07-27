@@ -18,7 +18,7 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TRandom3.h"
+#include "TF1.h"
 
 //----------//
 //   LDMX   //
@@ -91,6 +91,35 @@ namespace ldmx {
 
             /** Digi Pass Name to use as input */
             std::string digiPassName_;
+
+            /// Energy [MeV] deposited by a MIP in Si 0.5mm thick
+            double mipSiEnergy_;
+
+            /// Pedestal [ADC Counts] on below signal
+            double pedestal_;
+
+            /// Conversion from ADC counts to voltage [mV]
+            double gain_;
+
+            /// Length of clock cycle [ns]
+            double clockCycle_;
+
+            /// Conversion from voltage [mV] to energy [MeV]
+            double mV_;
+
+            /**
+             * Pulse shape of HGCROC chip voltage pulse
+             *  p[0]/(1.0+exp(p[1](t-p[2]+p[3]-p[4])))/(1.0+exp(p[5]*(t-p[6]+p[3]-p[4])))
+             *  p[0] = amplitude to be fit (TBD)
+             *  p[1] = -0.345 shape parameter - rate of up slope
+             *  p[2] = 70.6547 shape parameter - time of up slope relative to shape fit
+             *  p[3] = 77.732 shape parameter - time of peak relative to shape fit
+             *  p[4] = peak time to be fit (TBD)
+             *  p[5] = 0.140068 shape parameter - rate of down slope
+             *  p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
+             *These measurements can be used to fit the pulse shape if TOT is not available
+             */
+            TF1 pulseFunc_;
 
             /** 
              * Layer Weights to use for this reconstruction 

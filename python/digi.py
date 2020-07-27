@@ -113,6 +113,22 @@ class EcalRecProducer(Producer) :
     def __init__(self, instance_name = 'ecalRecon') : 
         super().__init__(instance_name , 'ldmx::EcalRecProducer','Ecal')
 
+        self.pedestal = 50. #ADC counts - baseline factor to subtract off of readout
+        self.clockCycle = 25.0 #ns
+        self.readoutPadCapacitance = 0.1 #pF <- derived from hardware geometry
+        self.maxADCRange = 320. #fC <- setting of HGCROC
+        self.nElectronsPerMIP = 37000.0 #e-h pairs created per MIP <- derived from 0.5mm thick Si
+        self.mipSiEnergy = 0.130 #MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
+
+        #Volts -> Energy conversion
+        #   voltage [mV] ( readout pad capacitance [pF] ) ( 1000 electrons / 0.162 fC ) ( 1 MIP / electrons ) ( energy / MIP ) = energy [MeV]
+        self.mV  = self.readoutPadCapacitance*(1000./0.162)*(1./self.nElectronsPerMIP)*(self.mipSiEnergy)
+
+        #ADC Counts -> Voltage conversion
+        #
+        # gain = maximum ADC range [fC] ( 1 / readout pad capacitance in pF ) ( 1 / 2^10 ADC Counts ) = mV / ADC counts
+        self.gain = self.maxADCRange/self.readoutPadCapacitance/1024 # mV / ADC
+
         self.digiCollName = 'EcalDigis'
         self.digiPassName = ''
 
@@ -123,10 +139,6 @@ class EcalRecProducer(Producer) :
 
         from LDMX.DetDescr import EcalHexReadout
         self.hexReadout = EcalHexReadout.EcalHexReadout()
-
-        self.pedestal = 50. #subtraction scale in ADC counts
-        self.gain     = 1. #conversion from ADC counts to mV
-        self.mV       = 1. #conversion from mV to MeV
 
         self.v12() #use v12 geometry by default
 

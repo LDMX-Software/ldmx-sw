@@ -4,6 +4,7 @@
  * @author Owen Colegrove, UCSB
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  * @author Cameron Bravo, SLAC National Accelerator Laboratory
+ * @author Tom Eichlersmith, University of Minnesota
  */
 
 #ifndef EVENTPROC_ECALDIGIPRODUCER_H_
