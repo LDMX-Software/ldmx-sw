@@ -37,7 +37,7 @@ namespace ldmx {
         //  These parameters could be configurable, that's why I put this here
         pulseFunc_ = TF1(
                 "pulseFunc",
-                "[0]/(1.0+exp([1]*(x-[2]+[3]-[4])))/(1.0+exp([5]*(x-[6]+[3]-[4])))",
+                "[0]/770.616*569.272/(1.0+exp([1]*(x-[2]+[3]-[4])))/(1.0+exp([5]*(x-[6]+[3]-[4])))",
                 0.0,(double) 10.*clockCycle_
                 );
         pulseFunc_.FixParameter( 1 , -0.345   );
