@@ -199,15 +199,18 @@ class ConditionsObjectProvider:
     Parameters
     ----------
     instanceName : str
-        Name of this copy of the producer object
+        Name of this copy of the provider object
     className : str
-        Name (including namespace) of the C++ class that this processor should be
+        Name (including namespace) of the C++ class of the provider
+    tagName : str
+        Tag which identifies the generation of information
 
     """
 
-    def __init__(self, instanceName, className):
+    def __init__(self, instanceName, className, tagName):
         self.instanceName=instanceName
         self.className=className
+        self.tagName=tagName
 
     def __str__(self) :
         """Stringify this ConditionsObjectProvider, creates a message with all the internal parameters.
@@ -218,7 +221,7 @@ class ConditionsObjectProvider:
             A message with all the parameters and member variables in a human readable format
         """
 
-        msg = "\n  ConditionsObjectProvider(%s of class %s)"%(self.instanceName,self.className)
+        msg = "\n  ConditionsObjectProvider(%s of class %s, tag='%s')"%(self.instanceName,self.className,self.tagName)
         if len(self.__dict__)>0:
             msg += "\n   Parameters:"
             for k, v in self.__dict__.items():

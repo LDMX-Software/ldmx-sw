@@ -78,7 +78,7 @@ namespace ldmx {
 	     * @param params Parameters for the conditoons object provider
              * @param process The process handle
              */
-            ConditionsObjectProvider* createConditionsObjectProvider(const std::string& classname, const std::string& moduleInstanceName, const Parameters& params, Process& process);
+            ConditionsObjectProvider* createConditionsObjectProvider(const std::string& classname, const std::string& moduleInstanceName, const std::string& tagname, const Parameters& params, Process& process);
 
             /**
              * Load a library.

@@ -7,8 +7,8 @@ namespace ldmx {
     Conditions::Conditions(Process& p) : process_{p} {
 	}
     
-    void Conditions::createConditionsObjectProvider(const std::string& classname, const std::string& instancename, const Parameters& params) {
-	ConditionsObjectProvider* cop=PluginFactory::getInstance().createConditionsObjectProvider(classname,instancename,params,process_);
+    void Conditions::createConditionsObjectProvider(const std::string& classname, const std::string& instancename, const std::string& tagname, const Parameters& params) {
+	ConditionsObjectProvider* cop=PluginFactory::getInstance().createConditionsObjectProvider(classname,instancename,tagname,params,process_);
 	if (cop) {
 	    providers_.push_back(cop);
 

@@ -81,8 +81,9 @@ namespace ldmx {
 	for (auto cop : conditionsObjectProviders) {
             auto className{cop.getParameter<std::string>("className")};
             auto instanceName{cop.getParameter<std::string>("instanceName")};
+	    auto tagName{cop.getParameter<std::string>("tagName")};
 
-	    conditions_.createConditionsObjectProvider(className, instanceName, cop);
+	    conditions_.createConditionsObjectProvider(className, instanceName, tagName, cop);
 	    
 	}
     }

@@ -80,7 +80,7 @@ namespace ldmx {
             /** 
 	     * Create a ConditionsObjectProvider given the information
 	     */
-	    void createConditionsObjectProvider(const std::string& classname, const std::string& instancename, const Parameters& params);
+	    void createConditionsObjectProvider(const std::string& classname, const std::string& instancename, const std::string& tagname, const Parameters& params);
 	    
        private:
 

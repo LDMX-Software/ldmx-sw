@@ -6,8 +6,8 @@
 
 namespace ldmx {
     
-	ConditionsObjectProvider::ConditionsObjectProvider(const std::string& name, const Parameters& params, Process& process) :
-	process_{process}, name_ {name} , theLog_{logging::makeLogger(name)} {
+    ConditionsObjectProvider::ConditionsObjectProvider(const std::string& name, const std::string& tagname, const Parameters& params, Process& process) :
+	process_{process}, name_ {name}, tagname_{tagname}, theLog_{logging::makeLogger(name)} {
 	}
     
     void ConditionsObjectProvider::declare(const std::string& classname, ConditionsObjectProviderMaker* maker) {

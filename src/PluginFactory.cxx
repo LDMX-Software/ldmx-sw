@@ -62,12 +62,12 @@ namespace ldmx {
         return ptr->second.ep_maker(moduleInstanceName, process);
     }
 
-    ConditionsObjectProvider* PluginFactory::createConditionsObjectProvider(const std::string& classname, const std::string& moduleInstanceName, const Parameters& params, Process& process) {
+    ConditionsObjectProvider* PluginFactory::createConditionsObjectProvider(const std::string& classname, const std::string& moduleInstanceName, const std::string& tagname, const Parameters& params, Process& process) {
         auto ptr = moduleInfo_.find(classname);
         if (ptr == moduleInfo_.end() || ptr->second.cop_maker==0) {
             return 0;
         }
-        return ptr->second.cop_maker(moduleInstanceName, params, process);
+        return ptr->second.cop_maker(moduleInstanceName, tagname, params, process);
     }
 
     void PluginFactory::loadLibrary(const std::string& libname) {

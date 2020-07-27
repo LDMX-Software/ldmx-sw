@@ -33,7 +33,7 @@ namespace ldmx {
     class ConditionsObjectProvider;
 
     /** Typedef for EventProcessorFactory use. */
-    typedef ConditionsObjectProvider* ConditionsObjectProviderMaker(const std::string& name, const Parameters& params, Process& process);
+    typedef ConditionsObjectProvider* ConditionsObjectProviderMaker(const std::string& name, const std::string& tagname, const Parameters& params, Process& process);
 
 
     /**
@@ -50,6 +50,7 @@ namespace ldmx {
             /**
              * Class constructor.
              * @param name Name for this instance of the class.
+	     * @param tagName The tag for the database entry (should not include whitespace)
              * @param process The Process class associated with ConditionsObjectProvider, provided by the framework.
              *
              * @note The name provided to this function should not be
@@ -58,7 +59,7 @@ namespace ldmx {
              * into a Process with different parameters.  Names should not include
              * whitespace or special characters.
              */
-            ConditionsObjectProvider(const std::string& name, const Parameters& parameters, Process& process);
+	ConditionsObjectProvider(const std::string& name, const std::string& tagname, const Parameters& parameters, Process& process);
 
             /**
              * Class destructor.
@@ -103,6 +104,13 @@ namespace ldmx {
              */
             static void declare(const std::string& classname, ConditionsObjectProviderMaker*);
 
+
+	    /** 
+	     * Access the tag name
+	     */
+	    const std::string& getTagName() const { return tagname_; }
+	
+	
         protected:
 
 	    /// The logger for this ConditionsObjectProvider
@@ -119,6 +127,9 @@ namespace ldmx {
             /** The name of the ConditionsObjectProvider. */
             std::string name_;
 
+	    /** The tag name for the ConditionsObjectProvider. */
+            std::string tagname_;
+
     };
 
 }
@@ -129,7 +140,7 @@ namespace ldmx {
  * @brief Macro which allows the framework to construct a producer given its name during configuration.
  * @attention Every Producer class must call this macro or DECLARE_CONDITIONS_PROVIDER_NS() in the associated implementation (.cxx) file.
  */
-#define DECLARE_CONDITIONS_PROVIDER(CLASS) ldmx::ConditionsObjectProvider*  CLASS ## _ldmx_make (const std::string& name, ldmx::Process& process) { return new CLASS(name,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmx_declare() { ldmx::ConditionsObjectProvider::declare(#CLASS,& CLASS ## _ldmx_make ); }
+#define DECLARE_CONDITIONS_PROVIDER(CLASS) ldmx::ConditionsObjectProvider*  CLASS ## _ldmx_make (const std::string& name, const std::string& tagname, const ldmx::Parameters& params, ldmx::Process& process) { return new CLASS(name,tagname,params,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmx_declare() { ldmx::ConditionsObjectProvider::declare(#CLASS,& CLASS ## _ldmx_make ); }
 
 /**
  * @def DECLARE_CONDITIONS_PROVIDER_NS(NS,CLASS)
@@ -138,6 +149,6 @@ namespace ldmx {
  * @brief Macro which allows the framework to construct a producer given its name during configuration.
  * @attention Every Producer class must call this macro or DECLARE_CONDITIONS_PROVIDER() in the associated implementation (.cxx) file.
  */
-#define DECLARE_CONDITIONS_PROVIDER_NS(NS, CLASS) ldmx::ConditionsObjectProvider*  CLASS ## _ldmx_make (const std::string& name, const ldmx::Parameters& params, ldmx::Process& process) { return new NS::CLASS(name,params,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmx_declare() { ldmx::ConditionsObjectProvider::declare(std::string(#NS)+"::"+std::string(#CLASS),& CLASS ## _ldmx_make ); }
+#define DECLARE_CONDITIONS_PROVIDER_NS(NS, CLASS) ldmx::ConditionsObjectProvider*  CLASS ## _ldmx_make (const std::string& name, const std::string& tagname, const ldmx::Parameters& params, ldmx::Process& process) { return new NS::CLASS(name,tagname,params,process); }  __attribute__((constructor(1000))) static void CLASS ## _ldmx_declare() { ldmx::ConditionsObjectProvider::declare(std::string(#NS)+"::"+std::string(#CLASS),& CLASS ## _ldmx_make ); }
 
 #endif 
