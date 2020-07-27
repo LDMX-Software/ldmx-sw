@@ -11,6 +11,7 @@
 #include "Framework/Exception.h"
 #include "Framework/StorageControl.h"
 #include "Framework/Parameters.h"
+#include "Framework/Conditions.h"
 
 // STL
 #include <vector>
@@ -23,7 +24,6 @@ class TDirectory;
 namespace ldmx {
 
     class EventProcessor;
-    class ConditionsProvider;
     class EventFile;
     class Event;
 
@@ -146,10 +146,7 @@ namespace ldmx {
             std::vector<EventProcessor*> sequence_;
 
 	    /** Set of ConditionsProviders */
-	    std::vector<ConditionsProvider*> conditionsProviders_;
-
-	    /** Map between available conditions and providers */
-	    std::map<std::string,ConditionsProvider*> conditionsToProviders_;
+	    Conditions conditions_;
 
             /** List of input files to process.  May be empty if this Process will generate new events. */
             std::vector<std::string> inputFiles_;
