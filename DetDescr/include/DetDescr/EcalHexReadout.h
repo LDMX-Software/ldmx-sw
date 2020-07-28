@@ -44,8 +44,8 @@ namespace ldmx {
              * @param gap air gap between edges of adjacent ECal modules [mm]
              * @param nCellsWide Total cell count in center horizontal row.
              */
-            EcalHexReadout(double moduleMinR = defaultMinR_, double gap = defaultGap_, unsigned nCellsWide = defaultNCellsWide_,
-                    const std::vector<double> &layerZPositions = defaultLayerZPositions_, double ecalFrontZ = defaultEcalFrontZ_);
+            EcalHexReadout(double moduleMinR, double gap, unsigned nCellsWide,
+                    const std::vector<double> &layerZPositions, double ecalFrontZ);
 
             /**
              * Class destructor.
@@ -284,6 +284,17 @@ namespace ldmx {
 
             int verbose_{0}; // 0 to 3
 
+            /** 
+             * MUST SYNC MINR AND GAP WITH ECAL.GDML. May change cell count here for eg granularity studies.
+             * maxR = center-to-corner module hexagon radius, i.e. currently "Hex_radius" in gdml
+             * nCellsWide = count of cells in neatly-ordered horizontal center row
+             * Cell count calculation:
+             *   N = total cell count (in each module)
+             *   c = nCellsWide as defined below
+             *   Define n through c = 2*n+1
+             *   Then N = 1 + 3n(n+1).
+             *   E.g. c = 23 gives N = 397.
+             */
             unsigned nCellsWide_{0};
             double lengthWide_{0};
             double gap_{1};
@@ -302,23 +313,6 @@ namespace ldmx {
             std::map<int, XYCoords> cellModulePositionMap_;
             std::map<int, std::vector<int> > NNMap_;
             std::map<int, std::vector<int> > NNNMap_;
-
-            /** 
-             * MUST SYNC MINR AND GAP WITH ECAL.GDML. May change cell count here for eg granularity studies.
-             * minR = center-to-flat module hexagon radius, i.e. currently "Hex_radius" in gdml
-             * nCellsWide = count of cells in neatly-ordered horizontal center row
-             * Cell count calculation:
-             *   N = total cell count (in each module)
-             *   c = nCellsWide as defined below
-             *   Define n through c = 2*n+1
-             *   Then N = 1 + 3n(n+1).
-             *   E.g. c = 23 gives N = 397.
-             */
-            static constexpr double defaultMinR_{85.};
-            static constexpr double defaultGap_{0.};
-            static constexpr unsigned defaultNCellsWide_{23};
-            static constexpr double defaultEcalFrontZ_{200.};
-            static const std::vector<double> defaultLayerZPositions_; //defined in src
 
             /**
              * Honeycomb Binning from ROOT

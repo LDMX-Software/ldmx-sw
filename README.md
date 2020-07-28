@@ -27,6 +27,27 @@
 
 ## Documentation 
 The full documentation for **ldmx-sw** is available on [github pages](https://ldmx-software.github.io/).
+A brief description of common commands is given below.
+
+### Common Commands inside Container
+
+Command | Purpose
+---|---
+`ldmx cmake ..` | Configure the ldmx-sw build
+`ldmx make` | Compile/build ldmx-sw
+`ldmx make install` | Install ldmx-sw
+`ldmx fire config.py` | Use ldmx-sw application and processors with input python configuration
+`ldmx python3 analysis.py` | Run python-based analysis
+`ldmx ./bin/mg5_aMC` | Run MadGraph5 inside (ubuntu-based) container
+
+### Other Container Configuration Commands
+
+The environment script defines several other shell commands to help configure and debug the container environment.
+
+- `ldmx-container-tags repo` : List the container tags that you could use with the input repository: `dev`, `pro`, or `local`
+- `ldmx-container-pull repo tag` : Setup the environment for the container 'ldmx/repo:tag' and pull down the newest version if the repo is remote
+- `ldmx-container-config` : Print out how the container environment is currently configured
+- `ldmx-has-required-engine` : Return 0 if computer has a supported container-running engine and 1 otherwise
 
 ## Maintainer 
 

@@ -10,44 +10,6 @@
 
 namespace ldmx {
 
-    //these are for the v9 ECal
-    const std::vector<double> EcalHexReadout::defaultLayerZPositions_ = {
-        4.550,
-        7.300,
-        13.800,
-        18.200,
-        26.050,
-        31.950,
-        41.050,
-        47.450,
-        56.550,
-        62.950,
-        72.050,
-        78.450,
-        87.550,
-        93.950,
-        103.050,
-        109.450,
-        118.550,
-        124.950,
-        134.050,
-        140.450,
-        149.550,
-        155.950,
-        165.050,
-        171.450,
-        184.050,
-        193.950,
-        206.550,
-        216.450,
-        229.050,
-        238.950,
-        251.550,
-        261.450,
-        274.050,
-        283.950
-    };
-
     EcalHexReadout::EcalHexReadout(double moduleMinR, double gap, unsigned nCellsWide, 
             const std::vector<double> &layerZPositions, double ecalFrontZ) 
         : layerZPositions_(layerZPositions), ecalFrontZ_(ecalFrontZ) {
@@ -92,8 +54,8 @@ namespace ldmx {
         //         Checked with a ruler - correct.
 
         gap_        = gap;
+        moduleR_    = moduleMinR*(2/sqrt(3));
         moduler_    = moduleMinR;
-        moduleR_    = moduler_*(2./sqrt(3.));
         nCellsWide_ = nCellsWide;
         cellr_      = moduleR_/(nCellsWide - 1./3.);
         cellR_      = (2./sqrt(3.))*cellr_;
