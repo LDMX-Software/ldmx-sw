@@ -30,7 +30,11 @@ namespace ldmx {
             if ((desiredVolume.compare("ecal") == 0) ) {
                 //looking for ecal volumes
                 if ( volumeName.contains("volume") and
-                    (volumeName.contains("Si") or volumeName.contains("W") or volumeName.contains("PCB")) 
+                    (   volumeName.contains("Si") 
+                     or volumeName.contains("W") 
+                     or volumeName.contains("CFMix") 
+                     or volumeName.contains("PCB")
+                    ) 
                 ) { volumes_.push_back( volume ); }
 
             } else if (volumeName.contains(desiredVolume)) {
@@ -47,6 +51,10 @@ namespace ldmx {
     }
 
     void DarkBremFilter::BeginOfEventAction(const G4Event*) {
+        std::cout << "[ DarkBremFilter ]: "
+            << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
+            << "Beginning event."
+            << std::endl;
         currentGen_ = 0;
         foundAp_    = false;
         return;
@@ -62,6 +70,11 @@ namespace ldmx {
             if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
                 std::cout << "[ DarkBremFilter ]: "
                           << "Found A', still need to check if it originated in requested volume." 
+                          << std::endl;
+            }
+            if ( foundAp_ ) {
+                std::cout << "[ DarkBremFilter ]: "
+                          << "Found more than one A' during filtering."
                           << std::endl;
             }
             foundAp_ = true;
@@ -121,32 +134,42 @@ namespace ldmx {
         userInfo->setGeneration( currentGen_ );
         
         if ( track->GetParticleDefinition() == G4APrime::APrime() ) {
-
-            //make sure A' is persisted into output file
-            userInfo->setSaveFlag(true); 
-            //we pushed A' through a generation early to make sure it gets
-            // processed before the final check, so its generation is later
-            userInfo->setGeneration( currentGen_+1 );
-
-            auto event{G4EventManager::GetEventManager()};
-            if ( !event->GetUserInformation() ) {
-                event->SetUserInformation(new UserEventInformation);
-            }
-            static_cast<UserEventInformation*>(event->GetUserInformation())->setWeight( track->GetWeight() );
-
             //check if A' was made in the desired volume and has the minimum energy
+            auto event{G4EventManager::GetEventManager()};
             if ( track->GetTotalEnergy() < minApEnergy_ or not inDesiredVolume(track) ) {
-                //abort event if A' wasn't in correct volume
-                if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
+                //abort event if A' wasn't in correct volume or didn't have enough energy
+                //if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
                     std::cout << "[ DarkBremFilter ]: "
+                        << "(" << event->GetConstCurrentEvent()->GetEventID() << ") "
                         << "A' wasn't produced inside of requested volume or was below requested energy, aborting event." 
                         << " A' was produced in '" << track->GetLogicalVolumeAtVertex()->GetName() << "' and had energy "
                         << track->GetTotalEnergy() << " MeV."
                         << std::endl;
-                }
+                //}
                 G4RunManager::GetRunManager()->AbortEvent();
-            } 
-
+            } else {
+                //make sure A' is persisted into output file
+                userInfo->setSaveFlag(true); 
+                //we pushed A' through a generation early to make sure it gets
+                // processed before the final check, so its generation is later
+                userInfo->setGeneration( currentGen_+1 );
+    
+                if ( !event->GetUserInformation() ) {
+                    event->SetUserInformation(new UserEventInformation);
+                }
+                static_cast<UserEventInformation*>(event->GetUserInformation())->setWeight( track->GetWeight() );
+    
+                if ( track->GetWeight() < 1e-13 ) {
+                    std::cout << "[ DarkBremFilter ]: "
+                        << "Event " << event->GetConstCurrentEvent()->GetEventID()
+                        << " with weight less than 1./Biasing Factor: " << track->GetWeight()
+                        << ". A' was produced in '" << track->GetLogicalVolumeAtVertex()->GetName() << "' and had energy "
+                        << track->GetTotalEnergy() << " MeV."
+                        << std::endl;
+                    userInfo->Print();
+                    event->GetUserInformation()->Print();
+                }
+            } //A' was made in desired volume and has the minimum energy
         }//track is A'
 
         return;
