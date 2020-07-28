@@ -230,8 +230,7 @@ namespace ldmx {
                 double toa(0.);
                 // make sure pulse crosses TOA threshold
                 if ( measurePulse(0.,false) < toaThreshold_ and pulsePeak > toaThreshold_ ) {
-                    std::cout << measurePulse(0.,false) << " " << toaThreshold_ << " " << pulsePeak << std::endl;
-                    toa = pulseFunc_.GetX(toaThreshold_, -nADCs_*clockCycle_, timeInWindow);
+                    toa = pulseFunc_.GetX(toaThreshold_-gain_*pedestal_, -nADCs_*clockCycle_, timeInWindow);
                 }
                 std::cout << "TOA: " << toa << "ns, ";
 
@@ -262,15 +261,16 @@ namespace ldmx {
                 double toa(0.); //default is earliest possible time
                 // check if first half is just always above readout
                 if ( measurePulse(0.,false) < totThreshold_ ) 
-                    toa = pulseFunc_.GetX(totThreshold_, 0., timeInWindow);
+                    toa = pulseFunc_.GetX(totThreshold_-gain_*pedestal_, 0., timeInWindow);
     
                 double tut(nADCs_*clockCycle_); //default is latest possible time
                 // check if second half is just always above readout
                 if ( pulseFunc_.Eval( nADCs_*clockCycle_ ) < totThreshold_ )
-                    tut = pulseFunc_.GetX(totThreshold_, timeInWindow, nADCs_*clockCycle_);
+                    tut = pulseFunc_.GetX(totThreshold_-gain_*pedestal_, timeInWindow, nADCs_*clockCycle_);
     
                 double tot = tut - toa;
 
+                std::cout << "TOA: " << toa << "ns, ";
                 std::cout << "TOT: " << tot << "ns} " << std::endl;
 
                 if ( makeConfigHists_ ) histograms_.fill( "tot_SimE" , tot , energyInWindow );
