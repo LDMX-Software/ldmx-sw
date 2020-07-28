@@ -27,7 +27,6 @@ namespace ldmx {
         auto hexReadout{ps.getParameter<Parameters>("hexReadout")};
         ecalHexReadout_ = std::make_unique<EcalHexReadout>(hexReadout);
 
-        peakToAmplitude_ = ps.getParameter<double>( "peakToAmplitude" );
         mipSiEnergy_ = ps.getParameter<double>( "mipSiEnergy" );
         pedestal_    = ps.getParameter<double>( "pedestal" );
         gain_        = ps.getParameter<double>( "gain" );
@@ -38,7 +37,7 @@ namespace ldmx {
         //  These parameters could be configurable, that's why I put this here
         pulseFunc_ = TF1(
                 "pulseFunc",
-                "[0]/[7]/(1.0+exp([1]*(x-[2]+[3]-[4])))/(1.0+exp([5]*(x-[6]+[3]-[4])))",
+                "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))",
                 0.0,(double) 10.*clockCycle_
                 );
         pulseFunc_.FixParameter( 1 , -0.345   );
@@ -46,7 +45,6 @@ namespace ldmx {
         pulseFunc_.FixParameter( 3 , 77.732   );
         pulseFunc_.FixParameter( 5 , 0.140068 );
         pulseFunc_.FixParameter( 6 , 87.7649  );
-        pulseFunc_.FixParameter( 7 , peakToAmplitude_ );
         pulseFunc_.SetParLimits( 0 , 0. , 10000. ); //amplitude in mV
         pulseFunc_.SetParLimits( 4 , 0. , 10.*clockCycle_ ); //peak time in ns
 
@@ -133,10 +131,10 @@ namespace ldmx {
                     //fit the voltage measurements with the pulse function
                     voltageMeasurements.Fit( &pulseFunc_ , "QW" );
                     //get the silicon energy from the fitted voltage amplitude in mV
-                    siEnergy = (pulseFunc_.GetParameter( 0 )/peakToAmplitude_)*mV_;
+                    siEnergy = (pulseFunc_.GetParameter( 0 ))*mV_;
                 } else {
                     //just use the maximum measured voltage
-                    siEnergy = (maxMeas/peakToAmplitude_)*mV_;
+                    siEnergy = (maxMeas)*mV_;
                 }
             }
             std::cout << siEnergy << "MeV" << std::endl;
