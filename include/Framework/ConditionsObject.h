@@ -6,9 +6,9 @@
 #ifndef FRAMEWORK_CONDITIONSOBJECT_H_
 #define FRAMEWORK_CONDITIONSOBJECT_H_
 
-namespace ldmx {
+#include <string>
 
-  class ConditionsObjectProvider;
+namespace ldmx {
 
    /**
      * @class ConditionsObject
@@ -19,7 +19,7 @@ namespace ldmx {
     /**
      * Class constructor
      */
-    ConditionsObject(const std::string& name, const ConditionsObjectProvider& provider) : name_(name), provider_{provider} {
+    ConditionsObject(const std::string& name) : name_(name) {
     }
 
     /**
@@ -32,20 +32,11 @@ namespace ldmx {
      */
     std::string getName() const { return name_; }
     
-    /** 
-     * Get access to the owner
-     */
-    const ConditionsObjectProvider& provider() { return provider_; }
   private:
     /** 
      * Name of the object
      */
     std::string name_;
-
-    /** 
-     * Source of this object
-     */
-    const ConditionsObjectProvider& provider_;
   };
 }
 
