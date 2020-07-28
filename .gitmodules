@@ -10,3 +10,6 @@
 [submodule "Ecal"]
 	path = Ecal
 	url = https://github.com/LDMX-Software/Ecal.git
+[submodule "Conditions"]
+	path = Conditions
+	url = https://github.com/LDMX-Software/Conditions.git
