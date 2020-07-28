@@ -48,11 +48,11 @@ class EcalDigiProducer(Producer) :
         self.nModulesPerLayer = 7
         self.nCellsPerModule  = 397
 
-        self.noiseRMS = self.calculateVoltage( self.calculateNoise( 700. , 25. ) ) #mV ~1.13mV
+        self.noiseRMS = self.calculateVoltage( self.calculateNoise( 700. , 25. ) ) #mV 
 
-        self.readoutThreshold = self.gain*self.pedestal + 4.*self.noiseRMS #mV ~160mV - readout threshold is 4sigma higher than noise average
-        self.toaThreshold     = self.gain*self.pedestal + self.calculateVoltage( 5.*self.nElectronsPerMIP  ) #mV ~300mV TOA Threshold is 5 MIPs
-        self.totThreshold     = self.gain*self.pedestal + self.calculateVoltage( 50.*self.nElectronsPerMIP ) #mV ~3000mV TOT Threshold is 50 MIPs
+        self.readoutThreshold = self.gain*self.pedestal + 4.*self.noiseRMS #mV readout threshold is 4sigma higher than noise average
+        self.toaThreshold     = self.gain*self.pedestal + self.calculateVoltage( 5.*self.nElectronsPerMIP  ) #mV TOA Threshold is 5 MIPs
+        self.totThreshold     = self.gain*self.pedestal + self.calculateVoltage( 50.*self.nElectronsPerMIP ) #mV TOT Threshold is 50 MIPs
 
         self.timingJitter =  self.clockCycle / 100. #ns - chosen pretty arbitrarily
 

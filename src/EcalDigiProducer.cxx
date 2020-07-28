@@ -132,18 +132,27 @@ namespace ldmx {
 
             //get a time for this noise hit
             double hitTime = noiseInjector_->Uniform( clockCycle_ );
+            int hitSample  = noiseInjector_->Integer( nADCs_ );
 
-            //converting the amplitude to MeV and then using the same digitization emulation
-            //as real hits is a worse-case scenario. In reality, these noise hits would
-            //probably be randomly distributed throughout digi samples instead of forming
-            //a coherent (although small) pulse shape.
             std::vector<HgcrocDigiCollection::Sample> digiToAdd;
-            std::vector<double> noiseEnergies( 1 , noiseHit/MeV_ ), noiseTimes( 1 , hitTime );
-            if ( constructDigis( noiseEnergies , noiseTimes , digiToAdd ) ) {
-                for ( auto& sample : digiToAdd ) sample.rawID_ = noiseID;
-                ecalDigis.addDigi( digiToAdd );
+            digiToAdd.resize( nADCs_ );
+            for ( int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
+                if ( iADC == hitSample ) {
+                    //put in noise hit
+                    digiToAdd[iADC].adc_t_ = noiseHit/gain_;
+                    digiToAdd[iADC].toa_   = hitTime*ns_;
+                } else {
+                    //noisy channels
+                    digiToAdd[iADC].adc_t_ = pedestal_;
+                    digiToAdd[iADC].toa_   = 0;
+                }
+                digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : pedestal_; 
+                digiToAdd[iADC].rawID_   = noiseID;
+                digiToAdd[iADC].tot_progress_ = false;
+                digiToAdd[iADC].tot_complete_ = false;
             }
 
+            ecalDigis.addDigi( digiToAdd );
         }
 
         event.add("EcalDigis", ecalDigis );
@@ -205,9 +214,9 @@ namespace ldmx {
             // choose readout mode
             double pulsePeak = measurePulse( timeInWindow , false );
             std::cout << "Pulse: { "
-                << "Peak: " << pulsePeak << "mV, "
-                << "Amplitude: " << signalAmplitude << "mV, "
+                << "Amplitude: " << signalAmplitude+gain_*pedestal_ << "mV, "
                 << "Beginning: " << measurePulse(0.,false) << "mV, "
+                << "Time: " << timeInWindow << "ns, "
                 << "Energy: " << energyInWindow << "MeV } -> ";
             if ( pulsePeak < readoutThreshold_ ) {
                 //below readout threshold -> skip this hit
@@ -215,13 +224,16 @@ namespace ldmx {
                 return false;
             } else if ( pulsePeak < totThreshold_ ) {
                 //below TOT threshold -> do ADC readout mode
+                std::cout << "ADC Mode { ";
 
-                std::cout << "ADC Mode" << std::endl;
                 //measure time of arrival (TOA) using TOA threshold
                 double toa(0.);
                 // make sure pulse crosses TOA threshold
-                if ( measurePulse(0.,false) < toaThreshold_ and pulsePeak > toaThreshold_ ) 
-                    toa = pulseFunc_.GetX(toaThreshold_, 0., timeInWindow);
+                if ( measurePulse(0.,false) < toaThreshold_ and pulsePeak > toaThreshold_ ) {
+                    std::cout << measurePulse(0.,false) << " " << toaThreshold_ << " " << pulsePeak << std::endl;
+                    toa = pulseFunc_.GetX(toaThreshold_, -nADCs_*clockCycle_, timeInWindow);
+                }
+                std::cout << "TOA: " << toa << "ns, ";
 
                 //measure ADCs
                 for ( unsigned int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
@@ -231,7 +243,9 @@ namespace ldmx {
                     digiToAdd[iADC].toa_     = toa * ns_;
                     digiToAdd[iADC].tot_progress_ = false;
                     digiToAdd[iADC].tot_complete_ = false;
+                    std::cout << " ADC " << iADC << ": " << digiToAdd[iADC].adc_t_*gain_ << "mV, ";
                 }
+                std::cout << "}" << std::endl;
 
             } else {
                 // above TOT threshold -> do TOT readout mode
@@ -243,7 +257,8 @@ namespace ldmx {
                 //  in reality, the pulse drastically changes shape when the chip goes
                 //  into saturation. The charge draining after saturation slows down
                 //  and makes the TOT <-> energy deposited conversion closer to linear
-                std::cout << "TOT Mode" << std::endl;
+                std::cout << "TOT Mode { ";
+
                 double toa(0.); //default is earliest possible time
                 // check if first half is just always above readout
                 if ( measurePulse(0.,false) < totThreshold_ ) 
@@ -255,6 +270,8 @@ namespace ldmx {
                     tut = pulseFunc_.GetX(totThreshold_, timeInWindow, nADCs_*clockCycle_);
     
                 double tot = tut - toa;
+
+                std::cout << "TOT: " << tot << "ns} " << std::endl;
 
                 if ( makeConfigHists_ ) histograms_.fill( "tot_SimE" , tot , energyInWindow );
     
