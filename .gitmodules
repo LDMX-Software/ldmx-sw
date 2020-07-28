@@ -7,8 +7,10 @@
     branch = iss13
 [submodule "Framework"]
 	path = Framework
-    url = https://github.com/LDMX-Software/Framework.git
-    branch = iss2
+	url = https://github.com/LDMX-Software/Framework.git
 [submodule "cmake"]
 	path = cmake
 	url = https://github.com/LDMX-Software/cmake.git
+[submodule "Ecal"]
+	path = Ecal
+	url = https://github.com/LDMX-Software/Ecal.git
