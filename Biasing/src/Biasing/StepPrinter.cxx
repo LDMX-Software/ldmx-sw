@@ -45,8 +45,9 @@ namespace ldmx {
                   << "\tStep #: "   << track->GetCurrentStepNumber() << "\n"
                   << "\tParticle currently in " << volume << "\n"  
                   << "\tRegion: " << region << "\n"
+                  << "\tWeight: " << track->GetWeight() << "\n"
                   << "\tNext volume: " << nextVolume << "\n" 
-                  << "********************************\n"
+                  << "********************************"
                   << std::endl;
         
     }
