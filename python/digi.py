@@ -26,6 +26,7 @@ class EcalDigiProducer(Producer) :
         self.iSOI  = 0 
         self.nElectronsPerMIP = 37000.0 #e-h pairs created per MIP <- derived from 0.5mm thick Si
         self.mipSiEnergy = 0.130 #MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
+        self.peakToAmplitude = 569.272/770.616 #factor between peak of pulse and amplitude of pulse function
 
         import time
         self.randomSeed = int(time.time())
@@ -119,6 +120,7 @@ class EcalRecProducer(Producer) :
         self.maxADCRange = 320. #fC <- setting of HGCROC
         self.nElectronsPerMIP = 37000.0 #e-h pairs created per MIP <- derived from 0.5mm thick Si
         self.mipSiEnergy = 0.130 #MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
+        self.peakToAmplitude = 569.272/770.616 #factor between peak of pulse and amplitude of pulse function
 
         #Volts -> Energy conversion
         #   voltage [mV] ( readout pad capacitance [pF] ) ( 1000 electrons / 0.162 fC ) ( 1 MIP / electrons ) ( energy / MIP ) = energy [MeV]

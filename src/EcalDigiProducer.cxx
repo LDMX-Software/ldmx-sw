@@ -34,6 +34,7 @@ namespace ldmx {
         totThreshold_     = ps.getParameter<double>("totThreshold");
         timingJitter_     = ps.getParameter<double>("timingJitter");
         clockCycle_       = ps.getParameter<double>("clockCycle");
+        peakToAmplitude_  = ps.getParameter<double>("peakToAmplitude");
         nADCs_            = ps.getParameter<int>("nADCs");
         iSOI_             = ps.getParameter<int>("iSOI");
 
@@ -66,7 +67,7 @@ namespace ldmx {
         // Configure the pulse shape function
         pulseFunc_ = TF1(
                 "pulseFunc",
-                "[0]/770.616*569.272/(1.0+exp([1]*(x-[2]+[3]-[4])))/(1.0+exp([5]*(x-[6]+[3]-[4])))",
+                "[0]/[7]/(1.0+exp([1]*(x-[2]+[3]-[4])))/(1.0+exp([5]*(x-[6]+[3]-[4])))",
                 0.0,(double) nADCs_*clockCycle_
                 );
         pulseFunc_.SetParameter( 1 , -0.345   );
@@ -74,6 +75,7 @@ namespace ldmx {
         pulseFunc_.SetParameter( 3 , 77.732   );
         pulseFunc_.SetParameter( 5 , 0.140068 );
         pulseFunc_.SetParameter( 6 , 87.7649  );
+        pulseFunc_.SetParameter( 7 , peakToAmplitude_ );
 
         //Option to make configuration histograms
         makeConfigHists_ = ps.getParameter<bool>("makeConfigHists");
@@ -203,16 +205,23 @@ namespace ldmx {
             };
 
             // choose readout mode
-            if ( measurePulse(timeInWindow,false) < readoutThreshold_ ) {
+            double pulsePeak = measurePulse( timeInWindow , false );
+            std::cout << "Pulse: { "
+                << "Peak: " << pulsePeak << "mV, "
+                << "Amplitude: " << signalAmplitude << "mV, "
+                << "Energy: " << energyInWindow << "MeV } -> ";
+            if ( pulsePeak < readoutThreshold_ ) {
                 //below readout threshold -> skip this hit
+                std::cout << "Below Readout" << std::endl;
                 return false;
-            } else if ( measurePulse(timeInWindow,false) < totThreshold_ ) {
+            } else if ( pulsePeak < totThreshold_ ) {
                 //below TOT threshold -> do ADC readout mode
 
+                std::cout << "ADC Mode" << std::endl;
                 //measure time of arrival (TOA) using TOA threshold
                 double toa(0.);
                 // make sure pulse crosses TOA threshold
-                if ( measurePulse(0.,false) < toaThreshold_ and measurePulse(timeInWindow,false) > toaThreshold_ ) 
+                if ( measurePulse(0.,false) < toaThreshold_ and pulsePeak > toaThreshold_ ) 
                     toa = pulseFunc_.GetX(toaThreshold_, 0., timeInWindow);
 
                 //measure ADCs
@@ -235,7 +244,7 @@ namespace ldmx {
                 //  in reality, the pulse drastically changes shape when the chip goes
                 //  into saturation. The charge draining after saturation slows down
                 //  and makes the TOT <-> energy deposited conversion closer to linear
-                
+                std::cout << "TOT Mode" << std::endl;
                 double toa(0.); //default is earliest possible time
                 // check if first half is just always above readout
                 if ( measurePulse(0.,false) < totThreshold_ ) 
@@ -243,7 +252,7 @@ namespace ldmx {
     
                 double tut(nADCs_*clockCycle_); //default is latest possible time
                 // check if second half is just always above readout
-                if ( pulseFunc_.Eval( nADCs_*clockCycle_ ) > totThreshold_ )
+                if ( pulseFunc_.Eval( nADCs_*clockCycle_ ) < totThreshold_ )
                     tut = pulseFunc_.GetX(totThreshold_, timeInWindow, nADCs_*clockCycle_);
     
                 double tot = tut - toa;

@@ -139,6 +139,9 @@ namespace ldmx {
             /// Jitter of timing mechanism in the chip [ns]
             double timingJitter_;
 
+            /// Translation between peak voltage and input amplitude of pulse
+            double peakToAmplitude_;
+
             /// Conversion from energy in MeV to voltage in mV
             double MeV_;
 
