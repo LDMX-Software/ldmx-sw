@@ -91,9 +91,6 @@ namespace ldmx {
             /** Digi Pass Name to use as input */
             std::string digiPassName_;
 
-            /// Translation between peak voltage and input amplitude of pulse
-            double peakToAmplitude_;
-
             /// Energy [MeV] deposited by a MIP in Si 0.5mm thick
             double mipSiEnergy_;
 

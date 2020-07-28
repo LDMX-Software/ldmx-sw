@@ -34,7 +34,6 @@ namespace ldmx {
         totThreshold_     = ps.getParameter<double>("totThreshold");
         timingJitter_     = ps.getParameter<double>("timingJitter");
         clockCycle_       = ps.getParameter<double>("clockCycle");
-        peakToAmplitude_  = ps.getParameter<double>("peakToAmplitude");
         nADCs_            = ps.getParameter<int>("nADCs");
         iSOI_             = ps.getParameter<int>("iSOI");
 
@@ -67,7 +66,7 @@ namespace ldmx {
         // Configure the pulse shape function
         pulseFunc_ = TF1(
                 "pulseFunc",
-                "[0]/[7]/(1.0+exp([1]*(x-[2]+[3]-[4])))/(1.0+exp([5]*(x-[6]+[3]-[4])))",
+                "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))",
                 0.0,(double) nADCs_*clockCycle_
                 );
         pulseFunc_.SetParameter( 1 , -0.345   );
@@ -75,7 +74,6 @@ namespace ldmx {
         pulseFunc_.SetParameter( 3 , 77.732   );
         pulseFunc_.SetParameter( 5 , 0.140068 );
         pulseFunc_.SetParameter( 6 , 87.7649  );
-        pulseFunc_.SetParameter( 7 , peakToAmplitude_ );
 
         //Option to make configuration histograms
         makeConfigHists_ = ps.getParameter<bool>("makeConfigHists");
@@ -209,6 +207,7 @@ namespace ldmx {
             std::cout << "Pulse: { "
                 << "Peak: " << pulsePeak << "mV, "
                 << "Amplitude: " << signalAmplitude << "mV, "
+                << "Beginning: " << measurePulse(0.,false) << "mV, "
                 << "Energy: " << energyInWindow << "MeV } -> ";
             if ( pulsePeak < readoutThreshold_ ) {
                 //below readout threshold -> skip this hit

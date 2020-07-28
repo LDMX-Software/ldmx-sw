@@ -139,9 +139,6 @@ namespace ldmx {
             /// Jitter of timing mechanism in the chip [ns]
             double timingJitter_;
 
-            /// Translation between peak voltage and input amplitude of pulse
-            double peakToAmplitude_;
-
             /// Conversion from energy in MeV to voltage in mV
             double MeV_;
 
@@ -165,7 +162,7 @@ namespace ldmx {
              *
              * Shape parameters are hardcoded into the function currently.
              *  Pulse Shape:
-             *   p[0]/(1.0+exp(p[1](t-p[2]+p[3]-p[4])))/(1.0+exp(p[5]*(t-p[6]+p[3]-p[4])))
+                [0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))
              *   p[0] = amplitude (related to num electrons through gain_)
              *   p[1] = -0.345 shape parameter - rate of up slope
              *   p[2] = 70.6547 shape parameter - time of up slope relative to shape fit
@@ -173,6 +170,12 @@ namespace ldmx {
              *   p[4] = peak time to be fit (related to time of hit [ns])
              *   p[5] = 0.140068 shape parameter - rate of down slope
              *   p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
+             *
+             * @f[
+             *  V(t) = 
+             *  p_0\frac{(1+\exp(p_1(-p_2+p_3)))(1+\exp(p_5*(-p_6+p_3)))}
+             *          {(1+\exp(p_1(t-p_2+p_3-p_4)))(1+\exp(p_5*(t-p_6+p_3-p_4)))}
+             * @f]
              */
             TF1 pulseFunc_;
     };
