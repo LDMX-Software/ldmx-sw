@@ -35,11 +35,6 @@ namespace ldmx {
             ~HgcrocEmulator() { /* empty on purpose */ }
 
             /**
-             * Set the function that will generate a noise ID given a set of already used IDs.
-             */
-            void setNoiseIDGenerator(int (*generator)(std::set<int>&)) { generateNoiseID_ = generator; }
-
-            /**
              * Digitize the signals from the simulated hits
              *
              * @todo More realistic TOT simulation. Right now, it is using the basic
@@ -49,6 +44,13 @@ namespace ldmx {
              * @return HgcrocDigiCollection full of digitized hits
              */
             HgcrocDigiCollection digitize( const std::vector<SimCalorimeterHit> &simHits ) const;
+
+        private:
+
+            /**
+             * Generate a noise ID randomly
+             */
+            int generateNoiseID() const;
         
         private:
 
@@ -91,8 +93,17 @@ namespace ldmx {
             /// Total Number of Readout Channels (for noise simulation)
             int nTotalChannels_;
 
-            /// Pointer to noise-ID-generation function
-            int (*generateNoiseID_)(std::set<int> &);
+            /// Number Ecal Layers (for noise simulation in ECal)
+            int nEcalLayers_;
+
+            /// Number of Modules Per Layer (for noise simulation in ECal)
+            int nModulesPerLayer_;
+
+            /// Number of Cells Per Module (for noise simulation in ECal)
+            int nCellsPerModule_;
+
+            /// Flag to determine how to simulate noise ID
+            bool ecal_;
 
             /// Generates noise hits based off of number of cells that are not hit
             std::unique_ptr<NoiseGenerator> noiseGenerator_;
@@ -120,7 +131,7 @@ namespace ldmx {
              *          {(1+\exp(p_1(t-p_2+p_3-p_4)))(1+\exp(p_5*(t-p_6+p_3-p_4)))}
              * @f]
              */
-            TF1 pulseFunc_;
+            mutable TF1 pulseFunc_;
 
     }; // HgcrocEmulator
 

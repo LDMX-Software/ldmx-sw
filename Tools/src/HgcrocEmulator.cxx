@@ -1,9 +1,26 @@
 
 #include "Tools/HgcrocEmulator.h"
 
+#include "DetDescr/EcalDetectorID.h"
+
+#include <time.h>
+
 namespace ldmx { 
 
     HgcrocEmulator::HgcrocEmulator(const Parameters& ps) {
+
+
+        //noise generator by default uses a Gausian model for noise
+        //  i.e. It assumes the noise is distributed around a mean (setPedestal)
+        //  with a certain RMS (setNoise) and then calculates
+        //  how many hits should be generated for a given number of empty
+        //  channels and a minimum readout value (setNoiseThreshold)
+        noiseGenerator_ = std::make_unique<NoiseGenerator>();
+
+        //The noise injector is used to place smearing on top
+        //of energy depositions and hit times before doing
+        //the digitization procedure.
+        noiseInjector_ = std::make_unique<TRandom3>(time(nullptr));
 
         //settings of readout chip
         //  used  in actual digitization
@@ -18,7 +35,6 @@ namespace ldmx {
         MeV_              = ps.getParameter<double>("MeV");
         nADCs_            = ps.getParameter<int>("nADCs");
         iSOI_             = ps.getParameter<int>("iSOI");
-        nTotalChannels_   = ps.getParameter<int>("nTotalChannels");
 
         //Time -> clock counts conversion
         //  time [ns] * ( 2^10 / max time in ns ) = clock counts
@@ -28,9 +44,6 @@ namespace ldmx {
         noiseGenerator_->setNoise(noiseRMS_); //rms noise in mV
         noiseGenerator_->setPedestal(gain_*pedestal_); //mean noise amplitude (if using Gaussian Model for the noise) in mV
         noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in mV
-
-        // Configure generator that will put noise on top of real signals 
-        noiseInjector_->SetSeed(0);
 
         // Configure the pulse shape function
         pulseFunc_ = TF1(
@@ -43,6 +56,15 @@ namespace ldmx {
         pulseFunc_.FixParameter( 3 , 77.732   );
         pulseFunc_.FixParameter( 5 , 0.140068 );
         pulseFunc_.FixParameter( 6 , 87.7649  );
+
+        //geometry stuff for noise simulation
+        nEcalLayers_ = ps.getParameter<int>("nEcalLayers");
+        nModulesPerLayer_ = ps.getParameter<int>("nModulesPerLayer");
+        nCellsPerModule_  = ps.getParameter<int>("nCellsPerModule");
+        
+        nTotalChannels_ = nEcalLayers_*nModulesPerLayer_*nCellsPerModule_;
+
+        ecal_ = true;
 
     }
 
@@ -216,18 +238,20 @@ namespace ldmx {
          *****************************************************************************************/
 
         //put noise into some empty channels
-        int numEmptyChannels = nTotalChannels_ - ecalDigis.getNumDigis(); //minus number of channels with a hit
+        int numEmptyChannels = nTotalChannels_ - digitizedHits.getNumDigis(); //minus number of channels with a hit
         //noise generator gives us a list of noise amplitudes [mV] that randomly populate the empty
         //channels and are above the readout threshold
         auto noiseHitAmplitudes{noiseGenerator_->generateNoiseHits(numEmptyChannels)};
         for ( double noiseHit : noiseHitAmplitudes ) {
 
             //get a time for this noise hit
-            int noiseID    = generateNoiseID_(simHitIDs);
+            int noiseID = generateNoiseID();
+            while ( simHitIDs.find(noiseID) != simHitIDs.end() ) noiseID = generateNoiseID();
+            simHitIDs.insert(noiseID);
+
             double hitTime = noiseInjector_->Uniform( clockCycle_ );
             int hitSample  = noiseInjector_->Integer( nADCs_ );
 
-            simHitIDs.insert(noiseID);
 
             std::vector<HgcrocDigiCollection::Sample> digiToAdd;
             digiToAdd.resize( nADCs_ );
@@ -252,5 +276,21 @@ namespace ldmx {
 
         return std::move(digitizedHits);
     } //HgcrocEmulator::digitize
+
+    int HgcrocEmulator::generateNoiseID() const {
+        if ( ecal_ ) {
+            EcalDetectorID detID;
+            int layerID = noiseInjector_->Integer(nEcalLayers_);
+            int moduleID= noiseInjector_->Integer(nModulesPerLayer_);
+            int cellID  = noiseInjector_->Integer(nCellsPerModule_);
+            detID.setFieldValue( 1 , layerID );
+            detID.setFieldValue( 2 , moduleID );
+            detID.setFieldValue( 3 , cellID );
+            return detID.pack();
+        } else {
+            //TODO hcal noise id generation
+            return 0;
+        }
+    }
 
 } // ldmx
