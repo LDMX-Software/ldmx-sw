@@ -100,3 +100,4 @@ class HgcrocEmulator() :
         self.readoutThreshold = self.gain*self.pedestal + 4*self.noiseRMS
         self.toaThreshold = self.gain*self.pedestal + self.calculateVoltage( 5.*nElectronsPerMIP )
         self.totThreshold = self.gain*self.pedestal + self.calculateVoltage( 50.*nElectronsPerMIP )
+

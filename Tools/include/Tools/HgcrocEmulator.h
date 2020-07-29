@@ -19,6 +19,17 @@ namespace ldmx {
      * @class HgcrocEmulator
      * @brief Emulate the digitization procedure performed by the HGCROC.
      *
+     * This object emulates how the chip converts the analog signal
+     * into DIGI samples. With that in mind, the digitize method
+     * converts a set of voltages and times into the DIGI.
+     *
+     * This object _does not_ do anything related to subsystem information.
+     * It does _not_ set the detector ID for the DIGI it constructs,
+     * it does _not_ simulate noise within the empty channels,
+     * and it does _not_ convert simulated energy depositions into
+     * voltages. These tasks depend on the detector construction,
+     * so they are left to the individual subsystem producers.
+     *
      * @TODO Allow for pulse shape parameters to be configurable
      * @TODO Shift the pulse SOI arbitrarily
      * @TODO More realistic TOT emulation
@@ -42,11 +53,8 @@ namespace ldmx {
              *
              * This is where the hefty amount of work is done.
              *
-             * - Sum the energy deposits in the sim hit and energy-weight average
-             *   the time of the hits
+             * - Sum the voltages and voltage-weight average the times
              * - Put noise on the time of the hit using timingJitter_
-             * - Convert the simulated energy deposit [MeV] into a voltage that the ROC
-             *   recieves [mV]. This is done by the parameter mVperMeV_
              * - Configure the pulse to have the calculated voltage amplitude as its
              *   peak and the simulated hit time as the time of its peak [ns]
              * - Determine what readout mode the ROC will choose:
