@@ -30,7 +30,11 @@ class HgcrocEmulator() :
         self.maxADCRange = 320. #fC <- setting of HGCROC
         self.nADCs = 10 
         self.iSOI  = 0 
-
+        self.rateUpSlope =  -0.345
+        self.timeUpSlope = 70.6547
+        self.rateDnSlope = 0.140068
+        self.timeDnSlope = 87.7649
+        self.timePeak    = 77.732
 
         #Voltage -> ADC Counts conversion
         # voltage [mV] / gain = ADC Counts
