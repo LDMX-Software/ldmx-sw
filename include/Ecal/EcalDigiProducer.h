@@ -15,14 +15,7 @@
 //----------------//
 #include <time.h> //for initial seed to TRandom3
 #include <memory> //for smart pointers
-#include <map> //for rawID mapping
-
-//----------//
-//   ROOT   //
-//----------//
-#include "TRandom3.h"
-#include "TF1.h"
-#include "TH2F.h"
+#include <set> //for tracking used detector IDs
 
 //----------//
 //   LDMX   //
@@ -34,6 +27,7 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
+#include "Tools/HgcrocEmulator.h"
 
 namespace ldmx {
 
@@ -71,29 +65,6 @@ namespace ldmx {
 
         private:
 
-            /**
-             * Construct the DIGIs from energy and time simulated data.
-             *
-             * Right now, it adds up the energies and finds an
-             * energy-weighted average of the times. These digis are
-             * then inserted into digiToAdd.
-             *
-             * energies and times must be the same size.
-             * NO CHECKING IS DONE FOR THIS.
-             *
-             * The ID of the digi samples is not set in this function.
-             * It is only meant to make the energy+time --> digis translation consistent and isolated.
-             *
-             * @param energies simulated energy depositions
-             * @param times simulated times of energy depositions
-             * @param digiToAdd vector of HgcrocDigiCollection::Sample that will be filled with constructed digis
-             * @return true if digiToAdd was actually filled with something
-             */
-            bool constructDigis(const std::vector<double> &energies, const std::vector<double> &times, 
-                    std::vector<HgcrocDigiCollection::Sample> &digiToAdd);
-
-        private:
-
             ///////////////////////////////////////////////////////////////////////////////////////
             //Python Configuration Parameters
             
@@ -121,29 +92,14 @@ namespace ldmx {
             /// Index for the Sample Of Interest in the list of digi samples 
             int iSOI_;
 
-            /// Should we make and fill configuration histograms? 
-            bool makeConfigHists_;
-
-            /// Noise RMS in MeV
-            double noiseRMS_; 
-
-            /// Min threshold for reading out a channel in MeV
-            double readoutThreshold_;
-
-            /// Min threshold for measuring TOA in MeV
-            double toaThreshold_;
-
-            /// Min threshold for measuring TOT in MeV
-            double totThreshold_;
-
-            /// Jitter of timing mechanism in the chip [ns]
-            double timingJitter_;
-
             /// Conversion from energy in MeV to voltage in mV
             double MeV_;
 
             ///////////////////////////////////////////////////////////////////////////////////////
             // Other member variables
+
+            /// Hgcroc Emulator to digitize analog voltage signals
+            std::unique_ptr<HgcrocEmulator> hgcroc_;
 
             /// Total number of channels in the ECal
             int nTotalChannels_;
@@ -157,27 +113,6 @@ namespace ldmx {
             /// Generates Gaussian noise on top of real hits
             std::unique_ptr<TRandom3> noiseInjector_;
 
-            /**
-             * Functional shape of signal pulse in time
-             *
-             * Shape parameters are hardcoded into the function currently.
-             *  Pulse Shape:
-                [0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))
-             *   p[0] = amplitude (related to num electrons through gain_)
-             *   p[1] = -0.345 shape parameter - rate of up slope
-             *   p[2] = 70.6547 shape parameter - time of up slope relative to shape fit
-             *   p[3] = 77.732 shape parameter - time of peak relative to shape fit
-             *   p[4] = peak time to be fit (related to time of hit [ns])
-             *   p[5] = 0.140068 shape parameter - rate of down slope
-             *   p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
-             *
-             * @f[
-             *  V(t) = 
-             *  p_0\frac{(1+\exp(p_1(-p_2+p_3)))(1+\exp(p_5*(-p_6+p_3)))}
-             *          {(1+\exp(p_1(t-p_2+p_3-p_4)))(1+\exp(p_5*(t-p_6+p_3-p_4)))}
-             * @f]
-             */
-            TF1 pulseFunc_;
     };
 }
 
