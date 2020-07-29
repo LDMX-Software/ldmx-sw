@@ -26,6 +26,11 @@ namespace ldmx {
         clockCycle_       = ps.getParameter<double>("clockCycle");
         nADCs_            = ps.getParameter<int>("nADCs");
         iSOI_             = ps.getParameter<int>("iSOI");
+        rateUpSlope_      = ps.getParameter<double>("rateUpSlope");
+        timeUpSlope_      = ps.getParameter<double>("timeUpSlope");
+        rateDnSlope_      = ps.getParameter<double>("rateDnSlope");
+        timeDnSlope_      = ps.getParameter<double>("timeDnSlope");
+        timePeak_         = ps.getParameter<double>("timePeak");
 
         //Time -> clock counts conversion
         //  time [ns] * ( 2^10 / max time in ns ) = clock counts
@@ -37,11 +42,11 @@ namespace ldmx {
                 "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))",
                 0.0,(double) nADCs_*clockCycle_
                 );
-        pulseFunc_.FixParameter( 1 , -0.345   );
-        pulseFunc_.FixParameter( 2 , 70.6547  );
-        pulseFunc_.FixParameter( 3 , 77.732   );
-        pulseFunc_.FixParameter( 5 , 0.140068 );
-        pulseFunc_.FixParameter( 6 , 87.7649  );
+        pulseFunc_.FixParameter( 1 , rateUpSlope_ );
+        pulseFunc_.FixParameter( 2 , timeUpSlope_ );
+        pulseFunc_.FixParameter( 3 , timePeak_    );
+        pulseFunc_.FixParameter( 5 , rateDnSlope_ );
+        pulseFunc_.FixParameter( 6 , timeDnSlope_ );
 
     }
 
