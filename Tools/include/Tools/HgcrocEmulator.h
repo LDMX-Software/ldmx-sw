@@ -182,6 +182,21 @@ namespace ldmx {
             /// Conversion from time [ns] to counts
             double ns_;
 
+            /// Rate of Up Slope in Pulse Shape [1/ns]
+            double rateUpSlope_;
+
+            /// Time of Up Slope relative to Pulse Shape Fit [ns]
+            double timeUpSlope_;
+
+            /// Rate of Down Slope in Pulse Shape [1/ns]
+            double rateDnSlope_;
+
+            /// Time of Down Slope relative to Pulse Shape Fit [ns]
+            double timeDnSlope_;
+            
+            /// Time of Peak relative to pulse shape fit [ns]
+            double timePeak_;
+
             /// Generates Gaussian noise on top of real hits
             std::unique_ptr<TRandom3> noiseInjector_;
 
@@ -192,12 +207,12 @@ namespace ldmx {
              *  Pulse Shape: 
              *  [0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))
              *   p[0] = amplitude (height of peak in mV)
-             *   p[1] = -0.345 shape parameter - rate of up slope
-             *   p[2] = 70.6547 shape parameter - time of up slope relative to shape fit
-             *   p[3] = 77.732 shape parameter - time of peak relative to shape fit
+             *   p[1] = rate of up slope - rateUpSlope_
+             *   p[2] = time of up slope relative to shape fit - timeUpSlope_
+             *   p[3] = time of peak relative to shape fit - timePeak_
              *   p[4] = peak time (related to time of hit [ns])
-             *   p[5] = 0.140068 shape parameter - rate of down slope
-             *   p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
+             *   p[5] = rate of down slope - rateDnSlope_
+             *   p[6] = time of down slope relative to shape fit - timeDnSlope_
              *
              * @f[
              *  V(t) = 
