@@ -107,11 +107,12 @@ namespace ldmx {
             //  check if A' was produced
             if ( not foundAp_ ) {
                 //A' wasn't produced, abort event
-                if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
+                //if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
                     std::cout << "[ DarkBremFilter ]: "
+                        << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
                         << "A' wasn't produced, aborting event." 
                         << std::endl;
-                }
+                //}
                 G4RunManager::GetRunManager()->AbortEvent();
             }
         }
