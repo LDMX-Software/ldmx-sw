@@ -41,11 +41,7 @@ namespace ldmx {
              * Digitize the signals from the simulated hits
              *
              * This is where the hefty amount of work is done.
-             * This function is separated into two parts.
-             *  1. Emulating the ROC response to the input simulated hits.
-             *  2. Putting noise pulses in the empty channels.
              *
-             * ## Part 1: Emulation
              * - Sum the energy deposits in the sim hit and energy-weight average
              *   the time of the hits
              * - Put noise on the time of the hit using timingJitter_
@@ -105,33 +101,41 @@ namespace ldmx {
              * This function incorporate the pedestal_ and optionally includes noise
              * according to noiseRMS_.
              *
-             * ## Part 2: Noise
-             * The noise amplitudes are retrieved from the NoiseGenerator::generateNoiseHits
-             * function using the number of empty channels. 
-             * Then the time, sample index, and detector ID are randomly chosen
-             * using noiseInjector_ and generateNoiseID().
-             *
-             * @param[in] simHits vector of SimCalorimeterHit that should be emulated
-             * @return HgcrocDigiCollection full of digitized hits
+             * @param[in] voltages list of voltage amplitudes going into the chip
+             * @param[in] times list of times corresponding to those voltage amplitudes
+             * @param[out] digiToAdd digi that will be filled with the samples from the chip
+             * @return true if digis were constructed (false if hit was below readout)
              */
-            HgcrocDigiCollection digitize( const std::vector<SimCalorimeterHit> &simHits ) const;
-
+            bool digitize( const std::vector<double> &voltages, 
+                    const std::vector<double> &times, 
+                    std::vector<HgcrocDigiCollection::Sample> &digiToAdd ) const;
+        
         private:
 
             /**
-             * Generate a noise ID randomly
+             * Configure the pulse to match the input voltage peak and time.
              *
-             * This is hiding the difference in the ecal and hcal emulation.
-             * In order to get a random detector ID within the subdetector,
-             * we need to use some geometry parameters. Hopefully,
-             * these geometry parameters can be pulled in from a
-             * detector data service in the future, but right now,
-             * they will have to be passed as parameters.
-             *
-             * @return a random detector ID number
+             * @param[in] amplitude voltage amplitude of pulse [mV]
+             * @param[in] time time of peak [ns]
              */
-            int generateNoiseID() const;
-        
+            void configurePulse(double amplitude, double time) const {
+                pulseFunc_.SetParameter( 0 , amplitude ); 
+                pulseFunc_.SetParameter( 4 , time );
+            }
+
+            /**
+             * Measure the pulse
+             *
+             * @param[in] time time to measure [ns]
+             * @param[in] withNoise flag to determine if we should include noise
+             * @return voltage measured [mV]
+             */
+            double measurePulse(double time, bool withNoise) const {
+                auto signal = gain_*pedestal_ + pulseFunc_.Eval(time);
+                if ( withNoise ) signal += noiseInjector_->Gaus( 0. , noiseRMS_ );
+                return signal;
+            }
+
         private:
 
             /// Verbosity, not configurable, only helpful in development
@@ -167,29 +171,8 @@ namespace ldmx {
             /// Jitter of timing mechanism in the chip [ns]
             double timingJitter_;
 
-            /// Conversion from energy [MeV] to voltage [mV]
-            double mVperMeV_;
-
             /// Conversion from time [ns] to counts
             double ns_;
-
-            /// Total Number of Readout Channels (for noise simulation)
-            int nTotalChannels_;
-
-            /// Number Ecal Layers (for noise simulation in ECal)
-            int nEcalLayers_;
-
-            /// Number of Modules Per Layer (for noise simulation in ECal)
-            int nModulesPerLayer_;
-
-            /// Number of Cells Per Module (for noise simulation in ECal)
-            int nCellsPerModule_;
-
-            /// Flag to determine how to simulate noise ID
-            bool ecal_;
-
-            /// Generates noise hits based off of number of cells that are not hit
-            std::unique_ptr<NoiseGenerator> noiseGenerator_;
 
             /// Generates Gaussian noise on top of real hits
             std::unique_ptr<TRandom3> noiseInjector_;
