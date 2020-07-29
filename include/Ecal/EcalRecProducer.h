@@ -12,13 +12,7 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <time.h>
 #include <memory> //for smart pointers
-
-//----------//
-//   ROOT   //
-//----------//
-#include "TF1.h"
 
 //----------//
 //   LDMX   //
@@ -55,12 +49,6 @@ namespace ldmx {
 
             /**
              * Grabs configure parameters from the python config file.
-             *
-             * Parameter        Default
-             * digiCollName     EcalDigis
-             * digiPassName     "" <-- blank means take any pass if only one collection exists
-             * layerWeights     DEFAULT_LAYER_WEIGHTS
-             * secondOrderEnergyCorrection DEFAULT_SECOND_ORDER_ENERGY_CORRECTION
              */
             virtual void configure(Parameters&);
 
@@ -106,21 +94,6 @@ namespace ldmx {
             /// Conversion from voltage [mV] to energy [MeV]
             double mV_;
 
-            /**
-             * Pulse shape of HGCROC chip voltage pulse
-             *  p[0]/p[7]/(1.0+exp(p[1](t-p[2]+p[3]-p[4])))/(1.0+exp(p[5]*(t-p[6]+p[3]-p[4])))
-             *  p[0] = amplitude to be fit (TBD)
-             *  p[1] = -0.345 shape parameter - rate of up slope
-             *  p[2] = 70.6547 shape parameter - time of up slope relative to shape fit
-             *  p[3] = 77.732 shape parameter - time of peak relative to shape fit
-             *  p[4] = peak time to be fit (TBD)
-             *  p[5] = 0.140068 shape parameter - rate of down slope
-             *  p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
-             *  p[7] = config parameter, translation between peak voltage and input amplitude
-             *These measurements can be used to fit the pulse shape if TOT is not available
-             */
-            TF1 pulseFunc_;
-
             /** 
              * Layer Weights to use for this reconstruction 
              *
@@ -146,12 +119,6 @@ namespace ldmx {
              * performs real space x,y postion <-> module,cell ID translation
              */
             std::unique_ptr<EcalHexReadout> ecalHexReadout_;
-
-            /**
-             * Approximate energy deposited in Silicon layer for a MIP hit
-             * MeV
-             */
-            static const double MIP_SI_RESPONSE; // MeV
 
     };
 }

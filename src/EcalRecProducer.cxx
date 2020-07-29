@@ -8,8 +8,6 @@
 
 namespace ldmx {
 
-    const double EcalRecProducer::MIP_SI_RESPONSE = 0.130; // MeV
-
     EcalRecProducer::EcalRecProducer(const std::string& name, Process& process) :
         Producer(name, process) {
     }
@@ -28,25 +26,12 @@ namespace ldmx {
         ecalHexReadout_ = std::make_unique<EcalHexReadout>(hexReadout);
 
         mipSiEnergy_ = ps.getParameter<double>( "mipSiEnergy" );
-        pedestal_    = ps.getParameter<double>( "pedestal" );
-        gain_        = ps.getParameter<double>( "gain" );
-        clockCycle_  = ps.getParameter<double>( "clockCycle" );
         mV_          = ps.getParameter<double>( "mV" );
 
-        // Configure the pulse shape function
-        //  These parameters could be configurable, that's why I put this here
-        pulseFunc_ = TF1(
-                "pulseFunc",
-                "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))",
-                0.0,(double) 10.*clockCycle_
-                );
-        pulseFunc_.FixParameter( 1 , -0.345   );
-        pulseFunc_.FixParameter( 2 , 70.6547  );
-        pulseFunc_.FixParameter( 3 , 77.732   );
-        pulseFunc_.FixParameter( 5 , 0.140068 );
-        pulseFunc_.FixParameter( 6 , 87.7649  );
-        pulseFunc_.SetParLimits( 0 , 0. , 10000. ); //amplitude in mV
-        pulseFunc_.SetParLimits( 4 , 0. , 10.*clockCycle_ ); //peak time in ns
+        auto hgcrocParams{ps.getParameter<Parameters>("hgcroc")};
+        pedestal_    = hgcrocParams.getParameter<double>( "pedestal" );
+        gain_        = hgcrocParams.getParameter<double>( "gain" );
+        clockCycle_  = hgcrocParams.getParameter<double>( "clockCycle" );
 
     }
 
@@ -129,9 +114,10 @@ namespace ldmx {
 
                 if ( false ) {
                     //fit the voltage measurements with the pulse function
-                    voltageMeasurements.Fit( &pulseFunc_ , "QW" );
+                    //  would need to access the pulse function in HGCROC somehow
+                    //voltageMeasurements.Fit( &pulseFunc_ , "QW" );
                     //get the silicon energy from the fitted voltage amplitude in mV
-                    siEnergy = (pulseFunc_.GetParameter( 0 ))*mV_;
+                    //siEnergy = (pulseFunc_.GetParameter( 0 ))*mV_;
                 } else {
                     //just use the maximum measured voltage
                     siEnergy = (maxMeas)*mV_;
