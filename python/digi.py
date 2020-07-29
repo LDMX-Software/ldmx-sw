@@ -6,6 +6,25 @@ with helpful member functions.
 
 from LDMX.Framework.ldmxcfg import Producer
 
+nElectronsPerMIP = 37000.0 #e-h pairs created per MIP <- derived from 0.5mm thick Si
+mipSiEnergy = 0.130 #MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
+
+def EcalHgcrocEmulator() :
+    from LDMX.Tools import HgcrocEmulator
+    hgcroc = HgcrocEmulator.HgcrocEmulator()
+
+    # set defaults with 37k electrons per MIP
+    hgcroc.setThresholdDefaults( 37000 )
+
+    # set pulse shape parameters
+    hgcroc.rateUpSlope =  -0.345
+    hgcroc.timeUpSlope = 70.6547
+    hgcroc.rateDnSlope = 0.140068
+    hgcroc.timeDnSlope = 87.7649
+    hgcroc.timePeak    = 77.732
+
+    return hgcroc
+
 class EcalDigiProducer(Producer) :
     """Configuration for EcalDigiProducer
 
@@ -18,18 +37,14 @@ class EcalDigiProducer(Producer) :
     def __init__(self, instance_name = 'ecalDigis') :
         super().__init__(instance_name , 'ldmx::EcalDigiProducer','Ecal')
 
-        self.nElectronsPerMIP = 37000.0 #e-h pairs created per MIP <- derived from 0.5mm thick Si
-        self.mipSiEnergy = 0.130 #MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
+        self.hgcroc = EcalHgcrocEmulator()
 
-        from LDMX.Tools import HgcrocEmulator
-        self.hgcroc = HgcrocEmulator.HgcrocEmulator()
-
-        self.hgcroc.setThresholdDefaults( self.nElectronsPerMIP )
+        self.mipSiEnergy = mipSiEnergy #needed for layer weights
 
         #Energy -> Volts converstion
         #   energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP ) = voltage [mV]
         #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
-        self.MeV = (1./self.mipSiEnergy)*self.hgcroc.calculateVoltage( self.nElectronsPerMIP )
+        self.MeV = (1./mipSiEnergy)*self.hgcroc.calculateVoltage( nElectronsPerMIP )
 
         # ecal hexagon geometry parameters
         # used for putting noise into empty channels
@@ -49,21 +64,11 @@ class EcalRecProducer(Producer) :
     def __init__(self, instance_name = 'ecalRecon') : 
         super().__init__(instance_name , 'ldmx::EcalRecProducer','Ecal')
 
-        self.pedestal = 50. #ADC counts - baseline factor to subtract off of readout
-        self.clockCycle = 25.0 #ns
-        self.readoutPadCapacitance = 0.1 #pF <- derived from hardware geometry
-        self.maxADCRange = 320. #fC <- setting of HGCROC
-        self.nElectronsPerMIP = 37000.0 #e-h pairs created per MIP <- derived from 0.5mm thick Si
-        self.mipSiEnergy = 0.130 #MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
+        self.hgcroc = EcalHgcrocEmulator()
 
         #Volts -> Energy conversion
         #   voltage [mV] ( readout pad capacitance [pF] ) ( 1000 electrons / 0.162 fC ) ( 1 MIP / electrons ) ( energy / MIP ) = energy [MeV]
-        self.mV  = self.readoutPadCapacitance*(1000./0.162)*(1./self.nElectronsPerMIP)*(self.mipSiEnergy)
-
-        #ADC Counts -> Voltage conversion
-        #
-        # gain = maximum ADC range [fC] ( 1 / readout pad capacitance in pF ) ( 1 / 2^10 ADC Counts ) = mV / ADC counts
-        self.gain = self.maxADCRange/self.readoutPadCapacitance/1024 # mV / ADC
+        self.mV  = mipSiEnergy / self.hgcroc.calculateVoltage( nElectronsPerMIP )
 
         self.digiCollName = 'EcalDigis'
         self.digiPassName = ''
