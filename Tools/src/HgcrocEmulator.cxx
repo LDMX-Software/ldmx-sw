@@ -32,7 +32,7 @@ namespace ldmx {
         totThreshold_     = ps.getParameter<double>("totThreshold");
         timingJitter_     = ps.getParameter<double>("timingJitter");
         clockCycle_       = ps.getParameter<double>("clockCycle");
-        MeV_              = ps.getParameter<double>("MeV");
+        mVperMeV_              = ps.getParameter<double>("mVperMeV");
         nADCs_            = ps.getParameter<int>("nADCs");
         iSOI_             = ps.getParameter<int>("iSOI");
 
@@ -118,7 +118,7 @@ namespace ldmx {
 
             //setup up pulse by changing the amplitude and timing parameters
             //  amplitude is gain times input voltage
-            double signalAmplitude = energyInWindow*MeV_; //now this is the amplitude in mV
+            double signalAmplitude = energyInWindow*mVperMeV_; //now this is the amplitude in mV
             pulseFunc_.SetParameter( 0 , signalAmplitude ); 
             pulseFunc_.SetParameter( 4 , timeInWindow ); //set time of peak to simulated hit time
 

@@ -50,7 +50,7 @@ namespace ldmx {
              *   the time of the hits
              * - Put noise on the time of the hit using timingJitter_
              * - Convert the simulated energy deposit [MeV] into a voltage that the ROC
-             *   recieves [mV]. This is done by the parameter MeV_
+             *   recieves [mV]. This is done by the parameter mVperMeV_
              * - Configure the pulse to have the calculated voltage amplitude as its
              *   peak and the simulated hit time as the time of its peak [ns]
              * - Determine what readout mode the ROC will choose:
@@ -168,7 +168,7 @@ namespace ldmx {
             double timingJitter_;
 
             /// Conversion from energy [MeV] to voltage [mV]
-            double MeV_;
+            double mVperMeV_;
 
             /// Conversion from time [ns] to counts
             double ns_;
