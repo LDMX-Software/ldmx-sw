@@ -3,9 +3,28 @@
 class HgcrocEmulator() :
     """Configuration for HGCROC Emulator
 
-    Parameters
+    Attributes
     ----------
-    TBD
+    pedestal : float
+    clockCycle : float
+    timingJitter : float
+    readoutPadCapacitance : float
+    maxADCRange : float
+    nADCs : float
+    iSOI : float
+    nElectronsPerMIP : float
+    mipSiEnergy : float
+    mVperMIP : float
+    MeV : float
+    gain : float
+    nEcalLayers : int
+    nModulesPerLayer : int
+    nCellsPerModule : int
+    ecal : bool
+    noiseRMS : float
+    readoutThreshold : float
+    toaThreshold : float
+    totThreshold : float
     """
 
     def __init__(self) :
