@@ -26,16 +26,13 @@ namespace ldmx {
 
         //settings of readout chip
         //  used  in actual digitization
-        gain_             = ps.getParameter<double>("gain");
-        pedestal_         = ps.getParameter<double>("pedestal");
-        noiseRMS_         = ps.getParameter<double>("noiseRMS");
-        readoutThreshold_ = ps.getParameter<double>("readoutThreshold");
-        toaThreshold_     = ps.getParameter<double>("toaThreshold");
-        totThreshold_     = ps.getParameter<double>("totThreshold");
-        timingJitter_     = ps.getParameter<double>("timingJitter");
-        clockCycle_       = ps.getParameter<double>("clockCycle");
-        nADCs_            = ps.getParameter<int>("nADCs");
-        iSOI_             = ps.getParameter<int>("iSOI");
+        auto hgcrocParams = ps.getParameter<Parameters>("hgcroc");
+        hgcroc_ = std::make_unique<HgcrocEmulator>(hgcrocParams);
+        gain_             = hgcrocParams.getParameter<double>("gain");
+        pedestal_         = hgcrocParams.getParameter<double>("pedestal");
+        clockCycle_       = hgcrocParams.getParameter<double>("clockCycle");
+        nADCs_            = hgcrocParams.getParameter<int>("nADCs");
+        iSOI_             = hgcrocParams.getParameter<int>("iSOI");
 
         // physical constants
         //  used to calculate unit conversions
@@ -54,32 +51,24 @@ namespace ldmx {
         nTotalChannels_   = nEcalLayers_*nModulesPerLayer_*nCellsPerModule_;
 
         // Configure generator that will produce noise hits in empty channels
-        noiseGenerator_->setNoise(noiseRMS_); //rms noise in mV
+        noiseGenerator_->setNoise(hgcrocParams.getParameter<double>("noiseRMS")); //rms noise in mV
         noiseGenerator_->setPedestal(gain_*pedestal_); //mean noise amplitude (if using Gaussian Model for the noise) in mV
-        noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in mV
+        noiseGenerator_->setNoiseThreshold(hgcrocParams.getParameter<double>("readoutThreshold")); //threshold for readout in mV
 
-        //The noise injector is used to place smearing on top
-        //of energy depositions and hit times before doing
-        //the digitization procedure.
-        noiseInjector_ = std::make_unique<TRandom3>(ps.getParameter<int>("randomSeed"));
-
-        // Configure the pulse shape function
-        pulseFunc_ = TF1(
-                "pulseFunc",
-                "[0]*((1.0+exp([1]*(-[2]+[3])))*(1.0+exp([5]*(-[6]+[3]))))/((1.0+exp([1]*(x-[2]+[3]-[4])))*(1.0+exp([5]*(x-[6]+[3]-[4]))))",
-                0.0,(double) nADCs_*clockCycle_
-                );
-        pulseFunc_.SetParameter( 1 , -0.345   );
-        pulseFunc_.SetParameter( 2 , 70.6547  );
-        pulseFunc_.SetParameter( 3 , 77.732   );
-        pulseFunc_.SetParameter( 5 , 0.140068 );
-        pulseFunc_.SetParameter( 6 , 87.7649  );
-
-        //Option to make configuration histograms
-        makeConfigHists_ = ps.getParameter<bool>("makeConfigHists");
     }
 
     void EcalDigiProducer::produce(Event& event) {
+
+        //Empty collection to be filled
+        HgcrocDigiCollection ecalDigis;
+        ecalDigis.setNumSamplesPerDigi( nADCs_ ); 
+        ecalDigis.setSampleOfInterestIndex( iSOI_ );
+
+        std::set<int> filledDetIDs; //detector IDs that already have a hit in them
+
+        /******************************************************************************************
+         * HGCROC Emulation on Simulated Hits
+         *****************************************************************************************/
 
         //get simulated ecal hits from Geant4
         //  the class EcalHitIO in the SimApplication module handles the translation from G4CalorimeterHits to SimCalorimeterHits
@@ -87,29 +76,27 @@ namespace ldmx {
         //  multiple "contributions" are still handled within SimCalorimeterHit 
         auto ecalSimHits{event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS)};
 
-        //Empty collection to be filled
-        HgcrocDigiCollection ecalDigis;
-        ecalDigis.setNumSamplesPerDigi( nADCs_ ); 
-        ecalDigis.setSampleOfInterestIndex( iSOI_ );
-
-        std::set<int> simHitIDs;
         for (auto const& simHit : ecalSimHits ) {
 
-            std::vector<double> energyDepositions, simulatedTimes;
+            std::vector<double> voltages, times;
             for ( int iContrib = 0; iContrib < simHit.getNumberOfContribs(); iContrib++ ) {
-                energyDepositions.push_back( simHit.getContrib( iContrib ).edep );
-                simulatedTimes.push_back( simHit.getContrib( iContrib ).time );
+                voltages.push_back( simHit.getContrib( iContrib ).edep*MeV_ );
+                times.push_back( simHit.getContrib( iContrib ).time );
             }
 
             int hitID = simHit.getID();
-            simHitIDs.insert( hitID );
+            filledDetIDs.insert( hitID );
 
             std::vector<HgcrocDigiCollection::Sample> digiToAdd;
-            if ( constructDigis( energyDepositions , simulatedTimes , digiToAdd ) ) {
+            if ( hgcroc_->digitize( voltages , times , digiToAdd ) ) {
                 for ( auto& sample : digiToAdd ) sample.rawID_ = hitID;
                 ecalDigis.addDigi( digiToAdd );
             }
         }
+
+        /******************************************************************************************
+         * Noise Simulation on Empty Channels
+         *****************************************************************************************/
 
         //put noise into some empty channels
         EcalID detID;
@@ -128,10 +115,12 @@ namespace ldmx {
                 int cellID  = noiseInjector_->Integer(nCellsPerModule_);
 		        detID=EcalID(layerID, moduleID, cellID);
                 noiseID = detID.raw();
-            } while ( simHitIDs.find( noiseID ) != simHitIDs.end() );
+            } while ( filledDetIDs.find( noiseID ) != filledDetIDs.end() );
+            filledDetIDs.insert( noiseID );
 
             //get a time for this noise hit
             double hitTime = noiseInjector_->Uniform( clockCycle_ );
+            //get a ADC sample for the noise hit
             int hitSample  = noiseInjector_->Integer( nADCs_ );
 
             std::vector<HgcrocDigiCollection::Sample> digiToAdd;
@@ -159,158 +148,6 @@ namespace ldmx {
 
         return;
     } //produce
-
-    bool EcalDigiProducer::constructDigis(
-            const std::vector<double> &energies, 
-            const std::vector<double> &times, 
-            std::vector<HgcrocDigiCollection::Sample> &digiToAdd) {
-
-            digiToAdd.clear(); //make sure it is clean
-            digiToAdd.resize( nADCs_ ); //fill with required number of samples (default constructed)
-
-            //First we emulate the ROC response by constructing
-            //  a pulse from the timing/energy info and then measuring
-            //  it at 25ns increments
-            //total energy and average tiem of contribs inside timing window
-            double energyInWindow = 0.0;
-            double timeInWindow   = 0.0;
-            for ( int iContrib = 0; iContrib < energies.size(); iContrib++ ) {
-
-                if ( times.at(iContrib) < 0 or times.at(iContrib) > clockCycle_*nADCs_ ) {
-                    //invalid contribution - outside time range or time is unset
-                    continue;
-                }
-
-                energyInWindow += energies.at(iContrib);
-                timeInWindow   += energies.at(iContrib) * times.at(iContrib);
-            }
-            if ( energyInWindow > 0. ) timeInWindow /= energyInWindow; //energy weighted average
-
-            // put noise onto timing
-            //TODO more physical way of simulating the timing jitter
-            timeInWindow += noiseInjector_->Gaus( 0. , timingJitter_ );
-
-            //set time in the window to zero if noise pushed it below zero
-            //TODO better (more physical) method for handling this case?
-            if ( timeInWindow   < 0. ) timeInWindow = 0.;
-
-            //setup up pulse by changing the amplitude and timing parameters
-            //  amplitude is gain times input voltage
-            double signalAmplitude = energyInWindow*MeV_; //now this is the amplitude in mV
-            pulseFunc_.SetParameter( 0 , signalAmplitude ); 
-            pulseFunc_.SetParameter( 4 , timeInWindow ); //set time of peak to simulated hit time
-
-            //measure pulse with option to include noise on top
-            //  returns height of pulse in mV
-            //  this : pointer to this object so lambda function has access to its members
-            //  time : time [ns] to measure height of pulse func at
-            //  withNoise : true if you want to include Gaussian noise on top
-            auto measurePulse = [this](const double &time, bool withNoise) {
-                auto signal = gain_*pedestal_ + pulseFunc_.Eval(time);
-                if ( withNoise ) signal += noiseInjector_->Gaus( 0. , noiseRMS_ );
-                return signal;
-            };
-
-            // choose readout mode
-            double pulsePeak = measurePulse( timeInWindow , false );
-            std::cout << "Pulse: { "
-                << "Amplitude: " << signalAmplitude+gain_*pedestal_ << "mV, "
-                << "Beginning: " << measurePulse(0.,false) << "mV, "
-                << "Time: " << timeInWindow << "ns, "
-                << "Energy: " << energyInWindow << "MeV } -> ";
-            if ( pulsePeak < readoutThreshold_ ) {
-                //below readout threshold -> skip this hit
-                std::cout << "Below Readout" << std::endl;
-                return false;
-            } else if ( pulsePeak < totThreshold_ ) {
-                //below TOT threshold -> do ADC readout mode
-                std::cout << "ADC Mode { ";
-
-                //measure time of arrival (TOA) using TOA threshold
-                double toa(0.);
-                // make sure pulse crosses TOA threshold
-                if ( measurePulse(0.,false) < toaThreshold_ and pulsePeak > toaThreshold_ ) {
-                    toa = pulseFunc_.GetX(toaThreshold_-gain_*pedestal_, -nADCs_*clockCycle_, timeInWindow);
-                }
-                std::cout << "TOA: " << toa << "ns, ";
-
-                //measure ADCs
-                for ( unsigned int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
-                    double measTime = iADC*clockCycle_; // + offset;
-                    digiToAdd[iADC].adc_t_   = measurePulse( measTime, true )/gain_;
-                    digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : pedestal_; 
-                    digiToAdd[iADC].toa_     = toa * ns_;
-                    digiToAdd[iADC].tot_progress_ = false;
-                    digiToAdd[iADC].tot_complete_ = false;
-                    std::cout << " ADC " << iADC << ": " << digiToAdd[iADC].adc_t_*gain_ << "mV, ";
-                }
-                std::cout << "}" << std::endl;
-
-            } else {
-                // above TOT threshold -> do TOT readout mode
-    
-                //measure time of arrival (TOA) and time under threshold (TUT) from pulse
-                //  TOA: earliest possible measure for crossing TOT threshold line
-                //  TUT: latest possible measure for crossing TOT threshold line
-                //TODO make the TOT measurement more realistic
-                //  in reality, the pulse drastically changes shape when the chip goes
-                //  into saturation. The charge draining after saturation slows down
-                //  and makes the TOT <-> energy deposited conversion closer to linear
-                std::cout << "TOT Mode { ";
-
-                double toa(0.); //default is earliest possible time
-                // check if first half is just always above readout
-                if ( measurePulse(0.,false) < totThreshold_ ) 
-                    toa = pulseFunc_.GetX(totThreshold_-gain_*pedestal_, 0., timeInWindow);
-    
-                double tut(nADCs_*clockCycle_); //default is latest possible time
-                // check if second half is just always above readout
-                if ( pulseFunc_.Eval( nADCs_*clockCycle_ ) < totThreshold_ )
-                    tut = pulseFunc_.GetX(totThreshold_-gain_*pedestal_, timeInWindow, nADCs_*clockCycle_);
-    
-                double tot = tut - toa;
-
-                std::cout << "TOA: " << toa << "ns, ";
-                std::cout << "TOT: " << tot << "ns} " << std::endl;
-
-                if ( makeConfigHists_ ) histograms_.fill( "tot_SimE" , tot , energyInWindow );
-    
-                /*
-                std::cout << std::setw(6)
-                    << energyInWindow << " MeV at " << timeInWindow << " ns --> "
-                    << tot << " TOT " << toa << " TOA " << tut << " TUT" << std::endl;
-                */
-    
-                for ( unsigned int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
-                    if ( tot > clockCycle_ or tot < 0 ) {
-                        //TOT still in progress or already completed
-                        double measTime = iADC*clockCycle_; // + offset;
-                        digiToAdd[iADC].adc_t_   = measurePulse( measTime, true )/gain_;
-                        digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : pedestal_;
-                        digiToAdd[iADC].toa_     = toa*ns_;
-                        digiToAdd[iADC].tot_progress_ = true;
-                        digiToAdd[iADC].tot_complete_ = false;
-                    } else {
-                        //TOT complete
-                        digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : pedestal_;
-                        digiToAdd[iADC].tot_     = tot*ns_;
-                        digiToAdd[iADC].toa_     = toa*ns_;
-                        digiToAdd[iADC].tot_progress_ = false;
-                        digiToAdd[iADC].tot_complete_ = true;
-                    }
-                    tot -= clockCycle_; //decrement TOT
-                }
-    
-                /*
-                std::cout << std::setw(6) << totalClockCounts
-                    << " TOT --> " << digiToAdd[iSOI_].adc_t_ << " Clocks and "
-                    << digiToAdd[iSOI_].tot_ << " tot" << std::endl;
-                */
-    
-            }
-
-            return true;
-    }
 }
 
 DECLARE_PRODUCER_NS(ldmx, EcalDigiProducer);
