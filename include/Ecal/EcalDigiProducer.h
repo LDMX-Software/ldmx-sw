@@ -101,6 +101,9 @@ namespace ldmx {
             ///////////////////////////////////////////////////////////////////////////////////////
             // Other member variables
 
+            /// Put noise into empty channels, not configurable, only helpful in development
+            bool noise_{true};
+
             /// Hgcroc Emulator to digitize analog voltage signals
             std::unique_ptr<HgcrocEmulator> hgcroc_;
 
