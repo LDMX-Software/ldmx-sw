@@ -46,7 +46,6 @@ namespace ldmx {
 
         std::cout << "In TrigScintDQM::configure, got parameters " << hitCollectionName_ << " and " << padName_ << std::endl;
 
-        detID_= std::make_unique<TrigScintID>();
     }
 
     void TrigScintDQM::analyze(const Event & event) { 
@@ -67,10 +66,9 @@ namespace ldmx {
         double totalEnergy{0};  
         for (const SimCalorimeterHit &hit : TrigScintHits ) {
     
-            int detIDRaw{hit.getID()};
-            detID_->setRawValue( hit.getID() ); 
-            detID_->unpack();
-            int bar = detID_->getFieldValue("bar");
+	    TrigScintID detID(hit.getID());
+
+            int bar = detID.bar();
         
             histograms_.fill("energy",hit.getEdep()); 
             histograms_.fill("hit_time",hit.getTime());
