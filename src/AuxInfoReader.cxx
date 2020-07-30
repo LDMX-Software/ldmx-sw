@@ -12,9 +12,6 @@
 #include "SimCore/MagneticFieldMap3D.h"
 #include "SimCore/UserRegionInformation.h"
 #include "SimCore/VisAttributesStore.h"
-#include "DetDescr/DetectorIDStore.h"
-#include "DetDescr/DefaultDetectorID.h"
-#include "DetDescr/EcalDetectorID.h"
 
 // Geant4
 #include "G4LogicalVolumeStore.hh"
@@ -54,8 +51,6 @@ namespace ldmx {
 
             if (auxType == "SensDet") {
                 createSensitiveDetector(auxVal, iaux->auxList);
-            } else if (auxType == "DetectorID") {
-                createDetectorID(auxVal, iaux->auxList);
             } else if (auxType == "MagneticField") {
                 createMagneticField(auxVal, iaux->auxList);
             } else if (auxType == "Region") {
@@ -200,63 +195,6 @@ namespace ldmx {
                 }
             }
         }
-    }
-
-    void AuxInfoReader::createDetectorID(G4String idName, const G4GDMLAuxListType* auxInfoList) {
-
-        //G4cout << "Creating DetectorID " << idName << G4endl;
-        IDField::IDFieldList* fieldList = new IDField::IDFieldList();
-
-        // iterate fields
-        int fieldIndex = 0;
-        for (std::vector<G4GDMLAuxStructType>::const_iterator fieldIt = auxInfoList->begin(); fieldIt != auxInfoList->end(); fieldIt++) {
-
-            std::vector<G4GDMLAuxStructType>* fieldsAux = fieldIt->auxList;
-
-            G4String auxType = fieldIt->type;
-            G4String auxVal = fieldIt->value;
-
-            if (auxType == "IDField") {
-
-                string fieldName = auxVal;
-
-                //G4cout << "Creating IDField " << fieldName << G4endl;
-
-                int startBit, endBit = -1;
-
-                // iterate field aux values
-                for (std::vector<G4GDMLAuxStructType>::const_iterator fieldValsIt = fieldsAux->begin(); fieldValsIt != fieldsAux->end(); fieldValsIt++) {
-
-                    G4String fieldValAuxType = fieldValsIt->type;
-                    G4String fieldValAuxValue = fieldValsIt->value;
-
-                    if (fieldValAuxType == "StartBit") {
-                        startBit = atoi(fieldValAuxValue.c_str());
-                    } else if (fieldValAuxType == "EndBit") {
-                        endBit = atoi(fieldValAuxValue.c_str());
-                    }
-                }
-
-                if (startBit == -1) {
-                    EXCEPTION_RAISE( "MissingInfo" , "The DetectorID is missing the StartBit." );
-                }
-
-                if (endBit == -1) {
-                    EXCEPTION_RAISE( "MissingInfo" , "The DetectorID is missing the EndBit." );
-                }
-
-                fieldList->push_back(new IDField(fieldName, fieldIndex, startBit, endBit));
-
-                //G4cout << "Added IDField " << fieldName << " with StartBit = " << startBit << ", EndBit = " << endBit << ", Index = " << fieldIndex << G4endl;
-
-                // Increment field index which is assigned automatically based on element ordering.
-                fieldIndex++;
-            }
-        }
-
-        DetectorID* id = new DetectorID(fieldList);
-        DetectorIDStore::getInstance()->addID(idName, id);
-        //G4cout << "Created detector ID " << idName << G4endl << G4endl;
     }
 
     void AuxInfoReader::createMagneticField(G4String magFieldName, const G4GDMLAuxListType* auxInfoList) {

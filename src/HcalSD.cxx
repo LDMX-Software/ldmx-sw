@@ -123,8 +123,8 @@ namespace ldmx {
         // Odd layers have bars horizontal
         // Even layers have bars vertical
         // 5cm wide bars are HARD-CODED
-        if      (section==HcalSection::BACK && layer % 2 == 1) stripID = int( (localPosition.y()+scint->GetYHalfLength())/50.0);
-        else if (section==HcalSection::BACK && layer % 2 == 0) stripID = int( (localPosition.x()+scint->GetXHalfLength())/50.0);
+        if      (section==HcalID::BACK && layer % 2 == 1) stripID = int( (localPosition.y()+scint->GetYHalfLength())/50.0);
+        else if (section==HcalID::BACK && layer % 2 == 0) stripID = int( (localPosition.x()+scint->GetXHalfLength())/50.0);
         else stripID = int( (localPosition.z()+scint->GetZHalfLength())/50.0);
 
         // std::cout << "---" << std::endl;
@@ -144,9 +144,9 @@ namespace ldmx {
 
         //do we want to set the hit coordinate in the middle of the absorber?
         // G4ThreeVector volumePosition = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector());
-        // if (section==HcalSection::BACK) hit->setPosition(position[0], position[1], volumePosition.z());
-        // elseif (section==HcalSection::TOP || section==HcalSection::BOTTOM) hit->setPosition(position[0], volumePosition.y(), position[2]);
-        // elseif (section==HcalSection::LEFT || section==HcalSection::RIGHT) hit->setPosition(volumePosition.x(),position[1] , position[2]);        
+        // if (section==HcalID::BACK) hit->setPosition(position[0], position[1], volumePosition.z());
+        // elseif (section==HcalID::TOP || section==HcalID::BOTTOM) hit->setPosition(position[0], volumePosition.y(), position[2]);
+        // elseif (section==HcalID::LEFT || section==HcalID::RIGHT) hit->setPosition(volumePosition.x(),position[1] , position[2]);        
 
 
         if (this->verboseLevel > 2) {
