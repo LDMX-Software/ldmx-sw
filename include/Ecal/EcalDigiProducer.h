@@ -92,6 +92,9 @@ namespace ldmx {
             /// Index for the Sample Of Interest in the list of digi samples 
             int iSOI_;
 
+            /// Readout threshold [mV]
+            double readoutThreshold_;
+
             /// Conversion from energy in MeV to voltage in mV
             double MeV_;
 

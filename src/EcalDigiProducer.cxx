@@ -51,9 +51,10 @@ namespace ldmx {
         nTotalChannels_   = nEcalLayers_*nModulesPerLayer_*nCellsPerModule_;
 
         // Configure generator that will produce noise hits in empty channels
+        readoutThreshold_ = hgcrocParams.getParameter<double>("readoutThreshold");
         noiseGenerator_->setNoise(hgcrocParams.getParameter<double>("noiseRMS")); //rms noise in mV
         noiseGenerator_->setPedestal(gain_*pedestal_); //mean noise amplitude (if using Gaussian Model for the noise) in mV
-        noiseGenerator_->setNoiseThreshold(hgcrocParams.getParameter<double>("readoutThreshold")); //threshold for readout in mV
+        noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in mV
 
     }
 
@@ -69,7 +70,7 @@ namespace ldmx {
         /******************************************************************************************
          * HGCROC Emulation on Simulated Hits
          *****************************************************************************************/
-
+        std::cout << "Sim Hits" << std::endl;
         //get simulated ecal hits from Geant4
         //  the class EcalHitIO in the SimApplication module handles the translation from G4CalorimeterHits to SimCalorimeterHits
         //  this class ensures that only one SimCalorimeterHit is generated per cell, but
@@ -86,7 +87,7 @@ namespace ldmx {
 
             int hitID = simHit.getID();
             filledDetIDs.insert( hitID );
-
+            std::cout << hitID << " ";
             std::vector<HgcrocDigiCollection::Sample> digiToAdd;
             if ( hgcroc_->digitize( voltages , times , digiToAdd ) ) {
                 for ( auto& sample : digiToAdd ) sample.rawID_ = hitID;
@@ -97,7 +98,7 @@ namespace ldmx {
         /******************************************************************************************
          * Noise Simulation on Empty Channels
          *****************************************************************************************/
-
+        std::cout << "Noise Hits" << std::endl;
         //put noise into some empty channels
         EcalID detID;
         int numEmptyChannels = nTotalChannels_ - ecalDigis.getNumDigis(); //minus number of channels with a hit
@@ -117,7 +118,7 @@ namespace ldmx {
                 noiseID = detID.raw();
             } while ( filledDetIDs.find( noiseID ) != filledDetIDs.end() );
             filledDetIDs.insert( noiseID );
-
+            std::cout << noiseID << " -> " << noiseHit << std::endl;
             //get a time for this noise hit
             double hitTime = noiseInjector_->Uniform( clockCycle_ );
             //get a ADC sample for the noise hit
@@ -128,7 +129,7 @@ namespace ldmx {
             for ( int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
                 if ( iADC == hitSample ) {
                     //put in noise hit
-                    digiToAdd[iADC].adc_t_ = noiseHit/gain_;
+                    digiToAdd[iADC].adc_t_ = (noiseHit+readoutThreshold_)/gain_;
                     digiToAdd[iADC].toa_   = hitTime*ns_;
                 } else {
                     //noisy channels
