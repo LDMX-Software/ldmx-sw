@@ -10,7 +10,6 @@
 /*   DetDescr   */
 /*~~~~~~~~~~~~~~*/
 #include "DetDescr/DetectorID.h"
-#include "DetDescr/DefaultDetectorID.h"
 
 /*~~~~~~~~~~~~~~~~~~~~*/
 /*   SimCore   */
@@ -69,7 +68,7 @@ namespace ldmx {
             G4TrackerHitsCollection* hitsCollection_{nullptr};
             
             /** The detector ID. */
-            DetectorID* detID_{new DefaultDetectorID()};
+      //            DetectorID* detID_{new DefaultDetectorID()};
             
     }; // ScoringPlaneSD
 
