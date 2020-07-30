@@ -126,7 +126,7 @@ namespace ldmx {
 
         //put noise into some empty channels
         int numEmptyChannels = TOTAL_NUM_CHANNELS - ecalDigis.getNumDigis();
-        EcalDetectorID detID;
+        EcalID detID;
         auto noiseHitAmplitudes{noiseGenerator_->generateNoiseHits(numEmptyChannels)};
         for ( double noiseHit : noiseHitAmplitudes ) {
 
@@ -137,10 +137,8 @@ namespace ldmx {
                 int layerID = noiseInjector_->Integer(NUM_ECAL_LAYERS);
                 int moduleID= noiseInjector_->Integer(NUM_HEX_MODULES_PER_LAYER);
                 int cellID  = noiseInjector_->Integer(CELLS_PER_HEX_MODULE);
-                detID.setFieldValue( 1 , layerID );
-                detID.setFieldValue( 2 , moduleID );
-                detID.setFieldValue( 3 , cellID );
-                noiseID = detID.pack();
+		detID=EcalID(layerID, moduleID, cellID);
+                noiseID = detID.raw();
             } while ( simHitIDs.find( noiseID ) != simHitIDs.end() );
 
             //get a time for this noise hit
