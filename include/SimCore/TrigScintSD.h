@@ -39,6 +39,9 @@ namespace ldmx {
              */
             G4bool ProcessHits(G4Step* step, G4TouchableHistory* history);
 
+    private:
+      int moduleId_;
+      
     };
 
 }
