@@ -45,14 +45,13 @@ namespace ldmx {
             
             virtual void produce(Event& event);
 
-            unsigned int generateRandomID(HcalSection sec);
+            HcalID generateRandomID(HcalSection sec);
             void         constructNoiseHit(std::vector<HcalHit>&, HcalSection, double, double, const std::map<unsigned int, float>&,std::unordered_set<unsigned int>&);
 
         private:
 
             bool                            verbose_{false};
             std::unique_ptr<TRandom3>       random_;
-            HcalID                          detID_;
             std::unique_ptr<NoiseGenerator> noiseGenerator_;
             
             double meanNoise_{0};
