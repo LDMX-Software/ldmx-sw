@@ -98,52 +98,44 @@ namespace ldmx {
         /******************************************************************************************
          * Noise Simulation on Empty Channels
          *****************************************************************************************/
-        std::cout << "Noise Hits" << std::endl;
-        //put noise into some empty channels
-        EcalID detID;
-        int numEmptyChannels = nTotalChannels_ - ecalDigis.getNumDigis(); //minus number of channels with a hit
-        //noise generator gives us a list of noise amplitudes [mV] that randomly populate the empty
-        //channels and are above the readout threshold
-        auto noiseHitAmplitudes{noiseGenerator_->generateNoiseHits(numEmptyChannels)};
-        for ( double noiseHit : noiseHitAmplitudes ) {
+        if ( noise_ ) {
+            std::cout << "Noise Hits" << std::endl;
+            //put noise into some empty channels
+            int numEmptyChannels = nTotalChannels_ - ecalDigis.getNumDigis(); //minus number of channels with a hit
+            EcalID detID;
+            //noise generator gives us a list of noise amplitudes [mV] that randomly populate the empty
+            //channels and are above the readout threshold
+            auto noiseHitAmplitudes{noiseGenerator_->generateNoiseHits(numEmptyChannels)};
+            std::vector<double> voltages( 1 , 0.), times( 1 , 0. );
+            for ( double noiseHit : noiseHitAmplitudes ) {
+    
+                //generate detector ID for noise hit
+                //making sure that it is in an empty channel
+                int noiseID;
+                do {
+                    int layerID = noiseInjector_->Integer(nEcalLayers_);
+                    int moduleID= noiseInjector_->Integer(nModulesPerLayer_);
+                    int cellID  = noiseInjector_->Integer(nCellsPerModule_);
+		            detID=EcalID(layerID, moduleID, cellID);
+                    noiseID = detID.raw();
+                } while ( filledDetIDs.find( noiseID ) != filledDetIDs.end() );
+                filledDetIDs.insert( noiseID );
+                std::cout << noiseID << " -> " << noiseHit + readoutThreshold_ - gain_*pedestal_ << std::endl;
 
-            //generate detector ID for noise hit
-            //making sure that it is in an empty channel
-            int noiseID;
-            do {
-                int layerID = noiseInjector_->Integer(nEcalLayers_);
-                int moduleID= noiseInjector_->Integer(nModulesPerLayer_);
-                int cellID  = noiseInjector_->Integer(nCellsPerModule_);
-		        detID=EcalID(layerID, moduleID, cellID);
-                noiseID = detID.raw();
-            } while ( filledDetIDs.find( noiseID ) != filledDetIDs.end() );
-            filledDetIDs.insert( noiseID );
-            std::cout << noiseID << " -> " << noiseHit << std::endl;
-            //get a time for this noise hit
-            double hitTime = noiseInjector_->Uniform( clockCycle_ );
-            //get a ADC sample for the noise hit
-            int hitSample  = noiseInjector_->Integer( nADCs_ );
+                //get a time for this noise hit
+                times[0]    = noiseInjector_->Uniform( clockCycle_ );
 
-            std::vector<HgcrocDigiCollection::Sample> digiToAdd;
-            digiToAdd.resize( nADCs_ );
-            for ( int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
-                if ( iADC == hitSample ) {
-                    //put in noise hit
-                    digiToAdd[iADC].adc_t_ = (noiseHit+readoutThreshold_)/gain_;
-                    digiToAdd[iADC].toa_   = hitTime*ns_;
-                } else {
-                    //noisy channels
-                    digiToAdd[iADC].adc_t_ = pedestal_;
-                    digiToAdd[iADC].toa_   = 0;
+                //noise generator gives the amplitude above the readout threshold
+                //  we need to convert it to the amplitdue above the pedestal
+                voltages[0] = noiseHit + readoutThreshold_ - gain_*pedestal_;
+    
+                std::vector<HgcrocDigiCollection::Sample> digiToAdd;
+                if ( hgcroc_->digitize( voltages , times , digiToAdd ) ) {
+                    for ( auto& sample : digiToAdd ) sample.rawID_ = noiseID;
+                    ecalDigis.addDigi( digiToAdd );
                 }
-                digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : pedestal_; 
-                digiToAdd[iADC].rawID_   = noiseID;
-                digiToAdd[iADC].tot_progress_ = false;
-                digiToAdd[iADC].tot_complete_ = false;
-            }
-
-            ecalDigis.addDigi( digiToAdd );
-        }
+            } //loop over noise amplitudes
+        } //if we should do the noise
 
         event.add("EcalDigis", ecalDigis );
 
