@@ -55,7 +55,7 @@ namespace ldmx {
             // If not, don't consider the hit.  Double sided readout is only 
             // being used for the back HCal bars.  For the side HCal, just 
             // use the maximum PE as before.
-            if ( (hcalHit.getSection() == HcalSection::BACK) && (hcalHit.getMinPE() < minPE_) ) continue;
+            if ( (hcalHit.getSection() == HcalID::BACK) && (hcalHit.getMinPE() < minPE_) ) continue;
 
             // Find the maximum PE in the list
             if (maxPE < pe) {
