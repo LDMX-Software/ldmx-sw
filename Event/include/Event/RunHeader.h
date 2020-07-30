@@ -70,7 +70,7 @@ namespace ldmx {
              * @return The start time of the run. 
              *
              */
-            const int getRunStart() const { return runStart_; }
+            int getRunStart() const { return runStart_; }
 
             /**
              * Set the run start time in seconds since epoch. 
@@ -84,7 +84,7 @@ namespace ldmx {
              *
              * @return The end time of the run. 
              */
-            const int getRunEnd() const { return runEnd_; }
+            int getRunEnd() const { return runEnd_; }
 
             /**
              * Set the end time of the run in seconds since epoch

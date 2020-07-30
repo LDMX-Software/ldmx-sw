@@ -37,4 +37,11 @@ namespace ldmx {
         return mask;
     }
 
+  unsigned IDField::countOnes(unsigned mask) {
+    unsigned rv=0;
+    for (int i=0; i<32; i++)
+      if (mask & (1<<i)) rv++;
+    return rv;
+  }
+  
 }

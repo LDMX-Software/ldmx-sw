@@ -70,8 +70,6 @@ namespace ldmx {
              */
             unsigned getBitMask();
 
-        private:
-
             /**
              * Utility for creating a bit mask from a start to end bit.
              * @param startBit The start bit.
@@ -79,6 +77,14 @@ namespace ldmx {
              */
             static unsigned createBitMask(unsigned startBit, unsigned endBit);
 
+	    /**
+             * Utility for counting number of 1 in a mask
+             * @param startBit The start bit.
+             * @param endBit The end bit.
+             */
+            static unsigned countOnes(unsigned mask);
+
+	
         private:
 
             /**
@@ -107,6 +113,9 @@ namespace ldmx {
             unsigned bitMask;
     };
 
+
+  
+  
 }
 
 #endif
