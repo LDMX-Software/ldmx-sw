@@ -143,18 +143,14 @@ namespace ldmx {
         ecalLayerEdepRaw_.resize(nEcalLayers_, 0);
         ecalLayerEdepReadout_.resize(nEcalLayers_, 0);
         ecalLayerTime_.resize(nEcalLayers_, 0);
-        cellMap_.resize(nEcalLayers_, std::map<EcalID, float>());
-        cellMapTightIso_.resize(nEcalLayers_, std::map<EcalID, float>());
 
         // Set the collection name as defined in the configuration
         collectionName_ = parameters.getParameter< std::string >("collection_name");
     }
 
     void EcalVetoProcessor::clearProcessor(){
-        for (int i = 0; i < nEcalLayers_; i++) {
-            cellMap_[i].clear();
-            cellMapTightIso_[i].clear();
-        }
+        cellMap_.clear();
+        cellMapTightIso_.clear();
         bdtFeatures_.clear();
 
         nReadoutHits_ = 0;
@@ -321,12 +317,11 @@ namespace ldmx {
             }
         }
 
+        for ( const auto& [ id , energy ] : cellMapTightIso_ ) {
+            if ( energy > 0 ) summedTightIso_ += energy;
+        }
+
         for (int iLayer = 0; iLayer < ecalLayerEdepReadout_.size(); iLayer++) {
-            for (auto cell : cellMapTightIso_[iLayer]) {
-                if (cell.second > 0) {
-                    summedTightIso_ += cell.second;
-                }
-            }
             ecalLayerTime_[iLayer] = ecalLayerTime_[iLayer] / ecalLayerEdepReadout_[iLayer];
             summedDet_ += ecalLayerEdepReadout_[iLayer];
         }
@@ -511,22 +506,19 @@ namespace ldmx {
 
     /* Function to load up empty vector of hit maps */
     void EcalVetoProcessor::fillHitMap(const std::vector<EcalHit> &ecalRecHits,
-            std::vector<std::map<EcalID, float>>& cellMap_) {
+            std::map<EcalID, float>& cellMap_) {
         for ( const EcalHit &hit : ecalRecHits ) {
-	    EcalID id=hitID(hit);
-
-            CellEnergyPair cell_energy_pair = std::make_pair(
-                    id, hit.getEnergy());
-            cellMap_[id.layer()].insert(cell_energy_pair);
+	        EcalID id=hitID(hit);
+            cellMap_.emplace( id , hit.getEnergy() );
         }
     }
 
     void EcalVetoProcessor::fillIsolatedHitMap(const std::vector<EcalHit> &ecalRecHits, EcalID globalCentroid,
-            std::vector<std::map<EcalID, float>>& cellMap_, std::vector<std::map<EcalID, float>>& cellMapIso_, bool doTight) {
+            std::map<EcalID, float>& cellMap_, std::map<EcalID, float>& cellMapIso_, bool doTight) {
         for (const EcalHit &hit : ecalRecHits ) {
-            std::pair<bool, EcalID> isolatedHit = std::make_pair(true, EcalID());
-	    EcalID id=hitID(hit);
-	    EcalID flatid(0,id.module(),id.cell());
+            auto isolatedHit = std::make_pair(true, EcalID());
+	        EcalID id=hitID(hit);
+	        EcalID flatid(0,id.module(),id.cell());
             if (doTight) {
                 //Disregard hits that are on the centroid.
                 if (flatid==globalCentroid) 
@@ -539,12 +531,15 @@ namespace ldmx {
             }
 
             //Skip hits that have a readout neighbor
+            //Get neighboring cell id's and try to look them up in the full cell map (constant speed algo.)
+            //  these ideas are only cell/module (must ignore layer)
             std::vector<EcalID> cellNbrIds = getInnerRingCellIds(id);
 
-            //Get neighboring cell id's and try to look them up in the full cell map (constant speed algo.)
             for (int k = 0; k < 6; k++) {
-                auto it = cellMap_[id.layer()].find(cellNbrIds[k]);
-                if (it != cellMap_[id.layer()].end()) {
+                //update neighbor ID to the current layer
+                cellNbrIds[k] = EcalID( id.layer() , cellNbrIds[k].module() , cellNbrIds[k].cell() );
+                //look in cell hit map to see if it is there
+                if (cellMap_.find(cellNbrIds[k]) != cellMap_.end()) {
                     isolatedHit = std::make_pair(false, cellNbrIds[k]);
                     break;
                 }
@@ -553,8 +548,7 @@ namespace ldmx {
                 continue;
             }
             //Insert isolated hit
-            CellEnergyPair cell_energy_pair = std::make_pair(id, hit.getEnergy());
-            cellMapIso_[id.layer()].insert(cell_energy_pair);
+            cellMapIso_.emplace( id , hit.getEnergy() );
         }
     }
 
