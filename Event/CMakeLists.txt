@@ -37,9 +37,17 @@ include("${ROOT_DIR}/RootMacros.cmake")
 # dictionary to be generated correctly. 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
+# Copy the files needed to generate the dictionary over to the installation 
+# directory.  This is needed so the dictionary can be built even when the 
+# source code is deleted.
+file(COPY ${PROJECT_SOURCE_DIR}/include/Event/EventDef.h 
+          ${PROJECT_SOURCE_DIR}/include/Event/EventLinkDef.h
+     DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Event/
+)
+
 # Generate the ROOT dictionary
-root_generate_dictionary(EventDic ${PROJECT_SOURCE_DIR}/include/Event/EventDef.h 
-    LINKDEF ${PROJECT_SOURCE_DIR}/include/Event/EventLinkDef.h)
+root_generate_dictionary(EventDic ${CMAKE_INSTALL_PREFIX}/include/Event/EventDef.h
+    LINKDEF ${CMAKE_INSTALL_PREFIX}/include/Event/EventLinkDef.h)
 
 # Install ROOT pcm file
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventDic_rdict.pcm DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
@@ -51,6 +59,7 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
 setup_library(name Event
               dependencies ROOT::Core
               sources EventDic.cxx ${SRC_FILES}
+              python_install_path ${CMAKE_INSTALL_PREFIX}/python/LDMX
 )
 
 # If this is really needed, import a target instead.
