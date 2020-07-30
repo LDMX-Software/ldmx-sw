@@ -24,13 +24,14 @@ namespace ldmx {
         totThreshold_     = ps.getParameter<double>("totThreshold");
         timingJitter_     = ps.getParameter<double>("timingJitter");
         clockCycle_       = ps.getParameter<double>("clockCycle");
-        nADCs_            = ps.getParameter<int>("nADCs");
-        iSOI_             = ps.getParameter<int>("iSOI");
+        measTime_         = ps.getParameter<double>("measTime");
         rateUpSlope_      = ps.getParameter<double>("rateUpSlope");
         timeUpSlope_      = ps.getParameter<double>("timeUpSlope");
         rateDnSlope_      = ps.getParameter<double>("rateDnSlope");
         timeDnSlope_      = ps.getParameter<double>("timeDnSlope");
         timePeak_         = ps.getParameter<double>("timePeak");
+        nADCs_            = ps.getParameter<int>("nADCs");
+        iSOI_             = ps.getParameter<int>("iSOI");
 
         //Time -> clock counts conversion
         //  time [ns] * ( 2^10 / max time in ns ) = clock counts
@@ -77,7 +78,7 @@ namespace ldmx {
 
         // put noise onto timing
         //TODO more physical way of simulating the timing jitter
-        timeInWindow += noiseInjector_->Gaus( 0. , timingJitter_ );
+        if ( noise_ ) timeInWindow += noiseInjector_->Gaus( 0. , timingJitter_ );
 
         //set time in the window to zero if noise pushed it below zero
         //TODO better (more physical) method for handling this case?
@@ -112,8 +113,8 @@ namespace ldmx {
 
             //measure ADCs
             for ( unsigned int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
-                double measTime = iADC*clockCycle_; // + offset;
-                digiToAdd[iADC].adc_t_   = measurePulse( measTime, true )/gain_;
+                double measTime = iADC*clockCycle_ + measTime_;
+                digiToAdd[iADC].adc_t_   = measurePulse( measTime, noise_ )/gain_;
                 digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : pedestal_; 
                 digiToAdd[iADC].toa_     = toa * ns_;
                 digiToAdd[iADC].tot_progress_ = false;
@@ -152,8 +153,8 @@ namespace ldmx {
             for ( unsigned int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
                 if ( tot > clockCycle_ or tot < 0 ) {
                     //TOT still in progress or already completed
-                    double measTime = iADC*clockCycle_; // + offset;
-                    digiToAdd[iADC].adc_t_   = measurePulse( measTime, true )/gain_;
+                    double measTime = iADC*clockCycle_ + measTime_;
+                    digiToAdd[iADC].adc_t_   = measurePulse( measTime, noise_ )/gain_;
                     digiToAdd[iADC].tot_progress_ = true;
                     digiToAdd[iADC].tot_complete_ = false;
                 } else {
