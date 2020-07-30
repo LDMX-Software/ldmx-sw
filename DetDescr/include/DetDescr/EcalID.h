@@ -36,14 +36,14 @@ namespace ldmx {
 	 * Create from raw number
 	 */
 	EcalID(RawValue rawid) : DetectorID(rawid) {
-	    assert(null() || subdet()==SD_ECAL);
+	    SUBDETECTORID_TEST("EcalID", SD_ECAL);
 	}
 
       	/**
 	 * Create from a DetectorID, but check
 	 */
 	EcalID(const DetectorID id) : DetectorID(id) {
-	    assert(id.null() || id.subdet()==SD_ECAL); // can be replaced with a throw in the the future	    
+	    SUBDETECTORID_TEST("EcalID", SD_ECAL);
 	}
 
 

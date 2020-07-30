@@ -76,6 +76,13 @@ namespace ldmx {
 	 * @param fieldValue The new value of the field.
 	 */
 	void setFieldValue(const std::string& fieldName, FieldValue fieldValue);
+
+	/**
+	 * Get the list of field information.
+	 * @return The list of field information.
+	 */
+	int getFieldCount() const { return int(p_fieldInfo_->fieldList_.size()); }
+
 	
 	/**
 	 * Get the list of field information.
@@ -147,7 +154,7 @@ namespace ldmx {
 	    IDField::IDFieldList fieldList_;
 	};
 
-	static std::map<SubdetectorIDType, SubdetectorIDFields> g_rosettaStone;
+	static std::map<SubdetectorIDType, const SubdetectorIDFields*> g_rosettaStone;
 
 	/**
 	 * Pointer to the appropriate field info for this class

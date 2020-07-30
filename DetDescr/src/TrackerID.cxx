@@ -1,6 +1,16 @@
 #include "DetDescr/TrackerID.h"
 #include "DetDescr/DetectorIDInterpreter.h"
 
+
+std::ostream& operator<<(std::ostream& s, const ldmx::TrackerID& id) {
+  if (id.null()) s << "NULL";
+  else if (id.subdet()==ldmx::SD_TRACKER_RECOIL) s << "Recoil(";
+  else if (id.subdet()==ldmx::SD_TRACKER_TAGGER) s << "Tagger(";
+  else s << "UnknownTk(";
+  s  <<id.layer()<<','<<id.module()<<')';
+  return s;
+}
+
 namespace ldmx {
 
   void TrackerID::createInterpreters() {
