@@ -25,12 +25,9 @@ namespace ldmx {
             birksc1_(1.29e-2),
             birksc2_(9.59e-6) {
         
-        detID_ = new HcalID(); 
-        detID_->setFieldValue("subdet", subDetID);
     }
 
     HcalSD::~HcalSD() {
-        delete detID_; 
     }
 
     G4bool HcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory* ROhist) {
@@ -136,10 +133,8 @@ namespace ldmx {
         // std::cout << "xpos_g = " << position.x() << "\t ypos_g = " << position.y() << "\t zpos_g = " << position.z() << std::endl;
         // std::cout << "Layer = " << layer << "\t section = " << section << "\t strip = " << stripID << std::endl;
 
-        detID_->setFieldValue(1, layer);
-        detID_->setFieldValue(2, section);
-        detID_->setFieldValue(3, stripID);
-        hit->setID(detID_->pack());
+	HcalID id(section,layer,stripID);
+        hit->setID(id.raw());
 
         // Set the track ID on the hit.
         hit->setTrackID(aStep->GetTrack()->GetTrackID());

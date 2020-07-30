@@ -11,15 +11,12 @@
 /*~~~~~~~~~~~~~~*/
 /*   DetDescr   */
 /*~~~~~~~~~~~~~~*/
-#include "DetDescr/EcalDetectorID.h" 
+#include "DetDescr/EcalID.h" 
 
 namespace ldmx {
 
     EcalSD::EcalSD(G4String name, G4String theCollectionName, int subDetID) :
             CalorimeterSD(name, theCollectionName) {
-
-        detID_ = new EcalDetectorID(); 
-        detID_->setFieldValue("subdet", subDetID);
 
         // These are the v12 parameters
         //  all distances in mm
@@ -74,7 +71,6 @@ namespace ldmx {
     }
 
     EcalSD::~EcalSD() {
-        delete detID_;  
     }
 
     G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
@@ -116,12 +112,9 @@ namespace ldmx {
         layerNumber = int(cpynum/7);
         int module_position = cpynum%7;
 
-        int cellModuleID = hitMap_->getCellModuleID(hitPosition[0], hitPosition[1]);
-        int cellID = (hitMap_->separateID(cellModuleID)).first;
-        detID_->setFieldValue(1, layerNumber);
-        detID_->setFieldValue(2, module_position);
-        detID_->setFieldValue(3, cellID);
-        hit->setID(detID_->pack());
+        EcalID partialId = hitMap_->getCellModuleID(hitPosition[0], hitPosition[1]);
+	EcalID id(layerNumber, module_position, partialId.cell());
+        hit->setID(id.raw());
 
         // Set the track ID on the hit.
         hit->setTrackID(aStep->GetTrack()->GetTrackID());
@@ -130,7 +123,7 @@ namespace ldmx {
         hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
 
         if (this->verboseLevel > 2) {
-	        G4cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << subdet_ << " and layer " << layerNumber << " and cellid " << cellID << " module position " << module_position << " ...";
+	  G4cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << id << " ...";
             hit->Print();
             G4cout << G4endl;
         }

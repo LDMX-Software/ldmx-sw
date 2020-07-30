@@ -66,7 +66,7 @@ namespace ldmx {
             G4TrackerHitsCollection* hitsCollection_;
 
             /// The detector ID
-            DetectorID* detID_{new TrackerID()};
+            SubdetectorIDType subDetID_;
     
     }; // TrackerID
 
