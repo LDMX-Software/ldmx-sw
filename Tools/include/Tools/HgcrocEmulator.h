@@ -30,7 +30,6 @@ namespace ldmx {
      * voltages. These tasks depend on the detector construction,
      * so they are left to the individual subsystem producers.
      *
-     * @TODO Allow for pulse shape parameters to be configurable
      * @TODO Shift the pulse SOI arbitrarily
      * @TODO More realistic TOT emulation
      */
@@ -149,6 +148,9 @@ namespace ldmx {
             /// Verbosity, not configurable, only helpful in development
             bool verbose_{true};
 
+            /// Put noise in channels, not configurable, only helpful in development
+            bool noise_{false};
+
             /// Time interval for chip clock [ns]
             double clockCycle_;
 
@@ -178,6 +180,9 @@ namespace ldmx {
 
             /// Jitter of timing mechanism in the chip [ns]
             double timingJitter_;
+
+            /// Measurement time relative to clock cycle [ns]
+            double measTime_;
 
             /// Conversion from time [ns] to counts
             double ns_;
