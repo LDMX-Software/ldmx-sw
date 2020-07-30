@@ -42,7 +42,7 @@ namespace ldmx {
              *
              * @param emptyChannels The total number of channels without a hit 
              *                      on them.
-             * @return A vector containing the amplitude of the noise hits.
+             * @return A vector containing the amplitude of the noise hits *above the threshold*
              */
             std::vector<double> generateNoiseHits(int emptyChannels); 
 
