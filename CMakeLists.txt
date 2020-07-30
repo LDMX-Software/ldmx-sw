@@ -19,6 +19,7 @@ find_package(ONNXRuntime 1.2.0)
 setup_library(name Ecal
               dependencies ROOT::Physics DARK::Framework DARK::Event DARK::Tools 
               DARK::DetDescr ONNXRuntime::Interface
+              python_install_path ${CMAKE_INSTALL_PREFIX}/python/LDMX
 )
 
 setup_test(dependencies DARK::Ecal)
