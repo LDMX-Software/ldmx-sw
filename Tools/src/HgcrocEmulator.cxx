@@ -96,8 +96,8 @@ namespace ldmx {
         }
         if ( pulsePeak < readoutThreshold_ ) {
             //below readout threshold -> skip this hit
-            //don't add anything to the digitizedHits collection
             if (verbose_) std::cout << "Below Readout" << std::endl;
+            return false; //skip this hit
         } else if ( pulsePeak < totThreshold_ ) {
             //below TOT threshold -> do ADC readout mode
             if (verbose_) std::cout << "ADC Mode { ";
