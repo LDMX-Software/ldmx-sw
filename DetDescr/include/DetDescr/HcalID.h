@@ -12,16 +12,7 @@
 
 namespace ldmx {
 
-    /**
-     * Encodes the section of the HCal based on the 'section' field value.
-     */
-    enum HcalSection {
-        BACK = 0,
-        TOP = 1,
-        BOTTOM = 2,
-        LEFT = 4,
-        RIGHT = 3
-    };
+  
     
     /**
      * @class HcalID
@@ -30,6 +21,17 @@ namespace ldmx {
     class HcalID : public DetectorID {	
 	public:
 
+	/**
+	 * Encodes the section of the HCal based on the 'section' field value.
+	 */
+	enum HcalSection {
+	    BACK = 0,
+	    TOP = 1,
+	    BOTTOM = 2,
+	    LEFT = 4,
+	    RIGHT = 3
+	};
+      
 	static const RawValue SECTION_MASK{0x7}; // space for up to 7 sections
 	static const RawValue SECTION_SHIFT{18};
 	static const RawValue LAYER_MASK{0xFF}; // space for up to 255 layers
@@ -46,14 +48,14 @@ namespace ldmx {
 	 * Create from raw number
 	 */
 	HcalID(RawValue rawid) : DetectorID(rawid) {
-	    assert(null() || subdet()==SD_HCAL);
+	    SUBDETECTORID_TEST("HcalID", SD_HCAL);
 	}
 
       	/**
 	 * Create from a DetectorID, but check
 	 */
 	HcalID(const DetectorID id) : DetectorID(id) {
-	    assert(id.null() || id.subdet()==SD_HCAL); // can be replaced with a throw in the the future	    
+  	    SUBDETECTORID_TEST("HcalID", SD_HCAL);
 	}
 
     

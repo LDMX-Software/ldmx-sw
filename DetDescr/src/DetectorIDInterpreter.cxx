@@ -3,9 +3,13 @@
 #include "DetDescr/EcalID.h"
 #include "DetDescr/TrigScintID.h"
 #include "DetDescr/TrackerID.h"
+#include "DetDescr/SimSpecialID.h"
 
 namespace ldmx {
 
+    
+    std::map<SubdetectorIDType, const DetectorIDInterpreter::SubdetectorIDFields*> DetectorIDInterpreter::g_rosettaStone;
+    
     DetectorIDInterpreter::~DetectorIDInterpreter()  {
     }
     DetectorIDInterpreter::DetectorIDInterpreter() : id_(), p_fieldInfo_(0) {
@@ -69,6 +73,7 @@ namespace ldmx {
         return getFieldValue(byname->second->getIndex());
     }
 
+
     void DetectorIDInterpreter::init() {
 	if (g_rosettaStone.empty()) loadStandardInterpreters();
 
@@ -80,27 +85,36 @@ namespace ldmx {
 
 	if (ptr == g_rosettaStone.end()) {
 	    // use the generic id
-	} else {
-	    p_fieldInfo_=&(ptr->second);
+	    ptr = g_rosettaStone.find(SD_NULL);
 	}
-	
+	p_fieldInfo_=(ptr->second);	
+
         this->fieldValues_.resize(p_fieldInfo_->fieldList_.size());
     }
     
     void DetectorIDInterpreter::registerInterpreter(SubdetectorIDType idtype,  const IDField::IDFieldList& fieldList) {
-	assert(g_rosettaStone.find(idtype)==g_rosettaStone.end()); // no replacements
-	SubdetectorIDFields fields;
-	fields.fieldList_=fieldList;
+	if (g_rosettaStone.find(idtype)!=g_rosettaStone.end()) {
+	    EXCEPTION_RAISE("DetectorIDException","Attempted to replace interpreter for subdetector "+std::to_string(idtype));
+	}
+	SubdetectorIDFields* fields=new SubdetectorIDFields();
+	fields->fieldList_=fieldList;
 	for (auto it : fieldList)
-	    fields.fieldMap_[it->getFieldName()]=it;
-	
+	    fields->fieldMap_[it->getFieldName()]=it;
+	g_rosettaStone[idtype]=fields;
     }
 
     void DetectorIDInterpreter::loadStandardInterpreters() {
 	if (!g_rosettaStone.empty()) return;
+	IDField::IDFieldList fields;
+	fields.push_back(new IDField("subdetector",0,DetectorID::SUBDETECTORID_SHIFT,31));
+	fields.push_back(new IDField("payload",2,0,DetectorID::SUBDETECTORID_SHIFT-1));
+
+	registerInterpreter(SD_NULL,fields);
+	
 	EcalID::createInterpreters();
 	HcalID::createInterpreters();
 	TrackerID::createInterpreters();
 	TrigScintID::createInterpreters();
+	SimSpecialID::createInterpreters();
     }
 }

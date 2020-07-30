@@ -19,18 +19,18 @@ namespace ldmx {
 	static const RawValue BAR_SHIFT{0};
 
 	/// Constructor
-	TrigScintID();
+	TrigScintID() :  DetectorID(SD_TRIGGER_SCINT,0) { }
 	
 	/// Constructor with raw id
 	TrigScintID(unsigned int rawid) : DetectorID(rawid) {
-	    assert(null() || subdet()==SD_TRIGGER_SCINT);
+	    SUBDETECTORID_TEST("TrigScintID",SD_TRIGGER_SCINT);
 	}
 	
      	/**
 	 * Create from a DetectorID, but check
 	 */
 	TrigScintID(const DetectorID id) : DetectorID(id) {
-	    assert(id.null() || id.subdet()==SD_TRIGGER_SCINT); // can be replaced with a throw in the the future	    
+	    SUBDETECTORID_TEST("TrigScintID",SD_TRIGGER_SCINT);
 	}
 	
         /**

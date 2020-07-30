@@ -32,14 +32,14 @@ namespace ldmx {
 	 * Create from a DetectorID, but check
 	 */
 	TrackerID(const DetectorID id) : DetectorID(id) {
-	    assert(id.null() || id.subdet()==SD_TRACKER_TAGGER || id.subdet()==SD_TRACKER_RECOIL); // can be replaced with a throw in the the future	    
+	    SUBDETECTORID_TEST2("TrackerID", SD_TRACKER_TAGGER, SD_TRACKER_RECOIL);
 	}
 
 	/**
 	 * Create from a raw id, but check
 	 */
 	TrackerID(RawValue rawid) : DetectorID(rawid) {
-	    assert(null() || subdet()==SD_TRACKER_TAGGER || subdet()==SD_TRACKER_RECOIL); // can be replaced with a throw in the the future
+	    SUBDETECTORID_TEST2("TrackerID", SD_TRACKER_TAGGER, SD_TRACKER_RECOIL);
 	}
 
 
@@ -69,5 +69,8 @@ namespace ldmx {
 	static void createInterpreters();
     };
 }
+
+std::ostream& operator<<(std::ostream&, const ldmx::TrackerID&);
+
 
 #endif

@@ -9,18 +9,19 @@
 
 #include <cstdint>
 #include <iostream>
-#include "assert.h" // a temporary solution until Exception is refactored to allow usage from DetDescr
+#include "Framework/Exception.h"
 
 namespace ldmx {
     
     typedef enum SubdetectorIDTypeEnum {
+	SD_NULL             = 0,
 	SD_TRACKER_TAGGER   = 1,
 	SD_TRIGGER_SCINT    = 2,
 	SD_ACTVE_TARGET     = 3,
 	SD_TRACKER_RECOIL   = 4,
 	SD_ECAL             = 5,
 	SD_HCAL             = 6,
-	SD_SCORING_PLANE    = 7, 
+	SD_SIM_SPECIAL      = 7, 
 	EID_TRACKER         = 16,
 	EID_TRIGGER_SCINT   = 17,
 	EID_ECAL            = 18,
@@ -106,10 +107,17 @@ namespace ldmx {
 	/**
 	 * The raw, packed value of the ID.
 	 */
-	RawValue id_;	
+	RawValue id_;
+
     };
-    
+
+
 }
+
+#define SUBDETECTORID_TEST(a,x) if (!null() && !(subdet()==x)) { EXCEPTION_RAISE("DetectorIDMismatch","Attempted to create "+std::string(a)+" from mismatched source "+std::to_string(subdet())); }
+#define SUBDETECTORID_TEST2(a,x,y) if (!null() && !(subdet()==x || subdet()==y)) { EXCEPTION_RAISE("DetectorIDMismatch","Attempted to create "+std::string(a)+" from mismatched source "+std::to_string(subdet())); }
+
+    
 
 std::ostream& operator<<(std::ostream&, const ldmx::DetectorID&);
 
