@@ -66,11 +66,11 @@ namespace ldmx {
             XYCoords getCellCentroidXYPair(EcalID centroidID){
                 return hexReadout_->getCellCenterAbsolute(centroidID);
             }
-            std::vector<EcalID> getInnerRingCellIds(EcalID cellModuleID){
-                return hexReadout_->getNN(cellModuleID);
+            std::vector<EcalID> getInnerRingCellIds(EcalID id){
+                return hexReadout_->getNN(id);
             }
-            std::vector<EcalID> getOuterRingCellIds(EcalID cellModuleID){
-                return hexReadout_->getNNN(cellModuleID);
+            std::vector<EcalID> getOuterRingCellIds(EcalID id){
+                return hexReadout_->getNNN(id);
             }
 
             void clearProcessor();
@@ -82,13 +82,13 @@ namespace ldmx {
 
             /* Function to load up empty vector of hit maps */
             void fillHitMap(const std::vector< EcalHit > &ecalRecHits,
-                    std::vector<std::map<EcalID, float>>& cellMap_);
+                    std::map<EcalID, float>& cellMap_);
 
             /* Function to take loaded hit maps and find isolated hits in them */
             void fillIsolatedHitMap(const std::vector< EcalHit > &ecalRecHits,
                     EcalID globalCentroid,
-                    std::vector<std::map<EcalID, float>>& cellMap_,
-                    std::vector<std::map<EcalID, float>>& cellMapIso_,
+                    std::map<EcalID, float>& cellMap_,
+                    std::map<EcalID, float>& cellMapIso_,
                     bool doTight = false);
 
             std::vector<XYCoords> getTrajectory(std::vector<double> momentum, std::vector<float> position);
@@ -96,8 +96,8 @@ namespace ldmx {
             void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
 
         private:
-            std::vector<std::map<EcalID, float>> cellMap_;
-            std::vector<std::map<EcalID, float>> cellMapTightIso_;
+            std::map<EcalID, float> cellMap_;
+            std::map<EcalID, float> cellMapTightIso_;
 
             std::vector<float> ecalLayerEdepRaw_;
             std::vector<float> ecalLayerEdepReadout_;
