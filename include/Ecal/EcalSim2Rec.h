@@ -24,7 +24,7 @@
 //----------//
 #include "Event/EventDef.h"
 #include "DetDescr/DetectorID.h"
-#include "DetDescr/EcalDetectorID.h"
+#include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
@@ -72,11 +72,9 @@ namespace ldmx {
             } 
             
             inline layer_cell_pair hitToPair(const SimCalorimeterHit &hit) {
-                int detIDraw = hit.getID();
-                detID_.setRawValue(detIDraw);
-                detID_.unpack();
-                int layer = detID_.getFieldValue("layer");
-                int cellid = detID_.getFieldValue("cell");
+		EcalID id(hit.getID());
+                int layer = id.layer();
+                int cellid = id.cell();
                 return (std::make_pair(layer, cellid));
             }
 
@@ -101,7 +99,6 @@ namespace ldmx {
             static const int TOTAL_CELLS{NUM_ECAL_LAYERS*HEX_MODULES_PER_LAYER*CELLS_PER_HEX_MODULE};
 
             std::unique_ptr<TRandom3> noiseInjector_;
-            EcalDetectorID detID_;
             std::unique_ptr<EcalHexReadout> hexReadout_;
             /** Generator of noise hits. */ 
             std::unique_ptr<NoiseGenerator> noiseGenerator_; 

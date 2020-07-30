@@ -153,10 +153,8 @@ namespace ldmx {
             //std::cout << "[ EcalSim2Rec ]: Random module ID: " << moduleID << std::endl;
             int cellID = noiseInjector_->Integer(CELLS_PER_HEX_MODULE); 
             //std::cout << "[ EcalSim2Rec ]: Random cell ID: " << cellID << std::endl;
-            detID_.setFieldValue(1, layerID); 
-            detID_.setFieldValue(2, moduleID); 
-            detID_.setFieldValue(3, cellID); 
-            recHit.setID(detID_.pack()); 
+	    EcalID id(layerID,moduleID,cellID);
+            recHit.setID(id.raw()); 
 
             // Set the calibrated energy of the hit
             recHit.setEnergy(((noiseHit/MIP_SI_RESPONSE)*layerWeights_.at(layerID)+noiseHit)*secondOrderEnergyCorrection_);
