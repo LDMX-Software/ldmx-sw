@@ -142,9 +142,9 @@ namespace ldmx {
                 hit.setAmplitude(cellPEs[id]);
                 hit.setEnergy(depEnergy);
                 hit.setTime(Time[id]);
-                hit.setXpos(Xpos[id]); 
-                hit.setYpos(Ypos[id]); 
-                hit.setZpos(Zpos[id]);
+                hit.setXPos(Xpos[id]); 
+                hit.setYPos(Ypos[id]); 
+                hit.setZPos(Zpos[id]);
                 hit.setModuleID(module);
                 hit.setBarID(id.bar() ); //getFieldValue("bar"));
                 hit.setNoise(false);
@@ -186,9 +186,9 @@ namespace ldmx {
             hit.setAmplitude(noiseHitPE);
             hit.setEnergy(0.);
             hit.setTime(0.);
-            hit.setXpos(0.);
-            hit.setYpos(0.);
-            hit.setZpos(0.);
+            hit.setXPos(0.);
+            hit.setYPos(0.);
+            hit.setZPos(0.);
             hit.setModuleID(module);
             hit.setBarID(noiseID.bar());
             hit.setNoise(true);

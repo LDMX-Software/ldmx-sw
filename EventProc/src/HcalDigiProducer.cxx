@@ -62,9 +62,9 @@ namespace ldmx {
         noiseHit.setPE(total_noise);
         noiseHit.setMinPE(min_noise); 
         noiseHit.setAmplitude(total_noise);
-        noiseHit.setXpos(0.);
-        noiseHit.setYpos(0.);
-        noiseHit.setZpos(0.);
+        noiseHit.setXPos(0.);
+        noiseHit.setYPos(0.);
+        noiseHit.setZPos(0.);
         noiseHit.setTime(-999.);
         noiseHit.setEnergy(total_noise*mev_per_mip_/pe_per_mip_);
         
@@ -248,9 +248,9 @@ namespace ldmx {
                 hit.setAmplitude(hcalLayerPEs[detIDraw]);
                 hit.setEnergy(energy);
                 hit.setTime(hcaldetIDTime[detIDraw]);
-                hit.setXpos(cur_xpos); // quantized and smeared positions
-                hit.setYpos(cur_ypos); // quantized and smeared positions
-                hit.setZpos(cur_zpos);
+                hit.setXPos(cur_xpos); // quantized and smeared positions
+                hit.setYPos(cur_ypos); // quantized and smeared positions
+                hit.setZPos(cur_zpos);
                 hit.setNoise(false);
                 
                 hcalRecHits.push_back( hit );
