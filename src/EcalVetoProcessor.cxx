@@ -283,7 +283,7 @@ namespace ldmx {
             //Layer-wise quantities
 	    EcalID id=hitID(hit);
             ecalLayerEdepRaw_[id.layer()] = ecalLayerEdepRaw_[id.layer()] + hit.getEnergy();
-            if(hit.getLayer() >= 20)
+            if(id.layer() >= 20)
                 ecalBackEnergy_ += hit.getEnergy();
             if (maxCellDep_ < hit.getEnergy())
                 maxCellDep_ = hit.getEnergy();
@@ -293,21 +293,21 @@ namespace ldmx {
                 ecalLayerTime_[id.layer()] += (hit.getEnergy()) * hit.getTime();
                 xMean += getCellCentroidXYPair(id).first * hit.getEnergy();
                 yMean += getCellCentroidXYPair(id).second * hit.getEnergy();
-                avgLayerHit_ += hit.getLayer();
-                wavgLayerHit += hit.getLayer() * hit.getEnergy();
-                if (deepestLayerHit_ < hit.getLayer()) {
-                    deepestLayerHit_ = hit.getLayer();
+                avgLayerHit_ += id.layer();
+                wavgLayerHit += id.layer() * hit.getEnergy();
+                if (deepestLayerHit_ < id.layer()) {
+                    deepestLayerHit_ = id.layer();
                 }
                 XYCoords xy_pair = getCellCentroidXYPair(id);
-                float distance_ele_trajectory = ele_trajectory.size() ? sqrt( pow((xy_pair.first - ele_trajectory[hit.getLayer()].first),2) + pow((xy_pair.second - ele_trajectory[hit.getLayer()].second),2) ) : -1.0;
-                float distance_photon_trajectory = photon_trajectory.size() ? sqrt( pow((xy_pair.first - photon_trajectory[hit.getLayer()].first),2) + pow((xy_pair.second - photon_trajectory[hit.getLayer()].second),2) ) : -1.0;
+                float distance_ele_trajectory = ele_trajectory.size() ? sqrt( pow((xy_pair.first - ele_trajectory[id.layer()].first),2) + pow((xy_pair.second - ele_trajectory[id.layer()].second),2) ) : -1.0;
+                float distance_photon_trajectory = photon_trajectory.size() ? sqrt( pow((xy_pair.first - photon_trajectory[id.layer()].first),2) + pow((xy_pair.second - photon_trajectory[id.layer()].second),2) ) : -1.0;
                 // Decide which region a hit goes into and add to sums
                 for(unsigned int ireg = 0; ireg < nregions; ireg++) {
-                    if(distance_ele_trajectory >= ireg*ele_radii[hit.getLayer()] && distance_ele_trajectory < (ireg+1)*ele_radii[hit.getLayer()])
+                    if(distance_ele_trajectory >= ireg*ele_radii[id.layer()] && distance_ele_trajectory < (ireg+1)*ele_radii[id.layer()])
                         electronContainmentEnergy[ireg] += hit.getEnergy();
-                    if(distance_photon_trajectory >= ireg*photon_radii[hit.getLayer()] && distance_photon_trajectory < (ireg+1)*photon_radii[hit.getLayer()])
+                    if(distance_photon_trajectory >= ireg*photon_radii[id.layer()] && distance_photon_trajectory < (ireg+1)*photon_radii[id.layer()])
                         photonContainmentEnergy[ireg] += hit.getEnergy();
-                    if(distance_ele_trajectory > (ireg+1)*ele_radii[hit.getLayer()] && distance_photon_trajectory > (ireg+1)*photon_radii[hit.getLayer()]) {
+                    if(distance_ele_trajectory > (ireg+1)*ele_radii[id.layer()] && distance_photon_trajectory > (ireg+1)*photon_radii[id.layer()]) {
                         outsideContainmentEnergy[ireg] += hit.getEnergy();
                         outsideContainmentNHits[ireg] += 1;
                         outsideContainmentXmean[ireg] += xy_pair.first*hit.getEnergy();
@@ -351,13 +351,13 @@ namespace ldmx {
             if (hit.getEnergy() > 0) {
                 xStd_ += pow((getCellCentroidXYPair(id).first - xMean), 2) * hit.getEnergy();
                 yStd_ += pow((getCellCentroidXYPair(id).second - yMean), 2) * hit.getEnergy();
-                stdLayerHit_ += pow((hit.getLayer() - wavgLayerHit), 2) * hit.getEnergy();
+                stdLayerHit_ += pow((id.layer() - wavgLayerHit), 2) * hit.getEnergy();
             }
             XYCoords xy_pair = getCellCentroidXYPair(id);
-            float distance_ele_trajectory = ele_trajectory.size() ? sqrt( pow((xy_pair.first - ele_trajectory[hit.getLayer()].first),2) + pow((xy_pair.second - ele_trajectory[hit.getLayer()].second),2) ) : -1.0;
-            float distance_photon_trajectory = photon_trajectory.size() ? sqrt( pow((xy_pair.first - photon_trajectory[hit.getLayer()].first),2) + pow((xy_pair.second - photon_trajectory[hit.getLayer()].second),2) ) : -1.0;
+            float distance_ele_trajectory = ele_trajectory.size() ? sqrt( pow((xy_pair.first - ele_trajectory[id.layer()].first),2) + pow((xy_pair.second - ele_trajectory[id.layer()].second),2) ) : -1.0;
+            float distance_photon_trajectory = photon_trajectory.size() ? sqrt( pow((xy_pair.first - photon_trajectory[id.layer()].first),2) + pow((xy_pair.second - photon_trajectory[id.layer()].second),2) ) : -1.0;
             for(unsigned int ireg = 0; ireg < nregions; ireg++) {
-                if(distance_ele_trajectory > (ireg+1)*ele_radii[hit.getLayer()] && distance_photon_trajectory > (ireg+1)*photon_radii[hit.getLayer()]) {
+                if(distance_ele_trajectory > (ireg+1)*ele_radii[id.layer()] && distance_photon_trajectory > (ireg+1)*photon_radii[id.layer()]) {
                     outsideContainmentXstd[ireg] += pow((xy_pair.first - outsideContainmentXmean[ireg]),2) * hit.getEnergy();
                     outsideContainmentYstd[ireg] += pow((xy_pair.second - outsideContainmentYmean[ireg]),2) * hit.getEnergy();
                 }
