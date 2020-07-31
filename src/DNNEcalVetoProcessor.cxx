@@ -148,10 +148,11 @@ namespace ldmx {
       data_[0].at(coordinate_y_offset_ + idx) = y;
       data_[0].at(coordinate_z_offset_ + idx) = z;
 
+      EcalID id(hit.getID());
       data_[1].at(feature_x_offset_ + idx) = x;
       data_[1].at(feature_y_offset_ + idx) = y;
       data_[1].at(feature_z_offset_ + idx) = z;
-      data_[1].at(feature_layerid_offset_ + idx) = hit.getLayer();
+      data_[1].at(feature_layerid_offset_ + idx) = id.layer();
       data_[1].at(feature_energy_offset_ + idx) = std::log(hit.getEnergy());
 
       ++idx;

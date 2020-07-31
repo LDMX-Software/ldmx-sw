@@ -92,7 +92,8 @@ namespace ldmx {
             //Skip zero energy digis.
             if (hit.getEnergy() == 0) { continue; }
 
-            cf.add( &hit , hexReadout_, layerZPos[hit.getLayer()]);
+            EcalID id(hit.getID());
+            cf.add( &hit , hexReadout_, layerZPos[id.layer()]);
         }
 
         cf.cluster(seedThreshold_, cutoff_);
