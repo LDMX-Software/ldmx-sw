@@ -21,9 +21,12 @@ if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
   message(WARNING "You are not inside a container; you may be working in an untested environment.")
 endif()
 
+# Set the python installation path
+set(PYTHON_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/python/LDMX)
+message(STATUS "Python install directory set to ${PYTHON_INSTALL_PREFIX}")
+
 # Load additional macro commands 
 list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
-message(STATUS ${CMAKE_MODULE_PATH})
 
 # Load the BuildMacros module. If loaded correctly, the variable 
 # 'build_macros_found' will be set to the path of the module.  Otherwise, it

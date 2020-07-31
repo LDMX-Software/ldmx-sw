@@ -13,5 +13,5 @@ setup_geant4_target()
 
 setup_library(name Biasing
               dependencies Geant4::Interface DARK::Framework DARK::SimCore
-              python_install_path ${CMAKE_INSTALL_PREFIX}/python/LDMX
+              python_install_path ${PYTHON_INSTALL_PREFIX}
 )
