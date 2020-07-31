@@ -31,6 +31,9 @@ class EcalDigiProducer(Producer) :
         self.nADCs = 10
         self.iSOI  = 0
 
+        import time
+        self.randomSeed = int(time.time())
+
 class EcalRecProducer(Producer) :
     """Configuration for the EcalRecProducer
 

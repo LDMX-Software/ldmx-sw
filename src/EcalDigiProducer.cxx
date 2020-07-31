@@ -25,11 +25,6 @@ namespace ldmx {
         //  how many hits should be generated for a given number of empty
         //  channels and a minimum readout value (setNoiseThreshold)
         noiseGenerator_ = std::make_unique<NoiseGenerator>();
-
-        //The noise injector is used to place smearing on top
-        //of energy depositions and hit times before doing
-        //the digitization procedure.
-        noiseInjector_ = std::make_unique<TRandom3>(time(nullptr));
     }
 
     EcalDigiProducer::~EcalDigiProducer() { }
@@ -58,7 +53,10 @@ namespace ldmx {
         noiseGenerator_->setPedestal(0); //mean noise amplitude (if using Gaussian Model for the noise) in MeV
         noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in MeV
 
-        noiseInjector_->SetSeed(0);
+        //The noise injector is used to place smearing on top
+        //of energy depositions and hit times before doing
+        //the digitization procedure.
+        noiseInjector_ = std::make_unique<TRandom3>(ps.getParameter<int>("randomSeed"));
 
         pulseFunc_ = TF1(
                 "pulseFunc",
