@@ -82,14 +82,14 @@ namespace ldmx {
             histograms_.fill("id",hit.getBarID() );
       
             totalPE += hit.getPE();  
-            if ( hit.getNoise()>0 ) {
+            if ( hit.isNoise()>0 ) {
                 noiseHitCount++;
                 histograms_.fill("pe_noise",hit.getPE()); 
                 histograms_.fill("id_noise",hit.getBarID() );
             } else {  //x, y, z not set for noise hits 
-                histograms_.fill("x", hit.getX() );
-                histograms_.fill("y", hit.getY() );
-                histograms_.fill("z", hit.getZ() );
+                histograms_.fill("x", hit.getXPos() );
+                histograms_.fill("y", hit.getYPos() );
+                histograms_.fill("z", hit.getZPos() );
             }
 
         }

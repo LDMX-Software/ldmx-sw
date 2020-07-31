@@ -43,7 +43,7 @@ namespace ldmx {
             if (hcalHit.getTime() >= maxTime_) continue;
 
             // If the hit z position is beyond the maximum HCal depth, skip it.
-            if (hcalHit.getZ() > maxDepth_) continue;
+            if (hcalHit.getZPos() > maxDepth_) continue;
 
             // Get the total PE in the bar
             float pe = hcalHit.getPE(); 
@@ -55,7 +55,8 @@ namespace ldmx {
             // If not, don't consider the hit.  Double sided readout is only 
             // being used for the back HCal bars.  For the side HCal, just 
             // use the maximum PE as before.
-            if ( (hcalHit.getSection() == HcalID::BACK) && (hcalHit.getMinPE() < minPE_) ) continue;
+            HcalID id(hcalHit.getID());
+            if ( (id.section() == HcalID::BACK) && (hcalHit.getMinPE() < minPE_) ) continue;
 
             // Find the maximum PE in the list
             if (maxPE < pe) {
