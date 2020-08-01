@@ -18,7 +18,7 @@ endif()
 # If a user is building outside of a Docker or Singularity environment, 
 # warn them. 
 if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
-  message(WARNING "You are not inside a container; you may be working in an untested environment.")
+    message(WARNING "You are not inside a container; you may be working in an untested environment.")
 endif()
 
 # Set the python installation path
@@ -37,8 +37,8 @@ include(BuildMacros RESULT_VARIABLE build_macros_found)
 # at the command line, it's respected.
 set(default_build_type "Release")
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
-  set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
+    message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
+    set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
 endif()
 
 # Add options to allow the following types of builds
@@ -58,9 +58,6 @@ if(NOT BUILD_RECON_ONLY AND NOT BUILD_SIM_ONLY AND NOT BUILD_EVE_ONLY)
     set(BUILD_ALL ON)
     message(STATUS "Building all modules.")
 endif()
-
-# These two modules are the minimum needed to build and run the framework.
-message(STATUS "Build the Framework.")
 
 # This modules contains the event model classes.
 add_subdirectory(Event)
@@ -113,7 +110,6 @@ endif()
 
 # Magnetic field map installation
 option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
-message(STATUS "MagFieldMap installation: ${INSTALL_FIELDMAP}")
 if(INSTALL_FIELDMAP)
   install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/InstallMagFieldMap.cmake")
 endif()
