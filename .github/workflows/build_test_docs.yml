@@ -26,7 +26,8 @@ jobs:
     - name: Configure the build
       run: |
           mkdir build &&
-          docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build cmake -DCMAKE_INSTALL_PREFIX=../install -DBUILD_TESTS=ON ..
+          docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build cmake --version &&
+          docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build cmake -DBUILD_TESTS=ON ..
 
     # build ldmx-sw using the docker environment
     - name: Build and Install
