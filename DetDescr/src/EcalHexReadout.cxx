@@ -83,12 +83,19 @@ namespace ldmx {
         // make hexagonal grid [boundary is rectangle] larger than the module
         double gridMinX = 0., gridMinY = 0.; //start at the origin
         int numXCells=0, numYCells=0;
+
+        //first x-cell is only a half
+        gridMinX -= cellr_;
+        numXCells++;
         while ( gridMinX > -1*moduleR_ ) {
             gridMinX -= 2*cellr_; //decrement x by cell center-to-flat diameter
             numXCells++;
         }
         while ( gridMinY > -1*moduler_ ) {
-            if (numYCells%2==0) gridMinY -= cellR_; //decrement y by cell center-to-corner diameter
+            //decrement y by cell center-to-corner radius
+            //  alternate between a full corner-to-corner diameter
+            //  and a side of a cell (center-to-corner radius)
+            if (numYCells%2==0) gridMinY -= 1*cellR_; 
             else                gridMinY -= 2*cellR_;
             numYCells++;
         }
@@ -113,24 +120,32 @@ namespace ldmx {
         TGraph * poly = 0; // a polygon returned by TH2Poly is a TGraph
         int ecalMapID = 0; // ecalMap cell IDs go from 0 to N-1, not equal to original grid cell ID.
         while( (polyBin = (TH2PolyBin*)next()) ){
+
+            //these bins are coming from the honeycomb
+            //  grid so we assume that they are regular
+            //  hexagons i.e. has 6 vertices
             poly = (TGraph*)polyBin->GetPolygon();
 
             // decide whether to copy polygon to new map.
             // use all vertices, eg in case of cut-off edge polygons.
             int numVerticesInside = 0;
             if(verbose_>2) std::cout << "[buildCellMap] Cell vertices" << std::endl;
-            double vertex_x=0, vertex_y=0;
-            for(unsigned i = 0 ; i < poly->GetN() ; i++){
-                poly->GetPoint(i,vertex_x,vertex_y);
+            double vertex_x[6];
+            double vertex_y[6];
+            bool   isinside[6];
+            for(unsigned i = 0 ; i < 6; i++){
+                poly->GetPoint(i,vertex_x[i],vertex_y[i]);
                 if (verbose_>2) {
                     std::cout << "     vtx # " << i << std::endl;
-                    std::cout << "     vtx x,y " << vertex_x << " " << vertex_y << std::endl;
+                    std::cout << "     vtx x,y " << vertex_x[i] << " " << vertex_y[i] << std::endl;
                 }
-                if ( isInside(vertex_x/moduleR_, vertex_y/moduleR_) ) numVerticesInside++;
+                isinside[i] = isInside(vertex_x[i]/moduleR_, vertex_y[i]/moduleR_);
+                if (isinside[i]) numVerticesInside++;
             }
 
-            bool addPoly = numVerticesInside > 1;
-            if(addPoly){
+            if(numVerticesInside > 1){
+                // Include this cell is more than one of its vertices is inside the module hexagon
+                
                 int id = polyBin->GetBinNumber();
                 double x = (polyBin->GetXMax() + polyBin->GetXMin()) / 2.;
                 double y = (polyBin->GetYMax() + polyBin->GetYMin()) / 2.;
@@ -143,7 +158,86 @@ namespace ldmx {
                     //  because the polygon that was copied over from gridMap is deleted at the end of this function
                     if ( numVerticesInside < 6 ) {
                         //TODO some fanciness with the edge
-                        ecalMap_.AddBin( poly->GetN() , poly->GetX() , poly->GetY() );
+                        //  Extend lines perpendicular to module edge to the module edge
+                        //  Squash any cell area outside module to the module edge
+
+                        // determine which side of hexagon we are straddling
+                        //  based on center of hexagon
+                        double edge_origin_x, edge_origin_y;
+                        double edge_dest_x, edge_dest_y;
+                        if ( x < -moduleR_/2. ) {
+                            edge_origin_x = -1.*moduleR_;
+                            edge_origin_y = 0.;
+                            edge_dest_x = -0.5*moduleR_;
+                            edge_dest_y = moduler_;
+                        } else if ( x > moduleR_/2. ) {
+                            edge_origin_x = moduleR_;
+                            edge_origin_y = 0.;
+                            edge_dest_x = 0.5*moduleR_;
+                            edge_dest_y = moduler_;
+                        } else {
+                            //flat edge at top
+                            edge_origin_x = 0.5*moduleR_;
+                            edge_origin_y = moduler_;
+                            edge_dest_x = -0.5*moduleR_;
+                            edge_dest_y = moduler_;
+                        }
+
+                        // flip to bottom half if below x-axis
+                        if ( y < 0 ) {
+                            edge_dest_y *= -1;
+                            edge_origin_y *= -1;
+                        }
+
+                        // get edge slope vector
+                        double edge_slope_x = edge_dest_x - edge_origin_x;
+                        double edge_slope_y = edge_dest_y - edge_origin_y;
+                        double edge_slope_mag = edge_slope_x*edge_slope_x+edge_slope_y*edge_slope_y;
+
+                        // extend (or cut) lines perpendicular to module edge to the module edge
+                        double actual_x[6], actual_y[6];
+                        for ( int i = 0; i < 6; i++ ) {
+                            if ( not isinside[i] ) {
+                                //project points not inside onto the edge
+                                double projection_factor 
+                                    = ((vertex_x[i]-edge_origin_x)*edge_slope_x
+                                      +(vertex_y[i]-edge_origin_y)*edge_slope_y)
+                                      /edge_slope_mag;
+                                actual_x[i] = projection_factor*edge_slope_x + edge_origin_x;
+                                actual_y[i] = projection_factor*edge_slope_y + edge_origin_y;
+//                            } else if ( 
+//                                    not isinside[(i+1)%6] 
+//                                    and (vertex_x[(i+1)%6]-vertex_x[i])*edge_slope_x 
+//                                    + (vertex_y[(i+1)%6]-vertex_y[i])*edge_slope_y > 1e-3
+//                            ) {
+//                                // if it is inside, only change it if the next point is outside _and_ the line is not perpendicular
+//                                // to the module edge, then we need to extend the previous line to the module edge
+//                                double origin_x = vertex_x[(i-1)%6];
+//                                double origin_y = vertex_y[(i-1)%6];
+//                                double slope_x = vertex_x[i] - origin_x;
+//                                double slope_y = vertex_y[i] - origin_y;
+//                                //assume the previous line is perpendicular to the edge we chose NOT SURE ABOUT THIS
+//                                
+//                                //normalize the slope
+//                                double slope_mag = sqrt( slope_x*slope_x + slope_y*slope_y );
+//                                slope_x /= slope_mag;
+//                                slope_y /= slope_mag;
+//                                //get the "time" parameter
+//                                double t = slope_x*(edge_origin_x - origin_x) 
+//                                         + slope_y*(edge_origin_y - origin_y);
+//
+//                                actual_x[i] = slope_x*t + origin_x;
+//                                actual_y[i] = slope_y*t + origin_y;
+                            } else {
+                                //both this point and the next point are inside
+                                //OR the next point is on a line perpendicular to the edge and has been squashed to the edge
+                                //keep this point as is
+                                actual_x[i] = vertex_x[i];
+                                actual_y[i] = vertex_y[i];
+                            }
+
+                        }
+                        ecalMap_.AddBin( 6 , actual_x, actual_y );
                     } else {
                         //all vertices inside ==> cell fully in the module
                         ecalMap_.AddBin( poly->GetN() , poly->GetX() , poly->GetY() );
