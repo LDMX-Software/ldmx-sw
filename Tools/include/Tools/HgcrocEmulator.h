@@ -146,10 +146,10 @@ namespace ldmx {
         private:
 
             /// Verbosity, not configurable, only helpful in development
-            bool verbose_{true};
+            bool verbose_{false};
 
             /// Put noise in channels, not configurable, only helpful in development
-            bool noise_{false};
+            bool noise_{true};
 
             /// Time interval for chip clock [ns]
             double clockCycle_;
