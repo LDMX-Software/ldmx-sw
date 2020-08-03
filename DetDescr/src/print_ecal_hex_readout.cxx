@@ -19,9 +19,9 @@ int main() {
 
     // These are the v12 parameters
     //  all distances in mm
-    double moduleRadius = 85.0; //same as default
-    int    numCellsWide = 23; //same as default
-    double moduleGap = 1.0;
+    double moduleRadius = 85.0;
+    double numCellRHeight = 35.0; 
+    double moduleGap = 1.5;
     double ecalFrontZ = 220;
     std::vector<double> ecalSensLayersZ = {
          7.850,
@@ -63,7 +63,7 @@ int main() {
     ldmx::EcalHexReadout hexReadout(
             moduleRadius,
             moduleGap,
-            numCellsWide,
+            numCellRHeight,
             ecalSensLayersZ,
             ecalFrontZ
             );
