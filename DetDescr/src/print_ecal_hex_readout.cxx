@@ -20,7 +20,7 @@ int main() {
     // These are the v12 parameters
     //  all distances in mm
     double moduleRadius = 85.0;
-    double numCellRHeight = 35.0; 
+    double numCellRHeight = 35.2; 
     double moduleGap = 1.5;
     double ecalFrontZ = 220;
     std::vector<double> ecalSensLayersZ = {
