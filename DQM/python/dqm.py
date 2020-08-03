@@ -44,8 +44,8 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
                 "Total Reconstructed Energy in ECal [MeV]" , 800 , 0. , 8000. )
         
         self.build2DHistogram( "sim_edep__rec_amplitude" ,
-                "Simulated [MeV]" , 100 , 0. , 50. ,
-                "Reconstructed [MeV]" , 100 , 0. , 50. )
+                "Simulated [MeV]" , 1000 , 0. , 50. ,
+                "Reconstructed [MeV]" , 1000 , 0. , 50. )
 
 
 class HCalDQM(ldmxcfg.Analyzer) :
