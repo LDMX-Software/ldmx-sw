@@ -68,9 +68,11 @@ namespace ldmx {
             //get energy estimate from all digi samples
             double siEnergy(0.);
             
+            /**
             std::cout << "Recon { "
                 << "ID: " << rawID << ", "
                 << "TOA: " << hitTime << "ns } ";
+                */
             if ( sample.tot_progress_ or sample.tot_complete_ ) {
                 //TOT - number of clock ticks that pulse was over threshold
                 //  this is related to the amplitude of the pulse through some convoluted relation using the pulse shape
@@ -83,8 +85,11 @@ namespace ldmx {
                     sample = digi.at( numWholeClocks );
                 }
 
+                std::cout << numWholeClocks << "*1024 + " << sample.tot_ << " -> ";
+
                 //convert the time over threshold into a total energy deposited in the silicon
                 siEnergy = convertTOT( numWholeClocks*1024 + sample.tot_ );
+                std::cout << siEnergy << std::endl;
             } else {
                 //ADC mode of readout
                 //ADC - voltage measurement at a specific time of the pulse
@@ -99,7 +104,7 @@ namespace ldmx {
                 //  p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
                 //These measurements can be used to fit the pulse shape if TOT is not available
                 
-                std::cout << "ADC Mode -> ";
+                //std::cout << "ADC Mode -> ";
                 TH1F voltageMeasurements( "voltageMeasurements" , "voltageMeasurements" ,
                         10.*clockCycle_ , 0. , 10.*clockCycle_ );
 
@@ -123,7 +128,7 @@ namespace ldmx {
                     siEnergy = (maxMeas)*mV_;
                 }
             }
-            std::cout << siEnergy << "MeV" << std::endl;
+            //std::cout << siEnergy << "MeV" << std::endl;
             
             //incorporate layer weights
             int layer = id.layer();

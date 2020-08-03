@@ -70,7 +70,7 @@ namespace ldmx {
         /******************************************************************************************
          * HGCROC Emulation on Simulated Hits
          *****************************************************************************************/
-        std::cout << "Sim Hits" << std::endl;
+        //std::cout << "Sim Hits" << std::endl;
         //get simulated ecal hits from Geant4
         //  the class EcalHitIO in the SimApplication module handles the translation from G4CalorimeterHits to SimCalorimeterHits
         //  this class ensures that only one SimCalorimeterHit is generated per cell, but
@@ -87,7 +87,7 @@ namespace ldmx {
 
             int hitID = simHit.getID();
             filledDetIDs.insert( hitID );
-            std::cout << hitID << " ";
+            //std::cout << hitID << " ";
             std::vector<HgcrocDigiCollection::Sample> digiToAdd;
             if ( hgcroc_->digitize( voltages , times , digiToAdd ) ) {
                 for ( auto& sample : digiToAdd ) sample.rawID_ = hitID;
@@ -99,7 +99,7 @@ namespace ldmx {
          * Noise Simulation on Empty Channels
          *****************************************************************************************/
         if ( noise_ ) {
-            std::cout << "Noise Hits" << std::endl;
+            //std::cout << "Noise Hits" << std::endl;
             //put noise into some empty channels
             int numEmptyChannels = nTotalChannels_ - ecalDigis.getNumDigis(); //minus number of channels with a hit
             EcalID detID;
@@ -120,7 +120,7 @@ namespace ldmx {
                     noiseID = detID.raw();
                 } while ( filledDetIDs.find( noiseID ) != filledDetIDs.end() );
                 filledDetIDs.insert( noiseID );
-                std::cout << noiseID << " -> " << noiseHit + readoutThreshold_ - gain_*pedestal_ << std::endl;
+                //std::cout << noiseID << " -> " << noiseHit + readoutThreshold_ - gain_*pedestal_ << std::endl;
 
                 //get a time for this noise hit
                 times[0]    = noiseInjector_->Uniform( clockCycle_ );
