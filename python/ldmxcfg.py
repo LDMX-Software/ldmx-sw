@@ -468,7 +468,7 @@ class Process:
 
             if isinstance(obj,list) :
                 return [ extract(o) for o in obj ]
-            elif isinstance(obj,(Process,EventProcessor,simcfg.PrimaryGenerator,simcfg.UserAction)) :
+            elif isinstance(obj,(Process,EventProcessor,simcfg.PrimaryGenerator,simcfg.UserAction,ConditionsObjectProvider)) :
                 params = dict()
                 for k in obj.__dict__ :
                     if k not in keys_to_skip :
@@ -507,7 +507,7 @@ class Process:
         if (self.maxEvents>0): msg += "\n Maximum events to process: %d"%(self.maxEvents)
         else: msg += "\n No limit on maximum events to process"
         if (len(self.conditionsObjectProviders)>0):
-            msg += "\n ConditionsObjectProviders:\n";
+            msg += "\n conditionsObjectProviders:\n";
             for cop in self.conditionsObjectProviders:
                 msg+=str(cop)
         msg += "\n Processor sequence:"
