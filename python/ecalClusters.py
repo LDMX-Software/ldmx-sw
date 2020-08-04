@@ -11,7 +11,7 @@ from LDMX.Framework import ldmxcfg
 class EcalClusterProducer(ldmxcfg.Producer) :
     """Configure the clustering"""
 
-    def __init__(self,name) :
+    def __init__(self,name='ecalClusters') :
         super().__init__(name,"ldmx::EcalClusterProducer")
 
         self.cutoff = 10.
@@ -29,5 +29,5 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         # Name of the cluster algo collection to make
         self.algoCollName = "ClusterAlgoResult"
 
-
-ecalClusters = EcalClusterProducer("ecalClusters")
+        from LDMX.DetDescr import EcalHexReadout
+        self.hexReadout = EcalHexReadout.EcalHexReadout()
