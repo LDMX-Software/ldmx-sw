@@ -23,7 +23,7 @@
 #include "Event/EcalCluster.h"
 #include "Event/ClusterAlgoResult.h"
 #include "DetDescr/DetectorID.h"
-#include "DetDescr/EcalDetectorID.h"
+#include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h" 

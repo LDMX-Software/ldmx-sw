@@ -29,7 +29,7 @@
 #include "Event/EcalDigiCollection.h"
 #include "Event/EventConstants.h"
 #include "Event/SimCalorimeterHit.h"
-#include "DetDescr/EcalDetectorID.h"
+#include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"

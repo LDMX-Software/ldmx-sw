@@ -9,7 +9,7 @@
 
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
-#include "DetDescr/EcalDetectorID.h"
+#include "DetDescr/EcalID.h"
 #include "Event/EventDef.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h"
@@ -32,9 +32,7 @@ namespace ldmx {
 
         public:
 
-            typedef std::pair<int, int> LayerCellPair;
-
-            typedef std::pair<int, float> CellEnergyPair;
+      typedef std::pair<EcalID, float> CellEnergyPair;
 
             typedef std::pair<float, float> XYCoords;
 
@@ -59,38 +57,38 @@ namespace ldmx {
              *  Necessary to easily combine cellID with moduleID to get unique ID of
              *  hit in layer. In future: combine celID+moduleID+layerID.
              */
-            bool isInShowerInnerRing(int centroidID, int probeID){
+            bool isInShowerInnerRing(EcalID centroidID, EcalID probeID){
                 return hexReadout_->isNN(centroidID, probeID);
             }
-            bool isInShowerOuterRing(int centroidID, int probeID){
+            bool isInShowerOuterRing(EcalID centroidID, EcalID probeID){
                 return hexReadout_->isNNN(centroidID, probeID);
             }
-            XYCoords getCellCentroidXYPair(int centroidID){
+            XYCoords getCellCentroidXYPair(EcalID centroidID){
                 return hexReadout_->getCellCenterAbsolute(centroidID);
             }
-            std::vector<int> getInnerRingCellIds(int cellModuleID){
-                return hexReadout_->getNN(cellModuleID);
+            std::vector<EcalID> getInnerRingCellIds(EcalID id){
+                return hexReadout_->getNN(id);
             }
-            std::vector<int> getOuterRingCellIds(int cellModuleID){
-                return hexReadout_->getNNN(cellModuleID);
+            std::vector<EcalID> getOuterRingCellIds(EcalID id){
+                return hexReadout_->getNNN(id);
             }
 
             void clearProcessor();
 
-            LayerCellPair hitToPair(const EcalHit &hit);
+            EcalID hitID(const EcalHit &hit) const { return EcalID(hit.getID()); }
 
             /* Function to calculate the energy weighted shower centroid */
-            int GetShowerCentroidIDAndRMS(const std::vector< EcalHit > &ecalRecHits, double & showerRMS);
+            EcalID GetShowerCentroidIDAndRMS(const std::vector< EcalHit > &ecalRecHits, double & showerRMS);
 
             /* Function to load up empty vector of hit maps */
             void fillHitMap(const std::vector< EcalHit > &ecalRecHits,
-                    std::vector<std::map<int, float>>& cellMap_);
+                    std::map<EcalID, float>& cellMap_);
 
             /* Function to take loaded hit maps and find isolated hits in them */
             void fillIsolatedHitMap(const std::vector< EcalHit > &ecalRecHits,
-                    float globalCentroid,
-                    std::vector<std::map<int, float>>& cellMap_,
-                    std::vector<std::map<int, float>>& cellMapIso_,
+                    EcalID globalCentroid,
+                    std::map<EcalID, float>& cellMap_,
+                    std::map<EcalID, float>& cellMapIso_,
                     bool doTight = false);
 
             std::vector<XYCoords> getTrajectory(std::vector<double> momentum, std::vector<float> position);
@@ -98,8 +96,8 @@ namespace ldmx {
             void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
 
         private:
-            std::vector<std::map<int, float>> cellMap_;
-            std::vector<std::map<int, float>> cellMapTightIso_;
+            std::map<EcalID, float> cellMap_;
+            std::map<EcalID, float> cellMapTightIso_;
 
             std::vector<float> ecalLayerEdepRaw_;
             std::vector<float> ecalLayerEdepReadout_;
@@ -127,7 +125,6 @@ namespace ldmx {
 
             double bdtCutVal_{0};
 
-            EcalDetectorID detID_;
             bool verbose_{false};
             bool doesPassVeto_{false};
 
