@@ -11,10 +11,18 @@
 /*   Event   */
 /*~~~~~~~~~~~*/
 #include "Framework/Exception.h"
-#include "Event/EventHeader.h"
+#include <iostream>
+
+namespace ldmx {
+  class ConditionsIOV;
+}
+
+std::ostream& operator<<(std::ostream&, const ldmx::ConditionsIOV& iov);
 
 namespace ldmx {
 
+    class EventHeader;
+  
     /** 
      * @class ConditionsIOV
      *
@@ -45,9 +53,10 @@ namespace ldmx {
 	}
 
 	/** Checks to see if this condition is valid for the given event using information from the header */
-	bool validForEvent(const EventHeader& eh) const {
-	    return (eh.getRun()>firstRun_) && (eh.getRun()<=lastRun_ || lastRun_==-1) && ((eh.isRealData())?(validForData_):(validForMC_));
-	}
+        bool validForEvent(const EventHeader& eh) const;
+
+        /** Checks to see if this IOV overlaps with the given IOV */
+        bool overlaps(const ConditionsIOV& iov) const;
 
 	/** 
 	 * Print the object
@@ -58,8 +67,11 @@ namespace ldmx {
 	 * Print the object
 	 */
 	std::string ToString() const;
-	
-	private:
+
+
+        void stream(std::ostream&) const;
+
+       private:
 	/** First run for which this condition is valid */
 	int firstRun_;
 
@@ -71,7 +83,11 @@ namespace ldmx {
 	
 	/** Is this Condition valid for simulation? */
 	bool validForMC_;
+
+
+    
     };
 }
+
 
 #endif // FRAMEWORK_CONDITIONSIOV_H_
