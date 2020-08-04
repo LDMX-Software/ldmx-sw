@@ -94,6 +94,7 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
 
     EcalDigiProducer digis( "testDigis" , dummyProcess );
     actualParameters.clear();
+    actualParameters[ "randomSeed" ] = 1;
     actualParameters[ "gain" ] = 2000.;
     actualParameters[ "pedestal" ] = 1100.;
     actualParameters[ "noiseIntercept" ] = 700.;
