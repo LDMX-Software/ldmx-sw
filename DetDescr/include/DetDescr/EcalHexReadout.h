@@ -15,6 +15,7 @@
 // LDMX
 #include "Framework/Exception.h"
 #include "DetDescr/EcalID.h"
+#include "Framework/Parameters.h"
 
 // STL
 #include <map>
@@ -24,15 +25,32 @@
 
 namespace ldmx {
 
-    typedef std::pair<double,double> XYCoords;
-    
     /**
      * @class EcalHexReadout
      * @brief Implementation of ECal hexagonal cell readout
      *
-     * @note
-     * This class defines an integer ID for each cell in a module, convertible with 2D position.
-     * 
+     * This is the object that does the extra geometry *not* implemented in the gdml.
+     * In order to save time during the simulation, the individual cells in the readout
+     * hexagons are not constructed individually in Geant4. This means we have to have
+     * a translation between position and cell ID which is accomplished by this class.
+     *
+     * ORIENTATION ASSUMPTIONS:
+     *   modules are oriented flat side down. cells are oriented corner side down.
+     * SOME GEOMETRY:
+     *   hexagons have two radii:
+     *     r (half of flat-to-flat width) and R (half of corner-to-corner width).
+     *     r = (sqrt(3)/2)R and s = R, where s is the length of an edge.
+     *   for seven ecal modules oriented flat-side-down, maximum x and y extents are:
+     *     deltaY = 6r' + 2g = 3sqrt(3)R' + 2g
+     *     deltaX = 4R' + s' + 2g/cos(30 deg) = 5R' + 4g/sqrt(3)
+     *     where g is uniform gap width between modules, and primed variables correspond to modules.
+     * THIS GRID:
+     *   column-to-column distance in a grid such as ours is 2r = sqrt(3)R.
+     *   row-to-row distance is 1.5R (easy to observe that twice that distance = 3R)
+     *
+     * The cell radius is calculated from the total number of center-to-corner cell radii
+     * that span the module height. This count can have fractional counts to account
+     * for the fractions of cell radii at the module edges.
      */
     class EcalHexReadout {
     
@@ -71,12 +89,10 @@ namespace ldmx {
 
             /**
              * Class constructor.
-             * @param moduleMinR The center-to-flat radius of an ECal module [mm]. See comments in src.
-             * @param gap air gap between edges of adjacent ECal modules [mm]
-             * @param nCellRHeight Total cell radius count across height of module
+             *
+             * @param ps Parameters to configure the EcalHexReadout
              */
-            EcalHexReadout(double moduleMinR, double gap, unsigned nCellRHeight,
-                    const std::vector<double> &layerZPositions, double ecalFrontZ);
+            EcalHexReadout(const Parameters &ps);
 
             /**
              * Class destructor.
@@ -98,7 +114,7 @@ namespace ldmx {
                 int moduleID = tmpID.getFieldValue( "module_position" );
                 int cellID   = tmpID.getCellID();
 
-                XYCoords xy = this->getCellCenterAbsolute( this->combineID( cellID , moduleID ) );
+                std::pair<double,double> xy = this->getCellCenterAbsolute( this->combineID( cellID , moduleID ) );
                 x = xy.first;
                 y = xy.second;
                 z = this->getZPosition( layerID );
@@ -130,7 +146,7 @@ namespace ldmx {
             /**
              * Get a module center position relative to the ecal center [mm]
              */
-            XYCoords getModuleCenter(int moduleID) const {
+            std::pair<double,double> getModuleCenter(int moduleID) const {
                 return modulePositionMap_.at(moduleID);
             }
 
@@ -189,7 +205,7 @@ namespace ldmx {
              * @param cellID The cell ID.
              * @return The XY position of the center of the cell. Error is exception.
              */
-            XYCoords getCellCenterRelative(int cellID) const {
+            std::pair<double,double> getCellCenterRelative(int cellID) const {
                 // this map search is probably just as fine as the TList search for the cell in ecalMap.
                 //   wonder why TH2Poly->GetBin(ID) doesn't exist. plus the map is useful by itself.
                 auto search = cellPositionMap_.find(cellID);
@@ -204,7 +220,7 @@ namespace ldmx {
              * @param cellModuleID The combined cellModuleID.
              * @return The XY position of the center of the cell. Error is exception.
              */
-            XYCoords getCellCenterAbsolute(int cellModuleID) const {
+            std::pair<double,double> getCellCenterAbsolute(int cellModuleID) const {
                 return cellModulePositionMap_.at(cellModuleID);
             }
 
@@ -296,76 +312,31 @@ namespace ldmx {
         return NNMap_.at(EcalID(0,cellModuleID.module(),cellModuleID.cell()));
     }
 
-    /**
-     * @param Return NNN IDs, which are cellModuleIDs. Normally twelve. Return by copy.
-     */
-    std::vector<EcalID> getNNN(EcalID cellModuleID) const {
-        return NNNMap_.at(EcalID(0,cellModuleID.module(),cellModuleID.cell()));
-    }
+            /**
+             * Distance to module edge, and whether cell is on edge of module.
+             * Use getNN()/getNNN() + isEdgeCell() to expand functionality.
+             */
+            double distanceToEdge(int cellModuleID) const;
 
-    /**
-     * @param Is probeID in the NN (doesn't include centerID) list of centerID.
-     */
-    bool isNN(EcalID centerID, EcalID probeID) const {
-        EcalID flatCenter(0,centerID.module(),centerID.cell());
-        EcalID flatProbe(0,probeID.module(),probeID.cell());
-        for (auto ID: getNN(flatCenter)) {
-        if (ID == flatProbe) return true;
-        }
-        return false;
-    }
+            /**
+             * Check if input cell is on the edge of a module.
+             */
+            bool isEdgeCell(int cellModuleID) const {
+                return (distanceToEdge(cellModuleID) < cellR_);
+            }
 
-    /**
-     * @param Is probeID in the NNN list (doesn't include NN) of centerID
-     */
-    bool isNNN(EcalID centerID, EcalID probeID) const {
-        EcalID flatCenter(0,centerID.module(),centerID.cell());
-        EcalID flatProbe(0,probeID.module(),probeID.cell());
-        for (auto ID: getNNN(flatCenter)) {
-        if (ID == flatProbe) return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Distance to module edge, and whether cell is on edge of module.
-     * Use getNN()/getNNN() + isEdgeCell() to expand functionality.
-     */
-    double distanceToEdge(EcalID id) const;
-    bool isEdgeCell(EcalID cellModuleID) const {
-        return (distanceToEdge(cellModuleID) < cellR_);
-    }
-    
-    /**
-     * Return entire cellID - cell center position map with read access
-     */
-    const std::map<int, XYCoords>& getCellPositionMap() const { return cellPositionMap_; }
+            /**
+             * Determines if point (x,y), already normed to max hexagon radius, lies
+             * within a hexagon. Corners are (1,0) and (0.5,sqrt(3)/2). Uses "<", not "<=".
+             */
+            bool isInside(double normX, double normY) const;
 
-    /**
-     * Return entire moduleID - module center position map with read access
-     */
-    const std::map<int, XYCoords>& getModulePositionMap() const { return modulePositionMap_; }
-
-    /**
-     * Return entire cellModuleID - cell center position map with read access
-     */
-    const std::map<EcalID, XYCoords>& getCellModulePositionMap() const { return cellModulePositionMap_; }
-
-    /**
-     * Returns cell min and max radii
-     */
-    std::vector<double> getCellMinMaxRadii() const { return {cellr_,cellR_}; }
-    
-    /**
-     * Returns module min and max radii
-     */
-    std::vector<double> getModuleMinMaxRadii() const { return {moduler_,moduleR_}; }
-
-    /**
-     * Stand-alone. Determines if point (x,y), already normed to max hexagon radius, lies
-     * within a hexagon. Corners are (1,0) and (0.5,sqrt(3)/2). Uses "<", not "<=".
-     */
-    bool isInside(double normX, double normY) const;
+            /**
+             * Get a const reference to the cell center position map.
+             */
+            const std::map<int,std::pair<double,double>>& getCellPositionMap() {
+                return cellPositionMap_;
+            }               
 
             /**
              * Get a reference to the TH2Poly used for Cell IDs.
@@ -386,13 +357,14 @@ namespace ldmx {
              * Sets modulePositionMap_ using the module IDs for keys and the centers of the module
              * hexagons for values.
              *
-             * The module IDs are set in the ecal.gdml file and are
+             * The module IDs are set in the ecal.gdml file and are replicated here.
              *  - 0 for center module
              *  - 1 on top (12 o'clock)
              *  - clockwise till 6 at 11 o'clock
              *
-             * @param[in] gap separation between module flat-sides
-             * @param[in] moduler center-to-flat module radius
+             * @param[in] gap_ separation between module flat-sides
+             * @param[in] moduler_ center-to-flat module radius
+             * @param[out] modulePositionMap_ map of module IDs to module centers relative to ecal
              */
             void buildModuleMap();
 
@@ -406,29 +378,50 @@ namespace ldmx {
              *
              * ## Strategy
              * Use ROOT's TH2Poly::HoneyComb method to build a large hexagonal grid,
-             * then copy the polygons from it which overlap with the module.
+             * then copy the polygons from it which overlap with the module with
+             * more than one vertex.
              *
              * A vertex between three cells is placed at the origin,
              * then the bottom left corner of the honeycomb and the number of x and y
              * cells across the honeycomb is calculated by continuing to decrement
              * the grid x/y point until the module center-to-flat distance is reached.
              *
-             * @param cellr_ the center-to-flat cell radius 
-             * @param cellR_ the center-to-corner cell radius
-             * @param moduler_ the center-to-flat module radius
+             * The hexagons that only have one vertex outside the module hexagon leave
+             * a small space un-covered by the tiling, so the vertices adjacent to the external
+             * vertex are projected onto the module edge.
+             *
+             * @param[in] cellr_ the center-to-flat cell radius 
+             * @param[in] cellR_ the center-to-corner cell radius
+             * @param[in] moduler_ the center-to-flat module radius
+             * @param[in] moduleR_ the center-to-flat module radius
+             * @param[out] ecalMap_ TH2Poly with local cell ID to local cell position mapping
+             * @param[out] cellPostionMap_ map of local cell ID to cell center position relative to module
              */
             void buildCellMap();
 
             /**
-             * Constructs the positions of all the cells in a layer (cellModuleID) relative to the ecal center
+             * Constructs the positions of all the cells in a layer relative to the ecal center.
              *
              * This uses the modulePostionMap_ and cellPositionMap_ to calculate the center
              * of all cells relative to the ecal center.
+             *
+             * @param[in] modulePositionMap_ map of module IDs to module centers relative to ecal
+             * @param[in] cellPositionMap_ map of cell IDs to cell centers relative to module
+             * @param[out]
              */
             void buildCellModuleMap();
 
             /**
              * Construts NNMap and NNNMap
+             *
+             * Since this only occurs once during processing, we can be wasteful.
+             * We do a nested loop over the entire cellular position map and calculate
+             * neighbors by seeing which cells are within multiples of the cellular radius
+             * of each other.
+             *
+             * @param[in] cellModulePostionMap_ map of cells to cell centers relative to ecal
+             * @param[out] NNMap_ map of cell IDs to list of cell IDs that are its nearest neighbors
+             * @param[out] NNNMap_ map of cell IDs to list of cell IDs that are its next-to-nearest neighbors
              */
             void buildNeighborMaps();
 
@@ -443,38 +436,29 @@ namespace ldmx {
              */
             void buildTriggerGroup();
 
+        private:
+
             /// verbosity, not configurable but helpful if developing
             int verbose_{2};
-
-            /** 
-             * MUST SYNC MINR AND GAP WITH ECAL.GDML. May change cell count here for eg granularity studies.
-             * maxR = center-to-corner module hexagon radius, i.e. currently "Hex_radius" in gdml
-             * nCellsWide = count of cells in neatly-ordered horizontal center row
-             * Cell count calculation:
-             *   N = total cell count (in each module)
-             *   c = nCellsWide as defined below
-             *   Define n through c = 2*n+1
-             *   Then N = 1 + 3n(n+1).
-             *   E.g. c = 23 gives N = 397.
-             */
 
             /// Gap between module flat sides [mm]
             double gap_;
 
-            /// Center-to-Corner Radius of cell hexagon [mm]
+            /// Center-to-Flat Radius of cell hexagon [mm]
             double cellr_{0};
 
-            /// Center-to-Corner Radius of module hexagon [mm]
+            /// Center-to-Flat Radius of module hexagon [mm]
             double moduler_{0};
 
-            /// Center-to-Flat-Side Radius of cell hexagon [mm]
+            /// Center-to-Corner Radius of cell hexagon [mm]
             double cellR_{0};
 
-            /// Center-to-Flat-Side Radius of module hexagon [mm]
+            /// Center-to-Corner Radius of module hexagon [mm]
             double moduleR_{0};
 
             /**
-             * Number of cell center-to-corner radii from the bottom to the top of the module
+             * Number of cell center-to-corner radii (one side of the cell) 
+             * from the bottom to the top of the module
              *
              * Could be fractional depending on how many fractions of a radii are spanning
              * between the center of the top/bottom cell row and the edge of the module
@@ -488,13 +472,13 @@ namespace ldmx {
             std::vector<double> layerZPositions_;
 
             /// Postion of module centers relative to world geometry (uses module ID as key)
-            std::map<int, XYCoords> modulePositionMap_;
+            std::map<int, std::pair<double,double>> modulePositionMap_;
 
             /// Position of cell centers relative to module (uses cell ID as key)
-            std::map<int, XYCoords> cellPositionMap_;
+            std::map<int, std::pair<double,double>> cellPositionMap_;
 
             /// Position of cell centers relative to world geometry (uses combined cell and module ID as key)
-            std::map<int, XYCoords> cellModulePositionMap_;
+            std::map<int, std::pair<double,double>> cellModulePositionMap_;
 
             /// Map of cell ID to neighboring cells
             std::map<int, std::vector<int> > NNMap_;
