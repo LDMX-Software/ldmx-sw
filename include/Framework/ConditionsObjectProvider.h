@@ -11,12 +11,10 @@
 /*   Event   */
 /*~~~~~~~~~~~*/
 #include "Framework/Exception.h"
-#include "Event/RunHeader.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Event.h"
 #include "Framework/Parameters.h" 
 #include "Framework/Logger.h"
 #include "Framework/ConditionsIOV.h"
@@ -31,6 +29,7 @@ namespace ldmx {
 
     class Process;
     class ConditionsObjectProvider;
+    class EventHeader;
 
     /** Typedef for EventProcessorFactory use. */
     typedef ConditionsObjectProvider* ConditionsObjectProviderMaker(const std::string& name, const std::string& tagname, const Parameters& params, Process& process);
@@ -129,6 +128,7 @@ namespace ldmx {
 
 	    /** The tag name for the ConditionsObjectProvider. */
             std::string tagname_;
+
 
     };
 
