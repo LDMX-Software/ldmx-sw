@@ -17,10 +17,6 @@ namespace ldmx {
 
     EcalSD::EcalSD(G4String name, G4String theCollectionName, int subDetID) :
             CalorimeterSD(name, theCollectionName) {
-
-        detID_ = new EcalDetectorID(); 
-        detID_->setFieldValue("subdet", subDetID);
-
     }
 
     EcalSD::~EcalSD() {
