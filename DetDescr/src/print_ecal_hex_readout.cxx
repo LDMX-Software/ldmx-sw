@@ -1,17 +1,20 @@
 
 #include "DetDescr/EcalHexReadout.h"
+#include "Framework/Parameters.h"
 
 #include "TCanvas.h" //for dumping map to file
 #include "TStyle.h" //for no stats box
 #include "TLine.h" //for module hex border
 
 #include <math.h>
+#include <string>
+#include <any>
+#include <map>
 
 /**
  * @app ldmx-print-ecal-hex-readout
  *
- * Prints the ecal cell ID <-> position map to
- * a pdf.
+ * Prints the ecal cell ID <-> position map to a pdf.
  */
 int main() {
 
@@ -19,54 +22,24 @@ int main() {
 
     // These are the v12 parameters
     //  all distances in mm
-    double moduleRadius = 85.0;
-    double numCellRHeight = 35.2; 
-    double moduleGap = 1.5;
-    double ecalFrontZ = 220;
     std::vector<double> ecalSensLayersZ = {
-         7.850,
-        13.300,
-        26.400,
-        33.500,
-        47.950,
-        56.550,
-        72.250,
-        81.350,
-        97.050,
-        106.150,
-        121.850,
-        130.950,
-        146.650,
-        155.750,
-        171.450,
-        180.550,
-        196.250,
-        205.350,
-        221.050,
-        230.150,
-        245.850,
-        254.950,
-        270.650,
-        279.750,
-        298.950,
-        311.550,
-        330.750,
-        343.350,
-        362.550,
-        375.150,
-        394.350,
-        406.950,
-        426.150,
-        438.750
+         7.850, 13.300, 26.400, 33.500, 47.950, 56.550, 72.250, 81.350, 97.050,
+        106.150, 121.850, 130.950, 146.650, 155.750, 171.450, 180.550, 196.250,
+        205.350, 221.050, 230.150, 245.850, 254.950, 270.650, 279.750, 298.950,
+        311.550, 330.750, 343.350, 362.550, 375.150, 394.350, 406.950, 426.150, 438.750
     };
 
-    ldmx::EcalHexReadout hexReadout(
-            moduleRadius,
-            moduleGap,
-            numCellRHeight,
-            ecalSensLayersZ,
-            ecalFrontZ
-            );
+    std::map<std::string,std::any> ps;
+    ps["layerZPositions"] = ecalSensLayersZ;
+    ps["ecalFrontZ"]      = 220.;
+    ps["moduleMinR"]      = 85.0;
+    ps["gap"]             = 1.0;
+    ps["nCellRHeight"]    = 35.3;
+    ps["verbose"]         = 2;
+    ldmx::Parameters params;
+    params.setParameters(ps);
+
+    ldmx::EcalHexReadout hexReadout(params);
 
     auto polyMap = hexReadout.getCellPolyMap();
 
@@ -78,7 +51,8 @@ int main() {
     TCanvas *c = new TCanvas( "c" , "c" , 900 , 800 ); //make square canvas
     c->SetMargin( 0.1 , 0.1 , 0.1 , 0.1 );
     gStyle->SetOptStat(0); //no stat box
-    polyMap->SetTitle( "Local Cell ID to Local Cell Position Map;X Position Relative to Module [mm];Y Position Relative to Module [mm]" );
+    polyMap->SetTitle( 
+            "Local Cell ID to Local Cell Position Map;X Position Relative to Module [mm];Y Position Relative to Module [mm]" );
     polyMap->GetXaxis()->SetTickLength(0.);
     polyMap->GetYaxis()->SetTickLength(0.);
     polyMap->Draw( "TEXT" ); //print with bin context labeled as text
@@ -94,7 +68,7 @@ int main() {
         std::make_pair<double,double>(+1.*hexCornerRadius , 0.)
     };
     TLine moduleHexBorder;
-    moduleHexBorder.SetLineColor( kRed );
+    moduleHexBorder.SetLineColorAlpha( kRed , 0.5 );
     moduleHexBorder.SetLineWidth( 2 );
     for ( int i = 1; i < hexCorners.size(); i++ ) {
         moduleHexBorder.DrawLine(
