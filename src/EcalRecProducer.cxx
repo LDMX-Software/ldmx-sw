@@ -94,11 +94,11 @@ namespace ldmx {
             //Right now, hard-coded to only use one sample in EcalDigiProducer
             //TODO: expand to multiple samples per digi
             EcalDigiSample sample = (ecalDigis.getDigi( iDigi )).at(0);
-            int rawID = sample.rawID_;
+            EcalID id(sample.rawID_);
             
             //ID to real space position
             double x,y,z;
-            ecalHexReadout_->getCellAbsolutePosition( rawID , x , y , z );
+            ecalHexReadout_->getCellAbsolutePosition( id , x , y , z );
             
             //get energy and time estimate from digi information
             double siEnergy, hitTime;
@@ -128,15 +128,13 @@ namespace ldmx {
             //printf( "%6d Clocks and %6d tot --> %6.2f MeV\n" , sample.adc_t_ , sample.tot_ , siEnergy );
             
             //incorporate layer weights
-            detID_.setRawValue( rawID );
-            detID_.unpack();
-            int layer = detID_.getLayerID();
+            int layer = id.layer();
             double recHitEnergy = 
                 ( (siEnergy / MIP_SI_RESPONSE)*layerWeights_.at(layer)+siEnergy )*secondOrderEnergyCorrection_;
 
             //copy over information to rec hit structure in new collection
             EcalHit recHit;
-            recHit.setID( rawID );
+            recHit.setID( id.raw() );
             recHit.setXPos( x );
             recHit.setYPos( y );
             recHit.setZPos( z );

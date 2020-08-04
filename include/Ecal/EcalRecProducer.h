@@ -25,7 +25,7 @@
 //----------//
 #include "Event/EventDef.h"
 #include "DetDescr/DetectorID.h"
-#include "DetDescr/EcalDetectorID.h"
+#include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
@@ -111,12 +111,6 @@ namespace ldmx {
              * of a calibration number.
              */
             double secondOrderEnergyCorrection_;
-
-            /** 
-             * Helper Instance of EcalDetectorID:
-             * used to translate the raw ID to layer, module, cell IDs
-             */
-            EcalDetectorID detID_;
 
             /**
              * Helper Instance of EcalHexReadout:
