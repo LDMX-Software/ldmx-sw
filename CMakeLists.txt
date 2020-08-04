@@ -1,5 +1,5 @@
 # declare Conditions module
 module(
   NAME Conditions
-  DEPENDENCIES Framework DetDescr
+  DEPENDENCIES Framework DetDescr 
 )

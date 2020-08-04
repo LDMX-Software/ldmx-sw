@@ -11,7 +11,7 @@ namespace ldmx {
 	    DetectorIDInterpreter did(id);
 
 	    for (auto field : did.getFieldList()) {
-		s << ",\"" << field->getFieldName() << '"';
+		s << ",id:\"" << field->getFieldName() << '"';
 	    }
 	}
 
@@ -49,7 +49,15 @@ namespace ldmx {
 	void SimpleTableStreamerCSV::store(const DoubleTableCondition& t, std::ostream& s, bool expandIds) {
 	    storeT<DoubleTableCondition,double>(t,s,expandIds);
 	}
-      
+
+	static int convert(const std::string& s, int dummy) {
+	    return strtol(s.c_str(),0,0);
+	}
+
+	static double convert(const std::string& s, double dummy) {
+	    return atof(s.c_str());
+	}
+	
 	static std::vector<std::string> splitCSV(const std::string& s) {
 	    std::vector<std::string> rv;
 	    std::string field;
@@ -142,8 +150,9 @@ namespace ldmx {
 		unsigned int id(0);
 		std::vector<V> values(table_to_csv.size(),0);
 		if (iDetID>=0) id=strtoul(split[iDetID].c_str(),0,0);
+		V dummy(0);
 		for (auto icopy : table_to_csv) {
-		    values[icopy.first]=strtoul(split[icopy.second].c_str(),0,0);		   
+		    values[icopy.first]=convert(split[icopy.second],dummy);		   
 		}
 		if (id!=0) {
 		    table.add(id,values);
@@ -152,8 +161,12 @@ namespace ldmx {
 	}
 	
 	void SimpleTableStreamerCSV::load(IntegerTableCondition& table, std::istream& is) {
-											 loadT<IntegerTableCondition,int>(table,is);
-											 }
+	    loadT<IntegerTableCondition,int>(table,is);
+	}
+
+	void SimpleTableStreamerCSV::load(DoubleTableCondition& table, std::istream& is) {
+	    loadT<DoubleTableCondition,double>(table,is);
+	}
     }  
 }
 

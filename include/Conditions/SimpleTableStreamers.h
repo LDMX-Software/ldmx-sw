@@ -32,8 +32,8 @@ namespace ldmx {
 	     * The first row of the table must be the column headers.
 	     * If the DetID column is not present or zero, the loader will attempt to use the "subdetector" column to determine which other columns should be used to construct a detector id using the interpreter.
 	     */
-	    static void load (IntegerTableCondition&, std::istream&);
-	    static void load (DoubleTableCondition&, std::istream&);
+	    static void load(IntegerTableCondition&, std::istream&);
+	    static void load(DoubleTableCondition&, std::istream&);
 	};
     }
 }
