@@ -22,15 +22,15 @@ namespace ldmx {
   Process::Process(const Parameters& configuration) : conditions_{*this} {
 
         passname_      = configuration.getParameter<std::string>("passName");
-        histoFilename_ = configuration.getParameter<std::string>("histogramFile"); 
-        logFileName_   = configuration.getParameter<std::string>("logFileName");
+        histoFilename_ = configuration.getParameter<std::string>("histogramFile",""); 
+        logFileName_   = configuration.getParameter<std::string>("logFileName","");
 
-        maxTries_           = configuration.getParameter<int>("maxTriesPerEvent");
-        eventLimit_         = configuration.getParameter<int>("maxEvents");
-        logFrequency_       = configuration.getParameter<int>("logFrequency"); 
-        compressionSetting_ = configuration.getParameter<int>("compressionSetting");
-        termLevelInt_       = configuration.getParameter<int>("termLogLevel");
-        fileLevelInt_       = configuration.getParameter<int>("fileLogLevel");
+        maxTries_           = configuration.getParameter<int>("maxTriesPerEvent",1);
+        eventLimit_         = configuration.getParameter<int>("maxEvents",-1);
+        logFrequency_       = configuration.getParameter<int>("logFrequency",-1); 
+        compressionSetting_ = configuration.getParameter<int>("compressionSetting",9);
+        termLevelInt_       = configuration.getParameter<int>("termLogLevel",2); 
+        fileLevelInt_       = configuration.getParameter<int>("fileLogLevel",0); 
 
         inputFiles_    = configuration.getParameter<std::vector<std::string>>("inputFiles" ,{});
         outputFiles_   = configuration.getParameter<std::vector<std::string>>("outputFiles",{});
@@ -38,7 +38,7 @@ namespace ldmx {
 
 	eventHeader_   = 0;
 
-        auto run{configuration.getParameter<int>("run")};
+        auto run{configuration.getParameter<int>("run",-1)};
         if ( run > 0 ) runForGeneration_ = run;
 
         auto libs{configuration.getParameter<std::vector<std::string>>("libraries",{})};
@@ -47,7 +47,7 @@ namespace ldmx {
                 ); 
 
         m_storageController.setDefaultKeep(
-                configuration.getParameter<bool>("skimDefaultIsKeep")
+					   configuration.getParameter<bool>("skimDefaultIsKeep",true)
                 );
         auto skimRules{configuration.getParameter<std::vector<std::string>>("skimRules",{})};
         for (size_t i=0; i<skimRules.size(); i+=2) {
@@ -55,7 +55,7 @@ namespace ldmx {
         }
 
         auto sequence{configuration.getParameter<std::vector<Parameters>>("sequence",{})};
-        if ( sequence.empty() ) {
+        if ( sequence.empty() && configuration.getParameter<bool>("testingMode",false)) {	  
             EXCEPTION_RAISE(
                     "NoSeq",
                     "No sequence has been defined. What should I be doing?\nUse p.sequence to tell me what processors to run."
@@ -82,6 +82,7 @@ namespace ldmx {
 
 	auto conditionsObjectProviders{configuration.getParameter<std::vector<Parameters> >("conditionsObjectProviders",{})};
 	for (auto cop : conditionsObjectProviders) {
+	  
             auto className{cop.getParameter<std::string>("className")};
             auto instanceName{cop.getParameter<std::string>("instanceName")};
 	    auto tagName{cop.getParameter<std::string>("tagName")};
