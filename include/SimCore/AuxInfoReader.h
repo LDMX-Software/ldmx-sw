@@ -12,6 +12,7 @@
 
 // LDMX
 #include "DetDescr/DetectorHeader.h"
+#include "Framework/Parameters.h"
 
 namespace ldmx {
 
@@ -33,8 +34,9 @@ namespace ldmx {
             /**
              * Class constructor.
              * @param parser The GDML parser.
+             * @param ps configuration parameters
              */
-            AuxInfoReader(G4GDMLParser* parser);
+            AuxInfoReader(G4GDMLParser* parser, Parameters ps);
 
             /**
              * Class destructor.
@@ -112,6 +114,9 @@ namespace ldmx {
              * Detector header with name and version.
              */
             ldmx::DetectorHeader* detectorHeader_ {nullptr};
+
+            /// Configuration parameters
+            Parameters parameters_;
     };
 
 }

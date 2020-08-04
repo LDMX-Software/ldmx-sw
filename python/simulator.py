@@ -31,6 +31,8 @@ class simulator(Producer):
         Full path to detector description gdml (suggested to use setDetector)
     validate_detector : bool, optional
         Should we have Geant4 validate that the gdml is correctly formatted?
+    ecalHexReadout : EcalHexReadout
+        Configuration for how to use EcalHexReadout class
     description : str
         Describe this run in a human-readable way
     scoringPlanes : str, optional
@@ -94,6 +96,8 @@ class simulator(Producer):
 
         #######################################################################
         # Optional Parameters (with helpful defaults)
+        from LDMX.DetDescr import EcalHexReadout
+        self.ecalHexReadout = EcalHexReadout.EcalHexReadout()
         self.scoringPlanes = ''
         self.randomSeeds = [ ] 
         self.beamSpotSmear = [ ]

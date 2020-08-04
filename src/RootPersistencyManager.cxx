@@ -44,8 +44,7 @@ namespace ldmx {
         // Set the parameters, used laster when printing run header
         parameters_ = parameters;
         
-        ecalHitIO_.setEnableHitContribs(parameters.getParameter< bool >("enableHitContribs")); 
-        ecalHitIO_.setCompressHitContribs(parameters.getParameter< bool >("compressHitContribs"));
+        ecalHitIO_.configure( parameters_ );
 
         run_ = runNumber;
     }
