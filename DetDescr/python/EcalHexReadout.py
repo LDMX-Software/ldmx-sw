@@ -27,5 +27,13 @@ class EcalHexReadout() :
                       230.150, 245.850, 254.950, 270.650, 279.750, 298.950, 311.550, 330.750, 343.350,
                       362.550, 375.150, 394.350, 406.950, 426.150, 438.750 
                       ]
-        self.ecalFrontZ = 220.0
+        self.ecalFrontZ = 240.5
         self.verbose = 0
+
+    def __str__(self) :
+        """Stringify this configuration class"""
+
+        s = 'EcalHexReadout { Module Gap: %f mm, Module Radius: %f mm, N Cell Sides Spanning Height: %f }' % ( 
+                self.gap , self.moduleMinR , self.nCellRHeight )
+        return s
+
