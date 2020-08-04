@@ -1,9 +1,11 @@
 
 #include "SimCore/ParallelWorld.h"
 
+#include "Framework/Parameters.h"
+
 ldmx::ParallelWorld::ParallelWorld(G4GDMLParser* parser, G4String worldName) 
     : G4VUserParallelWorld(worldName), parser_(parser), 
-      auxInfoReader_(new AuxInfoReader(parser)) {
+      auxInfoReader_(new AuxInfoReader(parser,Parameters())) {
 }
 
 ldmx::ParallelWorld::~ParallelWorld() {

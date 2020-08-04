@@ -41,6 +41,14 @@ namespace ldmx {
             virtual ~EcalSD();
 
             /**
+             * Configure this sensitive detector using the passed parameters
+             */
+            void configure(const Parameters& ps) {
+                auto hexReadout{ps.getParameter<Parameters>("ecalHexReadout")};
+                hitMap_ = std::make_unique<EcalHexReadout>(hexReadout);
+            }
+
+            /**
              * Process steps to create hits.
              * @param aStep The step information.
              * @param ROhist The readout history.
