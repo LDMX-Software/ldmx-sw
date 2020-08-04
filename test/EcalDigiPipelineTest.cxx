@@ -44,6 +44,7 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
     Parameters wrapperClass;
     actualParameters[ "instanceName" ] = std::string("DummyEcalDigisWillNotRun");
     actualParameters[ "className" ] = std::string("ldmx::EcalDigiProducer");
+    actualParameters[ "randomSeed" ] = 1;
     actualParameters[ "gain" ] = 2000.;
     actualParameters[ "pedestal" ] = 1100.;
     actualParameters[ "noiseIntercept" ] = 700.;
