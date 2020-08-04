@@ -11,44 +11,32 @@
 
 namespace ldmx {
 
-    EcalHexReadout::EcalHexReadout(double moduleMinR, double gap, unsigned nCellRHeight,
-            const std::vector<double> &layerZPositions, double ecalFrontZ) 
-        : layerZPositions_(layerZPositions), ecalFrontZ_(ecalFrontZ) {
+    EcalHexReadout::EcalHexReadout(const Parameters& ps) {
 
-        // ORIENTATION ASSUMPTIONS:
-        //   modules are oriented flat side down. cells are oriented corner side down.
-        // SOME GEOMETRY:
-        //   hexagons have two radii:
-        //     r (half of flat-to-flat width) and R (half of corner-to-corner width).
-        //     r = (sqrt(3)/2)R and s = R, where s is the length of an edge.
-        //   for seven ecal modules oriented flat-side-down, maximum x and y extents are:
-        //     deltaY = 6r' + 2g = 3sqrt(3)R' + 2g
-        //     deltaX = 4R' + s' + 2g/cos(30 deg) = 5R' + 4g/sqrt(3)
-        //     where g is uniform gap width between modules, and primed variables correspond to modules.
-        // THIS GRID:
-        //   column-to-column distance in a grid such as ours is 2r = sqrt(3)R.
-        //   row-to-row distance is 1.5R (easy to observe that twice that distance = 3R)
-        //
-        // The cell radius is calculated from the total number of center-to-corner cell radii
-        // that span the module height. This count can have fractional counts to account
-        // for the fractions of cell radii at the module edges.
+        layerZPositions_ = ps.getParameter<std::vector<double>>("layerZPositions");
+        ecalFrontZ_   = ps.getParameter<double>("ecalFrontZ");
+        moduler_      = ps.getParameter<double>("moduleMinR");
+        gap_          = ps.getParameter<double>("gap");
+        nCellRHeight_ = ps.getParameter<double>("nCellRHeight");
+        verbose_      = ps.getParameter<int>("verbose");
 
-        moduleR_      = moduleMinR*(2/sqrt(3));
-        moduler_      = moduleMinR;
-        nCellRHeight_ = nCellRHeight;
-        cellR_        = 2*moduler_/nCellRHeight;
-        cellr_        = (sqrt(3.)/2.)*cellR_;
-        gap_          = gap;
+        moduleR_ = moduler_*(2/sqrt(3));
+        cellR_   = 2*moduler_/nCellRHeight_;
+        cellr_   = (sqrt(3.)/2.)*cellR_;
+
         if(verbose_>0){
             std::cout << std::endl << "[EcalHexReadout] Verbosity set in header to " << verbose_ << std::endl;
-            std::cout << TString::Format("Building module map with gap %.2f, nCellRHeight %.2f ",gap_,nCellRHeight_) << std::endl;
-            std::cout << TString::Format("  min/max radii of cell %.2f %.2f and module %.2f %.2f",cellr_,cellR_,moduler_,moduleR_) << std::endl;
+            std::cout << "     Building module map with gap " << std::setprecision(2) << gap_
+                << ", nCellRHeight " << nCellRHeight_
+                << ",  min/max radii of cell " << cellr_ << " / " << cellR_
+                << ", and module " << moduler_ << " / " << moduleR_ << std::endl;
         }
 
         buildModuleMap();
         buildCellMap();
         buildCellModuleMap();
         buildNeighborMaps();
+
         if(verbose_>0){ std::cout << std::endl; }
     }
 
@@ -114,7 +102,6 @@ namespace ldmx {
         }
 
         // copy cells lying within module boundaries to a module grid
-        std::vector<int> cellIdCopied(gridMap.GetNumberOfBins());
         TListIter next(gridMap.GetBins()); // a TH2Poly is a TList of TH2PolyBin
         TH2PolyBin *polyBin = 0;
         TGraph * poly = 0; // a polygon returned by TH2Poly is a TGraph
@@ -127,12 +114,11 @@ namespace ldmx {
             poly = (TGraph*)polyBin->GetPolygon();
 
             // decide whether to copy polygon to new map.
-            // use all vertices, eg in case of cut-off edge polygons.
+            // use all vertices in case of cut-off edge polygons.
             int numVerticesInside = 0;
+            double vertex_x[6], vertex_y[6]; //vertices of the cell
+            bool   isinside[6]; //which vertices are inside
             if(verbose_>2) std::cout << "[buildCellMap] Cell vertices" << std::endl;
-            double vertex_x[6];
-            double vertex_y[6];
-            bool   isinside[6];
             for(unsigned i = 0 ; i < 6; i++){
                 poly->GetPoint(i,vertex_x[i],vertex_y[i]);
                 if (verbose_>2) {
@@ -144,110 +130,98 @@ namespace ldmx {
             }
 
             if(numVerticesInside > 1){
-                // Include this cell is more than one of its vertices is inside the module hexagon
-                
-                int id = polyBin->GetBinNumber();
-                double x = (polyBin->GetXMax() + polyBin->GetXMin()) / 2.;
-                double y = (polyBin->GetYMax() + polyBin->GetYMin()) / 2.;
-                if(verbose_>1) std::cout << TString::Format("[buildCellMap] Copying poly with ID %d and (x,y) (%.2f,%.2f)", id, x, y) << std::endl;
-                bool isCopied = (std::find(std::begin(cellIdCopied), std::end(cellIdCopied), id) != cellIdCopied.end());
-                if(verbose_>1 && isCopied) std::cout << "    cell was used already! not copying." << std::endl;
-                if(!isCopied){
-                    //ecalMap_ needs to have its own copy of the polygon TGraph
-                    //  otherwise, we get a seg fault when EcalHexReadout is destructed
-                    //  because the polygon that was copied over from gridMap is deleted at the end of this function
-                    if ( numVerticesInside < 6 ) {
-                        //TODO some fanciness with the edge
-                        //  Extend lines perpendicular to module edge to the module edge
-                        //  Squash any cell area outside module to the module edge
+                // Include this cell if more than one of its vertices is inside the module hexagon
 
-                        // determine which side of hexagon we are straddling
-                        //  based on center of hexagon
-                        double edge_origin_x, edge_origin_y;
-                        double edge_dest_x, edge_dest_y;
-                        if ( x < -moduleR_/2. ) {
-                            edge_origin_x = -1.*moduleR_;
-                            edge_origin_y = 0.;
-                            edge_dest_x = -0.5*moduleR_;
-                            edge_dest_y = moduler_;
-                        } else if ( x > moduleR_/2. ) {
-                            edge_origin_x = moduleR_;
-                            edge_origin_y = 0.;
-                            edge_dest_x = 0.5*moduleR_;
-                            edge_dest_y = moduler_;
-                        } else {
-                            //flat edge at top
-                            edge_origin_x = 0.5*moduleR_;
-                            edge_origin_y = moduler_;
-                            edge_dest_x = -0.5*moduleR_;
-                            edge_dest_y = moduler_;
-                        }
+                if ( numVerticesInside == 5 ) {
+                    // This cell is stradling the edge of the module
+                    // and is NOT cleanly cut by module edge
 
-                        // flip to bottom half if below x-axis
-                        if ( y < 0 ) {
-                            edge_dest_y *= -1;
-                            edge_origin_y *= -1;
-                        }
+                    if(verbose_>1) {
+                        std::cout << "[buildCellMap] Polygon " << ecalMapID
+                            << " has vertices poking out of module hexagon." << std::endl;
+                    }
 
-                        // get edge slope vector
-                        double edge_slope_x = edge_dest_x - edge_origin_x;
-                        double edge_slope_y = edge_dest_y - edge_origin_y;
-                        double edge_slope_mag = edge_slope_x*edge_slope_x+edge_slope_y*edge_slope_y;
-
-                        // extend (or cut) lines perpendicular to module edge to the module edge
-                        double actual_x[6], actual_y[6];
-                        for ( int i = 0; i < 6; i++ ) {
-                            if ( not isinside[i] ) {
-                                //project points not inside onto the edge
-                                double projection_factor 
-                                    = ((vertex_x[i]-edge_origin_x)*edge_slope_x
-                                      +(vertex_y[i]-edge_origin_y)*edge_slope_y)
-                                      /edge_slope_mag;
-                                actual_x[i] = projection_factor*edge_slope_x + edge_origin_x;
-                                actual_y[i] = projection_factor*edge_slope_y + edge_origin_y;
-//                            } else if ( 
-//                                    not isinside[(i+1)%6] 
-//                                    and (vertex_x[(i+1)%6]-vertex_x[i])*edge_slope_x 
-//                                    + (vertex_y[(i+1)%6]-vertex_y[i])*edge_slope_y > 1e-3
-//                            ) {
-//                                // if it is inside, only change it if the next point is outside _and_ the line is not perpendicular
-//                                // to the module edge, then we need to extend the previous line to the module edge
-//                                double origin_x = vertex_x[(i-1)%6];
-//                                double origin_y = vertex_y[(i-1)%6];
-//                                double slope_x = vertex_x[i] - origin_x;
-//                                double slope_y = vertex_y[i] - origin_y;
-//                                //assume the previous line is perpendicular to the edge we chose NOT SURE ABOUT THIS
-//                                
-//                                //normalize the slope
-//                                double slope_mag = sqrt( slope_x*slope_x + slope_y*slope_y );
-//                                slope_x /= slope_mag;
-//                                slope_y /= slope_mag;
-//                                //get the "time" parameter
-//                                double t = slope_x*(edge_origin_x - origin_x) 
-//                                         + slope_y*(edge_origin_y - origin_y);
-//
-//                                actual_x[i] = slope_x*t + origin_x;
-//                                actual_y[i] = slope_y*t + origin_y;
+                    // loop through vertices
+                    for ( int i = 0; i < 6; i++ ) {
+                        int up = i==5 ? 0 : i+1;
+                        int dn = i==0 ? 5 : i-1;
+                        if ( isinside[i] and (not isinside[up] or not isinside[dn]) ) {
+                            //this vertex is inside the module hexagon and is adjacent to a vertex outside
+                            // ==> project this vertex onto the nearest edge of the module hexagon
+        
+                            // determine which side of hexagon we should project onto
+                            double edge_origin_x, edge_origin_y;
+                            double edge_dest_x, edge_dest_y;
+                            if ( vertex_x[i] < -moduleR_/2. ) {
+                                //sloped edge on negative-x side
+                                edge_origin_x = -1.*moduleR_;
+                                edge_origin_y = 0.;
+                                edge_dest_x = -0.5*moduleR_;
+                                edge_dest_y = moduler_;
+                            } else if ( vertex_x[i] > moduleR_/2. ) {
+                                //sloped edge on positive-x side
+                                edge_origin_x = 0.5*moduleR_;
+                                edge_origin_y = moduler_;
+                                edge_dest_x = moduleR_;
+                                edge_dest_y = 0.;
                             } else {
-                                //both this point and the next point are inside
-                                //OR the next point is on a line perpendicular to the edge and has been squashed to the edge
-                                //keep this point as is
-                                actual_x[i] = vertex_x[i];
-                                actual_y[i] = vertex_y[i];
+                                //flat edge at top
+                                edge_origin_x = 0.5*moduleR_;
+                                edge_origin_y = moduler_;
+                                edge_dest_x = -0.5*moduleR_;
+                                edge_dest_y = moduler_;
+                            }
+        
+                            // flip to bottom half if below x-axis
+                            if ( vertex_y[i] < 0 ) {
+                                edge_dest_y *= -1;
+                                edge_origin_y *= -1;
+                            }
+        
+                            // get edge slope vector
+                            double edge_slope_x = edge_dest_x - edge_origin_x;
+                            double edge_slope_y = edge_dest_y - edge_origin_y;
+
+                            if(verbose_>2) {
+                                std::cout << "Vertex " << i 
+                                    << " is inside and adjacent to a vertex outside the module." << std::endl;
+                                std::cout << "Working on edge with slope (" << edge_slope_x << "," << edge_slope_y << ")"
+                                    << " and origin (" << edge_origin_x << "," << edge_origin_y << ")" << std::endl;
                             }
 
-                        }
-                        ecalMap_.AddBin( 6 , actual_x, actual_y );
-                    } else {
-                        //all vertices inside ==> cell fully in the module
-                        ecalMap_.AddBin( poly->GetN() , poly->GetX() , poly->GetY() );
-                    }
-                    cellPositionMap_[ecalMapID] = std::pair<double,double>(x,y);
-                    ecalMapID++;
-                    cellIdCopied.push_back(id);
+                            //project vertices adjacent to the vertex outside the module onto the module edge
+                            double projection_factor = 
+                                ( (vertex_x[i]-edge_origin_x)*edge_slope_x
+                                + (vertex_y[i]-edge_origin_y)*edge_slope_y )
+                                / (edge_slope_x*edge_slope_x + edge_slope_y*edge_slope_y);
+    
+                            vertex_x[i] = edge_origin_x + projection_factor*edge_slope_x;
+                            vertex_y[i] = edge_origin_y + projection_factor*edge_slope_y;
+    
+                            if(verbose_>2) {
+                                std::cout << "New Vertex " << i 
+                                    << " : (" << vertex_x[i] << "," << vertex_y[i] << ")" << std::endl;
+                            }
+                        } //if inside and adjacent to a vertex outside module
+                    } //loop through vertices
+                } //if numVerticesInside is equal to 5
+
+                //ecalMap_ needs to have its own copy of the polygon TGraph
+                //  otherwise, we get a seg fault when EcalHexReadout is destructed
+                //  because the polygon that was copied over from gridMap is deleted at the end of this function
+                ecalMap_.AddBin( 6 , vertex_x , vertex_y );
+                
+                double x = (polyBin->GetXMax() + polyBin->GetXMin()) / 2.;
+                double y = (polyBin->GetYMax() + polyBin->GetYMin()) / 2.;
+                if(verbose_>1) {
+                    std::cout << "[buildCellMap] Copying poly with ID " << polyBin->GetBinNumber()
+                        << " and (x,y) (" << std::setprecision(2) << x << "," << y << ")" << std::endl;
                 }
-            }
-        }
+                //save cell location as center of ENTIRE hexagon
+                cellPositionMap_[ecalMapID] = std::pair<double,double>(x,y);
+                ecalMapID++; //incrememnt cell ID
+            } // if num vertices inside is > 1
+        } //loop over larger grid spanning module hexagon
 
         if(verbose_>0) std::cout << std::endl;
         return;
@@ -324,8 +298,8 @@ namespace ldmx {
 
     double EcalHexReadout::distanceToEdge(EcalID cellModuleID) const {
         // https://math.stackexchange.com/questions/1210572/find-the-distance-to-the-edge-of-a-hexagon
-	int cellID = cellModuleID.cell();
-        XYCoords cellLocation = getCellCenterRelative(cellID);
+	    int cellID = cellModuleID.cell();
+        std::pair<double,double> cellLocation = getCellCenterRelative(cellID);
         double x = fabs(cellLocation.first); // bring to first quadrant
         double y = fabs(cellLocation.second);
         double r = sqrt(x*x+y*y);
