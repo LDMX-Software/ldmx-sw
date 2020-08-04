@@ -94,6 +94,24 @@ namespace ldmx {
                 return getParameter<T>(name);
             }
 
+            /**
+             * Check to see if a parameter exists
+             */
+            bool exists(const std::string& name) const {
+                return parameters_.find(name)!=parameters_.end();
+            }
+
+	/** 
+	 * get all keys
+	 */
+	std::vector<std::string> keys() const {
+	    std::vector<std::string> key;
+	    for (auto i : parameters_) {
+		key.push_back(i.first);
+	    }
+	    return key;
+	}
+	
         private:
 
             /// Parameters 
