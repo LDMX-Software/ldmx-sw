@@ -19,9 +19,10 @@ namespace ldmx {
 		    }
 		providerMap_[sptr]=cop;
 		}
-	    }
+	} else {
+	  EXCEPTION_RAISE("ConditionsException","No ConditionsObjectProvider for "+classname);	  
 	}
-
+    }
 
     void Conditions::onProcessStart() {
 	for (auto ptr: providers_)
@@ -47,7 +48,7 @@ namespace ldmx {
 	    std::pair<const ConditionsObject*,ConditionsIOV> cond=copptr->second->getCondition(condition_name,context);
 	    
 	    if (!cond.first) {
-		EXCEPTION_RAISE("ConditionUnavailable",std::string("Null condition for requested item : "+condition_name));
+		EXCEPTION_RAISE("ConditionUnavailable",std::string("Null condition returned for requested item : "+condition_name));
 	    }
 	    // first request, create a cache entry
 	    CacheEntry ce;
