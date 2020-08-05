@@ -56,13 +56,6 @@ namespace ldmx {
     void TrigScintHitDQM::analyze(const Event & event) { 
 
       
-        // Check if the collection of digitized TrigScint hits exist. If it doesn't 
-        // don't continue processing.
-        if ( !event.exists(hitCollectionName_.c_str()) ) {
-            std::cout << "No collection called " << hitCollectionName_ << std::endl;
-            return; 
-        }
-
         // Get the collection of TrigScintHit digitized hits if the exists 
         const std::vector<TrigScintHit> TrigScintHits = event.getCollection<TrigScintHit>( hitCollectionName_);
       
