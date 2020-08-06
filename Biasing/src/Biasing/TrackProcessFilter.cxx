@@ -28,7 +28,7 @@ namespace ldmx {
             auto trackInfo{dynamic_cast<UserTrackInformation*>(track->GetUserInformation())};
             if (name.contains(process_)) {
                 trackInfo->setSaveFlag(true);
-            } else trackInfo->setSaveFlag(false); 
+            } //else trackInfo->setSaveFlag(false); 
         } 
     }
 }

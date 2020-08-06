@@ -67,16 +67,18 @@ namespace ldmx {
             bool hasBremCandidate = false; 
             auto secondaries = step->GetSecondary();
 
+            /*
             std::cout << "[ EcalBremFilter ] : Primary electron went below brem energy threshold: " 
                 << "KE: " << track->GetKineticEnergy() << "MeV "
                 << "N Secondaries: " << secondaries->size() << std::endl;
+            */
             for (auto& secondary_track : *secondaries) {
                 G4String processName = secondary_track->GetCreatorProcess()->GetProcessName();
                 
                 if (processName.compareTo("eBrem") == 0 
                         && secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
     
-                    std::cout << "[ EcalBremFilter ] : Found a secondary hard brem!" << std::endl;
+                    //std::cout << "[ EcalBremFilter ] : Found a secondary hard brem!" << std::endl;
                    
                     if (secondary_track->GetUserInformation() == nullptr) {
                         secondary_track->SetUserInformation(new UserTrackInformation()); 
@@ -92,11 +94,11 @@ namespace ldmx {
                     static_cast< UserEventInformation* >(event->GetUserInformation())->incBremCandidateCount(); 
     
                     hasBremCandidate = true;
-                } 
-            }
+                } //check for hard brem
+            }//loop over secondaries
     
             if (!hasBremCandidate) { 
-                std::cout << "[ EcalBremFilter ] : No hard-brem secondaries. Aborting event..." << std::endl;
+                //std::cout << "[ EcalBremFilter ] : No hard-brem secondaries. Aborting event..." << std::endl;
                 track->SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()->AbortEvent();
                 return;
