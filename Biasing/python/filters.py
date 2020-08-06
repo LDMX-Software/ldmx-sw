@@ -39,6 +39,27 @@ class TargetBremFilter(simcfg.UserAction):
         self.brem_min_energy_threshold = brem_min_e
         self.kill_recoil_track = False
 
+class EcalBremFilter(simcfg.UserAction):
+    """ Configuration for filtering events that don't see a hard brem in the target. 
+
+    The event is rejected if the recoil electron brems, 
+    but the energy of at least one of the brems isn't above 
+    the brem_min_energy_threshold [MeV].
+
+    Parameters
+    ----------
+    brem_min_e : float
+        Minimum energy the brem photon can have [MeV]
+    """
+
+    def __init__(self,brem_min_e = 2000.) :
+        super().__init__("ecal_brem_filter", "ldmx::EcalBremFilter")
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.brem_min_energy_threshold = brem_min_e
+
 class EcalProcessFilter(simcfg.UserAction):
     """ Configuration for filtering events that don't see a hard brem undergo a photo-nuclear reaction in the ECal. 
 
