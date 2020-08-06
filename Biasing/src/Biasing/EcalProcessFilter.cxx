@@ -93,8 +93,7 @@ namespace ldmx {
         // If the particle doesn't interact, then move on to the next step.
         if (secondaries->size() == 0) {
 
-
-            // Check if the electron will be exiting the target        
+            // Check if the photon will be exiting the ecal
             if (auto volume{track->GetNextVolume()->GetName()}; volume.compareTo("hcal_PV") == 0) {
                 if (eventInfo->bremCandidateCount() == 1) {
                     track->SetTrackStatus(fKillTrackAndSecondaries);
@@ -114,10 +113,9 @@ namespace ldmx {
             // If the brem gamma interacts and produces secondaries, get the 
             // process used to create them. 
             auto processName{secondaries->at(0)->GetCreatorProcess()->GetProcessName()}; 
-            
+
             // Only record the process that is being biased
             if (!processName.contains(process_)) {
-
                 if (eventInfo->bremCandidateCount() == 1) {
                     track->SetTrackStatus(fKillTrackAndSecondaries);
                     G4RunManager::GetRunManager()->AbortEvent();
@@ -136,6 +134,7 @@ namespace ldmx {
                       << " particle via " << processName << " process." 
                       << std::endl;
             trackInfo->tagBremCandidate(false);   
+            trackInfo->setSaveFlag(true);
             trackInfo->tagPNGamma(); 
             eventInfo->decBremCandidateCount(); 
             eventInfo->setWeight(track->GetWeight());  
