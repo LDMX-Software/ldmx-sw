@@ -64,14 +64,21 @@ namespace ldmx {
         if ( track->GetKineticEnergy() < bremEnergyThreshold_ ) {
             //are we below the energy we want?
             // Get the electron secondries
-            bool hasBremCandidate = false; 
             auto secondaries = step->GetSecondary();
-
             /*
             std::cout << "[ EcalBremFilter ] : Primary electron went below brem energy threshold: " 
                 << "KE: " << track->GetKineticEnergy() << "MeV "
                 << "N Secondaries: " << secondaries->size() << std::endl;
             */
+
+            if (!secondaries or secondaries->size() == 0) {
+                //std::cout << "[ EcalBremFilter ] : No secondaries at all. Aborting event..." << std::endl;
+                track->SetTrackStatus(fKillTrackAndSecondaries);
+                G4RunManager::GetRunManager()->AbortEvent();
+                return;
+            }
+
+            bool hasBremCandidate = false; 
             for (auto& secondary_track : *secondaries) {
                 G4String processName = secondary_track->GetCreatorProcess()->GetProcessName();
                 
