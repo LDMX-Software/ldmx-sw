@@ -38,7 +38,7 @@ jobs:
       run: |
           cd ../ &&
           export LDMX_BASE=$(pwd) &&
-          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $LDMX_BASE/ldmx-sw/install ./bin/ldmx-test
+          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $LDMX_BASE/ldmx-sw/install ./bin/run_test.cxx
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
