@@ -52,27 +52,32 @@ namespace ldmx {
         // Only process the primary electron track
         if (track->GetParentID() != 0) return;
 
+        if (G4EventManager::GetEventManager()->GetConstCurrentEvent()->IsAborted()) return;
+
         // Get the PDG ID of the track and make sure it's an electron. If 
         // another particle type is found, thrown an exception. 
         if (auto pdgID{track->GetParticleDefinition()->GetPDGEncoding()}; pdgID != 11) return; 
 
-        // Get the region the particle is currently in.  Continue processing
-        // the particle only if it's in the CalorimeterRegion region. 
-        if (auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()};
-                region.compareTo("CalorimeterRegion") != 0) return;
+        //track is the primary electron and is currently inside the CalorimeterRegion
 
-        if ( track->GetKineticEnergy() < bremEnergyThreshold_ ) {
-            //are we below the energy we want?
+        if ( (step->GetPostStepPoint()->GetKineticEnergy() < bremEnergyThreshold_ and
+              step->GetPreStepPoint()->GetKineticEnergy() > bremEnergyThreshold_)
+              or 
+             (track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName().compareTo("CalorimeterRegion")==0 and
+              track->GetNextVolume()->GetLogicalVolume()->GetRegion()->GetName().compareTo("CalorimeterRegion") != 0)
+           ) {
+
+            //did we step below the threshold or leave the calorimeter region?
             // Get the electron secondries
             auto secondaries = step->GetSecondary();
-            /*
             std::cout << "[ EcalBremFilter ] : Primary electron went below brem energy threshold: " 
                 << "KE: " << track->GetKineticEnergy() << "MeV "
                 << "N Secondaries: " << secondaries->size() << std::endl;
-            */
 
             if (!secondaries or secondaries->size() == 0) {
-                //std::cout << "[ EcalBremFilter ] : No secondaries at all. Aborting event..." << std::endl;
+                std::cout << "[ EcalBremFilter ] : "
+                    << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
+                    << " No secondaries at all. Aborting event..." << std::endl;
                 track->SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()->AbortEvent();
                 return;
@@ -85,7 +90,11 @@ namespace ldmx {
                 if (processName.compareTo("eBrem") == 0 
                         && secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
     
-                    //std::cout << "[ EcalBremFilter ] : Found a secondary hard brem!" << std::endl;
+                    std::cout << "[ EcalBremFilter ] : "
+                        << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() 
+                        << " Found a secondary hard brem! " 
+                        << secondary_track->GetTrackID()
+                        << std::endl;
                    
                     if (secondary_track->GetUserInformation() == nullptr) {
                         secondary_track->SetUserInformation(new UserTrackInformation()); 
@@ -105,7 +114,9 @@ namespace ldmx {
             }//loop over secondaries
     
             if (!hasBremCandidate) { 
-                //std::cout << "[ EcalBremFilter ] : No hard-brem secondaries. Aborting event..." << std::endl;
+                std::cout << "[ EcalBremFilter ] : "
+                    << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
+                    << " No hard-brem secondaries. Aborting event..." << std::endl;
                 track->SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()->AbortEvent();
                 return;
