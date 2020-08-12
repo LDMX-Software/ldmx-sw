@@ -13,6 +13,11 @@ project(Tools VERSION 2.1.0
 # to an external folder and create the targets.
 find_package(ONNXRuntime 1.2.0)
 
+If (ONNXRuntime_FOUND)
+    install(DIRECTORY "${ONNXRuntime_INCLUDE_DIRS}" DESTINATION ${CMAKE_INSTALL_PREFIX}/onnx)
+    install(DIRECTORY "${ONNXRuntime_LIBRARIES}"    DESTINATION ${CMAKE_INSTALL_PREFIX}/onnx)
+endif()
+
 # Setup the library
 setup_library(name Tools
               dependencies DARK::Framework DARK::Event ONNXRuntime::Interface
