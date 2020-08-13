@@ -51,7 +51,7 @@ message(STATUS "${catch2_include_dir}")
 
 # If Catch2 isn't found, download it.
 if (NOT catch2_include_dir)
-    download_catch2(${Catch2_FIND_VERSION} ${CMAKE_BINARY_DIR}/external)
+    download_catch2(${Catch2_FIND_VERSION} ${CMAKE_INSTALL_PREFIX}/external)
 endif() 
 
 # Create the target

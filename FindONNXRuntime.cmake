@@ -67,7 +67,7 @@ if( NOT TARGET ONNXRuntime::Interface)
 
     # If onnxruntime isn't found, download it.
     if(NOT onnxruntime_include_dir)  
-        download_onnxruntime(1.2.0 ${CMAKE_BINARY_DIR}/external) 
+        download_onnxruntime(1.2.0 ${CMAKE_INSTALL_PREFIX}/external) 
     endif()
     
     # Create the target
