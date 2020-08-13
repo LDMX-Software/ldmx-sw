@@ -5,7 +5,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  *  
  */
-#include "Framework/catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
+#include "catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
 
 #include <cstdio> //for remove
 #include "TH1F.h" //for test histogram
