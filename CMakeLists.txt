@@ -15,12 +15,12 @@ find_package (Python3 COMPONENTS Interpreter Development)
 find_package(ROOT 6.16 CONFIG REQUIRED)
 
 # Search for Boost
-find_package(Boost REQUIRED COMPONENTS system log)
+find_package(Boost REQUIRED COMPONENTS system log filesystem thread chrono atomic regex)
 
 # Setup the library
 setup_library(name Framework
               dependencies Python3::Python ROOT::Hist ROOT::TreePlayer 
-                           DARK::Event Boost::log
+                           DARK::Event Boost::log Boost::atomic Boost::regex
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
