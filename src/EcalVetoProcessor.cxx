@@ -86,8 +86,56 @@ namespace ldmx {
         }
 
 
-        auto hexReadout{parameters.getParameter<Parameters>("hexReadout")};
-        hexReadout_ = std::make_unique<EcalHexReadout>(hexReadout);
+        // These are the v12 parameters
+        //  all distances in mm
+        double moduleRadius = 85.0; //same as default
+        int    numCellsWide = 23; //same as default
+        double moduleGap = 1.5;
+        double ecalFrontZ = 220;
+        std::vector<double> ecalSensLayersZ = {
+             7.850,
+            13.300,
+            26.400,
+            33.500,
+            47.950,
+            56.550,
+            72.250,
+            81.350,
+            97.050,
+            106.150,
+            121.850,
+            130.950,
+            146.650,
+            155.750,
+            171.450,
+            180.550,
+            196.250,
+            205.350,
+            221.050,
+            230.150,
+            245.850,
+            254.950,
+            270.650,
+            279.750,
+            298.950,
+            311.550,
+            330.750,
+            343.350,
+            362.550,
+            375.150,
+            394.350,
+            406.950,
+            426.150,
+            438.750
+        };
+
+        hexReadout_ = std::make_unique<EcalHexReadout>(
+                moduleRadius,
+                moduleGap,
+                numCellsWide,
+                ecalSensLayersZ,
+                ecalFrontZ
+                );
 
         nEcalLayers_ = parameters.getParameter< int >("num_ecal_layers");
 
