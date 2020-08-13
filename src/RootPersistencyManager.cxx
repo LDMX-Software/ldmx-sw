@@ -149,7 +149,7 @@ namespace ldmx {
                 threeVectorDump( genID + " Vertex [mm]" , gen.getParameter<std::vector<double>>("vertex") );
                 threeVectorDump( genID + " Momentum [MeV]" , gen.getParameter<std::vector<double>>("momentum") );
             } else if ( className.find("ldmx::LHEPrimaryGenerator") != std::string::npos ) {
-                runHeader.setStringParameter( genID + " LHE File" , gen.getParameter<std::string>("lheFilePath") );
+                runHeader.setStringParameter( genID + " LHE File" , gen.getParameter<std::string>("filePath") );
             } else if ( className.find("ldmx::RootCompleteReSim") != std::string::npos ) {
                 runHeader.setStringParameter( genID + " ROOT File" , gen.getParameter<std::string>("filePath") );
             } else if ( className.find("ldmx::RootSimFromEcalSP") != std::string::npos ) {
