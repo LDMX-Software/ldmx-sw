@@ -54,9 +54,6 @@ class EcalRecProducer(Producer) :
         self.secondOrderEnergyCorrection = 1.
         self.layerWeights = [ ]
 
-        from LDMX.DetDescr import EcalHexReadout
-        self.hexReadout = EcalHexReadout.EcalHexReadout()
-
         self.v12() #use v12 geometry by default
 
     def v2(self) :
