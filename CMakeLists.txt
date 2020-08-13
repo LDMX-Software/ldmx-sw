@@ -15,6 +15,14 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     message(STATUS "Install directory set to ${CMAKE_INSTALL_PREFIX}")
 endif()
 
+# Load additional macro commands 
+list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
+
+# Load the BuildMacros module. If loaded correctly, the variable 
+# 'build_macros_found' will be set to the path of the module.  Otherwise, it
+# is set to NOTFOUND.
+include(BuildMacros RESULT_VARIABLE build_macros_found)
+
 # If a user is building outside of a Docker or Singularity environment, 
 # warn them. 
 if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
@@ -24,14 +32,6 @@ endif()
 # Set the python installation path
 set(PYTHON_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/python/LDMX)
 message(STATUS "Python install directory set to ${PYTHON_INSTALL_PREFIX}")
-
-# Load additional macro commands 
-list(APPEND CMAKE_MODULE_PATH ${LDMX_SW_SOURCE_DIR}/cmake/)
-
-# Load the BuildMacros module. If loaded correctly, the variable 
-# 'build_macros_found' will be set to the path of the module.  Otherwise, it
-# is set to NOTFOUND.
-include(BuildMacros RESULT_VARIABLE build_macros_found)
 
 # Set the default release type to "Release". If a release type is specified 
 # at the command line, it's respected.
