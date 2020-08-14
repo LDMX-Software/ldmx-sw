@@ -15,3 +15,4 @@ setup_library(name DetDescr
 
 # Setup the test
 setup_test(dependencies DARK::DetDescr)
+
