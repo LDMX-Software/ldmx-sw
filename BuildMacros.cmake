@@ -56,6 +56,7 @@ macro(setup_geant4_target)
         # Set the target properties
         SET_TARGET_PROPERTIES(Geant4::Interface
             PROPERTIES
+            INTERFACE_LINK_LIBRARIES "${Geant4_LIBRARIES}"
             INTERFACE_COMPILE_OPTIONS "${Geant4_Flags}"
             INTERFACE_COMPILE_DEFINITIONS "${LDMX_Geant4_DEFINITIONS}"
             INTERFACE_INCLUDE_DIRECTORIES "${Geant4_INCLUDE_DIRS}"
@@ -202,4 +203,7 @@ macro(build_test)
     # Install the run_test  executable
     install(TARGETS run_test DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
+endmacro()
+
+macro(install_external)
 endmacro()
