@@ -15,11 +15,11 @@ namespace ldmx {
   
 	void TrigScintClusterProducer::configure(Parameters& ps) {
  
-	  seed_      = ps.getParameter< double >("seed_threshold");
+	  seed_      = ps.getParameter< double >("seed_threshold");          
 	  minThr_      = ps.getParameter< double >("clustering_threshold");
-	  NUM_STRIPS_PER_ARRAY_      = ps.getParameter< int >("number_of_strips");
-	  input_collection_          = ps.getParameter< std::string >("input_collection"); //,"trigScintDigisUp");
-	  output_collection_         = ps.getParameter< std::string >("output_collection"); //,"TriggerPadUpClusters");
+	  maxWidth_      = ps.getParameter< int >("max_cluster_width");
+	  input_collection_          = ps.getParameter< std::string >("input_collection");
+	  output_collection_         = ps.getParameter< std::string >("output_collection");
 	  verbose_                   = ps.getParameter< int >("verbosity");
 
 
@@ -37,13 +37,12 @@ namespace ldmx {
 	  //parameters.
 	  // a cluster seeding threshold
 	  // a clustering threshold -- a lower boundary for being added at all (zero suppression) -- tentative
-	  // the min number of channels in a row between two local maxima
-	  // a maximum cluster width?
+	  // a maximum cluster width
 	  // 
     
 	  //steps.
 	  // 1. get an input collection of digi hits. at most one entry per channel.
-	  // 2. order them in channel number, probably by putting contents in a vector representing the array of channels
+	  // 2. access them by channel number
 	  // 3. clustering:
 	  //       a. add first hit > seedThr to cluster(ling) . store content as localMax. track size of cluster (1)
 	  //       b. if not in beginning of array: add cell before while content <  add next hit first hit > seedThr to cluster(ling) 
@@ -61,25 +60,25 @@ namespace ldmx {
 		|   |   |   |   |   |  
 		| 0 | 2 | 4 | 6 | 8 |  ... | 48|
 
-		| 1 | 3 | 5 | 7 | 9 |  ... | 49|
-		|   |   |   |   |   |  
+   		  | 1 | 3 | 5 | 7 | 9 |  ... | 49|
+		  |   |   |   |   |   |  
 
 		with hits in channels after digi looking something like this
 
 
 		ampl:     _                 _                   _
-		| |_              | |                 | |    
-		----| | |-------------| |-----------------| |------- cluster seed threshold 
-		| | |_            | |_                | |_   
-        _| | | |          _| | |_             _| | |  _ 
-		| | | | |    vs   | | | | |    vs     | | | | | |
+		         | |_              | |                 | |    
+			 ----| | |-------------| |-----------------| |------- cluster seed threshold 
+				 | | |_            | |_                | |_   
+				_| | | |          _| | |_             _| | |  _ 
+			   | | | | |    vs   | | | | |    vs     | | | | | |
 
 
-		|                   |                   |
-		split | seeds        keep | disregard   keep! | just move on
-		| next cl.          | (later seed       | (most normal case)
-		might pick
-		it up)
+				   |                   |                   |
+			 split | seeds        keep | disregard   keep! | just move on
+				   | next cl.          | (later seed       | (no explicit splitting)
+										  might pick
+										  it up)
 
 		The idea being that while there could be good reasons for a track to touch three pads in a row, 
 		there is no good reason for it to cross four. 
@@ -89,11 +88,11 @@ namespace ldmx {
 		symmetric treatment on both sides of the seed.
 
 
-		//ok so the idea is. keep going until there is a seed. walk back at most 2 steps
-		//add all the hits. clusters of up to 3 is fine.
-		//if the cluster is > 3, then we need to do sth.
-		// if it's == 4, then split in the middle if there are two potential seeds. retain only the first half, cases are (seed = s, n - no/noise)
-		// nsns , nssn, snsn, ssnn.  nnss won't happen (max 1 back unless there is nothing in front) 
+		//Procedure: keep going until there is a seed. walk back at most 2 steps
+		// add all the hits. clusters of up to 3 is fine.
+		// if the cluster is > 3, then we need to do something.
+		// if it's == 4, we'd want to split in the middle if there are two potential seeds. retain only the first half, cases are (seed = s, n - no/noise)
+		// nsns , nssn, snsn, ssnn.  nnss won't happen (max 1 step back from s, unless there is nothing in front) 
 		// all these are ok to split like this bcs even if ssnn--> ss and some small nPE is lost, that's probably pretty negligible wrt the centroid position, with two seeds in one cluster 
 
 		// if it's > 4, cases are
@@ -111,13 +110,10 @@ namespace ldmx {
 		// 5. at this point, if clusterSize is 2 hits and seed+1 didn't exist, we can afford to walk back one more step and add whatever junk was there (we know it's not a seed)
 
 
-		TODO: clustering window width should be configurable for easy assessment of this method parameter
-
 	  */
     
     
 	  if ( verbose_) {
-		//      std::cout << "TrigScintClusterProducer: produce() starts! Event number: " << event.getEventHeader()->getEventNumber() << std::endl;
 		std::cout << "TrigScintClusterProducer: produce() starts! Event number: " << event.getEventHeader().getEventNumber() << std::endl;
       
 	  }
@@ -125,17 +121,15 @@ namespace ldmx {
     
 	  // looper over digi hits and aggregate energy depositions for each detID
     
-	  const auto digis{event.getCollection< TrigScintHit >(input_collection_)}; //, "digi")};
+	  const auto digis{event.getCollection< TrigScintHit >(input_collection_)}; 
 
 	  if ( verbose_) {
 		std::cout << "Got digi collection " << input_collection_ << " with " << digis.size() << " entries " << std::endl;
 	  }
 
 
-
-	  //TODO remove this once debug done 
+	  //TODO remove this once verified that the noise overlap bug is gone
 	  bool doDuplicate = true;
-
 
 	  // 1. store all the channel digi content in channel order
 	  auto iDigi{0};
@@ -193,7 +187,7 @@ namespace ldmx {
 		  continue;
 		}
 
-		//i don't like this but for now, erasing elements in the map leads to edge cases where i miss out on hits or run into non-existing indices. so while what i do below means that i don't need to erase hits, i'd rather find a way to do that and skip this book keeping:
+		//i don't like this but for now, erasing elements in the map leads, as it turns out, to edge cases where i miss out on hits or run into non-existing indices. so while what i do below means that i don't need to erase hits, i'd rather find a way to do that and skip this book keeping:
 		bool hasUsed=false;
 		for ( const auto& index : v_usedIndices_ ) {
 		  if (index == itr->first ) {
@@ -221,10 +215,8 @@ namespace ldmx {
 		TrigScintHit digi = (TrigScintHit) digis.at(itr->second );
 
 		// skip all until hit a seed
-		//      if ( digi.getEnergy()  > seed_ ) {
 		if ( digi.getPE()  >= seed_ ) {
 		  if ( verbose_ > 1 ) {
-			//	  std::cout << "Seeding cluster with channel " << itr->first << "; content " << digi.getEnergy() << std::endl; 
 			std::cout << "Seeding cluster with channel " << itr->first << "; content " << digi.getPE() << std::endl; 
 		  }
 
@@ -238,9 +230,7 @@ namespace ldmx {
 
 		  // ----- first look back one step 
 	
-		  //no index > 0 check needed, since we're using a map and not an array that goes out of bounds
-	
-		  // we have added the hit from the neighbouring channel to the list if it's above clustering threshold
+		  // we have added the hit from the neighbouring channel to the list only if it's above clustering threshold
 		  // so no check needed now
 		  std::map<int, int>::iterator itrBack = hitChannelMap_.find( itr->first - 1 ) ; 
       
@@ -248,8 +238,7 @@ namespace ldmx {
 
 
 		  if ( itrBack != hitChannelMap_.end() ) {// there is an entry for the previous channel, so it had content above threshold 
-			//but it wasn't enough to seed a cluster. so, unambiguous that it should be added here.
-
+			//but it wasn't enough to seed a cluster. so, unambiguous that it should be added here because it's its only chance to get in.
 
 			//need to check again for backwards hits
 			hasUsed=false;
@@ -272,13 +261,13 @@ namespace ldmx {
 
 			  if ( verbose_ >1 ) {
 				std::cout << "Added -1 channel " << itrBack->first << " to cluster; content " << digi.getPE() << std::endl;
+				if ( verbose_ > 2 ) {
+				  std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
+				}
 			  }
 
-			  if ( verbose_ > 1 ) {
-				std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
-			  }
 	  	  
-			}//not used
+			}//if seed-1 wasn't used already
 		  }// there exists a lower, unused neighbour
 	
 
@@ -290,69 +279,72 @@ namespace ldmx {
 		  // 4. if seed+1 and !seed+2 --> go to addHit(seed+1)
 
 		  // --- now, step 3, 4: look ahead 1 step from seed 
-	
-		  // (in principle these don't need to be different iterators, but it makes the logic easier to follow)
-		  std::map<int, int>::iterator itrNeighb = hitChannelMap_.find( itr->first + 1 ) ; 
-		  if ( itrNeighb != hitChannelMap_.end() ) {// there is an entry for the next channel, so it had content above threshold 
-			//seed+1 exists
-			//check if there is sth in position seed+2
-			if (hitChannelMap_.find( itrNeighb->first + 1 ) != hitChannelMap_.end()  ) { //a hit with that key exists, so seed+1 and seed+2 exist
-			  if (!hasBacked) { // there is no seed-1 in the cluster. room for at least seed+1, and for seed+2 only if there is no seed+3 
-				// 3b 
-				digi = (TrigScintHit) digis.at( itrNeighb->second );
-				addHit( itrNeighb->first, digi );
 
-				if ( verbose_ > 1 ) {
-				  std::cout << "No -1 hit. Added +1 channel " << itrNeighb->first << " to cluster; content " << digi.getPE() << std::endl;
+		  if (v_addedIndices_.size() < maxWidth_) {
+			// (in principle these don't need to be different iterators, but it makes the logic easier to follow)
+			std::map<int, int>::iterator itrNeighb = hitChannelMap_.find( itr->first + 1 ) ; 
+			if ( itrNeighb != hitChannelMap_.end() ) {// there is an entry for the next channel, so it had content above threshold 
+			  //seed+1 exists
+			  //check if there is sth in position seed+2
+			  if (hitChannelMap_.find( itrNeighb->first + 1 ) != hitChannelMap_.end()  ) { //a hit with that key exists, so seed+1 and seed+2 exist
+				if (!hasBacked) { // there is no seed-1 in the cluster. room for at least seed+1, and for seed+2 only if there is no seed+3 
+				  // 3b 
+				  digi = (TrigScintHit) digis.at( itrNeighb->second );
+				  addHit( itrNeighb->first, digi );
+				  
+				  if ( verbose_ > 1 ) {
+					std::cout << "No -1 hit. Added +1 channel " << itrNeighb->first << " to cluster; content " << digi.getPE() << std::endl;
+					if ( verbose_ > 2 ) {
+					std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
+					}
+				  }
+
+				  if (v_addedIndices_.size() < maxWidth_) {
+					if ( hitChannelMap_.find( itrNeighb->first + 2 )  == hitChannelMap_.end()  ) { //no seed+3. also no seed-1. so add seed+2
+					  // 3d.  add seed+2 to the cluster 
+					  itrNeighb = hitChannelMap_.find( itr->first + 2 ) ;
+					  digi = (TrigScintHit) digis.at(itrNeighb->second );
+					  addHit( itrNeighb->first,  digi );
+					  if ( verbose_ > 1 ) {
+						std::cout << "No +3 hit. Added +2 channel " << itrNeighb->first << " to cluster; content " << digi.getPE() << std::endl;
+						if ( verbose_ > 2 ) {
+						  std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
+						}
+					  }
+					}
+
+				  } //if no seed+3 --> added seed+2 
+				}// if seed-1 wasn't added 
+			  } // if seed+2 exists. then already added seed+1. 
+			  else { //so: if not, then we need to add seed+1 here. (step 4)
+				digi = (TrigScintHit) digis.at( itrNeighb->second ); //itrNeighb hasn't moved since there was no seed+2
+				addHit( itrNeighb->first,  digi );
+				
+				if ( verbose_ >1 ) {
+				  std::cout << "Added +1 channel " << itrNeighb->first << " as last channel to cluster; content " << digi.getPE() << std::endl;
 				  if ( verbose_ > 2 ) {
 					std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
 				  }
 				}
 
-				if ( hitChannelMap_.find( itrNeighb->first + 2 )  == hitChannelMap_.end()  ) { //no seed+3. also no seed-1. so add seed+2
-				  // 3d.  add seed+2 to the cluster 
-				  itrNeighb = hitChannelMap_.find( itr->first + 2 ) ;
-				  digi = (TrigScintHit) digis.at(itrNeighb->second );
-				  addHit( itrNeighb->first,  digi );
-				  if ( verbose_ > 1 ) {
-					std::cout << "No +3 hit. Added +2 channel " << itrNeighb->first << " to cluster; content " << digi.getPE() << std::endl;
-					if ( verbose_ > 2 ) {
-					  std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
-					}
-				  }
-		
-
-				} //if no seed+3 --> added seed+2 
-			  }// if seed-1 wasn't added 
-			} // if seed+2 exists. then already added seed+1. 
-			else { //so: if not, then we need to add seed+1 here. (step 4)
-			  digi = (TrigScintHit) digis.at( itrNeighb->second ); //itrNeighb hasn't moved since there was no seed+2
-			  addHit( itrNeighb->first,  digi );
-
-			  if ( verbose_ >1 ) {
-				std::cout << "Added +1 channel " << itrNeighb->first << " as last channel to cluster; content " << digi.getPE() << std::endl;
-				if ( verbose_ > 2 ) {
-				  std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
-				}
 			  }
-
-			}
+			}// if seed+1 exists 
 			// 5. at this point, if clusterSize is 2 hits and seed+1 didn't exist, we can afford to walk back one more step and add whatever junk was there (we know it's not a seed)                   	  
-		  }// if seed+1 exists 
-		  else if ( hasBacked && hitChannelMap_.find( itrBack->first - 1 ) != hitChannelMap_.end() ) {  //seed-1 has been added, but not seed+1, and there is a hit in seed-2
-			itrBack = hitChannelMap_.find( itr->first - 2 ) ;
-			digi = (TrigScintHit) digis.at( itrBack->second );
-			addHit( itrBack->first,  digi );
-	  
-			if ( verbose_ >1 ) {
-			  std::cout << "Added -2 channel " << itrBack->first << " to cluster; content " << digi.getPE() << std::endl;
-			}
-			if ( verbose_ > 1 ) {
-			  std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
-			}
-	  
-		  }// check if add in seed -2 
+			else if ( hasBacked && hitChannelMap_.find( itrBack->first - 1 ) != hitChannelMap_.end() ) {  //seed-1 has been added, but not seed+1, and there is a hit in seed-2
+			  itrBack = hitChannelMap_.find( itr->first - 2 ) ;
+			  digi = (TrigScintHit) digis.at( itrBack->second );
+			  addHit( itrBack->first,  digi );
+			  
+			  if ( verbose_ >1 ) {
+				std::cout << "Added -2 channel " << itrBack->first << " to cluster; content " << digi.getPE() << std::endl;
+			  }
+			  if ( verbose_ > 1 ) {
+				std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
+			  }
+			  
+			}// check if add in seed -2 
 
+		  }// if adding another hit, going forward, was allowed 
 	
 		  //done adding hits to cluster. calculate centroid 
 		  centroid_/=val_;             // final weighting step: divide by total 
@@ -360,7 +352,7 @@ namespace ldmx {
 	
 		  TrigScintCluster cluster;
 
-		  if (verbose_ > 1 ) { // && event.getEventHeader()->getEventNumber()%100 == 0 )
+		  if (verbose_ > 1 ) {
 			std::cout << "Now have " << v_addedIndices_.size() << " hits in the cluster " << std::endl;
 		  }
 		  cluster.setSeed( v_addedIndices_.at(0) );
@@ -373,17 +365,6 @@ namespace ldmx {
 		  cluster.setBeamEfrac( beamE_/valE_ );
 
 		  trigScintClusters.push_back( cluster );
-
-
-		  /*
-
-		  //remove used hits from the list
-		  for (unsigned int idx = 0; idx < v_addedIndices_.size(); idx++) {
-		  hitChannelMap_.erase( v_addedIndices_.at(idx)) ;
-
-		  }
-		  */
-
 
 		  if (verbose_ ) 
 			cluster.Print();
@@ -403,7 +384,6 @@ namespace ldmx {
 		} //if content enough to seed a cluster
       
 		if ( hitChannelMap_.begin() == hitChannelMap_.end() ) {
-		  //      if ( hitChannelMap_.size() == 0 ) // we removed them all..?                                                                                                                                     // {
           if (verbose_ )
 			std::cout<< "Time flies, and all clusters have already been removed! Interfering here to get out of the loop. " << std::endl;
           break;
@@ -434,7 +414,8 @@ namespace ldmx {
 	  time_ += hit.getTime()*ampl;
 
 	  v_usedIndices_.push_back( idx );
-	  /*    hitChannelMap_.erase( idx ) ;
+	  /*    // not working properly, but i'd prefer this type of solution
+			hitChannelMap_.erase( idx ) ;
 			if (verbose_ > 1 ) { 
 			std::cout << "Removed used hit " << idx << " from list" << std::endl;
 			}
@@ -443,8 +424,7 @@ namespace ldmx {
 	  */
 	  if (verbose_ > 1) {
 		std::cout << "   In addHit, adding hit at " << idx << " with amplitude " << ampl << ", updating cluster to current centroid " << centroid_/val_ - 1 << " and energy " << val_ << ". index vector now ends with " << v_addedIndices_.back() << std::endl;
-		//if ( hitChannelMap_.find(idx) != hitChannelMap_.end() )
-		//std::cout << "   -- trying to access hit from map: " <<  hitChannelMap_.find(idx)->second << std::endl;
+
 	  }
     
 	  return;
@@ -460,7 +440,6 @@ namespace ldmx {
 		  std::cout << "**************** \nIn TrigScintClusterProducer: Opening file! \n********************\n" << std::endl;
 		}
 	
-	  // consider creating object pointers here to avoid creating/deleting them all the time 
       
 	  return;
 	}
@@ -477,7 +456,6 @@ namespace ldmx {
     }
 
     void TrigScintClusterProducer::onProcessStart() {
-      // clear list of clusters?
 
       if (verbose_ )
 		{
