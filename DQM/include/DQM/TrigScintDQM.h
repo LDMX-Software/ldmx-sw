@@ -58,9 +58,6 @@ namespace ldmx {
 
         private:
 
-            /// Detector ID
-            std::unique_ptr<TrigScintID> detID_;
-
             /// Name of trigger pad hit  collection.
             std::string hitCollectionName_{"TriggerPadUpSimHits"}; 
 

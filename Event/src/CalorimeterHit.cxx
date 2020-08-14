@@ -26,8 +26,4 @@ namespace ldmx {
                 << "ns, amplitude: " << amplitude_ << "}" << std::endl;
     }
 
-    int CalorimeterHit::getLayer() const {
-        return (getID() & 0xFF0) >> 4; // depends on internal knowledge of Detector Id, but efficiency is important for this method
-    }
-
 }

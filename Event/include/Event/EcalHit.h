@@ -38,17 +38,10 @@ namespace ldmx {
             /** Print a text representation of this object. */
             void Print() const;
 
-            /**
-             * Get the cell of the hit from the ID.
-             *
-             * @return The cell of the hit from the ID.
-             */
-            int getCell() const;
-
         private:
 
             /** The ROOT class definition. */
-            ClassDef(EcalHit, 2);
+            ClassDef(EcalHit, 3);
     };
 }
 
