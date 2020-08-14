@@ -17,17 +17,10 @@
 namespace ldmx { 
 
     TrigScintSD::TrigScintSD(G4String name, G4String theCollectionName, int subDetID) 
-        : CalorimeterSD(name, theCollectionName) {
-    
-        detID_ = new TrigScintID();
-
-        // Set the subdet ID as it will always be the same for every hit.
-        detID_->setFieldValue("module", subDetID); 
-
+      : CalorimeterSD(name, theCollectionName), moduleId_{subDetID} {
     }
 
     TrigScintSD::~TrigScintSD() {
-       delete detID_; 
     }
 
     G4bool TrigScintSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
@@ -61,8 +54,8 @@ namespace ldmx {
 
         // Set the ID on the hit.
         auto bar{track->GetVolume()->GetCopyNo()};
-        detID_->setFieldValue("bar", bar);
-        hit->setID(detID_->pack());
+	TrigScintID id(moduleId_,bar);
+        hit->setID(id.raw());
 
         // Set the track ID on the hit.
         hit->setTrackID(track->GetTrackID());

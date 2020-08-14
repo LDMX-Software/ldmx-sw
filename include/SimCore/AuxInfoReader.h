@@ -69,13 +69,6 @@ namespace ldmx {
             void createSensitiveDetector(G4String sdType, const G4GDMLAuxListType* auxInfoList);
 
             /**
-             * Create a detector ID from GDML data.
-             * @param name The name of the detector ID.
-             * @param auxInfoList The aux info defining the detector ID.
-             */
-            void createDetectorID(G4String name, const G4GDMLAuxListType* auxInfoList);
-
-            /**
              * Create a magnetic field from GDML data.
              * @param name The name of the magnetic field.
              * @param auxInfoList The aux info defining the magnetic field.
