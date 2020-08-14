@@ -27,27 +27,24 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         self.output_collection="TriggerPadTaggerClusters"
         self.verbosity = 0
 
-    def up( verboseLevel = 0) :
+    def up() :
         """Get the cluster producer for the trigger pad upstream of target"""
         cluster = TrigScintClusterProducer( 'trigScintClustersUp' )
         cluster.input_collection = 'trigScintDigisUp'
         cluster.output_collection= 'TriggerPadUpClusters'
-        cluster.verbosity = verboseLevel
         return cluster
 
-    def down(verboseLevel = 0) :
+    def down() :
         """Get the cluster producer for the trigger pad downstream of target"""
         cluster = TrigScintClusterProducer( 'trigScintClustersDown' )
         cluster.input_collection = 'trigScintDigisDn'
         cluster.output_collection= 'TriggerPadDownClusters'
-        cluster.verbosity = verboseLevel
         return cluster
 
-    def tagger(verboseLevel = 0) :
+    def tagger() :
         """Get the cluster producer for the trigger pad upstream of tagger"""
         cluster = TrigScintClusterProducer( 'trigScintClustersTag' )
         cluster.input_collection = 'trigScintDigisTag'
         cluster.output_collection= 'TriggerPadTaggerClusters'
-        cluster.verbosity = verboseLevel
         return cluster
 
