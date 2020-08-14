@@ -19,7 +19,7 @@ class TrigScintTrackProducer(ldmxcfg.Producer) :
         from LDMX.EventProc import include
         include.library()
 
-        self.delta_max = 0.75
+        self.delta_max = 1.0
         self.tracking_threshold = 0.  #to add in neighboring channels
         self.seeding_collection = "TriggerPadTaggerClusters"
         self.further_input_collections = ["TriggerPadUpClusters","TriggerPadDownClusters"]

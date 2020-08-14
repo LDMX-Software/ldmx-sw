@@ -82,7 +82,8 @@ namespace ldmx {
 				  << input_collections_.at(1)  << " with " << clusters_pad2.size() << " entries." << std::endl;
 	  }
     
-    
+	  std::vector < TrigScintTrack > cleanedTracks;
+
 	  // loop over the clusters in the seeding pad collection, if there are clusters in all pads 
 	  if ( numSeeds && clusters_pad1.size()  && clusters_pad2.size() )  {
       
@@ -95,28 +96,30 @@ namespace ldmx {
 		  if ( verbose_ > 1 ) {
 			std::cout << "Got seed with centroid " << centroid << std::endl;
 		  }
-	
-	
+
+		  //reset for each seed 
+		  bool madeTrack = false;
+		  
 		  for (const auto& cluster1 : clusters_pad1) {
 	  
 			if ( verbose_ > 1 ) {
-			  std::cout << "Got pad1 cluster with centroid " << cluster1.getCentroid() << std::endl;
+			  std::cout << "\tGot pad1 cluster with centroid " << cluster1.getCentroid() << std::endl;
 			}
 			if (  fabs(cluster1.getCentroid() - centroid ) < maxDelta_ ) { // first match! loop through next pad too 
 	    
 			  if ( verbose_ > 1 ) {
-				std::cout << "It is close enough!. Check pad2" << std::endl;
+				std::cout << "\t\tIt is close enough!. Check pad2" << std::endl;
 			  }
 	    
 			  for (const auto& cluster2 : clusters_pad2) {
 				if ( verbose_ > 1 ) {
-				  std::cout << "Got pad2 cluster with centroid " << cluster2.getCentroid() << std::endl;
+				  std::cout << "\tGot pad2 cluster with centroid " << cluster2.getCentroid() << std::endl;
 				}
 	      
 				if (  fabs(cluster2.getCentroid() - centroid ) < maxDelta_ ) { // first match! loop through next pad too 
 
 				  if ( verbose_ > 1 ) {
-					std::cout << "It is close enough!. Make a track" << std::endl;
+					std::cout << "\t\tIt is close enough!. Make a track" << std::endl;
 				  }
 		
 				  //only make this vector now! this ensures against hanging clusters with indices from earlier in the loop 
@@ -125,10 +128,22 @@ namespace ldmx {
 				  //make a track 
 				  TrigScintTrack track = makeTrack( clusterVec );
 				  trackCandidates.push_back( track );
-		
+
+				  /*
+				  // here we could break if we didn't want to allow all possible combinations
+				  madeTrack=true;
+				  break; //we're done with this iteration once there's a track made 
+				  */
+				  
 				}//if match in pad2
 			  }//over clusters in pad2
 			}//if match in pad1
+			/*
+			//same here
+			if (madeTrack)
+			  break;
+			*/
+			
 		  }//over clusters in pad1
 	
 	
@@ -171,16 +186,82 @@ namespace ldmx {
 		  //}
 		} // over seeds 
 
+		//done here if there were no tracks found
+		if (tracks_.size() == 0) {
+		  if (verbose_ ) {
+			std::cout << "No tracks found!" << std::endl;
+		  }
+		  return;
+		}		
+		// now, if there are multiple seeds sharing the same downstream hits, this should also be remedied with a selection on min residual.
 
-		// TO DO if there are multiple seeds sharing the same downstream hits, this should also be remedied with a selection on min residual.
+		// The logic of this loop kind of assumes I can remove tracks immediately -- that way I can do pairwise checks between more tracks within a single loop.
+		// But for now I haven't figured out how to erase elements in a fool proof way. So I iterate over a vector...
 
+		std::vector keepIndices( tracks_.size(), 1);
+		if (verbose_ > 1)
+		  std::cout << "vector of indices to keep has size " << keepIndices.size() << std::endl;
+		
+		for (uint idx=tracks_.size()-1; idx > 0 ;idx--){
+
+		  TrigScintTrack track = tracks_.at( idx );
+		  TrigScintTrack nextTrack = tracks_.at( idx-1);
+		  if (verbose_ > 1)
+			std::cout << "In track disambiguation loop, idx points at " << idx << " and prev idx points at " << idx-1 << std::endl;
+
+		  std::vector<TrigScintCluster> consts_1 = track.getConstituents();
+		  std::vector<TrigScintCluster> consts_2 = nextTrack.getConstituents();
+		  if (verbose_ > 1)
+            std::cout << "In track disambiguation loop, got the two tracks, with nConstituents " << consts_1.size() << " and " << consts_2.size() << ", respectively. " << std::endl;
+		  // let's do "if either cluster is shared" right now... but could also have it settable to use a stricter cut: an AND 
+		  if ( consts_1[1].getCentroid() ==  consts_2[1].getCentroid() || consts_1[2].getCentroid() == consts_2[2].getCentroid() ) { //we have overlap downstream of the seeding pad. probably, one cluster in seeding pad is noise
+			
+			if (verbose_ > 1 ) {
+			  std::cout << "Found overlap! Tracks at index " << idx << " and " << idx -1 << std::endl;
+			  (tracks_.at(idx)).Print();
+			  (tracks_.at(idx-1)).Print();
+			}
+			
+			if ( (tracks_.at(idx)).getResidual() < (tracks_.at(idx-1)).getResidual() ) {
+			  //next track (lower index) is a worse choice, remove its flag for keeping 
+			  keepIndices.at(idx-1)=0;
+			}
+			else //prefer next track over current. remove current track's keep flag
+			  keepIndices.at(idx)=0;
+			/*}
+			  else {
+			  tracks_.erase(itNext);
+			  //        removeIdx.push_back(idx+1);
+			  // we might see the same index two times in the loop in this case, if there are three seeds sharing the same clusters downstream.
+			  // then the third only gets removed if it's even worse than the second.
+			  // one could deal with this with an extra overlap check. not sure we will be in this situation any time soon though.
+			  }*/
+		  }// over matching/overlapping tracks
+		}// over constructed tracks
+	   
+		for (uint idx=0; idx<tracks_.size(); idx++){
+		  if (verbose_ > 1 ) {
+			std::cout << "keep flag for idx " << idx << " is " << keepIndices.at(idx) << std::endl;
+		  }
+		  if ( keepIndices.at(idx) ) { //this hasn't been flagged for removal
+			
+			cleanedTracks.push_back( tracks_.at(idx) );
+			
+			if (verbose_ ) {
+			  std::cout << "After cleaning, keeping track at index " << idx << ":" << std::endl;
+			  (tracks_.at(idx)).Print();
+			}
+		  }//if index flagged for keeping
+		}//over all (uniquely seeded) tracks in the event
+		/*
 		if (verbose_ ) {
 		  for (uint idx=0; idx < tracks_.size(); idx++){
 			std::cout << "Keeping track at index " << idx << ":" << std::endl;
 			(tracks_.at(idx)).Print();
 		  }
 		}
-
+	  */
+	  
 	  } // if there are clusters in all pads 
 	  else 
 		if (verbose_ ) {
@@ -188,12 +269,11 @@ namespace ldmx {
 		}
     
 
-
 	  if (verbose_ ) {
 		std::cout << "Done with tracking step. " << std::endl << std::endl;
 	  }
 
-	  event.add(output_collection_, tracks_);
+	  event.add(output_collection_, cleanedTracks);
 	  tracks_.resize(0);
 
 	  return;
@@ -226,9 +306,10 @@ namespace ldmx {
   
 
 	  if (verbose_ ) {
-		std::cout << "   In makeTrack made track with centroid  " << centroid << " and residual " << residual << " from clusters with centroids" << std::endl;
+		std::cout << " --  In makeTrack made track with centroid  " << centroid << " and residual " << residual << " from clusters with centroids" << std::endl;
 		for (uint i = 0; i< clusters.size() ; i++)
-		  std::cout << "pad " << i << ": centroid " << (clusters.at(i)).getCentroid() << std::endl;
+		  std::cout << "\tpad " << i << ": centroid " << (clusters.at(i)).getCentroid() ;
+		std::cout << std::endl;
 	  }
   
 	  return tr;
@@ -243,8 +324,6 @@ namespace ldmx {
 		{
 		  std::cout << "**************** \nIn TrigScintTrackProducer: Opening file! \n********************\n" << std::endl;
 		}
-	  
-	  // consider creating object pointers here to avoid creating/deleting them all the time 
 	  
 	  return;
 	}
@@ -261,7 +340,6 @@ namespace ldmx {
 	}
   
     void TrigScintTrackProducer::onProcessStart() {
-      // clear list of clusters?
 
       if (verbose_ )
 	  {
