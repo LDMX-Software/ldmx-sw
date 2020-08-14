@@ -73,11 +73,6 @@ namespace ldmx {
             int subdet_;
 
             /**
-             * The detector ID.
-             */
-            DetectorID* detID_;
-
-            /**
              * The depth to the layer volume.
              */
             int layerDepth_ {2};

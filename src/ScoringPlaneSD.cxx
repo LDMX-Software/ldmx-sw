@@ -1,5 +1,6 @@
 
 #include "SimCore/ScoringPlaneSD.h"
+#include "DetDescr/SimSpecialID.h"
 
 /*----------------*/
 /*   C++ StdLib   */
@@ -26,12 +27,10 @@ namespace ldmx {
         // Register this SD with the manager.
         G4SDManager::GetSDMpointer()->AddNewDetector(this);
 
-        // Set the subdet ID as it will always be the same for every hit.
-        detID_->setFieldValue("subdet", subDetID);
+	// at some point, confirm that the subDetID is as expected...
     }
 
     ScoringPlaneSD::~ScoringPlaneSD() {
-        delete detID_;
     }
 
     G4bool ScoringPlaneSD::ProcessHits(G4Step* step, G4TouchableHistory* history) {
@@ -80,9 +79,8 @@ namespace ldmx {
          * Set the 32-bit ID on the hit.
          */
         int cpNumber = prePoint->GetTouchableHandle()->GetCopyNumber();
-        detID_->setFieldValue(1, cpNumber);
-        hit->setID(detID_->pack());
-        hit->setLayerID(cpNumber);
+	SimSpecialID id=SimSpecialID::ScoringPlaneID(cpNumber);
+        hit->setID(id.raw());
 
         /*
          * Debug print.

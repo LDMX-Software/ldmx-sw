@@ -25,11 +25,10 @@ namespace ldmx {
         G4SDManager::GetSDMpointer()->AddNewDetector(this);
 
         // Set the subdet ID as it will always be the same for every hit.
-        detID_->setFieldValue("subdet", subDetID);
+	subDetID_=SubdetectorIDType(subDetID);
     }
 
     TrackerSD::~TrackerSD() {
-        delete detID_;
     }
 
     G4bool TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
@@ -102,9 +101,8 @@ namespace ldmx {
         int copyNum = prePoint->GetTouchableHandle()->GetHistory()->GetVolume(2)->GetCopyNo();
         int layer = copyNum / 10;
         int module = copyNum % 10;
-        detID_->setFieldValue(1, layer);
-        detID_->setFieldValue(2, module);
-        hit->setID(detID_->pack());
+	TrackerID id(subDetID_,layer,module);
+        hit->setID(id.raw());
         hit->setLayerID(layer);
         hit->setModuleID(module); 
 
