@@ -19,8 +19,10 @@ find_package(Boost REQUIRED COMPONENTS system log filesystem thread chrono atomi
 
 # Setup the library
 setup_library(name Framework
-              dependencies Python3::Python ROOT::Hist ROOT::TreePlayer 
-                           DARK::Event Boost::log Boost::atomic Boost::regex
+              dependencies Python3::Python 
+                           ROOT::Hist ROOT::TreePlayer ROOT::MathCore ROOT::Physics
+                           DARK::Event 
+                           Boost::log Boost::atomic Boost::regex
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
