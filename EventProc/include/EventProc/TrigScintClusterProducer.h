@@ -28,10 +28,8 @@ namespace ldmx {
         public:
 
             TrigScintClusterProducer(const std::string& name, ldmx::Process& process) : ldmx::Producer(name, process) {
-	//	    	clusters_ = new TClonesArray("ldmx::TrigScintCluster");
 	    }
 
-      //virtual void configure(const ldmx::ParameterSet& ps);
       virtual void configure(ldmx::Parameters& ps);
       
       virtual void produce(ldmx::Event& event);
@@ -48,22 +46,22 @@ namespace ldmx {
       
         private:
       std::vector< TrigScintCluster > clusters_;
-      //TClonesArray * clusters_{nullptr};
+
       double seed_{0.};
       double minThr_{0.};
-
-      int verbose_{0}; //true}; //
+	  int maxWidth_{2};
+      int verbose_{0}; 
 
       std::string input_collection_;
       std::string output_collection_;
-      uint    NUM_STRIPS_PER_ARRAY_{64}; //this should be 50...
+
 
       float centroid_{0.};  //channel nb centroid (will be content weighted)
       float val_{0.};       // energy, PE, or sth
       float valE_{0.};       // energy, only; leave val_ for PE
       std::vector <unsigned int> v_addedIndices_;  // book keep which channels have already been added to a cluster
       std::vector <unsigned int> v_usedIndices_;  // book keep which channels have already been added to any cluster
-      float beamE_{0.};
+      float beamE_{0.};     // fraction of cluster energy associated with beam electron sim hits
       float time_{0.};
 
        // empty map container 
