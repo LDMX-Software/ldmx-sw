@@ -111,7 +111,11 @@ endif()
 # Magnetic field map installation
 option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
 if(INSTALL_FIELDMAP)
-  install(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/InstallMagFieldMap.cmake")
+    
+    # Add the magnetic field map directory.  This simply installs the B-field
+    # maps.
+    add_subdirectory(MagFieldMap)
+
 endif()
 
 # If enabled, build all test.  The test are assumed to reside inside of the
