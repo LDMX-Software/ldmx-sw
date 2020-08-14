@@ -225,6 +225,17 @@ namespace ldmx {
 	 */
 	bool isInside(double normX, double normY) const;
 
+            /**
+             * Get a reference to the TH2Poly used for Cell IDs.
+             *
+             * @note This is only helpful in the use case
+             * where you want to print the cell ID <-> cell position
+             * map. DO NOT USE THIS OTHERWISE.
+             *
+             * @return pointer to member variable ecalMap_
+             */
+            TH2Poly* getCellPolyMap() const { return &ecalMap_; }
+
         private:
 
 	/**
