@@ -19,9 +19,9 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
         from LDMX.EventProc import include
         include.library()
 
-        self.number_of_strips = 50
+        self.max_cluster_width = 2
         self.clustering_threshold = 0.  #to add in neighboring channels
-        self.seed_threshold = 40.
+        self.seed_threshold = 30.
         self.input_collection="trigScintDigisTag"
         self.input_pass_name="" #take any pass
         self.output_collection="TriggerPadTaggerClusters"
@@ -37,7 +37,7 @@ class TrigScintClusterProducer(ldmxcfg.Producer) :
 
     def down(verboseLevel = 0) :
         """Get the cluster producer for the trigger pad downstream of target"""
-        cluster = TrigScintClusterProducer( 'trigScintClustersDn' )
+        cluster = TrigScintClusterProducer( 'trigScintClustersDown' )
         cluster.input_collection = 'trigScintDigisDn'
         cluster.output_collection= 'TriggerPadDownClusters'
         cluster.verbosity = verboseLevel
