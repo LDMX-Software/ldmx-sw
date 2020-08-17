@@ -27,14 +27,14 @@ namespace ldmx {
     void EcalBremFilter::stepping(const G4Step* step) { 
 
         // Only process the primary electron track
-        if (step->GetTrack()->GetParentID() != 0) return;
+        if (step->GetTrack()->GetTrackID() != 1) return;
 
         if (G4EventManager::GetEventManager()->GetConstCurrentEvent()->IsAborted()) return;
 
         //track is the primary electron and event hasn't been aborted yet
         auto start{step->GetPreStepPoint()};
         auto end{step->GetPostStepPoint()};
-        if ( (start->GetKineticEnergy() < bremEnergyThreshold_ and end->GetKineticEnergy() > bremEnergyThreshold_)
+        if ( (start->GetKineticEnergy() > bremEnergyThreshold_ and end->GetKineticEnergy() < bremEnergyThreshold_)
               or 
              (start->GetPhysicalVolume()->GetLogicalVolume()->GetRegion()->GetName().compareTo("CalorimeterRegion")==0 and
               end  ->GetPhysicalVolume()->GetLogicalVolume()->GetRegion()->GetName().compareTo("CalorimeterRegion")!=0)
