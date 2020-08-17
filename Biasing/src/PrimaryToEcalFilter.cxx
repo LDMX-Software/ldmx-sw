@@ -32,8 +32,10 @@ namespace ldmx {
 
         // If the energy of the particle fell below threshold, stop processing the event.
         if (auto energy{step->GetPostStepPoint()->GetTotalEnergy()}; energy < threshold_) { 
+            /*
             std::cout << "[ PrimaryToEcalFilter ] : Aborting " 
                 << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << std::endl;
+            */
             step->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries); 
             G4RunManager::GetRunManager()->AbortEvent(); 
             return; 

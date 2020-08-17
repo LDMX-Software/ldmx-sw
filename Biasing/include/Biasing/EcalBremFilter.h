@@ -38,19 +38,9 @@ namespace ldmx {
              */
             void stepping(const G4Step* step) final override;
 
-            /**
-             * Classify a new track which postpones track processing.
-             * Track processing resumes normally if a target PN interaction occurred.
-             * @param aTrack The Geant4 track.
-             * @param currentTrackClass The current track classification.
-             */
-            G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* aTrack, 
-                const G4ClassificationOfNewTrack& currentTrackClass) final override;
-
-
             /// Retrieve the type of actions this class defines
             std::vector< TYPE > getTypes() final override { 
-                return { TYPE::STACKING, TYPE::STEPPING }; 
+                return { TYPE::STEPPING }; 
             } 
 
         private:
