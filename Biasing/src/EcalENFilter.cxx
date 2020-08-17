@@ -25,16 +25,13 @@ namespace ldmx {
 
     void EcalENFilter::stepping(const G4Step* step) { 
 
-        // Only continue if we aren't aborted
         if (G4EventManager::GetEventManager()->GetConstCurrentEvent()->IsAborted()) return;
-
-        // Only process tracks whose parent is the primary particle
-        if (step->GetTrack()->GetParentID() != 0) return; 
+        if (step->GetTrack()->GetTrackID() != 1) return; 
 
         //track is the primary electron and event hasn't been aborted yet
         auto start{step->GetPreStepPoint()};
         auto end{step->GetPostStepPoint()};
-        if ( (start->GetKineticEnergy() < recoilEnergyThreshold_ and end->GetKineticEnergy() > recoilEnergyThreshold_)
+        if ( (start->GetKineticEnergy() > recoilEnergyThreshold_ and end->GetKineticEnergy() < recoilEnergyThreshold_)
               or 
              (start->GetPhysicalVolume()->GetLogicalVolume()->GetRegion()->GetName().compareTo("CalorimeterRegion")==0 and
               end  ->GetPhysicalVolume()->GetLogicalVolume()->GetRegion()->GetName().compareTo("CalorimeterRegion")!=0)
@@ -44,14 +41,14 @@ namespace ldmx {
             
             // Get the electron secondries
             auto secondaries = step->GetSecondary();
-            std::cout << "[ EcalBremFilter ] : Primary electron went below recoil energy threshold: " 
+            std::cout << "[ EcalENFilter ] : Primary electron went below recoil energy threshold: " 
                 << "KE: " << step->GetTrack()->GetKineticEnergy() << "MeV "
                 << "N Secondaries: " << secondaries->size() << std::endl;
             /*
             */
 
             if (!secondaries or secondaries->size() == 0) {
-                std::cout << "[ EcalBremFilter ] : "
+                std::cout << "[ EcalENFilter ] : "
                     << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
                     << " No secondaries at all. Aborting event..." << std::endl;
                 /*
@@ -64,21 +61,26 @@ namespace ldmx {
             double enEnergy(0.);
             for (auto& secondary_track : *secondaries) {
                 G4String processName = secondary_track->GetCreatorProcess()->GetProcessName();
+
+                std::cout << "[ EcalENFilter ] : "
+                    << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() 
+                    << " Secondary coming from process '" 
+                    << processName << "': ";
                 
                 if (processName.contains("electronNuclear")) {
-                    std::cout << "[ EcalENFilter ] : "
-                        << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() 
+                    std::cout
                         << " Found a secondary EN product with energy "
-                        << secondary_track->GetKineticEnergy() << " MeV."
-                        << std::endl;
+                        << secondary_track->GetKineticEnergy() << " MeV.";
                     /*
                     */
                     enEnergy += secondary_track->GetKineticEnergy(); 
                 } //check for hard recoil
+
+                std::cout << std::endl;
             }//loop over secondaries
     
             if (enEnergy < recoilEnergyThreshold_) { 
-                std::cout << "[ EcalBremFilter ] : "
+                std::cout << "[ EcalENFilter ] : "
                     << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
                     << " Not enough energy went to EN secondaries. Aborting event..." << std::endl;
                 /*
