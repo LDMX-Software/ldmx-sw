@@ -94,6 +94,23 @@ class TargetENFilter(simcfg.UserAction) :
 
         self.recoilThreshold = recoil_thresh #MeV
 
+class EcalENFilter(simcfg.UserAction) :
+    """ Configuration for filtering electro-nuclear events in the target. 
+
+    Parameters
+    ----------
+    recoil_thresh : float
+        Maximum energy recoil electron is allowed to have [MeV]
+    """
+
+    def __init__(self,recoil_thresh = 2500.) :
+        super().__init__("ecal_en_process_filter","ldmx::EcalENFilter")
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.recoilThreshold = recoil_thresh #MeV
+
 class TargetPNFilter(simcfg.UserAction) :
     """ Configuration for filtering photo-nuclear events in the target."""
 
