@@ -34,9 +34,11 @@ namespace ldmx {
         G4String particleName = track->GetParticleDefinition()->GetParticleName();
 
         if (track == currentTrack_) {
+            /*
             std::cout << "[ EcalProcessFilter ]: "
                 << "Putting track " << track->GetTrackID() 
                 << " onto waiting stack." << std::endl;
+            */
             currentTrack_ = nullptr; 
             return fWaiting; 
         }
@@ -64,9 +66,10 @@ namespace ldmx {
                     G4EventManager::GetEventManager()->GetUserInformation())};
         if (eventInfo == nullptr) {
             // thrown an exception
-            std::cout << "[ EcalProcessFilter ]: "
-              << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
-              << " no event info..." << std::endl;
+            EXCEPTION_RAISE(
+                    "NoEventInfo",
+                    "EcalProcessFilter found an event without UserEventInformation."
+                    );
         }
 
         // Get the particles daughters.
@@ -83,18 +86,22 @@ namespace ldmx {
             // brem.
             if (secondaries->size() != 0) {
                     
-                    std::cout << "[ EcalProcessFilter ]: "
+                /*
+                std::cout << "[ EcalProcessFilter ]: "
                       << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
                       << " secondaries outside ecal...";
+                */
                 if (eventInfo->bremCandidateCount() == 1) {
-                    std::cout << "aborting the event." << std::endl;
+                    //std::cout << "aborting the event." << std::endl;
                     track->SetTrackStatus(fKillTrackAndSecondaries);
                     G4RunManager::GetRunManager()->AbortEvent();
                     currentTrack_ = nullptr;
                 } else { 
+                    /*
                     std::cout << "suspending the track " << track->GetTrackID()
                         << " , " << eventInfo->bremCandidateCount() << " brems left."
                         << std::endl;
+                    */
                     currentTrack_ = track; 
                     track->SetTrackStatus(fSuspend);
                     eventInfo->decBremCandidateCount();
@@ -109,18 +116,22 @@ namespace ldmx {
 
             // Check if the photon will be exiting the ecal
             if (auto volume{track->GetNextVolume()->GetName()}; volume.compareTo("hcal_PV") == 0) {
-                    std::cout << "[ EcalProcessFilter ]: "
+                /*
+                std::cout << "[ EcalProcessFilter ]: "
                       << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
                       << " no secondaries when leaving ecal...";
+                */
                 if (eventInfo->bremCandidateCount() == 1) {
-                    std::cout << "aborting the event." << std::endl;
+                    //std::cout << "aborting the event." << std::endl;
                     track->SetTrackStatus(fKillTrackAndSecondaries);
                     G4RunManager::GetRunManager()->AbortEvent();
                     currentTrack_ = nullptr;
                 } else { 
+                    /*
                     std::cout << "suspending the track " << track->GetTrackID()
                         << " , " << eventInfo->bremCandidateCount() << " brems left."
                         << std::endl;
+                    */
                     currentTrack_ = track; 
                     track->SetTrackStatus(fSuspend);
                     eventInfo->decBremCandidateCount();
@@ -137,18 +148,22 @@ namespace ldmx {
 
             // Only record the process that is being biased
             if (!processName.contains(process_)) {
-                    std::cout << "[ EcalProcessFilter ]: "
+                /*
+                std::cout << "[ EcalProcessFilter ]: "
                       << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
                       << " not PN products...";
+                */
                 if (eventInfo->bremCandidateCount() == 1) {
-                    std::cout << "aborting the event." << std::endl;
+                    //std::cout << "aborting the event." << std::endl;
                     track->SetTrackStatus(fKillTrackAndSecondaries);
                     G4RunManager::GetRunManager()->AbortEvent();
                     currentTrack_ = nullptr;
                 } else { 
+                    /*
                     std::cout << "suspending the track " << track->GetTrackID() 
                         << " , " << eventInfo->bremCandidateCount() << " brems left."
                         << std::endl;
+                    */
                     currentTrack_ = track; 
                     track->SetTrackStatus(fSuspend);
                     eventInfo->decBremCandidateCount();  
