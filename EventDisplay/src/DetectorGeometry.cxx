@@ -20,47 +20,47 @@ namespace ldmx {
 
         hcalWidthScint_ = 50.0;
 
-        hcalNLayers_[ HcalSection::BACK   ] = 100;
-        hcalNLayers_[ HcalSection::TOP    ] = 28;
-        hcalNLayers_[ HcalSection::BOTTOM ] = 28;
-        hcalNLayers_[ HcalSection::LEFT   ] = 26;
-        hcalNLayers_[ HcalSection::RIGHT  ] = 26;
+        hcalNLayers_[ HcalID::HcalSection::BACK   ] = 100;
+        hcalNLayers_[ HcalID::HcalSection::TOP    ] = 28;
+        hcalNLayers_[ HcalID::HcalSection::BOTTOM ] = 28;
+        hcalNLayers_[ HcalID::HcalSection::LEFT   ] = 26;
+        hcalNLayers_[ HcalID::HcalSection::RIGHT  ] = 26;
         
-        hcalNStrips_[ HcalSection::BACK   ] = 62;
-        hcalNStrips_[ HcalSection::TOP    ] = 9;
-        hcalNStrips_[ HcalSection::BOTTOM ] = 9;
-        hcalNStrips_[ HcalSection::LEFT   ] = 9;
-        hcalNStrips_[ HcalSection::RIGHT  ] = 9;
+        hcalNStrips_[ HcalID::HcalSection::BACK   ] = 62;
+        hcalNStrips_[ HcalID::HcalSection::TOP    ] = 9;
+        hcalNStrips_[ HcalID::HcalSection::BOTTOM ] = 9;
+        hcalNStrips_[ HcalID::HcalSection::LEFT   ] = 9;
+        hcalNStrips_[ HcalID::HcalSection::RIGHT  ] = 9;
          
         double ecal_z  = 440.;
         double ecal_xy = 600.;
         double back_transverse_width = 3100.;
         double ecal_front_z = 220.;
 
-        hcalLengthScint_[ HcalSection::BACK   ] = back_transverse_width;
-        hcalLengthScint_[ HcalSection::TOP    ] = (back_transverse_width+ecal_xy)/2.;
-        hcalLengthScint_[ HcalSection::BOTTOM ] = (back_transverse_width+ecal_xy)/2.;
-        hcalLengthScint_[ HcalSection::LEFT   ] = (back_transverse_width+ecal_xy)/2.;
-        hcalLengthScint_[ HcalSection::RIGHT  ] = (back_transverse_width+ecal_xy)/2.;
+        hcalLengthScint_[ HcalID::HcalSection::BACK   ] = back_transverse_width;
+        hcalLengthScint_[ HcalID::HcalSection::TOP    ] = (back_transverse_width+ecal_xy)/2.;
+        hcalLengthScint_[ HcalID::HcalSection::BOTTOM ] = (back_transverse_width+ecal_xy)/2.;
+        hcalLengthScint_[ HcalID::HcalSection::LEFT   ] = (back_transverse_width+ecal_xy)/2.;
+        hcalLengthScint_[ HcalID::HcalSection::RIGHT  ] = (back_transverse_width+ecal_xy)/2.;
          
-        hcalZeroLayer_[ HcalSection::BACK   ] = ecal_front_z + 600.; //leaving 60cm cube for ecal
-        hcalZeroLayer_[ HcalSection::TOP    ] = ecal_xy/2.;
-        hcalZeroLayer_[ HcalSection::BOTTOM ] = ecal_xy/2.;
-        hcalZeroLayer_[ HcalSection::LEFT   ] = ecal_xy/2.;
-        hcalZeroLayer_[ HcalSection::RIGHT  ] = ecal_xy/2.;
+        hcalZeroLayer_[ HcalID::HcalSection::BACK   ] = ecal_front_z + 600.; //leaving 60cm cube for ecal
+        hcalZeroLayer_[ HcalID::HcalSection::TOP    ] = ecal_xy/2.;
+        hcalZeroLayer_[ HcalID::HcalSection::BOTTOM ] = ecal_xy/2.;
+        hcalZeroLayer_[ HcalID::HcalSection::LEFT   ] = ecal_xy/2.;
+        hcalZeroLayer_[ HcalID::HcalSection::RIGHT  ] = ecal_xy/2.;
          
-        hcalZeroStrip_[ HcalSection::BACK   ] = back_transverse_width/2.; 
-        hcalZeroStrip_[ HcalSection::TOP    ] = ecal_front_z;
-        hcalZeroStrip_[ HcalSection::BOTTOM ] = ecal_front_z;
-        hcalZeroStrip_[ HcalSection::LEFT   ] = ecal_front_z;
-        hcalZeroStrip_[ HcalSection::RIGHT  ] = ecal_front_z;
+        hcalZeroStrip_[ HcalID::HcalSection::BACK   ] = back_transverse_width/2.; 
+        hcalZeroStrip_[ HcalID::HcalSection::TOP    ] = ecal_front_z;
+        hcalZeroStrip_[ HcalID::HcalSection::BOTTOM ] = ecal_front_z;
+        hcalZeroStrip_[ HcalID::HcalSection::LEFT   ] = ecal_front_z;
+        hcalZeroStrip_[ HcalID::HcalSection::RIGHT  ] = ecal_front_z;
 
         // absorber + scintillator + 2*air
-        hcalLayerThickness_[ HcalSection::BACK   ] = 25. + hcalThicknessScint_ + 2*2.;
-        hcalLayerThickness_[ HcalSection::TOP    ] = 20. + hcalThicknessScint_ + 2*2.;
-        hcalLayerThickness_[ HcalSection::BOTTOM ] = 20. + hcalThicknessScint_ + 2*2.;
-        hcalLayerThickness_[ HcalSection::LEFT   ] = 20. + hcalThicknessScint_ + 2*2.;
-        hcalLayerThickness_[ HcalSection::RIGHT  ] = 20. + hcalThicknessScint_ + 2*2.;
+        hcalLayerThickness_[ HcalID::HcalSection::BACK   ] = 25. + hcalThicknessScint_ + 2*2.;
+        hcalLayerThickness_[ HcalID::HcalSection::TOP    ] = 20. + hcalThicknessScint_ + 2*2.;
+        hcalLayerThickness_[ HcalID::HcalSection::BOTTOM ] = 20. + hcalThicknessScint_ + 2*2.;
+        hcalLayerThickness_[ HcalID::HcalSection::LEFT   ] = 20. + hcalThicknessScint_ + 2*2.;
+        hcalLayerThickness_[ HcalID::HcalSection::RIGHT  ] = 20. + hcalThicknessScint_ + 2*2.;
 
         ///////////////////////////////////////////////////////////////////////////////////
         // ECAL
@@ -77,7 +77,7 @@ namespace ldmx {
 
         ecalDepth_ = ecal_z;
 
-        ecalSiPlanes_ = {
+        std::vector<double> ecalSiPlanes = {
              7.850, 13.300, 26.400, 33.500, 47.950, 56.550, 72.250, 81.350, 97.050, 106.150,
             121.850, 130.950, 146.650, 155.750, 171.450, 180.550, 196.250, 205.350, 221.050, 230.150,
             245.850, 254.950, 270.650, 279.750, 298.950, 311.550, 330.750, 343.350, 362.550, 375.150,
@@ -88,7 +88,7 @@ namespace ldmx {
                 ecalHexRadius_,
                 ecalHexGap_,
                 ecalNCellsWide_,
-                ecalSiPlanes_,
+                ecalSiPlanes,
                 ecalZeroLayer_
                 );
 
@@ -224,9 +224,10 @@ namespace ldmx {
         //pairs that will go into BoundingBox
         std::pair<double,double> X(0,0), Y(0,0), Z(0,0);
 
-        HcalSection section = (HcalSection)( hit.getSection() );
-        int layer = hit.getLayer();
-        int strip = hit.getStrip();
+        HcalID id(hit.getID());
+        HcalID::HcalSection section = (HcalID::HcalSection)id.section();
+        int layer   = id.layer();
+        int strip   = id.strip();
 
         //calculate center of layer,strip with respect to detector section
         double layercenter = layer*hcalLayerThickness_.at( section ) + 0.5*hcalThicknessScint_;
@@ -237,7 +238,7 @@ namespace ldmx {
         double estrip = 0.5*hcalWidthScint_;
         
         double x,y,z;
-        if ( section == HcalSection::BACK ) {
+        if ( section == HcalID::HcalSection::BACK ) {
             
             z = hcalZeroLayer_.at( section ) + layercenter;
             Z.first  = z-elayer;
@@ -251,14 +252,14 @@ namespace ldmx {
                 X.first  = x - estrip;
                 X.second = x + estrip;
                 
-                y = hit.getY();
+                y = hit.getYPos();
                 Y.first  = y - hcalUncertaintyTimingPos_;
                 Y.second = y + hcalUncertaintyTimingPos_;
 
             } else {
                 //Horizontal Layers
                 
-                x = hit.getX();
+                x = hit.getXPos();
                 X.first  = x - hcalUncertaintyTimingPos_;
                 X.second = x + hcalUncertaintyTimingPos_;
 
@@ -274,28 +275,28 @@ namespace ldmx {
             Z.first  = z - estrip;
             Z.second = z + estrip;
 
-            if ( section == HcalSection::TOP or section == HcalSection::BOTTOM ) {
+            if ( section == HcalID::HcalSection::TOP or section == HcalID::HcalSection::BOTTOM ) {
                 
-                x = hit.getX();
+                x = hit.getXPos();
                 X.first  = x - hcalUncertaintyTimingPos_;
                 X.second = x + hcalUncertaintyTimingPos_;
                 
                 y = hcalZeroLayer_.at( section ) + layercenter;
-                if ( section == HcalSection::BOTTOM ) {
+                if ( section == HcalID::HcalSection::BOTTOM ) {
                     y *= -1;
                 } 
 
                 Y.first  = y - elayer;
                 Y.second = y + elayer;
                 
-            } else if ( section == HcalSection::LEFT or section == HcalSection::RIGHT ) {
+            } else if ( section == HcalID::HcalSection::LEFT or section == HcalID::HcalSection::RIGHT ) {
                 
-                y = hit.getY();
+                y = hit.getYPos();
                 Y.first  = y - hcalUncertaintyTimingPos_;
                 Y.second = y + hcalUncertaintyTimingPos_;
 
                 x = hcalZeroLayer_.at( section ) + layercenter;
-                if ( section == HcalSection::RIGHT ) {
+                if ( section == HcalID::HcalSection::RIGHT ) {
                     x *= -1;
                 }
 
@@ -349,21 +350,21 @@ namespace ldmx {
         return hbox;
     }
 
-    BoundingBox DetectorGeometry::getBoundingBox( HcalSection section ) const {
+    BoundingBox DetectorGeometry::getBoundingBox( HcalID::HcalSection section ) const {
 
         std::pair< double, double > X(0,0), Y(0,0), Z(0,0);
 
         double total_strip_width = hcalNStrips_.at( section ) * hcalWidthScint_;
         double total_thickness = hcalNLayers_.at( section ) * hcalLayerThickness_.at( section );
-        if ( section == HcalSection::BACK ) {
+        if ( section == HcalID::HcalSection::BACK ) {
            
-            X.first  = -hcalZeroStrip_.at( HcalSection::BACK );
+            X.first  = -hcalZeroStrip_.at( HcalID::HcalSection::BACK );
             X.second = X.first + total_strip_width;
 
-            Y.first  = -hcalLengthScint_.at( HcalSection::BACK )/2.0;
-            Y.second =  hcalLengthScint_.at( HcalSection::BACK )/2.0;
+            Y.first  = -hcalLengthScint_.at( HcalID::HcalSection::BACK )/2.0;
+            Y.second =  hcalLengthScint_.at( HcalID::HcalSection::BACK )/2.0;
 
-            Z.first  = hcalZeroLayer_.at( HcalSection::BACK );
+            Z.first  = hcalZeroLayer_.at( HcalID::HcalSection::BACK );
             Z.second = Z.first + total_thickness;
 
         } else {
@@ -371,40 +372,40 @@ namespace ldmx {
             Z.first  = hcalZeroStrip_.at( section );
             Z.second = Z.first + total_strip_width;
 
-            if ( section == HcalSection::LEFT ) {
+            if ( section == HcalID::HcalSection::LEFT ) {
                 
-                X.first  = hcalZeroLayer_.at( HcalSection::LEFT );
+                X.first  = hcalZeroLayer_.at( HcalID::HcalSection::LEFT );
                 X.second = X.first + total_thickness;
 
-                Y.second = hcalZeroLayer_.at( HcalSection::TOP );
-                Y.first  = Y.second - hcalLengthScint_.at( HcalSection::LEFT );
+                Y.second = hcalZeroLayer_.at( HcalID::HcalSection::TOP );
+                Y.first  = Y.second - hcalLengthScint_.at( HcalID::HcalSection::LEFT );
 
-            } else if ( section == HcalSection::RIGHT ) {
+            } else if ( section == HcalID::HcalSection::RIGHT ) {
 
-                X.second = -hcalZeroLayer_.at( HcalSection::RIGHT );
+                X.second = -hcalZeroLayer_.at( HcalID::HcalSection::RIGHT );
                 X.first  = X.second - total_thickness;
 
-                Y.first  = -hcalZeroLayer_.at( HcalSection::BOTTOM );
-                Y.second = Y.first + hcalLengthScint_.at( HcalSection::RIGHT );
+                Y.first  = -hcalZeroLayer_.at( HcalID::HcalSection::BOTTOM );
+                Y.second = Y.first + hcalLengthScint_.at( HcalID::HcalSection::RIGHT );
 
-            } else if ( section == HcalSection::TOP ) {
+            } else if ( section == HcalID::HcalSection::TOP ) {
 
-                Y.first  = hcalZeroLayer_.at( HcalSection::TOP );
+                Y.first  = hcalZeroLayer_.at( HcalID::HcalSection::TOP );
                 Y.second = Y.first + total_thickness;
 
-                X.first  = -hcalZeroLayer_.at( HcalSection::RIGHT );
-                X.second = X.first + hcalLengthScint_.at( HcalSection::TOP );
+                X.first  = -hcalZeroLayer_.at( HcalID::HcalSection::RIGHT );
+                X.second = X.first + hcalLengthScint_.at( HcalID::HcalSection::TOP );
 
-            } else if ( section == HcalSection::BOTTOM ) {
+            } else if ( section == HcalID::HcalSection::BOTTOM ) {
 
-                Y.second = -hcalZeroLayer_.at( HcalSection::BOTTOM );
+                Y.second = -hcalZeroLayer_.at( HcalID::HcalSection::BOTTOM );
                 Y.first  = Y.second - total_thickness;
 
-                X.second = hcalZeroLayer_.at( HcalSection::LEFT );
-                X.first  = X.second - hcalLengthScint_.at( HcalSection::BOTTOM );
+                X.second = hcalZeroLayer_.at( HcalID::HcalSection::LEFT );
+                X.first  = X.second - hcalLengthScint_.at( HcalID::HcalSection::BOTTOM );
 
             } else {
-                std::cerr << "[ Warning ] : Unrecognized HcalSection in DetectorGeometry::getBoundingBox." << std::endl;
+                std::cerr << "[ Warning ] : Unrecognized HcalID::HcalSection in DetectorGeometry::getBoundingBox." << std::endl;
                 std::cerr << "    Will return an incorrect geometry description!" << std::endl;
             }
         }
@@ -417,33 +418,17 @@ namespace ldmx {
         return boundingbox;
     }
 
-    HexPrism DetectorGeometry::getHexPrism( unsigned int cellID , unsigned int moduleID , int layer ) const {
-
-        unsigned int combinedID = ecalHexReader_->combineID( cellID , moduleID );
-
-        XYCoords xy = ecalHexReader_->getCellCenterAbsolute( combinedID );
+    HexPrism DetectorGeometry::getHexPrism( const EcalID &id ) const {
 
         HexPrism hexpris;
-        hexpris.x = xy.first;
-        hexpris.y = xy.second;
-        hexpris.z = ecalZeroLayer_ + ecalSiPlanes_.at( layer );
+        ecalHexReader_->getCellAbsolutePosition( id , hexpris.x , hexpris.y , hexpris.z );
         hexpris.height = ecalSiThickness_;
         hexpris.radius = ecalHexRadius_ / ecalNCellsWide_;
 
         return hexpris;
     }
 
-    HexPrism DetectorGeometry::getHexPrism( const EcalHit &hit ) const {
-
-        unsigned int hitID = hit.getID();
-        unsigned int cellID = hitID >> 15;
-        unsigned int moduleID = (hitID << 17) >> 29;
-        int layer = hit.getLayer();
-
-        return this->getHexPrism( cellID , moduleID , layer );
-    }
-
-    HexPrism DetectorGeometry::getHexPrism( int towerIndex ) const {
+    HexPrism DetectorGeometry::getHexTower( int towerIndex ) const {
 
         HexPrism hexpris;
 
