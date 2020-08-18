@@ -60,7 +60,6 @@ setup_library(name Event
               dependencies ROOT::Core
               sources EventDic.cxx ${SRC_FILES}
               python_install_path ${PYTHON_INSTALL_PREFIX}
-              python_root_module_name LDMX
 )
 
 # If this is really needed, import a target instead.
