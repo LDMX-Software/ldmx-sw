@@ -33,12 +33,13 @@ jobs:
     - name: Build and Install
       run: docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build make install
 
-    # run ldmx-test using the docker environment
+    # run test executable and test configs using the docker environment
     - name: Test the build
       run: |
           cd ../ &&
           export LDMX_BASE=$(pwd) &&
-          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $LDMX_BASE/ldmx-sw/install ./bin/run_test
+          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $LDMX_BASE/ldmx-sw/install ./bin/run_test &&
+          for config in */test/*.py; do docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $(pwd) fire $config; done
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
