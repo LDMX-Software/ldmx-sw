@@ -1,5 +1,4 @@
 
-
 # Set the minimum version of CMake that's required
 cmake_minimum_required(VERSION 3.12)
 
@@ -15,5 +14,6 @@ find_package(ONNXRuntime 1.2.0)
 
 # Setup the library
 setup_library(name Tools
-              dependencies DARK::Framework DARK::Event ONNXRuntime::Interface
+              dependencies DARK::Framework DARK::Event 
+                           ONNXRuntime::Interface
 )
