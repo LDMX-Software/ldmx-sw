@@ -22,7 +22,6 @@ setup_library(name Framework
               dependencies Python3::Python ROOT::Hist ROOT::TreePlayer
                            DARK::Event Boost::log Boost::atomic Boost::regex
               python_install_path ${PYTHON_INSTALL_PREFIX}
-              python_root_module_name LDMX
 )
 
 # Compiling the Framework library requires features introduced by the cpp 17
