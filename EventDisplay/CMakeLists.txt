@@ -64,10 +64,10 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/EventDisplay
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
 # Add the event display executable
-add_executable(ldmx_eve ${PROJECT_SOURCE_DIR}/src/ldmx_eve.cxx)
+add_executable(ldmx-eve ${PROJECT_SOURCE_DIR}/src/ldmx_eve.cxx)
 
 # Link to the Framework library
-target_link_libraries(ldmx_eve PRIVATE EventDisplay)
+target_link_libraries(ldmx-eve PRIVATE EventDisplay)
 
 # Install the fire executable
-install(TARGETS ldmx_eve DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS ldmx-eve DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
