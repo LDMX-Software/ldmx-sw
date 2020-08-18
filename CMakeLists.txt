@@ -22,10 +22,14 @@ endif()
 # Configure Geant4
 setup_geant4_target()
 
+# Search and configure ROOT
+find_package(ROOT CONFIG REQUIRED)
+
 # Setup the library 
 setup_library(name SimCore 
-              dependencies Geant4::Interface DARK::Framework DARK::DetDescr
+              dependencies Geant4::Interface ROOT::Physics DARK::Framework DARK::DetDescr
               python_install_path ${PYTHON_INSTALL_PREFIX}
+              python_root_module_name LDMX
 )
 
 # Set some target properties
