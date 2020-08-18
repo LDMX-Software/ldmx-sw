@@ -1,8 +1,7 @@
 
 name: Tests
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+# we are going to run this action whenever we push to master or make a PR onto master
 on:
   push:
     branches: [ master ]
@@ -10,7 +9,9 @@ on:
     branches: [ master ]
 
 jobs:
+  # this action only has one job
   build-test:
+    # run the commands on ubuntu with bash shell
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -37,6 +38,10 @@ jobs:
       run: docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build make install
 
     # run test executable and test configs using the docker environment
+    #   The test executable is hard-coded here and in the cmake macro build_test
+    #   The text configs are retrieved here for any files matching the pattern:
+    #       '*/test/*.py'
+    #   i.e. Any python file in the 'test' directory of any module.
     - name: Test the build
       run: |
           cd ../ &&
@@ -66,10 +71,6 @@ jobs:
     #   sphinx-apidoc requires the python files to be packaged together
     #   like a python module would be. The simplest way to achieve
     #   this form is to build and install ldmx-sw.
-    #
-    #   There is almost certainly a way to do this without having to build
-    #   and install ldmx-sw, but we might as well check that we can build
-    #   ldmx-sw. 
     - name: Run Sphinx to build python Docs
       run: |
           python3 -m pip install -U pip
@@ -77,6 +78,10 @@ jobs:
           sphinx-apidoc --force --no-toc -o docs/sphinx.conf/ install/python
           sudo `which sphinx-build` docs/sphinx.conf docs/html/_sphinx
 
+    # Copy the generated documentation to the github pages repo
+    #   This copies all the html files in the docs/html directory to the github.io repository
+    #   using the ldmx organization token for access and saving the changes with the
+    #   commit message of the commit that activated this action
     - name: Deploy the Docs
       if: ${{ github.event_name == 'push' }} #only deploy when the master actually changes
       uses: peaceiris/actions-gh-pages@v3
@@ -88,17 +93,4 @@ jobs:
         publish_dir: ./docs/html
         enable_jekyll: true #allow github pages to process using jekyll
         keep_files: true #keep old files (by default, clears publish_dir before deploying to it)
-
-     # Do we want to make a new production image every time a push to master happens?
-     # It may be nice to have a latest production image which matches master perfectly
-     # and then other production tags for the different releases
-#    - name: Deploy to Docker
-#      uses: docker/build-push-action@v1
-#      if: ${{ github.event_name == 'push' }} #UNTESTED - want to only do this when master branch changes
-#      with:
-#        username: ${{ secrets.DOCKER_USERNAME }} #needs to be added into repo settings
-#        password: ${{ secrets.DOCKER_PASSWORD }} #needs to be added into repo settings
-#        repository: ldmx/pro
-#        tag_with_ref: true #convert branch ref to a docker tag
-#        tag_with_sha: true #also tag with git sha
 
