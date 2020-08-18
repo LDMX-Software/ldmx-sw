@@ -113,7 +113,7 @@ TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
 
     testPyScript << "class TestProcessor(ldmxcfg.Producer):" << std::endl;
     testPyScript << "    def __init__(self):" << std::endl;
-    testPyScript << "        super().__init__( 'testInstance' , 'ldmx::test::TestConfig' )" << std::endl;
+    testPyScript << "        super().__init__( 'testInstance' , 'ldmx::test::TestConfig' , 'Framework' )" << std::endl;
     testPyScript << "        self.testInt = 9" << std::endl;
     testPyScript << "        self.testDouble = 7.7" << std::endl;
     testPyScript << "        self.testString = 'Yay!'" << std::endl;
