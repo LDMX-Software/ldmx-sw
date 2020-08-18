@@ -27,10 +27,10 @@ namespace ldmx {
         hcalNLayers_[ HcalID::HcalSection::RIGHT  ] = 26;
         
         hcalNStrips_[ HcalID::HcalSection::BACK   ] = 62;
-        hcalNStrips_[ HcalID::HcalSection::TOP    ] = 9;
-        hcalNStrips_[ HcalID::HcalSection::BOTTOM ] = 9;
-        hcalNStrips_[ HcalID::HcalSection::LEFT   ] = 9;
-        hcalNStrips_[ HcalID::HcalSection::RIGHT  ] = 9;
+        hcalNStrips_[ HcalID::HcalSection::TOP    ] = 12;
+        hcalNStrips_[ HcalID::HcalSection::BOTTOM ] = 12;
+        hcalNStrips_[ HcalID::HcalSection::LEFT   ] = 12;
+        hcalNStrips_[ HcalID::HcalSection::RIGHT  ] = 12;
          
         double ecal_z  = 440.;
         double ecal_xy = 600.;
