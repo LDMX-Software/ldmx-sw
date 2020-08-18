@@ -16,7 +16,7 @@ class EventProcessor:
         Name of this copy of the producer object
     className : str
         Name (including namespace) of the C++ class that this processor should be
-    libraryName : str
+    moduleName : str
         Name of module the C++ class is in (e.g. Ecal or SimCore)
 
     Attributes
@@ -36,7 +36,7 @@ class EventProcessor:
         self.className=className
         self.histograms=[]
 
-        Process.addLibrary( '${CMAKE_INSTALL_PREFIX}/lib/lib%s.so'%moduleName )
+        Process.addLibrary( '@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%moduleName )
 
     def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None):
         """Make a 1D histogram 
