@@ -12,12 +12,9 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for the ECal veto"""
 
     def __init__(self,name = 'ecalVeto') :
-        super().__init__(name,"ldmx::EcalVetoProcessor")
+        super().__init__(name,"ldmx::EcalVetoProcessor",'Ecal')
 
         from LDMX.Ecal.makePath import makeBDTPath, makeCellXYPath
-        from LDMX.Ecal.include import library
-        library()
-
         self.num_ecal_layers = 34
         self.do_bdt = True
         self.bdt_file = makeBDTPath( "gabrielle" )
@@ -37,10 +34,7 @@ class DNNEcalVetoProcessor(ldmxcfg.Producer) :
     """
 
     def __init__(self,name = 'dnnEcalVeto') :
-        super().__init__(name,"ldmx::DNNEcalVetoProcessor")
-
-        from LDMX.Ecal.include import library
-        library()
+        super().__init__(name,"ldmx::DNNEcalVetoProcessor",'Ecal')
 
         self.debug = False
         from LDMX.Ecal.makePath import makeBDTPath

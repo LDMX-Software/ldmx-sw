@@ -16,10 +16,7 @@ class EcalDigiProducer(Producer) :
     """
 
     def __init__(self, instance_name = 'ecalDigis') :
-        super().__init__(instance_name , 'ldmx::EcalDigiProducer')
-
-        from LDMX.Ecal.include import library
-        library()
+        super().__init__(instance_name , 'ldmx::EcalDigiProducer','Ecal')
 
         self.gain = 2000.
         self.pedestal =1100.
@@ -44,10 +41,7 @@ class EcalRecProducer(Producer) :
     """
 
     def __init__(self, instance_name = 'ecalRecon') : 
-        super().__init__(instance_name , 'ldmx::EcalRecProducer')
-
-        from LDMX.Ecal.include import library
-        library()
+        super().__init__(instance_name , 'ldmx::EcalRecProducer','Ecal')
 
         self.digiCollName = 'EcalDigis'
         self.digiPassName = ''
