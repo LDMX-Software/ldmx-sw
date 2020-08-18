@@ -14,10 +14,7 @@ class HcalDigiProducer(ldmxcfg.Producer) :
     """
 
     def __init__(self,name = 'hcalDigis') :
-        super().__init__(name,'ldmx::HcalDigiProducer')
-
-        from LDMX.EventProc import include
-        include.library()
+        super().__init__(name,'ldmx::HcalDigiProducer','EventProc')
 
         self.meanNoise = 0.02
         self.readoutThreshold= 1
@@ -48,10 +45,7 @@ class HcalVetoProcessor(ldmxcfg.Producer) :
     """
 
     def __init__(self,name = 'hcalVeto') :
-        super().__init__(name,'ldmx::HcalVetoProcessor')
-
-        from LDMX.EventProc import include
-        include.library()
+        super().__init__(name,'ldmx::HcalVetoProcessor','EventProc')
 
         self.pe_threshold = 5.0
         self.max_time = 50.0
