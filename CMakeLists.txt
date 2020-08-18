@@ -20,7 +20,6 @@ setup_library(name Ecal
               dependencies ROOT::Physics DARK::Framework DARK::Event DARK::Tools 
               DARK::DetDescr ONNXRuntime::Interface
               python_install_path ${PYTHON_INSTALL_PREFIX}
-              python_root_module_name LDMX
 )
 
 setup_test(dependencies DARK::Ecal)
