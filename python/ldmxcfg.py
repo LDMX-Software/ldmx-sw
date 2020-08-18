@@ -16,6 +16,8 @@ class EventProcessor:
         Name of this copy of the producer object
     className : str
         Name (including namespace) of the C++ class that this processor should be
+    moduleName : str
+        Name of module the C++ class is in (e.g. Ecal or SimCore)
 
     Attributes
     ----------
@@ -29,10 +31,12 @@ class EventProcessor:
     LDMX.Framework.histogram.histogram : histogram configuration object
     """
 
-    def __init__(self, instanceName, className):
+    def __init__(self, instanceName, className, moduleName):
         self.instanceName=instanceName
         self.className=className
         self.histograms=[]
+
+        Process.addLibrary( '@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%moduleName )
 
     def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None):
         """Make a 1D histogram 
@@ -137,8 +141,8 @@ class Producer(EventProcessor):
     LDMX.Framwork.ldmxcfg.EventProcessor : base class
     """
 
-    def __init__(self, instanceName, className):
-        super().__init__(instanceName,className)
+    def __init__(self, instanceName, className, moduleName):
+        super().__init__(instanceName,className, moduleName)
 
     def __str__(self) :
         """Stringify this Producer, creates a message with all the internal parameters.
@@ -167,8 +171,8 @@ class Analyzer(EventProcessor):
     LDMX.Framework.ldmxcfg.EventProcessor : base class
     """
 
-    def __init__(self, instanceName, className):
-        super().__init__(instanceName,className)
+    def __init__(self, instanceName, className, moduleName):
+        super().__init__(instanceName,className, moduleName)
 
     def __str__(self) :
         """Stringify this Analyzer, creates a message with all the internal parameters.
@@ -285,7 +289,7 @@ class Process:
         if ( Process.lastProcess is not None ) :
             Process.lastProcess.libraries.append( lib )
         else :
-            print( "[ Process.addLibrary ]: No Process object defined yet!" )
+            print( "[ Process.addLibrary ]: No Process object defined yet! You need to create a Process before creating any EventProcessors." )
             sys.exit(1)
 
     def skimDefaultIsSave(self):
