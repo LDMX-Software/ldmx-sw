@@ -16,6 +16,8 @@ class EventProcessor:
         Name of this copy of the producer object
     className : str
         Name (including namespace) of the C++ class that this processor should be
+    libraryName : str
+        Name of module the C++ class is in (e.g. Ecal or SimCore)
 
     Attributes
     ----------
@@ -29,10 +31,12 @@ class EventProcessor:
     LDMX.Framework.histogram.histogram : histogram configuration object
     """
 
-    def __init__(self, instanceName, className):
+    def __init__(self, instanceName, className, moduleName):
         self.instanceName=instanceName
         self.className=className
         self.histograms=[]
+
+        Process.lastProcess.addLibrary( '${CMAKE_INSTALL_PREFIX}/lib/lib%s.so'%moduleName )
 
     def build1DHistogram(self, name, xlabel, bins, xmin = None, xmax = None):
         """Make a 1D histogram 
