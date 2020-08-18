@@ -16,26 +16,26 @@ namespace ldmx {
 
         hcalUncertaintyTimingPos_ = 50.0;
 
-        hcalThicknessScint_ = 15.0; 
+        hcalThicknessScint_ = 20.0; 
 
         hcalWidthScint_ = 50.0;
 
         hcalNLayers_[ HcalSection::BACK   ] = 100;
-        hcalNLayers_[ HcalSection::TOP    ] = 32;
-        hcalNLayers_[ HcalSection::BOTTOM ] = 32;
-        hcalNLayers_[ HcalSection::LEFT   ] = 32;
-        hcalNLayers_[ HcalSection::RIGHT  ] = 32;
+        hcalNLayers_[ HcalSection::TOP    ] = 28;
+        hcalNLayers_[ HcalSection::BOTTOM ] = 28;
+        hcalNLayers_[ HcalSection::LEFT   ] = 26;
+        hcalNLayers_[ HcalSection::RIGHT  ] = 26;
         
         hcalNStrips_[ HcalSection::BACK   ] = 62;
-        hcalNStrips_[ HcalSection::TOP    ] = 6;
-        hcalNStrips_[ HcalSection::BOTTOM ] = 6;
-        hcalNStrips_[ HcalSection::LEFT   ] = 6;
-        hcalNStrips_[ HcalSection::RIGHT  ] = 6;
+        hcalNStrips_[ HcalSection::TOP    ] = 9;
+        hcalNStrips_[ HcalSection::BOTTOM ] = 9;
+        hcalNStrips_[ HcalSection::LEFT   ] = 9;
+        hcalNStrips_[ HcalSection::RIGHT  ] = 9;
          
-        double ecal_z  = 290.;
-        double ecal_xy = 525.;
+        double ecal_z  = 440.;
+        double ecal_xy = 600.;
         double back_transverse_width = 3100.;
-        double ecal_front_z = 200.;
+        double ecal_front_z = 220.;
 
         hcalLengthScint_[ HcalSection::BACK   ] = back_transverse_width;
         hcalLengthScint_[ HcalSection::TOP    ] = (back_transverse_width+ecal_xy)/2.;
@@ -43,7 +43,7 @@ namespace ldmx {
         hcalLengthScint_[ HcalSection::LEFT   ] = (back_transverse_width+ecal_xy)/2.;
         hcalLengthScint_[ HcalSection::RIGHT  ] = (back_transverse_width+ecal_xy)/2.;
          
-        hcalZeroLayer_[ HcalSection::BACK   ] = ecal_front_z + hcalNStrips_[ HcalSection::TOP ] * hcalWidthScint_;
+        hcalZeroLayer_[ HcalSection::BACK   ] = ecal_front_z + 600.; //leaving 60cm cube for ecal
         hcalZeroLayer_[ HcalSection::TOP    ] = ecal_xy/2.;
         hcalZeroLayer_[ HcalSection::BOTTOM ] = ecal_xy/2.;
         hcalZeroLayer_[ HcalSection::LEFT   ] = ecal_xy/2.;
@@ -67,7 +67,7 @@ namespace ldmx {
 
         ecalHexRadius_ = 85.;
 
-        ecalHexGap_ = 0.0;
+        ecalHexGap_ = 1.5;
 
         ecalZeroLayer_ = ecal_front_z;
 
@@ -75,18 +75,22 @@ namespace ldmx {
 
         ecalSiThickness_ = 0.5;
 
-        ecalDepth_ = 290.0;
+        ecalDepth_ = ecal_z;
 
-        //TODO Recalculate these planes automatically
         ecalSiPlanes_ = {
-            4.550, 7.300, 13.800, 18.200, 26.050, 31.950, 41.050, 47.450, 56.550, 62.950,
-            72.050, 78.450, 87.550, 93.950, 103.050, 109.450, 118.550, 124.950, 134.050,
-            140.450, 149.550, 155.950, 165.050, 171.450, 184.050, 193.950, 206.550, 216.450,
-            229.050, 238.950, 251.550, 261.450, 274.050, 283.950
-        }; // With respect to the front face of the ECAL
+             7.850, 13.300, 26.400, 33.500, 47.950, 56.550, 72.250, 81.350, 97.050, 106.150,
+            121.850, 130.950, 146.650, 155.750, 171.450, 180.550, 196.250, 205.350, 221.050, 230.150,
+            245.850, 254.950, 270.650, 279.750, 298.950, 311.550, 330.750, 343.350, 362.550, 375.150,
+            394.350, 406.950, 426.150, 438.750
+        };
 
-        //Helper Class for Hex Readout
-        ecalHexReader_ = std::make_unique<EcalHexReadout>( ecalHexRadius_ , ecalHexGap_, ecalNCellsWide_ );
+        ecalHexReader_ = std::make_unique<EcalHexReadout>(
+                ecalHexRadius_,
+                ecalHexGap_,
+                ecalNCellsWide_,
+                ecalSiPlanes_,
+                ecalZeroLayer_
+                );
 
         ecalXYTower_.emplace_back( 0.0 , 0.0 );
         for ( int towerIndex = 0; towerIndex < 6; towerIndex++ ) {
@@ -95,7 +99,6 @@ namespace ldmx {
                         cos( M_PI/3 * towerIndex)*( 2*ecalHexRadius_ + ecalHexGap_ )
                     );
         }
-        
 
         /////////////////////////////////////////////////////////////
         // RECOIL TRACKER
