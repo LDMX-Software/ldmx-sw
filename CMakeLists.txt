@@ -27,7 +27,9 @@ find_package(ROOT CONFIG REQUIRED)
 
 # Setup the library 
 setup_library(name SimCore 
-              dependencies Geant4::Interface ROOT::Physics DARK::Framework DARK::DetDescr
+              dependencies Geant4::Interface 
+                           ROOT::Physics 
+                           DARK::Framework DARK::DetDescr
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
