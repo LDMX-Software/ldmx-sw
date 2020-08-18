@@ -124,9 +124,3 @@ option(BUILD_TESTS "Build and link the run-test executable." OFF)
 if(BUILD_TESTS)
     build_test()
 endif()
-
-# install python init file for top-level LDMX module
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py 
-    "\"\"\"Python package to configure ldmx-sw\"\"\"")
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py DESTINATION python/LDMX)
-
