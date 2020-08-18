@@ -12,6 +12,7 @@ project(Biasing VERSION 2.1.0
 setup_geant4_target()
 
 setup_library(name Biasing
-              dependencies Geant4::Interface DARK::Framework DARK::SimCore
+              dependencies Geant4::Interface 
+                           DARK::Framework DARK::SimCore
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
