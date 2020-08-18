@@ -134,11 +134,6 @@ macro(setup_library)
     # python modules.
     if (EXISTS ${PROJECT_SOURCE_DIR}/python)
        
-        # Initilaize the python package
-        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py "") 
-        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/__init__.py 
-                DESTINATION ${setup_library_python_install_path}/${setup_library_name})
-
         # Install the python modules
         file(GLOB py_scripts CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/python/*.py)
         foreach(pyscript ${py_scripts})
