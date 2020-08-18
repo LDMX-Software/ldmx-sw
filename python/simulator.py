@@ -84,7 +84,7 @@ class simulator(Producer):
     """
 
     def __init__(self, instance_name ) :
-        super().__init__( instance_name , "ldmx::Simulator" )
+        super().__init__( instance_name , "ldmx::Simulator" , "SimCore" )
 
         #######################################################################
         # Required Parameters
@@ -123,11 +123,6 @@ class simulator(Producer):
         self.darkbrem_madgraphfilepath = '' #required if want to use dark brem
         self.darkbrem_method = 0
         self.darkbrem_globalxsecfactor = 1.
-
-        # add necessary library to the list to load
-        #   requires a process object to have been defined
-        from LDMX.SimCore import include
-        include.library()
 
     def setDetector(self, det_name , include_scoring_planes = False ) :
         """Set the detector description with the option to include the scoring planes
