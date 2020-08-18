@@ -29,7 +29,6 @@ find_package(ROOT CONFIG REQUIRED)
 setup_library(name SimCore 
               dependencies Geant4::Interface ROOT::Physics DARK::Framework DARK::DetDescr
               python_install_path ${PYTHON_INSTALL_PREFIX}
-              python_root_module_name LDMX
 )
 
 # Set some target properties
