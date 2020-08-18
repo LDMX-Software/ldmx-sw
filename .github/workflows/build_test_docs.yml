@@ -39,7 +39,7 @@ jobs:
           cd ../ &&
           export LDMX_BASE=$(pwd) &&
           docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $LDMX_BASE/ldmx-sw/install ./bin/run_test &&
-          for config in */test/*.py; do docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $(pwd) fire $config; done
+          for config in */test/*.py; do echo "docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $(pwd) fire $config"; done
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
