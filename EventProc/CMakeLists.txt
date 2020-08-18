@@ -12,4 +12,5 @@ setup_library(name EventProc
               dependencies DARK::Framework DARK::Event DARK::Tools 
                            DARK::DetDescr DARK::Ecal
               python_install_path ${PYTHON_INSTALL_PREFIX}
+              python_root_module_name LDMX
 )
