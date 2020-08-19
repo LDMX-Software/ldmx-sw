@@ -102,22 +102,15 @@ if(BUILD_ALL OR BUILD_SIM_ONLY)
     # Add the Detectors submodule.  This has no dependecies.
     add_subdirectory(Detectors)
 
+    # Add the magnetic field map directory.  This simply installs the B-field maps.
+    add_subdirectory(MagFieldMap)
+
 endif()
 
 if(BUILD_EVE_ONLY)
     
     message(STATUS "Building the event display.")
     add_subdirectory(EventDisplay)
-
-endif()
-
-# Magnetic field map installation
-option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
-if(INSTALL_FIELDMAP)
-    
-    # Add the magnetic field map directory.  This simply installs the B-field
-    # maps.
-    add_subdirectory(MagFieldMap)
 
 endif()
 
