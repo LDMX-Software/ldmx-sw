@@ -11,7 +11,9 @@ project(DetDescr VERSION 2.1.0
 file(GLOB DETDESCR_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
 
 setup_library(name DetDescr
-              dependencies DARK::Framework)
+              dependencies DARK::Framework
+              python_install_path ${PYTHON_INSTALL_PREFIX}
+             )
 
 # Setup the test
 setup_test(dependencies DARK::DetDescr)

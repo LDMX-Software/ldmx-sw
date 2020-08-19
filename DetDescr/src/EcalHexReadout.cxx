@@ -239,8 +239,7 @@ namespace ldmx {
                 double cellY = cell.second.second;
                 double x = cellX+moduleX;
                 double y = cellY+moduleY;
-                int cellModuleID = combineID(cellID,moduleID);
-                cellModulePositionMap_[cellModuleID] = std::pair<double,double>(x,y);
+                cellModulePositionMap_[EcalID(0,moduleID,cellID)] = std::pair<double,double>(x,y);
             }
         }
         if(verbose_>0) std::cout << "  contained " << cellModulePositionMap_.size() << " entries. " << std::endl;
@@ -278,7 +277,7 @@ namespace ldmx {
         if(verbose_>2){
             double specialX = 0.5*moduleR_ - 0.5*cellr_; // center of cell which is upper-right corner of center module
             double specialY = moduler_ - 0.5*cellR_;
-	    EcalID specialCellModuleID = getCellModuleID(specialX,specialY);
+	        EcalID specialCellModuleID = getCellModuleID(specialX,specialY);
             std::cout << "The neighbors of the bin in the upper-right corner of the center module, with cellModuleID " 
                       << specialCellModuleID << " include " << std::endl;
             for(auto centerNN : NNMap_.at(specialCellModuleID)){
