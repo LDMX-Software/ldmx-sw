@@ -66,7 +66,6 @@ namespace ldmx {
                 return &eventHeader_;
             }
 
-      
             /**
              * Get the event number.
              * @return the event index/number
@@ -176,7 +175,7 @@ namespace ldmx {
                         //get type name from branch if possible, otherwise use compiler level type name (above)
                         tname = outBranch->GetClassName();
                     } //output tree exists or not
-        	        products_.emplace_back(collectionName,passName_,tname);
+                    products_.emplace_back(collectionName,passName_,tname);
                     branchNames_.push_back(branchName);
                     knownLookups_.clear(); // have to invalidate this cache
                 }
@@ -199,12 +198,12 @@ namespace ldmx {
             }
 
             /**
-	         * Get a list of products which match the given POSIX-Extended, case-insenstive regular-expressions.
-	         * An empty argument is interpreted as ".*", which matches everything.
-	         * @param namematch Regular expression to compare with the product name
-	         * @param passmatch Regular expression to compare with the pass name
-	         * @param typematch Regular expression to compare with the type name
-	        */
+             * Get a list of products which match the given POSIX-Extended, case-insenstive regular-expressions.
+             * An empty argument is interpreted as ".*", which matches everything.
+             * @param namematch Regular expression to compare with the product name
+             * @param passmatch Regular expression to compare with the pass name
+             * @param typematch Regular expression to compare with the type name
+            */
             std::vector<ProductTag> searchProducts( const std::string& namematch, const std::string& passmatch, const std::string& typematch) const;
       
             /**
@@ -420,10 +419,10 @@ namespace ldmx {
                 return makeBranchName(collectionName, passName_);
             }
 
-   	        /**
+            /**
              * Get a list of the data products in the event
-	         */
-	        const std::vector<ProductTag>& getProducts() const { return products_; }
+             */
+            const std::vector<ProductTag>& getProducts() const { return products_; }
       
             /**
              * Go to the next event by incrementing the entry index.
@@ -673,7 +672,7 @@ namespace ldmx {
              * Efficiency cache for empty pass name lookups.
              */
             mutable std::map<std::string, std::string> knownLookups_;
-	
+    
             /**
              * List of all the event products
              */

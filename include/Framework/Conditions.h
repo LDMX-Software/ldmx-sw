@@ -43,7 +43,7 @@ namespace ldmx {
 
             /**
              * Constructor
-	     */
+             */
             Conditions(Process&);
 
             /**
@@ -51,20 +51,22 @@ namespace ldmx {
              */
             ~Conditions() {;}
 
-	   /**
+            /**
              * Primary request action for a conditions object If the
              * object is in the cache and still valid (IOV), the
              * cached object will be returned.  If it is not in the cache, 
-	     * or is out of date, the () method will be called to provide the 
-	     * object.
-	     */
-	    template <class T>
-	    const T& getCondition(const std::string& condition_name, const EventHeader& context) {
-		const ConditionsObject* obj=getConditionInternal(condition_name,context);
-		if (!obj) {
-		    EXCEPTION_RAISE("ConditionUnavailableException",std::string("Requested condition not available for unspecific reason: ")+condition_name); }
-		return dynamic_cast<const T&>(*obj);
-	    }
+             * or is out of date, the () method will be called to provide the 
+             * object.
+             */
+            template <class T>
+            const T& getCondition(const std::string& condition_name, const EventHeader& context) {
+                const ConditionsObject* obj=getConditionInternal(condition_name,context);
+                if (!obj) {
+                    EXCEPTION_RAISE("ConditionUnavailableException",
+                            std::string("Requested condition not available for unspecific reason: ")+condition_name);
+                }
+                return dynamic_cast<const T&>(*obj);
+            }
 
             /**
              * Calls onProcessStart for all ConditionsObjectProviders
@@ -78,33 +80,35 @@ namespace ldmx {
 
 
             /** 
-	     * Create a ConditionsObjectProvider given the information
-	     */
-	    void createConditionsObjectProvider(const std::string& classname, const std::string& instancename, const std::string& tagname, const Parameters& params);
-	    
+             * Create a ConditionsObjectProvider given the information
+             */
+            void createConditionsObjectProvider(const std::string& classname, const std::string& instancename, const std::string& tagname, const Parameters& params);
+        
        private:
 
-
-	    /** Cache-managing method */
-	    const ConditionsObject* getConditionInternal(const std::string& condition_name, const EventHeader& context);
-	    
+            /** Cache-managing method */
+            const ConditionsObject* getConditionInternal(const std::string& condition_name, const EventHeader& context);
+        
             /** Handle to the Process. */
             Process& process_;
 
-	    /** Set of conditions object providers */
-  	    std::vector<ConditionsObjectProvider*> providers_;
-
-	    /** Map of who provides which condition */
-	    std::map<std::string, ConditionsObjectProvider*> providerMap_;
-
-	    struct CacheEntry {
-		ConditionsIOV iov;
-		ConditionsObjectProvider* provider;
-		const ConditionsObject* obj;
-	    };
-
-	    /** Conditions cache */
-	    std::map<std::string,CacheEntry> cache_;
+            /** Set of conditions object providers */
+            std::vector<ConditionsObjectProvider*> providers_;
+    
+            /** Map of who provides which condition */
+            std::map<std::string, ConditionsObjectProvider*> providerMap_;
+    
+            /**
+             * An entry to store an already loaded conditions object
+             */
+            struct CacheEntry {
+                ConditionsIOV iov;
+                ConditionsObjectProvider* provider;
+                const ConditionsObject* obj;
+            };
+    
+            /** Conditions cache */
+            std::map<std::string,CacheEntry> cache_;
     };
 
 }

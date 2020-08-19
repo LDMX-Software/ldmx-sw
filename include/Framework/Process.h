@@ -63,18 +63,17 @@ namespace ldmx {
              */
             int getRunNumber() const;
 
-
-           /**
+            /**
              * Get the pointer to the current event header, if defined
              */
-           const EventHeader* getEventHeader() const { return eventHeader_; }
+            const EventHeader* getEventHeader() const { return eventHeader_; }
 
-           /**
+            /**
              * Get a reference to the conditions system
              */
-           Conditions& getConditions() { return conditions_; }
+            Conditions& getConditions() { return conditions_; }
 
-           /**
+            /**
              * Get the frequency with which the event information is printed.
              * @return integer log frequency (negative if turned off)
              */
@@ -156,8 +155,8 @@ namespace ldmx {
             /** Ordered list of EventProcessors to execute. */
             std::vector<EventProcessor*> sequence_;
 
-	    /** Set of ConditionsProviders */
-	    Conditions conditions_;
+            /** Set of ConditionsProviders */
+            Conditions conditions_;
 
             /** List of input files to process.  May be empty if this Process will generate new events. */
             std::vector<std::string> inputFiles_;

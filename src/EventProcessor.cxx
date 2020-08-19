@@ -13,6 +13,7 @@ namespace ldmx {
     }
 
     Conditions& EventProcessor::getConditions() const { return process_.getConditions(); }
+
     const EventHeader& EventProcessor::getEventHeader() const { return *(process_.getEventHeader()); }
   
     TDirectory* EventProcessor::getHistoDirectory() {

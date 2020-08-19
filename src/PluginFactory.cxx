@@ -8,7 +8,7 @@ namespace ldmx {
 
     PluginFactory::PluginFactory() {
     }
-	
+    
     void PluginFactory::registerEventProcessor(const std::string& classname, int classtype, EventProcessorMaker* maker) {
         auto ptr = moduleInfo_.find(classname);
         if (ptr != moduleInfo_.end()) {
@@ -18,7 +18,7 @@ namespace ldmx {
         mi.classname = classname;
         mi.classtype = classtype;
         mi.ep_maker = maker;
-	mi.cop_maker = 0;
+        mi.cop_maker = 0;
         moduleInfo_[classname] = mi;
     }
     
@@ -31,15 +31,15 @@ namespace ldmx {
         mi.classname = classname;
         mi.classtype = classtype;
         mi.cop_maker = maker;
-	mi.ep_maker = 0;
+        mi.ep_maker = 0;
         moduleInfo_[classname] = mi;
     }
 
     std::vector<std::string> PluginFactory::getEventProcessorClasses() const {
         std::vector<std::string> classes;
         for (auto ptr : moduleInfo_) {
-	    if (ptr.second.ep_maker!=0)
-		classes.push_back(ptr.first);
+        if (ptr.second.ep_maker!=0)
+        classes.push_back(ptr.first);
         }
         return classes;
     }

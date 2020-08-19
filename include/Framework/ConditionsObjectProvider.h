@@ -31,9 +31,9 @@ namespace ldmx {
     class ConditionsObjectProvider;
     class EventHeader;
 
-    /** Typedef for EventProcessorFactory use. */
-    typedef ConditionsObjectProvider* ConditionsObjectProviderMaker(const std::string& name, const std::string& tagname, const Parameters& params, Process& process);
-
+    /** Typedef for PluginFactory use. */
+    typedef ConditionsObjectProvider* 
+        ConditionsObjectProviderMaker(const std::string& name, const std::string& tagname, const Parameters& params, Process& process);
 
     /**
      * @class ConditionsObjectProvider
@@ -45,11 +45,11 @@ namespace ldmx {
 
             /** Constant used to types by the PluginFactory */
             static const int CLASSTYPE{10};
-	    
+        
             /**
              * Class constructor.
              * @param name Name for this instance of the class.
-	     * @param tagName The tag for the database entry (should not include whitespace)
+             * @param tagName The tag for the database entry (should not include whitespace)
              * @param process The Process class associated with ConditionsObjectProvider, provided by the framework.
              *
              * @note The name provided to this function should not be
@@ -58,25 +58,27 @@ namespace ldmx {
              * into a Process with different parameters.  Names should not include
              * whitespace or special characters.
              */
-	ConditionsObjectProvider(const std::string& name, const std::string& tagname, const Parameters& parameters, Process& process);
+            ConditionsObjectProvider(const std::string& name, const std::string& tagname, const Parameters& parameters, Process& process);
 
             /**
              * Class destructor.
              */
             virtual ~ConditionsObjectProvider() {;}
 
-	   /**
-	     */
- 	    virtual std::pair<const ConditionsObject*,ConditionsIOV> getCondition(const std::string& condition_name, const EventHeader& context) = 0;
+            /**
+             * Pure virtual getCondition function.
+             * Must be implemented by any Conditions providers.
+             */
+            virtual std::pair<const ConditionsObject*,ConditionsIOV> getCondition(const std::string& condition_name, const EventHeader& context) = 0;
 
-	   /**
-	    * Called by conditions system when done with a conditions object, appropriate point for cleanup.
-	    * @note Default behavior is to delete the object!
-            */
-	    virtual void releaseConditionsObject(const ConditionsObject* co) {
-		delete co;
-	    }
-	
+            /**
+             * Called by conditions system when done with a conditions object, appropriate point for cleanup.
+             * @note Default behavior is to delete the object!
+             */
+            virtual void releaseConditionsObject(const ConditionsObject* co) {
+                delete co;
+            }
+    
             /**
              * Callback for the ConditionsObjectProvider to take any necessary
              * action when the processing of events starts.
@@ -92,32 +94,30 @@ namespace ldmx {
             virtual void onProcessEnd() {
             }
 
-	    /**
-	     * Get the list of conditions objects available from this provider.
-	     */
-	    const std::vector<std::string>& getConditionObjectsAvailable() const { return objectNames_; }
-	    
+            /**
+             * Get the list of conditions objects available from this provider.
+             */
+            const std::vector<std::string>& getConditionObjectsAvailable() const { return objectNames_; }
+        
             /**
              * Internal function which is part of the PluginFactory machinery.
              * @param classname The class name of the processor.
              */
             static void declare(const std::string& classname, ConditionsObjectProviderMaker*);
 
-
-	    /** 
-	     * Access the tag name
-	     */
-	    const std::string& getTagName() const { return tagname_; }
-	
-	
+            /** 
+             * Access the tag name
+             */
+            const std::string& getTagName() const { return tagname_; }
+    
         protected:
 
-	    /// The logger for this ConditionsObjectProvider
+            /// The logger for this ConditionsObjectProvider
             logging::logger theLog_;
 
-	    /** The list of conditions objects available from this provider, should be filled by derived classes */
-	    std::vector<std::string> objectNames_;	   	    
-
+            /** The list of conditions objects available from this provider, should be filled by derived classes */
+            std::vector<std::string> objectNames_;          
+    
        private:
 
             /** Handle to the Process. */
@@ -126,7 +126,7 @@ namespace ldmx {
             /** The name of the ConditionsObjectProvider. */
             std::string name_;
 
-	    /** The tag name for the ConditionsObjectProvider. */
+            /** The tag name for the ConditionsObjectProvider. */
             std::string tagname_;
 
 

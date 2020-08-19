@@ -101,17 +101,16 @@ namespace ldmx {
                 return parameters_.find(name)!=parameters_.end();
             }
 
-	/** 
-	 * get all keys
-	 */
-	std::vector<std::string> keys() const {
-	    std::vector<std::string> key;
-	    for (auto i : parameters_) {
-		key.push_back(i.first);
-	    }
-	    return key;
-	}
-	
+            /** 
+             * Get a list of the keys available.
+             * This may be helpful in debugging to make sure the parameters are spelled correctly.
+             */
+            std::vector<std::string> keys() const {
+                std::vector<std::string> key;
+                for (auto i : parameters_) key.push_back(i.first);
+                return key;
+            }
+    
         private:
 
             /// Parameters 

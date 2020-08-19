@@ -49,7 +49,6 @@ namespace ldmx {
              * @param maker TODO.
              */
             void registerConditionsObjectProvider(const std::string& classname, int classtype, ConditionsObjectProviderMaker* maker);
-
       
             /**
              * Get the classes associated with the processor.
@@ -72,10 +71,10 @@ namespace ldmx {
             EventProcessor* createEventProcessor(const std::string& classname, const std::string& moduleInstanceName, Process& process);
 
             /**
-	     * Make a conditions object provider
+             * Make a conditions object provider
              * @param classname Class name of conditions object provider
              * @param moduleInstanceName 
-	     * @param params Parameters for the conditoons object provider
+             * @param params Parameters for the conditoons object provider
              * @param process The process handle
              */
             ConditionsObjectProvider* createConditionsObjectProvider(const std::string& classname, const std::string& moduleInstanceName, const std::string& tagname, const Parameters& params, Process& process);
@@ -95,13 +94,13 @@ namespace ldmx {
 
             /**
              * @struct PluginInfo
-             * @brief Processor info container to hold classname, class type and maker.
+             * @brief info container to hold classname, class type and maker.
              */
             struct PluginInfo {
-                    std::string classname;
-                    int classtype;
-                    EventProcessorMaker* ep_maker;
-	            ConditionsObjectProviderMaker* cop_maker;
+                std::string classname;
+                int classtype;
+                EventProcessorMaker* ep_maker;
+                ConditionsObjectProviderMaker* cop_maker;
             };
 
             /** A map of names to processor containers. */
