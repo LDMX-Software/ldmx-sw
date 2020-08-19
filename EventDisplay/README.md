@@ -26,3 +26,5 @@ You can see run-time helpful commands by passing the help flag.
 ```bash
 ldmx-eve --help
 ```
+Since we put the event display install in a different directory than the normal install,
+you can continue to work on other branches without breaking your installation of the event display.
