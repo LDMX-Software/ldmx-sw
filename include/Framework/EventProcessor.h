@@ -145,9 +145,9 @@ namespace ldmx {
             virtual void onProcessEnd() {
             }
 
-
-            /** Access a conditions object for the current event
-            */
+            /** 
+             * Access a conditions object for the current event
+             */
             template <class T>
             const T& getCondition(const std::string& condition_name) {
       	        return getConditions().getCondition<T>(condition_name, getEventHeader());
@@ -227,7 +227,8 @@ namespace ldmx {
              */
             Conditions& getConditions() const;
       
-            /** Internal getter for EventHeader without exposing all of Process
+            /** 
+             * Internal getter for EventHeader without exposing all of Process
              */
             const EventHeader& getEventHeader() const;
             

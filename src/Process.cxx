@@ -36,7 +36,7 @@ namespace ldmx {
         outputFiles_   = configuration.getParameter<std::vector<std::string>>("outputFiles",{});
         dropKeepRules_ = configuration.getParameter<std::vector<std::string>>("keep"       ,{});
 
-	eventHeader_   = 0;
+        eventHeader_   = 0;
 
         auto run{configuration.getParameter<int>("run",-1)};
         if ( run > 0 ) runForGeneration_ = run;
@@ -47,7 +47,7 @@ namespace ldmx {
                 ); 
 
         m_storageController.setDefaultKeep(
-					   configuration.getParameter<bool>("skimDefaultIsKeep",true)
+                       configuration.getParameter<bool>("skimDefaultIsKeep",true)
                 );
         auto skimRules{configuration.getParameter<std::vector<std::string>>("skimRules",{})};
         for (size_t i=0; i<skimRules.size(); i+=2) {
@@ -55,7 +55,7 @@ namespace ldmx {
         }
 
         auto sequence{configuration.getParameter<std::vector<Parameters>>("sequence",{})};
-        if ( sequence.empty() && configuration.getParameter<bool>("testingMode",false)) {	  
+        if ( sequence.empty() && configuration.getParameter<bool>("testingMode",false)) {     
             EXCEPTION_RAISE(
                     "NoSeq",
                     "No sequence has been defined. What should I be doing?\nUse p.sequence to tell me what processors to run."
@@ -80,16 +80,15 @@ namespace ldmx {
             sequence_.push_back(ep);
         }
 
-	auto conditionsObjectProviders{configuration.getParameter<std::vector<Parameters> >("conditionsObjectProviders",{})};
-	for (auto cop : conditionsObjectProviders) {
-	  
+        auto conditionsObjectProviders{configuration.getParameter<std::vector<Parameters> >("conditionsObjectProviders",{})};
+        for (auto cop : conditionsObjectProviders) {
+      
             auto className{cop.getParameter<std::string>("className")};
             auto instanceName{cop.getParameter<std::string>("instanceName")};
-	    auto tagName{cop.getParameter<std::string>("tagName")};
+            auto tagName{cop.getParameter<std::string>("tagName")};
 
-	    conditions_.createConditionsObjectProvider(className, instanceName, tagName, cop);
-	    
-	}
+            conditions_.createConditionsObjectProvider(className, instanceName, tagName, cop);
+        }
     }
 
     Process::~Process() {
@@ -155,9 +154,9 @@ namespace ldmx {
                     eh.setEventNumber(n_events_processed + 1);
                     eh.setTimestamp(TTimeStamp());
 
-		    // event header pointer grab
-		    eventHeader_=theEvent.getEventHeaderPtr();
-		    
+                    // event header pointer grab
+                    eventHeader_=theEvent.getEventHeaderPtr();
+                
                     numTries++;
 
                     // reset the storage controller state
@@ -271,8 +270,8 @@ namespace ldmx {
                         // clean up for storage control calculation
                         m_storageController.resetEventState();
 
-			// event header pointer grab
-			eventHeader_=theEvent.getEventHeaderPtr();
+                        // event header pointer grab
+                        eventHeader_=theEvent.getEventHeaderPtr();
             
                         // notify for new run if necessary
                         if (theEvent.getEventHeader().getRun() != wasRun) {
@@ -374,11 +373,9 @@ namespace ldmx {
         logging::close();
     }
 
-
     int Process::getRunNumber() const {
-	return (eventHeader_)?(eventHeader_->getRun()):(runForGeneration_);
+        return (eventHeader_)?(eventHeader_->getRun()):(runForGeneration_);
     }
-  
   
     TDirectory* Process::makeHistoDirectory(const std::string& dirName) {
         auto owner{openHistoFile()}; 
