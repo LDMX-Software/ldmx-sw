@@ -36,11 +36,20 @@ namespace ldmx {
             /**
              * Set the mapping of parameter names to value.
              *
-             * @param [in, out] parameters mapping between parameter names and
-             *      the corresponding value.
+             * @param [in, out] parameters mapping between parameter names and the corresponding value.
              */
             void setParameters(std::map < std::string, std::any > parameters) { 
                 parameters_ = parameters; 
+            }
+
+            /**
+             * Check to see if a parameter exists
+             *
+             * @param[in] name name of parameter to check
+             * @return true if parameter exists in configuration set
+             */
+            bool exists(const std::string& name) const {
+                return parameters_.find(name)!=parameters_.end();
             }
 
             /**
@@ -61,7 +70,7 @@ namespace ldmx {
                 
                 // Check if the variable exists in the map.  If it doesn't, 
                 // raise an exception.
-                if (parameters_.count(name) == 0) {
+                if (not exists(name)) {
                     EXCEPTION_RAISE( "NonExistParam",
                             "Parameter '"+name+"' does not exist in list of parameters."
                             );
@@ -88,17 +97,10 @@ namespace ldmx {
             template <typename T>
             T getParameter(const std::string& name, const T& def ) const {
 
-                if ( parameters_.count(name) == 0 ) return def;
+                if (not exists(name)) return def;
 
                 //get here knowing that name exists in parameters_
                 return getParameter<T>(name);
-            }
-
-            /**
-             * Check to see if a parameter exists
-             */
-            bool exists(const std::string& name) const {
-                return parameters_.find(name)!=parameters_.end();
             }
 
             /** 
