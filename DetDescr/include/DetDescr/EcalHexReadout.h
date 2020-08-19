@@ -54,37 +54,6 @@ namespace ldmx {
      */
     class EcalHexReadout {
     
-    public:
-    
-    /**
-     * Class constructor.
-     * @param moduleMinR The center-to-flat radius of an ECal module [mm]. See comments in src.
-     * @param gap air gap between edges of adjacent ECal modules [mm]
-     * @param nCellsWide Total cell count in center horizontal row.
-     */
-    EcalHexReadout(double moduleMinR, double gap, unsigned nCellsWide,
-               const std::vector<double> &layerZPositions, double ecalFrontZ);
-    
-    /**
-     * Class destructor.
-     */
-    ~EcalHexReadout() { }
-    
-    /**
-     * Get entire real space position for the cell with the input raw ID
-     *
-     * Inputs x,y,z will be set to the calculated position
-     */
-    void getCellAbsolutePosition(EcalID ID , double &x, double &y, double &z ) const {
-        
-        XYCoords xy = this->getCellCenterAbsolute( EcalID(0,ID.module(),ID.cell()) ); 
-        x = xy.first;
-        y = xy.second;
-        z = this->getZPosition( ID.layer() );
-        
-        return;
-    }
-
         public:
 
             /**
@@ -104,44 +73,25 @@ namespace ldmx {
              *
              * Inputs x,y,z will be set to the calculated position
              */
-            void getCellAbsolutePosition( int rawID , double &x, double &y, double &z ) const {
+            void getCellAbsolutePosition( EcalID id, double &x, double &y, double &z ) const {
                 
-                EcalDetectorID tmpID;
-                tmpID.setRawValue( rawID );
-                tmpID.unpack();
-
-                int layerID  = tmpID.getLayerID();
-                int moduleID = tmpID.getFieldValue( "module_position" );
-                int cellID   = tmpID.getCellID();
-
-                std::pair<double,double> xy = this->getCellCenterAbsolute( this->combineID( cellID , moduleID ) );
+                std::pair<double,double> xy = this->getCellCenterAbsolute( EcalID(0,id.module(),id.cell()) );
                 x = xy.first;
                 y = xy.second;
-                z = this->getZPosition( layerID );
+                z = getZPosition(id.layer());
 
                 return;
             }
 
             /**
-             * Combine cell and module IDs into a per-layer ID
+             * Get the z-coordinate given the layer id
+             *
+             * @param[in] layer int layer id
              */
-            int combineID(int cellID, int moduleID) const {
-              return 10*cellID+moduleID;
+            double getZPosition(int layer) const {
+                return ecalFrontZ_ + layerZPositions_.at(layer);
             }
 
-            /**
-             * Separate cell and module IDs from a combined cellModuleID
-             */
-            std::pair<int,int> separateID(int cellModuleID) const {
-              return std::pair<int,int>(cellModuleID/10, cellModuleID % 10);
-            }
-
-            /**
-             * Get the z position from the layer index
-             */
-            double getZPosition(int layerID) const {
-                return ecalFrontZ_ + layerZPositions_.at(layerID);
-            }
 
             /**
              * Get a module center position relative to the ecal center [mm]
@@ -185,22 +135,6 @@ namespace ldmx {
             }
 
             /**
-             * Get a combined cellModule ID from an XY position relative to ecal center.
-             * Error is ID < 0 (see TH2Poly for meanings).
-             * @param x Any X position [mm]
-             * @param y Any Y position [mm]
-             * @param moduleID The module copy number (0 through 6)
-             */
-            int getCellModuleID(double x, double y) const {
-                int moduleID = getModuleID(x,y);
-                double relX = x - getModuleCenter(moduleID).first;
-                double relY = y - getModuleCenter(moduleID).second;
-                int cellID = getCellIDRelative(relX,relY);
-                int cellModuleID = combineID(cellID,moduleID);
-                return cellModuleID;
-            }
-
-            /**
              * Get a cell center XY position relative to module center from a cell ID.
              * @param cellID The cell ID.
              * @return The XY position of the center of the cell. Error is exception.
@@ -216,112 +150,39 @@ namespace ldmx {
             }
 
             /**
+             * Get a combined cellModule ID from an XY position relative to ecal center.
+             * Error is ID < 0 (see TH2Poly for meanings).
+             * @param x Any X position [mm]
+             * @param y Any Y position [mm]
+             * @param moduleID The module copy number (0 through 6)
+             */
+            EcalID getCellModuleID(double x, double y) const {
+                int moduleID = getModuleID(x,y);
+                double relX = x - modulePositionMap_.at(moduleID).first;
+                double relY = y - modulePositionMap_.at(moduleID).second;
+                int cellID = getCellIDRelative(relX,relY);
+                return EcalID(0,moduleID,cellID);
+            }
+
+            /**
              * Get a cell center XY position relative to ecal center from a combined cellModuleID.
              * @param cellModuleID The combined cellModuleID.
              * @return The XY position of the center of the cell. Error is exception.
              */
-            std::pair<double,double> getCellCenterAbsolute(int cellModuleID) const {
-                return cellModulePositionMap_.at(cellModuleID);
+            std::pair<double,double> getCellCenterAbsolute(EcalID cellModuleID) const {
+                return cellModulePositionMap_.at(EcalID(0,cellModuleID.module(),cellModuleID.cell()));
             }
-
-            /**
-             * @param Return NN IDs, which are combined cellModuleIDs. Normally six. Return by copy.
-             *   NB cellModuleIDs are: 10*cellID+moduleID
-             */
-            std::vector<int> getNN(int cellModuleID) const {
-              return NNMap_.at(cellModuleID);
-            }
-
-    /**
-     * Get a module ID from an XY position relative to the ecal center [mm]
-     */
-    int getModuleID(double x, double y) const {
-        int bestID = -1;
-        double bestDist = 1E6;
-        for(auto const& module : modulePositionMap_) {  
-        int mID   = module.first;
-        double mX = module.second.first;
-        double mY = module.second.second;
-        double dist = sqrt( (x-mX)*(x-mX) + (y-mY)*(y-mY) );
-        if(dist < moduler_) return mID;
-        if(dist < bestDist) { bestID = mID; bestDist = dist; }
-        }
-        return bestID;
-    }
-    
-        /**
-     * Get a cell ID from an XY position relative to module center. 
-     * This is where invalid (x,y) from external calls will end up failing and need error handling.
-     * @param x Any X position [mm]
-     * @param y Any Y position [mm]
-     */
-    int getCellIDRelative(double x, double y) const {
-        int bin = ecalMap_.FindBin(x,y)-1; // NB FindBin indices starts from 1, our maps start from 0
-        if(bin < 0) {
-        TString error_msg = TString("[EcalHexReadout::getCellIDRelative] Relative coordinates are outside module hexagon!") + 
-            TString::Format(" Is the gap used by EcalHexReadout (%.2f mm) and the minimum module radius (%.2f mm)",gap_,moduler_) +
-            TString::Format(" the same as hexagon_gap and Hex_radius in ecal.gdml? Received (x,y) = (%.2f,%.2f).",x,y);
-        EXCEPTION_RAISE( "InvalidArg" , error_msg.Data() );
-        }
-        return bin;
-    }
-    
-        /**
-     * Get a combined cellModule ID from an XY position relative to ecal center.
-     * Error is ID < 0 (see TH2Poly for meanings).
-     * @param x Any X position [mm]
-     * @param y Any Y position [mm]
-     * @param moduleID The module copy number (0 through 6)
-     */
-    EcalID getCellModuleID(double x, double y) const {
-        int moduleID = getModuleID(x,y);
-        double relX = x - modulePositionMap_.at(moduleID).first;
-        double relY = y - modulePositionMap_.at(moduleID).second;
-        int cellID = getCellIDRelative(relX,relY);
-        return EcalID(0,moduleID,cellID);
-    }
-
-    /**
-     * Get a cell center XY position relative to module center from a cell ID.
-     * @param cellID The cell ID.
-     * @return The XY position of the center of the cell. Error is exception.
-     */
-    XYCoords getCellCenterRelative(int cellID) const {
-        // this map search is probably just as fine as the TList search for the cell in ecalMap.
-        //   wonder why TH2Poly->GetBin(ID) doesn't exist. plus the map is useful by itself.
-        auto search = cellPositionMap_.find(cellID);
-        if(search == cellPositionMap_.end()) {
-        EXCEPTION_RAISE( "InvalidCellID" , "Cell " + std::to_string(cellID) + " is not valid." );
-        }
-        return search->second;
-    }
-
-    /**
-     * Get a cell center XY position relative to ecal center from a combined cellModuleID.
-     * @param cellModuleID The combined cellModuleID.
-     * @return The XY position of the center of the cell. Error is exception.
-     */
-    XYCoords getCellCenterAbsolute(EcalID cellModuleID) const {
-        return cellModulePositionMap_.at(EcalID(0,cellModuleID.module(),cellModuleID.cell()));
-    }
-        
-    /**
-     * @param Return NN IDs, which are combined cellModuleIDs. Normally six. Return by copy.
-     */
-    std::vector<EcalID> getNN(EcalID cellModuleID) const {
-        return NNMap_.at(EcalID(0,cellModuleID.module(),cellModuleID.cell()));
-    }
 
             /**
              * Distance to module edge, and whether cell is on edge of module.
              * Use getNN()/getNNN() + isEdgeCell() to expand functionality.
              */
-            double distanceToEdge(int cellModuleID) const;
+            double distanceToEdge(EcalID cellModuleID) const;
 
             /**
              * Check if input cell is on the edge of a module.
              */
-            bool isEdgeCell(int cellModuleID) const {
+            bool isEdgeCell(EcalID cellModuleID) const {
                 return (distanceToEdge(cellModuleID) < cellR_);
             }
 
@@ -332,11 +193,66 @@ namespace ldmx {
             bool isInside(double normX, double normY) const;
 
             /**
+             * Get the Nearest Neighbors of the input ID
+             *
+             * @param id id to get
+             */
+            std::vector<EcalID> getNN(EcalID id) const {
+                auto list = NNMap_.at(EcalID(0,id.module(),id.cell()));
+                for (auto& flat : list) id = EcalID(id.layer(),flat.module(),flat.cell());
+                return list;
+            }
+
+            /**
+             * Check if the probe id is one of the nearest neightbors of the centroid id
+             *
+             * @param probe id to check if it is nearest neighbor
+             * @param centroid id that is center of neighbors
+             */
+            bool isNN(EcalID centroid, EcalID probe) const {
+                for ( auto& id : getNN(centroid) ) {
+                    if ( id == probe ) return true;
+                } 
+                return false;
+            }
+
+            /**
+             * Get the Next-to-Nearest Neighbors of the input ID
+             *
+             * @param id id to get
+             */
+            std::vector<EcalID> getNNN(EcalID id) const {
+                auto list = NNNMap_.at(EcalID(0,id.module(),id.cell()));
+                for (auto& flat : list) id = EcalID(id.layer(),flat.module(),flat.cell());
+                return list;
+            }
+
+            /**
+             * Check if the probe id is one of the next-to-nearest neightbors of the centroid id
+             *
+             * @param probe id to check if it is nearest neighbor
+             * @param centroid id that is center of neighbors
+             */
+            bool isNNN(EcalID centroid, EcalID probe) const {
+                for ( auto& id : getNNN(centroid) ) {
+                    if ( id == probe ) return true;
+                } 
+                return false;
+            }
+
+            /**
              * Get a const reference to the cell center position map.
              */
-            const std::map<int,std::pair<double,double>>& getCellPositionMap() {
+            const std::map<int,std::pair<double,double>>& getCellPositionMap() const {
                 return cellPositionMap_;
-            }               
+            }
+
+            /**
+             * Get a const reference to the full cell-module position map.
+             */
+            const std::map<EcalID,std::pair<double,double>>& getCellModulePositionMap() const {
+                return cellModulePositionMap_;
+            }
 
             /**
              * Get a reference to the TH2Poly used for Cell IDs.
@@ -477,14 +393,14 @@ namespace ldmx {
             /// Position of cell centers relative to module (uses cell ID as key)
             std::map<int, std::pair<double,double>> cellPositionMap_;
 
-            /// Position of cell centers relative to world geometry (uses combined cell and module ID as key)
-            std::map<int, std::pair<double,double>> cellModulePositionMap_;
+            /// Position of cell centers relative to world geometry (uses ID with real cell and module and layer as zero for key)
+            std::map<EcalID, std::pair<double,double>> cellModulePositionMap_;
 
-            /// Map of cell ID to neighboring cells
-            std::map<int, std::vector<int> > NNMap_;
+            /// Map of cell ID to neighboring cells (uses ID with real cell and module and layer as zero for key)
+            std::map<EcalID, std::vector<EcalID> > NNMap_;
 
-            /// Map of cell ID to neighbors of neighbor cells
-            std::map<int, std::vector<int> > NNNMap_;
+            /// Map of cell ID to neighbors of neighbor cells (uses ID with real cell and module and layer as zero for key)
+            std::map<EcalID, std::vector<EcalID> > NNNMap_;
 
             /// List of Trigger Group IDs (index is cell ID)
             std::vector<int> triggerGroups_;
