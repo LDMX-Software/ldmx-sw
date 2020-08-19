@@ -124,7 +124,7 @@ namespace ldmx {
              * Private dummy constructor
              * We hide it here because it shouldn't be used anywhere else.
              */
-            Process() { /** nothing on purpose */ }
+            Process() : conditions_{*this} { /** nothing on purpose */ }
     
         private:
 
