@@ -34,19 +34,22 @@ namespace ldmx {
      * hexagons are not constructed individually in Geant4. This means we have to have
      * a translation between position and cell ID which is accomplished by this class.
      *
-     * ORIENTATION ASSUMPTIONS:
-     *   modules are oriented flat side down. cells are oriented corner side down.
-     * SOME GEOMETRY:
-     *   hexagons have two radii:
-     *     r (half of flat-to-flat width) and R (half of corner-to-corner width).
-     *     r = (sqrt(3)/2)R and s = R, where s is the length of an edge.
-     *   for seven ecal modules oriented flat-side-down, maximum x and y extents are:
-     *     deltaY = 6r' + 2g = 3sqrt(3)R' + 2g
-     *     deltaX = 4R' + s' + 2g/cos(30 deg) = 5R' + 4g/sqrt(3)
-     *     where g is uniform gap width between modules, and primed variables correspond to modules.
-     * THIS GRID:
-     *   column-to-column distance in a grid such as ours is 2r = sqrt(3)R.
-     *   row-to-row distance is 1.5R (easy to observe that twice that distance = 3R)
+     * ## ORIENTATION ASSUMPTIONS:
+     * - modules are oriented flat side down. 
+     * - cells are oriented corner side down.
+     * 
+     * ## SOME GEOMETRY:
+     * - hexagons have two radii:
+     *   - r (half of flat-to-flat width) and R (half of corner-to-corner width).
+     *   - r = (sqrt(3)/2)R and s = R, where s is the length of an edge.
+     * - for seven ecal modules oriented flat-side-down, maximum x and y extents are:
+     *   - deltaY = 6r' + 2g = 3sqrt(3)R' + 2g
+     *   - deltaX = 4R' + s' + 2g/cos(30 deg) = 5R' + 4g/sqrt(3)
+     *   - where g is uniform gap width between modules, and primed variables correspond to modules.
+     * 
+     * ## THIS GRID:
+     * - column-to-column distance in a grid such as ours is 2r = sqrt(3)R.
+     * - row-to-row distance is 1.5R (easy to observe that twice that distance = 3R)
      *
      * The cell radius is calculated from the total number of center-to-corner cell radii
      * that span the module height. This count can have fractional counts to account
@@ -65,6 +68,8 @@ namespace ldmx {
 
             /**
              * Class destructor.
+             *
+             * Does nothing because the stl containers clean up automatically.
              */
             virtual ~EcalHexReadout() { }
 
@@ -72,6 +77,13 @@ namespace ldmx {
              * Get entire real space position for the cell with the input raw ID
              *
              * Inputs x,y,z will be set to the calculated position
+             *
+             * @sa getCellCenterAbsolute and getZPosition
+             *
+             * @param[in] id EcalID for the cell we want the position of
+             * @param[out] x set to x-coordinate of cell center
+             * @param[out] y set to y-coordinate of cell center
+             * @param[out] z set to z-coordinate of cell center
              */
             void getCellAbsolutePosition( EcalID id, double &x, double &y, double &z ) const {
                 
@@ -87,6 +99,7 @@ namespace ldmx {
              * Get the z-coordinate given the layer id
              *
              * @param[in] layer int layer id
+             * @return z-coordinate of the input sensitive layer
              */
             double getZPosition(int layer) const {
                 return ecalFrontZ_ + layerZPositions_.at(layer);
@@ -95,6 +108,9 @@ namespace ldmx {
 
             /**
              * Get a module center position relative to the ecal center [mm]
+             *
+             * @param[in] moduleID id of the module
+             * @return (x,y) coordinate pair for center of module
              */
             std::pair<double,double> getModuleCenter(int moduleID) const {
                 return modulePositionMap_.at(moduleID);
@@ -102,6 +118,10 @@ namespace ldmx {
 
             /**
              * Get a module ID from an XY position relative to the ecal center [mm]
+             *
+             * @param[in] x x-coordinate for test position
+             * @param[in] y y-coordinate for test position
+             * @return module ID that coordinate (x,y) is in
              */
             int getModuleID(double x, double y) const {
                 int bestID = -1;
@@ -119,9 +139,17 @@ namespace ldmx {
 
             /**
              * Get a cell ID from an XY position relative to module center. 
+             *
              * This is where invalid (x,y) from external calls will end up failing and need error handling.
+             *
+             * @note One option for assigning dead material is to do it here. 
+             * If the input (x,y) relative to the module is close enough to the edge (for example),
+             * we could return a special cell ID (-1 for example) that signals that this hit
+             * is in a dead region.
+             *
              * @param x Any X position [mm]
              * @param y Any Y position [mm]
+             * @return local cell ID to the module
              */
             int getCellIDRelative(double x, double y) const {
                 int bin = ecalMap_.FindBin(x,y)-1; // NB FindBin indices starts from 1, our maps start from 0
@@ -136,8 +164,11 @@ namespace ldmx {
 
             /**
              * Get a cell center XY position relative to module center from a cell ID.
+             *
+             * @throw Exception if invalid cell ID is input.
+             *
              * @param cellID The cell ID.
-             * @return The XY position of the center of the cell. Error is exception.
+             * @return The (x,y) position of the center of the cell.
              */
             std::pair<double,double> getCellCenterRelative(int cellID) const {
                 // this map search is probably just as fine as the TList search for the cell in ecalMap.
@@ -151,10 +182,12 @@ namespace ldmx {
 
             /**
              * Get a combined cellModule ID from an XY position relative to ecal center.
-             * Error is ID < 0 (see TH2Poly for meanings).
+             *
+             * @sa getCellIDRelative and getModuleID
+             *
              * @param x Any X position [mm]
              * @param y Any Y position [mm]
-             * @param moduleID The module copy number (0 through 6)
+             * @return an EcalID that has the correct module and cell information while layer is set to zero
              */
             EcalID getCellModuleID(double x, double y) const {
                 int moduleID = getModuleID(x,y);
@@ -166,8 +199,11 @@ namespace ldmx {
 
             /**
              * Get a cell center XY position relative to ecal center from a combined cellModuleID.
-             * @param cellModuleID The combined cellModuleID.
-             * @return The XY position of the center of the cell. Error is exception.
+             *
+             * @throw std::out_of_range if EcalID isn't created with valid cell or module IDs.
+             *
+             * @param cellModuleID EcalID where all we care about is module and cell
+             * @return The XY position of the center of the cell.
              */
             std::pair<double,double> getCellCenterAbsolute(EcalID cellModuleID) const {
                 return cellModulePositionMap_.at(EcalID(0,cellModuleID.module(),cellModuleID.cell()));
@@ -175,20 +211,33 @@ namespace ldmx {
 
             /**
              * Distance to module edge, and whether cell is on edge of module.
-             * Use getNN()/getNNN() + isEdgeCell() to expand functionality.
+             *
+             * @TODO Use getNN()/getNNN() + isEdgeCell() to expand functionality.
+             *
+             * @param[in] cellModuleID EcalId where all we care about is module and cell
+             * @return distance to edge of the module
              */
             double distanceToEdge(EcalID cellModuleID) const;
 
             /**
              * Check if input cell is on the edge of a module.
+             *
+             * @sa distanceToEdge
+             *
+             * @param[in] cellModuleID EcalId where all we care about is module and cell
+             * return true if distance to edge is less than max cell radius
              */
             bool isEdgeCell(EcalID cellModuleID) const {
                 return (distanceToEdge(cellModuleID) < cellR_);
             }
 
             /**
-             * Determines if point (x,y), already normed to max hexagon radius, lies
-             * within a hexagon. Corners are (1,0) and (0.5,sqrt(3)/2). Uses "<", not "<=".
+             * Determines if point (x,y), already normed to max hexagon radius, lies within a hexagon. 
+             * Corners are (1,0) and (0.5,sqrt(3)/2). Uses "<", not "<=".
+             *
+             * @param[in] normX X-coordinate relative to module hexagon divided by maximum hexagon radius
+             * @param[in] normY Y-coordinate relative to module hexagon divided by maximum hexagon radius
+             * @return true if (normX,normY) is within the hexagon centered at the origin with maximum radius 1.
              */
             bool isInside(double normX, double normY) const;
 
@@ -196,6 +245,7 @@ namespace ldmx {
              * Get the Nearest Neighbors of the input ID
              *
              * @param id id to get
+             * @return list of EcalID that are the inputs nearest neighbors
              */
             std::vector<EcalID> getNN(EcalID id) const {
                 auto list = NNMap_.at(EcalID(0,id.module(),id.cell()));
@@ -208,6 +258,7 @@ namespace ldmx {
              *
              * @param probe id to check if it is nearest neighbor
              * @param centroid id that is center of neighbors
+             * @return true if probe ID is a nearest neighbor of the centroid
              */
             bool isNN(EcalID centroid, EcalID probe) const {
                 for ( auto& id : getNN(centroid) ) {
@@ -220,6 +271,7 @@ namespace ldmx {
              * Get the Next-to-Nearest Neighbors of the input ID
              *
              * @param id id to get
+             * @return list of EcalID that are the inputs next-to-nearest neighbors
              */
             std::vector<EcalID> getNNN(EcalID id) const {
                 auto list = NNNMap_.at(EcalID(0,id.module(),id.cell()));
@@ -230,8 +282,9 @@ namespace ldmx {
             /**
              * Check if the probe id is one of the next-to-nearest neightbors of the centroid id
              *
-             * @param probe id to check if it is nearest neighbor
+             * @param probe id to check if it is a next-to-nearest neighbor
              * @param centroid id that is center of neighbors
+             * @return true if probe ID is a next-to-nearest neighbor of the centroid
              */
             bool isNNN(EcalID centroid, EcalID probe) const {
                 for ( auto& id : getNNN(centroid) ) {
