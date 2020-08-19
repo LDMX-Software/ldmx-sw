@@ -65,13 +65,7 @@ namespace ldmx {
         ///////////////////////////////////////////////////////////////////////////////////
         // ECAL
 
-        ecalHexRadius_ = 85.;
-
-        ecalHexGap_ = 1.5;
-
         ecalZeroLayer_ = ecal_front_z;
-
-        ecalNCellsWide_ = 23;
 
         ecalSiThickness_ = 0.5;
 
@@ -84,21 +78,17 @@ namespace ldmx {
             394.350, 406.950, 426.150, 438.750
         };
 
-        ecalHexReader_ = std::make_unique<EcalHexReadout>(
-                ecalHexRadius_,
-                ecalHexGap_,
-                ecalNCellsWide_,
-                ecalSiPlanes,
-                ecalZeroLayer_
-                );
+        std::map<std::string,std::any> hexReadoutParams;
+        hexReadoutParams["gap"] = 1.5;
+        hexReadoutParams["moduleMinR"] = 85.0;
+        hexReadoutParams["layerZPositions"] = ecalSiPlanes;
+        hexReadoutParams["ecalFrontZ"] = ecalZeroLayer_;
+        hexReadoutParams["nCellRHeight"] = 35.3;
+        hexReadoutParams["verbose"] = 0;
 
-        ecalXYTower_.emplace_back( 0.0 , 0.0 );
-        for ( int towerIndex = 0; towerIndex < 6; towerIndex++ ) {
-            ecalXYTower_.emplace_back( 
-                        sin( M_PI/3 * towerIndex)*( 2*ecalHexRadius_ + ecalHexGap_ ),
-                        cos( M_PI/3 * towerIndex)*( 2*ecalHexRadius_ + ecalHexGap_ )
-                    );
-        }
+        Parameters hexReadout;
+        hexReadout.setParameters( hexReadoutParams );
+        ecalHexReader_ = std::make_unique<EcalHexReadout>( hexReadout );
 
         /////////////////////////////////////////////////////////////
         // RECOIL TRACKER
@@ -423,7 +413,7 @@ namespace ldmx {
         HexPrism hexpris;
         ecalHexReader_->getCellAbsolutePosition( id , hexpris.x , hexpris.y , hexpris.z );
         hexpris.height = ecalSiThickness_;
-        hexpris.radius = ecalHexRadius_ / ecalNCellsWide_;
+        hexpris.radius = ecalHexReader_->getCellMaxR();
 
         return hexpris;
     }
@@ -438,11 +428,11 @@ namespace ldmx {
             return hexpris;
         }
 
-        hexpris.x = ecalXYTower_.at( towerIndex ).first;
-        hexpris.y = ecalXYTower_.at( towerIndex ).second;
+        hexpris.x = ecalHexReader_->getModuleCenter( towerIndex ).first;
+        hexpris.y = ecalHexReader_->getModuleCenter( towerIndex ).second;
         hexpris.z = ecalZeroLayer_ + ecalDepth_/2;
         hexpris.height = ecalDepth_;
-        hexpris.radius = ecalHexRadius_ * 2 / sqrt(3); //need radius to corner, not to side
+        hexpris.radius = ecalHexReader_->getModuleMaxR();
 
         return hexpris;
     }

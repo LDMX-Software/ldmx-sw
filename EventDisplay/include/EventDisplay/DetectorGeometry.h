@@ -177,15 +177,6 @@ namespace ldmx {
             /////////////////////////////////////////////////////////////
             // ECAL
 
-            /** Radius of hexagons [mm] */
-            double ecalHexRadius_;
-
-            /** Gap between adjacent hexagons in transvers direction [mm] */
-            double ecalHexGap_;
-
-            /** Number of cells across a given module */
-            int ecalNCellsWide_;
-
             /** Thickness of sensitive Si layers */
             double ecalSiThickness_;
 
@@ -197,9 +188,6 @@ namespace ldmx {
 
             /** Helper class to calculate (x,y) coordinate from hexagons */
             std::unique_ptr<EcalHexReadout> ecalHexReader_;
-
-            /** XYCoord for each ECAL Tower (Calculated from ecalHexRadius_ and ecalHexGap_ */
-            std::vector< XYCoords > ecalXYTower_;
 
             /////////////////////////////////////////////////////////////
             // RECOIL TRACKER
