@@ -233,7 +233,7 @@ namespace ldmx {
 
         for ( const EcalHit &hit : ecalRecHits ) {
             //Layer-wise quantities
-	    EcalID id=hitID(hit);
+            EcalID id=hitID(hit);
             ecalLayerEdepRaw_[id.layer()] = ecalLayerEdepRaw_[id.layer()] + hit.getEnergy();
             if(id.layer() >= 20)
                 ecalBackEnergy_ += hit.getEnergy();
@@ -299,7 +299,7 @@ namespace ldmx {
 
         // Loop over hits a second time to find the standard deviations.
         for ( const EcalHit &hit : ecalRecHits ) {
-	    EcalID id=hitID(hit);
+            EcalID id=hitID(hit);
             if (hit.getEnergy() > 0) {
                 xStd_ += pow((getCellCentroidXYPair(id).first - xMean), 2) * hit.getEnergy();
                 yStd_ += pow((getCellCentroidXYPair(id).second - yMean), 2) * hit.getEnergy();
@@ -424,13 +424,13 @@ namespace ldmx {
 
     /* Function to calculate the energy weighted shower centroid */
     EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(const std::vector<EcalHit> &ecalRecHits, double& showerRMS) {
-        XYCoords wgtCentroidCoords = std::make_pair<float, float>(0., 0.);
+        auto wgtCentroidCoords = std::make_pair<float, float>(0., 0.);
         float sumEdep = 0;
-	EcalID returnCellId;
+        EcalID returnCellId;
 
         //Calculate Energy Weighted Centroid
         for (const EcalHit &hit : ecalRecHits ) {
-	    EcalID id = hitID(hit);
+        EcalID id = hitID(hit);
             CellEnergyPair cell_energy_pair = std::make_pair(id, hit.getEnergy());
             XYCoords centroidCoords = getCellCentroidXYPair(id);
             wgtCentroidCoords.first = wgtCentroidCoords.first + centroidCoords.first * cell_energy_pair.second;
@@ -460,7 +460,7 @@ namespace ldmx {
     void EcalVetoProcessor::fillHitMap(const std::vector<EcalHit> &ecalRecHits,
             std::map<EcalID, float>& cellMap_) {
         for ( const EcalHit &hit : ecalRecHits ) {
-	        EcalID id=hitID(hit);
+            EcalID id=hitID(hit);
             cellMap_.emplace( id , hit.getEnergy() );
         }
     }
@@ -469,8 +469,8 @@ namespace ldmx {
             std::map<EcalID, float>& cellMap_, std::map<EcalID, float>& cellMapIso_, bool doTight) {
         for (const EcalHit &hit : ecalRecHits ) {
             auto isolatedHit = std::make_pair(true, EcalID());
-	        EcalID id=hitID(hit);
-	        EcalID flatid(0,id.module(),id.cell());
+            EcalID id=hitID(hit);
+            EcalID flatid(0,id.module(),id.cell());
             if (doTight) {
                 //Disregard hits that are on the centroid.
                 if (flatid==globalCentroid) 
