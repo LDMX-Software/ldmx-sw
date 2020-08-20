@@ -8,16 +8,16 @@ The event display depends on ROOT, so you will need an installation of ROOT outs
 The following procedure was developed on Ubuntu 18.04 using ROOT 6.20.00.
 
 ### Build and Install
-1.  Make a directory for the event display inside of ldmx-sw: `mkdir eve; cd eve`
+1. Remove any old build of ldmx-sw: `cd ldmx-sw; rm -rf build;`
 2. Make a build directory: `mkdir build; cd build`
-3. Configure the build: `cmake -DBUILD_EVE_ONLY=ON -DCMAKE_INSTALL_PREFIX=../install ../../`
+3. Configure the build: `cmake -DBUILD_EVE_ONLY=ON -DCMAKE_INSTALL_PREFIX=../../ldmx-eve ..`
 4. Build and Install: `make install`
 
 ### Environment Setup
 You need to point your computer to the library and executable that the event display uses.
 This entails setting two environment variables: `LD_LIBRARY_PATH` and `PATH`. In bash,
 ```bash
-cd eve/install
+cd ldmx-eve
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/lib
 export PATH=$PATH:$(pwd)/bin
 ```
