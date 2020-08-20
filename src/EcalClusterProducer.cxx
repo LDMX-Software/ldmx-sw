@@ -28,8 +28,6 @@ namespace ldmx {
 
     void EcalClusterProducer::produce(Event& event) {
 
-        static const double layerZPos[] = {-137.2, -134.3, -127.95, -123.55, -115.7, -109.8, -100.7, -94.3, -85.2, -78.8, -69.7, -63.3, -54.2, -47.8, -38.7, -32.3, -23.2, -16.8, -7.7, -1.3, 7.8, 14.2, 23.3, 29.7, 42.3, 52.2, 64.8, 74.7, 87.3, 97.2, 109.8, 119.7, 132.3, 142.2};
-
         TemplatedClusterFinder<MyClusterWeight> cf;
 
         std::vector< EcalHit > ecalHits = event.getCollection< EcalHit >( "ecalDigis" , digisPassName_ );
@@ -43,8 +41,7 @@ namespace ldmx {
             //Skip zero energy digis.
             if (hit.getEnergy() == 0) { continue; }
 
-            EcalID id(hit.getID());
-            cf.add( &hit , hexReadout_, layerZPos[id.layer()]);
+            cf.add( &hit , hexReadout_);
         }
 
         cf.cluster(seedThreshold_, cutoff_);

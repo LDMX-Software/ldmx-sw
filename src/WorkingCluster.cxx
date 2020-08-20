@@ -7,25 +7,22 @@
 
 namespace ldmx {
 
-    WorkingCluster::WorkingCluster(const EcalHit* eh, const std::shared_ptr<EcalHexReadout> hex, double zPos) {
-        add(eh, hex, zPos);
+    WorkingCluster::WorkingCluster(const EcalHit* eh, const std::shared_ptr<EcalHexReadout> hex) {
+        add(eh, hex);
     }
 
-    void WorkingCluster::add(const EcalHit* eh, const std::shared_ptr<EcalHexReadout> hex, double zPos) {
+    void WorkingCluster::add(const EcalHit* eh, const std::shared_ptr<EcalHexReadout> hex) {
     
         double hitE = eh->getEnergy();
-        unsigned int hitID = eh->getID();
 
-        unsigned int cellID = hitID>>15;
-        unsigned int moduleID = (hitID<<17)>>29;
-        unsigned int combinedID = 10*cellID + moduleID;
+        double hitX, hitY, hitZ;
+        hex->getCellAbsolutePosition( eh->getID() //this ID integer is converted into an EcalID
+                , hitX , hitY , hitZ );
 
-        std::pair<double, double> hitXY = hex->getCellCenterAbsolute(combinedID);
-    
         double newE = hitE + centroid_.E();
-        double newCentroidX = (centroid_.Px()*centroid_.E() + hitE*hitXY.first) / newE;
-        double newCentroidY = (centroid_.Py()*centroid_.E() + hitE*hitXY.second) / newE;
-        double newCentroidZ = (centroid_.Pz()*centroid_.E() + hitE*zPos) / newE;
+        double newCentroidX = (centroid_.Px()*centroid_.E() + hitE*hitX) / newE;
+        double newCentroidY = (centroid_.Py()*centroid_.E() + hitE*hitY) / newE;
+        double newCentroidZ = (centroid_.Pz()*centroid_.E() + hitE*hitZ) / newE;
 
         centroid_.SetPxPyPzE(newCentroidX, newCentroidY, newCentroidZ, newE);
 
