@@ -15,14 +15,14 @@ ClassImp(ldmx::TrigScintTrack)
 
 namespace ldmx {
 
-  void TrigScintTrack::Clear() { //Option_t *option) {
+  void TrigScintTrack::Clear() {
     centroid_=0;
     residual_=0;
   }
 
-  void TrigScintTrack::Print() const { //Option_t *option) const {
+  void TrigScintTrack::Print() const {
     std::cout << "TrigScintTrack { " << " channel centroid: " << getCentroid() 
-	      << ",  residual: " << getResidual() << " }" << std::endl;
+			  << ",  residual: " << getResidual() << " }" << std::endl;
   }
 
 }
