@@ -20,10 +20,7 @@ namespace ldmx {
     for (const auto& idx : getHitIDs() )
       std::cout  << idx << "  ";
     std::cout << "}"<< std::endl;
-    //for (int iHit = 0; iHit < hits_->GetEntries(); ++iHit) {
-        //    TrigScintHit* aHit = (TrigScintHit*) hits_->At(iHit);
-        //    std::cout << "Hit " << iHit << " : " << "with energy " << aHit->getEnergy() << std::endl;
-        //}
+
   }
   
   void TrigScintCluster::Clear(Option_t*) {
@@ -33,13 +30,6 @@ namespace ldmx {
     setSeed(-1);    
   }
   
-  //  void TrigScintCluster::Copy(TObject& ob) const {
-  //
-  //EcalCluster::Copy( ob );
-  //TrigScintCluster& tr = (TrigScintCluster&) (ob);
-  //tr.centroid_ = centroid_;
-    
-  //}
   
 }
 

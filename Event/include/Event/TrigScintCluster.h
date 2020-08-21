@@ -1,8 +1,7 @@
 /**
  * @file TrigScintCluster.h
- * @brief Class that stores cluster information from the TrigScint 
- * @author Josh Hiltbrand, University of Minnesota
- * @author Lene Kristian Bryngemark, Stanford University : adaptation to TrigScint 
+ * @brief Class that stores cluster information from the Trigger Scintillator
+ * @author Lene Kristian Bryngemark, Stanford University : adaptation to Trigger Scintillator
  */
 
 #ifndef EVENT_TRIGSCINTCLUSTER_H_
@@ -10,8 +9,6 @@
 
 // ROOT
 #include "TObject.h"
-#include "TString.h"
-#include "TRefArray.h"
 
 // STL
 #include <iostream>
@@ -21,10 +18,6 @@
 #include "Event/EventConstants.h"
 #include "Event/TrigScintHit.h"
 #include "Event/EcalCluster.h"
-// these two can't be found..?
-//#include "Framework/ParameterSet.h" // Needed to import parameters from configuration file
-//#include "Framework/EventProcessor.h"
-
 
 
 namespace ldmx {
@@ -57,64 +50,55 @@ namespace ldmx {
      */
     void Clear(Option_t *option = "") ; // override;
 
-    //    /**
-    // * Copy this object.
-    // * @param o The target object.
-    // */
-    //void Copy(TObject& o) const override;
 
     /**
      * Take in the hits that make up the cluster.
      * @param hit The digi hit's entry number in the events digi 
      * collection.
      */
-    //            void addHits(const std::vector<const TrigScintHit*> hitsVec);
-    void addHit(uint idx, const TrigScintHit* hit);
 
-    //try not re-defining these 
-    
+    void addHit(uint idx, const TrigScintHit* hit);
     
     void setSeed( int idx ) { seed_ = idx ; } 
-
-      void setEnergy(double energy) {
+	
+	void setEnergy(double energy) {
       energy_ = energy;
-      }
-
-      void setPE(int PE) {
+	}
+	
+	void setPE(int PE) {
       PE_ = PE;
-      }
-
- 
-      void setNHits(int nHits) {
+	}
+	
+	
+	void setNHits(int nHits) {
       nHits_ = nHits;
-      }
-
-    // i think the part of the code calling this is currently actually setting the channel IDs in dec, not hex
-      void setIDs(std::vector<unsigned int>& hitIDs) {
+	}
+	
+	void setIDs(std::vector<unsigned int>& hitIDs) {
       hitIDs_ = hitIDs;
-      }
-
-      void setCentroidXYZ(double x, double y, double z) {
+	}
+	
+	void setCentroidXYZ(double x, double y, double z) {
       centroidX_ = x;
       centroidY_ = y;
       centroidZ_ = z;
-      }
-
-   
+	}
+	
+	
     /**
      * @param centroid The channel ID centroid 
      */
-      
+	
     void setCentroid(double centroid) {
       centroid_ = centroid;
     }
-
-
+	
+	
     /** Set time of hit. */
     void setTime(float t){
       time_ = t;
     }
-
+	
     /** Get time of hit. */
     float getTime() const {
       return time_;
@@ -132,36 +116,36 @@ namespace ldmx {
 
     int getSeed() const { return seed_ ; } 
 
-    // /*
-      double getEnergy() const {
+
+	double getEnergy() const {
       return energy_;
-      }
-
-      double getPE() const {
+	}
+	
+	double getPE() const {
       return PE_;
-      }
-
-      int getNHits() const {
+	}
+	
+	int getNHits() const {
       return nHits_;
-      }
+	}
 
-      double getCentroidX() const {
+	double getCentroidX() const {
       return centroidX_;
-      }
+	}
 
-      double getCentroidY() const {
+	double getCentroidY() const {
       return centroidY_;
-      }
+	}
             
-      double getCentroidZ() const {
+	double getCentroidZ() const {
       return centroidZ_;
-      }
+	}
 
-      const std::vector<unsigned int>& getHitIDs() const {
+	const std::vector<unsigned int>& getHitIDs() const {
       return hitIDs_;
-      }
+	}
     
-    // */
+
     double getCentroid() const {
       return centroid_;
     }
