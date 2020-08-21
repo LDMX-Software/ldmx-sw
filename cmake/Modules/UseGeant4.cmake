@@ -1,2 +1,0 @@
-include(${Geant4_USE_FILE})
-set(EXT_DEP_LIBRARIES ${EXT_DEP_LIBRARIES} ${Geant4_LIBRARIES})

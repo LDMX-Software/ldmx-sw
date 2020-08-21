@@ -1,22 +1,21 @@
 #include "DetDescr/TrigScintID.h" 
+#include "DetDescr/DetectorIDInterpreter.h"
 
-/*~~~~~~~~~~~~~~*/
-/*   DetDescr   */
-/*~~~~~~~~~~~~~~*/
-#include "DetDescr/IDField.h"
+
+std::ostream& operator<<(std::ostream& s, const ldmx::TrigScintID& id) {
+  s << "TrigScint(" << id.module() << ',' << id.bar() << ')';
+  return s;
+}
 
 
 namespace ldmx { 
-
-    TrigScintID::TrigScintID() 
-        : DetectorID() {
-
-            auto fieldList{new IDField::IDFieldList()}; 
-            fieldList->push_back(new IDField("module", 0, 0, 4)); 
-            fieldList->push_back(new IDField("bar", 1, 5, 14)); 
-            setFieldList(fieldList); 
-        }
-
-    TrigScintID::~TrigScintID() {}
-
+    void TrigScintID::createInterpreters() {
+	IDField::IDFieldList fields;
+	fields.push_back(new IDField("subdetector",0,SUBDETECTORID_SHIFT,31));
+	fields.push_back(new IDField("module",1,MODULE_SHIFT,MODULE_SHIFT+IDField::countOnes(MODULE_MASK)-1));
+	fields.push_back(new IDField("bar",2,BAR_SHIFT,BAR_SHIFT+IDField::countOnes(BAR_MASK)-1));
+	
+	DetectorIDInterpreter::registerInterpreter(SD_TRIGGER_SCINT,fields);
+	
+    }
 }
