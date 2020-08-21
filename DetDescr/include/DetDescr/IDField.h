@@ -1,10 +1,5 @@
-/**
- * @file IDField.h
- * @brief Class that defines a single field in a bit-packed detector ID
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
-#ifndef DETDESCR_IDFIELD_H_
-#define DETDESCR_IDFIELD_H_
+#ifndef DETDESCR_IDFIELD_H
+#define DETDESCR_IDFIELD_H
 
 // STL
 #include <string>
@@ -77,14 +72,14 @@ namespace ldmx {
              */
             static unsigned createBitMask(unsigned startBit, unsigned endBit);
 
-	    /**
+            /**
              * Utility for counting number of 1 in a mask
              * @param startBit The start bit.
              * @param endBit The end bit.
              */
             static unsigned countOnes(unsigned mask);
 
-	
+
         private:
 
             /**
@@ -112,10 +107,6 @@ namespace ldmx {
              */
             unsigned bitMask;
     };
-
-
-  
-  
 }
 
 #endif

@@ -69,7 +69,7 @@ def photo_nuclear( detector, generator ) :
             # Only consider events where a hard brem occurs
             filters.TargetBremFilter(),
             # Only consider events where a PN reaction happnes in the ECal
-            filters.EcalPNFilter(),     
+            filters.EcalProcessFilter(),     
             # Tag all photo-nuclear tracks to persist them to the event.
             filters.TrackProcessFilter.photo_nuclear()
     ])

@@ -29,7 +29,7 @@ This runs through the cmake-magic that puts all the python modules together into
 Inside of the `docs` directory (this directory), we can generate the python API documentation by 
 referencing the installed python package.
 ```
-sphinx-apidoc -f -T -o sphinx.conf <path-to-ldmx-sw-install>/lib/python/LDMX
+sphinx-apidoc -f -T -o sphinx.conf <path-to-ldmx-sw-install> /python/LDMX
 ```
 
 Then we can build the python html docs.
