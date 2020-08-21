@@ -1,169 +1,110 @@
-/**
- * @file DetectorID.h
- * @brief Class that defines a 32-bit packed ID for uniquely identifying hits and detector components
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
 
 #ifndef DETDESCR_DETECTORID_H_
 #define DETDESCR_DETECTORID_H_
 
-// STL
-#include <vector>
-
-// LDMX
-#include "DetDescr/IDField.h"
+#include <cstdint>
+#include <iostream>
+#include "Framework/Exception.h"
 
 namespace ldmx {
 
+    typedef enum SubdetectorIDTypeEnum {
+        SD_NULL             = 0,
+        SD_TRACKER_TAGGER   = 1,
+        SD_TRIGGER_SCINT    = 2,
+        SD_ACTVE_TARGET     = 3,
+        SD_TRACKER_RECOIL   = 4,
+        SD_ECAL             = 5,
+        SD_HCAL             = 6,
+        SD_SIM_SPECIAL      = 7, 
+        EID_TRACKER         = 16,
+        EID_TRIGGER_SCINT   = 17,
+        EID_ECAL            = 18,
+        EID_HCAL            = 19
+    } SubdetectorIDType;
+
     /**
      * @class DetectorID
-     * @brief Defines a 32-bit packed ID for uniquely identifying hits and detector components
+     * @brief Defines a 32-bit packed ID for uniquely identifying hits and 
+     *  detector components
      *
-     * @note
-     * Represents an ID in the detector with a raw, 32-bit value which can
-     * be unpacked into a list of field values or packed from a list of field
-     * values.
+     * @note This class has a memory footprint of a single 32-bit integer, so 
+     *  can be efficiently used in data structures
      */
     class DetectorID {
 
-        protected:
-
-            /**
-             * Class constructor which is protected for use by sub-classes.
-             */
-            DetectorID();
-
         public:
 
-            /**
-             * Definition of the raw value type.
-             */
-            typedef unsigned RawValue;
+            typedef uint32_t RawValue;
+
+            static const RawValue SUBDETECTORID_MASK{0x3F};
+            static const RawValue SUBDETECTORID_SHIFT{26};
+            static const RawValue SUBDETECTOR_PAYLOAD_MASK{0x3FFFFFFF};
+
+
+            /// Class constructor for a null DetectorID
+            DetectorID() : id_{0} { }
+
+
+            /// Class constructor from a raw 32-bit integer
+            DetectorID(RawValue rawid) : id_{rawid} { }
 
             /**
-             * Definition of the field value type.
+             * Class constructor from a subdetector id and a 
+             * subdetector-specific section (masked to 
              */
-            typedef unsigned FieldValue;
+            DetectorID(SubdetectorIDType sdtype, RawValue raw_subpayload) {
+                id_ = ((RawValue(sdtype) & DetectorID::SUBDETECTORID_MASK ) << DetectorID::SUBDETECTORID_SHIFT) | (raw_subpayload & DetectorID::SUBDETECTOR_PAYLOAD_MASK);
+            }
 
-            /**
-             * A list of field values.
-             */
-            typedef std::vector<FieldValue> FieldValueList;
 
-            /**
-             * Define a new detector ID from a list of field information.
-             * @param fieldList The list of fields.
-             */
-            DetectorID(IDField::IDFieldList* fieldList);
+            /// @return A null ID
+            bool null() const { return id_==0; }
 
-            /**
-             * Class destructor, which will delete the field list and its objects.
-             */
-            virtual ~DetectorID();
+            /// @return The subdetector range.
+            SubdetectorIDType subdet() const {
+                return SubdetectorIDType((id_>>SUBDETECTORID_SHIFT)&SUBDETECTORID_MASK);
+            }
 
-            /**
-             * Get the raw value of the detector ID.
-             * @return The raw value.
-             */
-            RawValue getRawValue();
+
+            /// @return The raw value
+            RawValue raw() const { return id_; }
 
             /**
              * Set the raw value of the detector ID.
              * @param rawValue The raw value of the ID.
              */
-            void setRawValue(RawValue rawValue);
+            void setRawValue(RawValue rawValue) {
+                id_=rawValue;
+            }
 
-            /**
-             * Unpack the current raw value into a list.
-             * @return The list of unpacked values.
-             */
-            const FieldValueList& unpack();
+            bool operator<(const DetectorID& id) const {
+                return id_<id.id_;
+            }
 
-            /**
-             * Pack the current list of field values into a raw value.
-             * @return The packed ID.
-             */
-            RawValue pack();
+            bool operator==(const DetectorID& id) const {
+                return id_==id.id_;
+            }
 
-            /**
-             * Decode and return a field's value from the raw ID.
-             * @param i The index of the field value.
-             */
-            FieldValue getFieldValue(int i);
-
-            /**
-             * Set a field value by index in the field value list.
-             * @param i The index of the field value.
-             * @param value The new field value.
-             */
-            void setFieldValue(int i, FieldValue value);
-
-            /**
-             * Set a field value by its name.
-             * @param fieldName The name of the field.
-             * @param fieldValue The new value of the field.
-             */
-            void setFieldValue(const std::string& fieldName, FieldValue fieldValue);
-
-            /**
-             * Get the list of field information.
-             * @return The list of field information.
-             */
-            IDField::IDFieldList* getFieldList();
-
-            /**
-             * Get the information for a field by name.
-             * @return The information of the field.
-             *
-             */
-            IDField* getField(const std::string& fieldName);
-
-            /**
-             * Decode and return a field's value by name (e.g. "layer").
-             * @return The value of the field.
-             */
-            FieldValue getFieldValue(const std::string& fieldName);
+            bool operator!=(const DetectorID& id) const {
+                return id_!=id.id_;
+            }
 
         protected:
 
-            /**
-             * Set the list of fields that defines this ID.
-             * @param fieldList The list of fields defining the ID.
-             */
-            void setFieldList(IDField::IDFieldList* fieldList);
+            /// The raw, packed value of the ID.
+            RawValue id_;
 
-            /**
-             * Reinitialize the ID in case the field list changed.
-             * This is called automatically by <i>setFieldList</i>.
-             * Function should be called by a subclass if a new field list
-             * is set outside that method or if new fields are added
-             * to the existing list.
-             */
-            void init();
-
-        protected:
-
-            /**
-             * The raw, packed value of the ID.
-             */
-            RawValue rawValue_;
-
-            /**
-             * The unpacked list of field values.
-             */
-            FieldValueList fieldValues_;
-
-            /**
-             * The map of names to field information.
-             */
-            IDField::IDFieldMap fieldMap_;
-
-            /**
-             * The list of field information.
-             */
-            IDField::IDFieldList* fieldList_;
     };
 
+
 }
+
+#define SUBDETECTORID_TEST(a,x) if (!null() && !(subdet()==x)) { EXCEPTION_RAISE("DetectorIDMismatch","Attempted to create "+std::string(a)+" from mismatched source "+std::to_string(subdet())); }
+#define SUBDETECTORID_TEST2(a,x,y) if (!null() && !(subdet()==x || subdet()==y)) { EXCEPTION_RAISE("DetectorIDMismatch","Attempted to create "+std::string(a)+" from mismatched source "+std::to_string(subdet())); }
+
+
+
+std::ostream& operator<<(std::ostream&, const ldmx::DetectorID&);
 
 #endif

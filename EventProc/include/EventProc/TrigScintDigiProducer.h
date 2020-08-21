@@ -65,15 +65,12 @@ namespace ldmx {
 
             void produce(Event& event);
 
-            unsigned int generateRandomID(int module);
+            TrigScintID generateRandomID(int module);
 
         private:
 
             /// Random number generator 
             std::unique_ptr<TRandom3> random_; 
-            
-            /// Detector ID 
-            std::unique_ptr<TrigScintID> detID_;
             
             /// Generate noise hits given the number of channels and mean noise.
             std::unique_ptr<NoiseGenerator> noiseGenerator_;

@@ -170,7 +170,7 @@ function ldmx-container-config() {
 ###############################################################################
 function ldmx() {
     #store current working directory relative to ldmx base
-    _pwd=$(pwd -P)
+    _pwd=$(pwd -P)/.
     cd ${LDMX_BASE} # go to ldmx base directory outside container
     if hash docker &>/dev/null; then
         docker run \
@@ -185,6 +185,7 @@ function ldmx() {
         _current_working_dir=${_pwd##"${LDMX_BASE}/"} 
         singularity run \
             --no-home \
+            --bind ${LDMX_BASE} \
             ${LDMX_SINGULARITY_IMG} ${_current_working_dir} "$@"
     fi
     cd - &> /dev/null #go back outside the container

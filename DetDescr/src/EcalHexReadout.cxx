@@ -99,7 +99,7 @@ namespace ldmx {
                 double cellY = cell.second.second;
                 double x = cellX+moduleX;
                 double y = cellY+moduleY;
-                int cellModuleID = combineID(cellID,moduleID);
+		EcalID cellModuleID = EcalID(0,moduleID,cellID);
                 cellModulePositionMap_[cellModuleID] = std::pair<double,double>(x,y);
             }
         }
@@ -195,33 +195,33 @@ namespace ldmx {
         NNMap_.clear();
         NNNMap_.clear();
         for(auto const& centerChannel : cellModulePositionMap_) {
-            int centerID = centerChannel.first;
+            EcalID centerID = centerChannel.first;
             double centerX = centerChannel.second.first;
             double centerY = centerChannel.second.second;
             for(auto const& probeChannel : cellModulePositionMap_) {
-                int probeID = probeChannel.first;
+                EcalID probeID = probeChannel.first;
                 double probeX = probeChannel.second.first;
                 double probeY = probeChannel.second.second;
                 double dist = sqrt( (probeX-centerX)*(probeX-centerX) + (probeY-centerY)*(probeY-centerY) );
                 if(      dist > 1*cellr_  && dist <= 3.*cellr_)  { NNMap_[centerID].push_back(probeID); }
                 else if( dist > 3.*cellr_ && dist <= 4.5*cellr_) {NNNMap_[centerID].push_back(probeID); }
             }
-            if(verbose_>1) std::cout << TString::Format("Found %d NN and %d NNN for cellModuleID %d with x,y (%.2f,%.2f)",
-                                                        NNMap_[centerID].size(), NNNMap_[centerID].size(), centerID, centerX, centerY) << std::endl;
+            if(verbose_>1) std::cout << TString::Format("Found %d NN and %d NNN for cellModuleID ",int(NNMap_[centerID].size()), int(NNNMap_[centerID].size()))
+				     << centerID << TString::Format(" with x,y (%.2f,%.2f)", centerX, centerY) << std::endl;
         }
         if(verbose_>2){
             double specialX = 0.5*moduleR_ - 0.5*cellr_; // center of cell which is upper-right corner of center module
             double specialY = moduler_ - 0.5*cellR_;
-            int specialCellModuleID = getCellModuleID(specialX,specialY);
+	    EcalID specialCellModuleID = getCellModuleID(specialX,specialY);
             std::cout << "The neighbors of the bin in the upper-right corner of the center module, with cellModuleID " 
                       << specialCellModuleID << " include " << std::endl;
             for(auto centerNN : NNMap_.at(specialCellModuleID)){
-                std::cout << TString::Format(" NN ID %d (x,y) (%.2f, %.2f)",
-                             centerNN,getCellCenterAbsolute(centerNN).first,getCellCenterAbsolute(centerNN).second) << std::endl;
+	      std::cout << " NN " << centerNN
+			<< TString::Format(" (x,y) (%.2f, %.2f)",getCellCenterAbsolute(centerNN).first,getCellCenterAbsolute(centerNN).second) << std::endl;
             }
             for(auto centerNNN : NNNMap_.at(specialCellModuleID)){
-                std::cout << TString::Format(" NNN ID %d (x,y) (%.2f, %.2f)",
-                             centerNNN,getCellCenterAbsolute(centerNNN).first,getCellCenterAbsolute(centerNNN).second) << std::endl;
+	      std::cout << " NNN " << centerNNN
+			<< TString::Format(" (x,y) (%.2f, %.2f)",getCellCenterAbsolute(centerNNN).first,getCellCenterAbsolute(centerNNN).second) << std::endl;
             }
             std::cout << TString::Format("This bin is a distance of %.2f away from a module edge. Decision isEdge %d.",
                          distanceToEdge(specialCellModuleID),isEdgeCell(specialCellModuleID)) << std::endl;
@@ -230,9 +230,9 @@ namespace ldmx {
         return;
     }
 
-    double EcalHexReadout::distanceToEdge(int cellModuleID) const {
+    double EcalHexReadout::distanceToEdge(EcalID cellModuleID) const {
         // https://math.stackexchange.com/questions/1210572/find-the-distance-to-the-edge-of-a-hexagon
-        int cellID = separateID(cellModuleID).first;
+	int cellID = cellModuleID.cell();
         XYCoords cellLocation = getCellCenterRelative(cellID);
         double x = fabs(cellLocation.first); // bring to first quadrant
         double y = fabs(cellLocation.second);

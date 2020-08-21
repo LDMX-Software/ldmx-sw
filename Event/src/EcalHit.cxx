@@ -17,8 +17,4 @@ namespace ldmx {
                 << "ns, amplitude: " << getAmplitude() << "}" << std::endl;
 
     }
-
-    int EcalHit::getCell() const {
-        return (getID() >> 12); // depends on internal knowledge of Detector Id, but efficiency is important for this method
-    }
 }

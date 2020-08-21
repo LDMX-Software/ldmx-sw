@@ -1,11 +1,3 @@
-/*
- * ONNXRuntime.cc
- *
- *  Created on: Jun 28, 2019
- *      Author: Huilin Qu
- */
-
-#ifdef LDMX_USE_ONNXRUNTIME
 
 #include "Tools/ONNXRuntime.h"
 
@@ -162,5 +154,3 @@ namespace ldmx::Ort {
   }
 
 } /* namespace ldmx::Ort */
-
-#endif /* LDMX_USE_ONNXRUNTIME */
