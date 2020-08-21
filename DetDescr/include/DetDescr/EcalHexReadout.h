@@ -73,15 +73,7 @@ namespace ldmx {
 	double getZPosition(int layerID) const {
 	    return ecalFrontZ_ + layerZPositions_.at(layerID);
 	}
-    	
-	/**
-	 * Get a module center position relative to the ecal center [mm]
-	 */
-	XYCoords getModuleCenter(EcalID id) const {
-	    // for now, everything is stacked...
-	    return modulePositionMap_.at(id.module());
-	}
-	
+
 	/**
 	 * Get a module ID from an XY position relative to the ecal center [mm]
 	 */
@@ -125,8 +117,8 @@ namespace ldmx {
 	 */
 	EcalID getCellModuleID(double x, double y) const {
 	    int moduleID = getModuleID(x,y);
-	    double relX = x - getModuleCenter(moduleID).first;
-	    double relY = y - getModuleCenter(moduleID).second;
+	    double relX = x - modulePositionMap_.at(moduleID).first;
+	    double relY = y - modulePositionMap_.at(moduleID).second;
 	    int cellID = getCellIDRelative(relX,relY);
 	    return EcalID(0,moduleID,cellID);
 	}

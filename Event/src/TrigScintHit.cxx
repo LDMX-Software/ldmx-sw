@@ -17,7 +17,9 @@ namespace ldmx {
 
     void TrigScintHit::Clear(Option_t *option) {
         HcalHit::Clear();
-        setPE(0);
+        barID_ = -1;
+        moduleID_ = -1;
+        beamEfrac_ = 0;
     }
 
     void TrigScintHit::Print(Option_t *option) const {

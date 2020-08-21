@@ -114,7 +114,7 @@ def photo_nuclear( detector, generator ) :
             'photonNuclear' #process
             , 'target' #volume
             , 2500. #threshold in MeV
-            , 450 #factor
+            , 450. #factor
             )
    
     # the following filters are in a library that needs to be included

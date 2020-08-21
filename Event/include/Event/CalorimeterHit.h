@@ -181,11 +181,6 @@ namespace ldmx {
             }
 
             /**
-             * Get the layer of the hit from the ID.
-             */
-            int getLayer() const;
-
-            /**
              * Sort by time of hit
              */
             bool operator < ( const CalorimeterHit &rhs ) const {

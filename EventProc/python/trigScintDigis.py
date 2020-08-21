@@ -14,10 +14,7 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
     """Configuration for digitizer for Trigger Scintillators"""
 
     def __init__(self,name) :
-        super().__init__(name,'ldmx::TrigScintDigiProducer')
-
-        from LDMX.EventProc import include
-        include.library()
+        super().__init__(name,'ldmx::TrigScintDigiProducer','EventProc')
 
         self.mean_noise = 0.02
         self.number_of_strips = 50

@@ -29,9 +29,10 @@ namespace ldmx {
         /** Loop over all ecal hits in the given event */
         for (const EcalHit &hit : ecalRecHits ) {
 
-            if (hit.getLayer() < layerDigiE.size()) { // just to be safe...
+            EcalID id(hit.getID());
+            if (id.layer() < layerDigiE.size()) { // just to be safe...
                 if (mode_ == 0) { // Sum over all cells in a given layer
-                    layerDigiE[hit.getLayer()] += hit.getEnergy();
+                    layerDigiE[id.layer()] += hit.getEnergy();
                 } else if (mode_ == 1) { // Sum over cells in central tower only
                     //std::pair<float, float> xyPos = hit->getCellCentroidXYPair(hit->getID());
                     //float cellRadius = sqrt(pow(xyPos.first, 2) + pow(xyPos.second, 2));

@@ -36,42 +36,42 @@ namespace ldmx {
     }
 
     HcalID HcalDigiProducer::generateRandomID(HcalID::HcalSection sec){
-	int layer, strip;
-	HcalID::HcalSection section=sec;
+        int layer, strip;
+        HcalID::HcalSection section=sec;
         if( sec == HcalID::BACK ){
-	    layer=random_->Integer(NUM_BACK_HCAL_LAYERS_);
+            layer=random_->Integer(NUM_BACK_HCAL_LAYERS_);
             strip=random_->Integer(STRIPS_BACK_PER_LAYER_/SUPER_STRIP_SIZE_);
         }else if( sec == HcalID::TOP || sec == HcalID::BOTTOM ){
             layer=random_->Integer(NUM_SIDE_TB_HCAL_LAYERS_);
-	    section=HcalID::HcalSection(random_->Integer(2)+1);
+            section=HcalID::HcalSection(random_->Integer(2)+1);
             strip=random_->Integer(STRIPS_SIDE_TB_PER_LAYER_);            
         }else if( sec == HcalID::LEFT || sec == HcalID::RIGHT ){
             layer=random_->Integer(NUM_SIDE_LR_HCAL_LAYERS_);
-	    section=HcalID::HcalSection(random_->Integer(2)+3);
+            section=HcalID::HcalSection(random_->Integer(2)+3);
             strip=random_->Integer(STRIPS_SIDE_LR_PER_LAYER_);            
-	}else
-	    std::cout << "WARNING [HcalDigiProducer::generateRandomID]: HcalSection is not known" << std::endl;
-	
-	return HcalID(section, layer, strip);
+        }else
+            std::cout << "WARNING [HcalDigiProducer::generateRandomID]: HcalSection is not known" << std::endl;
+
+        return HcalID(section, layer, strip);
     }
 
     void HcalDigiProducer::constructNoiseHit(std::vector<HcalHit> &hcalRecHits, HcalID::HcalSection section, double total_noise, double min_noise, 
-                                             const std::map<unsigned int, float>& hcaldetIDEdep,std::unordered_set<unsigned int>& noiseHitIDs)
+            const std::map<unsigned int, float>& hcaldetIDEdep,std::unordered_set<unsigned int>& noiseHitIDs)
     {
         HcalHit noiseHit;
         noiseHit.setPE(total_noise);
         noiseHit.setMinPE(min_noise); 
         noiseHit.setAmplitude(total_noise);
-        noiseHit.setXpos(0.);
-        noiseHit.setYpos(0.);
-        noiseHit.setZpos(0.);
+        noiseHit.setXPos(0.);
+        noiseHit.setYPos(0.);
+        noiseHit.setZPos(0.);
         noiseHit.setTime(-999.);
         noiseHit.setEnergy(total_noise*mev_per_mip_/pe_per_mip_);
-        
+
         unsigned int rawID;
         do {rawID = generateRandomID(section).raw();}
         while( hcaldetIDEdep.find(rawID) != hcaldetIDEdep.end() || noiseHitIDs.find(rawID) != noiseHitIDs.end() );
-        
+
         noiseHit.setID(rawID);
         noiseHitIDs.insert(rawID);
         noiseHit.setNoise(true);
@@ -103,14 +103,14 @@ namespace ldmx {
             EXCEPTION_RAISE( "InvalidArg" , 
                     "The specified superstrip size is not compatible with the total number of strips! (Number of strips is not divisible by super strip size)" );
         }
-        
+
         // looper over sim hits and aggregate energy depositions for each detID
         auto hcalHits{event.getCollection<SimCalorimeterHit>(EventConstants::HCAL_SIM_HITS,sim_hit_pass_name_)};
 
         for (const SimCalorimeterHit &simHit : hcalHits ) {
-            
+
             int detIDraw = simHit.getID();
-	    HcalID detID(detIDraw);
+            HcalID detID(detIDraw);
             int layer = detID.layer();
             int subsection = detID.section();
             int strip = detID.strip();
@@ -118,15 +118,15 @@ namespace ldmx {
 
             if (verbose_) {
                 std::cout << detID << std::endl;
-	    }
+            }
 
             // re-assign the strip number based on super strip size -- ONLY FOR Back Hcal
             if (SUPER_STRIP_SIZE_ != 1 && subsection == 0){
                 int newstrip = strip/SUPER_STRIP_SIZE_;
-		detID=HcalID(detID.section(),detID.layer(),newstrip);
+                detID=HcalID(detID.section(),detID.layer(),newstrip);
                 detIDraw = detID.raw();
             }
-            
+
             // for now, we take an energy weighted average of the hit in each stip to simulate the hit position. 
             // will use strip TOF and light yield between strips to estimate position.            
             if (hcaldetIDEdep.find(detIDraw) == hcaldetIDEdep.end()){
@@ -144,9 +144,9 @@ namespace ldmx {
                 hcaldetIDEdep[detIDraw] += simHit.getEdep();
                 hcaldetIDTime[detIDraw] += simHit.getTime() * simHit.getEdep();
             }
-	    
+
         }
-                
+
         // loop over detIDs and simulate number of PEs
         std::vector<HcalHit> hcalRecHits;
         for (std::map<unsigned int, float>::iterator it = hcaldetIDEdep.begin(); it != hcaldetIDEdep.end(); ++it) {
@@ -162,7 +162,7 @@ namespace ldmx {
 
             int cur_subsection = curDetId.section();            
             int cur_layer      = curDetId.layer();
-	    int cur_strip      = curDetId.strip();
+            int cur_strip      = curDetId.strip();
 
             if (curDetId.getSection() == HcalID::BACK)
                 numSigHits_back++;
@@ -170,7 +170,7 @@ namespace ldmx {
                 numSigHits_side_tb++;
             else if (curDetId.getSection() == HcalID::LEFT || curDetId.getSection() == HcalID::RIGHT)
                 numSigHits_side_lr++;
-	        else std::cout << "WARNING [HcalDigiProducer::produce]: HcalSection is not known" << std::endl;
+            else std::cout << "WARNING [HcalDigiProducer::produce]: HcalSection is not known" << std::endl;
 
             // need to add in a weighting factor eventually, so keep it that way to make sure we don't forget about it
             double energy = depEnergy; 
@@ -181,10 +181,10 @@ namespace ldmx {
             // for back HCal, get PEs with attentuation
             if (cur_subsection == 0) {
                 float distance_along_bar = (cur_layer % 2) ? fabs(cur_xpos) : fabs(cur_ypos);                
-              
+
                 // increase the PE count to the case with no attentuation (assuming 80% attenuation on the pe_per_mip number @ 1m)
                 meanPE *= exp(1./strip_attenuation_length_); 
-                
+
                 float meanPE_close = meanPE * exp( -1. * ((half_total_width - distance_along_bar) / 1000.) / strip_attenuation_length_ );
                 float meanPE_far   = meanPE * exp( -1. * ((half_total_width + distance_along_bar) / 1000.) / strip_attenuation_length_ );
                 float PE_close     = random_->Poisson(meanPE_close+meanNoise_);
@@ -202,7 +202,7 @@ namespace ldmx {
                 }                
                 cur_xpos = std::max(std::min(cur_xpos,half_total_width),-half_total_width);
                 cur_ypos = std::max(std::min(cur_ypos,half_total_width),-half_total_width);                
-                
+
                 //This would be the quantized z position. 
                 //The back_hcal_z0 and back_hcal_layer_thickness values must be derived fromn the geometry!
                 //float back_hcal_z0(552);
@@ -211,14 +211,14 @@ namespace ldmx {
             }            
             // for sidecal don't worry about attenuation because it's single readout
             else {
-                
+
                 hcalLayerPEs[detIDraw]    = int(meanPE+meanNoise_); //random_->Poisson(meanPE+meanNoise_);
                 hcalLayerMinPEs[detIDraw] = hcalLayerPEs[detIDraw];            
 
-// It looks like LEFT / RIGHT are inverted ?!? LEFT should be + and RIGHT -
-// The gdml file is wrong, left and right are indeed inverted (x,y coodrinates should be reversed). 
-// need to fic gdml and this part 
-                                
+                // It looks like LEFT / RIGHT are inverted ?!? LEFT should be + and RIGHT -
+                // The gdml file is wrong, left and right are indeed inverted (x,y coodrinates should be reversed). 
+                // need to fic gdml and this part 
+
                 //Note the side Hcal doesn't have super strips
                 //This is the quantized position along the length of the bar - LEFT/RIGHT is for fixed HCAL geometry
                 // float ecal_width_(525);
@@ -226,7 +226,7 @@ namespace ldmx {
                 //if (cur_subsection == HcalID::BOTTOM) cur_xpos = -half_total_width/2.0 + ecal_width/4.0;
                 //if (cur_subsection == HcalID::LEFT)   cur_ypos =  half_total_width/2.0 - ecal_width/4.0;
                 //if (cur_subsection == HcalID::RIGHT)  cur_ypos = -half_total_width/2.0 + ecal_width/4.0;
-                
+
                 //This would be the quantized z position. The side_hcal_z0 value must be derived fromn the geometry!
                 //float side_hcal_z0(215.5);
                 //cur_zpos = side_hcal_z0+(cur_strip+0.5)*strip_width ;                        
@@ -248,20 +248,20 @@ namespace ldmx {
                 hit.setAmplitude(hcalLayerPEs[detIDraw]);
                 hit.setEnergy(energy);
                 hit.setTime(hcaldetIDTime[detIDraw]);
-                hit.setXpos(cur_xpos); // quantized and smeared positions
-                hit.setYpos(cur_ypos); // quantized and smeared positions
-                hit.setZpos(cur_zpos);
+                hit.setXPos(cur_xpos); // quantized and smeared positions
+                hit.setYPos(cur_ypos); // quantized and smeared positions
+                hit.setZPos(cur_zpos);
                 hit.setNoise(false);
-                
+
                 hcalRecHits.push_back( hit );
             }
 
             if (verbose_) {
-		HcalID detID(detIDraw);
+                HcalID detID(detIDraw);
 
                 int layer      = detID.layer();
                 int subsection = detID.section();
-		int strip      = detID.strip();
+                int strip      = detID.strip();
 
                 std::cout << "detID     : " << detIDraw << std::endl;
                 std::cout << "Layer     : " << layer << std::endl;
@@ -278,7 +278,7 @@ namespace ldmx {
                     << "\t Z: " << hcalZpos[detIDraw] << std::endl;
             }// end verbose            
         } //end loop over map of values
-        
+
 
         // ------------------------------- Noise simulation -------------------------------
         // simulate noise hits in back hcal
