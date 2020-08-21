@@ -4,7 +4,6 @@
 [submodule "SimCore"]
 	path = SimCore
 	url = https://github.com/LDMX-Software/SimCore
-    branch = iss13
 [submodule "Framework"]
 	path = Framework
 	url = https://github.com/LDMX-Software/Framework.git
