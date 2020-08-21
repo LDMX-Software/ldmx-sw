@@ -7,11 +7,12 @@ class MyProcessor(ldmxcfg.Producer) :
     """The name is purely conventional to match the C++ class name for clarity
 
     The line
-        super().__init__( name , "ldmx::MyProcessor" )
+        super().__init__( name , "ldmx::MyProcessor" , "EventProc" )
 
     Calls the constructor for ldmxcfg.Producer, which is how we have handles
     on this processor. You need to give the actual C++ class name with 
-    namespace(s) as the second entry.
+    namespace(s) as the second entry, and the name of the module the C++ class
+    is in as the third entry.
 
     Any other lines define parameters that are accessible in the C++
     configure method. For example, the line
@@ -20,15 +21,6 @@ class MyProcessor(ldmxcfg.Producer) :
     defines a integer parameter for this class which can be accessed
     in the configure method with
         int my_parameter = parameters.getParameter<int>("my_parameter");
-
-    The lines
-        from LDMX.EventProc import include
-        include.library()
-
-    Attach the EventProc library to the Process so that the
-    processors can be dynamically loaded. If you are in a different
-    module, you will need to change 'EventProc' to the name
-    of the module you are in.
 
     Examples
     --------
@@ -45,9 +37,6 @@ class MyProcessor(ldmxcfg.Producer) :
     """
 
     def __init__(self, name ):
-        super().__init__( name , "ldmx::MyProcessor" )
-
-        from LDMX.EventProc import include
-        include.library()
+        super().__init__( name , "ldmx::MyProcessor" , 'EventProc' )
 
         self.my_parameter = 20

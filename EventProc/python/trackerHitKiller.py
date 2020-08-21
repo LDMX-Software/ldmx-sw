@@ -14,10 +14,7 @@ class TrackerHitKiller(ldmxcfg.Producer) :
     """Configuration for killing tracker hits"""
 
     def __init__(self,name,hitEfficiency) :
-        super().__init__(name,'ldmx::TrackerHitKiller')
-
-        from LDMX.EventProc import include
-        include.library()
+        super().__init__(name,'ldmx::TrackerHitKiller','EventProc')
 
         self.hitEfficiency = hitEfficiency
 

@@ -29,10 +29,7 @@ class EcalDigiVerify(ldmxcfg.Analyzer) :
     """
 
     def __init__(self,name="EcalDigiVerify") :
-        super().__init__(name,'ldmx::EcalDigiVerifier')
-
-        from LDMX.DQM import include
-        include.library()
+        super().__init__(name,'ldmx::EcalDigiVerifier','DQM')
 
         self.ecalSimHitColl = "EcalSimHits"
         self.ecalSimHitPass = "" #use whatever pass is available
@@ -66,10 +63,7 @@ class HCalDQM(ldmxcfg.Analyzer) :
     """
 
     def __init__(self,name="HCal") :
-        super().__init__(name,'ldmx::HCalDQM')
-
-        from LDMX.DQM import include
-        include.library()
+        super().__init__(name,'ldmx::HCalDQM','DQM')
 
         self.ecal_veto_collection = "EcalVeto"
         
@@ -116,10 +110,7 @@ class PhotoNuclearDQM(ldmxcfg.Analyzer) :
     """
 
     def __init__(self,name='PN') :
-        super().__init__(name,'ldmx::PhotoNuclearDQM')
-
-        from LDMX.DQM import include
-        include.library()
+        super().__init__(name,'ldmx::PhotoNuclearDQM','DQM')
 
         self.build1DHistogram("event_type"         , "", 24, -1, 23)
         self.build1DHistogram("event_type_500mev"  , "", 24, -1, 23)
@@ -206,10 +197,7 @@ class RecoilTrackerDQM(ldmxcfg.Analyzer) :
     """
 
     def __init__(self,name='RecoilTracker') :
-        super().__init__(name, "ldmx::RecoilTrackerDQM")
-
-        from LDMX.DQM import include
-        include.library()
+        super().__init__(name, "ldmx::RecoilTrackerDQM",'DQM')
         
         self.build1DHistogram("track_count", "Track Multiplicity", 10, 0, 10)
         self.build1DHistogram("loose_track_count", "Track Multiplicity", 10, 0, 10)
@@ -242,10 +230,7 @@ class TrigScintSimDQM(ldmxcfg.Analyzer) :
     """
 
     def __init__(self,name='TrigScintSimUp',hit_coll='TriggerPadUpSimHits',pad='up') :
-        super().__init__(name,'ldmx::TrigScintDQM')
-
-        from LDMX.DQM import include
-        include.library()
+        super().__init__(name,'ldmx::TrigScintDQM','DQM')
 
         self.hit_collection = hit_coll
         self.pad = pad
@@ -265,10 +250,7 @@ class TrigScintDigiDQM(ldmxcfg.Analyzer) :
     """
 
     def __init__(self,name='TrigScintDigiUp',hit_coll='trigScintDigisUp',pad='up') :
-        super().__init__(name,'ldmx::TrigScintHitDQM')
-
-        from LDMX.DQM import include
-        include.library()
+        super().__init__(name,'ldmx::TrigScintHitDQM','DQM')
 
         self.hit_collection = hit_coll
         self.pad = pad

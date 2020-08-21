@@ -1,13 +1,6 @@
-/**
- * @file ONNXRuntime.h
- * @brief A convenience wrapper of the ONNXRuntime C++ API.
- * Based on https://github.com/microsoft/onnxruntime/blob/master/csharp/test/Microsoft.ML.OnnxRuntime.EndToEndTests.Capi/CXX_Api_Sample.cpp
- * @author Huilin Qu, UCSB
- */
-#ifdef LDMX_USE_ONNXRUNTIME
 
-#ifndef TOOLS_ONNXRUNTIME_H_
-#define TOOLS_ONNXRUNTIME_H_
+#ifndef TOOLS_ONNXRUNTIME_H
+#define TOOLS_ONNXRUNTIME_H
 
 #include <vector>
 #include <map>
@@ -80,5 +73,3 @@ namespace ldmx::Ort {
 }  // namespace ldmx::Ort
 
 #endif /* TOOLS_ONNXRUNTIME_H_ */
-
-#endif /* LDMX_USE_ONNXRUNTIME */

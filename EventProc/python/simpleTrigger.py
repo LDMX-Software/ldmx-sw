@@ -14,10 +14,7 @@ class TriggerProcessor(ldmxcfg.Producer) :
     """Configuration for the simple trigger on the ECal"""
 
     def __init__(self,name) :
-        super().__init__(name,'ldmx::TriggerProcessor')
-
-        from LDMX.EventProc import include
-        include.library()
+        super().__init__(name,'ldmx::TriggerProcessor','EventProc')
 
         self.threshold = 1500.0
         self.mode = 0
