@@ -11,7 +11,18 @@ project(DetDescr VERSION 2.1.0
 file(GLOB DETDESCR_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
 
 setup_library(name DetDescr
-              dependencies DARK::Framework)
+              dependencies DARK::Framework
+              python_install_path ${PYTHON_INSTALL_PREFIX}
+             )
 
 # Setup the test
 setup_test(dependencies DARK::DetDescr)
+
+# Add the printing executable
+add_executable(print-ecal-hex-readout ${PROJECT_SOURCE_DIR}/src/print_ecal_hex_readout.cxx)
+
+# Link to the Framework library
+target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr)
+
+# Install the fire executable
+install(TARGETS print-ecal-hex-readout DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
