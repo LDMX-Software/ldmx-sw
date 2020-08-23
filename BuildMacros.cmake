@@ -155,6 +155,56 @@ macro(setup_library)
 
 endmacro()
 
+macro(declare_event_object)
+
+    # declare a class to be an event bus passenger
+    #   class is the name of the class (required)
+    #   module is the module the class is defined in (required)
+    #   namespace is the namespace the class is defined in (default "ldmx")
+    #   if collection is defined, then the event bus passenger is added as a vector
+    #       e.g. collection "ON"
+    #   if map is defined, then the event bus passenger is the value and the key is
+    #       what map is defined as (e.g. map "int")
+
+    set(oneValueArgs 
+        class module namespace collection map
+        )
+    cmake_parse_arguments(declare_event_object "${options}" "${oneValueArgs}"
+                          "${multiValueArgs}" ${ARGN} )
+
+    set(full_class_name "ldmx::${declare_event_object_class}")
+    if(DEFINED declare_event_object_namespace)
+        set(full_class_name "${declare_event_object_namespace}::${declare_event_object_class}")
+    endif()
+
+    # Add all event objects to global list of event objects
+    set(event_classes ${event_classes} 
+        ${full_class_name}
+        CACHE INTERNAL "event_classes" )
+    set(event_headers ${event_headers} 
+        ${PROJECT_SOURCE_DIR}/include/${declare_event_object_module}/${declare_event_object_class}.h
+        CACHE INTERNAL "event_headers" )
+
+    if(EXISTS ${PROJECT_SOURCE_DIR}/src/${declare_event_object_class}.cxx)
+        set(event_sources ${event_sources} 
+            ${PROJECT_SOURCE_DIR}/src/${declare_event_object_class}.cxx
+            CACHE INTERNAL "event_sources" )
+    endif()
+
+    if(DEFINED declare_event_object_collection)
+        set(event_classes ${event_classes} 
+            "std::vector<${full_class_name}>"
+            CACHE INTERNAL "event_classes" )
+    endif()
+
+    if(DEFINED declare_event_object_map)
+        set(event_classes ${event_classes}
+            "std::map<${declare_event_object_map},${full_class_name}>"
+            CACHE INTERNAL "event_classes" )
+    endif()
+
+endmacro()
+
 macro(setup_test)
 
     set(multiValueArgs dependencies)
