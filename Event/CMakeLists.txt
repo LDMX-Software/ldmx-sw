@@ -26,6 +26,135 @@ configure_file(
 )
 install(FILES ${PROJECT_SOURCE_DIR}/include/Event/Version.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Event/)
 
+declare_event_object(
+    class "CalorimeterHit"
+    module "Event" collection "ON"
+    )
+
+declare_event_object(
+    class "ClusterAlgoResult"
+    module "Event"
+    )
+
+declare_event_object(
+    class "EventHeader"
+    module "Event"
+    )
+
+declare_event_object(
+    class "EcalCluster"
+    module "Event" collection "ON"
+    )
+
+declare_event_object(
+    class "EcalHit"
+    module "Event" collection "ON"
+    )
+
+declare_event_object(
+    class "EcalDigiCollection"
+    module "Event"
+    )
+
+declare_event_object(
+    class "EcalVetoResult"
+    module "Event"
+    )
+
+declare_event_object(
+    class "FindableTrackResult"
+    module "Event" collection "ON"
+    )
+
+declare_event_object(
+    class "HcalHit"
+    module "Event" collection "ON"
+    )
+
+declare_event_object(
+    class "HcalVetoResult"
+    module "Event"
+    )
+
+declare_event_object(
+    class "SimCalorimeterHit"
+    module "Event" collection "ON"
+    )
+
+declare_event_object(
+    class "SimTrackerHit"
+    module "Event" collection "ON"
+    )
+
+declare_event_object(
+    class "SiStripHit"
+    module "Event" collection "ON"
+    )
+
+declare_event_object(
+    class "SimParticle"
+    module "Event" map "int"
+    )
+
+declare_event_object(
+    class "TrigScintHit"
+    module "Event" collection "ON"
+    )
+
+declare_event_object(
+    class "TrackerVetoResult"
+    module "Event"
+    )
+
+declare_event_object(
+    class "TriggerResult"
+    module "Event"
+    )
+
+# Write the EventLinkDef file to be used in the dictionary generation
+set(event_link_def_file ${PROJECT_SOURCE_DIR}/include/Event/EventLinkDef.h)
+file(WRITE ${event_link_def_file}
+    "/**\n * @file EventLinkDef.h\n * Automatically generated pre-processor commands for configuring ROOT Event dictionary.\n */\n\n#ifdef __CINT__\n\n#pragma link off all globals;\n#pragma link off all classes;\n#pragma link off all functions;\n#pragma link C++ nestedclass;\n#pragma link C++ nestedtypedef;\n#pragma link C++ namespace ldmx;\n#pragma link C++ defined_in namespace ldmx;\n\n"
+    )
+foreach(event_class ${event_classes})
+    file(APPEND ${event_link_def_file}
+        "#pragma link C++ class ${event_class}+;\n"
+        )
+endforeach()
+file(APPEND ${event_link_def_file}
+    "\n#endif"
+    )
+
+# Write the EventDef file to be used in the dictionary generation
+set(event_def_file ${PROJECT_SOURCE_DIR}/include/Event/EventDef.h)
+file(WRITE ${event_def_file}
+    "/**\n * @file EventDef.h\n * @brief Automatically generated event bus passenger header.\n */\n"
+    )
+foreach(event_header ${event_headers})
+    string(REGEX REPLACE "^.*include\/" "" trimmed_header ${event_header})
+    file(APPEND ${event_def_file}
+        "#include \"${trimmed_header}\"\n"
+        )
+endforeach()
+
+file(APPEND ${event_def_file}
+    "\n#include <variant>\n\nnamespace ldmx {\n\n    /**\n     * @type EventBusPassenger\n     * Definition of allowed types in the event bus to be handled under one name.\n     */\n    typedef std::variant<\n"
+    )
+list(LENGTH event_classes num_event_classes)
+while(${num_event_classes} GREATER 1)
+    list(POP_FRONT ${event_classes} event_class)
+    file(APPEND ${event_def_file}
+        "        ${event_class},\n"
+        )
+    list(LENGTH event_classes num_event_classes)
+endwhile(${num_event_classes} GREATER 1)
+
+# put the last one in with no comma
+list(POP_FRONT ${event_classes} event_class)
+file(APPEND ${event_def_file}
+    "        ${event_class}\n    > EventBusPassenger;\n}"
+    )
+
 # Search and configure ROOT
 find_package(ROOT 6.16 CONFIG REQUIRED)
 
@@ -35,7 +164,11 @@ include("${ROOT_DIR}/RootMacros.cmake")
 
 # Unfortunately, the Event headers need to be included globably for the 
 # dictionary to be generated correctly. 
-include_directories(${PROJECT_SOURCE_DIR}/include)
+foreach(header ${event_headers})
+    string(REGEX REPLACE "include.*$" "include" header_dir ${header})
+    message("Including: ${header_dir}")
+    include_directories(${header_dir})
+endforeach()
 
 # Copy the files needed to generate the dictionary over to the installation 
 # directory.  This is needed so the dictionary can be built even when the 
@@ -53,12 +186,12 @@ root_generate_dictionary(EventDic ${CMAKE_INSTALL_PREFIX}/include/Event/EventDef
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventDic_rdict.pcm DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 # Need to define the sources here because of the addition of EventDic
-file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
+#file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
 
 # Setup the library
 setup_library(name Event
               dependencies ROOT::Core
-              sources EventDic.cxx ${SRC_FILES}
+              sources EventDic.cxx ${event_sources}
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
