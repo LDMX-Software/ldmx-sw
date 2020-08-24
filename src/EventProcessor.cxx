@@ -4,7 +4,7 @@
 #include "Framework/Process.h"
 #include "Framework/PluginFactory.h"
 #include "TDirectory.h"
-#include "Event/RunHeader.h"
+#include "Framework/RunHeader.h"
 
 namespace ldmx {
 

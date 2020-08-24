@@ -8,6 +8,9 @@ project(Framework VERSION 2.1.0
                   LANGUAGES CXX
 )
 
+declare_event_object( class "EventHeader" module "Framework" )
+declare_event_object( class "RunHeader"   just_dictionary "ON" module "Framework" )
+
 # Search for the Python3 library
 find_package (Python3 COMPONENTS Interpreter Development)
 
@@ -45,3 +48,6 @@ install(TARGETS fire DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # Setup the test
 setup_test(dependencies DARK::Framework)
+
+setup_dictionary(module "Framework")
+

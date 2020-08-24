@@ -13,7 +13,8 @@
 #include "TBranchElement.h"
 
 // LDMX
-#include "Event/EventDef.h"
+#include "Framework/EventDef.h"
+#include "Framework/ProductTag.h"
 #include "Framework/Exception.h"
 
 // STL
