@@ -10,8 +10,8 @@
 /*~~~~~~~~~~~*/
 /*   Event   */
 /*~~~~~~~~~~~*/
+#include "Framework/EventHeader.h"
 #include "Event/EventConstants.h"
-#include "Event/EventHeader.h"
 #include "Event/RunHeader.h"
 #include "Event/Version.h"
 #include "Event/SimTrackerHit.h" 
