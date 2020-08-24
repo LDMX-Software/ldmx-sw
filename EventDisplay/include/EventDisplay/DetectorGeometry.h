@@ -16,7 +16,8 @@
 #include <memory> //unique_ptr
 
 //LDMX Framework
-#include "DetDescr/HcalID.h" //HcalSection enum
+#include "DetDescr/HcalID.h"
+#include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Event/SimTrackerHit.h" //recoil hits
 #include "Event/HcalHit.h"
@@ -80,28 +81,18 @@ namespace ldmx {
             /**
              * Get bounding box for the input section.
              *
-             * @param section HcalSection
+             * @param section HcalID::HcalSection
              * @return BoundingBox that bounds section
              */
-            BoundingBox getBoundingBox( HcalSection section ) const;
-
-            /**
-             * Calculate bounding hexagonal prism for cell with the input IDs
-             *
-             * @param cellID int ID for cell
-             * @param moduleID int ID for module that contains the cell
-             * @param layer int layer contains the module
-             * @return HexPrism
-             */
-            HexPrism getHexPrism( unsigned int cellID , unsigned int moduleID , int layer ) const;
+            BoundingBox getBoundingBox( HcalID::HcalSection section ) const;
 
             /**
              * Calculate bounding hexagonal prism for input EcalHit.
              *
-             * @param hit EcalHit to find real space description
+             * @param id EcalID for the hit
              * @return HexPrism
              */
-            HexPrism getHexPrism( const EcalHit &hit ) const;
+            HexPrism getHexPrism( const EcalID &id ) const;
 
             /**
              * Get HexPrism for a tower
@@ -109,7 +100,7 @@ namespace ldmx {
              * @param towerIndex int index of hexagonal tower
              * @return HexPrism
              */
-            HexPrism getHexPrism( int towerIndex ) const;
+            HexPrism getHexTower( int towerIndex ) const;
 
             /**
              * Get Rotation Angle around z-axis for the input layerID and moduleID
@@ -154,22 +145,22 @@ namespace ldmx {
             // HCAL
 
             /** Number of layers in each section */
-            std::map< HcalSection , int > hcalNLayers_;
+            std::map< HcalID::HcalSection , int > hcalNLayers_;
 
             /** Number of strips per layer in each section */
-            std::map< HcalSection , int > hcalNStrips_;
+            std::map< HcalID::HcalSection , int > hcalNStrips_;
 
             /** Length of Scintillator Strip [mm] */
-            std::map< HcalSection , double > hcalLengthScint_;
+            std::map< HcalID::HcalSection , double > hcalLengthScint_;
 
             /** The plane of the zero'th layer of each section [mm] */
-            std::map< HcalSection , double > hcalZeroLayer_;
+            std::map< HcalID::HcalSection , double > hcalZeroLayer_;
             
             /** The plane of the zero'th strip of each section [mm] */
-            std::map< HcalSection , double > hcalZeroStrip_;
+            std::map< HcalID::HcalSection , double > hcalZeroStrip_;
 
             /** Thickness of the layers in each seciton [mm] */
-            std::map< HcalSection , double > hcalLayerThickness_;
+            std::map< HcalID::HcalSection , double > hcalLayerThickness_;
  
             /** an example layer number of a vertical layer */
             int hcalParityVertical_;
@@ -186,32 +177,17 @@ namespace ldmx {
             /////////////////////////////////////////////////////////////
             // ECAL
 
-            /** Radius of hexagons [mm] */
-            double ecalHexRadius_;
-
-            /** Gap between adjacent hexagons in transvers direction [mm] */
-            double ecalHexGap_;
-
-            /** Plane of the zero'th ecal layer */
-            double ecalZeroLayer_;
-
-            /** Number of cells across a given module */
-            int ecalNCellsWide_;
-
             /** Thickness of sensitive Si layers */
             double ecalSiThickness_;
 
             /** Total depth of ECAL (length in Z direction) */
             double ecalDepth_;
-
-            /** Planes of the Si layers */
-            std::vector< double > ecalSiPlanes_;
+            
+            /** z-coordinate of plane for first ecal layer [mm] */
+            double ecalZeroLayer_;
 
             /** Helper class to calculate (x,y) coordinate from hexagons */
             std::unique_ptr<EcalHexReadout> ecalHexReader_;
-
-            /** XYCoord for each ECAL Tower (Calculated from ecalHexRadius_ and ecalHexGap_ */
-            std::vector< XYCoords > ecalXYTower_;
 
             /////////////////////////////////////////////////////////////
             // RECOIL TRACKER

@@ -99,6 +99,9 @@ if(BUILD_ALL OR BUILD_SIM_ONLY)
     # Add the Detectors submodule.  This has no dependecies.
     add_subdirectory(Detectors)
 
+    # Add the magnetic field map directory.  This simply installs the B-field maps.
+    add_subdirectory(MagFieldMap)
+
 endif()
 
 if(BUILD_EVE_ONLY)
@@ -108,17 +111,9 @@ if(BUILD_EVE_ONLY)
 
 endif()
 
-# Magnetic field map installation
-option(INSTALL_FIELDMAP "Install field map data from MagFieldMap sub-module" ON)
-if(INSTALL_FIELDMAP)
-    
-    # Add the magnetic field map directory.  This simply installs the B-field
-    # maps.
-    add_subdirectory(MagFieldMap)
-
-endif()
-
 # The framework has all the backend code needed to run all processors.
+# we need to configure it last so it has all the event objects declared before
+#   it tries to set up the library
 add_subdirectory(Framework)
 
 # If enabled, build all test.  The test are assumed to reside inside of the
