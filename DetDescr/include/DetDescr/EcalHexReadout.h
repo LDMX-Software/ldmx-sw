@@ -294,6 +294,42 @@ namespace ldmx {
             }
 
             /**
+             * Get the center-to-flat radius of the module hexagons
+             *
+             * @return module min radius [mm]
+             */
+            double getModuleMinR() const {
+                return moduler_;
+            }
+
+            /**
+             * Get the center-to-corner radius of the module hexagons
+             *
+             * @return module max radius [mm]
+             */
+            double getModuleMaxR() const {
+                return moduleR_;
+            }
+
+            /**
+             * Get the center-to-flat radius of the cell hexagons
+             *
+             * @return cell min radius [mm]
+             */
+            double getCellMinR() const {
+                return cellr_;
+            }
+
+            /**
+             * Get the center-to-corner radius of the cell hexagons
+             *
+             * @return cell max radius [mm]
+             */
+            double getCellMaxR() const {
+                return cellR_;
+            }
+
+            /**
              * Get a const reference to the cell center position map.
              */
             const std::map<int,std::pair<double,double>>& getCellPositionMap() const {

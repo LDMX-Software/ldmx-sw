@@ -31,7 +31,7 @@ namespace ldmx {
             TString colName;
             colName.Form("Tower %d", col);
             TEveGeoShape* hexCol = EveShapeDrawer::getInstance().drawHexPrism(
-                    DetectorGeometry::getInstance().getHexPrism( col ),
+                    DetectorGeometry::getInstance().getHexTower( col ),
                     0, 0, 0, 
                     kBlue, 90, colName);
 
@@ -44,30 +44,30 @@ namespace ldmx {
     void EveDetectorGeometry::drawHCAL() {
     
         TEveGeoShape* backHcal = EveShapeDrawer::getInstance().drawRectPrism(
-                DetectorGeometry::getInstance().getBoundingBox( HcalSection::BACK ),
+                DetectorGeometry::getInstance().getBoundingBox( HcalID::HcalSection::BACK ),
                 0, 0, 0, kCyan, 90, "Back HCal"); 
         hcal_->AddElement(backHcal);
     
         TEveGeoShape* sideTopHcal = EveShapeDrawer::getInstance().drawRectPrism(
-                DetectorGeometry::getInstance().getBoundingBox( HcalSection::TOP ),
+                DetectorGeometry::getInstance().getBoundingBox( HcalID::HcalSection::TOP ),
                 0, 0, 0, kCyan, 90, "Module 1");
 
         sidehcal_->AddElement(sideTopHcal);
     
         TEveGeoShape* sideBottomHcal = EveShapeDrawer::getInstance().drawRectPrism(
-                DetectorGeometry::getInstance().getBoundingBox( HcalSection::BOTTOM ),
+                DetectorGeometry::getInstance().getBoundingBox( HcalID::HcalSection::BOTTOM ),
                 0, 0, 0, kCyan, 90, "Module 4");
 
         sidehcal_->AddElement(sideBottomHcal);
     
         TEveGeoShape* sideLeftHcal = EveShapeDrawer::getInstance().drawRectPrism(
-                DetectorGeometry::getInstance().getBoundingBox( HcalSection::LEFT ),
+                DetectorGeometry::getInstance().getBoundingBox( HcalID::HcalSection::LEFT ),
                 0, 0, 0, kCyan, 90, "Module 2");
 
         sidehcal_->AddElement(sideLeftHcal);
     
         TEveGeoShape* sideRightHcal = EveShapeDrawer::getInstance().drawRectPrism(
-                DetectorGeometry::getInstance().getBoundingBox( HcalSection::RIGHT ),
+                DetectorGeometry::getInstance().getBoundingBox( HcalID::HcalSection::RIGHT ),
                 0, 0, 0, kCyan, 90, "Module 3");
 
         sidehcal_->AddElement(sideRightHcal);
