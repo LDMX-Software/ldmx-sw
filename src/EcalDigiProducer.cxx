@@ -96,7 +96,7 @@ namespace ldmx {
         //  the class EcalHitIO in the SimApplication module handles the translation from G4CalorimeterHits to SimCalorimeterHits
         //  this class ensures that only one SimCalorimeterHit is generated per cell, but
         //  multiple "contributions" are still handled within SimCalorimeterHit 
-        auto ecalSimHits{event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS)};
+        auto ecalSimHits{event.getCollection<SimCalorimeterHit>("EcalSimHits")};
 
         //Empty collection to be filled
         EcalDigiCollection ecalDigis;

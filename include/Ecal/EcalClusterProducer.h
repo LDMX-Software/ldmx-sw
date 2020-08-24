@@ -18,10 +18,9 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/EcalHit.h"
-#include "Event/EventConstants.h"
-#include "Event/EcalCluster.h"
-#include "Event/ClusterAlgoResult.h"
+#include "Ecal/EcalHit.h"
+#include "Ecal/EcalCluster.h"
+#include "Ecal/ClusterAlgoResult.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
