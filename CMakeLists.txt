@@ -26,9 +26,13 @@ configure_file(
 )
 install(FILES ${PROJECT_SOURCE_DIR}/include/Framework/Version.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Framework/)
 
-
+# Declare two more objects to go into the dictionary
 declare_event_object( class "EventHeader" )
 declare_event_object( class "RunHeader" just_dictionary "ON" )
+
+# make the event bus dictionary now that all the event objects
+#   have been declared
+setup_dictionary()
 
 # Search for the Python3 library
 find_package (Python3 COMPONENTS Interpreter Development)
@@ -67,6 +71,4 @@ install(TARGETS fire DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # Setup the test
 setup_test(dependencies DARK::Framework)
-
-setup_dictionary()
 

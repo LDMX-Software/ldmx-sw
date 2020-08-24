@@ -286,7 +286,7 @@ namespace ldmx {
     
             //create the branch on this tree
             RunHeader *theHandle = nullptr;
-            runTree->Branch("RunHeader", RunHeader::BRANCH.c_str(), &theHandle, 32000, 3);
+            runTree->Branch(RunHeader::BRANCH.c_str(), "ldmx::RunHeader", &theHandle, 32000, 3);
 
             //copy over the run headers into the tree
             for( auto& runTuple : runMap_ ) {
