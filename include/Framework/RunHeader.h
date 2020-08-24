@@ -30,6 +30,11 @@ namespace ldmx {
         public:
 
             /**
+             * RunHeader branch name for the TTree that will store it.
+             */
+            static const std::string BRANCH;
+
+            /**
              * Constructor.
              *
              * @param runNumber The run number.

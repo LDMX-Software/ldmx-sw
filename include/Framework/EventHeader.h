@@ -27,6 +27,11 @@ namespace ldmx {
         public:
 
             /**
+             * Name of EventHeader branch
+             */
+            static const std::string BRANCH;
+
+            /**
              * Class constructor.
              */
             EventHeader() {

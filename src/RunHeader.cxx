@@ -13,6 +13,8 @@
 
 namespace ldmx {
 
+    const std::string RunHeader::BRANCH = "RunHeader";
+
     RunHeader::RunHeader(int runNumber, std::string detectorName, 
                          std::string description) :
         runNumber_(runNumber), 
