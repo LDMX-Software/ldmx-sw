@@ -175,7 +175,6 @@ macro(declare_event_object)
 
     # declare a class to be an event bus passenger
     #   class is the name of the class (required)
-    #   module is the module the class is defined in (required)
     #   namespace is the namespace the class is defined in (default "ldmx")
     #   if collection is defined, then the event bus passenger is added as a vector
     #       e.g. collection "ON"
@@ -186,13 +185,13 @@ macro(declare_event_object)
     #       e.g. just_dictionary "ON"
 
     set(oneValueArgs 
-        class module namespace collection map just_dictionary
+        class namespace collection map just_dictionary
         )
     cmake_parse_arguments(declare_event_object "${options}" "${oneValueArgs}"
                           "${multiValueArgs}" ${ARGN} )
 
     set(event_headers ${event_headers} 
-        ${PROJECT_SOURCE_DIR}/include/${declare_event_object_module}/${declare_event_object_class}.h
+        ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/${declare_event_object_class}.h
         CACHE INTERNAL "event_headers" )
 
     if(EXISTS ${PROJECT_SOURCE_DIR}/src/${declare_event_object_class}.cxx)
@@ -206,14 +205,23 @@ macro(declare_event_object)
         set(full_class_name "${declare_event_object_namespace}::${declare_event_object_class}")
     endif()
 
+    set(dict_classes ${dict_classes} ${full_class_name}
+        CACHE INTERNAL "dict_classes")
+
     if(DEFINED declare_event_object_collection)
         set(event_classes ${event_classes} 
             "std::vector<${full_class_name}>"
             CACHE INTERNAL "event_classes" )
+        set(dict_classes ${dict_classes}
+            "std::vector<${full_class_name}>"
+            CACHE INTERNAL "dict_classes")
     elseif(DEFINED declare_event_object_map)
         set(event_classes ${event_classes}
             "std::map<${declare_event_object_map},${full_class_name}>"
             CACHE INTERNAL "event_classes" )
+        set(dict_classes ${dict_classes}
+            "std::map<${declare_event_object_map},${full_class_name}>"
+            CACHE INTERNAL "dict_classes")
     elseif(NOT DEFINED declare_event_object_just_dictionary)
         set(event_classes ${event_classes} 
             ${full_class_name}
@@ -228,16 +236,13 @@ macro(setup_dictionary)
     #   We assume that all declare_event_object calls are done
 
     # Arguments
-    #   module : required, name of module this dictionary is in
 
-    set(oneValueArgs 
-        module 
-        )
+    set(oneValueArgs)
     cmake_parse_arguments(setup_dictionary "${options}" "${oneValueArgs}"
                           "${multiValueArgs}" ${ARGN} )
 
 
-    message("Writing ROOT Dictionary for ${setup_dictionary_module}")
+    message("Writing ROOT Dictionary for ${PROJECT_NAME}")
 
     list(REMOVE_DUPLICATES event_classes)
     list(REMOVE_DUPLICATES event_headers)
@@ -247,13 +252,13 @@ macro(setup_dictionary)
     message("Event Headers:'${event_headers}'")
     
     # Write the EventLinkDef file to be used in the dictionary generation
-    set(event_link_def_file ${PROJECT_SOURCE_DIR}/include/${setup_dictionary_module}/EventLinkDef.h)
+    set(event_link_def_file ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/EventLinkDef.h)
     file(WRITE ${event_link_def_file}
         "/**\n * @file EventLinkDef.h\n * Automatically generated pre-processor commands for configuring ROOT Event dictionary.\n */\n\n#ifdef __CINT__\n\n#pragma link off all globals;\n#pragma link off all classes;\n#pragma link off all functions;\n#pragma link C++ nestedclass;\n#pragma link C++ nestedtypedef;\n#pragma link C++ namespace ldmx;\n#pragma link C++ defined_in namespace ldmx;\n\n"
         )
-    foreach(event_class ${event_classes})
+    foreach(class ${dict_classes})
         file(APPEND ${event_link_def_file}
-            "#pragma link C++ class ${event_class}+;\n"
+            "#pragma link C++ class ${class}+;\n"
             )
     endforeach()
     file(APPEND ${event_link_def_file}
@@ -263,7 +268,7 @@ macro(setup_dictionary)
     message("Wrote ${event_link_def_file}")
     
     # Write the EventDef file to be used in the dictionary generation
-    set(event_def_file ${PROJECT_SOURCE_DIR}/include/${setup_dictionary_module}/EventDef.h)
+    set(event_def_file ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/EventDef.h)
     file(WRITE ${event_def_file}
         "/**\n * @file EventDef.h\n * @brief Automatically generated event bus passenger header.\n */\n"
         )
@@ -310,12 +315,12 @@ macro(setup_dictionary)
     message("Included Event Header directories")
 
     file(COPY ${event_def_file} ${event_link_def_file}
-         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${setup_dictionary_module})
+         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME})
 
     # Generate the ROOT dictionary
     root_generate_dictionary(EventDict 
-        ${CMAKE_INSTALL_PREFIX}/include/${setup_dictionary_module}/EventDef.h
-        LINKDEF ${CMAKE_INSTALL_PREFIX}/include/${setup_dictionary_module}/EventLinkDef.h
+        ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}/EventDef.h
+        LINKDEF ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}/EventLinkDef.h
     )
     
     message("Generated ROOT Dictionary")
