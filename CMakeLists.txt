@@ -84,6 +84,9 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
     # Data quality management plots.
     add_subdirectory(DQM)
 
+    # Conditions services
+    add_subdirectory(Conditions)
+
 endif()
 
 if(BUILD_ALL OR BUILD_SIM_ONLY)
