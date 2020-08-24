@@ -1,8 +1,3 @@
-/**
- * @file TrigScintTrackProducer.h
- * @brief
- * @author
- */
 
 #ifndef EVENTPROC_TRIGSCINTTRACKPRODUCER_H
 #define EVENTPROC_TRIGSCINTTRACKPRODUCER_H
@@ -19,7 +14,7 @@
 #include "TClonesArray.h"
 
 namespace ldmx {
-    
+
     /**
      * @class TrigScintTrackProducer
      * @brief making tracks from trigger scintillator clusters 
@@ -27,40 +22,40 @@ namespace ldmx {
     class TrigScintTrackProducer : public ldmx::Producer {
         public:
 
-            TrigScintTrackProducer(const std::string& name, ldmx::Process& process) : ldmx::Producer(name, process) {
-	//	    	tracks_ = new TClonesArray("ldmx::TrigScintTrack");
-	    }
+            TrigScintTrackProducer(const std::string& name, ldmx::Process& process) 
+                : Producer(name, process) {
+            }
 
-      //virtual void configure(const ldmx::ParameterSet& ps);
-      virtual void configure(ldmx::Parameters& ps);
-      
-      virtual void produce(ldmx::Event& event);
-      
-      virtual void onFileOpen();
-      
-      virtual void onFileClose();
-      
-      virtual void onProcessStart(); 
-      
-      virtual void onProcessEnd();
+            //virtual void configure(const ldmx::ParameterSet& ps);
+            virtual void configure(ldmx::Parameters& ps);
+
+            virtual void produce(ldmx::Event& event);
+
+            virtual void onFileOpen();
+
+            virtual void onFileClose();
+
+            virtual void onProcessStart(); 
+
+            virtual void onProcessEnd();
 
         private:
-      std::vector< TrigScintTrack > tracks_;
-                                                                   
-      TrigScintTrack makeTrack( std::vector<TrigScintCluster> clusters );
-      
-      double maxDelta_{0.};
-      int verbose_{0};
+            std::vector< TrigScintTrack > tracks_;
 
-      std::string seeding_collection_;
-       std::vector <std::string> input_collections_;
-       //std::string input_collection1_;
-       //std::string input_collection2_;
-      std::string output_collection_;
-      std::string passName_{""};
+            TrigScintTrack makeTrack( std::vector<TrigScintCluster> clusters );
 
-      float centroid_{0.};  //channel nb centroid (will not be content weighted)
-      float residual_{0.};  //channel nb residual (will not be content weighted)
+            double maxDelta_{0.};
+            int verbose_{0};
+
+            std::string seeding_collection_;
+            std::vector <std::string> input_collections_;
+            //std::string input_collection1_;
+            //std::string input_collection2_;
+            std::string output_collection_;
+            std::string passName_{""};
+
+            float centroid_{0.};  //channel nb centroid (will not be content weighted)
+            float residual_{0.};  //channel nb residual (will not be content weighted)
 
 
     };
