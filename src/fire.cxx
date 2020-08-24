@@ -12,7 +12,6 @@
 //   ldmx-sw   //
 //-------------//
 #include "Framework/Process.h"
-#include "Framework/EventProcessorFactory.h"
 #include "Framework/ConfigurePython.h"
 
 /**

@@ -7,44 +7,47 @@
 #include "TFile.h"
 #include "TROOT.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/EventProcessorFactory.h"
+#include "Framework/PluginFactory.h"
 #include "Framework/Event.h"
 #include "Framework/EventFile.h"
 #include "Framework/Process.h"
 #include "Framework/NtupleManager.h"
 #include "Framework/Logger.h"
 #include "Event/RunHeader.h"
+#include "Event/EventHeader.h"
 #include "Framework/Exception.h"
 
 namespace ldmx {
 
-    Process::Process(const Parameters& configuration) {
+  Process::Process(const Parameters& configuration) : conditions_{*this} {
 
         passname_      = configuration.getParameter<std::string>("passName");
-        histoFilename_ = configuration.getParameter<std::string>("histogramFile"); 
-        logFileName_   = configuration.getParameter<std::string>("logFileName");
+        histoFilename_ = configuration.getParameter<std::string>("histogramFile",""); 
+        logFileName_   = configuration.getParameter<std::string>("logFileName","");
 
-        maxTries_           = configuration.getParameter<int>("maxTriesPerEvent");
-        eventLimit_         = configuration.getParameter<int>("maxEvents");
-        logFrequency_       = configuration.getParameter<int>("logFrequency"); 
-        compressionSetting_ = configuration.getParameter<int>("compressionSetting");
-        termLevelInt_       = configuration.getParameter<int>("termLogLevel");
-        fileLevelInt_       = configuration.getParameter<int>("fileLogLevel");
+        maxTries_           = configuration.getParameter<int>("maxTriesPerEvent",1);
+        eventLimit_         = configuration.getParameter<int>("maxEvents",-1);
+        logFrequency_       = configuration.getParameter<int>("logFrequency",-1); 
+        compressionSetting_ = configuration.getParameter<int>("compressionSetting",9);
+        termLevelInt_       = configuration.getParameter<int>("termLogLevel",2); 
+        fileLevelInt_       = configuration.getParameter<int>("fileLogLevel",0); 
 
         inputFiles_    = configuration.getParameter<std::vector<std::string>>("inputFiles" ,{});
         outputFiles_   = configuration.getParameter<std::vector<std::string>>("outputFiles",{});
         dropKeepRules_ = configuration.getParameter<std::vector<std::string>>("keep"       ,{});
 
-        auto run{configuration.getParameter<int>("run")};
+        eventHeader_   = 0;
+
+        auto run{configuration.getParameter<int>("run",-1)};
         if ( run > 0 ) runForGeneration_ = run;
 
         auto libs{configuration.getParameter<std::vector<std::string>>("libraries",{})};
         std::for_each(libs.begin(), libs.end(), 
-                [](auto& lib) { EventProcessorFactory::getInstance().loadLibrary(lib);}
+                [](auto& lib) { PluginFactory::getInstance().loadLibrary(lib);}
                 ); 
 
         m_storageController.setDefaultKeep(
-                configuration.getParameter<bool>("skimDefaultIsKeep")
+                       configuration.getParameter<bool>("skimDefaultIsKeep",true)
                 );
         auto skimRules{configuration.getParameter<std::vector<std::string>>("skimRules",{})};
         for (size_t i=0; i<skimRules.size(); i+=2) {
@@ -52,7 +55,7 @@ namespace ldmx {
         }
 
         auto sequence{configuration.getParameter<std::vector<Parameters>>("sequence",{})};
-        if ( sequence.empty() ) {
+        if ( sequence.empty() && configuration.getParameter<bool>("testingMode",false)) {     
             EXCEPTION_RAISE(
                     "NoSeq",
                     "No sequence has been defined. What should I be doing?\nUse p.sequence to tell me what processors to run."
@@ -61,7 +64,7 @@ namespace ldmx {
         for (auto proc : sequence) {
             auto className{proc.getParameter<std::string>("className")};
             auto instanceName{proc.getParameter<std::string>("instanceName")};
-            EventProcessor* ep = EventProcessorFactory::getInstance().createEventProcessor(
+            EventProcessor* ep = PluginFactory::getInstance().createEventProcessor(
                     className, instanceName, *this);
             if (ep == 0) {
                 EXCEPTION_RAISE("UnableToCreate", 
@@ -75,6 +78,16 @@ namespace ldmx {
             }
             ep->configure(proc);
             sequence_.push_back(ep);
+        }
+
+        auto conditionsObjectProviders{configuration.getParameter<std::vector<Parameters> >("conditionsObjectProviders",{})};
+        for (auto cop : conditionsObjectProviders) {
+      
+            auto className{cop.getParameter<std::string>("className")};
+            auto instanceName{cop.getParameter<std::string>("instanceName")};
+            auto tagName{cop.getParameter<std::string>("tagName")};
+
+            conditions_.createConditionsObjectProvider(className, instanceName, tagName, cop);
         }
     }
 
@@ -141,6 +154,9 @@ namespace ldmx {
                     eh.setEventNumber(n_events_processed + 1);
                     eh.setTimestamp(TTimeStamp());
 
+                    // event header pointer grab
+                    eventHeader_=theEvent.getEventHeaderPtr();
+                
                     numTries++;
 
                     // reset the storage controller state
@@ -253,6 +269,9 @@ namespace ldmx {
                             && (eventLimit_ < 0 || (n_events_processed) < eventLimit_)) {
                         // clean up for storage control calculation
                         m_storageController.resetEventState();
+
+                        // event header pointer grab
+                        eventHeader_=theEvent.getEventHeaderPtr();
             
                         // notify for new run if necessary
                         if (theEvent.getEventHeader().getRun() != wasRun) {
@@ -354,6 +373,10 @@ namespace ldmx {
         logging::close();
     }
 
+    int Process::getRunNumber() const {
+        return (eventHeader_)?(eventHeader_->getRun()):(runForGeneration_);
+    }
+  
     TDirectory* Process::makeHistoDirectory(const std::string& dirName) {
         auto owner{openHistoFile()}; 
         TDirectory* child = owner->mkdir((char*) dirName.c_str());

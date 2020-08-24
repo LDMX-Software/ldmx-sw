@@ -17,7 +17,8 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Event.h"
-#include "Framework/Parameters.h" 
+#include "Framework/Parameters.h"
+#include "Framework/Conditions.h" 
 #include "Framework/StorageControl.h"
 #include "Framework/Histograms.h"
 #include "Framework/NtupleManager.h"
@@ -145,6 +146,14 @@ namespace ldmx {
             }
 
             /** 
+             * Access a conditions object for the current event
+             */
+            template <class T>
+            const T& getCondition(const std::string& condition_name) {
+      	        return getConditions().getCondition<T>(condition_name, getEventHeader());
+            }
+      
+            /** 
              * Access/create a directory in the histogram file for this event
              * processor to create histograms and analysis tuples.
              *
@@ -181,7 +190,7 @@ namespace ldmx {
             int getRunNumber() const;
     
             /**
-             * Internal function which is part of the EventProcessorFactory machinery.
+             * Internal function which is part of the PluginFactory machinery.
              * @param classname The class name of the processor.
              * @param classtype The class type of the processor (1 for Producer, 2 for Analyzer).
              */
@@ -213,6 +222,16 @@ namespace ldmx {
 
         private:
 
+            /**
+             * Internal getter for conditions without exposing all of Process
+             */
+            Conditions& getConditions() const;
+      
+            /** 
+             * Internal getter for EventHeader without exposing all of Process
+             */
+            const EventHeader& getEventHeader() const;
+            
             /** Handle to the Process. */
             Process& process_;
 
@@ -233,7 +252,7 @@ namespace ldmx {
 
         public:
 
-            /** Constant used to track EventProcessor types by the EventProcessorFactory */
+            /** Constant used to track EventProcessor types by the PluginFactory */
             static const int CLASSTYPE{1};
 
             /**
@@ -268,7 +287,7 @@ namespace ldmx {
 
         public:
 
-            /** Constant used to track EventProcessor types by the EventProcessorFactory */
+            /** Constant used to track EventProcessor types by the PluginFactory */
             static const int CLASSTYPE{2};
 
             /**

@@ -11,10 +11,12 @@
 #include "Framework/Exception.h"
 #include "Framework/StorageControl.h"
 #include "Framework/Parameters.h"
+#include "Framework/Conditions.h"
 
 // STL
 #include <vector>
 #include <memory>
+#include <map>
 
 class TFile;
 class TDirectory;
@@ -56,10 +58,20 @@ namespace ldmx {
             }
 
             /**
-             * Get the run number to be used when initiating new events from the job
+             * Get the current run number or the run number to be used when initiating new events from the job
              * @return int Run number
              */
-            int getRunNumber() const { return runForGeneration_; }
+            int getRunNumber() const;
+
+            /**
+             * Get the pointer to the current event header, if defined
+             */
+            const EventHeader* getEventHeader() const { return eventHeader_; }
+
+            /**
+             * Get a reference to the conditions system
+             */
+            Conditions& getConditions() { return conditions_; }
 
             /**
              * Get the frequency with which the event information is printed.
@@ -112,7 +124,7 @@ namespace ldmx {
              * Private dummy constructor
              * We hide it here because it shouldn't be used anywhere else.
              */
-            Process() { /** nothing on purpose */ }
+            Process() : conditions_{*this} { /** nothing on purpose */ }
     
         private:
 
@@ -143,6 +155,9 @@ namespace ldmx {
             /** Ordered list of EventProcessors to execute. */
             std::vector<EventProcessor*> sequence_;
 
+            /** Set of ConditionsProviders */
+            Conditions conditions_;
+
             /** List of input files to process.  May be empty if this Process will generate new events. */
             std::vector<std::string> inputFiles_;
 
@@ -166,6 +181,9 @@ namespace ldmx {
 
             /** Filename for histograms and other user products */
             std::string histoFilename_;
+
+            /** Pointer to the current EventHeader, used for Conditions information */
+            const EventHeader* eventHeader_;
 
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};
