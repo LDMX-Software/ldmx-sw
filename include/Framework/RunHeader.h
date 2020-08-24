@@ -21,7 +21,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "Event/Version.h"
+#include "Framework/Version.h"
 
 namespace ldmx {
 
@@ -161,6 +161,15 @@ namespace ldmx {
 
             /** Print a string desciption of this object. */
             void Print() const;
+
+            /**
+             * Clear this object of its parameters
+             */
+            void Clear() {
+                intParameters_.clear();
+                floatParameters_.clear();
+                stringParameters_.clear();
+            }
 
         private:
 
