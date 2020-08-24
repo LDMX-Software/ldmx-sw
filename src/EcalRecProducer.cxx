@@ -24,63 +24,8 @@ namespace ldmx {
         layerWeights_ = ps.getParameter<std::vector<double>>( "layerWeights" );
         secondOrderEnergyCorrection_ = ps.getParameter<double>( "secondOrderEnergyCorrection" );
 
-        //if changing Ecal geometry, input geometry parameters here
-        //  module radius - center-to-flat radius of a module in mm
-        //  num cells wide - number of cells in center horizontal row
-        //  gap between modules - air gap between adjacent flat edges of module
-        //  z-position of front face of ECal [mm]
-        //  list of positions of sensitive layers relative to front of ECal [mm]
-
-        // These are the v12 parameters
-        //  all distances in mm
-        double moduleRadius = 85.0; //same as default
-        int    numCellsWide = 23; //same as default
-        double moduleGap = 1.5;
-        double ecalFrontZ = 220;
-        std::vector<double> ecalSensLayersZ = {
-             7.850,
-            13.300,
-            26.400,
-            33.500,
-            47.950,
-            56.550,
-            72.250,
-            81.350,
-            97.050,
-            106.150,
-            121.850,
-            130.950,
-            146.650,
-            155.750,
-            171.450,
-            180.550,
-            196.250,
-            205.350,
-            221.050,
-            230.150,
-            245.850,
-            254.950,
-            270.650,
-            279.750,
-            298.950,
-            311.550,
-            330.750,
-            343.350,
-            362.550,
-            375.150,
-            394.350,
-            406.950,
-            426.150,
-            438.750
-        };
-
-        ecalHexReadout_ = std::make_unique<EcalHexReadout>(
-                moduleRadius,
-                moduleGap,
-                numCellsWide,
-                ecalSensLayersZ,
-                ecalFrontZ
-                );
+        auto hexReadout{ps.getParameter<Parameters>("hexReadout")};
+        ecalHexReadout_ = std::make_unique<EcalHexReadout>(hexReadout);
     }
 
     void EcalRecProducer::produce(Event& event) {

@@ -86,56 +86,8 @@ namespace ldmx {
         }
 
 
-        // These are the v12 parameters
-        //  all distances in mm
-        double moduleRadius = 85.0; //same as default
-        int    numCellsWide = 23; //same as default
-        double moduleGap = 1.5;
-        double ecalFrontZ = 220;
-        std::vector<double> ecalSensLayersZ = {
-             7.850,
-            13.300,
-            26.400,
-            33.500,
-            47.950,
-            56.550,
-            72.250,
-            81.350,
-            97.050,
-            106.150,
-            121.850,
-            130.950,
-            146.650,
-            155.750,
-            171.450,
-            180.550,
-            196.250,
-            205.350,
-            221.050,
-            230.150,
-            245.850,
-            254.950,
-            270.650,
-            279.750,
-            298.950,
-            311.550,
-            330.750,
-            343.350,
-            362.550,
-            375.150,
-            394.350,
-            406.950,
-            426.150,
-            438.750
-        };
-
-        hexReadout_ = std::make_unique<EcalHexReadout>(
-                moduleRadius,
-                moduleGap,
-                numCellsWide,
-                ecalSensLayersZ,
-                ecalFrontZ
-                );
+        auto hexReadout{parameters.getParameter<Parameters>("hexReadout")};
+        hexReadout_ = std::make_unique<EcalHexReadout>(hexReadout);
 
         nEcalLayers_ = parameters.getParameter< int >("num_ecal_layers");
 
@@ -281,7 +233,7 @@ namespace ldmx {
 
         for ( const EcalHit &hit : ecalRecHits ) {
             //Layer-wise quantities
-	    EcalID id=hitID(hit);
+            EcalID id=hitID(hit);
             ecalLayerEdepRaw_[id.layer()] = ecalLayerEdepRaw_[id.layer()] + hit.getEnergy();
             if(id.layer() >= 20)
                 ecalBackEnergy_ += hit.getEnergy();
@@ -347,7 +299,7 @@ namespace ldmx {
 
         // Loop over hits a second time to find the standard deviations.
         for ( const EcalHit &hit : ecalRecHits ) {
-	    EcalID id=hitID(hit);
+            EcalID id=hitID(hit);
             if (hit.getEnergy() > 0) {
                 xStd_ += pow((getCellCentroidXYPair(id).first - xMean), 2) * hit.getEnergy();
                 yStd_ += pow((getCellCentroidXYPair(id).second - yMean), 2) * hit.getEnergy();
@@ -472,13 +424,13 @@ namespace ldmx {
 
     /* Function to calculate the energy weighted shower centroid */
     EcalID EcalVetoProcessor::GetShowerCentroidIDAndRMS(const std::vector<EcalHit> &ecalRecHits, double& showerRMS) {
-        XYCoords wgtCentroidCoords = std::make_pair<float, float>(0., 0.);
+        auto wgtCentroidCoords = std::make_pair<float, float>(0., 0.);
         float sumEdep = 0;
-	EcalID returnCellId;
+        EcalID returnCellId;
 
         //Calculate Energy Weighted Centroid
         for (const EcalHit &hit : ecalRecHits ) {
-	    EcalID id = hitID(hit);
+        EcalID id = hitID(hit);
             CellEnergyPair cell_energy_pair = std::make_pair(id, hit.getEnergy());
             XYCoords centroidCoords = getCellCentroidXYPair(id);
             wgtCentroidCoords.first = wgtCentroidCoords.first + centroidCoords.first * cell_energy_pair.second;
@@ -508,7 +460,7 @@ namespace ldmx {
     void EcalVetoProcessor::fillHitMap(const std::vector<EcalHit> &ecalRecHits,
             std::map<EcalID, float>& cellMap_) {
         for ( const EcalHit &hit : ecalRecHits ) {
-	        EcalID id=hitID(hit);
+            EcalID id=hitID(hit);
             cellMap_.emplace( id , hit.getEnergy() );
         }
     }
@@ -517,8 +469,8 @@ namespace ldmx {
             std::map<EcalID, float>& cellMap_, std::map<EcalID, float>& cellMapIso_, bool doTight) {
         for (const EcalHit &hit : ecalRecHits ) {
             auto isolatedHit = std::make_pair(true, EcalID());
-	        EcalID id=hitID(hit);
-	        EcalID flatid(0,id.module(),id.cell());
+            EcalID id=hitID(hit);
+            EcalID flatid(0,id.module(),id.cell());
             if (doTight) {
                 //Disregard hits that are on the centroid.
                 if (flatid==globalCentroid) 
