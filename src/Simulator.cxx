@@ -11,7 +11,6 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Process.h"
-#include "Event/Version.h" //for LDMX_INSTALL path
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */

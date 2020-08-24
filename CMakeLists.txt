@@ -19,6 +19,10 @@ if (NOT build_macros_found)
     endif()
 endif()
 
+declare_event_object( class "SimCalorimeterHit" collection "ON" )
+declare_event_object( class "SimTrackerHit" collection "ON" )
+declare_event_object( class "SimParticle" map "int" )
+
 # Configure Geant4
 setup_geant4_target()
 
@@ -29,7 +33,7 @@ find_package(ROOT CONFIG REQUIRED)
 setup_library(name SimCore 
               dependencies Geant4::Interface 
                            ROOT::Physics 
-                           DARK::Framework DARK::DetDescr
+                           DARK::Event DARK::Framework DARK::DetDescr
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 

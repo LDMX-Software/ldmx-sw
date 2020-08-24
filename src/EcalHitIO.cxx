@@ -6,8 +6,8 @@
 #include <map>
 
 // LDMX
-#include "Event/SimCalorimeterHit.h"
-#include "Event/SimParticle.h"
+#include "SimCore/SimCalorimeterHit.h"
+#include "SimCore/SimParticle.h"
 
 namespace ldmx {
 
