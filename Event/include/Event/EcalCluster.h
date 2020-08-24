@@ -16,7 +16,6 @@
 #include <set>
 
 // ldmx-sw
-#include "Event/EventConstants.h"
 #include "Event/EcalHit.h"
 
 namespace ldmx {
