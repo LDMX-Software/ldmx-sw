@@ -10,7 +10,8 @@
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
 #include "DetDescr/EcalID.h"
-#include "Event/EventDef.h"
+#include "Ecal/EcalVetoResult.h"
+#include "Ecal/EcalHit.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h"
 

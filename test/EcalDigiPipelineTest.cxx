@@ -8,7 +8,6 @@
 
 #include "Framework/Event.h" //We need an event bus to pass through produce
 #include "Framework/Process.h" //We need a dummy process to link the event bus to
-#include "Event/EventDef.h" //Need event bus passengers
 #include "Ecal/EcalDigiProducer.h" //headers defining what we will be testing
 #include "Ecal/EcalRecProducer.h" //headers defining what we will be testing
 
