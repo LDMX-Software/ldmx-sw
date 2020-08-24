@@ -5,7 +5,7 @@
 /***************/
 /*   ldmx-sw   */
 /***************/
-#include "Event/EcalHit.h"
+#include "Ecal/EcalHit.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h" 
 

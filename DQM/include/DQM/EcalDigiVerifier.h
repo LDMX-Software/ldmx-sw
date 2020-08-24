@@ -2,7 +2,6 @@
 #define DQM_ECALDIGIVERIFIER_H
 
 //LDMX Framework
-#include "Event/EventDef.h"
 #include "Framework/EventProcessor.h" //Needed to declare processor
 #include "Framework/Parameters.h" // Needed to import parameters from configuration file
 

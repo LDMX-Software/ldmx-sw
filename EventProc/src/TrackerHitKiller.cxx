@@ -15,7 +15,7 @@
 /*~~~~~~~~~~~*/
 /*   Event   */
 /*~~~~~~~~~~~*/
-#include "Event/SimTrackerHit.h"
+#include "SimCore/SimTrackerHit.h"
 #include "Event/SiStripHit.h"
 
 namespace ldmx { 

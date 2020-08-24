@@ -11,7 +11,8 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/EventDef.h"
+#include "Event/SiStripHit.h"
+#include "Event/FindableTrackResult.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h" 
 

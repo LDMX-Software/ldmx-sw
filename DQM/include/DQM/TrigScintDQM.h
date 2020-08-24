@@ -25,7 +25,6 @@
 #include "Framework/EventProcessor.h"
 #include "DetDescr/TrigScintID.h"
 #include "Tools/AnalysisUtils.h"
-#include "Event/EventDef.h"
 
 namespace ldmx { 
 

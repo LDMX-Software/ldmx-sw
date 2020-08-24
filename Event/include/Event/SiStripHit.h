@@ -22,7 +22,7 @@
 //   LDMX-SW   //
 //-------------//
 #include "Event/RawHit.h"
-#include "Event/SimTrackerHit.h"
+#include "SimCore/SimTrackerHit.h"
 
 namespace ldmx { 
 

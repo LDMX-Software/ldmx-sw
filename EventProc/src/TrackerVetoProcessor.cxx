@@ -15,8 +15,8 @@
 //   LDMX   //
 //----------//
 #include "Event/FindableTrackResult.h"
-#include "Event/SimParticle.h" 
-#include "Event/SimTrackerHit.h"
+#include "SimCore/SimParticle.h" 
+#include "SimCore/SimTrackerHit.h"
 #include "Event/TrackerVetoResult.h"
 #include "Tools/AnalysisUtils.h"
 

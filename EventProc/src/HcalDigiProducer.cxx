@@ -105,7 +105,7 @@ namespace ldmx {
         }
 
         // looper over sim hits and aggregate energy depositions for each detID
-        auto hcalHits{event.getCollection<SimCalorimeterHit>(EventConstants::HCAL_SIM_HITS,sim_hit_pass_name_)};
+        auto hcalHits{event.getCollection<SimCalorimeterHit>("HcalSimHits",sim_hit_pass_name_)};
 
         for (const SimCalorimeterHit &simHit : hcalHits ) {
 
