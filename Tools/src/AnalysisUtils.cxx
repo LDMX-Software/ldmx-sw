@@ -16,7 +16,7 @@
 //   ldmx   //
 //----------//
 #include "Event/FindableTrackResult.h"
-#include "Event/SimParticle.h"
+#include "SimCore/SimParticle.h"
 #include "Framework/Exception.h"
 
 //----------//

@@ -75,14 +75,14 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
     # This module contains ECal reconstruction code.
     add_subdirectory(Ecal)
 
-    # Currently, this module contains processors from several subsystems.
-    add_subdirectory(EventProc)
-
-    # Data quality management plots.
-    add_subdirectory(DQM)
+#    # Currently, this module contains processors from several subsystems.
+#    add_subdirectory(EventProc)
+#
+#    # Data quality management plots.
+#    add_subdirectory(DQM)
 
     # Conditions services
-    add_subdirectory(Conditions)
+#    add_subdirectory(Conditions)
 
 endif()
 
