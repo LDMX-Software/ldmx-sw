@@ -62,9 +62,6 @@ endif()
 # This modules contains the event model classes.
 add_subdirectory(Event)
 
-# The framework has all the backend code needed to run all processors.
-add_subdirectory(Framework)
-
 # This module contains all detector service related code.
 add_subdirectory(DetDescr)
 
@@ -120,6 +117,9 @@ if(INSTALL_FIELDMAP)
     add_subdirectory(MagFieldMap)
 
 endif()
+
+# The framework has all the backend code needed to run all processors.
+add_subdirectory(Framework)
 
 # If enabled, build all test.  The test are assumed to reside inside of the
 # directory "test" within each module.  The main
