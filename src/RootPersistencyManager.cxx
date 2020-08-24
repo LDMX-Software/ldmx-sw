@@ -12,9 +12,8 @@
 /*~~~~~~~~~~~*/
 #include "Framework/EventHeader.h"
 #include "Framework/RunHeader.h"
-#include "Event/EventConstants.h"
-#include "Event/Version.h"
-#include "Event/SimTrackerHit.h" 
+#include "Framework/Version.h"
+#include "SimCore/SimTrackerHit.h" 
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
@@ -255,7 +254,7 @@ namespace ldmx {
 
                 G4CalorimeterHitsCollection* calHitsColl = dynamic_cast<G4CalorimeterHitsCollection*>(hc);
                 std::vector<SimCalorimeterHit> outputColl;
-                if (collName == EventConstants::ECAL_SIM_HITS) {
+                if (collName == "EcalSimHits") {
                     // Write ECal G4CalorimeterHit collection to output SimCalorimeterHit collection using helper class.
                     ecalHitIO_.writeHitsCollection(calHitsColl, outputColl );
                 } else {

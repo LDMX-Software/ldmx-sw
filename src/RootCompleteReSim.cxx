@@ -20,7 +20,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "Event/SimParticle.h"
+#include "SimCore/SimParticle.h"
 #include "Framework/Parameters.h"
 
 namespace ldmx {

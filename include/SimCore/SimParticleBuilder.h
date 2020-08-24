@@ -8,9 +8,8 @@
 #define SIMCORE_SIMPARTICLEBUILDER_H_
 
 // LDMX
-#include "Event/EventConstants.h"
 #include "Framework/Event.h"
-#include "Event/SimParticle.h"
+#include "SimCore/SimParticle.h"
 #include "SimCore/TrackMap.h"
 #include "SimCore/Trajectory.h"
 

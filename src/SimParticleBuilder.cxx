@@ -5,7 +5,6 @@
 // LDMX
 #include "Framework/Exception.h"
 #include "Framework/Event.h"
-#include "Event/EventConstants.h"
 #include "SimCore/G4CalorimeterHit.h"
 #include "SimCore/G4TrackerHit.h"
 #include "SimCore/UserTrackingAction.h"

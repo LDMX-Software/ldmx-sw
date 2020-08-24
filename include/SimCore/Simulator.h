@@ -22,11 +22,6 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h" 
 
-/*~~~~~~~~~~~*/
-/*   Event   */
-/*~~~~~~~~~~~*/
-#include "Event/EventDef.h"
-
 class G4UImanager;
 class G4UIsession;
 class G4RunManager;

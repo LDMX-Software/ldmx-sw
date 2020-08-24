@@ -14,7 +14,7 @@
 #include "G4ThreeVector.hh"
 
 // LDMX
-#include "Event/SimTrackerHit.h"
+#include "SimCore/SimTrackerHit.h"
 
 // STL
 #include <ostream>

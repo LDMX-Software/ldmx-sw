@@ -25,8 +25,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "Event/EventConstants.h"
-#include "Event/SimTrackerHit.h"
+#include "SimCore/SimTrackerHit.h"
 #include "Framework/Parameters.h"
 
 namespace ldmx {
