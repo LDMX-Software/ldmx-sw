@@ -12,7 +12,6 @@
 #include "TFile.h" //to open and check root files
 #include "TTreeReader.h" //to check output event files
 
-#include "Event/EventDef.h"
 #include "Framework/Process.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/EventFile.h"
