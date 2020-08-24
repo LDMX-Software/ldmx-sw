@@ -8,12 +8,7 @@ project(Event VERSION 2.1.0
               LANGUAGES CXX
 )
 
-#declare_event_object( class "CalorimeterHit" collection "ON" )
-#declare_event_object( class "ClusterAlgoResult" )
-#declare_event_object( class "EcalCluster" collection "ON" )
-#declare_event_object( class "EcalHit" collection "ON" )
-#declare_event_object( class "EcalDigiCollection" )
-#declare_event_object( class "EcalVetoResult" )
+declare_event_object( class "CalorimeterHit" collection "ON" )
 #declare_event_object( class "FindableTrackResult" collection "ON" )
 #declare_event_object( class "HcalHit" collection "ON" )
 #declare_event_object( class "HcalVetoResult" )
