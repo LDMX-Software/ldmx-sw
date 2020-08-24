@@ -190,7 +190,46 @@ class Analyzer(EventProcessor):
                 msg += "\n    " + str(k) + " : " + str(v)
 
         return msg
-                
+
+class ConditionsObjectProvider:
+    """A ConditionsObjectProvider
+
+    This object contains the parameters that are necessary for a ldmx::ConditionsObjectProvider to be configured.
+
+    Parameters
+    ----------
+    instanceName : str
+        Name of this copy of the provider object
+    className : str
+        Name (including namespace) of the C++ class of the provider
+    tagName : str
+        Tag which identifies the generation of information
+
+    """
+
+    def __init__(self, instanceName, className, tagName):
+        self.instanceName=instanceName
+        self.className=className
+        self.tagName=tagName
+
+    def __str__(self) :
+        """Stringify this ConditionsObjectProvider, creates a message with all the internal parameters.
+
+        Returns
+        -------
+        str
+            A message with all the parameters and member variables in a human readable format
+        """
+
+        msg = "\n  ConditionsObjectProvider(%s of class %s, tag='%s')"%(self.instanceName,self.className,self.tagName)
+        if len(self.__dict__)>0:
+            msg += "\n   Parameters:"
+            for k, v in self.__dict__.items():
+                msg += "\n    " + str(k) + " : " + str(v)
+
+        return msg
+        
+    
 class Process:
     """Process configuration object
 
@@ -238,6 +277,8 @@ class Process:
         Minimum severity of log messages to print to file: 0 (debug) - 4 (fatal)
     logFileName : str
         File to print log messages to, won't setup file logging if this parameter is not set
+    conditionsObjectProviders : list of ConditionsObjectProviders
+        List of the sources of calibration and conditions information
 
     See Also
     --------
@@ -265,6 +306,7 @@ class Process:
         self.logFileName='' #won't setup log file
         self.compressionSetting=9
         self.histogramFile=''
+        self.conditionsObjectProviders=[]
         Process.lastProcess=self
 
     def addLibrary(lib) :
@@ -292,6 +334,10 @@ class Process:
             print( "[ Process.addLibrary ]: No Process object defined yet! You need to create a Process before creating any EventProcessors." )
             sys.exit(1)
 
+    def declareConditionsObjectProvider(self, cop):
+        """Add a new conditions object provider to the list"""
+        self.conditionsObjectProviders.append( cop )
+            
     def skimDefaultIsSave(self):
         """Configure the process to by default keep every event."""
 
@@ -422,7 +468,7 @@ class Process:
 
             if isinstance(obj,list) :
                 return [ extract(o) for o in obj ]
-            elif isinstance(obj,(Process,EventProcessor,simcfg.PrimaryGenerator,simcfg.UserAction)) :
+            elif isinstance(obj,(Process,EventProcessor,simcfg.PrimaryGenerator,simcfg.UserAction,ConditionsObjectProvider)) :
                 params = dict()
                 for k in obj.__dict__ :
                     if k not in keys_to_skip :
@@ -460,6 +506,10 @@ class Process:
         if (self.run>0): msg += "\n using run number %d"%(self.run)
         if (self.maxEvents>0): msg += "\n Maximum events to process: %d"%(self.maxEvents)
         else: msg += "\n No limit on maximum events to process"
+        if (len(self.conditionsObjectProviders)>0):
+            msg += "\n conditionsObjectProviders:\n";
+            for cop in self.conditionsObjectProviders:
+                msg+=str(cop)
         msg += "\n Processor sequence:"
         for proc in self.sequence:
             msg += str(proc)

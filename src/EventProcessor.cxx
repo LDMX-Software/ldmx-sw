@@ -2,7 +2,7 @@
 
 // LDMX
 #include "Framework/Process.h"
-#include "Framework/EventProcessorFactory.h"
+#include "Framework/PluginFactory.h"
 #include "TDirectory.h"
 #include "Event/RunHeader.h"
 
@@ -12,6 +12,10 @@ namespace ldmx {
         process_{process}, name_ {name} , histograms_{name} , theLog_{logging::makeLogger(name)} {
     }
 
+    Conditions& EventProcessor::getConditions() const { return process_.getConditions(); }
+
+    const EventHeader& EventProcessor::getEventHeader() const { return *(process_.getEventHeader()); }
+  
     TDirectory* EventProcessor::getHistoDirectory() {
         if (!histoDir_) {
             histoDir_=process_.makeHistoDirectory(name_);
@@ -33,7 +37,7 @@ namespace ldmx {
     }
   
     void EventProcessor::declare(const std::string& classname, int classtype,EventProcessorMaker* maker) {
-        EventProcessorFactory::getInstance().registerEventProcessor(classname, classtype, maker);
+        PluginFactory::getInstance().registerEventProcessor(classname, classtype, maker);
     }
 
     void EventProcessor::createHistograms(const std::vector<Parameters>& histos) {
