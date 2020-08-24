@@ -114,15 +114,15 @@ macro(setup_library)
     #NOT SURE IF NEEDED
     #   do I need to remove the source files that were compiled into the 
     #   event bus dictionary? Or is it okay for them to be compiled twice?
-#    set(link_against_dictionary "NO")
-#    foreach(src ${SRC_FILES})
-#        list(FIND event_sources ${src} index)
-#        if(${index} GREATER 0)
-#            #found ==> is an event passenger
-#            list(REMOVE_ITEM SRC_FILES ${src})
-#            set(link_against_dictionary "YES")
-#        endif()
-#    endforeach()
+    set(link_against_dictionary "NO")
+    foreach(src ${SRC_FILES})
+        list(FIND event_sources ${src} index)
+        if(${index} GREATER 0)
+            #found ==> is an event passenger
+            list(REMOVE_ITEM SRC_FILES ${src})
+            set(link_against_dictionary "YES")
+        endif()
+    endforeach()
 
     # Create the SimCore shared library
     add_library(${setup_library_name} SHARED ${SRC_FILES})
@@ -131,9 +131,9 @@ macro(setup_library)
     target_include_directories(${setup_library_name} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
     # Setup the targets to link against 
-#    if(${link_against_dictionary} STREQUAL "YES")
-#        list(APPEND setup_library_dependencies "DARK::Event")
-#    endif()
+    if(${link_against_dictionary} STREQUAL "YES")
+        list(APPEND setup_library_dependencies "DARK::Event")
+    endif()
     target_link_libraries(${setup_library_name} PUBLIC ${setup_library_dependencies})
 
     # Define an alias. This is used to create the imported target.
@@ -261,9 +261,7 @@ macro(setup_dictionary)
             "#pragma link C++ class ${class}+;\n"
             )
     endforeach()
-    file(APPEND ${event_link_def_file}
-        "\n#endif"
-        )
+    file(APPEND ${event_link_def_file} "\n#endif")
 
     message("Wrote ${event_link_def_file}")
     
@@ -333,6 +331,7 @@ macro(setup_dictionary)
     # Create the Event shared library
     list(APPEND event_sources "EventDict.cxx")
     message("Event Sources:'${event_sources}'")
+
     add_library(Event SHARED ${event_sources})
 
     # Setup the include directories 
