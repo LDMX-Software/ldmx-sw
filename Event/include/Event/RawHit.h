@@ -40,6 +40,7 @@ namespace ldmx {
             float getTime() const { return time_; }
 
             virtual void Print() const {;}
+            virtual void Clear() {adcValues_.clear();}
 
             /**
              * Sort by time of hit
