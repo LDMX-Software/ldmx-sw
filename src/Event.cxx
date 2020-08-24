@@ -101,13 +101,13 @@ namespace ldmx {
         passengers_.clear();
 
         // put in EventHeader (only one without pass name)
-	    products_.emplace_back(EventConstants::EVENT_HEADER,"","ldmx::EventHeader");
+	    products_.emplace_back(EventHeader::BRANCH,"","ldmx::EventHeader");
 	
         // find the names of all the existing branches
         TObjArray* branches = inputTree_->GetListOfBranches();
         for (int i = 0; i < branches->GetEntriesFast(); i++) {
     	    std::string brname=branches->At(i)->GetName();
-    	    if (brname!=EventConstants::EVENT_HEADER) {
+    	    if (brname!=EventHeader::BRANCH) {
         		size_t j=brname.find("_");
         		std::string iname=brname.substr(0,j);
         		std::string pname=brname.substr(j+1);
@@ -121,14 +121,14 @@ namespace ldmx {
 
     bool Event::nextEvent() {
         ientry_++;
-        eventHeader_ = getObject<EventHeader>(EventConstants::EVENT_HEADER);
+        eventHeader_ = getObject<EventHeader>(EventHeader::BRANCH);
         return true;
     }
 
     void Event::beforeFill() {
-        if (inputTree_==0 && branchesFilled_.find(EventConstants::EVENT_HEADER)==branchesFilled_.end()) {
+        if (inputTree_==0 && branchesFilled_.find(EventHeader::BRANCH)==branchesFilled_.end()) {
             //Event Header not copied from input and hasn't been added yet, need to put it in
-            add(EventConstants::EVENT_HEADER, eventHeader_);
+            add(EventHeader::BRANCH, eventHeader_);
         }
     }
 

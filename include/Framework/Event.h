@@ -142,7 +142,7 @@ namespace ldmx {
                 }
         
                 std::string branchName;
-                if (collectionName== EventConstants::EVENT_HEADER) branchName=collectionName;
+                if (collectionName== EventHeader::BRANCH) branchName=collectionName;
                 else branchName = makeBranchName(collectionName);
         
                 if (branchesFilled_.find(branchName) != branchesFilled_.end()) {
@@ -267,11 +267,11 @@ namespace ldmx {
 
                 //get branch name
                 std::string branchName;
-                if (collectionName== EventConstants::EVENT_HEADER) branchName=collectionName;
+                if (collectionName== EventHeader::BRANCH) branchName=collectionName;
                 else branchName = makeBranchName(collectionName, passName);
         
                 //if no passName, then find branchName by looking over known branches
-                if (passName.empty() && collectionName!= EventConstants::EVENT_HEADER) {
+                if (passName.empty() && collectionName!= EventHeader::BRANCH) {
                     auto itKL = knownLookups_.find(collectionName);
                     if (itKL!=knownLookups_.end()) branchName=itKL->second;
                     else {
