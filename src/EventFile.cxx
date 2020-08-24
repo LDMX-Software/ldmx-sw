@@ -6,8 +6,8 @@
 #include "Framework/EventFile.h"
 #include "Framework/Event.h"
 #include "Framework/Exception.h"
+#include "Framework/RunHeader.h"
 #include "Event/EventConstants.h"
-#include "Event/RunHeader.h"
 
 namespace ldmx {
 

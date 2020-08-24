@@ -7,15 +7,11 @@
 #ifndef FRAMEWORK_EVENTPROCESSOR_H_
 #define FRAMEWORK_EVENTPROCESSOR_H_
 
-/*~~~~~~~~~~~*/
-/*   Event   */
-/*~~~~~~~~~~~*/
-#include "Framework/Exception.h"
-#include "Event/RunHeader.h"
-
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
+#include "Framework/Exception.h"
+#include "Framework/RunHeader.h"
 #include "Framework/Event.h"
 #include "Framework/Parameters.h"
 #include "Framework/Conditions.h" 

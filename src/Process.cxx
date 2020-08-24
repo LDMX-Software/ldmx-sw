@@ -13,8 +13,7 @@
 #include "Framework/Process.h"
 #include "Framework/NtupleManager.h"
 #include "Framework/Logger.h"
-#include "Event/RunHeader.h"
-#include "Event/EventHeader.h"
+#include "Framework/RunHeader.h"
 #include "Framework/Exception.h"
 
 namespace ldmx {
