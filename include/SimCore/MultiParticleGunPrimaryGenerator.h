@@ -38,7 +38,6 @@
 //   LDMX-SW   //
 //-------------//
 #include "Event/EventConstants.h"
-#include "Event/EventHeader.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
 #include "SimCore/PrimaryGenerator.h"
 #include "Framework/Parameters.h"
