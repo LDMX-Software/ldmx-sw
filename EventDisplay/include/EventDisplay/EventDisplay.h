@@ -100,7 +100,8 @@ namespace ldmx {
              * @return bool successful check
              */
             template<typename T>
-            bool GetCollection( const TString branchName , std::vector<T> &collection ) {
+            bool GetCollection( TString branchName , std::vector<T> &collection ) {
+                if ( not branchName.Contains("_") ) branchName += "*";
                 TBranchElement *br = dynamic_cast<TBranchElement*>(tree_->GetBranch(branchName));
                 if ( br ) {
                     br->SetObject( &collection ); 
@@ -197,8 +198,8 @@ namespace ldmx {
             int eventNumMax_; ///* maximum event index for the current tree
 
             TString clustersCollName_ = "ecalClusters_recon"; //* name of ecal clusters collection in event tree
-            TString ecalRecHitsCollName_ = "EcalRecHits_recon"; //* name of ecalRecHits collection in event tree
-            TString hcalRecHitsCollName_ = "HcalRecHits_recon"; //* name of hcalRecHits collection in event tree
+            TString ecalRecHitsCollName_ = "EcalRecHits_digi"; //* name of ecalRecHits collection in event tree
+            TString hcalRecHitsCollName_ = "HcalRecHits_digi"; //* name of hcalRecHits collection in event tree
             TString trackerHitsCollName_ = "RecoilSimHits_sim"; //* name of recoil hitss collection in event tree
             TString ecalSimParticlesCollName_ = "EcalScoringPlaneHits_sim"; //* name of ecal sim particles collection in event tree
             TString eventTreeName_ = "LDMX_Events"; //* name of event tree
