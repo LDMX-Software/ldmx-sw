@@ -25,7 +25,7 @@ namespace ldmx {
         auto [recoilTrackID, recoilElectron] = Analysis::getRecoil(particleMap);
 
         // Get the collection of simulated Ecal hits from the event. 
-        const std::vector<SimCalorimeterHit> ecalSimHits = event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS);
+        const std::vector<SimCalorimeterHit> ecalSimHits = event.getCollection<SimCalorimeterHit>("EcalSimHits");
        
         // Loop through the Ecal hits and check if the recoil electron is 
         // associated with any of them.  If there are any recoil electron hits

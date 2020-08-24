@@ -17,7 +17,7 @@
 // LDMX
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/HcalID.h"
-#include "Event/EventDef.h"
+#include "Event/HcalHit.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
 #include "Framework/Parameters.h" 

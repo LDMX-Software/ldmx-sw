@@ -19,7 +19,6 @@
 #include "Framework/Parameters.h" 
 
 #include "Tools/AnalysisUtils.h"
-#include "Event/EventDef.h"
 
 namespace ldmx { 
 

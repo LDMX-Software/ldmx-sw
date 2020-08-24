@@ -17,7 +17,6 @@
 //   LDMX   //
 //----------//
 #include "Tools/AnalysisUtils.h"
-#include "Event/EventDef.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
