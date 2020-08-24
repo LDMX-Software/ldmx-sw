@@ -8,8 +8,27 @@ project(Framework VERSION 2.1.0
                   LANGUAGES CXX
 )
 
+# Execute the command to extract the SHA1 hash of the current git tag. 
+# The variable GIT_SHA1 will be set to contain the hash. 
+execute_process (
+    COMMAND git rev-parse HEAD
+    OUTPUT_VARIABLE GIT_SHA1
+)
+
+# Remove the newline character
+string(REGEX REPLACE "\n$" "" GIT_SHA1 "${GIT_SHA1}")
+
+# Copies the file 'Version.h.in', substitutes the value of GIT_SHA1 and
+# writes it out to Version.h.  
+configure_file(
+    ${PROJECT_SOURCE_DIR}/include/Framework/Version.h.in
+    ${PROJECT_SOURCE_DIR}/include/Framework/Version.h
+)
+install(FILES ${PROJECT_SOURCE_DIR}/include/Framework/Version.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Framework/)
+
+
 declare_event_object( class "EventHeader" )
-declare_event_object( class "RunHeader"   just_dictionary "ON" )
+declare_event_object( class "RunHeader" just_dictionary "ON" )
 
 # Search for the Python3 library
 find_package (Python3 COMPONENTS Interpreter Development)
