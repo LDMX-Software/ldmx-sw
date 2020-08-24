@@ -17,57 +17,6 @@ namespace ldmx {
 
     EcalSD::EcalSD(G4String name, G4String theCollectionName, int subDetID) :
             CalorimeterSD(name, theCollectionName) {
-
-        // These are the v12 parameters
-        //  all distances in mm
-        double moduleRadius = 85.0; //same as default
-        int    numCellsWide = 23; //same as default
-        double moduleGap = 1.5;
-        double ecalFrontZ = 220;
-        std::vector<double> ecalSensLayersZ = {
-             7.850,
-            13.300,
-            26.400,
-            33.500,
-            47.950,
-            56.550,
-            72.250,
-            81.350,
-            97.050,
-            106.150,
-            121.850,
-            130.950,
-            146.650,
-            155.750,
-            171.450,
-            180.550,
-            196.250,
-            205.350,
-            221.050,
-            230.150,
-            245.850,
-            254.950,
-            270.650,
-            279.750,
-            298.950,
-            311.550,
-            330.750,
-            343.350,
-            362.550,
-            375.150,
-            394.350,
-            406.950,
-            426.150,
-            438.750
-        };
-
-        hitMap_ = std::make_unique<EcalHexReadout>(
-                moduleRadius,
-                moduleGap,
-                numCellsWide,
-                ecalSensLayersZ,
-                ecalFrontZ
-                );
     }
 
     EcalSD::~EcalSD() {
@@ -113,7 +62,7 @@ namespace ldmx {
         int module_position = cpynum%7;
 
         EcalID partialId = hitMap_->getCellModuleID(hitPosition[0], hitPosition[1]);
-	EcalID id(layerNumber, module_position, partialId.cell());
+	    EcalID id(layerNumber, module_position, partialId.cell());
         hit->setID(id.raw());
 
         // Set the track ID on the hit.
@@ -123,7 +72,7 @@ namespace ldmx {
         hit->setPdgCode(aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding());
 
         if (this->verboseLevel > 2) {
-	  G4cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << id << " ...";
+	        G4cout << "Created new SimCalorimeterHit in detector " << this->GetName() << " with subdet ID " << id << " ...";
             hit->Print();
             G4cout << G4endl;
         }

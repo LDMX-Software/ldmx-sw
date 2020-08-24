@@ -114,6 +114,7 @@ namespace ldmx {
              * @param event Event buffer for the current event. 
              */
             void setCurrentEvent(Event* event) { event_ = event; }
+
             /**
              * Set the number of events began and completed.
              *
