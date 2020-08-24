@@ -111,6 +111,19 @@ macro(setup_library)
         set(SRC_FILES ${setup_library_sources})
     endif()
 
+    #NOT SURE IF NEEDED
+    #   do I need to remove the source files that were compiled into the 
+    #   event bus dictionary? Or is it okay for them to be compiled twice?
+#    set(link_against_dictionary "NO")
+#    foreach(src ${SRC_FILES})
+#        list(FIND event_sources ${src} index)
+#        if(${index} GREATER 0)
+#            #found ==> is an event passenger
+#            list(REMOVE_ITEM SRC_FILES ${src})
+#            set(link_against_dictionary "YES")
+#        endif()
+#    endforeach()
+
     # Create the SimCore shared library
     add_library(${setup_library_name} SHARED ${SRC_FILES})
 
@@ -118,6 +131,9 @@ macro(setup_library)
     target_include_directories(${setup_library_name} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
     # Setup the targets to link against 
+#    if(${link_against_dictionary} STREQUAL "YES")
+#        list(APPEND setup_library_dependencies "DARK::Event")
+#    endif()
     target_link_libraries(${setup_library_name} PUBLIC ${setup_library_dependencies})
 
     # Define an alias. This is used to create the imported target.
@@ -222,6 +238,11 @@ macro(setup_dictionary)
 
 
     message("Writing ROOT Dictionary for ${setup_dictionary_module}")
+
+    list(REMOVE_DUPLICATES event_classes)
+    list(REMOVE_DUPLICATES event_headers)
+    list(REMOVE_DUPLICATES event_sources)
+
     message("Event Classes:'${event_classes}'")
     message("Event Headers:'${event_headers}'")
     
