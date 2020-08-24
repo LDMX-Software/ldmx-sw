@@ -27,42 +27,7 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
 
     using namespace ldmx;
 
-    std::map< std::string , std::any > requiredProcessParams;
-    requiredProcessParams["passName"] = std::string("dummyProcess");
-    requiredProcessParams["histogramFile"] = std::string();
-    requiredProcessParams["logFileName"] = std::string();
-    requiredProcessParams["maxTriesPerEvent"] = 1; 
-    requiredProcessParams["maxEvents"] = 1; 
-    requiredProcessParams["logFrequency"] = 1; 
-    requiredProcessParams["termLogLevel"] = 4; 
-    requiredProcessParams["fileLogLevel"] = 4; 
-    requiredProcessParams["compressionSetting"] = 1; 
-    requiredProcessParams["run"] = 1; 
-    requiredProcessParams["skimDefaultIsKeep"] = false; 
-
-    std::map< std::string , std::any > actualParameters;
-    Parameters wrapperClass;
-    actualParameters[ "instanceName" ] = std::string("DummyEcalDigisWillNotRun");
-    actualParameters[ "className" ] = std::string("ldmx::EcalDigiProducer");
-    actualParameters[ "randomSeed" ] = 1;
-    actualParameters[ "gain" ] = 2000.;
-    actualParameters[ "pedestal" ] = 1100.;
-    actualParameters[ "noiseIntercept" ] = 700.;
-    actualParameters[ "noiseSlope" ] = 25.;
-    actualParameters[ "padCapacitance" ] = 0.1;
-    actualParameters[ "nADCs" ] = 10; 
-    actualParameters[ "iSOI"  ] = 0; 
-    actualParameters[ "readoutThreshold" ] = 4.;
-    actualParameters[ "makeConfigHists" ] = false;
-    wrapperClass.setParameters( actualParameters );
-    
-    std::vector<Parameters> seq = { wrapperClass };
-    requiredProcessParams["sequence"] = seq;
-
-    Parameters dummyConfig;
-    dummyConfig.setParameters(requiredProcessParams);
-
-    Process dummyProcess( dummyConfig );
+    auto dummyProcess{Process::getDummy()};
     Event testEventBus( "testEcalDigiPipeline" );
 
     std::vector<SimCalorimeterHit> pretendSimHits;
@@ -92,6 +57,7 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
 
     testEventBus.add( "EcalSimHits" , pretendSimHits ); //needs to be correct collection name
 
+    std::map<std::string,std::any> actualParameters;
     EcalDigiProducer digis( "testDigis" , dummyProcess );
     actualParameters.clear();
     actualParameters[ "randomSeed" ] = 1;
@@ -104,10 +70,28 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
     actualParameters[ "iSOI"  ] = 0; 
     actualParameters[ "readoutThreshold" ] = 4.;
     actualParameters[ "makeConfigHists" ] = false;
-    wrapperClass.setParameters( actualParameters );
-    REQUIRE_NOTHROW( digis.configure( wrapperClass ) );
+    Parameters ecalDigi;
+    ecalDigi.setParameters( actualParameters );
+    REQUIRE_NOTHROW( digis.configure( ecalDigi ) );
 
     REQUIRE_NOTHROW( digis.produce( testEventBus ) );
+
+    
+    actualParameters.clear();
+    actualParameters["gap"] = 1.5;
+    actualParameters["moduleMinR"] = 85.0;
+    actualParameters["ecalFrontZ"] = 240.5;
+    actualParameters["nCellRHeight"] = 35.3;
+    actualParameters["verbose"] = 0;
+    std::vector<double> layerZPositions = {
+                      7.850, 13.300, 26.400, 33.500, 47.950, 56.550, 72.250, 81.350, 97.050, 106.150,
+                      121.850, 130.950, 146.650, 155.750, 171.450, 180.550, 196.250, 205.350, 221.050,
+                      230.150, 245.850, 254.950, 270.650, 279.750, 298.950, 311.550, 330.750, 343.350,
+                      362.550, 375.150, 394.350, 406.950, 426.150, 438.750 
+    };
+    actualParameters["layerZPositions"] = layerZPositions;
+    Parameters hexReadout;
+    hexReadout.setParameters(actualParameters);
 
     EcalRecProducer recon( "testRecon" , dummyProcess);
     actualParameters.clear();
@@ -121,8 +105,10 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
         17.364, 8.990
     };
     actualParameters[ "layerWeights" ] = layerWeights;
-    wrapperClass.setParameters( actualParameters );
-    REQUIRE_NOTHROW( recon.configure( wrapperClass ) );
+    actualParameters[ "hexReadout"   ] = hexReadout;
+    Parameters ecalRecon;
+    ecalRecon.setParameters( actualParameters );
+    REQUIRE_NOTHROW( recon.configure( ecalRecon ) );
 
     REQUIRE_NOTHROW( recon.produce( testEventBus ) );
 
