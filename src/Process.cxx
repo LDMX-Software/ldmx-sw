@@ -365,8 +365,10 @@ namespace ldmx {
             }
 
         } catch (Exception& e) {
-            ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
-                            << "  at " << e.module() << ":" << e.line() << " in " << e.function();
+	  ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
+			  << "  at " << e.module() << ":" << e.line() << " in " << e.function()
+			  << "\nStack trace: " << std::endl << e.stackTrace();
+	  
         }
 
         //we're done so let's close up the logging
