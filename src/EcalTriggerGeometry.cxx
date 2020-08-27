@@ -1,5 +1,7 @@
 #include "Ecal/EcalTriggerGeometry.h"
+#include "DetDescr/EcalHexReadout.h"
 #include <iostream>
+#include <sstream>
 
 namespace ldmx {
 
@@ -11,8 +13,7 @@ namespace ldmx {
   static const int INPLANE_IDENTICAL = 0x0100;
   
   
-  EcalTriggerGeometry::EcalTriggerGeometry(int symmetry) : ConditionsObject("EcalTriggerGeometry"), symmetry_{symmetry} {
-
+  EcalTriggerGeometry::EcalTriggerGeometry(int symmetry, EcalHexReadout* ecalGeom) : ConditionsObject("EcalTriggerGeometry"), symmetry_{symmetry}, ecalGeometry_{ecalGeom} {
     
     if ((symmetry_ & MODULES_MASK)==INPLANE_IDENTICAL) {
       // first set is the same regardless of alignment...
@@ -89,6 +90,22 @@ namespace ldmx {
     }
     return retval;
   }
+
+  EcalID EcalTriggerGeometry::centerInTriggerCell(EcalTriggerID triggerCell) const {
+    EcalTriggerID effId;
+    if ((symmetry_ & MODULES_MASK)==INPLANE_IDENTICAL) {
+      effId=EcalTriggerID(0,0,triggerCell.triggercell());  
+    }
+    auto ptr=trigger2precision_.find(effId);
+    if (ptr==trigger2precision_.end()) {
+      std::stringstream ss;
+      ss << "Unable to find trigger cell " << triggerCell;
+      EXCEPTION_RAISE("EcalGeometryException",ss.str());
+    }
+
+    return EcalID(triggerCell.layer(),triggerCell.module(),ptr->second[4].cell());
+  }
+
   
   EcalTriggerID EcalTriggerGeometry::belongsTo(EcalID precisionCell) const {
     EcalID effId;
@@ -101,5 +118,19 @@ namespace ldmx {
     } else {
       return EcalTriggerID(precisionCell.layer(),precisionCell.module(),ptr->second.triggercell());
     }
+  }
+
+
+  // as it happens, the fifth precision cell in the list is the center cell
+  std::pair<double,double> EcalTriggerGeometry::globalPosition(EcalTriggerID triggerCell) const {
+    if (!ecalGeometry_) return std::pair<double,double>(0,0);
+    EcalID pid=centerInTriggerCell(triggerCell);
+    return ecalGeometry_->getCellCenterAbsolute(pid);
+  }
+
+  std::pair<double,double> EcalTriggerGeometry::localPosition(EcalTriggerID triggerCell) const {
+      if (!ecalGeometry_) return std::pair<double,double>(0,0);
+      EcalID pid=centerInTriggerCell(triggerCell);
+      return ecalGeometry_->getCellCenterRelative(pid.cell());
   }
 }
