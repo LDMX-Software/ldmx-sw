@@ -25,6 +25,7 @@
 
 namespace ldmx {
 
+
     /**
      * @class EcalHexReadout
      * @brief Implementation of ECal hexagonal cell readout
@@ -104,6 +105,7 @@ namespace ldmx {
             double getZPosition(int layer) const {
                 return ecalFrontZ_ + layerZPositions_.at(layer);
             }
+
 
 
             /**
