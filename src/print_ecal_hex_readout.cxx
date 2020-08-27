@@ -108,7 +108,7 @@ int main() {
     c->SaveAs( "Cell_UV_Cell_Position_Map.pdf" );
 
     // and now for triggers
-    ldmx::EcalTriggerGeometry trigG(0x100);
+    ldmx::EcalTriggerGeometry trigG(0x100,&hexReadout);
     polyMap->SetTitle( 
 		      "Trigger Cell Summing Map Map; X Position Relative to Module [mm];Y Position Relative to Module [mm]" );
     polyMap->GetXaxis()->SetTickLength(0.);
@@ -134,7 +134,7 @@ int main() {
 	case (32): ival=2; break;
 	case (33): ival=3; break;
 	case (34): ival=1; break;
-	case (35): ival=0; break;
+	case (35): ival=0; break;  
 	case (36): ival=2; break;
 	case (37): ival=3; break;
 	case (38): ival=2; break;
@@ -158,11 +158,9 @@ int main() {
 
     for (int tcell=0; tcell<48; tcell++) {
 
-      ldmx::EcalTriggerID tid(0,0,tcell);
+      ldmx::EcalTriggerID tid(0,0,tcell);      
+      std::pair<double,double> pt= trigG.localPosition(tid);
 
-      std::vector<ldmx::EcalID> pids=trigG.contentsOfTriggerCell(tid);
-      
-      std::pair<double,double> pt= hexReadout.getCellCenterRelative(pids[4].cell());
       char text[100];
       sprintf(text,"(%d)",tcell);
       TText* tt=new TText(pt.first,pt.second,text);
