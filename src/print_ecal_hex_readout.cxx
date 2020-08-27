@@ -2,6 +2,8 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/Parameters.h"
 #include "DetDescr/EcalID.h"
+#include "DetDescr/EcalTriggerID.h"
+#include "Ecal/EcalTriggerGeometry.h"
 
 #include "TCanvas.h" //for dumping map to file
 #include "TStyle.h" //for no stats box
@@ -104,6 +106,76 @@ int main() {
     
     c->Update();
     c->SaveAs( "Cell_UV_Cell_Position_Map.pdf" );
+
+    // and now for triggers
+    ldmx::EcalTriggerGeometry trigG(0x100);
+    polyMap->SetTitle( 
+		      "Trigger Cell Summing Map Map; X Position Relative to Module [mm];Y Position Relative to Module [mm]" );
+    polyMap->GetXaxis()->SetTickLength(0.);
+    polyMap->GetYaxis()->SetTickLength(0.);
+    polyMap->SetMaximum(4);
+    polyMap->SetMinimum(0);
     
+    for (int icell=0; icell<432; icell++) {
+      ldmx::EcalID id(0,0,icell);
+      ldmx::EcalTriggerID tid=trigG.belongsTo(id);
+
+
+      std::cout << id << "->" << tid << std::endl;
+
+      int ival;
+      if (tid.triggercell()<16) ival=1+tid.triggercell()%3;
+      else if (tid.triggercell()<20) ival=1+(tid.triggercell()+1)%3;
+      else if (tid.triggercell()<24) ival=1+(tid.triggercell()-1)%3;
+      else if (tid.triggercell()<28) ival=1+(tid.triggercell())%3;
+      else if (tid.triggercell()<32) ival=1+(tid.triggercell()+1)%3;
+      else {
+	switch (tid.triggercell()) {
+	case (32): ival=2; break;
+	case (33): ival=3; break;
+	case (34): ival=1; break;
+	case (35): ival=0; break;
+	case (36): ival=2; break;
+	case (37): ival=3; break;
+	case (38): ival=2; break;
+	case (39): ival=1; break;
+	case (40): ival=0; break;
+	case (41): ival=2; break;
+	case (42): ival=0; break;
+	case (43): ival=2; break;
+	case (44): ival=3; break;
+	case (45): ival=3; break;
+	case (46): ival=1; break;
+	case (47): ival=0; break;				  
+	default: ival=(tid.triggercell()%4);
+	}
+      }
+      
+      polyMap->SetBinContent(icell+1,ival);
+    }
+
+    polyMap->Draw( "COL" ); //print with bin context labeled as text
+
+    for (int tcell=0; tcell<48; tcell++) {
+
+      ldmx::EcalTriggerID tid(0,0,tcell);
+
+      std::vector<ldmx::EcalID> pids=trigG.contentsOfTriggerCell(tid);
+      
+      std::pair<double,double> pt= hexReadout.getCellCenterRelative(pids[4].cell());
+      char text[100];
+      sprintf(text,"(%d)",tcell);
+      TText* tt=new TText(pt.first,pt.second,text);
+      tt->SetTextAlign(22);
+      tt->SetTextSize(0.012);
+      tt->Draw("SAME");
+	
+    }    
+
+
+    c->Update();
+    c->SaveAs( "TriggerCell_Position_Map.pdf" );
+
+
     return 0;
 }
