@@ -76,6 +76,108 @@ def photo_nuclear( detector, generator ) :
 
     return sim
 
+def electro_nuclear(detector) :
+    """Example configuration for producing EN interactions in the ECal
+
+    The primary electron is allowed to propagate into the ECal where 
+    the EN interaction is biased up.  Only events that 
+    result in a EN products totaling more than 2GeV in energy are kept. 
+
+    Parameters
+    ----------
+    detector : str
+        Name of detector to use
+
+    Returns
+    -------
+    Instance of the simulator configured for ECal electro-nuclear.
+
+    Example
+    -------
+
+        ecal_en_sim = ecal.electro_nuclear('ldmx-det-v12')
+
+    """
+    
+    sim = simulator.simulator( "ecal_electron_nuclear" )
+    
+    sim.description = "One e- fired far upstream with electron nuclear interactions biased up in ECal"
+    sim.setDetector( detector , True )
+    sim.generators.append( generators.single_4gev_e_upstream_tagger() )
+    sim.beamSpotSmear = [ 20., 80., 0. ] #mm
+    
+    # Biasing dark brem up inside of the ecal volumes
+    sim.biasingOn()
+    sim.biasingConfigure( 'electronNuclear' , 'ecal' , 2000. , 4.5e4 , 
+                allPtl = True, incidentOnly = False)
+    
+    # the following filters are in a library that needs to be included
+    from LDMX.Biasing import include
+    include.library()
+
+    sim.actions.extend([ 
+            # Abort events if the electron doesn't get to teh ECal with 3.5GeV
+            filters.PrimaryToEcalFilter( 3500. ),
+            # Abort events if primary electron doesn't undergo EN interactions totaling 2000MeV
+            filters.EcalENFilter(2000.),
+            # Keep all of the EN secondaries
+            filters.TrackProcessFilter.electro_nuclear()
+    ])
+    
+    return sim
+
+def brem_pn(detector) :
+    """Example configuration for producing a hard brem and a PN interaction in the ECal
+
+    The primary electron is allowed to propagate into the ECal where 
+    the PN interaction is biased up.  Only events that result in
+    a hard brem (E_gamma > 2GeV) going PN are kept.
+
+    Parameters
+    ----------
+    detector : str
+        Name of detector to use
+
+    Returns
+    -------
+    Instance of the simulator configured for ECal brem and photo-nuclear.
+
+    Example
+    -------
+
+        ecal_brem_pn_sim = ecal.brem_pn('ldmx-det-v12')
+
+    """
+    
+    sim = simulator.simulator( "ecal_brem_then_pn" )
+    
+    sim.description = "One e- fired far upstream with photon-nuclear interactions biased up in ECal"
+    sim.setDetector( detector , True )
+    sim.generators.append( generators.single_4gev_e_upstream_tagger() )
+    sim.beamSpotSmear = [ 20., 80., 0. ] #mm
+    
+    # Biasing dark brem up inside of the ecal volumes
+    sim.biasingOn()
+    sim.biasingConfigure( 'photonNuclear' , 'ecal' , 2000. , 4.5e2 , 
+                allPtl = True, incidentOnly = False)
+    
+    # the following filters are in a library that needs to be included
+    from LDMX.Biasing import include
+    include.library()
+
+    sim.actions.extend([ 
+            # Abort events if the electron doesn't get to teh ECal with 3.5GeV
+            filters.PrimaryToEcalFilter(3500.),
+            # Abort events if primary electron doesn't hard brem (E_gamma > 2000MeV)
+            filters.EcalBremFilter(2000.),
+            # Make sure brem photon undergoes PN
+            filters.EcalProcessFilter(),
+            # Keep all of the PN secondaries
+            filters.TrackProcessFilter.photo_nuclear()
+    ])
+    
+    return sim
+
 def dark_brem( ap_mass , lhe, detector ) :
     """Example configuration for producing dark brem interactions in the ECal. 
 
