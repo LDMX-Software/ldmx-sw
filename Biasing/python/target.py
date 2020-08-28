@@ -125,7 +125,7 @@ def photo_nuclear( detector, generator ) :
             filters.TaggerVetoFilter(),
             # Only consider events where a hard brem occurs
             filters.TargetBremFilter(),
-            filters.TargetPNFilter(),   
+            filters.TargetPNFilter(),
             # Tag all photo-nuclear tracks to persist them to the event.
             filters.TrackProcessFilter.photo_nuclear()
     ])
@@ -145,7 +145,7 @@ def dark_brem( ap_mass , lhe, detector ) :
     ap_mass : float
         The mass of the A' in MeV.
     lhe : str
-        The path to the LHE file to use as vertices of the dark brem. 
+        The path to the directory containing LHE files to use as vertices of the dark brem. 
     detector : str
         Name of detector to simulate in
 
@@ -158,38 +158,38 @@ def dark_brem( ap_mass , lhe, detector ) :
 
         target_ap_sim = target.dark_brem(1000, 'path/to/lhe', 'ldmx-det-v12')
 
-
     """
-    sim = simulator.simulator( "darkBrem_" + str(massAPrime) + "_MeV" )
+    sim = simulator.simulator( "target_dark_brem_" + str(ap_mass) + "_MeV" )
     
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in target"
     sim.setDetector( detector , True )
     sim.generators.append( generators.single_4gev_e_upstream_tagger() )
+    sim.beamSpotSmear = [ 20., 80., 0. ] #mm
     
-    # Bias the electron dark brem process inside of the target
-    # These commands allow us to restrict the dark brem process to a given 
-    # volume.
-    sim.biasingOn()
-    sim.biasingConfigure(
-            'eDBrem' #process
-            , 'target' #volume
-            , 0. #threshold
-            , 1000000 #factor
-            )
-    
-    sim.darkBremOn(
-            massAPrime #MeV
-            , lheFile
-            , 1 #Forward Only
-            )
-    
-    # the following filters are in a library that needs to be included
-    includeBiasing.library()
+    # Activiate dark bremming with a certain A' mass and LHE library
+    sim.dark_brem.activate( ap_mass , lhe )
+    sim.dark_brem.threshold = 2. #GeV - minimum energy electron needs to have to dark brem
+    sim.dark_brem.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
 
-    # Then give the UserAction to the simulation so that it knows to use it
-    sim.actions.extend([ 
-            filters.DarkBremFilter(), 
-            filters.TrackProcessFilter.dark_brem()     
-    ])
+    import math
+    factor = 1e4*( sim.dark_brem.APrimeMass**math.log10( sim.dark_brem.APrimeMass ) ) / ( sim.dark_brem.epsilon ** 2 )
     
+    # Biasing dark brem up inside of the target
+    sim.biasingOn()
+    sim.biasingConfigure( 'eDBrem' , 'target' , 0. , factor ,
+            allPtl = True, incidentOnly = False )
+
+    # the following filters are in a library that needs to be included
+    from LDMX.Biasing import include
+    include.library()
+
+    sim.actions.extend([
+        # make sure electron reaches target with 3.5GeV
+        filters.TaggerVetoFilter(3500.),
+        # make sure dark brem occurs in the target where A' has at least 2GeV
+        filters.DarkBremFilter.target(2000.),
+        # keep all prodcuts of dark brem (A' and recoil electron)
+        filters.TrackProcessFilter.dark_brem()
+        ])
+
     return sim

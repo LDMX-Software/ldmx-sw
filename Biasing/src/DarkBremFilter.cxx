@@ -51,10 +51,12 @@ namespace ldmx {
     }
 
     void DarkBremFilter::BeginOfEventAction(const G4Event*) {
+        /* Debug message
         std::cout << "[ DarkBremFilter ]: "
             << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
             << "Beginning event."
             << std::endl;
+        */
         currentGen_ = 0;
         foundAp_    = false;
         return;
@@ -68,9 +70,11 @@ namespace ldmx {
             //  keep A' in the current generation so that we can have it be processed
             //  before the abort event check
             if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
+                /* Debug message
                 std::cout << "[ DarkBremFilter ]: "
                           << "Found A', still need to check if it originated in requested volume." 
                           << std::endl;
+                */
             }
             if ( foundAp_ ) {
                 std::cout << "[ DarkBremFilter ]: "
@@ -107,12 +111,12 @@ namespace ldmx {
             //  check if A' was produced
             if ( not foundAp_ ) {
                 //A' wasn't produced, abort event
-                //if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
+                if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
                     std::cout << "[ DarkBremFilter ]: "
                         << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
                         << "A' wasn't produced, aborting event." 
                         << std::endl;
-                //}
+                }
                 G4RunManager::GetRunManager()->AbortEvent();
             }
         }
@@ -139,14 +143,14 @@ namespace ldmx {
             auto event{G4EventManager::GetEventManager()};
             if ( track->GetTotalEnergy() < minApEnergy_ or not inDesiredVolume(track) ) {
                 //abort event if A' wasn't in correct volume or didn't have enough energy
-                //if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
+                if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
                     std::cout << "[ DarkBremFilter ]: "
                         << "(" << event->GetConstCurrentEvent()->GetEventID() << ") "
                         << "A' wasn't produced inside of requested volume or was below requested energy, aborting event." 
                         << " A' was produced in '" << track->GetLogicalVolumeAtVertex()->GetName() << "' and had energy "
                         << track->GetTotalEnergy() << " MeV."
                         << std::endl;
-                //}
+                }
                 G4RunManager::GetRunManager()->AbortEvent();
             } else {
                 //make sure A' is persisted into output file
@@ -160,6 +164,7 @@ namespace ldmx {
                 }
                 static_cast<UserEventInformation*>(event->GetUserInformation())->setWeight( track->GetWeight() );
     
+                //TODO deal with under-weighted events
                 if ( track->GetWeight() < 1e-13 ) {
                     std::cout << "[ DarkBremFilter ]: "
                         << "Event " << event->GetConstCurrentEvent()->GetEventID()

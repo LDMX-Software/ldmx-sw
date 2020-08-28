@@ -58,7 +58,7 @@ def photo_nuclear( detector, generator ) :
     
     # Enable and configure the biasing
     sim.biasingOn()
-    sim.biasingConfigure( 'photonNuclear' , 'ecal' , 2500. , 450 )
+    sim.biasingConfigure( 'photonNuclear' , 'ecal' , 2500. , 450. )
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
@@ -105,29 +105,35 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     """
     
-    sim = simulator.simulator( "darkBrem_%sMeV" % str(massAPrime) )
+    sim = simulator.simulator( "ecal_dark_brem_%sMeV" % str(ap_mass) )
     
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in ECal"
     sim.setDetector( detector , True )
     sim.generators.append( generators.single_4gev_e_upstream_tagger() )
+    sim.beamSpotSmear = [ 20., 80., 0. ] #mm
     
-    # Bias the electron dark brem process inside of the ECal
-    # These commands allow us to restrict the dark brem process to a given 
-    # volume.
+    # Activiate dark bremming with a certain A' mass and LHE library
+    sim.dark_brem.activate( ap_mass , lhe )
+    sim.dark_brem.threshold = 2. #GeV - minimum energy electron needs to have to dark brem
+    sim.dark_brem.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
+
+    import math
+    factor = ( sim.dark_brem.APrimeMass**math.log10( sim.dark_brem.APrimeMass ) ) / ( sim.dark_brem.epsilon ** 2 )
+    
+    # Biasing dark brem up inside of the ecal volumes
     sim.biasingOn()
-    sim.biasingConfigure( 'eDBrem' , 'ecal' , 0. , 100000 )
-    
-    sim.darkBremOn( massAPrime #MeV
-            , lheFile 
-            , 1 ) #Forward Only
+    sim.biasingConfigure( 'eDBrem' , 'ecal' , 0. , factor , 
+                allPtl = True, incidentOnly = False)
     
     # the following filters are in a library that needs to be included
-    includeBiasing.library()
+    from LDMX.Biasing import include
+    include.library()
 
-    # Then give the UserAction to the simulation so that it knows to use it
-    sim.actions().extend([ 
+    sim.actions.extend([ 
+            # Abort events if the electron doesn't get to teh ECal with 3.5GeV
+            filters.PrimaryToEcalFilter( 3500. ),
             # Only keep events when a dark brem happens in the target
-            filters.DarkBremFilter('ecal') , 
+            filters.DarkBremFilter.ecal( 2000. , 3 ),
             # Keep all of the dark brem daughters. 
             filters.TrackProcessFilter.dark_brem()
     ])
