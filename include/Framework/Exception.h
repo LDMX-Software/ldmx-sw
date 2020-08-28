@@ -21,9 +21,10 @@ namespace ldmx {
 
             /**
              * Empty constructor.
+             *
+             * Don't build stack trace for empty exceptions.
              */
             Exception() throw () {
-		buildStackTrace();
             }
 
             /**
@@ -36,7 +37,7 @@ namespace ldmx {
              */
             Exception(const std::string& name, const std::string& message, const std::string& module, int line, const std::string& function) :
                     name_ { name }, message_ { message }, module_ { module }, function_ { function }, line_ { line } {
-			buildStackTrace();
+                buildStackTrace();
             }
 
             /**
@@ -93,17 +94,16 @@ namespace ldmx {
                 return message_.c_str();
             }
 
-   	    /**
-	      * Get the full stack trace
-	     */
-	    const std::string& stackTrace() const throw() {
-	        return stackTrace_;
-	    }
-		
-
+            /**
+              * Get the full stack trace
+             */
+            const std::string& stackTrace() const throw() {
+                return stackTrace_;
+            }
+        
         private:
 
-	    void buildStackTrace() throw ();
+            void buildStackTrace() throw ();
 
             /** Exception name. */
             std::string name_;
@@ -120,7 +120,7 @@ namespace ldmx {
             /** Source line number where the exception occurred. */
             int line_{0};
 
-	    /** The stack trace */
+            /** The stack trace */
             std::string stackTrace_;
     };
 }
