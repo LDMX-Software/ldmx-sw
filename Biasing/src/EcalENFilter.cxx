@@ -41,17 +41,17 @@ namespace ldmx {
             
             // Get the electron secondries
             auto secondaries = step->GetSecondary();
+            /*
             std::cout << "[ EcalENFilter ] : Primary electron went below recoil energy threshold: " 
                 << "KE: " << step->GetTrack()->GetKineticEnergy() << "MeV "
                 << "N Secondaries: " << secondaries->size() << std::endl;
-            /*
             */
 
             if (!secondaries or secondaries->size() == 0) {
+                /*
                 std::cout << "[ EcalENFilter ] : "
                     << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
                     << " No secondaries at all. Aborting event..." << std::endl;
-                /*
                 */
                 step->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()->AbortEvent();
@@ -62,16 +62,18 @@ namespace ldmx {
             for (auto& secondary_track : *secondaries) {
                 G4String processName = secondary_track->GetCreatorProcess()->GetProcessName();
 
+                /*
                 std::cout << "[ EcalENFilter ] : "
                     << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() 
                     << " Secondary coming from process '" 
                     << processName << "': ";
+                */
                 
                 if (processName.contains("electronNuclear")) {
+                    /*
                     std::cout
                         << " Found a secondary EN product with energy "
                         << secondary_track->GetKineticEnergy() << " MeV.";
-                    /*
                     */
                     enEnergy += secondary_track->GetKineticEnergy(); 
                 } //check for hard recoil
@@ -80,10 +82,10 @@ namespace ldmx {
             }//loop over secondaries
     
             if (enEnergy < recoilEnergyThreshold_) { 
+                /*
                 std::cout << "[ EcalENFilter ] : "
                     << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
                     << " Not enough energy went to EN secondaries. Aborting event..." << std::endl;
-                /*
                 */
                 step->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
                 G4RunManager::GetRunManager()->AbortEvent();
