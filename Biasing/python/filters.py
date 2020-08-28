@@ -161,7 +161,7 @@ class DarkBremFilter(simcfg.UserAction):
         """
 
         f = DarkBremFilter('target')
-        f.nGensFromPrimary = 0 #only allow primary to dark brem
+        f.nGensFromPrimary = 1 #only allow primary to dark brem
         f.minApEnergy = minApEnergy
         return f
     
