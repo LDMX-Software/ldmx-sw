@@ -12,4 +12,4 @@ p.sequence = [
 p.maxEvents = 1000
 p.termLogLevel = 0
 p.logFrequency = 10
-p.outputFiles = [ 'ecal_db.root' ]
+p.outputFiles = [ '/tmp/ecal_db.root' ]
