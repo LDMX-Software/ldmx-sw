@@ -37,8 +37,10 @@ namespace ldmx {
      *
      * This class is meant to filter for events that produce a dark brem matching
      * the input parameters:
+     *
      *      volume: A' originates inside of the input volume (target or ecal)
      *      nGensFromPrimary: A' produced by electron removed from primary by <= input n generations
+     *      minApEnergy: minimum energy [MeV] A' needs to have
      *
      * The general idea for this filter is to force Geant4 to
      * simulate the tracks in generation order. This is done by
@@ -55,7 +57,7 @@ namespace ldmx {
             /**
              * Class constructor.
              *
-             * Links this filter to its messenger.
+             * Retrieve the necessary configuration parameters
              */
             DarkBremFilter(const std::string& name, Parameters& parameters);
 
@@ -66,6 +68,8 @@ namespace ldmx {
 
             /**
              * Get the types of actions this class can do
+             *
+             * @return list of action types this class does
              */
             std::vector< TYPE > getTypes() final override {
                 return { TYPE::STACKING , TYPE::EVENT , TYPE::TRACKING };
@@ -73,8 +77,10 @@ namespace ldmx {
 
             /**
              * Reset generation counter and flag on if A' has been found
+             *
+             * @param event unused
              */
-            void BeginOfEventAction(const G4Event* ) final override;
+            void BeginOfEventAction(const G4Event* event) final override;
 
             /**
              * Classify a new track which postpones track processing.
@@ -85,7 +91,7 @@ namespace ldmx {
              * before the next generation of tracks is started.
              *
              * Checks a new track for being an A'
-             *  if it is an A', checks if it is in correct volume and sets foundAp_ member
+             *  if it is an A', sets the foundAp_ member and returns fUrgent
              * 
              * @param aTrack The Geant4 track.
              * @param currentTrackClass The current track classification.
@@ -112,8 +118,11 @@ namespace ldmx {
              *
              * If passed track is A', set save status to true
              * Aborts event if A' does not originate in desired volume
+             *  or has the minimum energy we wish
+             *
+             * @param track G4Track to check if it is an A'
              */
-            void PostUserTrackingAction(const G4Track* ) final override;
+            void PostUserTrackingAction(const G4Track* track) final override;
 
         private:
 
@@ -130,8 +139,6 @@ namespace ldmx {
             /** 
              * The volumes that the filter will be applied to.
              *
-             * Default: 'target'
-             *
              * Parameter Name: 'volume'
              *  Searched for in PhysicalVolumeStore
              */
@@ -141,8 +148,6 @@ namespace ldmx {
              * Number of generations away from primary
              * to allow to dark brem.
              *
-             * Default: 0 (only primary itself)
-             *
              * Parameter Name: 'nGensFromPrimary'
              */
             int nGensFromPrimary_;
@@ -150,19 +155,21 @@ namespace ldmx {
             /**
              * Minimum energy [MeV] that the A' should have to keep the event.
              * 
-             * Default: 0 (allow all energies)
-             *
              * Parameter Name: 'minApEnergy'
              */
             double minApEnergy_;
 
             /**
              * Have we found the A' yet?
+             *
+             * Reset to false in BeginOfEventAction
              */
             bool foundAp_;
 
             /**
              * The current generation removed from the primary electron
+             *
+             * Reset to zero in BeginOfEventAction
              */
             int currentGen_;
 

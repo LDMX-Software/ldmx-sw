@@ -24,6 +24,9 @@ namespace ldmx {
     /**
      * User stepping action used to filter events where the primary
      * particle falls below a threshold before reaching the CalorimeterRegion
+     *
+     * This is a simplistic filter designed similar to the 
+     * TaggerVetoFilter.
      */
     class PrimaryToEcalFilter : public UserAction { 
     
@@ -42,8 +45,12 @@ namespace ldmx {
             ~PrimaryToEcalFilter();
 
             /**
-             * Stepping action called when a step is taken during tracking of 
-             * a particle. 
+             * Only process if the track is a primary (parentID == 0) and
+             * if the event is not aborted and the particle is not
+             * in the CalorimeterRegion.
+             *
+             * If the energy of the particle is below the input threshold,
+             * then the event is aborted.
              *
              * @param[in] step Geant4 step
              */
