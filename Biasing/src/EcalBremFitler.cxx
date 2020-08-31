@@ -21,9 +21,6 @@ namespace ldmx {
         bremEnergyThreshold_     = parameters.getParameter< double >("brem_min_energy_threshold"); 
     }
 
-    EcalBremFilter::~EcalBremFilter() {
-    }
-
     void EcalBremFilter::stepping(const G4Step* step) { 
 
         // Only process the primary electron track

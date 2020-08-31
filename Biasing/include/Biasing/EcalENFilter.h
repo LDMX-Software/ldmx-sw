@@ -12,6 +12,14 @@ class G4Event;
 
 namespace ldmx {
 
+    /**
+     * Action to look for EN products of at least a minimum total energy
+     * within the ECal.
+     *
+     * Designed very similar to EcalBremFilter, but focused on summing
+     * the EN products energy and not looking for a single product
+     * of a certain energy.
+     */
     class EcalENFilter : public UserAction {
 
         public:
@@ -25,7 +33,14 @@ namespace ldmx {
             ~EcalENFilter();
 
             /**
-             * Implement the stepping action which performs the ecal volume filtering.
+             * Will only process if event is not aborted and track is primary (TrackID==1).
+             *
+             * If we step below the energy threshold or if we are stepping outside
+             * of the calorimeter region, we get the secondaries. We loop through
+             * the secondaries and add up all the products that a produced via
+             * 'electronNuclear' process. If that energy is below the energy
+             * threshold, we abort the event.
+             *
              * @param step The Geant4 step.
              */
             void stepping(const G4Step* step) final override;
@@ -37,8 +52,8 @@ namespace ldmx {
 
         private:
 
-            /** Energy that the recoil electron must not surpass. */
-            double recoilEnergyThreshold_;
+            /// Minimum energy [MeV] that all electro-nuclear products must have
+            double minENEnergy_;
 
     }; // EcalENFilter
 
