@@ -153,10 +153,14 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     Example
     -------
+    Here we use the example vertex library. This should not be used
+    for large (>50k) event samples.
 
-        target_ap_sim = target.dark_brem(1000, 'path/to/lhe', 'ldmx-det-v12')
+        from LDMX.SimCore import makePath
+        target_ap_sim = target.dark_brem(1000., makePath.makeLHEPath(1000.), 'ldmx-det-v12')
 
     """
+
     sim = simulator.simulator( "target_dark_brem_" + str(ap_mass) + "_MeV" )
     
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in target"

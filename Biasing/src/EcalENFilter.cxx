@@ -1,9 +1,3 @@
-/**
- * @file EcalENFilter.cxx
- * @brief Class defining a UserActionPlugin that biases Geant4 to only process 
- *        events which involve an electronuclear reaction in the target
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
 
 #include "Biasing/EcalENFilter.h"
 
@@ -17,7 +11,7 @@ namespace ldmx {
     EcalENFilter::EcalENFilter(const std::string& name, Parameters& parameters) 
         : UserAction (name, parameters) {
         
-        recoilEnergyThreshold_ = parameters.getParameter< double >("recoilThreshold"); 
+        minENEnergy_ = parameters.getParameter< double >("minENEnergy"); 
 
     }
 
@@ -31,7 +25,7 @@ namespace ldmx {
         //track is the primary electron and event hasn't been aborted yet
         auto start{step->GetPreStepPoint()};
         auto end{step->GetPostStepPoint()};
-        if ( (start->GetKineticEnergy() > recoilEnergyThreshold_ and end->GetKineticEnergy() < recoilEnergyThreshold_)
+        if ( (start->GetKineticEnergy() > minENEnergy_ and end->GetKineticEnergy() < minENEnergy_)
               or 
              (start->GetPhysicalVolume()->GetLogicalVolume()->GetRegion()->GetName().compareTo("CalorimeterRegion")==0 and
               end  ->GetPhysicalVolume()->GetLogicalVolume()->GetRegion()->GetName().compareTo("CalorimeterRegion")!=0)
@@ -81,7 +75,7 @@ namespace ldmx {
                 std::cout << std::endl;
             }//loop over secondaries
     
-            if (enEnergy < recoilEnergyThreshold_) { 
+            if (enEnergy < minENEnergy_) { 
                 /*
                 std::cout << "[ EcalENFilter ] : "
                     << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()

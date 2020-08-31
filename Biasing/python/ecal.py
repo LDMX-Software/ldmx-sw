@@ -200,9 +200,11 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     Example
     -------
+    Here we use the example vertex library. This should not be used
+    for large (>50k) event samples.
 
-        ecal_ap_sim = ecal.dark_brem(1000, 'path/to/lhe', 'ldmx-det-v12')
-
+        from LDMX.SimCore import makePath
+        ecal_ap_sim = ecal.dark_brem(1000., makePath.makeLHEPath(1000.), 'ldmx-det-v12')
 
     """
     
@@ -231,7 +233,7 @@ def dark_brem( ap_mass , lhe, detector ) :
     include.library()
 
     sim.actions.extend([ 
-            # Abort events if the electron doesn't get to teh ECal with 3.5GeV
+            # Abort events if the electron doesn't get to the ECal with 3.5GeV
             filters.PrimaryToEcalFilter( 3500. ),
             # Only keep events when a dark brem happens in the target
             filters.DarkBremFilter.ecal( 2000. , 3 ),
