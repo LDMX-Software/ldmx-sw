@@ -227,19 +227,19 @@
             <volume name="sp_hcal_front_back"> 
                 <materialref ref="Vacuum" />
                 <solidref ref="sp_hcal_front_back_box" />
-                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" >
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" />
                 <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
             </volume>  
             <volume name="sp_hcal_top_bot"> 
                 <materialref ref="Vacuum" />
                 <solidref ref="sp_hcal_top_bot_box" />
-                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" >
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" />
                 <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
             </volume>
             <volume name="sp_hcal_left_right"> 
                 <materialref ref="Vacuum" />
                 <solidref ref="sp_hcal_left_right_box" />
-                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" >
+                <auxiliary auxtype="SensDet" auxvalue="ScoringPlaneSD4" />
                 <auxiliary auxtype="VisAttributes" auxvalue="SpVis"/>
             </volume> 
         </loop>
