@@ -20,7 +20,10 @@ namespace ldmx {
 
     /**
      * User action that allows a user to filter out events that don't result in
-     * a brem within the target. 
+     * a hard brem within the ecal. 
+     *
+     * This action is designed similarly to TargetBremFilter, but since
+     * the ecal is so much thicker, it is slightly less efficient.
      */
     class EcalBremFilter : public UserAction {
 
@@ -30,10 +33,23 @@ namespace ldmx {
             EcalBremFilter(const std::string& name, Parameters& parameters);
 
             /// Destructor 
-            ~EcalBremFilter();
+            ~EcalBremFilter() { /* Empty on Purpose */ }
 
             /**
-             * Implement the stepping action which performs the target volume biasing.
+             * Only continues processing if the step is for the primary track (trackID == 1)
+             * and the event hasn't been aborted yet.
+             *
+             * Checks if this step either stepped from inside CalorimeterRegion to outside
+             * or if primary particle stepped from above the brem energy threshold to below.
+             * 
+             * If either of these things are true, we retrieve the secondaries and check
+             * for a secondary that is a product of 'eBrem' and is above the brem energy
+             * threshold. For a secondary matching these criteria, we tag it as a brem
+             * candidate and increments the count of brem candidates in the user event
+             * information.
+             *
+             * If we aren't able to find at least one brem candidate, we abort the event.
+             *
              * @param step The Geant4 step.
              */
             void stepping(const G4Step* step) final override;
@@ -45,7 +61,7 @@ namespace ldmx {
 
         private:
 
-            /// Brem gamma energy treshold
+            /// Brem gamma energy treshold [MeV]
             double bremEnergyThreshold_; 
 
     }; // EcalBremFilter
