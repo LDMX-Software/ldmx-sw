@@ -39,7 +39,8 @@ int main() {
     ldmx::Parameters params;
     params.setParameters(ps);
 
-    ldmx::EcalHexReadout hexReadout(params);
+    ldmx::EcalHexReadout* phexReadout=ldmx::EcalHexReadout::debugMake(params);
+    ldmx::EcalHexReadout& hexReadout(*phexReadout);
 
     auto polyMap = hexReadout.getCellPolyMap();
 
