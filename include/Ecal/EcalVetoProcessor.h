@@ -128,7 +128,7 @@ namespace ldmx {
             bool verbose_{false};
             bool doesPassVeto_{false};
 
-            std::unique_ptr<EcalHexReadout> hexReadout_;
+            const EcalHexReadout* hexReadout_;
 
             std::string bdtFileName_;
             std::string cellFileNamexy_;

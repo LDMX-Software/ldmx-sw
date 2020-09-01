@@ -26,7 +26,6 @@
 #include "Event/EventDef.h"
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalID.h"
-#include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
 
@@ -110,13 +109,7 @@ namespace ldmx {
              * This is less physically motivated than the layer weights and is more
              * of a calibration number.
              */
-            double secondOrderEnergyCorrection_;
-
-            /**
-             * Helper Instance of EcalHexReadout:
-             * performs real space x,y postion <-> module,cell ID translation
-             */
-            std::unique_ptr<EcalHexReadout> ecalHexReadout_;
+            double secondOrderEnergyCorrection_;        
 
             /**
              * Approximate energy deposited in Silicon layer for a MIP hit
