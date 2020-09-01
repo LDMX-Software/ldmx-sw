@@ -13,6 +13,7 @@
 // LDMX
 #include "DetDescr/DetectorHeader.h"
 #include "Framework/Parameters.h"
+#include "SimCore/ConditionsInterface.h"
 
 namespace ldmx {
 
@@ -36,7 +37,7 @@ namespace ldmx {
              * @param parser The GDML parser.
              * @param ps configuration parameters
              */
-            AuxInfoReader(G4GDMLParser* parser, Parameters ps);
+	AuxInfoReader(G4GDMLParser* parser, Parameters ps, ConditionsInterface& ci);
 
             /**
              * Class destructor.
@@ -117,6 +118,9 @@ namespace ldmx {
 
             /// Configuration parameters
             Parameters parameters_;
+
+	    /// ConditionsInterface
+	    ConditionsInterface& conditionsIntf_;
     };
 
 }

@@ -15,8 +15,8 @@
 
 namespace ldmx {
 
-    EcalSD::EcalSD(G4String name, G4String theCollectionName, int subDetID) :
-            CalorimeterSD(name, theCollectionName) {
+    EcalSD::EcalSD(G4String name, G4String theCollectionName, int subDetID, ConditionsInterface& ci) :
+      CalorimeterSD(name, theCollectionName), conditionsIntf_(ci) {
     }
 
     EcalSD::~EcalSD() {
@@ -24,6 +24,9 @@ namespace ldmx {
 
     G4bool EcalSD::ProcessHits(G4Step* aStep, G4TouchableHistory*) {
 
+
+	const EcalHexReadout& hitMap = conditionsIntf_.getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+	
         // Determine if current particle of this step is a Geantino.
         G4ParticleDefinition* pdef = aStep->GetTrack()->GetDefinition();
         bool isGeantino = false;
@@ -61,7 +64,7 @@ namespace ldmx {
         layerNumber = int(cpynum/7);
         int module_position = cpynum%7;
 
-        EcalID partialId = hitMap_->getCellModuleID(hitPosition[0], hitPosition[1]);
+        EcalID partialId = hitMap.getCellModuleID(hitPosition[0], hitPosition[1]);
 	    EcalID id(layerNumber, module_position, partialId.cell());
         hit->setID(id.raw());
 

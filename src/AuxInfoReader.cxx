@@ -31,8 +31,8 @@ using std::string;
 
 namespace ldmx {
 
-    AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser, Parameters ps) :
-            parser_(theParser), eval_(new G4GDMLEvaluator), parameters_(ps) {
+    AuxInfoReader::AuxInfoReader(G4GDMLParser* theParser, Parameters ps, ConditionsInterface& ci) :
+	parser_(theParser), eval_(new G4GDMLEvaluator), parameters_(ps), conditionsIntf_(ci) {
     }
 
     AuxInfoReader::~AuxInfoReader() {
@@ -117,8 +117,7 @@ namespace ldmx {
         if (sdType == "TrackerSD") {
             sd = new TrackerSD(theSensDetName, hcName, subdetID);
         } else if (sdType == "EcalSD") {
-            sd = new EcalSD(theSensDetName, hcName, subdetID);
-            dynamic_cast<EcalSD*>(sd)->configure(parameters_);
+            sd = new EcalSD(theSensDetName, hcName, subdetID, conditionsIntf_);
         } else if (sdType == "HcalSD") {
             sd = new HcalSD(theSensDetName, hcName, subdetID);
         } else if (sdType == "ScoringPlaneSD") { 

@@ -41,7 +41,7 @@ namespace ldmx {
             "/persistency/gdml/read" //detector description is read after passed a path to the detector description (required)
         };
 
-    Simulator::Simulator(const std::string& name, ldmx::Process& process) : Producer( name , process ) {
+  Simulator::Simulator(const std::string& name, ldmx::Process& process) : Producer( name , process ), conditionsIntf_(this) {
 
         // Get the ui manager from geant
         //      This pointer is handled by Geant4
@@ -74,7 +74,7 @@ namespace ldmx {
         if (sessionHandle_ != nullptr) uiManager_->SetCoutDestination( sessionHandle_.get() ); 
 
         // Instantiate the run manager.  
-        runManager_ = std::make_unique<RunManager>(parameters);
+        runManager_ = std::make_unique<RunManager>(parameters, conditionsIntf_);
 
         // Instantiate the GDML parser and corresponding messenger owned and
         // managed by DetectorConstruction
@@ -85,7 +85,7 @@ namespace ldmx {
 
         // Set the DetectorConstruction instance used to build the detector 
         // from the GDML description. 
-        runManager_->SetUserInitialization( new DetectorConstruction( parser , parameters ) );
+        runManager_->SetUserInitialization( new DetectorConstruction( parser , parameters, conditionsIntf_) );
 
         // Parse the detector geometry and validate if specified.
         auto detectorPath{parameters_.getParameter< std::string >("detector")};
@@ -118,12 +118,12 @@ namespace ldmx {
 
     void Simulator::onFileOpen(EventFile &file) {
         // Initialize persistency manager and connect it to the current EventFile
-        persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_, this->getRunNumber()); 
+      persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_, this->getRunNumber(), conditionsIntf_); 
         persistencyManager_->Initialize(); 
     }
 
     void Simulator::produce(ldmx::Event& event) {
-
+        
         // Pass the current LDMX event object to the persistency manager.  This
         // is needed by the persistency manager to fill the current event. 
         persistencyManager_->setCurrentEvent( &event ); 
