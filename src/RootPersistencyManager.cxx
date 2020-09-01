@@ -33,9 +33,9 @@
 
 namespace ldmx {
 
-    RootPersistencyManager::RootPersistencyManager(EventFile &file, Parameters& parameters, const int& runNumber) :
+  RootPersistencyManager::RootPersistencyManager(EventFile &file, Parameters& parameters, const int& runNumber, ConditionsInterface& ci) :
         G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"),
-        file_(file) {
+        file_(file), ecalHitIO_(ci)  {
 
         // Let Geant4 know what to use this persistency manager
         G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);

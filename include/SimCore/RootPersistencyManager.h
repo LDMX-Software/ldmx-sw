@@ -64,7 +64,7 @@ namespace ldmx {
              * @param parameters configuration parameters from Simulator
              * @param runNumber current run identifer from Process
              */
-            RootPersistencyManager(EventFile &file, Parameters& parameters, const int& runNumber);
+            RootPersistencyManager(EventFile &file, Parameters& parameters, const int& runNumber, ConditionsInterface& ci);
 
             /// Destructor 
             virtual ~RootPersistencyManager() { }

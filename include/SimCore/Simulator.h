@@ -22,10 +22,13 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h" 
 
+#include "SimCore/ConditionsInterface.h"
+
 /*~~~~~~~~~~~*/
 /*   Event   */
 /*~~~~~~~~~~~*/
 #include "Event/EventDef.h"
+
 
 class G4UImanager;
 class G4UIsession;
@@ -162,6 +165,9 @@ namespace ldmx {
             /// Number of events completed
             int numEventsCompleted_{0};
 
+            ///  Conditions interface
+	    ConditionsInterface conditionsIntf_;
+      
             /*********************************************************
              * Python Configuration Parameters
              *********************************************************/

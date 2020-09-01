@@ -31,6 +31,7 @@ namespace ldmx {
     class DetectorConstruction;
     class UserActionManager; 
     class APrimeMessenger;
+    class ConditionsInterface;
 
     /**
      * @class RunManager
@@ -43,7 +44,7 @@ namespace ldmx {
             /**
              * Class constructor.
              */
-            RunManager(Parameters& parameters); 
+            RunManager(Parameters& parameters, ConditionsInterface& ci); 
 
             /**
              * Class destructor.
@@ -109,6 +110,10 @@ namespace ldmx {
              */
             bool useRootSeed_{false};
 
+            /** ConditionsInterface
+             */
+            ConditionsInterface& conditionsIntf_;
+      
     }; // RunManager
 } // ldmx
 
