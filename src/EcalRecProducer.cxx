@@ -5,6 +5,7 @@
  */
 
 #include "Ecal/EcalRecProducer.h"
+#include "DetDescr/EcalHexReadout.h"
 
 namespace ldmx {
 
@@ -24,12 +25,12 @@ namespace ldmx {
         layerWeights_ = ps.getParameter<std::vector<double>>( "layerWeights" );
         secondOrderEnergyCorrection_ = ps.getParameter<double>( "secondOrderEnergyCorrection" );
 
-        auto hexReadout{ps.getParameter<Parameters>("hexReadout")};
-        ecalHexReadout_ = std::make_unique<EcalHexReadout>(hexReadout);
     }
 
     void EcalRecProducer::produce(Event& event) {
-
+	// Get the Ecal Geometry
+	const EcalHexReadout& hexReadout = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+ 
         std::vector<EcalHit> ecalRecHits;
         EcalDigiCollection ecalDigis = event.getObject<EcalDigiCollection>( digiCollName_ , digiPassName_ );
         int numDigiHits = ecalDigis.getNumDigis();
@@ -43,7 +44,7 @@ namespace ldmx {
             
             //ID to real space position
             double x,y,z;
-            ecalHexReadout_->getCellAbsolutePosition( id , x , y , z );
+            hexReadout.getCellAbsolutePosition( id , x , y , z );
             
             //get energy and time estimate from digi information
             double siEnergy, hitTime;
