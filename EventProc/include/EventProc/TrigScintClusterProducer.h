@@ -1,8 +1,11 @@
+<<<<<<< HEAD
 /**
  * @file TrigScintClusterProducer.h
  * @brief Clustering of trigger scintillator hits 
  * @author Lene Kristian Bryngemark, Stanford University 
  */
+=======
+>>>>>>> f8d37fb8bb3d80b3e41100fb6cbee9f97d4720ac
 
 #ifndef EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H
 #define EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H
@@ -17,7 +20,7 @@
 
 
 namespace ldmx {
-    
+
     /**
      * @class TrigScintClusterProducer
      * @brief 
@@ -26,6 +29,7 @@ namespace ldmx {
         public:
 
             TrigScintClusterProducer(const std::string& name, ldmx::Process& process) : ldmx::Producer(name, process) {
+
 	    }
 
       virtual void configure(ldmx::Parameters& ps);
@@ -89,7 +93,7 @@ namespace ldmx {
 	  //cluster time (energy weighted based on hit time)
       float time_{0.};
 
-       // empty map container 
+      // empty map container 
       std::map<int, int> hitChannelMap_; 
 
     };
