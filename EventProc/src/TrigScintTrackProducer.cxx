@@ -27,13 +27,12 @@ namespace ldmx {
 
 	  if (verbose_)
 		{
-		  std::cout << "In TrigScintTrackProducer: configure done!" << std::endl;
-		  std::cout << "Got parameters: \nSeeding:   " << seeding_collection_ 
+		  ldmx_log(info)<< "In TrigScintTrackProducer: configure done!" << std::endl;
+		  ldmx_log(info)<< "Got parameters: \nSeeding:   " << seeding_collection_ 
 					<< "\nTolerance: " << maxDelta_
 					<< "\nInput:     " << input_collections_.at(0) << " and " <<  input_collections_.at(1)
 					<< "\nOutput:    " << output_collection_
-					<< "\nVerbosity: " << verbose_
-					<< std::endl;
+						<< "\nVerbosity: " << verbose_ ;
 		}
     
 
@@ -50,7 +49,7 @@ namespace ldmx {
 	  // a verbosity controller
     
 	  if ( verbose_) {
-		std::cout << "TrigScintTrackProducer: produce() starts! Event number: " << event.getEventHeader().getEventNumber() << std::endl;
+		ldmx_log(debug)<< "TrigScintTrackProducer: produce() starts! Event number: " << event.getEventHeader().getEventNumber()  ;
       
 	  }
     
@@ -59,27 +58,27 @@ namespace ldmx {
 	  uint numSeeds = seeds.size() ; 
     
 	  if ( verbose_) {
-		std::cout << "Got track seeding cluster collection " << seeding_collection_ << " with " << numSeeds << " entries " << std::endl;
+		ldmx_log(debug)<< "Got track seeding cluster collection " << seeding_collection_ << " with " << numSeeds << " entries "  ;
 	  }
     
     
 	  if (! event.exists( input_collections_.at(0) )) {
-		std::cout << "No collection called " << input_collections_.at(0) << "; skipping event" << std::endl;
+		ldmx_log(info)<< "No collection called " << input_collections_.at(0) << "; skipping event"  ;
 		return ;
 	  }
 	  const auto clusters_pad1{event.getCollection< TrigScintCluster >(input_collections_.at(0), passName_)}; 
     
     
 	  if (! event.exists( input_collections_.at(1) )) {
-		std::cout << "No collection called " << input_collections_.at(1) << "; skipping event" << std::endl;
+		ldmx_log(info)<< "No collection called " << input_collections_.at(1) << "; skipping event"  ;
 		return ;
 	  }
     
 	  const auto clusters_pad2{event.getCollection< TrigScintCluster >(input_collections_.at(1), passName_)}; 
     
 	  if ( verbose_) {
-		std::cout << "Got the other two pad collections:" << input_collections_.at(0)  << " with " << clusters_pad1.size() << " entries, and " 
-				  << input_collections_.at(1)  << " with " << clusters_pad2.size() << " entries." << std::endl;
+		ldmx_log(debug)<< "Got the other two pad collections:" << input_collections_.at(0)  << " with " << clusters_pad1.size() << " entries, and " 
+				  << input_collections_.at(1)  << " with " << clusters_pad2.size() << " entries."  ;
 	  }
     
 	  std::vector < TrigScintTrack > cleanedTracks;
@@ -94,7 +93,7 @@ namespace ldmx {
 		  std::vector < TrigScintTrack > trackCandidates;
 	
 		  if ( verbose_ > 1 ) {
-			std::cout << "Got seed with centroid " << centroid << std::endl;
+			ldmx_log(debug)<< "Got seed with centroid " << centroid  ;
 		  }
 
 		  //reset for each seed 
@@ -103,23 +102,23 @@ namespace ldmx {
 		  for (const auto& cluster1 : clusters_pad1) {
 	  
 			if ( verbose_ > 1 ) {
-			  std::cout << "\tGot pad1 cluster with centroid " << cluster1.getCentroid() << std::endl;
+			  ldmx_log(debug)<< "\tGot pad1 cluster with centroid " << cluster1.getCentroid()  ;
 			}
 			if (  fabs(cluster1.getCentroid() - centroid ) < maxDelta_ ) { // first match! loop through next pad too 
 	    
 			  if ( verbose_ > 1 ) {
-				std::cout << "\t\tIt is close enough!. Check pad2" << std::endl;
+				ldmx_log(debug)<< "\t\tIt is close enough!. Check pad2"  ;
 			  }
 	    
 			  for (const auto& cluster2 : clusters_pad2) {
 				if ( verbose_ > 1 ) {
-				  std::cout << "\tGot pad2 cluster with centroid " << cluster2.getCentroid() << std::endl;
+				  ldmx_log(debug)<< "\tGot pad2 cluster with centroid " << cluster2.getCentroid()  ;
 				}
 	      
 				if (  fabs(cluster2.getCentroid() - centroid ) < maxDelta_ ) { // first match! loop through next pad too 
 
 				  if ( verbose_ > 1 ) {
-					std::cout << "\t\tIt is close enough!. Make a track" << std::endl;
+					ldmx_log(debug)<< "\t\tIt is close enough!. Make a track"  ;
 				  }
 		
 				  //only make this vector now! this ensures against hanging clusters with indices from earlier in the loop 
@@ -160,7 +159,7 @@ namespace ldmx {
 			// now for each seed, pick only the track with the smallest residual. 
 	  
 			if ( verbose_  ) {
-			  std::cout << "Got " << trackCandidates.size() << " tracks to check." << std::endl;
+			  ldmx_log(debug)<< "Got " << trackCandidates.size() << " tracks to check."  ;
 			}
 	  
 			for (uint idx=0; idx < trackCandidates.size(); idx++){
@@ -169,7 +168,7 @@ namespace ldmx {
 				minResidual = (trackCandidates.at(idx)).getResidual() ; //update minimum 
 	      
 				if (verbose_ > 1 ) {
-				  std::cout << "Track at index " << idx << " has smallest residual so far: " << minResidual << std::endl;
+				  ldmx_log(debug)<< "Track at index " << idx << " has smallest residual so far: " << minResidual  ;
 				}
 	      
 			  }//finding min residual 
@@ -180,7 +179,7 @@ namespace ldmx {
 		  //	if (keepIdx >= 0) {
 		  tracks_.push_back( trackCandidates.at(keepIdx) );
 		  if (verbose_ ) {
-			std::cout << "Kept track at index " << keepIdx << std::endl;
+			ldmx_log(debug)<< "Kept track at index " << keepIdx  ;
 			(trackCandidates.at(keepIdx)).Print();
 		  }
 		  //}
@@ -189,7 +188,7 @@ namespace ldmx {
 		//done here if there were no tracks found
 		if (tracks_.size() == 0) {
 		  if (verbose_ ) {
-			std::cout << "No tracks found!" << std::endl;
+			ldmx_log(debug)<< "No tracks found!"  ;
 		  }
 		  return;
 		}		
@@ -200,24 +199,24 @@ namespace ldmx {
 
 		std::vector keepIndices( tracks_.size(), 1);
 		if (verbose_ > 1)
-		  std::cout << "vector of indices to keep has size " << keepIndices.size() << std::endl;
+		  ldmx_log(debug)<< "vector of indices to keep has size " << keepIndices.size()  ;
 		
 		for (uint idx=tracks_.size()-1; idx > 0 ;idx--){
 
 		  TrigScintTrack track = tracks_.at( idx );
 		  TrigScintTrack nextTrack = tracks_.at( idx-1);
 		  if (verbose_ > 1)
-			std::cout << "In track disambiguation loop, idx points at " << idx << " and prev idx points at " << idx-1 << std::endl;
+			ldmx_log(debug)<< "In track disambiguation loop, idx points at " << idx << " and prev idx points at " << idx-1  ;
 
 		  std::vector<TrigScintCluster> consts_1 = track.getConstituents();
 		  std::vector<TrigScintCluster> consts_2 = nextTrack.getConstituents();
 		  if (verbose_ > 1)
-            std::cout << "In track disambiguation loop, got the two tracks, with nConstituents " << consts_1.size() << " and " << consts_2.size() << ", respectively. " << std::endl;
+            ldmx_log(debug)<< "In track disambiguation loop, got the two tracks, with nConstituents " << consts_1.size() << " and " << consts_2.size() << ", respectively. "  ;
 		  // let's do "if either cluster is shared" right now... but could also have it settable to use a stricter cut: an AND 
 		  if ( consts_1[1].getCentroid() ==  consts_2[1].getCentroid() || consts_1[2].getCentroid() == consts_2[2].getCentroid() ) { //we have overlap downstream of the seeding pad. probably, one cluster in seeding pad is noise
 			
 			if (verbose_ > 1 ) {
-			  std::cout << "Found overlap! Tracks at index " << idx << " and " << idx -1 << std::endl;
+			  ldmx_log(debug)<< "Found overlap! Tracks at index " << idx << " and " << idx -1  ;
 			  (tracks_.at(idx)).Print();
 			  (tracks_.at(idx-1)).Print();
 			}
@@ -241,14 +240,14 @@ namespace ldmx {
 	   
 		for (uint idx=0; idx<tracks_.size(); idx++){
 		  if (verbose_ > 1 ) {
-			std::cout << "keep flag for idx " << idx << " is " << keepIndices.at(idx) << std::endl;
+			ldmx_log(debug)<< "keep flag for idx " << idx << " is " << keepIndices.at(idx)  ;
 		  }
 		  if ( keepIndices.at(idx) ) { //this hasn't been flagged for removal
 			
 			cleanedTracks.push_back( tracks_.at(idx) );
 			
 			if (verbose_ ) {
-			  std::cout << "After cleaning, keeping track at index " << idx << ":" << std::endl;
+			  ldmx_log(debug)<< "After cleaning, keeping track at index " << idx << ":"  ;
 			  (tracks_.at(idx)).Print();
 			}
 		  }//if index flagged for keeping
@@ -256,7 +255,7 @@ namespace ldmx {
 		/*
 		if (verbose_ ) {
 		  for (uint idx=0; idx < tracks_.size(); idx++){
-			std::cout << "Keeping track at index " << idx << ":" << std::endl;
+			ldmx_log(debug)<< "Keeping track at index " << idx << ":"  ;
 			(tracks_.at(idx)).Print();
 		  }
 		}
@@ -265,12 +264,12 @@ namespace ldmx {
 	  } // if there are clusters in all pads 
 	  else 
 		if (verbose_ ) {
-		  std::cout << "Not all pads had clusters; skipping tracking attempt" << std::endl;
+		  ldmx_log(info)<< "Not all pads had clusters; skipping tracking attempt"  ;
 		}
     
 
 	  if (verbose_ ) {
-		std::cout << "Done with tracking step. " << std::endl << std::endl;
+		ldmx_log(debug)<< "Done with tracking step. "    ;
 	  }
 
 	  event.add(output_collection_, cleanedTracks);
@@ -306,10 +305,10 @@ namespace ldmx {
   
 
 	  if (verbose_ ) {
-		std::cout << " --  In makeTrack made track with centroid  " << centroid << " and residual " << residual << " from clusters with centroids" << std::endl;
+		ldmx_log(debug)<< " --  In makeTrack made track with centroid  " << centroid << " and residual " << residual << " from clusters with centroids"  ;
 		for (uint i = 0; i< clusters.size() ; i++)
-		  std::cout << "\tpad " << i << ": centroid " << (clusters.at(i)).getCentroid() ;
-		std::cout << std::endl;
+		  ldmx_log(debug)<< "\tpad " << i << ": centroid " << (clusters.at(i)).getCentroid() ;
+		ldmx_log(debug) ;
 	  }
   
 	  return tr;
@@ -322,7 +321,7 @@ namespace ldmx {
 	  
 	  if (verbose_ )
 		{
-		  std::cout << "**************** \nIn TrigScintTrackProducer: Opening file! \n********************\n" << std::endl;
+		  ldmx_log(debug)<< "**************** \nIn TrigScintTrackProducer: Opening file! \n********************\n"  ;
 		}
 	  
 	  return;
@@ -333,7 +332,7 @@ namespace ldmx {
 	  
 	  if (verbose_ )
 		{
-		  std::cout << "In TrigScintTrackProducer: Closing file!" << std::endl;
+		  ldmx_log(debug)<< "In TrigScintTrackProducer: Closing file!"  ;
 		}
 	  
 	  return;
@@ -343,7 +342,7 @@ namespace ldmx {
 
       if (verbose_ )
 	  {
-	    std::cout << "In TrigScintCusterProducer: Process starts!" << std::endl;
+	    ldmx_log(info)<< "In TrigScintCusterProducer: Process starts!"  ;
 	  }
 	
 
@@ -354,7 +353,7 @@ namespace ldmx {
 
       if (verbose_ )
 	  {
-	    std::cout << "In TrigScintCusterProducer: Process ends!" << std::endl;
+	    ldmx_log(info)<< "In TrigScintCusterProducer: Process ends!"  ;
 	  }
 
         return;

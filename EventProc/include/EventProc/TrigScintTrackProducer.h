@@ -1,7 +1,7 @@
 /**
  * @file TrigScintTrackProducer.h
- * @brief
- * @author
+ * @brief making tracks from trigger scintillator clusters 
+ * @author Lene Kristian Bryngemark, Stanford University
  */
 
 #ifndef EVENTPROC_TRIGSCINTTRACKPRODUCER_H
@@ -16,8 +16,6 @@
 #include "Event/TrigScintCluster.h"
 
 
-#include "TClonesArray.h"
-
 namespace ldmx {
     
     /**
@@ -28,10 +26,8 @@ namespace ldmx {
         public:
 
             TrigScintTrackProducer(const std::string& name, ldmx::Process& process) : ldmx::Producer(name, process) {
-	//	    	tracks_ = new TClonesArray("ldmx::TrigScintTrack");
 	    }
 
-      //virtual void configure(const ldmx::ParameterSet& ps);
       virtual void configure(ldmx::Parameters& ps);
       
       virtual void produce(ldmx::Event& event);
@@ -45,23 +41,36 @@ namespace ldmx {
       virtual void onProcessEnd();
 
         private:
+
+	  //collection of produced tracks
       std::vector< TrigScintTrack > tracks_;
-                                                                   
+
+	  //add a cluster to a track
       TrigScintTrack makeTrack( std::vector<TrigScintCluster> clusters );
-      
+
+	  //maximum difference (in channel number space) between track seed and cluster in the next pad tolerated to form a track
       double maxDelta_{0.};
+
+	  //producer specific verbosity 
       int verbose_{0};
 
+	  //collection used to seed the tracks 
       std::string seeding_collection_;
-       std::vector <std::string> input_collections_;
-       //std::string input_collection1_;
-       //std::string input_collection2_;
-      std::string output_collection_;
-      std::string passName_{""};
 
-      float centroid_{0.};  //channel nb centroid (will not be content weighted)
-      float residual_{0.};  //channel nb residual (will not be content weighted)
+	  //other cluster collections used in track making
+	  std::vector <std::string> input_collections_;
 
+	  //output collection (tracks)
+	  std::string output_collection_;
+
+	  //specific pass name to use for track making 
+	  std::string passName_{""};
+
+	  //track centroid in units of channel nb (will not be content weighted)
+      float centroid_{0.};
+
+	  //track residual in units of channel nb (will not be content weighted)
+      float residual_{0.};  
 
     };
 }

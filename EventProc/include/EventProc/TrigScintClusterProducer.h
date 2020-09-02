@@ -1,7 +1,7 @@
 /**
  * @file TrigScintClusterProducer.h
- * @brief
- * @author
+ * @brief Clustering of trigger scintillator hits 
+ * @author Lene Kristian Bryngemark, Stanford University 
  */
 
 #ifndef EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H
@@ -15,8 +15,6 @@
 #include "Event/EventConstants.h"
 #include "Event/TrigScintHit.h"
 
-
-#include "TClonesArray.h"
 
 namespace ldmx {
     
@@ -33,7 +31,10 @@ namespace ldmx {
       virtual void configure(ldmx::Parameters& ps);
       
       virtual void produce(ldmx::Event& event);
-      
+
+	  /**
+	   * add a hit at index idx to a cluster 
+	   */
       virtual void addHit( uint idx, TrigScintHit hit ); 
       
       virtual void onFileOpen();
@@ -45,23 +46,47 @@ namespace ldmx {
       virtual void onProcessEnd();
       
         private:
+
+	  //collection of clusters produced 
       std::vector< TrigScintCluster > clusters_;
 
+	  //cluster seeding threshold
       double seed_{0.};
+
+	  //min threshold for adding a hit to a cluster
       double minThr_{0.};
+
+	  //max number of neighboring hits to combine when forming a cluster
 	  int maxWidth_{2};
+
+	  //specific verbosity of this producer
       int verbose_{0}; 
 
+	  //input collection (hits)
       std::string input_collection_;
+
+	  //output collection (clusters)
       std::string output_collection_;
 
+	  //cluster channel nb centroid (will be content weighted)
+      float centroid_{0.};
+	  
+	  // energy (edep), PE, or sth
+      float val_{0.};
 
-      float centroid_{0.};  //channel nb centroid (will be content weighted)
-      float val_{0.};       // energy, PE, or sth
-      float valE_{0.};       // energy, only; leave val_ for PE
-      std::vector <unsigned int> v_addedIndices_;  // book keep which channels have already been added to a cluster
-      std::vector <unsigned int> v_usedIndices_;  // book keep which channels have already been added to any cluster
-      float beamE_{0.};     // fraction of cluster energy associated with beam electron sim hits
+	  // edep content, only; leave val_ for PE
+      float valE_{0.};
+
+	  // book keep which channels have already been added to the cluster at hand
+      std::vector <unsigned int> v_addedIndices_;
+
+	  // book keep which channels have already been added to any cluster
+      std::vector <unsigned int> v_usedIndices_;  
+
+	  // fraction of cluster energy deposition associated with beam electron sim hits
+      float beamE_{0.};     
+
+	  //cluster time (energy weighted based on hit time)
       float time_{0.};
 
        // empty map container 
