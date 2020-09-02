@@ -20,7 +20,7 @@ namespace ldmx {
 
   Process::Process(const Parameters& configuration) : conditions_{*this} {
 
-        passname_      = configuration.getParameter<std::string>("passName");
+        passname_      = configuration.getParameter<std::string>("passName", "");
         histoFilename_ = configuration.getParameter<std::string>("histogramFile",""); 
         logFileName_   = configuration.getParameter<std::string>("logFileName","");
 

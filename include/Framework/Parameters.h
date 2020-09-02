@@ -43,6 +43,28 @@ namespace ldmx {
             }
 
             /**
+             * Add a parameter to the parameter list.  If the parameter already
+             * exists in the list, throw an exception. 
+             *
+             * @param[in] name Name of the parameter.
+             * @param[in] value The value of the parameter.
+             * @throw Exception if a parameter by that name already exist in 
+             *  the list. 
+             *
+             */
+            template < typename T > 
+            void addParameter(const std::string& name, const T& value) { 
+                
+                if (exists(name)) {
+                    EXCEPTION_RAISE("ParameterExist", 
+                            "The parameter " + name + " already exists in the list of parameters."
+                    ); 
+                }
+
+                parameters_[name] = value; 
+            }
+
+            /**
              * Check to see if a parameter exists
              *
              * @param[in] name name of parameter to check

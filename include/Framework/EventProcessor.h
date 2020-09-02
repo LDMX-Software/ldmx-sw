@@ -48,9 +48,10 @@ namespace ldmx {
 
             /**
              * Constructor
+             *
+             * Use empty Exception constructor so stack trace isn't built.
              */
-            AbortEventException() throw ()
-                : Exception( "AbortEventException" , "I should have been caught earlier!" , "" , 0 , "" ) { }
+            AbortEventException() throw () : Exception( ) { }
     
             /**
              * Destructor
