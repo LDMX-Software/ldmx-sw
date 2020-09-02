@@ -22,9 +22,17 @@ source $ROOTDIR/bin/thisroot.sh
 source $G4DIR/bin/geant4.sh
 
 # add ldmx-sw and ldmx-analysis installs to the various paths
-export LD_LIBRARY_PATH=$ONNX_DIR/lib:/usr/local/lib:$LD_LIBRARY_PATH
-export PYTHONPATH=/usr/local/lib/python:$PYTHONPATH
-export PATH=/usr/local/bin:$PATH
+export LDMX_SW_INSTALL=/usr/local/
+export LD_LIBRARY_PATH=$LDMX_SW_INSTALL/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=$LDMX_SW_INSTALL/python:$PYTHONPATH
+export PATH=$LDMX_SW_INSTALL/bin:$PATH
+
+# add externals installed along side ldmx-sw
+# TODO this for loop might be very slow... might want to hard-code the externals path
+for _external_path in $LDMX_SW_INSTALL/external/*/lib
+do
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$_external_path
+done
 
 # go to first argument
 cd "$1"
