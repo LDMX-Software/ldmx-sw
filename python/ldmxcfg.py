@@ -468,7 +468,7 @@ class Process:
 
             if isinstance(obj,list) :
                 return [ extract(o) for o in obj ]
-            elif isinstance(obj,(Process,EventProcessor,simcfg.PrimaryGenerator,simcfg.UserAction,ConditionsObjectProvider)) :
+            elif hasattr(obj,'__dict__') :
                 params = dict()
                 for k in obj.__dict__ :
                     if k not in keys_to_skip :
