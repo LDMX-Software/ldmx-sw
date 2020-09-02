@@ -1,9 +1,3 @@
-/**                                                                                                                                                                               
- * @file TrigScintTrack.cxx 
- * @brief Class that stores reconstructed track information from the Trigger scintillator pads
- * @author Lene Kristian Bryngemark, Stanford University
- */
-
 #include "Event/TrigScintTrack.h"
 
 /*~~~~~~~~~~~~~~~~*/
@@ -15,14 +9,13 @@ ClassImp(ldmx::TrigScintTrack)
 
 namespace ldmx {
 
-  void TrigScintTrack::Clear() {
-    centroid_=0;
-    residual_=0;
-  }
+    void TrigScintTrack::Clear() {
+        centroid_=0;
+        residual_=0;
+    }
 
-  void TrigScintTrack::Print() const {
-    std::cout << "TrigScintTrack { " << " channel centroid: " << getCentroid() 
-			  << ",  residual: " << getResidual() << " }" << std::endl;
-  }
-
+    void TrigScintTrack::Print() const {
+        std::cout << "TrigScintTrack { " << " channel centroid: " << getCentroid() 
+                  << ",  residual: " << getResidual() << " }" << std::endl;
+    }
 }

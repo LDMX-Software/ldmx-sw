@@ -111,7 +111,7 @@ namespace ldmx {
             Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
 
             TEveGeoShape* ecalDigiHit = EveShapeDrawer::getInstance().drawHexPrism(
-                    DetectorGeometry::getInstance().getHexPrism( hit ),
+                    DetectorGeometry::getInstance().getHexPrism( EcalID(hit.getID()) ),
                     0, 0, 0, 
                     color, 0, digiName);
 
@@ -130,23 +130,19 @@ namespace ldmx {
 
         std::sort(hits.begin(), hits.end(), compHcalHits);
 
-        ldmx::HcalID detID;
         for ( const HcalHit &hit : hits ) {
             int pe = hit.getPE();
             if (pe == 0) { continue; }
 
-            detID.setRawValue(hit.getID());
-            detID.unpack();
+            HcalID id(hit.getID());
 
             const UChar_t* rgb = palette->ColorFromValue(pe);
             TColor* aColor = new TColor();
             Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
 
-            int bar = hit.getStrip();
-            int layer = hit.getLayer();
-            int section = hit.getSection();
             TString digiName;
-            digiName.Form("%d PEs, Section %d, Layer %d, Bar %d, Z %1.5g", pe, section, layer, bar, hit.getZ());
+            digiName.Form("%d PEs, Section %d, Layer %d, Bar %d, Z %1.5g", pe, 
+                    id.section(), id.layer(), id.strip(), hit.getZPos());
 
             BoundingBox hcal_hit_bb = DetectorGeometry::getInstance().getBoundingBox( hit );
             TEveGeoShape *hcalDigiHit = EveShapeDrawer::getInstance().drawRectPrism(
@@ -154,7 +150,7 @@ namespace ldmx {
                     0, 0, 0, color, 0, digiName );
 
             if ( hcalDigiHit ) {
-                if ( hit.getNoise() ) { hcalDigiHit->SetRnrSelf(0); }
+                if ( hit.isNoise() ) { hcalDigiHit->SetRnrSelf(0); }
                 hcalHits_->AddElement(hcalDigiHit);
             } // successfully created hcal digi hit
 
@@ -205,16 +201,15 @@ namespace ldmx {
             int numHits = clusterHitIDs.size();
 
             for (int iHit = 0; iHit < numHits; iHit++) {
-                unsigned int cellID = clusterHitIDs[iHit]>>15;
-                unsigned int moduleID = (clusterHitIDs[iHit]<<17)>>29;
-                int layer = (clusterHitIDs[iHit]<<20)>>24;
+
+                EcalID id(clusterHitIDs.at(iHit));
 
                 const UChar_t* rgb = palette->ColorFromValue(energy);
                 TColor* aColor = new TColor();
                 Int_t color = aColor->GetColor((Int_t)rgb[0], (Int_t)rgb[1], (Int_t)rgb[2]);
     
                 TEveGeoShape* ecalDigiHit = EveShapeDrawer::getInstance().drawHexPrism(
-                        DetectorGeometry::getInstance().getHexPrism( cellID , moduleID , layer ),
+                        DetectorGeometry::getInstance().getHexPrism( id ),
                         0, 0, 0, 
                         color, 0, "RecHit");
                 ecalCluster->AddElement(ecalDigiHit);
