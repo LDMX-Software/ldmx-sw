@@ -1,11 +1,8 @@
-<<<<<<< HEAD
 /**
  * @file TrigScintClusterProducer.h
  * @brief Clustering of trigger scintillator hits 
  * @author Lene Kristian Bryngemark, Stanford University 
  */
-=======
->>>>>>> f8d37fb8bb3d80b3e41100fb6cbee9f97d4720ac
 
 #ifndef EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H
 #define EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H
@@ -66,8 +63,8 @@ namespace ldmx {
 	  //specific verbosity of this producer
       int verbose_{0}; 
 
-	  //input collection (hits)
-      std::string input_collection_;
+	//input collection (hits)
+      	std::string input_collection_;
 
 	  //output collection (clusters)
       std::string output_collection_;

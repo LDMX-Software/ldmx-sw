@@ -44,34 +44,34 @@ namespace ldmx {
 
 	  //collection of produced tracks
       std::vector< TrigScintTrack > tracks_;
-
+	  
 	  //add a cluster to a track
-      TrigScintTrack makeTrack( std::vector<TrigScintCluster> clusters );
+	  TrigScintTrack makeTrack( std::vector<TrigScintCluster> clusters );
 
 	  //maximum difference (in channel number space) between track seed and cluster in the next pad tolerated to form a track
       double maxDelta_{0.};
-
+	  
 	  //producer specific verbosity 
       int verbose_{0};
-
+	  
 	  //collection used to seed the tracks 
       std::string seeding_collection_;
-
+	  
 	  //other cluster collections used in track making
 	  std::vector <std::string> input_collections_;
-
+	  
 	  //output collection (tracks)
 	  std::string output_collection_;
-
+	  
 	  //specific pass name to use for track making 
 	  std::string passName_{""};
-
+	  
 	  //track centroid in units of channel nb (will not be content weighted)
       float centroid_{0.};
-
+	  
 	  //track residual in units of channel nb (will not be content weighted)
       float residual_{0.};  
-
+	  
     };
 }
 
