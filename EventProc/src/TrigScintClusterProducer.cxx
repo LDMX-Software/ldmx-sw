@@ -25,7 +25,14 @@ namespace ldmx {
 
 	  if (verbose_)
 		{
-		  std::cout << "In TrigScintClusterProducer: configure done!" << std::endl;
+		  ldmx_log(info) << "In TrigScintClusterProducer: configure done!" ;
+		  ldmx_log(info)<< "Got parameters: \nSeed threshold:   " << seed_
+						<< "\nClustering threshold: " << minThr_
+						<< "\nMax cluster width: " << maxWidth_
+						<< "\nInput collection:     " << input_collection_ 
+						<< "\nOutput collection:    " << output_collection_
+						<< "\nVerbosity: " << verbose_ ;
+
 		}
 	
 
@@ -114,7 +121,7 @@ namespace ldmx {
     
     
 	  if ( verbose_) {
-		std::cout << "TrigScintClusterProducer: produce() starts! Event number: " << event.getEventHeader().getEventNumber() << std::endl;
+		ldmx_log(debug) << "TrigScintClusterProducer: produce() starts! Event number: " << event.getEventHeader().getEventNumber();
       
 	  }
 
@@ -124,7 +131,7 @@ namespace ldmx {
 	  const auto digis{event.getCollection< TrigScintHit >(input_collection_)}; 
 
 	  if ( verbose_) {
-		std::cout << "Got digi collection " << input_collection_ << " with " << digis.size() << " entries " << std::endl;
+		ldmx_log(debug) << "Got digi collection " << input_collection_ << " with " << digis.size() << " entries ";
 	  }
 
 
@@ -147,12 +154,12 @@ namespace ldmx {
 			std::map<int, int>::iterator itr = hitChannelMap_.find( idx );
 			double oldVal = digis.at(itr->second).getPE();
 			if (verbose_) {
-			  std::cout << "Got duplicate digis for channel " << idx << ", with already inserted value " << oldVal << " and new " << digi.getPE() << std::endl;
+			  ldmx_log(debug) << "Got duplicate digis for channel " << idx << ", with already inserted value " << oldVal << " and new " << digi.getPE();
 			}
 			if ( digi.getPE() > oldVal ) {
 			  hitChannelMap_.erase( itr->first );
 			  if (verbose_) {
-				std::cout << "Skipped duplicate digi with smaller value for channel " << idx << std::endl;
+				ldmx_log(debug) << "Skipped duplicate digi with smaller value for channel " << idx;
 			  }
 			}
 		  }
@@ -162,7 +169,7 @@ namespace ldmx {
 		  iDigi++;
 	
 		  if ( verbose_) {
-			std::cout << "Mapping digi hit nb " << iDigi << " with energy = " << digi.getEnergy() << " MeV, nPE = " << digi.getPE() << " > " << minThr_ << " to key/channel " << ID << std::endl;
+			ldmx_log(debug) << "Mapping digi hit nb " << iDigi << " with energy = " << digi.getEnergy() << " MeV, nPE = " << digi.getPE() << " > " << minThr_ << " to key/channel " << ID;
 		  }
 		}
 
@@ -182,7 +189,7 @@ namespace ldmx {
 		// this hit may have disappeared
 		if (hitChannelMap_.find( itr->first ) == hitChannelMap_.end() ) {
 		  if ( verbose_ > 1 ) {
-			std::cout << "Attempting to use removed hit at channel " << itr->first << "; skipping." << std::endl;
+			ldmx_log(debug) << "Attempting to use removed hit at channel " << itr->first << "; skipping.";
 		  }
 		  continue;
 		}
@@ -192,7 +199,7 @@ namespace ldmx {
 		for ( const auto& index : v_usedIndices_ ) {
 		  if (index == itr->first ) {
 			if ( verbose_ > 1 ) {
-			  std::cout << "Attempting to re-use hit at channel " << itr->first << "; skipping." << std::endl;
+			  ldmx_log(warn) << "Attempting to re-use hit at channel " << itr->first << "; skipping.";
 			}
 			hasUsed = true;
 		  }
@@ -200,13 +207,13 @@ namespace ldmx {
 		if (hasUsed)
 		  continue;
 		if ( verbose_ > 1 ) {
-		  std::cout << "\t At hit with channel nb " << itr->first << "." << std::endl;
+		  ldmx_log(debug) << "\t At hit with channel nb " << itr->first << ".";
 		}
       
 		if ( hitChannelMap_.size() == 0 ) // we removed them all..? shouldn't ever happen
 		  {
 			if (verbose_ )
-			  std::cout<< "Time flies, and all clusters have already been removed! Unclear how we even got here; interfering here to get out of the loop. " << std::endl;
+			  ldmx_log(warn)<< "Time flies, and all clusters have already been removed! Unclear how we even got here; interfering here to get out of the loop. ";
 			break;
 		  }
       
@@ -217,7 +224,7 @@ namespace ldmx {
 		// skip all until hit a seed
 		if ( digi.getPE()  >= seed_ ) {
 		  if ( verbose_ > 1 ) {
-			std::cout << "Seeding cluster with channel " << itr->first << "; content " << digi.getPE() << std::endl; 
+			ldmx_log(debug) << "Seeding cluster with channel " << itr->first << "; content " << digi.getPE(); 
 		  }
 
 		  // 1.  add seeding hit to cluster
@@ -225,7 +232,7 @@ namespace ldmx {
 		  addHit( itr->first, (TrigScintHit)digi );
 
 		  if ( verbose_ > 1 ) {
-			std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
+			ldmx_log(debug) << "\t itr is pointing at hit with channel nb " << itr->first << ".";
 		  }
 
 		  // ----- first look back one step 
@@ -245,7 +252,7 @@ namespace ldmx {
 			for ( const auto& index : v_usedIndices_ ) {
 			  if (index == itrBack->first ) {
 				if ( verbose_ > 1 ) {
-				  std::cout << "Attempting to re-use hit at channel " << itrBack->first << "; skipping." << std::endl;
+				  ldmx_log(warn) << "Attempting to re-use hit at channel " << itrBack->first << "; skipping.";
 				}
 				hasUsed = true;
 			  }
@@ -260,10 +267,8 @@ namespace ldmx {
 			  hasBacked = true;
 
 			  if ( verbose_ >1 ) {
-				std::cout << "Added -1 channel " << itrBack->first << " to cluster; content " << digi.getPE() << std::endl;
-				if ( verbose_ > 2 ) {
-				  std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
-				}
+				ldmx_log(debug) << "Added -1 channel " << itrBack->first << " to cluster; content " << digi.getPE();
+				ldmx_log(debug) << "\t itr is pointing at hit with channel nb " << itr->first << ".";
 			  }
 
 	  	  
@@ -293,10 +298,8 @@ namespace ldmx {
 				  addHit( itrNeighb->first, digi );
 				  
 				  if ( verbose_ > 1 ) {
-					std::cout << "No -1 hit. Added +1 channel " << itrNeighb->first << " to cluster; content " << digi.getPE() << std::endl;
-					if ( verbose_ > 2 ) {
-					std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
-					}
+					ldmx_log(debug) << "No -1 hit. Added +1 channel " << itrNeighb->first << " to cluster; content " << digi.getPE();
+					ldmx_log(debug) << "\t itr is pointing at hit with channel nb " << itr->first << ".";
 				  }
 
 				  if (v_addedIndices_.size() < maxWidth_) {
@@ -306,10 +309,8 @@ namespace ldmx {
 					  digi = (TrigScintHit) digis.at(itrNeighb->second );
 					  addHit( itrNeighb->first,  digi );
 					  if ( verbose_ > 1 ) {
-						std::cout << "No +3 hit. Added +2 channel " << itrNeighb->first << " to cluster; content " << digi.getPE() << std::endl;
-						if ( verbose_ > 2 ) {
-						  std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
-						}
+						ldmx_log(debug) << "No +3 hit. Added +2 channel " << itrNeighb->first << " to cluster; content " << digi.getPE();
+						ldmx_log(debug) << "\t itr is pointing at hit with channel nb " << itr->first << ".";
 					  }
 					}
 
@@ -321,10 +322,8 @@ namespace ldmx {
 				addHit( itrNeighb->first,  digi );
 				
 				if ( verbose_ >1 ) {
-				  std::cout << "Added +1 channel " << itrNeighb->first << " as last channel to cluster; content " << digi.getPE() << std::endl;
-				  if ( verbose_ > 2 ) {
-					std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
-				  }
+				  ldmx_log(debug) << "Added +1 channel " << itrNeighb->first << " as last channel to cluster; content " << digi.getPE();
+				  ldmx_log(debug) << "\t itr is pointing at hit with channel nb " << itr->first << ".";
 				}
 
 			  }
@@ -336,10 +335,10 @@ namespace ldmx {
 			  addHit( itrBack->first,  digi );
 			  
 			  if ( verbose_ >1 ) {
-				std::cout << "Added -2 channel " << itrBack->first << " to cluster; content " << digi.getPE() << std::endl;
+				ldmx_log(debug) << "Added -2 channel " << itrBack->first << " to cluster; content " << digi.getPE();
 			  }
 			  if ( verbose_ > 1 ) {
-				std::cout << "\t itr is pointing at hit with channel nb " << itr->first << "." << std::endl;
+				ldmx_log(debug) << "\t itr is pointing at hit with channel nb " << itr->first << ".";
 			  }
 			  
 			}// check if add in seed -2 
@@ -353,7 +352,7 @@ namespace ldmx {
 		  TrigScintCluster cluster;
 
 		  if (verbose_ > 1 ) {
-			std::cout << "Now have " << v_addedIndices_.size() << " hits in the cluster " << std::endl;
+			ldmx_log(debug) << "Now have " << v_addedIndices_.size() << " hits in the cluster ";
 		  }
 		  cluster.setSeed( v_addedIndices_.at(0) );
 		  cluster.setIDs(v_addedIndices_);
@@ -377,7 +376,7 @@ namespace ldmx {
 		  v_addedIndices_.resize(0);  // book keep which channels have already been added to a cluster 
 
 		  if ( verbose_ > 1 ) {
-			std::cout << "\t Finished processing of seeding hit with channel nb " << itr->first << "." << std::endl;
+			ldmx_log(debug) << "\t Finished processing of seeding hit with channel nb " << itr->first << ".";
 		  }
 
 
@@ -385,7 +384,7 @@ namespace ldmx {
       
 		if ( hitChannelMap_.begin() == hitChannelMap_.end() ) {
           if (verbose_ )
-			std::cout<< "Time flies, and all clusters have already been removed! Interfering here to get out of the loop. " << std::endl;
+			ldmx_log(warn)<< "Time flies, and all clusters have already been removed! Interfering here to get out of the loop. ";
           break;
         }
 	  }// over channels 
@@ -417,13 +416,13 @@ namespace ldmx {
 	  /*    // not working properly, but i'd prefer this type of solution
 			hitChannelMap_.erase( idx ) ;
 			if (verbose_ > 1 ) { 
-			std::cout << "Removed used hit " << idx << " from list" << std::endl;
+			ldmx_log(debug) << "Removed used hit " << idx << " from list";
 			}
 			if ( hitChannelMap_.find( idx) != hitChannelMap_.end() )
-			std::cerr << "----- WARNING! Hit still present in map after removal!! " << std::endl;
+			std::cerr << "----- WARNING! Hit still present in map after removal!! ";
 	  */
 	  if (verbose_ > 1) {
-		std::cout << "   In addHit, adding hit at " << idx << " with amplitude " << ampl << ", updating cluster to current centroid " << centroid_/val_ - 1 << " and energy " << val_ << ". index vector now ends with " << v_addedIndices_.back() << std::endl;
+		ldmx_log(debug) << "   In addHit, adding hit at " << idx << " with amplitude " << ampl << ", updating cluster to current centroid " << centroid_/val_ - 1 << " and energy " << val_ << ". index vector now ends with " << v_addedIndices_.back();
 
 	  }
     
@@ -437,7 +436,7 @@ namespace ldmx {
 		
 	  if (verbose_ )
 		{
-		  std::cout << "**************** \nIn TrigScintClusterProducer: Opening file! \n********************\n" << std::endl;
+		  ldmx_log(debug) << "**************** \nIn TrigScintClusterProducer: Opening file! \n********************\n";
 		}
 	
       
@@ -449,7 +448,7 @@ namespace ldmx {
 
 	  if (verbose_ )
 		{
-		  std::cout << "In TrigScintClusterProducer: Closing file!" << std::endl;
+		  ldmx_log(debug) << "In TrigScintClusterProducer: Closing file!";
 		}
 
 	  return;
@@ -459,7 +458,7 @@ namespace ldmx {
 
       if (verbose_ )
 		{
-		  std::cout << "In TrigScintCusterProducer: Process starts!" << std::endl;
+		  ldmx_log(debug) << "In TrigScintCusterProducer: Process starts!";
 		}
 	
 
@@ -470,7 +469,7 @@ namespace ldmx {
 	   
       if (verbose_ )
 		{
-		  std::cout << "In TrigScintCusterProducer: Process ends!" << std::endl;
+		  ldmx_log(debug) << "In TrigScintCusterProducer: Process ends!";
 		}
 
 	  return;

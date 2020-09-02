@@ -15,7 +15,7 @@ namespace ldmx {
   
   void TrigScintCluster::Print(Option_t *option) const {
     
-    std::cout << "TrigScintCluster { " << "Energy or PE: " << energy_ << ", " << "Number of hits: " << nHits_ << ", " << "Seed channel " << seed_ << ", Channel centroid: " << centroid_ << " }" << std::endl;
+    std::cout << "TrigScintCluster { " << "Energy: " << energy_ << ", " << "Number of hits: " << nHits_ << ", " << "Seed channel " << seed_ << ", Channel centroid: " << centroid_ << " }" << std::endl;
     std::cout << "  --  Constituent hit channel ids: {  ";
     for (const auto& idx : getHitIDs() )
       std::cout  << idx << "  ";
