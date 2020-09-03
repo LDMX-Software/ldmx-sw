@@ -39,15 +39,13 @@ jobs:
 
     # run test executable and test configs using the docker environment
     #   The test executable is hard-coded here and in the cmake macro build_test
-    #   The text configs are retrieved here for any files matching the pattern:
-    #       'ldmx-sw/*/test/*.py'
-    #   i.e. Any python file in the 'test' directory of any module.
+    #   The test configs are retrieved and ran within run-test-configs.sh script
     - name: Test the build
       run: |
           cd ../ &&
           export LDMX_BASE=$(pwd) &&
           docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $LDMX_BASE/ldmx-sw/install ./bin/run_test &&
-          for config in `ls ldmx-sw/*/test/*.py`; do docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $(pwd) fire "$config"; done
+          . ldmx-sw/scripts/run-test-configs.sh
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
