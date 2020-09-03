@@ -52,7 +52,7 @@ def electro_nuclear( detector, generator ) :
     
     # Enable and configure the biasing
     sim.biasingOn()
-    sim.biasingConfigure( 'electronNuclear' , 'target' , 0. , 1e8 )
+    sim.biasingConfigure( 'electronNuclear' , 'target' , 0. , int(1e8) )
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
@@ -114,7 +114,7 @@ def photo_nuclear( detector, generator ) :
             'photonNuclear' #process
             , 'target' #volume
             , 2500. #threshold in MeV
-            , 450. #factor
+            , 450 #factor
             )
    
     # the following filters are in a library that needs to be included
