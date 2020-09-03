@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) {
 			  << "  at " << e.module() << ":" << e.line() << " in " << e.function()
 			  << "\nStack trace: " << std::endl << e.stackTrace();
 	    logging::close();
-        return 1; //return non-zero error-status
+        return 127; //return non-zero error-status
     }
     
     std::cout << "---- LDMXSW: Event processing complete  --------" << std::endl;
