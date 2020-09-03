@@ -17,7 +17,7 @@
 // ldmx-sw
 #include "Event/EventConstants.h"
 #include "Event/TrigScintHit.h"
-#include "Event/EcalCluster.h"
+//#include "Event/EcalCluster.h"
 
 
 namespace ldmx {
@@ -26,7 +26,8 @@ namespace ldmx {
    * @class TrigScintCluster 
    * @brief Stores cluster information from the trigger scintillator pads. Adds on the ECal cluster functionality
    */
-  class TrigScintCluster : public EcalCluster {
+  class TrigScintCluster : public TObject {
+	//  EcalCluster {
 
   public:
     
@@ -183,6 +184,10 @@ namespace ldmx {
       return centroid_;
     }
     
+	bool operator < ( const TrigScintCluster &rhs ) const {
+	  return this->getEnergy() < rhs.getEnergy();
+	}
+	
      
 
   private:
