@@ -167,8 +167,9 @@ namespace ldmx {
                 matchesAll(dtable,fTable2);
             }
 
+            /*
             SECTION( "Testing HTTP loading" ) {
-                const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process(\"test\")\np.testMode=True\ncolumns=[\"A\",\"Q\",\"V\"]\ncop=SimpleCSVTableProvider.SimpleCSVTableProvider(\"tableSource\",\"TEST_MODE\")\ncop.provideIntegerTable(\"test_table_http\",\"http://webusers.physics.umn.edu/~jmmans/test_table.csv\",columns)\np.declareConditionsObjectProvider(cop)\np.libraries.append(\"libConditions.so\")\n";
+                const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process(\"test\")\np.testMode=True\ncolumns=[\"A\",\"Q\",\"V\"]\ncop=SimpleCSVTableProvider.SimpleCSVTableProvider(\"tableSource\",\"TEST_MODE\")\ncop.provideIntegerTable(\"test_table_http\",\"https://homepages.spa.umn.edu/~jmmans/test_table.csv\",columns)\np.declareConditionsObjectProvider(cop)\np.libraries.append(\"libConditions.so\")\n";
 
                 FILE* f=fopen("/tmp/test_cond.py","w");
                 fputs(cfg,f);
@@ -181,6 +182,7 @@ namespace ldmx {
                 const IntegerTableCondition& httpTable=hp->getConditions().getCondition<IntegerTableCondition>("test_table_http",cxt);
                 matchesAll(httpTable,itable);
             }
+            */
         }
     }
 }
