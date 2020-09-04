@@ -26,13 +26,9 @@ configure_file(
 )
 install(FILES ${PROJECT_SOURCE_DIR}/include/Framework/Version.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Framework/)
 
-# Declare two more objects to go into the dictionary
-declare_event_object( class "EventHeader" )
-declare_event_object( class "RunHeader" just_dictionary "ON" )
-
-# make the event bus dictionary now that all the event objects
-#   have been declared
-setup_dictionary()
+# Register both the event and run headers
+register_event_object( namespace "ldmx" class "EventHeader")
+register_event_object( namespace "ldmx" class "RunHeader" type "dict_only" )
 
 # Search for the Python3 library
 find_package (Python3 COMPONENTS Interpreter Development)
@@ -46,8 +42,8 @@ find_package(Boost REQUIRED COMPONENTS system log filesystem thread chrono atomi
 # Setup the library
 setup_library(name Framework
               dependencies Python3::Python 
-                           ROOT::Hist ROOT::TreePlayer
-                           DARK::Event 
+                           ROOT::Core ROOT::Hist ROOT::TreePlayer
+                           #DARK::Event 
                            Boost::log Boost::atomic Boost::regex
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
