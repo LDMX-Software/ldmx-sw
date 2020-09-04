@@ -9,7 +9,7 @@
 
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
-//#include "Ecal/EcalTriggerGeometry.h"
+#include "Ecal/EcalTriggerGeometry.h"
 #include "Framework/ConditionsObjectProvider.h"
 
 namespace ldmx {
@@ -23,13 +23,13 @@ namespace ldmx {
 	/**
 	 * Class constructor
 	 * @param parameters -- uses the "EcalHexReadout" section to configure the EcalHexReadout
-	 */	
+	 */
 	EcalGeometryProvider(const std::string& name, const std::string& tagname, const Parameters& parameters, Process& process);
 
 
 	/** Destructor */
 	virtual ~EcalGeometryProvider();
-	
+
 	/**
 	 * Provides access to the EcalHexReadout or EcalTriggerGeometry
 	 * @note Currently, these are assumed to be valid for all time, but this behavior could be changed.  Users should not cache the pointer
@@ -42,14 +42,13 @@ namespace ldmx {
 	 */
 	virtual void releaseConditionsObject(const ConditionsObject* co) {
 	}
-    
+
 	private:
 	EcalHexReadout* ecalGeometry_;
-	//	EcalTriggerGeometry* ecalTriggerGeometry_;
-	
+		EcalTriggerGeometry* ecalTriggerGeometry_;
+
     };
-    
+
 }
 
-    
 #endif // ECAL_ECALGEOMETRYPROVIDER_H_

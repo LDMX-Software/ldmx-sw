@@ -26,6 +26,10 @@ namespace ldmx {
    */
   class EcalTriggerGeometry : public ConditionsObject {
   public:
+    static constexpr const char* CONDITIONS_OBJECT_NAME{"EcalTriggerGeometry"};
+
+    
+
     EcalTriggerGeometry(int symmetry, EcalHexReadout* ecalGeom=0);
     
     /**
