@@ -47,11 +47,7 @@ class EcalRecProducer(Producer) :
         self.digiPassName = ''
         self.secondOrderEnergyCorrection = 1.
         self.layerWeights = [ ]
-
-        from LDMX.DetDescr import EcalHexReadout
-        self.hexReadout = EcalHexReadout.EcalHexReadout()
-
-        self.v12() #use v12 geometry by default
+        self.v12()
 
     def v2(self) :
         """These layerWeights and energy correction were calculated at least before v3 geometry.
@@ -60,7 +56,6 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.hexReadout.v9()
         self.secondOrderEnergyCorrection = 0.948;
         self.layerWeights = [
             1.641, 3.526, 5.184, 6.841,
@@ -76,7 +71,6 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.hexReadout.v9()
         self.secondOrderEnergyCorrection = 4000. / 4012.;
         self.layerWeights = [
             1.019, 1.707, 3.381, 5.022, 6.679, 8.060, 8.613, 8.613, 8.613, 8.613, 8.613,
@@ -92,7 +86,6 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.hexReadout.v12()
         self.secondOrderEnergyCorrection = 4000./4010.;
         self.layerWeights = [
             1.675, 2.724, 4.398, 6.039, 7.696, 9.077, 9.630, 9.630, 9.630, 9.630, 9.630,
