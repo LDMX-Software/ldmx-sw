@@ -3,7 +3,7 @@
 
 std::ostream& operator<<(std::ostream& s, const ldmx::EcalID& id) {
   std::pair uv=id.getCellUV();
-  s << "Ecal(" << id.layer() << ',' << id.module() << ',' << id.cell() << '[' << uv.first << ',' << uv.second << "] )";
+  s << "Ecal(" << id.layer() << ',' << id.module() << ',' << id.cell() << '[' << uv.first << ',' << uv.second << "])";
   return s;
 }
 

@@ -1,6 +1,7 @@
 #include "DetDescr/DetectorIDInterpreter.h"
 #include "DetDescr/HcalID.h"
 #include "DetDescr/EcalID.h"
+#include "DetDescr/EcalTriggerID.h"
 #include "DetDescr/TrigScintID.h"
 #include "DetDescr/TrackerID.h"
 #include "DetDescr/SimSpecialID.h"
@@ -8,7 +9,7 @@
 namespace ldmx {
 
 
-    std::map<SubdetectorIDType, const DetectorIDInterpreter::SubdetectorIDFields*> DetectorIDInterpreter::g_rosettaStone;
+    std::map<DetectorIDInterpreter::IDSignature, const DetectorIDInterpreter::SubdetectorIDFields*> DetectorIDInterpreter::g_rosettaStone;
 
     DetectorIDInterpreter::~DetectorIDInterpreter()  {
     }
@@ -79,28 +80,53 @@ namespace ldmx {
 
         p_fieldInfo_=0;
 
-        if (id_.null()) return;	
+        if (id_.null()) return;
 
-        auto ptr = g_rosettaStone.find(id_.subdet());
+	for (auto ptr: g_rosettaStone) {
+	    if ((id_.raw()&ptr.first.mask_)==ptr.first.comparison_) {
+		p_fieldInfo_=(ptr.second);			
+		this->fieldValues_.resize(p_fieldInfo_->fieldList_.size());
+		return;
+	    }
+	}
 
-        if (ptr == g_rosettaStone.end()) {
-            // use the generic id
-            ptr = g_rosettaStone.find(SD_NULL);
-        }
+	// fell through, no match
+	IDSignature sig;
+	sig.comparison_=0;
+	sig.mask_=DetectorID::SUBDETECTORID_MASK<<DetectorID::SUBDETECTORID_SHIFT;
+	    
+	auto ptr = g_rosettaStone.find(sig);	    
         p_fieldInfo_=(ptr->second);	
-
         this->fieldValues_.resize(p_fieldInfo_->fieldList_.size());
+	    
     }
 
     void DetectorIDInterpreter::registerInterpreter(SubdetectorIDType idtype,  const IDField::IDFieldList& fieldList) {
-        if (g_rosettaStone.find(idtype)!=g_rosettaStone.end()) {
+	IDSignature sig;
+	sig.comparison_=idtype<<DetectorID::SUBDETECTORID_SHIFT;
+	sig.mask_=DetectorID::SUBDETECTORID_MASK<<DetectorID::SUBDETECTORID_SHIFT;
+	if (g_rosettaStone.find(sig)!=g_rosettaStone.end()) {
             EXCEPTION_RAISE("DetectorIDException","Attempted to replace interpreter for subdetector "+std::to_string(idtype));
-        }
+	}
         SubdetectorIDFields* fields=new SubdetectorIDFields();
         fields->fieldList_=fieldList;
         for (auto it : fieldList)
             fields->fieldMap_[it->getFieldName()]=it;
-        g_rosettaStone[idtype]=fields;
+        g_rosettaStone[sig]=fields;
+    }
+
+    void DetectorIDInterpreter::registerInterpreter(SubdetectorIDType idtype,   unsigned int mask, unsigned int equality, const IDField::IDFieldList& fieldList) {
+	IDSignature sig;
+	sig.comparison_=(idtype<<DetectorID::SUBDETECTORID_SHIFT) | equality;
+	sig.mask_=(DetectorID::SUBDETECTORID_MASK<<DetectorID::SUBDETECTORID_SHIFT) | mask;
+        if (g_rosettaStone.find(sig)!=g_rosettaStone.end()) {
+            EXCEPTION_RAISE("DetectorIDException","Attempted to replace interpreter for subdetector "+std::to_string(idtype)+" mask "+std::to_string(mask)+" equality "+std::to_string(equality));
+	}
+        SubdetectorIDFields* fields=new SubdetectorIDFields();
+        fields->fieldList_=fieldList;
+        for (auto it : fieldList)
+            fields->fieldMap_[it->getFieldName()]=it;
+        g_rosettaStone[sig]=fields;
     }
 
     void DetectorIDInterpreter::loadStandardInterpreters() {
@@ -112,6 +138,7 @@ namespace ldmx {
         registerInterpreter(SD_NULL,fields);
 
         EcalID::createInterpreters();
+	EcalTriggerID::createInterpreters();
         HcalID::createInterpreters();
         TrackerID::createInterpreters();
         TrigScintID::createInterpreters();
