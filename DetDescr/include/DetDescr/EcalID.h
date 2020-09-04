@@ -8,7 +8,7 @@
 #define DETDESCR_ECALDETECTORID_H_
 
 // LDMX
-#include "DetDescr/DetectorID.h"
+#include "DetDescr/EcalAbstractID.h"
 
 namespace ldmx {
 
@@ -16,10 +16,10 @@ namespace ldmx {
      * @class EcalID
      * @brief Extension of DetectorID providing access to ECal layers and cell numbers in a hex grid
      */
-    class EcalID : public DetectorID {
+    class EcalID : public EcalAbstractID {
 
     public:
-	
+
 	static const RawValue LAYER_MASK{0x3F}; // space for up to 64 layers
 	static const RawValue LAYER_SHIFT{17};
 	static const RawValue MODULE_MASK{0x1F}; // space for up to 32 modules/layer
@@ -30,32 +30,47 @@ namespace ldmx {
 	/**
 	 * Empty ECAL id (but not null!)
 	 */
-	EcalID() : DetectorID(SD_ECAL,0) { }
+        EcalID() : EcalAbstractID() { }
 
 	/**
 	 * Create from raw number
 	 */
-	EcalID(RawValue rawid) : DetectorID(rawid) {
-	    SUBDETECTORID_TEST("EcalID", SD_ECAL);
+	EcalID(RawValue rawid) : EcalAbstractID(rawid) {
+	  if (!null() && cell_type()!=PrecisionGlobal && cell_type()!=PrecisionLocal) {
+	    EXCEPTION_RAISE("DetectorIDMismatch","Attempted to create EcalID from mismatched Ecal cell_type "+std::to_string(cell_type()));
+	  }
 	}
 
       	/**
 	 * Create from a DetectorID, but check
 	 */
-	EcalID(const DetectorID id) : DetectorID(id) {
-	    SUBDETECTORID_TEST("EcalID", SD_ECAL);
+	EcalID(const DetectorID id) : EcalAbstractID(id) {
+	  if (!null() && cell_type()!=PrecisionGlobal && cell_type()!=PrecisionLocal) {
+	    EXCEPTION_RAISE("DetectorIDMismatch","Attempted to create EcalID from mismatched Ecal cell_type "+std::to_string(cell_type()));
+	  }
 	}
 
 
         /**
 	 * Create from pieces
 	 */
-	EcalID(unsigned int layer, unsigned int module, unsigned int cell) : DetectorID(SD_ECAL,0) {
+	EcalID(unsigned int layer, unsigned int module, unsigned int cell) : EcalAbstractID(PrecisionGlobal,0) {
 	    id_|=(layer&LAYER_MASK)<<LAYER_SHIFT;
 	    id_|=(module&MODULE_MASK)<<MODULE_SHIFT;
 	    id_|=(cell&CELL_MASK)<<CELL_SHIFT;
 	}
-      
+
+        /**
+	 * Create from pieces including u/v cell
+	 */
+	EcalID(unsigned int layer, unsigned int module, unsigned int u, unsigned int v);
+	
+        /**
+	 * Create from pieces including u/v cell
+	 */
+	EcalID(unsigned int layer, unsigned int module, std::pair<unsigned int, unsigned int> uv) : EcalID(layer,module, uv.first, uv.second) {
+	}
+		
 	/**
 	 * Get the value of the module field from the ID.
 	 * @return The value of the module field.
@@ -104,6 +119,13 @@ namespace ldmx {
 	int getCellID() const {
 	    return (id_>>CELL_SHIFT)&CELL_MASK;
 	}
+
+	/** 
+	 * Get the cell u,v index assuming a CMS-standard 432-cell sensor
+	 * @return Pair providing a U/V index
+	 */
+	std::pair<unsigned int,unsigned int> getCellUV() const;
+
 
 	static void createInterpreters();
     };
