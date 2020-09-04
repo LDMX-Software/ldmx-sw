@@ -16,6 +16,7 @@
 #include "Framework/Exception.h"
 #include "DetDescr/EcalID.h"
 #include "Framework/Parameters.h"
+#include "Framework/ConditionsObject.h"
 
 // STL
 #include <map>
@@ -25,7 +26,8 @@
 
 namespace ldmx {
 
-
+    class EcalGeometryProvider;
+  
     /**
      * @class EcalHexReadout
      * @brief Implementation of ECal hexagonal cell readout
@@ -56,16 +58,10 @@ namespace ldmx {
      * that span the module height. This count can have fractional counts to account
      * for the fractions of cell radii at the module edges.
      */
-    class EcalHexReadout {
-    
-        public:
+  class EcalHexReadout : public ConditionsObject {
 
-            /**
-             * Class constructor.
-             *
-             * @param ps Parameters to configure the EcalHexReadout
-             */
-            EcalHexReadout(const Parameters &ps);
+        public:
+            static constexpr const char* CONDITIONS_OBJECT_NAME{"EcalHexReadout"};
 
             /**
              * Class destructor.
@@ -296,6 +292,42 @@ namespace ldmx {
             }
 
             /**
+             * Get the center-to-flat radius of the module hexagons
+             *
+             * @return module min radius [mm]
+             */
+            double getModuleMinR() const {
+                return moduler_;
+            }
+
+            /**
+             * Get the center-to-corner radius of the module hexagons
+             *
+             * @return module max radius [mm]
+             */
+            double getModuleMaxR() const {
+                return moduleR_;
+            }
+
+            /**
+             * Get the center-to-flat radius of the cell hexagons
+             *
+             * @return cell min radius [mm]
+             */
+            double getCellMinR() const {
+                return cellr_;
+            }
+
+            /**
+             * Get the center-to-corner radius of the cell hexagons
+             *
+             * @return cell max radius [mm]
+             */
+            double getCellMaxR() const {
+                return cellR_;
+            }
+
+            /**
              * Get a const reference to the cell center position map.
              */
             const std::map<int,std::pair<double,double>>& getCellPositionMap() const {
@@ -320,7 +352,17 @@ namespace ldmx {
              */
             TH2Poly* getCellPolyMap() const { return &ecalMap_; }
 
+    static EcalHexReadout* debugMake(const Parameters& p) { return new EcalHexReadout(p); }
+    
         private:
+
+            /**
+             * Class constructor, for use only by the provider
+             *
+             * @param ps Parameters to configure the EcalHexReadout
+             */
+            EcalHexReadout(const Parameters &ps);
+            friend class EcalGeometryProvider;
 
             /**
              * Constructs the positions of the seven modules (moduleID) relative to the ecal center
