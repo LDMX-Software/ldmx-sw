@@ -8,16 +8,14 @@ namespace ldmx {
     HgcrocTrigDigi::HgcrocTrigDigi() {
     }
 
-    HgcrocTrigDigi::HgcrocTrigDigi(uint8_t layer, uint8_t rocid, uint8_t elink) : layer_(layer),rocid_(rocid),elink_(elink) {
+    HgcrocTrigDigi::HgcrocTrigDigi(uint32_t tid) : tid_(tid) {
     }
 
     HgcrocTrigDigi::~HgcrocTrigDigi() {
     }
     
     void HgcrocTrigDigi::Print() const {
-        std::cout << "HgcrocTrigDigi { " << "(layer,roc,elink): (" << layer_ << ", "
-		  << rocid_ << ", "
-		  << elink_ << ") ";
+      std::cout << "HgcrocTrigDigi { " << "(id : " << tid_ << ") ";
 	
 	for (int i=0; i<4; i++) 
 	    std::cout << std::hex << getPrimitive(i) << " (" << std::dec << linearPrimitive(i) << "), ";;

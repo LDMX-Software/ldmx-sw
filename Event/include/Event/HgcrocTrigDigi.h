@@ -21,13 +21,13 @@ namespace ldmx {
 	public:
 
 	HgcrocTrigDigi();
-	HgcrocTrigDigi(uint8_t layer, uint8_t rocid, uint8_t elink);
+	HgcrocTrigDigi(uint32_t tid);
 
 	virtual ~HgcrocTrigDigi();
 
 
 	bool operator<(const HgcrocTrigDigi &d) {
-	    return layer_<d.layer_ && rocid_<d.rocid_ && elink_<<d.elink_;
+	  return tid_<d.tid_;
 	}
 
 	/**
@@ -76,9 +76,7 @@ namespace ldmx {
 	void Print() const;
 	
 	private:
-	uint8_t layer_{0};
-	uint8_t rocid_{0};
-	uint8_t elink_{0};
+         uint32_t tid_{0};
 	uint8_t tp0_{0};
 	uint8_t tp1_{0};
 	uint8_t tp2_{0};
