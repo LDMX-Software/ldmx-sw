@@ -182,6 +182,9 @@ function(register_event_object)
         message(FATAL_ERROR "Trying to register class ${register_event_object_class} that doesn't exist.")
     endif()
 
+    get_filename_component(header_dir ${PROJECT_SOURCE_DIR} NAME)
+    set(header ${header_dir}/${register_event_object_class}.h)
+
     if(DEFINED register_event_object_namespace)
         STRING(CONCAT register_event_object_class
                       ${register_event_object_namespace} "::" 
@@ -192,6 +195,8 @@ function(register_event_object)
     if(register_event_object_class IN_LIST dict)
         return()
     endif()
+
+    set(event_headers ${event_headers} ${header} CACHE INTERNAL "event_headers")
 
     # If the passenger type was not specified, then add the class to the event
     # bus stand alone.
@@ -210,6 +215,35 @@ function(register_event_object)
     endif()
 
 endfunction()
+
+macro(build_event_bus)
+
+    get_filename_component(header_dir ${PROJECT_SOURCE_DIR} NAME)
+    if(NOT EXISTS ${PROJECT_SOURCE_DIR}/include/${header_dir}/EventDef.h)
+        
+        set(file_path ${PROJECT_SOURCE_DIR}/include/${header_dir}/EventDef.h)
+
+        foreach(header ${event_headers})
+            file(APPEND ${file_path} "#include \"${header}\"\n")
+        endforeach()
+        
+        list(LENGTH bus_passengers passenger_count)
+        MATH(EXPR last_passenger_index "${passenger_count} - 1")
+        list(GET bus_passengers ${last_passenger_index} last_passenger)
+        list(REMOVE_AT bus_passengers ${last_passenger_index})
+
+        file(APPEND ${file_path} "\n#include <variant>\n\n")
+        file(APPEND ${file_path} "typedef std::variant<\n")
+        foreach(passenger ${bus_passengers})
+            file(APPEND ${file_path} "    ${passenger},\n")
+        endforeach()
+        
+        file(APPEND ${file_path} "    ${last_passenger}\n")
+        file(APPEND ${file_path} "> EventBusPassenger;")
+
+    endif()
+
+endmacro()
 
 macro(setup_test)
 
