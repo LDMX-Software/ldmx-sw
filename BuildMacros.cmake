@@ -245,6 +245,44 @@ macro(build_event_bus)
 
 endmacro()
 
+macro(build_dict)
+
+    set(oneValueArgs template namespace)
+    cmake_parse_arguments(build_dict "${options}" "${oneValueArgs}"
+                          "${multiValueArgs}" ${ARGN} )
+
+    get_filename_component(header_dir ${PROJECT_SOURCE_DIR} NAME)
+    if(NOT EXISTS ${PROJECT_SOURCE_DIR}/include/${header_dir}/EventLinkDef.h)
+
+        message(STATUS "Building ROOT dictionary.")
+        message(STATUS "${build_dict_template}")
+        if(DEFINED build_dict_template)
+            configure_file(
+                ${build_dict_template}
+                ${PROJECT_SOURCE_DIR}/include/${header_dir}/EventLinkDef.h 
+                COPYONLY
+            )
+        endif()
+
+        set(file_path ${PROJECT_SOURCE_DIR}/include/${header_dir}/EventLinkDef.h)
+        set(prefix "#pragma link C++")
+
+        if(DEFINED build_dict_namespace)
+            file(APPEND ${file_path} "${prefix} namespace ${build_dict_namespace}\n")
+            file(APPEND ${file_path} "${prefix} defined_in namespace ${build_dict_namespace}\n\n")
+        endif()
+
+        foreach(entry ${dict})
+            file(APPEND ${file_path} "${prefix} class ${entry}+;\n")
+        endforeach()
+
+        file(APPEND ${file_path} "\n#endif")
+
+    endif()
+    
+
+endmacro()
+
 macro(setup_test)
 
     set(multiValueArgs dependencies)
