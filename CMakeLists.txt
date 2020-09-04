@@ -30,6 +30,8 @@ install(FILES ${PROJECT_SOURCE_DIR}/include/Framework/Version.h DESTINATION ${CM
 register_event_object( namespace "ldmx" class "EventHeader")
 register_event_object( namespace "ldmx" class "RunHeader" type "dict_only" )
 
+build_event_bus()
+
 # Search for the Python3 library
 find_package (Python3 COMPONENTS Interpreter Development)
 
