@@ -8,15 +8,15 @@ namespace ldmx {
 
 	objectNames_.push_back(EcalHexReadout::CONDITIONS_OBJECT_NAME);
 	objectNames_.push_back("EcalGeometry");
-//	objectNames_.push_back(EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
+	objectNames_.push_back(EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 	
 	// create the ecalGeometry
-	ecalGeometry_=new EcalHexReadout(parameters);
-	/*
+	ecalGeometry_=new EcalHexReadout(parameters.getParameter<Parameters>("hexReadout"));
+	
 	// create the ecalTriggerGeometry
 	int symmetry=0x100;
         ecalTriggerGeometry_=new EcalTriggerGeometry(symmetry,ecalGeometry_);
-	*/
+	
     }
     EcalGeometryProvider::~EcalGeometryProvider() {
 	if (ecalGeometry_) delete ecalGeometry_;
@@ -26,5 +26,8 @@ namespace ldmx {
 	if (condition_name=="EcalGeometry" || condition_name==EcalHexReadout::CONDITIONS_OBJECT_NAME) {
 	    return std::make_pair(ecalGeometry_,ConditionsIOV(true,true));
 	}
+        if (condition_name==EcalTriggerGeometry::CONDITIONS_OBJECT_NAME) {
+            return std::make_pair(ecalTriggerGeometry_,ConditionsIOV(true,true));
+        }
     }
 }

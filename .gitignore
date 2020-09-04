@@ -1,0 +1,13 @@
+.cproject
+.project
+.settings
+.pydevproject
+/docs/doxygen.conf
+*~
+*#
+*.pyc
+/bin
+/lib
+/data
+/build*
+/install*
