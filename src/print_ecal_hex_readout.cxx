@@ -43,8 +43,9 @@ int main() {
     ldmx::Parameters params;
     params.setParameters(ps);
 
-    ldmx::EcalHexReadout hexReadout(params);
-
+    ldmx::EcalHexReadout* p_hexReadout=ldmx::EcalHexReadout::debugMake(params);
+    ldmx::EcalHexReadout& hexReadout(*p_hexReadout);
+    
     auto polyMap = hexReadout.getCellPolyMap();
 
     //fill poly map with IDs
@@ -110,7 +111,7 @@ int main() {
     // and now for triggers
     ldmx::EcalTriggerGeometry trigG(0x100,&hexReadout);
     polyMap->SetTitle( 
-		      "Trigger Cell Summing Map Map; X Position Relative to Module [mm];Y Position Relative to Module [mm]" );
+		      "Trigger Cell Summing Map; X Position Relative to Module [mm];Y Position Relative to Module [mm]" );
     polyMap->GetXaxis()->SetTickLength(0.);
     polyMap->GetYaxis()->SetTickLength(0.);
     polyMap->SetMaximum(4);
