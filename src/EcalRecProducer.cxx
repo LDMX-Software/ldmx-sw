@@ -32,6 +32,7 @@ namespace ldmx {
         pedestal_    = hgcrocParams.getParameter<double>( "pedestal" );
         gain_        = hgcrocParams.getParameter<double>( "gain" );
         clockCycle_  = hgcrocParams.getParameter<double>( "clockCycle" );
+        drainRate_   = hgcrocParams.getParameter<double>( "drainRate" );
 
     }
 
@@ -66,7 +67,7 @@ namespace ldmx {
             
             /**
             std::cout << "Recon { "
-                << "ID: " << rawID << ", "
+                << "ID: " << id << ", "
                 << "TOA: " << hitTime << "ns } ";
                 */
             if ( sample.tot_progress_ or sample.tot_complete_ ) {
@@ -77,15 +78,20 @@ namespace ldmx {
                 std::cout << "TOT Mode -> ";
                 int numWholeClocks{0};
                 while ( sample.tot_progress_ and numWholeClocks < digi.size() ) {
-                    numWholeClocks++;
                     sample = digi.at( numWholeClocks );
+                    numWholeClocks++;
                 }
 
-                std::cout << numWholeClocks << "*1024 + " << sample.tot_ << " -> ";
+                double tot = numWholeClocks*1024;
+                if ( numWholeClocks < digi.size() ) tot += sample.tot_;
+
+                std::cout << tot << " ns -> ";
 
                 //convert the time over threshold into a total energy deposited in the silicon
-                siEnergy = convertTOT( numWholeClocks*1024 + sample.tot_ );
-                std::cout << siEnergy << std::endl;
+                //  (time over threshold [ns]) * (rate of drain [mV/ns]) * (convert to energy [MeV/mV])
+                siEnergy = tot * drainRate_ * mV_;
+
+                std::cout << siEnergy << " MeV" << std::endl;
             } else {
                 //ADC mode of readout
                 //ADC - voltage measurement at a specific time of the pulse
@@ -148,30 +154,6 @@ namespace ldmx {
         event.add( "EcalRecHits", ecalRecHits );
     }
 
-    double EcalRecProducer::convertTOT(const int tot) const {
-
-        /**
-         * Fit retrieved from a SimEDep vs TOT plot.
-         * NOT physically motivated, will need to investigate further.
-         *
-         * Fit (for TOT > 3000):
-         *    Function: expo ==> exp([0]+[1]*x)
-         *    EDM=1.27359e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
-         *    EXT PARAMETER                                   STEP         FIRST   
-         *    NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-         *     1  Constant    -1.36729e+01   1.91947e-03   3.15252e-05  -6.27332e-01
-         *     2  Slope        2.41246e-03   3.53378e-07   5.80385e-09  -1.99549e+03
-         * Roughly flattens out (within uncertainty) to ~5e-2MeV when TOT < 3000
-         *
-         * For TOT < 3000:
-         *   Just assume a linear line from (0,0) to (3000, 1e-2)
-         *   This is discontinuous!
-         */
-
-        if ( tot > 3000 ) return exp( -1.36729e1 + 2.41246e-3*tot );
-        
-        return (1e-2/3000)*tot;
-    }
 }
 
 DECLARE_PRODUCER_NS(ldmx, EcalRecProducer);

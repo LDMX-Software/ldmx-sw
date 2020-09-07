@@ -56,6 +56,13 @@ namespace ldmx {
         noiseGenerator_->setPedestal(gain_*pedestal_); //mean noise amplitude (if using Gaussian Model for the noise) in mV
         noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in mV
 
+        //The noise injector is used to place smearing on top
+        //of energy depositions and hit times before doing
+        //the digitization procedure.
+        int seed = ps.getParameter<int>("randomSeed");
+        noiseInjector_ = std::make_unique<TRandom3>(seed);
+        noiseGenerator_->setSeed(seed);
+
     }
 
     void EcalDigiProducer::produce(Event& event) {
@@ -113,9 +120,9 @@ namespace ldmx {
                 //making sure that it is in an empty channel
                 int noiseID;
                 do {
-                    int layerID = noiseInjector_->Integer(nEcalLayers_);
-                    int moduleID= noiseInjector_->Integer(nModulesPerLayer_);
-                    int cellID  = noiseInjector_->Integer(nCellsPerModule_);
+                    int layerID  = noiseInjector_->Integer(nEcalLayers_);
+                    int moduleID = noiseInjector_->Integer(nModulesPerLayer_);
+                    int cellID   = noiseInjector_->Integer(nCellsPerModule_);
 		            detID=EcalID(layerID, moduleID, cellID);
                     noiseID = detID.raw();
                 } while ( filledDetIDs.find( noiseID ) != filledDetIDs.end() );
