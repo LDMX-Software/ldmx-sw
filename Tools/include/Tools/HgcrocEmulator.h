@@ -57,7 +57,7 @@ namespace ldmx {
              * - Configure the pulse to have the calculated voltage amplitude as its
              *   peak and the simulated hit time as the time of its peak [ns]
              * - Determine what readout mode the ROC will choose:
-             *   - Amplitude < readoutThreshold_ : skip the hit
+             *   - Amplitude < readoutThreshold_ : skip the hit, return false
              *   - Amplitude < totThreshold_ : ADC Mode (described below)
              *   - Amplitude > totThreshold_ : TOT Mode (described below)
              *
@@ -82,18 +82,15 @@ namespace ldmx {
              * to false for all the samples.
              *
              * #### TOT Mode
-             * Here, we measure the time that the pulse is over totThreshold_.
-             * We calculate the TOT by measuring the TOA by seeing when the
-             * pulse crosses totThreshold before the peak and by measuring
-             * time under threshold (TUT) by measuring when the pulse crosses
-             * under totThreshold_ after the peak.
+             * Here, we measure how long the chip is in saturation.
+             * This is calculated using the drain rate and assuming
+             * a linear drain of the voltage off of the chip.
              *
-             * @note In reality, the pulse shape changes drastically when
-             * the chip electronics are saturated, so this is not a very
-             * realistic method of digitization.
+             * Thus, TOT = pulse peak / drain rate
+             * and TOA is calculated as before, seeing when the 
+             * pulse crossed the TOA threshold.
              *
-             * @todo Improve the TOT method of digitization by incorporating
-             * the more linear response when saturated.
+             * @TODO What do the ADC measurements look like during the TOT measurment?
              *
              * The TOT is then converted into the samples using the following
              * algorithm. Beginning at the first sample,
@@ -183,6 +180,9 @@ namespace ldmx {
 
             /// Measurement time relative to clock cycle [ns]
             double measTime_;
+
+            /// Rate that charge drains off HGC ROC after being saturated [mV/ns]
+            double drainRate_;
 
             /// Conversion from time [ns] to counts
             double ns_;
