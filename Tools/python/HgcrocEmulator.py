@@ -18,6 +18,7 @@ class HgcrocEmulator() :
     readoutThreshold : float
     toaThreshold : float
     totThreshold : float
+    drainRate : float
     """
 
     def __init__(self) :
@@ -32,6 +33,7 @@ class HgcrocEmulator() :
         self.maxADCRange = 320. #fC <- setting of HGCROC
         self.nADCs = 10 
         self.iSOI  = 0 
+        self.drainRate = 1. #mV / ns
         self.rateUpSlope =  -0.345
         self.timeUpSlope = 70.6547
         self.rateDnSlope = 0.140068
