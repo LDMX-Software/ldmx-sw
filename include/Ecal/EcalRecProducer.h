@@ -43,7 +43,6 @@ namespace ldmx {
 
             /**
              * Destructor
-             * Deletes hanging pointers if they exist
              */
             virtual ~EcalRecProducer();
 
@@ -55,21 +54,12 @@ namespace ldmx {
             /**
              * Produce EcalHits and put them into the event bus using the
              * EcalDigis as input.
+             *
+             * This function unfolds the digi samples taken by the HGC ROC
+             * and reconstructs their energy using knowledge of how
+             * the chip operates and the position using EcalHexReadout.
              */
             virtual void produce(Event& event);
-
-        private:
-
-            /**
-             * Convert TOT from digis to a reconstructed energy deposited in the Silicon.
-             *
-             * We construct this conversion by fitting the plot of TOT vs Sim Energy Dep.
-             * The choice of fit and different scalings pre- or post- fit may have a large effect and should be studied.
-             *
-             * @param tot tot to convert
-             * @return converted silicon energy
-             */
-            double convertTOT(const int tot) const;
 
         private:
 
@@ -90,6 +80,9 @@ namespace ldmx {
 
             /// Length of clock cycle [ns]
             double clockCycle_;
+
+            /// Rate that voltage drains off chip after saturation [mV/ns]
+            double drainRate_;
 
             /// Conversion from voltage [mV] to energy [MeV]
             double mV_;
@@ -116,7 +109,8 @@ namespace ldmx {
 
             /**
              * Helper Instance of EcalHexReadout:
-             * performs real space x,y postion <-> module,cell ID translation
+             *
+             * performs real space postion <-> ID translation
              */
             std::unique_ptr<EcalHexReadout> ecalHexReadout_;
 
