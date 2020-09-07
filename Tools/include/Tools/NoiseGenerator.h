@@ -54,6 +54,9 @@ namespace ldmx {
 
             /** Set the pedestal. */
             void setPedestal(double pedestal) { pedestal_ = pedestal; }; 
+
+            /** Set the random seed. */
+            void setSeed(int seed) { random_->SetSeed(seed); }
         
         private:
 
