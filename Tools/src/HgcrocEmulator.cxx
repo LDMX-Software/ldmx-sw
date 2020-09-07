@@ -1,8 +1,6 @@
 
 #include "Tools/HgcrocEmulator.h"
 
-#include "DetDescr/EcalDetectorID.h"
-
 #include <time.h>
 
 namespace ldmx { 
@@ -25,6 +23,7 @@ namespace ldmx {
         timingJitter_     = ps.getParameter<double>("timingJitter");
         clockCycle_       = ps.getParameter<double>("clockCycle");
         measTime_         = ps.getParameter<double>("measTime");
+        drainRate_        = ps.getParameter<double>("drainRate");
         rateUpSlope_      = ps.getParameter<double>("rateUpSlope");
         timeUpSlope_      = ps.getParameter<double>("timeUpSlope");
         rateDnSlope_      = ps.getParameter<double>("rateDnSlope");
@@ -126,34 +125,32 @@ namespace ldmx {
         } else {
             // above TOT threshold -> do TOT readout mode
 
-            //measure time of arrival (TOA) and time under threshold (TUT) from pulse
-            //  TOA: earliest possible measure for crossing TOT threshold line
-            //  TUT: latest possible measure for crossing TOT threshold line
-            //TODO make the TOT measurement more realistic
-            //  in reality, the pulse drastically changes shape when the chip goes
-            //  into saturation. The charge draining after saturation slows down
-            //  and makes the TOT <-> energy deposited conversion closer to linear
+            // Measure Time Over Threshold (TOT) by using the drain rate.
+            //      1. Use drain rate to see how long it takes for the voltage to drain off
+            //      2. Translate this into DIGI samples
             if (verbose_) std::cout << "TOT Mode { ";
+
+            // Assume linear drain with slope drain rate:
+            //      y-intercept = pulse amplitude
+            //      slope       = drain rate
+            //  ==> x-intercept = amplitude / rate
+            double tot = pulsePeak / drainRate_;
 
             double toa(0.); //default is earliest possible time
             // check if first half is just always above readout
             if ( measurePulse(0.,false) < totThreshold_ ) 
                 toa = pulseFunc_.GetX(totThreshold_-gain_*pedestal_, 0., timeInWindow);
 
-            double tut(nADCs_*clockCycle_); //default is latest possible time
-            // check if second half is just always above readout
-            if ( pulseFunc_.Eval( nADCs_*clockCycle_ ) < totThreshold_ )
-                tut = pulseFunc_.GetX(totThreshold_-gain_*pedestal_, timeInWindow, nADCs_*clockCycle_);
-
-            double tot = tut - toa;
-
             if (verbose_) std::cout << "TOA: " << toa << "ns, ";
             if (verbose_) std::cout << "TOT: " << tot << "ns} " << std::endl;
 
+            //Notice that if tot > max time = digiToAdd.size()*clockCycle_, 
+            //  this will return just the max time
             for ( unsigned int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
                 if ( tot > clockCycle_ or tot < 0 ) {
                     //TOT still in progress or already completed
                     double measTime = iADC*clockCycle_ + measTime_;
+                    //TODO what does the pulse ADC measurement look like during TOT
                     digiToAdd[iADC].adc_t_   = measurePulse( measTime, noise_ )/gain_;
                     digiToAdd[iADC].tot_progress_ = true;
                     digiToAdd[iADC].tot_complete_ = false;
