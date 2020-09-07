@@ -43,10 +43,6 @@ namespace ldmx {
         //loop through digis
         for ( unsigned int iDigi = 0; iDigi < numDigiHits; iDigi++ ) {
             
-            //Right now, hard-coded to only use one sample in EcalDigiProducer
-            //TODO: expand to multiple samples per digi
-
-            EcalDigiSample sample = (ecalDigis.getDigi( iDigi )).at(0);
             auto digi = ecalDigis.getDigi( iDigi );
 
             //Get location and time from first digi sample

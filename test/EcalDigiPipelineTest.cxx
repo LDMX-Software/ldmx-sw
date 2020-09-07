@@ -41,7 +41,7 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
         //TODO test several contribs
         //  right now, not a big deal because we just do an energy weight average anyways
         SimCalorimeterHit currHit;
-	EcalID id(0,1,index++);
+        EcalID id(0,1,index++);
         currHit.setID( id.raw() );
         currHit.addContrib(
                 -1 //incidentID
@@ -59,7 +59,6 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
 
     std::map<std::string,std::any> actualParameters;
     EcalDigiProducer digis( "testDigis" , dummyProcess );
-    std::map< std::string , std::any > actualParameters;
     actualParameters[ "randomSeed" ] = 1;
     actualParameters[ "gain" ] = 2000.;
     actualParameters[ "pedestal" ] = 1100.;
