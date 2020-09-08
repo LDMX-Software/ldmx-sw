@@ -1,7 +1,7 @@
 
 #include "Tools/HgcrocEmulator.h"
 
-#include <time.h>
+#include <cmath>
 
 namespace ldmx { 
 
@@ -128,7 +128,7 @@ namespace ldmx {
             // Measure Time Over Threshold (TOT) by using the drain rate.
             //      1. Use drain rate to see how long it takes for the voltage to drain off
             //      2. Translate this into DIGI samples
-            if (verbose_) std::cout << "TOT Mode { ";
+            /*if (verbose_)*/ std::cout << "TOT Mode { ";
 
             // Assume linear drain with slope drain rate:
             //      y-intercept = pulse amplitude
@@ -141,29 +141,33 @@ namespace ldmx {
             if ( measurePulse(0.,false) < totThreshold_ ) 
                 toa = pulseFunc_.GetX(totThreshold_-gain_*pedestal_, 0., timeInWindow);
 
-            if (verbose_) std::cout << "TOA: " << toa << "ns, ";
-            if (verbose_) std::cout << "TOT: " << tot << "ns} " << std::endl;
+            /*if (verbose_)*/ std::cout << "TOA: " << toa << "ns, ";
+            /*if (verbose_)*/ std::cout << "TOT: " << tot << "ns, ";
+
+            int num_whole_clocks = int( tot / clockCycle_ );
+            double tot_in_last_sample = tot - num_whole_clocks*clockCycle_;
 
             //Notice that if tot > max time = digiToAdd.size()*clockCycle_, 
             //  this will return just the max time
             for ( unsigned int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
-                if ( tot > clockCycle_ or tot < 0 ) {
+                if ( iADC == num_whole_clocks ) {
+                    //TOT complete
+                    digiToAdd[iADC].tot_     = tot_in_last_sample*ns_;
+                    digiToAdd[iADC].tot_progress_ = false;
+                    digiToAdd[iADC].tot_complete_ = true;
+                    /*if (verbose_)*/ std::cout << iADC << " samples plus " << tot_in_last_sample << " }";
+                } else {
                     //TOT still in progress or already completed
                     double measTime = iADC*clockCycle_ + measTime_;
                     //TODO what does the pulse ADC measurement look like during TOT
                     digiToAdd[iADC].adc_t_   = measurePulse( measTime, noise_ )/gain_;
-                    digiToAdd[iADC].tot_progress_ = true;
+                    digiToAdd[iADC].tot_progress_ = (iADC < num_whole_clocks);
                     digiToAdd[iADC].tot_complete_ = false;
-                } else {
-                    //TOT complete
-                    digiToAdd[iADC].tot_     = tot*ns_;
-                    digiToAdd[iADC].tot_progress_ = false;
-                    digiToAdd[iADC].tot_complete_ = true;
-                }
+                } 
                 digiToAdd[iADC].toa_     = toa*ns_;
                 digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : pedestal_;
-                tot -= clockCycle_; //decrement TOT
             }
+            /*if (verbose_)*/ std::cout << std::endl;
 
         } //where is the amplitude of the hit w.r.t. readout and TOT thresholds
 
