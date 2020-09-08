@@ -8,6 +8,19 @@ project(Framework VERSION 2.1.0
                   LANGUAGES CXX
 )
 
+# Search for the Python3 library
+find_package (Python3 COMPONENTS Interpreter Development)
+
+# Search for Boost
+find_package(Boost REQUIRED COMPONENTS system log filesystem thread chrono atomic regex)
+
+# Search and configure ROOT
+find_package(ROOT 6.16 CONFIG REQUIRED)
+
+# Generate the ROOT dictionary.  The following allows the use of the macro 
+# used to generate the dictionary. 
+include("${ROOT_DIR}/RootMacros.cmake")
+
 # Execute the command to extract the SHA1 hash of the current git tag. 
 # The variable GIT_SHA1 will be set to contain the hash. 
 execute_process (
@@ -26,27 +39,47 @@ configure_file(
 )
 install(FILES ${PROJECT_SOURCE_DIR}/include/Framework/Version.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Framework/)
 
-# Register both the event and run headers
+# Register both the event and run headers with the event bus and ROOT dictionary
 register_event_object( namespace "ldmx" class "EventHeader")
 register_event_object( namespace "ldmx" class "RunHeader" type "dict_only" )
 
+# Build the event bus from the registered event objects
 build_event_bus()
 
-# Search for the Python3 library
-find_package (Python3 COMPONENTS Interpreter Development)
+# Build the ROOT dictionary from registered event objects
+build_dict(template ${PROJECT_SOURCE_DIR}/include/Framework/EventLinkDef.h.in
+           namespace ldmx)
 
-# Search and configure ROOT
-find_package(ROOT 6.16 CONFIG REQUIRED)
 
-# Search for Boost
-find_package(Boost REQUIRED COMPONENTS system log filesystem thread chrono atomic regex)
+# Unfortunately, the headers need to be included globably for the 
+# dictionary to be generated correctly. 
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+# Copy the files needed to generate the dictionary over to the installation 
+# directory.  This is needed so the dictionary can be built even when the 
+# source code is deleted.
+file(COPY ${PROJECT_SOURCE_DIR}/include/Framework/EventDef.h 
+          ${PROJECT_SOURCE_DIR}/include/Framework/EventLinkDef.h
+     DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Frameowork/
+)
+
+# Generate the ROOT dictionary
+root_generate_dictionary(EventDic ${CMAKE_INSTALL_PREFIX}/include/Framework/EventDef.h
+    LINKDEF ${CMAKE_INSTALL_PREFIX}/include/Framework/EventLinkDef.h)
+
+
+# Install ROOT pcm file
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventDic_rdict.pcm DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
+# Need to define the sources here because of the addition of EventDic
+file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
 
 # Setup the library
 setup_library(name Framework
               dependencies Python3::Python 
                            ROOT::Core ROOT::Hist ROOT::TreePlayer
-                           #DARK::Event 
                            Boost::log Boost::atomic Boost::regex
+              sources EventDic.cxx ${SRC_FILES}
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
