@@ -46,12 +46,9 @@ namespace ldmx {
             
             auto digi = ecalDigis.getDigi( iDigi );
 
-            //Get location and time from first digi sample
-            auto sample = digi.at(0);
-            
             //ID from first digi sample
             //  assuming rest of samples have same ID
-            EcalID id(sample.rawID_);
+            EcalID id(digi.at(0).rawID_);
             
             //ID to real space position
             double x,y,z;
@@ -59,7 +56,7 @@ namespace ldmx {
             
             //TOA is the time of arrival with respect to the 25ns clock window
             //  TODO what to do if hit NOT in first clock cycle?
-            double timeRelClock25 = sample.toa_*(clockCycle_/1024); //ns
+            double timeRelClock25 = digi.at(0).toa_*(clockCycle_/1024); //ns
             double hitTime = timeRelClock25;
 
             //get energy estimate from all digi samples
@@ -70,22 +67,25 @@ namespace ldmx {
                 << "ID: " << id << ", "
                 << "TOA: " << hitTime << "ns } ";
                 */
-            if ( sample.tot_progress_ or sample.tot_complete_ ) {
+            if ( digi.at(0).tot_progress_ or digi.at(0).tot_complete_ ) {
                 //TOT - number of clock ticks that pulse was over threshold
                 //  this is related to the amplitude of the pulse through some convoluted relation using the pulse shape
                 //  the amplitude of the pulse is related to the energy deposited
 
                 std::cout << "TOT Mode -> ";
                 int numWholeClocks{0};
-                while ( sample.tot_progress_ and numWholeClocks < digi.size() ) {
-                    sample = digi.at( numWholeClocks );
-                    numWholeClocks++;
+                double extra_tot{0.};
+                for ( auto const &sample : digi ) {
+                    if ( sample.tot_progress_ ) numWholeClocks++;
+                    else if ( sample.tot_complete_ ) {
+                        extra_tot = sample.tot_*(clockCycle_/1024);
+                        break;
+                    }
                 }
 
-                double tot = numWholeClocks*1024;
-                if ( numWholeClocks < digi.size() ) tot += sample.tot_;
+                double tot = numWholeClocks*25. + extra_tot;
 
-                std::cout << tot << " ns -> ";
+                std::cout << numWholeClocks << " samples plus " << extra_tot << " ns = " << tot << " ns -> ";
 
                 //convert the time over threshold into a total energy deposited in the silicon
                 //  (time over threshold [ns]) * (rate of drain [mV/ns]) * (convert to energy [MeV/mV])
@@ -112,7 +112,7 @@ namespace ldmx {
 
                 double maxMeas{0.};
                 int numWholeClocks{0};
-                for ( auto sample : digi ) {
+                for ( auto const &sample : digi ) {
                     double voltage = (sample.adc_t_ - pedestal_)*gain_; //mV
                     if ( voltage > maxMeas ) maxMeas = voltage;
                     double time    = numWholeClocks*clockCycle_; //+ offestWithinClock; //ns
