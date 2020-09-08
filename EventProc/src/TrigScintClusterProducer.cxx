@@ -19,6 +19,7 @@ namespace ldmx {
 	  minThr_      = ps.getParameter< double >("clustering_threshold");
 	  maxWidth_      = ps.getParameter< int >("max_cluster_width");
 	  input_collection_          = ps.getParameter< std::string >("input_collection");
+	  passName_          = ps.getParameter< std::string >("input_pass_name");
 	  output_collection_         = ps.getParameter< std::string >("output_collection");
 	  verbose_                   = ps.getParameter< int >("verbosity");
 
@@ -30,6 +31,7 @@ namespace ldmx {
 						<< "\nClustering threshold: " << minThr_
 						<< "\nMax cluster width: " << maxWidth_
 						<< "\nInput collection:     " << input_collection_ 
+						<< "\nInput pass name:     " << passName_ 
 						<< "\nOutput collection:    " << output_collection_
 						<< "\nVerbosity: " << verbose_ ;
 
@@ -128,10 +130,10 @@ namespace ldmx {
     
 	  // looper over digi hits and aggregate energy depositions for each detID
     
-	  const auto digis{event.getCollection< TrigScintHit >(input_collection_)}; 
+	  const auto digis{event.getCollection< TrigScintHit >(input_collection_,passName_)}; 
 
 	  if ( verbose_) {
-		ldmx_log(debug) << "Got digi collection " << input_collection_ << " with " << digis.size() << " entries ";
+		ldmx_log(debug) << "Got digi collection " << input_collection_ << "_" << passName_ << " with " << digis.size() << " entries ";
 	  }
 
 

@@ -63,11 +63,14 @@ namespace ldmx {
 	  //specific verbosity of this producer
       int verbose_{0}; 
 
-	//input collection (hits)
-      	std::string input_collection_;
+	  //input collection (hits)
+	  std::string input_collection_;
 
 	  //output collection (clusters)
       std::string output_collection_;
+
+	  //specific pass name to use for track making 
+	  std::string passName_{""};
 
 	  //cluster channel nb centroid (will be content weighted)
       float centroid_{0.};

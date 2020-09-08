@@ -31,8 +31,9 @@ namespace ldmx {
 		  ldmx_log(info)<< "Got parameters: \nSeeding:   " << seeding_collection_ 
 					<< "\nTolerance: " << maxDelta_
 					<< "\nInput:     " << input_collections_.at(0) << " and " <<  input_collections_.at(1)
+					<< "\nInput pass name:     " << passName_ 
 					<< "\nOutput:    " << output_collection_
-						<< "\nVerbosity: " << verbose_ ;
+					<< "\nVerbosity: " << verbose_ ;
 		}
     
 
