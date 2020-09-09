@@ -62,6 +62,9 @@ namespace ldmx {
 
             //get energy estimate from all digi samples
             double siEnergy(0.);
+
+            //is this hit a noise hit?
+            bool yes_noise{false};
             
             /**
             std::cout << "Recon { "
