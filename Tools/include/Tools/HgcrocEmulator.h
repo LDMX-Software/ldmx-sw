@@ -61,7 +61,7 @@ namespace ldmx {
              *   - Amplitude < totThreshold_ : ADC Mode (described below)
              *   - Amplitude > totThreshold_ : TOT Mode (described below)
              *
-             * @todo Allow for the user to choose a sample of interest (iSOI_)
+             * @TODO Allow for the user to choose a sample of interest (iSOI_)
              * other than zero. This should shift which sample the peak of
              * the pulse is placed in.
              *
@@ -92,16 +92,19 @@ namespace ldmx {
              *
              * @TODO What do the ADC measurements look like during the TOT measurment?
              *
-             * The TOT is then converted into the samples using the following
-             * algorithm. Beginning at the first sample,
-             * if TOT > clockCycle_ or TOT < 0. :
-             *      insert an ADC sample where the tot_progress flag is set to true
-             *      decrement TOT by clockCycle_
-             * else :
-             *      insert the TOT measurement
+             * The TOT is then converted into the samples using the following algorithm.
+             *
+             *  1. Calculate the number of clock cycles it would take for the TOT to be measured
+             *  2. Convert the TOT measurement [ns] to TDC counts using totMax and the internal 12 bits
+             *  3. Convert TDC counts (12 bits) to the 10 bit sample using
+             *     - if ( TDC > 512 ) ten_bit_sample = TDC
+             *     - else ten_bit_sample = 512 + TDC/8
+             *  4. Insert the ten_bit_sample into the correct sample using the index above
+             *  5. Set the other samples to normal ADC measurements, 
+             *     using the flags to show if TOT is in progress or not
              *
              * #### Pulse Measurement
-             * All "measurements" of the pulse use the lambda function measurePulse.
+             * All "measurements" of the pulse use the member function measurePulse.
              * This function incorporate the pedestal_ and optionally includes noise
              * according to noiseRMS_.
              *
@@ -183,6 +186,9 @@ namespace ldmx {
 
             /// Rate that charge drains off HGC ROC after being saturated [mV/ns]
             double drainRate_;
+
+            /// Maximum TOT measured by chip [ns]
+            double totMax_;
 
             /// Conversion from time [ns] to counts
             double ns_;

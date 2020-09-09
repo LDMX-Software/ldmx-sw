@@ -1,8 +1,6 @@
 
 #include "Tools/HgcrocEmulator.h"
 
-#include <cmath>
-
 namespace ldmx { 
 
     HgcrocEmulator::HgcrocEmulator(const Parameters& ps) {
@@ -24,6 +22,7 @@ namespace ldmx {
         clockCycle_       = ps.getParameter<double>("clockCycle");
         measTime_         = ps.getParameter<double>("measTime");
         drainRate_        = ps.getParameter<double>("drainRate");
+        totMax_           = ps.getParameter<double>("totMax");
         rateUpSlope_      = ps.getParameter<double>("rateUpSlope");
         timeUpSlope_      = ps.getParameter<double>("timeUpSlope");
         rateDnSlope_      = ps.getParameter<double>("rateDnSlope");
@@ -128,7 +127,6 @@ namespace ldmx {
             // Measure Time Over Threshold (TOT) by using the drain rate.
             //      1. Use drain rate to see how long it takes for the voltage to drain off
             //      2. Translate this into DIGI samples
-            /*if (verbose_)*/ std::cout << "TOT Mode { ";
 
             // Assume linear drain with slope drain rate:
             //      y-intercept = pulse amplitude
@@ -141,33 +139,47 @@ namespace ldmx {
             if ( measurePulse(0.,false) < totThreshold_ ) 
                 toa = pulseFunc_.GetX(totThreshold_-gain_*pedestal_, 0., timeInWindow);
 
-            /*if (verbose_)*/ std::cout << "TOA: " << toa << "ns, ";
-            /*if (verbose_)*/ std::cout << "TOT: " << tot << "ns, ";
-
+            // calculate the index that tot will complete on
             int num_whole_clocks = int( tot / clockCycle_ );
-            double tot_in_last_sample = tot - num_whole_clocks*clockCycle_;
+
+            // calculate the TDC counts for this tot measurement
+            //  internally, the chip uses 12 bits (2^12 = 4096)
+            //  to measure a maximum of tot Max [ns]
+            int tdc_counts = int( tot * 4096 / totMax_ );
+
+            // the output tot counts are packed into 10 bits (from 12 bits)
+            //  by checking if it is above 512 (2^9)
+            int ten_bit_sample = tdc_counts;
+            if ( tdc_counts > 512 ) ten_bit_sample = 512 + tdc_counts/8;
+
+            /*if (verbose_)*/ {
+                std::cout << "TOT Mode { "
+                    << "TOA: " << toa << " ns, "
+                    << "TOT: " << tot << " ns, "
+                    << "TDC: " << tdc_counts << ", "
+                    << "10 Bit: " << ten_bit_sample << " ] "
+                    << std::endl;
+            }
 
             //Notice that if tot > max time = digiToAdd.size()*clockCycle_, 
             //  this will return just the max time
             for ( unsigned int iADC = 0; iADC < digiToAdd.size(); iADC++ ) {
                 if ( iADC == num_whole_clocks ) {
                     //TOT complete
-                    digiToAdd[iADC].tot_     = tot_in_last_sample*ns_;
+                    digiToAdd[iADC].tot_ = ten_bit_sample;
                     digiToAdd[iADC].tot_progress_ = false;
                     digiToAdd[iADC].tot_complete_ = true;
-                    /*if (verbose_)*/ std::cout << iADC << " samples plus " << tot_in_last_sample << " }";
                 } else {
                     //TOT still in progress or already completed
                     double measTime = iADC*clockCycle_ + measTime_;
                     //TODO what does the pulse ADC measurement look like during TOT
-                    digiToAdd[iADC].adc_t_   = measurePulse( measTime, noise_ )/gain_;
+                    digiToAdd[iADC].adc_t_ = measurePulse( measTime, noise_ )/gain_;
                     digiToAdd[iADC].tot_progress_ = (iADC < num_whole_clocks);
                     digiToAdd[iADC].tot_complete_ = false;
                 } 
                 digiToAdd[iADC].toa_     = toa*ns_;
                 digiToAdd[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.at(iADC-1).adc_t_ : pedestal_;
             }
-            /*if (verbose_)*/ std::cout << std::endl;
 
         } //where is the amplitude of the hit w.r.t. readout and TOT thresholds
 

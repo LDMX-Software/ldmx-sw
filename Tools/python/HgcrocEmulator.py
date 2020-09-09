@@ -33,7 +33,8 @@ class HgcrocEmulator() :
         self.maxADCRange = 320. #fC <- setting of HGCROC
         self.nADCs = 10 
         self.iSOI  = 0 
-        self.drainRate = 25. * (self.calculateVoltage( 37000. ) / 0.130) / (10*25) #mV / ns
+        self.totMax = 200. #ns - maximum TOT allowed by chip
+        self.drainRate = 4000. / self.readoutPadCapacitance / self.totMax #mV / ns - maximum charge dep [fC] / pad capacitance [pF] / tot max [ns]
         self.rateUpSlope =  -0.345
         self.timeUpSlope = 70.6547
         self.rateDnSlope = 0.140068
