@@ -80,7 +80,7 @@ namespace ldmx {
                     if ( sample.tot_complete_ ) {
                         //unpack 10 bit tot into 12 bit
                         if ( sample.tot_ < 512 ) tdc = sample.tot_;
-                        else tdc = 512 + (sample.tot_-512)*8;
+                        else tdc = (sample.tot_-512)*8;
                         break;
                     }
                 }
