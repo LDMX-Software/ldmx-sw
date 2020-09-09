@@ -84,6 +84,9 @@ namespace ldmx {
             /// Rate that voltage drains off chip after saturation [mV/ns]
             double drainRate_;
 
+            /// Maximum TOT measured by the chip [ns]
+            double totMax_;
+
             /// Conversion from voltage [mV] to energy [MeV]
             double mV_;
 

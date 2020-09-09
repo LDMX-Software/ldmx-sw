@@ -33,6 +33,7 @@ namespace ldmx {
         gain_        = hgcrocParams.getParameter<double>( "gain" );
         clockCycle_  = hgcrocParams.getParameter<double>( "clockCycle" );
         drainRate_   = hgcrocParams.getParameter<double>( "drainRate" );
+        totMax_      = hgcrocParams.getParameter<double>( "totMax" );
 
     }
 
@@ -69,23 +70,26 @@ namespace ldmx {
                 */
             if ( digi.at(0).tot_progress_ or digi.at(0).tot_complete_ ) {
                 //TOT - number of clock ticks that pulse was over threshold
-                //  this is related to the amplitude of the pulse through some convoluted relation using the pulse shape
+                //  this is related to the amplitude of the pulse approximately through a linear drain rate
                 //  the amplitude of the pulse is related to the energy deposited
 
                 std::cout << "TOT Mode -> ";
                 int numWholeClocks{0};
-                double extra_tot{0.};
+                int tdc{-1}; //look for tdc counts
                 for ( auto const &sample : digi ) {
-                    if ( sample.tot_progress_ ) numWholeClocks++;
-                    else if ( sample.tot_complete_ ) {
-                        extra_tot = sample.tot_*(clockCycle_/1024);
+                    if ( sample.tot_complete_ ) {
+                        //unpack 10 bit tot into 12 bit
+                        if ( sample.tot_ < 512 ) tdc = sample.tot_;
+                        else tdc = 512 + (sample.tot_-512)*8;
                         break;
                     }
                 }
+                //tdc was not set, set it to the maximum
+                if ( tdc < 0 ) tdc = 4096;
 
-                double tot = numWholeClocks*25. + extra_tot;
+                double tot = ( double(tdc)/4096. ) * totMax_;
 
-                std::cout << numWholeClocks << " samples plus " << extra_tot << " ns = " << tot << " ns -> ";
+                std::cout << tdc << " TDC Counts -> " << tot << " ns -> ";
 
                 //convert the time over threshold into a total energy deposited in the silicon
                 //  (time over threshold [ns]) * (rate of drain [mV/ns]) * (convert to energy [MeV/mV])
