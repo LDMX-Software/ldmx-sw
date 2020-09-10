@@ -49,7 +49,7 @@ namespace ldmx {
 
             //ID from first digi sample
             //  assuming rest of samples have same ID
-            EcalID id(digi.at(0).rawID_);
+            EcalID id(digi.id_);
             
             //ID to real space position
             double x,y,z;
@@ -57,7 +57,7 @@ namespace ldmx {
             
             //TOA is the time of arrival with respect to the 25ns clock window
             //  TODO what to do if hit NOT in first clock cycle?
-            double timeRelClock25 = digi.at(0).toa_*(clockCycle_/1024); //ns
+            double timeRelClock25 = digi.samples_.at(0).toa_*(clockCycle_/1024); //ns
             double hitTime = timeRelClock25;
 
             //get energy estimate from all digi samples
@@ -71,25 +71,14 @@ namespace ldmx {
                 << "ID: " << id << ", "
                 << "TOA: " << hitTime << "ns } ";
                 */
-            if ( digi.at(0).tot_progress_ or digi.at(0).tot_complete_ ) {
+            if ( digi.isTOT() ) {
                 //TOT - number of clock ticks that pulse was over threshold
                 //  this is related to the amplitude of the pulse approximately through a linear drain rate
                 //  the amplitude of the pulse is related to the energy deposited
 
                 std::cout << "TOT Mode -> ";
-                int numWholeClocks{0};
-                int tdc{-1}; //look for tdc counts
-                for ( auto const &sample : digi ) {
-                    if ( sample.tot_complete_ ) {
-                        //unpack 10 bit tot into 12 bit
-                        if ( sample.tot_ < 512 ) tdc = sample.tot_;
-                        else tdc = (sample.tot_-512)*8;
-                        break;
-                    }
-                }
-                //tdc was not set, set it to the maximum
-                if ( tdc < 0 ) tdc = 4096;
 
+                int tdc = digi.tot();
                 double tot = ( double(tdc)/4096. ) * totMax_;
 
                 std::cout << tdc << " TDC Counts -> " << tot << " ns -> ";
@@ -119,8 +108,8 @@ namespace ldmx {
 
                 double maxMeas{0.};
                 int numWholeClocks{0};
-                for ( auto const &sample : digi ) {
-                    double voltage = (sample.adc_t_ - pedestal_)*gain_; //mV
+                for ( auto const &s : digi.samples_ ) {
+                    double voltage = (s.adc_t_ - pedestal_)*gain_; //mV
                     if ( voltage > maxMeas ) maxMeas = voltage;
                     double time    = numWholeClocks*clockCycle_; //+ offestWithinClock; //ns
                     voltageMeasurements.Fill( time , voltage );

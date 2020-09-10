@@ -95,9 +95,8 @@ namespace ldmx {
             int hitID = simHit.getID();
             filledDetIDs.insert( hitID );
             //std::cout << hitID << " ";
-            std::vector<HgcrocDigiCollection::Sample> digiToAdd;
-            if ( hgcroc_->digitize( voltages , times , digiToAdd ) ) {
-                for ( auto& sample : digiToAdd ) sample.rawID_ = hitID;
+            HgcrocDigiCollection::HgcrocDigi digiToAdd;
+            if ( hgcroc_->digitize( hitID , voltages , times , digiToAdd ) ) {
                 ecalDigis.addDigi( digiToAdd );
             }
         }
@@ -109,7 +108,6 @@ namespace ldmx {
             //std::cout << "Noise Hits" << std::endl;
             //put noise into some empty channels
             int numEmptyChannels = nTotalChannels_ - ecalDigis.getNumDigis(); //minus number of channels with a hit
-            EcalID detID;
             //noise generator gives us a list of noise amplitudes [mV] that randomly populate the empty
             //channels and are above the readout threshold
             auto noiseHitAmplitudes{noiseGenerator_->generateNoiseHits(numEmptyChannels)};
@@ -123,7 +121,7 @@ namespace ldmx {
                     int layerID  = noiseInjector_->Integer(nEcalLayers_);
                     int moduleID = noiseInjector_->Integer(nModulesPerLayer_);
                     int cellID   = noiseInjector_->Integer(nCellsPerModule_);
-		            detID=EcalID(layerID, moduleID, cellID);
+		            auto detID=EcalID(layerID, moduleID, cellID);
                     noiseID = detID.raw();
                 } while ( filledDetIDs.find( noiseID ) != filledDetIDs.end() );
                 filledDetIDs.insert( noiseID );
@@ -136,9 +134,8 @@ namespace ldmx {
                 //  we need to convert it to the amplitdue above the pedestal
                 voltages[0] = noiseHit + readoutThreshold_ - gain_*pedestal_;
     
-                std::vector<HgcrocDigiCollection::Sample> digiToAdd;
-                if ( hgcroc_->digitize( voltages , times , digiToAdd ) ) {
-                    for ( auto& sample : digiToAdd ) sample.rawID_ = noiseID;
+                HgcrocDigiCollection::HgcrocDigi digiToAdd;
+                if ( hgcroc_->digitize( noiseID , voltages , times , digiToAdd ) ) {
                     ecalDigis.addDigi( digiToAdd );
                 }
             } //loop over noise amplitudes
