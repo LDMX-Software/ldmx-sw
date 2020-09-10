@@ -108,14 +108,16 @@ namespace ldmx {
              * This function incorporate the pedestal_ and optionally includes noise
              * according to noiseRMS_.
              *
+             * @param[in] channelID raw integer ID for this readout channel
              * @param[in] voltages list of voltage amplitudes going into the chip
              * @param[in] times list of times corresponding to those voltage amplitudes
              * @param[out] digiToAdd digi that will be filled with the samples from the chip
              * @return true if digis were constructed (false if hit was below readout)
              */
-            bool digitize( const std::vector<double> &voltages, 
+            bool digitize( const int &channelID,
+                    const std::vector<double> &voltages, 
                     const std::vector<double> &times, 
-                    std::vector<HgcrocDigiCollection::Sample> &digiToAdd ) const;
+                    HgcrocDigiCollection::HgcrocDigi &digiToAdd ) const;
         
         private:
 

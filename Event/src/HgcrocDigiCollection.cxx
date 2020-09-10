@@ -11,10 +11,6 @@ namespace ldmx {
 
     int32_t HgcrocDigiCollection::Sample::encode() const {
 
-        int32_t word;
-
-        //this is where the measurements --> word translation occurs
-
         //choose which measurements to put into first and second positions
         //  based off of the flags passed
         int firstMeas(0), seconMeas(0);
@@ -23,7 +19,10 @@ namespace ldmx {
             seconMeas = adc_t_;
         } else if ( not tot_progress_ and tot_complete_ ) {
             firstMeas = adc_tm1_;
-            seconMeas = tot_;
+            //the 12 bit internal tot measurement needs to 
+            //  be packed into a 10 bit int
+            if ( tot_ < 512 ) seconMeas = tot_;
+            else seconMeas = 512 + tot_/8; //lose some precision, but can go higher
         } else /* both flags true */ {
             firstMeas = adc_t_;
             seconMeas = tot_;
@@ -32,7 +31,7 @@ namespace ldmx {
         //check if over largest number possible ==> set to largest if over (don't want wrapping)
         //and then do bit shifting nonsense to code the measurements into the 32-bit word
         //set last measurement to TOA
-        word = (tot_progress_ << FIRSTFLAG_POS) 
+        int32_t word = (tot_progress_ << FIRSTFLAG_POS) 
              + (tot_complete_ << SECONFLAG_POS) 
              + ( (( firstMeas > TEN_BIT_MASK ? TEN_BIT_MASK : firstMeas) & TEN_BIT_MASK) << FIRSTMEAS_POS ) 
              + ( (( seconMeas > TEN_BIT_MASK ? TEN_BIT_MASK : seconMeas) & TEN_BIT_MASK) << SECONMEAS_POS ) 
@@ -66,11 +65,17 @@ namespace ldmx {
         } else if ( not tot_progress_ and tot_complete_ ) {
             //TOT measurement completed, output it
             adc_tm1_ = firstMeas;
-            tot_     = seconMeas;
+            //The tot measurement needs to be converted from a packed 10-bit integer
+            //  to an unpacked 12-bit integer
+            if ( seconMeas < 512 ) tot_ = seconMeas;
+            else tot_ = 8*(seconMeas-512);
         } else /* both true */ {
             //Calibration Mode
             adc_t_ = firstMeas;
-            tot_   = seconMeas;
+            //The tot measurement needs to be converted from a packed 10-bit integer
+            //  to an unpacked 12-bit integer
+            if ( seconMeas < 512 ) tot_ = seconMeas;
+            else tot_ = 8*(seconMeas-512);
         }
 
         return;
@@ -95,36 +100,30 @@ namespace ldmx {
         return;
     }
 
-    std::vector< HgcrocDigiCollection::Sample > HgcrocDigiCollection::getDigi( unsigned int digiIndex ) const {
+    HgcrocDigiCollection::HgcrocDigi HgcrocDigiCollection::getDigi( unsigned int digiIndex ) const {
         
-        std::vector< HgcrocDigiCollection::Sample > digi;
-        for ( unsigned int sampleIndex = 0; sampleIndex < this->getNumSamplesPerDigi(); sampleIndex++ ) {
-    
-            HgcrocDigiCollection::Sample sample;
-    
-            sample.rawID_ = channelIDs_.at( digiIndex );
-            sample.decode( samples_.at( digiIndex*numSamplesPerDigi_ + sampleIndex ) );
-    
-            digi.push_back( sample );
-        }
+        HgcrocDigiCollection::HgcrocDigi digi;
+        digi.id_ = channelIDs_.at( digiIndex );
+
+        for ( unsigned int sampleIndex = 0; sampleIndex < this->getNumSamplesPerDigi(); sampleIndex++ )
+            digi.samples_.emplace_back( samples_.at( digiIndex*numSamplesPerDigi_ + sampleIndex ) );
 
         return digi;
     }
 
-    void HgcrocDigiCollection::addDigi( std::vector< HgcrocDigiCollection::Sample > newSamples ) {
+    void HgcrocDigiCollection::addDigi( const HgcrocDigiCollection::HgcrocDigi &digi ) {
 
-        if ( newSamples.size() != this->getNumSamplesPerDigi() ) {
+        if ( digi.samples_.size() != this->getNumSamplesPerDigi() ) {
             std::cerr << "[ WARN ] [ HgcrocDigiCollection ] Input list of samples has size '"
-                << newSamples.size() << "' that does not match the number of samples per digi '"
+                << digi.samples_.size() << "' that does not match the number of samples per digi '"
                 << this->getNumSamplesPerDigi() << "'!." << std::endl;
             return;
         }
         
-        int channelID = newSamples.at(0).rawID_;
-        channelIDs_.push_back( channelID );
+        channelIDs_.push_back( digi.id_ );
 
-        for ( auto const &sample : newSamples )
-            samples_.push_back( sample.encode() );
+        for ( auto const &s : digi.samples_ )
+            samples_.push_back( s.encode() );
 
         return;
     }
