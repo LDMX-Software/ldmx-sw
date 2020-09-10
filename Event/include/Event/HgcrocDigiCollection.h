@@ -59,9 +59,6 @@ namespace ldmx {
              * Usually several samples are used for each channel to re-construct the hit.
              */
             struct Sample {
-                /** Raw integer ID of channel this sample is for */
-                int rawID_{-1};
-        
                 /** ADC counts in this channel at this clock */
                 int adc_t_{-1};
         
@@ -79,6 +76,18 @@ namespace ldmx {
         
                 /** Is the TOT measurement complete at this sample? */
                 bool tot_complete_{false};
+
+                /**
+                 * Helpful alternative constructor
+                 *
+                 * Decodes the sample information from the input word.
+                 */
+                Sample(int32_t word) { decode(word); }
+
+                /**
+                 * Default constructor
+                 */
+                Sample() { }
 
                 /**
                  * Encode this Sample into a 32-bit word.
@@ -114,6 +123,58 @@ namespace ldmx {
                 void decode(int32_t word);
 
             }; //Sample
+
+        public:
+
+            /**
+             * @struct HgcrocDigi
+             * One DIGI signal coming from the HGC ROC
+             *
+             * This struct stores the channel ID and
+             * the decoded samples coming from this channel
+             */
+            struct HgcrocDigi {
+
+                /// channel ID where this signal is coming from
+                int id_;
+
+                /// the decoded samples that are in this digi
+                std::vector< HgcrocDigiCollection::Sample > samples_;
+
+                /**
+                 * Check if this DIGI is an ADC measurement
+                 */
+                bool isADC() const { 
+                    for ( auto const& s : samples_ ) {
+                        if ( s.tot_progress_ or s.tot_complete_ ) return false;
+                    }
+                    return true;
+                }
+
+                /**
+                 * Check if this DIGI is a TOT measurement
+                 *
+                 * @note Just NOT an ADC measurement right now.
+                 * May need to include the callibration case in the future.
+                 */
+                bool isTOT() const { 
+                    return !isADC();
+                }
+                
+                /**
+                 * Get the 12-bit decoded TOT measurement from this DIGI
+                 */
+                int tot() const {
+                    if ( not isTOT() ) return -1;
+                    for ( auto const& s : samples_ ) {
+                        if ( s.tot_complete_ ) return s.tot_;
+                    }
+                    //this DIGI is TOT, but never completed
+                    //  ==> return maximum
+                    return 4096;
+                }
+
+            }; //HgcrocDigi
 
         public:
 
@@ -183,7 +244,7 @@ namespace ldmx {
              * @param[in] digiIndex index of digi to decode
              * @return vector of Sample represeting the decoded digis
              */
-            std::vector< Sample > getDigi( unsigned int digiIndex ) const;
+            HgcrocDigi getDigi( unsigned int digiIndex ) const;
 
             /**
              * Get total number of digis
@@ -196,9 +257,9 @@ namespace ldmx {
              *
              * @sa Sample for how the valid measurements depend on the flags.
              *
-             * @param[in] newSamples collection of samples to insert as one more Digi
+             * @param[in] digi HgcrocDigi package with the new samples and channel ID
              */
-            void addDigi( std::vector< Sample > newSamples );
+            void addDigi( const HgcrocDigi &digi );
 
         private:
 
