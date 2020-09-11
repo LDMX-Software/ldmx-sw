@@ -128,6 +128,7 @@ namespace ldmx {
             = static_cast<RunManager*>(RunManager::GetRunManager())->getDetectorConstruction();
 
         header.setDetectorName(detector->getDetectorHeader()->getName());
+        header.setDetectorVersion(detector->getDetectorHeader()->getVersion());
         header.setDescription(parameters_.getParameter<std::string>("description"));
 
         header.setIntParameter("Save ECal Hit Contribs" , parameters_.getParameter<bool>("enableHitContribs"));
