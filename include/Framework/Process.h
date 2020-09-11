@@ -12,6 +12,7 @@
 #include "Framework/StorageControl.h"
 #include "Framework/Parameters.h"
 #include "Framework/Conditions.h"
+#include "Event/RunHeader.h"
 
 // STL
 #include <vector>
@@ -67,6 +68,11 @@ namespace ldmx {
              * Get the pointer to the current event header, if defined
              */
             const EventHeader* getEventHeader() const { return eventHeader_; }
+
+            /**
+             * Get the pointer to the current run header, if defined
+             */
+            const RunHeader* getRunHeader() const { return runHeader_; }
 
             /**
              * Get a reference to the conditions system
@@ -184,6 +190,9 @@ namespace ldmx {
 
             /** Pointer to the current EventHeader, used for Conditions information */
             const EventHeader* eventHeader_;
+
+            /** Pointer to the current RunHeader, used for Conditions information */
+            const RunHeader* runHeader_;
 
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};

@@ -37,6 +37,7 @@ namespace ldmx {
         dropKeepRules_ = configuration.getParameter<std::vector<std::string>>("keep"       ,{});
 
         eventHeader_   = 0;
+        runHeader_     = 0;
 
         auto run{configuration.getParameter<int>("run",-1)};
         if ( run > 0 ) runForGeneration_ = run;
@@ -278,6 +279,7 @@ namespace ldmx {
                             wasRun = theEvent.getEventHeader().getRun();
                             try {
                                 const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
+                                runHeader_ = &runHeader; //save current run header for later
                                 ldmx_log(info) << "Got new run header from '" << masterFile->getFileName() << "' ...";
                                 runHeader.Print(); //TODO print run header into log
                                 for (auto module : sequence_) {
