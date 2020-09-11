@@ -20,7 +20,6 @@ namespace ldmx {
     void RunHeader::Print() const {
         std::cout << "RunHeader { run: " << runNumber_
                 << ", detectorName: " << detectorName_
-                << ", detectorVersion: " << detectorVersion_
                 << ", description: " << description_
                 << std::endl;
         std::cout << "  intParameters: " << std::endl;
