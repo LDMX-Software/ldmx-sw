@@ -73,18 +73,18 @@ namespace ldmx {
                 //  this is related to the amplitude of the pulse approximately through a linear drain rate
                 //  the amplitude of the pulse is related to the energy deposited
 
-                std::cout << "TOT Mode -> ";
-
                 int tdc = digi.tot();
                 double tot = ( double(tdc)/4096. ) * totMax_;
-
-                std::cout << tdc << " TDC Counts -> " << tot << " ns -> ";
 
                 //convert the time over threshold into a total energy deposited in the silicon
                 //  (time over threshold [ns]) * (rate of drain [mV/ns]) * (convert to energy [MeV/mV])
                 siEnergy = tot * drainRate_ * mV_;
 
-                std::cout << siEnergy << " MeV" << std::endl;
+                /* debug printout
+                std::cout << "TOT Mode -> "
+                          << tdc << " TDC Counts -> " << tot << " ns -> "
+                          << siEnergy << " MeV" << std::endl;
+                 */
             } else {
                 //ADC mode of readout
                 //ADC - voltage measurement at a specific time of the pulse
