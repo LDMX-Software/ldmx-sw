@@ -6,19 +6,33 @@ class HgcrocEmulator() :
     Attributes
     ----------
     pedestal : float
+        Basline readout ADC counts of chip
     clockCycle : float
+        Cycle of chip clock [ns]
     measTime : float
+        Time that chip takes voltage measurement within clock window [ns]
     timingJitter : float
+        Uncertainty in chip clock [ns]
     readoutPadCapacitance : float
+        Capacitance [pF] of chip readout pad
     maxADCRange : float
-    nADCs : float
-    iSOI : float
+        Maximum charge that chip can readout [fC]
+    nADCs : int
+        Number of voltage samples to measure for one DIGI
+    iSOI : int
+        (UNUSED) Index for sample of interest within multi-sample DIGI
     gain : float
+        Conversion from ADC Counts to voltage [mV]
     noiseRMS : float
+        Average noise within chip [mV]
     readoutThreshold : float
+        Threshold [mV] for chip to construct a DIGI from a voltage signal
     toaThreshold : float
+        Threshold [mV] for chip to measure Time Of Arrival
     totThreshold : float
+        Threshold [mV] for chip to go into saturation and measure Time Over Threshold
     drainRate : float
+        Rate that chip drains during saturation [mV/ns]
     """
 
     def __init__(self) :
