@@ -22,8 +22,6 @@ cd build
 # configure the build
 #   install it to a path already in PATH
 cmake \
-    -DXercesC_DIR=$XercesC_DIR \
-    -DONNXRUNTIME_ROOT=$ONNX_DIR \
     -DCMAKE_INSTALL_PREFIX=/usr/local \
     ..
 
