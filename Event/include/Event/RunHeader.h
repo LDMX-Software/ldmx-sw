@@ -55,12 +55,6 @@ namespace ldmx {
             /** Set the name of the detector that was used in this run */
             void setDetectorName(const std::string& det) { detectorName_ = det; }
 
-            /// Get the version number of the detector used to create events
-            int getDetectorVersion() const { return detectorVersion_; }
-
-            /// Set the version number of the detector used in this run
-            void setDetectorVersion(const int v) { detectorVersion_ = v; }
-
             /** 
              * @return The git SHA-1 associated with the software tag used
              * to generate this file.
@@ -172,9 +166,6 @@ namespace ldmx {
 
             /** Detector name. */
             std::string detectorName_{""};
-
-            /// Detector version
-            int detectorVersion_{0};
 
             /** Run description. */
             std::string description_{""};
