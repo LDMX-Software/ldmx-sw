@@ -1,3 +1,4 @@
+#include "Framework/Process.h"
 #include "Framework/Conditions.h"
 #include "Framework/PluginFactory.h"
 #include <sstream>
@@ -37,7 +38,16 @@ namespace ldmx {
     }
 
 
-    const ConditionsObject* Conditions::getConditionInternal(const std::string& condition_name, const EventHeader& context) {
+    const EventHeader& Conditions::getEventHeader() const {
+	return *(process_.getEventHeader());
+    }
+
+    const RunHeader& Conditions::getRunHeader() const {
+	return *(process_.getRunHeader());
+    }
+  
+
+    const ConditionsObject* Conditions::getConditionInternal(const std::string& condition_name, const EventHeader& context, const RunHeader& run_context) {
         auto cacheptr = cache_.find(condition_name);
         
         if (cacheptr == cache_.end()) {
@@ -47,7 +57,7 @@ namespace ldmx {
                 EXCEPTION_RAISE("ConditionUnavailable",std::string("No provider is available for : "+condition_name));
             }
             
-            std::pair<const ConditionsObject*,ConditionsIOV> cond=copptr->second->getCondition(condition_name,context);
+            std::pair<const ConditionsObject*,ConditionsIOV> cond=copptr->second->getCondition(condition_name,context,run_context);
             
             if (!cond.first) {
                 EXCEPTION_RAISE("ConditionUnavailable",std::string("Null condition returned for requested item : "+condition_name));
@@ -65,7 +75,7 @@ namespace ldmx {
                 // if not, we release the old object
                 cacheptr->second.provider->releaseConditionsObject(cacheptr->second.obj);
                 // now ask for a new one
-                std::pair<const ConditionsObject*,ConditionsIOV> cond=cacheptr->second.provider->getCondition(condition_name,context);
+                std::pair<const ConditionsObject*,ConditionsIOV> cond=cacheptr->second.provider->getCondition(condition_name,context, run_context);
                 
                 if (!cond.first) {
                     std::stringstream s;
