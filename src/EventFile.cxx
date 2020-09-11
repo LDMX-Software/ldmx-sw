@@ -60,8 +60,6 @@ namespace ldmx {
 
         importRunHeaders();
 
-        processStart_ = std::time(nullptr);
-
     }
 
     EventFile::EventFile(const std::string& filename) :
@@ -310,15 +308,12 @@ namespace ldmx {
                     + "'." );
         }
 
-        runHeader.setRunStart(processStart_);
-        runHeader.setRunEnd(std::time(nullptr));
-
         runMap_[runNumber] = runHeader;
 
         return;
     }
 
-    const RunHeader& EventFile::getRunHeader(int runNumber) {
+    RunHeader& EventFile::getRunHeader(int runNumber) {
         if (runMap_.find(runNumber) != runMap_.end()) {
             return runMap_[runNumber];
         } else {
