@@ -155,6 +155,7 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
             //not a noise hit
             //argument to epsilon is maximum relative difference allowed
             //  right now, I set it to 0.05 (5% allowed difference)
+            CHECK_FALSE( hit.isNoise() );
             CHECK( hit.getAmplitude() == Approx( correct_energies.at(id) ).epsilon(0.05) );
             correct_energies.erase(id);
         } else {
