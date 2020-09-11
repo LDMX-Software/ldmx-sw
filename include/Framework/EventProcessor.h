@@ -276,6 +276,12 @@ namespace ldmx {
              * @param event The Event to process.
              */
             virtual void produce(Event& event) = 0;
+
+            /**
+             * Handle allowing producers to modify run headers before the run begins
+             * @param header RunHeader for Producer to add parameters to
+             */
+            virtual void beforeNewRun(RunHeader& header) { }
     };
 
     /**

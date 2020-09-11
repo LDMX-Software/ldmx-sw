@@ -170,7 +170,7 @@ namespace ldmx {
              * @return The RunHeader from the input file.
              * @throw Exception if there is no RunHeader in the map with the given run number.
              */
-            const RunHeader& getRunHeader(int runNumber);
+            RunHeader& getRunHeader(int runNumber);
 
             const std::string& getFileName() {
                 return fileName_;
@@ -240,9 +240,6 @@ namespace ldmx {
 
             /** Map of run numbers to RunHeader objects read from the input file. */
             std::map<int, RunHeader> runMap_;
-
-            /// Time at which processing of events starts in seconds since epoch
-            int processStart_{0}; 
     };
 }
 

@@ -53,6 +53,12 @@ class TestProducer : public Producer {
             createRunHeader_ = p.getParameter<bool>("createRunHeader");
         }
 
+        void beforeNewRun(RunHeader& header) final override {
+            if(not createRunHeader_) return;
+            header.setIntParameter( "Should Be Run Number" , header.getRunNumber() );
+            return;
+        }
+
         void produce(Event& event) final override {
 
             int i_event = event.getEventNumber();
@@ -79,19 +85,6 @@ class TestProducer : public Producer {
             events_ = i_event;
 
             if ( res.passesVeto() ) setStorageHint( hint_mustKeep );
-
-            return;
-        }
-
-        void onFileClose(EventFile& eventFile) final override {
-
-            if ( not createRunHeader_ ) return;
-
-            RunHeader runHeader( events_ , "No Detector" , "Test Run" );
-            runHeader.setIntParameter( "Event Count" , events_ );
-
-            //stores run header to runtree in output file
-            eventFile.writeRunHeader( runHeader );
 
             return;
         }
@@ -311,7 +304,7 @@ class isGoodEventFile : public Catch::MatcherBase<std::string> {
             TTreeReaderValue<RunHeader> runHeader( runs , "RunHeader" );
 
             while ( runs.Next() ) {
-                if ( runHeader->getRunNumber() != runHeader->getIntParameter( "Event Count" ) ) { f->Close(); return false; }
+                if ( runHeader->getRunNumber() != runHeader->getIntParameter( "Should Be Run Number" ) ) { f->Close(); return false; }
             }
              
             f->Close();
