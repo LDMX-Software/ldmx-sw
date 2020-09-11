@@ -22,12 +22,8 @@ namespace ldmx {
   void DNNEcalVetoProcessor::configure(Parameters &parameters) {
 
     disc_cut_ = parameters.getParameter<double>("disc_cut");
-#ifdef LDMX_USE_ONNXRUNTIME
     rt_ = std::make_unique<Ort::ONNXRuntime>(parameters.getParameter<std::string>("model_path"));
-#else
-    EXCEPTION_RAISE("DNNEcalVetoProcessor",
-                    "Cannot run DNN because ONNXRuntime is not installed.");
-#endif
+
     // debug mode
     debug_ = parameters.getParameter<bool>("debug");
 
@@ -49,10 +45,8 @@ namespace ldmx {
       // make inputs
       make_inputs(hexReadout,ecalRecHits);
       // run the DNN
-#ifdef LDMX_USE_ONNXRUNTIME
       auto outputs = rt_->run(input_names_, data_)[0];
       result.setDiscValue(outputs.at(1));
-#endif
     } else {
       result.setDiscValue(-99);
     }
