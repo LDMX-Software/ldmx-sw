@@ -99,45 +99,44 @@ endmacro()
 
 macro(setup_library)
 
-    set(oneValueArgs name python_install_path)
+    set(options interface)
+    set(oneValueArgs module name python_install_path)
     set(multiValueArgs dependencies sources)
     cmake_parse_arguments(setup_library "${options}" "${oneValueArgs}"
                           "${multiValueArgs}" ${ARGN} )
 
-    # Find all of the source files we want to add to the library
-    if (NOT setup_library_sources)
-        file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
+    # If not an interface, find all of the source files we want to add to the
+    # library.
+    if (NOT setup_library_interface)
+        if (NOT setup_library_sources)
+            file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
+        else()
+            set(SRC_FILES ${setup_library_sources})
+        endif()
+        
+        # Create the SimCore shared library
+        add_library(${setup_library_name} SHARED ${SRC_FILES})
     else()
-        set(SRC_FILES ${setup_library_sources})
+        add_library(${setup_library_name} INTERFACE)
     endif()
 
-    #NOT SURE IF NEEDED
-    #   do I need to remove the source files that were compiled into the 
-    #   event bus dictionary? Or is it okay for them to be compiled twice?
-    #set(link_against_dictionary "NO")
-    #foreach(src ${SRC_FILES})
-    #    list(FIND event_sources ${src} index)
-    #    if(${index} GREATER 0)
-            #found ==> is an event passenger
-            #        list(REMOVE_ITEM SRC_FILES ${src})
-            #set(link_against_dictionary "YES")
-            #endif()
-            #endforeach()
-
-    # Create the SimCore shared library
-    add_library(${setup_library_name} SHARED ${SRC_FILES})
-
     # Setup the include directories 
-    target_include_directories(${setup_library_name} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+    if (setup_library_interface)
+        target_include_directories(${setup_library_name} INTERFACE ${PROJECT_SOURCE_DIR}/include)
+    else()
+        target_include_directories(${setup_library_name} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+    endif()
 
     # Setup the targets to link against 
-    #if(${link_against_dictionary} STREQUAL "YES")
-    #    list(APPEND setup_library_dependencies "DARK::Event")
-    #endif()
     target_link_libraries(${setup_library_name} PUBLIC ${setup_library_dependencies})
 
     # Define an alias. This is used to create the imported target.
-    add_library(DARK::${setup_library_name} ALIAS ${setup_library_name})
+    set(alias "${setup_library_name}::${setup_library_name}")
+    if (setup_library_module)
+        set(alias "${setup_library_module}::${setup_library_name}")
+    endif()
+    add_library(${alias} ALIAS ${setup_library_name})
+    
 
     # Install the libraries and headers
     install(TARGETS ${setup_library_name}
@@ -146,44 +145,45 @@ macro(setup_library)
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/${setup_library_name}
             DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
-    # If the python directory exists, initialize the package and copy over the 
+endmacro()
+
+
+
+# If the python directory exists, initialize the package and copy over the 
     # python modules.
-    if (EXISTS ${PROJECT_SOURCE_DIR}/python)
+    #if (EXISTS ${PROJECT_SOURCE_DIR}/python)
        
         # Install the python modules
-        file(GLOB py_scripts CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/python/*.py)
-        foreach(pyscript ${py_scripts})
-            string(REPLACE ".in" "" script_output ${pyscript})
-            get_filename_component(script_output ${script_output} NAME)
-            configure_file(${pyscript} ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output})
-            install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output} DESTINATION ${setup_library_python_install_path}/${setup_library_name})
-        endforeach()
+        #    file(GLOB py_scripts CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/python/*.py)
+        #foreach(pyscript ${py_scripts})
+        #    string(REPLACE ".in" "" script_output ${pyscript})
+        #    get_filename_component(script_output ${script_output} NAME)
+        #    configure_file(${pyscript} ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output})
+        #    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output} DESTINATION ${setup_library_python_install_path}/${setup_library_name})
+        #endforeach()
 
-    endif()
+        #endif()
 
     # If the data directory exists, install it to the data directory
-    if (EXISTS ${PROJECT_SOURCE_DIR}/data)
-        file(GLOB data_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/data/*)
-        foreach(data_file ${data_files})
-            install(FILES ${data_file} DESTINATION ${CMAKE_INSTALL_PREFIX}/data/${setup_library_name})
-        endforeach()
-    endif()
-
-endmacro()
+    #if (EXISTS ${PROJECT_SOURCE_DIR}/data)
+    #    file(GLOB data_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/data/*)
+    #    foreach(data_file ${data_files})
+    #        install(FILES ${data_file} DESTINATION ${CMAKE_INSTALL_PREFIX}/data/${setup_library_name})
+    #    endforeach()
+    #endif()
 
 function(register_event_object)
 
-    set(oneValueArgs namespace class type)
+    set(oneValueArgs module namespace class type key)
     cmake_parse_arguments(register_event_object "${options}" "${oneValueArgs}"
                           "${multiValueArgs}" ${ARGN} )
 
     # Start by checking if the class that is being registered exists
-    if(NOT EXISTS ${PROJECT_SOURCE_DIR}/src/${register_event_object_class}.cxx)
+    if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${register_event_object_module}/src/${register_event_object_class}.cxx)
         message(FATAL_ERROR "Trying to register class ${register_event_object_class} that doesn't exist.")
     endif()
 
-    get_filename_component(header_dir ${PROJECT_SOURCE_DIR} NAME)
-    set(header ${header_dir}/${register_event_object_class}.h)
+    set(header ${register_event_object_module}/${register_event_object_class}.h)
 
     if(DEFINED register_event_object_namespace)
         STRING(CONCAT register_event_object_class
@@ -196,32 +196,38 @@ function(register_event_object)
         return()
     endif()
 
+    set(dict ${dict} ${register_event_object_class} CACHE INTERNAL "dict")
+
     set(event_headers ${event_headers} ${header} CACHE INTERNAL "event_headers")
 
     # If the passenger type was not specified, then add the class to the event
     # bus stand alone.
-    if(NOT DEFINED ${register_event_object_type})
+    if(NOT DEFINED register_event_object_type)
         message(STATUS ${register_event_object_type})
         set(bus_passengers ${bus_passengers} ${register_event_object_class} CACHE INTERNAL "bus_passengers")
-        set(dict ${dict} ${register_event_object_class} CACHE INTERNAL "dict")
     elseif(register_event_object_type STREQUAL "collection")
         set(bus_passengers ${bus_passengers} 
             "std::vector< ${register_event_object_class} >" CACHE INTERNAL "bus_passengers")
         set(dict ${dict} ${register_event_object_class} 
             "std::vector< ${register_event_object_class} >" CACHE INTERNAL "dict")
     elseif(register_event_object_type STREQUAL "map")
-    elseif(register_event_object_type STREQUAL "dic_only")
-        set(dict ${dict} ${register_event_object_class} CACHE INTERNAL "dict")
+        set(bus_passengers ${bus_passengers}
+            "std::map< ${register_event_object_key}, ${register_event_object_class} >" 
+            CACHE INTERNAL "bus_passengers")
+        set(dict ${dict}
+            "std::map< ${register_event_object_key}, ${register_event_object_class} >" 
+            CACHE INTERNAL "dict")
+    elseif(NOT register_event_object_type STREQUAL "dict_only")
+        message(FATAL_ERROR "Trying to register object with invalid type ${register_event_object_type}")
     endif()
-
+    
 endfunction()
 
 macro(build_event_bus)
 
-    get_filename_component(header_dir ${PROJECT_SOURCE_DIR} NAME)
-    if(NOT EXISTS ${PROJECT_SOURCE_DIR}/include/${header_dir}/EventDef.h)
+    if(NOT EXISTS ${CMAKE_INSTALL_PREFIX}/external/event/EventDef.h)
         
-        set(file_path ${PROJECT_SOURCE_DIR}/include/${header_dir}/EventDef.h)
+        set(file_path ${CMAKE_INSTALL_PREFIX}/external/event/EventDef.h)
 
         foreach(header ${event_headers})
             file(APPEND ${file_path} "#include \"${header}\"\n")
@@ -241,6 +247,14 @@ macro(build_event_bus)
         file(APPEND ${file_path} "    ${last_passenger}\n")
         file(APPEND ${file_path} "> EventBusPassenger;")
 
+        if(NOT TARGET EventDef::Interface)
+            add_library(EventDef::Interface INTERFACE IMPORTED)
+            set_target_properties(EventDef::Interface
+                                  PROPERTIES
+                                  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/external/event"
+            )
+        endif()
+    
     endif()
 
 endmacro()
