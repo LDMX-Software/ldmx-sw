@@ -149,7 +149,7 @@ namespace ldmx {
             //  to measure a maximum of tot Max [ns]
             int tdc_counts = int( tot * 4096 / totMax_ );
 
-            /*if (verbose_)*/ {
+            if (verbose_) {
                 std::cout << "TOT Mode { "
                     << "TOA: " << toa << " ns, "
                     << "TOT: " << tot << " ns, "
