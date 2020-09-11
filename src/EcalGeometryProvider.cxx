@@ -22,7 +22,7 @@ namespace ldmx {
 	if (ecalGeometry_) delete ecalGeometry_;
 	ecalGeometry_=0;
     }
-    std::pair<const ConditionsObject*,ConditionsIOV> EcalGeometryProvider::getCondition(const std::string& condition_name, const EventHeader& context) {
+    std::pair<const ConditionsObject*,ConditionsIOV> EcalGeometryProvider::getCondition(const std::string& condition_name, const EventHeader& context, const RunHeader& run_context) {
 	if (condition_name=="EcalGeometry" || condition_name==EcalHexReadout::CONDITIONS_OBJECT_NAME) {
 	    return std::make_pair(ecalGeometry_,ConditionsIOV(true,true));
 	}
