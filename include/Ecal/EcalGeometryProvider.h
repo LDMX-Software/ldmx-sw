@@ -35,7 +35,7 @@ namespace ldmx {
 	 * @note Currently, these are assumed to be valid for all time, but this behavior could be changed.  Users should not cache the pointer
 	 * between events
 	 */
-	virtual std::pair<const ConditionsObject*,ConditionsIOV> getCondition(const std::string& condition_name, const EventHeader& context);
+	virtual std::pair<const ConditionsObject*,ConditionsIOV> getCondition(const std::string& condition_name, const EventHeader& context, const RunHeader& runcontext);
 
 	/**
 	 * Take no action on release, as the object is permanently owned by the Provider
