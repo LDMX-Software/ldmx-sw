@@ -11,27 +11,26 @@
 /*   Event   */
 /*~~~~~~~~~~~*/
 #include "Framework/Exception.h"
-#include "Event/EventHeader.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Parameters.h" 
-#include "Framework/Logger.h"
 #include "Framework/ConditionsIOV.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
-#include <any>
 #include <map>
-
+#include <vector>
 
 namespace ldmx {
 
     class Process;
     class ConditionsObjectProvider;
     class ConditionsObject;
+    class EventHeader;
+    class RunHeader;
+    class Parameters;
 
     /**
      * @class Conditions
@@ -59,8 +58,8 @@ namespace ldmx {
              * object.
              */
             template <class T>
-            const T& getCondition(const std::string& condition_name, const EventHeader& context) {
-                const ConditionsObject* obj=getConditionInternal(condition_name,context);
+            const T& getCondition(const std::string& condition_name) {
+	      const ConditionsObject* obj=getConditionInternal(condition_name, getEventHeader(), getRunHeader());
                 if (!obj) {
                     EXCEPTION_RAISE("ConditionUnavailableException",
                             std::string("Requested condition not available for unspecific reason: ")+condition_name);
@@ -87,8 +86,14 @@ namespace ldmx {
        private:
 
             /** Cache-managing method */
-            const ConditionsObject* getConditionInternal(const std::string& condition_name, const EventHeader& context);
-        
+            const ConditionsObject* getConditionInternal(const std::string& condition_name, const EventHeader& context, const RunHeader& run_context);
+
+	    /** Get the event header from the process */
+            const EventHeader& getEventHeader() const;
+
+	    /** Get the run header from the process */
+            const RunHeader& getRunHeader() const;
+		
             /** Handle to the Process. */
             Process& process_;
 
