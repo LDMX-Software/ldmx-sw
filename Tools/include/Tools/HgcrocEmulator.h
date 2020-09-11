@@ -48,6 +48,16 @@ namespace ldmx {
             ~HgcrocEmulator() { /* empty on purpose */ }
 
             /**
+             * Set Conditions
+             *
+             * Passes the chips conditions to be cached here and
+             * used later in digitization.
+             *
+             * @param
+             */
+            void condition( );
+
+            /**
              * Digitize the signals from the simulated hits
              *
              * This is where the hefty amount of work is done.
@@ -153,14 +163,9 @@ namespace ldmx {
             /// Put noise in channels, not configurable, only helpful in development
             bool noise_{true};
 
-            /// Time interval for chip clock [ns]
-            double clockCycle_;
-
-            /// gain setting of the chip [mV / ADC units]
-            double gain_;
-
-            /// base pedestal [ADC units]
-            double pedestal_;
+            /**************************************************************************************
+             * Parameters Identical for all Chips
+             *************************************************************************************/
 
             /// Depth of ADC buffer. 
             int nADCs_; 
@@ -171,23 +176,8 @@ namespace ldmx {
             /// Noise RMS [mV]
             double noiseRMS_; 
 
-            /// Min threshold for reading out a channel [mV]
-            double readoutThreshold_;
-
-            /// Min threshold for measuring TOA [mV]
-            double toaThreshold_;
-
-            /// Min threshold for measuring TOT [mV]
-            double totThreshold_;
-
-            /// Jitter of timing mechanism in the chip [ns]
-            double timingJitter_;
-
-            /// Measurement time relative to clock cycle [ns]
-            double measTime_;
-
-            /// Rate that charge drains off HGC ROC after being saturated [mV/ns]
-            double drainRate_;
+            /// Time interval for chip clock [ns]
+            double clockCycle_;
 
             /// Maximum TOT measured by chip [ns]
             double totMax_;
@@ -209,6 +199,34 @@ namespace ldmx {
             
             /// Time of Peak relative to pulse shape fit [ns]
             double timePeak_;
+
+            /**************************************************************************************
+             * Chip-Dependent Parameters (Conditions)
+             *************************************************************************************/
+
+            /// gain setting of the chip [mV / ADC units]
+            double gain_;
+
+            /// base pedestal [ADC units]
+            double pedestal_;
+
+            /// Min threshold for reading out a channel [mV]
+            double readoutThreshold_;
+
+            /// Min threshold for measuring TOA [mV]
+            double toaThreshold_;
+
+            /// Min threshold for measuring TOT [mV]
+            double totThreshold_;
+
+            /// Jitter of timing mechanism in the chip [ns]
+            double timingJitter_;
+
+            /// Measurement time relative to clock cycle [ns]
+            double measTime_;
+
+            /// Rate that charge drains off HGC ROC after being saturated [mV/ns]
+            double drainRate_;
 
             /// Generates Gaussian noise on top of real hits
             std::unique_ptr<TRandom3> noiseInjector_;
