@@ -63,9 +63,6 @@ namespace ldmx {
             //get energy estimate from all digi samples
             double siEnergy(0.);
 
-            //is this hit a noise hit?
-            bool yes_noise{false};
-            
             /**
             std::cout << "Recon { "
                 << "ID: " << id << ", "
@@ -144,6 +141,14 @@ namespace ldmx {
             recHit.setTime( hitTime );
 
             ecalRecHits.push_back( recHit );
+        }
+
+        if (event.exists("EcalSimHits")) {
+            //ecal sim hits exist ==> label which hits are real and which are pure noise
+            auto ecalSimHits{event.getCollection<SimCalorimeterHit>("EcalSimHits")};
+            std::set<int> real_hits;
+            for ( auto const& sim_hit : ecalSimHits ) real_hits.insert( sim_hit.getID() );
+            for ( auto& hit : ecalRecHits ) hit.setNoise( real_hits.find(hit.getID()) == real_hits.end() );
         }
 
         //add collection to event bus
