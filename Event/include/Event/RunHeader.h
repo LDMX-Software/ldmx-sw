@@ -32,12 +32,9 @@ namespace ldmx {
             /**
              * Constructor.
              *
-             * @param runNumber The run number.
-             * @param detectorName The name of the detector.
-             * @param description A short description of the run.
+             * @param runNumber The run number uniquely identifying this run
              */
-            RunHeader(int runNumber, std::string detectorName,  
-                      std::string description); 
+            RunHeader(int runNumber); 
 
             /**
              * Default constructor.
@@ -55,6 +52,9 @@ namespace ldmx {
             /** @return The name of the detector used to create the events. */
             const std::string& getDetectorName() const { return detectorName_; }
 
+            /** Set the name of the detector that was used in this run */
+            void setDetectorName(const std::string& det) { detectorName_ = det; }
+
             /** 
              * @return The git SHA-1 associated with the software tag used
              * to generate this file.
@@ -63,6 +63,9 @@ namespace ldmx {
 
             /** @return A short description of the run. */
             const std::string& getDescription() const { return description_; }
+
+            /** Set the description of this run */
+            void setDescription(const std::string& des) { description_ = des; }
 
             /**
              * Get the start time of the run in seconds since epoch.
@@ -108,7 +111,6 @@ namespace ldmx {
              * 
              * @param name The name of the parameter.
              * @param value The value of the parameter.
-             * @return The parameter value.
              */
             void setIntParameter(const std::string& name, int value) { 
                 intParameters_[name] = value;
@@ -128,7 +130,7 @@ namespace ldmx {
              * Set a float parameter value.
              * 
              * @param name The name of the parameter.
-             * @return value The parameter value.
+             * @param value The value of the parameter.
              */
             void setFloatParameter(const std::string& name, float value) {
                 floatParameters_[name] = value;
@@ -148,7 +150,7 @@ namespace ldmx {
              * Set a string parameter value.
              * 
              * @param name The name of the parameter.
-             * @return value The parameter value.
+             * @param value The value of the parameter.
              */
             void setStringParameter(const std::string& name, std::string value) {
                 stringParameters_[name] = value;
@@ -189,7 +191,7 @@ namespace ldmx {
             /** Map of string parameters. */
             std::map<std::string, std::string> stringParameters_;
 
-            ClassDef(RunHeader, 2);
+            ClassDef(RunHeader, 3);
 
     }; // RunHeader
 
