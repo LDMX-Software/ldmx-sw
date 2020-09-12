@@ -99,51 +99,65 @@ endmacro()
 
 macro(setup_library)
 
-    set(options interface)
+    set(options interface register_target)
     set(oneValueArgs module name python_install_path)
     set(multiValueArgs dependencies sources)
     cmake_parse_arguments(setup_library "${options}" "${oneValueArgs}"
                           "${multiValueArgs}" ${ARGN} )
 
+
+    # Build the library name and source path
+    set(library_name "${setup_library_name}")
+    set(src_path "${PROJECT_SOURCE_DIR}/src/${setup_library_name}")
+    set(include_path "include/${setup_library_name}")
+    if (setup_library_module)
+        set(library_name "${setup_library_module}_${setup_library_name}")
+        set(src_path "${PROJECT_SOURCE_DIR}/src/${setup_library_module}/${setup_library_name}")
+        set(include_path "include/${setup_library_module}/${setup_library_name}")
+    endif()
+
     # If not an interface, find all of the source files we want to add to the
     # library.
     if (NOT setup_library_interface)
         if (NOT setup_library_sources)
-            file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
+            file(GLOB SRC_FILES CONFIGURE_DEPENDS ${src_path}/*.cxx)
         else()
             set(SRC_FILES ${setup_library_sources})
         endif()
         
         # Create the SimCore shared library
-        add_library(${setup_library_name} SHARED ${SRC_FILES})
+        add_library(${library_name} SHARED ${SRC_FILES})
     else()
-        add_library(${setup_library_name} INTERFACE)
+        add_library(${library_name} INTERFACE)
     endif()
 
     # Setup the include directories 
     if (setup_library_interface)
-        target_include_directories(${setup_library_name} INTERFACE ${PROJECT_SOURCE_DIR}/include)
+        target_include_directories(${library_name} INTERFACE ${PROJECT_SOURCE_DIR}/include)
     else()
-        target_include_directories(${setup_library_name} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+        target_include_directories(${library_name} PUBLIC ${PROJECT_SOURCE_DIR}/include)
     endif()
 
     # Setup the targets to link against 
-    target_link_libraries(${setup_library_name} PUBLIC ${setup_library_dependencies})
+    target_link_libraries(${library_name} PUBLIC ${setup_library_dependencies})
 
     # Define an alias. This is used to create the imported target.
     set(alias "${setup_library_name}::${setup_library_name}")
     if (setup_library_module)
         set(alias "${setup_library_module}::${setup_library_name}")
     endif()
-    add_library(${alias} ALIAS ${setup_library_name})
-    
+    add_library(${alias} ALIAS ${library_name})
+
+    if(setup_library_register_target)
+        set(registered_targets ${registered_targets} ${alias} CACHE INTERNAL "registered_targets")
+    endif()
 
     # Install the libraries and headers
-    install(TARGETS ${setup_library_name}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+    install(TARGETS ${library_name}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
     )
-    install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/${setup_library_name}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/${include_path}
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/${include_path})
 
 endmacro()
 
@@ -174,16 +188,16 @@ endmacro()
 
 function(register_event_object)
 
-    set(oneValueArgs module namespace class type key)
+    set(oneValueArgs module_path namespace class type key)
     cmake_parse_arguments(register_event_object "${options}" "${oneValueArgs}"
                           "${multiValueArgs}" ${ARGN} )
 
     # Start by checking if the class that is being registered exists
-    if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${register_event_object_module}/src/${register_event_object_class}.cxx)
+    if(NOT EXISTS ${PROJECT_SOURCE_DIR}/include/${register_event_object_module_path}/${register_event_object_class}.h)
         message(FATAL_ERROR "Trying to register class ${register_event_object_class} that doesn't exist.")
     endif()
 
-    set(header ${register_event_object_module}/${register_event_object_class}.h)
+    set(header ${register_event_object_module_path}/${register_event_object_class}.h)
 
     if(DEFINED register_event_object_namespace)
         STRING(CONCAT register_event_object_class
@@ -200,10 +214,13 @@ function(register_event_object)
 
     set(event_headers ${event_headers} ${header} CACHE INTERNAL "event_headers")
 
+    if(NOT ${PROJECT_SOURCE_DIR}/include IN_LIST include_paths)
+        set(include_paths ${PROJECT_SOURCE_DIR}/include ${include_paths} CACHE INTERNAL "include_paths")
+    endif()
+
     # If the passenger type was not specified, then add the class to the event
     # bus stand alone.
     if(NOT DEFINED register_event_object_type)
-        message(STATUS ${register_event_object_type})
         set(bus_passengers ${bus_passengers} ${register_event_object_class} CACHE INTERNAL "bus_passengers")
     elseif(register_event_object_type STREQUAL "collection")
         set(bus_passengers ${bus_passengers} 
@@ -225,12 +242,14 @@ endfunction()
 
 macro(build_event_bus)
 
-    if(NOT EXISTS ${CMAKE_INSTALL_PREFIX}/external/event/EventDef.h)
-        
-        set(file_path ${CMAKE_INSTALL_PREFIX}/external/event/EventDef.h)
+    set(oneValueArgs path)
+    cmake_parse_arguments(build_event_bus "${options}" "${oneValueArgs}"
+                          "${multiValueArgs}" ${ARGN} )
 
+    if(build_event_bus_path AND NOT EXISTS ${build_event_bus_path})
+       
         foreach(header ${event_headers})
-            file(APPEND ${file_path} "#include \"${header}\"\n")
+            file(APPEND ${build_event_bus_path} "#include \"${header}\"\n")
         endforeach()
         
         list(LENGTH bus_passengers passenger_count)
@@ -238,23 +257,15 @@ macro(build_event_bus)
         list(GET bus_passengers ${last_passenger_index} last_passenger)
         list(REMOVE_AT bus_passengers ${last_passenger_index})
 
-        file(APPEND ${file_path} "\n#include <variant>\n\n")
-        file(APPEND ${file_path} "typedef std::variant<\n")
+        file(APPEND ${build_event_bus_path} "\n#include <variant>\n\n")
+        file(APPEND ${build_event_bus_path} "typedef std::variant<\n")
         foreach(passenger ${bus_passengers})
-            file(APPEND ${file_path} "    ${passenger},\n")
+            file(APPEND ${build_event_bus_path} "    ${passenger},\n")
         endforeach()
         
-        file(APPEND ${file_path} "    ${last_passenger}\n")
-        file(APPEND ${file_path} "> EventBusPassenger;")
+        file(APPEND ${build_event_bus_path} "    ${last_passenger}\n")
+        file(APPEND ${build_event_bus_path} "> EventBusPassenger;")
 
-        if(NOT TARGET EventDef::Interface)
-            add_library(EventDef::Interface INTERFACE IMPORTED)
-            set_target_properties(EventDef::Interface
-                                  PROPERTIES
-                                  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/external/event"
-            )
-        endif()
-    
     endif()
 
 endmacro()
@@ -269,7 +280,6 @@ macro(build_dict)
     if(NOT EXISTS ${PROJECT_SOURCE_DIR}/include/${header_dir}/EventLinkDef.h)
 
         message(STATUS "Building ROOT dictionary.")
-        message(STATUS "${build_dict_template}")
         if(DEFINED build_dict_template)
             configure_file(
                 ${build_dict_template}
@@ -282,8 +292,8 @@ macro(build_dict)
         set(prefix "#pragma link C++")
 
         if(DEFINED build_dict_namespace)
-            file(APPEND ${file_path} "${prefix} namespace ${build_dict_namespace}\n")
-            file(APPEND ${file_path} "${prefix} defined_in namespace ${build_dict_namespace}\n\n")
+            file(APPEND ${file_path} "${prefix} namespace ${build_dict_namespace};\n")
+            file(APPEND ${file_path} "${prefix} defined_in namespace ${build_dict_namespace};\n\n")
         endif()
 
         foreach(entry ${dict})
@@ -294,7 +304,6 @@ macro(build_dict)
 
     endif()
     
-
 endmacro()
 
 macro(setup_test)
@@ -340,7 +349,4 @@ macro(build_test)
     # Install the run_test  executable
     install(TARGETS run_test DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
-endmacro()
-
-macro(install_external)
 endmacro()
