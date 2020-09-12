@@ -8,13 +8,22 @@ project(Event VERSION 2.1.0
               LANGUAGES CXX
 )
 
-declare_event_object( class "CalorimeterHit" collection "ON" )
-declare_event_object( class "FindableTrackResult" collection "ON" )
-declare_event_object( class "HcalHit" collection "ON" )
-declare_event_object( class "HcalVetoResult" )
-declare_event_object( class "SiStripHit" collection "ON" )
-declare_event_object( class "TrigScintHit" collection "ON" )
-declare_event_object( class "TrackerVetoResult" )
-declare_event_object( class "TriggerResult" )
-declare_event_object( class "RawHit" collection "ON")
+register_event_object( module_path "Event" namespace "ldmx" class "CalorimeterHit"      type "collection" )
+register_event_object( module_path "Event" namespace "ldmx" class "FindableTrackResult" type "collection" )
+register_event_object( module_path "Event" namespace "ldmx" class "HcalHit"             type "collection" )
+register_event_object( module_path "Event" namespace "ldmx" class "HcalVetoResult"                        )
+register_event_object( module_path "Event" namespace "ldmx" class "SiStripHit"          type "collection" )
+register_event_object( module_path "Event" namespace "ldmx" class "TrigScintHit"        type "collection" )
+register_event_object( module_path "Event" namespace "ldmx" class "TrackerVetoResult"                     )
+register_event_object( module_path "Event" namespace "ldmx" class "TriggerResult"                         )
+register_event_object( module_path "Event" namespace "ldmx" class "RawHit"              type "collection" )
+
+# Search and configure ROOT
+find_package(ROOT CONFIG REQUIRED)
+
+setup_library(name Event 
+              dependencies ROOT::Core
+                           SimCore::Event
+              register_target)
+                       
 
