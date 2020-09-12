@@ -1,4 +1,4 @@
-#include "SimCore/SimParticle.h"
+#include "SimCore/Event/SimParticle.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */

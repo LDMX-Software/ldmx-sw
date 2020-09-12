@@ -12,7 +12,7 @@
 #include "G4VPhysicsConstructor.hh"
 
 // LDMX
-#include "Framework/Parameters.h"
+#include "Framework/Configure/Parameters.h"
 #include "SimCore/G4eDarkBremsstrahlung.h"
 
 namespace ldmx {

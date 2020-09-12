@@ -11,7 +11,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/EventFile.h"
-#include "Framework/Parameters.h" 
+#include "Framework/Configure/Parameters.h" 
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */

@@ -10,7 +10,7 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Parameters.h" 
+#include "Framework/Configure/Parameters.h" 
 #include "SimCore/PrimaryGenerator.h"
 
 namespace ldmx { 

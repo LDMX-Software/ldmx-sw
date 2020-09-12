@@ -18,7 +18,7 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Exception.h" 
+#include "Framework/Exception/Exception.h" 
 
 ldmx::PrimaryGeneratorManager ldmx::PrimaryGeneratorManager::instance_ __attribute__((init_priority(300)));
 

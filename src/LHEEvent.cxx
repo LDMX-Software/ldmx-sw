@@ -1,5 +1,5 @@
 #include "SimCore/LHEEvent.h"
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 
 // Geant4
 #include "globals.hh"

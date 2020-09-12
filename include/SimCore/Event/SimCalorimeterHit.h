@@ -11,7 +11,7 @@
 #include "TObject.h" //For ClassDef
 
 // LDMX
-#include "SimCore/SimParticle.h"
+#include "SimCore/Event/SimParticle.h"
 
 namespace ldmx {
 

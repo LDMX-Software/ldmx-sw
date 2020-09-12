@@ -16,8 +16,8 @@
 
 // LDMX
 #include "SimCore/UserPrimaryParticleInformation.h"
-#include "Framework/Parameters.h"
-#include "Framework/Exception.h"
+#include "Framework/Configure/Parameters.h"
+#include "Framework/Exception/Exception.h"
 
 namespace ldmx {
 
