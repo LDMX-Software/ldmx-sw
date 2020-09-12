@@ -12,7 +12,7 @@
 
 // LDMX
 #include "DetDescr/DetectorHeader.h"
-#include "Framework/Parameters.h"
+#include "Framework/Configure/Parameters.h"
 
 namespace ldmx {
 

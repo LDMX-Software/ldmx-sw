@@ -1,5 +1,5 @@
 #include "SimCore/LHEParticle.h"
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 
 // STL
 #include <iostream>

@@ -16,7 +16,7 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Parameters.h" 
+#include "Framework/Configure/Parameters.h" 
 
 #include "SimCore/UserRunAction.h" 
 #include "SimCore/UserEventAction.h" 

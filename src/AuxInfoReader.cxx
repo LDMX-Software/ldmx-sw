@@ -1,7 +1,7 @@
 #include "SimCore/AuxInfoReader.h"
 
 // LDMX
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 #include "SimCore/TrackerSD.h"
 #include "SimCore/CalorimeterSD.h"
 #include "SimCore/EcalSD.h"

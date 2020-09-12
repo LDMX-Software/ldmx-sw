@@ -1,4 +1,4 @@
-#include "SimCore/SimTrackerHit.h"
+#include "SimCore/Event/SimTrackerHit.h"
 
 ClassImp(ldmx::SimTrackerHit)
 

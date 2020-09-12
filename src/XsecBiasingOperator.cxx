@@ -11,7 +11,7 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Exception.h" 
+#include "Framework/Exception/Exception.h" 
 
 namespace ldmx { 
 

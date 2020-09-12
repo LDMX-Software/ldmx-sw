@@ -1,4 +1,4 @@
-#include "SimCore/SimCalorimeterHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 
 // STL
 #include <iostream>

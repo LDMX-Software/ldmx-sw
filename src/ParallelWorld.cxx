@@ -1,7 +1,7 @@
 
 #include "SimCore/ParallelWorld.h"
 
-#include "Framework/Parameters.h"
+#include "Framework/Configure/Parameters.h"
 
 ldmx::ParallelWorld::ParallelWorld(G4GDMLParser* parser, G4String worldName) 
     : G4VUserParallelWorld(worldName), parser_(parser), 

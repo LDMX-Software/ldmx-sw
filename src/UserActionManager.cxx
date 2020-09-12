@@ -9,7 +9,7 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <dlfcn.h> 
 
-#include "Framework/Exception.h" 
+#include "Framework/Exception/Exception.h" 
 
 
 ldmx::UserActionManager ldmx::UserActionManager::instance_ __attribute__((init_priority(200))); 

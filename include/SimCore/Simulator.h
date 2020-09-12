@@ -20,7 +20,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/EventProcessor.h"
-#include "Framework/Parameters.h" 
+#include "Framework/Configure/Parameters.h" 
 
 class G4UImanager;
 class G4UIsession;

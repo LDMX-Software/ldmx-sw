@@ -5,7 +5,6 @@
 #include "G4VSensitiveDetector.hh"
 
 // LDMX
-#include "Framework/Event.h"
 #include "SimCore/G4CalorimeterHit.h"
 #include "DetDescr/DetectorID.h"
 
