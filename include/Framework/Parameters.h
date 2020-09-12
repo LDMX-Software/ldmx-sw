@@ -98,15 +98,14 @@ namespace ldmx {
                             );
                 }
 
-                T parameter; 
                 try { 
-                    parameter = std::any_cast< T >(parameters_.at(name));
+                    T parameter = std::any_cast< T >(parameters_.at(name));
+		    return parameter;
                 } catch(const std::bad_any_cast& e) {
                     EXCEPTION_RAISE( "BadTypeParam",
                                     "Parameter '" + name + "' is being cast to incorrect type '" + typeid(T).name() + "'."); 
                 }
 
-                return parameter; 
             }
 
             /**
