@@ -8,38 +8,47 @@ project(SimCore VERSION 2.1.0
                 LANGUAGES CXX
 )
 
-# Check if the project specifc macros have been loaded. If not, and the 
-# stand alone build option has been given, clone the project locally and 
-# include them.  Otherwise, error out.
-if (NOT build_macros_found)
-    if (stand_alone_build)
-        # Pull in the cmake module as an external package.
-    else()
-        message(FATAL_ERROR "Project specific build modules have not been loaded.")
-    endif()
-endif()
-
-declare_event_object( class "SimCalorimeterHit" collection "ON" )
-declare_event_object( class "SimTrackerHit" collection "ON" )
-declare_event_object( class "SimParticle" map "int" )
-
-# Configure Geant4
-setup_geant4_target()
-
 # Search and configure ROOT
 find_package(ROOT CONFIG REQUIRED)
 
-# Setup the library 
-setup_library(name SimCore 
-              dependencies Geant4::Interface 
-                           ROOT::Physics 
-                           DARK::Event DARK::Framework DARK::DetDescr
-              python_install_path ${PYTHON_INSTALL_PREFIX}
-)
+option(BUILD_EVENT "Build the event library." ON)
+if(BUILD_EVENT)
 
-# Set some target properties
-set_target_properties(SimCore PROPERTIES 
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
-)
+    register_event_object( module_path "SimCore/Event" namespace "ldmx" class "SimCalorimeterHit" type "collection")
+    register_event_object( module_path "SimCore/Event" namespace "ldmx" class "SimTrackerHit"     type "collection")
+    register_event_object( module_path "SimCore/Event" namespace "ldmx" class "SimParticle"       type "map" key "int" )
+
+    # Get all of the event sources that will be included in this library.
+    file(GLOB EVENT_SRC_FILES ${PROJECT_SOURCE_DIR}/src/SimCore/Event/*.cxx)
+
+    # Generate the files needed to build the event classes.
+    setup_library(module SimCore
+                  name Event
+                  dependencies ROOT::Core
+                  sources ${EVENT_SRC_FILES}
+                  register_target)
+                  
+endif()
+
+option(BUILD_SIMCORE "Build the SimCore library." ON)
+if(BUILD_SIMCORE)
+
+    # Configure Geant4
+    setup_geant4_target()
+
+
+    # Setup the library 
+    setup_library(name SimCore 
+                  dependencies Geant4::Interface 
+                               ROOT::Physics
+                               Framework::Configure DetDescr::DetDescr
+                               #DARK::Event DARK::Framework 
+                  python_install_path ${PYTHON_INSTALL_PREFIX})
+
+    # Set some target properties
+    set_target_properties(SimCore PROPERTIES 
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO)
+
+endif()
