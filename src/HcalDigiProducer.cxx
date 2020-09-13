@@ -1,6 +1,6 @@
 /**
  * @file HcalDigiProducer.cxx
- * @brief Class that performs basic ECal digitization
+ * @brief Class that performs basic HCal digitization
  * @author Cameron Bravo, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
  */
@@ -37,6 +37,8 @@ namespace ldmx {
         // physical constants
         //  used to calculate unit conversions
         MeV_ = ps.getParameter<double>("MeV");
+	std::cout << "MeV " << MeV_ << std::endl;
+	std::cout << "nADCs " << nADCs_ << std::endl;
 
         //Time -> clock counts conversion
         //  time [ns] * ( 2^10 / max time in ns ) = clock counts
@@ -44,7 +46,7 @@ namespace ldmx {
 
         // geometry constants
         //  These are used in the noise generation so that we can randomly
-        //  distribute the noise uniformly throughout the ECal channels.
+        //  distribute the noise uniformly throughout the HCal channels.
         nHcalLayers_      = ps.getParameter<int>("nHcalLayers");
         nModulesPerLayer_ = ps.getParameter<int>("nModulesPerLayer");
         nCellsPerModule_  = ps.getParameter<int>("nCellsPerModule");
@@ -68,9 +70,9 @@ namespace ldmx {
     void HcalDigiProducer::produce(Event& event) {
 
         //Empty collection to be filled
-        HgcrocDigiCollection ecalDigis;
-        ecalDigis.setNumSamplesPerDigi( nADCs_ ); 
-        ecalDigis.setSampleOfInterestIndex( iSOI_ );
+        HgcrocDigiCollection hcalDigis;
+        hcalDigis.setNumSamplesPerDigi( nADCs_ ); 
+        hcalDigis.setSampleOfInterestIndex( iSOI_ );
 
         std::set<int> filledDetIDs; //detector IDs that already have a hit in them
 
@@ -78,26 +80,32 @@ namespace ldmx {
          * HGCROC Emulation on Simulated Hits
          *****************************************************************************************/
         //std::cout << "Sim Hits" << std::endl;
-        //get simulated ecal hits from Geant4
+        //get simulated hcal hits from Geant4
         //  the class HcalHitIO in the SimApplication module handles the translation from G4CalorimeterHits to SimCalorimeterHits
         //  this class ensures that only one SimCalorimeterHit is generated per cell, but
         //  multiple "contributions" are still handled within SimCalorimeterHit 
-        auto ecalSimHits{event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS)};
+        auto hcalSimHits{event.getCollection<SimCalorimeterHit>(EventConstants::HCAL_SIM_HITS)};
 
-        for (auto const& simHit : ecalSimHits ) {
+        for (auto const& simHit : hcalSimHits ) {
 
             std::vector<double> voltages, times;
+	    double sumEdep = 0;
+	    int sumPE = 0;
             for ( int iContrib = 0; iContrib < simHit.getNumberOfContribs(); iContrib++ ) {
                 voltages.push_back( simHit.getContrib( iContrib ).edep*MeV_ );
                 times.push_back( simHit.getContrib( iContrib ).time );
+		sumEdep += simHit.getContrib( iContrib ).edep;
+		sumPE += simHit.getContrib( iContrib ).edep*MeV_;
             }
 
-            int hitID = simHit.getID();
+	    int hitID = simHit.getID();
             filledDetIDs.insert( hitID );
-            //std::cout << hitID << " ";
+            std::cout << hitID << " " << "sumEdep " << sumEdep << " pe " << sumPE << std::endl;
             HgcrocDigiCollection::HgcrocDigi digiToAdd;
             if ( hgcroc_->digitize( hitID , voltages , times , digiToAdd ) ) {
-                ecalDigis.addDigi( digiToAdd );
+	        digiToAdd.edep_ = sumEdep;
+	        digiToAdd.pe_ = sumPE;
+	        hcalDigis.addDigi( digiToAdd );
             }
         }
 
@@ -107,7 +115,7 @@ namespace ldmx {
         if ( noise_ ) {
             //std::cout << "Noise Hits" << std::endl;
             //put noise into some empty channels
-            int numEmptyChannels = nTotalChannels_ - ecalDigis.getNumDigis(); //minus number of channels with a hit
+            int numEmptyChannels = nTotalChannels_ - hcalDigis.getNumDigis(); //minus number of channels with a hit
             //noise generator gives us a list of noise amplitudes [mV] that randomly populate the empty
             //channels and are above the readout threshold
             auto noiseHitAmplitudes{noiseGenerator_->generateNoiseHits(numEmptyChannels)};
@@ -136,12 +144,12 @@ namespace ldmx {
     
                 HgcrocDigiCollection::HgcrocDigi digiToAdd;
                 if ( hgcroc_->digitize( noiseID , voltages , times , digiToAdd ) ) {
-                    ecalDigis.addDigi( digiToAdd );
+                    hcalDigis.addDigi( digiToAdd );
                 }
             } //loop over noise amplitudes
         } //if we should do the noise
 
-        event.add("HcalDigis", ecalDigis );
+        event.add("HcalDigis", hcalDigis );
 
         return;
     } //produce

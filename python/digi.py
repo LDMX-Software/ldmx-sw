@@ -5,40 +5,43 @@ with helpful member functions.
 
 Two module-wide parameters are defined.
 
-Attributes
-----------
-nElectronsPerMIP : float
-    Number of e-h pairs created for each MIP in 0.5mm thick Si
-mipSiEnergy : float
-    Energy [MeV] of a single MIP on average in 0.5mm thick Si
 """
 
 from LDMX.Framework.ldmxcfg import Producer
 
-nElectronsPerMIP = 37000.0 #e-h pairs created per MIP <- derived from 0.5mm thick Si
-mipSiEnergy = 0.130 #MeV - corresponds to ~3.5 eV per e-h pair <- derived from 0.5mm thick Si
+nPEPerMIP = 68. #PEs created per MIP 
+mipSiEnergy = 4.66 #MeV - measured 1.4 MeV for a 6mm thick tile, so for 20mm bar = 1.4*20/6      
 
 def HcalHgcrocEmulator() :
     """Get an HGCROC emulator and configure for the HCal specifically
 
     This sets the pulse shape parameters to the ones from a fit
-    to a test readout of an HCal module and then thresholds to the
-    default construction using 37k electrons as the number of
-    electrons per MIP.
+    to a test readout of an HCal module 
     """
 
     from LDMX.Tools import HgcrocEmulator
     hgcroc = HgcrocEmulator.HgcrocEmulator()
 
-    # set defaults with 37k electrons per MIP
-    hgcroc.setThresholdDefaults( nElectronsPerMIP )
+    '''
+    The default calculation for the different thresholds if the following:                                                                                                       
+    - readout is 4 times the rms noise above the pedestal                                                                                                                        
+    - toa is 5 MIPs above the pedestal                                                                                                                                           
+    - tot is 50 MIPs above the pedestal 
+    '''
+    hgcroc.gain = 1. # need to change this?
+    hgcroc.readoutThreshold = 1. # PE                                                                                                                                             
+    hgcroc.toaThreshold = 1.
+    hgcroc.totThreshold = 100000.
+    hgcroc.pedestal = 1.
 
-    # set pulse shape parameters
-    hgcroc.rateUpSlope =  -0.345
-    hgcroc.timeUpSlope = 70.6547
-    hgcroc.rateDnSlope = 0.140068
-    hgcroc.timeDnSlope = 87.7649
-    hgcroc.timePeak    = 77.732
+    # set pulse shape parameters                                                                                                                                              
+    # "[0]/(1.0+exp([1]*(x-[2]+[3]-[4])))/(1.0+exp([5]*(x-[6]+[3]-[4])))",                                                                                                       
+    # /(-0.969(x+58.641-61.5518) /0.0288779*(x+23.3814-61.5518)                                                                                                         
+    hgcroc.rateUpSlope = -0.969
+    hgcroc.timeUpSlope = -58.641
+    hgcroc.rateDnSlope = 0.0288779
+    hgcroc.timeDnSlope = -23.3814
+    hgcroc.timePeak    = -61.5518
 
     return hgcroc
 
@@ -64,10 +67,12 @@ class HcalDigiProducer(Producer) :
 
         self.hgcroc = HcalHgcrocEmulator()
 
-        #Energy -> Volts converstion
+        #Energy -> PE converstion
+        # energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( nPE / 1 MIP) * 4 times = PE  
         #   energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP ) = voltage [mV]
         #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
-        self.MeV = (1./mipSiEnergy)*self.hgcroc.calculateVoltage( nElectronsPerMIP )
+        self.MeV = (1./mipSiEnergy)*nPEPerMIP*4
+        print('MeV ',self.MeV)
 
         import time
         self.randomSeed = int(time.time())

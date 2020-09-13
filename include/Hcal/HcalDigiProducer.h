@@ -24,7 +24,6 @@
 #include "Event/EventConstants.h"
 #include "Event/SimCalorimeterHit.h"
 #include "DetDescr/HcalID.h"
-#include "DetDescr/HcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
 #include "Tools/HgcrocEmulator.h"
@@ -102,7 +101,7 @@ namespace ldmx {
             // Other member variables
 
             /// Put noise into empty channels, not configurable, only helpful in development
-            bool noise_{true};
+            bool noise_{false};
 
             /// Hgcroc Emulator to digitize analog voltage signals
             std::unique_ptr<HgcrocEmulator> hgcroc_;
