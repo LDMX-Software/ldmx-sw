@@ -151,6 +151,7 @@ namespace ldmx {
                 RunHeader runHeader(runForGeneration_);
                 runHeader.setRunStart(std::time(nullptr)); //set run starting
                 runHeader_ = &runHeader; //give handle to run header to process
+		outFile.writeRunHeader(runHeader); //add run header to file
 
                 for (auto module : sequence_) 
                     if (dynamic_cast<Producer*>(module)) 
@@ -210,7 +211,6 @@ namespace ldmx {
                 for (auto module : sequence_) module->onFileClose(outFile);
                 
                 runHeader.setRunEnd(std::time(nullptr));
-                outFile.writeRunHeader(runHeader); //add run header to file
                 outFile.close();
                 
             } else {
