@@ -13,11 +13,8 @@
 
 namespace ldmx {
 
-    RunHeader::RunHeader(int runNumber, std::string detectorName, 
-                         std::string description) :
-        runNumber_(runNumber), 
-        detectorName_(detectorName), 
-        description_(description) {
+    RunHeader::RunHeader(int runNumber) :
+        runNumber_(runNumber) {
     }
 
     void RunHeader::Print() const {
