@@ -30,7 +30,7 @@ class EcalHexReadoutGeometry() :
         # parameters which are somewhat independent of GDML
         self.nCellRHeight = 0
 
-        self.verbose = 1
+        self.verbose = 0
 
     def __str__(self) :
         """Stringify this configuration class"""
