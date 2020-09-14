@@ -92,39 +92,54 @@ namespace ldmx {
         //setup up pulse by changing the amplitude and timing parameters
         configurePulse( signalAmplitude , timeInWindow );
 
+        //Configure chip settings based off of table (that may have been passed)
+        double gain             = getCondition( channelID , "gain" , gain_ );
+        double pedestal         = getCondition( channelID , "pedestal" , pedestal_ );
+        double readoutThreshold = getCondition( channelID , "readoutThreshold" , readoutThreshold_ );
+        double toaThreshold     = getCondition( channelID , "toaThreshold" , toaThreshold_ );
+        double totThreshold     = getCondition( channelID , "totThreshold" , totThreshold_ );
+        double measTime         = getCondition( channelID , "measTime" , measTime_ );
+        double drainRate        = getCondition( channelID , "drainRate" , drainRate_ );
+
+        auto measurePulse = [this,&gain,&pedestal](double time, bool withNoise) {
+            auto signal = gain*pedestal + pulseFunc_.Eval(time);
+            if(withNoise) signal += noiseInjector_->Gaus(0.,noiseRMS_);
+            return signal;
+        };
+
         // choose readout mode
         double pulsePeak = measurePulse( timeInWindow , false );
         if (verbose_) {
             std::cout << "Pulse: { "
-                << "Amplitude: " << signalAmplitude+gain_*pedestal_ << "mV, "
+                << "Amplitude: " << signalAmplitude+gain*pedestal << "mV, "
                 << "Beginning: " << measurePulse(0.,false) << "mV, "
                 << "Time: " << timeInWindow << "ns } -> ";
         }
-        if ( pulsePeak < readoutThreshold_ ) {
+        if ( pulsePeak < readoutThreshold ) {
             //below readout threshold -> skip this hit
             if (verbose_) std::cout << "Below Readout" << std::endl;
             return false; //skip this hit
-        } else if ( pulsePeak < totThreshold_ ) {
+        } else if ( pulsePeak < totThreshold ) {
             //below TOT threshold -> do ADC readout mode
             if (verbose_) std::cout << "ADC Mode { ";
 
             //measure time of arrival (TOA) using TOA threshold
             double toa(0.);
             // make sure pulse crosses TOA threshold
-            if ( measurePulse(0.,false) < toaThreshold_ and pulsePeak > toaThreshold_ ) {
-                toa = pulseFunc_.GetX(toaThreshold_-gain_*pedestal_, -nADCs_*clockCycle_, timeInWindow);
+            if ( measurePulse(0.,false) < toaThreshold and pulsePeak > toaThreshold ) {
+                toa = pulseFunc_.GetX(toaThreshold-gain*pedestal, -nADCs_*clockCycle_, timeInWindow);
             }
             if (verbose_) std::cout << "TOA: " << toa << "ns, ";
 
             //measure ADCs
             for ( unsigned int iADC = 0; iADC < digiToAdd.samples_.size(); iADC++ ) {
-                double measTime = iADC*clockCycle_ + measTime_;
-                digiToAdd.samples_[iADC].adc_t_   = measurePulse( measTime, noise_ )/gain_;
-                digiToAdd.samples_[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.samples_.at(iADC-1).adc_t_ : pedestal_; 
+                double fullMeasTime = iADC*clockCycle_ + measTime;
+                digiToAdd.samples_[iADC].adc_t_   = measurePulse( fullMeasTime, noise_ )/gain;
+                digiToAdd.samples_[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.samples_.at(iADC-1).adc_t_ : pedestal; 
                 digiToAdd.samples_[iADC].toa_     = toa * ns_;
                 digiToAdd.samples_[iADC].tot_progress_ = false;
                 digiToAdd.samples_[iADC].tot_complete_ = false;
-                if (verbose_) std::cout << " ADC " << iADC << ": " << digiToAdd.samples_[iADC].adc_t_*gain_ << "mV, ";
+                if (verbose_) std::cout << " ADC " << iADC << ": " << digiToAdd.samples_[iADC].adc_t_*gain << "mV, ";
             }
             if (verbose_) std::cout << "}" << std::endl;
 
@@ -139,12 +154,12 @@ namespace ldmx {
             //      y-intercept = pulse amplitude
             //      slope       = drain rate
             //  ==> x-intercept = amplitude / rate
-            double tot = pulsePeak / drainRate_;
+            double tot = pulsePeak / drainRate;
 
             double toa(0.); //default is earliest possible time
             // check if first half is just always above readout
-            if ( measurePulse(0.,false) < totThreshold_ ) 
-                toa = pulseFunc_.GetX(totThreshold_-gain_*pedestal_, 0., timeInWindow);
+            if ( measurePulse(0.,false) < totThreshold ) 
+                toa = pulseFunc_.GetX(totThreshold-gain*pedestal, 0., timeInWindow);
 
             // calculate the index that tot will complete on
             int num_whole_clocks = int( tot / clockCycle_ );
@@ -172,14 +187,14 @@ namespace ldmx {
                     digiToAdd.samples_[iADC].tot_complete_ = true;
                 } else {
                     //TOT still in progress or already completed
-                    double measTime = iADC*clockCycle_ + measTime_;
+                    double fullMeasTime = iADC*clockCycle_ + measTime;
                     //TODO what does the pulse ADC measurement look like during TOT
-                    digiToAdd.samples_[iADC].adc_t_ = measurePulse( measTime, noise_ )/gain_;
+                    digiToAdd.samples_[iADC].adc_t_ = measurePulse( fullMeasTime, noise_ )/gain;
                     digiToAdd.samples_[iADC].tot_progress_ = (iADC < num_whole_clocks);
                     digiToAdd.samples_[iADC].tot_complete_ = false;
                 } 
                 digiToAdd.samples_[iADC].toa_     = toa*ns_;
-                digiToAdd.samples_[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.samples_.at(iADC-1).adc_t_ : pedestal_;
+                digiToAdd.samples_[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.samples_.at(iADC-1).adc_t_ : pedestal;
             }
 
         } //where is the amplitude of the hit w.r.t. readout and TOT thresholds
