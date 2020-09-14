@@ -1,6 +1,6 @@
 
 #include "DetDescr/EcalHexReadout.h"
-#include "Framework/Parameters.h"
+#include "Framework/Configure/Parameters.h"
 
 #include "TCanvas.h" //for dumping map to file
 #include "TStyle.h" //for no stats box
