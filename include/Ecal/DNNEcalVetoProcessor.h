@@ -13,9 +13,7 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h"
 
-#ifdef LDMX_USE_ONNXRUNTIME
 #include "Tools/ONNXRuntime.h"
-#endif
 
 namespace ldmx {
 
@@ -59,9 +57,7 @@ namespace ldmx {
 
     float disc_cut_ = -99;
     std::vector<std::vector<float>> data_;
-#ifdef LDMX_USE_ONNXRUNTIME
     std::unique_ptr<Ort::ONNXRuntime> rt_;
-#endif
 
     /** Name of the collection which will containt the results. */
     std::string collectionName_{"DNNEcalVeto"};
