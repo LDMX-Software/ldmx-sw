@@ -189,10 +189,10 @@ namespace ldmx {
             std::string histoFilename_;
 
             /** Pointer to the current EventHeader, used for Conditions information */
-            const EventHeader* eventHeader_;
+            const EventHeader* eventHeader_{0};
 
             /** Pointer to the current RunHeader, used for Conditions information */
-            const RunHeader* runHeader_;
+            const RunHeader* runHeader_{0};
 
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};
