@@ -4,7 +4,7 @@
 
 #include <cstdint>
 #include <iostream>
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 
 namespace ldmx {
 
