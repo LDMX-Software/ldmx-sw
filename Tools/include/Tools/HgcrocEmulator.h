@@ -57,8 +57,9 @@ namespace ldmx {
              * @param table DoubleTableConditions to be used for chip parameters
              */
             void condition(const DoubleTableCondition& table) {
+                //reset cache of column numbers if table changes
+                if(&table!=chipConditions_) conditionNamesToIndex_.clear();
                 chipConditions_ = &table;
-                conditionNamesToIndex_.clear();
             }
 
             /**
