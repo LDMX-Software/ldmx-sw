@@ -78,6 +78,7 @@ int main(int argc, char* argv[]) {
     } catch (Exception& e) {
         std::cerr << "Configuration Error [" << e.name() << "] : " << e.message() << std::endl;
         std::cerr << "  at " << e.module() << ":" << e.line() << " in " << e.function() << std::endl;
+	std::cerr << "Stack trace: " << std::endl << e.stackTrace();
         return 1;
     }
 
