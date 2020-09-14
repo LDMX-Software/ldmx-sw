@@ -1,4 +1,4 @@
-
+"""ConditionsProvider for EcalHexReadout and other Ecal geometry-related aspects"""
 from LDMX.Framework import ldmxcfg
 from LDMX.DetDescr import EcalHexReadout
 
