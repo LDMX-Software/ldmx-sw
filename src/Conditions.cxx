@@ -49,14 +49,23 @@ namespace ldmx {
 
     const ConditionsObject* Conditions::getConditionInternal(const std::string& condition_name, const EventHeader& context, const RunHeader& run_context) {
         auto cacheptr = cache_.find(condition_name);
-        
+
+	if (!process_.getRunHeader()) {
+	    EXCEPTION_RAISE("ConditionsException","Attempting to get a condition with a null RunHeader");
+	}
+
+	if (!process_.getEventHeader()) {
+	    EXCEPTION_RAISE("ConditionsException","Attempting to get a condition with a null EventHeader");
+	}
+		
+	
         if (cacheptr == cache_.end()) {
             auto copptr = providerMap_.find(condition_name);
             
             if (copptr==providerMap_.end()) {
                 EXCEPTION_RAISE("ConditionUnavailable",std::string("No provider is available for : "+condition_name));
             }
-            
+
             std::pair<const ConditionsObject*,ConditionsIOV> cond=copptr->second->getCondition(condition_name,context,run_context);
             
             if (!cond.first) {
@@ -68,6 +77,7 @@ namespace ldmx {
             ce.obj=cond.first;
             ce.provider=copptr->second;
             cache_[condition_name]=ce;
+	    return ce.obj;
         } else {
             /// if still valid, we return what we have
             if (cacheptr->second.iov.validForEvent(context)) return cacheptr->second.obj;
