@@ -64,7 +64,11 @@ namespace ldmx {
                     EXCEPTION_RAISE("ConditionUnavailableException",
                             std::string("Requested condition not available for unspecific reason: ")+condition_name);
                 }
-                return dynamic_cast<const T&>(*obj);
+		try {
+		    return dynamic_cast<const T&>(*obj);
+		} catch (...) {
+		    EXCEPTION_RAISE("ConditionsTypeException","Conditions type problem with "+condition_name+" "+typeid(*obj).name());
+		}
             }
 
             /**
