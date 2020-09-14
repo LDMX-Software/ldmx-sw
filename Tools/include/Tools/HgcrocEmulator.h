@@ -6,6 +6,7 @@
 #include "Event/HgcrocDigiCollection.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Framework/Parameters.h"
+#include "Conditions/SimpleTableCondition.h"
 
 //----------//
 //   ROOT   //
@@ -53,9 +54,12 @@ namespace ldmx {
              * Passes the chips conditions to be cached here and
              * used later in digitization.
              *
-             * @param
+             * @param table DoubleTableConditions to be used for chip parameters
              */
-            void condition( );
+            void condition(const DoubleTableCondition& table) {
+                chipConditions_ = &table;
+                conditionNamesToIndex_.clear();
+            }
 
             /**
              * Digitize the signals from the simulated hits
@@ -148,16 +152,26 @@ namespace ldmx {
             }
 
             /**
-             * Measure the pulse
-             *
-             * @param[in] time time to measure [ns]
-             * @param[in] withNoise flag to determine if we should include noise
-             * @return voltage measured [mV]
+             * Get condition for input chip ID, condition name, and default value
+             * 
+             * @param[in] id chip global integer ID used in condition table
+             * @param[in] name std::string name of chip parameter in table
+             * @param[in] def default value for parameter if not found in table (or table not set)
+             * @return value of chip parameter
              */
-            double measurePulse(double time, bool withNoise) const {
-                auto signal = gain_*pedestal_ + pulseFunc_.Eval(time);
-                if ( withNoise ) signal += noiseInjector_->Gaus( 0. , noiseRMS_ );
-                return signal;
+            double getCondition(int id, const std::string& name, double def) const {
+                //check if emulator has been passed a table of conditions
+                if (!chipConditions_) return def;
+                if ( conditionNamesToIndex_.count(name) == 0 ) 
+                    conditionNamesToIndex_[name] = chipConditions_->getColumnNumber(name);
+                double condition{def};
+                try {
+                    condition = chipConditions_->get(id,conditionNamesToIndex_.at(name));
+                } catch(Exception&) {
+                    //ignore thrown exceptions and use default instead
+                    return def;
+                }
+                return condition;
             }
 
         private:
@@ -211,6 +225,22 @@ namespace ldmx {
             /**************************************************************************************
              * Chip-Dependent Parameters (Conditions)
              *************************************************************************************/
+
+            /**
+             * Handle to table of chip-dependent conditions
+             *
+             * The defaults are listed below and are separate parameters
+             * passed through the python configuration.
+             */
+            const DoubleTableCondition* chipConditions_{nullptr};
+
+            /**
+             * Map of condition names to column numbers
+             *
+             * mutable so that we can update the cached column values
+             * in getCondition during processing.
+             */
+            mutable std::map<std::string,int> conditionNamesToIndex_;
 
             /// gain setting of the chip [mV / ADC units]
             double gain_;

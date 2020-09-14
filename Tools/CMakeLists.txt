@@ -14,7 +14,7 @@ find_package(ONNXRuntime 1.2.0)
 
 # Setup the library
 setup_library(name Tools
-              dependencies DARK::Framework DARK::Event
+              dependencies DARK::Framework DARK::Event DARK::Conditions
                            ONNXRuntime::Interface
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
