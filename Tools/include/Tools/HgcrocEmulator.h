@@ -118,6 +118,11 @@ namespace ldmx {
              * This function incorporate the pedestal_ and optionally includes noise
              * according to noiseRMS_.
              *
+             * @note For more realism, some chip parameters should change depending on the
+             * chip they are coming from. This should be modified here, with a package
+             * of "HgcrocConditions" passed to this function to configure the emulator
+             * before digitizing.
+             *
              * @param[in] channelID raw integer ID for this readout channel
              * @param[in] voltages list of voltage amplitudes going into the chip
              * @param[in] times list of times corresponding to those voltage amplitudes
@@ -179,6 +184,9 @@ namespace ldmx {
             /// Time interval for chip clock [ns]
             double clockCycle_;
 
+            /// Jitter of timing mechanism in the chip [ns]
+            double timingJitter_;
+
             /// Maximum TOT measured by chip [ns]
             double totMax_;
 
@@ -219,14 +227,15 @@ namespace ldmx {
             /// Min threshold for measuring TOT [mV]
             double totThreshold_;
 
-            /// Jitter of timing mechanism in the chip [ns]
-            double timingJitter_;
-
             /// Measurement time relative to clock cycle [ns]
             double measTime_;
 
             /// Rate that charge drains off HGC ROC after being saturated [mV/ns]
             double drainRate_;
+
+            /**************************************************************************************
+             * Helpful Member Objects
+             *************************************************************************************/
 
             /// Generates Gaussian noise on top of real hits
             std::unique_ptr<TRandom3> noiseInjector_;

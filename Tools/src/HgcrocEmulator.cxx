@@ -10,18 +10,11 @@ namespace ldmx {
         //the digitization procedure.
         noiseInjector_ = std::make_unique<TRandom3>(time(nullptr));
 
-        //settings of readout chip
+        //settings of readout chip that are the same for all chips
         //  used  in actual digitization
-        gain_             = ps.getParameter<double>("gain");
-        pedestal_         = ps.getParameter<double>("pedestal");
         noiseRMS_         = ps.getParameter<double>("noiseRMS");
-        readoutThreshold_ = ps.getParameter<double>("readoutThreshold");
-        toaThreshold_     = ps.getParameter<double>("toaThreshold");
-        totThreshold_     = ps.getParameter<double>("totThreshold");
         timingJitter_     = ps.getParameter<double>("timingJitter");
         clockCycle_       = ps.getParameter<double>("clockCycle");
-        measTime_         = ps.getParameter<double>("measTime");
-        drainRate_        = ps.getParameter<double>("drainRate");
         totMax_           = ps.getParameter<double>("totMax");
         rateUpSlope_      = ps.getParameter<double>("rateUpSlope");
         timeUpSlope_      = ps.getParameter<double>("timeUpSlope");
@@ -30,6 +23,18 @@ namespace ldmx {
         timePeak_         = ps.getParameter<double>("timePeak");
         nADCs_            = ps.getParameter<int>("nADCs");
         iSOI_             = ps.getParameter<int>("iSOI");
+
+        //conditions/settings of chip that may change between chips
+        //  the ones passed here are the "defaults", i.e. if
+        //  no extra conditions information is passed, then the emulator
+        //  uses these parameters
+        gain_             = ps.getParameter<double>("gain");
+        pedestal_         = ps.getParameter<double>("pedestal");
+        readoutThreshold_ = ps.getParameter<double>("readoutThreshold");
+        toaThreshold_     = ps.getParameter<double>("toaThreshold");
+        totThreshold_     = ps.getParameter<double>("totThreshold");
+        measTime_         = ps.getParameter<double>("measTime");
+        drainRate_        = ps.getParameter<double>("drainRate");
 
         //Time -> clock counts conversion
         //  time [ns] * ( 2^10 / max time in ns ) = clock counts
