@@ -65,7 +65,7 @@ class EcalDigiProducer(Producer) :
         self.hgcroc = EcalHgcrocEmulator()
 
         #Energy -> Volts converstion
-        #   energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP ) = voltage [mV]
+        #   energy [MeV] ( 1 MIP / energy [MeV] ) ( voltage [mV] / 1 MIP ) = voltage [mV]
         #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
         self.MeV = (1./mipSiEnergy)*self.hgcroc.calculateVoltage( nElectronsPerMIP )
 

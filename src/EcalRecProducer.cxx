@@ -49,7 +49,7 @@ namespace ldmx {
 
             //ID from first digi sample
             //  assuming rest of samples have same ID
-            EcalID id(digi.id_);
+            EcalID id(digi.id());
             
             //ID to real space position
             double x,y,z;
@@ -57,13 +57,13 @@ namespace ldmx {
             
             //TOA is the time of arrival with respect to the 25ns clock window
             //  TODO what to do if hit NOT in first clock cycle?
-            double timeRelClock25 = digi.samples_.at(0).toa_*(clockCycle_/1024); //ns
+            double timeRelClock25 = digi.begin()->toa()*(clockCycle_/1024); //ns
             double hitTime = timeRelClock25;
 
             //get energy estimate from all digi samples
             double siEnergy(0.);
 
-            /**
+            /* debug printout
             std::cout << "Recon { "
                 << "ID: " << id << ", "
                 << "TOA: " << hitTime << "ns } ";
@@ -99,14 +99,13 @@ namespace ldmx {
                 //  p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
                 //These measurements can be used to fit the pulse shape if TOT is not available
                 
-                //std::cout << "ADC Mode -> ";
                 TH1F voltageMeasurements( "voltageMeasurements" , "voltageMeasurements" ,
                         10.*clockCycle_ , 0. , 10.*clockCycle_ );
 
                 double maxMeas{0.};
                 int numWholeClocks{0};
-                for ( auto const &s : digi.samples_ ) {
-                    double voltage = (s.adc_t_ - pedestal_)*gain_; //mV
+                for ( auto it = digi.begin(); it < digi.end(); it++) {
+                    double voltage = (it->adc_t() - pedestal_)*gain_; //mV
                     if ( voltage > maxMeas ) maxMeas = voltage;
                     double time    = numWholeClocks*clockCycle_; //+ offestWithinClock; //ns
                     voltageMeasurements.Fill( time , voltage );
@@ -122,8 +121,12 @@ namespace ldmx {
                     //just use the maximum measured voltage
                     siEnergy = (maxMeas)*mV_;
                 }
+
+                /* debug printout
+                std::cout << "ADC Mode -> "
+                          << siEnergy << " MeV" << std::endl;
+                 */
             }
-            //std::cout << siEnergy << "MeV" << std::endl;
             
             //incorporate layer weights
             int layer = id.layer();
