@@ -69,3 +69,36 @@ namespace ldmx {
     }
 
 } //ldmx
+
+std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection::Sample& sample) {
+    s << "Sample { "
+      << "tot prog: " << sample.isTOTinProgress() << ", "
+      << "tot comp: " << sample.isTOTComplete() << ", ";
+    if(sample.isTOTComplete() and sample.isTOTinProgress())
+        s << "adc t: " << sample.adc_t() << ", " << "tot: " << sample.tot() << ", ";
+    else if(sample.isTOTComplete())
+        s << "adc t-1: " << sample.adc_tm1() << ", " << "tot: " << sample.tot() << ", ";
+    else
+        s << "adc t-1: " << sample.adc_tm1() << ", " << "adc t: " << sample.adc_t() << ", ";
+
+    s << "toa: " << sample.toa() << " }";
+    return s;
+}
+
+std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection::HgcrocDigi& digi) {
+    s << "HgcrocDigi { ";
+
+    if ( digi.isADC() ) 
+        s << "ADC Mode -> SOI: " << digi.soi() << " }";
+    else
+        s << "TOT Mode -> " << digi.tot() << " }";
+    
+    return s;
+}
+
+std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection& col) {
+    s << "HgcrocDigiCollection { ";
+    for ( unsigned int iDigi = 0; iDigi < col.getNumDigis(); iDigi++ ) s << col.getDigi(iDigi) << "\n";
+    s << "}";
+    return s;
+}
