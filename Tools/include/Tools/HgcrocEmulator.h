@@ -137,7 +137,7 @@ namespace ldmx {
             bool digitize( const int &channelID,
                     const std::vector<double> &voltages, 
                     const std::vector<double> &times, 
-                    HgcrocDigiCollection::HgcrocDigi &digiToAdd ) const;
+                    std::vector<HgcrocDigiCollection::Sample> &digiToAdd ) const;
         
         private:
 

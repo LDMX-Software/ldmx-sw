@@ -35,144 +35,266 @@ namespace ldmx {
         public:
         
             /**
-             * @struct Sample
+             * @class Sample
              * @brief One sample of a digi channel corresponding to one clock of the HGCROC chip
              *
              * Not all of these measurements are valid in each sample.
-             * The valid measurements depend on the tot_progress_ and tot_complete_ flags.
+             * The valid measurements depend on the tot_progress and tot_complete flags.
              *
-             * The toa_ measurement is always valid and is inserted as the third measurement in the 32-bit word.
+             * The TOA measurement is always valid and is inserted as the third measurement in the 32-bit word.
              *
              * If the TOT measurment is NOT complete, then the other
              * two valid measurements (in order) are
-             *  1. ADC of the previous sample (adc_tm1_)
-             *  2. ADC of this sample (adc_t_)
+             *  1. ADC of the previous sample (adc_tm1)
+             *  2. ADC of this sample (adc_t)
              *
              * If the TOT is NOT in progress and the TOT is complete, then
-             *  1. ADC of the previous sample (adc_tm1_)
-             *  2. TOT measurement (tot_)
+             *  1. ADC of the previous sample (adc_tm1)
+             *  2. TOT measurement (tot)
              *
              * If both flags are true, then
-             *  1. ADC of this sample (adc_t_)
-             *  2. TOT measurement (tot_)
+             *  1. ADC of this sample (adc_t)
+             *  2. TOT measurement (tot)
              *
              * Usually several samples are used for each channel to re-construct the hit.
              */
-            struct Sample {
-                /** ADC counts in this channel at this clock */
-                int adc_t_{-1};
-        
-                /** ADC counts in this channel at the previous clock */
-                int adc_tm1_{-1};
-        
-                /** Time counts over threshhold in this channel during this clock */
-                int tot_{-1};
-        
-                /** Time counts when signal arrived in this channel during this clock */
-                int toa_{-1};
-        
-                /** Is the TOT measurement in progress during this sample? */
-                bool tot_progress_{false};
-        
-                /** Is the TOT measurement complete at this sample? */
-                bool tot_complete_{false};
+            class Sample {
 
-                /**
-                 * Helpful alternative constructor
-                 *
-                 * Decodes the sample information from the input word.
-                 */
-                Sample(int32_t word) { decode(word); }
+                public:
+    
+                    /**
+                     * Helpful alternative constructor
+                     *
+                     * Encodes the various measurements into the word depending on the passed flags.
+                     * Use this constructor inside of the chip emulator when converting voltage
+                     * pulses into DIGIs.
+                     *
+                     * @note This is where the measurements to word translation occurs.
+                     */
+                    Sample(bool tot_progress, bool tot_complete, int firstMeas, int seconMeas, int toa);
+    
+                    /**
+                     * Basic constructor
+                     *
+                     * Use this constructor when translating binary data coming off the 
+                     * detector into our event model.
+                     */
+                    Sample(uint32_t w) : word_(w) { }
 
-                /**
-                 * Default constructor
-                 */
-                Sample() { }
+                    /**
+                     * Default constructor
+                     *
+                     * Not used, but required for Event dictionary generation
+                     */
+                    Sample() { }
+    
+                    /**
+                     * Get the first flag from the sample
+                     * checking if TOT is in progress during this sample
+                     *
+                     * @return true if TOT is in progress during this sample
+                     */
+                    bool isTOTinProgress() const {
+                        return (ONE_BIT_MASK & ( word_ >> FIRSTFLAG_POS ));
+                    }
+    
+                    /**
+                     * Get the second flag from the sample
+                     * checking if TOT is complete at this sample
+                     *
+                     * @return true if TOT is complete and should use this sample to get TOT measurement
+                     */
+                    bool isTOTComplete() const {
+                        return (ONE_BIT_MASK & ( word_ >> SECONFLAG_POS ));
+                    }
+    
+                    /**
+                     * Get the Time Of Arrival of this sample
+                     * which is always the third position in all readout modes.
+                     *
+                     * @return 10-bit measurement of TOA
+                     */
+                    int toa() const {
+                        return (TEN_BIT_MASK & word_);
+                    }
+    
+                    /**
+                     * Get the TOT measurement from this sample
+                     * 
+                     * @note Does not check if this is the TOT Complete sample!
+                     *
+                     * Expands the 10-bit measurment inside the sample into
+                     * the 12-bit actual measurement of TOT.
+                     *
+                     * @return 12-bit measurement of TOT
+                     */
+                    int tot() const {
+                        int seconMeas = secon();
+                        if ( seconMeas > 512 ) seconMeas = (seconMeas - 512)*8;
+                        return seconMeas;
+                    }
+    
+                    /**
+                     * Get the last ADC measurement from this sample
+                     *
+                     * @note Does not check if this sample has a valid ADC t-1 measurement.
+                     *
+                     * @return 10-bit measurement of ADC t-1
+                     */
+                    int adc_tm1() const {
+                        return first();
+                    }
+    
+                    /**
+                     * Get the ADC measurement from this sample
+                     *
+                     * Checks which running mode we are in to determine
+                     * which position the measurement should be taken from.
+                     *
+                     * @return 10-bit measurement of current ADC
+                     */
+                    int adc_t() const {
+                        if ( not isTOTComplete() ) return secon(); //running modes
+                        else return first(); //calibration mode
+                    }
 
-                /**
-                 * Encode this Sample into a 32-bit word.
-                 *
-                 * @note This is where the measurements to word translation occurs.
-                 *
-                 * Any measurements that aren't used as indicated by the flags
-                 * are ignored and not saved into the word.
-                 *
-                 * @note This should only be used within HgcrocDigiCollection!
-                 */
-                int32_t encode() const;
+                private:
+    
+                    /**
+                     * Get the first 10-bit measurement out of the sample
+                     *
+                     * @return 10-bit measurement at first position in sample
+                     */
+                    int first() const {
+                        return TEN_BIT_MASK & ( word_ >> FIRSTMEAS_POS );
+                    }
+    
+                    /**
+                     * Get the second 10-bit measurement out of the sample
+                     *
+                     * @return 10-bit measurement at second position in sample
+                     */
+                    int secon() const {
+                        return TEN_BIT_MASK & ( word_ >> SECONMEAS_POS );
+                    }
 
-                /**
-                 * Decode the input 32-bit word into the members of this sample.
-                 *
-                 * @note This is where the word to measurements translation occurs.
-                 *
-                 * The first two bits are interpreted as:
-                 *  1. Whether TOT measurement is in progress during this sample
-                 *  2. TOT measurement is complete at this sample
-                 *
-                 * After the first two bits, the next 30 bits are broken into 
-                 * three 10 bit measurements. The first two measurments depend
-                 * on the two flags above. The third measurement is set to be
-                 * the time of arrival measurement (TOA).
-                 *
-                 * Any measurements that aren't set becuase of the interpretation
-                 * from the flags are left as their default value.
-                 *
-                 * @note This should only be used within HgcrocDigiCollection!
-                 */
-                void decode(int32_t word);
+                private:
+    
+                    /// The actual 32-bit word spit out by the chip
+                    uint32_t word_;
 
             }; //Sample
 
         public:
 
             /**
-             * @struct HgcrocDigi
+             * @class HgcrocDigi
              * One DIGI signal coming from the HGC ROC
              *
-             * This struct stores the channel ID and
-             * the decoded samples coming from this channel
+             * This stores the channel ID and the samples coming from a channel
+             * It really only makes sense to use this object when retrieving DIGIs
+             * from the collection. Do not try to make one of these yourself.
              */
-            struct HgcrocDigi {
+            class HgcrocDigi {
 
-                /// channel ID where this signal is coming from
-                int id_;
+                public:
 
-                /// the decoded samples that are in this digi
-                std::vector< HgcrocDigiCollection::Sample > samples_;
+                    /**
+                     * Constructor
+                     *
+                     * Passes required variables to this structure.
+                     *
+                     * @param[in] id global integer ID for the DIGI channel
+                     * @param[in] first iterator pointing to first sample of this DIGI in the collection
+                     * @param[in] collection const reference to the collection this DIGI references
+                     */
+                    HgcrocDigi(unsigned int id, 
+                            std::vector<HgcrocDigiCollection::Sample>::const_iterator first, 
+                            const HgcrocDigiCollection& collection) :
+                        id_(id), first_(first), collection_(collection) { }
+    
+                    /**
+                     * Get the ID for this DIGI
+                     *
+                     * @return global integer ID for this DIGI channel
+                     */
+                    unsigned int id() const { return id_; }
 
-                /**
-                 * Check if this DIGI is an ADC measurement
-                 */
-                bool isADC() const { 
-                    for ( auto const& s : samples_ ) {
-                        if ( s.tot_progress_ or s.tot_complete_ ) return false;
+                    /**
+                     * Get the starting iterator for looping through this DIGI
+                     *
+                     * @return const vector iterator pointing to start of this DIGI
+                     */
+                    auto begin() const { return first_; }
+
+                    /**
+                     * Get the ending iterator for looping through this DIGI
+                     *
+                     * @return const vector iterator pointing to end of this DIGI
+                     */
+                    auto end() const { return first_+collection_.getNumSamplesPerDigi(); }
+
+                    /**
+                     * Check if this DIGI is an ADC measurement
+                     *
+                     * We consider this DIGI an ADC measurement if both of the flags
+                     * for all the samples are false.
+                     *
+                     * @return true if we consider this DIGI an ADC measurement
+                     */
+                    bool isADC() const { 
+                        for ( auto it = begin(); it < end(); it++) {
+                            if ( it->isTOTinProgress() or it->isTOTComplete() ) return false;
+                        }
+                        return true;
                     }
-                    return true;
-                }
-
-                /**
-                 * Check if this DIGI is a TOT measurement
-                 *
-                 * @note Just NOT an ADC measurement right now.
-                 * May need to include the callibration case in the future.
-                 */
-                bool isTOT() const { 
-                    return !isADC();
-                }
+    
+                    /**
+                     * Check if this DIGI is a TOT measurement
+                     *
+                     * @note Just NOT an ADC measurement right now.
+                     * May need to include the callibration case in the future.
+                     *
+                     * @return true if this DIGI is a TOT measurement
+                     */
+                    bool isTOT() const { 
+                        return !isADC();
+                    }
+                    
+                    /**
+                     * Get the 12-bit decoded TOT measurement from this DIGI
+                     *
+                     * @return 12-bit TOT measurement, returns -1 if this DIGI is not TOT
+                     */
+                    int tot() const {
+                        if ( not isTOT() ) return -1;
+                        for ( auto it = begin(); it < end(); it++) {
+                            if ( it->isTOTComplete() ) return it->tot();
+                        }
+                        //this DIGI is TOT, but never completed
+                        //  ==> return maximum
+                        return 4096;
+                    }
+    
+                    /**
+                     * Get the sample of interest from this DIGI
+                     *
+                     * @return Sample that is the sample of interest in this DIGI
+                     */
+                    const HgcrocDigiCollection::Sample& soi() const {
+                        return *(first_+collection_.getSampleOfInterestIndex());
+                    }
                 
-                /**
-                 * Get the 12-bit decoded TOT measurement from this DIGI
-                 */
-                int tot() const {
-                    if ( not isTOT() ) return -1;
-                    for ( auto const& s : samples_ ) {
-                        if ( s.tot_complete_ ) return s.tot_;
-                    }
-                    //this DIGI is TOT, but never completed
-                    //  ==> return maximum
-                    return 4096;
-                }
+                private:
+
+                    /// channel ID where this signal is coming from
+                    unsigned int id_;
+    
+                    /// the location of the first sample that are in this digi
+                    std::vector< HgcrocDigiCollection::Sample >::const_iterator first_;
+    
+                    /// Reference to collection that owns this DIGI
+                    const HgcrocDigiCollection& collection_;
 
             }; //HgcrocDigi
 
@@ -237,14 +359,15 @@ namespace ldmx {
              *
              * Each "digi" is numSamplesPerDigi_ samples.
              * The sample is a single 32-bit word that is then translated into
-             * a Sample depending on the first two bits.
+             * the 10-bit measurements depending on the first two bits.
              *
              * @sa Sample for how the valid measurements depend on the flags.
+             * @sa HgcrocDigi for how to use the object returned from this function
              *
              * @param[in] digiIndex index of digi to decode
-             * @return vector of Sample represeting the decoded digis
+             * @return HgcrocDigi package with accessors
              */
-            HgcrocDigi getDigi( unsigned int digiIndex ) const;
+            const HgcrocDigi getDigi( unsigned int digiIndex ) const;
 
             /**
              * Get total number of digis
@@ -253,13 +376,14 @@ namespace ldmx {
             unsigned int getNumDigis() const { return channelIDs_.size(); }
 
             /**
-             * Translate and add samples to collection
+             * Add samples to collection
              *
              * @sa Sample for how the valid measurements depend on the flags.
              *
-             * @param[in] digi HgcrocDigi package with the new samples and channel ID
+             * @param[in] id global integer ID for this channel
+             * @param[in] digi list of new samples to add
              */
-            void addDigi( const HgcrocDigi &digi );
+            void addDigi( unsigned int id, const std::vector<Sample>& digi );
 
         private:
 
@@ -284,16 +408,16 @@ namespace ldmx {
         private:
 
             /** list of channel IDs that we have digis for */
-            std::vector< int > channelIDs_;
+            std::vector< unsigned int > channelIDs_;
 
             /** list of samples that we have been given */
-            std::vector< int32_t > samples_;
+            std::vector< Sample > samples_;
 
             /** number of samples for each digi */
-            unsigned int numSamplesPerDigi_{1};
+            unsigned int numSamplesPerDigi_;
 
             /** index for the sample of interest in the samples list */
-            unsigned int sampleOfInterest_{0};
+            unsigned int sampleOfInterest_;
 
             /**
              * The ROOT class definition.

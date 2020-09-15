@@ -58,12 +58,10 @@ namespace ldmx {
             const int &channelID,
             const std::vector<double> &voltages,
             const std::vector<double> &times,
-            HgcrocDigiCollection::HgcrocDigi &digiToAdd
+            std::vector<HgcrocDigiCollection::Sample> &digiToAdd
     ) const {
 
-        digiToAdd.id_ = channelID; //set ID for this DIGI
-        digiToAdd.samples_.clear(); //make sure it is clean
-        digiToAdd.samples_.resize( nADCs_ ); //fill with required number of samples (default constructed)
+        digiToAdd.clear(); //make sure it is clean
 
         //sum all voltages and do a voltage-weighted average to get the hit time
         //  exclude any hits with times outside the sampling region
@@ -101,6 +99,18 @@ namespace ldmx {
         double measTime         = getCondition( channelID , "measTime" , measTime_ );
         double drainRate        = getCondition( channelID , "drainRate" , drainRate_ );
 
+        /* debug printout
+        std::cout << "Configuration: {"
+                  << "gain: " << gain << " mV/ADC, "
+                  << "pedestal: " << pedestal << ", "
+                  << "readout: " << readoutThreshold << " mV, "
+                  << "toa: " << toaThreshold << " mV, "
+                  << "tot: " << totThreshold << " mV, "
+                  << "measTime: " << measTime << " ns, "
+                  << "drainRate: " << drainRate << " mV/ns }"
+                  << std::endl;
+         */
+
         auto measurePulse = [this,&gain,&pedestal](double time, bool withNoise) {
             auto signal = gain*pedestal + pulseFunc_.Eval(time);
             if(withNoise) signal += noiseInjector_->Gaus(0.,noiseRMS_);
@@ -111,7 +121,7 @@ namespace ldmx {
         double pulsePeak = measurePulse( timeInWindow , false );
         if (verbose_) {
             std::cout << "Pulse: { "
-                << "Amplitude: " << signalAmplitude+gain*pedestal << "mV, "
+                << "Amplitude: " << pulsePeak << "mV, "
                 << "Beginning: " << measurePulse(0.,false) << "mV, "
                 << "Time: " << timeInWindow << "ns } -> ";
         }
@@ -132,14 +142,15 @@ namespace ldmx {
             if (verbose_) std::cout << "TOA: " << toa << "ns, ";
 
             //measure ADCs
-            for ( unsigned int iADC = 0; iADC < digiToAdd.samples_.size(); iADC++ ) {
+            for ( unsigned int iADC = 0; iADC < nADCs_; iADC++ ) {
                 double fullMeasTime = iADC*clockCycle_ + measTime;
-                digiToAdd.samples_[iADC].adc_t_   = measurePulse( fullMeasTime, noise_ )/gain;
-                digiToAdd.samples_[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.samples_.at(iADC-1).adc_t_ : pedestal; 
-                digiToAdd.samples_[iADC].toa_     = toa * ns_;
-                digiToAdd.samples_[iADC].tot_progress_ = false;
-                digiToAdd.samples_[iADC].tot_complete_ = false;
-                if (verbose_) std::cout << " ADC " << iADC << ": " << digiToAdd.samples_[iADC].adc_t_*gain << "mV, ";
+                digiToAdd.emplace_back(
+                        false, false, //use flags to mark this sample as an ADC measurement
+                        iADC > 0 ? digiToAdd.at(iADC-1).adc_t() : pedestal, //ADC t-1 is first measurement
+                        measurePulse( fullMeasTime, noise_ )/gain, //ADC t is second measurement
+                        toa * ns_ //TOA is third measurement
+                        );
+                if (verbose_) std::cout << " ADC " << iADC << ": " << digiToAdd[iADC].adc_t()*gain << "mV, ";
             }
             if (verbose_) std::cout << "}" << std::endl;
 
@@ -179,22 +190,28 @@ namespace ldmx {
 
             //Notice that if tot > max time = digiToAdd.size()*clockCycle_, 
             //  this will return just the max time
-            for ( unsigned int iADC = 0; iADC < digiToAdd.samples_.size(); iADC++ ) {
+            for ( unsigned int iADC = 0; iADC < nADCs_; iADC++ ) {
+                bool tot_progress, tot_complete;
+                int secon_measurement;
                 if ( iADC == num_whole_clocks ) {
                     //TOT complete
-                    digiToAdd.samples_[iADC].tot_ = tdc_counts;
-                    digiToAdd.samples_[iADC].tot_progress_ = false;
-                    digiToAdd.samples_[iADC].tot_complete_ = true;
+                    secon_measurement = tdc_counts;
+                    tot_progress      = false;
+                    tot_complete      = true;
                 } else {
                     //TOT still in progress or already completed
                     double fullMeasTime = iADC*clockCycle_ + measTime;
                     //TODO what does the pulse ADC measurement look like during TOT
-                    digiToAdd.samples_[iADC].adc_t_ = measurePulse( fullMeasTime, noise_ )/gain;
-                    digiToAdd.samples_[iADC].tot_progress_ = (iADC < num_whole_clocks);
-                    digiToAdd.samples_[iADC].tot_complete_ = false;
+                    secon_measurement = measurePulse( fullMeasTime, noise_ )/gain;
+                    tot_progress      = (iADC < num_whole_clocks);
+                    tot_complete      = false;
                 } 
-                digiToAdd.samples_[iADC].toa_     = toa*ns_;
-                digiToAdd.samples_[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.samples_.at(iADC-1).adc_t_ : pedestal;
+                digiToAdd.emplace_back(
+                        tot_progress, tot_complete, //flags to mark type of sample
+                        iADC > 0 ? digiToAdd.at(iADC-1).adc_t() : pedestal, //first measurement is ADC t-1
+                        secon_measurement,
+                        toa*ns_ //last measurement is TOA
+                        );
             }
 
         } //where is the amplitude of the hit w.r.t. readout and TOT thresholds
