@@ -2,16 +2,14 @@
  * @file EcalTrigPrimDigiProducer.h
  * @brief Class that performs emulation of the EcalTriggerPrimitives
  * @author Jeremiah Mans, University of Minnesota
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- * @author Cameron Bravo, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENTPROC_ECALTRIGPRIMDIGIPRODUCER_H_
-#define EVENTPROC_ECALTRIGPRIMDIGIPRODUCER_H_INC
+#ifndef ECAL_ECALTRIGPRIMDIGIPRODUCER_H_
+#define ECAL_ECALTRIGPRIMDIGIPRODUCER_H_
 
 
 //----------------//
-//   C++ StdLib   //
+//   LDMX Core    //
 //----------------//
 #include "Framework/EventProcessor.h"
 
@@ -46,6 +44,13 @@ namespace ldmx {
 	 * EcalDigis as input.
 	 */
 	virtual void produce(Event& event);
+
+    private:
+            /** Digi Collection Name to use as input */
+            std::string digiCollName_;
+
+            /** Digi Pass Name to use as input */
+            std::string digiPassName_;
 	
     };
 }
