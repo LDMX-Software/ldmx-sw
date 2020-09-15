@@ -425,6 +425,39 @@ namespace ldmx {
             ClassDef(HgcrocDigiCollection, 1);
     };
 
-}
+} //ldmx
+
+/**
+ * Streamer for the HgcrocDigiCollection::Sample
+ *
+ * Prints Flags and three ten bit measurements.
+ *
+ * @param[in] s ostream to print sample to
+ * @param[in] sample Sample to print
+ * @return modified ostream
+ */
+std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection::Sample& sample);
+
+/**
+ * Streamer for HgcrocDigiCollection::HgcrocDigi
+ *
+ * Prints TOT measurement (if it was TOT) or SOI otherwise
+ *
+ * @param[in] s ostream to print sample to
+ * @param[in] digi HgcrocDigi to print
+ * @return modified ostream
+ */
+std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection::HgcrocDigi& digi);
+
+/**
+ * Streamer for HgcrocDigiCollection
+ *
+ * Prints all of the digi's using their streamer.
+ *
+ * @param[in] s ostream to print sample to
+ * @param[in] col HgcrocDigiCollection to print
+ * @return modified ostream
+ */
+std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection& col);
 
 #endif /* EVENT_ECALDIGI_H_ */
