@@ -186,9 +186,12 @@ namespace ldmx {
             hit.setAmplitude(noiseHitPE);
             hit.setEnergy(0.);
             hit.setTime(0.);
-            hit.setXPos(0.);
-            hit.setYPos(0.);
-            hit.setZPos(0.);
+            // hit.setXPos(0.);
+            // hit.setYPos(0.);
+            // hit.setZPos(0.);
+            hit.setXPos(10.);
+            hit.setYPos(10.);
+            hit.setZPos(10.);
             hit.setModuleID(module);
             hit.setBarID(noiseID.bar());
             hit.setNoise(true);
