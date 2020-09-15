@@ -44,12 +44,16 @@ namespace ldmx {
 	}
 
 	private:
+
+	/** Construct the EcalHexReadout object */
+	void constructEcalHexReadout(const EventHeader& context, const RunHeader& runcontext);
+	
         /** Handle to the parameters, needed for future use during get condition */
         Parameters params_;
         /** Geometry as last used */
         std::string detectorGeometry_;
 	EcalHexReadout* ecalGeometry_;
-		EcalTriggerGeometry* ecalTriggerGeometry_;
+	EcalTriggerGeometry* ecalTriggerGeometry_;
 
     };
 

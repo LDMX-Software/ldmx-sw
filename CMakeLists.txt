@@ -18,7 +18,7 @@ find_package(ONNXRuntime 1.2.0)
 
 setup_library(name Ecal
               dependencies ROOT::Physics 
-                           DARK::Framework DARK::Event DARK::Tools DARK::DetDescr 
+                           DARK::Framework DARK::Event DARK::Tools DARK::DetDescr DARK::Conditions
                            ONNXRuntime::Interface
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
