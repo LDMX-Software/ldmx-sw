@@ -30,7 +30,6 @@ namespace ldmx {
     class Process;
     class ConditionsObjectProvider;
     class EventHeader;
-    class RunHeader;
 
     /** Typedef for PluginFactory use. */
     typedef ConditionsObjectProvider* 
@@ -70,7 +69,7 @@ namespace ldmx {
              * Pure virtual getCondition function.
              * Must be implemented by any Conditions providers.
              */
-	    virtual std::pair<const ConditionsObject*,ConditionsIOV> getCondition(const std::string& condition_name, const EventHeader& context, const RunHeader& run_context) = 0;
+            virtual std::pair<const ConditionsObject*,ConditionsIOV> getCondition(const std::string& condition_name, const EventHeader& context) = 0;
 
             /**
              * Called by conditions system when done with a conditions object, appropriate point for cleanup.
