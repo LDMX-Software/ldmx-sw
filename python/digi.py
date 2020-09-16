@@ -4,9 +4,9 @@ All classes are derived versions of LDMX.Framework.ldmxcfg.Producer
 with helpful member functions.
 """
 
-from LDMX.Framework.ldmxcfg import Producer
+from LDMX.Framework import ldmxcfg
 
-class EcalDigiProducer(Producer) :
+class EcalDigiProducer(ldmxcfg.Producer) :
     """Configuration for EcalDigiProducer
 
     Warnings
@@ -31,7 +31,7 @@ class EcalDigiProducer(Producer) :
         import time
         self.randomSeed = int(time.time())
 
-class EcalRecProducer(Producer) :
+class EcalRecProducer(ldmxcfg.Producer) :
     """Configuration for the EcalRecProducer
 
     The layer weights and second order energy correction
@@ -47,6 +47,9 @@ class EcalRecProducer(Producer) :
         self.digiPassName = ''
         self.secondOrderEnergyCorrection = 1.
         self.layerWeights = [ ]
+
+        from LDMX.Ecal import EcalGeometry
+        EcalGeometry.EcalGeometryProvider.getInstance()
 
         self.v12() #use v12 geometry by default
 
