@@ -1,6 +1,6 @@
-#include "Framework/Process.h"
 #include "Framework/Conditions.h"
 #include "Framework/PluginFactory.h"
+#include "Framework/Process.h"
 #include <sstream>
 
 namespace ldmx {
@@ -38,35 +38,18 @@ namespace ldmx {
     }
 
 
-    const EventHeader& Conditions::getEventHeader() const {
-	return *(process_.getEventHeader());
-    }
-
-    const RunHeader& Conditions::getRunHeader() const {
-	return *(process_.getRunHeader());
-    }
-  
-
-    const ConditionsObject* Conditions::getConditionInternal(const std::string& condition_name, const EventHeader& context, const RunHeader& run_context) {
+    const ConditionsObject* Conditions::getConditionInternal(const std::string& condition_name) {
         auto cacheptr = cache_.find(condition_name);
-
-	if (!process_.getRunHeader()) {
-	    EXCEPTION_RAISE("ConditionsException","Attempting to get a condition with a null RunHeader");
-	}
-
-	if (!process_.getEventHeader()) {
-	    EXCEPTION_RAISE("ConditionsException","Attempting to get a condition with a null EventHeader");
-	}
-		
-	
+        const EventHeader& context=*process_.getEventHeader();
+        
         if (cacheptr == cache_.end()) {
             auto copptr = providerMap_.find(condition_name);
             
             if (copptr==providerMap_.end()) {
                 EXCEPTION_RAISE("ConditionUnavailable",std::string("No provider is available for : "+condition_name));
             }
-
-            std::pair<const ConditionsObject*,ConditionsIOV> cond=copptr->second->getCondition(condition_name,context,run_context);
+            
+            std::pair<const ConditionsObject*,ConditionsIOV> cond=copptr->second->getCondition(condition_name,context);
             
             if (!cond.first) {
                 EXCEPTION_RAISE("ConditionUnavailable",std::string("Null condition returned for requested item : "+condition_name));
@@ -77,7 +60,6 @@ namespace ldmx {
             ce.obj=cond.first;
             ce.provider=copptr->second;
             cache_[condition_name]=ce;
-	    return ce.obj;
         } else {
             /// if still valid, we return what we have
             if (cacheptr->second.iov.validForEvent(context)) return cacheptr->second.obj;
@@ -85,7 +67,7 @@ namespace ldmx {
                 // if not, we release the old object
                 cacheptr->second.provider->releaseConditionsObject(cacheptr->second.obj);
                 // now ask for a new one
-                std::pair<const ConditionsObject*,ConditionsIOV> cond=cacheptr->second.provider->getCondition(condition_name,context, run_context);
+                std::pair<const ConditionsObject*,ConditionsIOV> cond=cacheptr->second.provider->getCondition(condition_name,context);
                 
                 if (!cond.first) {
                     std::stringstream s;
