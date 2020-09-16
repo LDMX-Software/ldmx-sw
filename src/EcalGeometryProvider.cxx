@@ -34,10 +34,9 @@ namespace ldmx {
 
 		// find the right branch of the tree
 		if (!params_.exists("EcalHexReadout")) {
-		    std::cout << detectorGeometry_ << std::endl;
 		    EXCEPTION_RAISE("GeometryException","No configuration information found for EcalHexReadout");
 		}
-		std::cout << detectorGeometry_ << std::endl;
+		
 		const Parameters& phex=params_.getParameter<const Parameters&>("EcalHexReadout");
 		// search through the subtrees
 		for (auto key: phex.keys()) {
