@@ -4,9 +4,9 @@ Defines a derived class from ldmxcfg.Producer
 with several helpful member functions.
 """
 
-from LDMX.Framework.ldmxcfg import Producer
+from LDMX.Framework import ldmxcfg 
 
-class simulator(Producer):
+class simulator(ldmxcfg.Producer):
     """A instance of the simulation configuration
 
     This class is derived from ldmxcfg.Producer and is mainly
@@ -31,8 +31,6 @@ class simulator(Producer):
         Full path to detector description gdml (suggested to use setDetector)
     validate_detector : bool, optional
         Should we have Geant4 validate that the gdml is correctly formatted?
-    ecalHexReadout : EcalHexReadout
-        Configuration for how to use EcalHexReadout class
     description : str
         Describe this run in a human-readable way
     scoringPlanes : str, optional
@@ -95,9 +93,12 @@ class simulator(Producer):
         self.description = ''
 
         #######################################################################
+        # Declare the Ecal Geometry Provider that the simulation requires
+        from LDMX.Ecal import EcalGeometry
+        EcalGeometry.EcalGeometryProvider.getInstance()
+
+        #######################################################################
         # Optional Parameters (with helpful defaults)
-        from LDMX.DetDescr import EcalHexReadout
-        self.ecalHexReadout = EcalHexReadout.EcalHexReadout()
         self.scoringPlanes = ''
         self.randomSeeds = [ ] 
         self.beamSpotSmear = [ ]
