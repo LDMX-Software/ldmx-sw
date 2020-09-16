@@ -27,54 +27,60 @@
 
 namespace ldmx { 
 
-    class NoiseGenerator { 
+class NoiseGenerator { 
 
-        public: 
+ public: 
 
-            /** Constructor */
-            NoiseGenerator(double noiseValue=0.0001, bool gauss=true);
+  /** Constructor */
+  NoiseGenerator(double noiseValue=0.0001, bool gauss=true);
 
-            /** Destructor */
-            ~NoiseGenerator(); 
+  /** Destructor */
+  ~NoiseGenerator(); 
+
+  /** Seed the generator */
+  void seedGenerator(uint64_t seed);
+
+  /** Has been seeded? */
+  bool hasSeed() const { return random_.get()!=nullptr; }
+      
+  /**
+   * Generate noise hits.
+   *
+   * @param emptyChannels The total number of channels without a hit 
+   *                      on them.
+   * @return A vector containing the amplitude of the noise hits.
+   */
+  std::vector<double> generateNoiseHits(int emptyChannels); 
+
+  /** Set the noise threshold. */
+  void setNoiseThreshold(double noiseThreshold) { noiseThreshold_ = noiseThreshold; }
+
+  /** Set the mean noise. */
+  void setNoise(double noise) { noise_ = noise; };
+
+  /** Set the pedestal. */
+  void setPedestal(double pedestal) { pedestal_ = pedestal; }; 
         
-            /**
-             * Generate noise hits.
-             *
-             * @param emptyChannels The total number of channels without a hit 
-             *                      on them.
-             * @return A vector containing the amplitude of the noise hits.
-             */
-            std::vector<double> generateNoiseHits(int emptyChannels); 
+ private:
 
-            /** Set the noise threshold. */
-            void setNoiseThreshold(double noiseThreshold) { noiseThreshold_ = noiseThreshold; }
+  /** Random number generator. */
+  std::unique_ptr<TRandom3> random_{nullptr};
 
-            /** Set the mean noise. */
-            void setNoise(double noise) { noise_ = noise; };
+  /** The noise threshold. */
+  double noiseThreshold_{4}; 
 
-            /** Set the pedestal. */
-            void setPedestal(double pedestal) { pedestal_ = pedestal; }; 
-        
-        private:
-
-            /** Random number generator. */
-            std::unique_ptr<TRandom3> random_;
-
-            /** The noise threshold. */
-            double noiseThreshold_{4}; 
-
-            /** Mean noise. */
-            double noise_{1};
+  /** Mean noise. */
+  double noise_{1};
             
-            /** Pedestal or baseline. */
-            double pedestal_{0};  
+  /** Pedestal or baseline. */
+  double pedestal_{0};  
 
-            /** Gaussian flag */
-            bool useGaussianModel_{true};
+  /** Gaussian flag */
+  bool useGaussianModel_{true};
 
-            /** pdf for poisson errors */
-            std::unique_ptr< boost::math::poisson_distribution<> > poisson_dist_;
-    }; // NoiseGenerator
+  /** pdf for poisson errors */
+  std::unique_ptr< boost::math::poisson_distribution<> > poisson_dist_;
+}; // NoiseGenerator
 
 } // ldmx
 
