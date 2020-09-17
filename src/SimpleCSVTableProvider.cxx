@@ -240,7 +240,7 @@ std::pair<const ConditionsObject*,ConditionsIOV> SimpleCSVTableProvider::getCond
           ldmx::utility::SimpleTableStreamerCSV::load(*table,ss);
           return std::pair<const ConditionsObject*,ConditionsIOV>(table,tabledef.iov_);
         }
-      } else if (expurl.find("file://")!=std::string::npos || expurl.find("://")==std::string::npos) {
+      } else if (expurl.find("file://")!=std::string::npos || expurl.find(":")==std::string::npos) {
         std::string fname(expurl);
         if (expurl.find("file://")!=std::string::npos) fname=expurl.substr(expurl.find("file://")+strlen("file://"));
         std::ifstream fs(fname);
