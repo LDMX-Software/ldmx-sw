@@ -1,7 +1,10 @@
 #include "Conditions/SimpleCSVTableProvider.h"
 #include <boost/asio.hpp>
+#include <boost/bind.hpp>
+//#include <boost/asio/ssl.hpp>
 #include <fstream>
 #include "Conditions/SimpleTableStreamers.h"
+
 
 DECLARE_CONDITIONS_PROVIDER_NS(ldmx,SimpleCSVTableProvider);
 
@@ -46,18 +49,23 @@ namespace ldmx {
 	}
     }
 
+#define HACK_HACK
+#ifndef HACK_HACK
     static void httpstream(const std::string& url, std::string& strbuf, int depth=0) {
 	using boost::asio::ip::tcp;
 	boost::asio::io_service io_service;
 
 	int locslash=url.find("//");
 	std::string hostname=url.substr(locslash+2,url.find("/",locslash+2)-locslash-2);
+	std::string accessor=url.substr(0,locslash);
+
+	std::cout << accessor << std::endl;
 	
 	// Get a list of endpoints corresponding to the server name.
 	tcp::socket socket(io_service);
 	try {
 	    tcp::resolver resolver(io_service);
-	    tcp::resolver::query query(hostname, "http");
+	    tcp::resolver::query query(hostname, accessor);
 	    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 	    
 	    // Try each endpoint until we successfully establish a connection.
@@ -122,9 +130,10 @@ namespace ldmx {
 	    while (boost::asio::read(socket, response,
 				     boost::asio::transfer_at_least(1), error));
 
-	    if (depth>10) {
+	    if (depth>20) {
 		EXCEPTION_RAISE("ConditionsException","Too much redirection in attempt to load HTTP CSV file");
 	    }
+            std::cout << newurl << " " << status_code << std::endl;
 	    httpstream(newurl,strbuf,depth+1); // recursion...
 	}
 
@@ -151,6 +160,31 @@ namespace ldmx {
 	//   throw boost::system::system_error(error);
 	//	strbuf=build.str();
     }
+#endif
+#ifdef HACK_HACK
+  #include <sys/wait.h>
+// horrible hack using wget
+static void httpstream(const std::string& url, std::string& strbuf, int depth=0) {
+   static int istream=0;
+   char fname[250];
+   snprintf(fname,250,"/tmp/httpstream_%d_%d.csv ",getpid(),istream++);
+   pid_t apid=fork();
+   if (apid==0) { // child
+     execl("/usr/bin/wget","wget","-q","-O",fname,url.c_str(),(char*)0);
+   } else {
+     int wstatus;
+     int wrv=waitpid(apid,&wstatus,0);
+   }
+
+   std::ifstream ib(fname);
+   std::ostringstream ss;
+   ss << ib.rdbuf();
+   strbuf = ss.str();
+   std::remove(fname);
+}
+
+#endif
+
 
     std::string SimpleCSVTableProvider::expandEnv(const std::string& s) const {
 	std::string retval;
@@ -185,7 +219,7 @@ namespace ldmx {
 	    if (condition_name == tabledef.objectName_ && tabledef.iov_.validForEvent(context)) {
 		std::string expurl=expandEnv(tabledef.url_);
 		//		std::cout << "url:" <<  expurl << " from " << tabledef.url_ << std::endl;
-		if (expurl.find("http://")!=std::string::npos) {
+		if (expurl.find("http://")!=std::string::npos || expurl.find("https://")!=std::string::npos) {
 		    std::string buffer;
 		    httpstream(expurl,buffer);
 		    //std::cout <<buffer <<std::endl;
