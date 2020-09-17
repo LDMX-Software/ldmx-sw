@@ -8,14 +8,32 @@ project(Ecal VERSION 2.1.0
              LANGUAGES CXX
 )
 
-declare_event_object( class "ClusterAlgoResult" )
-declare_event_object( class "EcalCluster" collection "ON" )
-declare_event_object( class "EcalHit" collection "ON" )
-declare_event_object( class "EcalVetoResult" )
-declare_event_object( class "EcalDigiCollection" )
-
 # Search and configure ROOT
 find_package(ROOT CONFIG REQUIRED)
+
+option(BUILD_EVENT_ONLY "Build the event library." ON)
+if(BUILD_EVENT_ONLY)
+    
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "ClusterAlgoResult" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalVetoResult" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalDigiCollection" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalCluster" type "collection" )
+    register_event_object( module_path "Ecal/Event" namespace "ldmx" class "EcalHit"     type "collection" )
+   
+    # Get all of the event sources that will be included in this library.
+    file(GLOB EVENT_SRC_FILES ${PROJECT_SOURCE_DIR}/src/Ecal/Event/*.cxx)
+
+    # Generate the files needed to build the event classes.
+    setup_library(module Ecal
+                  name Event
+                  dependencies ROOT::Core 
+                               Event::Event SimCore::Event 
+                  sources ${EVENT_SRC_FILES}
+                  register_target)
+
+    return()
+
+endif()
 
 # Search for the ONNXRuntime binaries.  If not found, download the binaries 
 # to an external folder and create the targets.
@@ -23,7 +41,7 @@ find_package(ONNXRuntime 1.2.0)
 
 setup_library(name Ecal
               dependencies ROOT::Physics 
-                           DARK::Framework DARK::Event DARK::Tools DARK::DetDescr 
+                           Framework::Framework Event::Event Tools::Tools DetDescr::DetDescr 
                            ONNXRuntime::Interface
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
