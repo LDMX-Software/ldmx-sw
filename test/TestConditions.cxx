@@ -144,7 +144,7 @@ namespace ldmx {
             }
 
             SECTION( "Testing python static" ) {
-              const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process(\"test\")\np.testMode=True\ncolumns=[\"A\",\"B\",\"C\"]\ncop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider(\"test_table_python\",\"TEST_MODE\",columns)\ncop.validForAllRows([10,45,129])\np.declareConditionsObjectProvider(cop)\np.libraries.append(\"libConditions.so\")\n";
+              const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode=True\ncolumns=['A','B','C']\ncop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider('test_table_python','TEST_MODE',columns)\ncop.validForAllRows([10,45,129])";
 
               FILE* f=fopen("/tmp/test_cond.py","w");
               fputs(cfg,f);
@@ -171,7 +171,7 @@ namespace ldmx {
                 fs.close();
                 //	std::cout << "Step 1" << std::endl << ss.str();
 
-                const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process(\"test\")\np.testMode=True\ncolumns=[\"SQRT\",\"EXP\",\"LOG\"]\ncop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"test_table_file\",\"TEST_MODE\",columns)\ncop.validForRuns(\"file:///tmp/dump_double.csv\",0,100)\ncop.validForRuns(\"/tmp/dump_double.csv\",101,120)\np.declareConditionsObjectProvider(cop)\np.libraries.append(\"libConditions.so\")\n";
+                const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode=True\ncolumns=['SQRT','EXP','LOG']\ncop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider('test_table_file','TEST_MODE',columns)\ncop.validForRuns('file:///tmp/dump_double.csv',0,100)\ncop.validForRuns('/tmp/dump_double.csv',101,120)\n";
 
                 FILE* f=fopen("/tmp/test_cond.py","w");
                 fputs(cfg,f);
