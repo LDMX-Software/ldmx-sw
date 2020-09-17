@@ -143,6 +143,26 @@ namespace ldmx {
                 REQUIRE_THROWS_WITH( ldmx::utility::SimpleTableStreamerCSV::load(itable2, ss_read4) , Contains("Mismatched number of columns (3!=4) on line 3") );
             }
 
+            SECTION( "Testing python static" ) {
+              const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode=True\ncolumns=['A','B','C']\ncop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider('test_table_python','TEST_MODE',columns)\ncop.validForAllRows([10,45,129])";
+
+              FILE* f=fopen("/tmp/test_cond.py","w");
+              fputs(cfg,f);
+              fclose(f);
+
+              ldmx::ConfigurePython cp("/tmp/test_cond.py",0,0);
+              ldmx::ProcessHandle hp=cp.makeProcess();
+              EventHeader cxt;
+              hp->setEventHeader(&cxt);
+
+              cxt.setRun(10);
+              const IntegerTableCondition& iTable=hp->getConditions().getCondition<IntegerTableCondition>("test_table_python");
+
+              CHECK( iTable.getByName(292,"A") == 10 );
+              CHECK( iTable.getByName(2928184,"B") == 45 );
+              CHECK( iTable.getByName(82910,"C") == 129 );	
+            }
+            
             SECTION( "Testing file loading" ) {
                 std::ofstream fs("/tmp/dump_double.csv");
                 std::stringstream ss;
@@ -151,7 +171,7 @@ namespace ldmx {
                 fs.close();
                 //	std::cout << "Step 1" << std::endl << ss.str();
 
-                const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process(\"test\")\np.testMode=True\ncolumns=[\"SQRT\",\"EXP\",\"LOG\"]\ncop=SimpleCSVTableProvider.SimpleCSVTableProvider(\"tableSource\",\"TEST_MODE\")\ncop.provideDoubleTable(\"test_table_file1\",\"file:///tmp/dump_double.csv\",columns)\ncop.provideDoubleTable(\"test_table_file2\",\"/tmp/dump_double.csv\",columns)\np.declareConditionsObjectProvider(cop)\np.libraries.append(\"libConditions.so\")\n";
+                const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process('test')\np.testMode=True\ncolumns=['SQRT','EXP','LOG']\ncop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider('test_table_file','TEST_MODE',columns)\ncop.validForRuns('file:///tmp/dump_double.csv',0,100)\ncop.validForRuns('/tmp/dump_double.csv',101,120)\n";
 
                 FILE* f=fopen("/tmp/test_cond.py","w");
                 fputs(cfg,f);
@@ -160,16 +180,18 @@ namespace ldmx {
                 ldmx::ConfigurePython cp("/tmp/test_cond.py",0,0);
                 ldmx::ProcessHandle hp=cp.makeProcess();
                 EventHeader cxt;
+                hp->setEventHeader(&cxt);
 
-                const DoubleTableCondition& fTable1=hp->getConditions().getCondition<DoubleTableCondition>("test_table_file1",cxt);
-                const DoubleTableCondition& fTable2=hp->getConditions().getCondition<DoubleTableCondition>("test_table_file2",cxt);
+                cxt.setRun(10);
+                const DoubleTableCondition& fTable1=hp->getConditions().getCondition<DoubleTableCondition>("test_table_file");
+                cxt.setRun(119);
+                const DoubleTableCondition& fTable2=hp->getConditions().getCondition<DoubleTableCondition>("test_table_file");
                 matchesAll(dtable,fTable1);
                 matchesAll(dtable,fTable2);
             }
-
             /*
             SECTION( "Testing HTTP loading" ) {
-                const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process(\"test\")\np.testMode=True\ncolumns=[\"A\",\"Q\",\"V\"]\ncop=SimpleCSVTableProvider.SimpleCSVTableProvider(\"tableSource\",\"TEST_MODE\")\ncop.provideIntegerTable(\"test_table_http\",\"https://homepages.spa.umn.edu/~jmmans/test_table.csv\",columns)\np.declareConditionsObjectProvider(cop)\np.libraries.append(\"libConditions.so\")\n";
+                const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process(\"test\")\np.testMode=True\ncolumns=[\"A\",\"Q\",\"V\"]\ncop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"test_table_http\",\"TEST_MODE\",columns)\ncop.validForever(\"http://webusers.physics.umn.edu/~jmmans/test_table.csv\")\n";
 
                 FILE* f=fopen("/tmp/test_cond.py","w");
                 fputs(cfg,f);
@@ -178,8 +200,9 @@ namespace ldmx {
                 ldmx::ConfigurePython cp("/tmp/test_cond.py",0,0);
                 ldmx::ProcessHandle hp=cp.makeProcess();
                 EventHeader cxt;
-
-                const IntegerTableCondition& httpTable=hp->getConditions().getCondition<IntegerTableCondition>("test_table_http",cxt);
+                hp->setEventHeader(&cxt);
+                
+                const IntegerTableCondition& httpTable=hp->getConditions().getCondition<IntegerTableCondition>("test_table_http");
                 matchesAll(httpTable,itable);
             }
             */
