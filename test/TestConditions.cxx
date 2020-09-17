@@ -143,6 +143,26 @@ namespace ldmx {
                 REQUIRE_THROWS_WITH( ldmx::utility::SimpleTableStreamerCSV::load(itable2, ss_read4) , Contains("Mismatched number of columns (3!=4) on line 3") );
             }
 
+            SECTION( "Testing python static" ) {
+              const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process(\"test\")\np.testMode=True\ncolumns=[\"A\",\"B\",\"C\"]\ncop=SimpleCSVTableProvider.SimpleCSVIntegerTableProvider(\"test_table_python\",\"TEST_MODE\",columns)\ncop.validForAllRows([10,45,129])\np.declareConditionsObjectProvider(cop)\np.libraries.append(\"libConditions.so\")\n";
+
+              FILE* f=fopen("/tmp/test_cond.py","w");
+              fputs(cfg,f);
+              fclose(f);
+
+              ldmx::ConfigurePython cp("/tmp/test_cond.py",0,0);
+              ldmx::ProcessHandle hp=cp.makeProcess();
+              EventHeader cxt;
+              hp->setEventHeader(&cxt);
+
+              cxt.setRun(10);
+              const IntegerTableCondition& iTable=hp->getConditions().getCondition<IntegerTableCondition>("test_table_python");
+
+              CHECK( iTable.getByName(292,"A") == 10 );
+              CHECK( iTable.getByName(2928184,"B") == 45 );
+              CHECK( iTable.getByName(82910,"C") == 129 );	
+            }
+            
             SECTION( "Testing file loading" ) {
                 std::ofstream fs("/tmp/dump_double.csv");
                 std::stringstream ss;

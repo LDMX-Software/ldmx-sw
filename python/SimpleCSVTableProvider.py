@@ -36,7 +36,7 @@ class SimpleCSVTableEntry:
 class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
     def __init__(self,objName, tagName, dataType, columns):
         super().__init__(objName,"ldmx::SimpleCSVTableProvider",tagName)
-        self.dataType="double"
+        self.dataType=dataType
         self.columns=columns
         self.entries=[]
 
@@ -47,6 +47,11 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
         entry=SimpleCSVTableEntry(url)
         entry.setIOV(firstRun,lastRun)
         self.entries.append(entry)
+
+    def validForAllRows(self, values):
+        entry=SimpleCSVTableEntry("python:")
+        entry.values=values
+        self.entries.append(entry)
         
 class SimpleCSVDoubleTableProvider(SimpleCSVTableProvider):
     def __init__(self,objName, tagName, columns):
@@ -56,6 +61,6 @@ class SimpleCSVIntegerTableProvider(SimpleCSVTableProvider):
     def __init__(self,objName, tagName, columns):
         super().__init__(objName, tagName,"int",columns)
 
-
+    
 
 
