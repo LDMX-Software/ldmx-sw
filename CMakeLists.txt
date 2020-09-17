@@ -11,8 +11,8 @@ project(SimCore VERSION 2.1.0
 # Search and configure ROOT
 find_package(ROOT CONFIG REQUIRED)
 
-option(BUILD_EVENT "Build the event library." ON)
-if(BUILD_EVENT)
+option(BUILD_EVENT_ONLY "Build the event library." ON)
+if(BUILD_EVENT_ONLY)
 
     register_event_object( module_path "SimCore/Event" namespace "ldmx" class "SimCalorimeterHit" type "collection")
     register_event_object( module_path "SimCore/Event" namespace "ldmx" class "SimTrackerHit"     type "collection")
@@ -27,28 +27,27 @@ if(BUILD_EVENT)
                   dependencies ROOT::Core
                   sources ${EVENT_SRC_FILES}
                   register_target)
+
+    return()
                   
 endif()
 
-option(BUILD_SIMCORE "Build the SimCore library." ON)
-if(BUILD_SIMCORE)
 
-    # Configure Geant4
-    setup_geant4_target()
+# Configure Geant4
+setup_geant4_target()
 
 
-    # Setup the library 
-    setup_library(name SimCore 
-                  dependencies Geant4::Interface 
-                               ROOT::Physics
-                               Framework::Configure DetDescr::DetDescr
-                               #DARK::Event DARK::Framework 
-                  python_install_path ${PYTHON_INSTALL_PREFIX})
+# Setup the library 
+setup_library(name SimCore 
+              dependencies Geant4::Interface 
+                           ROOT::Physics
+                           Framework::Configure DetDescr::DetDescr 
+                           "${registered_targets}"
+              python_install_path ${PYTHON_INSTALL_PREFIX})
 
-    # Set some target properties
-    set_target_properties(SimCore PROPERTIES 
-        CXX_STANDARD 17
-        CXX_STANDARD_REQUIRED YES
-        CXX_EXTENSIONS NO)
+# Set some target properties
+set_target_properties(SimCore PROPERTIES 
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO)
 
-endif()
