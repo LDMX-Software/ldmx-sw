@@ -27,8 +27,8 @@
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
-#include "Ecal/EcalDigiCollection.h"
-#include "Ecal/EcalHit.h"
+#include "Ecal/Event/EcalDigiCollection.h"
+#include "Ecal/Event/EcalHit.h"
 #include "Tools/NoiseGenerator.h"
 
 namespace ldmx {
