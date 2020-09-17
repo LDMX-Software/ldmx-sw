@@ -10,33 +10,34 @@
 
 namespace ldmx {
 
-   /**
-    * @class ConditionsObject
-    * @brief Base class for all conditions objects, very simple
-    */
-  class ConditionsObject {
-        public:
-            /**
-             * Class constructor
-             */
-            ConditionsObject(const std::string& name) : name_(name) { }
+/**
+ * @class ConditionsObject
+ * @brief Base class for all conditions objects, very simple
+ */
+class ConditionsObject {
+ public:
+  /**
+   * Class constructor
+   */
+  ConditionsObject(const std::string& name) : name_(name) { }
         
-            /**
-             * Destructor
-             */
-            virtual ~ConditionsObject() { }
+  /**
+   * Destructor
+   */
+  virtual ~ConditionsObject() { }
         
-            /**
-             * Get the name of this object
-             */
-            std::string getName() const { return name_; }
+  /**
+   * Get the name of this object
+   */
+  std::string getName() const { return name_; }
         
-        private:
-            /** 
-             * Name of the object
-             */
-            std::string name_;
-    };
-}
+ private:
+  /** 
+   * Name of the object
+   */
+  std::string name_;
+};
+
+} // namespace ldmx
 
 #endif
