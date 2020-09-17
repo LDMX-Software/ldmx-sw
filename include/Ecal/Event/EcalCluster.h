@@ -16,7 +16,7 @@
 #include <set>
 
 // ldmx-sw
-#include "Ecal/EcalHit.h"
+#include "Ecal/Event/EcalHit.h"
 
 namespace ldmx {
 
