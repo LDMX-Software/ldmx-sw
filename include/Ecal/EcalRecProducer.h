@@ -18,7 +18,6 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TRandom3.h"
 
 //----------//
 //   LDMX   //
@@ -28,7 +27,6 @@
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
-#include "Tools/NoiseGenerator.h"
 
 namespace ldmx {
 
