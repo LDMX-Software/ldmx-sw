@@ -111,6 +111,12 @@ namespace ldmx {
             StorageControl& getStorageController() { return m_storageController; }
 
             /**
+             * Set the pointer to the current event header, used only for tests
+             */
+            void setEventHeader(EventHeader* h) { eventHeader_=h; }
+
+
+      /**
              * Get a dummy process
              *
              * This function returns an instance of this class without
