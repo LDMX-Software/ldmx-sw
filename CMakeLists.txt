@@ -9,7 +9,7 @@ project(Conditions VERSION 2.1.0
 )
 
 setup_library(name Conditions
-              dependencies DARK::Framework DARK::DetDescr
+              dependencies Framework::Framework DetDescr::DetDescr
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
