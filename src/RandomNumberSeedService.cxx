@@ -8,8 +8,7 @@ static const int SEED_EXTERNAL = 2;
 static const int SEED_RUN =  3;
 static const int SEED_TIME = 4;
 
-RandomNumberSeedService::RandomNumberSeedService(const std::string& name, const std::string& tagname, const Parameters& parameters, Process& process) : ConditionsObject(name), ConditionsObjectProvider(name,tagname,parameters,process) {
-  objectNames_.push_back(CONDITIONS_OBJECT_NAME);
+RandomNumberSeedService::RandomNumberSeedService(const std::string& name, const std::string& tagname, const Parameters& parameters, Process& process) : ConditionsObject(CONDITIONS_OBJECT_NAME), ConditionsObjectProvider(CONDITIONS_OBJECT_NAME,tagname,parameters,process) {
   std::string seeding=parameters.getParameter<std::string>("seedMode","run");
   if (!strcasecmp(seeding.c_str(),"run")) {
     seedMode_=SEED_RUN;
@@ -46,10 +45,7 @@ std::vector<std::string> RandomNumberSeedService::getSeedNames() const {
   return rv;
 }
 
-std::pair<const ConditionsObject*,ConditionsIOV> RandomNumberSeedService::getCondition(const std::string& condition_name, const EventHeader& context) {
-  if (condition_name!=CONDITIONS_OBJECT_NAME) {
-    EXCEPTION_RAISE("ConditionsException","Asked to create unexpected condition: "+condition_name);
-  }
+std::pair<const ConditionsObject*,ConditionsIOV> RandomNumberSeedService::getCondition(const EventHeader& context) {
   if (!initialized_) {
     if (seedMode_==SEED_RUN) {
       masterSeed_=context.getRun();

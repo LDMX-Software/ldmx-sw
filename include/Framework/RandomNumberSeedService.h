@@ -44,8 +44,8 @@ class RandomNumberSeedService : public ConditionsObject, public ConditionsObject
   /** Access the master seed */
   uint64_t getMasterSeed() const { return masterSeed_; }
 
-  virtual std::pair<const ConditionsObject*,ConditionsIOV> getCondition(const std::string& condition_name, const EventHeader& context);  
-  virtual void releaseConditionsObject(const ConditionsObject* co) { } // it us, never destroy it.
+  virtual std::pair<const ConditionsObject*,ConditionsIOV> getCondition(const EventHeader& context);  
+  virtual void releaseConditionsObject(const ConditionsObject* co) { } // it is us, never destroy it.
 
  private:
   /** intialized */
