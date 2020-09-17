@@ -14,7 +14,7 @@
 #include "G4ThreeVector.hh"
 
 // LDMX
-#include "SimCore/SimCalorimeterHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace ldmx {
 

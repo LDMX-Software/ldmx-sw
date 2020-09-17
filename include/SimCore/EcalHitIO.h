@@ -10,7 +10,7 @@
 
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
-#include "SimCore/SimCalorimeterHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/G4CalorimeterHit.h"
 #include "SimCore/SimParticleBuilder.h"
 
