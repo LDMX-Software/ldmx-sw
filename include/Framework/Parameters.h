@@ -103,7 +103,7 @@ namespace ldmx {
                     parameter = std::any_cast< T >(parameters_.at(name));
                 } catch(const std::bad_any_cast& e) {
                     EXCEPTION_RAISE( "BadTypeParam",
-                                    "Parameter '" + name + "' is being cast to incorrect type '" + typeid(T).name() + "'."); 
+                                     "Parameter '" + name + "' of type '"+parameters_.at(name).type().name()+"' is being cast to incorrect type '" + typeid(T).name() + "'."); 
                 }
 
                 return parameter; 
