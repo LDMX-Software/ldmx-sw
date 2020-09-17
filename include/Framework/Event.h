@@ -12,10 +12,11 @@
 #include "TTree.h"
 #include "TBranchElement.h"
 
+#include "EventDef.h"
+
 // LDMX
-#include "Framework/EventDef.h"
 #include "Framework/ProductTag.h"
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 
 // STL
 #include <algorithm> 
