@@ -19,11 +19,10 @@ find_package(ROOT 6.16 CONFIG REQUIRED)
 include("${ROOT_DIR}/RootMacros.cmake")
 
 # Unfortunately, the Event headers need to be included globably for the 
-# dictionary to be generated correctly. 
+# dictionary to be generated correctly.
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${LDMX_SW_SOURCE_DIR}/DetDescr/include)
-include_directories(${LDMX_SW_SOURCE_DIR}/Framework/include)
-include_directories(${LDMX_SW_SOURCE_DIR}/Event/include)
+include_directories(${include_paths})
 
 # Generate the ROOT dictionary
 root_generate_dictionary(EventDisplayDic ${PROJECT_SOURCE_DIR}/include/EventDisplay/EventDisplayDef.h 
@@ -33,7 +32,7 @@ root_generate_dictionary(EventDisplayDic ${PROJECT_SOURCE_DIR}/include/EventDisp
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventDisplayDic_rdict.pcm DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 # Find all of the source files we want to add to the Event library
-file(GLOB EVENT_DISPLAY_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
+file(GLOB EVENT_DISPLAY_SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/EventDisplay/*.cxx)
 
 # Create the Event target
 add_library(EventDisplay SHARED EventDisplayDic.cxx ${EVENT_DISPLAY_SRC_FILES})
@@ -49,7 +48,8 @@ target_link_libraries(EventDisplay PUBLIC
     ROOT::Geom
     ROOT::Gui
     ROOT::Eve
-    DARK::DetDescr
+    DetDescr::DetDescr
+    Framework::Framework
 )
 
 # Define an alias 
@@ -64,7 +64,7 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/EventDisplay
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
 # Add the event display executable
-add_executable(ldmx-eve ${PROJECT_SOURCE_DIR}/src/ldmx_eve.cxx)
+add_executable(ldmx-eve ${PROJECT_SOURCE_DIR}/src/EventDisplay/ldmx_eve.cxx)
 
 # Link to the Framework library
 target_link_libraries(ldmx-eve PRIVATE EventDisplay)

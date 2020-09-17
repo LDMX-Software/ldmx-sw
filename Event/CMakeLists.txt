@@ -12,18 +12,16 @@ register_event_object( module_path "Event" namespace "ldmx" class "CalorimeterHi
 register_event_object( module_path "Event" namespace "ldmx" class "FindableTrackResult" type "collection" )
 register_event_object( module_path "Event" namespace "ldmx" class "HcalHit"             type "collection" )
 register_event_object( module_path "Event" namespace "ldmx" class "HcalVetoResult"                        )
-register_event_object( module_path "Event" namespace "ldmx" class "SiStripHit"          type "collection" )
 register_event_object( module_path "Event" namespace "ldmx" class "TrigScintHit"        type "collection" )
 register_event_object( module_path "Event" namespace "ldmx" class "TrackerVetoResult"                     )
 register_event_object( module_path "Event" namespace "ldmx" class "TriggerResult"                         )
-register_event_object( module_path "Event" namespace "ldmx" class "RawHit"              type "collection" )
 
 # Search and configure ROOT
 find_package(ROOT CONFIG REQUIRED)
 
 setup_library(name Event 
               dependencies ROOT::Core
-                           SimCore::Event
+                           "${registered_targets}"
               register_target)
                        
 

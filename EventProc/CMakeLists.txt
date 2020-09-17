@@ -9,6 +9,6 @@ project(EventProc VERSION 2.1.0
 )
 
 setup_library(name EventProc
-              dependencies DARK::Framework DARK::Event DARK::Tools DARK::DetDescr DARK::Ecal
+              dependencies Framework::Framework Event::Event Tools::Tools DetDescr::DetDescr Ecal::Ecal
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
