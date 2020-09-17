@@ -1,7 +1,7 @@
 #include "Ecal/DNNEcalVetoProcessor.h"
 
 // LDMX
-#include "Ecal/EcalHit.h"
+#include "Ecal/Event/EcalHit.h"
 
 #include <algorithm>
 

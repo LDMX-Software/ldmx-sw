@@ -4,7 +4,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "Ecal/EcalVetoResult.h"
+#include "Ecal/Event/EcalVetoResult.h"
 
 ClassImp(ldmx::EcalVetoResult)
 

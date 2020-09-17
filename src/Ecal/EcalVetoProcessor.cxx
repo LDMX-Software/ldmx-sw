@@ -1,7 +1,7 @@
 #include "Ecal/EcalVetoProcessor.h"
 
 // LDMX
-#include "Ecal/EcalHit.h"
+#include "Ecal/Event/EcalHit.h"
 
 /*~~~~~~~~~~~*/
 /*   Tools   */

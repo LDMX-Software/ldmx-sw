@@ -1,4 +1,4 @@
-#include "Ecal/EcalCluster.h"
+#include "Ecal/Event/EcalCluster.h"
 
 ClassImp(ldmx::EcalCluster)
 

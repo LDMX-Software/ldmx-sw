@@ -1,4 +1,4 @@
-#include "Ecal/EcalHit.h"
+#include "Ecal/Event/EcalHit.h"
 
 // STL
 #include <iostream>
