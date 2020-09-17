@@ -20,7 +20,7 @@
 #include "Event/HcalHit.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
-#include "Framework/Parameters.h" 
+#include "Framework/Configure/Parameters.h" 
 
 namespace ldmx {
 

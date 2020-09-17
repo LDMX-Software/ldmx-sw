@@ -9,11 +9,11 @@
 
 #include "DetDescr/HcalID.h"
 #include "EventDisplay/DetectorGeometry.h"
-#include "Event/EcalHit.h"
+#include "Ecal/Event/EcalHit.h"
 #include "Event/HcalHit.h"
-#include "Event/SimTrackerHit.h"
-#include "Event/EcalCluster.h"
-#include "Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Ecal/Event/EcalCluster.h"
+#include "SimCore/Event/SimParticle.h"
 
 #include "EventDisplay/EveDetectorGeometry.h"
 #include "EventDisplay/EveShapeDrawer.h"

@@ -3,7 +3,7 @@
 
 //LDMX Framework
 #include "Framework/EventProcessor.h" //Needed to declare processor
-#include "Framework/Parameters.h" // Needed to import parameters from configuration file
+#include "Framework/Configure/Parameters.h" // Needed to import parameters from configuration file
 
 namespace ldmx {
     

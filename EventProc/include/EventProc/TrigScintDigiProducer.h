@@ -20,14 +20,14 @@
 // LDMX
 #include "DetDescr/TrigScintID.h"
 #include "Event/TrigScintHit.h"
-#include "SimCore/SimCalorimeterHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/NoiseGenerator.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/EventProcessor.h"
-#include "Framework/Parameters.h" 
+#include "Framework/Configure/Parameters.h" 
 
 namespace ldmx {
 

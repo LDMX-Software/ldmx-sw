@@ -19,9 +19,9 @@
 #include "DetDescr/HcalID.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
-#include "Event/SimTrackerHit.h" //recoil hits
+#include "SimCore/Event/SimTrackerHit.h" //recoil hits
 #include "Event/HcalHit.h"
-#include "Event/EcalHit.h"
+#include "Ecal/Event/EcalHit.h"
 
 namespace ldmx {
     
