@@ -237,7 +237,7 @@ class ConditionsObjectProvider:
         if not isinstance(ConditionsObjectProvider,other) :
             return NotImplemented
 
-        return (self.instanceName == other.instanceName and self.className == other.className)
+        return (self.objectName == other.objectName and self.className == other.className)
 
     def __str__(self) :
         """Stringify this ConditionsObjectProvider, creates a message with all the internal parameters.
