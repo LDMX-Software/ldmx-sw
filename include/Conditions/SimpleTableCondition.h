@@ -21,7 +21,7 @@ namespace ldmx {
 	
 	
 	/** Create table with given set of columns */
-	BaseTableCondition(const std::string& name, const std::vector<std::string>& columns) : ConditionsObject{name}, columns_{columns} {
+	BaseTableCondition(const std::string& name, const std::vector<std::string>& columns) : ConditionsObject{name}, columns_{columns},idMask_{0xFFFFFFFFu}  {
 	    columnCount_=(unsigned int)(columns.size());
 	}
 	
@@ -75,6 +75,21 @@ namespace ldmx {
 	    return keys_.size();
 	}
 
+
+        /**
+	 * Set an AND mask to be applied to the id.  Typically used to "flatten" a table in some manner.
+	 */
+	void setIdMask(unsigned int mask) { 
+	    idMask_=mask;
+	}
+
+	/**
+	 * Get the AND mask to be applied to the id.  Typically used to "flatten" a table in some manner.
+	 */
+	unsigned int getIdMask() const { 
+	    return idMask_;
+	}
+	    
 	protected:
 	
 	std::size_t findKey(unsigned int id) const;
@@ -84,6 +99,7 @@ namespace ldmx {
 	std::vector<std::string> columns_;
 	unsigned int columnCount_;
 	std::vector<uint32_t> keys_;
+        unsigned int idMask_;
     };
     
     template <class T>
