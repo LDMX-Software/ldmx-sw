@@ -16,8 +16,8 @@
 //   ldmx   //
 //----------//
 #include "Event/FindableTrackResult.h"
-#include "SimCore/SimParticle.h"
-#include "Framework/Exception.h"
+#include "SimCore/Event/SimParticle.h"
+#include "Framework/Exception/Exception.h"
 
 //----------//
 //   ROOT   //

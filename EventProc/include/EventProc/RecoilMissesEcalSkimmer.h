@@ -12,8 +12,8 @@
 //   LDMX   //
 //----------//
 #include "Tools/AnalysisUtils.h"
-#include "SimCore/SimCalorimeterHit.h"
-#include "SimCore/SimParticle.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/Event/SimParticle.h"
 #include "Framework/EventProcessor.h"
 
 namespace ldmx { 

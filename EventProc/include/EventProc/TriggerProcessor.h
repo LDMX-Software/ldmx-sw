@@ -10,9 +10,9 @@
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
 #include "Event/TriggerResult.h"
-#include "Ecal/EcalHit.h"
+#include "Ecal/Event/EcalHit.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/Parameters.h" 
+#include "Framework/Configure/Parameters.h" 
 
 namespace ldmx {
 
