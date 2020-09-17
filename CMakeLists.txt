@@ -8,6 +8,13 @@ project(Framework VERSION 2.1.0
                   LANGUAGES CXX
 )
 
+
+setup_library(module Framework
+              name Exception
+              sources ${PROJECT_SOURCE_DIR}/src/Framework/Exception/Exception.cxx)
+
+setup_library(module Framework name Configure interface)
+                  
 # Search for the Python3 library
 find_package (Python3 COMPONENTS Interpreter Development)
 
@@ -40,11 +47,10 @@ configure_file(
 install(FILES ${PROJECT_SOURCE_DIR}/include/Framework/Version.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Framework/)
 
 # Register both the event and run headers with the event bus and ROOT dictionary
-register_event_object( namespace "ldmx" class "EventHeader")
-register_event_object( namespace "ldmx" class "RunHeader" type "dict_only" )
+register_event_object( module_path "Framework" namespace "ldmx" class "EventHeader")
+register_event_object( module_path "Framework" namespace "ldmx" class "RunHeader" type "dict_only")
 
-# Build the event bus from the registered event objects
-build_event_bus()
+build_event_bus(path ${PROJECT_SOURCE_DIR}/include/Framework/EventDef.h)
 
 # Build the ROOT dictionary from registered event objects
 build_dict(template ${PROJECT_SOURCE_DIR}/include/Framework/EventLinkDef.h.in
@@ -53,34 +59,41 @@ build_dict(template ${PROJECT_SOURCE_DIR}/include/Framework/EventLinkDef.h.in
 
 # Unfortunately, the headers need to be included globably for the 
 # dictionary to be generated correctly. 
-include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${include_paths})
 
 # Copy the files needed to generate the dictionary over to the installation 
 # directory.  This is needed so the dictionary can be built even when the 
 # source code is deleted.
 file(COPY ${PROJECT_SOURCE_DIR}/include/Framework/EventDef.h 
           ${PROJECT_SOURCE_DIR}/include/Framework/EventLinkDef.h
-     DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Frameowork/
+     DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Framework/
 )
 
 # Generate the ROOT dictionary
 root_generate_dictionary(EventDic ${CMAKE_INSTALL_PREFIX}/include/Framework/EventDef.h
-    LINKDEF ${CMAKE_INSTALL_PREFIX}/include/Framework/EventLinkDef.h)
+                         LINKDEF ${CMAKE_INSTALL_PREFIX}/include/Framework/EventLinkDef.h)
 
+# When issues the make clean command, remove both the EventDef and EventLinkDef 
+# files.
+set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES 
+    "${PROJECT_SOURCE_DIR}/include/Framework/EventDef.h;${PROJECT_SOURCE_DIR}/include/Framework/EventLinkDef.h")
 
 # Install ROOT pcm file
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventDic_rdict.pcm DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 # Need to define the sources here because of the addition of EventDic
-file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/*.cxx)
+file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/Framework/*.cxx)
 
 # Setup the library
+message(STATUS "Registered targets: ${registered_targets}")
 setup_library(name Framework
               dependencies Python3::Python 
                            ROOT::Core ROOT::Hist ROOT::TreePlayer
                            Boost::log Boost::atomic Boost::regex
-              sources EventDic.cxx ${SRC_FILES}
-              python_install_path ${PYTHON_INSTALL_PREFIX}
+                           Framework::Exception Framework::Configure
+                           "${registered_targets}"
+               sources EventDic.cxx ${SRC_FILES}
+                           #python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
 # Compiling the Framework library requires features introduced by the cpp 17
@@ -92,14 +105,14 @@ set_target_properties(Framework PROPERTIES
 )
 
 # Add the fire executable
-add_executable(fire ${PROJECT_SOURCE_DIR}/src/fire.cxx)
+add_executable(fire ${PROJECT_SOURCE_DIR}/src/Framework/fire.cxx)
 
 # Link to the Framework library
-target_link_libraries(fire PRIVATE Framework)
+target_link_libraries(fire PRIVATE Framework::Framework)
 
 # Install the fire executable
 install(TARGETS fire DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # Setup the test
-setup_test(dependencies DARK::Framework)
+setup_test(dependencies Framework::Framework)
 
