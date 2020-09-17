@@ -1,6 +1,6 @@
 
 #include "Framework/Histograms.h"
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 
 //----------------//
 //   C++ StdLib   //
