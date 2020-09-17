@@ -10,7 +10,7 @@
 /*~~~~~~~~~~~*/
 /*   Event   */
 /*~~~~~~~~~~~*/
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 #include <iostream>
 
 namespace ldmx {

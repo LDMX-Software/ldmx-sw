@@ -21,7 +21,7 @@
 /*~~~~~~~~~~*/
 /*   Core   */
 /*~~~~~~~~~~*/
-#include "Framework/Exception.h" 
+#include "Framework/Exception/Exception.h" 
 #include "Framework/Logger.h"
 
 namespace ldmx {
