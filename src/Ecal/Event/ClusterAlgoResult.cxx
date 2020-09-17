@@ -1,4 +1,4 @@
-#include "Ecal/ClusterAlgoResult.h"
+#include "Ecal/Event/ClusterAlgoResult.h"
 
 ClassImp(ldmx::ClusterAlgoResult)
 

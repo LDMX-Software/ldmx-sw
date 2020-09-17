@@ -3,7 +3,7 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "Ecal/EcalDigiCollection.h"
+#include "Ecal/Event/EcalDigiCollection.h"
 
 ClassImp(ldmx::EcalDigiCollection)
 
