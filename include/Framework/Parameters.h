@@ -103,12 +103,8 @@ namespace ldmx {
 		    return parameter;
                 } catch(const std::bad_any_cast& e) {
                     EXCEPTION_RAISE( "BadTypeParam",
-                                    "Parameter '" + name + "' is being cast to incorrect type '" + typeid(T).name() + "'.");                 
-                } catch(...) {
-                    EXCEPTION_RAISE( "BadTypeParam",
                                     "Parameter '" + name + "' is being cast to incorrect type '" + typeid(T).name() + "'."); 
                 }
-
             }
 
             /**
