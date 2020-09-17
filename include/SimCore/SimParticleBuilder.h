@@ -9,7 +9,7 @@
 
 // LDMX
 #include "Framework/Event.h"
-#include "SimCore/SimParticle.h"
+#include "SimCore/Event/SimParticle.h"
 #include "SimCore/TrackMap.h"
 #include "SimCore/Trajectory.h"
 
