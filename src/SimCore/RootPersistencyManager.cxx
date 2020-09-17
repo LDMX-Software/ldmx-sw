@@ -13,7 +13,7 @@
 #include "Framework/EventHeader.h"
 #include "Framework/RunHeader.h"
 #include "Framework/Version.h"
-#include "SimCore/SimTrackerHit.h" 
+#include "SimCore/Event/SimTrackerHit.h" 
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
