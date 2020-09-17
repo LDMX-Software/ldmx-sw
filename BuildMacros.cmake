@@ -350,3 +350,12 @@ macro(build_test)
     install(TARGETS run_test DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 endmacro()
+
+macro(clear_cache_variables)
+    unset(registered_targets CACHE)
+    unset(dict CACHE)
+    unset(event_headers CACHE)
+    unset(bus_passengers CACHE)
+    unset(test_sources CACHE)
+    unset(test_dep CACHE)
+endmacro()
