@@ -30,6 +30,9 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h" 
 
+// QIE output
+#include "dataframe.h"
+
 namespace ldmx {
 
     enum TrigScintSection{

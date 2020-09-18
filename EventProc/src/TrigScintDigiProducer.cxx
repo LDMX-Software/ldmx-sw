@@ -1,4 +1,5 @@
 #include "EventProc/TrigScintDigiProducer.h"
+// #include "EventProc/dataframe.h"
 
 #include <iostream>
 #include <exception>
@@ -200,8 +201,16 @@ namespace ldmx {
             trigScintHits.push_back(hit); 
         }
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
         event.add(outputCollection_, trigScintHits);
+	// Expo* ex = new Expo(0.1,5,30,1);	 // [Niramay]
+	// SimQIE* smq = new SimQIE(6,1.5); // [Niramay]
+	// smq->SetGain();			 // [Niramay]
+	// smq->SetFreq();			 // [Niramay]
+	
+	// std::vector<dataframe> dd;		// [Niramay]
+	// dataframe temp(5,ex,smq);
+	// dd.push_back(temp);
+        // event.add("QIE", dd); // [Niramay]
     }
 }
 
