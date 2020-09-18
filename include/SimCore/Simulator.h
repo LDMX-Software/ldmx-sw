@@ -82,6 +82,14 @@ namespace ldmx {
             void configure(Parameters& parameters) final override; 
 
             /**
+             * Before the Run Starts (but after configuration is complete)
+             * write out simulatin parameters to the run header
+             *
+             * @param[in,out] header RunHeader for this run
+             */
+            void beforeNewRun(RunHeader& header) final override;
+
+            /**
              * Run simulation and export results to output event.
              *
              * @param event The event to process. 
