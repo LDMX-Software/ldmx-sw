@@ -11,36 +11,29 @@
 //----------------//
 #include <iostream>
 
+std::ostream& operator<<(std::ostream& s, const ldmx::RunHeader& h) {
+    s << "RunHeader { run: " << h.getRunNumber()
+            << ", detectorName: " << h.getDetectorName()
+            << ", description: " << h.getDescription()
+            << "\n";
+    s << "  intParameters: " << "\n";
+    for (const auto& [ key , val ] : h.getIntParameters())
+        s << "    " << key << " = " << val << "\n";
+    s << "  floatParameters: " << "\n";
+    for (const auto& [ key , val ] : h.getFloatParameters())
+        s << "    " << key << " = " << val << "\n";
+    s << "  stringParameters: " << "\n";
+    for (const auto& [ key , val ] : h.getStringParameters())
+        s << "    " << key << " = " << val << "\n";
+    s << "}";
+}
+
 namespace ldmx {
 
-    RunHeader::RunHeader(int runNumber, std::string detectorName, 
-                         std::string description) :
-        runNumber_(runNumber), 
-        detectorName_(detectorName), 
-        description_(description) {
-    }
+    RunHeader::RunHeader(int runNumber) : runNumber_(runNumber) { }
 
     void RunHeader::Print() const {
-        std::cout << "RunHeader { run: " << runNumber_
-                << ", detectorName: " << detectorName_
-                << ", description: " << description_
-                << std::endl;
-        std::cout << "  intParameters: " << std::endl;
-        for (auto entry : intParameters_) {
-            std::cout << "    " << entry.first
-                    << " = " << entry.second << std::endl;
-        }
-        std::cout << "  floatParameters: " << std::endl;
-        for (auto entry : floatParameters_) {
-            std::cout << "    " << entry.first
-                    << " = " << entry.second << std::endl;
-        }
-        std::cout << "  stringParameters: " << std::endl;
-        for (auto entry : stringParameters_) {
-            std::cout << "    " << entry.first
-                    << " = " << entry.second << std::endl;
-        }
-        std::cout << "}" << std::endl;
+        std::cout << *this << std::endl;
     }
 
 }
