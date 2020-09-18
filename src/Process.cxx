@@ -147,6 +147,17 @@ namespace ldmx {
                 
                 for ( auto rule : dropKeepRules_ ) outFile.addDrop(rule);
 
+                RunHeader runHeader(runForGeneration_);
+                runHeader.setRunStart(std::time(nullptr)); //set run starting
+                runHeader_ = &runHeader; //give handle to run header to process
+                outFile.writeRunHeader(runHeader); //add run header to file
+
+                for (auto module : sequence_)
+                    if (dynamic_cast<Producer*>(module))
+                        dynamic_cast<Producer*>(module)->beforeNewRun(runHeader);
+                for (auto module : sequence_)
+                    module->onNewRun(runHeader);
+
                 int numTries = 0; //number of tries for the current event number
                 while (n_events_processed < eventLimit_) {
                     EventHeader& eh = theEvent.getEventHeader();
@@ -198,6 +209,7 @@ namespace ldmx {
 
                 for (auto module : sequence_) module->onFileClose(outFile);
                 
+                runHeader.setRunEnd(std::time(nullptr));
                 outFile.close();
                 
             } else {
@@ -277,12 +289,15 @@ namespace ldmx {
                         if (theEvent.getEventHeader().getRun() != wasRun) {
                             wasRun = theEvent.getEventHeader().getRun();
                             try {
-                                const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
+                                auto runHeader = masterFile->getRunHeader(wasRun);
+                                runHeader_ = &runHeader; //save current run header for later
                                 ldmx_log(info) << "Got new run header from '" << masterFile->getFileName() << "' ...";
                                 runHeader.Print(); //TODO print run header into log
-                                for (auto module : sequence_) {
+                                for (auto module : sequence_)
+                                    if (dynamic_cast<Producer*>(module))
+                                        dynamic_cast<Producer*>(module)->beforeNewRun(runHeader);
+                                for (auto module : sequence_)
                                     module->onNewRun(runHeader);
-                                }
                             } catch (const Exception&) {
                                 ldmx_log(warn) << "Run header for run " << wasRun << " was not found!";
                             }
@@ -365,10 +380,10 @@ namespace ldmx {
             }
 
         } catch (Exception& e) {
-	  ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
-			  << "  at " << e.module() << ":" << e.line() << " in " << e.function()
-			  << "\nStack trace: " << std::endl << e.stackTrace();
-	  
+      ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
+              << "  at " << e.module() << ":" << e.line() << " in " << e.function()
+              << "\nStack trace: " << std::endl << e.stackTrace();
+      
         }
 
         //we're done so let's close up the logging
