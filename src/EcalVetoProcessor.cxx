@@ -63,12 +63,7 @@ namespace ldmx {
     void EcalVetoProcessor::configure(Parameters& parameters) {
         doBdt_ = parameters.getParameter< bool >("do_bdt");
         if (doBdt_){
-#ifdef LDMX_USE_ONNXRUNTIME
             rt_ = std::make_unique<Ort::ONNXRuntime>(parameters.getParameter<std::string>("bdt_file"));
-#else
-            EXCEPTION_RAISE("EcalVetoProcessor",
-                            "Cannot run BDT because ONNXRuntime is not installed.");
-#endif
         }
 
         cellFileNamexy_ = parameters.getParameter< std::string >("cellxy_file");
@@ -395,7 +390,6 @@ namespace ldmx {
         result.setVariables(nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
             showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_, electronContainmentEnergy, photonContainmentEnergy, outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd, outsideContainmentYstd, ecalLayerEdepReadout_, recoilP, recoilPos);
 
-#ifdef LDMX_USE_ONNXRUNTIME
         if (doBdt_) {
             buildBDTFeatureVector(result);
             Ort::FloatArrays inputs({bdtFeatures_});
@@ -412,7 +406,6 @@ namespace ldmx {
                 setStorageHint(hint_shouldDrop);
             }
         }
-#endif
 
         if (inside) {
             setStorageHint(hint_shouldKeep);
