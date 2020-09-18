@@ -210,6 +210,9 @@ namespace ldmx {
                 for (auto module : sequence_) module->onFileClose(outFile);
                 
                 runHeader.setRunEnd(std::time(nullptr));
+                std::stringstream ss;
+                ss << runHeader;
+                ldmx_log(info) << ss.str();
                 outFile.close();
                 
             } else {
@@ -291,8 +294,10 @@ namespace ldmx {
                             try {
                                 auto runHeader = masterFile->getRunHeader(wasRun);
                                 runHeader_ = &runHeader; //save current run header for later
-                                ldmx_log(info) << "Got new run header from '" << masterFile->getFileName() << "' ...";
-                                runHeader.Print(); //TODO print run header into log
+                                std::stringstream ss;
+                                ss << "Got new run header from '" << masterFile->getFileName() << "' ...\n"
+                                   << runHeader;
+                                ldmx_log(info) << ss.str();
                                 for (auto module : sequence_)
                                     if (dynamic_cast<Producer*>(module))
                                         dynamic_cast<Producer*>(module)->beforeNewRun(runHeader);
