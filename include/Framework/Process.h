@@ -116,7 +116,7 @@ namespace ldmx {
             void setEventHeader(EventHeader* h) { eventHeader_=h; }
 
 
-      /**
+            /**
              * Get a dummy process
              *
              * This function returns an instance of this class without

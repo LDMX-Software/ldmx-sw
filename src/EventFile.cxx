@@ -286,9 +286,10 @@ namespace ldmx {
             runTree->Branch("RunHeader", EventConstants::RUN_HEADER.c_str(), &theHandle, 32000, 3);
 
             //copy over the run headers into the tree
-            for( auto& runTuple : runMap_ ) {
-                theHandle = &(runTuple.second);
+            for( auto& [ num , header_pair ] : runMap_ ) {
+                theHandle = header_pair.second;
                 runTree->Fill();
+                if (header_pair.first) delete header_pair.second; 
             }
 
             runTree->Write();
@@ -308,14 +309,14 @@ namespace ldmx {
                     + "'." );
         }
 
-        runMap_[runNumber] = runHeader;
+        runMap_[runNumber] = std::make_pair(false,&runHeader);
 
         return;
     }
 
     RunHeader& EventFile::getRunHeader(int runNumber) {
         if (runMap_.find(runNumber) != runMap_.end()) {
-            return runMap_[runNumber];
+            return *(runMap_.at(runNumber).second);
         } else {
             EXCEPTION_RAISE("DataError", "No run header exists for " + std::to_string(runNumber) + " in the run map.");
         }
@@ -337,7 +338,7 @@ namespace ldmx {
             //TODO check that setup went correctly
             while( oldRunTree.Next() ) {
                 //copy input run tree into run map
-                runMap_[ oldRunHeader->getRunNumber() ] = *oldRunHeader;
+                runMap_[ oldRunHeader->getRunNumber() ] = std::make_pair(true,new RunHeader(*oldRunHeader));
             }
         }
 

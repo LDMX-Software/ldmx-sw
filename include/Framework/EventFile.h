@@ -153,12 +153,18 @@ namespace ldmx {
             /**
              * Close the file, writing the tree to disk if creating an output file.
              *
+             * Deletes any RunHeaders that this instance of EventFile owns.
+             *
              * @throw Exception if run tree already exists in output file.
              */
             void close();
 
             /**
              * Write the run header into the run map
+             *
+             * Any RunHeader passed here is not owned or cleaned up
+             * by this EventFile instance.
+             *
              * @param runHeader The run header to write into the map
              * @throw Exception if run number is already in run map
              */
@@ -187,6 +193,9 @@ namespace ldmx {
              * Otherwise, we try to import run headers from file_.
              *
              * Does not check if any run headers are getting overwritten!
+             *
+             * Any RunHeaders read in from this function are owned by this instance
+             * of EventFile and are deleted in close().
              *
              * @note This function does nothing if parent_->file_ and file_ are nullptrs.
              */
@@ -238,8 +247,16 @@ namespace ldmx {
              */
             std::vector< std::string > reactivateRules_;
 
-            /** Map of run numbers to RunHeader objects read from the input file. */
-            std::map<int, RunHeader> runMap_;
+            /** 
+             * Map of run numbers to RunHeader objects
+             *
+             * The value object is a pair that should remain internal.
+             *  1. True if EventFile owns the RunHeader (and needs to clean it up)
+             *     - This happens when RunHeaders are imported from an input file
+             *  2. False if EventFile does not own the RunHeader
+             *     - This happens when the RunHeader is created by Process::run during production
+             */
+            std::map<int, std::pair<bool,RunHeader*>> runMap_;
     };
 }
 
