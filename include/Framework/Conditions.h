@@ -11,7 +11,6 @@
 /*   Event   */
 /*~~~~~~~~~~~*/
 #include "Framework/Exception.h"
-#include "Event/EventHeader.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -32,6 +31,7 @@ namespace ldmx {
 class Process;
 class ConditionsObjectProvider;
 class ConditionsObject;
+class RunHeader;
 
 /**
  * @class Conditions
@@ -88,7 +88,11 @@ class Conditions {
    */
   void onProcessEnd();
 
-
+  /**
+   * Calls onNewRun for all ConditionsObjectProviders
+   */
+  void onNewRun(RunHeader&);
+  
   /** 
    * Create a ConditionsObjectProvider given the information
    */
