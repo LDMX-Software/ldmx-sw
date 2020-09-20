@@ -1,12 +1,32 @@
-#include "Framework/RandomNumberSeedService.h"
 #include "Event/EventHeader.h"
+#include "Event/RunHeader.h"
+#include "Framework/Process.h"
+#include "Framework/RandomNumberSeedService.h"
 #include <time.h>
+
+std::ostream& operator<<(std::ostream& s, const ldmx::RandomNumberSeedService& o) {
+  o.stream(s);
+  return s;
+}
+
 
 namespace ldmx {
 
 static const int SEED_EXTERNAL = 2;
 static const int SEED_RUN =  3;
 static const int SEED_TIME = 4;
+
+void RandomNumberSeedService::stream(std::ostream& s) const {
+  s << "RandomNumberSeedService(";
+  if (seedMode_==SEED_RUN) s << "Seed on RUN";
+  if (seedMode_==SEED_TIME) s << "Seed on TIME";
+  if (seedMode_==SEED_EXTERNAL) s << "Seeded EXTERNALLY";
+  s << ") Master seed = " <<masterSeed_ << std::endl;
+  for (auto i: seeds_) {
+    s << " " << i.first << "=>" << i.second << std::endl;
+  }
+}
+
 
 RandomNumberSeedService::RandomNumberSeedService(const std::string& name, const std::string& tagname, const Parameters& parameters, Process& process) : ConditionsObject(CONDITIONS_OBJECT_NAME), ConditionsObjectProvider(CONDITIONS_OBJECT_NAME,tagname,parameters,process) {
   std::string seeding=parameters.getParameter<std::string>("seedMode","run");
@@ -15,6 +35,7 @@ RandomNumberSeedService::RandomNumberSeedService(const std::string& name, const 
   }
   if (!strcasecmp(seeding.c_str(),"external")) {
     seedMode_=SEED_EXTERNAL;
+    masterSeed_=parameters.getParameter<int>("masterSeed");
   }
   if (!strcasecmp(seeding.c_str(),"time")) {
     masterSeed_=time(0);
@@ -22,6 +43,15 @@ RandomNumberSeedService::RandomNumberSeedService(const std::string& name, const 
   }
   // need to also load any hand-provided seeds...
 }
+
+void RandomNumberSeedService::onNewRun(RunHeader& rh) {
+  if (seedMode_==SEED_RUN) {
+    masterSeed_=rh.getRunNumber();
+  }
+  std::string key="RandomNumberMasterSeed["+process().getPassName()+"]";
+  rh.setIntParameter(key,int(masterSeed_));
+}
+
 
 uint64_t RandomNumberSeedService::getSeed(const std::string& name) const {
   uint64_t seed(0);
