@@ -46,7 +46,9 @@ class RandomNumberSeedService : public ConditionsObject, public ConditionsObject
 
   virtual std::pair<const ConditionsObject*,ConditionsIOV> getCondition(const EventHeader& context);  
   virtual void releaseConditionsObject(const ConditionsObject* co) { } // it is us, never destroy it.
-
+  virtual void onNewRun(RunHeader&);
+  void stream(std::ostream&) const;
+  
  private:
   /** intialized */
   bool initialized_{false};
@@ -61,7 +63,7 @@ class RandomNumberSeedService : public ConditionsObject, public ConditionsObject
 };
 
 }
-  
+std::ostream& operator<<(std::ostream&, const ldmx::RandomNumberSeedService&);
 
 
 #endif // FRAMEWORK_RANDOMNUMBERSEEDSERVICE_H_
