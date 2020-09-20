@@ -122,6 +122,7 @@ namespace ldmx {
             Event theEvent(passname_);
             
             // Start by notifying everyone that modules processing is beginning
+            conditions_.onProcessStart();
             for (auto module : sequence_) module->onProcessStart();
 
             // If we have no input files, but do have an event number, run for
@@ -279,6 +280,7 @@ namespace ldmx {
                             try {
                                 const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
                                 ldmx_log(info) << "Got new run header from '" << masterFile->getFileName() << "' ...";
+                                conditions_.onNewRun(masterFile->getRunHeader(wasRun));
                                 runHeader.Print(); //TODO print run header into log
                                 for (auto module : sequence_) {
                                     module->onNewRun(runHeader);
@@ -363,6 +365,7 @@ namespace ldmx {
             for (auto module : sequence_) {
                 module->onProcessEnd();
             }
+            conditions_.onProcessEnd();
 
         } catch (Exception& e) {
 	  ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
