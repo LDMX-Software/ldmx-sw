@@ -8,9 +8,11 @@
 
 #include "Framework/Event.h" //We need an event bus to pass through produce
 #include "Framework/Process.h" //We need a dummy process to link the event bus to
+#include "Framework/RandomNumberSeedService.h"
 #include "Event/EventDef.h" //Need event bus passengers
 #include "Ecal/EcalDigiProducer.h" //headers defining what we will be testing
 #include "Ecal/EcalRecProducer.h" //headers defining what we will be testing
+
 
 /**
  * Test for the Ecal Digi Pipeline
@@ -28,6 +30,14 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
     using namespace ldmx;
 
     auto dummyProcess{Process::getDummy()};
+    std::map<std::string,std::any> randParameters;
+    randParameters["seedMode"]=std::string("external");
+    randParameters["masterSeed"]=123456789;
+    Parameters rand_params;
+    rand_params.setParameters(randParameters);
+
+    dummyProcess.getConditions().createConditionsObjectProvider("ldmx::RandomNumberSeedService",RandomNumberSeedService::CONDITIONS_OBJECT_NAME,"DUMMY",rand_params);
+    
     Event testEventBus( "testEcalDigiPipeline" );
 
     std::vector<SimCalorimeterHit> pretendSimHits;
