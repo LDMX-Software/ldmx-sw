@@ -161,30 +161,41 @@ macro(setup_library)
 
 endmacro()
 
+macro(setup_python)
+   
+    set(oneValueArgs install_path)
+    cmake_parse_arguments(setup_python "${options}" "${oneValueArgs}"
+                          "${multiValueArgs}" ${ARGN} )
 
 
-# If the python directory exists, initialize the package and copy over the 
+    # If the python directory exists, initialize the package and copy over the 
     # python modules.
-    #if (EXISTS ${PROJECT_SOURCE_DIR}/python)
+    if (EXISTS ${PROJECT_SOURCE_DIR}/python)
        
         # Install the python modules
-        #    file(GLOB py_scripts CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/python/*.py)
-        #foreach(pyscript ${py_scripts})
-        #    string(REPLACE ".in" "" script_output ${pyscript})
-        #    get_filename_component(script_output ${script_output} NAME)
-        #    configure_file(${pyscript} ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output})
-        #    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output} DESTINATION ${setup_library_python_install_path}/${setup_library_name})
-        #endforeach()
+        file(GLOB py_scripts CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/python/*.py)
+        foreach(pyscript ${py_scripts})
+            string(REPLACE ".in" "" script_output ${pyscript})
+            get_filename_component(script_output ${script_output} NAME)
+            configure_file(${pyscript} ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output})
+            install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output} DESTINATION ${setup_python_install_path})
+        endforeach()
 
-        #endif()
+    endif()
+
+endmacro()
+
+macro(setup_data)
 
     # If the data directory exists, install it to the data directory
-    #if (EXISTS ${PROJECT_SOURCE_DIR}/data)
-    #    file(GLOB data_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/data/*)
-    #    foreach(data_file ${data_files})
-    #        install(FILES ${data_file} DESTINATION ${CMAKE_INSTALL_PREFIX}/data/${setup_library_name})
-    #    endforeach()
-    #endif()
+    if (EXISTS ${PROJECT_SOURCE_DIR}/data)
+        file(GLOB data_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/data/*)
+        foreach(data_file ${data_files})
+            install(FILES ${data_file} DESTINATION ${CMAKE_INSTALL_PREFIX}/data/${setup_library_name})
+        endforeach()
+    endif()
+
+endmacro()
 
 function(register_event_object)
 
