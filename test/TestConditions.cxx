@@ -1,5 +1,6 @@
 #include "Framework/catch.hpp" //for TEST_CASE, REQUIRE, and other Catch2 macros
 
+#include "Event/EventHeader.h"
 #include "Conditions/SimpleTableCondition.h"
 #include "Conditions/SimpleTableStreamers.h"
 #include "Conditions/SimpleCSVTableProvider.h"
@@ -189,6 +190,7 @@ namespace ldmx {
                 matchesAll(dtable,fTable1);
                 matchesAll(dtable,fTable2);
             }
+            
             /*
             SECTION( "Testing HTTP loading" ) {
                 const char* cfg="#!/usr/bin/python\n\nimport sys\n\nfrom LDMX.Framework import ldmxcfg\nfrom LDMX.Conditions import SimpleCSVTableProvider\n\np=ldmxcfg.Process(\"test\")\np.testMode=True\ncolumns=[\"A\",\"Q\",\"V\"]\ncop=SimpleCSVTableProvider.SimpleCSVDoubleTableProvider(\"test_table_http\",\"TEST_MODE\",columns)\ncop.validForever(\"http://webusers.physics.umn.edu/~jmmans/test_table.csv\")\n";
