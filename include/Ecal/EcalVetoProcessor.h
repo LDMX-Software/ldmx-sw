@@ -15,9 +15,7 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Configure/Parameters.h"
 
-#ifdef LDMX_USE_ONNXRUNTIME
 #include "Tools/ONNXRuntime.h"
-#endif
 
 //C++
 #include <map>
@@ -138,9 +136,7 @@ namespace ldmx {
             /** Name of the collection which will containt the results. */
             std::string collectionName_{"EcalVeto"};
 
-#ifdef LDMX_USE_ONNXRUNTIME
             std::unique_ptr<Ort::ONNXRuntime> rt_;
-#endif
 
     };
 
