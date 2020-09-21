@@ -145,10 +145,6 @@ namespace ldmx {
 
                     } //type of object in python list
                 } //python list has non-zero size
-            } else if (PyDict_Check(value)) {
-                Parameters python_dictionary;
-                python_dictionary.setParameters(getMembers(value));
-                params[skey] = python_dictionary;
             } else {
                 //object got here, so we assume
                 //it is a higher level object 
