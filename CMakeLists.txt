@@ -93,7 +93,6 @@ setup_library(name Framework
                            Framework::Exception Framework::Configure
                            "${registered_targets}"
                sources EventDic.cxx ${SRC_FILES}
-                           #python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
 # Compiling the Framework library requires features introduced by the cpp 17
@@ -116,3 +115,4 @@ install(TARGETS fire DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 # Setup the test
 setup_test(dependencies Framework::Framework)
 
+setup_python(install_path ${PYTHON_INSTALL_PREFIX}/Framework)
