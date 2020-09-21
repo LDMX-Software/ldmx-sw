@@ -14,9 +14,7 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Configure/Parameters.h"
 
-#ifdef LDMX_USE_ONNXRUNTIME
 #include "Tools/ONNXRuntime.h"
-#endif
 
 namespace ldmx {
 
@@ -60,9 +58,7 @@ namespace ldmx {
 
     float disc_cut_ = -99;
     std::vector<std::vector<float>> data_;
-#ifdef LDMX_USE_ONNXRUNTIME
     std::unique_ptr<Ort::ONNXRuntime> rt_;
-#endif
 
     std::unique_ptr<EcalHexReadout> hexReadout_;
 

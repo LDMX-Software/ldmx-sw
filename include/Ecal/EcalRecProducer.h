@@ -12,24 +12,16 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <time.h>
 #include <memory> //for smart pointers
-
-//----------//
-//   ROOT   //
-//----------//
-#include "TRandom3.h"
 
 //----------//
 //   LDMX   //
 //----------//
+#include "Event/EventDef.h" 
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
-#include "Ecal/Event/EcalDigiCollection.h"
-#include "Ecal/Event/EcalHit.h"
-#include "Tools/NoiseGenerator.h"
 
 namespace ldmx {
 
@@ -51,39 +43,23 @@ namespace ldmx {
 
             /**
              * Destructor
-             * Deletes hanging pointers if they exist
              */
             virtual ~EcalRecProducer();
 
             /**
              * Grabs configure parameters from the python config file.
-             *
-             * Parameter        Default
-             * digiCollName     EcalDigis
-             * digiPassName     "" <-- blank means take any pass if only one collection exists
-             * layerWeights     DEFAULT_LAYER_WEIGHTS
-             * secondOrderEnergyCorrection DEFAULT_SECOND_ORDER_ENERGY_CORRECTION
              */
             virtual void configure(Parameters&);
 
             /**
              * Produce EcalHits and put them into the event bus using the
              * EcalDigis as input.
+             *
+             * This function unfolds the digi samples taken by the HGC ROC
+             * and reconstructs their energy using knowledge of how
+             * the chip operates and the position using EcalHexReadout.
              */
             virtual void produce(Event& event);
-
-        private:
-
-            /**
-             * Convert TOT from digis to a reconstructed energy deposited in the Silicon.
-             *
-             * We construct this conversion by fitting the plot of TOT vs Sim Energy Dep.
-             * The choice of fit and different scalings pre- or post- fit may have a large effect and should be studied.
-             *
-             * @param tot tot to convert
-             * @return converted silicon energy
-             */
-            double convertTOT(const int tot) const;
 
         private:
 
@@ -92,6 +68,27 @@ namespace ldmx {
 
             /** Digi Pass Name to use as input */
             std::string digiPassName_;
+
+            /// Energy [MeV] deposited by a MIP in Si 0.5mm thick
+            double mipSiEnergy_;
+
+            /// Pedestal [ADC Counts] on below signal
+            double pedestal_;
+
+            /// Conversion from ADC counts to voltage [mV]
+            double gain_;
+
+            /// Length of clock cycle [ns]
+            double clockCycle_;
+
+            /// Rate that voltage drains off chip after saturation [mV/ns]
+            double drainRate_;
+
+            /// Maximum TOT measured by the chip [ns]
+            double totMax_;
+
+            /// Conversion from voltage [mV] to energy [MeV]
+            double mV_;
 
             /** 
              * Layer Weights to use for this reconstruction 
@@ -115,15 +112,10 @@ namespace ldmx {
 
             /**
              * Helper Instance of EcalHexReadout:
-             * performs real space x,y postion <-> module,cell ID translation
+             *
+             * performs real space postion <-> ID translation
              */
             std::unique_ptr<EcalHexReadout> ecalHexReadout_;
-
-            /**
-             * Approximate energy deposited in Silicon layer for a MIP hit
-             * MeV
-             */
-            static const double MIP_SI_RESPONSE; // MeV
 
     };
 }
