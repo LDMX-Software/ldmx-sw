@@ -234,7 +234,7 @@ class ConditionsObjectProvider:
             other COP to compare agains
         """
 
-        if not isinstance(ConditionsObjectProvider,other) :
+        if not isinstance(other,ConditionsObjectProvider) :
             return NotImplemented
 
         return (self.objectName == other.objectName and self.className == other.className)
@@ -269,8 +269,9 @@ class RandomNumberSeedService(ConditionsObjectProvider):
     """
 
     def __init__(self,tag) :
-        super().__init__('RandomNumberSeedService','ldmx::RandomNumberSeedService',tag)
+        super().__init__('RandomNumberSeedService','ldmx::RandomNumberSeedService',tag,'Framework')
         self.seedMode = ''
+        self.seed=-1 #only used in external mode
 
     def run(self) :
         """Base random number seeds off of the run number"""
@@ -377,7 +378,7 @@ class Process:
         Process.lastProcess=self
 
         # needs lastProcess defined to self-register
-        self.randomNumberSeedService=RandomNumberSeedService()
+        self.randomNumberSeedService=RandomNumberSeedService('rnss')
 
     def addLibrary(lib) :
         """Add a library to the list of dynamically loaded libraries
