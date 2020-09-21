@@ -37,6 +37,7 @@ namespace ldmx { namespace test {
              * - int parameter
              * - double parameter
              * - string parameter
+             * - dictionary parameter
              * - vector of ints parameter
              * - vector of doubles parameter
              * - vector of strings parameter
@@ -46,6 +47,10 @@ namespace ldmx { namespace test {
                 CHECK( parameters.getParameter< int >("testInt") == 9 );
                 CHECK( parameters.getParameter< double >("testDouble") == Approx( 7.7 ) );
                 CHECK( parameters.getParameter< std::string >("testString") == "Yay!" );
+
+                auto testDict{parameters.getParameter<Parameters>("testDict")};
+                CHECK( testDict.getParameter<int   >("one") == 1 );
+                CHECK( testDict.getParameter<double>("two") == 2.0 );
 
                 std::vector<int> correctIntVec = { 1 , 2 , 3 };
                 auto testIntVec{parameters.getParameter<std::vector<int>>("testIntVec")};
@@ -118,6 +123,7 @@ TEST_CASE( "Configure Python Test" , "[Framework][functionality]" ) {
     testPyScript << "        self.testDouble = 7.7" << std::endl;
     testPyScript << "        self.testString = 'Yay!'" << std::endl;
     testPyScript << "        self.testIntVec = [ 1 , 2 , 3 ]" << std::endl;
+    testPyScript << "        self.testDict = { 'one' : 1, 'two' : 2.0 }" << std::endl;
     testPyScript << "        self.testDoubleVec = [ 0.1 , 0.2 , 0.3 ]" << std::endl;
     testPyScript << "        self.testStringVec = [ 'first' , 'second' , 'third' ]" << std::endl;
 
