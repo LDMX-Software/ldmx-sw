@@ -1,4 +1,4 @@
-#include "EventProc/dataframe.h"
+#include "Event/dataframe.h"
 
 #include <iostream>
 #include <exception>
@@ -28,6 +28,12 @@ namespace ldmx {
     TDCs = sm->Out_TDC(pl,maxTS);
     CIDs = sm->CapID(pl,maxTS);
   }
+
+
+  void dataframe::Print(Option_t* option) const {return;}
+  void dataframe::Clear(Option_t* option){return;}
+
+
 
   digiCollection::digiCollection()
   {

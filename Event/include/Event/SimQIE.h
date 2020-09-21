@@ -1,25 +1,24 @@
 // file to store QIE simulation related functions
 // default charge unit = femto C = 1e-15 C
 
+#ifndef EVENT_SIMQIE_H
+#define EVENT_SIMQIE_H
+
 #include<iostream>
 #include"TMath.h"
-#include"Pulse.h"
+#include"Event/Pulse.h"
 #include"TRandomGen.h"
 
 namespace ldmx {
   class SimQIE
   {
   public:
-    /* SimQIE(bool DBG=false);		      // without noise & pedestal */
     SimQIE();		      // without noise & pedestal
-    /* SimQIE(float pd, float sg, bool DBG=false); // with noise & pedestal */
     SimQIE(float pd, float sg); // with noise & pedestal
 
     float QBins[257];		// DO NOT USE. Problem with oevrlapping regions
-    /* void SetGain(float gg=1e+6);	// set gain of QIE */
     void SetGain(float gg=1e+6);	// set gain of QIE
     void SetFreq(float sf=40);	// sampling frequency in MHz
-    /* void SetFreq(float sf);	// sampling frequency in MHz */
   
     float QErr(float);
     int Q2ADC(float);
@@ -47,3 +46,4 @@ namespace ldmx {
     void GenerateBins();		                    // DO NOT USE. Problem with overalapping regions
   };
 }
+#endif

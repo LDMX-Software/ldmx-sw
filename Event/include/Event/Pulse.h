@@ -1,7 +1,10 @@
 // Class to store all the functions related to the input pulse to QIE
 
-////////////////////////// The base class ///////////////////////////////
+#ifndef EVENT_PULSE_H
+#define EVENT_PULSE_H
+
 namespace ldmx {
+  ////////////////////////// The base class ///////////////////////////////
   class Pulse
   {
   public:
@@ -11,17 +14,11 @@ namespace ldmx {
     virtual float Max();			      // Return the maximum of the pulse
   };
 
-  float Pulse::eval(float T){return(0);}
-  float Pulse::Integrate(float T1,float T2){return(0);}
-  float Pulse::Der(float T){return(0);}
-  float Pulse::Max(){return(0);}
   //////////////////////// Daughter class /////////////////////////////////
 
   class Bimoid: public Pulse
   {
   public:
-    /* Bimoid(float start,float rise, float fall, float qq=1); */
-    /* Bimoid(float start,float qq=1); */
     Bimoid(float start,float rise, float fall, float qq);
     Bimoid(float start,float qq);
     float eval(float T);
@@ -42,7 +39,6 @@ namespace ldmx {
   {
   public:
     Expo();					   // default constructor
-    /* Expo(float k_,float tmax_,float tstart_=0,float Q_=1); // main constructor */
     Expo(float k_,float tmax_,float tstart_,float Q_); // main constructor
 
     float GetRise(){return(rt);}	// return rise time
@@ -65,3 +61,4 @@ namespace ldmx {
   };
 
 }
+#endif

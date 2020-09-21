@@ -31,7 +31,8 @@
 #include "Framework/Parameters.h" 
 
 // QIE output
-#include "dataframe.h"
+// #include "SimQIE.h"
+#include "Event/dataframe.h"
 
 namespace ldmx {
 

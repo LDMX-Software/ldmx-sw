@@ -27,6 +27,7 @@
 #include "Event/TrackerVetoResult.h"
 #include "Event/TriggerResult.h"
 #include "Event/TrigScintHit.h" 
+#include "Event/dataframe.h" 
 
 #include <variant>
 
@@ -59,6 +60,7 @@ namespace ldmx {
         TrackerVetoResult,
         TriggerResult,
         TrigScintHit,
+        dataframe,
         std::vector < CalorimeterHit >,
         std::vector < EcalCluster >,
         std::vector < EcalHit >,
@@ -69,7 +71,8 @@ namespace ldmx {
         std::vector < SiStripHit >,
         std::vector < SimTrackerHit >,
         std::vector < TrigScintHit >,
-        std::map< int , SimParticle >
+      std::map< int , SimParticle >,
+        std::vector<dataframe>
     > EventBusPassenger;
 
 }
