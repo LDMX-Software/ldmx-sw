@@ -51,3 +51,4 @@ set_target_properties(SimCore PROPERTIES
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO)
 
+setup_python(install_path ${PYTHON_INSTALL_PREFIX}/SimCore)
