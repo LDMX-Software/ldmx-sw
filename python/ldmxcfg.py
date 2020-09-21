@@ -228,7 +228,41 @@ class ConditionsObjectProvider:
                 msg += "\n    " + str(k) + " : " + str(v)
 
         return msg
-        
+
+class RandomNumberSeedService(ConditionsObjectProvider):
+    """The random number seed service
+
+    This object registers the random number seed service with the process and
+    gives some helper functions for configuration.
+
+    Attributes
+    ----------
+    seedMode : str
+        Name of mode of getting random seeds
+    """
+
+    def __init__(self,tag) :
+        super().__init__('RandomNumberSeedService','ldmx::RandomNumberSeedService',tag)
+        self.seedMode = ''
+
+    def run(self) :
+        """Base random number seeds off of the run number"""
+        self.seedMode = 'run'
+
+    def external(self,seed) :
+        """Input the master random number seed
+
+        Parameters
+        ----------
+        seed : int
+            Integer to use as master random number seed
+        """
+        self.seedMode = 'external'
+        self.seed = seed
+
+    def time(self) :
+        """Set master random seed based off of time"""
+        self.seedMode = 'time'
     
 class Process:
     """Process configuration object
@@ -279,6 +313,8 @@ class Process:
         File to print log messages to, won't setup file logging if this parameter is not set
     conditionsObjectProviders : list of ConditionsObjectProviders
         List of the sources of calibration and conditions information
+    randomNumberSeedService : RandomNumberSeedService
+        conditions object that provides random number seeds in a deterministic way
 
     See Also
     --------
@@ -308,6 +344,9 @@ class Process:
         self.histogramFile=''
         self.conditionsObjectProviders=[]
         Process.lastProcess=self
+
+        # needs lastProcess defined to self-register
+        self.randomNumberSeedService=RandomNumberSeedService()
 
     def addLibrary(lib) :
         """Add a library to the list of dynamically loaded libraries
