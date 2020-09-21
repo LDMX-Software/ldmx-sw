@@ -6,6 +6,7 @@
  */
 
 #include "Ecal/EcalDigiProducer.h"
+#include "Framework/RandomNumberSeedService.h"
 
 namespace ldmx {
 
@@ -55,17 +56,23 @@ namespace ldmx {
         noiseGenerator_->setNoise(hgcrocParams.getParameter<double>("noiseRMS")); //rms noise in mV
         noiseGenerator_->setPedestal(gain_*pedestal_); //mean noise amplitude (if using Gaussian Model for the noise) in mV
         noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in mV
-
-        //The noise injector is used to place smearing on top
-        //of energy depositions and hit times before doing
-        //the digitization procedure.
-        int seed = ps.getParameter<int>("randomSeed");
-        noiseInjector_ = std::make_unique<TRandom3>(seed);
-        noiseGenerator_->setSeed(seed);
-
     }
 
     void EcalDigiProducer::produce(Event& event) {
+
+        // Need to handle seeding on the first event
+        if (!noiseGenerator_->hasSeed()) {
+            const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+            noiseGenerator_->seedGenerator(rseed.getSeed("EcalDigiProducer::NoiseGenerator"));
+        }
+        if (noiseInjector_.get()==nullptr) {
+            const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+            noiseInjector_ = std::make_unique<TRandom3>(rseed.getSeed("EcalDigiProducer::NoiseInjector"));
+        }
+        if(!hgcroc_->hasSeed()) {
+            const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+            hgcroc_->seedGenerator(rseed.getSeed("EcalDigiProducer::HgcrocEmulator"));
+        }
 
         //Empty collection to be filled
         HgcrocDigiCollection ecalDigis;
