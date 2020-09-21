@@ -68,10 +68,13 @@ namespace ldmx {
         PyObject* dictionary{PyObject_GetAttrString(object, "__dict__")};
 
         if ( dictionary == 0 ) {
-            EXCEPTION_RAISE(
+            if (PyDict_Check(object)) dictionary = object;
+            else {
+                EXCEPTION_RAISE(
                     "ObjFail",
                     "Python Object does not have __dict__ member"
                     );
+            }
         }
 
         PyObject *key(0), *value(0);
@@ -142,6 +145,10 @@ namespace ldmx {
 
                     } //type of object in python list
                 } //python list has non-zero size
+            } else if (PyDict_Check(value)) {
+                Parameters python_dictionary;
+                python_dictionary.setParameters(getMembers(value));
+                params[skey] = python_dictionary;
             } else {
                 //object got here, so we assume
                 //it is a higher level object 
