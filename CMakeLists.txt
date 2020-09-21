@@ -47,3 +47,7 @@ setup_library(name Ecal
 )
 
 setup_test(dependencies DARK::Ecal)
+
+setup_python(install_path ${PYTHON_INSTALL_PREFIX}/Ecal)
+
+setup_data()
