@@ -23,5 +23,6 @@ setup_library(name Event
               dependencies ROOT::Core
                            "${registered_targets}"
               register_target)
-                       
+
+setup_python(install_path ${PYTHON_INSTALL_PREFIX}/Event)
 

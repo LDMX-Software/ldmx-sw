@@ -16,3 +16,5 @@ setup_library(name DQM
                            Framework::Framework Event::Event Tools::Tools DetDescr::DetDescr
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
+
+setup_python(install_path ${PYTHON_INSTALL_PREFIX}/DQM)

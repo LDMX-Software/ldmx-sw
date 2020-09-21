@@ -16,3 +16,5 @@ setup_library(name Biasing
                            Framework::Framework SimCore::SimCore
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
+
+setup_python(install_path ${PYTHON_INSTALL_PREFIX}/Biasing)

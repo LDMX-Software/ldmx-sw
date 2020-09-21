@@ -27,3 +27,5 @@ target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr ROOT::Gpad)
 
 # Install the fire executable
 install(TARGETS print-ecal-hex-readout DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
+setup_python(install_path ${PYTHON_INSTALL_PREFIX}/DetDescr)
