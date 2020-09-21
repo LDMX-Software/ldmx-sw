@@ -115,7 +115,6 @@ namespace ldmx {
              */
             void setEventHeader(EventHeader* h) { eventHeader_=h; }
 
-
             /**
              * Get a dummy process
              *

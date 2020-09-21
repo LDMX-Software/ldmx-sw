@@ -69,10 +69,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    ProcessHandle p;
     std::cout << "---- LDMXSW: Loading configuration --------" << std::endl;
+
+    ProcessHandle p;
     try {
-        
         ConfigurePython cfg(argv[ptrpy], argv + ptrpy + 1, argc - ptrpy - 1);
         p = cfg.makeProcess();
     } catch (Exception& e) {
@@ -101,8 +101,19 @@ int main(int argc, char* argv[]) {
 
     std::cout << "---- LDMXSW: Starting event processing --------" << std::endl;
     
-    //process has its own try-catch branch for any exceptions
-    p->run();
+    try {
+        p->run();
+    } catch (Exception& e) {
+        //Process::run opens up the logging using the parameters passed to it from python
+        //  if an Exception is thrown, we haven't gotten to the end of Process::run
+        //  where logging is closed, so we can do one more error message and then close it.
+        auto theLog_{logging::makeLogger("fire")}; //ldmx_log macro needs this variable to be named 'theLog_'
+	    ldmx_log(fatal) << "[" << e.name() << "] : " << e.message() << "\n"
+			  << "  at " << e.module() << ":" << e.line() << " in " << e.function()
+			  << "\nStack trace: " << std::endl << e.stackTrace();
+	    logging::close();
+        return 127; //return non-zero error-status
+    }
     
     std::cout << "---- LDMXSW: Event processing complete  --------" << std::endl;
 
