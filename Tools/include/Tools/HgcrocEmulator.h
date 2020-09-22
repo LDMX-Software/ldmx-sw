@@ -4,8 +4,8 @@
 
 #include "Tools/NoiseGenerator.h"
 #include "Event/HgcrocDigiCollection.h"
-#include "Event/SimCalorimeterHit.h"
-#include "Framework/Parameters.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "Framework/Configure/Parameters.h"
 #include "Conditions/SimpleTableCondition.h"
 
 //----------//
