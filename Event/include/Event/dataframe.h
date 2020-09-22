@@ -6,7 +6,9 @@
 #ifndef EVENT_DATAFRAME_H
 #define EVENT_DATAFRAME_H
 
+/* #include"EventProc/SimQIE.h" */
 #include"SimQIE.h"
+#include "TObject.h" //For ClassDef
 
 namespace ldmx {
   class dataframe
@@ -15,6 +17,7 @@ namespace ldmx {
     dataframe(int maxTS_,Pulse* pl, float pd, float ns);
     dataframe(int maxTS_,Pulse* pl, SimQIE* sm);
     dataframe();
+    ~dataframe();
 
     int* GetADC(){return(ADCs);}
     int* GetTDC(){return(TDCs);}
