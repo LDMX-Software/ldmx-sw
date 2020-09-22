@@ -13,7 +13,6 @@ find_package(ROOT 6.16 CONFIG REQUIRED)
 setup_library(name DetDescr
               dependencies  ROOT::Core ROOT::Hist
                             Framework::Exception Framework::Configure 
-              python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
 # Setup the test
