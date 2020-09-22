@@ -70,7 +70,6 @@ namespace ldmx {
 
 } //ldmx
 
-/*
 std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection::Sample& sample) {
     s << "Sample { "
       << "tot prog: " << sample.isTOTinProgress() << ", "
@@ -102,4 +101,4 @@ std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection& col)
     for ( unsigned int iDigi = 0; iDigi < col.getNumDigis(); iDigi++ ) s << col.getDigi(iDigi) << "\n";
     s << "}";
     return s;
-}*/
+}
