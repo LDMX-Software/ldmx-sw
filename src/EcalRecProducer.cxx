@@ -8,8 +8,6 @@
 
 namespace ldmx {
 
-    const double EcalRecProducer::MIP_SI_RESPONSE = 0.130; // MeV
-
     EcalRecProducer::EcalRecProducer(const std::string& name, Process& process) :
         Producer(name, process) {
     }
@@ -26,56 +24,114 @@ namespace ldmx {
 
         auto hexReadout{ps.getParameter<Parameters>("hexReadout")};
         ecalHexReadout_ = std::make_unique<EcalHexReadout>(hexReadout);
+
+        mipSiEnergy_ = ps.getParameter<double>( "mipSiEnergy" );
+        mV_          = ps.getParameter<double>( "mV" );
+
+        auto hgcrocParams{ps.getParameter<Parameters>("hgcroc")};
+        pedestal_    = hgcrocParams.getParameter<double>( "pedestal" );
+        gain_        = hgcrocParams.getParameter<double>( "gain" );
+        clockCycle_  = hgcrocParams.getParameter<double>( "clockCycle" );
+        drainRate_   = hgcrocParams.getParameter<double>( "drainRate" );
+        totMax_      = hgcrocParams.getParameter<double>( "totMax" );
+
     }
 
     void EcalRecProducer::produce(Event& event) {
 
         std::vector<EcalHit> ecalRecHits;
-        EcalDigiCollection ecalDigis = event.getObject<EcalDigiCollection>( digiCollName_ , digiPassName_ );
+        auto ecalDigis = event.getObject<HgcrocDigiCollection>( digiCollName_ , digiPassName_ );
         int numDigiHits = ecalDigis.getNumDigis();
         //loop through digis
         for ( unsigned int iDigi = 0; iDigi < numDigiHits; iDigi++ ) {
             
-            //Right now, hard-coded to only use one sample in EcalDigiProducer
-            //TODO: expand to multiple samples per digi
-            EcalDigiSample sample = (ecalDigis.getDigi( iDigi )).at(0);
-            EcalID id(sample.rawID_);
+            auto digi = ecalDigis.getDigi( iDigi );
+
+            //ID from first digi sample
+            //  assuming rest of samples have same ID
+            EcalID id(digi.id());
             
             //ID to real space position
             double x,y,z;
             ecalHexReadout_->getCellAbsolutePosition( id , x , y , z );
             
-            //get energy and time estimate from digi information
-            double siEnergy, hitTime;
-            
-            //TODO: Energy estimate from N samples can (and should be) refined
             //TOA is the time of arrival with respect to the 25ns clock window
-            double timeRelClock25 = sample.toa_*(25./1024); //ns
-            hitTime = timeRelClock25;
+            //  TODO what to do if hit NOT in first clock cycle?
+            double timeRelClock25 = digi.begin()->toa()*(clockCycle_/1024); //ns
+            double hitTime = timeRelClock25;
 
-            //ADC - voltage measurement at a specific time of the pulse
-            // Pulse Shape:
-            //  p[0]/(1.0+exp(p[1](t-p[2]+p[3]-p[4])))/(1.0+exp(p[5]*(t-p[6]+p[3]-p[4])))
-            //  p[0] = amplitude to be fit (TBD)
-            //  p[1] = -0.345 shape parameter - rate of up slope
-            //  p[2] = 70.6547 shape parameter - time of up slope relative to shape fit
-            //  p[3] = 77.732 shape parameter - time of peak relative to shape fit
-            //  p[4] = peak time to be fit (TBD)
-            //  p[5] = 0.140068 shape parameter - rate of down slope
-            //  p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
-            //These measurements can be used to fit the pulse shape if TOT is not available
+            //get energy estimate from all digi samples
+            double siEnergy(0.);
 
-            //TOT - number of clock ticks that pulse was over threshold
-            //  this is related to the amplitude of the pulse through some convoluted relation using the pulse shape
-            //  the amplitude of the pulse is related to the energy deposited
-            //  TODO actually have mutliple samples instead of having adc_t_ count number of samples over threshold
-            siEnergy = convertTOT( sample.adc_t_*1024 + sample.tot_ );
-            //printf( "%6d Clocks and %6d tot --> %6.2f MeV\n" , sample.adc_t_ , sample.tot_ , siEnergy );
+            /* debug printout
+            std::cout << "Recon { "
+                << "ID: " << id << ", "
+                << "TOA: " << hitTime << "ns } ";
+                */
+            if ( digi.isTOT() ) {
+                //TOT - number of clock ticks that pulse was over threshold
+                //  this is related to the amplitude of the pulse approximately through a linear drain rate
+                //  the amplitude of the pulse is related to the energy deposited
+
+                int tdc = digi.tot();
+                double tot = ( double(tdc)/4096. ) * totMax_;
+
+                //convert the time over threshold into a total energy deposited in the silicon
+                //  (time over threshold [ns]) * (rate of drain [mV/ns]) * (convert to energy [MeV/mV])
+                siEnergy = tot * drainRate_ * mV_;
+
+                /* debug printout
+                std::cout << "TOT Mode -> "
+                          << tdc << " TDC Counts -> " << tot << " ns -> "
+                          << siEnergy << " MeV" << std::endl;
+                 */
+            } else {
+                //ADC mode of readout
+                //ADC - voltage measurement at a specific time of the pulse
+                // Pulse Shape:
+                //  p[0]/(1.0+exp(p[1](t-p[2]+p[3]-p[4])))/(1.0+exp(p[5]*(t-p[6]+p[3]-p[4])))
+                //  p[0] = amplitude to be fit (TBD)
+                //  p[1] = -0.345 shape parameter - rate of up slope
+                //  p[2] = 70.6547 shape parameter - time of up slope relative to shape fit
+                //  p[3] = 77.732 shape parameter - time of peak relative to shape fit
+                //  p[4] = peak time to be fit (TBD)
+                //  p[5] = 0.140068 shape parameter - rate of down slope
+                //  p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
+                //These measurements can be used to fit the pulse shape if TOT is not available
+                
+                TH1F voltageMeasurements( "voltageMeasurements" , "voltageMeasurements" ,
+                        10.*clockCycle_ , 0. , 10.*clockCycle_ );
+
+                double maxMeas{0.};
+                int numWholeClocks{0};
+                for ( auto it = digi.begin(); it < digi.end(); it++) {
+                    double voltage = (it->adc_t() - pedestal_)*gain_; //mV
+                    if ( voltage > maxMeas ) maxMeas = voltage;
+                    double time    = numWholeClocks*clockCycle_; //+ offestWithinClock; //ns
+                    voltageMeasurements.Fill( time , voltage );
+                }
+
+                if ( false ) {
+                    //fit the voltage measurements with the pulse function
+                    //  would need to access the pulse function in HGCROC somehow
+                    //voltageMeasurements.Fit( &pulseFunc_ , "QW" );
+                    //get the silicon energy from the fitted voltage amplitude in mV
+                    //siEnergy = (pulseFunc_.GetParameter( 0 ))*mV_;
+                } else {
+                    //just use the maximum measured voltage
+                    siEnergy = (maxMeas)*mV_;
+                }
+
+                /* debug printout
+                std::cout << "ADC Mode -> "
+                          << siEnergy << " MeV" << std::endl;
+                 */
+            }
             
             //incorporate layer weights
             int layer = id.layer();
             double recHitEnergy = 
-                ( (siEnergy / MIP_SI_RESPONSE)*layerWeights_.at(layer)+siEnergy )*secondOrderEnergyCorrection_;
+                ( (siEnergy / mipSiEnergy_ )*layerWeights_.at(layer)+siEnergy )*secondOrderEnergyCorrection_;
 
             //copy over information to rec hit structure in new collection
             EcalHit recHit;
@@ -90,34 +146,18 @@ namespace ldmx {
             ecalRecHits.push_back( recHit );
         }
 
+        if (event.exists("EcalSimHits")) {
+            //ecal sim hits exist ==> label which hits are real and which are pure noise
+            auto ecalSimHits{event.getCollection<SimCalorimeterHit>("EcalSimHits")};
+            std::set<int> real_hits;
+            for ( auto const& sim_hit : ecalSimHits ) real_hits.insert( sim_hit.getID() );
+            for ( auto& hit : ecalRecHits ) hit.setNoise( real_hits.find(hit.getID()) == real_hits.end() );
+        }
+
         //add collection to event bus
         event.add( "EcalRecHits", ecalRecHits );
     }
 
-    double EcalRecProducer::convertTOT(const int tot) const {
-
-        /**
-         * Fit retrieved from a SimEDep vs TOT plot.
-         * NOT physically motivated, will need to investigate further.
-         *
-         * Fit (for TOT > 3000):
-         *    Function: expo ==> exp([0]+[1]*x)
-         *    EDM=1.27359e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
-         *    EXT PARAMETER                                   STEP         FIRST   
-         *    NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-         *     1  Constant    -1.36729e+01   1.91947e-03   3.15252e-05  -6.27332e-01
-         *     2  Slope        2.41246e-03   3.53378e-07   5.80385e-09  -1.99549e+03
-         * Roughly flattens out (within uncertainty) to ~5e-2MeV when TOT < 3000
-         *
-         * For TOT < 3000:
-         *   Just assume a linear line from (0,0) to (3000, 1e-2)
-         *   This is discontinuous!
-         */
-
-        if ( tot > 3000 ) return exp( -1.36729e1 + 2.41246e-3*tot );
-        
-        return (1e-2/3000)*tot;
-    }
 }
 
 DECLARE_PRODUCER_NS(ldmx, EcalRecProducer);
