@@ -19,13 +19,14 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Event/EcalDigiCollection.h"
+#include "Event/HgcrocDigiCollection.h"
 #include "Event/EventConstants.h"
 #include "Event/SimCalorimeterHit.h"
 #include "DetDescr/EcalID.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/NoiseGenerator.h"
+#include "Tools/HgcrocEmulator.h"
 
 namespace ldmx {
 
