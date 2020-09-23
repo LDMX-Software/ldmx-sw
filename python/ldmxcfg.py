@@ -248,7 +248,7 @@ class ConditionsObjectProvider:
             A message with all the parameters and member variables in a human readable format
         """
 
-        msg = "\n  ConditionsObjectProvider(%s of class %s, tag='%s')"%(self.instanceName,self.className,self.tagName)
+        msg = "\n  ConditionsObjectProvider(%s of class %s, tag='%s')"%(self.objectName,self.className,self.tagName)
         if len(self.__dict__)>0:
             msg += "\n   Parameters:"
             for k, v in self.__dict__.items():
