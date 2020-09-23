@@ -155,6 +155,11 @@ namespace ldmx {
             std::string getStringParameter(const std::string& name) const {
                 return stringParameters_.at(name);
             }
+      
+            /// Get a const reference to all string parameters
+      const std::map<std::string,std::string>& getStringParameters() const {
+                return stringParameters_;
+            }
 
             /**
              * Set a string parameter value.
