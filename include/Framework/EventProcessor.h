@@ -151,7 +151,7 @@ namespace ldmx {
              */
             template <class T>
             const T& getCondition(const std::string& condition_name) {
-	      return getConditions().getCondition<T>(condition_name);
+                return getConditions().getCondition<T>(condition_name);
             }
       
             /** 
