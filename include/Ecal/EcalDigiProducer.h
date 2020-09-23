@@ -13,7 +13,6 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <time.h> //for initial seed to TRandom3
 #include <memory> //for smart pointers
 #include <set> //for tracking used detector IDs
 
@@ -31,25 +30,25 @@
 
 namespace ldmx {
 
-    /**
-     * @class EcalDigiProducer
-     * @brief Performs basic ECal digitization
-     */
-    class EcalDigiProducer : public Producer {
+/**
+ * @class EcalDigiProducer
+ * @brief Performs basic ECal digitization
+ */
+class EcalDigiProducer : public Producer {
 
-        public:
+ public:
 
-            /**
-             * Constructor
-             * Makes unique noise generator and injector for this class
-             */
-            EcalDigiProducer(const std::string& name, Process& process);
+  /**
+   * Constructor
+   * Makes unique noise generator and injector for this class
+   */
+  EcalDigiProducer(const std::string& name, Process& process);
 
-            /**
-             * Destructor
-             * Deletes digi collection if it has been created
-             */
-            virtual ~EcalDigiProducer();
+  /**
+   * Destructor
+   * Deletes digi collection if it has been created
+   */
+  virtual ~EcalDigiProducer();
 
             /**
              * Configure this producer from the python configuration.

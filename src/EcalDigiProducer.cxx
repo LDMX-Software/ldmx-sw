@@ -6,6 +6,7 @@
  */
 
 #include "Ecal/EcalDigiProducer.h"
+#include "Framework/RandomNumberSeedService.h"
 
 namespace ldmx {
 
@@ -55,24 +56,30 @@ namespace ldmx {
         noiseGenerator_->setNoise(hgcrocParams.getParameter<double>("noiseRMS")); //rms noise in mV
         noiseGenerator_->setPedestal(gain_*pedestal_); //mean noise amplitude (if using Gaussian Model for the noise) in mV
         noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in mV
-
-        //The noise injector is used to place smearing on top
-        //of energy depositions and hit times before doing
-        //the digitization procedure.
-        int seed = ps.getParameter<int>("randomSeed");
-        noiseInjector_ = std::make_unique<TRandom3>(seed);
-        noiseGenerator_->setSeed(seed);
-
     }
 
     void EcalDigiProducer::produce(Event& event) {
+
+        // Need to handle seeding on the first event
+        if (!noiseGenerator_->hasSeed()) {
+            const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+            noiseGenerator_->seedGenerator(rseed.getSeed("EcalDigiProducer::NoiseGenerator"));
+        }
+        if (noiseInjector_.get()==nullptr) {
+            const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+            noiseInjector_ = std::make_unique<TRandom3>(rseed.getSeed("EcalDigiProducer::NoiseInjector"));
+        }
+        if(!hgcroc_->hasSeed()) {
+            const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+            hgcroc_->seedGenerator(rseed.getSeed("EcalDigiProducer::HgcrocEmulator"));
+        }
 
         //Empty collection to be filled
         HgcrocDigiCollection ecalDigis;
         ecalDigis.setNumSamplesPerDigi( nADCs_ ); 
         ecalDigis.setSampleOfInterestIndex( iSOI_ );
 
-        std::set<int> filledDetIDs; //detector IDs that already have a hit in them
+        std::set<unsigned int> filledDetIDs; //detector IDs that already have a hit in them
 
         /******************************************************************************************
          * HGCROC Emulation on Simulated Hits
@@ -84,20 +91,30 @@ namespace ldmx {
         //  multiple "contributions" are still handled within SimCalorimeterHit 
         auto ecalSimHits{event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS)};
 
+        /* debug printout
+        std::cout << "Energy to Voltage Conversion: " << MeV_ << " mV/MeV" << std::endl;
+         */
+
         for (auto const& simHit : ecalSimHits ) {
 
             std::vector<double> voltages, times;
             for ( int iContrib = 0; iContrib < simHit.getNumberOfContribs(); iContrib++ ) {
+                /* debug printout
+                std::cout << simHit.getContrib(iContrib).edep << " MeV" << std::endl;
+                 */
                 voltages.push_back( simHit.getContrib( iContrib ).edep*MeV_ );
                 times.push_back( simHit.getContrib( iContrib ).time );
             }
 
-            int hitID = simHit.getID();
+            unsigned int hitID = simHit.getID();
             filledDetIDs.insert( hitID );
+
             //std::cout << hitID << " ";
-            HgcrocDigiCollection::HgcrocDigi digiToAdd;
+            //container emulator uses to write out samples and
+            //transfer samples into the digi collection
+            std::vector<HgcrocDigiCollection::Sample> digiToAdd;
             if ( hgcroc_->digitize( hitID , voltages , times , digiToAdd ) ) {
-                ecalDigis.addDigi( digiToAdd );
+                ecalDigis.addDigi( hitID , digiToAdd );
             }
         }
 
@@ -116,7 +133,7 @@ namespace ldmx {
     
                 //generate detector ID for noise hit
                 //making sure that it is in an empty channel
-                int noiseID;
+                unsigned int noiseID;
                 do {
                     int layerID  = noiseInjector_->Integer(nEcalLayers_);
                     int moduleID = noiseInjector_->Integer(nModulesPerLayer_);
@@ -134,9 +151,9 @@ namespace ldmx {
                 //  we need to convert it to the amplitdue above the pedestal
                 voltages[0] = noiseHit + readoutThreshold_ - gain_*pedestal_;
     
-                HgcrocDigiCollection::HgcrocDigi digiToAdd;
+                std::vector<HgcrocDigiCollection::Sample> digiToAdd;
                 if ( hgcroc_->digitize( noiseID , voltages , times , digiToAdd ) ) {
-                    ecalDigis.addDigi( digiToAdd );
+                    ecalDigis.addDigi( noiseID , digiToAdd );
                 }
             } //loop over noise amplitudes
         } //if we should do the noise
@@ -145,6 +162,7 @@ namespace ldmx {
 
         return;
     } //produce
+
 }
 
 DECLARE_PRODUCER_NS(ldmx, EcalDigiProducer);
