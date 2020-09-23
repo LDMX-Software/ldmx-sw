@@ -171,8 +171,33 @@ namespace ldmx {
                 stringParameters_[name] = value;
             }
 
+            /**
+             * Stream this object into the input ostream
+             *
+             * Includes new-line characters to separate out the different parameter maps
+             *
+             * @param[in] s ostream to write to
+             */
+            void stream(std::ostream& s) const;
+
             /** Print a string desciption of this object. */
             void Print() const;
+
+            /**
+             * Stream this object to an output stream
+             *
+             * Needs to be here and labeled as friend for
+             * it to be compatible with Boost logging.
+             *
+             * @see ldmx::RunHeader::stream
+             * @param[in] s ostream to write to
+             * @param[in] h RunHeader to write out
+             * @return modified ostream
+             */
+            friend std::ostream& operator<<(std::ostream& s, const ldmx::RunHeader& h) {
+                h.stream(s);
+                return s;
+            }
 
         private:
 
@@ -211,16 +236,5 @@ namespace ldmx {
     }; // RunHeader
 
 } // ldmx
-
-/**
- * Stream this object to an output stream
- *
- * Includes new-line characters to separate out the different parameter maps
- *
- * @param[in] s ostream to write to
- * @param[in] h RunHeader to write out
- * @return modified ostream
- */
-std::ostream& operator<<(std::ostream& s, const ldmx::RunHeader& h);
 
 #endif // _EVENT_RUN_HEADER_H_ 
