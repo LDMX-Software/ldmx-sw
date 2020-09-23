@@ -12,6 +12,8 @@ std::ostream& operator<<(std::ostream& s, const ldmx::RandomNumberSeedService& o
 
 namespace ldmx {
 
+const std::string RandomNumberSeedService::CONDITIONS_OBJECT_NAME="RandomNumberSeedService";
+
 static const int SEED_EXTERNAL = 2;
 static const int SEED_RUN =  3;
 static const int SEED_TIME = 4;
@@ -29,24 +31,24 @@ void RandomNumberSeedService::stream(std::ostream& s) const {
 
 
 RandomNumberSeedService::RandomNumberSeedService(const std::string& name, const std::string& tagname, const Parameters& parameters, Process& process) : ConditionsObject(CONDITIONS_OBJECT_NAME), ConditionsObjectProvider(CONDITIONS_OBJECT_NAME,tagname,parameters,process) {
-  std::string seeding=parameters.getParameter<std::string>("seedMode","run");
+  auto seeding=parameters.getParameter<std::string>("seedMode","run");
   if (!strcasecmp(seeding.c_str(),"run")) {
     seedMode_=SEED_RUN;
-  }
-  if (!strcasecmp(seeding.c_str(),"external")) {
+  } else if (!strcasecmp(seeding.c_str(),"external")) {
     seedMode_=SEED_EXTERNAL;
     masterSeed_=parameters.getParameter<int>("masterSeed");
-  }
-  if (!strcasecmp(seeding.c_str(),"time")) {
+    initialized_ = true;
+  } else if (!strcasecmp(seeding.c_str(),"time")) {
     masterSeed_=time(0);
     seedMode_=SEED_TIME;
+    initialized_ = true;
   }
-  // need to also load any hand-provided seeds, eventually when supported by Parameters...
 }
 
 void RandomNumberSeedService::onNewRun(RunHeader& rh) {
   if (seedMode_==SEED_RUN) {
     masterSeed_=rh.getRunNumber();
+    initialized_ = true;
   }
   std::string key="RandomNumberMasterSeed["+process().getPassName()+"]";
   rh.setIntParameter(key,int(masterSeed_));
