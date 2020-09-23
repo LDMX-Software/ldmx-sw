@@ -154,6 +154,8 @@ namespace ldmx {
             for (auto module : sequence_)
                 if (dynamic_cast<Producer*>(module))
                     dynamic_cast<Producer*>(module)->beforeNewRun(runHeader);
+
+            //now run header has been modified by Producers, so it is valid to read from
             conditions_.onNewRun(runHeader);
             for (auto module : sequence_)
                 module->onNewRun(runHeader);
@@ -296,6 +298,7 @@ namespace ldmx {
                             for (auto module : sequence_)
                                 if (dynamic_cast<Producer*>(module))
                                     dynamic_cast<Producer*>(module)->beforeNewRun(runHeader);
+                            //now run header has been modified by Producers, so it is valid to read from
                             conditions_.onNewRun(runHeader);
                             for (auto module : sequence_)
                                 module->onNewRun(runHeader);
