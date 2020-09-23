@@ -69,9 +69,6 @@ class EcalDigiProducer(Producer) :
         #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
         self.MeV = (1./mipSiEnergy)*self.hgcroc.calculateVoltage( nElectronsPerMIP )
 
-        import time
-        self.randomSeed = int(time.time())
-
         # ecal hexagon geometry parameters
         # used for putting noise into empty channels
         self.nEcalLayers      = 34
