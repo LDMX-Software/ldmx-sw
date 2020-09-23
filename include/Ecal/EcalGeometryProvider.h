@@ -1,6 +1,6 @@
 /**
  * @file EcalGeometryProvider.h
- * @brief Class that creates EcalHexReadout and EcalTriggerGeometry objects based on python specifications
+ * @brief Classes that create EcalHexReadout and EcalTriggerGeometry objects based on python specifications
  * @author Jeremiah Mans, UMN
  */
 
@@ -16,7 +16,7 @@ namespace ldmx {
 
     /**
      * @class EcalGeometryProvider
-     * @brief Common, singleton source for EcalHexReadout and EcalTriggerGeometry
+     * @brief Common, singleton source for EcalHexReadout
      */
     class EcalGeometryProvider : public ConditionsObjectProvider {
 	public:
@@ -35,7 +35,7 @@ namespace ldmx {
 	 * @note Currently, these are assumed to be valid for all time, but this behavior could be changed.  Users should not cache the pointer
 	 * between events
 	 */
-	virtual std::pair<const ConditionsObject*,ConditionsIOV> getCondition(const std::string& condition_name, const EventHeader& context, const RunHeader& runcontext);
+	virtual std::pair<const ConditionsObject*,ConditionsIOV> getCondition(const EventHeader& context, const RunHeader& runcontext);
 
 	/**
 	 * Take no action on release, as the object is permanently owned by the Provider
