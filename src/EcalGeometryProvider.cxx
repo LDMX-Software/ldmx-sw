@@ -43,6 +43,9 @@ class EcalGeometryProvider : public ConditionsObjectProvider {
     else if (ecalGeometry_!=nullptr && detectorGeometry_!=rh.getDetectorName()) {
       EXCEPTION_RAISE("GeometryException","Attempting to run a single job with multiple geometries "+detectorGeometry_+" and '"+rh.getDetectorName()+"'");
     }
+    //make sure detector name has been set
+    if (detectorGeometry_.empty())
+        EXCEPTION_RAISE("GeometryException","EcalGeometryProvider unable to get the name of the detector from the RunHeader.");
   }
 
     
