@@ -43,9 +43,9 @@ int main() {
     ldmx::Parameters params;
     params.setParameters(ps);
 
-    ldmx::EcalHexReadout* p_hexReadout=ldmx::EcalHexReadout::debugMake(params);
-    ldmx::EcalHexReadout& hexReadout(*p_hexReadout);
-    
+    ldmx::EcalHexReadout* phexReadout=ldmx::EcalHexReadout::debugMake(params);
+    ldmx::EcalHexReadout& hexReadout(*phexReadout);
+
     auto polyMap = hexReadout.getCellPolyMap();
 
     //fill poly map with IDs
