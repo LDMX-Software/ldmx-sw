@@ -62,7 +62,6 @@ namespace ldmx {
             virtual void produce(Event& event);
 
         private:
-
             /** Digi Collection Name to use as input */
             std::string digiCollName_;
 
@@ -112,8 +111,7 @@ namespace ldmx {
 
             /**
              * Helper Instance of EcalHexReadout:
-             *
-             * performs real space postion <-> ID translation
+             * performs real space x,y postion <-> module,cell ID translation
              */
             std::unique_ptr<EcalHexReadout> ecalHexReadout_;
 

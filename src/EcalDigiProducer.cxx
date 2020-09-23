@@ -162,6 +162,7 @@ namespace ldmx {
 
         return;
     } //produce
+
 }
 
 DECLARE_PRODUCER_NS(ldmx, EcalDigiProducer);
