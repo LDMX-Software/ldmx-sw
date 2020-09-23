@@ -5,23 +5,11 @@ namespace ldmx {
 
     HgcrocEmulator::HgcrocEmulator(const Parameters& ps) {
 
-        //The noise injector is used to place smearing on top
-        //of energy depositions and hit times before doing
-        //the digitization procedure.
-        noiseInjector_ = std::make_unique<TRandom3>(time(nullptr));
-
-        //settings of readout chip
+        //settings of readout chip that are the same for all chips
         //  used  in actual digitization
-        gain_             = ps.getParameter<double>("gain");
-        pedestal_         = ps.getParameter<double>("pedestal");
         noiseRMS_         = ps.getParameter<double>("noiseRMS");
-        readoutThreshold_ = ps.getParameter<double>("readoutThreshold");
-        toaThreshold_     = ps.getParameter<double>("toaThreshold");
-        totThreshold_     = ps.getParameter<double>("totThreshold");
         timingJitter_     = ps.getParameter<double>("timingJitter");
         clockCycle_       = ps.getParameter<double>("clockCycle");
-        measTime_         = ps.getParameter<double>("measTime");
-        drainRate_        = ps.getParameter<double>("drainRate");
         totMax_           = ps.getParameter<double>("totMax");
         rateUpSlope_      = ps.getParameter<double>("rateUpSlope");
         timeUpSlope_      = ps.getParameter<double>("timeUpSlope");
@@ -30,6 +18,18 @@ namespace ldmx {
         timePeak_         = ps.getParameter<double>("timePeak");
         nADCs_            = ps.getParameter<int>("nADCs");
         iSOI_             = ps.getParameter<int>("iSOI");
+
+        //conditions/settings of chip that may change between chips
+        //  the ones passed here are the "defaults", i.e. if
+        //  no extra conditions information is passed, then the emulator
+        //  uses these parameters
+        gain_             = ps.getParameter<double>("gain");
+        pedestal_         = ps.getParameter<double>("pedestal");
+        readoutThreshold_ = ps.getParameter<double>("readoutThreshold");
+        toaThreshold_     = ps.getParameter<double>("toaThreshold");
+        totThreshold_     = ps.getParameter<double>("totThreshold");
+        measTime_         = ps.getParameter<double>("measTime");
+        drainRate_        = ps.getParameter<double>("drainRate");
 
         //Time -> clock counts conversion
         //  time [ns] * ( 2^10 / max time in ns ) = clock counts
@@ -49,16 +49,18 @@ namespace ldmx {
 
     }
 
+    void HgcrocEmulator::seedGenerator(uint64_t seed) {
+        noiseInjector_=std::make_unique<TRandom3>(seed);
+    }
+    
     bool HgcrocEmulator::digitize(
             const int &channelID,
             const std::vector<double> &voltages,
             const std::vector<double> &times,
-            HgcrocDigiCollection::HgcrocDigi &digiToAdd
+            std::vector<HgcrocDigiCollection::Sample> &digiToAdd
     ) const {
 
-        digiToAdd.id_ = channelID; //set ID for this DIGI
-        digiToAdd.samples_.clear(); //make sure it is clean
-        digiToAdd.samples_.resize( nADCs_ ); //fill with required number of samples (default constructed)
+        digiToAdd.clear(); //make sure it is clean
 
         //sum all voltages and do a voltage-weighted average to get the hit time
         //  exclude any hits with times outside the sampling region
@@ -87,39 +89,67 @@ namespace ldmx {
         //setup up pulse by changing the amplitude and timing parameters
         configurePulse( signalAmplitude , timeInWindow );
 
+        //Configure chip settings based off of table (that may have been passed)
+        double gain             = getCondition( channelID , "gain" , gain_ );
+        double pedestal         = getCondition( channelID , "pedestal" , pedestal_ );
+        double readoutThreshold = getCondition( channelID , "readoutThreshold" , readoutThreshold_ );
+        double toaThreshold     = getCondition( channelID , "toaThreshold" , toaThreshold_ );
+        double totThreshold     = getCondition( channelID , "totThreshold" , totThreshold_ );
+        double measTime         = getCondition( channelID , "measTime" , measTime_ );
+        double drainRate        = getCondition( channelID , "drainRate" , drainRate_ );
+
+        /* debug printout
+        std::cout << "Configuration: {"
+                  << "gain: " << gain << " mV/ADC, "
+                  << "pedestal: " << pedestal << ", "
+                  << "readout: " << readoutThreshold << " mV, "
+                  << "toa: " << toaThreshold << " mV, "
+                  << "tot: " << totThreshold << " mV, "
+                  << "measTime: " << measTime << " ns, "
+                  << "drainRate: " << drainRate << " mV/ns }"
+                  << std::endl;
+         */
+
+        auto measurePulse = [this,&gain,&pedestal](double time, bool withNoise) {
+            auto signal = gain*pedestal + pulseFunc_.Eval(time);
+            if(withNoise) signal += noiseInjector_->Gaus(0.,noiseRMS_);
+            return signal;
+        };
+
         // choose readout mode
         double pulsePeak = measurePulse( timeInWindow , false );
         if (verbose_) {
             std::cout << "Pulse: { "
-                << "Amplitude: " << signalAmplitude+gain_*pedestal_ << "mV, "
+                << "Amplitude: " << pulsePeak << "mV, "
                 << "Beginning: " << measurePulse(0.,false) << "mV, "
                 << "Time: " << timeInWindow << "ns } -> ";
         }
-        if ( pulsePeak < readoutThreshold_ ) {
+        if ( pulsePeak < readoutThreshold ) {
             //below readout threshold -> skip this hit
             if (verbose_) std::cout << "Below Readout" << std::endl;
             return false; //skip this hit
-        } else if ( pulsePeak < totThreshold_ ) {
+        } else if ( pulsePeak < totThreshold ) {
             //below TOT threshold -> do ADC readout mode
             if (verbose_) std::cout << "ADC Mode { ";
 
             //measure time of arrival (TOA) using TOA threshold
             double toa(0.);
             // make sure pulse crosses TOA threshold
-            if ( measurePulse(0.,false) < toaThreshold_ and pulsePeak > toaThreshold_ ) {
-                toa = pulseFunc_.GetX(toaThreshold_-gain_*pedestal_, -nADCs_*clockCycle_, timeInWindow);
+            if ( measurePulse(0.,false) < toaThreshold and pulsePeak > toaThreshold ) {
+                toa = pulseFunc_.GetX(toaThreshold-gain*pedestal, -nADCs_*clockCycle_, timeInWindow);
             }
             if (verbose_) std::cout << "TOA: " << toa << "ns, ";
 
             //measure ADCs
-            for ( unsigned int iADC = 0; iADC < digiToAdd.samples_.size(); iADC++ ) {
-                double measTime = iADC*clockCycle_ + measTime_;
-                digiToAdd.samples_[iADC].adc_t_   = measurePulse( measTime, noise_ )/gain_;
-                digiToAdd.samples_[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.samples_.at(iADC-1).adc_t_ : pedestal_; 
-                digiToAdd.samples_[iADC].toa_     = toa * ns_;
-                digiToAdd.samples_[iADC].tot_progress_ = false;
-                digiToAdd.samples_[iADC].tot_complete_ = false;
-                if (verbose_) std::cout << " ADC " << iADC << ": " << digiToAdd.samples_[iADC].adc_t_*gain_ << "mV, ";
+            for ( unsigned int iADC = 0; iADC < nADCs_; iADC++ ) {
+                double fullMeasTime = iADC*clockCycle_ + measTime;
+                digiToAdd.emplace_back(
+                        false, false, //use flags to mark this sample as an ADC measurement
+                        iADC > 0 ? digiToAdd.at(iADC-1).adc_t() : pedestal, //ADC t-1 is first measurement
+                        measurePulse( fullMeasTime, noise_ )/gain, //ADC t is second measurement
+                        toa * ns_ //TOA is third measurement
+                        );
+                if (verbose_) std::cout << " ADC " << iADC << ": " << digiToAdd[iADC].adc_t()*gain << "mV, ";
             }
             if (verbose_) std::cout << "}" << std::endl;
 
@@ -134,12 +164,12 @@ namespace ldmx {
             //      y-intercept = pulse amplitude
             //      slope       = drain rate
             //  ==> x-intercept = amplitude / rate
-            double tot = pulsePeak / drainRate_;
+            double tot = pulsePeak / drainRate;
 
             double toa(0.); //default is earliest possible time
             // check if first half is just always above readout
-            if ( measurePulse(0.,false) < totThreshold_ ) 
-                toa = pulseFunc_.GetX(totThreshold_-gain_*pedestal_, 0., timeInWindow);
+            if ( measurePulse(0.,false) < totThreshold ) 
+                toa = pulseFunc_.GetX(totThreshold-gain*pedestal, 0., timeInWindow);
 
             // calculate the index that tot will complete on
             int num_whole_clocks = int( tot / clockCycle_ );
@@ -149,7 +179,7 @@ namespace ldmx {
             //  to measure a maximum of tot Max [ns]
             int tdc_counts = int( tot * 4096 / totMax_ );
 
-            /*if (verbose_)*/ {
+            if (verbose_) {
                 std::cout << "TOT Mode { "
                     << "TOA: " << toa << " ns, "
                     << "TOT: " << tot << " ns, "
@@ -159,22 +189,28 @@ namespace ldmx {
 
             //Notice that if tot > max time = digiToAdd.size()*clockCycle_, 
             //  this will return just the max time
-            for ( unsigned int iADC = 0; iADC < digiToAdd.samples_.size(); iADC++ ) {
+            for ( unsigned int iADC = 0; iADC < nADCs_; iADC++ ) {
+                bool tot_progress, tot_complete;
+                int secon_measurement;
                 if ( iADC == num_whole_clocks ) {
                     //TOT complete
-                    digiToAdd.samples_[iADC].tot_ = tdc_counts;
-                    digiToAdd.samples_[iADC].tot_progress_ = false;
-                    digiToAdd.samples_[iADC].tot_complete_ = true;
+                    secon_measurement = tdc_counts;
+                    tot_progress      = false;
+                    tot_complete      = true;
                 } else {
                     //TOT still in progress or already completed
-                    double measTime = iADC*clockCycle_ + measTime_;
+                    double fullMeasTime = iADC*clockCycle_ + measTime;
                     //TODO what does the pulse ADC measurement look like during TOT
-                    digiToAdd.samples_[iADC].adc_t_ = measurePulse( measTime, noise_ )/gain_;
-                    digiToAdd.samples_[iADC].tot_progress_ = (iADC < num_whole_clocks);
-                    digiToAdd.samples_[iADC].tot_complete_ = false;
+                    secon_measurement = measurePulse( fullMeasTime, noise_ )/gain;
+                    tot_progress      = (iADC < num_whole_clocks);
+                    tot_complete      = false;
                 } 
-                digiToAdd.samples_[iADC].toa_     = toa*ns_;
-                digiToAdd.samples_[iADC].adc_tm1_ = iADC > 0 ? digiToAdd.samples_.at(iADC-1).adc_t_ : pedestal_;
+                digiToAdd.emplace_back(
+                        tot_progress, tot_complete, //flags to mark type of sample
+                        iADC > 0 ? digiToAdd.at(iADC-1).adc_t() : pedestal, //first measurement is ADC t-1
+                        secon_measurement,
+                        toa*ns_ //last measurement is TOA
+                        );
             }
 
         } //where is the amplitude of the hit w.r.t. readout and TOT thresholds

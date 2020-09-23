@@ -6,6 +6,7 @@
 #include "Event/HgcrocDigiCollection.h"
 #include "Event/SimCalorimeterHit.h"
 #include "Framework/Parameters.h"
+#include "Conditions/SimpleTableCondition.h"
 
 //----------//
 //   ROOT   //
@@ -48,14 +49,30 @@ namespace ldmx {
             ~HgcrocEmulator() { /* empty on purpose */ }
 
             /**
+             * Check if emulator has been seeded
+             * @return true if random generator has been seeded
+             */
+            bool hasSeed() const { return noiseInjector_.get()!=nullptr; }
+
+            /**
+             * Seed the emulator for random number generation
+             * @param[in] seed integer to use as random seed
+             */
+            void seedGenerator(uint64_t seed);
+
+            /**
              * Set Conditions
              *
              * Passes the chips conditions to be cached here and
              * used later in digitization.
              *
-             * @param
+             * @param table DoubleTableConditions to be used for chip parameters
              */
-            void condition( );
+            void condition(const DoubleTableCondition& table) {
+                //reset cache of column numbers if table changes
+                if(&table!=chipConditions_) conditionNamesToIndex_.clear();
+                chipConditions_ = &table;
+            }
 
             /**
              * Digitize the signals from the simulated hits
@@ -118,6 +135,11 @@ namespace ldmx {
              * This function incorporate the pedestal_ and optionally includes noise
              * according to noiseRMS_.
              *
+             * @note For more realism, some chip parameters should change depending on the
+             * chip they are coming from. This should be modified here, with a package
+             * of "HgcrocConditions" passed to this function to configure the emulator
+             * before digitizing.
+             *
              * @param[in] channelID raw integer ID for this readout channel
              * @param[in] voltages list of voltage amplitudes going into the chip
              * @param[in] times list of times corresponding to those voltage amplitudes
@@ -127,7 +149,7 @@ namespace ldmx {
             bool digitize( const int &channelID,
                     const std::vector<double> &voltages, 
                     const std::vector<double> &times, 
-                    HgcrocDigiCollection::HgcrocDigi &digiToAdd ) const;
+                    std::vector<HgcrocDigiCollection::Sample> &digiToAdd ) const;
         
         private:
 
@@ -143,16 +165,26 @@ namespace ldmx {
             }
 
             /**
-             * Measure the pulse
-             *
-             * @param[in] time time to measure [ns]
-             * @param[in] withNoise flag to determine if we should include noise
-             * @return voltage measured [mV]
+             * Get condition for input chip ID, condition name, and default value
+             * 
+             * @param[in] id chip global integer ID used in condition table
+             * @param[in] name std::string name of chip parameter in table
+             * @param[in] def default value for parameter if not found in table (or table not set)
+             * @return value of chip parameter
              */
-            double measurePulse(double time, bool withNoise) const {
-                auto signal = gain_*pedestal_ + pulseFunc_.Eval(time);
-                if ( withNoise ) signal += noiseInjector_->Gaus( 0. , noiseRMS_ );
-                return signal;
+            double getCondition(int id, const std::string& name, double def) const {
+                //check if emulator has been passed a table of conditions
+                if (!chipConditions_) return def;
+                if ( conditionNamesToIndex_.count(name) == 0 ) 
+                    conditionNamesToIndex_[name] = chipConditions_->getColumnNumber(name);
+                double condition{def};
+                try {
+                    condition = chipConditions_->get(id,conditionNamesToIndex_.at(name));
+                } catch(Exception&) {
+                    //ignore thrown exceptions and use default instead
+                    return def;
+                }
+                return condition;
             }
 
         private:
@@ -179,6 +211,9 @@ namespace ldmx {
             /// Time interval for chip clock [ns]
             double clockCycle_;
 
+            /// Jitter of timing mechanism in the chip [ns]
+            double timingJitter_;
+
             /// Maximum TOT measured by chip [ns]
             double totMax_;
 
@@ -204,6 +239,22 @@ namespace ldmx {
              * Chip-Dependent Parameters (Conditions)
              *************************************************************************************/
 
+            /**
+             * Handle to table of chip-dependent conditions
+             *
+             * The defaults are listed below and are separate parameters
+             * passed through the python configuration.
+             */
+            const DoubleTableCondition* chipConditions_{nullptr};
+
+            /**
+             * Map of condition names to column numbers
+             *
+             * mutable so that we can update the cached column values
+             * in getCondition during processing.
+             */
+            mutable std::map<std::string,int> conditionNamesToIndex_;
+
             /// gain setting of the chip [mV / ADC units]
             double gain_;
 
@@ -219,14 +270,15 @@ namespace ldmx {
             /// Min threshold for measuring TOT [mV]
             double totThreshold_;
 
-            /// Jitter of timing mechanism in the chip [ns]
-            double timingJitter_;
-
             /// Measurement time relative to clock cycle [ns]
             double measTime_;
 
             /// Rate that charge drains off HGC ROC after being saturated [mV/ns]
             double drainRate_;
+
+            /**************************************************************************************
+             * Helpful Member Objects
+             *************************************************************************************/
 
             /// Generates Gaussian noise on top of real hits
             std::unique_ptr<TRandom3> noiseInjector_;
