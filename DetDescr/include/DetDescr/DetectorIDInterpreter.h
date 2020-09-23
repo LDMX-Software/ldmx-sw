@@ -100,7 +100,12 @@ namespace ldmx {
             /** 
              * Register a new field interpreter for a given subdetector id
              */
-            static void registerInterpreter(SubdetectorIDType idtype,  const IDField::IDFieldList& fieldList);		    
+            static void registerInterpreter(SubdetectorIDType idtype,  const IDField::IDFieldList& fieldList);
+
+            /** 
+             * Register a new field interpreter for a more-complex case where additional bits are needed to determine format
+             */
+            static void registerInterpreter(SubdetectorIDType idtype, unsigned int mask, unsigned int equality,  const IDField::IDFieldList& fieldList);		    
 
         private:
 
@@ -148,7 +153,14 @@ namespace ldmx {
                 IDField::IDFieldList fieldList_;
             };
 
-            static std::map<SubdetectorIDType, const SubdetectorIDFields*> g_rosettaStone;
+	    struct IDSignature {
+	        unsigned int mask_;
+	        unsigned int comparison_;
+		bool operator<(const IDSignature& id) const { return (comparison_&mask_)<(id.comparison_&id.mask_); }
+	    };
+	
+            static std::map<IDSignature, const SubdetectorIDFields*> g_rosettaStone;
+          
 
             /**
              * Pointer to the appropriate field info for this class

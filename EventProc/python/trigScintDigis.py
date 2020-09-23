@@ -24,8 +24,6 @@ class TrigScintDigiProducer(ldmxcfg.Producer) :
         self.input_collection="TriggerPadUpSimHits"
         self.input_pass_name="" #take any pass
         self.output_collection="trigScintDigisUp"
-        import time
-        self.randomSeed = int(time.time())
         self.verbose = False
 
     def up() :

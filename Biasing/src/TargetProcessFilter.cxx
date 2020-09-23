@@ -129,3 +129,4 @@ namespace ldmx {
     }
 }
 
+DECLARE_ACTION(ldmx, TargetProcessFilter)
