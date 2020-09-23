@@ -29,7 +29,6 @@
 /*~~~~~~~~~~~*/
 #include "Event/EventDef.h"
 
-
 class G4UImanager;
 class G4UIsession;
 class G4RunManager;
