@@ -57,7 +57,6 @@ namespace ldmx {
             hexReadout.getCellAbsolutePosition( id , x , y , z );
             
             //get energy and time estimate from digi information
-            double siEnergy, hitTime;
             
             //TODO: Energy estimate from N samples can (and should be) refined
             //TOA is the time of arrival with respect to the 25ns clock window
