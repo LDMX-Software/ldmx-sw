@@ -151,11 +151,10 @@ namespace ldmx {
             runHeader_ = &runHeader; //give handle to run header to process
             outFile.writeRunHeader(runHeader); //add run header to file
 
-            conditions_.onNewRun(runHeader);
-
             for (auto module : sequence_)
                 if (dynamic_cast<Producer*>(module))
                     dynamic_cast<Producer*>(module)->beforeNewRun(runHeader);
+            conditions_.onNewRun(runHeader);
             for (auto module : sequence_)
                 module->onNewRun(runHeader);
 
@@ -297,6 +296,7 @@ namespace ldmx {
                             for (auto module : sequence_)
                                 if (dynamic_cast<Producer*>(module))
                                     dynamic_cast<Producer*>(module)->beforeNewRun(runHeader);
+                            conditions_.onNewRun(runHeader);
                             for (auto module : sequence_)
                                 module->onNewRun(runHeader);
                         } catch (const Exception&) {
