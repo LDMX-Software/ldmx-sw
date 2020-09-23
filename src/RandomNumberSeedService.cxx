@@ -41,7 +41,7 @@ RandomNumberSeedService::RandomNumberSeedService(const std::string& name, const 
     masterSeed_=time(0);
     seedMode_=SEED_TIME;
   }
-  // need to also load any hand-provided seeds...
+  // need to also load any hand-provided seeds, eventually when supported by Parameters...
 }
 
 void RandomNumberSeedService::onNewRun(RunHeader& rh) {
