@@ -273,6 +273,9 @@ class RandomNumberSeedService(ConditionsObjectProvider):
         self.seedMode = ''
         self.seed=-1 #only used in external mode
 
+        # use run seed mode by default
+        self.run()
+
     def run(self) :
         """Base random number seeds off of the run number"""
         self.seedMode = 'run'
