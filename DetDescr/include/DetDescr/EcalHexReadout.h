@@ -102,6 +102,14 @@ namespace ldmx {
                 return ecalFrontZ_ + layerZPositions_.at(layer);
             }
 
+            /**
+             * Get the number of layers in the Ecal Geometry
+             *
+             * @returns number fo layers in geometry
+             */
+            int getNumLayers() const {
+                return layerZPositions_.size();
+            }
 
             /**
              * Get a module center position relative to the ecal center [mm]
@@ -111,6 +119,15 @@ namespace ldmx {
              */
             std::pair<double,double> getModuleCenter(int moduleID) const {
                 return modulePositionMap_.at(moduleID);
+            }
+
+            /**
+             * Get the number of modules in the Ecal flower
+             *
+             * @returns number of modules
+             */
+            int getNumModulesPerLayer() const {
+                return modulePositionMap_.size();
             }
 
             /**
@@ -157,6 +174,15 @@ namespace ldmx {
                     EXCEPTION_RAISE( "InvalidArg" , error_msg.Data() );
                 }
                 return bin;
+            }
+
+            /**
+             * Get the number of cells in an ecal module
+             *
+             * @returns number of cells in the ecal module
+             */
+            int getNumCellsPerModule() const {
+                return ecalMap_.GetNumberOfBins();
             }
 
             /**
