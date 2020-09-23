@@ -106,6 +106,11 @@ namespace ldmx {
                 return intParameters_.at(name); 
             }
 
+            /// Get a const reference to all int parameters
+            const std::map<std::string,int>& getIntParameters() const {
+                return intParameters_;
+            }
+
             /**
              * Set an int parameter value.
              * 
@@ -126,11 +131,16 @@ namespace ldmx {
                 return floatParameters_.at(name);
             }
 
+            /// Get a const reference to all float parameters
+            const std::map<std::string,float>& getFloatParameters() const {
+                return floatParameters_;
+            }
+
             /**
              * Set a float parameter value.
              * 
              * @param name The name of the parameter.
-             * @param value The value of the parameter.
+             * @param value The parameter value.
              */
             void setFloatParameter(const std::string& name, float value) {
                 floatParameters_[name] = value;
@@ -150,7 +160,7 @@ namespace ldmx {
              * Set a string parameter value.
              * 
              * @param name The name of the parameter.
-             * @param value The value of the parameter.
+             * @param value The parameter value.
              */
             void setStringParameter(const std::string& name, std::string value) {
                 stringParameters_[name] = value;
@@ -196,5 +206,16 @@ namespace ldmx {
     }; // RunHeader
 
 } // ldmx
+
+/**
+ * Stream this object to an output stream
+ *
+ * Includes new-line characters to separate out the different parameter maps
+ *
+ * @param[in] s ostream to write to
+ * @param[in] h RunHeader to write out
+ * @return modified ostream
+ */
+std::ostream& operator<<(std::ostream& s, const ldmx::RunHeader& h);
 
 #endif // _EVENT_RUN_HEADER_H_ 
