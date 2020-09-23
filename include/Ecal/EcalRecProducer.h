@@ -61,7 +61,6 @@ namespace ldmx {
             virtual void produce(Event& event);
 
         private:
-
             /** Digi Collection Name to use as input */
             std::string digiCollName_;
 
@@ -108,7 +107,6 @@ namespace ldmx {
              * of a calibration number.
              */
             double secondOrderEnergyCorrection_;
-
 
     };
 }
