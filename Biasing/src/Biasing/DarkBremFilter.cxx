@@ -57,8 +57,9 @@ namespace ldmx {
             << "Beginning event."
             << std::endl;
         */
-        currentGen_ = 0;
-        foundAp_    = false;
+        currentGen_   = 0;
+        foundAp_      = false;
+        foundExtraAp_ = false;
         return;
     }
 
@@ -69,17 +70,16 @@ namespace ldmx {
             //  we need to check that it originated in the desired volume
             //  keep A' in the current generation so that we can have it be processed
             //  before the abort event check
-            if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
-                /* Debug message
-                std::cout << "[ DarkBremFilter ]: "
-                          << "Found A', still need to check if it originated in requested volume." 
-                          << std::endl;
-                */
-            }
+            /* Debug message
+            std::cout << "[ DarkBremFilter ]: "
+                      << "Found A', still need to check if it originated in requested volume." 
+                      << std::endl;
+            */
             if ( foundAp_ ) {
                 std::cout << "[ DarkBremFilter ]: "
-                          << "Found more than one A' during filtering."
+                          << "Found more than one A' during filtering, will abort event."
                           << std::endl;
+                foundExtraAp_ = true;
             }
             foundAp_ = true;
             return fUrgent; 
@@ -109,13 +109,14 @@ namespace ldmx {
         if ( currentGen_ > nGensFromPrimary_ ) {
             //we finished the number of generations that are allowed to produce A'
             //  check if A' was produced
-            if ( not foundAp_ ) {
+            if ( not foundAp_ or foundExtraAp_ ) {
                 //A' wasn't produced, abort event
                 if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
                     std::cout << "[ DarkBremFilter ]: "
-                        << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
-                        << "A' wasn't produced, aborting event." 
-                        << std::endl;
+                        << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") ";
+                    if (not foundAp_) std::cout << "A' wasn't produced, aborting event.";
+                    else std::cout << "Found more than one A', aborting event.";
+                    std::cout << std::endl;
                 }
                 G4RunManager::GetRunManager()->AbortEvent();
             }

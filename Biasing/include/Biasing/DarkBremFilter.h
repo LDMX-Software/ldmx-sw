@@ -167,6 +167,13 @@ namespace ldmx {
             bool foundAp_;
 
             /**
+             * Have we found more than one A'?
+             *
+             * Reset to false in BeginOfEventAction.
+             */
+            bool foundExtraAp_;
+
+            /**
              * The current generation removed from the primary electron
              *
              * Reset to zero in BeginOfEventAction
