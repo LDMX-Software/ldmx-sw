@@ -123,15 +123,15 @@ void Simulator::onFileOpen(EventFile &file) {
   persistencyManager_->Initialize(); 
 }
 
-void Simulator::beforeNewRun(RunHeader& header) {
-
+void Simulator::onNewRun(const RunHeader& header) {
   const RandomNumberSeedService& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
   std::vector<int> seeds;
   seeds.push_back(rseed.getSeed("Simulator[0]"));
   seeds.push_back(rseed.getSeed("Simulator[1]"));
   setSeeds(seeds); 
-      
+}
 
+void Simulator::beforeNewRun(RunHeader& header) {
       
   // Get the detector header from the user detector construction
   auto detector 
