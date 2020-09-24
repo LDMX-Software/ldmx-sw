@@ -1,5 +1,7 @@
 #include "Ecal/EcalTriggerGeometry.h"
+#include "Event/EventHeader.h"
 #include "DetDescr/EcalHexReadout.h"
+#include "Framework/ConditionsObjectProvider.h"
 #include <iostream>
 #include <sstream>
 
@@ -13,7 +15,7 @@ namespace ldmx {
   static const int INPLANE_IDENTICAL = 0x0100;
   
   
-  EcalTriggerGeometry::EcalTriggerGeometry(int symmetry, EcalHexReadout* ecalGeom) : ConditionsObject("EcalTriggerGeometry"), symmetry_{symmetry}, ecalGeometry_{ecalGeom} {
+  EcalTriggerGeometry::EcalTriggerGeometry(int symmetry, const EcalHexReadout* ecalGeom) : ConditionsObject(CONDITIONS_OBJECT_NAME), symmetry_{symmetry}, ecalGeometry_{ecalGeom} {
     
     if ((symmetry_ & MODULES_MASK)==INPLANE_IDENTICAL) {
       // first set is the same regardless of alignment...
@@ -133,4 +135,47 @@ namespace ldmx {
       EcalID pid=centerInTriggerCell(triggerCell);
       return ecalGeometry_->getCellCenterRelative(pid.cell());
   }
+
+class EcalTriggerGeometryProvider : public ConditionsObjectProvider {
+ public:
+  /**
+   * Class constructor
+   */	
+  EcalTriggerGeometryProvider(const std::string& name, const std::string& tagname, const Parameters& parameters, Process& process) :
+      ConditionsObjectProvider(EcalTriggerGeometry::CONDITIONS_OBJECT_NAME, tagname, parameters, process), ecalTriggerGeometry_{nullptr} {
+  }
+
+
+  /** Destructor */
+  virtual ~EcalTriggerGeometryProvider() {
+    if (ecalTriggerGeometry_!=nullptr) delete ecalTriggerGeometry_;
+    ecalTriggerGeometry_=nullptr;
+  }
+	
+  /**
+   * Provides access to the EcalHexReadout or EcalTriggerGeometry
+   * @note Currently, these are assumed to be valid for all time, but this behavior could be changed.  Users should not cache the pointer
+   * between events
+   */
+  virtual std::pair<const ConditionsObject*,ConditionsIOV> getCondition(const EventHeader& context) {
+    if (ecalTriggerGeometry_==nullptr) {
+      std::pair<const ConditionsObject*,ConditionsIOV> cond_ecal_geom=requestParentCondition(EcalHexReadout::CONDITIONS_OBJECT_NAME, context);
+      const EcalHexReadout* ecalgeom=dynamic_cast<const EcalHexReadout*>(cond_ecal_geom.first);
+      ecalTriggerGeometry_=new EcalTriggerGeometry(INPLANE_IDENTICAL | LAYERS_IDENTICAL, ecalgeom);
+    }
+   return std::make_pair(ecalTriggerGeometry_,ConditionsIOV(context.getRun(),context.getRun(),true,true)); 
+  }
+
+  /**
+   * Take no action on release, as the object is permanently owned by the Provider
+   */
+  virtual void releaseConditionsObject(const ConditionsObject* co) {
+  }
+
+ private:
+
+  EcalTriggerGeometry* ecalTriggerGeometry_;
+};
+
 }
+DECLARE_CONDITIONS_PROVIDER_NS(ldmx, EcalTriggerGeometryProvider);
