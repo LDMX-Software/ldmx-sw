@@ -1,5 +1,6 @@
 #include "Ecal/HgcrocTriggerCalculations.h"
 #include "Event/HgcrocTrigDigi.h"
+#include <iostream>
 
 namespace ldmx {
   
@@ -17,15 +18,29 @@ unsigned int HgcrocTriggerCalculations::singleChannelCharge(int adc, int tot,
 	
   unsigned int charge_tot{0};
   charge_tot=eff_tot*tot_gain;
-	
-  return (tot!=0)?(charge_tot):(charge_adc);
+
+
+  unsigned int charge_final=(tot!=0)?(charge_tot):(charge_adc);
+
+  /*
+  std::cout << adc << " "
+            << tot << " "
+            << adc_ped << " "
+            << adc_thresh << " "
+            << tot_ped << " "
+            << tot_thresh << " "
+            << tot_gain << " "
+            << charge_final << std::endl ;
+  */
+  
+  return charge_final;
         
 }
 
 HgcrocTriggerCalculations::HgcrocTriggerCalculations(const IntegerTableCondition& ict) : conditions_{ict, true} {
 }
 
-void HgcrocTriggerCalculations::addDigi(unsigned int tid, int adc, int tot) {
+void HgcrocTriggerCalculations::addDigi(unsigned int id, unsigned int tid, int adc, int tot) {
   unsigned int charge=singleChannelCharge(adc,tot,
                                           conditions_.adc_pedestal(id),conditions_.adc_threshold(id),
                                           conditions_.tot_pedestal(id),conditions_.tot_threshold(id),
@@ -42,7 +57,7 @@ void HgcrocTriggerCalculations::compressDigis(int cells_per_trig) {
   if (cells_per_trig==4) shift=1;
   else if (cells_per_trig==9) shift=3;
   else {
-    EXCEPTION_RAISE("HgcrocTriggerException","Invalid number of precision cells per trigger cell: "+std::tostring(cells_per_trig));
+    EXCEPTION_RAISE("HgcrocTriggerException","Invalid number of precision cells per trigger cell: "+std::to_string(cells_per_trig));
   }
 
   for (auto ilinear : linearCharge_) {
