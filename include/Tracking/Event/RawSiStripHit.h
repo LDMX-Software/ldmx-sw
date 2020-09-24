@@ -29,11 +29,36 @@ public:
   RawSiStripHit() = default;
 
   /**
+   * Constructor.
+   *
+   * @param[in] samples The ADC samples composing this hit.  For now, the size
+   *    of a sample is assumed to be 16 bits. 
+   * @param[in] time The timestamp of this hit as set by the data acquisition
+   *    system.
+   */
+  RawSiStripHit(std::vector<short> samples, long time); 
+
+  /**
    * Destructor.
    *
    * Currently, the destructor does nothing.
    */
   virtual ~RawSiStripHit(){};
+
+  /**
+   * Clear the vector of samples and set the timestamp to 0. 
+   *
+   * This class is needed by ROOT when building the dictionary. 
+   */
+   void Clear(); 
+
+   /**
+    * Print the string representation of this object. 
+    *
+    * This class is needed by ROOT when building the dictionary. 
+    */
+   void Print() const { std::cout << this; }
+
 
   /**
    * Get the digitized (ADC) samples composing this hit.
@@ -54,9 +79,9 @@ public:
    * This is the time stamp as set by the data aquisition system. This will
    * typically be in units of ns.
    *
-   * @param[in] time_ The timestamp as set by the data aquisition system.
+   * @param[in] time_ The timestamp as set by the data acquisition system.
    *
-   * @return[out] The timestamp of this his in ns.
+   * @return[out] The timestamp of this hit in ns.
    */
   long getTime() const { return time_; }
 
