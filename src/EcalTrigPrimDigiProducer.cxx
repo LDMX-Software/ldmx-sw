@@ -1,6 +1,6 @@
 #include "Ecal/EcalTrigPrimDigiProducer.h"
 #include "Ecal/EcalTriggerGeometry.h"
-#include "Event/EcalDigiCollection.h"
+#include "Event/HgcrocDigiCollection.h"
 #include "Ecal/HgcrocTriggerCalculations.h"
 
 namespace ldmx {
@@ -18,7 +18,7 @@ namespace ldmx {
 	const EcalTriggerGeometry& geom=getCondition<EcalTriggerGeometry>(EcalTriggerGeometry::CONDITIONS_OBJECT_NAME);
 	
 	// get the Ecal digis
-        const EcalDigiCollection& ecalDigis = event.getObject<EcalDigiCollection>( digiCollName_ , digiPassName_ );
+        const HgcrocDigiCollection& ecalDigis = event.getObject<EcalDigiCollection>( digiCollName_ , digiPassName_ );
 
 	// get the calibration object
 	const IntegerTableCondition& conditions = conditions().getCondition<IntegerTableCondition>(condObjName_);
@@ -28,10 +28,20 @@ namespace ldmx {
 	
 	// Loop over the digis
 	for (unsigned int ix=0; ix<ecalDigis.getNumDigis(); ix++) {
-	    calc.addDigi();
+          const HgcrocDigiCollection::HgcrocDigi pdigi=ecalDigis.getDigi(ix);
+          EcalTriggerID tid=geom.belongsTo(EcalID(pdigi.id()));
 
-	}
-	// Now, we 
+          if (!tid.null()) {
+            int tot=0;
+            if (pdigi.soi().isTOTComplete()) tot=pdigi.soi().tot();
+            calc.addDigi(tid.raw(),pdigi.soi().adc_t(),tot);
+          }
+        }
+
+	// Now, we compress the digis
+        calc.compressDigis(9); // 9 is the number for Ecal...
+
+        //const std::map<unsigned int, uint8_t>&
 	
     }
 }

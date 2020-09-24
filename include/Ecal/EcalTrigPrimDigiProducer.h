@@ -51,7 +51,11 @@ namespace ldmx {
 
             /** Digi Pass Name to use as input */
             std::string digiPassName_;
-	
+
+
+      /** Conditions object for the calibration information */
+      std::string condObjName_;
+      
     };
 }
 
