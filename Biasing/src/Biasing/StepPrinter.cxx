@@ -36,20 +36,19 @@ namespace ldmx {
 
         // Get the region
         auto region{track->GetVolume()->GetLogicalVolume()->GetRegion()->GetName()}; 
-        
-        std::cout << "*******************************\n"
-                  << "*   Step " << track->GetCurrentStepNumber() << "\n"
-                  << "********************************\n"
-                  << "\tEnergy of " << particleName << " : " << energy << "\n"   
-                  << "\tTrack ID: " << track->GetTrackID()  << "\n" 
-                  << "\tStep #: "   << track->GetCurrentStepNumber() << "\n"
-                  << "\tParticle currently in " << volume << "\n"  
-                  << "\tRegion: " << region << "\n"
-                  << "\tWeight: " << track->GetWeight() << "\n"
-                  << "\tNext volume: " << nextVolume << "\n" 
-                  << "********************************"
-                  << std::endl;
-        
+
+        std::cout << " Step " << track->GetCurrentStepNumber() << " {"
+                  << " Energy: " << energy
+                  << " Track ID: " << track->GetTrackID()
+                  << " Particle currently in: " << volume
+                  << " Region: " << region
+                  << " Next volume: " << nextVolume
+                  << " Weight: " << track->GetWeight()
+                  << " Children:";
+        for (auto const& track : *(step->GetSecondaryInCurrentStep()) )
+            std::cout << " " << track->GetParticleDefinition()->GetPDGEncoding();
+
+        std::cout << " }" << std::endl;
     }
 
 } // ldmx
