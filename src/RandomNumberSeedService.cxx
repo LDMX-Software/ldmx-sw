@@ -4,12 +4,6 @@
 #include "Framework/RandomNumberSeedService.h"
 #include <time.h>
 
-std::ostream& operator<<(std::ostream& s, const ldmx::RandomNumberSeedService& o) {
-  o.stream(s);
-  return s;
-}
-
-
 namespace ldmx {
 
 const std::string RandomNumberSeedService::CONDITIONS_OBJECT_NAME="RandomNumberSeedService";

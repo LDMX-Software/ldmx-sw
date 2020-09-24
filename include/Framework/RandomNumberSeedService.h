@@ -115,6 +115,19 @@ class RandomNumberSeedService : public ConditionsObject, public ConditionsObject
    */
   void stream(std::ostream& s) const;
 
+  /**
+   * Output streaming operator
+   *
+   * @see ldmx::RandomNumberSeedService::stream
+   * @param[in] s output stream to print to
+   * @param[in] o seed service to print
+   * @returns modified output stream
+   */
+  friend std::ostream& operator<<(std::ostream& s, const RandomNumberSeedService& o) {
+      o.stream(s);
+      return s;
+  }
+
  private:
 
   /// whether the master seed has been initialized
@@ -132,15 +145,5 @@ class RandomNumberSeedService : public ConditionsObject, public ConditionsObject
 };
 
 }
-
-/**
- * Output streaming operator
- *
- * @see ldmx::RandomNumberSeedService::stream
- * @param[in] s output stream to print to
- * @param[in] o seed service to print
- * @returns modified output stream
- */
-std::ostream& operator<<(std::ostream& s, const ldmx::RandomNumberSeedService& o);
 
 #endif // FRAMEWORK_RANDOMNUMBERSEEDSERVICE_H_
