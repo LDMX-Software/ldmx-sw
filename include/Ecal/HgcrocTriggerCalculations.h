@@ -69,9 +69,10 @@ class HgcrocTriggerCalculations {
 
   /** 
       Determine the linear charge for the given channel, using the calibration information, and add it to the map
+      @param id Precision channel id (used to lookup in the conditions table)
       @param tid Trigger channel id
   */
-  void addDigi(unsigned int tid, int adc, int tot);
+  void addDigi(unsigned int id, unsigned int tid, int adc, int tot);
 
 
   /**
