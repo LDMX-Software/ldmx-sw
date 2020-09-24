@@ -66,15 +66,6 @@ class EcalDigiProducer : public Producer {
 
             ///////////////////////////////////////////////////////////////////////////////////////
             //Python Configuration Parameters
-            
-            /// Number of layers in ECal 
-            int nEcalLayers_;
-
-            /// Number of Hexagnonal modules per layer in ECal 
-            int nModulesPerLayer_;
-
-            /// Number of cells in each hex module 
-            int nCellsPerModule_;
 
             /// Time interval for chip clock in ns
             double clockCycle_;
