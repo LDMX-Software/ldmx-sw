@@ -27,7 +27,7 @@
 #include "Event/TrackerVetoResult.h"
 #include "Event/TriggerResult.h"
 #include "Event/TrigScintHit.h" 
-#include "Event/dataframe.h" 
+#include "Event/TrigScintQIEDigis.h" 
 
 #include <variant>
 
@@ -60,7 +60,7 @@ namespace ldmx {
         TrackerVetoResult,
         TriggerResult,
         TrigScintHit,
-        dataframe,
+        TrigScintQIEDigis,
         std::vector < CalorimeterHit >,
         std::vector < EcalCluster >,
         std::vector < EcalHit >,

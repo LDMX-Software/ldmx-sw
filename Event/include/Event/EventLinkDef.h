@@ -42,7 +42,7 @@
 
 // #pragma link C++ class ldmx::Pulse+; // for QIE simulation [Niramay]
 // #pragma link C++ class ldmx::SimQIE+; // for QIE simulation [Niramay]
-#pragma link C++ class ldmx::dataframe+; // for QIE simulation [Niramay]
+#pragma link C++ class ldmx::TrigScintQIEDigis+; // for QIE simulation [Niramay]
 
 //objects that we want to be added inside of an STL collection must be repeated below
 #pragma link C++ class std::vector<ldmx::SimCalorimeterHit>+;
@@ -57,7 +57,7 @@
 #pragma link C++ class std::vector<ldmx::SiStripHit>+;
 #pragma link C++ class std::vector<ldmx::RawHit>+;
 #pragma link C++ class std::vector< ldmx::TrigScintHit >+;
-#pragma link C++ class std::vector<ldmx::dataframe>+; // for QIE simulation [Niramay]
+#pragma link C++ class std::vector<ldmx::TrigScintQIEDigis>+; // for QIE simulation [Niramay]
 
 #endif
 

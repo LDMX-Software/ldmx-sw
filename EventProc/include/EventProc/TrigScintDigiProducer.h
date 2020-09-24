@@ -32,7 +32,7 @@
 
 // QIE output
 // #include "SimQIE.h"
-#include "Event/dataframe.h"
+#include "Event/TrigScintQIEDigis.h"
 
 namespace ldmx {
 

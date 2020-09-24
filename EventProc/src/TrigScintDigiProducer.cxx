@@ -1,5 +1,5 @@
 #include "EventProc/TrigScintDigiProducer.h"
-// #include "Event/dataframe.h"
+// #include "Event/TrigScintQIEDigis.h"
 
 #include <iostream>
 #include <exception>
@@ -208,10 +208,10 @@ namespace ldmx {
 	smq->SetGain();			 // [Niramay]
 	smq->SetFreq();			 // [Niramay]
 	
-	std::vector<dataframe> dd;		// [Niramay]
-	dataframe temp(5,ex,smq);
+	std::vector<TrigScintQIEDigis> dd;		// [Niramay]
+	TrigScintQIEDigis temp(5,ex,smq);
 	dd.push_back(temp);
-        event.add("QIE", dd); // [Niramay]
+        event.add("TrigScintQIEDigis", temp); // [Niramay]
     }
 }
 

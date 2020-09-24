@@ -42,7 +42,7 @@ namespace ldmx {
       if(qq>edges[(a+b)/2]) a=(a+b)/2;
       else b=(a+b)/2;
     }
-    return 64*(int)(a/4)+bins[a%4]+floor((qq-edges[a])/sense[a]);
+    return 64*(int)(a/4)+nbins[a%4]+floor((qq-edges[a])/sense[a]);
   }
 
   float SimQIE::ADC2Q(int adc)
@@ -55,11 +55,11 @@ namespace ldmx {
     int ss = 0;			// sub range
   
     for(int i=1;i<4;i++){		// to get the subrange
-      if(v1>bins[i]) ss++;
+      if(v1>nbins[i]) ss++;
     }
-    int cc = 64*rr+bins[ss];
-    // return(edges[4*rr+ss]+(v1-bins[ss])*sense[4*rr+ss]+sense[4*rr+ss]/2);
-    float temp=edges[4*rr+ss]+(v1-bins[ss])*sense[4*rr+ss]+sense[4*rr+ss]/2;
+    int cc = 64*rr+nbins[ss];
+    // return(edges[4*rr+ss]+(v1-nbins[ss])*sense[4*rr+ss]+sense[4*rr+ss]/2);
+    float temp=edges[4*rr+ss]+(v1-nbins[ss])*sense[4*rr+ss]+sense[4*rr+ss]/2;
     return(temp/Gain);
   }
 
@@ -85,10 +85,10 @@ namespace ldmx {
 
     for(int rr=0;rr<4;rr++){	         // loop over range
       for(int ss=0;ss<4;ss++){	         // loop over subrange
-	for(int bb=bins[ss]; bb<bins[ss+1];bb++){ // loop over bins
+	for(int bb=nbins[ss]; bb<nbins[ss+1];bb++){ // loop over nbins
 	  /* std::cout<<"rr = "<<rr<<"\tss = "<<ss<<"\tbb = "<<bb<<endl; */
 	  int ind = 64*rr+bb;
-	  QBins[ind]=edges[4*rr+ss]+(bb-bins[ss])*sense[4*rr+ss];
+	  QBins[ind]=edges[4*rr+ss]+(bb-nbins[ss])*sense[4*rr+ss];
 	}
       }
     }
