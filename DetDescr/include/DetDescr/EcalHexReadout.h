@@ -111,7 +111,6 @@ namespace ldmx {
                 return layerZPositions_.size();
             }
 
-
             /**
              * Get a module center position relative to the ecal center [mm]
              *
