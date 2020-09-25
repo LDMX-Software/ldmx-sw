@@ -29,15 +29,15 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         """
 
         if EcalGeometryProvider.__instance == None :
-            EcalGeometryProvider('tag')
+            EcalGeometryProvider()
 
         return EcalGeometryProvider.__instance
 
-    def __init__(self,tagName):
+    def __init__(self):
         if EcalGeometryProvider.__instance != None :
             raise Exception('EcalGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
-            super().__init__("EcalGeometryProvider","ldmx::EcalGeometryProvider",tagName,"Ecal")
+            super().__init__("EcalGeometryProvider","ldmx::EcalGeometryProvider","Ecal")
             from LDMX.DetDescr import EcalHexReadout
             self.EcalHexReadout = EcalHexReadout.EcalHexReadout()
             EcalGeometryProvider.__instance = self 
