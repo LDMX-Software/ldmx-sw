@@ -189,6 +189,11 @@ namespace ldmx {
              * @return int run number
              */
             int getRunNumber() const;
+
+            /** 
+             * Get the processor name 
+             */
+            std::string getName() const { return name_; }
     
             /**
              * Internal function which is part of the PluginFactory machinery.
