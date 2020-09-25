@@ -29,7 +29,6 @@
 /*~~~~~~~~~~~*/
 #include "Event/EventDef.h"
 
-
 class G4UImanager;
 class G4UIsession;
 class G4RunManager;
@@ -92,6 +91,16 @@ namespace ldmx {
              * @param header of new run
              */
             void beforeNewRun(RunHeader& header) final override;
+
+
+            /**
+             * Given a non-const reference to the new RunHeader,
+             * we can add parameters from the simulation here
+             * before the run starts.
+             *
+             * @param header of new run
+             */
+            void onNewRun(const RunHeader& header) final override;
 
             /**
              * Run simulation and export results to output event.
