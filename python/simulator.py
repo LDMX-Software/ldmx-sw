@@ -35,8 +35,6 @@ class simulator(ldmxcfg.Producer):
         Describe this run in a human-readable way
     scoringPlanes : str, optional
         Full path to the scoring planes gdml (suggested to use setDetector)
-    randomSeeds : list of int, optional
-        Random seeds to pass to Geant4
     beamSpotSmear : list of float, optional
         2 (x,y) or 3 (x,y,z) widths to smear ALL primary vertices by [mm]
     enableHitContribs : bool, optional
@@ -100,7 +98,6 @@ class simulator(ldmxcfg.Producer):
         #######################################################################
         # Optional Parameters (with helpful defaults)
         self.scoringPlanes = ''
-        self.randomSeeds = [ ] 
         self.beamSpotSmear = [ ]
         self.enableHitContribs   = True
         self.compressHitContribs = True
