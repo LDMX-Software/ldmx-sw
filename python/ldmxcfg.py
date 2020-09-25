@@ -206,22 +206,36 @@ class ConditionsObjectProvider:
         Name of the object this provider provides
     className : str
         Name (including namespace) of the C++ class of the provider
-    tagName : str
-        Tag which identifies the generation of information
     moduleName : str
         Name of module that this COP is compiled into (e.g. Ecal or EventProc)
+
+    Attributes
+    ----------
+    tagName : str
+        Tag which identifies the generation of information
     """
 
-    def __init__(self, objectName, className, tagName, moduleName):
+    def __init__(self, objectName, className, moduleName):
         self.objectName=objectName
         self.className=className
-        self.tagName=tagName
+        self.tagName=''
 
         # make sure process loads this library if it hasn't yet
         Process.addLibrary( '@CMAKE_INSTALL_PREFIX@/lib/lib%s.so'%moduleName )
         
         #register this conditions object provider with the process
         Process.declareConditionsObjectProvider(self)
+
+    def setTag(self,newtag) :
+        """Set the tag generation of the Conditions
+
+        Parameters
+        ----------
+        newtag : str
+            Tag for generation of conditions
+        """
+
+        self.tagName=newtag
 
     def __eq__(self,other) :
         """Check if two COPs are the same
@@ -268,8 +282,8 @@ class RandomNumberSeedService(ConditionsObjectProvider):
         Name of mode of getting random seeds
     """
 
-    def __init__(self,tag) :
-        super().__init__('RandomNumberSeedService','ldmx::RandomNumberSeedService',tag,'Framework')
+    def __init__(self) :
+        super().__init__('RandomNumberSeedService','ldmx::RandomNumberSeedService','Framework')
         self.seedMode = ''
         self.seed=-1 #only used in external mode
 
@@ -342,6 +356,8 @@ class Process:
         Minimum severity of log messages to print to file: 0 (debug) - 4 (fatal)
     logFileName : str
         File to print log messages to, won't setup file logging if this parameter is not set
+    conditionsGlobalTag : str
+        Global tag for the current generation of conditions
     conditionsObjectProviders : list of ConditionsObjectProviders
         List of the sources of calibration and conditions information
     randomNumberSeedService : RandomNumberSeedService
@@ -377,11 +393,12 @@ class Process:
         self.logFileName='' #won't setup log file
         self.compressionSetting=9
         self.histogramFile=''
+        self.conditionsGlobalTag='Default'
         self.conditionsObjectProviders=[]
         Process.lastProcess=self
 
         # needs lastProcess defined to self-register
-        self.randomNumberSeedService=RandomNumberSeedService('rnss')
+        self.randomNumberSeedService=RandomNumberSeedService()
 
     def addLibrary(lib) :
         """Add a library to the list of dynamically loaded libraries
@@ -425,6 +442,8 @@ class Process:
 
         if ( Process.lastProcess is not None ) :
 
+            cop.setTag(Process.lastProcess.conditionsGlobalTag)
+
             # check if the input COP matches one already declared
             #   if it does match, override the already declared one with the passed one
             for index, already_defined_cop in enumerate(Process.lastProcess.conditionsObjectProviders) :
@@ -435,6 +454,19 @@ class Process:
             Process.lastProcess.conditionsObjectProviders.append( cop )
         else :
             raise Exception( "No Process object defined yet! You need to create a Process before declaring any ConditionsObjectProviders." )
+
+    def setConditionsGlobalTag(self,tag) :
+        """Set the global tag for all the ConditionsObjectProviders
+
+        Parameters
+        ----------
+        tag : str
+            Global generation tag to pass to all COPs
+        """
+
+        self.conditionsGlobalTag=tag
+        for cop in self.conditionsObjectProviders :
+            cop.setTag(tag)
             
     def skimDefaultIsSave(self):
         """Configure the process to by default keep every event."""
