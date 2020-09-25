@@ -171,16 +171,18 @@ def dark_brem( ap_mass , lhe, detector ) :
     sim.beamSpotSmear = [ 20., 80., 0. ] #mm
     
     # Activiate dark bremming with a certain A' mass and LHE library
-    sim.dark_brem.activate( ap_mass , lhe )
-    sim.dark_brem.threshold = 2. #GeV - minimum energy electron needs to have to dark brem
-    sim.dark_brem.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
+    from LDMX.SimCore import dark_brem
+    db_model = dark_brem.VertexLibraryModel( lhe )
+    db_model.threshold = 2. #GeV - minimum energy electron needs to have to dark brem
+    db_model.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
+    sim.dark_brem.activate( ap_mass , db_model )
 
     import math
-    factor = 1e4*( sim.dark_brem.APrimeMass**math.log10( sim.dark_brem.APrimeMass ) ) / ( sim.dark_brem.epsilon ** 2 )
+    factor = 1e4*( sim.dark_brem.ap_mass**math.log10( sim.dark_brem.ap_mass ) ) / ( sim.dark_brem.model.epsilon ** 2 )
     
     # Biasing dark brem up inside of the target
     sim.biasingOn()
-    sim.biasingConfigure( 'eDBrem' , 'target' , 0. , factor ,
+    sim.biasingConfigure( 'eDarkBrem' , 'target' , 0. , factor ,
             allPtl = True, incidentOnly = False )
 
     # the following filters are in a library that needs to be included
