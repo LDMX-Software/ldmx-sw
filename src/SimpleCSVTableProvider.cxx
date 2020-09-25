@@ -5,7 +5,6 @@
 #include <fstream>
 #include "Conditions/SimpleTableStreamers.h"
 
-
 DECLARE_CONDITIONS_PROVIDER_NS(ldmx,SimpleCSVTableProvider);
 
 namespace ldmx {
@@ -133,9 +132,9 @@ static void httpstream(const std::string& url, std::string& strbuf, int depth=0)
 
     //	    std::cout << newurl << "," << newhost <<"\n";      
 					      
-<<<<<<< HEAD
 	// read to the end for good behavior
 	boost::system::error_code error;
+	bool storing=false;
 	while (boost::asio::read(socket, response,
 		   boost::asio::transfer_at_least(1), error));
 
