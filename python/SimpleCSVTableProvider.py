@@ -66,16 +66,14 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
     ---------
     objName : str
         Name of object that this provider provides (e.g. EcalGains)
-    tagName : str
-        Name of tag that this provider is generated from
     dataType : str
         Name of type of data stored in this table (e.g. "int" or "double")
     columns : list of str
         List of column names for this table
     """
 
-    def __init__(self,objName, tagName, dataType, columns):
-        super().__init__(objName,"ldmx::SimpleCSVTableProvider",tagName,'Conditions')
+    def __init__(self,objName,dataType, columns):
+        super().__init__(objName,"ldmx::SimpleCSVTableProvider",'Conditions')
         self.dataType=dataType
         self.columns=columns
         self.entries=[]
@@ -123,11 +121,11 @@ class SimpleCSVTableProvider(ldmxcfg.ConditionsObjectProvider):
         
 class SimpleCSVDoubleTableProvider(SimpleCSVTableProvider):
     """Provider for tables of doubles"""
-    def __init__(self,objName, tagName, columns):
-        super().__init__(objName, tagName,"double",columns)
+    def __init__(self,objName,columns):
+        super().__init__(objName,"double",columns)
         
 class SimpleCSVIntegerTableProvider(SimpleCSVTableProvider):
     """Provider for tables of integers"""
-    def __init__(self,objName, tagName, columns):
-        super().__init__(objName, tagName,"int",columns)
+    def __init__(self,objName,columns):
+        super().__init__(objName,"int",columns)
 
