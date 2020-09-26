@@ -263,5 +263,5 @@ class TrackProcessFilter(simcfg.UserAction):
         Instance of TrackProcessFilter configured to tag dark brem tracks.
     
         """
-        return TrackProcessFilter('eDBrem')
+        return TrackProcessFilter('eDarkBrem')
 
