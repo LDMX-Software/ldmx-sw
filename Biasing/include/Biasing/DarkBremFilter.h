@@ -134,6 +134,16 @@ namespace ldmx {
              */
             bool inDesiredVolume(const G4Track* ) const;
 
+            /**
+             * Helper to abort an event with a message
+             *
+             * Tells the RunManger to abort the current event
+             * after displaying the input message.
+             *
+             * @param[in] reason reason for aborting the event
+             */
+            void AbortEvent(const std::string& reason) const;
+
         private:
 
             /** 
@@ -165,13 +175,6 @@ namespace ldmx {
              * Reset to false in BeginOfEventAction
              */
             bool foundAp_;
-
-            /**
-             * Have we found more than one A'?
-             *
-             * Reset to false in BeginOfEventAction.
-             */
-            bool foundExtraAp_;
 
             /**
              * The current generation removed from the primary electron
