@@ -11,7 +11,7 @@
 
 #include "SimCore/G4APrime.h" //checking if particles match A'
 #include "SimCore/UserTrackInformation.h" //make sure A' is saved
-#include "SimCore/UserEventInformation.h"
+#include "SimCore/UserEventInformation.h" //set the weight for the event
 
 #include "G4LogicalVolumeStore.hh" //for the store
 
@@ -57,9 +57,8 @@ namespace ldmx {
             << "Beginning event."
             << std::endl;
         */
-        currentGen_   = 0;
-        foundAp_      = false;
-        foundExtraAp_ = false;
+        currentGen_ = 0;
+        foundAp_    = false;
         return;
     }
 
@@ -67,22 +66,13 @@ namespace ldmx {
 
         if ( aTrack->GetParticleDefinition() == G4APrime::APrime() ) {
             //there is an A'! Yay!
-            //  we need to check that it originated in the desired volume
-            //  keep A' in the current generation so that we can have it be processed
-            //  before the abort event check
             /* Debug message
             std::cout << "[ DarkBremFilter ]: "
                       << "Found A', still need to check if it originated in requested volume." 
                       << std::endl;
             */
-            if ( foundAp_ ) {
-                std::cout << "[ DarkBremFilter ]: "
-                          << "Found more than one A' during filtering, will abort event."
-                          << std::endl;
-                foundExtraAp_ = true;
-            }
+            if ( foundAp_ ) AbortEvent("Found more than one A' during filtering.");
             foundAp_ = true;
-            return fUrgent; 
         }
 
         return fWaiting;
@@ -106,21 +96,10 @@ namespace ldmx {
         //increment current generation
         currentGen_++;
 
-        if ( currentGen_ > nGensFromPrimary_ ) {
-            //we finished the number of generations that are allowed to produce A'
-            //  check if A' was produced
-            if ( not foundAp_ or foundExtraAp_ ) {
-                //A' wasn't produced, abort event
-                if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
-                    std::cout << "[ DarkBremFilter ]: "
-                        << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") ";
-                    if (not foundAp_) std::cout << "A' wasn't produced, aborting event.";
-                    else std::cout << "Found more than one A', aborting event.";
-                    std::cout << std::endl;
-                }
-                G4RunManager::GetRunManager()->AbortEvent();
-            }
-        }
+        //if we are past the number of generations required to find an A'
+        //  and we haven't found one yet, abort the event.
+        if ( currentGen_ > nGensFromPrimary_ and not foundAp_ )
+            AbortEvent("A' wasn't produced within the minimum number of generations.");
         
         return;
     }
@@ -144,38 +123,25 @@ namespace ldmx {
             auto event{G4EventManager::GetEventManager()};
             if ( track->GetTotalEnergy() < minApEnergy_ or not inDesiredVolume(track) ) {
                 //abort event if A' wasn't in correct volume or didn't have enough energy
-                if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
-                    std::cout << "[ DarkBremFilter ]: "
-                        << "(" << event->GetConstCurrentEvent()->GetEventID() << ") "
-                        << "A' wasn't produced inside of requested volume or was below requested energy, aborting event." 
-                        << " A' was produced in '" << track->GetLogicalVolumeAtVertex()->GetName() << "' and had energy "
-                        << track->GetTotalEnergy() << " MeV."
-                        << std::endl;
-                }
-                G4RunManager::GetRunManager()->AbortEvent();
+                std::stringstream reason;
+                reason << "A' wasn't produced inside of requested volume or was below requested energy, aborting event." 
+                   << " A' was produced in '" << track->GetLogicalVolumeAtVertex()->GetName() << "' and had energy "
+                   << track->GetTotalEnergy() << " MeV.";
+                AbortEvent(reason.str());
             } else {
                 //make sure A' is persisted into output file
                 userInfo->setSaveFlag(true); 
-                //we pushed A' through a generation early to make sure it gets
-                // processed before the final check, so its generation is later
-                userInfo->setGeneration( currentGen_+1 );
     
                 if ( !event->GetUserInformation() ) {
                     event->SetUserInformation(new UserEventInformation);
                 }
                 static_cast<UserEventInformation*>(event->GetUserInformation())->setWeight( track->GetWeight() );
-    
-                //TODO deal with under-weighted events
-                if ( track->GetWeight() < 1e-13 ) {
-                    std::cout << "[ DarkBremFilter ]: "
-                        << "Event " << event->GetConstCurrentEvent()->GetEventID()
-                        << " with weight less than 1./Biasing Factor: " << track->GetWeight()
-                        << ". A' was produced in '" << track->GetLogicalVolumeAtVertex()->GetName() << "' and had energy "
-                        << track->GetTotalEnergy() << " MeV."
-                        << std::endl;
-                    userInfo->Print();
-                    event->GetUserInformation()->Print();
-                }
+                std::cout << "[ DarkBremFilter ]: "
+                    << "(" << event->GetConstCurrentEvent()->GetEventID()
+                    << ") weighted " 
+                    << std::setprecision(std::numeric_limits<double>::digits10 + 1) //maximum precision
+                    << track->GetWeight()
+                    << std::endl;
             } //A' was made in desired volume and has the minimum energy
         }//track is A'
 
@@ -195,6 +161,17 @@ namespace ldmx {
         }
 
         return false;
+    }
+
+    void DarkBremFilter::AbortEvent(const std::string& reason) const {
+        //if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
+            std::cout << "[ DarkBremFilter ]: "
+                << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
+                << reason << " Aborting event."
+                << std::endl;
+        //}
+        G4RunManager::GetRunManager()->AbortEvent();
+        return;
     }
 }
 
