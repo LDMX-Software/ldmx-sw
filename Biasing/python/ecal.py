@@ -117,7 +117,7 @@ def electro_nuclear(detector) :
 
     sim.actions.extend([ 
             # Abort events if the electron doesn't get to teh ECal with 3.5GeV
-            filters.PrimaryToEcalFilter( 3500. ),
+            filters.PrimaryToEcalFilter(3500.),
             # Abort events if primary electron doesn't undergo EN interactions totaling 2000MeV
             filters.EcalENFilter(2000.),
             # Keep all of the EN secondaries
@@ -237,9 +237,9 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     sim.actions.extend([ 
             # Abort events if the electron doesn't get to the ECal with 3.5GeV
-            filters.PrimaryToEcalFilter( 3500. ),
+            filters.PrimaryToEcalFilter(3500.),
             # Only keep events when a dark brem happens in the target
-            filters.DarkBremFilter.ecal( 2000. , 3 ),
+            filters.DarkBremFilter.ecal(2000.,3),
             # Keep all of the dark brem daughters. 
             filters.TrackProcessFilter.dark_brem()
     ])
