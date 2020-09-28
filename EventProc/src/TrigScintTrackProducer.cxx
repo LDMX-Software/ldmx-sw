@@ -64,15 +64,15 @@ namespace ldmx {
     
     
 	  if (! event.exists( input_collections_.at(0) )) {
-		ldmx_log(info)<< "No collection called " << input_collections_.at(0) << "; skipping event"  ;
-		return ;
+		ldmx_log(info)<< "No collection called " << input_collections_.at(0) << "; still, not skipping event"  ;
+		//		return ;
 	  }
 	  const auto clusters_pad1{event.getCollection< TrigScintCluster >(input_collections_.at(0), passName_)}; 
     
     
 	  if (! event.exists( input_collections_.at(1) )) {
-		ldmx_log(info)<< "No collection called " << input_collections_.at(1) << "; skipping event"  ;
-		return ;
+		ldmx_log(info)<< "No collection called " << input_collections_.at(1) << "; still, not skipping event"  ;
+		//		return ;
 	  }
     
 	  const auto clusters_pad2{event.getCollection< TrigScintCluster >(input_collections_.at(1), passName_)}; 
