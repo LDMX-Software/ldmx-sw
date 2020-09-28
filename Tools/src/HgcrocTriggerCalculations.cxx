@@ -5,6 +5,25 @@
 
 namespace ldmx {
   
+HgcrocTriggerConditions::HgcrocTriggerConditions(const IntegerTableCondition& ict, bool validate): ict_{ict} {
+  if (!validate) return;
+  if (ict_.getColumnCount()<5) {
+    EXCEPTION_RAISE("ConditionsException","Inconsistent condition for HgcrocTriggerConditions :"+ict.getName());
+  }
+  std::vector<std::string> expected_colnames;
+  expected_colnames.push_back("ADC_PEDESTAL");
+  expected_colnames.push_back("ADC_THRESHOLD");
+  expected_colnames.push_back("TOT_PEDESTAL");
+  expected_colnames.push_back("TOT_THRESHOLD");
+  expected_colnames.push_back("TOT_GAIN");
+
+  for (size_t i=0; i<5; i++) {
+    if (ict_.getColumnNames()[i]!=expected_colnames[i]) {
+      EXCEPTION_RAISE("ConditionsException","Expected column '"+expected_colnames[i]+"', got '"+ict_.getColumnNames()[i]+"'");
+    }
+  }
+}
+
 unsigned int HgcrocTriggerCalculations::singleChannelCharge(int adc, int tot,
                                                             int adc_ped, int adc_thresh,
                                                             int tot_ped, int tot_thresh, int tot_gain) {
@@ -23,7 +42,7 @@ unsigned int HgcrocTriggerCalculations::singleChannelCharge(int adc, int tot,
 
   unsigned int charge_final=(tot!=0)?(charge_tot):(charge_adc);
 
-  /*
+  /* debug message
   std::cout << adc << " "
             << tot << " "
             << adc_ped << " "
@@ -70,25 +89,4 @@ void HgcrocTriggerCalculations::compressDigis(int cells_per_trig) {
     
 }
 
-HgcrocTriggerConditions::HgcrocTriggerConditions(const IntegerTableCondition& ict, bool validate): ict_{ict} {
-  if (!validate) return;
-  if (ict_.getColumnCount()<5) {
-    EXCEPTION_RAISE("ConditionsException","Inconsistent condition for HgcrocTriggerConditions :"+ict.getName());
-  }
-  std::vector<std::string> expected_colnames;
-  expected_colnames.push_back("ADC_PEDESTAL");
-  expected_colnames.push_back("ADC_THRESHOLD");
-  expected_colnames.push_back("TOT_PEDESTAL");
-  expected_colnames.push_back("TOT_THRESHOLD");
-  expected_colnames.push_back("TOT_GAIN");
-
-  for (size_t i=0; i<5; i++) {
-    if (ict_.getColumnNames()[i]!=expected_colnames[i]) {
-      EXCEPTION_RAISE("ConditionsException","Expected column '"+expected_colnames[i]+"', got '"+ict_.getColumnNames()[i]+"'");
-    }
-  }
-}
-
-    
-
-}
+} //ldmx
