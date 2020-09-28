@@ -25,8 +25,7 @@ namespace ldmx {
      * User stepping action used to filter events where the primary
      * particle falls below a threshold before reaching the CalorimeterRegion
      *
-     * This is a simplistic filter designed similar to the 
-     * TaggerVetoFilter.
+     * This is a simplistic filter designed similar to the TaggerVetoFilter.
      */
     class PrimaryToEcalFilter : public UserAction { 
     
