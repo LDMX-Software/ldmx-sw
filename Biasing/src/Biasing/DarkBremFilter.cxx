@@ -136,12 +136,14 @@ namespace ldmx {
                     event->SetUserInformation(new UserEventInformation);
                 }
                 static_cast<UserEventInformation*>(event->GetUserInformation())->setWeight( track->GetWeight() );
+                /* debug printout to check weighting of events
                 std::cout << "[ DarkBremFilter ]: "
                     << "(" << event->GetConstCurrentEvent()->GetEventID()
                     << ") weighted " 
                     << std::setprecision(std::numeric_limits<double>::digits10 + 1) //maximum precision
                     << track->GetWeight()
                     << std::endl;
+                 */
             } //A' was made in desired volume and has the minimum energy
         }//track is A'
 
@@ -164,12 +166,12 @@ namespace ldmx {
     }
 
     void DarkBremFilter::AbortEvent(const std::string& reason) const {
-        //if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
+        if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
             std::cout << "[ DarkBremFilter ]: "
                 << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
                 << reason << " Aborting event."
                 << std::endl;
-        //}
+        }
         G4RunManager::GetRunManager()->AbortEvent();
         return;
     }

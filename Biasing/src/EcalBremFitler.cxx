@@ -18,7 +18,7 @@ namespace ldmx {
     EcalBremFilter::EcalBremFilter(const std::string& name, Parameters& parameters) 
         : UserAction(name, parameters) { 
         
-        bremEnergyThreshold_     = parameters.getParameter< double >("brem_min_energy_threshold"); 
+        brem_min_energy_threshold_ = parameters.getParameter< double >("brem_min_energy_threshold"); 
     }
 
     void EcalBremFilter::stepping(const G4Step* step) { 
@@ -31,7 +31,7 @@ namespace ldmx {
         //track is the primary electron and event hasn't been aborted yet
         auto start{step->GetPreStepPoint()};
         auto end{step->GetPostStepPoint()};
-        if ( (start->GetKineticEnergy() > bremEnergyThreshold_ and end->GetKineticEnergy() < bremEnergyThreshold_)
+        if ( (start->GetKineticEnergy() > brem_min_energy_threshold_ and end->GetKineticEnergy() < brem_min_energy_threshold_)
               or 
              (start->GetPhysicalVolume()->GetLogicalVolume()->GetRegion()->GetName().compareTo("CalorimeterRegion")==0 and
               end  ->GetPhysicalVolume()->GetLogicalVolume()->GetRegion()->GetName().compareTo("CalorimeterRegion")!=0)
@@ -40,7 +40,7 @@ namespace ldmx {
             //we just stepped below the threshold or left the calorimeter region
             
             // Get the electron secondries
-            auto secondaries = step->GetSecondary();
+            const std::vector<G4Track*>* secondaries = step->GetSecondary();
             /*
             std::cout << "[ EcalBremFilter ] : Primary electron went below brem energy threshold: " 
                 << "KE: " << step->GetTrack()->GetKineticEnergy() << "MeV "
@@ -63,7 +63,7 @@ namespace ldmx {
                 G4String processName = secondary_track->GetCreatorProcess()->GetProcessName();
                 
                 if (processName.compareTo("eBrem") == 0 
-                        && secondary_track->GetKineticEnergy() > bremEnergyThreshold_) {
+                        && secondary_track->GetKineticEnergy() > brem_min_energy_threshold_) {
     
                     /*
                     std::cout << "[ EcalBremFilter ] : "

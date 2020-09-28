@@ -113,7 +113,7 @@ class EcalENFilter(simcfg.UserAction) :
         from LDMX.Biasing import include
         include.library()
 
-        self.minENEnergy = recoil_thresh #MeV
+        self.min_total_en_energy = recoil_thresh #MeV
 
 class TargetPNFilter(simcfg.UserAction) :
     """ Configuration for filtering photo-nuclear events in the target."""

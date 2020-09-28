@@ -62,7 +62,7 @@ namespace ldmx {
         private:
 
             /// Brem gamma energy treshold [MeV]
-            double bremEnergyThreshold_; 
+            double brem_min_energy_threshold_; 
 
     }; // EcalBremFilter
 }

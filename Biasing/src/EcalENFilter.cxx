@@ -11,7 +11,7 @@ namespace ldmx {
     EcalENFilter::EcalENFilter(const std::string& name, Parameters& parameters) 
         : UserAction (name, parameters) {
         
-        minENEnergy_ = parameters.getParameter< double >("minENEnergy"); 
+        min_total_en_energy_ = parameters.getParameter< double >("min_total_en_energy"); 
 
     }
 
@@ -25,7 +25,7 @@ namespace ldmx {
         //track is the primary electron and event hasn't been aborted yet
         auto start{step->GetPreStepPoint()};
         auto end{step->GetPostStepPoint()};
-        if ( (start->GetKineticEnergy() > minENEnergy_ and end->GetKineticEnergy() < minENEnergy_)
+        if ( (start->GetKineticEnergy() > min_total_en_energy_ and end->GetKineticEnergy() < min_total_en_energy_)
               or 
              (start->GetPhysicalVolume()->GetLogicalVolume()->GetRegion()->GetName().compareTo("CalorimeterRegion")==0 and
               end  ->GetPhysicalVolume()->GetLogicalVolume()->GetRegion()->GetName().compareTo("CalorimeterRegion")!=0)
@@ -75,7 +75,7 @@ namespace ldmx {
                 std::cout << std::endl;
             }//loop over secondaries
     
-            if (enEnergy < minENEnergy_) { 
+            if (enEnergy < min_total_en_energy_) { 
                 /*
                 std::cout << "[ EcalENFilter ] : "
                     << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
