@@ -53,7 +53,7 @@ namespace ldmx {
         private:
 
             /// Minimum energy [MeV] that all electro-nuclear products must have
-            double minENEnergy_;
+            double min_total_en_energy_;
 
     }; // EcalENFilter
 
