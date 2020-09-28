@@ -53,7 +53,7 @@ class EcalBremFilter(simcfg.UserAction):
         Minimum energy the brem photon can have [MeV]
     """
 
-    def __init__(self,brem_min_e = 2000.) :
+    def __init__(self,brem_min_e) :
         super().__init__("ecal_brem_filter", "ldmx::EcalBremFilter")
 
         from LDMX.Biasing import include
@@ -107,13 +107,13 @@ class EcalENFilter(simcfg.UserAction) :
         Minimum total energy of all EN products [MeV]
     """
 
-    def __init__(self,min_en_energy = 2500.) :
+    def __init__(self,min_en_energy) :
         super().__init__("ecal_en_process_filter","ldmx::EcalENFilter")
 
         from LDMX.Biasing import include
         include.library()
 
-        self.min_total_en_energy = recoil_thresh #MeV
+        self.min_total_en_energy = min_en_energy #MeV
 
 class TargetPNFilter(simcfg.UserAction) :
     """ Configuration for filtering photo-nuclear events in the target."""
@@ -152,7 +152,7 @@ class DarkBremFilter(simcfg.UserAction):
         self.nGensFromPrimary = 0
         self.minApEnergy = 0.
 
-    def target(minApEnergy = 2000.) :
+    def target(minApEnergy) :
         """Configure filter to look for dark brem in target
 
         Sets number of generations from primary to 0,
@@ -169,7 +169,7 @@ class DarkBremFilter(simcfg.UserAction):
         f.minApEnergy = minApEnergy
         return f
     
-    def ecal(minApEnergy = 2000., nGensFromPrimary = 3) :
+    def ecal(minApEnergy,nGensFromPrimary) :
         """Configure filter to look for dark brem in ecal
 
         Parameters
