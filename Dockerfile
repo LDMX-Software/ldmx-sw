@@ -3,9 +3,15 @@
 #   for the development image, look at the LDMX-Software/docker repo
 ###############################################################################
 
-FROM ldmx/dev:latest
+ARG DEV_TAG=v1.0
+FROM ldmx/dev:${DEV_TAG}
+
+# install ldmx-sw into the container at /usr/local
 COPY . /code
-RUN /bin/bash /code/scripts/docker_install.sh
+RUN mkdir /code/build &&\
+    ./home/ldmx.sh /code/build cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. &&\
+    ./home/ldmx.sh /code/build make install &&\
+    rm -rf code
 
 COPY ./scripts/docker_entrypoint.sh /home/docker_entrypoint.sh
 RUN chmod 755 /home/docker_entrypoint.sh
