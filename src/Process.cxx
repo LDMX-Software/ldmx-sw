@@ -120,6 +120,7 @@ namespace ldmx {
         Event theEvent(passname_);
         
         // Start by notifying everyone that modules processing is beginning
+        conditions_.onProcessStart();
         for (auto module : sequence_) module->onProcessStart();
 
         // If we have no input files, but do have an event number, run for
@@ -144,6 +145,20 @@ namespace ldmx {
             outFile.setupEvent(&theEvent);
             
             for ( auto rule : dropKeepRules_ ) outFile.addDrop(rule);
+
+            RunHeader runHeader(runForGeneration_);
+            runHeader.setRunStart(std::time(nullptr)); //set run starting
+            runHeader_ = &runHeader; //give handle to run header to process
+            outFile.writeRunHeader(runHeader); //add run header to file
+
+            for (auto module : sequence_)
+                if (dynamic_cast<Producer*>(module))
+                    dynamic_cast<Producer*>(module)->beforeNewRun(runHeader);
+
+            //now run header has been modified by Producers, so it is valid to read from
+            conditions_.onNewRun(runHeader);
+            for (auto module : sequence_)
+                module->onNewRun(runHeader);
 
             int numTries = 0; //number of tries for the current event number
             while (n_events_processed < eventLimit_) {
@@ -196,6 +211,8 @@ namespace ldmx {
 
             for (auto module : sequence_) module->onFileClose(outFile);
             
+            runHeader.setRunEnd(std::time(nullptr));
+            ldmx_log(info) << runHeader;
             outFile.close();
             
         } else {
@@ -275,12 +292,16 @@ namespace ldmx {
                     if (theEvent.getEventHeader().getRun() != wasRun) {
                         wasRun = theEvent.getEventHeader().getRun();
                         try {
-                            const RunHeader& runHeader = masterFile->getRunHeader(wasRun);
-                            ldmx_log(info) << "Got new run header from '" << masterFile->getFileName() << "' ...";
-                            runHeader.Print(); //TODO print run header into log
-                            for (auto module : sequence_) {
+                            auto runHeader = masterFile->getRunHeader(wasRun);
+                            runHeader_ = &runHeader; //save current run header for later
+                            ldmx_log(info) << "Got new run header from '" << masterFile->getFileName() << "' ...\n" << runHeader;
+                            for (auto module : sequence_)
+                                if (dynamic_cast<Producer*>(module))
+                                    dynamic_cast<Producer*>(module)->beforeNewRun(runHeader);
+                            //now run header has been modified by Producers, so it is valid to read from
+                            conditions_.onNewRun(runHeader);
+                            for (auto module : sequence_)
                                 module->onNewRun(runHeader);
-                            }
                         } catch (const Exception&) {
                             ldmx_log(warn) << "Run header for run " << wasRun << " was not found!";
                         }

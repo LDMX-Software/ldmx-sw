@@ -151,7 +151,7 @@ namespace ldmx {
              */
             template <class T>
             const T& getCondition(const std::string& condition_name) {
-      	        return getConditions().getCondition<T>(condition_name, getEventHeader());
+                return getConditions().getCondition<T>(condition_name);
             }
       
             /** 
@@ -189,6 +189,11 @@ namespace ldmx {
              * @return int run number
              */
             int getRunNumber() const;
+
+            /** 
+             * Get the processor name 
+             */
+            std::string getName() const { return name_; }
     
             /**
              * Internal function which is part of the PluginFactory machinery.
@@ -276,6 +281,12 @@ namespace ldmx {
              * @param event The Event to process.
              */
             virtual void produce(Event& event) = 0;
+
+            /**
+             * Handle allowing producers to modify run headers before the run begins
+             * @param header RunHeader for Producer to add parameters to
+             */
+            virtual void beforeNewRun(RunHeader& header) { }
     };
 
     /**

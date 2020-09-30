@@ -50,7 +50,6 @@ namespace ldmx {
              * @param[in] value The value of the parameter.
              * @throw Exception if a parameter by that name already exist in 
              *  the list. 
-             *
              */
             template < typename T > 
             void addParameter(const std::string& name, const T& value) { 
@@ -98,15 +97,13 @@ namespace ldmx {
                             );
                 }
 
-                T parameter; 
                 try { 
-                    parameter = std::any_cast< T >(parameters_.at(name));
+                    auto parameter = std::any_cast< T >(parameters_.at(name));
+                    return parameter;
                 } catch(const std::bad_any_cast& e) {
                     EXCEPTION_RAISE( "BadTypeParam",
                                      "Parameter '" + name + "' of type '"+parameters_.at(name).type().name()+"' is being cast to incorrect type '" + typeid(T).name() + "'."); 
                 }
-
-                return parameter; 
             }
 
             /**
