@@ -1,0 +1,118 @@
+
+<define>
+
+    <!-- Constant defining the clearance between volumes --> 
+    <constant name="clearance" value="0.001*mm" />
+
+    <!-- Dimensions of world volume -->
+    <constant name="world_dim" value="12.0*m"/>
+    <constant name="world_x"   value="world_dim"/>
+    <constant name="world_y"   value="world_dim"/>
+    <constant name="world_z"   value="world_dim"/>
+
+    <!-- 
+        Target
+    --> 
+    <!-- position -->
+    <constant name="target_z" value="0.0*mm" />
+    <!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
+    <constant name="target_thickness" value="0.3504*mm" />
+    <!-- Target dimensions -->
+    <constant name="target_dim_x" value="4.0*cm"  />
+    <constant name="target_dim_y" value="10.0*cm" />
+
+    <!--
+        Trigger Scintillator 
+    --> 
+
+    <!-- Trigger scintillator positions --> 
+    <constant name="trigger_pad_thickness"      value="4.5*mm" />
+
+    <!--
+        Trackers 
+    -->
+    <!-- tagger module and sensor dimensions -->
+    <constant name="tracker_sensor_x" value="38.3399*mm" />
+    <constant name="tracker_sensor_y" value="98.33*mm"   />
+    <constant name="tracker_sensor_thickness" value="0.32*mm"/>
+    <constant name="carbon_fiber_thickness" value="0.2*mm"/>
+
+    <!-- Stereo Angle = 100 mrad = 5.72 degrees -->
+    <constant name="stereo_angle" value="5.72957795130823"/>
+    
+    <!--
+        Tagger Tracker 
+    -->
+
+    <!-- Tracker tracker distances relative to the parent volume -->
+    <!-- 
+        20 cm between recoil l1 mid and tagget l7 mid
+        Distance from target to mid point of a module. 
+        Layer 1: 10 mm
+        Layer 2: 110 mm
+        Layer 3: 210 mm
+        Layer 4: 310 mm
+        Layer 5: 410 mm
+        Layer 6: 510 mm
+        Layer 7: 610 mm
+    --> 
+    <constant name="tagger_delta_layer" value="100" />
+    <constant name="tagger_l7_mid_z" value="5.5 - target_thickness/2 - 2*clearance"/>
+    <constant name="tagger_l6_mid_z" value="tagger_l7_mid_z + tagger_delta_layer"/>
+    <constant name="tagger_l5_mid_z" value="tagger_l6_mid_z + tagger_delta_layer"/>
+    <constant name="tagger_l4_mid_z" value="tagger_l5_mid_z + tagger_delta_layer"/>
+    <constant name="tagger_l3_mid_z" value="tagger_l4_mid_z + tagger_delta_layer"/>
+    <constant name="tagger_l2_mid_z" value="tagger_l3_mid_z + tagger_delta_layer"/>
+    <constant name="tagger_l1_mid_z" value="tagger_l2_mid_z + tagger_delta_layer"/>
+
+
+    <!-- layer X positions assuming a 1.5 T field. -->
+    <constant name="tagger_l1_x" value="-20.955*mm"/>
+    <constant name="tagger_l2_x" value="-14.643*mm"/>
+    <constant name="tagger_l3_x" value="-9.461*mm"/>
+    <constant name="tagger_l4_x" value="-5.407*mm"/>
+    <constant name="tagger_l5_x" value="-2.481*mm"/>
+    <constant name="tagger_l6_x" value="-0.681*mm"/>
+    <constant name="tagger_l7_x" value="-0.006*mm"/>
+
+    <!-- offset in Z between stereo sensors -->
+    <constant name="tagger_layer_offset" value="3.0*mm"/>
+
+    <!-- Dimensions of the tagger tracker envelope -->
+    <constant name="tagger_envelope_x" value="425*mm" />
+    <constant name="tagger_envelope_y" value="345*mm" />
+    <constant name="tagger_envelope_z" value="tagger_l1_mid_z + tagger_layer_offset + 2*clearance + trigger_pad_thickness" />
+
+    <!-- layer Z start position -->
+    <constant name="tagger_z_start" value="tagger_envelope_z/2"/>
+
+    <!-- position of each layer in local coordinates of envelope volume -->
+    <constant name="tagger_l1_z" value="tagger_z_start - tagger_l1_mid_z"/>
+    <constant name="tagger_l1_z1" value="tagger_l1_z - tagger_layer_offset"/>
+    <constant name="tagger_l1_z2" value="tagger_l1_z + tagger_layer_offset"/>
+
+    <constant name="tagger_l2_z" value="tagger_z_start - tagger_l2_mid_z"/>
+    <constant name="tagger_l2_z1" value="tagger_l2_z - tagger_layer_offset"/>
+    <constant name="tagger_l2_z2" value="tagger_l2_z + tagger_layer_offset"/>
+
+    <constant name="tagger_l3_z" value="tagger_z_start - tagger_l3_mid_z"/>
+    <constant name="tagger_l3_z1" value="tagger_l3_z - tagger_layer_offset"/>
+    <constant name="tagger_l3_z2" value="tagger_l3_z + tagger_layer_offset"/>
+
+    <constant name="tagger_l4_z" value="tagger_z_start - tagger_l4_mid_z"/>
+    <constant name="tagger_l4_z1" value="tagger_l4_z - tagger_layer_offset"/>
+    <constant name="tagger_l4_z2" value="tagger_l4_z + tagger_layer_offset"/>
+
+    <constant name="tagger_l5_z" value="tagger_z_start - tagger_l5_mid_z"/>
+    <constant name="tagger_l5_z1" value="tagger_l5_z - tagger_layer_offset"/>
+    <constant name="tagger_l5_z2" value="tagger_l5_z + tagger_layer_offset"/>
+
+    <constant name="tagger_l6_z" value="tagger_z_start - tagger_l6_mid_z"/>
+    <constant name="tagger_l6_z1" value="tagger_l6_z - tagger_layer_offset"/>
+    <constant name="tagger_l6_z2" value="tagger_l6_z + tagger_layer_offset"/>
+
+    <constant name="tagger_l7_z" value="tagger_z_start - tagger_l7_mid_z"/>
+    <constant name="tagger_l7_z1" value="tagger_l7_z - tagger_layer_offset"/>
+    <constant name="tagger_l7_z2" value="tagger_l7_z + tagger_layer_offset"/>
+
+</define>

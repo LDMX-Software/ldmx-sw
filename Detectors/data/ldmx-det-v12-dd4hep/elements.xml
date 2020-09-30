@@ -1,0 +1,58 @@
+<materials>
+
+    <element Z="1" formula="H" name="H" >
+        <atom type="A" unit="g/mol" value="1.00794" />
+    </element>
+    <element Z="2" formula="He" name="He" >
+        <atom type="A" unit="g/mol" value="4.00264" />
+    </element>
+    <element Z="3" formula="Li" name="Li" >
+        <atom type="A" unit="g/mol" value="6.94003" />
+    </element>
+    <element Z="4" formula="Be" name="Be" >
+        <atom type="A" unit="g/mol" value="9.01218" />
+    </element>
+    <element Z="5" formula="B" name="B" >
+        <atom type="A" unit="g/mol" value="10.811" />
+    </element>
+    <element Z="6" formula="C" name="C" >
+        <atom type="A" unit="g/mol" value="12.0107" />
+    </element>
+    <element Z="7" formula="N" name="N" >
+        <atom type="A" unit="g/mol" value="14.0068" />
+    </element>
+    <element Z="8" formula="O" name="O" >
+        <atom type="A" unit="g/mol" value="15.9994" />
+    </element>
+    <element Z="9" formula="F" name="F" >
+        <atom type="A" unit="g/mol" value="18.9984" />
+    </element>
+    <element Z="10" formula="Ne" name="Ne" >
+        <atom type="A" unit="g/mol" value="20.18" />
+    </element>
+    <element Z="11" formula="Na" name="Na" >
+        <atom type="A" unit="g/mol" value="22.9898" />
+    </element>
+    <element Z="12" formula="Mg" name="Mg" >
+        <atom type="A" unit="g/mol" value="24.305" />
+    </element>
+    <element Z="13" formula="Al" name="Al" >
+        <atom type="A" unit="g/mol" value="26.9815" />
+    </element>
+    <element Z="14" formula="Si" name="Si" >
+        <atom type="A" unit="g/mol" value="28.0854" />
+    </element>
+    <element Z="15" formula="P" name="P" >
+        <atom type="A" unit="g/mol" value="30.9738" />
+    </element>
+    <element Z="16" formula="S" name="S" >
+        <atom type="A" unit="g/mol" value="32.0661" />
+    </element>
+    <element Z="17" formula="Cl" name="Cl" >
+        <atom type="A" unit="g/mol" value="35.4526" />
+    </element>
+    <element Z="18" formula="Ar" name="Ar" >
+        <atom type="A" unit="g/mol" value="39.9477" />
+    </element>
+
+</materials>
