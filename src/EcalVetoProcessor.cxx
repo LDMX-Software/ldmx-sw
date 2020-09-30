@@ -15,6 +15,11 @@
 #include <fstream>
 #include <cmath>
 
+// ROOT (MIP tracking)
+#include "TMatrixD.h"
+#include "TDecompSVD.h"
+#include "TVector3.h"
+
 namespace ldmx {
 
     // arrays holding 68% containment radius per layer for different bins in momentum/angle
@@ -39,6 +44,13 @@ namespace ldmx {
         bdtFeatures_.push_back(result.getAvgLayerHit());
         bdtFeatures_.push_back(result.getDeepestLayerHit());
         bdtFeatures_.push_back(result.getStdLayerHit());
+        // MIP tracking (unused but could be uncommented)
+        //bdtFeatures.push_back(result.getNStraightTracks());
+        //bdtFeatures.push_back(result.getNLinregTracks());
+        //bdtFeatures.push_back(result.getFirstNearPhLayer());
+        //bdtFeatures.push_back(result.getEpAng());
+        //bdtFeatures.push_back(result.getEpSep());
+
         for(int ireg = 0; ireg < result.getElectronContainmentEnergy().size(); ++ireg) {
             bdtFeatures_.push_back(result.getElectronContainmentEnergy()[ireg]);
         }
@@ -111,6 +123,12 @@ namespace ldmx {
         stdLayerHit_ = 0;
         deepestLayerHit_ = 0;
         ecalBackEnergy_ = 0;
+        // MIP tracking
+        nStraightTracks_ = 0;
+        nLinregTracks_ = 0;
+        firstNearPhLayer_ = 0;
+        epAng_ = 0;
+        epSep_ = 0;
 
         std::fill(ecalLayerEdepRaw_.begin(), ecalLayerEdepRaw_.end(), 0);
         std::fill(ecalLayerEdepReadout_.begin(), ecalLayerEdepReadout_.end(), 0);
@@ -388,7 +406,9 @@ namespace ldmx {
         }
 
         result.setVariables(nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
-            showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_, electronContainmentEnergy, photonContainmentEnergy, outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd, outsideContainmentYstd, ecalLayerEdepReadout_, recoilP, recoilPos);
+            showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
+            nStraightTracks_, nLinregTracks_, firstNearPhLayer_, epAng_, epSep_,  // MIP tracking
+            electronContainmentEnergy, photonContainmentEnergy, outsideContainmentEnergy, outsideContainmentNHits, outsideContainmentXstd, outsideContainmentYstd, ecalLayerEdepReadout_, recoilP, recoilPos);
 
         if (doBdt_) {
             buildBDTFeatureVector(result);
@@ -506,6 +526,26 @@ namespace ldmx {
             positions.push_back(std::make_pair(posX, posY));
         }
         return positions;
+    }
+
+
+    // MIP tracking
+
+    // Return the minimum distance between the lines passing through points (v1,v2) and (w1,w2).
+    float EcalVetoProcessor::distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1, TVector3 w2) {
+        TVector3 e1 = v1 - v2;
+        TVector3 e2 = w1 - w2;
+        TVector3 crs = e1.Cross(e2);
+        if (crs.Mag() == 0) {
+            return 100.0;  // arbitrary large number; edge case that shouldn't cause problems.
+        } else {
+            return std::abs(crs.Dot(v1 - w1) / crs.Mag());
+        }
+    }
+
+    // Return the minimum distance between the point h1 and the line passing through p1 and p2.
+    float EcalVetoProcessor::distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2) {
+        return ((h1 - p1).Cross(h1 - p2)).Mag() / (p1 - p2).Mag();
     }
 
 }
