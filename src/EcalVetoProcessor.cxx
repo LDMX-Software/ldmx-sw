@@ -31,6 +31,13 @@ namespace ldmx {
 
     const std::vector<double> radius68_thetagt20 = {4.0754238481177705, 4.193693485630508, 5.14209420056253, 6.114996249971468, 7.7376807326481645, 8.551663213602291, 11.129110612057813, 13.106293737495639, 17.186617323282082, 19.970887612094604, 25.04088272634407, 28.853696411302344, 34.72538105333071, 40.21218694947545, 46.07344239520299, 50.074953583805346, 62.944045771758645, 61.145621459396814, 69.86940198299047, 74.82378572939959, 89.4528387422834, 93.18228303096758, 92.51751129204555, 98.80228884380018, 111.17537347472128, 120.89712563907408, 133.27021026999518, 142.99196243434795, 155.36504706526904, 165.08679922962185, 177.45988386054293, 187.18163602489574, 199.55472065581682, 209.2764728201696};
 
+    // MIP tracking:  List of all layer z positions
+    const std::vector<double> LAYER_Z_POSITIONS = {223.8000030517578, 226.6999969482422, 233.0500030517578, 237.4499969482422, 245.3000030517578, 251.1999969482422, 260.29998779296875,
+        266.70001220703125, 275.79998779296875, 282.20001220703125, 291.29998779296875, 297.70001220703125, 306.79998779296875, 313.20001220703125,
+        322.29998779296875, 328.70001220703125, 337.79998779296875, 344.20001220703125, 353.29998779296875, 359.70001220703125, 368.79998779296875,
+        375.20001220703125, 384.29998779296875, 390.70001220703125, 403.29998779296875, 413.20001220703125, 425.79998779296875, 435.70001220703125,
+        448.29998779296875, 458.20001220703125, 470.79998779296875, 480.70001220703125, 493.29998779296875, 503.20001220703125};
+
 
     void EcalVetoProcessor::buildBDTFeatureVector(const ldmx::EcalVetoResult& result) {
         bdtFeatures_.clear();
@@ -244,6 +251,9 @@ namespace ldmx {
         std::vector<float> outsideContainmentXstd (nregions, 0.0);
         std::vector<float> outsideContainmentYstd (nregions, 0.0);
 
+        // MIP tracking: list storing all hit info used for tracking
+        std::vector<HitData> trackingHitList;
+
         for ( const EcalHit &hit : ecalRecHits ) {
             //Layer-wise quantities
             EcalID id=hitID(hit);
@@ -278,6 +288,14 @@ namespace ldmx {
                         outsideContainmentXmean[ireg] += xy_pair.first*hit.getEnergy();
                         outsideContainmentYmean[ireg] += xy_pair.second*hit.getEnergy();
                     }
+                }
+
+                // Decide whether hit should be added to trackingHitList:  add if inside e- RoC or if etraj is missing
+                if(distance_ele_trajectory >= ele_radii[id.layer()] || distance_ele_trajectory == -1.0) {
+                    HitData hd;
+                    hd.pos = TVector3(xy_pair.first, xy_pair.second, LAYER_Z_POSITIONS[id.layer()]);
+                    hd.layer = id.layer();
+                    trackingHitList.push_back(hd);
                 }
             }
         }
@@ -404,6 +422,130 @@ namespace ldmx {
                 }
             }
         }
+
+
+
+        // MIP tracking starts here
+        std::cout << "BEGINNING MIP TRACKING" << std::endl;  //temp
+
+        /* Goal:  Calculate nStraightTracks (self-explanatory), nLinregTracks (tracks found by linreg algorithm),
+        ** firstNearPhLayer (layer of the first hit near the photon trajectory), epAng (angle between the projected
+        ** electron and photon trajectories), and epSep (distance between the projected electron and photon
+        ** trajectories at the scoring plane). */
+
+        // Find epAng and epSep, and prepare EP trajectory vectors:
+        TVector3 e_traj_start;
+        TVector3 e_traj_end;
+        TVector3 p_traj_start;
+        TVector3 p_traj_end;
+        if(ele_trajectory.size()==3 && photon_trajectory.size()==3) {
+            /*make ele_trajectory and photon_trajectory into TVector3 pairs for later use*/
+            std::cout << "Expected, size==3" << std::endl;
+            e_traj_start = TVector3(ele_trajectory[0].first, ele_trajectory[0].second, LAYER_Z_POSITIONS.front());
+            e_traj_end =   TVector3(ele_trajectory[0].first, ele_trajectory[0].second, LAYER_Z_POSITIONS.back());
+            p_traj_start = TVector3(photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.front());
+            p_traj_end =   TVector3(photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.back());
+
+            // TEMPORARILY COMMENTED for testing purposes
+            TVector3 evec = e_traj_end - e_traj_start;
+            TVector3 e_norm = evec.Unit();
+            TVector3 pvec = p_traj_end - p_traj_start;
+            TVector3 p_norm = pvec.Unit();
+            float epDot = e_norm.Dot(p_norm);
+            std::cout << "Assigning norm" << std::endl;
+            epAng_ = acos(epDot) * 180.0 / M_PI;  //In degrees for legibility
+            epSep_ = sqrt( pow(e_traj_start.X() - p_traj_start.X(), 2) + 
+                           pow(e_traj_start.Y() - p_traj_start.Y(), 2) );
+        } else {
+            /*All hits in the Ecal are fair game.  Pick e/ptraj so that they won't restrict anything.*/
+            std::cout << "Unexpected traj size " << ele_trajectory.size() << ", " << photon_trajectory.size() << std::endl;
+            e_traj_start = TVector3(999,999,0);
+            e_traj_end = TVector3(999,999,999);
+            p_traj_start = TVector3(1000,1000,0);
+            p_traj_end = TVector3(1000,1000,1000);
+            epAng_ = 3.0 + 1.0;  /*ensures event will not be vetoed by angle/separation cut  */
+            epSep_ = 10.0 + 1.0;
+        }
+
+        /* Compute firstNearPhLayer */
+        firstNearPhLayer_ = LAYER_Z_POSITIONS.size();
+        std::cout << "trackingHitList contains " << trackingHitList.size() << " hits." << std::endl;
+
+        if(photon_trajectory.size() != 0) {  /*if ptraj doesn't exist, leave phlayer at the default value*/
+            for(std::vector<HitData>::iterator it = trackingHitList.begin(); it != trackingHitList.end(); ++it) {
+                float ehDist = sqrt( pow((*it).pos.X() - photon_trajectory[(*it).layer].first,  2)
+                                   + pow((*it).pos.Y() - photon_trajectory[(*it).layer].second, 2));
+                if(ehDist < 8.7 && (*it).layer < firstNearPhLayer_) {
+                    firstNearPhLayer_ = (*it).layer;
+                }
+            }
+        }
+        std::cout << "COMPLETED INITIAL ANALYSIS.  STARTING TRACKING..." << std::endl;
+
+        // Actual tracking begins here.
+
+
+        // Straight track finding:
+        
+        /*First, sort list by decreasing layer number*/
+        std::sort(trackingHitList.begin(), trackingHitList.end(), [](HitData ha, HitData hb) {return ha.layer > hb.layer;});
+
+        // Info for current track:
+        int track[34];  /*list of hit numbers in track; 34=maximum theoretical length*/
+        int currenthit;
+        int trackLen;
+        float cellWidth = 8.7;
+
+        for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
+            track[0] = iHit;  /*automatically start searching for a new track*/
+            currenthit = iHit;
+            trackLen = 1;
+
+            for (int jHit = 0; jHit < trackingHitList.size(); jHit++) {
+                if (trackingHitList[jHit].layer == trackingHitList[currenthit].layer ||
+                    trackingHitList[jHit].layer > trackingHitList[currenthit].layer + 3) {
+                    continue;  //if hit is not in the next two layers, continue
+                }
+                /*if it is:  add to track if the (x,y) coordinates are identical to current hit.*/
+                if (trackingHitList[jHit].pos.X() == trackingHitList[currenthit].pos.X() &&
+                    trackingHitList[jHit].pos.Y() == trackingHitList[currenthit].pos.Y()) {
+                    /*add it to the track*/
+                    track[trackLen] = jHit;
+                    trackLen++;
+                }
+            }
+            /*confirm valid track*/
+            if (trackLen < 2) continue;
+            float closest_e = distTwoLines(trackingHitList[track[0]].pos, trackingHitList[track[trackLen-1]].pos,
+                                           e_traj_start, e_traj_end);
+            float closest_p = distTwoLines(trackingHitList[track[0]].pos, trackingHitList[track[trackLen-1]].pos,
+                                           p_traj_start, p_traj_end);
+            if (closest_p > cellWidth and closest_e < 2*cellWidth) continue;
+            if (trackLen < 4 and closest_e > closest_p) continue;
+
+            /*if track found, increment nStraightTracks and remove hits from future consideration*/
+            if (trackLen >= 2) {
+                for (int kHit = 0; kHit < trackLen; kHit++) {
+                    trackingHitList.erase(trackingHitList.begin() + track[kHit]);
+                }
+                /*The *current* hit will have been removed, so iHit is currently pointing to the next hit.*/
+                iHit--;  /*Decrement iHit so no hits will get skipped by iHit++*/
+                nStraightTracks_++;
+            }
+            /*Optional addition:  Merge nearby straight tracks.  Not necessary for veto.*/
+        }
+
+
+        // OPTIONAL:  If a track is found, immediately skip the relatively slow linreg section.
+        // Downside:  Can't do this if nLinregTracks is used in the BDT.
+
+
+
+        // Linreg tracking:
+        std::cout << "BEGINNING LINREG TRACKING" << std::endl;
+
+
+        std::cout << "TRACKING COMPLETED." << std::endl;
 
         result.setVariables(nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
             showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
