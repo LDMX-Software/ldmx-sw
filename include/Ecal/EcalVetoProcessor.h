@@ -16,6 +16,9 @@
 
 #include "Tools/ONNXRuntime.h"
 
+// ROOT (MIP tracking)
+#include "TVector3.h"
+
 //C++
 #include <map>
 #include <memory>
@@ -30,7 +33,7 @@ namespace ldmx {
 
         public:
 
-      typedef std::pair<EcalID, float> CellEnergyPair;
+            typedef std::pair<EcalID, float> CellEnergyPair;
 
             typedef std::pair<float, float> XYCoords;
 
@@ -93,6 +96,12 @@ namespace ldmx {
 
             void buildBDTFeatureVector(const ldmx::EcalVetoResult& result);
 
+            // MIP tracking
+            /* Function to find distance between two lines (line 1 passing through v1 and v2, etc.) */
+            float distTwoLines(TVector3 v1, TVector3 v2, TVector3 w1, TVector3 w2);
+            /* Function to find the minimum point-line distance */
+            float distPtToLine(TVector3 h1, TVector3 p1, TVector3 p2);
+
         private:
             std::map<EcalID, float> cellMap_;
             std::map<EcalID, float> cellMapTightIso_;
@@ -120,6 +129,12 @@ namespace ldmx {
             double avgLayerHit_{0};
             double stdLayerHit_{0};
             double ecalBackEnergy_{0};
+            // MIP tracking
+            int nStraightTracks_{0};
+            int nLinregTracks_{0};
+            int firstNearPhLayer_{0};
+            float epAng_{0};
+            float epSep_{0};
 
             double bdtCutVal_{0};
 
@@ -137,6 +152,13 @@ namespace ldmx {
 
             std::unique_ptr<Ort::ONNXRuntime> rt_;
 
+    };
+
+    // MIP tracking
+    struct HitData {
+        int layer;
+        TVector3 pos;
+        //float x, y, z, layer;
     };
 
 }
