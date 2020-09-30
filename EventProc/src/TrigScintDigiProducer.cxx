@@ -50,6 +50,11 @@ namespace ldmx {
         std::map<TrigScintID, float> Xpos, Ypos, Zpos, Edep, Time, beamFrac;
         std::set<TrigScintID> noiseHitIDs;
 
+	// Set QIE simulation parameters
+	SimQIE* smq = new SimQIE(6,1.5); // [Niramay]
+	smq->SetGain();			 // [Niramay]
+	smq->SetFreq();			 // [Niramay]
+
         auto numRecHits{0};
 
         // looper over sim hits and aggregate energy depositions for each detID
@@ -117,6 +122,7 @@ namespace ldmx {
 
         // Create the container to hold the digitized trigger scintillator hits.
         std::vector< TrigScintHit > trigScintHits; 
+	std::vector<TrigScintQIEDigis> QDigis;		// [Niramay]
 
         // loop over detIDs and simulate number of PEs
         int ihit = 0;        
@@ -151,6 +157,10 @@ namespace ldmx {
                 hit.setNoise(false);
                 hit.setBeamEfrac(beamFrac[id]/depEnergy);
 
+		Expo* ex = new Expo(0.1,5,30,cellPEs[id]); // [Niramay]
+		TrigScintQIEDigis QIEInfo(5,ex,smq);	 // [Niramay]
+
+		QDigis.push_back(QIEInfo); // [Niramay]
                 trigScintHits.push_back(hit); 
             }
 
@@ -198,20 +208,18 @@ namespace ldmx {
             hit.setNoise(true);
             hit.setBeamEfrac(0.);
 
+	    Expo* ex = new Expo(0.1,5,30,noiseHitPE); // [Niramay]
+	    TrigScintQIEDigis QIEInfo(5,ex,smq);	 // [Niramay]
+
+	    QDigis.push_back(QIEInfo); // [Niramay]
             trigScintHits.push_back(hit); 
         }
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        event.add(outputCollection_, trigScintHits);
+        // event.add(outputCollection_, trigScintHits);
+        event.add("TTT"+outputCollection_, trigScintHits); // [Niramay] Just for fun
+        event.add("TrigScintQIEDigis", QDigis); // [Niramay]
 
-	Expo* ex = new Expo(0.1,5,30,1);	 // [Niramay]
-	SimQIE* smq = new SimQIE(6,1.5); // [Niramay]
-	smq->SetGain();			 // [Niramay]
-	smq->SetFreq();			 // [Niramay]
-	
-	std::vector<TrigScintQIEDigis> dd;		// [Niramay]
-	TrigScintQIEDigis temp(5,ex,smq);
-	dd.push_back(temp);
-        event.add("TrigScintQIEDigis", temp); // [Niramay]
+        // event.add("TrigScintQIEDigisTemp", temp); // [Niramay]
     }
 }
 

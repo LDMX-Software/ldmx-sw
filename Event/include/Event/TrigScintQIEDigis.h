@@ -13,20 +13,30 @@ namespace ldmx {
     TrigScintQIEDigis();
     ~TrigScintQIEDigis(){};
 
-    int* GetADC(){return(ADCs);}
-    int* GetTDC(){return(TDCs);}
-    int* GetCID(){return(CIDs);}
+    // int* GetADC(){return(ADCs);}
+    // int* GetTDC(){return(TDCs);}
+    // int* GetCID(){return(CIDs);}
+    std::vector<int> GetADC(){return(ADCs);}
+    std::vector<int> GetTDC(){return(TDCs);}
+    std::vector<int> GetCID(){return(CIDs);}
 
     void Print(Option_t *option = "") const; // required by Event/include/Event/EventDef.h
     void Clear(Option_t *option = ""); // required by Event/include/Event/EventDef.h
   
+    bool operator < ( const TrigScintQIEDigis &rhs ) const
+    { return this->chanID < rhs.chanID;} // required for declaring std::vector<> in Event/include/Event/EventDef.h
+
     // private:
     int maxTS;			// no. of time samples stored
     int chanID;			// channel ID
 
-    int* ADCs;			// analog to digital counts
-    int* TDCs;			// Time to Digital counts
-    int* CIDs;			// capacitor IDs
+    // int* ADCs;			// analog to digital counts
+    // int* TDCs;			// Time to Digital counts
+    // int* CIDs;			// capacitor IDs
+    std::vector<int> ADCs;			// analog to digital counts
+    std::vector<int> TDCs;			// Time to Digital counts
+    std::vector<int> CIDs;			// capacitor IDs
+    // ClassDef(TrigScintQIEDigis,7);
     ClassDef(TrigScintQIEDigis,1);
   };
 }
