@@ -66,116 +66,11 @@ namespace ldmx {
         // NOTE: This method is called once the run is terminated through 
         // the run manager.  
 
-        // Get the detector header from the user detector construction
-        auto detector 
-            = static_cast<RunManager*>(RunManager::GetRunManager())->getDetectorConstruction();
-
-        // Create the run header.
-        RunHeader runHeader( 
-                run_,
-                detector->getDetectorHeader()->getName(), 
-                parameters_.getParameter<std::string>("description")
-                );
-
+        auto runHeader = file_.getRunHeader(run_);
 
         // Set parameter value with number of events processed.
         runHeader.setIntParameter("Event Count", eventsCompleted_ );
         runHeader.setIntParameter("Events Began" , eventsBegan_ );
-
-        runHeader.setIntParameter("Save ECal Hit Contribs" , parameters_.getParameter<bool>("enableHitContribs"));
-        runHeader.setIntParameter("Compress ECal Hit Contribs" , parameters_.getParameter<bool>("compressHitContribs"));
-        runHeader.setIntParameter("Included Scoring Planes" , !parameters_.getParameter<std::string>("scoringPlanes").empty() );
-        runHeader.setIntParameter("Use Random Seed from Event Header" , parameters_.getParameter<bool>("rootPrimaryGenUseSeed") );
-
-        //lambda function for dumping 3-vectors into the run header
-        auto threeVectorDump = [&runHeader](const std::string& name, const std::vector<double>& vec) {
-            runHeader.setFloatParameter( name + " X" , vec.at(0) );
-            runHeader.setFloatParameter( name + " Y" , vec.at(1) );
-            runHeader.setFloatParameter( name + " Z" , vec.at(2) );
-        };
-
-        auto beamSpotSmear{parameters_.getParameter<std::vector<double>>("beamSpotSmear",{})};
-        if ( !beamSpotSmear.empty() ) threeVectorDump( "Smear Beam Spot [mm]" , beamSpotSmear );
-
-        //lambda function for dumping vectors of strings to the run header
-        auto stringVectorDump = [&runHeader](const std::string& name, const std::vector<std::string>& vec ) {
-            int index = 0;
-            for ( auto const & val : vec ) {
-                runHeader.setStringParameter( name + " " + std::to_string(++index) , val );
-            }
-        };
-
-        stringVectorDump( "Pre Init Command"  , parameters_.getParameter<std::vector<std::string>>("preInitCommands",{}) );
-        stringVectorDump( "Post Init Command" , parameters_.getParameter<std::vector<std::string>>("postInitCommands",{}) );
-
-        if ( parameters_.getParameter<bool>("biasing_enabled") ) {
-            runHeader.setStringParameter("Biasing Process"  , parameters_.getParameter<std::string>("biasing_process"));
-            runHeader.setStringParameter("Biasing Volume"   , parameters_.getParameter<std::string>("biasing_volume"));
-            runHeader.setStringParameter("Biasing Particle" , parameters_.getParameter<std::string>("biasing_particle"));
-            runHeader.setIntParameter(   "Biasing All"      , parameters_.getParameter<bool>(       "biasing_all" ));
-            runHeader.setIntParameter(   "Biasing Incident" , parameters_.getParameter<bool>(       "biasing_incident" ));
-            runHeader.setIntParameter(   "Biasing Disable EM",parameters_.getParameter<bool>(       "biasing_disableEMBiasing" ));
-            runHeader.setIntParameter(   "Biasing Factor"   , parameters_.getParameter<int>(        "biasing_factor" ));
-            runHeader.setFloatParameter( "Biasing Threshold", parameters_.getParameter<double>(     "biasing_threshold" ));
-        }
-
-        auto apMass{parameters_.getParameter<double>("APrimeMass")};
-        if ( apMass > 0 ) {
-            runHeader.setFloatParameter(  "A' Mass [MeV]" , apMass );
-            runHeader.setFloatParameter(  "Dark Brem Global Bias" , parameters_.getParameter<double>("darkbrem_globalxsecfactor") );
-            runHeader.setStringParameter( "Dark Brem Vertex Library Path" , parameters_.getParameter<std::string>("darkbrem_madgraphfilepath") );
-            runHeader.setIntParameter(    "Dark Brem Interpretation Method" , parameters_.getParameter<int>("darkbrem_method") );
-        }
-
-        auto generators{parameters_.getParameter<std::vector<Parameters>>("generators")};
-        int counter = 0;
-        for ( auto const &gen : generators ) {
-
-            std::string genID = "Gen " + std::to_string(++counter);
-            auto className{gen.getParameter<std::string>("class_name")};
-            runHeader.setStringParameter( genID + " Class" , className );
-
-            if ( className.find("ldmx::ParticleGun") != std::string::npos ) {
-                runHeader.setFloatParameter( genID + " Time [ns]" , gen.getParameter<double>("time") );
-                runHeader.setFloatParameter( genID + " Energy [MeV]" , gen.getParameter<double>("energy") );
-                runHeader.setStringParameter( genID + " Particle" , gen.getParameter<std::string>("particle") );
-                threeVectorDump( genID + " Position [mm]" , gen.getParameter<std::vector<double>>("position") );
-                threeVectorDump( genID + " Direction" , gen.getParameter<std::vector<double>>("direction") );
-            } else if ( className.find("ldmx::MultiParticleGunPrimaryGenerator") != std::string::npos ) {
-                runHeader.setIntParameter( genID + " Poisson Enabled" , gen.getParameter<bool>("enablePoisson") );
-                runHeader.setIntParameter( genID + " N Particles" , gen.getParameter<int>("nParticles") );
-                runHeader.setIntParameter( genID + " PDG ID" , gen.getParameter<int>("pdgID") );
-                threeVectorDump( genID + " Vertex [mm]" , gen.getParameter<std::vector<double>>("vertex") );
-                threeVectorDump( genID + " Momentum [MeV]" , gen.getParameter<std::vector<double>>("momentum") );
-            } else if ( className.find("ldmx::LHEPrimaryGenerator") != std::string::npos ) {
-                runHeader.setStringParameter( genID + " LHE File" , gen.getParameter<std::string>("filePath") );
-            } else if ( className.find("ldmx::RootCompleteReSim") != std::string::npos ) {
-                runHeader.setStringParameter( genID + " ROOT File" , gen.getParameter<std::string>("filePath") );
-            } else if ( className.find("ldmx::RootSimFromEcalSP") != std::string::npos ) {
-                runHeader.setStringParameter( genID + " ROOT File" , gen.getParameter<std::string>("filePath") );
-                runHeader.setFloatParameter( genID + " Time Cutoff [ns]" , gen.getParameter<double>("time_cutoff") );
-            } else if ( className.find("ldmx::GeneralParticleSource") != std::string::npos ) {
-                stringVectorDump( genID + " Init Cmd" , gen.getParameter<std::vector<std::string>>("initCommands") );
-            } else  {
-                std::cerr << "[ RootPersistencyManager ] [WARN] : "
-                    << "Unrecognized primary generator '" << className << "'. "
-                    << "Will not be saving details to RunHeader."
-                    << std::endl;
-            }
-
-        }
-
-        // Set a string parameter with the Geant4 SHA-1.
-        G4String g4Version{G4RunManagerKernel::GetRunManagerKernel()->GetVersionString()};
-        runHeader.setStringParameter("Geant4 revision", g4Version); 
-        
-        runHeader.setStringParameter("ldmx-sw revision", GIT_SHA1);
-
-        //debug printout TODO add to logging
-        runHeader.Print();
-
-        // Write the header to the file.
-        file_.writeRunHeader(runHeader);
 
         return true;
     }
