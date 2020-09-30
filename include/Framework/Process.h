@@ -12,6 +12,7 @@
 #include "Framework/StorageControl.h"
 #include "Framework/Parameters.h"
 #include "Framework/Conditions.h"
+#include "Event/RunHeader.h"
 
 // STL
 #include <vector>
@@ -69,6 +70,11 @@ namespace ldmx {
             const EventHeader* getEventHeader() const { return eventHeader_; }
 
             /**
+             * Get the pointer to the current run header, if defined
+             */
+            const RunHeader* getRunHeader() const { return runHeader_; }
+
+            /**
              * Get a reference to the conditions system
              */
             Conditions& getConditions() { return conditions_; }
@@ -109,8 +115,7 @@ namespace ldmx {
              */
             void setEventHeader(EventHeader* h) { eventHeader_=h; }
 
-
-      /**
+            /**
              * Get a dummy process
              *
              * This function returns an instance of this class without
@@ -189,7 +194,10 @@ namespace ldmx {
             std::string histoFilename_;
 
             /** Pointer to the current EventHeader, used for Conditions information */
-            const EventHeader* eventHeader_;
+            const EventHeader* eventHeader_{0};
+
+            /** Pointer to the current RunHeader, used for Conditions information */
+            const RunHeader* runHeader_{0};
 
             /** TFile for histograms and other user products */
             TFile* histoTFile_{0};

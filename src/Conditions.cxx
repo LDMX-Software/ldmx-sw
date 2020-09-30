@@ -34,6 +34,11 @@ void Conditions::onProcessEnd() {
     ptr.second->onProcessEnd();
 }
 
+void Conditions::onNewRun(RunHeader& rh) {
+  for (auto ptr: providerMap_)
+    ptr.second->onNewRun(rh);
+}
+
 ConditionsIOV Conditions::getConditionIOV(const std::string& condition_name) const {
   
   auto cacheptr = cache_.find(condition_name);
