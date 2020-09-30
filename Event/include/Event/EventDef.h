@@ -71,6 +71,7 @@ namespace ldmx {
         std::vector < SiStripHit >,
         std::vector < SimTrackerHit >,
         std::vector < TrigScintHit >,
+        std::vector < TrigScintQIEDigis >,
         std::map< int , SimParticle >
     > EventBusPassenger;
 

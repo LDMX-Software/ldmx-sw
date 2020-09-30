@@ -57,7 +57,7 @@
 #pragma link C++ class std::vector<ldmx::SiStripHit>+;
 #pragma link C++ class std::vector<ldmx::RawHit>+;
 #pragma link C++ class std::vector< ldmx::TrigScintHit >+;
-#pragma link C++ class std::vector<ldmx::TrigScintQIEDigis>+; // for QIE simulation [Niramay]
+#pragma link C++ class std::vector< ldmx::TrigScintQIEDigis>+; // for QIE simulation [Niramay]
 
 #endif
 
