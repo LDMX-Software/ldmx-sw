@@ -5,6 +5,7 @@
  */
 
 #include "Ecal/EcalRecProducer.h"
+#include "DetDescr/EcalHexReadout.h"
 
 namespace ldmx {
 
@@ -22,8 +23,6 @@ namespace ldmx {
         layerWeights_ = ps.getParameter<std::vector<double>>( "layerWeights" );
         secondOrderEnergyCorrection_ = ps.getParameter<double>( "secondOrderEnergyCorrection" );
 
-        auto hexReadout{ps.getParameter<Parameters>("hexReadout")};
-        ecalHexReadout_ = std::make_unique<EcalHexReadout>(hexReadout);
 
         mipSiEnergy_ = ps.getParameter<double>( "mipSiEnergy" );
         mV_          = ps.getParameter<double>( "mV" );
@@ -38,7 +37,9 @@ namespace ldmx {
     }
 
     void EcalRecProducer::produce(Event& event) {
-
+	// Get the Ecal Geometry
+	const EcalHexReadout& hexReadout = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+ 
         std::vector<EcalHit> ecalRecHits;
         auto ecalDigis = event.getObject<HgcrocDigiCollection>( digiCollName_ , digiPassName_ );
         int numDigiHits = ecalDigis.getNumDigis();
@@ -53,8 +54,11 @@ namespace ldmx {
             
             //ID to real space position
             double x,y,z;
-            ecalHexReadout_->getCellAbsolutePosition( id , x , y , z );
+            hexReadout.getCellAbsolutePosition( id , x , y , z );
             
+            //get energy and time estimate from digi information
+            
+            //TODO: Energy estimate from N samples can (and should be) refined
             //TOA is the time of arrival with respect to the 25ns clock window
             //  TODO what to do if hit NOT in first clock cycle?
             double timeRelClock25 = digi.begin()->toa()*(clockCycle_/1024); //ns

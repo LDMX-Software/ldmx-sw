@@ -80,9 +80,7 @@ namespace ldmx {
             }
         }
 
-
-        auto hexReadout{parameters.getParameter<Parameters>("hexReadout")};
-        hexReadout_ = std::make_unique<EcalHexReadout>(hexReadout);
+	hexReadout_=0; // load during event processing
 
         nEcalLayers_ = parameters.getParameter< int >("num_ecal_layers");
 
@@ -119,6 +117,11 @@ namespace ldmx {
 
     void EcalVetoProcessor::produce(Event& event) {
 
+        // Get the Ecal Geometry
+	const EcalHexReadout& hexReadout = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+	hexReadout_=&hexReadout;
+
+      
         EcalVetoResult result;
 
         clearProcessor();
@@ -413,6 +416,7 @@ namespace ldmx {
             setStorageHint(hint_shouldDrop);
         }
         event.add( collectionName_, result );
+	hexReadout_=0;
     }
 
     /* Function to calculate the energy weighted shower centroid */
