@@ -33,9 +33,9 @@
 
 namespace ldmx {
 
-    RootPersistencyManager::RootPersistencyManager(EventFile &file, Parameters& parameters, const int& runNumber) :
+  RootPersistencyManager::RootPersistencyManager(EventFile &file, Parameters& parameters, const int& runNumber, ConditionsInterface& ci) :
         G4PersistencyManager(G4PersistencyCenter::GetPersistencyCenter(), "RootPersistencyManager"),
-        file_(file) {
+        file_(file), ecalHitIO_(ci)  {
 
         // Let Geant4 know what to use this persistency manager
         G4PersistencyCenter::GetPersistencyCenter()->RegisterPersistencyManager(this);
@@ -66,11 +66,15 @@ namespace ldmx {
         // NOTE: This method is called once the run is terminated through 
         // the run manager.  
 
+        //throws an exception if not correct run number
         auto runHeader = file_.getRunHeader(run_);
 
         // Set parameter value with number of events processed.
         runHeader.setIntParameter("Event Count", eventsCompleted_ );
         runHeader.setIntParameter("Events Began" , eventsBegan_ );
+
+        //debug printout TODO add to logging
+        file_.getRunHeader(run_).Print();
 
         return true;
     }

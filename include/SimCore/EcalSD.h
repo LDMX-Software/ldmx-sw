@@ -10,6 +10,7 @@
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
 #include "SimCore/CalorimeterSD.h"
+#include "SimCore/ConditionsInterface.h"
 
 // ROOT
 #include "TMath.h"
@@ -33,20 +34,12 @@ namespace ldmx {
              * @param theCollectionName The name of the hits collection.
              * @param subDetID The subdetector ID.
              */
-            EcalSD(G4String name, G4String theCollectionName, int subDetID);
+	    EcalSD(G4String name, G4String theCollectionName, int subDetID, ConditionsInterface& ci);
 
             /**
              * Class destructor.
              */
             virtual ~EcalSD();
-
-            /**
-             * Configure this sensitive detector using the passed parameters
-             */
-            void configure(const Parameters& ps) {
-                auto hexReadout{ps.getParameter<Parameters>("ecalHexReadout")};
-                hitMap_ = std::make_unique<EcalHexReadout>(hexReadout);
-            }
 
             /**
              * Process steps to create hits.
@@ -78,6 +71,9 @@ namespace ldmx {
              * Map of polygonal layers for getting Z positions.
              */
             std::map<G4VSolid*, G4Polyhedron*> polyMap_;
+
+	    /// ConditionsInterface
+	    ConditionsInterface& conditionsIntf_;	
     };
 
 }
