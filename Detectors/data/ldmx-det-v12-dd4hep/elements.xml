@@ -42,6 +42,12 @@
     <element Z="14" formula="Si" name="Si" >
         <atom type="A" unit="g/mol" value="28.0854" />
     </element>
+    <material formula="Si" name="Silicon" state="solid" >
+        <RL type="X0" unit="cm" value="9.36607" />
+        <NIL type="lambda" unit="cm" value="45.7531" />
+        <D type="density" unit="g/cm3" value="2.33" />
+        <composite n="1" ref="Si" />
+    </material>
     <element Z="15" formula="P" name="P" >
         <atom type="A" unit="g/mol" value="30.9738" />
     </element>
