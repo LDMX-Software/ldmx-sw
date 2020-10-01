@@ -5,6 +5,12 @@ with helpful member functions.
 
 Two module-wide parameters are defined.
 
+Attributes
+----------
+nPEPerMIP: float
+    Number of PE created for each MIP for a 20 mm scintillator tile
+mipSiEnergy: float
+    Energy [MeV] of a single MIP on average in 20 mm scintillator
 """
 
 from LDMX.Framework.ldmxcfg import Producer
@@ -15,33 +21,25 @@ mipSiEnergy = 4.66 #MeV - measured 1.4 MeV for a 6mm thick tile, so for 20mm bar
 def HcalHgcrocEmulator() :
     """Get an HGCROC emulator and configure for the HCal specifically
 
-    This sets the pulse shape parameters to the ones from a fit
-    to a test readout of an HCal module 
+    This sets the pulse shape parameters to the ones from a fit 
+    to a test readout of an HCal module and then thresholds to 
+    1 PE using 68 as the number of PEs per MIP.
     """
 
     from LDMX.Tools import HgcrocEmulator
     hgcroc = HgcrocEmulator.HgcrocEmulator()
 
-    '''
-    The default calculation for the different thresholds if the following:                                                                                                       
-    - readout is 4 times the rms noise above the pedestal                                                                                                                        
-    - toa is 5 MIPs above the pedestal                                                                                                                                           
-    - tot is 50 MIPs above the pedestal 
-    '''
-    hgcroc.gain = 1. # need to change this?
-    hgcroc.readoutThreshold = 1. # PE                                                                                                                                             
-    hgcroc.toaThreshold = 1.
-    hgcroc.totThreshold = 100000.
-    hgcroc.pedestal = 1.
+    hgcroc.pedestal = 50. # mV 
+    hgcroc.readoutThreshold = hgcroc.calculateVoltagePE(1.) # [mV] # readout threshold 1 PE
+    hgcroc.toaThreshold = 7*50 + hgcroc.calculateVoltagePE( 5.*nPEPerMIP) # toa is 5 MIPs above the pedestal?
+    hgcroc.totThreshold = 1000000. # just leave tot mode out for now
 
     # set pulse shape parameters                                                                                                                                              
-    # "[0]/(1.0+exp([1]*(x-[2]+[3]-[4])))/(1.0+exp([5]*(x-[6]+[3]-[4])))",                                                                                                       
-    # /(-0.969(x+58.641-61.5518) /0.0288779*(x+23.3814-61.5518)                                                                                                         
-    hgcroc.rateUpSlope = -0.969
-    hgcroc.timeUpSlope = -58.641
-    hgcroc.rateDnSlope = 0.0288779
-    hgcroc.timeDnSlope = -23.3814
-    hgcroc.timePeak    = -61.5518
+    hgcroc.rateUpSlope = -0.983
+    hgcroc.timeUpSlope = 9.897
+    hgcroc.rateDnSlope = 0.0279
+    hgcroc.timeDnSlope = 45.037
+    hgcroc.timePeak    = 9.747
 
     return hgcroc
 
@@ -68,17 +66,8 @@ class HcalDigiProducer(Producer) :
         self.hgcroc = HcalHgcrocEmulator()
 
         #Energy -> PE converstion
-        # energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( nPE / 1 MIP) * 4 times = PE  
-        #   energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP ) = voltage [mV]
-        #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
-        self.MeV = (1./mipSiEnergy)*nPEPerMIP*4
-        print('MeV ',self.MeV)
-
-        import time
-        self.randomSeed = int(time.time())
-
-        # hcal hexagon geometry parameters
-        # used for putting noise into empty channels
-        self.nHcalLayers      = 34
-        self.nModulesPerLayer = 7
-        self.nCellsPerModule  = 397
+        # energy [MeV] ( 1 MIP / energy per MIP [MeV] ) ( voltage per MIP [mV] / 1 MIP ) = voltage [mV]                                                                   
+        # assuming 7 PEs ~ 2.5V ~ 2500 mV                                                                                                                                     
+        # this leads to ~ 3.64 V/MeV  ~ 3640 mV/MeV                                                                                                                           
+        # max ADC range should be larger than 320fC - maybe even pC?                                                                                                               
+        self.MeV = (1./mipSiEnergy)*self.hgcroc.calculateVoltagePE(nPEPerMIP)

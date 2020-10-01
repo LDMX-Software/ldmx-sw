@@ -5,6 +5,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  * @author Cameron Bravo, SLAC National Accelerator Laboratory
  * @author Tom Eichlersmith, University of Minnesota
+ * @author Cristina Suarez, Fermi National Accelerator Laboratory 
  */
 
 #ifndef EVENTPROC_HCALDIGIPRODUCER_H_
@@ -13,7 +14,6 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <time.h> //for initial seed to TRandom3
 #include <memory> //for smart pointers
 #include <set> //for tracking used detector IDs
 
@@ -30,25 +30,25 @@
 
 namespace ldmx {
 
-    /**
-     * @class HcalDigiProducer
-     * @brief Performs basic HCal digitization
-     */
-    class HcalDigiProducer : public Producer {
+/**
+ * @class HcalDigiProducer
+ * @brief Performs basic HCal digitization
+ */
+class HcalDigiProducer : public Producer {
 
-        public:
+ public:
 
-            /**
-             * Constructor
-             * Makes unique noise generator and injector for this class
-             */
-            HcalDigiProducer(const std::string& name, Process& process);
+  /**
+   * Constructor
+   * Makes unique noise generator and injector for this class
+   */
+  HcalDigiProducer(const std::string& name, Process& process);
 
-            /**
-             * Destructor
-             * Deletes digi collection if it has been created
-             */
-            virtual ~HcalDigiProducer();
+  /**
+   * Destructor
+   * Deletes digi collection if it has been created
+   */
+  virtual ~HcalDigiProducer();
 
             /**
              * Configure this producer from the python configuration.
@@ -67,15 +67,6 @@ namespace ldmx {
             ///////////////////////////////////////////////////////////////////////////////////////
             //Python Configuration Parameters
             
-            /// Number of layers in HCal 
-            int nHcalLayers_;
-
-            /// Number of Hexagnonal modules per layer in HCal 
-            int nModulesPerLayer_;
-
-            /// Number of cells in each hex module 
-            int nCellsPerModule_;
-
             /// Time interval for chip clock in ns
             double clockCycle_;
 
@@ -101,22 +92,13 @@ namespace ldmx {
             // Other member variables
 
             /// Put noise into empty channels, not configurable, only helpful in development
-            bool noise_{false};
+            bool noise_{true};
 
             /// Hgcroc Emulator to digitize analog voltage signals
             std::unique_ptr<HgcrocEmulator> hgcroc_;
 
-            /// Total number of channels in the HCal
-            int nTotalChannels_;
-
             /// Conversion from time in ns to ticks of the internal clock
             double ns_;
-
-            /// Generates noise hits based off of number of cells that are not hit
-            std::unique_ptr<NoiseGenerator> noiseGenerator_;
-
-            /// Generates Gaussian noise on top of real hits
-            std::unique_ptr<TRandom3> noiseInjector_;
 
     };
 }
