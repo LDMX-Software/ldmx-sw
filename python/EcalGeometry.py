@@ -29,15 +29,15 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         """
 
         if EcalGeometryProvider.__instance == None :
-            EcalGeometryProvider('tag')
+            EcalGeometryProvider()
 
         return EcalGeometryProvider.__instance
 
-    def __init__(self,tagName):
+    def __init__(self):
         if EcalGeometryProvider.__instance != None :
             raise Exception('EcalGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
-            super().__init__("EcalHexReadout","ldmx::EcalGeometryProvider",tagName,"Ecal")
+            super().__init__("EcalGeometryProvider","ldmx::EcalGeometryProvider","Ecal")
             from LDMX.DetDescr import EcalHexReadout
             self.EcalHexReadout = EcalHexReadout.EcalHexReadout()
             EcalGeometryProvider.__instance = self
@@ -70,18 +70,16 @@ class EcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         """
 
         if EcalTriggerGeometryProvider.__instance == None :
-            EcalTriggerGeometryProvider('tag')
+            EcalTriggerGeometryProvider()
 
         return EcalTriggerGeometryProvider.__instance
 
-    def __init__(self,tagName):
+    def __init__(self):
         if EcalTriggerGeometryProvider.__instance != None :
             raise Exception('EcalTriggerGeometryProvider is a singleton class and should only be retrieved using getInstance()')
         else:
-            super().__init__("EcalTriggerGeometry","ldmx::EcalTriggerGeometryProvider",tagName,"Ecal")
+            super().__init__("EcalTriggerGeometry","ldmx::EcalTriggerGeometryProvider","Ecal")
             from LDMX.DetDescr import EcalHexReadout
             self.EcalHexReadout = EcalHexReadout.EcalHexReadout()
             EcalTriggerGeometryProvider.__instance = self 
 
-ldmxcfg.Process.declareConditionsObjectProvider(EcalGeometryProvider.getInstance())
-ldmxcfg.Process.declareConditionsObjectProvider(EcalTriggerGeometryProvider.getInstance())
