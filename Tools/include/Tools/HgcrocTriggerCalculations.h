@@ -147,6 +147,12 @@ class HgcrocTriggerCalculations {
    * Convert the linear charges to compressed charges, with a division depending on the number of cells summed by HGCROC 
    *
    * Fills the map of trigger channel IDs to compressed charge measurements.
+   * Some of the lowest order bits are dropped during compression in order
+   * to effectively reach the necessary dynamic range. The number of these
+   * bits that are dropped depends on the number of cells in each trigger
+   * grouping.
+   *  - 9 --> drop 8 lowest order bits --> multiply unpacked charge by 8 to get full amount
+   *  - 4 --> drop 4 lowest order bits --> mutliply unpacked charge by 4 to get full amount
    *
    * @raises Exception if the input cells_per_trig is not 4 or 9.
    * @param cells_per_trig Valid values are 4 or 9
