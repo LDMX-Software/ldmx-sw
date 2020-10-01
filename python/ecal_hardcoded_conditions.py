@@ -4,7 +4,7 @@ from LDMX.Framework.ldmxcfg import ConditionsObjectProvider
 from LDMX.Framework.ldmxcfg import Process
 from LDMX.Conditions.SimpleCSVTableProvider import SimpleCSVIntegerTableProvider
 
-EcalTrigPrimConditionsHardcode=SimpleCSVIntegerTableProvider("EcalTrigPrimDigiConditions","null",["ADC_PEDESTAL","ADC_THRESHOLD","TOT_PEDESTAL","TOT_THRESHOLD","TOT_GAIN"])
+EcalTrigPrimConditionsHardcode=SimpleCSVIntegerTableProvider("EcalTrigPrimDigiConditions",["ADC_PEDESTAL","ADC_THRESHOLD","TOT_PEDESTAL","TOT_THRESHOLD","TOT_GAIN"])
            
 EcalTrigPrimConditionsHardcode.validForAllRows([ 50 , # ADC_PEDESTAL -- should match value from HgcrocEmulator
                                                  5 , # ADC_THRESHOLD -- current noise is 
