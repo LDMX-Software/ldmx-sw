@@ -69,11 +69,6 @@ class EcalDigiProducer(Producer) :
         #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
         self.MeV = (1./mipSiEnergy)*self.hgcroc.calculateVoltage( nElectronsPerMIP )
 
-        # ecal hexagon geometry parameters
-        # used for putting noise into empty channels
-        self.nEcalLayers      = 34
-        self.nModulesPerLayer = 7
-        self.nCellsPerModule  = 397
 
 class EcalRecProducer(Producer) :
     """Configuration for the EcalRecProducer
@@ -120,8 +115,6 @@ class EcalRecProducer(Producer) :
         self.secondOrderEnergyCorrection = 1.
         self.layerWeights = [ ]
 
-        from LDMX.DetDescr import EcalHexReadout
-        self.hexReadout = EcalHexReadout.EcalHexReadout()
 
         self.v12() #use v12 geometry by default
 
@@ -132,7 +125,6 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.hexReadout.v9()
         self.secondOrderEnergyCorrection = 0.948;
         self.layerWeights = [
             1.641, 3.526, 5.184, 6.841,
@@ -148,7 +140,6 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.hexReadout.v9()
         self.secondOrderEnergyCorrection = 4000. / 4012.;
         self.layerWeights = [
             1.019, 1.707, 3.381, 5.022, 6.679, 8.060, 8.613, 8.613, 8.613, 8.613, 8.613,
@@ -164,7 +155,6 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.hexReadout.v12()
         self.secondOrderEnergyCorrection = 4000./4010.;
         self.layerWeights = [
             1.675, 2.724, 4.398, 6.039, 7.696, 9.077, 9.630, 9.630, 9.630, 9.630, 9.630,

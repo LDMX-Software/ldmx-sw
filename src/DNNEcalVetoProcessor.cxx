@@ -21,25 +21,11 @@ namespace ldmx {
 
   void DNNEcalVetoProcessor::configure(Parameters &parameters) {
 
-    auto hexReadout{parameters.getParameter<Parameters>("hexReadout")};
-    hexReadout_ = std::make_unique<EcalHexReadout>(hexReadout);
-
     disc_cut_ = parameters.getParameter<double>("disc_cut");
     rt_ = std::make_unique<Ort::ONNXRuntime>(parameters.getParameter<std::string>("model_path"));
 
     // debug mode
     debug_ = parameters.getParameter<bool>("debug");
-    if (debug_) {
-      std::cout << "=== Module position map ===" << std::endl;
-      for (const auto &p : hexReadout_->getCellModulePositionMap()) {
-        std::cout << p.first << " " << p.second.first << " " << p.second.second << std::endl;
-      }
-      std::cout << "=== Layer Zs ===" << std::endl;
-      for (unsigned layer=0; layer<34; ++layer) {
-        std::cout << hexReadout_->getZPosition(layer) << std::endl;
-      }
-      std::cout << std::endl << "========================" << std::endl;
-    }
 
     // Set the collection name as defined in the configuration
     collectionName_ = parameters.getParameter<std::string>("collection_name");
@@ -48,13 +34,16 @@ namespace ldmx {
   void DNNEcalVetoProcessor::produce(Event &event) {
     EcalVetoResult result;
 
+    // Get the Ecal Geometry
+    const EcalHexReadout& hexReadout = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+    
     // Get the collection of digitized Ecal hits from the event.
     const auto ecalRecHits = event.getCollection<EcalHit>("EcalRecHits");
     auto nhits = std::count_if(ecalRecHits.begin(), ecalRecHits.end(), [](const EcalHit& hit){ return hit.getEnergy()>0; });
 
     if (nhits < max_num_hits_) {
       // make inputs
-      make_inputs(ecalRecHits);
+      make_inputs(hexReadout,ecalRecHits);
       // run the DNN
       auto outputs = rt_->run(input_names_, data_)[0];
       result.setDiscValue(outputs.at(1));
@@ -78,7 +67,7 @@ namespace ldmx {
     event.add(collectionName_, result);
   }
 
-  void DNNEcalVetoProcessor::make_inputs(const std::vector<EcalHit>& ecalRecHits) {
+  void DNNEcalVetoProcessor::make_inputs(const EcalHexReadout& geom, const std::vector<EcalHit>& ecalRecHits) {
     // clear data
     for (auto &v : data_){
       std::fill(v.begin(), v.end(), 0);
@@ -88,7 +77,7 @@ namespace ldmx {
     for (const auto& hit : ecalRecHits) {
       if (hit.getEnergy() <= 0) continue;
       double x = 0, y = 0, z = 0;
-      hexReadout_->getCellAbsolutePosition(hit.getID(), x, y, z);
+      geom.getCellAbsolutePosition(hit.getID(), x, y, z);
 
       data_[0].at(coordinate_x_offset_ + idx) = x;
       data_[0].at(coordinate_y_offset_ + idx) = y;

@@ -43,14 +43,6 @@ namespace ldmx {
         //  time [ns] * ( 2^10 / max time in ns ) = clock counts
         ns_ = 1024./clockCycle_;
 
-        // geometry constants
-        //  These are used in the noise generation so that we can randomly
-        //  distribute the noise uniformly throughout the ECal channels.
-        nEcalLayers_      = ps.getParameter<int>("nEcalLayers");
-        nModulesPerLayer_ = ps.getParameter<int>("nModulesPerLayer");
-        nCellsPerModule_  = ps.getParameter<int>("nCellsPerModule");
-        nTotalChannels_   = nEcalLayers_*nModulesPerLayer_*nCellsPerModule_;
-
         // Configure generator that will produce noise hits in empty channels
         readoutThreshold_ = hgcrocParams.getParameter<double>("readoutThreshold");
         noiseGenerator_->setNoise(hgcrocParams.getParameter<double>("noiseRMS")); //rms noise in mV
@@ -73,6 +65,7 @@ namespace ldmx {
             const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
             hgcroc_->seedGenerator(rseed.getSeed("EcalDigiProducer::HgcrocEmulator"));
         }
+
 
         //Empty collection to be filled
         HgcrocDigiCollection ecalDigis;
@@ -124,7 +117,15 @@ namespace ldmx {
         if ( noise_ ) {
             //std::cout << "Noise Hits" << std::endl;
             //put noise into some empty channels
-            int numEmptyChannels = nTotalChannels_ - ecalDigis.getNumDigis(); //minus number of channels with a hit
+            
+            // geometry constants
+            //  These are used in the noise generation so that we can randomly
+            //  distribute the noise uniformly throughout the ECal channels.
+            const auto& hexGeom = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+            int nEcalLayers      = hexGeom.getNumLayers();
+            int nModulesPerLayer = hexGeom.getNumModulesPerLayer();
+            int nCellsPerModule  = hexGeom.getNumCellsPerModule();
+            int numEmptyChannels = nEcalLayers*nModulesPerLayer*nCellsPerModule - ecalDigis.getNumDigis(); 
             //noise generator gives us a list of noise amplitudes [mV] that randomly populate the empty
             //channels and are above the readout threshold
             auto noiseHitAmplitudes{noiseGenerator_->generateNoiseHits(numEmptyChannels)};
@@ -135,9 +136,9 @@ namespace ldmx {
                 //making sure that it is in an empty channel
                 unsigned int noiseID;
                 do {
-                    int layerID  = noiseInjector_->Integer(nEcalLayers_);
-                    int moduleID = noiseInjector_->Integer(nModulesPerLayer_);
-                    int cellID   = noiseInjector_->Integer(nCellsPerModule_);
+                    int layerID  = noiseInjector_->Integer(nEcalLayers);
+                    int moduleID = noiseInjector_->Integer(nModulesPerLayer);
+                    int cellID   = noiseInjector_->Integer(nCellsPerModule);
 		            auto detID=EcalID(layerID, moduleID, cellID);
                     noiseID = detID.raw();
                 } while ( filledDetIDs.find( noiseID ) != filledDetIDs.end() );

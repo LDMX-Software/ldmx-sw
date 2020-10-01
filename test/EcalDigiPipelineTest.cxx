@@ -44,6 +44,10 @@ class EcalFakeSimHits : public Producer {
         EcalFakeSimHits(const std::string &name,Process& p) : Producer( name , p ) { }
         ~EcalFakeSimHits() { }
 
+        void beforeNewRun(RunHeader& header) {
+            header.setDetectorName("ldmx-det-v12");
+        }
+
         void produce(Event& event) final override {
 
             std::vector<SimCalorimeterHit> pretendSimHits;
@@ -164,6 +168,8 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
     cf << "p.maxEvents = 1" << std::endl;
     cf << "from LDMX.Ecal import digi" << std::endl;
     cf << "p.outputFiles = [ '/tmp/ecal_digi_pipeline_test.root' ]" << std::endl;
+    cf << "from LDMX.Ecal import EcalGeometry" << std::endl;
+    cf << "geom = EcalGeometry.EcalGeometryProvider.getInstance()" << std::endl;
     cf << "p.sequence = [" << std::endl;
     cf << "    ldmxcfg.Producer('fakeSimHits','ldmx::test::EcalFakeSimHits','Ecal')," << std::endl;
     cf << "    digi.EcalDigiProducer()," << std::endl;
