@@ -134,8 +134,11 @@ void Simulator::onNewRun(const RunHeader& header) {
 void Simulator::beforeNewRun(RunHeader& header) {
       
   // Get the detector header from the user detector construction
-  auto detector 
+  DetectorConstruction* detector 
       = static_cast<RunManager*>(RunManager::GetRunManager())->getDetectorConstruction();
+
+  if (!detector or !detector->getDetectorHeader())
+    EXCEPTION_RAISE("SimSetup","Detector not constructed before run start.");
 
   header.setDetectorName(detector->getDetectorHeader()->getName());
   header.setDescription(parameters_.getParameter<std::string>("description"));
@@ -215,19 +218,28 @@ void Simulator::beforeNewRun(RunHeader& header) {
     } else if ( className.find("ldmx::GeneralParticleSource") != std::string::npos ) {
       stringVectorDump( genID + " Init Cmd" , gen.getParameter<std::vector<std::string>>("initCommands") );
     } else  {
-      std::cerr << "[ RootPersistencyManager ] [WARN] : "
-                << "Unrecognized primary generator '" << className << "'. "
-                << "Will not be saving details to RunHeader."
-                << std::endl;
+        ldmx_log(warn) << "Unrecognized primary generator '" << className << "'. "
+                << "Will not be saving details to RunHeader.";
     }
-
   }
 
   // Set a string parameter with the Geant4 SHA-1.
-  G4String g4Version{G4RunManagerKernel::GetRunManagerKernel()->GetVersionString()};
-  header.setStringParameter("Geant4 revision", g4Version); 
+  if (G4RunManagerKernel::GetRunManagerKernel()) {
+    G4String g4Version{G4RunManagerKernel::GetRunManagerKernel()->GetVersionString()};
+    header.setStringParameter("Geant4 revision", g4Version); 
+  } else {
+    ldmx_log(warn) << "Unable to access G4 RunManager Kernel. Will not store G4 Version string.";
+  }
         
   header.setStringParameter("ldmx-sw revision", GIT_SHA1);
+}
+
+void Simulator::onNewRun(const RunHeader&) {
+  const RandomNumberSeedService& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+  std::vector<int> seeds;
+  seeds.push_back(rseed.getSeed("Simulator[0]"));
+  seeds.push_back(rseed.getSeed("Simulator[1]"));
+  setSeeds(seeds); 
 }
 
 void Simulator::produce(ldmx::Event& event) {
