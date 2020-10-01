@@ -7,8 +7,8 @@
 
 namespace ldmx {
 
-    DetectorConstruction::DetectorConstruction(G4GDMLParser* theParser, Parameters& parameters) :
-            parser_(theParser), auxInfoReader_(new AuxInfoReader(theParser, parameters)) {
+    DetectorConstruction::DetectorConstruction(G4GDMLParser* theParser, Parameters& parameters, ConditionsInterface& ci) :
+      parser_(theParser), auxInfoReader_(new AuxInfoReader(theParser, parameters, ci)) {
                 parameters_ = parameters; 
     }
 

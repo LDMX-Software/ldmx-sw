@@ -22,6 +22,8 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h" 
 
+#include "SimCore/ConditionsInterface.h"
+
 /*~~~~~~~~~~~*/
 /*   Event   */
 /*~~~~~~~~~~~*/
@@ -82,10 +84,11 @@ namespace ldmx {
             void configure(Parameters& parameters) final override; 
 
             /**
-             * Before the Run Starts (but after configuration is complete)
-             * write out simulatin parameters to the run header
+             * Given a non-const reference to the new RunHeader,
+             * we can add parameters from the simulation here
+             * before the run starts.
              *
-             * @param[in,out] header RunHeader for this run
+             * @param header of new run
              */
             void beforeNewRun(RunHeader& header) final override;
 
@@ -178,6 +181,9 @@ namespace ldmx {
             /// Number of events completed
             int numEventsCompleted_{0};
 
+            ///  Conditions interface
+            ConditionsInterface conditionsIntf_;
+      
             /*********************************************************
              * Python Configuration Parameters
              *********************************************************/

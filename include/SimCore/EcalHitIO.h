@@ -13,6 +13,7 @@
 #include "Event/SimCalorimeterHit.h"
 #include "SimCore/G4CalorimeterHit.h"
 #include "SimCore/SimParticleBuilder.h"
+#include "SimCore/ConditionsInterface.h"
 
 // STL
 #include <vector>
@@ -52,7 +53,7 @@ namespace ldmx {
             /**
              * Class constructor.
              */
-            EcalHitIO() { }
+            EcalHitIO( ConditionsInterface& ci) : conditionsIntf_(ci) { }
 
             /**
              * Class destructor.
@@ -62,12 +63,7 @@ namespace ldmx {
             /**
              * Configure the EcalHitIO using the passed parameters
              */
-            void configure(const Parameters& ps) {
-                enableHitContribs_   = ps.getParameter<bool>("enableHitContribs");
-                compressHitContribs_ = ps.getParameter<bool>("compressHitContribs");
-                auto hexReadout{ps.getParameter<Parameters>("ecalHexReadout")};
-                hexReadout_ = std::make_unique<EcalHexReadout>(hexReadout);
-            }
+            void configure(const Parameters& ps);
 
 
             /**
@@ -95,13 +91,9 @@ namespace ldmx {
 
         private:
 
-            /**
-             * Hex cell readout.
-             *
-             * Inputs v12 geometry parameters
-             */
-            std::unique_ptr<EcalHexReadout> hexReadout_;
-
+            /// ConditionsInterface
+	    ConditionsInterface& conditionsIntf_;
+      
             /**
              * Enable hit contribution output.
              */
