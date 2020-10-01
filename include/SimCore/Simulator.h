@@ -92,16 +92,6 @@ namespace ldmx {
              */
             void beforeNewRun(RunHeader& header) final override;
 
-
-            /**
-             * Given a non-const reference to the new RunHeader,
-             * we can add parameters from the simulation here
-             * before the run starts.
-             *
-             * @param header of new run
-             */
-            void onNewRun(const RunHeader& header) final override;
-
             /**
              * Before the run starts (but after the conditions are configured)
              * set up the random seeds for this run.
