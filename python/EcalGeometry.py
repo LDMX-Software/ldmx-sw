@@ -42,6 +42,9 @@ class EcalGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             self.EcalHexReadout = EcalHexReadout.EcalHexReadout()
             EcalGeometryProvider.__instance = self
 
+# make sure global instance is created, this registers the condition
+EcalGeometryProvider.getInstance()
+
 class EcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     """Provider that provides access to Ecal geometry (EcalHexReadout)
 
@@ -83,3 +86,5 @@ class EcalTriggerGeometryProvider(ldmxcfg.ConditionsObjectProvider):
             self.EcalHexReadout = EcalHexReadout.EcalHexReadout()
             EcalTriggerGeometryProvider.__instance = self 
 
+# make sure global instance is created, this registers the condition
+EcalTriggerGeometryProvider.getInstance()
