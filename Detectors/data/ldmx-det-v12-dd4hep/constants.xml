@@ -38,7 +38,7 @@
     <constant name="carbon_fiber_thickness" value="0.2*mm"/>
 
     <!-- Stereo Angle = 100 mrad = 5.72 degrees -->
-    <constant name="stereo_angle" value="5.72957795130823"/>
+    <constant name="stereo_angle" value="5.72957795130823*deg"/>
     
     <!--
         Tagger Tracker 
