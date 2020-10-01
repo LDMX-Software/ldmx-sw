@@ -103,6 +103,14 @@ namespace ldmx {
             void onNewRun(const RunHeader& header) final override;
 
             /**
+             * Before the run starts (but after the conditions are configured)
+             * set up the random seeds for this run.
+             *
+             * @param[in] header RunHeader for this run, unused
+             */
+            void onNewRun(const RunHeader& header) final override;
+
+            /**
              * Run simulation and export results to output event.
              *
              * @param event The event to process. 
