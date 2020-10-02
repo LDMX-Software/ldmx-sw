@@ -26,7 +26,11 @@
     --> 
 
     <!-- Trigger scintillator positions --> 
-    <constant name="trigger_pad_thickness"      value="4.5*mm" />
+    <constant name="trigger_scint_thickness" value="4.5*mm" />
+
+    <!-- Trigger scint midpoint distance from the target is -2.4262 mm --> 
+    <constant name="trigger_scint_up_mid_z"      
+              value="target_z - (target_thickness/2) - (trigger_scint_thickness/2) - clearance" />
 
     <!--
         Trackers 
@@ -44,28 +48,6 @@
         Tagger Tracker 
     -->
 
-    <!-- Tracker tracker distances relative to the parent volume -->
-    <!-- 
-        20 cm between recoil l1 mid and tagget l7 mid
-        Distance from target to mid point of a module. 
-        Layer 1: 10 mm
-        Layer 2: 110 mm
-        Layer 3: 210 mm
-        Layer 4: 310 mm
-        Layer 5: 410 mm
-        Layer 6: 510 mm
-        Layer 7: 610 mm
-    --> 
-    <constant name="tagger_delta_layer" value="100" />
-    <constant name="tagger_l7_mid_z" value="5.5 - target_thickness/2 - 2*clearance"/>
-    <constant name="tagger_l6_mid_z" value="tagger_l7_mid_z + tagger_delta_layer"/>
-    <constant name="tagger_l5_mid_z" value="tagger_l6_mid_z + tagger_delta_layer"/>
-    <constant name="tagger_l4_mid_z" value="tagger_l5_mid_z + tagger_delta_layer"/>
-    <constant name="tagger_l3_mid_z" value="tagger_l4_mid_z + tagger_delta_layer"/>
-    <constant name="tagger_l2_mid_z" value="tagger_l3_mid_z + tagger_delta_layer"/>
-    <constant name="tagger_l1_mid_z" value="tagger_l2_mid_z + tagger_delta_layer"/>
-
-
     <!-- layer X positions assuming a 1.5 T field. -->
     <constant name="tagger_l1_x" value="-20.955*mm"/>
     <constant name="tagger_l2_x" value="-14.643*mm"/>
@@ -78,41 +60,50 @@
     <!-- offset in Z between stereo sensors -->
     <constant name="tagger_layer_offset" value="3.0*mm"/>
 
+    <!-- 
+      Tagger tracker distances relative to envelope volume face closest to 
+      target.
+     -->
+    <!-- 
+        20 cm between recoil l1 mid and tagger l7 mid
+        Distance from target to mid point of a module. 
+        Layer 7: 10 mm
+        Layer 6: 110 mm
+        Layer 5: 210 mm
+        Layer 4: 310 mm
+        Layer 3: 410 mm
+        Layer 2: 510 mm
+        Layer 1: 610 mm
+    --> 
+    <constant name="tagger_delta_layer" value="100*mm" />
+    <constant name="tagger_l7_mid_z" value="5.5*mm - target_thickness/2 - 2*clearance"/>
+    <constant name="tagger_l6_mid_z" value="tagger_l7_mid_z + tagger_delta_layer"/>
+    <constant name="tagger_l5_mid_z" value="tagger_l6_mid_z + tagger_delta_layer"/>
+    <constant name="tagger_l4_mid_z" value="tagger_l5_mid_z + tagger_delta_layer"/>
+    <constant name="tagger_l3_mid_z" value="tagger_l4_mid_z + tagger_delta_layer"/>
+    <constant name="tagger_l2_mid_z" value="tagger_l3_mid_z + tagger_delta_layer"/>
+    <constant name="tagger_l1_mid_z" value="tagger_l2_mid_z + tagger_delta_layer"/>
+    
     <!-- Dimensions of the tagger tracker envelope -->
-    <constant name="tagger_envelope_x" value="425*mm" />
-    <constant name="tagger_envelope_y" value="345*mm" />
-    <constant name="tagger_envelope_z" value="tagger_l1_mid_z + tagger_layer_offset + 2*clearance + trigger_pad_thickness" />
+    <constant name="tagger_env_x" value="425*mm" />
+    <constant name="tagger_env_y" value="345*mm" />
+    <!-- 608.3228 mm --> 
+    <constant name="tagger_env_z" value="tagger_l1_mid_z + tagger_layer_offset" /> 
 
-    <!-- layer Z start position -->
-    <constant name="tagger_z_start" value="tagger_envelope_z/2"/>
+    <!-- Midpoint of tagger envelope in world volume -->
+    <constant name="tagger_env_pos_z" value="trigger_scint_up_mid_z - trigger_scint_thickness/2 - tagger_env_z/2 - clearance" />
+    
+    <!-- Position of the tagger envelope face closest to the target -->
+    <constant name="tagger_z_start" value="tagger_env_z/2"/>
 
     <!-- position of each layer in local coordinates of envelope volume -->
-    <constant name="tagger_l1_z" value="tagger_z_start - tagger_l1_mid_z"/>
-    <constant name="tagger_l1_z1" value="tagger_l1_z - tagger_layer_offset"/>
-    <constant name="tagger_l1_z2" value="tagger_l1_z + tagger_layer_offset"/>
+    <constant name="tagger_l1_env_mid_z" value="tagger_z_start - tagger_l1_mid_z"/>
+    <constant name="tagger_l2_env_mid_z" value="tagger_z_start - tagger_l2_mid_z"/>
+    <constant name="tagger_l3_env_mid_z" value="tagger_z_start - tagger_l3_mid_z"/>
+    <constant name="tagger_l4_env_mid_z" value="tagger_z_start - tagger_l4_mid_z"/>
+    <constant name="tagger_l5_env_mid_z" value="tagger_z_start - tagger_l5_mid_z"/>
+    <constant name="tagger_l6_env_mid_z" value="tagger_z_start - tagger_l6_mid_z"/>
+    <constant name="tagger_l7_env_mid_z" value="tagger_z_start - tagger_l7_mid_z"/>
 
-    <constant name="tagger_l2_z" value="tagger_z_start - tagger_l2_mid_z"/>
-    <constant name="tagger_l2_z1" value="tagger_l2_z - tagger_layer_offset"/>
-    <constant name="tagger_l2_z2" value="tagger_l2_z + tagger_layer_offset"/>
-
-    <constant name="tagger_l3_z" value="tagger_z_start - tagger_l3_mid_z"/>
-    <constant name="tagger_l3_z1" value="tagger_l3_z - tagger_layer_offset"/>
-    <constant name="tagger_l3_z2" value="tagger_l3_z + tagger_layer_offset"/>
-
-    <constant name="tagger_l4_z" value="tagger_z_start - tagger_l4_mid_z"/>
-    <constant name="tagger_l4_z1" value="tagger_l4_z - tagger_layer_offset"/>
-    <constant name="tagger_l4_z2" value="tagger_l4_z + tagger_layer_offset"/>
-
-    <constant name="tagger_l5_z" value="tagger_z_start - tagger_l5_mid_z"/>
-    <constant name="tagger_l5_z1" value="tagger_l5_z - tagger_layer_offset"/>
-    <constant name="tagger_l5_z2" value="tagger_l5_z + tagger_layer_offset"/>
-
-    <constant name="tagger_l6_z" value="tagger_z_start - tagger_l6_mid_z"/>
-    <constant name="tagger_l6_z1" value="tagger_l6_z - tagger_layer_offset"/>
-    <constant name="tagger_l6_z2" value="tagger_l6_z + tagger_layer_offset"/>
-
-    <constant name="tagger_l7_z" value="tagger_z_start - tagger_l7_mid_z"/>
-    <constant name="tagger_l7_z1" value="tagger_l7_z - tagger_layer_offset"/>
-    <constant name="tagger_l7_z2" value="tagger_l7_z + tagger_layer_offset"/>
 
 </define>
