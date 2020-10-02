@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info 
+        name="ldmx-det-v12"
+        title="Phase I LDMX detector concept."
+        author="Omar Moreno"
+        status="development"
+        url=""
+        version="12.0">
+        <comment>
+            Test detector based on version 12 of the LDMX detector concept.
+        </comment>
+    </info>
+
+    <includes>
+        <gdmlFile ref="elements.xml"  />
+        <gdmlFile ref="materials.xml" />
+    </includes>
+
+    <define>
+        <include ref="constants.xml" />
+    </define>
+
+    <display>
+        <vis name="DetEnvelopeVis" alpha="0.1" r="0.82" g="0.82" b="0.82" showDaughters="true" visible="true" />
+    </display>
+
+    <include ref="tagger.xml" />
+
+    <readouts>
+        <readout name="TrackerHits">
+            <id>layer:9</id>
+        </readout>
+    </readouts>  
+
+</lccdd>
