@@ -1,7 +1,14 @@
 #include "Event/HgcrocTrigDigi.h"
+
 #include <iostream>
 
 ClassImp(ldmx::HgcrocTrigDigi)
+
+std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocTrigDigi& digi) {      
+  s << "HgcrocTrigDigi { " << "(id : 0x" << std::hex << digi.getId() << std::dec << ") ";      
+  s << "0x" << std::hex << int(digi.getPrimitive()) << " (" << std::dec << digi.linearPrimitive() << ") } ";
+  return s;
+}
 
 std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocTrigDigiCollection& digis) {
   s << "HgcrocTrigDigiCollection { " << std::endl;
@@ -10,13 +17,6 @@ std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocTrigDigiCollection& 
   s << "}";
   return s;
 }
-
-std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocTrigDigi& digi) {      
-  s << "HgcrocTrigDigi { " << "(id : 0x" << std::hex << digi.getId() << std::dec << ") ";      
-  s << "0x" << std::hex << int(digi.getPrimitive()) << " (" << std::dec << digi.linearPrimitive() << ") } ";
-  return s;
-}
-
 
 namespace ldmx {
   
@@ -60,4 +60,4 @@ uint32_t HgcrocTrigDigi::compressed2Linear(uint8_t comp) {
   return (v1+v2)/2;
 }
     
-}
+} //ldmx
