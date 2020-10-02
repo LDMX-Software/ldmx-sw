@@ -33,6 +33,9 @@ setup_library(name SimCore
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
+# Testing includes .py files as well as .cxx files in test directory
+setup_test(dependencies DARK::SimCore)
+
 # Set some target properties
 set_target_properties(SimCore PROPERTIES 
     CXX_STANDARD 17
