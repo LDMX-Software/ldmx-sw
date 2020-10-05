@@ -16,3 +16,6 @@
 [submodule "Conditions"]
 	path = Conditions
 	url = https://github.com/LDMX-Software/Conditions.git
+[submodule "Tracking"]
+	path = Tracking
+	url = https://github.com/LDMX-Software/Tracking
