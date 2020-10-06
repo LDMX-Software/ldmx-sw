@@ -1,8 +1,8 @@
 """Fully-runnable example that uses the biased ecal pn template"""
 
-from LDMX.Framework import ldmxcfg
-from LDMX.Biasing import ecal
-from LDMX.SimCore import generators
+from @PYTHON_PACKAGE_NAME@.Framework import ldmxcfg
+from @PYTHON_PACKAGE_NAME@.Biasing import ecal
+from @PYTHON_PACKAGE_NAME@.SimCore import generators
 
 # We need to create a process
 #   this is the object that keeps track of all the files/processors/histograms/etc

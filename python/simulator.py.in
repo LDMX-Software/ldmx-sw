@@ -4,7 +4,7 @@ Defines a derived class from ldmxcfg.Producer
 with several helpful member functions.
 """
 
-from LDMX.Framework.ldmxcfg import Producer
+from @PYTHON_PACKAGE_NAME@.Framework.ldmxcfg import Producer
 
 class simulator(Producer):
     """A instance of the simulation configuration
@@ -96,7 +96,7 @@ class simulator(Producer):
 
         #######################################################################
         # Optional Parameters (with helpful defaults)
-        from LDMX.DetDescr import EcalHexReadout
+        from @PYTHON_PACKAGE_NAME@.DetDescr import EcalHexReadout
         self.ecalHexReadout = EcalHexReadout.EcalHexReadout()
         self.scoringPlanes = ''
         self.randomSeeds = [ ] 
@@ -140,10 +140,10 @@ class simulator(Producer):
 
         See Also
         --------
-        LDMX.Detectors.makePath for definitions of the path making functions.
+        @PYTHON_PACKAGE_NAME@.Detectors.makePath for definitions of the path making functions.
         """
 
-        from LDMX.Detectors import makePath as mP
+        from @PYTHON_PACKAGE_NAME@.Detectors import makePath as mP
         self.detector = mP.makeDetectorPath( det_name )
         if include_scoring_planes :
             self.scoringPlanes = mP.makeScoringPlanesPath( det_name )
