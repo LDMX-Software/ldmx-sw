@@ -159,6 +159,9 @@ namespace ldmx {
 
 		Expo* ex = new Expo(0.1,5,30,cellPEs[id]); // [Niramay]
 		TrigScintQIEDigis QIEInfo(5,ex,smq);	 // [Niramay]
+		QIEInfo.chanID = id.bar();
+		QIEInfo.truePE = cellPEs[id];
+		QIEInfo.IsNoisy = false;
 
 		QDigis.push_back(QIEInfo); // [Niramay]
                 trigScintHits.push_back(hit); 
@@ -197,12 +200,9 @@ namespace ldmx {
             hit.setAmplitude(noiseHitPE);
             hit.setEnergy(0.);
             hit.setTime(0.);
-            // hit.setXPos(0.);
-            // hit.setYPos(0.);
-            // hit.setZPos(0.);
-            hit.setXPos(10.);
-            hit.setYPos(10.);
-            hit.setZPos(10.);
+            hit.setXPos(0.);
+            hit.setYPos(0.);
+            hit.setZPos(0.);
             hit.setModuleID(module);
             hit.setBarID(noiseID.bar());
             hit.setNoise(true);
@@ -210,13 +210,15 @@ namespace ldmx {
 
 	    Expo* ex = new Expo(0.1,5,30,noiseHitPE); // [Niramay]
 	    TrigScintQIEDigis QIEInfo(5,ex,smq);	 // [Niramay]
+	    QIEInfo.chanID = noiseID.bar();
+	    QIEInfo.truePE = noiseHitPE;
+	    QIEInfo.IsNoisy = true;
 
 	    QDigis.push_back(QIEInfo); // [Niramay]
             trigScintHits.push_back(hit); 
         }
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        // event.add(outputCollection_, trigScintHits);
-        event.add("TTT"+outputCollection_, trigScintHits); // [Niramay] Just for fun
+        event.add(outputCollection_, trigScintHits);
         event.add("TrigScintQIEDigis", QDigis); // [Niramay]
 
         // event.add("TrigScintQIEDigisTemp", temp); // [Niramay]
