@@ -1,4 +1,3 @@
-
 include(CMakeParseArguments)
 
 # Define some colors. These are used to colorize CMake's user output
@@ -171,15 +170,30 @@ macro(setup_python)
   # python modules.
   if(EXISTS ${PROJECT_SOURCE_DIR}/python)
 
-    # Install the python modules
-    file(GLOB py_scripts CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/python/*.py)
+    # Get a list of all python files inside the python package
+    file(GLOB py_scripts CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/python/*.py
+                                           ${PROJECT_SOURCE_DIR}/python/*.py.in)
+
     foreach(pyscript ${py_scripts})
+
+      # If a filename has a '.in' extension, remove it.  The '.in' extension is
+      # used to denote files that have variables that will be substituded by the
+      # configure_file macro.
       string(REPLACE ".in" "" script_output ${pyscript})
+
+      # GLOB returns the full path to the file.  We also need the filename so
+      # it's new location can be specified.
       get_filename_component(script_output ${script_output} NAME)
+
+      # Copy the file from its original location to the bin directory.  This
+      # will also replace all cmake variables within the files.
       configure_file(${pyscript}
                      ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output})
-      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output}
-              DESTINATION ${setup_python_install_path})
+
+      # Install the files to the given path
+      install(
+        FILES ${CMAKE_CURRENT_BINARY_DIR}/python/${script_output}
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/python/${setup_python_package_name})
     endforeach()
 
   endif()
