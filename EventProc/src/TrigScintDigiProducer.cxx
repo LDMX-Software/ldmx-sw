@@ -180,7 +180,7 @@ namespace ldmx {
 
             TrigScintID noiseID=tempID;
 
-	    noiseHitIDs.insert(noiseID);
+	     noiseHitIDs.insert(noiseID);
             hit.setID(noiseID.raw());
             hit.setPE(noiseHitPE);
             hit.setMinPE(noiseHitPE);
