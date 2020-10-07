@@ -7,9 +7,6 @@
 #ifndef EVENT_TRIGSCINTCLUSTER_H_
 #define EVENT_TRIGSCINTCLUSTER_H_
 
-// ROOT
-#include "TObject.h"
-
 // STL
 #include <iostream>
 #include <set>
@@ -17,7 +14,6 @@
 // ldmx-sw
 #include "Event/EventConstants.h"
 #include "Event/TrigScintHit.h"
-//#include "Event/EcalCluster.h"
 
 
 namespace ldmx {
@@ -26,7 +22,7 @@ namespace ldmx {
    * @class TrigScintCluster 
    * @brief Stores cluster information from the trigger scintillator pads. Adds on the ECal cluster functionality
    */
-  class TrigScintCluster :{
+  class TrigScintCluster : {
 
   public:
     
