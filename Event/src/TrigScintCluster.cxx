@@ -3,12 +3,8 @@
 ClassImp(ldmx::TrigScintCluster)
 
 namespace ldmx {
-
-  TrigScintCluster::TrigScintCluster() { //: EcalCluster() {
-    
-  }
   
-  TrigScintCluster::~TrigScintCluster() {
+  TrigScintCluster::~TrigScintCluster(){
     Clear();
     
   }
@@ -25,17 +21,17 @@ namespace ldmx {
   
   void TrigScintCluster::Clear(Option_t*) {
     
-	hitIDs_.clear();
-	
-	centroidX_ = 0;
-	centroidY_ = 0;
-	centroidZ_ = 0;
-	setEnergy(0);
-	setNHits(0);
+    hitIDs_.clear();
+    
+    centroidX_ = 0;
+    centroidY_ = 0;
+    centroidZ_ = 0;
+    setEnergy(0);
+    setNHits(0);
     setCentroid(0); 
     setSeed(-1);    
+
   }
-  
   
 }
 
