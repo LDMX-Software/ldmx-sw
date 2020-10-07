@@ -26,15 +26,14 @@ namespace ldmx {
    * @class TrigScintCluster 
    * @brief Stores cluster information from the trigger scintillator pads. Adds on the ECal cluster functionality
    */
-  class TrigScintCluster : public TObject {
-	//  EcalCluster {
+  class TrigScintCluster :{
 
   public:
     
     /**
      * Class constructor.
      */
-    TrigScintCluster();
+    TrigScintCluster() = default;
 
     /**
      * Class destructor.
