@@ -18,85 +18,84 @@
 
 namespace ldmx {
 
+  /**
+   * @class TrigScintClusterProducer
+   * @brief 
+   */
+  class TrigScintClusterProducer : public ldmx::Producer {
+
+  public:
+
+  TrigScintClusterProducer(const std::string& name, ldmx::Process& process) : ldmx::Producer(name, process) {}
+    
+    virtual void configure(ldmx::Parameters& ps);
+    
+    virtual void produce(ldmx::Event& event);
+
     /**
-     * @class TrigScintClusterProducer
-     * @brief 
+     * add a hit at index idx to a cluster 
      */
-    class TrigScintClusterProducer : public ldmx::Producer {
-        public:
-
-            TrigScintClusterProducer(const std::string& name, ldmx::Process& process) : ldmx::Producer(name, process) {
-
-	    }
-
-      virtual void configure(ldmx::Parameters& ps);
+    virtual void addHit( uint idx, TrigScintHit hit ); 
       
-      virtual void produce(ldmx::Event& event);
-
-	  /**
-	   * add a hit at index idx to a cluster 
-	   */
-      virtual void addHit( uint idx, TrigScintHit hit ); 
+    virtual void onFileOpen();
       
-      virtual void onFileOpen();
+    virtual void onFileClose();
       
-      virtual void onFileClose();
+    virtual void onProcessStart(); 
       
-      virtual void onProcessStart(); 
+    virtual void onProcessEnd();
       
-      virtual void onProcessEnd();
-      
-        private:
+  private:
 
-	  //collection of clusters produced 
-      std::vector< TrigScintCluster > clusters_;
+    //collection of clusters produced 
+    std::vector< TrigScintCluster > clusters_;
 
-	  //cluster seeding threshold
-      double seed_{0.};
+    //cluster seeding threshold
+    double seed_{0.};
 
-	  //min threshold for adding a hit to a cluster
-      double minThr_{0.};
+    //min threshold for adding a hit to a cluster
+    double minThr_{0.};
 
-	  //max number of neighboring hits to combine when forming a cluster
-	  int maxWidth_{2};
+    //max number of neighboring hits to combine when forming a cluster
+    int maxWidth_{2};
 
-	  //specific verbosity of this producer
-      int verbose_{0}; 
+    //specific verbosity of this producer
+    int verbose_{0}; 
 
-	  //input collection (hits)
-	  std::string input_collection_;
+    //input collection (hits)
+    std::string input_collection_;
 
-	  //output collection (clusters)
-      std::string output_collection_;
+    //output collection (clusters)
+    std::string output_collection_;
 
-	  //specific pass name to use for track making 
-	  std::string passName_{""};
+    //specific pass name to use for track making 
+    std::string passName_{""};
 
-	  //cluster channel nb centroid (will be content weighted)
-      float centroid_{0.};
+    //cluster channel nb centroid (will be content weighted)
+    float centroid_{0.};
 	  
-	  // energy (edep), PE, or sth
-      float val_{0.};
+    // energy (edep), PE, or sth
+    float val_{0.};
 
-	  // edep content, only; leave val_ for PE
-      float valE_{0.};
+    // edep content, only; leave val_ for PE
+    float valE_{0.};
 
-	  // book keep which channels have already been added to the cluster at hand
-      std::vector <unsigned int> v_addedIndices_;
+    // book keep which channels have already been added to the cluster at hand
+    std::vector <unsigned int> v_addedIndices_;
 
-	  // book keep which channels have already been added to any cluster
-      std::vector <unsigned int> v_usedIndices_;  
+    // book keep which channels have already been added to any cluster
+    std::vector <unsigned int> v_usedIndices_;  
 
-	  // fraction of cluster energy deposition associated with beam electron sim hits
-      float beamE_{0.};     
+    // fraction of cluster energy deposition associated with beam electron sim hits
+    float beamE_{0.};     
 
-	  //cluster time (energy weighted based on hit time)
-      float time_{0.};
+    //cluster time (energy weighted based on hit time)
+    float time_{0.};
 
-      // empty map container 
-      std::map<int, int> hitChannelMap_; 
+    // empty map container 
+    std::map<int, int> hitChannelMap_; 
 
-    };
+  };
 }
 
 #endif /* EVENTPROC_TRIGSCINTCLUSTERPRODUCER_H */
