@@ -18,61 +18,61 @@
 
 namespace ldmx {
     
-    /**
-     * @class TrigScintTrackProducer
-     * @brief making tracks from trigger scintillator clusters 
-     */
-    class TrigScintTrackProducer : public ldmx::Producer {
-        public:
+  /**
+   * @class TrigScintTrackProducer
+   * @brief making tracks from trigger scintillator clusters 
+   */
+  class TrigScintTrackProducer : public ldmx::Producer {
+  public:
 
-            TrigScintTrackProducer(const std::string& name, ldmx::Process& process) : ldmx::Producer(name, process) {
-	    }
+  TrigScintTrackProducer(const std::string& name, ldmx::Process& process) : ldmx::Producer(name, process) {
+    }
 
-      virtual void configure(ldmx::Parameters& ps);
+    virtual void configure(ldmx::Parameters& ps);
       
-      virtual void produce(ldmx::Event& event);
+    virtual void produce(ldmx::Event& event);
       
-      virtual void onFileOpen();
+    virtual void onFileOpen();
       
-      virtual void onFileClose();
+    virtual void onFileClose();
       
-      virtual void onProcessStart(); 
+    virtual void onProcessStart(); 
       
-      virtual void onProcessEnd();
+    virtual void onProcessEnd();
 
-        private:
+  private:
 
-	  //collection of produced tracks
-      std::vector< TrigScintTrack > tracks_;
+    //collection of produced tracks
+    std::vector< TrigScintTrack > tracks_;
 	  
-	  //add a cluster to a track
-	  TrigScintTrack makeTrack( std::vector<TrigScintCluster> clusters );
+    //add a cluster to a track
+    TrigScintTrack makeTrack( std::vector<TrigScintCluster> clusters );
 
-	  //maximum difference (in channel number space) between track seed and cluster in the next pad tolerated to form a track
-      double maxDelta_{0.};
+    //maximum difference (in channel number space) between track seed and cluster in the next pad tolerated to form a track
+    double maxDelta_{0.};
 	  
-	  //producer specific verbosity 
-      int verbose_{0};
+    //producer specific verbosity 
+    int verbose_{0};
 	  
-	  //collection used to seed the tracks 
-      std::string seeding_collection_;
+    //collection used to seed the tracks 
+    std::string seeding_collection_;
 	  
-	  //other cluster collections used in track making
-	  std::vector <std::string> input_collections_;
+    //other cluster collections used in track making
+    std::vector <std::string> input_collections_;
 	  
-	  //output collection (tracks)
-	  std::string output_collection_;
+    //output collection (tracks)
+    std::string output_collection_;
 	  
-	  //specific pass name to use for track making 
-	  std::string passName_{""};
+    //specific pass name to use for track making 
+    std::string passName_{""};
 	  
-	  //track centroid in units of channel nb (will not be content weighted)
-      float centroid_{0.};
+    //track centroid in units of channel nb (will not be content weighted)
+    float centroid_{0.};
 	  
-	  //track residual in units of channel nb (will not be content weighted)
-      float residual_{0.};  
+    //track residual in units of channel nb (will not be content weighted)
+    float residual_{0.};  
 	  
-    };
+  };
 }
 
 #endif /* EVENTPROC_TRIGSCINTTRACKPRODUCER_H */
