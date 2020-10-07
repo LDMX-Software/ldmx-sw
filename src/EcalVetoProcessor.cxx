@@ -541,8 +541,46 @@ namespace ldmx {
 
 
 
+
         // Linreg tracking:
         std::cout << "BEGINNING LINREG TRACKING" << std::endl;
+
+        //int track[34];
+        //int trackLen;
+        int hitsInRegion[50];
+        int nHitsInRegion;
+        //int currenthit;
+        
+        TMatrixD svdMatrix(3,3);
+        TMatrixD Vm;
+        TMatrixD hdt(3,3);
+        TVector3 slopeVec;
+        TVector3 hmean;
+        TVector3 hpoint;
+        TVector3 mean_best;
+        TVector3 point_best;
+        float r_corr_best;
+        int hitNums_best[3];
+        int hitNums[3];
+        
+        /* for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
+            trackLen = 0;
+            nHitsInRegion = 1;
+            currenthit = iHit;
+            hitsInRegion[0] = iHit;
+
+            for (int jHit = 0; jHit < trackingHitList.size(); jHit++) {
+                float dstToHit = (trackingHitList[iHit].pos - trackingHitList[jHit].pos).Mag();
+                if (dstToHit <= 2*cellWidth) { //consider only hits within 2 cells of the primary hit
+                    hitsInRegion[nHitsInRegion] = jHit;
+                    nHitsInRegion++;
+                }
+            } */
+
+
+
+
+
 
 
         std::cout << "TRACKING COMPLETED." << std::endl;
