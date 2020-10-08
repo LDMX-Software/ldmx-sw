@@ -36,13 +36,18 @@ endif()
 # Configure Geant4
 setup_geant4_target()
 
+# Get a list of all of the source files.
+file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist/*.cxx
+                                       ${PROJECT_SOURCE_DIR}/src/SimCore/*.cxx)
+
 # Setup the library
 setup_library(name SimCore
               dependencies Geant4::Interface
                            ROOT::Physics
                            Framework::Configure
                            DetDescr::DetDescr
-                           "${registered_targets}")
+                           "${registered_targets}"
+              sources ${SRC_FILES})
 
 # Set some target properties
 set_target_properties(SimCore

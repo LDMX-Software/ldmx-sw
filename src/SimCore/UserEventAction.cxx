@@ -1,8 +1,3 @@
-/**
- * @file UserEventAction.cxx
- * @brief Class which implements the Geant4 user event action
- * @author Omar Moreno, SLAC National Accelerator Laboratory
- */
 
 #include "SimCore/UserEventAction.h"
 
@@ -14,7 +9,6 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/RootPersistencyManager.h"
 #include "SimCore/RunManager.h"
 #include "SimCore/TrackMap.h"
 #include "SimCore/UserTrackingAction.h"

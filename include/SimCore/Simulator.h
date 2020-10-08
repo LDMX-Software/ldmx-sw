@@ -29,11 +29,16 @@ class G4GDMLParser;
 class G4GDMLMessenger; 
 class G4CascadeParameters;
 
+namespace simcore { 
+namespace persist { 
+class RootPersistencyManager;
+}
+}
+
 namespace ldmx {
 
     class EventFile;  
     class ParameterSet; 
-    class RootPersistencyManager; 
     class RunManager;
     class DetectorConstruction;
 
@@ -142,7 +147,7 @@ namespace ldmx {
             G4UImanager* uiManager_{nullptr};
 
             /// PersistencyManager 
-            std::unique_ptr<RootPersistencyManager> persistencyManager_;
+            std::unique_ptr<simcore::persist::RootPersistencyManager> persistencyManager_;
 
             /// Handle to the G4Session -> how to deal with G4cout and G4cerr
             std::unique_ptr<G4UIsession> sessionHandle_;

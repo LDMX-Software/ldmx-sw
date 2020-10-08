@@ -1,9 +1,3 @@
-/**
- * @file EcalHitIO.h
- * @brief Class providing hit readout for simulated LDMX ECal detector
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- * @author Owen Colegro, UCSB
- */
 
 #ifndef SIMCORE_ECALHITIO_H_
 #define SIMCORE_ECALHITIO_H_
@@ -12,7 +6,6 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/G4CalorimeterHit.h"
-#include "SimCore/SimParticleBuilder.h"
 
 // STL
 #include <vector>
