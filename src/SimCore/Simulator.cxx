@@ -16,9 +16,9 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/DetectorConstruction.h"
-#include "SimCore/RootPersistencyManager.h" 
 #include "SimCore/RunManager.h"
 #include "SimCore/G4Session.h"
+#include "SimCore/Persist/RootPersistencyManager.h" 
 
 /*~~~~~~~~~~~~~~*/
 /*    Geant4    */
@@ -117,7 +117,7 @@ namespace ldmx {
 
     void Simulator::onFileOpen(EventFile &file) {
         // Initialize persistency manager and connect it to the current EventFile
-        persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_, this->getRunNumber()); 
+        persistencyManager_ = std::make_unique<simcore::persist::RootPersistencyManager>(file, parameters_, this->getRunNumber()); 
         persistencyManager_->Initialize(); 
     }
 
