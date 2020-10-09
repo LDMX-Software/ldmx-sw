@@ -1,7 +1,8 @@
 #include "EventProc/TrigScintDigiProducer.h"
+#include "Framework/RandomNumberSeedService.h"
+#include "Framework/Exception.h"
 
 #include <iostream>
-#include <exception>
 
 namespace ldmx {
 
@@ -24,8 +25,6 @@ void TrigScintDigiProducer::configure(Parameters& parameters) {
   inputPassName_    = parameters.getParameter< std::string >("input_pass_name" );
   outputCollection_ = parameters.getParameter< std::string >("output_collection");
   verbose_          = parameters.getParameter< bool >("verbose");
-
-  random_ = std::make_unique<TRandom3>(parameters.getParameter< int >("randomSeed"));
         
   noiseGenerator_ = std::make_unique<NoiseGenerator>(meanNoise_, false); 
   noiseGenerator_->setNoiseThreshold(1); 
@@ -36,7 +35,7 @@ TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
   TrigScintID tempID(module,random_->Integer(stripsPerArray_));
   if ( module >= TrigScintSection::NUM_SECTIONS ) {
     // Throw an exception
-    std::cout << "WARNING [TrigScintDigiProducer::generateRandomID]: TrigScintSection is not known" << std::endl;
+    EXCEPTION_RAISE("TrigScintDigiException","generateRandomID]: TrigScintSection is not known");
   }
 
   return tempID;
@@ -44,11 +43,22 @@ TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
 
 void TrigScintDigiProducer::produce(Event& event) {
 
+  // Need to handle seeding on the first event
+  if (!noiseGenerator_->hasSeed()) {
+    const RandomNumberSeedService& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+    noiseGenerator_->seedGenerator(rseed.getSeed("TrigScintDigiProducer::NoiseGenerator"));
+  }
+  if (random_.get()==nullptr) {
+    const RandomNumberSeedService& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+    random_ = std::make_unique<TRandom3>(rseed.getSeed("TrigScintDigiProducer"));
+  }
+  
+
+  
   std::map<TrigScintID, int>   cellPEs;
   std::map<TrigScintID, int>   cellMinPEs;
   std::map<TrigScintID, float> Xpos, Ypos, Zpos, Edep, Time, beamFrac;
   std::set<TrigScintID> noiseHitIDs;
-
 
   auto numRecHits{0};
 
@@ -198,9 +208,9 @@ void TrigScintDigiProducer::produce(Event& event) {
     trigScintHits.push_back(hit); 
   }
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
   event.add(outputCollection_, trigScintHits);
 }
 }
 
 DECLARE_PRODUCER_NS(ldmx, TrigScintDigiProducer);
-
