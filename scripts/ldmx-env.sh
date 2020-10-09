@@ -32,6 +32,30 @@ then
 fi
 
 ###############################################################################
+# ldmx-which-os
+#   Check what OS we are hosting the container on.
+#   Taken from https://stackoverflow.com/a/8597411
+###############################################################################
+function ldmx-which-os() {
+    if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "freebsd"* ]]; then
+        export LDMX_CONTAINER_DISPLAY=""        
+        return 0
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # Mac OSX
+        export LDMX_CONTAINER_DISPLAY="docker.for.mac.host.internal"
+        return 0
+    fi
+
+    return 1
+}
+
+if ! ldmx-which-os
+then
+    echo "[ldmx-env.sh][WARN] : Unable to detect OS Type from '${OSTYPE}'"
+    exit 1
+fi
+
+###############################################################################
 # ldmx-container-tags
 #   Get the docker tags for the repository
 #   Taken from https://stackoverflow.com/a/39454426
@@ -199,6 +223,8 @@ function ldmx() {
             --rm \
             -it \
             -e LDMX_BASE \
+            -e DISPLAY=${LDMX_CONTAINER_DISPLAY}:0 \
+            -v /tmp/.X11-unix:/tmp/.X11-unix \
             -v $LDMX_BASE:$LDMX_BASE \
             -u $(id -u ${USER}):$(id -g ${USER}) \
             $LDMX_DOCKER_TAG ${_pwd} "$@"
