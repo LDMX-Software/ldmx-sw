@@ -4,7 +4,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "EventProc/HcalVetoProcessor.h"
+#include "Hcal/HcalVetoProcessor.h"
 
 //-------------//
 //   ldmx-sw   //

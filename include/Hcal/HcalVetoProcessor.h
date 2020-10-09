@@ -4,8 +4,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef __EVENTPROC_HCAL_VETO_PROCESSOR_H__
-#define __EVENTPROC_HCAL_VETO_PROCESSOR_H__
+#ifndef __HCAL_HCAL_VETO_PROCESSOR_H__
+#define __HCAL_HCAL_VETO_PROCESSOR_H__
 
 //----------------//
 //   C++ StdLib   //
@@ -64,5 +64,5 @@ namespace ldmx {
     }; // HcalVetoProcessor
 }
 
-#endif // EVENTPROC_HCALVETOPROCESSOR_H_
+#endif // HCAL_HCALVETOPROCESSOR_H_
 
