@@ -1,62 +1,174 @@
-// Class to store all the functions related to the input pulse to QIE
+/**
+ * @file Pulse.h
+ * @brief Class for the input pulses to QIE
+ * @author Niramay Gogate, Texas Tech University
+ */
 
 #ifndef EVENT_PULSE_H
 #define EVENT_PULSE_H
 
 namespace ldmx {
-  ////////////////////////// The base class ///////////////////////////////
+
+  /**
+   * @class Pulse
+   * @brief The base class to store the most important functions
+   *
+   * @note Always use the classes inherited from this class for 
+   * QIE input pulse.
+   */
   class Pulse
   {
-  public:
-    virtual float eval(float T);		      // Evaluate pulse at time T
-    virtual float Integrate(float T1,float T2); // Integrate pulse from T1 to T2
-    virtual float Der(float T);		      // Differentiate pulse at time T
-    virtual float Max();			      // Return the maximum of the pulse
+ public:
+
+    /**
+     * Evaluate the pulse at time T
+     */
+    virtual float eval(float T);
+
+    /**
+     * Integrate the pulse from T1 to T2
+     */
+    virtual float Integrate(float T1,float T2);
+
+    /**
+     * Differentiate pulse at time T
+     */
+    virtual float Der(float T);
+
+    /**
+     *  maximum of the pulse
+     */
+    virtual float Max();
   };
 
-  //////////////////////// Daughter class /////////////////////////////////
 
+  /**
+   * @class Bimoid
+   * @brief Pulse made out of difference of two sigmoids
+   *
+   * @note The pulse maximum is found numerically
+   */
   class Bimoid: public Pulse
   {
-  public:
+ public:
+    /**
+     * Class constructors.
+     */
     Bimoid(float start,float rise, float fall, float qq);
     Bimoid(float start,float qq);
+
+    /**
+     * Evaluate the pulse at time T
+     */
     float eval(float T);
+
+    /**
+     * Integrate the pulse from T1 to T2
+     */
     float Integrate(float T1,float T2);
+
+    /**
+     *  maximum of the pulse
+     */
     float Max();
+
+    /**
+     * Differentiate pulse at time T
+     */
     float Der(float T);
-  private:
-    float t0;			// starting time of the pulse
-    float rt;			// rise time
-    float ft;			// fall time
-    float NC;			// Normalization constant
-    float Q0;			// Net charge (integral I.dt)
+ private:
+    // starting time of the pulse
+    float t0;
+    // rise time
+    float rt;
+    // fall time
+    float ft;
+    // Normalization constant
+    float NC;
+    // Net charge (integral I.dt)
+    float Q0;
   };
 
-  ////////////////piece-wise Exponential pulse/////////////////////////////
-
+  /**
+   * @class Expo
+   * @brief piece-wise exponential pulse, modelled
+   * as an output of a capacitor
+   *
+   * @note This is the preferred inpute pulse
+   * shape
+   */
   class Expo: public Pulse
   {
-  public:
-    Expo();					   // default constructor
+ public:
+
+    /**
+     * The default constructor
+     */
+    Expo();
+
+    /**
+     * Main constructor
+     * @param k_ = 1/(RC time const)
+     * @param tmax_ = relative time of the pulse maximum (in ns)
+     * @param tstart_ = start time of the pulse (in ns)
+     * @param Q_ = Total charge carried by the pulse (in fC)
+     */
     Expo(float k_,float tmax_,float tstart_,float Q_); // main constructor
 
-    float GetRise(){return(rt);}	// return rise time
-    float GetFall(){return(ft);}	// return fall time
+    /**
+     * Get Rise time of the pulse
+     */
+    float GetRise(){return(rt);}
+
+    /**
+     * Get Fall time of the pulse
+     */
+    float GetFall(){return(ft);}
+
+    /**
+     * Set Rise and Fall time of the pulse
+     * @param rr Rise time
+     * @param ff Fall time
+     */
     void SetRiseFall(float rr,float ff);
 
-    float eval(float T);
-    float Integrate(float T1,float T2);
-    float Max();
-    float Der(float T);
-  private:
-    float t0;			// pulse start time
-    float k;			// 1/RC time constant (for the capacitor)
-    float tmax;			// time when pulse attains maximum
-    float NC;			// normalization constant
-    float rt=-1;			// rise time
-    float ft=-1;			// fall time
 
+    /**
+     * Evaluate the pulse at time T
+     */
+    float eval(float T);
+
+    /**
+     * Integrate the pulse from T1 to T2
+     */
+    float Integrate(float T1,float T2);
+
+    /**
+     *  maximum of the pulse
+     */
+    float Max();
+
+    /**
+     * Differentiate pulse at time T
+     */
+    float Der(float T);
+ private:
+    // starting time of the pulse
+    float t0;
+    // 1/RC time constant (for the capacitor)
+    float k;
+    // time when pulse attains maximum
+    float tmax;
+    // normalization constant (for internal use)
+    float NC;
+    // Rise Time
+    float rt=-1;
+    // Fall Time
+    float ft=-1;
+
+    /**
+     * Indefinite integral at time T
+     */
     float I_Int(float T);		// Indefinite integral
   };
 

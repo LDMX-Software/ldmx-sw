@@ -30,85 +30,83 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Parameters.h" 
 
-// QIE output
-// #include "SimQIE.h"
 #include "Event/TrigScintQIEDigis.h"
 
 namespace ldmx {
 
-    enum TrigScintSection{
-        UPSTREAM_TAGGER = 1,
-        UPSTREAM_TARGET,
-        DOWNSTREAM_TARGET,
-        NUM_SECTIONS
-    };
+  enum TrigScintSection{
+    UPSTREAM_TAGGER = 1,
+    UPSTREAM_TARGET,
+    DOWNSTREAM_TARGET,
+    NUM_SECTIONS
+  };
+
+  /**
+   * @class TrigScintDigiProducer
+   * @brief Performs digitization of simulated Trigger Scintillator data
+   */
+  class TrigScintDigiProducer : public Producer {
+
+ public:
+
+    typedef int layer;
+
+    typedef std::pair<double, double> zboundaries;
+
+    TrigScintDigiProducer(const std::string& name, Process& process);
+
+    ~TrigScintDigiProducer(); 
 
     /**
-     * @class TrigScintDigiProducer
-     * @brief Performs digitization of simulated Trigger Scintillator data
+     * Callback for the processor to configure itself from the given set
+     * of parameters.
+     * 
+     * @param parameters ParameterSet for configuration.
      */
-    class TrigScintDigiProducer : public Producer {
+    void configure(Parameters& parameters) final override;
 
-        public:
+    void produce(Event& event);
 
-            typedef int layer;
+    TrigScintID generateRandomID(int module);
 
-            typedef std::pair<double, double> zboundaries;
+ private:
 
-            TrigScintDigiProducer(const std::string& name, Process& process);
-
-            ~TrigScintDigiProducer(); 
-
-            /**
-             * Callback for the processor to configure itself from the given set
-             * of parameters.
-             * 
-             * @param parameters ParameterSet for configuration.
-             */
-            void configure(Parameters& parameters) final override;
-
-            void produce(Event& event);
-
-            TrigScintID generateRandomID(int module);
-
-        private:
-
-            /// Random number generator 
-            std::unique_ptr<TRandom3> random_; 
+    /// Random number generator 
+    std::unique_ptr<TRandom3> random_; 
             
-            /// Generate noise hits given the number of channels and mean noise.
-            std::unique_ptr<NoiseGenerator> noiseGenerator_;
+    /// Generate noise hits given the number of channels and mean noise.
+    std::unique_ptr<NoiseGenerator> noiseGenerator_;
 
-            /// Class to set the verbosity level.  
-            // TODO: Make use of the global verbose parameter. 
-            bool verbose_{false};
+    /// Class to set the verbosity level.  
+    // TODO: Make use of the global verbose parameter. 
+    bool verbose_{false};
 
-            /// Name of the input collection containing the sim hits
-	        std::string inputCollection_;
+    /// Name of the input collection containing the sim hits
+    std::string inputCollection_;
 
-            /// Name of the pass that the input collection is on (empty string means take any pass)
-            std::string inputPassName_;
+    /// Name of the pass that the input collection is on (empty string means take any pass)
+    std::string inputPassName_;
 
-            /// Name of the output collection that will be used to stored the
-            /// digitized trigger scintillator hits
-	        std::string outputCollection_;
+    /// Name of the output collection that will be used to stored the
+    /// digitized trigger scintillator hits
+    std::string outputCollection_;
 
-            /// Number of strips per array
-	        int stripsPerArray_{50};
+    /// Number of strips per array
+    int stripsPerArray_{50};
 
-            /// Number of arrays
-            int numberOfArrays_{3};
+    /// Number of arrays
+    int numberOfArrays_{3};
 
-            /// Mean readout noise
-            double meanNoise_{0};
+    /// Mean readout noise
+    double meanNoise_{0};
 
-            /// Total MeV per MIP
-            double mevPerMip_{1.40};
+    /// Total MeV per MIP
+    double mevPerMip_{1.40};
 
-            /// Total number of photoelectrons per MIP
-            double pePerMip_{13.5};
+    /// Total number of photoelectrons per MIP
+    double pePerMip_{13.5};
 
-    };
+  };
 
 }
 

@@ -1,7 +1,7 @@
 /**
  * @file TrigScintQIEDigiProducer.h
  * @brief Class that simulates QIE chip of the trigger scintillator
- * @author Niramay Gogate, TTU
+ * @author Niramay Gogate, Texas Tech University
  */
 
 #ifndef EVENTPROC_TRIGSCINTQIEDIGIPRODUCER_H
@@ -48,7 +48,7 @@ namespace ldmx {
    */
   class TrigScintQIEDigiProducer : public Producer {
 
-  public:
+ public:
     typedef int layer;
     typedef std::pair<double, double> zboundaries;
     TrigScintQIEDigiProducer(const std::string& name, Process& process);
@@ -64,7 +64,7 @@ namespace ldmx {
     void produce(Event& event);
     TrigScintID generateRandomID(int module);
 
-  private:
+ private:
     /// Random number generator 
     std::unique_ptr<TRandom3> random_; 
             

@@ -19,7 +19,7 @@ namespace ldmx {
 /**
  * The git commit sha for this installation of ldmx-sw
  */
-#define GIT_SHA1 "58d8232fb5b1e19407ffe2fb53815ede5f838be0"
+#define GIT_SHA1 "26c4861db8e6b2226436f7d1a82f09de04cae81d"
 
 }
 
