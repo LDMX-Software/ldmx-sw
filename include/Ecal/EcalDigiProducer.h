@@ -67,6 +67,15 @@ class EcalDigiProducer : public Producer {
             ///////////////////////////////////////////////////////////////////////////////////////
             //Python Configuration Parameters
 
+	        /// input hit collection name
+            std::string inputCollName_;
+
+	        /// input pass name
+            std::string inputPassName_;
+
+	        /// output hit collection name
+            std::string outputCollName_;
+	  
             /// Time interval for chip clock in ns
             double clockCycle_;
 
