@@ -17,7 +17,7 @@ namespace ldmx {
 
     void EcalRecProducer::configure(Parameters& ps) {
 
-		//collection names
+        //collection names
         digiCollName_ = ps.getParameter<std::string>( "digiCollName" );
         digiPassName_ = ps.getParameter<std::string>( "digiPassName" );
         simHitCollName_  = ps.getParameter<std::string>("simHitCollName");
@@ -43,7 +43,7 @@ namespace ldmx {
     void EcalRecProducer::produce(Event& event) {
         // Get the Ecal Geometry
         const EcalHexReadout& hexReadout = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
-	
+
         std::vector<EcalHit> ecalRecHits;
         auto ecalDigis = event.getObject<HgcrocDigiCollection>( digiCollName_ , digiPassName_ );
         int numDigiHits = ecalDigis.getNumDigis();
@@ -156,7 +156,7 @@ namespace ldmx {
 
         if (event.exists( simHitCollName_, simHitPassName_ )) {
             //ecal sim hits exist ==> label which hits are real and which are pure noise
-		  auto ecalSimHits{event.getCollection<SimCalorimeterHit>( simHitCollName_, simHitPassName_ )};
+            auto ecalSimHits{event.getCollection<SimCalorimeterHit>( simHitCollName_, simHitPassName_ )};
             std::set<int> real_hits;
             for ( auto const& sim_hit : ecalSimHits ) real_hits.insert( sim_hit.getID() );
             for ( auto& hit : ecalRecHits ) hit.setNoise( real_hits.find(hit.getID()) == real_hits.end() );
