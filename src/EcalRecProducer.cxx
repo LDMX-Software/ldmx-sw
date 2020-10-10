@@ -20,8 +20,8 @@ namespace ldmx {
 		//collection names
         digiCollName_ = ps.getParameter<std::string>( "digiCollName" );
         digiPassName_ = ps.getParameter<std::string>( "digiPassName" );
-		simHitCollName_  = ps.getParameter<std::string>("simHitCollName");
-		simHitPassName_  = ps.getParameter<std::string>("simHitPassName");
+        simHitCollName_  = ps.getParameter<std::string>("simHitCollName");
+        simHitPassName_  = ps.getParameter<std::string>("simHitPassName");
         recHitCollName_ = ps.getParameter<std::string>("recHitCollName");
 
         layerWeights_ = ps.getParameter<std::vector<double>>( "layerWeights" );

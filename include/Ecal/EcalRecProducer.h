@@ -71,7 +71,7 @@ namespace ldmx {
             std::string simHitCollName_;
 
             /// simhit pass name
-	        std::string simHitPassName_;
+            std::string simHitPassName_;
 
             /// output hit collection name
             std::string recHitCollName_;

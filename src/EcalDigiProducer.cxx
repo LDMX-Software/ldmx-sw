@@ -35,10 +35,10 @@ namespace ldmx {
         nADCs_            = hgcrocParams.getParameter<int>("nADCs");
         iSOI_             = hgcrocParams.getParameter<int>("iSOI");
 
-		//collection names
-		input_collection_  = ps.getParameter<std::string>("inputCollName");
-		input_pass_name_  = ps.getParameter<std::string>("inputPassName");
-		output_collection_ = ps.getParameter<std::string>("digiCollName");
+        //collection names
+        inputCollName_  = ps.getParameter<std::string>("inputCollName");
+        inputPassName_  = ps.getParameter<std::string>("inputPassName");
+        digiCollName_   = ps.getParameter<std::string>("digiCollName");
 
         // physical constants
         //  used to calculate unit conversions
@@ -87,7 +87,7 @@ namespace ldmx {
         //  the class EcalHitIO in the SimApplication module handles the translation from G4CalorimeterHits to SimCalorimeterHits
         //  this class ensures that only one SimCalorimeterHit is generated per cell, but
         //  multiple "contributions" are still handled within SimCalorimeterHit 
-		auto ecalSimHits{event.getCollection<SimCalorimeterHit>(input_collection_, input_pass_name_)};
+		auto ecalSimHits{event.getCollection<SimCalorimeterHit>(inputCollName_, inputPassName_)};
 
         /* debug printout
         std::cout << "Energy to Voltage Conversion: " << MeV_ << " mV/MeV" << std::endl;
@@ -164,7 +164,7 @@ namespace ldmx {
             } //loop over noise amplitudes
         } //if we should do the noise
 
-        event.add(output_collection_, ecalDigis );
+        event.add( digiCollName_, ecalDigis );
 
         return;
     } //produce
