@@ -21,43 +21,43 @@
 
 namespace ldmx { 
 
-    class TrackerHitKiller : public Producer { 
+class TrackerHitKiller : public Producer { 
     
-        public: 
+ public: 
 
-            /** Constructor */
-            TrackerHitKiller(const std::string &name, Process &process); 
+  /** Constructor */
+  TrackerHitKiller(const std::string &name, Process &process); 
             
-            /** Destructor */
-            ~TrackerHitKiller();
+  /** Destructor */
+  ~TrackerHitKiller();
 
-            /** 
-             * Configure the processor using the given user specified parameters.
-             * 
-             * @param parameters Set of parameters used to configure this processor.
-             */
-            void configure(Parameters& parameters) final override;
+  /** 
+   * Configure the processor using the given user specified parameters.
+   * 
+   * @param parameters Set of parameters used to configure this processor.
+   */
+  void configure(Parameters& parameters) final override;
 
-            /**
-             * Run the processor and create a collection of "digitized" Si
-             * strip hits which include hit efficiency effects.
-             *
-             * @param event The event to process.
-             */
-            void produce(Event &event); 
+  /**
+   * Run the processor and create a collection of "digitized" Si
+   * strip hits which include hit efficiency effects.
+   *
+   * @param event The event to process.
+   */
+  void produce(Event &event); 
 
-        private: 
+ private: 
 
-            /** 
-             * Random number generator used to determine if hit should be
-             * dropped. 
-             */
-            std::unique_ptr<TRandom3> random_;
+  /** 
+   * Random number generator used to determine if hit should be
+   * dropped. 
+   */
+  std::unique_ptr<TRandom3> random_{nullptr};
 
-            /// Hit efficiency
-            double hitEff_{99};
+  /// Hit efficiency
+  double hitEff_{99};
 
-    }; // TrackerHitKiller
+}; // TrackerHitKiller
 
 } // ldmx
 

@@ -13,6 +13,8 @@ jobs:
   build-test:
     # run the commands on ubuntu with bash shell
     runs-on: ubuntu-latest
+    env:
+      image: ldmx/dev:v1.0
     defaults:
       run:
         shell: bash
@@ -24,30 +26,29 @@ jobs:
 
     # Setup our ldmx development environment
     - name: Setup ldmx environment
-      run: docker pull ldmx/dev
+      run: docker pull $image
     
     # configure ldmx-sw using the docker environment
     - name: Configure the build
       run: |
           mkdir build &&
-          docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build cmake --version &&
-          docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build cmake -DBUILD_TESTS=ON ..
+          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build cmake --version &&
+          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build cmake -DBUILD_TESTS=ON ..
 
     # build ldmx-sw using the docker environment
     - name: Build and Install
-      run: docker run -i -v $(pwd):$(pwd) ldmx/dev $(pwd)/build make install
+      run: docker run -i -v $(pwd):$(pwd) $image $(pwd)/build make install
 
     # run test executable and test configs using the docker environment
     #   The test executable is hard-coded here and in the cmake macro build_test
-    #   The text configs are retrieved here for any files matching the pattern:
-    #       'ldmx-sw/*/test/*.py'
-    #   i.e. Any python file in the 'test' directory of any module.
+    #   The test configs are retrieved and ran through fire, exiting if any error out
+    #       The set of test configs is any file matching 'ldmx-sw/*/test/*.py'
     - name: Test the build
       run: |
           cd ../ &&
           export LDMX_BASE=$(pwd) &&
-          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $LDMX_BASE/ldmx-sw/install ./bin/run_test &&
-          for config in `ls ldmx-sw/*/test/*.py`; do docker run -i -e LDMX_BASE -v $(pwd):$(pwd) ldmx/dev $(pwd) fire "$config"; done
+          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/install ./bin/run_test &&
+          for c in `ls ldmx-sw/*/test/*.py`; do if ! docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $(pwd) fire $c; then exit 1; fi; done
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,

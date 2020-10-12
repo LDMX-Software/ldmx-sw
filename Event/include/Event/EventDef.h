@@ -8,7 +8,7 @@
 #include "Event/ClusterAlgoResult.h"
 #include "Event/EcalCluster.h"
 #include "Event/EcalHit.h"
-#include "Event/EcalDigiCollection.h"
+#include "Event/HgcrocDigiCollection.h"
 #include "Event/EcalVetoResult.h"
 #include "Event/EventConstants.h"
 #include "Event/EventHeader.h"
@@ -52,7 +52,7 @@ namespace ldmx {
      */
     typedef std::variant< 
         ClusterAlgoResult,
-        EcalDigiCollection,
+        HgcrocDigiCollection,
         EcalVetoResult,
         EventHeader,
         HcalVetoResult,

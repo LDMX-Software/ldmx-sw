@@ -30,8 +30,6 @@ class HcalDigiProducer(ldmxcfg.Producer) :
         self.strip_attenuation_length = 5. # this is in m
         self.strip_position_resolution = 150. # this is in mm
         self.sim_hit_pass_name = '' #use any pass available
-        import time
-        self.randomSeed = int(time.time())
 
 class HcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for veto in HCal
