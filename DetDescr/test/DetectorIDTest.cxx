@@ -65,7 +65,7 @@ TEST_CASE( "DetectorID" , "[DetDescr][functionality]" ) {
 	std::stringstream ss;
 	ss << eid;
 
-	REQUIRE( ss.str()=="Ecal(50,15,500)" );
+	REQUIRE( ss.str()=="Ecal(50,15,500[92,23])" );
 
 	DetectorIDInterpreter dii(eid);
 

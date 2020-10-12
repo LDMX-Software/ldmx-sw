@@ -22,13 +22,28 @@ source $ROOTDIR/bin/thisroot.sh
 source $G4DIR/bin/geant4.sh
 
 # add ldmx-sw and ldmx-analysis installs to the various paths
-export LD_LIBRARY_PATH=$ONNX_DIR/lib:/usr/local/lib:$LD_LIBRARY_PATH
-export PYTHONPATH=/usr/local/lib/python:$PYTHONPATH
-export PATH=/usr/local/bin:$PATH
+export LDMX_SW_INSTALL=/usr/local/
+export LD_LIBRARY_PATH=$LDMX_SW_INSTALL/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=$LDMX_SW_INSTALL/python:$PYTHONPATH
+export PATH=$LDMX_SW_INSTALL/bin:$PATH
+
+# add externals installed along side ldmx-sw
+# TODO this for loop might be very slow... might want to hard-code the externals path
+for _external_path in $LDMX_SW_INSTALL/external/*/lib
+do
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$_external_path
+done
 
 # go to first argument
 cd "$1"
 
-# execute the rest as arguments to the application
-fire "${@:2}"
-
+# run the rest of the arguments depending on the command
+if [[ "$2" =~ .*".py" ]]
+then
+    # command ends in '.py'
+    #   assume that we are running the ldmx application
+    fire "${@:2}"
+else
+    # otherwise just run everything like normal
+    eval "${@:2}"
+fi

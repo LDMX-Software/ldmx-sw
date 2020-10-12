@@ -45,14 +45,13 @@ def electro_nuclear( detector, generator ) :
     # Set run parameters
     sim.runNumber = 0
     sim.description = "Target electron-nuclear, xsec bias 1e8"
-    sim.randomSeeds = [ 1, 2 ]
     sim.beamSpotSmear = [20., 80., 0.] #mm
     
     sim.generators.append(generator)
     
     # Enable and configure the biasing
     sim.biasingOn()
-    sim.biasingConfigure( 'electronNuclear' , 'target' , 0. , 1e8 )
+    sim.biasingConfigure( 'electronNuclear' , 'target' , 0. , int(1e8) )
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
@@ -103,7 +102,6 @@ def photo_nuclear( detector, generator ) :
     # Set run parameters
     sim.runNumber = 0
     sim.description = "ECal photo-nuclear, xsec bias 450"
-    sim.randomSeeds = [ 1, 2 ]
     sim.beamSpotSmear = [20., 80., 0.]
     
     sim.generators.append(generator)
@@ -114,7 +112,7 @@ def photo_nuclear( detector, generator ) :
             'photonNuclear' #process
             , 'target' #volume
             , 2500. #threshold in MeV
-            , 450. #factor
+            , 450 #factor
             )
    
     # the following filters are in a library that needs to be included

@@ -1,6 +1,7 @@
 #include "EventProc/TrigScintDigiProducer.h"
+#include "Framework/RandomNumberSeedService.h"
+#include "Framework/Exception.h"
 
-#include <exception>
 #include <iostream>
 
 namespace ldmx {
@@ -173,8 +174,8 @@ void TrigScintDigiProducer::produce(Event &event) {
     } // end verbose
   }
 
-  // ------------------------------- Noise simulation
-  // -------------------------------
+  // ------------------------------- Noise simulation -----------------------//
+  // ------------------------------------------------------------------------//
   int numEmptyCells =
       stripsPerArray_ - numRecHits; // only simulating for single array until
                                     // all arrays are merged into one collection

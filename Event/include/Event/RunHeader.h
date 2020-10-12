@@ -32,12 +32,9 @@ namespace ldmx {
             /**
              * Constructor.
              *
-             * @param runNumber The run number.
-             * @param detectorName The name of the detector.
-             * @param description A short description of the run.
+             * @param runNumber The run number uniquely identifying this run
              */
-            RunHeader(int runNumber, std::string detectorName,  
-                      std::string description); 
+            RunHeader(int runNumber); 
 
             /**
              * Default constructor.
@@ -55,6 +52,9 @@ namespace ldmx {
             /** @return The name of the detector used to create the events. */
             const std::string& getDetectorName() const { return detectorName_; }
 
+            /** Set the name of the detector that was used in this run */
+            void setDetectorName(const std::string& det) { detectorName_ = det; }
+
             /** 
              * @return The git SHA-1 associated with the software tag used
              * to generate this file.
@@ -63,6 +63,9 @@ namespace ldmx {
 
             /** @return A short description of the run. */
             const std::string& getDescription() const { return description_; }
+
+            /** Set the description of this run */
+            void setDescription(const std::string& des) { description_ = des; }
 
             /**
              * Get the start time of the run in seconds since epoch.
@@ -103,12 +106,16 @@ namespace ldmx {
                 return intParameters_.at(name); 
             }
 
+            /// Get a const reference to all int parameters
+            const std::map<std::string,int>& getIntParameters() const {
+                return intParameters_;
+            }
+
             /**
              * Set an int parameter value.
              * 
              * @param name The name of the parameter.
              * @param value The value of the parameter.
-             * @return The parameter value.
              */
             void setIntParameter(const std::string& name, int value) { 
                 intParameters_[name] = value;
@@ -124,11 +131,16 @@ namespace ldmx {
                 return floatParameters_.at(name);
             }
 
+            /// Get a const reference to all float parameters
+            const std::map<std::string,float>& getFloatParameters() const {
+                return floatParameters_;
+            }
+
             /**
              * Set a float parameter value.
              * 
              * @param name The name of the parameter.
-             * @return value The parameter value.
+             * @param value The value of the parameter.
              */
             void setFloatParameter(const std::string& name, float value) {
                 floatParameters_[name] = value;
@@ -144,18 +156,48 @@ namespace ldmx {
                 return stringParameters_.at(name);
             }
 
+            /// Get a const reference to all string parameters
+            const std::map<std::string,std::string>& getStringParameters() const {
+                return stringParameters_;
+            }
+
             /**
              * Set a string parameter value.
              * 
              * @param name The name of the parameter.
-             * @return value The parameter value.
+             * @param value The value of the parameter.
              */
             void setStringParameter(const std::string& name, std::string value) {
                 stringParameters_[name] = value;
             }
 
+            /**
+             * Stream this object into the input ostream
+             *
+             * Includes new-line characters to separate out the different parameter maps
+             *
+             * @param[in] s ostream to write to
+             */
+            void stream(std::ostream& s) const;
+
             /** Print a string desciption of this object. */
             void Print() const;
+
+            /**
+             * Stream this object to an output stream
+             *
+             * Needs to be here and labeled as friend for
+             * it to be compatible with Boost logging.
+             *
+             * @see ldmx::RunHeader::stream
+             * @param[in] s ostream to write to
+             * @param[in] h RunHeader to write out
+             * @return modified ostream
+             */
+            friend std::ostream& operator<<(std::ostream& s, const ldmx::RunHeader& h) {
+                h.stream(s);
+                return s;
+            }
 
         private:
 
@@ -189,7 +231,7 @@ namespace ldmx {
             /** Map of string parameters. */
             std::map<std::string, std::string> stringParameters_;
 
-            ClassDef(RunHeader, 2);
+            ClassDef(RunHeader, 3);
 
     }; // RunHeader
 
