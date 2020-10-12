@@ -33,55 +33,67 @@ namespace ldmx {
   class OverlayProducer : public ldmx::Producer {
   public:
 
-		OverlayProducer(const std::string& name, ldmx::Process& process) : ldmx::Producer(name, process) {  }
+	OverlayProducer(const std::string& name, ldmx::Process& process) : ldmx::Producer(name, process), overlayEvent_{"overlay"}{  }
 
-		  ~OverlayProducer();
+	//	~OverlayProducer();
+	//destructor causes linking problems 
+	
+	virtual void configure(Parameters& parameters) final override;
 
-	  virtual void configure(Parameters& parameters) final override;
-
-            virtual void produce(Event& event) final override;
+	virtual void produce(Event& event) final override;
 
 	virtual void onFileOpen();
 
-            virtual void onFileClose(EventFile&);
+	virtual void onFileClose(EventFile&);
 
-            virtual void onProcessStart(); 
+	virtual void onProcessStart(); 
 
-            virtual void onProcessEnd();
+	virtual void onProcessEnd();
 
-        private:
+  private:
 
-	    /**
-	     * overlay events input file
-	     */
+	/** 
+	 * overlay events input file
+	 */
 
-	    std::unique_ptr<EventFile> overlayFile_;      
+	std::unique_ptr<EventFile> overlayFile_;      
 	    
-            /**
-             * The overlay ldmx event bus
-             */
-            Event overlayEvent_;
+	/**
+	 * The overlay ldmx event bus
+	 */
+	Event overlayEvent_;
 
-	    std::unique_ptr<TTree> overlayTree_;      // overlay events input tree
-	    std::string overlayFileName_;   // overlay events input file name
-	    std::string overlayTreeName_;   // overlay events input tre name
-	    std::string overlayPassName_;   // overlay events input file name
-	    //	    std::unique_ptr<EventFile> simFile_;      // sim file: the file being generated, to be overlaid 
-	    EventFile *simFile_;      // sim file: the file being generated, to be overlaid 
-	    int lastEvent_{0};         // book keeping of used events
-	    int doPoisson_{0};         // or not
-	    double poissonMu_{0.};       // av. nOverlay from the given process
-	    int nEventsTot_{0};        // in the input tree 
-	    std::vector <std::string> collections_;     // to loop over and add hits from
-	    std::string overlayProcessName_;  // to use for naming the collection where nOverlaidEvents is relayed
-	    std::string passName_;          // to use for naming the event bus passengers, mostly a disambiguation
-	    std::string simParticleCollName_;          // to use for naming the event bus passengers, mostly a disambiguation
-	    std::string simParticlePassName_;          // to use for naming the event bus passengers, mostly a disambiguation
-	    int verbosity_;            // control verbosity 
-	    std::unique_ptr<TRandom2> rndm_;  // random number generator. TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input files will have way shorter period anyway. 
-	    //	    TRandom2 * rndm_{NULL};     
-	    int seed_{0};              // random number generator seed. not clear if this needs to be reproducibly independent or can just be clock seeded (using 0). 
-    };
+	std::unique_ptr<TTree> overlayTree_;      // overlay events input tree
+	std::string overlayFileName_;   // overlay events input file name
+	std::string overlayTreeName_;   // overlay events input tre name
+	std::string overlayPassName_;   // overlay events input file name
+	//	    std::unique_ptr<EventFile> simFile_;      // sim file: the file being generated, to be overlaid 
+	EventFile *simFile_;      // sim file: the file being generated, to be overlaid 
+	int lastEvent_{0};         // book keeping of used events
+	int doPoisson_{0};         // or not
+	double poissonMu_{0.};       // av. nOverlay from the given process
+	double timeSigma_{0.};       // spread in time for bunches
+	double timeMean_{0.};       // spread in time for bunches
+	int nEventsTot_{0};        // in the input tree 
+	std::vector <std::string> collections_;     // to loop over and add hits from
+	std::string overlayProcessName_;  // to use for naming the collection where nOverlaidEvents is relayed
+	std::string passName_;          // to use for naming the event bus passengers, mostly a disambiguation
+	std::string simParticleCollName_;          // to use for naming the event bus passengers, mostly a disambiguation
+	std::string simParticlePassName_;          // to use for naming the event bus passengers, mostly a disambiguation
+	int verbosity_;            // control verbosity 
+	std::unique_ptr<TRandom2> rndm_;  // random number generator. TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input files will have way shorter period anyway. 
+	std::unique_ptr<TRandom2> rndmTime_;  // random number generator. TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input files will have way shorter period anyway. 
+	//	    TRandom2 * rndm_{NULL};     
+	int seed_{0};              // random number generator seed. not clear if this needs to be reproducibly independent or can just be clock seeded (using 0).
+
+	// for Ecal, overlay hits need to be added as contribs.
+	// but these are required to be unique, by the Ecal rconstruction code 
+	// so assign a nonsensical trackID, incidentID, and PDG ID to the contribs from overlay
+	int overlayIncidentID_{ -1000 };
+	int overlayTrackID_{ -1000 };
+	int overlayPdgCode_{ 0 };
+	
+  };
 }
 
 #endif /* EVENTPROC_OVERLAYPRODUCER_H */
