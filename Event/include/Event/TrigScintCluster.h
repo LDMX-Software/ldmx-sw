@@ -17,7 +17,7 @@ namespace ldmx {
  * @brief Stores cluster information from the trigger scintillator pads. Adds on
  * the ECal cluster functionality
  */
-class TrigScintCluster : {
+class TrigScintCluster {
 
 public:
   /**
