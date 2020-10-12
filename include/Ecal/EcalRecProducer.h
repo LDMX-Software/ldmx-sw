@@ -67,6 +67,15 @@ namespace ldmx {
             /** Digi Pass Name to use as input */
             std::string digiPassName_;
 
+            /// simhit collection name                                                                                                     
+            std::string simHitCollName_;
+
+            /// simhit pass name
+            std::string simHitPassName_;
+
+            /// output hit collection name
+            std::string recHitCollName_;
+	  
             /// Energy [MeV] deposited by a MIP in Si 0.5mm thick
             double mipSiEnergy_;
 
