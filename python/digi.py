@@ -69,6 +69,11 @@ class EcalDigiProducer(Producer) :
         #   this leads to ~ 470 mV/MeV or ~6.8 MeV maximum hit (if 320 fC is max ADC range)
         self.MeV = (1./mipSiEnergy)*self.hgcroc.calculateVoltage( nElectronsPerMIP )
 
+        # input and output collection name parameters
+        self.inputCollName = 'EcalSimHits'
+        self.inputPassName = ''
+        self.digiCollName = 'EcalDigis'
+
 
 class EcalRecProducer(Producer) :
     """Configuration for the EcalRecProducer
@@ -109,7 +114,10 @@ class EcalRecProducer(Producer) :
 
         self.digiCollName = 'EcalDigis'
         self.digiPassName = ''
-
+        self.simHitCollName = 'EcalSimHits'
+        self.simHitPassName = ''
+        self.recHitCollName = 'EcalRecHits'
+        
         # geometry dependent settings
         # use helper functions to set these
         self.secondOrderEnergyCorrection = 1.
