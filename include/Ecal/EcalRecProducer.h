@@ -115,7 +115,7 @@ namespace ldmx {
              * This is less physically motivated than the layer weights and is more
              * of a calibration number.
              */
-            double secondOrderEnergyCorrection_;        
+            double secondOrderEnergyCorrection_;
 
     };
 }

@@ -122,9 +122,7 @@ class EcalRecProducer(Producer) :
         # use helper functions to set these
         self.secondOrderEnergyCorrection = 1.
         self.layerWeights = [ ]
-
-
-        self.v12() #use v12 geometry by default
+        self.v12()
 
     def v2(self) :
         """These layerWeights and energy correction were calculated at least before v3 geometry.
