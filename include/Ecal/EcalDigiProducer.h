@@ -74,7 +74,7 @@ class EcalDigiProducer : public Producer {
             std::string inputPassName_;
 
             /// output hit collection name
-            std::string outputCollName_;
+            std::string digiCollName_;
 	  
             /// Time interval for chip clock in ns
             double clockCycle_;
