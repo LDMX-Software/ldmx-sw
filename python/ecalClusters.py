@@ -29,5 +29,3 @@ class EcalClusterProducer(ldmxcfg.Producer) :
         # Name of the cluster algo collection to make
         self.algoCollName = "ClusterAlgoResult"
 
-        from LDMX.DetDescr import EcalHexReadout
-        self.hexReadout = EcalHexReadout.EcalHexReadout()
