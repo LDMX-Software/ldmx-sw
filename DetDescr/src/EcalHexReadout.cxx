@@ -11,7 +11,7 @@
 
 namespace ldmx {
 
-    EcalHexReadout::EcalHexReadout(const Parameters& ps) {
+  EcalHexReadout::EcalHexReadout(const Parameters& ps) : ConditionsObject(EcalHexReadout::CONDITIONS_OBJECT_NAME) {
 
         layerZPositions_ = ps.getParameter<std::vector<double>>("layerZPositions");
         ecalFrontZ_   = ps.getParameter<double>("ecalFrontZ");

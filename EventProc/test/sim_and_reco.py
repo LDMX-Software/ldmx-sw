@@ -37,7 +37,7 @@ tsDigisDown.pe_per_mip = tsDigisUp.pe_per_mip
 
 from LDMX.Ecal import digi
 from LDMX.Ecal import vetos
-from LDMX.EventProc import hcal
+from LDMX.Hcal import hcal
 from LDMX.EventProc.simpleTrigger import simpleTrigger 
 from LDMX.EventProc.trackerHitKiller import trackerHitKiller
 p.sequence=[ sim, 
