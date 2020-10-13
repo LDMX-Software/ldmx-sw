@@ -149,8 +149,7 @@ class DarkBremFilter(simcfg.UserAction):
         include.library()
 
         self.volume = vol
-        self.nGensFromPrimary = 0
-        self.minApEnergy = 0.
+        self.threshold = 0.
 
     def target(minApEnergy) :
         """Configure filter to look for dark brem in target
@@ -165,24 +164,20 @@ class DarkBremFilter(simcfg.UserAction):
         """
 
         f = DarkBremFilter('target')
-        f.nGensFromPrimary = 1 #only allow primary to dark brem
-        f.minApEnergy = minApEnergy
+        f.threshold = minApEnergy
         return f
     
-    def ecal(minApEnergy,nGensFromPrimary) :
+    def ecal(minApEnergy) :
         """Configure filter to look for dark brem in ecal
 
         Parameters
         ----------
         minApEnergy : float
             Minimum A' energy [MeV] to keep event
-        nGensFromPrimary : int
-            Number of particle generations to look for A' for before giving up
         """
 
         f = DarkBremFilter('ecal')
-        f.nGensFromPrimary = nGensFromPrimary
-        f.minApEnergy = minApEnergy
+        f.threshold = minApEnergy
         return f
 
 class TaggerVetoFilter(simcfg.UserAction): 
