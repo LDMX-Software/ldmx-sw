@@ -16,3 +16,6 @@
 [submodule "Conditions"]
 	path = Conditions
 	url = https://github.com/LDMX-Software/Conditions.git
+[submodule "Hcal"]
+	path = Hcal
+	url = https://github.com/LDMX-Software/Hcal.git
