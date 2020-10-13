@@ -47,6 +47,13 @@ TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
 
 void TrigScintDigiProducer::produce(Event &event) {
 
+  // Need to handle seeding on the first event
+  if (!noiseGenerator_->hasSeed()) {
+	const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+	noiseGenerator_->seedGenerator(rseed.getSeed("TrigScintDigiProducer::NoiseGenerator"));
+  }
+
+  
   std::map<TrigScintID, int> cellPEs;
   std::map<TrigScintID, int> cellMinPEs;
   std::map<TrigScintID, float> Xpos, Ypos, Zpos, Edep, Time, beamFrac;
