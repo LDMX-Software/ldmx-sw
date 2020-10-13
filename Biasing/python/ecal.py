@@ -235,11 +235,14 @@ def dark_brem( ap_mass , lhe, detector ) :
     from LDMX.Biasing import include
     include.library()
 
+    from LDMX.Biasing import util
     sim.actions.extend([ 
+            # Make sure all particles above 2GeV are processed first
+            util.PartialEnergySorter(2000.),
             # Abort events if the electron doesn't get to the ECal with 3.5GeV
             filters.PrimaryToEcalFilter(3500.),
             # Only keep events when a dark brem happens in the target
-            filters.DarkBremFilter.ecal(2000.,3),
+            filters.DarkBremFilter.ecal(2000.),
             # Keep all of the dark brem daughters. 
             filters.TrackProcessFilter.dark_brem()
     ])
