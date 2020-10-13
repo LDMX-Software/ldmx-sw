@@ -20,3 +20,21 @@ class StepPrinter(simcfg.UserAction) :
         include.library()
 
         self.track_id = track_id
+
+class PartialEnergySorter(simcfg.UserAction) :
+    """Process particles such that all particles above
+    the input threshold are processed first.
+
+    Parameters
+    ----------
+    thresh : float
+        Minimum energy [MeV] to process a track first
+    """
+
+    def __init__(self,thresh) :
+        super().__init__('sort_above_%dMeV'%thresh,'ldmx::PartialEnergySorter')
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.threshold = thresh

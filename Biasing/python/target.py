@@ -187,7 +187,10 @@ def dark_brem( ap_mass , lhe, detector ) :
     from LDMX.Biasing import include
     include.library()
 
+    from LDMX.Biasing import util
     sim.actions.extend([
+        # Make sure all particles above 2GeV are processed first
+        util.PartialEnergySorter(2000.),
         # make sure electron reaches target with 3.5GeV
         filters.TaggerVetoFilter(3500.),
         # make sure dark brem occurs in the target where A' has at least 2GeV

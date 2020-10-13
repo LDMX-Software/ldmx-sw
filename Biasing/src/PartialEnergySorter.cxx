@@ -17,33 +17,66 @@ namespace ldmx {
 
     PartialEnergySorter::~PartialEnergySorter() { } 
 
-    G4ClassificationOfNewTrack PartialEnergySorter::ClassifyNewTrack(const G4Track* aTrack,
-            const G4ClassificationOfNewTrack& currentTrackClassification) final override {
+    void PartialEnergySorter::BeginOfEventAction(const G4Event*) {
+        /** debug printout
+        std::cout << "[ PartialEnergySorter ] : "
+            << "Starting a new event."
+            << std::endl;
+         */
+        num_particles_above_threshold_ = 0;
+    }
 
-        if ( aTrack->GetTotalEnergy() > threshold_ ) {
+    G4ClassificationOfNewTrack PartialEnergySorter::ClassifyNewTrack(const G4Track* aTrack,
+            const G4ClassificationOfNewTrack& currentTrackClassification) {
+
+        /** debug printout
+        std::cout << "[ PartialEnergySorter ] : Classifying track "
+            << aTrack->GetTrackID() << " with energy "
+            << aTrack->GetKineticEnergy() << " MeV."
+            << std::endl;
+         */
+
+        if ( aTrack->GetKineticEnergy() > threshold_ ) {
+            /** debug printout
+            std::cout << "[ PartialEnergySorter ] : Classifying track "
+                << aTrack->GetTrackID() << " with energy "
+                << aTrack->GetKineticEnergy() << " MeV."
+                << std::endl;
+             */
             num_particles_above_threshold_++;
             return fUrgent;
         }
 
-        /* not sure if this is needed...
-        if ( num_particles_above_threshold_ == 0 ) 
-            return currentTrackClassification;
+        /*
+         * Track has kinetic energy less than or equal to
+         * the threshold, so we put it on the waiting stack
          */
-
-        if ( aTrack->GetTotalEnergy() < threshold_ ) 
-            return fWaiting;
-
-        return currentTrackClassification; 
+        return fWaiting;
     }
 
     void PartialEnergySorter::stepping(const G4Step* step) {
 
+        auto pre_energy{step->GetPreStepPoint()->GetKineticEnergy()};
+        auto post_energy{step->GetPostStepPoint()->GetKineticEnergy()};
+
+        /** debug printout
+        std::cout << "[ PartialEnergySorter ] : Stepping track "
+            << step->GetTrack()->GetTrackID() << " going from "
+            << pre_energy  << " MeV to "
+            << post_energy << " MeV."
+            << std::endl;
+         */
+
         if ( num_particles_above_threshold_ == 0 ) return;
 
-        auto pre_energy{step->GetPreStepPoint()->GetTotalEnergy()};
-        auto post_energy{step->GetPostStepPoint()->GetTotalEnergy()};
-
         if ( pre_energy >= threshold_ and post_energy <= threshold_ ) {
+            /** debug printout
+            std::cout << "[ PartialEnergySorter ] : Stepping track "
+                << step->GetTrack()->GetTrackID() << " going from "
+                << pre_energy  << " MeV to "
+                << post_energy << " MeV."
+                << std::endl;
+             */
             num_particles_above_threshold_--;
             step->GetTrack()->SetTrackStatus(fSuspend);
         }

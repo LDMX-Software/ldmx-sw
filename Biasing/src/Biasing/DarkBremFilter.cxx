@@ -21,8 +21,7 @@ namespace ldmx {
         : UserAction(name, parameters) {
 
         std::string desiredVolume = parameters.getParameter< std::string >("volume");
-        nGensFromPrimary_ = parameters.getParameter< int >("nGensFromPrimary");
-        minApEnergy_ = parameters.getParameter< double >("minApEnergy");
+        threshold_ = parameters.getParameter< double >("threshold");
  
         //TODO check if this needs to be updated when v12 geo updates are merged in
         for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
@@ -57,12 +56,11 @@ namespace ldmx {
             << "Beginning event."
             << std::endl;
         */
-        currentGen_ = 0;
         foundAp_    = false;
         return;
     }
 
-    G4ClassificationOfNewTrack DarkBremFilter::ClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& ) {
+    G4ClassificationOfNewTrack DarkBremFilter::ClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& cl) {
 
         if ( aTrack->GetParticleDefinition() == G4APrime::APrime() ) {
             //there is an A'! Yay!
@@ -72,34 +70,17 @@ namespace ldmx {
                       << std::endl;
             */
             if ( foundAp_ ) AbortEvent("Found more than one A' during filtering.");
+            if ( aTrack->GetKineticEnergy() < threshold_ ) AbortEvent("A' was not produced above the required threshold.");
             foundAp_ = true;
         }
 
-        return fWaiting;
+        return cl;
     }
 
     void DarkBremFilter::NewStage() {
 
-        /**
-         * called when urgent stack is empty 
-         * since we are putting everything on waiting stack, 
-         * this is only called when a generation has been simulated 
-         * and we are starting the next one.
-         */
-
-        /* Check that generational stacking is working
-        std::cout << "[ DarkBremFilter ]: "
-            << "Closing up generation " << currentGen_ << " and starting a new one."
-            << std::endl;
-        */
-
-        //increment current generation
-        currentGen_++;
-
-        //if we are past the number of generations required to find an A'
-        //  and we haven't found one yet, abort the event.
-        if ( currentGen_ > nGensFromPrimary_ and not foundAp_ )
-            AbortEvent("A' wasn't produced within the minimum number of generations.");
+        if ( not foundAp_ )
+            AbortEvent("A' wasn't produced.");
         
         return;
     }
@@ -112,23 +93,16 @@ namespace ldmx {
             << std::endl;
         */
 
-        //add generation to UserTrackInformation
-        UserTrackInformation* userInfo 
-              = dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
-
-        userInfo->setGeneration( currentGen_ );
-        
         if ( track->GetParticleDefinition() == G4APrime::APrime() ) {
             //check if A' was made in the desired volume and has the minimum energy
             auto event{G4EventManager::GetEventManager()};
-            if ( track->GetTotalEnergy() < minApEnergy_ or not inDesiredVolume(track) ) {
-                //abort event if A' wasn't in correct volume or didn't have enough energy
-                std::stringstream reason;
-                reason << "A' wasn't produced inside of requested volume or was below requested energy, aborting event." 
-                   << " A' was produced in '" << track->GetLogicalVolumeAtVertex()->GetName() << "' and had energy "
-                   << track->GetTotalEnergy() << " MeV.";
-                AbortEvent(reason.str());
+            if (not inDesiredVolume(track)) {
+                AbortEvent("A' wasn't produced inside of the requested volume.");
             } else {
+                //add generation to UserTrackInformation
+                UserTrackInformation* userInfo 
+                      = dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
+
                 //make sure A' is persisted into output file
                 userInfo->setSaveFlag(true); 
     

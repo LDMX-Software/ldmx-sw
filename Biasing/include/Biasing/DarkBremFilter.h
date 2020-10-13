@@ -20,10 +20,10 @@
 //------------//
 #include "G4RunManager.hh"
 
-/*~~~~~~~~~~~~~*/
-/*   SimCore   */
-/*~~~~~~~~~~~~~*/
-#include "SimCore/UserAction.h"
+/*~~~~~~~~~~~~*/
+/*   Biasing  */
+/*~~~~~~~~~~~~*/
+#include "Biasing/PartialEnergySorter.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -39,16 +39,12 @@ namespace ldmx {
      * the input parameters:
      *
      *      volume: A' originates inside of the input volume (target or ecal)
-     *      nGensFromPrimary: A' produced by electron removed from primary by <= input n generations
-     *      minApEnergy: minimum energy [MeV] A' needs to have
+     *      threshold: minimum energy [MeV] A' needs to have, also threshold for PartialEnergySorter
      *
-     * The general idea for this filter is to force Geant4 to
-     * simulate the tracks in generation order. This is done by
-     * pushing all new tracks to the waiting stack and incrementing
-     * the current generation by one when the urgent stack is empty.
-     * Checking if the A' is produced is done in the PostTrackingAction,
-     * and the event is aborted if we reach a generation later than the input
-     * generation and no A' has been found.
+     * @see PartialEnergySorter
+     * Here we assume that the partial energy sorter is being run in sequence with this filter.
+     * This filter makes sure that any events passing this filter have an A' of the required
+     * input energy and generated inside of the required input volume.
      */
     class DarkBremFilter : public UserAction {
 
@@ -76,40 +72,37 @@ namespace ldmx {
             }
 
             /**
-             * Reset generation counter and flag on if A' has been found
+             * Reset flag on if A' has been found
              *
              * @param event unused
              */
             void BeginOfEventAction(const G4Event* event) final override;
 
             /**
-             * Classify a new track which postpones track processing.
+             * We return the classification of the track done by the PartialEnergySorter,
+             * but we can check here if the A' has been created above the required
+             * energy.
              *
-             * Push all new tracks to fWaiting
-             *
-             * This forces all tracks in a given generation to be simulated
-             * before the next generation of tracks is started.
-             *
-             * Checks a new track for being an A'
-             *  if it is an A', sets the foundAp_ member and returns fUrgent
+             * Checks a new track for being an A' above threshold_
+             *  if it is an A', sets the foundAp_ member 
              * 
+             * @see PartialEnergySort::ClassifyNewTrack
              * @param aTrack The Geant4 track.
              * @param currentTrackClass The current track classification.
+             * @returns current track classification
              */
             G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* aTrack, 
                     const G4ClassificationOfNewTrack& currentTrackClass) final override; 
 
             /**
-             * Increment the generation counter
+             * When using the PartialEnergySorter,
+             * the *first* time that a new stage begins is when
+             * all particles are now below the threshold.
              *
-             * This function is called when the urgent stack is empty
-             * and the waiting stack is transferred to the urgent stack.
+             * We take this opportunity to make sure that the A'
+             * has been found.
              *
-             * With all new tracks being pushed to the waiting stack,
-             * this only occurs when a new generation has begun.
-             *
-             * When a new generation has begun, if the new generation is more
-             * than the input generation limit, we check if the A' was found.
+             * @see PartialEnergySort::NewStage
              */
             void NewStage() final override;
 
@@ -117,8 +110,9 @@ namespace ldmx {
              * Make sure A' is saved.
              *
              * If passed track is A', set save status to true
-             * Aborts event if A' does not originate in desired volume
-             *  or has the minimum energy we wish
+             * Aborts event if A' does not originate in desired volume.
+             * This is the last check that the event needs to pass
+             * to be kept.
              *
              * @param track G4Track to check if it is an A'
              */
@@ -155,19 +149,14 @@ namespace ldmx {
             std::vector< G4LogicalVolume* > volumes_;
 
             /**
-             * Number of generations away from primary
-             * to allow to dark brem.
-             *
-             * Parameter Name: 'nGensFromPrimary'
-             */
-            int nGensFromPrimary_;
-
-            /**
              * Minimum energy [MeV] that the A' should have to keep the event.
+             *
+             * Also used by PartialEnergySorter to determine
+             * which tracks should be processed first.
              * 
-             * Parameter Name: 'minApEnergy'
+             * Parameter Name: 'threshold'
              */
-            double minApEnergy_;
+            double threshold_;
 
             /**
              * Have we found the A' yet?
@@ -175,13 +164,6 @@ namespace ldmx {
              * Reset to false in BeginOfEventAction
              */
             bool foundAp_;
-
-            /**
-             * The current generation removed from the primary electron
-             *
-             * Reset to zero in BeginOfEventAction
-             */
-            int currentGen_;
 
     }; // DarkBremFilter
 }
