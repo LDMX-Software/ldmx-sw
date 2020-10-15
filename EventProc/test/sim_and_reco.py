@@ -25,9 +25,9 @@ sim.actions = [ filters.TaggerVetoFilter(),
                 filters.EcalProcessFilter(), 
                 filters.TrackProcessFilter.photo_nuclear() ]
 
-from LDMX.EventProc.trigScint import TrigScintDigiProducer
-from LDMX.EventProc.trigScint import TrigScintClusterProducer
-from LDMX.EventProc.trigScint import trigScintTrack
+from LDMX.TrigScint.trigScint import TrigScintDigiProducer
+from LDMX.TrigScint.trigScint import TrigScintClusterProducer
+from LDMX.TrigScint.trigScint import trigScintTrack
 tsDigisUp   = TrigScintDigiProducer.up()
 tsDigisTag  = TrigScintDigiProducer.tagger()
 tsDigisDown = TrigScintDigiProducer.down()
