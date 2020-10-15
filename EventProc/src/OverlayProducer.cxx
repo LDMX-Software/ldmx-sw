@@ -184,8 +184,14 @@ namespace ldmx {
 			simHit.Print();
 
 			//store ids of existing hits. for these, need to add contribs...
-			if (isEcalHitCollection)
-			  hitMap[ simHit.getID() ] = SimCalorimeterHit();
+			if (isEcalHitCollection) {
+			  int simHitID = simHit.getID();
+			  hitMap[ simHitID ] = SimCalorimeterHit();
+			  hitMap[ simHitID ].setID( simHitID );
+
+			  std::vector <float> hitPos = simHit.getPosition();
+			  hitMap[ simHitID ].setPosition( hitPos[0], hitPos[1], hitPos[2]);
+			}
 			
 		  } //over calo simhit collection
 		  
@@ -205,11 +211,13 @@ namespace ldmx {
 		  if (! isEcalHitCollection )  //special treatment for ecal
 			outHits.push_back( overlayHit );
 		  else {
-			// Add a hit contrib because all steps are being saved or there is not an existing record.
+			int overlayHitID = overlayHit.getID();
+			if ( hitMap.find( overlayHitID ) == hitMap.end() )
+			  hitMap[ overlayHitID ] = overlayHit;
+
 			// incidentID = -1000, trackID = -1000, pdgCode = 0  <-- these are set in the header for now but could be parameters
-			int hitID = overlayHit.getID();
-			hitMap[ hitID ].addContrib(overlayIncidentID_,overlayTrackID_,overlayPdgCode_, overlayHit.getEdep(), overlayTime);
-			hitMap[ hitID ].setID(hitID);
+			hitMap[ overlayHitID ].setID(overlayHitID);
+			hitMap[ overlayHitID ].addContrib(overlayIncidentID_,overlayTrackID_,overlayPdgCode_, overlayHit.getEdep(), overlayTime);
 		  }
 		  
 		} //over overlay calo simhit collection
@@ -218,7 +226,6 @@ namespace ldmx {
 		std::cout << "Nhits in overlay collection " << outCollNames[iColl] << ": " << outHits.size() << std::endl;
 
 		if ( isEcalHitCollection ) {
-
 		  for ( auto &mapHit : hitMap ) {
             outHits.push_back( mapHit.second );
 		  }
