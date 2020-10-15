@@ -81,7 +81,7 @@ float SimQIE::QErr(float Q)
   return(sense[a]/(sqrt(12)*Q));
 }
 
-int* SimQIE::Out_ADC(Pulse* pp,int N)
+int* SimQIE::Out_ADC(QIEInputPulse* pp,int N)
 {
   int* OP = new int[N];	// N no. of output ADCs
 
@@ -92,7 +92,7 @@ int* SimQIE::Out_ADC(Pulse* pp,int N)
   return(OP);
 }
 
-int SimQIE::TDC(Pulse* pp, float T0=0)
+int SimQIE::TDC(QIEInputPulse* pp, float T0=0)
 {
   float thr2=TDC_thr/Gain;
   if(pp->eval(T0)>thr2) return(62);		// when pulse starts high
@@ -102,7 +102,7 @@ int SimQIE::TDC(Pulse* pp, float T0=0)
   return(63);			// when pulse remains low all along
 }
 
-int* SimQIE::Out_TDC(Pulse* pp,int N)
+int* SimQIE::Out_TDC(QIEInputPulse* pp,int N)
 {
   int* OP = new int[N];	// N no. of output ADCs
 
@@ -112,7 +112,7 @@ int* SimQIE::Out_TDC(Pulse* pp,int N)
   return(OP);
 }
 
-int* SimQIE::CapID(Pulse* pp, int N)
+int* SimQIE::CapID(QIEInputPulse* pp, int N)
 {
   int* OP = new int[N+1];	// N no. of output CapIDs
   OP[0]=0;			// needs to be changed later

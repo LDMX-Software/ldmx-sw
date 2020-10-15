@@ -1,5 +1,5 @@
 /**
- * @file Pulse.h
+ * @file QIEInputPulse.h
  * @brief Class for the input pulses to QIE
  * @author Niramay Gogate, Texas Tech University
  */
@@ -10,13 +10,13 @@
 namespace ldmx {
 
   /**
-   * @class Pulse
+   * @class QIEInputPulse
    * @brief The base class to store the most important functions
    *
    * @note Always use the classes inherited from this class for 
    * QIE input pulse.
    */
-  class Pulse
+  class QIEInputPulse
   {
  public:
 
@@ -48,7 +48,7 @@ namespace ldmx {
    *
    * @note The pulse maximum is found numerically
    */
-  class Bimoid: public Pulse
+  class Bimoid: public QIEInputPulse
   {
  public:
     /**
@@ -97,7 +97,7 @@ namespace ldmx {
    * @note This is the preferred inpute pulse
    * shape
    */
-  class Expo: public Pulse
+  class Expo: public QIEInputPulse
   {
  public:
 

@@ -17,7 +17,7 @@ TrigScintQIEDigis::TrigScintQIEDigis()
 
 // TrigScintQIEDigis::~TrigScintQIEDigis(){}
 
-TrigScintQIEDigis::TrigScintQIEDigis(int maxTS_,Pulse* pl, float pd=0, float ns=0)
+TrigScintQIEDigis::TrigScintQIEDigis(int maxTS_,QIEInputPulse* pl, float pd=0, float ns=0)
 {
   SimQIE* smq;
   if(ns==0) smq = new SimQIE();
@@ -41,7 +41,7 @@ TrigScintQIEDigis::TrigScintQIEDigis(int maxTS_,Pulse* pl, float pd=0, float ns=
   CIDs = temp3;
 }
 
-TrigScintQIEDigis::TrigScintQIEDigis(int maxTS_,Pulse* pl, SimQIE* sm)
+TrigScintQIEDigis::TrigScintQIEDigis(int maxTS_,QIEInputPulse* pl, SimQIE* sm)
 {
   maxTS = maxTS_;
   // ADCs = sm->Out_ADC(pl,maxTS);

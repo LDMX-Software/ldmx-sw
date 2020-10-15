@@ -1,5 +1,5 @@
 /**
- * @file Pulse.h
+ * @file SimQIE.h
  * @brief class for simulating QIE chip output
  * @author Niramay Gogate, Texas Tech University
  */
@@ -9,7 +9,7 @@
 
 #include<iostream>
 #include"TMath.h"
-#include"Event/Pulse.h"
+#include"Event/QIEInputPulse.h"
 #include"TRandomGen.h"
 
 namespace ldmx {
@@ -71,28 +71,28 @@ namespace ldmx {
      * @param pp = pointer to a pulse instance
      * @param T0 = starting time of the pulse
      */
-    int TDC(Pulse* pp,float T0);
+    int TDC(QIEInputPulse* pp,float T0);
 
     /**
      * Complete set of ADCs for the pulse
      * @param pp = pointer to pulse instance
      * @param N = no. of time samples considered for digitization
      */
-    int* Out_ADC(Pulse* pp,int N);	// Output per time sample, for N time samples
+    int* Out_ADC(QIEInputPulse* pp,int N);	// Output per time sample, for N time samples
 
     /**
      * Complete set of TDCs for the pulse
      * @param pp = pointer to pulse instance
      * @param N = no. of time samples considered for digitization
      */
-    int* Out_TDC(Pulse* pp,int N);	// Output per time sample, for N time samples
+    int* Out_TDC(QIEInputPulse* pp,int N);	// Output per time sample, for N time samples
 
     /**
      * Complete set of Capacitor IDs for the pulse
      * @param pp = pointer to pulse instance
      * @param N = no. of time samples considered for digitization
      */
-    int* CapID(Pulse* pp, int N);	// return CapID for N time samples
+    int* CapID(QIEInputPulse* pp, int N);	// return CapID for N time samples
 
  private:
 

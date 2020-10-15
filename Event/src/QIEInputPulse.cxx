@@ -1,16 +1,16 @@
 /**
- * @file Pulse.cxx
+ * @file QIEInputPulse.cxx
  * @author Niramay Gogate, Texas Tech University
  */
 
-#include "Event/Pulse.h"
+#include "Event/QIEInputPulse.h"
 #include<cmath>
 namespace ldmx {
 
-float Pulse::eval(float T){return(0);}
-float Pulse::Integrate(float T1,float T2){return(0);}
-float Pulse::Der(float T){return(0);}
-float Pulse::Max(){return(0);}
+float QIEInputPulse::eval(float T){return(0);}
+float QIEInputPulse::Integrate(float T1,float T2){return(0);}
+float QIEInputPulse::Der(float T){return(0);}
+float QIEInputPulse::Max(){return(0);}
 
 Bimoid::Bimoid(float start,float qq=1)
 {

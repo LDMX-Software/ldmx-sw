@@ -30,7 +30,7 @@ class TrigScintQIEDigis
    * 
    * @note SimQIE instance is initialized automatically
    */
-  TrigScintQIEDigis(int maxTS_,Pulse* pl, float pd, float ns);
+  TrigScintQIEDigis(int maxTS_,QIEInputPulse* pl, float pd, float ns);
 
   /**
    * Defaut constructor
@@ -40,7 +40,7 @@ class TrigScintQIEDigis
    *
    * @note The most preferred way of initialization
    */
-  TrigScintQIEDigis(int maxTS_,Pulse* pl, SimQIE* sm);
+  TrigScintQIEDigis(int maxTS_,QIEInputPulse* pl, SimQIE* sm);
 
   /**
    * Default constructor
