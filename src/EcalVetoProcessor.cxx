@@ -426,7 +426,7 @@ namespace ldmx {
 
 
         // MIP tracking starts here
-        std::cout << "BEGINNING MIP TRACKING" << std::endl;  //temp
+        // std::cout << "BEGINNING MIP TRACKING" << std::endl;  //temp
 
         /* Goal:  Calculate nStraightTracks (self-explanatory), nLinregTracks (tracks found by linreg algorithm),
         ** firstNearPhLayer (layer of the first hit near the photon trajectory), epAng (angle between the projected
@@ -440,7 +440,7 @@ namespace ldmx {
         TVector3 p_traj_end;
         if(ele_trajectory.size()==3 && photon_trajectory.size()==3) {
             /*make ele_trajectory and photon_trajectory into TVector3 pairs for later use*/
-            std::cout << "Expected, size==3" << std::endl;
+            //std::cout << "Expected, size==3" << std::endl;
             e_traj_start = TVector3(ele_trajectory[0].first, ele_trajectory[0].second, LAYER_Z_POSITIONS.front());
             e_traj_end =   TVector3(ele_trajectory[0].first, ele_trajectory[0].second, LAYER_Z_POSITIONS.back());
             p_traj_start = TVector3(photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.front());
@@ -452,13 +452,13 @@ namespace ldmx {
             TVector3 pvec = p_traj_end - p_traj_start;
             TVector3 p_norm = pvec.Unit();
             float epDot = e_norm.Dot(p_norm);
-            std::cout << "Assigning norm" << std::endl;
+            //std::cout << "Assigning norm" << std::endl;
             epAng_ = acos(epDot) * 180.0 / M_PI;  //In degrees for legibility
             epSep_ = sqrt( pow(e_traj_start.X() - p_traj_start.X(), 2) + 
                            pow(e_traj_start.Y() - p_traj_start.Y(), 2) );
         } else {
             /*All hits in the Ecal are fair game.  Pick e/ptraj so that they won't restrict anything.*/
-            std::cout << "Unexpected traj size " << ele_trajectory.size() << ", " << photon_trajectory.size() << std::endl;
+            //std::cout << "Unexpected traj size " << ele_trajectory.size() << ", " << photon_trajectory.size() << std::endl;
             e_traj_start = TVector3(999,999,0);
             e_traj_end = TVector3(999,999,999);
             p_traj_start = TVector3(1000,1000,0);
@@ -469,7 +469,7 @@ namespace ldmx {
 
         /* Compute firstNearPhLayer */
         firstNearPhLayer_ = LAYER_Z_POSITIONS.size();
-        std::cout << "trackingHitList contains " << trackingHitList.size() << " hits." << std::endl;
+        //std::cout << "trackingHitList contains " << trackingHitList.size() << " hits." << std::endl;
 
         if(photon_trajectory.size() != 0) {  /*if ptraj doesn't exist, leave phlayer at the default value*/
             for(std::vector<HitData>::iterator it = trackingHitList.begin(); it != trackingHitList.end(); ++it) {
@@ -480,7 +480,7 @@ namespace ldmx {
                 }
             }
         }
-        std::cout << "COMPLETED INITIAL ANALYSIS.  STARTING TRACKING..." << std::endl;
+        //std::cout << "COMPLETED INITIAL ANALYSIS.  STARTING TRACKING..." << std::endl;
 
         // Actual tracking begins here.
 
@@ -543,7 +543,7 @@ namespace ldmx {
 
 
         // Linreg tracking:
-        std::cout << "BEGINNING LINREG TRACKING" << std::endl;
+        //std::cout << "BEGINNING LINREG TRACKING" << std::endl;
 
         //int track[34];
         //int trackLen;
@@ -583,7 +583,7 @@ namespace ldmx {
 
 
 
-        std::cout << "TRACKING COMPLETED." << std::endl;
+        //std::cout << "TRACKING COMPLETED." << std::endl;
 
         result.setVariables(nReadoutHits_, deepestLayerHit_, summedDet_, summedTightIso_, maxCellDep_,
             showerRMS_, xStd_, yStd_, avgLayerHit_, stdLayerHit_, ecalBackEnergy_,
