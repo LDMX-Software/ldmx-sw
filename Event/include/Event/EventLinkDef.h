@@ -42,9 +42,7 @@
 #pragma link C++ class ldmx::SiStripHit+; 
 #pragma link C++ class ldmx::RawHit+;
 
-// #pragma link C++ class ldmx::Pulse+; // for QIE simulation [Niramay]
-// #pragma link C++ class ldmx::SimQIE+; // for QIE simulation [Niramay]
-#pragma link C++ class ldmx::TrigScintQIEDigis+; // for QIE simulation [Niramay]
+#pragma link C++ class ldmx::TrigScintQIEDigis+;
 
 //objects that we want to be added inside of an STL collection must be repeated below
 #pragma link C++ class std::vector<ldmx::SimCalorimeterHit>+;
@@ -59,12 +57,9 @@
 #pragma link C++ class std::vector<ldmx::SiStripHit>+;
 #pragma link C++ class std::vector<ldmx::RawHit>+;
 #pragma link C++ class std::vector< ldmx::TrigScintHit >+;
-<<<<<<< HEAD
-#pragma link C++ class std::vector< ldmx::TrigScintQIEDigis>+; // for QIE simulation [Niramay]
-=======
+#pragma link C++ class std::vector< ldmx::TrigScintQIEDigis>+;
 #pragma link C++ class std::vector< ldmx::TrigScintCluster >+;
 #pragma link C++ class std::vector< ldmx::TrigScintTrack >+;
->>>>>>> origin/master
 
 #endif
 

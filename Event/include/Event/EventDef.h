@@ -27,12 +27,9 @@
 #include "Event/TrackerVetoResult.h"
 #include "Event/TriggerResult.h"
 #include "Event/TrigScintHit.h" 
-<<<<<<< HEAD
 #include "Event/TrigScintQIEDigis.h" 
-=======
 #include "Event/TrigScintCluster.h" 
 #include "Event/TrigScintTrack.h" 
->>>>>>> origin/master
 
 #include <variant>
 
@@ -65,12 +62,9 @@ namespace ldmx {
         TrackerVetoResult,
         TriggerResult,
         TrigScintHit,
-<<<<<<< HEAD
         TrigScintQIEDigis,
-=======
         TrigScintCluster,
         TrigScintTrack,
->>>>>>> origin/master
         std::vector < CalorimeterHit >,
         std::vector < EcalCluster >,
         std::vector < EcalHit >,
@@ -81,12 +75,9 @@ namespace ldmx {
         std::vector < SiStripHit >,
         std::vector < SimTrackerHit >,
         std::vector < TrigScintHit >,
-<<<<<<< HEAD
         std::vector < TrigScintQIEDigis >,
-=======
         std::vector < TrigScintCluster >,
         std::vector < TrigScintTrack >,
->>>>>>> origin/master
         std::map< int , SimParticle >
     > EventBusPassenger;
 
