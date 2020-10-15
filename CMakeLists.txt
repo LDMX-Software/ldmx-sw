@@ -87,6 +87,9 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
     # Conditions services
     add_subdirectory(Conditions)
 
+    # This module contains HCal reconstruction code.
+    add_subdirectory(Hcal)
+
 endif()
 
 if(BUILD_ALL OR BUILD_SIM_ONLY)

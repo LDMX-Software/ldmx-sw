@@ -34,6 +34,8 @@
 #pragma link C++ class ldmx::SimParticle+;
 #pragma link C++ class ldmx::TriggerResult+;
 #pragma link C++ class ldmx::TrigScintHit+; 
+#pragma link C++ class ldmx::TrigScintCluster+;
+#pragma link C++ class ldmx::TrigScintTrack+;
 #pragma link C++ class ldmx::TrackerVetoResult+;
 #pragma link C++ class ldmx::ClusterAlgoResult+;
 #pragma link C++ class ldmx::PnWeightResult+;
@@ -57,7 +59,12 @@
 #pragma link C++ class std::vector<ldmx::SiStripHit>+;
 #pragma link C++ class std::vector<ldmx::RawHit>+;
 #pragma link C++ class std::vector< ldmx::TrigScintHit >+;
+<<<<<<< HEAD
 #pragma link C++ class std::vector< ldmx::TrigScintQIEDigis>+; // for QIE simulation [Niramay]
+=======
+#pragma link C++ class std::vector< ldmx::TrigScintCluster >+;
+#pragma link C++ class std::vector< ldmx::TrigScintTrack >+;
+>>>>>>> origin/master
 
 #endif
 
