@@ -9,6 +9,14 @@
 
 namespace ldmx {
 
+// Forward declaration needed by typedef
+class HgcrocTrigDigi; 
+
+  /**
+ * Define the type of collection for trig digis
+ */
+typedef std::vector<HgcrocTrigDigi> HgcrocTrigDigiCollection;
+
 /**
  * @class HgcrocTrigDigi
  * @brief Contains the trigger output for a single trigger hgcroc channel
@@ -131,11 +139,6 @@ private:
   /// ROOT Dictionary class definition macro
   ClassDef(HgcrocTrigDigi, 1);
 };
-
-/**
- * Define the type of collection for trig digis
- */
-typedef std::vector<HgcrocTrigDigi> HgcrocTrigDigiCollection;
 
 } // namespace ldmx
 
