@@ -41,6 +41,7 @@
 #pragma link C++ class ldmx::PnWeightResult+;
 #pragma link C++ class ldmx::SiStripHit+; 
 #pragma link C++ class ldmx::RawHit+;
+#pragma link C++ class ldmx::HgcrocTrigDigi+;
 
 #pragma link C++ class ldmx::TrigScintQIEDigis+;
 
@@ -60,6 +61,7 @@
 #pragma link C++ class std::vector< ldmx::TrigScintQIEDigis>+;
 #pragma link C++ class std::vector< ldmx::TrigScintCluster >+;
 #pragma link C++ class std::vector< ldmx::TrigScintTrack >+;
+#pragma link C++ class std::vector<ldmx::HgcrocTrigDigi>+;
 
 #endif
 
