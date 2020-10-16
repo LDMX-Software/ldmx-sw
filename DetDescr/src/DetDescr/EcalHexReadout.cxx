@@ -11,7 +11,7 @@
 
 namespace ldmx {
 
-    EcalHexReadout::EcalHexReadout(const Parameters& ps) {
+  EcalHexReadout::EcalHexReadout(const Parameters& ps) : ConditionsObject(EcalHexReadout::CONDITIONS_OBJECT_NAME) {
 
         layerZPositions_ = ps.getParameter<std::vector<double>>("layerZPositions");
         ecalFrontZ_   = ps.getParameter<double>("ecalFrontZ");
@@ -24,6 +24,7 @@ namespace ldmx {
         cellR_   = 2*moduler_/nCellRHeight_;
         cellr_   = (sqrt(3.)/2.)*cellR_;
 
+       
         if(verbose_>0){
             std::cout << std::endl << "[EcalHexReadout] Verbosity set in header to " << verbose_ << std::endl;
             std::cout << "     Building module map with gap " << std::setprecision(2) << gap_
@@ -304,7 +305,7 @@ namespace ldmx {
         if(verbose_>2){
             double specialX = 0.5*moduleR_ - 0.5*cellr_; // center of cell which is upper-right corner of center module
             double specialY = moduler_ - 0.5*cellR_;
-	        EcalID specialCellModuleID = getCellModuleID(specialX,specialY);
+	    EcalID specialCellModuleID = getCellModuleID(specialX,specialY);
             std::cout << "The neighbors of the bin in the upper-right corner of the center module, with cellModuleID " 
                       << specialCellModuleID << " include " << std::endl;
             for(auto centerNN : NNMap_.at(specialCellModuleID)){
@@ -324,7 +325,7 @@ namespace ldmx {
 
     double EcalHexReadout::distanceToEdge(EcalID cellModuleID) const {
         // https://math.stackexchange.com/questions/1210572/find-the-distance-to-the-edge-of-a-hexagon
-	    int cellID = cellModuleID.cell();
+	int cellID = cellModuleID.cell();
         std::pair<double,double> cellLocation = getCellCenterRelative(cellID);
         double x = fabs(cellLocation.first); // bring to first quadrant
         double y = fabs(cellLocation.second);
@@ -348,26 +349,5 @@ namespace ldmx {
         if(verbose_>2) std::cout << TString::Format("[isInside] they are inside quadrant. Dot product (>0 is inside): %.2f ", dotProd) << std::endl;
         return (dotProd > 0.);
     }
-
-//    void EcalHexReadout::buildTriggerGroups() {
-//
-//        /*
-//         * Assumptions
-//         *  - Scanning from right to left, bottom to top of module hexagon (behavior default to TH2Poly)
-//         *  - Ignoring cell at exact center of module (putting it into it's own trigger group)
-//         */
-//
-//        //calculate total number of cells in the hexagon
-//        int n = (nCellsWide_-1)/2;
-//        int totalNumCells = 1 + 3n(n+1);
-//        
-//        triggerGroups_.resize(totalNumCells);
-//
-//        //loop through all cells, assigning them to a trigger group
-//        int rowNum{0}, collNum{0};
-//        for ( unsigned int cellID = 0; cellID < triggerGroups_.size(); cellID++ ) {
-//            
-//        }
-//    }
 
 }

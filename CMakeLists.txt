@@ -99,6 +99,12 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
     add_subdirectory(DQM)
 
 
+    # This module contains HCal reconstruction code.
+    add_subdirectory(Hcal)
+
+    # This module contains all things trigger scintillator
+    add_subdirectory(TrigScint)
+
 endif()
 
 if(BUILD_ALL OR BUILD_SIM_ONLY)

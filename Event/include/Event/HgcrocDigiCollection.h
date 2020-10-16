@@ -376,6 +376,12 @@ namespace ldmx {
             unsigned int getNumDigis() const { return channelIDs_.size(); }
 
             /**
+             * Get total number of digis
+             * @return unsigned int number of digis
+             */
+            unsigned int size() const { return channelIDs_.size(); }
+
+            /**
              * Add samples to collection
              *
              * @sa Sample for how the valid measurements depend on the flags.

@@ -49,6 +49,18 @@ namespace ldmx {
             ~HgcrocEmulator() { /* empty on purpose */ }
 
             /**
+             * Check if emulator has been seeded
+             * @return true if random generator has been seeded
+             */
+            bool hasSeed() const { return noiseInjector_.get()!=nullptr; }
+
+            /**
+             * Seed the emulator for random number generation
+             * @param[in] seed integer to use as random seed
+             */
+            void seedGenerator(uint64_t seed);
+
+            /**
              * Set Conditions
              *
              * Passes the chips conditions to be cached here and
