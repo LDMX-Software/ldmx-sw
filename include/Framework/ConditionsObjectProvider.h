@@ -30,6 +30,7 @@ namespace ldmx {
 class Process;
 class ConditionsObjectProvider;
 class EventHeader;
+class RunHeader;
 
 /** Typedef for PluginFactory use. */
 typedef ConditionsObjectProvider* 
@@ -95,6 +96,13 @@ class ConditionsObjectProvider {
   }
 
   /**
+   * Callback for the ConditionsObjectProvider to take any necessary
+   * action when the processing of events starts for a given run.
+   */
+  virtual void onNewRun(RunHeader&) {
+  }
+
+  /**
    * Get the list of conditions objects available from this provider.
    */
   const std::string& getConditionObjectName() const { return objectName_; }
@@ -117,6 +125,9 @@ class ConditionsObjectProvider {
   
   /// The logger for this ConditionsObjectProvider
   logging::logger theLog_;
+
+  /** Get the process handle */
+  const Process& process() const { return process_; }
 
  private:
 
