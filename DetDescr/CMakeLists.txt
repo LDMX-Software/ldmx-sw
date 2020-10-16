@@ -17,14 +17,3 @@ setup_library(name DetDescr
 
 # Setup the test
 setup_test(dependencies DARK::DetDescr)
-
-# Add the printing executable
-add_executable(print-ecal-hex-readout ${PROJECT_SOURCE_DIR}/src/DetDescr/print_ecal_hex_readout.cxx)
-
-# Link to the Framework library
-target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr ROOT::Gpad)
-
-# Install the fire executable
-install(TARGETS print-ecal-hex-readout DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-
-setup_python(install_path ${PYTHON_INSTALL_PREFIX}/DetDescr)

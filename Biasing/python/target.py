@@ -45,7 +45,6 @@ def electro_nuclear( detector, generator ) :
     # Set run parameters
     sim.runNumber = 0
     sim.description = "Target electron-nuclear, xsec bias 1e8"
-    sim.randomSeeds = [ 1, 2 ]
     sim.beamSpotSmear = [20., 80., 0.] #mm
     
     sim.generators.append(generator)
@@ -103,7 +102,6 @@ def photo_nuclear( detector, generator ) :
     # Set run parameters
     sim.runNumber = 0
     sim.description = "ECal photo-nuclear, xsec bias 450"
-    sim.randomSeeds = [ 1, 2 ]
     sim.beamSpotSmear = [20., 80., 0.]
     
     sim.generators.append(generator)

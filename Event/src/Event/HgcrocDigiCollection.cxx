@@ -1,7 +1,3 @@
-/**
- * @file HgcrocDigiCollection.cxx
- * @author Tom Eichlersmith, University of Minnesota
- */
 
 #include "Event/HgcrocDigiCollection.h"
 
@@ -86,19 +82,21 @@ std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection::Samp
 }
 
 std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection::HgcrocDigi& digi) {
-    s << "HgcrocDigi { ";
-
-    if ( digi.isADC() ) 
-        s << "ADC Mode -> SOI: " << digi.soi() << " }";
-    else
-        s << "TOT Mode -> " << digi.tot() << " }";
-    
-    return s;
+  s << "HgcrocDigi { ";
+  
+  s << " Id: 0x" << std::hex << digi.id() << std::dec << " ";
+  
+  if ( digi.isADC() ) 
+    s << "ADC Mode -> SOI: " << digi.soi() << " }";
+  else
+    s << "TOT Mode -> " << digi.tot() << " }";
+  
+  return s;
 }
 
 std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection& col) {
-    s << "HgcrocDigiCollection { ";
-    for ( unsigned int iDigi = 0; iDigi < col.getNumDigis(); iDigi++ ) s << col.getDigi(iDigi) << "\n";
-    s << "}";
-    return s;
+  s << "HgcrocDigiCollection { " << std::endl;
+  for ( unsigned int iDigi = 0; iDigi < col.getNumDigis(); iDigi++ ) s << "  " << col.getDigi(iDigi) << std::endl;
+  s << "}";
+  return s;
 }
