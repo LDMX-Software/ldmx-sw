@@ -172,7 +172,6 @@ void TrigScintClusterProducer::produce(ldmx::Event &event) {
 
       hitChannelMap_.insert(std::pair<int, int>(ID, iDigi));
       // the channel number is the key, the digi list index is the value
-      iDigi++;
 
       if (verbose_) {
         ldmx_log(debug) << "Mapping digi hit nb " << iDigi
@@ -181,6 +180,7 @@ void TrigScintClusterProducer::produce(ldmx::Event &event) {
                         << " to key/channel " << ID;
       }
     }
+    iDigi++;
   }
 
   // 2. now step through all the channels in the map and cluster the hits
