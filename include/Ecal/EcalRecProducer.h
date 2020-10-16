@@ -20,7 +20,6 @@
 #include "Framework/EventDef.h" 
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalID.h"
-#include "DetDescr/EcalHexReadout.h"
 #include "Framework/EventProcessor.h"
 
 namespace ldmx {
@@ -62,13 +61,21 @@ namespace ldmx {
             virtual void produce(Event& event);
 
         private:
-
             /** Digi Collection Name to use as input */
             std::string digiCollName_;
 
             /** Digi Pass Name to use as input */
             std::string digiPassName_;
 
+            /// simhit collection name                                                                                                     
+            std::string simHitCollName_;
+
+            /// simhit pass name
+            std::string simHitPassName_;
+
+            /// output hit collection name
+            std::string recHitCollName_;
+	  
             /// Energy [MeV] deposited by a MIP in Si 0.5mm thick
             double mipSiEnergy_;
 
@@ -109,13 +116,6 @@ namespace ldmx {
              * of a calibration number.
              */
             double secondOrderEnergyCorrection_;
-
-            /**
-             * Helper Instance of EcalHexReadout:
-             *
-             * performs real space postion <-> ID translation
-             */
-            std::unique_ptr<EcalHexReadout> ecalHexReadout_;
 
     };
 }

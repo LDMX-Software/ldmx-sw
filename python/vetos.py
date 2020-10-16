@@ -22,9 +22,6 @@ class EcalVetoProcessor(ldmxcfg.Producer) :
         self.disc_cut = 0.99
         self.collection_name = "EcalVeto"
 
-        from LDMX.DetDescr import EcalHexReadout
-        self.hexReadout = EcalHexReadout.EcalHexReadout()
-
 
 class DNNEcalVetoProcessor(ldmxcfg.Producer) :
     """Configuration for DNN Ecal Veto
@@ -42,8 +39,6 @@ class DNNEcalVetoProcessor(ldmxcfg.Producer) :
         self.disc_cut = -1.
         self.collection_name = "EcalVetoDNN"
 
-        from LDMX.DetDescr import EcalHexReadout
-        self.hexReadout = EcalHexReadout.EcalHexReadout()
 
 
 

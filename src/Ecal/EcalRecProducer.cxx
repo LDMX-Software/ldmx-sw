@@ -5,6 +5,7 @@
  */
 
 #include "Ecal/EcalRecProducer.h"
+#include "DetDescr/EcalHexReadout.h"
 
 namespace ldmx {
 
@@ -16,14 +17,15 @@ namespace ldmx {
 
     void EcalRecProducer::configure(Parameters& ps) {
 
+        //collection names
         digiCollName_ = ps.getParameter<std::string>( "digiCollName" );
         digiPassName_ = ps.getParameter<std::string>( "digiPassName" );
+        simHitCollName_  = ps.getParameter<std::string>("simHitCollName");
+        simHitPassName_  = ps.getParameter<std::string>("simHitPassName");
+        recHitCollName_ = ps.getParameter<std::string>("recHitCollName");
 
         layerWeights_ = ps.getParameter<std::vector<double>>( "layerWeights" );
         secondOrderEnergyCorrection_ = ps.getParameter<double>( "secondOrderEnergyCorrection" );
-
-        auto hexReadout{ps.getParameter<Parameters>("hexReadout")};
-        ecalHexReadout_ = std::make_unique<EcalHexReadout>(hexReadout);
 
         mipSiEnergy_ = ps.getParameter<double>( "mipSiEnergy" );
         mV_          = ps.getParameter<double>( "mV" );
@@ -38,6 +40,8 @@ namespace ldmx {
     }
 
     void EcalRecProducer::produce(Event& event) {
+        // Get the Ecal Geometry
+        const EcalHexReadout& hexReadout = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
 
         std::vector<EcalHit> ecalRecHits;
         auto ecalDigis = event.getObject<HgcrocDigiCollection>( digiCollName_ , digiPassName_ );
@@ -53,8 +57,8 @@ namespace ldmx {
             
             //ID to real space position
             double x,y,z;
-            ecalHexReadout_->getCellAbsolutePosition( id , x , y , z );
-            
+            hexReadout.getCellAbsolutePosition( id , x , y , z );
+
             //TOA is the time of arrival with respect to the 25ns clock window
             //  TODO what to do if hit NOT in first clock cycle?
             double timeRelClock25 = digi.begin()->toa()*(clockCycle_/1024); //ns
@@ -146,16 +150,16 @@ namespace ldmx {
             ecalRecHits.push_back( recHit );
         }
 
-        if (event.exists("EcalSimHits")) {
+        if (event.exists( simHitCollName_, simHitPassName_ )) {
             //ecal sim hits exist ==> label which hits are real and which are pure noise
-            auto ecalSimHits{event.getCollection<SimCalorimeterHit>("EcalSimHits")};
+            auto ecalSimHits{event.getCollection<SimCalorimeterHit>( simHitCollName_, simHitPassName_ )};
             std::set<int> real_hits;
             for ( auto const& sim_hit : ecalSimHits ) real_hits.insert( sim_hit.getID() );
             for ( auto& hit : ecalRecHits ) hit.setNoise( real_hits.find(hit.getID()) == real_hits.end() );
         }
 
         //add collection to event bus
-        event.add( "EcalRecHits", ecalRecHits );
+        event.add( recHitCollName_, ecalRecHits );
     }
 
 }
