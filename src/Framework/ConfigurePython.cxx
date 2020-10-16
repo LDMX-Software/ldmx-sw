@@ -68,10 +68,13 @@ namespace ldmx {
         PyObject* dictionary{PyObject_GetAttrString(object, "__dict__")};
 
         if ( dictionary == 0 ) {
-            EXCEPTION_RAISE(
+            if (PyDict_Check(object)) dictionary = object;
+            else {
+                EXCEPTION_RAISE(
                     "ObjFail",
                     "Python Object does not have __dict__ member"
                     );
+            }
         }
 
         PyObject *key(0), *value(0);
