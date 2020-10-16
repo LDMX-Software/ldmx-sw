@@ -35,7 +35,7 @@ namespace ldmx {
      * Make inputs to the DNN from ECAL RecHits.
      * @param ecalRecHits The EcalHit collection.
      */
-    void make_inputs(const std::vector<EcalHit>& ecalRecHits);
+    void make_inputs(const EcalHexReadout& geom, const std::vector<EcalHit>& ecalRecHits);
 
   private:
     /** Maximum number of hits allowed in ECAL. Events with more hits will be marked as BKG directly without running the DNN. */
@@ -59,8 +59,6 @@ namespace ldmx {
     float disc_cut_ = -99;
     std::vector<std::vector<float>> data_;
     std::unique_ptr<Ort::ONNXRuntime> rt_;
-
-    std::unique_ptr<EcalHexReadout> hexReadout_;
 
     /** Name of the collection which will containt the results. */
     std::string collectionName_{"DNNEcalVeto"};

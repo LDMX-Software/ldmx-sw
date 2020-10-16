@@ -14,9 +14,6 @@ namespace ldmx {
     EcalClusterProducer::~EcalClusterProducer() { }
 
     void EcalClusterProducer::configure(Parameters& parameters) {
-
-        auto hexReadout{parameters.getParameter<Parameters>("hexReadout")};
-        hexReadout_ = std::make_shared<EcalHexReadout>(hexReadout);
         cutoff_ = parameters.getParameter< double >("cutoff");
         seedThreshold_ = parameters.getParameter< double >("seedThreshold"); 
         digisPassName_ = parameters.getParameter< std::string >("digisPassName");
@@ -27,7 +24,9 @@ namespace ldmx {
     }
 
     void EcalClusterProducer::produce(Event& event) {
-
+	// Get the Ecal Geometry
+	const EcalHexReadout& hexReadout = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+    
         TemplatedClusterFinder<MyClusterWeight> cf;
 
         std::vector< EcalHit > ecalHits = event.getCollection< EcalHit >( "ecalDigis" , digisPassName_ );
@@ -41,7 +40,7 @@ namespace ldmx {
             //Skip zero energy digis.
             if (hit.getEnergy() == 0) { continue; }
 
-            cf.add( &hit , hexReadout_);
+            cf.add( &hit , hexReadout);
         }
 
         cf.cluster(seedThreshold_, cutoff_);
