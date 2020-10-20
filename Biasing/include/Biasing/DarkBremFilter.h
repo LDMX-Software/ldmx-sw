@@ -39,7 +39,7 @@ namespace ldmx {
      * the input parameters:
      *
      *      volume: A' originates inside of the input volume (target or ecal)
-     *      threshold: minimum energy [MeV] A' needs to have, also threshold for PartialEnergySorter
+     *      threshold: minimum energy [MeV] A' needs to have, should also be threshold for PartialEnergySorter
      *
      * @see PartialEnergySorter
      * Here we assume that the partial energy sorter is being run in sequence with this filter.
