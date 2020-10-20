@@ -1,8 +1,3 @@
-/**
- * @file AuxInfoReader.h
- * @brief Class for reading reading auxiliary information from GDML
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
 
 #ifndef SIMCORE_AUXINFOREADER_H_
 #define SIMCORE_AUXINFOREADER_H_

@@ -1,8 +1,3 @@
-/**
- * @file DetectorConstruction.h
- * @brief Class implementing the Geant4 detector construction
- * @author Jeremy McCormick, SLAC National Accelerator Laboratory
- */
 
 #ifndef SIMCORE_DETECTORCONSTRUCTION_H_
 #define SIMCORE_DETECTORCONSTRUCTION_H_
