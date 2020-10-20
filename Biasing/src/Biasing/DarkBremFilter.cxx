@@ -69,9 +69,14 @@ namespace ldmx {
                       << "Found A', still need to check if it originated in requested volume." 
                       << std::endl;
             */
-            if ( foundAp_ ) AbortEvent("Found more than one A' during filtering.");
-            if ( aTrack->GetKineticEnergy() < threshold_ ) AbortEvent("A' was not produced above the required threshold.");
-            foundAp_ = true;
+            if (not foundAp_ and aTrack->GetTotalEnergy() > threshold_ ) {
+                //The A' is the first one created in this event and is above the energy threshold
+                foundAp_ = true;
+            } else if ( foundAp_ ) {
+                AbortEvent("Found more than one A' during filtering.");
+            } else {
+                AbortEvent("A' was not produced above the required threshold.");
+            }
         }
 
         return cl;
