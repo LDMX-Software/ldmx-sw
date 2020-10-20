@@ -53,7 +53,7 @@ setup_python(install_path ${PYTHON_INSTALL_PREFIX}/Ecal)
 setup_data()
 
 # Add the printing executable
-add_executable(print-ecal-hex-readout ${PROJECT_SOURCE_DIR}/src/print_ecal_hex_readout.cxx)
+add_executable(print-ecal-hex-readout ${PROJECT_SOURCE_DIR}/src/Ecal/print_ecal_hex_readout.cxx)
 
 # Link to the Framework library
 target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr Ecal)
