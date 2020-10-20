@@ -3,6 +3,7 @@
 #include <string>
 
 // LDMX
+#include "Event/EventConstants.h"
 #include "Framework/Event.h"
 #include "Framework/Exception/Exception.h"
 #include "SimCore/G4CalorimeterHit.h"
