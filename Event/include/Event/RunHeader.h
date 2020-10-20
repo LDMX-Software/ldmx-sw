@@ -140,7 +140,7 @@ namespace ldmx {
              * Set a float parameter value.
              * 
              * @param name The name of the parameter.
-             * @param value The value of the parameter.
+             * @param value The parameter value.
              */
             void setFloatParameter(const std::string& name, float value) {
                 floatParameters_[name] = value;
@@ -155,7 +155,7 @@ namespace ldmx {
             std::string getStringParameter(const std::string& name) const {
                 return stringParameters_.at(name);
             }
-
+      
             /// Get a const reference to all string parameters
             const std::map<std::string,std::string>& getStringParameters() const {
                 return stringParameters_;
@@ -165,7 +165,7 @@ namespace ldmx {
              * Set a string parameter value.
              * 
              * @param name The name of the parameter.
-             * @param value The value of the parameter.
+             * @param value The parameter value.
              */
             void setStringParameter(const std::string& name, std::string value) {
                 stringParameters_[name] = value;
