@@ -3,9 +3,9 @@
 
 #include "Framework/Configure/Parameters.h"
 
-ldmx::ParallelWorld::ParallelWorld(G4GDMLParser* parser, G4String worldName) 
+ldmx::ParallelWorld::ParallelWorld(G4GDMLParser* parser, G4String worldName, ConditionsInterface& ci) 
     : G4VUserParallelWorld(worldName), parser_(parser), 
-      auxInfoReader_(new AuxInfoReader(parser,Parameters())) {
+      auxInfoReader_(new AuxInfoReader(parser,Parameters(),ci)) {
 }
 
 ldmx::ParallelWorld::~ParallelWorld() {

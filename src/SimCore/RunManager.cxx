@@ -33,7 +33,7 @@
 
 namespace ldmx {
 
-    RunManager::RunManager(Parameters& parameters) {  
+    RunManager::RunManager(Parameters& parameters, ConditionsInterface& ci) : conditionsIntf_(ci) {  
 
         parameters_ = parameters; 
 
@@ -93,7 +93,7 @@ namespace ldmx {
             auto validateGeometry_{parameters_.getParameter< bool >("validate_detector")};
             G4GDMLParser* pwParser = new G4GDMLParser();
             pwParser->Read(parallelWorldPath_, validateGeometry_);
-            this->getDetectorConstruction()->RegisterParallelWorld(new ParallelWorld(pwParser, "ldmxParallelWorld"));
+            this->getDetectorConstruction()->RegisterParallelWorld(new ParallelWorld(pwParser, "ldmxParallelWorld", conditionsIntf_));
         }
 
         G4RunManager::Initialize();

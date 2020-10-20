@@ -29,7 +29,7 @@ namespace ldmx {
         public: 
 
             /** Constructor */
-            ParallelWorld(G4GDMLParser* parser, G4String worldName);
+            ParallelWorld(G4GDMLParser* parser, G4String worldName, ConditionsInterface& ci);
 
             /** Destructor */
             ~ParallelWorld();

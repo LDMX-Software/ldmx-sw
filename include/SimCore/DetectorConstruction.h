@@ -48,7 +48,7 @@ namespace ldmx {
              * Class constructor.
              * @param theParser GDML parser defining the geometry.
              */
-            DetectorConstruction(G4GDMLParser* theParser, Parameters& parameters);
+            DetectorConstruction(G4GDMLParser* theParser, Parameters& parameters, ConditionsInterface& ci);
 
             /**
              * Class destructor.

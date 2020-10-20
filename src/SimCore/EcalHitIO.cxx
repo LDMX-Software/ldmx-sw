@@ -11,8 +11,15 @@
 
 namespace ldmx {
 
+  void EcalHitIO::configure(const Parameters& ps) {
+                enableHitContribs_   = ps.getParameter<bool>("enableHitContribs");
+                compressHitContribs_ = ps.getParameter<bool>("compressHitContribs");
+  }
+  
     void EcalHitIO::writeHitsCollection(G4CalorimeterHitsCollection* hc, std::vector<SimCalorimeterHit> &outputColl) {
 
+	const EcalHexReadout& hexReadout = conditionsIntf_.getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+      
         //get ancestral mapping of tracks
         auto trackMap{UserTrackingAction::getUserTrackingAction()->getTrackMap()};
 
@@ -41,7 +48,7 @@ namespace ldmx {
                  * Z position is set from the original hit, which should be the middle of the sensor.
                  */
                 double x,y,z;
-                hexReadout_->getCellAbsolutePosition( hitID , x , y , z );
+                hexReadout.getCellAbsolutePosition( hitID , x , y , z );
                 hitMap[hitID].setPosition( x , y , z );
 
             } 

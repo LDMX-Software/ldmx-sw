@@ -19,8 +19,11 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
+#include "Framework/EventDef.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Configure/Parameters.h" 
+
+#include "SimCore/ConditionsInterface.h"
 
 class G4UImanager;
 class G4UIsession;
@@ -29,9 +32,9 @@ class G4GDMLParser;
 class G4GDMLMessenger; 
 class G4CascadeParameters;
 
-namespace simcore { 
+namespace simcore {
 namespace persist { 
-class RootPersistencyManager;
+class RootPersistencyManager; 
 }
 }
 
@@ -80,6 +83,23 @@ namespace ldmx {
              * @param parameters ParameterSet for configuration.
              */
             void configure(Parameters& parameters) final override; 
+
+            /**
+             * Given a non-const reference to the new RunHeader,
+             * we can add parameters from the simulation here
+             * before the run starts.
+             *
+             * @param header of new run
+             */
+            void beforeNewRun(RunHeader& header) final override;
+
+            /**
+             * Before the run starts (but after the conditions are configured)
+             * set up the random seeds for this run.
+             *
+             * @param[in] header RunHeader for this run, unused
+             */
+            void onNewRun(const RunHeader& header) final override;
 
             /**
              * Run simulation and export results to output event.
@@ -162,6 +182,9 @@ namespace ldmx {
             /// Number of events completed
             int numEventsCompleted_{0};
 
+            ///  Conditions interface
+            ConditionsInterface conditionsIntf_;
+      
             /*********************************************************
              * Python Configuration Parameters
              *********************************************************/
