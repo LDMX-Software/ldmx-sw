@@ -74,7 +74,8 @@ namespace ldmx {
              *
              * All tracks with kinetic energy above the threshold are
              * put onto the urgent stack while any other particles
-             * are put onto the waiting stack.
+             * are put onto the waiting stack if there are particles
+             * still above threshold.
              *
              * @param aTrack The Geant4 track.
              * @param currentTrackClass The current track classification.
@@ -100,14 +101,15 @@ namespace ldmx {
             } 
 
             /**
-             * Print when we are entering a new stage to see what is happening.
+             * Reset the count for the number of particles above threshold.
              *
              * This function is called when the urgent stack is empty
              * and the waiting stack is transferred to the urgent stack.
              *
              * With all tracks below threshold being pushed to the waiting stack,
              * the first time this occurs during the event is when the rest
-             * of the particles are below the threshold energy.
+             * of the particles are below the threshold energy, so we reset the
+             * counter on the number of particles above the threshold here.
              *
              * This function can be called several times in an event, but
              * the *first* time it is called in an event is when there is
@@ -119,6 +121,9 @@ namespace ldmx {
              * "left-over" that are above the threshold. These particles are
              * the electron that went dark brem and the A' which are above
              * the threshold but both don't interact with anything else.
+             * Since they don't interact with anything else, they finish
+             * tracking without "stepping" from above the threshold to
+             * below it.
              */
             void NewStage() final override {
                 /** debug printout
@@ -128,6 +133,7 @@ namespace ldmx {
                     << " particles above threshold."
                     << std::endl;
                  */
+                num_particles_above_threshold_ = 0;
             }
             
         private: 
