@@ -50,24 +50,17 @@ namespace ldmx {
         /*
          * Track has kinetic energy less than or equal to
          * the threshold, so we put it on the waiting stack
+         * if there are still particles above threshold to be processed.
          */
-        return fWaiting;
+        return num_particles_above_threshold_ > 0 ? fWaiting : currentTrackClassification;
     }
 
     void PartialEnergySorter::stepping(const G4Step* step) {
 
+        if ( num_particles_above_threshold_ == 0 ) return;
+
         auto pre_energy{step->GetPreStepPoint()->GetKineticEnergy()};
         auto post_energy{step->GetPostStepPoint()->GetKineticEnergy()};
-
-        /** debug printout
-        std::cout << "[ PartialEnergySorter ] : Stepping track "
-            << step->GetTrack()->GetTrackID() << " going from "
-            << pre_energy  << " MeV to "
-            << post_energy << " MeV."
-            << std::endl;
-         */
-
-        if ( num_particles_above_threshold_ == 0 ) return;
 
         if ( pre_energy >= threshold_ and post_energy <= threshold_ ) {
             /** debug printout
