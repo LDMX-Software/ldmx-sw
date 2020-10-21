@@ -14,7 +14,7 @@ find_package(ROOT CONFIG REQUIRED)
 
 setup_library(name Hcal
               dependencies ROOT::Physics 
-                           DARK::Framework DARK::Event DARK::Tools DARK::DetDescr 
+              Framework::Framework Event::Event Tools::Tools DetDescr::DetDescr 
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
