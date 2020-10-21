@@ -30,11 +30,6 @@ namespace ldmx {
     class EventFile {
 
         public:
-
-            /**
-             * Name of TTree that holds the Events
-             */
-            static const std::string EVENT_TREE;
             
             /**
              * Constructor to make a general file.

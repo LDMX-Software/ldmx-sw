@@ -5,12 +5,11 @@
 // LDMX
 #include "Framework/EventFile.h"
 #include "Framework/Event.h"
-#include "Framework/Exception/Exception.h"
 #include "Framework/RunHeader.h"
+#include "Framework/Exception/Exception.h"
+#include "Event/EventConstants.h"
 
 namespace ldmx {
-
-    const std::string EventFile::EVENT_TREE = "LDMX_Events";
 
     EventFile::EventFile(const std::string& filename, EventFile* parent, bool isOutputFile, bool isSingleOutput, int compressionSetting) : 
                 fileName_(filename), parent_(parent), isOutputFile_(isOutputFile), isSingleOutput_(isSingleOutput) {
@@ -50,11 +49,11 @@ namespace ldmx {
                 EXCEPTION_RAISE("FileError", "Input file '" + fileName_ + "' is not readable or does not exist.");
             }
 
-            tree_ = (TTree*) (file_->Get( EVENT_TREE.c_str() ));
+            tree_ = (TTree*) (file_->Get( EventConstants::EVENT_TREE_NAME.c_str() ));
             if (!tree_) {
                 EXCEPTION_RAISE("FileError" ,
                         "File '" + fileName_ + "' does not have a TTree named '"
-                        + EVENT_TREE + "' in it." );
+                        + EventConstants::EVENT_TREE_NAME + "' in it." );
             }
             entries_ = tree_->GetEntriesFast();
         }
@@ -284,7 +283,7 @@ namespace ldmx {
     
             //create the branch on this tree
             RunHeader *theHandle = nullptr;
-            runTree->Branch(RunHeader::BRANCH.c_str(), "ldmx::RunHeader", &theHandle, 32000, 3);
+            runTree->Branch("RunHeader", EventConstants::RUN_HEADER.c_str(), &theHandle, 32000, 3);
 
             //copy over the run headers into the tree
             for( auto& [ num , header_pair ] : runMap_ ) {
