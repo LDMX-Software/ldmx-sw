@@ -16,6 +16,9 @@ register_event_object( module_path "Event" namespace "ldmx" class "TrigScintHit"
 register_event_object( module_path "Event" namespace "ldmx" class "TrackerVetoResult"                      )
 register_event_object( module_path "Event" namespace "ldmx" class "TriggerResult"                          )
 register_event_object( module_path "Event" namespace "ldmx" class "HgcrocDigiCollection"                   )
+register_event_object( module_path "Event" namespace "ldmx" class "HgcrocTrigDigi"       type "collection" )
+register_event_object( module_path "Event" namespace "ldmx" class "TrigScintCluster"     type "collection" )
+register_event_object( module_path "Event" namespace "ldmx" class "TrigScintTrack"       type "collection" )
 
 # Search and configure ROOT
 find_package(ROOT CONFIG REQUIRED)
