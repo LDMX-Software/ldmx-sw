@@ -119,7 +119,7 @@ void Simulator::configure(Parameters& parameters) {
 
 void Simulator::onFileOpen(EventFile &file) {
   // Initialize persistency manager and connect it to the current EventFile
-  persistencyManager_ = std::make_unique<RootPersistencyManager>(file, parameters_, this->getRunNumber(),conditionsIntf_); 
+  persistencyManager_ = std::make_unique<simcore::persist::RootPersistencyManager>(file, parameters_, this->getRunNumber(),conditionsIntf_); 
   persistencyManager_->Initialize(); 
 }
 
