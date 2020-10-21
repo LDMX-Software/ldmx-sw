@@ -6,8 +6,8 @@
 #include "DetDescr/EcalHexReadout.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/G4CalorimeterHit.h"
-#include "SimCore/SimParticleBuilder.h"
 #include "SimCore/ConditionsInterface.h"
+#include "SimCore/Persist/SimParticleBuilder.h"
 
 // STL
 #include <vector>

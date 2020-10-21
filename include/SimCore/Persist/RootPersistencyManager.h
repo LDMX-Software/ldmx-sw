@@ -10,8 +10,8 @@
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h"
 #include "Framework/EventFile.h"
+#include "Framework/Configure/Parameters.h"
 
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
@@ -67,7 +67,7 @@ public:
    * @param runNumber current run identifer from Process
    */
   RootPersistencyManager(EventFile &file, Parameters &parameters,
-                         const int &runNumber);
+                         const int &runNumber, ConditionsInterface &ci);
 
   /// Destructor
   virtual ~RootPersistencyManager() {}
@@ -206,7 +206,7 @@ private:
   EcalHitIO ecalHitIO_;
 
   /// Helper for building output SimParticle collection.
-  simcore::persist::SimParticleBuilder simParticleBuilder_;
+  SimParticleBuilder simParticleBuilder_;
 };
 
 } // namespace persist
