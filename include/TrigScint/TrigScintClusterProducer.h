@@ -10,7 +10,7 @@
 //LDMX Framework
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h" //Needed to declare processor
-#include "Framework/Parameters.h" // Needed to import parameters from configuration file
+#include "Framework/Configure/Parameters.h" // Needed to import parameters from configuration file
 #include "Event/TrigScintCluster.h"
 #include "Event/EventConstants.h"
 #include "Event/TrigScintHit.h"
