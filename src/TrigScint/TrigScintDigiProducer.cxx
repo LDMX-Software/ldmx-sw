@@ -1,6 +1,6 @@
 #include "TrigScint/TrigScintDigiProducer.h"
 #include "Framework/RandomNumberSeedService.h"
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 
 #include <iostream>
 
