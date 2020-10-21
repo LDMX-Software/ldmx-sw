@@ -1,5 +1,5 @@
 #include "Ecal/EcalTriggerGeometry.h"
-#include "Event/EventHeader.h"
+#include "Framework/EventHeader.h"
 #include "DetDescr/EcalHexReadout.h"
 #include "Framework/ConditionsObjectProvider.h"
 #include <iostream>
