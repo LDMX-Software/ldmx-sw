@@ -13,6 +13,6 @@ setup_library(name Conditions
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
-setup_test(dependencies DARK::Conditions)
+setup_test(dependencies Conditions::Conditions)
 
 setup_python(install_path ${PYTHON_INSTALL_PREFIX}/Conditions)
