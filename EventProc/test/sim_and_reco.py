@@ -25,15 +25,15 @@ sim.actions = [ filters.TaggerVetoFilter(),
                 filters.EcalProcessFilter(), 
                 filters.TrackProcessFilter.photo_nuclear() ]
 
-from LDMX.EventProc.trigScintDigis import TrigScintDigiProducer
+from LDMX.TrigScint.trigScint import TrigScintDigiProducer
+from LDMX.TrigScint.trigScint import TrigScintClusterProducer
+from LDMX.TrigScint.trigScint import trigScintTrack
 tsDigisUp   = TrigScintDigiProducer.up()
 tsDigisTag  = TrigScintDigiProducer.tagger()
 tsDigisDown = TrigScintDigiProducer.down()
-
-#set the PE response to 100 (default is 10, too low)
-tsDigisUp.pe_per_mip   = 100.
-tsDigisTag.pe_per_mip  = tsDigisUp.pe_per_mip
-tsDigisDown.pe_per_mip = tsDigisUp.pe_per_mip
+clTag=TrigScintClusterProducer.tagger()
+clUp=TrigScintClusterProducer.up()
+clDown=TrigScintClusterProducer.down()
 
 from LDMX.Ecal import digi
 from LDMX.Ecal import vetos
@@ -46,7 +46,9 @@ p.sequence=[ sim,
         vetos.EcalVetoProcessor(),
         hcal.HcalDigiProducer(),
         hcal.HcalVetoProcessor(), 
-        tsDigisUp, tsDigisTag, tsDigisDown, 
+        tsDigisUp, tsDigisTag, tsDigisDown,
+        clTag, clUp, clDown,
+        trigScintTrack,
         trackerHitKiller, simpleTrigger, 
         ldmxcfg.Producer('finableTrack','ldmx::FindableTrackProcessor','EventProc'),
         ldmxcfg.Producer('trackerVeto' ,'ldmx::TrackerVetoProcessor'  ,'EventProc')
