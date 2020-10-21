@@ -3,7 +3,7 @@
 #include "TTree.h"
 
 #include "Hcal/HcalDigiProducer.h"
-#include "Framework/Exception.h"
+#include "Framework/Exception/Exception.h"
 #include "Framework/RandomNumberSeedService.h"
 
 #include <iostream>
