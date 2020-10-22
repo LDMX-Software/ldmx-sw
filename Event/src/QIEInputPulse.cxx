@@ -7,9 +7,9 @@
 #include<cmath>
 namespace ldmx {
 
-float QIEInputPulse::eval(float T){return(0);}
+float QIEInputPulse::Eval(float T){return(0);}
 float QIEInputPulse::Integrate(float T1,float T2){return(0);}
-float QIEInputPulse::Der(float T){return(0);}
+float QIEInputPulse::Derivative(float T){return(0);}
 float QIEInputPulse::Max(){return(0);}
 
 Bimoid::Bimoid(float start,float qq=1)
@@ -30,7 +30,7 @@ Bimoid::Bimoid(float start,float rise, float fall, float qq=1)
   NC = (ft-rt)*log(2)/Q0;		// Remember, u hv to divide by it
 }
 
-float Bimoid::eval(float T)
+float Bimoid::Eval(float T)
 {
   if(T<t0) return(0);
   float y1 = 1/(1+exp((t0-T)/rt));
@@ -56,15 +56,15 @@ float Bimoid::Max()
   float b =t0+10;
   float mx=(a+b)/2;		// maximum
 
-  while(abs(Der(mx))>=1e-5){
-    if(Der(a)*Der(mx)>0) a=mx;
+  while(abs(Derivative(mx))>=1e-5){
+    if(Derivative(a)*Derivative(mx)>0) a=mx;
     else b = mx;
     mx = (a+b)/2;
   }
   return(mx);
 }
 
-float Bimoid::Der(float T)
+float Bimoid::Derivative(float T)
 {
   float T_ = T-t0;
   float E1 = exp(-T_/rt);
@@ -97,7 +97,7 @@ void Expo::SetRiseFall(float rr, float ff)
   tmax = (log(9-exp(-k*rt))-log(9*exp(-k*rt)-1))/k;
 }
 
-float Expo::eval(float t_)
+float Expo::Eval(float t_)
 {
   if(NC==0) return(0);		// fast evaluation for zero pulse
   if(t_<=t0) return(0);
@@ -121,7 +121,7 @@ float Expo::Integrate(float T1, float T2)
   return(I_Int(T2)-I_Int(T1));
 }
 
-float Expo::Der(float T)
+float Expo::Derivative(float T)
 {
   if(T<=t0) return(0);
   float t=T-t0;

@@ -23,7 +23,7 @@ namespace ldmx {
     /**
      * Evaluate the pulse at time T
      */
-    virtual float eval(float T);
+    virtual float Eval(float T);
 
     /**
      * Integrate the pulse from T1 to T2
@@ -33,7 +33,7 @@ namespace ldmx {
     /**
      * Differentiate pulse at time T
      */
-    virtual float Der(float T);
+    virtual float Derivative(float T);
 
     /**
      *  maximum of the pulse
@@ -48,7 +48,7 @@ namespace ldmx {
    *
    * @note The pulse maximum is found numerically
    */
-  class Bimoid: public QIEInputPulse
+  class Bimoid final : public QIEInputPulse
   {
  public:
     /**
@@ -60,22 +60,22 @@ namespace ldmx {
     /**
      * Evaluate the pulse at time T
      */
-    float eval(float T);
+    float Eval(float T) final;
 
     /**
      * Integrate the pulse from T1 to T2
      */
-    float Integrate(float T1,float T2);
+    float Integrate(float T1,float T2) final;
 
     /**
      *  maximum of the pulse
      */
-    float Max();
+    float Max() final;
 
     /**
      * Differentiate pulse at time T
      */
-    float Der(float T);
+    float Derivative(float T) final;
  private:
     // starting time of the pulse
     float t0;
@@ -97,7 +97,7 @@ namespace ldmx {
    * @note This is the preferred inpute pulse
    * shape
    */
-  class Expo: public QIEInputPulse
+  class Expo final : public QIEInputPulse
   {
  public:
 
@@ -136,22 +136,22 @@ namespace ldmx {
     /**
      * Evaluate the pulse at time T
      */
-    float eval(float T);
+    float Eval(float T) final;
 
     /**
      * Integrate the pulse from T1 to T2
      */
-    float Integrate(float T1,float T2);
+    float Integrate(float T1,float T2) final;
 
     /**
      *  maximum of the pulse
      */
-    float Max();
+    float Max() final;
 
     /**
      * Differentiate pulse at time T
      */
-    float Der(float T);
+    float Derivative(float T) final;
  private:
     // starting time of the pulse
     float t0;
