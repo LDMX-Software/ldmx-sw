@@ -7,15 +7,23 @@
 #include <exception>
 #include"TMath.h"
 #include"TrigScint/SimQIE.h"
-
+#include "Framework/Exception.h"
 namespace ldmx {
 
 SimQIE::SimQIE(){}
 
-SimQIE::SimQIE(float PD, float SG)
+  SimQIE::SimQIE(float PD, float SG, uint64_t seed=0)
 {
   IsNoise = true;
-  trg = new TRandomGen<ROOT::Math::MixMaxEngine<240,0>>();
+  // trg = new TRandomGen<ROOT::Math::MixMaxEngine<240,0>>();
+  if(seed==0){
+    EXCEPTION_RAISE("RandomSeedException",
+		    "Noise generator was not seeded before use");
+  }
+  else{
+    rand_ptr = std::make_unique<TRandom3>(seed);
+    trg = rand_ptr.get();
+  }
   mu = PD;
   sg = SG;
 }
@@ -116,8 +124,7 @@ int* SimQIE::CapID(QIEInputPulse* pp, int N)
 {
   int* OP = new int[N+1];	// N no. of output CapIDs
   OP[0]=0;			// needs to be changed later
-  TRandomGen<ROOT::Math::MixMaxEngine<240,0>> rng;
-  OP[1]=rng.Integer(4);
+  OP[1] = trg->Integer(4);
   for(int i=1;i<N;i++){
     OP[i+1]=(OP[i]+1)%4;
   }
