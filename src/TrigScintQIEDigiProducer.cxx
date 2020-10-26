@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <exception>
+#include "Framework/RandomNumberSeedService.h"
 
 namespace ldmx {
 
@@ -50,7 +51,8 @@ void TrigScintQIEDigiProducer::produce(Event& event) {
   std::set<TrigScintID> noiseHitIDs;
 
   // Set QIE simulation parameters
-  SimQIE* smq = new SimQIE(6,1.5); 
+  const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+  SimQIE* smq = new SimQIE(6,1.5,rseed.getSeed("TrigScintQIEDigiProducer")); 
   smq->SetGain();
   smq->SetFreq();
   /// no. of time samples analyzed per hit

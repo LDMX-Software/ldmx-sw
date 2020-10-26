@@ -10,7 +10,8 @@
 #include<iostream>
 #include"TMath.h"
 #include"TrigScint/QIEInputPulse.h"
-#include"TRandomGen.h"
+// #include"TRandomGen.h"
+#include"TRandom3.h"
 
 namespace ldmx {
 
@@ -33,8 +34,9 @@ namespace ldmx {
      * Main constructor
      * @param pd pedestal value
      * @param sg noise value
+     * @param seed random seed for noise generation
      */
-    SimQIE(float pd, float sg);
+    SimQIE(float pd, float sg, uint64_t seed);
 
     /**
      * Set gain of SiPM
@@ -111,7 +113,10 @@ namespace ldmx {
     // TDC threshold (default 3.74 microAmpere)
     float TDC_thr = 3.74;
     // Random number generator (required for noise simulation)
-    TRandomGen<ROOT::Math::MixMaxEngine<240,0>>* trg;
+    std::unique_ptr<TRandom3> rand_ptr{nullptr};
+    TRandom3* trg;
+    // TRandomGen<ROOT::Math::MixMaxEngine<240,0>>* trg;
+
     // mean of gaussian noise (Pedestal)
     float mu=0;
     // std. dev. of gaussian noise (Actual noise level)
