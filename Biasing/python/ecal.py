@@ -158,7 +158,7 @@ def brem_pn(detector) :
     
     # Biasing dark brem up inside of the ecal volumes
     sim.biasingOn()
-    sim.biasingConfigure( 'photonNuclear' , 'ecal' , 2000. , 4.5e2 , 
+    sim.biasingConfigure( 'photonNuclear' , 'ecal' , 2500. , 4.5e2 , 
                 allPtl = True, incidentOnly = False)
     
     # the following filters are in a library that needs to be included
@@ -168,8 +168,8 @@ def brem_pn(detector) :
     sim.actions.extend([ 
             # Abort events if the electron doesn't get to teh ECal with 3.5GeV
             filters.PrimaryToEcalFilter(3500.),
-            # Abort events if primary electron doesn't hard brem (E_gamma > 2000MeV)
-            filters.EcalBremFilter(2000.),
+            # Abort events if primary electron doesn't hard brem (E_gamma > 2500MeV)
+            filters.EcalBremFilter(2500.),
             # Make sure brem photon undergoes PN
             filters.EcalProcessFilter(),
             # Keep all of the PN secondaries
