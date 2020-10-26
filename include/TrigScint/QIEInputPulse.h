@@ -23,22 +23,22 @@ namespace ldmx {
     /**
      * Evaluate the pulse at time T
      */
-    virtual float Eval(float T);
+    float Eval(float T);
 
     /**
      * Integrate the pulse from T1 to T2
      */
-    virtual float Integrate(float T1,float T2);
+    float Integrate(float T1,float T2);
 
     /**
      * Differentiate pulse at time T
      */
-    virtual float Derivative(float T);
+    float Derivative(float T);
 
     /**
      *  maximum of the pulse
      */
-    virtual float Max();
+    float Max();
   };
 
 
@@ -48,7 +48,7 @@ namespace ldmx {
    *
    * @note The pulse maximum is found numerically
    */
-  class Bimoid final : public QIEInputPulse
+  class Bimoid final : public virtual QIEInputPulse
   {
  public:
     /**
@@ -58,24 +58,29 @@ namespace ldmx {
     Bimoid(float start,float qq);
 
     /**
+     * Default class destructor
+     */
+    ~Bimoid(){};
+    
+    /**
      * Evaluate the pulse at time T
      */
-    float Eval(float T) final;
+    float Eval(float T);
 
     /**
      * Integrate the pulse from T1 to T2
      */
-    float Integrate(float T1,float T2) final;
+    float Integrate(float T1,float T2);
 
     /**
      *  maximum of the pulse
      */
-    float Max() final;
+    float Max();
 
     /**
      * Differentiate pulse at time T
      */
-    float Derivative(float T) final;
+    float Derivative(float T);
  private:
     // starting time of the pulse
     float t0;
@@ -97,7 +102,7 @@ namespace ldmx {
    * @note This is the preferred inpute pulse
    * shape
    */
-  class Expo final : public QIEInputPulse
+  class Expo final : public virtual QIEInputPulse
   {
  public:
 
@@ -136,22 +141,22 @@ namespace ldmx {
     /**
      * Evaluate the pulse at time T
      */
-    float Eval(float T) final;
+    float Eval(float T);
 
     /**
      * Integrate the pulse from T1 to T2
      */
-    float Integrate(float T1,float T2) final;
+    float Integrate(float T1,float T2);
 
     /**
      *  maximum of the pulse
      */
-    float Max() final;
+    float Max();
 
     /**
      * Differentiate pulse at time T
      */
-    float Derivative(float T) final;
+    float Derivative(float T);
  private:
     // starting time of the pulse
     float t0;
