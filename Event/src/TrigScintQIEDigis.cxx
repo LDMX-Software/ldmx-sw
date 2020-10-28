@@ -17,19 +17,19 @@ namespace ldmx {
 
   void TrigScintQIEDigis::SetADC(int* adc_){
     for(int i=0;i<maxTS;i++){
-      ADCs[i] = adc_[i];
+      ADCs.push_back(adc_[i]);
     }
   }
   
   void TrigScintQIEDigis::SetTDC(int* tdc_){
     for(int i=0;i<maxTS;i++){
-      TDCs[i] = tdc_[i];
+      TDCs.push_back(tdc_[i]);
     }
   }
   
   void TrigScintQIEDigis::SetCID(int* cid_){
     for(int i=0;i<maxTS;i++){
-      CIDs[i] = cid_[i];
+      CIDs.push_back(cid_[i]);
     }
   }
   
