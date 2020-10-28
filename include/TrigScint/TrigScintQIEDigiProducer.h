@@ -64,12 +64,14 @@ namespace ldmx {
     void configure(Parameters& parameters) final override;
     void produce(Event& event);
     TrigScintID generateRandomID(int module);
+    /** Has been seeded? */
+    bool hasSeed() const { return random_.get()!=nullptr; }
 
  private:
     /// Random number generator 
-    std::unique_ptr<TRandom3> random_; 
+    std::unique_ptr<TRandom3> random_{nullptr}; 
             
-    /// Generate noise hits given the number of channels and mean noise.
+    /// Generate noise
     std::unique_ptr<NoiseGenerator> noiseGenerator_;
 
     /// Class to set the verbosity level.  
@@ -100,6 +102,8 @@ namespace ldmx {
 
     /// Total number of photoelectrons per MIP
     double pePerMip_{13.5};
+
+    SimQIE* smq{nullptr};
 
   };
 
