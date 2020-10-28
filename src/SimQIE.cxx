@@ -18,7 +18,7 @@ SimQIE::SimQIE(){}
   // trg = new TRandomGen<ROOT::Math::MixMaxEngine<240,0>>();
   if(seed==0){
     EXCEPTION_RAISE("RandomSeedException",
-		    "Noise generator was not seeded before use");
+		    "QIE Noise generator not seeded (seed=0)");
   }
   else{
     rand_ptr = std::make_unique<TRandom3>(seed);
