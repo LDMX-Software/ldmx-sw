@@ -126,59 +126,22 @@ class TargetPNFilter(simcfg.UserAction) :
 
         self.process = 'photonNuclear'
 
-class DarkBremFilter(simcfg.UserAction):
+class EcalDarkBremFilter(simcfg.UserAction):
     """ Configuration for filtering A' events
 
     Parameters
     ----------
-    vol : str
-        Geant4 name of volume to filter for
-
-    Attributes
-    ----------
-    nGensFromPrimary : int
-        Number of particle generations to search before giving up on generating the A'
     minApEnergy : float
         Minimum A' energy to keep the event [MeV]
     """
 
-    def __init__(self,vol):
-        super().__init__('%s_ap_filter'%vol,'ldmx::DarkBremFilter')
+    def __init__(self,minApEnergy):
+        super().__init__('ecal_db_filter','ldmx::EcalDarkBremFilter')
 
         from LDMX.Biasing import include
         include.library()
 
-        self.volume = vol
-        self.threshold = 0.
-
-    def target(minApEnergy) :
-        """Configure filter to look for dark brem in target
-
-        Sets number of generations from primary to 0,
-        meaning only allow primary to dark brem
-
-        Parameters
-        ----------
-        minApEnergy : float
-            Minimum A' energy [MeV] to keep event
-        """
-
-        f = DarkBremFilter('target')
-        f.threshold = minApEnergy
-        return f
-    
-    def ecal(minApEnergy) :
-        """Configure filter to look for dark brem in ecal
-
-        Parameters
-        ----------
-        minApEnergy : float
-            Minimum A' energy [MeV] to keep event
-        """
-
-        f = DarkBremFilter('ecal')
-        f.threshold = minApEnergy
-        return f
+        self.threshold = minApEnergy
 
 class TaggerVetoFilter(simcfg.UserAction): 
     """ Configuration used to reject off-energy electrons in the tagger tracker.
