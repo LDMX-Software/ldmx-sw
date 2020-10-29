@@ -143,6 +143,23 @@ class EcalDarkBremFilter(simcfg.UserAction):
 
         self.threshold = minApEnergy
 
+class TargetDarkBremFilter(simcfg.UserAction):
+    """ Configuration for filtering A' events
+
+    Parameters
+    ----------
+    minApEnergy : float
+        Minimum A' energy to keep the event [MeV]
+    """
+
+    def __init__(self,minApEnergy):
+        super().__init__('target_db_filter','ldmx::TargetDarkBremFilter')
+
+        from LDMX.Biasing import include
+        include.library()
+
+        self.threshold = minApEnergy
+
 class TaggerVetoFilter(simcfg.UserAction): 
     """ Configuration used to reject off-energy electrons in the tagger tracker.
 

@@ -14,143 +14,86 @@
 #include "SimCore/UserEventInformation.h" //set the weight for the event
 
 #include "G4LogicalVolumeStore.hh" //for the store
+#include "G4Electron.hh" //to check if track is electron
 
 namespace ldmx { 
 
     TargetDarkBremFilter::TargetDarkBremFilter(const std::string& name, Parameters& parameters)
-        : UserAction(name, parameters) {
+        : UserAction(name, parameters) { threshold_ = parameters.getParameter< double >("threshold"); }
 
-        std::string desiredVolume = parameters.getParameter< std::string >("volume");
-        threshold_ = parameters.getParameter< double >("threshold");
- 
-        //TODO check if this needs to be updated when v12 geo updates are merged in
-        for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
-            G4String volumeName = volume->GetName();
-            if ((desiredVolume.compare("ecal") == 0) ) {
-                //looking for ecal volumes
-                if ( volumeName.contains("volume") and
-                    (   volumeName.contains("Si") 
-                     or volumeName.contains("W") 
-                     or volumeName.contains("CFMix") 
-                     or volumeName.contains("PCB")
-                    ) 
-                ) { volumes_.push_back( volume ); }
+    void TargetDarkBremFilter::stepping(const G4Step* step) { 
 
-            } else if (volumeName.contains(desiredVolume)) {
-                volumes_.push_back( volume );
-            }
-        }
+        //don't process if event is already aborted
+        if (G4EventManager::GetEventManager()->GetConstCurrentEvent()->IsAborted()) return;
 
-        if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 0 ) {
-            std::cout << "[ TargetDarkBremFilter ]: "
-                << "Looking for A' in: ";
-            for ( auto const& volume : volumes_ ) std::cout << volume->GetName() << ", ";
-            std::cout << std::endl;
-        }
-    }
+        // Get the track associated with this step.
+        auto track{step->GetTrack()};
 
-    void TargetDarkBremFilter::BeginOfEventAction(const G4Event*) {
-        /* Debug message
-        std::cout << "[ TargetDarkBremFilter ]: "
-            << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
-            << "Beginning event."
-            << std::endl;
-        */
-        foundAp_    = false;
-        return;
-    }
+        // Leave if track is not primary
+        if (track->GetParentID() != 0) return;
 
-    G4ClassificationOfNewTrack TargetDarkBremFilter::ClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& cl) {
+        // Leave if track is not an electron
+        if (track->GetParticleDefinition() != G4Electron::Electron()) return; 
 
-        if ( aTrack->GetParticleDefinition() == G4APrime::APrime() ) {
-            //there is an A'! Yay!
-            /* Debug message
-            std::cout << "[ TargetDarkBremFilter ]: "
-                      << "Found A', still need to check if it originated in requested volume." 
-                      << std::endl;
-            */
-            if (not foundAp_ and aTrack->GetTotalEnergy() > threshold_ ) {
-                //The A' is the first one created in this event and is above the energy threshold
-                foundAp_ = true;
-            } else if ( foundAp_ ) {
-                AbortEvent("Found more than one A' during filtering.");
+        // Leave if track is not in target region
+        if (not isInTargetRegion(track->GetVolume())) return;
+
+        if (
+            not isInTargetRegion(track->GetNextVolume()) //leaving target region
+            or track->GetTrackStatus() == fStopAndKill //stopping within target region
+            or track->GetKineticEnergy() == 0. //stopping within target region
+           ) {
+            // Get the electron secondries
+            const std::vector<G4Track*>* secondaries{step->GetSecondary()};
+            if (not secondaries or secondaries->size() == 0) {
+                AbortEvent("Primary electron did not create secondaries.");
+                return;
             } else {
-                AbortEvent("A' was not produced above the required threshold.");
-            }
-        }
-
-        return cl;
-    }
-
-    void TargetDarkBremFilter::NewStage() {
-
-        if ( not foundAp_ )
-            AbortEvent("A' wasn't produced.");
-        
-        return;
-    }
-
-    void TargetDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
-
-        /* Check that generational stacking is working
-        std::cout << "[ TargetDarkBremFilter ]:"
-            << track->GetTrackID() << " " << track->GetParticleDefinition()->GetPDGEncoding()
-            << std::endl;
-        */
-
-        if ( track->GetParticleDefinition() == G4APrime::APrime() ) {
-            //check if A' was made in the desired volume and has the minimum energy
-            auto event{G4EventManager::GetEventManager()};
-            if (not inDesiredVolume(track)) {
-                AbortEvent("A' wasn't produced inside of the requested volume.");
-            } else {
-                //add generation to UserTrackInformation
-                UserTrackInformation* userInfo 
-                      = dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
-
-                //make sure A' is persisted into output file
-                userInfo->setSaveFlag(true); 
+                //check secondaries to see if we made a dark brem
+                for (auto& secondary_track : *secondaries) {
+                    if (secondary_track->GetParticleDefinition() == G4APrime::APrime()) {
+                        //we found an A', woo-hoo!
     
-                if ( !event->GetUserInformation() ) {
-                    event->SetUserInformation(new UserEventInformation);
-                }
-                static_cast<UserEventInformation*>(event->GetUserInformation())->setWeight( track->GetWeight() );
-                /* debug printout to check weighting of events
-                std::cout << "[ TargetDarkBremFilter ]: "
-                    << "(" << event->GetConstCurrentEvent()->GetEventID()
-                    << ") weighted " 
-                    << std::setprecision(std::numeric_limits<double>::digits10 + 1) //maximum precision
-                    << track->GetWeight()
-                    << std::endl;
-                 */
-            } //A' was made in desired volume and has the minimum energy
-        }//track is A'
+                        if (secondary_track->GetTotalEnergy() < threshold_) {
+                            AbortEvent("A' was not created with total energy above input threshold.");
+                            return;
+                        }
+    
+                        if (not isInTargetRegion(secondary_track->GetVolume())) {
+                            AbortEvent("A' was not created within target region.");
+                            return;
+                        }
+                       
+                        auto event{G4EventManager::GetEventManager()}; 
+                        if (event->GetUserInformation() == nullptr) { 
+                            event->SetUserInformation(new UserEventInformation()); 
+                        }
+                        //persist weight
+                        dynamic_cast<UserEventInformation*>(event->GetUserInformation())->setWeight(secondary_track->GetWeight());
+    
+                        //we found a good A', so we can leave
+                        return;
+                    }//this secondary is an A' 
+                }//loop through secondaries
+            }//are there secondaries to loop through
+    
+            //got here without finding A'
+            AbortEvent("Primary electron did not create A'.");
+            return;
+        } //should check secondaries of primary
 
+        //get here if we are the primary in the target region,
+        //  but shouldn't check the secondaries yet
         return;
-    }
-
-    bool TargetDarkBremFilter::inDesiredVolume(const G4Track* track) const {
-
-        /**
-         * Comparing the pointers to logical volumes isn't very robust.
-         * TODO find a better way to do this
-         */
-
-        auto inVol = track->GetLogicalVolumeAtVertex();
-        for ( auto const& volume : volumes_ ) {
-            if ( inVol == volume ) return true;
-        }
-
-        return false;
     }
 
     void TargetDarkBremFilter::AbortEvent(const std::string& reason) const {
-        if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
+        //if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
             std::cout << "[ TargetDarkBremFilter ]: "
                 << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
                 << reason << " Aborting event."
                 << std::endl;
-        }
+        //}
         G4RunManager::GetRunManager()->AbortEvent();
         return;
     }
