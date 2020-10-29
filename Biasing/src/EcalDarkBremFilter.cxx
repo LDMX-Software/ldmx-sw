@@ -1,13 +1,13 @@
 /*
- * @file DarkBremFilter.cxx
- * @class DarkBremFilter
+ * @file EcalDarkBremFilter.cxx
+ * @class EcalDarkBremFilter
  * @brief Class defining a UserActionPlugin that allows a user to filter out 
  *        events that don't result in a dark brem within a given volume
  * @author Michael Revering, University of Minnesota
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#include "Biasing/DarkBremFilter.h"
+#include "Biasing/EcalDarkBremFilter.h"
 
 #include "SimCore/G4APrime.h" //checking if particles match A'
 #include "SimCore/UserTrackInformation.h" //make sure A' is saved
@@ -17,41 +17,39 @@
 
 namespace ldmx { 
 
-    DarkBremFilter::DarkBremFilter(const std::string& name, Parameters& parameters)
+    EcalDarkBremFilter::EcalDarkBremFilter(const std::string& name, Parameters& parameters)
         : UserAction(name, parameters) {
 
-        std::string desiredVolume = parameters.getParameter< std::string >("volume");
         threshold_ = parameters.getParameter< double >("threshold");
  
-        //TODO check if this needs to be updated when v12 geo updates are merged in
+        /*
+         * We look for the logical volumes that match the following pattern:
+         *  - 'volume' is in the name AND
+         *  - 'Si' OR 'W' OR 'CFMix' OR 'PCB' are in the name
+         */
         for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
             G4String volumeName = volume->GetName();
-            if ((desiredVolume.compare("ecal") == 0) ) {
-                //looking for ecal volumes
-                if ( volumeName.contains("volume") and
-                    (   volumeName.contains("Si") 
-                     or volumeName.contains("W") 
-                     or volumeName.contains("CFMix") 
-                     or volumeName.contains("PCB")
-                    ) 
-                ) { volumes_.push_back( volume ); }
-
-            } else if (volumeName.contains(desiredVolume)) {
-                volumes_.push_back( volume );
-            }
+            //looking for ecal volumes
+            if ( volumeName.contains("volume") and
+                (   volumeName.contains("Si") 
+                 or volumeName.contains("W") 
+                 or volumeName.contains("CFMix") 
+                 or volumeName.contains("PCB")
+                ) 
+            ) { volumes_.push_back( volume ); }
         }
 
         if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 0 ) {
-            std::cout << "[ DarkBremFilter ]: "
+            std::cout << "[ EcalDarkBremFilter ]: "
                 << "Looking for A' in: ";
             for ( auto const& volume : volumes_ ) std::cout << volume->GetName() << ", ";
             std::cout << std::endl;
         }
     }
 
-    void DarkBremFilter::BeginOfEventAction(const G4Event*) {
+    void EcalDarkBremFilter::BeginOfEventAction(const G4Event*) {
         /* Debug message
-        std::cout << "[ DarkBremFilter ]: "
+        std::cout << "[ EcalDarkBremFilter ]: "
             << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
             << "Beginning event."
             << std::endl;
@@ -60,12 +58,12 @@ namespace ldmx {
         return;
     }
 
-    G4ClassificationOfNewTrack DarkBremFilter::ClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& cl) {
+    G4ClassificationOfNewTrack EcalDarkBremFilter::ClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& cl) {
 
         if ( aTrack->GetParticleDefinition() == G4APrime::APrime() ) {
             //there is an A'! Yay!
             /* Debug message
-            std::cout << "[ DarkBremFilter ]: "
+            std::cout << "[ EcalDarkBremFilter ]: "
                       << "Found A', still need to check if it originated in requested volume." 
                       << std::endl;
             */
@@ -82,7 +80,7 @@ namespace ldmx {
         return cl;
     }
 
-    void DarkBremFilter::NewStage() {
+    void EcalDarkBremFilter::NewStage() {
 
         if ( not foundAp_ )
             AbortEvent("A' wasn't produced.");
@@ -90,10 +88,10 @@ namespace ldmx {
         return;
     }
 
-    void DarkBremFilter::PostUserTrackingAction(const G4Track* track) {
+    void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
 
         /* Check that generational stacking is working
-        std::cout << "[ DarkBremFilter ]:"
+        std::cout << "[ EcalDarkBremFilter ]:"
             << track->GetTrackID() << " " << track->GetParticleDefinition()->GetPDGEncoding()
             << std::endl;
         */
@@ -116,7 +114,7 @@ namespace ldmx {
                 }
                 static_cast<UserEventInformation*>(event->GetUserInformation())->setWeight( track->GetWeight() );
                 /* debug printout to check weighting of events
-                std::cout << "[ DarkBremFilter ]: "
+                std::cout << "[ EcalDarkBremFilter ]: "
                     << "(" << event->GetConstCurrentEvent()->GetEventID()
                     << ") weighted " 
                     << std::setprecision(std::numeric_limits<double>::digits10 + 1) //maximum precision
@@ -129,7 +127,7 @@ namespace ldmx {
         return;
     }
 
-    bool DarkBremFilter::inDesiredVolume(const G4Track* track) const {
+    bool EcalDarkBremFilter::inDesiredVolume(const G4Track* track) const {
 
         /**
          * Comparing the pointers to logical volumes isn't very robust.
@@ -144,9 +142,9 @@ namespace ldmx {
         return false;
     }
 
-    void DarkBremFilter::AbortEvent(const std::string& reason) const {
+    void EcalDarkBremFilter::AbortEvent(const std::string& reason) const {
         if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
-            std::cout << "[ DarkBremFilter ]: "
+            std::cout << "[ EcalDarkBremFilter ]: "
                 << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
                 << reason << " Aborting event."
                 << std::endl;
@@ -156,4 +154,4 @@ namespace ldmx {
     }
 }
 
-DECLARE_ACTION(ldmx, DarkBremFilter) 
+DECLARE_ACTION(ldmx, EcalDarkBremFilter) 
