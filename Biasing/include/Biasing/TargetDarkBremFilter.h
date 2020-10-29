@@ -19,6 +19,7 @@
 //   Geant4   //
 //------------//
 #include "G4RunManager.hh"
+#include "G4VPhysicalVolume.hh"
 
 /*~~~~~~~~~~~~*/
 /*   Biasing  */
@@ -36,15 +37,14 @@ namespace ldmx {
      * @class TargetDarkBremFilter
      *
      * This class is meant to filter for events that produce a dark brem matching
-     * the input parameters:
+     * originating in the target and matching the following parameters.
      *
-     *      volume: A' originates inside of the input volume (target or ecal)
-     *      threshold: minimum energy [MeV] A' needs to have, should also be threshold for PartialEnergySorter
+     *      threshold: minimum energy [MeV] A' needs to have
      *
-     * @see PartialEnergySorter
-     * Here we assume that the partial energy sorter is being run in sequence with this filter.
-     * This filter makes sure that any events passing this filter have an A' of the required
-     * input energy and generated inside of the required input volume.
+     * @see TargetBremFilter
+     * This filter is designed similar to the target brem filter where we check the
+     * secondaries of the primary electron if it is stopping within the target or
+     * if it is leaving the target region.
      */
     class TargetDarkBremFilter : public UserAction {
 
@@ -68,65 +68,49 @@ namespace ldmx {
              * @return list of action types this class does
              */
             std::vector< TYPE > getTypes() final override {
-                return { TYPE::STACKING , TYPE::EVENT , TYPE::TRACKING };
+                return { TYPE::STEPPING };
             }
 
             /**
-             * Reset flag on if A' has been found
+             * Looking for A' while primary is stepping.
              *
-             * @param event unused
+             * We make sure that the current track
+             * is the primary electron that is within
+             * the target region. Then if the track
+             * is either stopped or leaving the target region,
+             * we look through its secondaries for a good A'.
+             *
+             * @param[in] step current G4Step
              */
-            void BeginOfEventAction(const G4Event* event) final override;
-
-            /**
-             * We return the classification of the track done by the PartialEnergySorter,
-             * but we can check here if the A' has been created above the required
-             * energy.
-             *
-             * Checks a new track for being an A' above threshold_
-             *  if it is an A', sets the foundAp_ member 
-             * 
-             * @see PartialEnergySort::ClassifyNewTrack
-             * @param aTrack The Geant4 track.
-             * @param currentTrackClass The current track classification.
-             * @returns current track classification
-             */
-            G4ClassificationOfNewTrack ClassifyNewTrack(const G4Track* aTrack, 
-                    const G4ClassificationOfNewTrack& currentTrackClass) final override; 
-
-            /**
-             * When using the PartialEnergySorter,
-             * the *first* time that a new stage begins is when
-             * all particles are now below the threshold.
-             *
-             * We take this opportunity to make sure that the A'
-             * has been found.
-             *
-             * @see PartialEnergySort::NewStage
-             */
-            void NewStage() final override;
-
-            /**
-             * Make sure A' is saved.
-             *
-             * If passed track is A', set save status to true
-             * Aborts event if A' does not originate in desired volume.
-             * This is the last check that the event needs to pass
-             * to be kept.
-             *
-             * @param track G4Track to check if it is an A'
-             */
-            void PostUserTrackingAction(const G4Track* track) final override;
+            void stepping(const G4Step* step);
 
         private:
 
             /**
-             * Check if input volume is in the desired volume name
+             * Check if the volume is in the target region
              *
-             * @param pointer to track to check
-             * @return true if originated in desired volume
+             * @note will return false if vol is nullptr
+             *
+             * @param[in] vol G4VPhysicalVolume to check region
+             * @returns true if vol is in target region
              */
-            bool inDesiredVolume(const G4Track* ) const;
+            inline bool isInTargetRegion(const G4VPhysicalVolume* vol) const {
+                return vol ? isInTargetRegion(vol->GetLogicalVolume()) : false;
+            }
+
+            /**
+             * Check if the volume is in the target region
+             *
+             * @note will return false if vol or region is nullptr.
+             *
+             * @param[in] vol G4LogicalVolume to check region
+             * @returns true if vol is in target region
+             */
+            inline bool isInTargetRegion(const G4LogicalVolume* vol) const {
+                if (not vol) return false;
+                auto region{vol->GetRegion()};
+                return region ? (region->GetName().compareTo("target") == 0) : false;
+            }
 
             /**
              * Helper to abort an event with a message
@@ -140,14 +124,6 @@ namespace ldmx {
 
         private:
 
-            /** 
-             * The volumes that the filter will be applied to.
-             *
-             * Parameter Name: 'volume'
-             *  Searched for in PhysicalVolumeStore
-             */
-            std::vector< G4LogicalVolume* > volumes_;
-
             /**
              * Minimum energy [MeV] that the A' should have to keep the event.
              *
@@ -157,13 +133,6 @@ namespace ldmx {
              * Parameter Name: 'threshold'
              */
             double threshold_;
-
-            /**
-             * Have we found the A' yet?
-             *
-             * Reset to false in BeginOfEventAction
-             */
-            bool foundAp_;
 
     }; // TargetDarkBremFilter
 }
