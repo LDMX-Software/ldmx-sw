@@ -1,14 +1,14 @@
 /**
- * @file DarkBremFilter.h
- * @class DarkBremFilter
+ * @file EcalDarkBremFilter.h
+ * @class EcalDarkBremFilter
  * @brief Class defining a UserActionPlugin that allows a user to filter out 
  *        events that don't result in a dark brem inside a given volume
  * @author Michael Revering, University of Minnesota
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef BIASING_DARKBREMFILTER_H_
-#define BIASING_DARKBREMFILTER_H_
+#ifndef BIASING_ECALDARKBREMFILTER_H_
+#define BIASING_ECALDARKBREMFILTER_H_
 
 //----------------//
 //   C++ StdLib   //
@@ -33,7 +33,7 @@
 namespace ldmx {
 
     /**
-     * @class DarkBremFilter
+     * @class EcalDarkBremFilter
      *
      * This class is meant to filter for events that produce a dark brem matching
      * the input parameters:
@@ -46,7 +46,7 @@ namespace ldmx {
      * This filter makes sure that any events passing this filter have an A' of the required
      * input energy and generated inside of the required input volume.
      */
-    class DarkBremFilter : public UserAction {
+    class EcalDarkBremFilter : public UserAction {
 
         public:
 
@@ -55,12 +55,12 @@ namespace ldmx {
              *
              * Retrieve the necessary configuration parameters
              */
-            DarkBremFilter(const std::string& name, Parameters& parameters);
+            EcalDarkBremFilter(const std::string& name, Parameters& parameters);
 
             /**
              * Class destructor.
              */
-            ~DarkBremFilter() { }
+            ~EcalDarkBremFilter() { }
 
             /**
              * Get the types of actions this class can do
@@ -140,14 +140,6 @@ namespace ldmx {
 
         private:
 
-            /** 
-             * The volumes that the filter will be applied to.
-             *
-             * Parameter Name: 'volume'
-             *  Searched for in PhysicalVolumeStore
-             */
-            std::vector< G4LogicalVolume* > volumes_;
-
             /**
              * Minimum energy [MeV] that the A' should have to keep the event.
              *
@@ -158,6 +150,11 @@ namespace ldmx {
              */
             double threshold_;
 
+            /** 
+             * The volumes that the filter will be applied to.
+             */
+            std::vector< G4LogicalVolume* > volumes_;
+
             /**
              * Have we found the A' yet?
              *
@@ -165,7 +162,7 @@ namespace ldmx {
              */
             bool foundAp_;
 
-    }; // DarkBremFilter
+    }; // EcalDarkBremFilter
 }
 
-#endif // BIASING_DARKBREMFILTER_H__
+#endif // BIASING_ECALDARKBREMFILTER_H__
