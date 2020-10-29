@@ -222,26 +222,19 @@ def dark_brem( ap_mass , lhe, detector ) :
     db_model.epsilon   = 0.01 #decrease epsilon from one to help with Geant4 biasing calculations
     sim.dark_brem.activate( ap_mass , db_model )
 
-    import math
-    factor = ( sim.dark_brem.ap_mass**math.log10( sim.dark_brem.ap_mass ) ) / ( sim.dark_brem.model.epsilon ** 2 )
-    
     # Biasing dark brem up inside of the ecal volumes
     sim.biasingOn()
-    sim.biasingConfigure( 'eDarkBrem' , 'ecal' , 0. , factor , 
+    sim.biasingConfigure( 'eDarkBrem' , 'ecal' , 0. , (sim.dark_brem.ap_mass/db_model.epsilon)**2 , 
                 allPtl = True, incidentOnly = False)
     
-    # the following filters are in a library that needs to be included
-    from LDMX.Biasing import include
-    include.library()
-
     from LDMX.Biasing import util
     sim.actions.extend([ 
             # Make sure all particles above 2GeV are processed first
             util.PartialEnergySorter(2000.),
             # Abort events if the electron doesn't get to the ECal with 3.5GeV
             filters.PrimaryToEcalFilter(3500.),
-            # Only keep events when a dark brem happens in the target
-            filters.DarkBremFilter.ecal(2000.),
+            # Only keep events when a dark brem happens in the Ecal
+            filters.EcalDarkBremFilter(2000.),
             # Keep all of the dark brem daughters. 
             filters.TrackProcessFilter.dark_brem()
     ])
