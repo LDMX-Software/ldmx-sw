@@ -30,8 +30,7 @@ if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
 endif()
 
 # Set the python installation path
-set(PYTHON_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/python/LDMX)
-message(STATUS "Python install directory set to ${PYTHON_INSTALL_PREFIX}")
+set(PYTHON_PACKAGE_NAME LDMX)
 
 # Set the default release type to "Release". If a release type is specified 
 # at the command line, it's respected.
