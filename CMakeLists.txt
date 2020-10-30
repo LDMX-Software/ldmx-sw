@@ -49,6 +49,7 @@ setup_library(name SimCore
               dependencies Geant4::Interface
                            ROOT::Physics
                            Framework::Configure
+                           Framework::Framework
                            DetDescr::DetDescr
                            Boost::log
                            "${registered_targets}"
