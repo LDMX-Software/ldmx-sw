@@ -30,8 +30,7 @@ if (NOT EXISTS /.dockerenv AND NOT EXISTS /singularity)
 endif()
 
 # Set the python installation path
-set(PYTHON_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/python/LDMX)
-message(STATUS "Python install directory set to ${PYTHON_INSTALL_PREFIX}")
+set(PYTHON_PACKAGE_NAME LDMX)
 
 # Set the default release type to "Release". If a release type is specified 
 # at the command line, it's respected.
@@ -99,6 +98,12 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
     # Data quality management plots.
     add_subdirectory(DQM)
 
+
+    # This module contains HCal reconstruction code.
+    add_subdirectory(Hcal)
+
+    # This module contains all things trigger scintillator
+    add_subdirectory(TrigScint)
 
 endif()
 

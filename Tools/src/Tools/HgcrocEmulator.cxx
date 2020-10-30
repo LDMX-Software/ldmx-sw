@@ -5,11 +5,6 @@ namespace ldmx {
 
     HgcrocEmulator::HgcrocEmulator(const Parameters& ps) {
 
-        //The noise injector is used to place smearing on top
-        //of energy depositions and hit times before doing
-        //the digitization procedure.
-        noiseInjector_ = std::make_unique<TRandom3>(time(nullptr));
-
         //settings of readout chip that are the same for all chips
         //  used  in actual digitization
         noiseRMS_         = ps.getParameter<double>("noiseRMS");
@@ -54,6 +49,10 @@ namespace ldmx {
 
     }
 
+    void HgcrocEmulator::seedGenerator(uint64_t seed) {
+        noiseInjector_=std::make_unique<TRandom3>(seed);
+    }
+    
     bool HgcrocEmulator::digitize(
             const int &channelID,
             const std::vector<double> &voltages,

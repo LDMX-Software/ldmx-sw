@@ -11,6 +11,4 @@
 /data
 /build*
 /install*
-
-# Ignore auto-generated file
-Event/include/Event/Version.h
+Version.h
