@@ -23,7 +23,7 @@ namespace ldmx {
     rt = 1;			// default rise and fall tiems
     ft = 10;
     Q0 = qq;
-    NC = (ft-rt)*log(2)/Q0;		// Remember, u hv to divide by it
+    nc = (ft-rt)*log(2)/Q0;		// Remember, u hv to divide by it
   }
 
   // Bimoid pulse, made out of difference of two sigmoids parametrized by
@@ -36,14 +36,14 @@ namespace ldmx {
     rt = rise;
     ft = fall;
     Q0 = qq;
-    NC = (ft-rt)*log(2)/Q0;		// Remember, u hv to divide by it
+    nc = (ft-rt)*log(2)/Q0;		// Remember, u hv to divide by it
   }
 
   float Bimoid::Eval(float T){
     if (T<t0) return 0;
     float y1 = 1/(1+exp((t0-T)/rt));
     float y2 = 1/(1+exp((t0-T)/ft));
-    return((y1-y2)/NC);
+    return((y1-y2)/nc);
   }
 
   float Bimoid::Integrate(float T1, float T2){
@@ -54,7 +54,7 @@ namespace ldmx {
   
     float I1 = rt*log(1+exp((t1-t0)/rt)) - ft*log(1+exp((t1-t0)/ft));
     float I2 = rt*log(1+exp((t2-t0)/rt)) - ft*log(1+exp((t2-t0)/ft));
-    return((I2-I1)/NC);
+    return((I2-I1)/nc);
   }
 
   float Bimoid::Max(){
@@ -80,7 +80,7 @@ namespace ldmx {
     float v1 = E1/(rt*pow(1+E1,2));
     float v2 = E2/(ft*pow(1+E2,2));
 
-    return((v1-v2)/NC);		// Actual derivative
+    return((v1-v2)/nc);		// Actual derivative
   }
 
   Expo::Expo(){}
@@ -95,7 +95,7 @@ namespace ldmx {
     k=k_;
     tmax=tmax_;
     t0=tstart_;
-    NC = Q_/tmax;
+    nc = Q_/tmax;
 
     rt = (log(9+exp(-k*tmax))-log(1+9*exp(-k*tmax)))/k;
     ft = log(9)/k;
@@ -111,24 +111,24 @@ namespace ldmx {
   }
 
   float Expo::Eval(float t_){
-    if (NC==0) return 0;		// fast evaluation for zero pulse
+    if (nc==0) return 0;		// fast evaluation for zero pulse
     if (t_<=t0) return 0;
     float T = t_-t0;
     if (T<tmax) {
-      return(NC*(1-exp(-k*T))/tmax);
+      return(nc*(1-exp(-k*T))/tmax);
     }
     else {
-      return(NC*(1-exp(-k*tmax))*exp(k*(tmax-T))/tmax);
+      return(nc*(1-exp(-k*tmax))*exp(k*(tmax-T))/tmax);
     }
     return -1;
   }
 
   float Expo::Max(){
-    return NC*(1-exp(-k*tmax))/tmax;
+    return nc*(1-exp(-k*tmax))/tmax;
   }
 
   float Expo::Integrate(float T1, float T2){
-    if (NC==0){
+    if (nc==0){
       return 0;		// for faster implementation of zero pulse
     }
     if (T2<=t0) return 0;
@@ -138,17 +138,17 @@ namespace ldmx {
   float Expo::Derivative(float T){
     if (T<=t0) return 0;
     float t=T-t0;
-    if (t<=tmax) return(NC*k*exp(-k*t));
-    return(-NC*k*(1-exp(-k*tmax))*exp(k*(tmax-t)));
+    if (t<=tmax) return(nc*k*exp(-k*t));
+    return(-nc*k*(1-exp(-k*tmax))*exp(k*(tmax-t)));
   }
 
   float Expo::I_Int(float T){
     if (T<=t0) return 0;
     float t=T-t0;
-    if (t<tmax) return(NC*(k*t+exp(-k*t)-1)/k);
+    if (t<tmax) return(nc*(k*t+exp(-k*t)-1)/k);
 
     float c1 = (1-exp(-k*tmax))/k;
     float c2 = tmax-c1*exp(k*(tmax-t));
-    return NC*c2;
+    return nc*c2;
   }
 }

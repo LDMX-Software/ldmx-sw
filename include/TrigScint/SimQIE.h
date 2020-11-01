@@ -10,7 +10,7 @@
 #include<iostream>
 #include"TMath.h"
 #include"TrigScint/QIEInputPulse.h"
-// #include"TRandomGen.h"
+/// #include"TRandomGen.h"
 #include"TRandom3.h"
 
 namespace ldmx {
@@ -80,49 +80,49 @@ namespace ldmx {
      * @param pp = pointer to pulse instance
      * @param N = no. of time samples considered for digitization
      */
-    int* Out_ADC(QIEInputPulse* pp,int N);	// Output per time sample, for N time samples
+    int* Out_ADC(QIEInputPulse* pp,int N);	/// Output per time sample, for N time samples
 
     /**
      * Complete set of TDCs for the pulse
      * @param pp = pointer to pulse instance
      * @param N = no. of time samples considered for digitization
      */
-    int* Out_TDC(QIEInputPulse* pp,int N);	// Output per time sample, for N time samples
+    int* Out_TDC(QIEInputPulse* pp,int N);	/// Output per time sample, for N time samples
 
     /**
      * Complete set of Capacitor IDs for the pulse
      * @param pp = pointer to pulse instance
      * @param N = no. of time samples considered for digitization
      */
-    int* CapID(QIEInputPulse* pp, int N);	// return CapID for N time samples
+    int* CapID(QIEInputPulse* pp, int N);	/// return CapID for N time samples
 
  private:
 
-    // Indices of first bin of each subrange
+    /// Indices of first bin of each subrange
     int nbins[5] = {0,16,36,57,64};
-    // Charge lower limit of all the 16 subranges
+    /// Charge lower limit of all the 16 subranges
     float edges[17]={-16, 34, 158, 419, 517, 915, 1910, 3990, 4780, 7960, 15900, 32600, 38900, 64300, 128000, 261000, 350000};
-    // sensitivity of the subranges (Total charge/no. of bins)
+    /// sensitivity of the subranges (Total charge/no. of bins)
     float sense[16]={3.1, 6.2, 12.4, 24.8, 24.8, 49.6, 99.2, 198.4, 198.4, 396.8, 793.6, 1587, 1587, 3174, 6349, 12700};
 
-    // QIE gain -> to convert from no. of e- to charge in fC
-    float Gain = 1;
-    // time period of one time sample [in ns]
-    float Tau = 25;
+    /// QIE gain -> to convert from no. of e- to charge in fC
+    float gain = 1;
+    /// time period of one time sample [in ns]
+    float tau = 25;
 
-    // TDC threshold (default 3.74 microAmpere)
-    float TDC_thr = 3.74;
-    // Random number generator (required for noise simulation)
+    /// TDC threshold (default 3.74 microAmpere)
+    float tdc_thr = 3.74;
+    /// Random number generator (required for noise simulation)
     std::unique_ptr<TRandom3> rand_ptr{nullptr};
     TRandom3* trg;
-    // TRandomGen<ROOT::Math::MixMaxEngine<240,0>>* trg;
+    /// TRandomGen<ROOT::Math::MixMaxEngine<240,0>>* trg;
 
-    // mean of gaussian noise (Pedestal)
+    /// mean of gaussian noise (Pedestal)
     float mu=0;
-    // std. dev. of gaussian noise (Actual noise level)
+    /// std. dev. of gaussian noise (Actual noise level)
     float sg=0;
-    // Whether noise is added to the system
-    bool IsNoise=false;
+    /// Whether noise is added to the system
+    bool isnoise=false;
 
   };
 }

@@ -13,7 +13,7 @@ namespace ldmx {
   SimQIE::SimQIE() {}
 
   SimQIE::SimQIE(float PD, float SG, uint64_t seed=0) {
-    IsNoise = true;
+    isnoise = true;
     if (seed==0) {
       EXCEPTION_RAISE("RandomSeedException",
 		      "QIE Noise generator not seeded (seed=0)");
@@ -26,20 +26,20 @@ namespace ldmx {
     sg = SG;
   }
 
-  void SimQIE::SetGain(float gg) {
-    Gain = gg*16e-5;		// to convert from 1.6e-19 to fC
+  void SimQIE::Setgain(float gg) {
+    gain = gg*16e-5;		// to convert from 1.6e-19 to fC
   }
 
   void SimQIE::SetFreq(float sf) {
-    Tau = 1000/sf;		// 1/sf -> MHz to ns
+    tau = 1000/sf;		// 1/sf -> MHz to ns
   }
 
   // Function to convert charge to ADC count
   // Working: The method checks in which QIE subrange does the charge lie,
   // applies a corresponding  gain to it and digitizes it.
   int SimQIE::Q2ADC(float QQ) {
-    float qq = Gain*QQ;		    // including QIE gain
-    if (IsNoise) qq+=trg->Gaus(mu,sg); // Adding gaussian random noise.
+    float qq = gain*QQ;		    // including QIE gain
+    if (isnoise) qq+=trg->Gaus(mu,sg); // Adding gaussian random noise.
 
     if (qq<=edges[0]) return 0;
     if (qq>=edges[16]) return 255;
@@ -75,7 +75,7 @@ namespace ldmx {
       edges[4*rr+ss]+
       (v1-nbins[ss])*sense[4*rr+ss]+
       sense[4*rr+ss]/2;
-    return(temp/Gain);
+    return(temp/gain);
   }
 
   // Function to return the quantization error for given input charge
@@ -99,7 +99,7 @@ namespace ldmx {
     int* OP = new int[N];	// N no. of output ADCs
 
     for(int i=0;i<N;i++) {
-      float QQ = pp->Integrate(i*Tau,i*Tau+Tau);
+      float QQ = pp->Integrate(i*tau,i*tau+tau);
       OP[i]=Q2ADC(QQ);
     }
     return OP;
@@ -108,9 +108,9 @@ namespace ldmx {
   // Function that returns the digitized time corresponding to current pulse
   // crossing a specified current threshold
   int SimQIE::TDC(QIEInputPulse* pp, float T0=0) {
-    float thr2=TDC_thr/Gain;
+    float thr2=tdc_thr/gain;
     if (pp->Eval(T0)>thr2) return 62;		// when pulse starts high
-    for(float tt=T0;tt<T0+Tau;tt+=0.1) {
+    for(float tt=T0;tt<T0+tau;tt+=0.1) {
       if (pp->Eval(tt)>=thr2) return((int)(2*(tt-T0)));
     }
     return 63;			// when pulse remains low all along
@@ -122,7 +122,7 @@ namespace ldmx {
     int* OP = new int[N];	// N no. of output ADCs
 
     for(int i=0;i<N;i++) {
-      OP[i] = TDC(pp,Tau*i);
+      OP[i] = TDC(pp,tau*i);
     }
     return OP;
   }
