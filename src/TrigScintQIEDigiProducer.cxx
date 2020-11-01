@@ -185,7 +185,7 @@ namespace ldmx {
 
 	QIEInfo.SetADC(smq->Out_ADC(ex,MaxTS));
 	QIEInfo.SetTDC(smq->Out_TDC(ex,MaxTS));
-	QIEInfo.SetADC(smq->CapID(ex,MaxTS));
+	QIEInfo.SetCID(smq->CapID(ex,MaxTS));
 
 	QDigis.push_back(QIEInfo);
       }
@@ -227,7 +227,7 @@ namespace ldmx {
 
       QIEInfo.SetADC(smq->Out_ADC(ex,MaxTS));
       QIEInfo.SetTDC(smq->Out_TDC(ex,MaxTS));
-      QIEInfo.SetADC(smq->CapID(ex,MaxTS));
+      QIEInfo.SetCID(smq->CapID(ex,MaxTS));
 
       QDigis.push_back(QIEInfo); 
     }

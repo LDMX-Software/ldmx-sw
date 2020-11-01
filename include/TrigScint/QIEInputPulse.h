@@ -23,22 +23,22 @@ namespace ldmx {
     /**
      * Evaluate the pulse at time T
      */
-    float Eval(float T);
+    virtual float Eval(float T);
 
     /**
      * Integrate the pulse from T1 to T2
      */
-    float Integrate(float T1,float T2);
+    virtual float Integrate(float T1,float T2);
 
     /**
      * Differentiate pulse at time T
      */
-    float Derivative(float T);
+    virtual float Derivative(float T);
 
     /**
      *  maximum of the pulse
      */
-    float Max();
+    virtual float Max();
   };
 
 
@@ -48,7 +48,7 @@ namespace ldmx {
    *
    * @note The pulse maximum is found numerically
    */
-  class Bimoid final : public virtual QIEInputPulse
+  class Bimoid : public QIEInputPulse
   {
  public:
     /**
@@ -65,22 +65,22 @@ namespace ldmx {
     /**
      * Evaluate the pulse at time T
      */
-    float Eval(float T);
+    float Eval(float T) final;
 
     /**
      * Integrate the pulse from T1 to T2
      */
-    float Integrate(float T1,float T2);
+    float Integrate(float T1,float T2) final;
 
     /**
      *  maximum of the pulse
      */
-    float Max();
+    float Max() final;
 
     /**
      * Differentiate pulse at time T
      */
-    float Derivative(float T);
+    float Derivative(float T) final;
  private:
     // starting time of the pulse
     float t0;
@@ -102,7 +102,7 @@ namespace ldmx {
    * @note This is the preferred inpute pulse
    * shape
    */
-  class Expo final : public virtual QIEInputPulse
+  class Expo : public QIEInputPulse
   {
  public:
 
@@ -141,22 +141,22 @@ namespace ldmx {
     /**
      * Evaluate the pulse at time T
      */
-    float Eval(float T);
+    float Eval(float T) final;
 
     /**
      * Integrate the pulse from T1 to T2
      */
-    float Integrate(float T1,float T2);
+    float Integrate(float T1,float T2) final;
 
     /**
      *  maximum of the pulse
      */
-    float Max();
+    float Max() final;
 
     /**
      * Differentiate pulse at time T
      */
-    float Derivative(float T);
+    float Derivative(float T) final;
  private:
     // starting time of the pulse
     float t0;
