@@ -82,15 +82,15 @@ namespace ldmx {
      */
     float Derivative(float T) final;
  private:
-    // starting time of the pulse
+    /// starting time of the pulse
     float t0;
-    // rise time
+    /// rise time
     float rt;
-    // fall time
+    /// fall time
     float ft;
-    // Normalization constant
-    float NC;
-    // Net charge (integral I.dt)
+    /// Normalization constant
+    float nc;
+    /// Net charge (integral I.dt)
     float Q0;
   };
 
@@ -118,7 +118,7 @@ namespace ldmx {
      * @param tstart_ = start time of the pulse (in ns)
      * @param Q_ = Total charge carried by the pulse (in fC)
      */
-    Expo(float k_,float tmax_,float tstart_,float Q_); // main constructor
+    Expo(float k_,float tmax_,float tstart_,float Q_); /// main constructor
 
     /**
      * Get Rise time of the pulse
@@ -158,23 +158,23 @@ namespace ldmx {
      */
     float Derivative(float T) final;
  private:
-    // starting time of the pulse
+    /// starting time of the pulse
     float t0;
-    // 1/RC time constant (for the capacitor)
+    /// 1/RC time constant (for the capacitor)
     float k;
-    // time when pulse attains maximum
+    /// time when pulse attains maximum
     float tmax;
-    // normalization constant (for internal use)
-    float NC;
-    // Rise Time
+    /// normalization constant (for internal use)
+    float nc;
+    /// Rise Time
     float rt=-1;
-    // Fall Time
+    /// Fall Time
     float ft=-1;
 
     /**
      * Indefinite integral at time T
      */
-    float I_Int(float T);		// Indefinite integral
+    float I_Int(float T);
   };
 
 }
