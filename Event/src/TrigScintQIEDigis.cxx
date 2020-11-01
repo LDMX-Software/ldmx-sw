@@ -11,24 +11,24 @@ ClassImp(ldmx::TrigScintQIEDigis);
 
 namespace ldmx {
 
-  TrigScintQIEDigis::TrigScintQIEDigis(int maxTS_=5){
+  TrigScintQIEDigis::TrigScintQIEDigis(int maxTS_=5) {
     maxTS = maxTS_;
   }
 
-  void TrigScintQIEDigis::SetADC(int* adc_){
-    for(int i=0;i<maxTS;i++){
+  void TrigScintQIEDigis::SetADC(int* adc_) {
+    for(int i=0;i<maxTS;i++) {
       ADCs.push_back(adc_[i]);
     }
   }
   
-  void TrigScintQIEDigis::SetTDC(int* tdc_){
-    for(int i=0;i<maxTS;i++){
+  void TrigScintQIEDigis::SetTDC(int* tdc_) {
+    for(int i=0;i<maxTS;i++) {
       TDCs.push_back(tdc_[i]);
     }
   }
   
-  void TrigScintQIEDigis::SetCID(int* cid_){
-    for(int i=0;i<maxTS;i++){
+  void TrigScintQIEDigis::SetCID(int* cid_) {
+    for(int i=0;i<maxTS;i++) {
       CIDs.push_back(cid_[i]);
     }
   }
@@ -43,6 +43,6 @@ namespace ldmx {
 	     <<"}\n";
   }
 
-  void TrigScintQIEDigis::Clear(Option_t* option){}
+  void TrigScintQIEDigis::Clear(Option_t* option) {}
 }
 // DECLARE_PRODUCER_NS(ldmx, TrigScintQIEDigis);
