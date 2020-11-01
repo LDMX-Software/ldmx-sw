@@ -60,33 +60,33 @@ namespace ldmx {
     /**
      * Get ADCs of all time samples
      */
-    std::vector<int> GetADC(){return(ADCs);}
+    std::vector<int> GetADC(){return(adcs);}
 
     /**
-     * Get TDCs of all time samples
+     * Get tdcs of all time samples
      */
-    std::vector<int> GetTDC(){return(TDCs);}
+    std::vector<int> GetTDC(){return(tdcs);}
 
     /**
      * Get Cap IDs of all time samples
      */
-    std::vector<int> GetCID(){return(CIDs);}
+    std::vector<int> GetCID(){return(cids);}
 
     /**
-     * Store ADCs of all time samples
-     * @param adc_ array of ADCs
+     * Store adcs of all time samples
+     * @param adc_ array of adcs
      */
     void SetADC(int* adc_);
 
     /**
-     * Store TDCs of all time samples
-     * @param tdc_ array of TDCs
+     * Store tdcs of all time samples
+     * @param tdc_ array of tdcs
      */
     void SetTDC(int* tdc_);
 
     /**
-     * Store CIDs of all time samples
-     * @param cid_ array of CIDs
+     * Store cids of all time samples
+     * @param cid_ array of cids
      */
     void SetCID(int* cid_);
 
@@ -99,11 +99,11 @@ namespace ldmx {
     bool IsNoisy; 
 
     /// analog to digital counts
-    std::vector<int> ADCs;
+    std::vector<int> adcs;
     /// Time to Digital counts
-    std::vector<int> TDCs;
+    std::vector<int> tdcs;
     /// capacitor IDs
-    std::vector<int> CIDs;
+    std::vector<int> cids;
 
     ClassDef(TrigScintQIEDigis,1);
   };

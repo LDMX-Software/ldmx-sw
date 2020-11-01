@@ -17,19 +17,19 @@ namespace ldmx {
 
   void TrigScintQIEDigis::SetADC(int* adc_) {
     for(int i=0;i<maxTS;i++) {
-      ADCs.push_back(adc_[i]);
+      adcs.push_back(adc_[i]);
     }
   }
   
   void TrigScintQIEDigis::SetTDC(int* tdc_) {
     for(int i=0;i<maxTS;i++) {
-      TDCs.push_back(tdc_[i]);
+      tdcs.push_back(tdc_[i]);
     }
   }
   
   void TrigScintQIEDigis::SetCID(int* cid_) {
     for(int i=0;i<maxTS;i++) {
-      CIDs.push_back(cid_[i]);
+      cids.push_back(cid_[i]);
     }
   }
   
@@ -37,9 +37,9 @@ namespace ldmx {
     std::cout<<"TrigScintQIEDigis { "
 	     <<"maxTS= "<<maxTS<<", "
 	     <<"chanID= "<<chanID<<", "
-	     <<"ADC[0]= "<<ADCs[0]<<", "
-	     <<"TDC[0]= "<<TDCs[0]<<", "
-	     <<"CID[0]= "<<TDCs[0]<<", "
+	     <<"ADC[0]= "<<adcs[0]<<", "
+	     <<"TDC[0]= "<<tdcs[0]<<", "
+	     <<"CID[0]= "<<tdcs[0]<<", "
 	     <<"}\n";
   }
 
