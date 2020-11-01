@@ -10,125 +10,133 @@
 #include "Framework/Exception.h"
 namespace ldmx {
 
-SimQIE::SimQIE(){}
+  SimQIE::SimQIE() {}
 
-  SimQIE::SimQIE(float PD, float SG, uint64_t seed=0)
-{
-  IsNoise = true;
-  // trg = new TRandomGen<ROOT::Math::MixMaxEngine<240,0>>();
-  if(seed==0){
-    EXCEPTION_RAISE("RandomSeedException",
-		    "QIE Noise generator not seeded (seed=0)");
+  SimQIE::SimQIE(float PD, float SG, uint64_t seed=0) {
+    IsNoise = true;
+    if (seed==0) {
+      EXCEPTION_RAISE("RandomSeedException",
+		      "QIE Noise generator not seeded (seed=0)");
+    }
+    else{
+      rand_ptr = std::make_unique<TRandom3>(seed);
+      trg = rand_ptr.get();
+    }
+    mu = PD;
+    sg = SG;
   }
-  else{
-    rand_ptr = std::make_unique<TRandom3>(seed);
-    trg = rand_ptr.get();
+
+  void SimQIE::SetGain(float gg) {
+    Gain = gg*16e-5;		// to convert from 1.6e-19 to fC
   }
-  mu = PD;
-  sg = SG;
-}
 
-void SimQIE::SetGain(float gg)
-{
-  Gain = gg*16e-5;		// to convert from 1.6e-19 to fC
-}
-
-void SimQIE::SetFreq(float sf)
-{
-  Tau = 1000/sf;		// 1/sf -> MHz to ns
-}
-
-int SimQIE::Q2ADC(float QQ)
-{
-  float qq = Gain*QQ;		    // including QIE gain
-  if(IsNoise) qq+=trg->Gaus(mu,sg); // Adding gaussian random noise.
-
-  if(qq<=edges[0]) return(0);
-  if(qq>=edges[16]) return(255);
-
-  int ID=8;
-  int a=0;
-  int b=16;
-  while(b-a!=1){
-    if(qq>edges[(a+b)/2]) a=(a+b)/2;
-    else b=(a+b)/2;
+  void SimQIE::SetFreq(float sf) {
+    Tau = 1000/sf;		// 1/sf -> MHz to ns
   }
-  return 64*(int)(a/4)+nbins[a%4]+floor((qq-edges[a])/sense[a]);
-}
 
-float SimQIE::ADC2Q(int adc)
-{
-  if(adc<= 0) return(-16);
-  if(adc>= 255) return(350000);
+  // Function to convert charge to ADC count
+  // Working: The method checks in which QIE subrange does the charge lie,
+  // applies a corresponding  gain to it and digitizes it.
+  int SimQIE::Q2ADC(float QQ) {
+    float qq = Gain*QQ;		    // including QIE gain
+    if (IsNoise) qq+=trg->Gaus(mu,sg); // Adding gaussian random noise.
 
-  int rr = adc/64;		// range
-  int v1 = adc%64;		// temp. var
-  int ss = 0;			// sub range
+    if (qq<=edges[0]) return 0;
+    if (qq>=edges[16]) return 255;
+
+    int ID=8;
+    int a=0;
+    int b=16;
+    while(b-a!=1) {
+      if (qq>edges[(a+b)/2]) {
+	a=(a+b)/2;
+      }
+      else b=(a+b)/2;
+    }
+    return 64*(int)(a/4)+nbins[a%4]+floor((qq-edges[a])/sense[a]);
+  }
+
+  // Function to convert ADCs back to charge
+  // Working: The method checks to which QIE subrange does the ADC correspnd to
+  // and returns the mean charge of the correspnding bin in the subrange
+  float SimQIE::ADC2Q(int adc) {
+    if (adc<= 0) return -16;
+    if (adc>= 255) return 350000;
+
+    int rr = adc/64;		// range
+    int v1 = adc%64;		// temp. var
+    int ss = 0;			// sub range
   
-  for(int i=1;i<4;i++){		// to get the subrange
-    if(v1>nbins[i]) ss++;
+    for(int i=1;i<4;i++) {		// to get the subrange
+      if (v1>nbins[i]) ss++;
+    }
+    int cc = 64*rr+nbins[ss];
+    float temp =
+      edges[4*rr+ss]+
+      (v1-nbins[ss])*sense[4*rr+ss]+
+      sense[4*rr+ss]/2;
+    return(temp/Gain);
   }
-  int cc = 64*rr+nbins[ss];
-  // return(edges[4*rr+ss]+(v1-nbins[ss])*sense[4*rr+ss]+sense[4*rr+ss]/2);
-  float temp=edges[4*rr+ss]+(v1-nbins[ss])*sense[4*rr+ss]+sense[4*rr+ss]/2;
-  return(temp/Gain);
-}
 
-float SimQIE::QErr(float Q)
-{
-  if(Q<=edges[0]) return(0);
-  if(Q>=edges[16]) return(0);
+  // Function to return the quantization error for given input charge
+  float SimQIE::QErr(float Q) {
+    if (Q<=edges[0]) return 0;
+    if (Q>=edges[16]) return 0;
 
-  int ID=8;
-  int a=0;
-  int b=16;
-  while(b-a!=1){
-    if(Q>edges[(a+b)/2]) a=(a+b)/2;
-    else b=(a+b)/2;
+    int ID=8;
+    int a=0;
+    int b=16;
+    while(b-a!=1) {
+      if (Q>edges[(a+b)/2]) a=(a+b)/2;
+      else b=(a+b)/2;
+    }
+    return(sense[a]/(sqrt(12)*Q));
   }
-  return(sense[a]/(sqrt(12)*Q));
-}
 
-int* SimQIE::Out_ADC(QIEInputPulse* pp,int N)
-{
-  int* OP = new int[N];	// N no. of output ADCs
+  // Function that returns an array of ADCs each corresponding to
+  // one time sample
+  int* SimQIE::Out_ADC(QIEInputPulse* pp,int N) {
+    int* OP = new int[N];	// N no. of output ADCs
 
-  for(int i=0;i<N;i++){
-    float QQ = pp->Integrate(i*Tau,i*Tau+Tau);
-    OP[i]=Q2ADC(QQ);
+    for(int i=0;i<N;i++) {
+      float QQ = pp->Integrate(i*Tau,i*Tau+Tau);
+      OP[i]=Q2ADC(QQ);
+    }
+    return OP;
   }
-  return(OP);
-}
 
-int SimQIE::TDC(QIEInputPulse* pp, float T0=0)
-{
-  float thr2=TDC_thr/Gain;
-  if(pp->Eval(T0)>thr2) return(62);		// when pulse starts high
-  for(float tt=T0;tt<T0+Tau;tt+=0.1){
-    if(pp->Eval(tt)>=thr2) return((int)(2*(tt-T0)));
+  // Function that returns the digitized time corresponding to current pulse
+  // crossing a specified current threshold
+  int SimQIE::TDC(QIEInputPulse* pp, float T0=0) {
+    float thr2=TDC_thr/Gain;
+    if (pp->Eval(T0)>thr2) return 62;		// when pulse starts high
+    for(float tt=T0;tt<T0+Tau;tt+=0.1) {
+      if (pp->Eval(tt)>=thr2) return((int)(2*(tt-T0)));
+    }
+    return 63;			// when pulse remains low all along
   }
-  return(63);			// when pulse remains low all along
-}
 
-int* SimQIE::Out_TDC(QIEInputPulse* pp,int N)
-{
-  int* OP = new int[N];	// N no. of output ADCs
+  // Function that returns an array of TDCs each corresponding to
+  // one time sample
+  int* SimQIE::Out_TDC(QIEInputPulse* pp,int N) {
+    int* OP = new int[N];	// N no. of output ADCs
 
-  for(int i=0;i<N;i++){
-    OP[i] = TDC(pp,Tau*i);
+    for(int i=0;i<N;i++) {
+      OP[i] = TDC(pp,Tau*i);
+    }
+    return OP;
   }
-  return(OP);
-}
-
-int* SimQIE::CapID(QIEInputPulse* pp, int N)
-{
-  int* OP = new int[N+1];	// N no. of output CapIDs
-  OP[0]=0;			// needs to be changed later
-  OP[1] = trg->Integer(4);
-  for(int i=1;i<N;i++){
-    OP[i+1]=(OP[i]+1)%4;
+  
+  // Function that returns an array of Caoacitor IDs each corresponding to
+  // one time sample
+  int* SimQIE::CapID(QIEInputPulse* pp, int N) {
+    int* OP = new int[N+1];	// N no. of output CapIDs
+    OP[0]=0;			// needs to be changed later
+    OP[1] = trg->Integer(4);
+    for(int i=1;i<N;i++) {
+      OP[i+1]=(OP[i]+1)%4;
+    }
+    return OP;
   }
-  return(OP);
-
-}
+  
 }
