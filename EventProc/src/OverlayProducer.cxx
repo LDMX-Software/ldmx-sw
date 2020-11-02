@@ -223,8 +223,6 @@ namespace ldmx {
 		  
 		} //over overlay calo simhit collection
 		  
-		ldmx_log(debug) <<  "Nhits in overlay collection " << outCollNames[iColl] << ": " << outHits.size() ;
-		
 		if ( isEcalHitCollection ) {
 		  for ( auto &mapHit : hitMap ) {
             outHits.push_back( mapHit.second );
@@ -233,6 +231,7 @@ namespace ldmx {
 		  }
 		}// add overlaid ecal hits as contribs rather than simhits 
 		
+		ldmx_log(debug) <<  "Nhits in overlay collection " << outCollNames[iColl] << ": " << outHits.size() ;
 		v_outHits.push_back(outHits);
 		
 	  } // over collections 
