@@ -9,7 +9,7 @@ project(TrigScint VERSION 2.1.0
 
 setup_library(name TrigScint
               dependencies Framework::Framework Event::Event DetDescr::DetDescr
-                           Tools::Tools
+                           Tools::Tools SimCore::Event
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
