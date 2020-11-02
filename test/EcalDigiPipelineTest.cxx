@@ -18,6 +18,16 @@ namespace ldmx {
 namespace test {
 
 /**
+ * Maximum percent error that a single hit
+ * can be reconstructed with before failing the test.
+ *
+ * Comparing energy deposited in Silicon that was
+ * "simulated" (input into digitizer) and the reconstructed
+ * energy deposited output by reconstructor.
+ */
+static const double MAX_ENERGY_PERCENT_ERROR=2.5;
+
+/**
  * @class FakeSimHits
  *
  * Fills the event bus with an EcalSimHits collection with
@@ -120,9 +130,8 @@ class EcalCheckEnergyReconstruction : public Analyzer {
                 if ( correct_energies.count(id) > 0 ) {
                     //not a noise hit
                     //argument to epsilon is maximum relative difference allowed
-                    //  right now, I set it to 0.05 (5% allowed difference)
                     CHECK_FALSE( hit.isNoise() );
-                    CHECK( hit.getAmplitude() == Approx( correct_energies.at(id) ).epsilon(0.05) );
+                    CHECK( hit.getAmplitude() == Approx( correct_energies.at(id) ).epsilon(MAX_ENERGY_PERCENT_ERROR/100) );
                     correct_energies.erase(id);
                 } else {
                     //should be flagged as noise
@@ -166,6 +175,7 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
     cf << "from LDMX.Framework import ldmxcfg" << std::endl;
     cf << "p = ldmxcfg.Process( 'testEcalDigis' )" << std::endl;
     cf << "p.maxEvents = 1" << std::endl;
+    cf << "from LDMX.Ecal import ecal_hardcoded_conditions" << std::endl;
     cf << "from LDMX.Ecal import digi" << std::endl;
     cf << "p.outputFiles = [ '/tmp/ecal_digi_pipeline_test.root' ]" << std::endl;
     cf << "from LDMX.Ecal import EcalGeometry" << std::endl;
