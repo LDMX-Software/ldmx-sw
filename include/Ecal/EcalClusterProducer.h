@@ -62,7 +62,6 @@ namespace ldmx {
 
         private:
 
-            std::shared_ptr<EcalHexReadout> hexReadout_;
             double seedThreshold_{0};
             double cutoff_{0};
             std::string digisPassName_;

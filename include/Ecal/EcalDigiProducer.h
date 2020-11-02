@@ -13,7 +13,6 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <time.h> //for initial seed to TRandom3
 #include <memory> //for smart pointers
 #include <set> //for tracking used detector IDs
 
@@ -31,25 +30,25 @@
 
 namespace ldmx {
 
-    /**
-     * @class EcalDigiProducer
-     * @brief Performs basic ECal digitization
-     */
-    class EcalDigiProducer : public Producer {
+/**
+ * @class EcalDigiProducer
+ * @brief Performs basic ECal digitization
+ */
+class EcalDigiProducer : public Producer {
 
-        public:
+ public:
 
-            /**
-             * Constructor
-             * Makes unique noise generator and injector for this class
-             */
-            EcalDigiProducer(const std::string& name, Process& process);
+  /**
+   * Constructor
+   * Makes unique noise generator and injector for this class
+   */
+  EcalDigiProducer(const std::string& name, Process& process);
 
-            /**
-             * Destructor
-             * Deletes digi collection if it has been created
-             */
-            virtual ~EcalDigiProducer();
+  /**
+   * Destructor
+   * Deletes digi collection if it has been created
+   */
+  virtual ~EcalDigiProducer();
 
             /**
              * Configure this producer from the python configuration.
@@ -67,16 +66,16 @@ namespace ldmx {
 
             ///////////////////////////////////////////////////////////////////////////////////////
             //Python Configuration Parameters
-            
-            /// Number of layers in ECal 
-            int nEcalLayers_;
 
-            /// Number of Hexagnonal modules per layer in ECal 
-            int nModulesPerLayer_;
+            /// input hit collection name
+            std::string inputCollName_;
 
-            /// Number of cells in each hex module 
-            int nCellsPerModule_;
+            /// input pass name
+            std::string inputPassName_;
 
+            /// output hit collection name
+            std::string digiCollName_;
+	  
             /// Time interval for chip clock in ns
             double clockCycle_;
 
