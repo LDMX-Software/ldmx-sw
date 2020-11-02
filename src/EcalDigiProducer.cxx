@@ -6,6 +6,7 @@
  */
 
 #include "Ecal/EcalDigiProducer.h"
+#include "Framework/RandomNumberSeedService.h"
 
 namespace ldmx {
 
@@ -34,6 +35,11 @@ namespace ldmx {
         nADCs_            = hgcrocParams.getParameter<int>("nADCs");
         iSOI_             = hgcrocParams.getParameter<int>("iSOI");
 
+        //collection names
+        inputCollName_  = ps.getParameter<std::string>("inputCollName");
+        inputPassName_  = ps.getParameter<std::string>("inputPassName");
+        digiCollName_   = ps.getParameter<std::string>("digiCollName");
+
         // physical constants
         //  used to calculate unit conversions
         MeV_ = ps.getParameter<double>("MeV");
@@ -42,30 +48,29 @@ namespace ldmx {
         //  time [ns] * ( 2^10 / max time in ns ) = clock counts
         ns_ = 1024./clockCycle_;
 
-        // geometry constants
-        //  These are used in the noise generation so that we can randomly
-        //  distribute the noise uniformly throughout the ECal channels.
-        nEcalLayers_      = ps.getParameter<int>("nEcalLayers");
-        nModulesPerLayer_ = ps.getParameter<int>("nModulesPerLayer");
-        nCellsPerModule_  = ps.getParameter<int>("nCellsPerModule");
-        nTotalChannels_   = nEcalLayers_*nModulesPerLayer_*nCellsPerModule_;
-
         // Configure generator that will produce noise hits in empty channels
         readoutThreshold_ = hgcrocParams.getParameter<double>("readoutThreshold");
         noiseGenerator_->setNoise(hgcrocParams.getParameter<double>("noiseRMS")); //rms noise in mV
         noiseGenerator_->setPedestal(gain_*pedestal_); //mean noise amplitude (if using Gaussian Model for the noise) in mV
         noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in mV
-
-        //The noise injector is used to place smearing on top
-        //of energy depositions and hit times before doing
-        //the digitization procedure.
-        int seed = ps.getParameter<int>("randomSeed");
-        noiseInjector_ = std::make_unique<TRandom3>(seed);
-        noiseGenerator_->setSeed(seed);
-
     }
 
     void EcalDigiProducer::produce(Event& event) {
+
+        // Need to handle seeding on the first event
+        if (!noiseGenerator_->hasSeed()) {
+            const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+            noiseGenerator_->seedGenerator(rseed.getSeed("EcalDigiProducer::NoiseGenerator"));
+        }
+        if (noiseInjector_.get()==nullptr) {
+            const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+            noiseInjector_ = std::make_unique<TRandom3>(rseed.getSeed("EcalDigiProducer::NoiseInjector"));
+        }
+        if(!hgcroc_->hasSeed()) {
+            const auto& rseed = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+            hgcroc_->seedGenerator(rseed.getSeed("EcalDigiProducer::HgcrocEmulator"));
+        }
+
 
         //Empty collection to be filled
         HgcrocDigiCollection ecalDigis;
@@ -82,7 +87,7 @@ namespace ldmx {
         //  the class EcalHitIO in the SimApplication module handles the translation from G4CalorimeterHits to SimCalorimeterHits
         //  this class ensures that only one SimCalorimeterHit is generated per cell, but
         //  multiple "contributions" are still handled within SimCalorimeterHit 
-        auto ecalSimHits{event.getCollection<SimCalorimeterHit>(EventConstants::ECAL_SIM_HITS)};
+		auto ecalSimHits{event.getCollection<SimCalorimeterHit>(inputCollName_, inputPassName_)};
 
         /* debug printout
         std::cout << "Energy to Voltage Conversion: " << MeV_ << " mV/MeV" << std::endl;
@@ -117,7 +122,15 @@ namespace ldmx {
         if ( noise_ ) {
             //std::cout << "Noise Hits" << std::endl;
             //put noise into some empty channels
-            int numEmptyChannels = nTotalChannels_ - ecalDigis.getNumDigis(); //minus number of channels with a hit
+            
+            // geometry constants
+            //  These are used in the noise generation so that we can randomly
+            //  distribute the noise uniformly throughout the ECal channels.
+            const auto& hexGeom = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+            int nEcalLayers      = hexGeom.getNumLayers();
+            int nModulesPerLayer = hexGeom.getNumModulesPerLayer();
+            int nCellsPerModule  = hexGeom.getNumCellsPerModule();
+            int numEmptyChannels = nEcalLayers*nModulesPerLayer*nCellsPerModule - ecalDigis.getNumDigis(); 
             //noise generator gives us a list of noise amplitudes [mV] that randomly populate the empty
             //channels and are above the readout threshold
             auto noiseHitAmplitudes{noiseGenerator_->generateNoiseHits(numEmptyChannels)};
@@ -128,9 +141,9 @@ namespace ldmx {
                 //making sure that it is in an empty channel
                 unsigned int noiseID;
                 do {
-                    int layerID  = noiseInjector_->Integer(nEcalLayers_);
-                    int moduleID = noiseInjector_->Integer(nModulesPerLayer_);
-                    int cellID   = noiseInjector_->Integer(nCellsPerModule_);
+                    int layerID  = noiseInjector_->Integer(nEcalLayers);
+                    int moduleID = noiseInjector_->Integer(nModulesPerLayer);
+                    int cellID   = noiseInjector_->Integer(nCellsPerModule);
 		            auto detID=EcalID(layerID, moduleID, cellID);
                     noiseID = detID.raw();
                 } while ( filledDetIDs.find( noiseID ) != filledDetIDs.end() );
@@ -151,10 +164,11 @@ namespace ldmx {
             } //loop over noise amplitudes
         } //if we should do the noise
 
-        event.add("EcalDigis", ecalDigis );
+        event.add( digiCollName_, ecalDigis );
 
         return;
     } //produce
+
 }
 
 DECLARE_PRODUCER_NS(ldmx, EcalDigiProducer);

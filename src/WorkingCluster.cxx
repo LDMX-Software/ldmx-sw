@@ -7,16 +7,16 @@
 
 namespace ldmx {
 
-    WorkingCluster::WorkingCluster(const EcalHit* eh, const std::shared_ptr<EcalHexReadout> hex) {
+    WorkingCluster::WorkingCluster(const EcalHit* eh, const EcalHexReadout& hex) {
         add(eh, hex);
     }
 
-    void WorkingCluster::add(const EcalHit* eh, const std::shared_ptr<EcalHexReadout> hex) {
+    void WorkingCluster::add(const EcalHit* eh, const EcalHexReadout& hex) {
     
         double hitE = eh->getEnergy();
 
         double hitX, hitY, hitZ;
-        hex->getCellAbsolutePosition( eh->getID() //this ID integer is converted into an EcalID
+        hex.getCellAbsolutePosition( eh->getID() //this ID integer is converted into an EcalID
                 , hitX , hitY , hitZ );
 
         double newE = hitE + centroid_.E();

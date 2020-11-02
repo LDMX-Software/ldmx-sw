@@ -18,9 +18,19 @@ find_package(ONNXRuntime 1.2.0)
 
 setup_library(name Ecal
               dependencies ROOT::Physics 
-                           DARK::Framework DARK::Event DARK::Tools DARK::DetDescr 
+                           DARK::Framework DARK::Event DARK::Tools DARK::DetDescr DARK::Conditions
                            ONNXRuntime::Interface
               python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
 setup_test(dependencies DARK::Ecal)
+
+# Add the printing executable
+add_executable(print-ecal-hex-readout ${PROJECT_SOURCE_DIR}/src/print_ecal_hex_readout.cxx)
+
+# Link to the Framework library
+target_link_libraries(print-ecal-hex-readout PRIVATE DetDescr Ecal)
+
+# Install the fire executable
+install(TARGETS print-ecal-hex-readout DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
