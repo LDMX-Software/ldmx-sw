@@ -171,8 +171,8 @@ namespace ldmx {
 		  if (verbosity_ > 2) {
 			 ldmx_log(debug) <<  "[ OverlayProducer ]: in loop: start of collection " << outCollNames.back()  ;
 			 ldmx_log(debug) <<  "[ OverlayProducer ]: in loop: printing current sim event: "  ;
-			 ldmx_log(debug) <<  "[ OverlayProducer ]: in loop: size of sim hits vector is " << simHits.size()  ;
 		  }
+		  ldmx_log(debug) <<  "[ OverlayProducer ]: in loop: size of sim hits vector " << outCollNames.back() << " is " << simHits.size()  ;
 
 		  
 		  //we don't need to touch the hard process sim hits, really... but we might need the simhits in the hit map.
@@ -194,8 +194,8 @@ namespace ldmx {
 		
 		if (verbosity_ > 2) {
 		   ldmx_log(debug) <<  "[ OverlayProducer ]: in loop: printing overlay event: "  ;
-		   ldmx_log(debug) <<  "[ OverlayProducer ]: in loop: size of overlay hits vector is " << overlayHits.size()  ;
 		}
+		ldmx_log(debug) <<  "[ OverlayProducer ]: in loop: size of overlay hits vector is " << overlayHits.size()  ;
 
 		for ( SimCalorimeterHit &overlayHit : overlayHits ) {
 			
@@ -264,21 +264,6 @@ namespace ldmx {
 	return;
   }
   
-  void OverlayProducer::onFileOpen() {//EventFile& input) {
-	if (verbosity_ > 2) {
-	  ldmx_log(debug) <<  "[ OverlayProducer ]: onFileOpen() " ;
-	}
-	
-	//      simFile_ = std::make_unique<EventFile*> ( input );
-	//      simFile_=&input ;
-	
-	return;
-  }
-  
-  void OverlayProducer::onFileClose(EventFile&) {
-	
-	return;
-  }
   
   void OverlayProducer::onProcessStart() {
 	if (verbosity_ > 2) {
@@ -311,11 +296,6 @@ namespace ldmx {
 	  
 	  
 	  return;
-    }
-
-    void OverlayProducer::onProcessEnd() {
-
-        return;
     }
 
 }

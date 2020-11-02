@@ -16,7 +16,6 @@
 #include <vector>
 #include <map>
 
-
 //LDMX Framework
 #include "Event/EventDef.h" // Includes all possible event bus objects
 #include "Framework/EventFile.h"
@@ -42,13 +41,13 @@ namespace ldmx {
 
 	virtual void produce(Event& event) final override;
 
-	virtual void onFileOpen();
+	//	virtual void onFileOpen();
 
-	virtual void onFileClose(EventFile&);
+	//virtual void onFileClose(EventFile&);
 
 	virtual void onProcessStart(); 
 
-	virtual void onProcessEnd();
+	//	virtual void onProcessEnd();
 
   private:
 
