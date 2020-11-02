@@ -43,7 +43,7 @@ class HgcrocEmulator() :
         self.clockCycle = 25.0 #ns
         self.measTime = 0. #ns
         self.timingJitter = self.clockCycle / 100. #ns - pretty arbitrarily chosen
-        self.readoutPadCapacitance = 0.1 #pF <- derived from hardware of HGCROC
+        self.readoutPadCapacitance = 20. #pF <- derived from hardware of HGCROC
         self.maxADCRange = 320. #fC <- setting of HGCROC
         self.nADCs = 10 
         self.iSOI  = 0 
