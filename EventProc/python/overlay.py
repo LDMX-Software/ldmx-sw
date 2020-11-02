@@ -21,7 +21,7 @@ class OverlayProducer(ldmxcfg.Producer) :
 
         self.overlayFileName = "ldmx_upstreamMultiElectron_events.root"
         self.overlayTreeName = "LDMX_Events"
-        self.numberOverlaidInteractions = 1.
+        self.totalNumberOfInteractions = 2.
         self.timeSpread = 0.
         self.doPoisson = 0
         self.overlayProcessName = "inclusive"
