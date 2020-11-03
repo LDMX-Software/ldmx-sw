@@ -444,10 +444,10 @@ namespace ldmx {
         if(ele_trajectory.size()==3 && photon_trajectory.size()==3) {
             /*make ele_trajectory and photon_trajectory into TVector3 pairs for later use*/
             std::cout << "     Found electron and photon trajectory" << std::endl;
-            e_traj_start.setXYZ(ele_trajectory[0].first,    ele_trajectory[0].second,    LAYER_Z_POSITIONS.front());
-            e_traj_end.setXYZ(  ele_trajectory[0].first,    ele_trajectory[0].second,    LAYER_Z_POSITIONS.back());
-            p_traj_start.setXYZ(photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.front());
-            p_traj_end.setXYZ(  photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.back());
+            e_traj_start.SetXYZ(ele_trajectory[0].first,    ele_trajectory[0].second,    LAYER_Z_POSITIONS.front());
+            e_traj_end.SetXYZ(  ele_trajectory[0].first,    ele_trajectory[0].second,    LAYER_Z_POSITIONS.back());
+            p_traj_start.SetXYZ(photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.front());
+            p_traj_end.SetXYZ(  photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.back());
 
             // TEMPORARILY COMMENTED for testing purposes
             TVector3 evec   = e_traj_end - e_traj_start;
@@ -650,7 +650,7 @@ namespace ldmx {
         }
         */
 
-        std::cout << "(currently unused) Found " << nLinregTracks << " linreg tracks" << std::endl;
+        std::cout << "(currently unused) Found " << nLinregTracks_ << " linreg tracks" << std::endl;
 
 
         //std::cout << "TRACKING COMPLETED." << std::endl;
