@@ -29,8 +29,8 @@ nBunchesToSample : int
     Furthermore, pileup will be uniformly distributed among this number of bunches m = -N, -N+1, ..., N 
     while the sim event is always in bunch m = 0. 
 bunchSpacing : float
-    The spacing in time between bunches [ns]                                                                                                                 randomSeed : float
-    Initial seed to use for all random number generators in this producer. 
+    The spacing in time between bunches [ns]                                                                                                                 #randomSeed : float
+#    Initial seed to use for all random number generators in this producer. 
 verbosity : int
     Sets the producer specific level of verbosity, up to 3 for the most verbose step-by-step debug printouts.
 
@@ -39,7 +39,7 @@ verbosity : int
 
 from LDMX.Framework import ldmxcfg
 
-class OverlayProducer(ldmxcfg.Producer, fileName) :
+class OverlayProducer(ldmxcfg.Producer) :
     """Configuration for pileup overlay
 
         Sets all parameters to reasonable defaults.
@@ -47,10 +47,10 @@ class OverlayProducer(ldmxcfg.Producer, fileName) :
     Examples
     --------
         from LDMX.EventProc.overlay import OverlayProducer
-        p.sequence.append( OverlayProducer() )
+        p.sequence.append( OverlayProducer( myPileupFileName.root ) )
     """
 
-    def __init__(self,name = 'OverlayProducer') :
+    def __init__(self,fileName,name = 'OverlayProducer') :
         super().__init__(name,'ldmx::OverlayProducer','EventProc')
 
 
@@ -65,6 +65,5 @@ class OverlayProducer(ldmxcfg.Producer, fileName) :
         self.timeMean = 0.          # [ns]
         self.nBunchesToSample = 0
         self.bunchSpacing = 26.88   # [ns]
-        self.randomSeed = 0
         self.verbosity = 3
 

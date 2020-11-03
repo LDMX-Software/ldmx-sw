@@ -17,7 +17,6 @@ namespace ldmx {
 	  // name of file containing events to be overlaid, and a list of collections to overlay
       overlayFileName_     = parameters.getParameter< std::string >("overlayFileName");
       collections_         = parameters.getParameter< std::vector <std::string> >("overlayHitCollections");
-	  //	  simParticleCollName_ = parameters.getParameter< std::string >( "collectionName" );
       simPassName_         = parameters.getParameter< std::string >( "passName" );
       overlayPassName_     = parameters.getParameter< std::string >( "overlayPassName" );
 
@@ -29,7 +28,6 @@ namespace ldmx {
 	  nBunchesToSample_    = parameters.getParameter< int >("nBunchesToSample");
 	  bunchSpacing_        = parameters.getParameter< double >("bunchSpacing");
 	  
-	  seed_                = parameters.getParameter< int >("randomSeed");  // TODO: this will use new common deterministic seeding
       verbosity_           = parameters.getParameter< int >("verbosity");
 
 
@@ -42,14 +40,13 @@ namespace ldmx {
 		for ( const std::string &coll : collections_ )
 		   ldmx_log(info) <<  coll << "; " ;
 
-		 ldmx_log(info) <<  "\n\t randomSeed = " << seed_
+		ldmx_log(info) 
 				  << "\n\t numberOverlaidInteractions = " << poissonMu_
 				  << "\n\t doPoisson = " << doPoisson_
 				  << "\n\t timeSpread = " << timeSigma_
 				  << "\n\t timeMean = " << timeMean_
 				  << "\n\t verbosity = " << verbosity_ ;
 		
-		//		  << "\n\t  = " << 
       }
 	  
 
@@ -64,11 +61,24 @@ namespace ldmx {
 	if (verbosity_ > 2) {
 	   ldmx_log(debug) <<  "produce() starts on simulation event " <<  event.getEventHeader().getEventNumber() ;
 	}
+
+	if (rndm_.get() == nullptr) {
+	  //not been seeded yet, get it from RNSS
+	  const auto& rnss = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+	  rndm_ = std::make_unique<TRandom2>(rnss.getSeed("OverlayProducer::rndm"));
+	}
+	if (rndmTime_.get() == nullptr) {
+	  //not been seeded yet, get it from RNSS
+	  const auto& rnss = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+	  rndmTime_ = std::make_unique<TRandom2>(rnss.getSeed("OverlayProducer::rndmTime"));
+	}
+
 	
-	// sample a poisson distribution or use a deterministic number of overlay events : this is nEvsOverlay
-	// but we should sample a poisson of the total number of events, which is nOverlay + 1 (since it includes the sim event)
-	int nEvsOverlay = doPoisson_ ? (int) rndm_->Poisson( poissonMu_ ) : (int)poissonMu_ ;  //either sample or take the number at face value every time 
+	// sample a poisson distribution, or use a deterministic number of overlay events
+	int nEvsOverlay = doPoisson_ ? (int) rndm_->Poisson( poissonMu_ ) : (int)poissonMu_ ;
+	// the poisson samples the total number of events, which is nOverlay + 1 (since it includes the sim event)
 	nEvsOverlay -=1; // now subtract the sim event from the poisson mu
+
 	
 	//TODO: find a way to make use of this logic while using nextEvent 
 	// find if lastEvent_ + nEvsOverlay > nEvents in the tree as a whole. in that case, reset lastEvent to 0 or (some random small nb)
@@ -136,15 +146,11 @@ namespace ldmx {
 		  
 		std::vector<SimCalorimeterHit> simHits = event.getCollection<SimCalorimeterHit>( collections_[iColl], simPassName_ );
 
-		// here: check if it exists -- if it's a simcalo hit collection. then define the out coll:
-
-		std::vector<SimCalorimeterHit> outHits;
-
 		bool isEcalHitCollection = false ;
-
 		if (strstr (collections_[iColl].c_str(), "Ecal") )
 		  isEcalHitCollection = true ;
 
+		std::vector<SimCalorimeterHit> outHits;
 		std::vector<SimCalorimeterHit> overlayHits = overlayEvent_.getCollection<SimCalorimeterHit>( collections_[iColl], overlayPassName_ );
 		//		std::vector<SimTrackerHit> overlayTrackerHits = overlayEvent_->getCollection<SimTrackerHit>( collections_[iColl] );
 
@@ -274,10 +280,10 @@ namespace ldmx {
 	  ldmx_log(debug) <<  "onProcessStart() " ;
 	}
 
-	//	const auto& rseed    = getCondition<RandomNumberSeedService>("OverlayProducer"); //RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-	//seed_ = rseed.getSeed("OverlayProducer"); //RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
-	rndm_  = std::make_unique<TRandom2>( seed_ );
-	rndmTime_  = std::make_unique<TRandom2>( seed_ );
+	//	const auto& rseed    = getCondition<RandomNumberSeedService>(RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+	//seed_ = rseed.getSeed("OverlayProducer");
+	//rndm_  = std::make_unique<TRandom2>( seed_ );
+	//rndmTime_  = std::make_unique<TRandom2>( seed_ );
 	
 	overlayFile_ = std::make_unique<EventFile>( overlayFileName_ );
 	overlayFile_->setupEvent( &overlayEvent_ );
