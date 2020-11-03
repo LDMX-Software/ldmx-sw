@@ -107,7 +107,10 @@ namespace ldmx {
             unsigned int hitID = simHit.getID();
             filledDetIDs.insert( hitID );
 
-            //std::cout << hitID << " ";
+            /* debug printout
+            std::cout << hitID << " "
+                << simHit.getEdep() << std::endl;
+             */
             //container emulator uses to write out samples and
             //transfer samples into the digi collection
             std::vector<HgcrocDigiCollection::Sample> digiToAdd;
