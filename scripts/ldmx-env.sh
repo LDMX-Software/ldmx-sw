@@ -153,6 +153,24 @@ function ldmx-container-config() {
 }
 
 ###############################################################################
+# ldmx-container-clean
+#   Clean up the container environment by removing all spawned containers
+#   and any downloaded images. This is helpful to "hard-reset" your
+#   ldmx environment.
+###############################################################################
+function ldmx-container-clean() {
+    if hash docker &> /dev/null
+    then
+        docker container prune -f
+        docker image prune -a -f
+    elif hash singularity &> /dev/null
+    then
+        rm $LDMX_BASE/*.sif
+        rm -r $SINGULARITY_CACHEDIR
+    fi
+}
+
+###############################################################################
 # ldmx
 #   Launch the user into the ldmx docker container environment, passing
 #   any argument along as a command to be executed.
@@ -178,6 +196,7 @@ function ldmx() {
     if hash docker &>/dev/null
     then
         docker run \
+            --rm \
             -it \
             -e LDMX_BASE \
             -v $LDMX_BASE:$LDMX_BASE \
