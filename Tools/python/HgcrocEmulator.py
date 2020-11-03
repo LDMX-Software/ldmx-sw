@@ -71,6 +71,10 @@ class HgcrocEmulator() :
         self.toaThreshold     = 0. #mV - useless default
         self.totThreshold     = 0. #mV - useless default
 
+        # turn on or off noise
+        #   NOT DOCUMENTED - only meant for testing purposes
+        self.noise = True
+
     def calculateVoltage(self, electrons) :
         """Calculate the voltage signal [mV] of the input number of electrons
 
