@@ -164,7 +164,8 @@ namespace ldmx {
             //      y-intercept = pulse amplitude
             //      slope       = drain rate
             //  ==> x-intercept = amplitude / rate
-            double tot = pulsePeak / drainRate;
+            //actual time over threshold using the real signal voltage amplitude
+            double tot = signalAmplitude / drainRate; 
 
             double toa(0.); //default is earliest possible time
             // check if first half is just always above readout
@@ -177,7 +178,7 @@ namespace ldmx {
             // calculate the TDC counts for this tot measurement
             //  internally, the chip uses 12 bits (2^12 = 4096)
             //  to measure a maximum of tot Max [ns]
-            int tdc_counts = int( tot * 4096 / totMax_ );
+            int tdc_counts = int( tot * (4096-pedestal) / totMax_ ) + pedestal;
 
             if (verbose_) {
                 std::cout << "TOT Mode { "
