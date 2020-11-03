@@ -28,6 +28,18 @@ namespace test {
 static const double MAX_ENERGY_PERCENT_ERROR=2.5;
 
 /**
+ * Number of sim hits to create.
+ *
+ * In this test, we create one sim hit per event,
+ * run it through the digi pipeline, and then
+ * check it. This parameter tells us how many
+ * sim hits to create and then (combined with
+ * the parameters of EcalFakeSimHits), we know
+ * how "fine-grained" the test is.
+ */
+static const int NUM_TEST_SIM_HITS=61;
+
+/**
  * @class FakeSimHits
  *
  * Fills the event bus with an EcalSimHits collection with
@@ -38,16 +50,19 @@ static const double MAX_ENERGY_PERCENT_ERROR=2.5;
 class EcalFakeSimHits : public Producer {
 
         /// Maximum energy to make a simulated hit for [MeV]
-        double maxEnergy_  = 80. ;
-
-        /// Difference between energies to make a sim hit for [MeV]
-        double energyStep_ = 0.1 ; //MeV
+        const double maxEnergy_  = 12.6; //80.;
 
         /**
          * Minimum energy to make a sim hit for [MeV]
          * Needs to be above readout threshold (after internal EcalDigi's calculation)
          */
-        double minEnergy_ = 0.5 ; 
+        const double minEnergy_ = 6.5; //0.5; 
+
+        /// Difference between energies to make a sim hit for [MeV]
+        const double energyStep_ = (maxEnergy_-minEnergy_)/(NUM_TEST_SIM_HITS); //MeV
+
+        /// current energy of the sim hit we are on
+        double currEnergy_ = minEnergy_;
 
     public:
 
@@ -60,43 +75,24 @@ class EcalFakeSimHits : public Producer {
 
         void produce(Event& event) final override {
 
-            std::vector<SimCalorimeterHit> pretendSimHits;
-        
-            //fill pretend sim hits with a range of simulated energies
-            int cell(0), module(0), layer(0);
-            double currEnergy{minEnergy_};
-            while ( currEnergy < maxEnergy_ ) {
-                //TODO test several contribs
-                //  right now, not a big deal because we just do an energy weight average anyways
-                SimCalorimeterHit currHit;
-                //distribute indices across distince IDs
-                //  need to be careful to not exceed max count of subparts
-                EcalID id(layer,module,cell);
-                currHit.setID( id.raw() );
-                currHit.addContrib(
+            //put in a single sim hit
+            std::vector<SimCalorimeterHit> pretendSimHits(1);
+
+            EcalID id(0,0,0);
+            pretendSimHits[0].setID( id.raw() );
+            pretendSimHits[0].addContrib(
                         -1 //incidentID
                         , -1 // trackID
                         , 0 // pdg ID
-                        , currEnergy // edep
+                        , currEnergy_ // edep
                         , 1. //time
                         );
-                pretendSimHits.push_back( currHit );
-        
-                currEnergy += energyStep_;
-                cell++;
-                if ( cell > 300 ) {
-                    cell = 0;
-                    module++;
-                }
-                if ( module > 7 ) {
-                    module = 0;
-                    layer++;
-                }
-            }
-            
+
             //needs to be correct collection name
             REQUIRE_NOTHROW(event.add( "EcalSimHits" , pretendSimHits ));
 
+            currEnergy_ += energyStep_;
+            
             return;
         }
 }; //EcalFakeSimHits
@@ -119,20 +115,18 @@ class EcalCheckEnergyReconstruction : public Analyzer {
             std::vector<SimCalorimeterHit> simHits;
             REQUIRE_NOTHROW(simHits = event.getCollection<SimCalorimeterHit>( "EcalSimHits" ));
 
-            std::map<EcalID,double> correct_energies;
-            for ( const auto& hit : simHits ) correct_energies[EcalID(hit.getID())] = hit.getEdep();
-
             std::vector<EcalHit> recHits;
             REQUIRE_NOTHROW(recHits = event.getCollection<EcalHit>( "EcalRecHits" ));
 
+            bool found_real_hit = false;
             for ( const auto& hit : recHits ) {
                 EcalID id(hit.getID());
-                if ( correct_energies.count(id) > 0 ) {
+                if ( id.raw() == simHits.at(0).getID() ) {
                     //not a noise hit
                     //argument to epsilon is maximum relative difference allowed
                     CHECK_FALSE( hit.isNoise() );
-                    CHECK( hit.getAmplitude() == Approx( correct_energies.at(id) ).epsilon(MAX_ENERGY_PERCENT_ERROR/100) );
-                    correct_energies.erase(id);
+                    CHECK( hit.getAmplitude() == Approx( simHits.at(0).getEdep() ).epsilon(MAX_ENERGY_PERCENT_ERROR/100) );
+                    found_real_hit = true;
                 } else {
                     //should be flagged as noise
                     CHECK( hit.isNoise() );
@@ -140,8 +134,7 @@ class EcalCheckEnergyReconstruction : public Analyzer {
             }
 
             // did we lose any energies during the processing?
-            //  all of the correct eneriges should have been visited and erased in the above loop
-            CHECK( correct_energies.size() == 0 );
+            CHECK( found_real_hit );
 
             return;
         }
@@ -174,7 +167,7 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
 
     cf << "from LDMX.Framework import ldmxcfg" << std::endl;
     cf << "p = ldmxcfg.Process( 'testEcalDigis' )" << std::endl;
-    cf << "p.maxEvents = 1" << std::endl;
+    cf << "p.maxEvents = " << ldmx::test::NUM_TEST_SIM_HITS << std::endl;
     cf << "from LDMX.Ecal import ecal_hardcoded_conditions" << std::endl;
     cf << "from LDMX.Ecal import digi" << std::endl;
     cf << "p.outputFiles = [ '/tmp/ecal_digi_pipeline_test.root' ]" << std::endl;
@@ -186,6 +179,11 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
     cf << "    digi.EcalRecProducer()," << std::endl;
     cf << "    ldmxcfg.Analyzer('checkEcalHits','ldmx::test::EcalCheckEnergyReconstruction','Ecal')," << std::endl;
     cf << "    ]" << std::endl;
+
+    /* debug printing during run
+     */
+    cf << "p.termLogLevel = 1" << std::endl;
+    cf << "p.logFrequency = 1" << std::endl;
 
     /* debug pause before running
     cf << "p.pause()" << std::endl;
