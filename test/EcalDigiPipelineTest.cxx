@@ -266,18 +266,20 @@ TEST_CASE( "Ecal Digi Pipeline test" , "[Ecal][functionality]" ) {
     cf << "p.histogramFile = '" << (ldmx::test::ecal::NTUPLIZE_ENERGIES ? "" : "/tmp/") << "ecal_digi_pipeline_test.root'" << std::endl;
     cf << "from LDMX.Ecal import EcalGeometry" << std::endl;
     cf << "geom = EcalGeometry.EcalGeometryProvider.getInstance()" << std::endl;
+    cf << "ecalDigis = digi.EcalDigiProducer()" << std::endl;
+    cf << "ecalDigis.hgcroc.noise = False" << std::endl; //turn off noise for testing purposes
     cf << "p.sequence = [" << std::endl;
     cf << "    ldmxcfg.Producer('fakeSimHits','ldmx::test::ecal::EcalFakeSimHits','Ecal')," << std::endl;
-    cf << "    digi.EcalDigiProducer()," << std::endl;
+    cf << "    ecalDigis," << std::endl;
     cf << "    ecal_trig_digi.EcalTrigPrimDigiProducer()," << std::endl;
     cf << "    digi.EcalRecProducer()," << std::endl;
     cf << "    ldmxcfg.Analyzer('checkEcalHits','ldmx::test::ecal::EcalCheckEnergyReconstruction','Ecal')," << std::endl;
     cf << "    ]" << std::endl;
 
     /* debug printing during run
-     */
     cf << "p.termLogLevel = 1" << std::endl;
     cf << "p.logFrequency = 1" << std::endl;
+     */
 
     /* debug pause before running
     cf << "p.pause()" << std::endl;
