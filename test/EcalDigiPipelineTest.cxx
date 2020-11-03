@@ -26,7 +26,8 @@ namespace ecal {
  * "simulated" (input into digitizer) and the reconstructed
  * energy deposited output by reconstructor.
  */
-static const double MAX_ENERGY_PERCENT_ERROR=2.5;
+static const double MAX_ENERGY_ERROR_ADC_MODE=0.130/2; //allowed to be off only by a half a MIPs worth
+static const double MAX_ENERGY_PERCENT_ERROR_TOT_MODE=5.; //allowed to be off only by 5%
 
 /**
  * Number of sim hits to create.
@@ -38,8 +39,7 @@ static const double MAX_ENERGY_PERCENT_ERROR=2.5;
  * the parameters of EcalFakeSimHits), we know
  * how "fine-grained" the test is.
  */
-static const int NUM_TEST_SIM_HITS=795;
-//static const int NUM_TEST_SIM_HITS=61;
+static const int NUM_TEST_SIM_HITS=1600;
 
 /**
  * Should the sim/rec/tp energies be ntuplized
@@ -57,19 +57,58 @@ static const bool NTUPLIZE_ENERGIES=true;
  */
 class EcalFakeSimHits : public Producer {
 
-        /// Maximum energy to make a simulated hit for [MeV]
-        const double maxEnergy_  = 80.;
-        //const double maxEnergy_  = 12.6; 
+        /**
+         * Maximum energy to make a simulated hit for [MeV]
+         *
+         * The maximum value to be readout is 4096 TDC which
+         * is equivalent to 4000fC deposited charge which
+         * is equivalent to ~86MeV.
+         */
+        const double maxEnergy_  = 86.;
 
         /**
          * Minimum energy to make a sim hit for [MeV]
          * Needs to be above readout threshold (after internal EcalDigi's calculation)
+         *
+         * One MIP is ~0.13 MeV, so we choose that.
          */
-        const double minEnergy_ = 0.5;
-        //const double minEnergy_ = 6.5;
+        const double minEnergy_ = 0.13;
 
-        /// Difference between energies to make a sim hit for [MeV]
-        const double energyStep_ = (maxEnergy_-minEnergy_)/(NUM_TEST_SIM_HITS); //MeV
+        /**
+         * Best possible resolution of our detector when reading out in ADC mode is
+         *
+         * (320 fC)/(1024 counts)(0.130 MeV/MIP)/(37*0.162 fC/MIP) = 6.7e-3 MeV
+         */
+        const double adcEnergyStep_ = (320./1024)*(0.130/(37*0.162));
+
+        /**
+         * TOT threshold in MeV
+         *
+         * About 6.5 MeV
+         */
+        const double totThreshold_ = 50*0.130;
+
+        /**
+         * Best possible resolution for our detector when reading out in
+         * the lower TOT mode (TDC < 512) is
+         *
+         * (4000 fC / 4096 counts)*(0.130 MeV per MIP / (37*0.162) fC per MIP) = 2.1e-2 MeV
+         */
+        const double totLowEnergyStep_ = (4000./4096)*(0.130/(37*0.162));
+
+        /**
+         * Threshold between low energy TOT and high energy TOT in MeV
+         *
+         * About 10.7 MeV
+         */
+        const double totHighThreshold_ = 512*totLowEnergyStep_;
+
+        /**
+         * Best possible resolution for our detector when reading out in
+         * the higher TOT mode (TDC > 512) is eight times higher than
+         * the lower TDC mode because we throw away the lowest 3 bits.
+         */
+        const double totHighEnergyStep_ = 8*totLowEnergyStep_;
 
         /// current energy of the sim hit we are on
         double currEnergy_ = minEnergy_;
@@ -101,7 +140,9 @@ class EcalFakeSimHits : public Producer {
             //needs to be correct collection name
             REQUIRE_NOTHROW(event.add( "EcalSimHits" , pretendSimHits ));
 
-            currEnergy_ += energyStep_;
+            if (currEnergy_ < totThreshold_ ) currEnergy_ += adcEnergyStep_;
+            else if (currEnergy_ < totHighThreshold_ ) currEnergy_ += totLowEnergyStep_;
+            else currEnergy_ += totHighEnergyStep_;
             
             return;
         }
@@ -141,6 +182,15 @@ class EcalCheckEnergyReconstruction : public Analyzer {
             float truth_energy = simHits.at(0).getEdep();
             ntuple_.setVar<float>("SimEnergy",truth_energy);
 
+            bool is_adc_mode = false;
+            const auto digis{event.getObject<HgcrocDigiCollection>("EcalDigis")};
+            for ( unsigned int iDigi = 0; iDigi < digis.getNumDigis(); iDigi++ ) {
+                //TODO make this work when we include noise in testing
+                auto digi = digis.getDigi( iDigi );
+                is_adc_mode = digi.isADC();
+                ntuple_.setVar<int>("DaqDigi",digi.soi().raw());
+            }
+
             const auto recHits = event.getCollection<EcalHit>( "EcalRecHits" );
 
             bool found_real_hit = false;
@@ -150,7 +200,12 @@ class EcalCheckEnergyReconstruction : public Analyzer {
                     //not a noise hit
                     //argument to epsilon is maximum relative difference allowed
                     CHECK_FALSE( hit.isNoise() );
-                    CHECK( hit.getAmplitude() == Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR/100) );
+
+                    //define target energy by using the settings at the top
+                    auto target_energy = Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR_TOT_MODE/100);
+                    if (is_adc_mode) target_energy = Approx(truth_energy).margin(MAX_ENERGY_ERROR_ADC_MODE);
+
+                    CHECK( hit.getAmplitude() == target_energy );
                     ntuple_.setVar<float>("RecEnergy",hit.getAmplitude());
                     found_real_hit = true;
                 } else {
@@ -165,19 +220,11 @@ class EcalCheckEnergyReconstruction : public Analyzer {
             const auto trigDigis{event.getObject<HgcrocTrigDigiCollection>("ecalTrigDigis")};
             for (const auto& digi : trigDigis ) {
                 //TODO make this work when we include noise in testing
-                
-                float tp_energy = 8 * digi.linearPrimitive() * 320./1024 * 0.130 / (37000.*(0.162/1000));
+                float tp_energy = 8 * digi.linearPrimitive() * 320./1024 * 0.130 / (37.*(0.162));
                 //CHECK( tp_energy == Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR/100) );
                 ntuple_.setVar<float>("TrigPrimEnergy",tp_energy);
                 ntuple_.setVar<int>("TrigPrimDigiEncoded",digi.getPrimitive());
                 ntuple_.setVar<int>("TrigPrimDigiLinear",digi.linearPrimitive());
-            }
-
-            const auto digis{event.getObject<HgcrocDigiCollection>("EcalDigis")};
-            for ( unsigned int iDigi = 0; iDigi < digis.getNumDigis(); iDigi++ ) {
-                //TODO make this work when we include noise in testing
-                auto digi = digis.getDigi( iDigi );
-                ntuple_.setVar<int>("DaqDigi",digi.soi().raw());
             }
 
             return;
