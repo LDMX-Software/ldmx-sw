@@ -79,7 +79,7 @@ namespace ldmx {
 	int verbosity_;            // control verbosity 
 	std::unique_ptr<TRandom2> rndm_;  // random number generator. TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input files will have way shorter period anyway. 
 	std::unique_ptr<TRandom2> rndmTime_;  // random number generator. TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input files will have way shorter period anyway. 
-	int seed_{0};              // random number generator seed, gets set by central random number generator seeding service 
+	//	int seed_{0};              // random number generator seed, gets set by central random number generator seeding service 
 
 	// for Ecal, overlay hits need to be added as contribs.
 	// but these are required to be unique, by the Ecal rconstruction code 
