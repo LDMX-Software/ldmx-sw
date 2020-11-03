@@ -1,10 +1,45 @@
-"""Configuration for overlay """
+"""Configuration for overlay 
 
+Parameters
+----------------
+fileName : string
+     The name of the file containing the pileup events to overlay on the sim event
 
+Attributes:
+-------------
+passName : string
+    Pass name of the sim events 
+overlayPassName : string
+    Pass name of the pileup events 
+overlayHitCollections : string
+    List of sim hit collections to pull from the sim and pileup events and combine
+totalNumberOfInteractions : int 
+    The total number of interactions combined (including the sim event)
+doPoisson : int
+    Specifies whether to sample a Poisson(totalNumberOfInteractions) to obtain the number of events to combine (doPoisson != 0), 
+    or deterministically set nOverlay=totalNumberOfInteractions-1 (doPoisson = 0)
+timeSpread : float
+    The width of a single bunch in time (expressed in sigma) [ns]
+timeMean : float
+    The average time, relative to the sim time, of the pileup events [ns]. 
+    Note that this should generally be 0. A non-zero number combined with a 0 spread is useful for debugging.
+nBunchesToSample : int
+    The number of preceding/following bunches sampled for out-of-time pileup. 
+    This is one number, assuming symmetry backwards and forwards in time. 
+    Furthermore, pileup will be uniformly distributed among this number of bunches m = -N, -N+1, ..., N 
+    while the sim event is always in bunch m = 0. 
+bunchSpacing : float
+    The spacing in time between bunches [ns]                                                                                                                 randomSeed : float
+    Initial seed to use for all random number generators in this producer. 
+verbosity : int
+    Sets the producer specific level of verbosity, up to 3 for the most verbose step-by-step debug printouts.
+
+    
+"""
 
 from LDMX.Framework import ldmxcfg
 
-class OverlayProducer(ldmxcfg.Producer) :
+class OverlayProducer(ldmxcfg.Producer, fileName) :
     """Configuration for pileup overlay
 
         Sets all parameters to reasonable defaults.
@@ -15,21 +50,21 @@ class OverlayProducer(ldmxcfg.Producer) :
         p.sequence.append( OverlayProducer() )
     """
 
-    def __init__(self,name = 'overlay') :
+    def __init__(self,name = 'OverlayProducer') :
         super().__init__(name,'ldmx::OverlayProducer','EventProc')
 
 
-        self.overlayFileName = "ldmx_upstreamMultiElectron_events.root"
+        self.overlayFileName = fileName 
         self.passName = "sim"
         self.overlayPassName = "sim"
         self.overlayHitCollections=[ "TriggerPadUpSimHits", "EcalSimHits"]
 
         self.totalNumberOfInteractions = 2.
-        self.timeSpread = 0.
-        self.timeMean = 0.
-        self.nBunchesToSample = 0.
-        self.bunchSpacing = 26.88   # ns
         self.doPoisson = 0
-        self.randomSeed=0
-        self.verbosity=3
+        self.timeSpread = 0.        # [ns]
+        self.timeMean = 0.          # [ns]
+        self.nBunchesToSample = 0
+        self.bunchSpacing = 26.88   # [ns]
+        self.randomSeed = 0
+        self.verbosity = 3
 
