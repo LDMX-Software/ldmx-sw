@@ -18,6 +18,7 @@ namespace ldmx {
         timePeak_         = ps.getParameter<double>("timePeak");
         nADCs_            = ps.getParameter<int>("nADCs");
         iSOI_             = ps.getParameter<int>("iSOI");
+        noise_            = ps.getParameter<bool>("noise");
 
         //conditions/settings of chip that may change between chips
         //  the ones passed here are the "defaults", i.e. if
