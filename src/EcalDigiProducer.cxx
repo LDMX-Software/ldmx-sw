@@ -34,6 +34,7 @@ namespace ldmx {
         clockCycle_       = hgcrocParams.getParameter<double>("clockCycle");
         nADCs_            = hgcrocParams.getParameter<int>("nADCs");
         iSOI_             = hgcrocParams.getParameter<int>("iSOI");
+        noise_            = hgcrocParams.getParameter<bool>("noise");
 
         //collection names
         inputCollName_  = ps.getParameter<std::string>("inputCollName");
