@@ -66,10 +66,10 @@ namespace ldmx {
             double charge(0.);
 
             /* debug printout
-                */
             std::cout << "Recon { "
                 << "ID: " << id << ", "
                 << "TOA: " << hitTime << "ns } ";
+                */
             if ( digi.isTOT() ) {
                 //TOT - number of clock ticks that pulse was over threshold
                 //  this is related to the amplitude of the pulse approximately through a linear drain rate
@@ -80,8 +80,8 @@ namespace ldmx {
                 charge = (digi.tot() - the_conditions.totPedestal(id))*the_conditions.totGain(id);
 
                 /* debug printout
+                std::cout << "TOT Mode -> " << digi.tot() << "TDC -> " << charge << " fC";
                  */
-                std::cout << "TOT Mode -> " << charge << " fC";
             } else {
                 //ADC mode of readout
                 //ADC - voltage measurement at a specific time of the pulse
@@ -120,18 +120,18 @@ namespace ldmx {
                 }
 
                 /* debug printout
-                 */
                 std::cout << "ADC Mode -> " << charge << " fC";
+                 */
             }
 
             double num_mips_equivalent = charge / charge_per_mip_;
             double energy_deposited_in_Si = num_mips_equivalent * mip_si_energy_;
 
             /* debug printout
-             */
-            std::cout << " -> N MIPs: " << num_mips_equivalent
-                << " = " << energy_deposited_in_Si << " MeV"
+            std::cout << " -> " << num_mips_equivalent
+                << " equiv MIPs -> " << energy_deposited_in_Si << " MeV"
                 << std::endl;
+             */
             
             //incorporate layer weights
             double reconstructed_energy = 
