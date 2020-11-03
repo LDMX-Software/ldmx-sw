@@ -8,11 +8,6 @@
 #include<cmath>
 namespace ldmx {
 
-  float QIEInputPulse::Eval(float T){return 0;}
-  float QIEInputPulse::Integrate(float T1,float T2){return 0;}
-  float QIEInputPulse::Derivative(float T){return 0;}
-  float QIEInputPulse::Max(){return 0;}
-
   // Bimoid pulse, made out of difference of two sigmoids parametrized by
   // rt,ft respectively.
   // Parameters:
