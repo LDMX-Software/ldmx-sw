@@ -429,7 +429,7 @@ namespace ldmx {
 
 
         // MIP tracking starts here
-        // std::cout << "BEGINNING MIP TRACKING" << std::endl;  //temp
+        std::cout << "BEGINNING MIP TRACKING" << std::endl;  //temp
 
         /* Goal:  Calculate nStraightTracks (self-explanatory), nLinregTracks (tracks found by linreg algorithm),
         ** firstNearPhLayer (layer of the first hit near the photon trajectory), epAng (angle between the projected
@@ -443,25 +443,26 @@ namespace ldmx {
         TVector3 p_traj_end;
         if(ele_trajectory.size()==3 && photon_trajectory.size()==3) {
             /*make ele_trajectory and photon_trajectory into TVector3 pairs for later use*/
-            //std::cout << "Expected, size==3" << std::endl;
-            e_traj_start = TVector3(ele_trajectory[0].first, ele_trajectory[0].second, LAYER_Z_POSITIONS.front());
-            e_traj_end =   TVector3(ele_trajectory[0].first, ele_trajectory[0].second, LAYER_Z_POSITIONS.back());
-            p_traj_start = TVector3(photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.front());
-            p_traj_end =   TVector3(photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.back());
+            std::cout << "     Found electron and photon trajectory" << std::endl;
+            e_traj_start.setXYZ(ele_trajectory[0].first,    ele_trajectory[0].second,    LAYER_Z_POSITIONS.front());
+            e_traj_end.setXYZ(  ele_trajectory[0].first,    ele_trajectory[0].second,    LAYER_Z_POSITIONS.back());
+            p_traj_start.setXYZ(photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.front());
+            p_traj_end.setXYZ(  photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.back());
 
             // TEMPORARILY COMMENTED for testing purposes
-            TVector3 evec = e_traj_end - e_traj_start;
+            TVector3 evec   = e_traj_end - e_traj_start;
             TVector3 e_norm = evec.Unit();
-            TVector3 pvec = p_traj_end - p_traj_start;
+            TVector3 pvec   = p_traj_end - p_traj_start;
             TVector3 p_norm = pvec.Unit();
             float epDot = e_norm.Dot(p_norm);
             //std::cout << "Assigning norm" << std::endl;
             epAng_ = acos(epDot) * 180.0 / M_PI;  //In degrees for legibility
             epSep_ = sqrt( pow(e_traj_start.X() - p_traj_start.X(), 2) + 
                            pow(e_traj_start.Y() - p_traj_start.Y(), 2) );
+            std::cout << "epAng=" << epAng_ << ", epSep=" << epSep_ << std::endl;
         } else {
             /*All hits in the Ecal are fair game.  Pick e/ptraj so that they won't restrict anything.*/
-            //std::cout << "Unexpected traj size " << ele_trajectory.size() << ", " << photon_trajectory.size() << std::endl;
+            std::cout << "Missing trajectory: len(etraj)=" << ele_trajectory.size() << ", " << photon_trajectory.size() << std::endl;
             e_traj_start = TVector3(999,999,0);
             e_traj_end = TVector3(999,999,999);
             p_traj_start = TVector3(1000,1000,0);
@@ -483,7 +484,8 @@ namespace ldmx {
                 }
             }
         }
-        //std::cout << "COMPLETED INITIAL ANALYSIS.  STARTING TRACKING..." << std::endl;
+        std::cout << "Found firstNearPhLayer:  " << firstNearPhLayer_ << std::endl;
+        std::cout << "COMPLETED INITIAL ANALYSIS.  STARTING TRACKING..." << std::endl;
 
         // Actual tracking begins here.
 
@@ -538,6 +540,7 @@ namespace ldmx {
             /*Optional addition:  Merge nearby straight tracks.  Not necessary for veto.*/
         }
 
+        std::cout << "Found " << nStraightTracks_ << " straight tracks" << std::endl;
 
         // OPTIONAL:  If a track is found, immediately skip the relatively slow linreg section.
         // Downside:  Can't do this if nLinregTracks is used in the BDT.
@@ -566,7 +569,8 @@ namespace ldmx {
         int hitNums_best[3];
         int hitNums[3];
         
-        /* for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
+        /*
+        for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
             trackLen = 0;
             nHitsInRegion = 1;
             currenthit = iHit;
@@ -578,12 +582,75 @@ namespace ldmx {
                     hitsInRegion[nHitsInRegion] = jHit;
                     nHitsInRegion++;
                 }
-            } */
+            }
 
+            hitNums[0] = iHit;
 
+            for (int jHit = 1; jHit < nHitsInRegion - 1; jHit++) {
+                hitNums[1] = jHit;
+                for (int kHit = jHit + 1; kHit < nHitsInRegion; kHit++) {
+                    //hdt[0] = trackingHitList[iHit];
+                    hitNums[2] = kHit;
+                    //NOTE/TODO/WARNING:  Subtract off mean??
+                    for (int hInd = 0; hInd < 3; hInd++) {
+                        hmean(hInd) = (trackingHitList[hitNums[0]].pos(hInd) +
+                                       trackingHitList[hitNums[1]].pos(hInd) +
+                                       trackingHitList[hitNums[2]].pos(hInd))/3.0;
+                    }
+                    for (int hInd = 0; hInd < 3; hInd++) {
+                        for (int lInd = 0; lInd < 3; lInd++) {
+                            //hdt[hInd][lInd] = trackingHitList[hitNums[hInd]].pos(lInd) - hmean(lInd);
+                            hdt(hInd,lInd) = trackingHitList[hitNums[hInd]].pos(lInd) - hmean(lInd);
+                            //WARNING:  order may be wrong
+                        }
+                    }
+                    //svdMatrix.SetMatrixArray(hdt);
+                    TDecompSVD svdObj = TDecompSVD(hdt);
+                    svdObj.Decompose();
+                    Vm = svdObj.GetV();
+                    for (int hInd = 0; hInd < 3; hInd++) {
+                        slopeVec(hInd) = Vm[0][hInd]; //NOTE:  Make sure it's not [hInd][0]
+                        //get a second point on the regression line
+                        //hpoint(hInd) = slopeVec(hInd) + hmean(hInd);
+                    }
+                    hpoint = slopeVec + hmean;
+                    //linreg complete:  Now have best-fit for 3 hits under consideration
+                    //find closest_e and closest_p...can get a second point w/ slopeVec+regmean
+                    float closest_e = distTwoLines(hmean, hpoint, e_traj_start, e_traj_end);
+                    float closest_p = distTwoLines(hmean, hpoint, p_traj_start, p_traj_end);
+                    if (closest_p > 8.8 or closest_e < 14) continue;
+                    //find r^2
+                    float vrnc = (trackingHitList[hitNums[0]].pos - hmean).Mag() + 
+                                 (trackingHitList[hitNums[1]].pos - hmean).Mag() +
+                                 (trackingHitList[hitNums[2]].pos - hmean).Mag();
+                    float sumerr = pow(distPtToLine(trackingHitList[hitNums[0]].pos, hmean, hpoint), 2) +
+                                   pow(distPtToLine(trackingHitList[hitNums[1]].pos, hmean, hpoint), 2) +
+                                   pow(distPtToLine(trackingHitList[hitNums[2]].pos, hmean, hpoint), 2);
+                    float r_corr = 1 - sumerr/vrnc;
+                    if (r_corr > r_corr_best and r_corr > .6) {
+                        r_corr_best = r_corr;
+                        mean_best = hmean; //these two aren't necessary unless additional hits are added
+                        point_best = hpoint;
+                        for (int k=0; k<3; k++) {
+                            track[k] = hitNums[k];
+                            trackLen++;
+                        }
+                    }
+                }
+            }
+            //Ordinarily, additional hits in line w/ track would be added here.  However, this doesn't affect the results of the simple veto.
+            //remove hits from further consideration:
+            if (trackLen >= 2) {
+                nLinregTracks_++;
+                for (int kHit = 0; kHit < trackLen; kHit++) {
+                    trackingHitList.erase(trackingHitList.begin() + track[kHit]);
+                }
+                iHit--;
+            }
+        }
+        */
 
-
-
+        std::cout << "(currently unused) Found " << nLinregTracks << " linreg tracks" << std::endl;
 
 
         //std::cout << "TRACKING COMPLETED." << std::endl;
@@ -601,6 +668,8 @@ namespace ldmx {
             result.setDiscValue(pred);
             //std::cout << "  pred > bdtCutVal = " << (pred > bdtCutVal_) << std::endl;
 
+            bool passesTrackingVeto = (nStraightTracks_ == 0) && (nLinregTracks_ == 0) &&
+                                (firstNearPhLayer_ >= 6) && (epAng_ > 3.0 || epSep_ > 10.0);
             // If the event passes the veto, keep it. Otherwise,
             // drop the event.
             if (result.passesVeto() && inside) {
