@@ -23,22 +23,22 @@ namespace ldmx {
     /**
      * Evaluate the pulse at time T
      */
-    virtual float Eval(float T);
+    virtual float Eval(float T) = 0;
 
     /**
      * Integrate the pulse from T1 to T2
      */
-    virtual float Integrate(float T1,float T2);
+    virtual float Integrate(float T1,float T2) = 0;
 
     /**
      * Differentiate pulse at time T
      */
-    virtual float Derivative(float T);
+    virtual float Derivative(float T) = 0;
 
     /**
      *  maximum of the pulse
      */
-    virtual float Max();
+    virtual float Max() = 0;
   };
 
 
