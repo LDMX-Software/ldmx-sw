@@ -5,47 +5,48 @@
  */
 
 #include "EventProc/OverlayProducer.h"
-
+#include "Framework/RandomNumberSeedService.h"
 
 namespace ldmx {
 
     void OverlayProducer::configure(Parameters& parameters) {
 
       // Configure this instance of the producer
-	   ldmx_log(debug) <<  "[ OverlayProducer ]: configure " ;
+	  ldmx_log(debug) <<  "[ OverlayProducer ]: configure " ;
 	  
-                            
+	  // name of file containing events to be overlaid, and a list of collections to overlay
       overlayFileName_     = parameters.getParameter< std::string >("overlayFileName");
-      overlayTreeName_     = parameters.getParameter< std::string >("overlayTreeName");
+      collections_         = parameters.getParameter< std::vector <std::string> >("overlayHitCollections");
+	  //	  simParticleCollName_ = parameters.getParameter< std::string >( "collectionName" );
+      simPassName_         = parameters.getParameter< std::string >( "passName" );
+      overlayPassName_     = parameters.getParameter< std::string >( "overlayPassName" );
+
+	  // overlay specifics: 
       poissonMu_           = parameters.getParameter< double >("totalNumberOfInteractions");
       doPoisson_           = parameters.getParameter< int >("doPoisson");
       timeSigma_           = parameters.getParameter< double >("timeSpread");
       timeMean_            = parameters.getParameter< double >("timeMean");
-      overlayProcessName_  = parameters.getParameter< std::string >("overlayProcessName");
-      collections_         = parameters.getParameter< std::vector <std::string> >("overlayHitCollections");
-      seed_                = parameters.getParameter< int >("randomSeed");  // TODO: this will use new common deterministic seeding
-      passName_            = "overlay";
+	  nBunchesToSample_    = parameters.getParameter< int >("nBunchesToSample");
+	  bunchSpacing_        = parameters.getParameter< double >("bunchSpacing");
+	  
+	  seed_                = parameters.getParameter< int >("randomSeed");  // TODO: this will use new common deterministic seeding
       verbosity_           = parameters.getParameter< int >("verbosity");
 
 
-	  simParticleCollName_ = parameters.getParameter<std::string>( "collection_name" );
-      simParticlePassName_ = parameters.getParameter<std::string>( "pass_name" );
-      overlayPassName_     = parameters.getParameter<std::string>( "overlay_pass_name" );
 
       if (verbosity_) {
-		 ldmx_log(debug) <<  "[ OverlayProducer ]: Got parameters \n \t overlayFileName = " << overlayFileName_ 
-				  << "\n\t overlayTreeName = " << overlayTreeName_
-				  << "\n\t numberOverlaidInteractions = " << poissonMu_
-				  << "\n\t doPoisson = " << doPoisson_
-				  << "\n\t overlayProcessName = " << overlayProcessName_
+		 ldmx_log(info) <<  "[ OverlayProducer ]: Got parameters \n \t overlayFileName = " << overlayFileName_ 
+				  << "\n\t sim pass name  " << simPassName_
+				  << "\n\t overlay pass name  " << overlayPassName_
 				  << "\n\t overlayHitCollections = " ;
 		for ( const std::string &coll : collections_ )
-		   ldmx_log(debug) <<  coll << "; " ;
+		   ldmx_log(info) <<  coll << "; " ;
 
-		 ldmx_log(debug) <<  "\n\t randomSeed = " << seed_
+		 ldmx_log(info) <<  "\n\t randomSeed = " << seed_
+				  << "\n\t numberOverlaidInteractions = " << poissonMu_
+				  << "\n\t doPoisson = " << doPoisson_
 				  << "\n\t timeSpread = " << timeSigma_
 				  << "\n\t timeMean = " << timeMean_
-				  << "\n\t passName hardcoded to " << passName_
 				  << "\n\t verbosity = " << verbosity_ ;
 		
 		//		  << "\n\t  = " << 
@@ -65,11 +66,11 @@ namespace ldmx {
 	}
 	
 	// sample a poisson distribution or use a deterministic number of overlay events : this is nEvsOverlay
-	// but we need to sample a poisson of the total number of events, which is nOverlay + 1 (since it includes the sim event)
+	// but we should sample a poisson of the total number of events, which is nOverlay + 1 (since it includes the sim event)
 	int nEvsOverlay = doPoisson_ ? (int) rndm_->Poisson( poissonMu_ ) : (int)poissonMu_ ;  //either sample or take the number at face value every time 
-	nEvsOverlay -=1;
+	nEvsOverlay -=1; // now subtract the sim event from the poisson mu
 	
-	//TO DO: find a way to make use of this logic while using nextEvent 
+	//TODO: find a way to make use of this logic while using nextEvent 
 	// find if lastEvent_ + nEvsOverlay > nEvents in the tree as a whole. in that case, reset lastEvent to 0 or (some random small nb)
 	if (lastEvent_ + nEvsOverlay >= nEventsTot_)
 	  lastEvent_ = 0;
@@ -90,7 +91,7 @@ namespace ldmx {
 	}
 
       
-	// then with each collection, loop over nEvs, and push back all the hits in the overlay collection to the input collection
+	// then with each collection, loop over nEvs, and push back all the hits in the overlay collection to the input collection.
 	// using nextEvent to loop, we need to loop over overlay events and in an inner loop, loop over collections.
 	// so, need a handle to not re-add the sim collection every time we pull that collection from an overlay event.
 	//    -- the vector of output collection names to add will fill this purpose too.
@@ -107,11 +108,17 @@ namespace ldmx {
 		 ldmx_log(debug) <<  "[ OverlayProducer ]: in loop: overlaying event " <<  iEv + 1  << " out of " << nEvsOverlay ;
 	  }
 		
-
-	  // an overlay event wide time offset to be applied to all hits.  
+	  // an overlay event wide time offset to be applied to all its hits.
+	  // TODO -- figure out if we should also randomly shift the time of the sim event (likely only needed if time bias gets picked up by BDT or ML)
+	  int bunchOffset = (int) rndmTime_->Uniform( - (nBunchesToSample_+1), nBunchesToSample_+1 );
+	  //	  int bunchOffset = (int) -nBunchesToSample_ + 2*rndmTime_->Integer( nBunchesToSample_+1 ); 
 	  float timeOffset = rndmTime_->Gaus( timeMean_, timeSigma_ );
+	  float bunchTimeOffset = bunchSpacing_ * bunchOffset;
+	  timeOffset += bunchTimeOffset;
+	  
 	  if (verbosity_ > 2) {
          ldmx_log(debug) <<  "[ OverlayProducer ]: hit time offset in event " <<  iEv + 1  << " is  " << timeOffset << " ns";
+         ldmx_log(debug) <<  "[ OverlayProducer ]: bunch position offset in event " <<  iEv + 1  << " is  " << bunchOffset << ", leading to an additional time offset of " << bunchTimeOffset << " ns";
       }
 
 
@@ -128,7 +135,7 @@ namespace ldmx {
 	  // get the collections that we want to overlay, by looping over the list of collections passed to the producer : collections_
 	  for (uint iColl = 0; iColl < collections_.size(); iColl++) {
 		  
-		std::vector<SimCalorimeterHit> simHits = event.getCollection<SimCalorimeterHit>( collections_[iColl] );
+		std::vector<SimCalorimeterHit> simHits = event.getCollection<SimCalorimeterHit>( collections_[iColl], simPassName_ );
 
 		// here: check if it exists -- if it's a simcalo hit collection. then define the out coll:
 
@@ -139,7 +146,7 @@ namespace ldmx {
 		if (strstr (collections_[iColl].c_str(), "Ecal") )
 		  isEcalHitCollection = true ;
 
-		std::vector<SimCalorimeterHit> overlayHits = overlayEvent_.getCollection<SimCalorimeterHit>( collections_[iColl] );
+		std::vector<SimCalorimeterHit> overlayHits = overlayEvent_.getCollection<SimCalorimeterHit>( collections_[iColl], overlayPassName_ );
 		//		std::vector<SimTrackerHit> overlayTrackerHits = overlayEvent_->getCollection<SimTrackerHit>( collections_[iColl] );
 
 
@@ -224,6 +231,8 @@ namespace ldmx {
 		} //over overlay calo simhit collection
 		  
 		if ( isEcalHitCollection ) {
+		  if (verbosity_ > 2)
+			ldmx_log(debug) <<  "Printing hits in hitmap after overlay of " << outCollNames[iColl] ;
 		  for ( auto &mapHit : hitMap ) {
             outHits.push_back( mapHit.second );
 			if (verbosity_ > 2)
@@ -267,36 +276,37 @@ namespace ldmx {
   
   void OverlayProducer::onProcessStart() {
 	if (verbosity_ > 2) {
-	   ldmx_log(debug) <<  "[ OverlayProducer ]: onProcessStart() " ;
+	  ldmx_log(debug) <<  "[ OverlayProducer ]: onProcessStart() " ;
 	}
 
-      //based on the config parameters, set stuff up 
-      // doing this here guarantess that the overlay file(s) gets set up regardless of whether we have an input file or not; onFileOpen gets called for both modes.
+	//based on the config parameters, set stuff up 
+	// doing this here guarantess that the overlay file(s) gets set up regardless of whether we have an input file or not; onFileOpen gets called for both modes.
 
-      rndm_  = std::make_unique<TRandom2>( seed_ );
-      rndmTime_  = std::make_unique<TRandom2>( seed_ );
-      //      EventFile overlayFile_ (overlayFileName_);      
+	//	const auto& rseed    = getCondition<RandomNumberSeedService>("OverlayProducer"); //RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+	//seed_ = rseed.getSeed("OverlayProducer"); //RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+	rndm_  = std::make_unique<TRandom2>( seed_ );
+	rndmTime_  = std::make_unique<TRandom2>( seed_ );
+	//      EventFile overlayFile_ (overlayFileName_);      
+	
+	overlayFile_ = std::make_unique<EventFile>( overlayFileName_ );
+	overlayFile_->setupEvent( &overlayEvent_ );
 
-
-      overlayFile_ = std::make_unique<EventFile>( overlayFileName_ );
-      overlayFile_->setupEvent( &overlayEvent_ );
-
-	  //we update the iterator at the end of each event. so do this once here to grab the first event in the processor
-	  // TODO this could also be done N random times to get a randomness in which events get matched to what sim event.
+	//we update the iterator at the end of each event. so do this once here to grab the first event in the processor
+	// TODO this could also be done N random times to get a randomness in which events get matched to what sim event.
 	  
-	  if (! overlayFile_->nextEvent() ) {
-		std::cerr << "Couldn't read next event!" ;
-		return;
-	  }
-      if (verbosity_ > 2) {
-		 ldmx_log(debug) <<  "[ OverlayProducer ]: onProcessStart () successful. Used input file: " <<overlayFile_->getFileName() ;
-		 ldmx_log(debug) <<  "[ OverlayProducer ]: onProcessStart () successful. Got event info: " ;
-		overlayFile_->getEvent()->Print( verbosity_ );
-      }
-	  
-	  
+	if (! overlayFile_->nextEvent() ) {
+	  std::cerr << "Couldn't read next event!" ;
 	  return;
-    }
+	}
+	if (verbosity_ > 2) {
+	  ldmx_log(debug) <<  "[ OverlayProducer ]: onProcessStart () successful. Used input file: " <<overlayFile_->getFileName() ;
+	  ldmx_log(debug) <<  "[ OverlayProducer ]: onProcessStart () successful. Got event info: " ;
+	  overlayFile_->getEvent()->Print( verbosity_ );
+	}
+	  
+	  
+	return;
+  }
 
 }
 

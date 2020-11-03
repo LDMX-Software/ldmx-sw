@@ -20,19 +20,16 @@ class OverlayProducer(ldmxcfg.Producer) :
 
 
         self.overlayFileName = "ldmx_upstreamMultiElectron_events.root"
-        self.overlayTreeName = "LDMX_Events"
+        self.passName = "sim"
+        self.overlayPassName = "sim"
+        self.overlayHitCollections=[ "TriggerPadUpSimHits", "EcalSimHits"]
+
         self.totalNumberOfInteractions = 2.
         self.timeSpread = 0.
+        self.timeMean = 0.
+        self.nBunchesToSample = 0.
+        self.bunchSpacing = 26.88   # ns
         self.doPoisson = 0
-        self.overlayProcessName = "inclusive"
-        self.overlayHitCollections=[ "TriggerPadUpSimHits", "EcalSimHits"]
         self.randomSeed=0
         self.verbosity=3
 
-        self.pass_name = "sim"
-        self.overlay_pass_name = "inclusive"
-        self.collection_name = "inclusive"
-
-#        import time
-#        self.randomSeed = int(time.time())
-        
