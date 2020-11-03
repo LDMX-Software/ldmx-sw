@@ -158,6 +158,15 @@ namespace ldmx {
                         else return first(); //calibration mode
                     }
 
+                    /**
+                     * Get the raw value of this sample
+                     * 
+                     * @return 32-bit full value fo the sample
+                     */
+                    uint32_t raw() const {
+                        return word_;
+                    }
+
                 private:
     
                     /**
@@ -428,7 +437,7 @@ namespace ldmx {
             /**
              * The ROOT class definition.
              */
-            ClassDef(HgcrocDigiCollection, 1);
+            ClassDef(HgcrocDigiCollection, 2);
     };
 
 } //ldmx
