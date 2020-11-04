@@ -194,8 +194,8 @@ namespace ldmx {
             for ( unsigned int iADC = 0; iADC < nADCs_; iADC++ ) {
                 bool tot_progress, tot_complete;
                 int secon_measurement;
-                if ( iADC == num_whole_clocks ) {
-                    //TOT complete
+                if ( iADC == iSOI_ ) {
+                    //for in-time hits, the TOT is reported in the SOI
                     secon_measurement = tdc_counts;
                     tot_progress      = false;
                     tot_complete      = true;
