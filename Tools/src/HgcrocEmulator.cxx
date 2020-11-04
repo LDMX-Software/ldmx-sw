@@ -130,6 +130,19 @@ namespace ldmx {
             if (verbose_) std::cout << "Below Readout" << std::endl;
             return false; //skip this hit
         } else if ( pulsePeak < totThreshold ) {
+            /**
+             * TODO more realistic ADC readout
+             *
+             * A real ADC readout would sum the pulses at the different
+             * sampling times (instead of sampling one pulse after adding
+             * together the amplitudes). This would involve several additional
+             * complexities that aren't currently integrated.
+             *  - Does the hit time directly correspond to the peak time? (as is now)
+             *    Or should we shift the peak time to some time after the hit time?
+             *  - How does the pre-amp shape several analog pulses coming together 
+             *    when they are separated by time? Do they just add linearly?
+             */
+
             //below TOT threshold -> do ADC readout mode
             if (verbose_) std::cout << "ADC Mode { ";
 
@@ -155,6 +168,15 @@ namespace ldmx {
             if (verbose_) std::cout << "}" << std::endl;
 
         } else {
+            /**
+             * TODO more realistic TOT readout
+             *
+             * A real TOT readout would invalidate the cell for any samples after the hit
+             * started until the ADC(t-1) sample is able to recover. The TOT readout
+             * is always given in the SOI for the hit that is being TOT readout (TOT complete), but
+             * any bunches after that hit where the chip hasn't recovered yet would recieve
+             * TOT in progress.
+             */
             // above TOT threshold -> do TOT readout mode
 
             // Measure Time Over Threshold (TOT) by using the drain rate.
