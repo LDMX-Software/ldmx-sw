@@ -1,10 +1,12 @@
 
 #include "XML/Helper.h"
+#include "Acts/Plugins/DD4hep/ActsExtension.hpp"
 
 using namespace dd4hep;
 
 static Ref_t create_tracker(Detector &lcdd, xml::Handle_t xml_handle,
                             SensitiveDetector sens_det) {
+    
 
   // Detector xml handle
   xml::DetElement det_handle = xml_handle;
@@ -75,6 +77,11 @@ static Ref_t create_tracker(Detector &lcdd, xml::Handle_t xml_handle,
 
   // Create the tracker detector element
   DetElement tracker(det_handle.nameStr(), det_handle.id());
+  std::cout<<"PF::DEBUG "<<__PRETTY_FUNCTION__<<" "<<tracker.name()<< " "<<tracker.type()<<std::endl;
+
+  //Add the ActsExtension for the Reco Geometry
+  Acts::ActsExtension* trackerExtension = new Acts::ActsExtension();
+  trackerExtension->addType("tracker", "detector");
 
   // Get the global position of the tracker envelope and place it in the mother
   // volume.
