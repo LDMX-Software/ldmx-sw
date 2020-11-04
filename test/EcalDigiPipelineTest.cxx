@@ -86,7 +86,7 @@ static const double MAX_ENERGY_ERROR_TP_ADC_MODE=2*MIP_SI_ENERGY;
  * the parameters of EcalFakeSimHits), we know
  * how "fine-grained" the test is.
  */
-static const int NUM_TEST_SIM_HITS=1600;
+static const int NUM_TEST_SIM_HITS=2000;
 
 /**
  * Should the sim/rec/tp energies be ntuplized
@@ -108,10 +108,9 @@ class EcalFakeSimHits : public Producer {
          * Maximum energy to make a simulated hit for [MeV]
          *
          * The maximum value to be readout is 4096 TDC which
-         * is equivalent to 4000fC deposited charge which
-         * is equivalent to ~86MeV.
+         * is equivalent to ~10000fC deposited charge.
          */
-        const double maxEnergy_  = 4000.*MeV_per_fC;
+        const double maxEnergy_  = 10000.*MeV_per_fC;
 
         /**
          * Minimum energy to make a sim hit for [MeV]
@@ -122,40 +121,11 @@ class EcalFakeSimHits : public Producer {
         const double minEnergy_ = MIP_SI_ENERGY;
 
         /**
-         * Best possible resolution of our detector when reading out in ADC mode is
-         *
-         * (320 fC)/(1024 counts)(0.130 MeV/MIP)/(37*0.162 fC/MIP) = 6.7e-3 MeV
+         * The step between energies is calculated depending on the min, max energy
+         * and the total number of sim hits you desire.
+         * [MeV]
          */
-        const double adcEnergyStep_ = (320./1024)*MeV_per_fC;
-
-        /**
-         * TOT threshold in MeV
-         *
-         * About 6.5 MeV
-         */
-        const double totThreshold_ = 50*MIP_SI_ENERGY;
-
-        /**
-         * Best possible resolution for our detector when reading out in
-         * the lower TOT mode (TDC < 512) is
-         *
-         * (4000 fC / 4096 counts)*(0.130 MeV per MIP / (37*0.162) fC per MIP) = 2.1e-2 MeV
-         */
-        const double totLowEnergyStep_ = (4000./4096)*MeV_per_fC;
-
-        /**
-         * Threshold between low energy TOT and high energy TOT in MeV
-         *
-         * About 10.7 MeV
-         */
-        const double totHighThreshold_ = 512*totLowEnergyStep_;
-
-        /**
-         * Best possible resolution for our detector when reading out in
-         * the higher TOT mode (TDC > 512) is eight times higher than
-         * the lower TDC mode because we throw away the lowest 3 bits.
-         */
-        const double totHighEnergyStep_ = 8*totLowEnergyStep_;
+        const double energyStep_ = (maxEnergy_-minEnergy_)/NUM_TEST_SIM_HITS;
 
         /// current energy of the sim hit we are on
         double currEnergy_ = minEnergy_;
@@ -187,9 +157,7 @@ class EcalFakeSimHits : public Producer {
             //needs to be correct collection name
             REQUIRE_NOTHROW(event.add( "EcalSimHits" , pretendSimHits ));
 
-            if (currEnergy_ < totThreshold_ ) currEnergy_ += adcEnergyStep_;
-            else if (currEnergy_ < totHighThreshold_ ) currEnergy_ += totLowEnergyStep_;
-            else currEnergy_ += totHighEnergyStep_;
+            currEnergy_ += energyStep_;
             
             return;
         }
@@ -262,9 +230,7 @@ class EcalCheckEnergyReconstruction : public Analyzer {
             CHECK( trigDigis.size() == 1 );
             
             auto trigDigi = trigDigis.at(0);
-            float tp_energy = trigDigi.linearPrimitive() * MeV_per_fC; //MeV equivalent to counts in primitive
-            if (daqDigi.isADC()) tp_energy *= 8*320./1024; //adc gain
-            else                 tp_energy *= 4000./4096;  //tot gain
+            float tp_energy = 8*trigDigi.linearPrimitive()*320./1024*MeV_per_fC;
 
             auto target_tp_energy = Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR_TP_TOT_MODE/100);
             if (is_in_adc_mode) target_tp_energy = Approx(truth_energy).margin(MAX_ENERGY_ERROR_TP_ADC_MODE);
