@@ -20,14 +20,35 @@ namespace ecal {
 
 /**
  * Maximum percent error that a single hit
- * can be reconstructed with before failing the test.
+ * can be reconstructed with before failing the test
+ * if above the tot threshold.
+ *
+ * Comparing energy deposited in Silicon that was
+ * "simulated" (input into digitizer) and the reconstructed
+ * energy deposited output by reconstructor.
+ */
+static const double MAX_ENERGY_PERCENT_ERROR_TOT_MODE=5.; //allowed to be off only by 5%
+
+/**
+ * Maximum absolute error that a single hit
+ * can be reconstructed with before failing the test
+ * if below the adc threshold
  *
  * Comparing energy deposited in Silicon that was
  * "simulated" (input into digitizer) and the reconstructed
  * energy deposited output by reconstructor.
  */
 static const double MAX_ENERGY_ERROR_ADC_MODE=0.130/2; //allowed to be off only by a half a MIPs worth
-static const double MAX_ENERGY_PERCENT_ERROR_TOT_MODE=5.; //allowed to be off only by 5%
+
+/**
+ * Maximum percent error allowed for a energy converted
+ * from a trigger primitive.
+ *
+ * @note Currently not used! Not quite sure how to
+ * check if the trigger primitives are "correct" compared
+ * to the simulated energy.
+ */
+static const double MAX_ENERGY_PERCENT_ERROR_TRIG_PRIM=5.; //allowed to be off only by 5%
 
 /**
  * Number of sim hits to create.
@@ -153,6 +174,10 @@ class EcalFakeSimHits : public Producer {
  *
  * Checks
  * - Amplitude of EcalRecHit matches SimCalorimeterHit EDep with the same ID
+ *
+ * Assumptions
+ * - Only one sim hit per event
+ * - Noise generation has been turned off
  */
 class EcalCheckEnergyReconstruction : public Analyzer {
 
@@ -179,53 +204,41 @@ class EcalCheckEnergyReconstruction : public Analyzer {
 
             const auto simHits = event.getCollection<SimCalorimeterHit>( "EcalSimHits" );
 
+            REQUIRE( simHits.size() == 1 );
+
             float truth_energy = simHits.at(0).getEdep();
             ntuple_.setVar<float>("SimEnergy",truth_energy);
 
-            bool is_adc_mode = false;
-            const auto digis{event.getObject<HgcrocDigiCollection>("EcalDigis")};
-            for ( unsigned int iDigi = 0; iDigi < digis.getNumDigis(); iDigi++ ) {
-                //TODO make this work when we include noise in testing
-                auto digi = digis.getDigi( iDigi );
-                is_adc_mode = digi.isADC();
-                ntuple_.setVar<int>("DaqDigi",digi.soi().raw());
-            }
+            const auto daqDigis{event.getObject<HgcrocDigiCollection>("EcalDigis")};
+
+            CHECK( daqDigis.getNumDigis() == 1 );
+            auto daqDigi = daqDigis.getDigi(0);
+            ntuple_.setVar<int>("DaqDigi",daqDigi.soi().raw());
 
             const auto recHits = event.getCollection<EcalHit>( "EcalRecHits" );
+            CHECK( recHits.size() == 1 );
 
-            bool found_real_hit = false;
-            for ( const auto& hit : recHits ) {
-                EcalID id(hit.getID());
-                if ( id.raw() == simHits.at(0).getID() ) {
-                    //not a noise hit
-                    //argument to epsilon is maximum relative difference allowed
-                    CHECK_FALSE( hit.isNoise() );
+            auto hit = recHits.at(0);
+            EcalID id(hit.getID());
+            CHECK_FALSE( hit.isNoise() );
+            CHECK( id.raw() == simHits.at(0).getID() );
 
-                    //define target energy by using the settings at the top
-                    auto target_energy = Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR_TOT_MODE/100);
-                    if (is_adc_mode) target_energy = Approx(truth_energy).margin(MAX_ENERGY_ERROR_ADC_MODE);
+            //define target energy by using the settings at the top
+            auto target_energy = Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR_TOT_MODE/100);
+            if (daqDigi.isADC()) target_energy = Approx(truth_energy).margin(MAX_ENERGY_ERROR_ADC_MODE);
 
-                    CHECK( hit.getAmplitude() == target_energy );
-                    ntuple_.setVar<float>("RecEnergy",hit.getAmplitude());
-                    found_real_hit = true;
-                } else {
-                    //should be flagged as noise
-                    CHECK( hit.isNoise() );
-                }
-            }
-
-            // did we lose any energies during the processing?
-            CHECK( found_real_hit );
+            CHECK( hit.getAmplitude() == target_energy );
+            ntuple_.setVar<float>("RecEnergy",hit.getAmplitude());
 
             const auto trigDigis{event.getObject<HgcrocTrigDigiCollection>("ecalTrigDigis")};
-            for (const auto& digi : trigDigis ) {
-                //TODO make this work when we include noise in testing
-                float tp_energy = 8 * digi.linearPrimitive() * 320./1024 * 0.130 / (37.*(0.162));
-                //CHECK( tp_energy == Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR/100) );
-                ntuple_.setVar<float>("TrigPrimEnergy",tp_energy);
-                ntuple_.setVar<int>("TrigPrimDigiEncoded",digi.getPrimitive());
-                ntuple_.setVar<int>("TrigPrimDigiLinear",digi.linearPrimitive());
-            }
+            CHECK( trigDigis.size() == 1 );
+            
+            auto trigDigi = trigDigis.at(0);
+            float tp_energy = 8 * trigDigi.linearPrimitive() * 320./1024 * 0.130 / (37.*(0.162));
+            //CHECK( tp_energy == Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR_TRIG_PRIM/100) );
+            ntuple_.setVar<float>("TrigPrimEnergy",tp_energy);
+            ntuple_.setVar<int>("TrigPrimDigiEncoded",trigDigi.getPrimitive());
+            ntuple_.setVar<int>("TrigPrimDigiLinear",trigDigi.linearPrimitive());
 
             return;
         }
