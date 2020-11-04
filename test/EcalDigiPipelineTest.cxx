@@ -19,6 +19,20 @@ namespace test {
 namespace ecal {
 
 /**
+ * Energy deposited in our silicon sensors by one MIP on average.
+ * [MeV]
+ */
+static const double MIP_SI_ENERGY=0.130;
+
+/**
+ * Conversion between deposited charge and deposited energy
+ * [MeV/fC]
+ *
+ * charge [fC] * (1000 electrons / 0.162 fC) * (1 MIP / 37 000 electrons) * (0.130 MeV / 1 MIP)
+ */
+static const double MeV_per_fC=MIP_SI_ENERGY/(37*0.162);
+
+/**
  * Maximum percent error that a single hit
  * can be reconstructed with before failing the test
  * if above the tot threshold.
@@ -27,7 +41,18 @@ namespace ecal {
  * "simulated" (input into digitizer) and the reconstructed
  * energy deposited output by reconstructor.
  */
-static const double MAX_ENERGY_PERCENT_ERROR_TOT_MODE=5.; //allowed to be off only by 5%
+static const double MAX_ENERGY_PERCENT_ERROR_DAQ_TOT_MODE=5.;
+
+/**
+ * Maximum percent error that a single hit can be
+ * estimated at the trigger primitive level when
+ * reading out in TOT mode.
+ *
+ * Comparing energy deposited in Silicon that was
+ * "simulated" (input into digitizer) and the
+ * energy estimated from trigger primitives.
+ */
+static const double MAX_ENERGY_PERCENT_ERROR_TP_TOT_MODE=20.;
 
 /**
  * Maximum absolute error that a single hit
@@ -38,17 +63,18 @@ static const double MAX_ENERGY_PERCENT_ERROR_TOT_MODE=5.; //allowed to be off on
  * "simulated" (input into digitizer) and the reconstructed
  * energy deposited output by reconstructor.
  */
-static const double MAX_ENERGY_ERROR_ADC_MODE=0.130/2; //allowed to be off only by a half a MIPs worth
+static const double MAX_ENERGY_ERROR_DAQ_ADC_MODE=MIP_SI_ENERGY/2;
 
 /**
- * Maximum percent error allowed for a energy converted
- * from a trigger primitive.
+ * Maximum absolute error that a single hit
+ * can be estimated at the trigger primitive level
+ * if below the adc threshold
  *
- * @note Currently not used! Not quite sure how to
- * check if the trigger primitives are "correct" compared
- * to the simulated energy.
+ * Comparing energy deposited in Silicon that was
+ * "simulated" (input into digitizer) and the
+ * energy estimated from trigger primitives.
  */
-static const double MAX_ENERGY_PERCENT_ERROR_TRIG_PRIM=5.; //allowed to be off only by 5%
+static const double MAX_ENERGY_ERROR_TP_ADC_MODE=2*MIP_SI_ENERGY; 
 
 /**
  * Number of sim hits to create.
@@ -85,7 +111,7 @@ class EcalFakeSimHits : public Producer {
          * is equivalent to 4000fC deposited charge which
          * is equivalent to ~86MeV.
          */
-        const double maxEnergy_  = 86.;
+        const double maxEnergy_  = 4000.*MeV_per_fC;
 
         /**
          * Minimum energy to make a sim hit for [MeV]
@@ -93,21 +119,21 @@ class EcalFakeSimHits : public Producer {
          *
          * One MIP is ~0.13 MeV, so we choose that.
          */
-        const double minEnergy_ = 0.13;
+        const double minEnergy_ = MIP_SI_ENERGY;
 
         /**
          * Best possible resolution of our detector when reading out in ADC mode is
          *
          * (320 fC)/(1024 counts)(0.130 MeV/MIP)/(37*0.162 fC/MIP) = 6.7e-3 MeV
          */
-        const double adcEnergyStep_ = (320./1024)*(0.130/(37*0.162));
+        const double adcEnergyStep_ = (320./1024)*MeV_per_fC;
 
         /**
          * TOT threshold in MeV
          *
          * About 6.5 MeV
          */
-        const double totThreshold_ = 50*0.130;
+        const double totThreshold_ = 50*MIP_SI_ENERGY;
 
         /**
          * Best possible resolution for our detector when reading out in
@@ -115,7 +141,7 @@ class EcalFakeSimHits : public Producer {
          *
          * (4000 fC / 4096 counts)*(0.130 MeV per MIP / (37*0.162) fC per MIP) = 2.1e-2 MeV
          */
-        const double totLowEnergyStep_ = (4000./4096)*(0.130/(37*0.162));
+        const double totLowEnergyStep_ = (4000./4096)*MeV_per_fC;
 
         /**
          * Threshold between low energy TOT and high energy TOT in MeV
@@ -174,6 +200,7 @@ class EcalFakeSimHits : public Producer {
  *
  * Checks
  * - Amplitude of EcalRecHit matches SimCalorimeterHit EDep with the same ID
+ * - Estimated energy at TP level matches sim energy
  *
  * Assumptions
  * - Only one sim hit per event
@@ -214,6 +241,7 @@ class EcalCheckEnergyReconstruction : public Analyzer {
             CHECK( daqDigis.getNumDigis() == 1 );
             auto daqDigi = daqDigis.getDigi(0);
             ntuple_.setVar<int>("DaqDigi",daqDigi.soi().raw());
+            bool is_in_adc_mode = daqDigi.isADC();
 
             const auto recHits = event.getCollection<EcalHit>( "EcalRecHits" );
             CHECK( recHits.size() == 1 );
@@ -224,18 +252,24 @@ class EcalCheckEnergyReconstruction : public Analyzer {
             CHECK( id.raw() == simHits.at(0).getID() );
 
             //define target energy by using the settings at the top
-            auto target_energy = Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR_TOT_MODE/100);
-            if (daqDigi.isADC()) target_energy = Approx(truth_energy).margin(MAX_ENERGY_ERROR_ADC_MODE);
+            auto target_daq_energy = Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR_DAQ_TOT_MODE/100);
+            if (is_in_adc_mode) target_daq_energy = Approx(truth_energy).margin(MAX_ENERGY_ERROR_DAQ_ADC_MODE);
 
-            CHECK( hit.getAmplitude() == target_energy );
+            CHECK( hit.getAmplitude() == target_daq_energy );
             ntuple_.setVar<float>("RecEnergy",hit.getAmplitude());
 
             const auto trigDigis{event.getObject<HgcrocTrigDigiCollection>("ecalTrigDigis")};
             CHECK( trigDigis.size() == 1 );
             
             auto trigDigi = trigDigis.at(0);
-            float tp_energy = 8 * trigDigi.linearPrimitive() * 320./1024 * 0.130 / (37.*(0.162));
-            //CHECK( tp_energy == Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR_TRIG_PRIM/100) );
+            float tp_energy = trigDigi.linearPrimitive() * MeV_per_fC; //MeV equivalent to counts in primitive
+            if (daqDigi.isADC()) tp_energy *= 8*320./1024; //adc gain
+            else                 tp_energy *= 4000./4096;  //tot gain
+
+            auto target_tp_energy = Approx(truth_energy).epsilon(MAX_ENERGY_PERCENT_ERROR_TP_TOT_MODE/100);
+            if (is_in_adc_mode) target_tp_energy = Approx(truth_energy).margin(MAX_ENERGY_ERROR_TP_ADC_MODE);
+
+            CHECK( tp_energy == target_tp_energy );
             ntuple_.setVar<float>("TrigPrimEnergy",tp_energy);
             ntuple_.setVar<int>("TrigPrimDigiEncoded",trigDigi.getPrimitive());
             ntuple_.setVar<int>("TrigPrimDigiLinear",trigDigi.linearPrimitive());
@@ -256,11 +290,10 @@ DECLARE_ANALYZER_NS(ldmx::test::ecal,EcalCheckEnergyReconstruction)
  *
  * Does not check for realism. Simply makes sure sim energies
  * end up being "close" to output rec energies.
- *  Close is defined right now to be a maximum of 5% relative difference.
  *
  * Checks
- *  - Keep reconstructed energy depositied within 5% of simulated value
- *  - Mark any pure noise hits as noise
+ *  - Keep reconstructed energy depositied close to simulated value
+ *  - Keep estimated energy at TP level close to simulated value
  *
  * @TODO still need to expand to multiple contribs in a single sim hit
  * @TODO check layer weights are being calculated correctly somehow
