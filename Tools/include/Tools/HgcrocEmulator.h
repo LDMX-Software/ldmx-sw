@@ -235,6 +235,9 @@ namespace ldmx {
             /// Time of Peak relative to pulse shape fit [ns]
             double timePeak_;
 
+            /// The capacitance of the readout pads in the chips [pF]
+            double readoutPadCapacitance_;
+
             /**************************************************************************************
              * Chip-Dependent Parameters (Conditions)
              *************************************************************************************/

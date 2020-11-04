@@ -19,6 +19,7 @@ namespace ldmx {
         nADCs_            = ps.getParameter<int>("nADCs");
         iSOI_             = ps.getParameter<int>("iSOI");
         noise_            = ps.getParameter<bool>("noise");
+        readoutPadCapacitance_   = ps.getParameter<double>("readoutPadCapacitance");
 
         //conditions/settings of chip that may change between chips
         //  the ones passed here are the "defaults", i.e. if
@@ -179,8 +180,10 @@ namespace ldmx {
              */
             // above TOT threshold -> do TOT readout mode
 
+            double charge_deposited = signalAmplitude * readoutPadCapacitance_;
+
             // Measure Time Over Threshold (TOT) by using the drain rate.
-            //      1. Use drain rate to see how long it takes for the voltage to drain off
+            //      1. Use drain rate to see how long it takes for the charge to drain off
             //      2. Translate this into DIGI samples
 
             // Assume linear drain with slope drain rate:
@@ -188,7 +191,7 @@ namespace ldmx {
             //      slope       = drain rate
             //  ==> x-intercept = amplitude / rate
             //actual time over threshold using the real signal voltage amplitude
-            double tot = signalAmplitude / drainRate; 
+            double tot = charge_deposited / drainRate; 
 
             double toa(0.); //default is earliest possible time
             // check if first half is just always above readout
@@ -201,7 +204,7 @@ namespace ldmx {
             // calculate the TDC counts for this tot measurement
             //  internally, the chip uses 12 bits (2^12 = 4096)
             //  to measure a maximum of tot Max [ns]
-            int tdc_counts = int( tot * (4096-pedestal) / totMax_ ) + pedestal;
+            int tdc_counts = int( tot * 4096 / totMax_ ) + pedestal;
 
             if (verbose_) {
                 std::cout << "TOT Mode { "
