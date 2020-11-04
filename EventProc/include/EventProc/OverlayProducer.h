@@ -45,10 +45,15 @@ namespace ldmx {
 
   private:
 
-	/** 
-	 * overlay events input file
-	 */
 
+	/**
+	 * Pileup overlay events input file name
+	 */
+	std::string overlayFileName_;
+
+	/** 
+	 * Pileup overlay events input file
+	 */
 	std::unique_ptr<EventFile> overlayFile_;      
 	    
 	/**
@@ -56,34 +61,76 @@ namespace ldmx {
 	 */
 	Event overlayEvent_;
 
-	//	std::unique_ptr<TTree> overlayTree_;      // overlay events input tree
-	std::string overlayFileName_;   // overlay events input file name
-	//	std::string overlayTreeName_;   // overlay events input tre name
-	std::string overlayPassName_;   // overlay events input file name
+	/**
+	 * List of simhit collection(s) to loop over and add hits from, combining sim and pileup
+	 */
+	std::vector <std::string> collections_;     
 
-	//	EventFile *simFile_;      // sim file: the file being generated, to be overlaid 
-	int lastEvent_{0};         // book keeping of used events
-	int doPoisson_{0};         // or not
-	double poissonMu_{0.};       // av. nOverlay from the given process
-	double timeSigma_{0.};       // width of pileup bunch spread in time
-	double timeMean_{0.};        // average position in time of pileup bunches
-	double bunchSpacing_{0.};    // spacing in time between electron bunches 
-	int nBunchesToSample_{0};    // number of bunches before and after the sim event to sample (0 --> all events occur in the same bunch)
+	/**
+	 * Pileup overlay events input pass name
+	 */
+	std::string overlayPassName_;   
 
-	int nEventsTot_{0};        // in the input tree 
-	std::vector <std::string> collections_;     // to loop over and add hits from
-	//	std::string overlayProcessName_;  // to use for naming the collection where nOverlaidEvents is relayed
-	std::string simPassName_;          // to use for naming the event bus passengers, mostly a disambiguation
-	//	std::string simParticleCollName_;          // to use for naming the event bus passengers, mostly a disambiguation
-	//	std::string simParticlePassName_;          // to use for naming the event bus passengers, mostly a disambiguation
-	int verbosity_;            // control verbosity 
-	std::unique_ptr<TRandom2> rndm_;  // random number generator. TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input files will have way shorter period anyway. 
-	std::unique_ptr<TRandom2> rndmTime_;  // random number generator. TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input files will have way shorter period anyway. 
-	//	int seed_{0};              // random number generator seed, gets set by central random number generator seeding service 
+	/**
+	 * To use for finding the sim event bus passengers, mostly a disambiguation
+	 */
+	std::string simPassName_;
+	
+	/**
+	 * Let the total number of events be poisson distributed, or fix at the chosen value, poissonMu_
+	 */
+	int doPoisson_{0};
 
-	// for Ecal, overlay hits need to be added as contribs.
-	// but these are required to be unique, by the Ecal rconstruction code 
-	// so assign a nonsensical trackID, incidentID, and PDG ID to the contribs from overlay
+	/**
+	 * (average) total number of events 
+	 */
+	double poissonMu_{0.};
+
+	/**
+	 * Random number generator for number of events.
+	 * TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input files will have way shorter period anyway.
+	 */
+	std::unique_ptr<TRandom2> rndm_;
+
+	/**
+	 * Random number generator for peileup event time offset.
+	 * TRandom2 slightly (~10%) faster than TRandom3; shorter period but our input files will have way shorter period anyway. 
+	 */
+	std::unique_ptr<TRandom2> rndmTime_;  
+
+	/**
+	 * Width of pileup bunch spread in time (in [ns]), specified as a sigma of a Gaussian distribution
+	 */
+	double timeSigma_{0.};
+
+	/**
+	 * Average position in time (in [ns]) of pileup bunches, relative to the sim event.
+	 * Should realistically be 0. Using a non-zero mean and sigma = 0 is however useful for validation.
+	 */
+	double timeMean_{0.};
+
+	/**
+	 * Spacing in time (in [ns]) between electron bunches.
+	 */
+	double bunchSpacing_{0.};
+
+	/**
+	 * Number of bunches before and after the sim event to pull pileup events from 
+	 * (0 --> all events occur in the same bunch as the sim event).
+	 */
+	int nBunchesToSample_{0};    
+
+	/**
+	 * Local control of processor verbosity 
+	 */
+	int verbosity_;
+
+	/**
+	 * For Ecal, overlay hits need to be added as contribs.
+	 * But these are required to be unique, by the Ecal rconstruction code.
+	 * So assign a nonsensical trackID, incidentID, and PDG ID to the contribs from overlay.
+	 * These are hardwired right here.
+	 */
 	int overlayIncidentID_{ -1000 };
 	int overlayTrackID_{ -1000 };
 	int overlayPdgCode_{ 0 };
