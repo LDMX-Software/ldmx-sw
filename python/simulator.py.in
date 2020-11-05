@@ -6,7 +6,7 @@ with several helpful member functions.
 
 from @PYTHON_PACKAGE_NAME@.Framework.ldmxcfg import Producer
 
-class simulator(ldmxcfg.Producer):
+class simulator(Producer):
     """A instance of the simulation configuration
 
     This class is derived from ldmxcfg.Producer and is mainly
@@ -90,10 +90,6 @@ class simulator(ldmxcfg.Producer):
         self.detector = ''
         self.description = ''
 
-        #######################################################################
-        # Declare the Ecal Geometry Provider that the simulation requires
-        from LDMX.Ecal import EcalGeometry
-        EcalGeometry.EcalGeometryProvider.getInstance()
 
         #######################################################################
         # Optional Parameters (with helpful defaults)
@@ -125,6 +121,17 @@ class simulator(ldmxcfg.Producer):
         self.darkbrem_madgraphfilepath = '' #required if want to use dark brem
         self.darkbrem_method = 0
         self.darkbrem_globalxsecfactor = 1.
+
+    def declareGeoProvide(self):
+      """
+        TODO: Move this to the ECal module.
+      """
+        
+      #######################################################################
+      # Declare the Ecal Geometry Provider that the simulation requires
+      from LDMX.Ecal import EcalGeometry
+      EcalGeometry.EcalGeometryProvider.getInstance()
+
 
     def setDetector(self, det_name , include_scoring_planes = False ) :
         """Set the detector description with the option to include the scoring planes
