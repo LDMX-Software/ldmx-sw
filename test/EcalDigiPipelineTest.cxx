@@ -190,6 +190,9 @@ class EcalCheckEnergyReconstruction : public Analyzer {
             ntuple_.addVar<float>("EcalDigiTest","TrigPrimEnergy");
 
             ntuple_.addVar<int>("EcalDigiTest","DaqDigi");
+            ntuple_.addVar<int>("EcalDigiTest","DaqDigiIsADC");
+            ntuple_.addVar<int>("EcalDigiTest","DaqDigiADC");
+            ntuple_.addVar<int>("EcalDigiTest","DaqDigiTOT");
             ntuple_.addVar<int>("EcalDigiTest","TrigPrimDigiEncoded");
             ntuple_.addVar<int>("EcalDigiTest","TrigPrimDigiLinear" );
 
@@ -210,6 +213,9 @@ class EcalCheckEnergyReconstruction : public Analyzer {
             auto daqDigi = daqDigis.getDigi(0);
             ntuple_.setVar<int>("DaqDigi",daqDigi.soi().raw());
             bool is_in_adc_mode = daqDigi.isADC();
+            ntuple_.setVar<int>("DaqDigiIsADC",is_in_adc_mode);
+            ntuple_.setVar<int>("DaqDigiADC",daqDigi.soi().adc_t());
+            ntuple_.setVar<int>("DaqDigiTOT",daqDigi.tot());
 
             const auto recHits = event.getCollection<EcalHit>( "EcalRecHits" );
             CHECK( recHits.size() == 1 );
