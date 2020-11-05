@@ -41,7 +41,7 @@ static const double MeV_per_fC=MIP_SI_ENERGY/(37*0.162);
  * "simulated" (input into digitizer) and the reconstructed
  * energy deposited output by reconstructor.
  */
-static const double MAX_ENERGY_PERCENT_ERROR_DAQ_TOT_MODE=5.;
+static const double MAX_ENERGY_PERCENT_ERROR_DAQ_TOT_MODE=2.;
 
 /**
  * Maximum percent error that a single hit can be
@@ -52,7 +52,7 @@ static const double MAX_ENERGY_PERCENT_ERROR_DAQ_TOT_MODE=5.;
  * "simulated" (input into digitizer) and the
  * energy estimated from trigger primitives.
  */
-static const double MAX_ENERGY_PERCENT_ERROR_TP_TOT_MODE=20.;
+static const double MAX_ENERGY_PERCENT_ERROR_TP_TOT_MODE=10.;
 
 /**
  * Maximum absolute error that a single hit
