@@ -1,10 +1,12 @@
 
 #include "XML/Helper.h"
+#include "Acts/Plugins/DD4hep/ActsExtension.hpp"
 
 using namespace dd4hep;
 
 static Ref_t create_tracker(Detector &lcdd, xml::Handle_t xml_handle,
                             SensitiveDetector sens_det) {
+    
 
   // Set the sensitive detector type
   sens_det.setType("tracker"); 
