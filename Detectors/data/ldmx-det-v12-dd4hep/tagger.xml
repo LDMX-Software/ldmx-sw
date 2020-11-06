@@ -35,11 +35,11 @@
 
     <module id="2">
       <position x="tagger_l2_x" y="0*mm" z="tagger_l2_env_mid_z" />
-      <layer id="1" 
+      <layer id="3" 
         type="Box" dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="0.*mm" y="0.*mm" z="tagger_layer_offset" />
       </layer>
-      <layer id="2" 
+      <layer id="4" 
         type="Box" dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="0.*mm" y="0.*mm" z="-tagger_layer_offset" />
         <rotation x="-stereo_angle" y="0" z="0" />
@@ -48,11 +48,11 @@
 
     <module id="3">
       <position x="tagger_l3_x" y="0*mm" z="tagger_l3_env_mid_z" />
-      <layer id="1" 
+      <layer id="5" 
         type="Box" dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="0.*mm" y="0.*mm" z="tagger_layer_offset" />
       </layer>
-      <layer id="2" 
+      <layer id="6" 
         type="Box" dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="0.*mm" y="0.*mm" z="-tagger_layer_offset" />
         <rotation x="stereo_angle" y="0" z="0" />
@@ -61,11 +61,11 @@
 
     <module id="4">
       <position x="tagger_l4_x" y="0*mm" z="tagger_l4_env_mid_z" />
-      <layer id="1" 
+      <layer id="7" 
         type="Box" dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="0.*mm" y="0.*mm" z="tagger_layer_offset" />
       </layer>
-      <layer id="2" 
+      <layer id="8" 
         type="Box" dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="0.*mm" y="0.*mm" z="-tagger_layer_offset" />
         <rotation x="-stereo_angle" y="0" z="0" />
@@ -74,11 +74,11 @@
 
     <module id="5">
       <position x="tagger_l5_x" y="0*mm" z="tagger_l5_env_mid_z" />
-      <layer id="1" 
+      <layer id="9" 
         type="Box" dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="0.*mm" y="0.*mm" z="tagger_layer_offset" />
       </layer>
-      <layer id="2" 
+      <layer id="10" 
         type="Box" dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="0.*mm" y="0.*mm" z="-tagger_layer_offset" />
         <rotation x="stereo_angle" y="0" z="0" />
@@ -87,11 +87,11 @@
 
     <module id="6">
       <position x="tagger_l6_x" y="0*mm" z="tagger_l6_env_mid_z" />
-      <layer id="1" 
+      <layer id="11" 
         type="Box" dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="0.*mm" y="0.*mm" z="tagger_layer_offset" />
       </layer>
-      <layer id="2" 
+      <layer id="12" 
         type="Box" dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="0.*mm" y="0.*mm" z="-tagger_layer_offset" />
         <rotation x="-stereo_angle" y="0" z="0" />
@@ -99,16 +99,16 @@
     </module>
     <module id="7">
       <position x="tagger_l7_x" y="0*mm" z="tagger_l7_env_mid_z" />
-      <layer id="1" 
+      <layer id="13" 
         type="Box" dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="0.*mm" y="0.*mm" z="tagger_layer_offset" />
       </layer>
-      <layer id="2" 
+      <layer id="14" 
         type="Box" dx="tracker_sensor_x/2" dy="tracker_sensor_y/2" dz="tracker_sensor_thickness/2" material="Silicon" >
         <position x="0.*mm" y="0.*mm" z="-tagger_layer_offset" />
         <rotation x="stereo_angle" y="0" z="0" />
       </layer>
-    </module>
+    </module> 
   </detector>
 
 </detectors>
