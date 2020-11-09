@@ -10,10 +10,8 @@
 #include "Biasing/TargetDarkBremFilter.h"
 
 #include "SimCore/G4APrime.h" //checking if particles match A'
-#include "SimCore/UserTrackInformation.h" //make sure A' is saved
 #include "SimCore/UserEventInformation.h" //set the weight for the event
 
-#include "G4LogicalVolumeStore.hh" //for the store
 #include "G4Electron.hh" //to check if track is electron
 
 namespace ldmx { 
@@ -29,17 +27,39 @@ namespace ldmx {
         // Get the track associated with this step.
         auto track{step->GetTrack()};
 
+        // Leave if track is not an electron
+        auto particle_def{track->GetParticleDefinition()};
+        if (particle_def != G4Electron::Electron()) {
+            if (particle_def == G4APrime::APrime()) {
+            /** check while stepping A' to see if it originated in correct volume
+             * this needs to be here (and not below) because sometimes the
+             * electron dark brems in the tagger and misses the target completely
+             */
+                /* debug message
+                 */
+                if (track->GetCurrentStepNumber() == 1 ) {
+                std::cout << "[ TargetDarkBremFilter ] : "
+                    << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
+                    << "A' originated in " << track->GetLogicalVolumeAtVertex()->GetName()
+                    << std::endl;
+                }
+            if (
+                track->GetParticleDefinition() == G4APrime::APrime() //track is A'
+                and track->GetCurrentStepNumber() == 1 //first step of the A' track
+                and not isInTarget(track->GetLogicalVolumeAtVertex()) //did not originate in target
+               ) { AbortEvent("A' was not created within target."); }
+            }
+            return; 
+        }
+
         // Leave if track is not primary
         if (track->GetParentID() != 0) return;
 
-        // Leave if track is not an electron
-        if (track->GetParticleDefinition() != G4Electron::Electron()) return; 
-
         // Leave if track is not in target region
-        if (not isInTargetRegion(track->GetVolume())) return;
+        if (not isInTarget(track->GetVolume())) return;   
 
         if (
-            not isInTargetRegion(track->GetNextVolume()) //leaving target region
+            not isInTarget(track->GetNextVolume()) //leaving target region
             or track->GetTrackStatus() == fStopAndKill //stopping within target region
             or track->GetKineticEnergy() == 0. //stopping within target region
            ) {
@@ -59,10 +79,19 @@ namespace ldmx {
                             return;
                         }
     
-                        if (not isInTargetRegion(secondary_track->GetVolume())) {
-                            AbortEvent("A' was not created within target region.");
+                        if (not isInTarget(secondary_track->GetVolume())) {
+                            AbortEvent("A' was not created within target.");
                             return;
                         }
+
+                        /* debug message
+                        std::cout << "[ TargetDarkBremFilter ] : "
+                            << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
+                            << "Found an A' weighted " << secondary_track->GetWeight()
+                            << " originating in " << secondary_track->GetVolume()->GetLogicalVolume()->GetName()
+                            << " with energy " << secondary_track->GetTotalEnergy() << " MeV."
+                            << std::endl;
+                         */
                        
                         auto event{G4EventManager::GetEventManager()}; 
                         if (event->GetUserInformation() == nullptr) { 
@@ -88,12 +117,12 @@ namespace ldmx {
     }
 
     void TargetDarkBremFilter::AbortEvent(const std::string& reason) const {
-        //if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
+        if ( G4RunManager::GetRunManager()->GetVerboseLevel() > 1 ) {
             std::cout << "[ TargetDarkBremFilter ]: "
                 << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
                 << reason << " Aborting event."
                 << std::endl;
-        //}
+        }
         G4RunManager::GetRunManager()->AbortEvent();
         return;
     }
