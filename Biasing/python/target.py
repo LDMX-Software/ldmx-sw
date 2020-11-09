@@ -178,8 +178,11 @@ def dark_brem( ap_mass , lhe, detector ) :
     sim.dark_brem.activate( ap_mass , db_model )
 
     # Biasing dark brem up inside of the target
+    #   need to bias up high mass A' by more than 2 so that they can actually happen
+    from math import log10 
+    mass_power = max(log10(sim.dark_brem.ap_mass),2.)
     sim.biasingOn()
-    sim.biasingConfigure( 'eDarkBrem' , 'target' , 0. , (sim.dark_brem.ap_mass/db_model.epsilon)**2 ,
+    sim.biasingConfigure( 'eDarkBrem' , 'target' , 0. , sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2 ,
             allPtl = False, incidentOnly = True )
 
     sim.actions.extend([
