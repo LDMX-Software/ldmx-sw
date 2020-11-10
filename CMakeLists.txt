@@ -43,12 +43,11 @@ setup_library(name Ecal
               dependencies ROOT::Physics 
                            Framework::Framework Event::Event Tools::Tools DetDescr::DetDescr 
                            ONNXRuntime::Interface
-              python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
-setup_test(dependencies DARK::Ecal)
+setup_test(dependencies Ecal::Ecal)
 
-setup_python(install_path ${PYTHON_INSTALL_PREFIX}/Ecal)
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/Ecal)
 
 setup_data()
 
