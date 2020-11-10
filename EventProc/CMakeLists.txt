@@ -10,5 +10,6 @@ project(EventProc VERSION 2.1.0
 
 setup_library(name EventProc
               dependencies Framework::Framework Event::Event Tools::Tools DetDescr::DetDescr Ecal::Ecal
-              python_install_path ${PYTHON_INSTALL_PREFIX}
 )
+
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/EventProc)
