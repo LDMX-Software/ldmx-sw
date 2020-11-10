@@ -14,7 +14,6 @@ find_package(ROOT CONFIG REQUIRED)
 setup_library(name DQM
               dependencies ROOT::Physics 
                            Framework::Framework Event::Event Tools::Tools DetDescr::DetDescr
-              python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
-setup_python(install_path ${PYTHON_INSTALL_PREFIX}/DQM)
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/DQM)
