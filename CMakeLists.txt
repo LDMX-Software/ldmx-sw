@@ -10,9 +10,8 @@ project(Conditions VERSION 2.1.0
 
 setup_library(name Conditions
               dependencies Framework::Framework DetDescr::DetDescr
-              python_install_path ${PYTHON_INSTALL_PREFIX}
 )
 
 setup_test(dependencies Conditions::Conditions)
 
-setup_python(install_path ${PYTHON_INSTALL_PREFIX}/Conditions)
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/Conditions)
