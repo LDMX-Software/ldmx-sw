@@ -95,7 +95,7 @@ endmacro()
 macro(setup_library)
 
   set(options interface register_target)
-  set(oneValueArgs module name python_install_path)
+  set(oneValueArgs module name)
   set(multiValueArgs dependencies sources)
   cmake_parse_arguments(setup_library "${options}" "${oneValueArgs}"
                         "${multiValueArgs}" ${ARGN})
