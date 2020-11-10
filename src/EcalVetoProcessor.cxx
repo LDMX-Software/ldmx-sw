@@ -3,6 +3,7 @@
 // LDMX
 #include "Event/EcalHit.h"
 #include "Event/EventConstants.h"
+#include "DetDescr/SimSpecialID.h"
 
 /*~~~~~~~~~~~*/
 /*   Tools   */
@@ -176,7 +177,9 @@ namespace ldmx {
             float pmax = 0;
             for ( SimTrackerHit &spHit : ecalSpHits ) {
 
-                if (spHit.getLayerID() != 31 || spHit.getMomentum()[2] <= 0) continue;
+                SimSpecialID spID(spHit.getID());
+                int layer_id = spID.plane();
+                if (layer_id != 31 || spHit.getMomentum()[2] <= 0) continue;
 
                 if (spHit.getTrackID() == recoilTrackID) {
                     if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {
@@ -193,6 +196,8 @@ namespace ldmx {
                 pmax = 0;
                 for ( SimTrackerHit &spHit : targetSpHits ) {
 
+                    SimSpecialID spID(spHit.getID());
+                    int layer_id = spID.plane();
                     if (spHit.getLayerID() != 1 || spHit.getMomentum()[2] <= 0) continue;
 
                     if (spHit.getTrackID() == recoilTrackID) {
@@ -443,7 +448,7 @@ namespace ldmx {
         TVector3 p_traj_end;
         if(ele_trajectory.size()==3 && photon_trajectory.size()==3) {
             /*make ele_trajectory and photon_trajectory into TVector3 pairs for later use*/
-            std::cout << "     Found electron and photon trajectory" << std::endl;
+            //std::cout << "     Found electron and photon trajectory" << std::endl;
             e_traj_start.SetXYZ(ele_trajectory[0].first,    ele_trajectory[0].second,    LAYER_Z_POSITIONS.front());
             e_traj_end.SetXYZ(  ele_trajectory[0].first,    ele_trajectory[0].second,    LAYER_Z_POSITIONS.back());
             p_traj_start.SetXYZ(photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.front());
@@ -459,10 +464,10 @@ namespace ldmx {
             epAng_ = acos(epDot) * 180.0 / M_PI;  //In degrees for legibility
             epSep_ = sqrt( pow(e_traj_start.X() - p_traj_start.X(), 2) + 
                            pow(e_traj_start.Y() - p_traj_start.Y(), 2) );
-            std::cout << "epAng=" << epAng_ << ", epSep=" << epSep_ << std::endl;
+            //std::cout << "epAng=" << epAng_ << ", epSep=" << epSep_ << std::endl;
         } else {
             /*All hits in the Ecal are fair game.  Pick e/ptraj so that they won't restrict anything.*/
-            std::cout << "Missing trajectory: len(etraj)=" << ele_trajectory.size() << ", " << photon_trajectory.size() << std::endl;
+            //std::cout << "Missing trajectory: len(etraj)=" << ele_trajectory.size() << ", " << photon_trajectory.size() << std::endl;
             e_traj_start = TVector3(999,999,0);
             e_traj_end = TVector3(999,999,999);
             p_traj_start = TVector3(1000,1000,0);
@@ -475,7 +480,8 @@ namespace ldmx {
         firstNearPhLayer_ = LAYER_Z_POSITIONS.size();
         //std::cout << "trackingHitList contains " << trackingHitList.size() << " hits." << std::endl;
 
-        if(photon_trajectory.size() != 0) {  /*if ptraj doesn't exist, leave phlayer at the default value*/
+        
+        if(photon_trajectory.size() != 0) {  //if ptraj doesn't exist, leave phlayer at the default value
             for(std::vector<HitData>::iterator it = trackingHitList.begin(); it != trackingHitList.end(); ++it) {
                 float ehDist = sqrt( pow((*it).pos.X() - photon_trajectory[(*it).layer].first,  2)
                                    + pow((*it).pos.Y() - photon_trajectory[(*it).layer].second, 2));
@@ -484,25 +490,28 @@ namespace ldmx {
                 }
             }
         }
-        std::cout << "Found firstNearPhLayer:  " << firstNearPhLayer_ << std::endl;
-        std::cout << "COMPLETED INITIAL ANALYSIS.  STARTING TRACKING..." << std::endl;
+        //std::cout << "Found firstNearPhLayer:  " << firstNearPhLayer_ << std::endl;
+        //std::cout << "COMPLETED INITIAL ANALYSIS.  STARTING TRACKING..." << std::endl;
+
 
         // Actual tracking begins here.
 
 
         // Straight track finding:
-        
-        /*First, sort list by decreasing layer number*/
+
+        //First, sort list by decreasing layer number
         std::sort(trackingHitList.begin(), trackingHitList.end(), [](HitData ha, HitData hb) {return ha.layer > hb.layer;});
 
+        
+
         // Info for current track:
-        int track[34];  /*list of hit numbers in track; 34=maximum theoretical length*/
+        int track[34];  //list of hit numbers in track; 34=maximum theoretical length
         int currenthit;
         int trackLen;
         float cellWidth = 8.7;
 
         for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
-            track[0] = iHit;  /*automatically start searching for a new track*/
+            track[0] = iHit;  //automatically start searching for a new track
             currenthit = iHit;
             trackLen = 1;
 
@@ -511,15 +520,15 @@ namespace ldmx {
                     trackingHitList[jHit].layer > trackingHitList[currenthit].layer + 3) {
                     continue;  //if hit is not in the next two layers, continue
                 }
-                /*if it is:  add to track if the (x,y) coordinates are identical to current hit.*/
+                //if it is:  add to track if the (x,y) coordinates are identical to current hit.
                 if (trackingHitList[jHit].pos.X() == trackingHitList[currenthit].pos.X() &&
                     trackingHitList[jHit].pos.Y() == trackingHitList[currenthit].pos.Y()) {
-                    /*add it to the track*/
+                    //add it to the track
                     track[trackLen] = jHit;
                     trackLen++;
                 }
             }
-            /*confirm valid track*/
+            //confirm valid track
             if (trackLen < 2) continue;
             float closest_e = distTwoLines(trackingHitList[track[0]].pos, trackingHitList[track[trackLen-1]].pos,
                                            e_traj_start, e_traj_end);
@@ -528,19 +537,20 @@ namespace ldmx {
             if (closest_p > cellWidth and closest_e < 2*cellWidth) continue;
             if (trackLen < 4 and closest_e > closest_p) continue;
 
-            /*if track found, increment nStraightTracks and remove hits from future consideration*/
+            //if track found, increment nStraightTracks and remove hits from future consideration
             if (trackLen >= 2) {
                 for (int kHit = 0; kHit < trackLen; kHit++) {
                     trackingHitList.erase(trackingHitList.begin() + track[kHit]);
                 }
-                /*The *current* hit will have been removed, so iHit is currently pointing to the next hit.*/
-                iHit--;  /*Decrement iHit so no hits will get skipped by iHit++*/
+                //The *current* hit will have been removed, so iHit is currently pointing to the next hit.
+                iHit--;  //Decrement iHit so no hits will get skipped by iHit++
                 nStraightTracks_++;
             }
-            /*Optional addition:  Merge nearby straight tracks.  Not necessary for veto.*/
+            //Optional addition:  Merge nearby straight tracks.  Not necessary for veto.
         }
+        
 
-        std::cout << "Found " << nStraightTracks_ << " straight tracks" << std::endl;
+        //std::cout << "Found " << nStraightTracks_ << " straight tracks" << std::endl;
 
         // OPTIONAL:  If a track is found, immediately skip the relatively slow linreg section.
         // Downside:  Can't do this if nLinregTracks is used in the BDT.
@@ -650,7 +660,7 @@ namespace ldmx {
         }
         */
 
-        std::cout << "(currently unused) Found " << nLinregTracks_ << " linreg tracks" << std::endl;
+        //std::cout << "(currently unused) Found " << nLinregTracks_ << " linreg tracks" << std::endl;
 
 
         //std::cout << "TRACKING COMPLETED." << std::endl;
