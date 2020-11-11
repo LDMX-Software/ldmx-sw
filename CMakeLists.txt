@@ -55,6 +55,9 @@ setup_library(name SimCore
                            "${registered_targets}"
               sources ${SRC_FILES})
 
+# Testing includes .py files as well as .cxx files in test directory
+setup_test(dependencies SimCore::SimCore)
+
 # Set some target properties
 set_target_properties(SimCore
                       PROPERTIES CXX_STANDARD 17
