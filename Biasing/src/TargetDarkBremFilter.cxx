@@ -30,25 +30,18 @@ namespace ldmx {
         // Leave if track is not an electron
         auto particle_def{track->GetParticleDefinition()};
         if (particle_def != G4Electron::Electron()) {
-            if (particle_def == G4APrime::APrime()) {
-            /** check while stepping A' to see if it originated in correct volume
-             * this needs to be here (and not below) because sometimes the
-             * electron dark brems in the tagger and misses the target completely
-             */
-                /* debug message
+            if (particle_def == G4APrime::APrime() and track->GetCurrentStepNumber()==1) {
+                /** check on first step of A' to see if it originated in correct volume
+                 * this needs to be here because sometimes the
+                 * electron dark brems in the tagger and misses the target completely
                  */
-                if (track->GetCurrentStepNumber() == 1 ) {
                 std::cout << "[ TargetDarkBremFilter ] : "
                     << "(" << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << ") "
                     << "A' originated in " << track->GetLogicalVolumeAtVertex()->GetName()
                     << std::endl;
-                }
-            if (
-                track->GetParticleDefinition() == G4APrime::APrime() //track is A'
-                and track->GetCurrentStepNumber() == 1 //first step of the A' track
-                and not isInTarget(track->GetLogicalVolumeAtVertex()) //did not originate in target
-               ) { AbortEvent("A' was not created within target."); }
-            }
+                if (not isInTargetRegion(track->GetLogicalVolumeAtVertex())) 
+                    AbortEvent("A' was not created within target."); 
+            } //first step of A'
             return; 
         }
 
@@ -56,10 +49,10 @@ namespace ldmx {
         if (track->GetParentID() != 0) return;
 
         // Leave if track is not in target region
-        if (not isInTarget(track->GetVolume())) return;   
+        if (not isInTargetRegion(track->GetVolume())) return;   
 
         if (
-            not isInTarget(track->GetNextVolume()) //leaving target region
+            not isInTargetRegion(track->GetNextVolume()) //leaving target region
             or track->GetTrackStatus() == fStopAndKill //stopping within target region
             or track->GetKineticEnergy() == 0. //stopping within target region
            ) {
@@ -79,7 +72,7 @@ namespace ldmx {
                             return;
                         }
     
-                        if (not isInTarget(secondary_track->GetVolume())) {
+                        if (not isInTargetRegion(secondary_track->GetVolume())) {
                             AbortEvent("A' was not created within target.");
                             return;
                         }

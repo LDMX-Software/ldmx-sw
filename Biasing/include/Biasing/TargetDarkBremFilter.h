@@ -87,27 +87,29 @@ namespace ldmx {
         private:
 
             /**
-             * Check if the volume is the target
+             * Check if the volume is the target region
              *
              * @note will return false if vol is nullptr
              *
              * @param[in] vol G4VPhysicalVolume to check region
-             * @returns true if vol is target
+             * @returns true if vol is in target region
              */
-            inline bool isInTarget(const G4VPhysicalVolume* vol) const {
-                return vol ? isInTarget(vol->GetLogicalVolume()) : false;
+            inline bool isInTargetRegion(const G4VPhysicalVolume* vol) const {
+                return vol ? isInTargetRegion(vol->GetLogicalVolume()) : false;
             }
 
             /**
-             * Check if the volume is in the target
+             * Check if the volume is in the target region
              *
              * @note will return false if vol is nullptr.
              *
              * @param[in] vol G4LogicalVolume to check region
-             * @returns true if vol is target
+             * @returns true if vol is in target region
              */
-            inline bool isInTarget(const G4LogicalVolume* vol) const {
-                return vol ? (vol->GetName().compareTo("target") == 0) : false;
+            inline bool isInTargetRegion(const G4LogicalVolume* vol) const {
+                if (!vol) return false;
+                auto region=vol->GetRegion();
+                return region ? (region->GetName().compareTo("target") == 0) : false;
             }
 
             /**
