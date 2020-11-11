@@ -43,6 +43,7 @@ def photo_nuclear( detector, generator ) :
 
     # Instantiate the simulator. 
     sim = simulator.simulator("photo-nuclear")
+    from LDMX.Ecal import EcalGeometry
     
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
