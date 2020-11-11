@@ -224,8 +224,11 @@ def dark_brem( ap_mass , lhe, detector ) :
     sim.dark_brem.activate( ap_mass , db_model )
 
     # Biasing dark brem up inside of the ecal volumes
+    from math import log10
+    # need a higher power for the higher mass A'
+    mass_power = max(log10(sim.dark_brem.ap_mass),2.)
     sim.biasingOn()
-    sim.biasingConfigure( 'eDarkBrem' , 'ecal' , 0. , (sim.dark_brem.ap_mass/db_model.epsilon)**2 , 
+    sim.biasingConfigure( 'eDarkBrem' , 'ecal' , 0. , sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2 , 
                 allPtl = True, incidentOnly = False)
     
     from LDMX.Biasing import util
