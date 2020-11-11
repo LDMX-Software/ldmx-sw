@@ -18,4 +18,4 @@ setup_library(name Tools
                            ONNXRuntime::Interface
 )
 
-setup_python(install_path ${PYTHON_INSTALL_PREFIX}/Tools)
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/Tools)
