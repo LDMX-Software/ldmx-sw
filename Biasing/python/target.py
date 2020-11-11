@@ -37,6 +37,7 @@ def electro_nuclear( detector, generator ) :
     
     # Instantiate the sim.
     sim = simulator.simulator("target_electronNuclear")
+    from LDMX.Ecal import EcalGeometry
     
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
@@ -94,6 +95,7 @@ def photo_nuclear( detector, generator ) :
 
     # Instantiate the sim.
     sim = simulator.simulator("target_photonNuclear")
+    from LDMX.Ecal import EcalGeometry
     
     # Set the path to the detector to use.
     #   Also tell the simulator to include scoring planes
@@ -159,6 +161,7 @@ def dark_brem( ap_mass , lhe, detector ) :
 
     """
     sim = simulator.simulator( "darkBrem_" + str(massAPrime) + "_MeV" )
+    from LDMX.Ecal import EcalGeometry
     
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in target"
     sim.setDetector( detector , True )

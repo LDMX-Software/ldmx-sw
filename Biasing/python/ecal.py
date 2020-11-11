@@ -43,6 +43,7 @@ def photo_nuclear( detector, generator ) :
 
     # Instantiate the simulator. 
     sim = simulator.simulator("photo-nuclear")
+    from LDMX.Ecal import EcalGeometry
     
     # Set the path to the detector to use.
     #   the second parameter says we want to include scoring planes
@@ -105,6 +106,7 @@ def dark_brem( ap_mass , lhe, detector ) :
     """
     
     sim = simulator.simulator( "darkBrem_%sMeV" % str(massAPrime) )
+    from LDMX.Ecal import EcalGeometry
     
     sim.description = "One e- fired far upstream with Dark Brem turned on and biased up in ECal"
     sim.setDetector( detector , True )
