@@ -15,5 +15,7 @@ setup_library(name DetDescr
                             Framework::Exception Framework::Configure 
 )
 
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/DetDescr)
+
 # Setup the test
 setup_test(dependencies DARK::DetDescr)
