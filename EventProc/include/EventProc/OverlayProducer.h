@@ -62,10 +62,16 @@ namespace ldmx {
 	Event overlayEvent_;
 
 	/**
-	 * List of simhit collection(s) to loop over and add hits from, combining sim and pileup
+	 * List of SimCalorimeterHit collection(s) to loop over and add hits from, combining sim and pileup
 	 */
-	std::vector <std::string> collections_;     
+	std::vector <std::string> caloCollections_;     
 
+	/**
+	 * List of SimTrackerHit collection(s) to loop over and add hits from, combining sim and pileup
+	 */
+	std::vector <std::string> trackerCollections_;     
+
+	
 	/**
 	 * Pileup overlay events input pass name
 	 */
