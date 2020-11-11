@@ -47,8 +47,7 @@ jobs:
       run: |
           cd ../ &&
           export LDMX_BASE=$(pwd) &&
-          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/install ./bin/run_test &&
-          for c in `ls ldmx-sw/*/test/*.py`; do if ! docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $(pwd) fire $c; then exit 1; fi; done
+          docker run -i -e LDMX_BASE -v $(pwd):$(pwd) $image $LDMX_BASE/ldmx-sw/install ./bin/run_test
 
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
