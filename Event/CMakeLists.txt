@@ -28,5 +28,4 @@ setup_library(name Event
                            "${registered_targets}"
               register_target)
 
-setup_python(install_path ${PYTHON_INSTALL_PREFIX}/Event)
-
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/Event)
