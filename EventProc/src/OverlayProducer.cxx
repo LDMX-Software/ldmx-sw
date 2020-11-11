@@ -23,7 +23,7 @@ namespace ldmx {
 
 	  // overlay specifics: 
       poissonMu_           = parameters.getParameter< double >("totalNumberOfInteractions");
-      doPoisson_           = parameters.getParameter< int >("doPoisson");
+      doPoisson_           = parameters.getParameter< bool >("doPoisson");
       timeSigma_           = parameters.getParameter< double >("timeSpread");
       timeMean_            = parameters.getParameter< double >("timeMean");
 	  nBunchesToSample_    = parameters.getParameter< int >("nBunchesToSample");
