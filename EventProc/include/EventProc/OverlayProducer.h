@@ -85,7 +85,7 @@ namespace ldmx {
 	/**
 	 * Let the total number of events be poisson distributed, or fix at the chosen value, poissonMu_
 	 */
-	int doPoisson_{0};
+	bool doPoisson_{false};
 
 	/**
 	 * (average) total number of events 

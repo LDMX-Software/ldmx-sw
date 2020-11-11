@@ -11,8 +11,10 @@ passName : string
     Pass name of the sim events 
 overlayPassName : string
     Pass name of the pileup events 
-overlayHitCollections : string
-    List of sim hit collections to pull from the sim and pileup events and combine
+overlayCaloHitCollections : string
+    List of SimCalorimeterHit collections to pull from the sim and pileup events and combine
+overlayTrackerHitCollections : string
+    List of SimTrackerHit collections to pull from the sim and pileup events and combine
 totalNumberOfInteractions : int 
     The total number of interactions combined (including the sim event)
 doPoisson : int
@@ -29,8 +31,7 @@ nBunchesToSample : int
     Furthermore, pileup will be uniformly distributed among this number of bunches m = -N, -N+1, ..., N 
     while the sim event is always in bunch m = 0. 
 bunchSpacing : float
-    The spacing in time between bunches [ns]                                                                                                                 #randomSeed : float
-#    Initial seed to use for all random number generators in this producer. 
+    The spacing in time between bunches [ns]
 verbosity : int
     Sets the producer specific level of verbosity, up to 3 for the most verbose step-by-step debug printouts.
 
@@ -57,10 +58,10 @@ class OverlayProducer(ldmxcfg.Producer) :
         self.overlayFileName = fileName 
         self.passName = "sim"
         self.overlayPassName = "sim"
-        self.overlayHitCollections=[ "TriggerPadUpSimHits", "EcalSimHits"]
-
+        self.overlayCaloHitCollections=[ "TriggerPadUpSimHits", "EcalSimHits"]
+        self.overlayTrackerHitCollections=[ "TaggerSimHits"]
         self.totalNumberOfInteractions = 2.
-        self.doPoisson = 0
+        self.doPoisson = False
         self.timeSpread = 0.        # [ns]
         self.timeMean = 0.          # [ns]
         self.nBunchesToSample = 0
