@@ -126,14 +126,13 @@ namespace ldmx {
     }
     return OP;
   }
-  
+
   // Function that returns an array of Caoacitor IDs each corresponding to
   // one time sample
   int* SimQIE::CapID(QIEInputPulse* pp, int N) {
-    int* OP = new int[N+1];	// N no. of output CapIDs
-    OP[0]=0;			// needs to be changed later
-    OP[1] = trg->Integer(4);
-    for(int i=1;i<N;i++) {
+    int* OP = new int[N];	// N no. of output CapIDs
+    OP[0] = trg->Integer(4);
+    for(int i=0;i<N;i++) {
       OP[i+1]=(OP[i]+1)%4;
     }
     return OP;
