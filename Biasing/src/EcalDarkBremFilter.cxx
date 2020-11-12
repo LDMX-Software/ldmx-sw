@@ -9,7 +9,7 @@
 
 #include "Biasing/EcalDarkBremFilter.h"
 
-#include "SimCore/G4APrime.h" //checking if particles match A'
+#include "SimCore/DarkBrem/G4APrime.h" //checking if particles match A'
 #include "SimCore/UserTrackInformation.h" //make sure A' is saved
 #include "SimCore/UserEventInformation.h" //set the weight for the event
 
@@ -60,7 +60,7 @@ namespace ldmx {
 
     G4ClassificationOfNewTrack EcalDarkBremFilter::ClassifyNewTrack(const G4Track* aTrack, const G4ClassificationOfNewTrack& cl) {
 
-        if ( aTrack->GetParticleDefinition() == G4APrime::APrime() ) {
+        if ( aTrack->GetParticleDefinition() == darkbrem::G4APrime::APrime() ) {
             //there is an A'! Yay!
             /* Debug message
             std::cout << "[ EcalDarkBremFilter ]: "
@@ -96,7 +96,7 @@ namespace ldmx {
             << std::endl;
         */
 
-        if ( track->GetParticleDefinition() == G4APrime::APrime() ) {
+        if ( track->GetParticleDefinition() == darkbrem::G4APrime::APrime() ) {
             //check if A' was made in the desired volume and has the minimum energy
             auto event{G4EventManager::GetEventManager()};
             if (not inDesiredVolume(track)) {
