@@ -9,7 +9,7 @@
 
 #include "Biasing/TargetDarkBremFilter.h"
 
-#include "SimCore/G4APrime.h" //checking if particles match A'
+#include "SimCore/DarkBrem/G4APrime.h" //checking if particles match A'
 #include "SimCore/UserTrackInformation.h" //make sure A' is saved
 #include "SimCore/UserEventInformation.h" //set the weight for the event
 
@@ -51,7 +51,7 @@ namespace ldmx {
             } else {
                 //check secondaries to see if we made a dark brem
                 for (auto& secondary_track : *secondaries) {
-                    if (secondary_track->GetParticleDefinition() == G4APrime::APrime()) {
+                    if (secondary_track->GetParticleDefinition() == darkbrem::G4APrime::APrime()) {
                         //we found an A', woo-hoo!
     
                         if (secondary_track->GetTotalEnergy() < threshold_) {
