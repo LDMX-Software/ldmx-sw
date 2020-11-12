@@ -39,6 +39,7 @@ setup_geant4_target()
 
 # Get a list of all of the source files.
 file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist/[a-zA-Z]*.cxx
+                                       ${PROJECT_SOURCE_DIR}/src/SimCore/DarkBrem/[a-zA-Z]*.cxx
                                        ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx)
 
 # Setup the library
@@ -58,8 +59,6 @@ set_target_properties(SimCore
                       CXX_STANDARD_REQUIRED YES
                       CXX_EXTENSIONS NO)
 
-setup_python(package_name ${PYTHON_PACKAGE_NAME}/SimCore)
-
 # Unpack the example dark brem vertex library (or libraries)
 file(GLOB vertex_libraries data/*.tar.gz)
 
@@ -76,13 +75,15 @@ if(NOT EXISTS ${DB_VERTEX_LIB_INSTALL})
     endforeach()
 endif()
 
+setup_python(package_name ${PYTHON_PACKAGE_NAME}/SimCore)
+
 # Add compiled tests
 configure_file(${PROJECT_SOURCE_DIR}/test/DarkBremProcessTest.cxx.in 
                ${CMAKE_CURRENT_BINARY_DIR}/test/DarkBremProcessTest.cxx)
 setup_test(dependencies SimCore::SimCore Geant4::Interface)
 
 # Configure the executable so it knows the installation path of the db vertex libraries
-configure_file(${PROJECT_SOURCE_DIR}/src/SimCore/print_dark_brem_xsec_table.cxx.in
+configure_file(${PROJECT_SOURCE_DIR}/src/SimCore/DarkBrem/print_dark_brem_xsec_table.cxx.in
                ${CMAKE_CURRENT_BINARY_DIR}/bin/print_dark_brem_xsec_table.cxx)
 add_executable(print-dark-brem-xsec-table 
                ${CMAKE_CURRENT_BINARY_DIR}/bin/print_dark_brem_xsec_table.cxx)

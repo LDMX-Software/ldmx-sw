@@ -6,7 +6,7 @@
 #include "AuxInfoReader.h"
 
 // Biasing
-#include "SimCore/DarkBremXsecBiasingOperator.h"
+#include "SimCore/DarkBrem/DarkBremXsecBiasingOperator.h"
 #include "SimCore/ElectroNuclearXsecBiasingOperator.h"
 #include "SimCore/GammaToMuPairXsecBiasingOperator.h"
 #include "SimCore/PhotoNuclearXsecBiasingOperator.h"

@@ -9,7 +9,7 @@
 //   LDMX   //
 //----------//
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/G4eDarkBremsstrahlung.h"
+#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 
 /**
  * @func printUsage
@@ -20,7 +20,6 @@ void printUsage();
 
 /**
  * The executable main for printing out the table.
- *
  */
 int main(int argc, char* argv[]) {
 
@@ -50,7 +49,7 @@ int main(int argc, char* argv[]) {
     process.addParameter( "only_one_per_event" , false );
     process.addParameter( "cache_xsec"         , true );
 
-    ldmx::G4eDarkBremsstrahlung db_process(process);
+    ldmx::darkbrem::G4eDarkBremsstrahlung db_process(process);
 
     table_file << db_process.getCache();
 

@@ -9,8 +9,8 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
-#include "SimCore/APrimePhysics.h"
-#include "SimCore/G4eDarkBremsstrahlung.h" //for process name
+#include "SimCore/DarkBrem/APrimePhysics.h"
+#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h" //for process name
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/GammaPhysics.h"
 #include "SimCore/ParallelWorld.h"
@@ -61,7 +61,7 @@ namespace ldmx {
         }
 
         pList->RegisterPhysics(new GammaPhysics);
-        pList->RegisterPhysics(new APrimePhysics( parameters_.getParameter<Parameters>("dark_brem") ));
+        pList->RegisterPhysics(new darkbrem::APrimePhysics( parameters_.getParameter<Parameters>("dark_brem") ));
        
         auto biasingEnabled{parameters_.getParameter< bool >("biasing_enabled")}; 
         if (biasingEnabled) {
@@ -149,8 +149,8 @@ namespace ldmx {
         // the process that isn't in the table will cause the table
         // to throw a "not found" warning.
         std::vector<G4String> dark_brem_processes = {
-                G4eDarkBremsstrahlung::PROCESS_NAME,
-                "biasWrapper("+G4eDarkBremsstrahlung::PROCESS_NAME+")"
+                darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME,
+                "biasWrapper("+darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME+")"
                 };
         ptable->SetVerboseLevel(0); //silent ptable while searching for process that may/may not exist
         for ( auto const& name : dark_brem_processes ) ptable->SetProcessActivation(name,true);    

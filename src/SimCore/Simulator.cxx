@@ -182,13 +182,13 @@ void Simulator::beforeNewRun(RunHeader& header) {
     for (int i_process = 0; i_process < n_electron_processes; i_process++) {
       G4VProcess* process = (*electron_processes)[i_process];
       if (process->GetProcessName().contains(
-              G4eDarkBremsstrahlung::PROCESS_NAME)) {
+              darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)) {
         // reset process to wrapped process if it is biased
         if (dynamic_cast<G4BiasingProcessInterface*>(process))
           process = dynamic_cast<G4BiasingProcessInterface*>(process)
                         ->GetWrappedProcess();
         // record the process configuration to the run header
-        dynamic_cast<G4eDarkBremsstrahlung*>(process)->RecordConfig(header);
+        dynamic_cast<darkbrem::G4eDarkBremsstrahlung*>(process)->RecordConfig(header);
         break;
       }  // this process is the dark brem process
     }    // loop through electron processes
