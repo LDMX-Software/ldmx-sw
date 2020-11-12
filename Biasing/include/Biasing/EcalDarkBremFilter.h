@@ -21,14 +21,9 @@
 #include "G4RunManager.hh"
 
 /*~~~~~~~~~~~~*/
-/*   Biasing  */
+/*   SimCore  */
 /*~~~~~~~~~~~~*/
-#include "Biasing/PartialEnergySorter.h"
-
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Parameters.h" 
+#include "SimCore/UserAction.h"
 
 namespace ldmx {
 
