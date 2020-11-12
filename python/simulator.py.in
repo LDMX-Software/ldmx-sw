@@ -67,14 +67,8 @@ class simulator(Producer):
         Minimum energy [MeV] for a particle to be biased (only used by some biasing operators)
     biasing_factor : int, optional
         Factor to bias process by
-    APrimeMass : float, optional
-        Mass of A' to simulation [MeV]
-    darkbrem_madgraphfilepath : str, optional
-        Full path to LHE file to use as dark brem vertices
-    darkbrem_method : int, optional
-        Integer flag to decide how to interpret dark brem vertices
-    darkbrem_globalxsecfactor : float, optional
-        Bias the dark brem process everywhere by this factor
+    dark_brem : DarkBrem
+        Configuration options for dark brem process
     logging_prefix : str, optional
         Prefix to prepend any Geant4 logging files
     rootPrimaryGenUseSeed : bool, optional
@@ -120,10 +114,8 @@ class simulator(Producer):
         self.biasing_factor = 1
 
         # Dark Brem stuff
-        self.APrimeMass = 0. #required if want to use dark brem [MeV]
-        self.darkbrem_madgraphfilepath = '' #required if want to use dark brem
-        self.darkbrem_method = 0
-        self.darkbrem_globalxsecfactor = 1.
+        from LDMX.SimCore import dark_brem
+        self.dark_brem = dark_brem.DarkBrem()
 
     def declareGeoProvide(self):
       """
@@ -193,7 +185,7 @@ class simulator(Producer):
         """
 
         processToParticle = {
-            'eDBrem'          : 'e-',
+            'eDarkBrem'       : 'e-',
             'photonNuclear'   : 'gamma',
             'electronNuclear' : 'e-'
             }
@@ -204,29 +196,5 @@ class simulator(Producer):
         self.biasing_all = allPtl
         self.biasing_incident = incidentOnly
         self.biasing_disableEMBiasing = disableEMBiasing
-        self.biasing_threshold = threshold
-        self.biasing_factor = factor
-
-    def darkBremOn(self,ap_mass,lhe_file_path,method=1,globalxsecfactor=1.) :
-        """Configure the dark brem simulation
-
-        This method implicitly activates the dark brem in the simulation because
-        a LHE file is passed. If this LHE file does not exist, an exception will
-        be thrown by the dark brem process.
-
-        Parameters
-        ----------
-        ap_mass : float
-            Mass of A' [MeV] to simulate (must match the mass in the LHE file)
-        lhe_file_path : str
-            Path to the LHE file containing dark brem vertices
-        method : int, optional
-            Tell the dark brem simulation how to interpret the vertices
-        globalxsecfactor : float, optional
-            Bias the dark brem process globally by the input factor
-        """
-
-        self.APrimeMass = ap_mass
-        self.darkbrem_madgraphfilepath = lhe_file_path
-        self.darkbrem_method = method
-        self.darkbrem_globalxsecfactor = globalxsecfactor
+        self.biasing_threshold = float(threshold) #just in case someone forgets trailing decimal point
+        self.biasing_factor = float(factor) #just in case someone forgets trailing decimal point

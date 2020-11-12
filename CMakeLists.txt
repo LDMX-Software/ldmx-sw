@@ -52,9 +52,6 @@ setup_library(module SimCore
                            "${registered_targets}"
               sources ${SRC_FILES})
 
-# Testing includes .py files as well as .cxx files in test directory
-setup_test(dependencies SimCore::SimCore)
-
 # Set some target properties
 set_target_properties(SimCore
                       PROPERTIES CXX_STANDARD 17
@@ -62,3 +59,41 @@ set_target_properties(SimCore
                       CXX_EXTENSIONS NO)
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/SimCore)
+
+# Unpack the example dark brem vertex library (or libraries)
+file(GLOB vertex_libraries data/*.tar.gz)
+
+# set installation location of dark brem vertex libraries
+#   also used when configuring the makePath.py module
+set(DB_VERTEX_LIB_INSTALL ${CMAKE_INSTALL_PREFIX}/data/db_vertex_libraries)
+if(NOT EXISTS ${DB_VERTEX_LIB_INSTALL})
+    #assume new build ==> unpack vertex libraries
+    message(STATUS "Unpacking example dark brem vertex libraries.")
+    file(MAKE_DIRECTORY ${DB_VERTEX_LIB_INSTALL})
+    foreach(library_path ${vertex_libraries})
+        execute_process(COMMAND 
+            tar -C ${DB_VERTEX_LIB_INSTALL} --skip-old-files -zxf ${library_path})
+    endforeach()
+endif()
+
+# Add compiled tests
+configure_file(${PROJECT_SOURCE_DIR}/test/DarkBremProcessTest.cxx.in 
+               ${CMAKE_CURRENT_BINARY_DIR}/test/DarkBremProcessTest.cxx)
+setup_test(dependencies SimCore::SimCore Geant4::Interface)
+
+# Configure the executable so it knows the installation path of the db vertex libraries
+configure_file(${PROJECT_SOURCE_DIR}/src/SimCore/print_dark_brem_xsec_table.cxx.in
+               ${CMAKE_CURRENT_BINARY_DIR}/bin/print_dark_brem_xsec_table.cxx)
+add_executable(print-dark-brem-xsec-table 
+               ${CMAKE_CURRENT_BINARY_DIR}/bin/print_dark_brem_xsec_table.cxx)
+
+# Link to the Framework library
+target_link_libraries(print-dark-brem-xsec-table 
+                      PRIVATE Geant4::Interface 
+                              SimCore::SimCore 
+                              Framework::Framework)
+
+# Install the fire executable
+install(TARGETS print-dark-brem-xsec-table 
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+

@@ -44,8 +44,17 @@ class G4APrime : public G4ParticleDefinition {
 
     public:
 
-        /** Accessor for APrime definition */
-        static G4APrime* APrime(G4double theMass = 10.0*MeV);
+        /** 
+         * Accessor for APrime definition 
+         *
+         * The first call to this function defines the mass
+         * and then later calls can call it without an argument
+         * because we will just return the single instance
+         * of the A' definition.
+         *
+         * @param[in] theMass mass of the A' in MeV
+         */
+        static G4APrime* APrime(G4double theMass = -1*MeV);
 };
 
 #endif //SIMCORE_G4APRIME_H_

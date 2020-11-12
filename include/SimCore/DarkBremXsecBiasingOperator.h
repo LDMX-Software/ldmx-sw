@@ -13,10 +13,7 @@
 //   LDMX   //
 //----------//
 #include "SimCore/XsecBiasingOperator.h"
-
-class G4Track;
-class G4BiasingProcessInterface;
-class G4VBiasingOperation;
+#include "SimCore/G4eDarkBremsstrahlung.h"
 
 namespace ldmx { 
 
@@ -29,44 +26,59 @@ namespace ldmx {
              *
              * Calls base class constructor.
              */
-            DarkBremXsecBiasingOperator(std::string name);
+            DarkBremXsecBiasingOperator(std::string name) : XsecBiasingOperator(name) { }
 
             /** 
              * Destructor 
              *
              * Blank right now
              */
-            ~DarkBremXsecBiasingOperator();
+            ~DarkBremXsecBiasingOperator() { /*nothing on purpose*/ }
 
             /** 
-             * Method called at the beginning of a run. 
+             * This the following protected member variables from XsecBiasingOperator:
+             *  - biasAll_ : If true, bias all particles connected to the dark brem process;
+             *      otherwise, only bias the primary particle (ParentID == 0)
+             *  - xsecFactor_ : Factor to multiply cross section by
+             *  - xsecOperator : Geant4 biasing operator to use
              *
-             * @sa XsecBiasingOperator::StartRun()
-             */
-            void StartRun();
-
-            /** 
+             * @param[in] track const pointer to track to Bias
+             * @param[in] callingProcess process that might be biased by this operator
              * @return Method that returns the biasing operation that will be used
              *         to bias the occurence of events.
              */
             G4VBiasingOperation* ProposeOccurenceBiasingOperation(const G4Track* track,
                     const G4BiasingProcessInterface* callingProcess);
 
-        
         protected:
 
-            virtual std::string getProcessToBias() { return DARKBREM_PROCESS; }
+            /** 
+             * DEBUG FUNCTION
+             * This function is called by the biasing interface class during PostStepDoIt.
+             * You can observe the particle change that was produced by the process
+             * and the weight that will be multiplied into this particle change.
+             *
+             * This is called inside G4VBiasingOperator::ReportOperationApplied
+             * which is called inside G4BiasingProcessInterface::PostStepDoIt
+            void OperationApplied(const G4BiasingProcessInterface* callingProcess,
+                    G4BiasingAppliedCase biasingCase,
+                    G4VBiasingOperation* operationApplied,
+                    G4double weight,
+                    G4VBiasingOperation* finalStateOpApplied,
+                    const G4VParticleChange* particleChangeProduced 
+                    ) {
+                std::string currentProcess = callingProcess->GetWrappedProcess()->GetProcessName(); 
+                if (currentProcess.compare(this->getProcessToBias()) == 0) { 
+                    std::cout << "DB Final State Biasing Operator Applied: " 
+                        << callingProcess->GetProcessName()
+                        << " -> " << weight*particleChangeProduced->GetWeight()
+                        << std::endl;
+                }
+            }
+             */
 
-        private: 
-
-            /** Geant4 photonuclear process name. */
-            static const std::string DARKBREM_PROCESS;
-
-            /** Unbiased darkbrem xsec. */
-            double dbXsecUnbiased_{0};
-
-            /** Biased darkbrem xsec. */
-            double dbXsecBiased_{0};  
+            /// Return the name of the process this operator biases
+            virtual std::string getProcessToBias() { return G4eDarkBremsstrahlung::PROCESS_NAME; }
 
     };  // DarkBremXsecBiasingOperator
 }

@@ -1,5 +1,7 @@
 #include "SimCore/DetectorConstruction.h"
 
+#include "SimCore/G4eDarkBremsstrahlung.h"
+
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
@@ -34,7 +36,7 @@ namespace ldmx {
             auto biasIncident{parameters_.getParameter< bool >("biasing_incident")}; 
             auto disableEMBiasing{parameters_.getParameter< bool >("biasing_disableEMBiasing")};
             auto biasThreshold{parameters_.getParameter< double >("biasing_threshold")}; 
-            auto biasFactor{parameters_.getParameter< int >("biasing_factor")}; 
+            auto biasFactor{parameters_.getParameter< double >("biasing_factor")}; 
 
             // Instantiate the biasing operator
             // TODO: At some point, this should be more generic i.e. operators should be
@@ -46,7 +48,7 @@ namespace ldmx {
                 xsecBiasing = new GammaToMuPairXsecBiasingOperator("GammaToMuPairXsecBiasingOperator");
             } else if (biasingProcess.compare("electronNuclear") == 0) { 
                 xsecBiasing = new ElectroNuclearXsecBiasingOperator("ElectroNuclearXsecBiasingOperator");
-            } else if (biasingProcess.compare("eDBrem") == 0) { 
+            } else if (biasingProcess.compare(G4eDarkBremsstrahlung::PROCESS_NAME) == 0) { 
                 xsecBiasing = new DarkBremXsecBiasingOperator("DarkBremXsecBiasingOperator");
             } else {
                 EXCEPTION_RAISE("BiasingException", "Invalid process name '" + biasingProcess + "'." ); 
@@ -66,15 +68,20 @@ namespace ldmx {
             for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
                 G4String volumeName = volume->GetName();
                 //std::cout << "[ DetectorConstruction ]: " << "Volume: " << volume->GetName() << std::endl;
-                if ((biasingVolume.compare("ecal") == 0) 
-                        && (volumeName.contains("Wthick") 
+                if (biasingVolume.compare("ecal") == 0) {
+                    if ((
+                               volumeName.contains("Wthick") 
                             || volumeName.contains("Si")
-                            || volumeName.contains("W")) 
-                        && volumeName.contains("volume")) {
-                    xsecBiasing->AttachTo(volume);
-                    std::cout << "[ DetectorConstruction ]: " << "Attaching biasing operator " 
-                              << xsecBiasing->GetName() << " to volume " 
-                              << volume->GetName() << std::endl;
+                            || volumeName.contains("W") 
+                            || volumeName.contains("PCB")
+                            || volumeName.contains("CFMix")
+                        ) && volumeName.contains("volume")
+                    ) {
+                        xsecBiasing->AttachTo(volume);
+                        std::cout << "[ DetectorConstruction ]: " << "Attaching biasing operator " 
+                                  << xsecBiasing->GetName() << " to volume " 
+                                  << volume->GetName() << std::endl;
+                    }
                 } else if (volumeName.contains(biasingVolume)) {
                     xsecBiasing->AttachTo(volume);
                     std::cout << "[ DetectorConstruction ]: " 

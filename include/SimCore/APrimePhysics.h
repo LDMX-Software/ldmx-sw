@@ -13,7 +13,6 @@
 
 // LDMX
 #include "Framework/Configure/Parameters.h"
-#include "SimCore/G4eDarkBremsstrahlung.h"
 
 namespace ldmx {
 
@@ -21,73 +20,74 @@ namespace ldmx {
      * @class APrimePhysics
      * @brief Defines basic APrime physics
      *
-     * It constructs the APrime particle and links the dark brem process
-     * to the electron.
+     * It constructs the APrime particle and links the dark brem process to the electron.
+     *
+     * @see G4APrime
+     * @see G4eDarkBremsstrahlung
      *
      * @note
-     * This class basically does not do anything except define
-     * a dummy particle so that event generation works properly.
+     * This class basically does not do anything except
+     * register the custom particle (G4APrime) and custom
+     * process (G4eDarkBremsstrahlung).
      */
     class APrimePhysics : public G4VPhysicsConstructor {
 
         public:
 
             /**
+             * The name of this physics constructor.
+             *
+             * Passed into Geant4 to register this physics,
+             * should not conflict with any other Geant4
+             * physics.
+             */
+            static const std::string NAME;
+
+            /**
              * Class constructor.
              *
-             * @param name The name of the physics.
+             * @param params Parameters to configure the dark brem process
              */
-            APrimePhysics(Parameters &params, const G4String& name = "APrime");
+            APrimePhysics(Parameters params);
 
             /**
              * Class destructor.
              *
              * Nothing right now.
              */
-            virtual ~APrimePhysics();
+            virtual ~APrimePhysics() { /* nothing on purpose */ }
 
             /**
-             * Construct particles.
+             * Construct particle.
              *
-             * Instatiates the APrime particle by calling the accessor method.
+             * Insert A' into the Geant4 particle table.
+             * Geant4 registers all instances derived from G4ParticleDefinition
+             * and deletes them at the end of processing.
+             *
+             * Uses the A' mass given by the parameter APrimeMass to 
+             * inform the G4APrime instance what mass to use.
+             *
+             * @see G4APrime
              */
             void ConstructParticle();
 
             /**
              * Construct the process.
              *
-             * Links the dark brem processs to the electron through the process manager.
+             * Links the dark brem processs to the electron through the process manager
+             * only if the dark brem process is enabled ('enable' is True).
+             *
+             * G4ProcessManager registers and cleans up any created processes,
+             * so we can forget about it after creating it.
+             *
+             * @see G4eDarkBremsstrahlung
              */
             void ConstructProcess();
 
         private:
 
-            /**
-             * Mass of A Prime
-             */
-            double aprimeMass_;
-
-            /**
-             * Path to LHE file containing MadGraph simulated Dark Brems
-             *
-             * Mass of A' in this file has to match passed A'
-             */
-            std::string madGraphFilePath_;
-
-            /**
-             * Set mode of interpretation for MadGraph events
-             */
-            G4eDarkBremsstrahlungModel::DarkBremMethod bremMethod_;
-
-            /**
-             * Global Xsec Biasing factor for Dark Brem process
-             */
-            double globalXsecFactor_{1};
-
-            /**
-             * Definition of the APrime particle.
-             */
-            G4ParticleDefinition* aprimeDef_;
+            /// dark brem process parameters
+            Parameters parameters_;
     };
 
 }

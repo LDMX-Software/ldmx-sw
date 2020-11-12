@@ -38,7 +38,10 @@ namespace ldmx {
         if (processIsBiased(this->getProcessToBias())) { 
             xsecOperation = new G4BOptnChangeCrossSection("changeXsec-" + this->getProcessToBias());
         } else { 
-            // Throw an exception
+            EXCEPTION_RAISE(
+                    "BiasSetup",
+                    this->getProcessToBias()+" is not found in list of biased processes!"
+                    );
         }
     }
 

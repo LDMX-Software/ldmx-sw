@@ -10,6 +10,7 @@
 //   ldmx-sw   //
 //-------------//
 #include "SimCore/APrimePhysics.h"
+#include "SimCore/G4eDarkBremsstrahlung.h" //for process name
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/GammaPhysics.h"
 #include "SimCore/ParallelWorld.h"
@@ -60,7 +61,7 @@ namespace ldmx {
         }
 
         pList->RegisterPhysics(new GammaPhysics);
-        pList->RegisterPhysics(new APrimePhysics( parameters_ ));
+        pList->RegisterPhysics(new APrimePhysics( parameters_.getParameter<Parameters>("dark_brem") ));
        
         auto biasingEnabled{parameters_.getParameter< bool >("biasing_enabled")}; 
         if (biasingEnabled) {
@@ -71,7 +72,9 @@ namespace ldmx {
             // Instantiate the constructor used when biasing
             G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
 
-            // Specify what particles are being biased
+            // Specify what particle is being biased
+            //  this then will put a biasing interface wrapper around *all* processes associated with this particle
+            //  TODO input which processes to bias to improve efficiency??
             biasingPhysics->Bias(biasedParticle);
 
             // Register the physics constructor to the physics list:
@@ -82,7 +85,7 @@ namespace ldmx {
     }
 
     void RunManager::Initialize() {
-        
+
         setupPhysics();
 
         // The parallel world needs to be registered before the mass world is
@@ -96,6 +99,9 @@ namespace ldmx {
             this->getDetectorConstruction()->RegisterParallelWorld(new ParallelWorld(pwParser, "ldmxParallelWorld", conditionsIntf_));
         }
 
+        //This is where the physics lists are told to construct their particles and their processes
+        //  They are constructed in order, so it is important to register the biasing physics
+        //  *after* any other processes that need to be able to be biased
         G4RunManager::Initialize();
 
         // Instantiate the primary generator action
@@ -133,16 +139,27 @@ namespace ldmx {
         //reset dark brem process (if needed)
         G4ProcessTable* ptable = G4ProcessTable::GetProcessTable();
         G4int verbosity = ptable->GetVerboseLevel();
+
+        //Only one of these processes should be in the table
+        //  (i.e. either the Dark Brem is biased or its not)
+        //BUT we want to be able to cover both options without
+        // the user having to configure it, so we set both
+        // of these processes to active (by passing 'true')
+        // while the table is silenced. If the table isn't silenced,
+        // the process that isn't in the table will cause the table
+        // to throw a "not found" warning.
+        std::vector<G4String> dark_brem_processes = {
+                G4eDarkBremsstrahlung::PROCESS_NAME,
+                "biasWrapper("+G4eDarkBremsstrahlung::PROCESS_NAME+")"
+                };
         ptable->SetVerboseLevel(0); //silent ptable while searching for process that may/may not exist
-        G4String pname = "biasWrapper(eDBrem)"; //TODO allow eDBrem to be biased or unbiased
-        bool active = true;
-        ptable->SetProcessActivation(pname,active);    
+        for ( auto const& name : dark_brem_processes ) ptable->SetProcessActivation(name,true);    
+        ptable->SetVerboseLevel(verbosity);
+
         if ( this->GetVerboseLevel() > 1 ) {
             std::cout << "[ RunManager ] : "
                 << "Reset the dark brem process (if it was activated)." << std::endl;
         }
-        ptable->SetVerboseLevel(verbosity);
-
     }
 
     DetectorConstruction* RunManager::getDetectorConstruction() {
