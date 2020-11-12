@@ -103,6 +103,15 @@ namespace ldmx {
     /// Total number of photoelectrons per MIP
     double pePerMip_{13.5};
 
+    /// QIE Input pulse shape
+    std::string input_pulse_shape_;
+
+    /// QIE Input pulse parameters
+    std::vector<float> pulse_params;
+
+    /// no. of time samples analysed by QIE
+    int maxts_;
+    
     SimQIE* smq{nullptr};
 
   };
