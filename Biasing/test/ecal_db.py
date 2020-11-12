@@ -2,6 +2,7 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('ecal_db')
 from LDMX.Biasing import ecal
 from LDMX.SimCore import makePath
+from LDMX.Ecal import EcalGeometry
 p.sequence = [
     ecal.dark_brem( 
         10., #MeV - mass of A'
@@ -9,7 +10,5 @@ p.sequence = [
         'ldmx-det-v12' , #name of geometry to use
         )
     ]
-p.maxEvents = 1000
-p.termLogLevel = 0
-p.logFrequency = 10
+p.maxEvents = 100
 p.outputFiles = [ '/tmp/ecal_db.root' ]
