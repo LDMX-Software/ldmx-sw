@@ -7,8 +7,8 @@
 //----------//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Logger.h"
-#include "SimCore/G4eDarkBremsstrahlung.h"
-#include "SimCore/G4APrime.h"
+#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
+#include "SimCore/DarkBrem/G4APrime.h"
 
 namespace ldmx { 
 namespace test { 
@@ -24,7 +24,7 @@ namespace SimCore {
  * @param[in] element atomic mass [amu]
  * @param[in] element atomic number
  */
-void xsec_calculation( ldmx::ElementXsecCache& the_cache, std::map<double,double> energy_to_xsec, double A, double Z ) {
+void xsec_calculation( ldmx::darkbrem::ElementXsecCache& the_cache, std::map<double,double> energy_to_xsec, double A, double Z ) {
     for ( auto const& [ energy , xsec ] : energy_to_xsec ) {
         G4double actual_xsec;
         REQUIRE_NOTHROW( actual_xsec = the_cache.get( energy*MeV , A , Z ) );
@@ -44,7 +44,7 @@ void xsec_calculation( ldmx::ElementXsecCache& the_cache, std::map<double,double
  * @param[in] process dark brem process to generate secondaries
  * @param[in] incident_momentum 3-momentum of incident electron to generate secondaries
  */
-void secondary_generation(ldmx::G4eDarkBremsstrahlung& process, const G4ThreeVector& incident_momentum) {
+void secondary_generation(ldmx::darkbrem::G4eDarkBremsstrahlung& process, const G4ThreeVector& incident_momentum) {
 
     //maximum momentum allowed to be leftover in units of MeV
     static const double max_leftover_momentum{1e-6};
@@ -102,7 +102,7 @@ TEST_CASE( "Custom Geant4 Dark Brem Process" , "[SimCore][signal][functionality]
     ldmx::logging::open( ldmx::logging::level::fatal , ldmx::logging::level::fatal , "" );
 
     double ap_mass = 10.; //MeV - A' mass to use for functionality testing
-    G4APrime* ap = G4APrime::APrime(ap_mass);
+    auto ap = ldmx::darkbrem::G4APrime::APrime(ap_mass);
 
     ldmx::Parameters process;
     process.addParameter( "ap_mass"            , ap_mass );
@@ -121,13 +121,13 @@ TEST_CASE( "Custom Geant4 Dark Brem Process" , "[SimCore][signal][functionality]
 
         process.addParameter( "model" , model );
 
-        ldmx::G4eDarkBremsstrahlung db_process(process);
+        ldmx::darkbrem::G4eDarkBremsstrahlung db_process(process);
     
         SECTION( "Xsec Calculation" ) {
 
             //for this model, we calculated common cross sections in the constructor
             //  and cached them for later use, so we just get the cache here
-            ldmx::ElementXsecCache& the_cache = db_process.getCache();
+            ldmx::darkbrem::ElementXsecCache& the_cache = db_process.getCache();
 
             /**
              * map of correct cross sections
