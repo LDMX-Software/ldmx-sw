@@ -168,17 +168,31 @@ void Simulator::beforeNewRun(RunHeader& header) {
     header.setIntParameter(   "Biasing All"      , parameters_.getParameter<bool>(       "biasing_all" ));
     header.setIntParameter(   "Biasing Incident" , parameters_.getParameter<bool>(       "biasing_incident" ));
     header.setIntParameter(   "Biasing Disable EM",parameters_.getParameter<bool>(       "biasing_disableEMBiasing" ));
-    header.setIntParameter(   "Biasing Factor"   , parameters_.getParameter<int>(        "biasing_factor" ));
+    header.setFloatParameter( "Biasing Factor"   , parameters_.getParameter<double>(     "biasing_factor" ));
     header.setFloatParameter( "Biasing Threshold", parameters_.getParameter<double>(     "biasing_threshold" ));
   }
 
-  auto apMass{parameters_.getParameter<double>("APrimeMass")};
-  if ( apMass > 0 ) {
-    header.setFloatParameter(  "A' Mass [MeV]" , apMass );
-    header.setFloatParameter(  "Dark Brem Global Bias" , parameters_.getParameter<double>("darkbrem_globalxsecfactor") );
-    header.setStringParameter( "Dark Brem Vertex Library Path" , parameters_.getParameter<std::string>("darkbrem_madgraphfilepath") );
-    header.setIntParameter(    "Dark Brem Interpretation Method" , parameters_.getParameter<int>("darkbrem_method") );
-  }
+  auto dark_brem{parameters_.getParameter<Parameters>("dark_brem")};
+  if (dark_brem.getParameter<bool>("enable")) {
+    // the dark brem process is enabled, find it and then record its
+    // configuration
+    G4ProcessVector* electron_processes =
+        G4Electron::Electron()->GetProcessManager()->GetProcessList();
+    int n_electron_processes = electron_processes->size();
+    for (int i_process = 0; i_process < n_electron_processes; i_process++) {
+      G4VProcess* process = (*electron_processes)[i_process];
+      if (process->GetProcessName().contains(
+              G4eDarkBremsstrahlung::PROCESS_NAME)) {
+        // reset process to wrapped process if it is biased
+        if (dynamic_cast<G4BiasingProcessInterface*>(process))
+          process = dynamic_cast<G4BiasingProcessInterface*>(process)
+                        ->GetWrappedProcess();
+        // record the process configuration to the run header
+        dynamic_cast<G4eDarkBremsstrahlung*>(process)->RecordConfig(header);
+        break;
+      }  // this process is the dark brem process
+    }    // loop through electron processes
+  }      // dark brem has been enabled
 
   auto generators{parameters_.getParameter<std::vector<Parameters>>("generators")};
   int counter = 0;

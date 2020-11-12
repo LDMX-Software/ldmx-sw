@@ -44,6 +44,7 @@ namespace ldmx {
         // Set the vertex volume
         vertexVolume_ = trackInfo->getVertexVolume(); 
         vertexRegion_ = aTrack->GetLogicalVolumeAtVertex()->GetRegion()->GetName();
+        genStatus_    = trackInfo->getGeneration();
 
         // Set initial momentum from track information.
         const G4ThreeVector& p = trackInfo->getInitialMomentum();

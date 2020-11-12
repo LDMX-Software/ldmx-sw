@@ -33,12 +33,14 @@ namespace ldmx {
                   << "Currently in volume " << track->GetVolume()->GetName()  
                   << std::endl;*/
 
-        if (track->GetParentID() != 0) return 0;
+        if (track->GetParentID() != 0 or track->GetKineticEnergy() < threshold_) return 0;
 
         // Only bias the first step taken within the volume.
+        /*
         const G4Step* step = track->GetStep(); 
         G4StepPoint* preStepPoint = step->GetPreStepPoint();
         if (preStepPoint->GetStepStatus() != fGeomBoundary) return 0; 
+        */
 
         /*std::cout << "[ ElectroNuclearXsecBiasingOperator ]: " 
                   << "Calling process: " 

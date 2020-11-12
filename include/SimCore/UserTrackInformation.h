@@ -8,6 +8,9 @@ namespace ldmx {
 
     /**
      * Provides user defined information to associate with a Geant4 track.
+     *
+     * This allows us to have knowledge of special track-level
+     * details that may not be persisted after the simulation.
      */
     class UserTrackInformation : public G4VUserTrackInformation {
 
@@ -93,12 +96,39 @@ namespace ldmx {
                 initialMomentum_.set(p.x(), p.y(), p.z()); 
             }
 
+            /**
+             * Set the name of the volume that the track was generated in
+             *
+             * @param[in] vertexVolume name of volume
+             */
             void setVertexVolume(const std::string vertexVolume) {
                 vertexVolume_ = vertexVolume; 
             }
 
+            /**
+             * Get the vertex volume
+             * @returns name of volume track was generated in
+             */
             std::string getVertexVolume() const { return vertexVolume_; }
-        
+
+            /**
+             * Set the generation of this track
+             *
+             * Primary = 1, child of primary = 2, etc
+             *
+             * @note Only updated if DarkBremFilter is used.
+             *
+             * @param[in] gen generation of this track
+             */
+            void setGeneration(const int gen) { generation_ = gen; }
+
+            /**
+             * Get the generation
+             * @note Only updated if DarkBremFilter is used.
+             * @returns integer generation of this track
+             */
+            int getGeneration() const { return generation_; } 
+
         private:
 
             /// Flag for saving the track as a Trajectory.
@@ -118,6 +148,9 @@ namespace ldmx {
 
             /// The initial momentum of the track.
             G4ThreeVector initialMomentum_;
+
+            /// The generation of this track
+            int generation_{0};
     };
 }
 

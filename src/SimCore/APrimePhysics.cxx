@@ -9,6 +9,7 @@
 
 // LDMX
 #include "SimCore/G4APrime.h"
+#include "SimCore/G4eDarkBremsstrahlung.h"
 
 // Geant4
 #include "G4Electron.hh"
@@ -16,24 +17,10 @@
 
 namespace ldmx {
 
-    APrimePhysics::APrimePhysics(Parameters &params, const G4String& name) :
-            G4VPhysicsConstructor(name), aprimeDef_(nullptr) { 
+    const std::string APrimePhysics::NAME = "APrime";
 
-        aprimeMass_       = params.getParameter<double     >( "APrimeMass"                );
-        int bremMethodInt = params.getParameter<int        >( "darkbrem_method"           );
-        madGraphFilePath_ = params.getParameter<std::string>( "darkbrem_madgraphfilepath" );
-        globalXsecFactor_ = params.getParameter<double     >( "darkbrem_globalxsecfactor" );
-
-        //prevent negative or shrinking xsec factors
-        if ( globalXsecFactor_ < 1 ) globalXsecFactor_ = 1.;
-
-        //convert int to enum
-        bremMethod_ = G4eDarkBremsstrahlungModel::DarkBremMethod( bremMethodInt );
-
-    }
-
-    APrimePhysics::~APrimePhysics() {
-    }
+    APrimePhysics::APrimePhysics(Parameters params) 
+        : G4VPhysicsConstructor(APrimePhysics::NAME), parameters_(params) { }
 
     void APrimePhysics::ConstructParticle() { 
         /**
@@ -43,26 +30,30 @@ namespace ldmx {
          * Geant4 registers all instances derived from G4ParticleDefinition and 
          * deletes them at the end of the run.
          */
-        aprimeDef_ = G4APrime::APrime(aprimeMass_);
+        G4APrime::APrime(parameters_.getParameter<double>("ap_mass")*MeV);
     }
 
     void APrimePhysics::ConstructProcess() {
-
         //add process to electron if LHE file has been provided
-        if ( not madGraphFilePath_.empty() ) {
-            G4eDarkBremsstrahlung *theDarkBremProcess = new G4eDarkBremsstrahlung;
-            theDarkBremProcess->SetCrossSectionBiasingFactor(globalXsecFactor_);
-            theDarkBremProcess->SetMethod(bremMethod_);
-            theDarkBremProcess->SetMadGraphDataFile(madGraphFilePath_);
-    
-        	G4Electron::ElectronDefinition()->GetProcessManager()->AddProcess(
-                    theDarkBremProcess /*process to add - G4ProcessManager cleans up processes*/
-                    , G4ProcessVectorOrdering::ordInActive /*activation when particle at rest*/
-                    , 1 /*activation along step*/
-                    , 1 /*activation at end of step*/
+        if ( parameters_.getParameter<bool>("enable") ) {
+            /*
+             * In G4 speak, a "discrete" process is one that only happens at the end of steps.
+             * we want the DB to be discrete because it is not a "slow braking" like ionization, 
+             * the electron suddenly has the interaction and loses a lot of its energy.
+             *
+             * The first argument to this function is the process we are adding.
+             *      The process manager handles cleaning up the processes, 
+             *      so we just give it a new pointer.
+             * The second argument is the "ordering" index.
+             *      This index determines when the process is called w.r.t. the other processes
+             *      that could be called at the end of the step. Not providing the second argument
+             *      means that the ordering index is given a default value of 1000 which
+             *      seems to be safely above all the internal/default processes.
+             */
+        	G4Electron::ElectronDefinition()->GetProcessManager()->AddDiscreteProcess(
+                    new G4eDarkBremsstrahlung(parameters_)
                     );
         }
-
     }
 
 }

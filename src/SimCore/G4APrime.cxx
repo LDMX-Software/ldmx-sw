@@ -6,6 +6,8 @@
 
 #include "SimCore/G4APrime.h"
 
+#include "Framework/Exception/Exception.h"
+
 #include "globals.hh"
 #include "G4ParticleTable.hh"
 #include "G4PhysicalConstants.hh"
@@ -35,7 +37,11 @@ G4APrime::G4APrime(
                            lepton, baryon, encoding, stable, lifetime, decaytable ) { /* Nothing on purpose */ }
 
 G4APrime* G4APrime::APrime(G4double theMass) {
+
     if(!theAPrime) {
+
+        if ( theMass < 0 )
+            EXCEPTION_RAISE("APMass","APrime doesn't have a mass set!");
      
         const G4String&     name = "A^1";
         G4double            mass = theMass;
