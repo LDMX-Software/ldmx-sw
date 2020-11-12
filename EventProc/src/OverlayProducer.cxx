@@ -276,6 +276,7 @@ namespace ldmx {
 		  else
 			caloCollectionMap[caloCollections_[iColl]+"Overlay"].push_back(mapHit.second);
 		}
+        break; // for now we only have one hitMap: for Ecal. so no need looking further after we got a match
 	  }// isEcal
 	}//second loop over collections, to collect hits from hitmap
 
