@@ -14,7 +14,6 @@ namespace ldmx {
     void UserTrackInformation::Print() const { 
         std::cout << "Saving track: " << saveFlag_ << "\n"
                   << "Is brem candidate: " << isBremCandidate_ << "\n"
-                  << "Generation: " << generation_ << "\n"
                   << std::flush;
     }
 }
