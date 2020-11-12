@@ -67,6 +67,10 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         self.input_collection="TriggerPadUpSimHits"
         self.input_pass_name="" #take any pass
         self.output_collection="trigScintQIEDigisUp"
+        self.input_pulse_shape="Expo" # Name of the input pulse class
+        self.expo_k=0.1
+        self.expo_tmax=5.0
+        self.maxts=5
         import time
         self.randomSeed = int(time.time())
         self.verbose = False
