@@ -14,54 +14,49 @@
 // Forward declarations
 class G4Step;
 
-namespace ldmx { 
+namespace ldmx {
 
-    /**
-     * User stepping action used to filter events where the primary
-     * particle falls below a threshold before reaching the CalorimeterRegion
-     *
-     * This is a simplistic filter designed similar to the TaggerVetoFilter.
-     */
-    class PrimaryToEcalFilter : public UserAction { 
-    
-        public: 
-            
-            /**
-             * Constructor.
-             *
-             * @param[in] name the name of the instance of this UserAction.
-             * @param[in] parameters the parameters used to configure this 
-             *      UserAction.
-             */
-            PrimaryToEcalFilter(const std::string& name, Parameters& parameters); 
+/**
+ * User stepping action used to filter events where the primary
+ * particle falls below a threshold before reaching the CalorimeterRegion
+ *
+ * This is a simplistic filter designed similar to the TaggerVetoFilter.
+ */
+class PrimaryToEcalFilter : public UserAction {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param[in] name the name of the instance of this UserAction.
+   * @param[in] parameters the parameters used to configure this
+   *      UserAction.
+   */
+  PrimaryToEcalFilter(const std::string& name, Parameters& parameters);
 
-            /// Destructor
-            ~PrimaryToEcalFilter();
+  /// Destructor
+  ~PrimaryToEcalFilter() {}
 
-            /**
-             * Only process if the track is a primary (parentID == 0) and
-             * if the event is not aborted and the particle is not
-             * in the CalorimeterRegion.
-             *
-             * If the energy of the particle is below the input threshold,
-             * then the event is aborted.
-             *
-             * @param[in] step Geant4 step
-             */
-            void stepping(const G4Step* step) final override;  
+  /**
+   * Only process if the track is a primary (parentID == 0) and
+   * if the event is not aborted and the particle is not
+   * in the CalorimeterRegion.
+   *
+   * If the energy of the particle is below the input threshold,
+   * then the event is aborted.
+   *
+   * @param[in] step Geant4 step
+   */
+  void stepping(const G4Step* step) final override;
 
-            /// Retrieve the type of actions this class defines
-            std::vector< TYPE > getTypes() final override { 
-                return { TYPE::STEPPING }; 
-            } 
-            
-        private: 
+  /// Retrieve the type of actions this class defines
+  std::vector<TYPE> getTypes() final override { return {TYPE::STEPPING}; }
 
-            /// Energy [MeV] below which a primary should be vetoed.
-            double threshold_; 
+ private:
+  /// Energy [MeV] below which a primary should be vetoed.
+  double threshold_;
 
-    };  // PrimaryToEcalFilter
+};  // PrimaryToEcalFilter
 
-} // ldmx
+}  // namespace ldmx
 
-#endif // BIASING_TAGGERVETOFILTER_H 
+#endif  // BIASING_TAGGERVETOFILTER_H
