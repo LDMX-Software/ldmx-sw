@@ -11,11 +11,6 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Parameters.h" 
-
 namespace ldmx {
 
     /**

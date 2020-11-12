@@ -21,15 +21,10 @@
 #include "G4RunManager.hh"
 #include "G4VPhysicalVolume.hh"
 
-/*~~~~~~~~~~~~*/
-/*   Biasing  */
-/*~~~~~~~~~~~~*/
-#include "Biasing/PartialEnergySorter.h"
-
-/*~~~~~~~~~~~~~~~*/
-/*   Framework   */
-/*~~~~~~~~~~~~~~~*/
-#include "Framework/Configure/Parameters.h" 
+//------------//
+//    LDMX    //
+//------------//
+#include "SimCore/UserAction.h"
 
 namespace ldmx {
 
