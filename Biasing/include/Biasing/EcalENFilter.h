@@ -6,57 +6,53 @@
 /*~~~~~~~~~~~~~*/
 #include "SimCore/UserAction.h"
 
-// Forward Declarations 
-class G4Step; 
-class G4Event; 
+// Forward Declarations
+class G4Step;
+class G4Event;
 
 namespace ldmx {
 
-    /**
-     * Action to look for EN products of at least a minimum total energy
-     * within the ECal.
-     *
-     * Designed very similar to EcalBremFilter, but focused on summing
-     * the EN products energy and not looking for a single product
-     * of a certain energy.
-     */
-    class EcalENFilter : public UserAction {
+/**
+ * Action to look for EN products of at least a minimum total energy
+ * within the ECal.
+ *
+ * Designed very similar to EcalBremFilter, but focused on summing
+ * the EN products energy and not looking for a single product
+ * of a certain energy.
+ */
+class EcalENFilter : public UserAction {
+ public:
+  /**
+   * Class constructor.
+   */
+  EcalENFilter(const std::string& name, Parameters& parameters);
 
-        public:
+  /// Destructor
+  ~EcalENFilter() {}
 
-            /**
-             * Class constructor.
-             */
-            EcalENFilter(const std::string& name, Parameters& parameters);
+  /**
+   * Will only process if event is not aborted and track is primary
+   * (TrackID==1).
+   *
+   * If we step below the energy threshold or if we are stepping outside
+   * of the calorimeter region, we get the secondaries. We loop through
+   * the secondaries and add up all the products that a produced via
+   * 'electronNuclear' process. If that energy is below the energy
+   * threshold, we abort the event.
+   *
+   * @param step The Geant4 step.
+   */
+  void stepping(const G4Step* step) final override;
 
-            /// Destructor
-            ~EcalENFilter();
+  /// Retrieve the type of actions this class defines
+  std::vector<TYPE> getTypes() final override { return {TYPE::STEPPING}; }
 
-            /**
-             * Will only process if event is not aborted and track is primary (TrackID==1).
-             *
-             * If we step below the energy threshold or if we are stepping outside
-             * of the calorimeter region, we get the secondaries. We loop through
-             * the secondaries and add up all the products that a produced via
-             * 'electronNuclear' process. If that energy is below the energy
-             * threshold, we abort the event.
-             *
-             * @param step The Geant4 step.
-             */
-            void stepping(const G4Step* step) final override;
+ private:
+  /// Minimum energy [MeV] that all electro-nuclear products must have
+  double min_total_en_energy_;
 
-            /// Retrieve the type of actions this class defines
-            std::vector< TYPE > getTypes() final override { 
-                return { TYPE::STEPPING }; 
-            } 
+};  // EcalENFilter
 
-        private:
+}  // namespace ldmx
 
-            /// Minimum energy [MeV] that all electro-nuclear products must have
-            double min_total_en_energy_;
-
-    }; // EcalENFilter
-
-} // ldmx
-
-#endif // BIASING_TARGETPROCESSFILTER_H
+#endif  // BIASING_TARGETPROCESSFILTER_H
