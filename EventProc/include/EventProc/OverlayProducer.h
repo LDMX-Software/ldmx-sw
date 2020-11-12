@@ -36,11 +36,34 @@ namespace ldmx {
 
 	//	~OverlayProducer();
 	//destructor causes linking problems 
-	
+
+	/**
+	 * Configure the processor with input parameters from the python cofig
+	 */
 	virtual void configure(Parameters& parameters) final override;
 
+	/**
+	 * Based on the list of collections to overlay, and the desired number of events, 
+	 * loop through all relevant collections and copy the sim event (once), and then add 
+	 * the corresponding collection from the pileup overlay file.
+	 * The event loop is the outer loop, and the inner loop is over the list of collections.
+	 *
+	 * The collections have to be specified separately as a list of SimCalorimeterHit collections
+	 * and a list of SimTrackerHit collections. 
+	 *
+	 * The collection name is parsed for "Ecal" to be flagged as a collection which needs overlay hits 
+	 * to be added as contribs. This is currently hardwired. 
+	 *
+	 * The resulting collections inherit the input collection name, with an appended string "Overlay". 
+	 * This name is also currently hardwired. 
+	 */
 	virtual void produce(Event& event) final override;
 
+	/**
+	 * At the start of processing, the pileup overlay file is set up, and the starting event number 
+	 * is chosen. Currently, this uses a fixed offset but it can (will) be randomized once we can reset the 
+	 * pileup event counter using nextEvent().
+	 */
 	virtual void onProcessStart(); 
 
   private:
@@ -121,8 +144,8 @@ namespace ldmx {
 	double bunchSpacing_{0.};
 
 	/**
-	 * Number of bunches before and after the sim event to pull pileup events from 
-	 * (0 --> all events occur in the same bunch as the sim event).
+	 * Number of bunches before and after the sim event to pull pileup events from.
+	 * Defaults to 0 --> all events occur in the same bunch as the sim event.
 	 */
 	int nBunchesToSample_{0};    
 
@@ -132,7 +155,7 @@ namespace ldmx {
 	int verbosity_;
 
 	/**
-	 * For Ecal, overlay hits need to be added as contribs.
+	 * For Ecal, overlay hits should be added as contribs.
 	 * But these are required to be unique, by the Ecal rconstruction code.
 	 * So assign a nonsensical trackID, incidentID, and PDG ID to the contribs from overlay.
 	 * These are hardwired right here.
