@@ -129,8 +129,6 @@ namespace ldmx {
       double meanPE       = depEnergy / mevPerMip_ * pePerMip_;
       cellPEs[id]   = random_->Poisson(meanPE + meanNoise_);
 
-
-
       // If a cell has a PE count above threshold, persit the hit.
       if( cellPEs[id] >= 1 ){
 
