@@ -119,7 +119,7 @@ namespace ldmx {
   }
 
   float Expo::Max(){
-    return nc*(1-exp(-k*tmax))/tmax;
+    return nc*(1-exp(-k*tmax));
   }
 
   float Expo::Integrate(float T1, float T2){
