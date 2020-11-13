@@ -110,10 +110,10 @@ namespace ldmx {
     if (t_<=t0) return 0;
     float T = t_-t0;
     if (T<tmax) {
-      return(nc*(1-exp(-k*T))/tmax);
+      return(nc*(1-exp(-k*T)));
     }
     else {
-      return(nc*(1-exp(-k*tmax))*exp(k*(tmax-T))/tmax);
+      return(nc*(1-exp(-k*tmax))*exp(k*(tmax-T)));
     }
     return -1;
   }
