@@ -151,7 +151,7 @@ class EcalFakeSimHits : public Producer {
                         , -1 // trackID
                         , 0 // pdg ID
                         , currEnergy_ // edep
-                        , 1. //time
+                        , 0. //time
                         );
 
             //needs to be correct collection name
