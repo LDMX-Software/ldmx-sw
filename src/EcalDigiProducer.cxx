@@ -159,7 +159,7 @@ namespace ldmx {
 
                 //noise generator gives the amplitude above the readout threshold
                 //  we need to convert it to the amplitdue above the pedestal
-                voltages[0] = noiseHit + readoutThreshold_ - gain_*pedestal_;
+                voltages[0] = noiseHit + gain*readoutThreshold - gain*pedestal;
     
                 std::vector<HgcrocDigiCollection::Sample> digiToAdd;
                 if ( hgcroc_->digitize( noiseID , voltages , times , digiToAdd ) ) {
