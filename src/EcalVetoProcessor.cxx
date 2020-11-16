@@ -91,6 +91,7 @@ namespace ldmx {
 
         // Set the collection name as defined in the configuration
         collectionName_ = parameters.getParameter< std::string >("collection_name");
+        rec_pass_name_  = parameters.getParameter< std::string >("rec_pass_name");
     }
 
     void EcalVetoProcessor::clearProcessor(){
@@ -203,7 +204,7 @@ namespace ldmx {
 
 
         // Get the collection of digitized Ecal hits from the event.
-        const std::vector< EcalHit > ecalRecHits = event.getCollection< EcalHit >( "EcalRecHits" );
+        const std::vector< EcalHit > ecalRecHits = event.getCollection< EcalHit >( "EcalRecHits" , rec_pass_name_ );
 
         EcalID globalCentroid = GetShowerCentroidIDAndRMS( ecalRecHits , showerRMS_);
         /* ~~ Fill the hit map ~~ O(n)  */
