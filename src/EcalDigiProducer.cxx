@@ -53,7 +53,7 @@ namespace ldmx {
         readoutThreshold_ = hgcrocParams.getParameter<double>("readoutThreshold");
         noiseGenerator_->setNoise(hgcrocParams.getParameter<double>("noiseRMS")); //rms noise in mV
         noiseGenerator_->setPedestal(gain_*pedestal_); //mean noise amplitude (if using Gaussian Model for the noise) in mV
-        noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in mV
+        noiseGenerator_->setNoiseThreshold(gain_*readoutThreshold_); //threshold for readout in mV
     }
 
     void EcalDigiProducer::produce(Event& event) {
