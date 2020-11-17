@@ -133,7 +133,10 @@ namespace ldmx {
       if( cellPEs[id] >= 1 ){
 
 	// Expo* ex = new Expo(0.1,5,30,cellPEs[id]);
-	Expo* ex = new Expo(pulse_params[0],pulse_params[1],30,cellPEs[id]);
+	// Expo* ex = new Expo(pulse_params[0],pulse_params[1],30,cellPEs[id]);
+        Expo* ex = new Expo(pulse_params[0],pulse_params[1]);
+        ex->AddPulse(30,cellPEs[id]);
+
 	TrigScintQIEDigis QIEInfo(maxts_);
 	QIEInfo.chanID = id.bar();
 
@@ -170,7 +173,9 @@ namespace ldmx {
       TrigScintID noiseID=tempID;
 
       // Expo* ex = new Expo(0.1,5,30,noiseHitPE); 
-      Expo* ex = new Expo(pulse_params[0],pulse_params[1],30,noiseHitPE);
+      // Expo* ex = new Expo(pulse_params[0],pulse_params[1],30,noiseHitPE);
+      Expo* ex = new Expo(pulse_params[0],pulse_params[1]);
+      ex->AddPulse(30,noiseHitPE);
       TrigScintQIEDigis QIEInfo(maxts_);
 
       QIEInfo.chanID = noiseID.bar();
