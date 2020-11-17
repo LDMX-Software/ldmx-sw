@@ -204,7 +204,7 @@ void Simulator::beforeNewRun(RunHeader& header) {
 
     if ( className.find("ldmx::ParticleGun") != std::string::npos ) {
       header.setFloatParameter( genID + " Time [ns]" , gen.getParameter<double>("time") );
-      header.setFloatParameter( genID + " Energy [MeV]" , gen.getParameter<double>("energy") );
+      header.setFloatParameter( genID + " Energy [GeV]" , gen.getParameter<double>("energy") );
       header.setStringParameter( genID + " Particle" , gen.getParameter<std::string>("particle") );
       threeVectorDump( genID + " Position [mm]" , gen.getParameter<std::vector<double>>("position") );
       threeVectorDump( genID + " Direction" , gen.getParameter<std::vector<double>>("direction") );
