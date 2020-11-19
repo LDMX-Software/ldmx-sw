@@ -26,8 +26,9 @@ namespace ldmx {
     outputCollection_ = parameters.getParameter< std::string >("output_collection");
     verbose_          = parameters.getParameter< bool >("verbose");
 
-    maxts_ = parameters.getParameter< int >("maxts");
-    input_pulse_shape_ = parameters.getParameter< std::string >("input_pulse_shape");
+    toff_overall_     	= parameters.getParameter< double >("toff_overall");
+    maxts_ 	      	= parameters.getParameter< int >("maxts");
+    input_pulse_shape_ 	= parameters.getParameter< std::string >("input_pulse_shape");
     if ( input_pulse_shape_ == "Expo") {
       pulse_params.clear();
       pulse_params.push_back(parameters.getParameter< double >("expo_k"));
@@ -96,7 +97,7 @@ namespace ldmx {
 
       if (verbose_) {
 	std::cout << id << std::endl;
-      }        
+      }
 
       unsigned int detIDRaw = id.raw();
 
@@ -135,7 +136,7 @@ namespace ldmx {
 	// Expo* ex = new Expo(0.1,5,30,cellPEs[id]);
 	// Expo* ex = new Expo(pulse_params[0],pulse_params[1],30,cellPEs[id]);
         Expo* ex = new Expo(pulse_params[0],pulse_params[1]);
-        ex->AddPulse(30,cellPEs[id]);
+        ex->AddPulse(toff_overall_,cellPEs[id]);
 
 	TrigScintQIEDigis QIEInfo(maxts_);
 	QIEInfo.chanID = id.bar();
@@ -175,7 +176,7 @@ namespace ldmx {
       // Expo* ex = new Expo(0.1,5,30,noiseHitPE); 
       // Expo* ex = new Expo(pulse_params[0],pulse_params[1],30,noiseHitPE);
       Expo* ex = new Expo(pulse_params[0],pulse_params[1]);
-      ex->AddPulse(30,noiseHitPE);
+      ex->AddPulse(toff_overall_,noiseHitPE);
       TrigScintQIEDigis QIEInfo(maxts_);
 
       QIEInfo.chanID = noiseID.bar();
