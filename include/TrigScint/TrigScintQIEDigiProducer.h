@@ -109,6 +109,9 @@ namespace ldmx {
     /// QIE Input pulse parameters
     std::vector<float> pulse_params;
 
+    /// Overall input pulse time offset
+    float toff_overall_;
+
     /// no. of time samples analysed by QIE
     int maxts_;
     
