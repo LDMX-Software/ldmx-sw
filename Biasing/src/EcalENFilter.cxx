@@ -78,7 +78,7 @@ void EcalENFilter::stepping(const G4Step* step) {
         enEnergy += secondary_track->GetKineticEnergy();
       }  // check for hard recoil
 
-      std::cout << std::endl;
+      //std::cout << std::endl;
     }  // loop over secondaries
 
     if (enEnergy < min_total_en_energy_) {
