@@ -16,6 +16,7 @@ namespace ldmx {
  * Action to look for EN products of at least a minimum total energy
  * within the ECal.
  *
+ * @see EcalBremFilter
  * Designed very similar to EcalBremFilter, but focused on summing
  * the EN products energy and not looking for a single product
  * of a certain energy.
@@ -55,4 +56,4 @@ class EcalENFilter : public UserAction {
 
 }  // namespace ldmx
 
-#endif  // BIASING_TARGETPROCESSFILTER_H
+#endif  // BIASING_ECALENFILTER_H

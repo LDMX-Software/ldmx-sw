@@ -7,8 +7,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef BIASING_ECALDARKBREMFILTER_H_
-#define BIASING_ECALDARKBREMFILTER_H_
+#ifndef BIASING_TARGETDARKBREMFILTER_H_
+#define BIASING_TARGETDARKBREMFILTER_H_
 
 //----------------//
 //   C++ StdLib   //
@@ -126,4 +126,4 @@ class TargetDarkBremFilter : public UserAction {
 };  // TargetDarkBremFilter
 }  // namespace ldmx
 
-#endif  // BIASING_ECALDARKBREMFILTER_H__
+#endif  // BIASING_TARGETDARKBREMFILTER_H__
