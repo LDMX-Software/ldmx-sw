@@ -30,11 +30,12 @@ namespace ldmx {
 /**
  * @class EcalDarkBremFilter
  *
- * This class is meant to filter for events that produce a dark brem matching
- * the input parameters:
+ * This class is meant to filter for events that produce a dark brem
+ * occuring within the ECal and producing an A' of a minimum energy
+ * threshold [MeV].
  *
- *      threshold: minimum energy [MeV] A' needs to have, should also be
- * threshold for PartialEnergySorter
+ * @note The threshold that the A' needs to have should be equal to
+ * or greater than the threshold of the PartialEnergySorter.
  *
  * @see PartialEnergySorter
  * Here we assume that the partial energy sorter is being run in sequence with

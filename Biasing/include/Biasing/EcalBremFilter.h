@@ -18,7 +18,7 @@ namespace ldmx {
  * a hard brem within the ecal.
  *
  * This action is designed similarly to TargetBremFilter, but since
- * the ecal is so much thicker, it is slightly less efficient.
+ * the ecal is so much thicker, it is expected to be less efficient.
  */
 class EcalBremFilter : public UserAction {
  public:
@@ -29,8 +29,8 @@ class EcalBremFilter : public UserAction {
   ~EcalBremFilter() {}
 
   /**
-   * Only continues processing if the step is for the primary track (trackID ==
-   * 1) and the event hasn't been aborted yet.
+   * Only continues processing if the step is for the primary track 
+   * (trackID == 1) and the event hasn't been aborted yet.
    *
    * Checks if this step either stepped from inside CalorimeterRegion to outside
    * or if primary particle stepped from above the brem energy threshold to
@@ -58,4 +58,4 @@ class EcalBremFilter : public UserAction {
 };  // EcalBremFilter
 }  // namespace ldmx
 
-#endif  // BIASING_TARGETBREMFILTER_H
+#endif  // BIASING_ECALBREMFILTER_H

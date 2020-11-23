@@ -26,6 +26,11 @@ namespace ldmx {
  * This UserAction can run on its own or combined with
  * other actions doing the filtering.
  *
+ * @note The threshold in this sorter is for _kinetic_ energy.
+ * It was implemented in this way to avoid processing slower-moving
+ * but heavier particles, but you should keep this in mind when setting
+ * the threshold.
+ *
  * ## Necessities for Filters Run in Sequence
  * - *If* your derived class re-defines ClassifyNewTrack, you should avoid
  *   changing the classification and return the current track classification.
@@ -131,7 +136,7 @@ class PartialEnergySorter : public UserAction {
   }
 
  private:
-  /// Minimum Energy [MeV] we want to simulate first
+  /// Minimum Kinetic Energy [MeV] we want to simulate first
   double threshold_;
 
   /// Number of particles above the threshold
@@ -141,4 +146,4 @@ class PartialEnergySorter : public UserAction {
 
 }  // namespace ldmx
 
-#endif  // BIASING_TAGGERVETOFILTER_H
+#endif  // BIASING_PARTIALENERGYSORTER_H
