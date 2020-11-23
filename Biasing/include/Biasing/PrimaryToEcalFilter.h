@@ -59,4 +59,4 @@ class PrimaryToEcalFilter : public UserAction {
 
 }  // namespace ldmx
 
-#endif  // BIASING_TAGGERVETOFILTER_H
+#endif  // BIASING_PRIMARYTOECALFILTER_H
