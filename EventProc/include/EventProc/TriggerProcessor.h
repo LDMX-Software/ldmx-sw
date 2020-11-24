@@ -2,6 +2,7 @@
  * @file TriggerProcessor.h
  * @brief Class that provides a trigger decision for recon using a TriggerResult object
  * @author Josh Hiltbrand, University of Minnesota
+ * @author Lene Kristian Bryngemark, Stanford University
  */
 
 #ifndef EVENTPROC_TRIGGERPROCESSOR_H_
@@ -63,23 +64,25 @@ namespace ldmx {
         private:
 
             /** The energy sum to make cut on. */
-            float layerESumCut_{0};
+	  std::vector< double > layerESumCuts_;
+
+            /** The beam energy. */
+             double beamEnergy_{0.};
 
             /** The trigger mode to run in. Mode zero sums over
              * all cells in layer, while in mode 1 only cells in
              * center module are summed over. (TODO)
              */
-            int mode_{0};
+             int mode_{0};
 
             /** The first layer of layer sum. */
             int startLayer_{0};
 
-            /** The last layer of layer sum. */
+            /** The endpoint layer of layer sum: not inclusive -- i.e. this is the first layer not included in the sum. */
             int endLayer_{0};
-
+	  
             /** The name of the trigger algorithm used. */
             TString algoName_;
-
 
             /** The name of the input collection (the Ecal hits). */
             std::string inputColl_;
