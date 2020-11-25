@@ -5,7 +5,7 @@ name: Docker Image
 #   Also generate a production image whenever there is a push to the master branch.
 on:
   push:
-    branches: '**'
+    branches: master #'**'
     tags: 'v*.*.*'
 
 jobs:
@@ -34,51 +34,37 @@ jobs:
       name: Determine Image Tags
       id: generate_tag
       run: |
-        _repo=""
+        _repo="ldmx/pro"
         _tag=""
         if [[ $GITHUB_REF == refs/tags/* ]]; then
           # if pushing a git tag ==> get the git tag for the docker tag
-          _repo=ldmx/pro
           _tag=${GITHUB_REF#refs/tags/}
         elif [[ $GITHUB_REF == refs/heads/* ]]; then
           # pushing to a branch ==> docker tag is branch name
           #   if branch name is default_branch
-          #     docker tag is ldmx/pro:edge
-          #   else
-          #     docker tag is $(cat pro_image_repo)/latest
-          _branch=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
+          #     docker tag is edge
+          _tag=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
           if [ "${{ github.event.repository.default_branch }}" = "$_tag" ]; then
             _tag=edge
-            _repo=ldmx/pro
-          else
-            _tag=latest
-            _repo=$(cat .github/workflows/custom_pro_image_repo 2> /dev/null)
-            if [[ -z $_repo ]]; then
-              _repo=UNDEFINED #does not have slash indicating real repo
-            elif [[ "$_repo" == "ldmx/pro" ]]; then
-              echo "For the non-main branch, you should create your own custom production image repository."
-              exit 1
-            fi
           fi
         fi
-        _main_tag="${_repo}:${_tag}"
-        _push_tags="${_main_tag}"
-        if [[ $_tag =~ ^v[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-          # latest docker tag is latest version built matching the format v<1-3 digis>.<1-3 digis>
+        _push_tags="${_repo}:${_tag}"
+        if [[ $_tag =~ ^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+          # latest docker tag is latest release version built matching the format 
+          #   v<1-3 digits>.<1-3 digits>.<1-3 digits>
           _push_tags="$_push_tags,${_repo}:latest"
-        elif [ "${{ github.event_name }}" = "push" ]; then
-          # on push actions, tag with sha of GITHUB as well
+        fi
+        if [ "${{ github.event.repository.default_branch }}" = "${GITHUB_REF#refs/heads/}" ]; then
+          # on pushes to default branch, tag with sha of GITHUB as well
           _push_tags="$_push_tags,${_repo}:sha-${GITHUB_SHA::8}"
         fi
         echo "Generated Tags: ${_push_tags}"
         echo ::set-output name=push_tags::${_push_tags}
-        echo ::set-output name=main_tag::${_main_tag}
     -
       name: Build the Image
-      if: contains( steps.generate_tag.outputs.main_tag , '/' )
       id: docker_build
       uses: docker/build-push-action@v2
       with:
         tags: ${{ steps.generate_tag.outputs.push_tags }}
-        push: contains( steps.generate_tag.outputs.main_tag , '/' )
+        push: true
 
