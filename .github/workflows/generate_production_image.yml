@@ -5,7 +5,7 @@ name: Docker Image
 #   Also generate a production image whenever there is a push to the master branch.
 on:
   push:
-    branches: [ master ]
+    branches: '**'
     tags: 'v*.*.*'
 
 jobs:
@@ -34,21 +34,26 @@ jobs:
       name: Determine Image Tags
       id: generate_tag
       run: |
-        _repo=ldmx/pro
-        _tag=noop
+        _repo=""
+        _tag=""
         if [[ $GITHUB_REF == refs/tags/* ]]; then
           # if pushing a git tag ==> get the git tag for the docker tag
+          _repo=ldmx/pro
           _tag=${GITHUB_REF#refs/tags/}
         elif [[ $GITHUB_REF == refs/heads/* ]]; then
           # pushing to a branch ==> docker tag is branch name
-          #   if branch name is default_branch, docker tag is 'edge'
-          _tag=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
+          #   if branch name is default_branch
+          #     docker tag is ldmx/pro:edge
+          #   else
+          #     docker tag is $(cat pro_image_repo)/latest
+          _branch=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
           if [ "${{ github.event.repository.default_branch }}" = "$_tag" ]; then
             _tag=edge
+            _repo=ldmx/pro
+          else
+            _tag=latest
+            _repo=$(cat .github/workflows/custom_pro_image_repo 2> /dev/null)
           fi
-        elif [[ $GITHUB_REF == refs/pull/* ]]; then
-          # pull request branch ==> docker tag is pr number
-          _tag=pr-${{ github.event.number }}
         fi
         _main_tag="${_repo}:${_tag}"
         _push_tags="${_main_tag}"
@@ -68,6 +73,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         tags: ${{ steps.generate_tag.outputs.push_tags }}
+        push: contains( steps.generate_tag.outputs.main_tag , '/' )
 
         
 
