@@ -68,9 +68,9 @@ def photo_nuclear( detector ) :
             # Make sure all particles above 1500MeV are processed first
             util.PartialEnergySorter(1500.),
             # Make sure a total of 1700MeV energy went PN in ECal
-            filters.MidShowerBkgdFilter.pn(1700.),
+            filters.MidShowerBkgdFilter.photo_nuclear(1700.)
             # Tag all photo-nuclear tracks to persist them to the event.
-            filters.TrackProcessFilter.photo_nuclear()
+            #filters.TrackProcessFilter.photo_nuclear()
     ]
 
     return sim
@@ -118,9 +118,9 @@ def electro_nuclear(detector) :
             # Make sure all particles above 1500MeV are processed first
             util.PartialEnergySorter(1500.),
             # Abort events if EN interactions don't produce a total of 1700MeV
-            filters.MidShowerBkgdFilter.en(1700.),
+            filters.MidShowerBkgdFilter.electro_nuclear(1700.)
             # Keep all of the EN secondaries
-            filters.TrackProcessFilter.electro_nuclear()
+            #filters.TrackProcessFilter.electro_nuclear()
     ]
     
     return sim
