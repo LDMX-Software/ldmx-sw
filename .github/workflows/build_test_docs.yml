@@ -1,19 +1,17 @@
 
 name: Tests
 
-# we are going to run this action whenever we push to master or make a PR onto master
 on:
   push:
-    branches: [ master ]
-  pull_request:
+    branches: '**' #all branches
+    tags: 'v*.*.*' #all version tags
+  pull_request: #all pull requests
 
 jobs:
-  # this action only has one job
   build-test:
-    # run the commands on ubuntu with bash shell
     runs-on: ubuntu-latest
     env:
-      image: ldmx/dev:v1.0
+      image: ldmx/dev:latest #define image to rbuild ldmx-sw and run tests on
     defaults:
       run:
         shell: bash
@@ -31,7 +29,6 @@ jobs:
     - name: Configure the build
       run: |
           mkdir build &&
-          docker run -i -v $(pwd):$(pwd) $image $(pwd)/build cmake --version &&
           docker run -i -v $(pwd):$(pwd) $image $(pwd)/build cmake -DBUILD_TESTS=ON ..
 
     # build ldmx-sw using the docker environment
@@ -51,6 +48,9 @@ jobs:
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
     #   the docs are only updated if the build passes
+    # They need to be in the same job as the build becuase
+    #   the sphinx-apidoc command needs the python package
+    #   structured like a normal python package. 
 
     # Runs doxygen doxygen.conf in the docs/ directory
     - name: Run Doxygen to build C++ Docs
@@ -80,8 +80,9 @@ jobs:
     #   This copies all the html files in the docs/html directory to the github.io repository
     #   using the ldmx organization token for access and saving the changes with the
     #   commit message of the commit that activated this action
+    # Only deply the docs when the default branch is pushed to
     - name: Deploy the Docs
-      if: ${{ github.event_name == 'push' }} #only deploy when the master actually changes
+      if: ${{ github.event_name == 'push' && ${GITHUB_REF##*/} == github.event.repository.default_branch }} 
       uses: peaceiris/actions-gh-pages@v3
       with:
         personal_token: ${{ secrets.LDMX_ORG_TOKEN }} #requires setup to connect ldmx-sw and ldmx-sw.github.io
@@ -91,4 +92,68 @@ jobs:
         publish_dir: ./docs/html
         enable_jekyll: true #allow github pages to process using jekyll
         keep_files: true #keep old files (by default, clears publish_dir before deploying to it)
+
+  generate-image:
+    if: ${{ github.event_name == 'push' }} #only generate production image if pushing a commit
+    needs: build-test #will only generate production image if build-test finishes successfully
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+    -
+      name: Setup QEMU
+      uses: docker/setup-qemu-action@v1
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    -
+      name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - 
+      name: Get Build Context
+      uses: actions/checkout@v2
+    -
+      name: Determine Image Tags
+      id: generate_tag
+      run: |
+        _repo="ldmx/pro"
+        _tag=""
+        if [[ $GITHUB_REF == refs/tags/* ]]; then
+          # if pushing a git tag ==> get the git tag for the docker tag
+          _tag=${GITHUB_REF#refs/tags/}
+        elif [[ $GITHUB_REF == refs/heads/* ]]; then
+          # pushing to a branch ==> docker tag is branch name
+          #   if branch name is default_branch of repository
+          #     docker tag is edge
+          _tag=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
+          if [ "${{ github.event.repository.default_branch }}" = "$_tag" ]; then
+            _tag=edge
+          fi
+        else
+          echo "Running Determine Image Tags on a commit that isn't a tag or a branch."
+          exit 1
+        fi
+        _push_tags="${_repo}:${_tag}"
+        if [[ $_tag =~ ^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+          # latest docker tag is latest release version built matching the format 
+          #   v<1-3 digits>.<1-3 digits>.<1-3 digits>
+          _push_tags="$_push_tags,${_repo}:latest"
+        fi
+        if [ "${{ github.event.repository.default_branch }}" = "${GITHUB_REF#refs/heads/}" ]; then
+          # on pushes to default branch, tag with sha of GITHUB as well
+          _push_tags="$_push_tags,${_repo}:sha-${GITHUB_SHA::8}"
+        fi
+        echo "Generated Tags: ${_push_tags}"
+        echo ::set-output name=push_tags::${_push_tags}
+    -
+      name: Build the Image
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        tags: ${{ steps.generate_tag.outputs.push_tags }}
+        push: true
 
