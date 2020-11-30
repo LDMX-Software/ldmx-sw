@@ -35,13 +35,6 @@ namespace ldmx {
     G4VBiasingOperation* PhotoNuclearXsecBiasingOperator::ProposeOccurenceBiasingOperation(
             const G4Track* track, const G4BiasingProcessInterface* callingProcess) {
     
-        /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: "
-                  << "Parent ID: " << track->GetParentID() 
-                  << " Created within " << track->GetLogicalVolumeAtVertex()->GetName() 
-                  << std::endl;*/
-
-        if (track->GetParentID() != 1) return 0; 
-
         /*std::cout << "[ PhotoNuclearXsecBiasingOperator ]: " 
                   << "Kinetic energy: " << track->GetKineticEnergy() 
                   << " MeV" << std::endl;*/
