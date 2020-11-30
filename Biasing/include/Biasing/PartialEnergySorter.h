@@ -85,10 +85,11 @@ class PartialEnergySorter : public UserAction {
 
   /**
    * Checks if a particle steps from above the threshold to below it.
-   * If the particle does step below the threshold it is suspended and
-   * num_particles_above_threshold_ is decremented.
+   * If the particle does step below the threshold it is suspended,
+   * so that it can be re-classifed onto the waiting stack.
    *
-   * Nothing happens if num_particles_above_threshold_ is zero.
+   * Nothing happens if we are already below threshold
+   * (i.e. below_threshold_ is true).
    *
    * @param[in] step Geant4 step
    */
@@ -100,7 +101,7 @@ class PartialEnergySorter : public UserAction {
   }
 
   /**
-   * Reset the count for the number of particles above threshold.
+   * Flag that we are now going below threshold.
    *
    * This function is called when the urgent stack is empty
    * and the waiting stack is transferred to the urgent stack.
@@ -132,15 +133,15 @@ class PartialEnergySorter : public UserAction {
         << " particles above threshold."
         << std::endl;
      */
-    num_particles_above_threshold_ = 0;
+    below_threshold_ = true;
   }
 
  private:
   /// Minimum Kinetic Energy [MeV] we want to simulate first
   double threshold_;
 
-  /// Number of particles above the threshold
-  int num_particles_above_threshold_{0};
+  /// Are we simulating below the threshold yet?
+  bool below_threshold_;
 
 };  // PartialEnergySorter
 
