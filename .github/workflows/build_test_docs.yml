@@ -76,13 +76,27 @@ jobs:
           sphinx-apidoc --force --no-toc -o docs/sphinx.conf/ install/python
           sudo `which sphinx-build` docs/sphinx.conf docs/html/_sphinx
 
+    # Check if we should deploy the docs
+    #   Only deploy if the github ref matchs the default branch of the repository
+    #   This only happens if we are pushing a commit to the default branch
+    - name: Check if we should deploy the Docs
+      id: check_deploy
+      run: |
+        _we_should="no"
+        if [[ "$GITHUB_REF" == "refs/heads/${{ github.event.repository.default_branch }}" ]];
+        then
+          _we_should="yes"
+        fi
+        echo "Should we deploy the docs? ${_we_should}"
+        echo ::set-output name=we_should_deploy_docs::${_we_should}
+
+
     # Copy the generated documentation to the github pages repo
     #   This copies all the html files in the docs/html directory to the github.io repository
     #   using the ldmx organization token for access and saving the changes with the
     #   commit message of the commit that activated this action
-    # Only deply the docs when the default branch is pushed to
     - name: Deploy the Docs
-      if: ${{ github.event_name == 'push' && ${GITHUB_REF##*/} == github.event.repository.default_branch }} 
+      if: ${{ steps.check_deploy.outputs.we_should_deploy_docs == 'yes' }}
       uses: peaceiris/actions-gh-pages@v3
       with:
         personal_token: ${{ secrets.LDMX_ORG_TOKEN }} #requires setup to connect ldmx-sw and ldmx-sw.github.io
