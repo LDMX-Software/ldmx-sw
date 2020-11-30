@@ -1,0 +1,151 @@
+#ifndef BIASING_MIDSHOWERBKGDFILTER_H_
+#define BIASING_MIDSHOWERBKGDFILTER_H_
+
+/*~~~~~~~~~~~~*/
+/*   SimCore  */
+/*~~~~~~~~~~~~*/
+#include "SimCore/UserAction.h"
+
+namespace ldmx {
+
+/**
+ * @class MidShowerBkgdFilter
+ *
+ * The basic premis of this filter is to add up all of the 
+ * energy "lost" to the configured process. Whenever a particle
+ * makes a step and has secondaries within that step going to
+ * the input process, we add its change in energy to the running
+ * total for the event. When the PartialEnergySorter has run out
+ * of "high" energy particles to process (when NewStage is called)
+ * we check if the running total is high enough to keep the event.
+ *
+ * @see PartialEnergySorter
+ * Here we assume that the partial energy sorter is being run in sequence with
+ * this filter. 
+ */
+class MidShowerBkgdFilter : public UserAction {
+ public:
+  /**
+   * Class constructor.
+   *
+   * Retrieve the necessary configuration parameters
+   */
+  MidShowerBkgdFilter(const std::string& name, Parameters& parameters);
+
+  /**
+   * Class destructor.
+   */
+  ~MidShowerBkgdFilter() {}
+
+  /**
+   * Get the types of actions this class can do
+   *
+   * @return list of action types this class does
+   */
+  std::vector<TYPE> getTypes() final override {
+    return {TYPE::STACKING,TYPE::STEPPING,TYPE::EVENT};
+  }
+
+  /**
+   * Reset the total energy going to the configured process.
+   *
+   * @param[in] event not used
+   */
+  void BeginOfEventAction(const G4Event* event) final override;
+
+  /**
+   * We follow the simulation along each step and check
+   * if any secondaries of the input process were created.
+   *
+   * If they were created, we add the change in energy
+   * to the total energy "lost" to the input process.
+   *
+   * @note Only includes the steps that are within the
+   * 'CalorimeterRegion' in the search for interesting
+   * products.
+   *
+   * @see isOutsideCalorimeterRegion
+   * @see anyCreatedViaProcess
+   *
+   * @param[in] step current G4Step
+   */
+  void stepping(const G4Step* step) final override;
+
+  /**
+   * When using the PartialEnergySorter,
+   * the *first* time that a new stage begins is when
+   * all particles are now below the threshold.
+   *
+   * We take this opportunity to make sure that
+   * enough energy has gone to the products of
+   * the input process.
+   *
+   * @see PartialEnergySort::NewStage
+   * @see AbortEvent
+   */
+  void NewStage() final override;
+
+ private:
+
+  /**
+   * Checks if the passed step is outside of the CalorimeterRegion.
+   *
+   * @param[in] step const G4Step to check
+   * @returns true if passed step is outside of the CalorimeterRegion.
+   */
+  bool isOutsideCalorimeterRegion(const G4Step* step) const;
+
+  /**
+   * Checks if any of the passed tracks were created via the configured process.
+   *
+   * @note Ignores tracks that don't have an assigned creator process.
+   * @note Returns false if list is nullptr
+   * @note Checks if creator process name *contains* the configured process name.
+   * This is because sometimes the configured process will end up bing biased
+   * and the full process name will wrapped by 'biasWrapper()'.
+   *
+   * @param[in] list vector list of tracks to check
+   * @return true if any of the listed tracks was created via the configured process
+   */
+  bool anyCreatedViaProcess(const std::vector<const G4Track*>* list) const;
+
+  /**
+   * Helper to abort an event with a message
+   *
+   * Tells the RunManger to abort the current event
+   * after displaying the input message.
+   *
+   * @param[in] reason reason for aborting the event
+   */
+  void AbortEvent(const std::string& reason) const;
+
+ private:
+  /**
+   * Minimum energy [MeV] that the process products need to have
+   * to keep the event.
+   *
+   * Also used by PartialEnergySorter to determine
+   * which tracks should be processed first.
+   *
+   * Parameter Name: 'threshold'
+   */
+  double threshold_;
+
+  /**
+   * Process  to look for
+   * 
+   * Parameter Name: 'process'
+   */
+  std::string process_;
+
+  /**
+   * Total energy gone to the process in the current event
+   *
+   * Reset to 0. in BeginOfEventAction
+   */
+  double total_process_energy_{0.};
+
+};  // MidShowerBkgdFilter
+}  // namespace ldmx
+
+#endif  // BIASING_MIDSHOWERBKGDFILTER_H__
