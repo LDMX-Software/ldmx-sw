@@ -22,7 +22,7 @@ void PartialEnergySorter::BeginOfEventAction(const G4Event*) {
       << "Starting a new event."
       << std::endl;
    */
-  num_particles_above_threshold_ = 0;
+  below_threshold_ = false;
 }
 
 G4ClassificationOfNewTrack PartialEnergySorter::ClassifyNewTrack(
@@ -42,7 +42,6 @@ G4ClassificationOfNewTrack PartialEnergySorter::ClassifyNewTrack(
         << aTrack->GetKineticEnergy() << " MeV."
         << std::endl;
      */
-    num_particles_above_threshold_++;
     return fUrgent;
   }
 
@@ -51,12 +50,11 @@ G4ClassificationOfNewTrack PartialEnergySorter::ClassifyNewTrack(
    * the threshold, so we put it on the waiting stack
    * if there are still particles above threshold to be processed.
    */
-  return num_particles_above_threshold_ > 0 ? fWaiting
-                                            : currentTrackClassification;
+  return below_threshold_ ? currentTrackClassification : fWaiting;
 }
 
 void PartialEnergySorter::stepping(const G4Step* step) {
-  if (num_particles_above_threshold_ == 0) return;
+  if (below_threshold_) return;
 
   auto pre_energy{step->GetPreStepPoint()->GetKineticEnergy()};
   auto post_energy{step->GetPostStepPoint()->GetKineticEnergy()};
@@ -69,7 +67,6 @@ void PartialEnergySorter::stepping(const G4Step* step) {
         << post_energy << " MeV."
         << std::endl;
      */
-    num_particles_above_threshold_--;
     step->GetTrack()->SetTrackStatus(fSuspend);
   }
 }
