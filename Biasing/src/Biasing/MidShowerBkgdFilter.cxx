@@ -1,7 +1,10 @@
 #include "Biasing/MidShowerBkgdFilter.h"
 
-#include "SimCore/UserTrackingAction.h"
-#include "SimCore/TrackMap.h"
+#include "SimCore/UserTrackInformation.h"
+
+#include "G4Step.hh"
+#include "G4RunManager.hh"
+#include "G4EventManager.hh"
 
 namespace ldmx {
 
@@ -48,6 +51,11 @@ void MidShowerBkgdFilter::stepping(const G4Step* step) {
       << std::endl;
      */
     total_process_energy_ += pre_energy - post_energy;
+
+    auto track_info = dynamic_cast<UserTrackInformation*>(
+        step->GetTrack()->GetUserInformation());
+
+    track_info->setSaveFlag(true);
   } // there are interesting secondaries in this step
 }
 
