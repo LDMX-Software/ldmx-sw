@@ -151,7 +151,7 @@ class EcalFakeSimHits : public Producer {
                         , -1 // trackID
                         , 0 // pdg ID
                         , currEnergy_ // edep
-                        , 0. //time
+                        , 1. //time - 299mm is about 1ns from target and in middle of ECal
                         );
 
             //needs to be correct collection name
