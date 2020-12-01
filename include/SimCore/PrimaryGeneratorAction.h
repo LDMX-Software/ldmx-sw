@@ -107,6 +107,14 @@ namespace ldmx {
             /** Extent of the beamspot in y. */
             double beamspotZSize_{0.};   
 
+            /**
+             * Should we time-shift so that the primary vertices arrive (or originate)
+             * at t=0ns at z=0mm?
+             *
+             * @note This should remain true unless the user knows what they are doing!
+             */
+            bool time_shift_primaries_{true};
+
     };  // PrimaryGeneratorAction
 
 } // ldmx
