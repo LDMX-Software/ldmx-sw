@@ -1,20 +1,17 @@
 
 name: Tests
 
-# we are going to run this action whenever we push to trunk or make a PR onto 
-# trunk
 on:
   push:
-    branches: [ trunk ]
-  pull_request:
+    branches: '**' #all branches
+    tags: 'v*.*.*' #all version tags
+  pull_request: #all pull requests
 
 jobs:
-  # this action only has one job
   build-test:
-    # run the commands on ubuntu with bash shell
     runs-on: ubuntu-latest
     env:
-      image: ldmx/dev:v1.0
+      image: ldmx/dev:latest #define image to rbuild ldmx-sw and run tests on
     defaults:
       run:
         shell: bash
@@ -49,6 +46,9 @@ jobs:
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
     #   the docs are only updated if the build passes
+    # They need to be in the same job as the build becuase
+    #   the sphinx-apidoc command needs the python package
+    #   structured like a normal python package. 
 
     # Runs doxygen doxygen.conf in the docs/ directory
     - name: Run Doxygen to build C++ Docs
@@ -74,12 +74,27 @@ jobs:
           sphinx-apidoc --force --no-toc -o docs/sphinx.conf/ install/python
           sudo `which sphinx-build` docs/sphinx.conf docs/html/_sphinx
 
+    # Check if we should deploy the docs
+    #   Only deploy if the github ref matchs the default branch of the repository
+    #   This only happens if we are pushing a commit to the default branch
+    - name: Check if we should deploy the Docs
+      id: check_deploy
+      run: |
+        _we_should="no"
+        if [[ "$GITHUB_REF" == "refs/heads/${{ github.event.repository.default_branch }}" ]];
+        then
+          _we_should="yes"
+        fi
+        echo "Should we deploy the docs? ${_we_should}"
+        echo ::set-output name=we_should_deploy_docs::${_we_should}
+
+
     # Copy the generated documentation to the github pages repo
     #   This copies all the html files in the docs/html directory to the github.io repository
     #   using the ldmx organization token for access and saving the changes with the
     #   commit message of the commit that activated this action
     - name: Deploy the Docs
-      if: ${{ github.event_name == 'push' }} #only deploy when the trunk actually changes
+      if: ${{ steps.check_deploy.outputs.we_should_deploy_docs == 'yes' }}
       uses: peaceiris/actions-gh-pages@v3
       with:
         personal_token: ${{ secrets.LDMX_ORG_TOKEN }} #requires setup to connect ldmx-sw and ldmx-sw.github.io
@@ -89,4 +104,73 @@ jobs:
         publish_dir: ./docs/html
         enable_jekyll: true #allow github pages to process using jekyll
         keep_files: true #keep old files (by default, clears publish_dir before deploying to it)
+
+  generate-image:
+    if: ${{ github.event_name == 'push' }} #only generate production image if pushing a commit
+    needs: build-test #will only generate production image if build-test finishes successfully
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+    -
+      name: Setup QEMU
+      uses: docker/setup-qemu-action@v1
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    -
+      name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - 
+      name: Get Build Context
+      uses: actions/checkout@v2
+    -
+      name: Determine Image Tags
+      id: generate_tag
+      run: |
+        _tags=""
+        if [[ $GITHUB_REF == refs/tags/* ]]; then
+          # if pushing a git tag ==> get the git tag for the docker tag
+          _git_tag=${GITHUB_REF#refs/tags/}
+          _tags="ldmx/pro:$_git_tag"
+          if [[ $_git_tag =~ ^v[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            # there was a version released on github
+            #   v<1-3 digits>.<1-3 digits>.<1-3 digits>
+            _tags="$_tags,ldmx/pro:latest"
+          fi
+        elif [[ $GITHUB_REF == refs/heads/* ]]; then
+          # pushing to a branch, repo may change
+          _branch=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
+          if [ "${{ github.event.repository.default_branch }}" = "$_branch" ]; then
+            #on default branch, set repository to mainline repo and set tag to edge
+            _repo="ldmx/pro"
+          elif [ -f .github/workflows/production_image_repo ]; then
+            #not default branch and production image repo is defined
+            _repo=$(cat .github/workflows/production_image_repo)
+            if [ "$_repo" = "ldmx/pro" ]; then
+              echo "Can't push a non-master branch commit to 'ldmx/pro'. Create your own repository."
+              exit 2
+            fi
+          else
+            #not default branch without production image defined
+            _repo=UNDEFINED
+          fi
+          _tags="$_repo:edge,$_repo:sha-${GITHUB_SHA::8}"
+        else
+          echo "Running Determine Image Tags on a commit that isn't a tag or a branch."
+          exit 1
+        fi
+        echo "Generated Tags: ${_tags}"
+        echo ::set-output name=tags::${_tags}
+    -
+      name: Build the Image
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        tags: ${{ steps.generate_tag.outputs.push_tags }}
+        push: contains(steps.generate_tag.outputs.tags,"/")
 
