@@ -46,6 +46,8 @@ namespace ldmx {
             beamspotZSize_ = beamSpot[2];
         }
 
+        time_shift_primaries_ = parameters.getParameter<bool>("time_shift_primaries");
+
         auto generators{parameters_.getParameter< std::vector< Parameters > >("generators",{})};
         if ( generators.empty() ) {
             EXCEPTION_RAISE(
@@ -78,6 +80,15 @@ namespace ldmx {
         if (event->GetNumberOfPrimaryVertex() > 0) {
             setUserPrimaryInfo(event);
             if (useBeamspot_) smearingBeamspot(event);
+            if (time_shift_primaries_) {
+              // shift the time so that a light-speed particle
+              // arrives at the target at 0ns
+              int nPV = event->GetNumberOfPrimaryVertex();
+              for (int iPV = 0; iPV < nPV; ++iPV) {
+                G4PrimaryVertex *pv = event->GetPrimaryVertex(iPV);
+                pv->SetT0( pv->GetT0() + pv->GetZ0()/299.702547 );
+              }
+            }
         } else {
             EXCEPTION_RAISE(
                     "NoPrimaries",
