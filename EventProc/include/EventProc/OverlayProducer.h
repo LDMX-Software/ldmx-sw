@@ -11,28 +11,28 @@
 #include <vector>
 
 // LDMX Framework
-#include "Event/EventDef.h" 
+#include "Event/EventDef.h"
 #include "Framework/EventFile.h"
-#include "Framework/EventProcessor.h" 
-#include "Framework/Parameters.h" 
+#include "Framework/EventProcessor.h"
+#include "Framework/Parameters.h"
 
 namespace ldmx {
 
 /**
  * Class to overlay in-time pile-up events from an overlay file
  */
-class OverlayProducer : public ldmx::Producer {
+class OverlayProducer : public Producer {
 public:
-  OverlayProducer(const std::string &name, ldmx::Process &process)
-      : ldmx::Producer(name, process), overlayEvent_{"overlay"} {}
+  OverlayProducer(const std::string &name, Process &process)
+      : Producer(name, process), overlayEvent_{"overlay"} {}
 
-  //	~OverlayProducer();
-  // destructor causes linking problems
+  // Destructor
+  ~OverlayProducer() = default;
 
   /**
    * Configure the processor with input parameters from the python cofig
    */
-  virtual void configure(Parameters &parameters) final override;
+  void configure(Parameters &parameters) final override;
 
   /**
    * Based on the list of collections to overlay, and the desired number of
@@ -51,7 +51,7 @@ public:
    * The resulting collections inherit the input collection name, with an
    * appended string "Overlay". This name is also currently hardwired.
    */
-  virtual void produce(Event &event) final override;
+  void produce(Event &event) final override;
 
   /**
    * At the start of processing, the pileup overlay file is set up, and the
@@ -59,7 +59,7 @@ public:
    * can (will) be randomized once we can reset the pileup event counter using
    * nextEvent().
    */
-  virtual void onProcessStart();
+  void onProcessStart() final override;
 
 private:
   /**
