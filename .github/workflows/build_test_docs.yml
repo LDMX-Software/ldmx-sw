@@ -134,21 +134,32 @@ jobs:
       name: Determine Image Tags
       id: generate_tag
       run: |
-        _repo=$(cat .github/workflows/production_image_repo)
+        _repo=""
         _tag=""
         if [[ $GITHUB_REF == refs/tags/* ]]; then
           # if pushing a git tag ==> get the git tag for the docker tag
+          _repo="ldmx/pro"
           _tag=${GITHUB_REF#refs/tags/}
         elif [[ $GITHUB_REF == refs/heads/* ]]; then
-          # pushing to a branch ==> docker tag is branch name
-          #   if branch name is default_branch of repository
-          #     docker tag is edge
-          _tag=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
-          if [ "${{ github.event.repository.default_branch }}" = "$_tag" ]; then
+          # pushing to a branch
+          _branch=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
+          if [ "${{ github.event.repository.default_branch }}" = "$_branch" ]; then
+            #on default branch, set repository to mainline repo and set tag to edge
+            _repo="ldmx/pro"
             _tag=edge
-          elif [ "$_repo" = "ldmx/pro" ]; then
-            echo "Can't push a non-master branch commit to 'ldmx/pro'. Create your own repository."
-            exit 2
+          elif [ -f .github/workflows/production_image_repo ]; then
+            #not default branch and production image repo is defined
+            _repo=$(cat .github/workflows/production_image_repo)
+            if [ "$_repo" = "ldmx/pro" ]; then
+              echo "Can't push a non-master branch commit to 'ldmx/pro'. Create your own repository."
+              exit 2
+            fi
+            #non-master branch with repo defined
+            _tag=latest
+          else
+            #not default branch without production image defined
+            _repo=UNDEFINED
+            _tag=latest
           fi
         else
           echo "Running Determine Image Tags on a commit that isn't a tag or a branch."
@@ -172,5 +183,5 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         tags: ${{ steps.generate_tag.outputs.push_tags }}
-        push: true
+        push: contains(steps.generate_tag.outputs.push_tags,"/")
 
