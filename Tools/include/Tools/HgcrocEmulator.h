@@ -33,6 +33,7 @@ namespace ldmx {
      * @TODO Shift the pulse SOI arbitrarily (needed for realism stuff below)
      * @TODO more realistic TOT emulation with focus on OOT signals
      * @TODO more realistic ADC emulation with focus on OOT signals
+     * @TODO time phase setting relative to target t=0ns
      */
     class HgcrocEmulator { 
 
