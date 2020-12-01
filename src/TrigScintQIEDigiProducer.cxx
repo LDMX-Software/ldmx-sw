@@ -78,13 +78,19 @@ namespace ldmx {
     std::map<TrigScintID, float> Edep;
     std::set<TrigScintID> noiseHitIDs;
 
+    // To simulate multiple pulses coming at different times, SiPMS
+    Expo* ex[stripsPerArray_];
+    for(int i=0;i<stripsPerArray_;i++){
+      ex[i] = new Expo(pulse_params[0],pulse_params[1]);
+    }
     auto numRecHits{0};
 
     // looper over sim hits and aggregate energy depositions for each detID
     const auto simHits{event.getCollection< SimCalorimeterHit >(inputCollection_,inputPassName_)};
     auto particleMap{event.getMap< int, SimParticle >("SimParticles")};
 
-    int module{-1}; 
+    int module{-1};
+
     for (const auto& simHit : simHits) {
 
       TrigScintID id(simHit.getID());
@@ -99,30 +105,32 @@ namespace ldmx {
 	std::cout << id << std::endl;
       }
 
-      unsigned int detIDRaw = id.raw();
+      // unsigned int detIDRaw = id.raw();
 
-      // for now, we take am energy weighted average of the hit in each stip to simulate the hit position. 
-      // AJW: these should be dropped, they are likely to lead to a problem since we can't measure them anyway
-      // except roughly y and z, which is encoded in the ids.
+      // // for now, we take am energy weighted average of the hit in each stip to simulate the hit position. 
+      // // AJW: these should be dropped, they are likely to lead to a problem since we can't measure them anyway
+      // // except roughly y and z, which is encoded in the ids.
       if (Edep.find(id) == Edep.end()) {
 
-	// first hit, initialize
-	Edep[id] = simHit.getEdep();
-	numRecHits++;
+      	// first hit, initialize
+      	Edep[id] = simHit.getEdep();
+      	numRecHits++;
 
       } else {
 
-	// not first hit, aggregate, and store the largest radius hit
-	Edep[id] += simHit.getEdep();
+      	// not first hit, aggregate, and store the largest radius hit
+      	Edep[id] += simHit.getEdep();
       }
 
+      double PulseAmp = simHit.getEdep() / mevPerMip_ * pePerMip_;
+      ex[id.bar()]->AddPulse(toff_overall_+simHit.getTime(),PulseAmp);
     }
 
     // Create the container to hold the digitized trigger scintillator hits.
     std::vector<TrigScintQIEDigis> QDigis;
 
     // loop over detIDs and simulate number of PEs
-    int ihit = 0;
+    // int ihit = 0;
     for (std::map<TrigScintID, float>::iterator it = Edep.begin(); it != Edep.end(); ++it) {
       TrigScintID id(it->first);
 
@@ -133,17 +141,19 @@ namespace ldmx {
       // If a cell has a PE count above threshold, persit the hit.
       if( cellPEs[id] >= 1 ){
 
-	// Expo* ex = new Expo(0.1,5,30,cellPEs[id]);
-	// Expo* ex = new Expo(pulse_params[0],pulse_params[1],30,cellPEs[id]);
-        Expo* ex = new Expo(pulse_params[0],pulse_params[1]);
-        ex->AddPulse(toff_overall_,cellPEs[id]);
+	// // Expo* ex = new Expo(0.1,5,30,cellPEs[id]);
+	// // Expo* ex = new Expo(pulse_params[0],pulse_params[1],30,cellPEs[id]);
+        // Expo* ex = new Expo(pulse_params[0],pulse_params[1]);
+        // ex->AddPulse(toff_overall_,cellPEs[id]);
 
 	TrigScintQIEDigis QIEInfo(maxts_);
 	QIEInfo.chanID = id.bar();
 
-	QIEInfo.SetADC(smq->Out_ADC(ex,maxts_));
-	QIEInfo.SetTDC(smq->Out_TDC(ex,maxts_));
-	QIEInfo.SetCID(smq->CapID(ex,maxts_));
+	QIEInfo.SetADC(smq->Out_ADC(ex[id.bar()],maxts_));
+	QIEInfo.SetTDC(smq->Out_TDC(ex[id.bar()],maxts_));
+	QIEInfo.SetCID(smq->CapID(ex[id.bar()],maxts_));
+	QIEInfo.truePE = cellPEs[id];
+	QIEInfo.IsNoisy= false;
 
 	QDigis.push_back(QIEInfo);
       }
@@ -184,6 +194,8 @@ namespace ldmx {
       QIEInfo.SetADC(smq->Out_ADC(ex,maxts_));
       QIEInfo.SetTDC(smq->Out_TDC(ex,maxts_));
       QIEInfo.SetCID(smq->CapID(ex,maxts_));
+      QIEInfo.truePE = noiseHitPE;
+      QIEInfo.IsNoisy= true;
 
       QDigis.push_back(QIEInfo); 
     }

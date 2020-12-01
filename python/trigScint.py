@@ -71,7 +71,7 @@ class TrigScintQIEDigiProducer(ldmxcfg.Producer) :
         self.expo_k=0.1
         self.expo_tmax=5.0
         self.maxts=5
-        self.toff_overall = 30
+        self.toff_overall = 30.0
         import time
         self.randomSeed = int(time.time())
         self.verbose = False
