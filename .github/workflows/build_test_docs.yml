@@ -46,6 +46,9 @@ jobs:
     # The rest of the steps are building docs
     #   Since the build is made and tested above,
     #   the docs are only updated if the build passes
+    # They need to be in the same job as the build becuase
+    #   the sphinx-apidoc command needs the python package
+    #   structured like a normal python package. 
 
     # Runs doxygen doxygen.conf in the docs/ directory
     - name: Run Doxygen to build C++ Docs
