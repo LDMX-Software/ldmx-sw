@@ -153,6 +153,7 @@ class EcalFakeSimHits : public Producer {
                         , currEnergy_ // edep
                         , 1. //time - 299mm is about 1ns from target and in middle of ECal
                         );
+            pretendSimHits[0].setPosition(0.,0.,299.); //sim position in middle of ECal
 
             //needs to be correct collection name
             REQUIRE_NOTHROW(event.add( "EcalSimHits" , pretendSimHits ));
