@@ -434,7 +434,7 @@ namespace ldmx {
 
 
         // MIP tracking starts here
-        std::cout << "BEGINNING MIP TRACKING" << std::endl;  //temp
+        //std::cout << "BEGINNING MIP TRACKING" << std::endl;  //temp
 
         /* Goal:  Calculate nStraightTracks (self-explanatory), nLinregTracks (tracks found by linreg algorithm),
         ** firstNearPhLayer (layer of the first hit near the photon trajectory), epAng (angle between the projected
@@ -446,13 +446,13 @@ namespace ldmx {
         TVector3 e_traj_end;
         TVector3 p_traj_start;
         TVector3 p_traj_end;
-        if(ele_trajectory.size()==3 && photon_trajectory.size()==3) {
+        if(ele_trajectory.size() > 0 && photon_trajectory.size() > 0) {
             /*make ele_trajectory and photon_trajectory into TVector3 pairs for later use*/
             //std::cout << "     Found electron and photon trajectory" << std::endl;
             e_traj_start.SetXYZ(ele_trajectory[0].first,    ele_trajectory[0].second,    LAYER_Z_POSITIONS.front());
-            e_traj_end.SetXYZ(  ele_trajectory[0].first,    ele_trajectory[0].second,    LAYER_Z_POSITIONS.back());
+            e_traj_end.SetXYZ(  ele_trajectory[33].first,    ele_trajectory[33].second,    LAYER_Z_POSITIONS.back());
             p_traj_start.SetXYZ(photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.front());
-            p_traj_end.SetXYZ(  photon_trajectory[0].first, photon_trajectory[0].second, LAYER_Z_POSITIONS.back());
+            p_traj_end.SetXYZ(  photon_trajectory[33].first, photon_trajectory[33].second, LAYER_Z_POSITIONS.back());
 
             // TEMPORARILY COMMENTED for testing purposes
             TVector3 evec   = e_traj_end - e_traj_start;
@@ -568,7 +568,7 @@ namespace ldmx {
         //int currenthit;
         
         TMatrixD svdMatrix(3,3);
-        TMatrixD Vm;
+        TMatrixD Vm(3,3);
         TMatrixD hdt(3,3);
         TVector3 slopeVec;
         TVector3 hmean;
@@ -579,8 +579,9 @@ namespace ldmx {
         int hitNums_best[3];
         int hitNums[3];
         
-        /*
+        std::cout << "Entering linreg tracking loop" << std::endl;        
         for (int iHit = 0; iHit < trackingHitList.size(); iHit++) {
+            //std::cout << "iHit " << iHit << std::endl;
             trackLen = 0;
             nHitsInRegion = 1;
             currenthit = iHit;
@@ -597,11 +598,11 @@ namespace ldmx {
             hitNums[0] = iHit;
 
             for (int jHit = 1; jHit < nHitsInRegion - 1; jHit++) {
+                //std::cout << "  jHit " << jHit << std::endl;
                 hitNums[1] = jHit;
                 for (int kHit = jHit + 1; kHit < nHitsInRegion; kHit++) {
-                    //hdt[0] = trackingHitList[iHit];
+                    //std::cout << "    kHit " << kHit << std::endl;
                     hitNums[2] = kHit;
-                    //NOTE/TODO/WARNING:  Subtract off mean??
                     for (int hInd = 0; hInd < 3; hInd++) {
                         hmean(hInd) = (trackingHitList[hitNums[0]].pos(hInd) +
                                        trackingHitList[hitNums[1]].pos(hInd) +
@@ -609,12 +610,9 @@ namespace ldmx {
                     }
                     for (int hInd = 0; hInd < 3; hInd++) {
                         for (int lInd = 0; lInd < 3; lInd++) {
-                            //hdt[hInd][lInd] = trackingHitList[hitNums[hInd]].pos(lInd) - hmean(lInd);
                             hdt(hInd,lInd) = trackingHitList[hitNums[hInd]].pos(lInd) - hmean(lInd);
-                            //WARNING:  order may be wrong
                         }
                     }
-                    //svdMatrix.SetMatrixArray(hdt);
                     TDecompSVD svdObj = TDecompSVD(hdt);
                     svdObj.Decompose();
                     Vm = svdObj.GetV();
@@ -628,20 +626,21 @@ namespace ldmx {
                     //find closest_e and closest_p...can get a second point w/ slopeVec+regmean
                     float closest_e = distTwoLines(hmean, hpoint, e_traj_start, e_traj_end);
                     float closest_p = distTwoLines(hmean, hpoint, p_traj_start, p_traj_end);
-                    if (closest_p > 8.8 or closest_e < 14) continue;
+                    if (closest_p > cellWidth or closest_e < 1.5*cellWidth) continue;
                     //find r^2
                     float vrnc = (trackingHitList[hitNums[0]].pos - hmean).Mag() + 
                                  (trackingHitList[hitNums[1]].pos - hmean).Mag() +
                                  (trackingHitList[hitNums[2]].pos - hmean).Mag();
-                    float sumerr = pow(distPtToLine(trackingHitList[hitNums[0]].pos, hmean, hpoint), 2) +
-                                   pow(distPtToLine(trackingHitList[hitNums[1]].pos, hmean, hpoint), 2) +
-                                   pow(distPtToLine(trackingHitList[hitNums[2]].pos, hmean, hpoint), 2);
+                    float sumerr = distPtToLine(trackingHitList[hitNums[0]].pos, hmean, hpoint) +
+                                   distPtToLine(trackingHitList[hitNums[1]].pos, hmean, hpoint) +
+                                   distPtToLine(trackingHitList[hitNums[2]].pos, hmean, hpoint);
                     float r_corr = 1 - sumerr/vrnc;
                     if (r_corr > r_corr_best and r_corr > .6) {
                         r_corr_best = r_corr;
                         mean_best = hmean; //these two aren't necessary unless additional hits are added
                         point_best = hpoint;
-                        for (int k=0; k<3; k++) {
+                        trackLen = 0;
+                        for (int k=0; k<3; k++) { // Only looking for 3-hit tracks currently
                             track[k] = hitNums[k];
                             trackLen++;
                         }
@@ -658,9 +657,9 @@ namespace ldmx {
                 iHit--;
             }
         }
-        */
+        
 
-        //std::cout << "(currently unused) Found " << nLinregTracks_ << " linreg tracks" << std::endl;
+        std::cout << "Found " << nLinregTracks_ << " linreg tracks" << std::endl;
 
 
         //std::cout << "TRACKING COMPLETED." << std::endl;
