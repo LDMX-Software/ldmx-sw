@@ -101,8 +101,17 @@ namespace ldmx {
                 /* debug printout
                 std::cout << simHit.getContrib(iContrib).edep << " MeV" << std::endl;
                  */
+                /**
+                 * HACK ALERT
+                 * The shifting of the time should _not_ be done this sloppily.
+                 * In reality, each chip has a set time phase that it samples at (relative to target),
+                 * so the time shifting should be at the emulator level.
+                 */
                 voltages.push_back( simHit.getContrib( iContrib ).edep*MeV_ );
-                times.push_back( simHit.getContrib( iContrib ).time );
+                times.push_back( 
+                        simHit.getContrib( iContrib ).time //global time (t=0ns at target)
+                        - simHit.getPosition().at(2)/299.702547 //shift light-speed particle traveling along z
+                        );
             }
 
             unsigned int hitID = simHit.getID();
