@@ -3,6 +3,7 @@
 // LDMX
 #include "Event/EcalHit.h"
 #include "Event/EventConstants.h"
+#include "DetDescr/SimSpecialID.h"
 
 /*~~~~~~~~~~~*/
 /*   Tools   */
@@ -152,7 +153,8 @@ namespace ldmx {
             float pmax = 0;
             for ( SimTrackerHit &spHit : ecalSpHits ) {
 
-                if (spHit.getLayerID() != 31 || spHit.getMomentum()[2] <= 0) continue;
+                SimSpecialID hit_id(spHit.getID());
+                if (hit_id.plane() != 31 || spHit.getMomentum()[2] <= 0) continue;
 
                 if (spHit.getTrackID() == recoilTrackID) {
                     if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {
@@ -169,7 +171,8 @@ namespace ldmx {
                 pmax = 0;
                 for ( SimTrackerHit &spHit : targetSpHits ) {
 
-                    if (spHit.getLayerID() != 1 || spHit.getMomentum()[2] <= 0) continue;
+                    SimSpecialID hit_id(spHit.getID());
+                    if (hit_id.plane() != 1 || spHit.getMomentum()[2] <= 0) continue;
 
                     if (spHit.getTrackID() == recoilTrackID) {
                         if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {
