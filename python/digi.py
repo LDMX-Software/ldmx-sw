@@ -160,7 +160,7 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.secondOrderEnergyCorrection = 4000. / 4023.;
+        self.secondOrderEnergyCorrection = 4000. / 4007.;
         self.layerWeights = [
             1.675, 2.724, 4.398, 6.039, 7.696, 9.077, 9.630, 9.630, 9.630, 9.630, 9.630,
             9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630,
