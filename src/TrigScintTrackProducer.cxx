@@ -216,58 +216,64 @@ void TrigScintTrackProducer::produce(ldmx::Event &event) {
       ldmx_log(debug) << "vector of indices to keep has size "
                       << keepIndices.size();
 
-    for (uint idx = tracks_.size() - 1; idx > 0; idx--) {
-
+	for (uint idx = tracks_.size() - 1; idx > 0; idx--) {
+	  //since we start in one end, we only have to check matches in one direction
       TrigScintTrack track = tracks_.at(idx);
-      TrigScintTrack nextTrack = tracks_.at(idx - 1);
-      if (verbose_ > 1)
-        ldmx_log(debug) << "In track disambiguation loop, idx points at " << idx
-                        << " and prev idx points at " << idx - 1;
+	  for (int idxComp = idx - 1; idxComp >= 0; idxComp--) {
+		if (verbose_ > 1)
+		  ldmx_log(debug) << "In track disambiguation loop, idx points at " << idx
+						  << " and prev idx points at " << idxComp;
 
-      std::vector<TrigScintCluster> consts_1 = track.getConstituents();
-      std::vector<TrigScintCluster> consts_2 = nextTrack.getConstituents();
-      if (verbose_ > 1)
-        ldmx_log(debug) << "In track disambiguation loop, got the two tracks, "
-                           "with nConstituents "
-                        << consts_1.size() << " and " << consts_2.size()
-                        << ", respectively. ";
-      // let's do "if either cluster is shared" right now... but could also have
-      // it settable to use a stricter cut: an AND
-      if (consts_1[1].getCentroid() == consts_2[1].getCentroid() ||
-          consts_1[2].getCentroid() ==
-              consts_2[2].getCentroid()) { // we have overlap downstream of the
-                                           // seeding pad. probably, one cluster
-                                           // in seeding pad is noise
+		TrigScintTrack nextTrack = tracks_.at(idxComp);
 
-        if (verbose_ > 1) {
-          ldmx_log(debug) << "Found overlap! Tracks at index " << idx << " and "
-                          << idx - 1;
-          (tracks_.at(idx)).Print();
-          (tracks_.at(idx - 1)).Print();
-        }
+		//no need to start pulling constituents from tracks that are ridiculously far apart
+		if ( fabs(track.getCentroid() - nextTrack.getCentroid() < 3 *  maxDelta_ )) {
+			std::vector<TrigScintCluster> consts_1 = track.getConstituents();
+			std::vector<TrigScintCluster> consts_2 = nextTrack.getConstituents();
+			if (verbose_ > 1)
+			  ldmx_log(debug) << "In track disambiguation loop, got the two tracks, "
+				"with nConstituents "
+							  << consts_1.size() << " and " << consts_2.size()
+							  << ", respectively. ";
+			// let's do "if either cluster is shared" right now... but could also have
+			// it settable to use a stricter cut: an AND
+			if (consts_1[1].getCentroid() == consts_2[1].getCentroid() ||
+				consts_1[2].getCentroid() ==
+				consts_2[2].getCentroid()) { // we have overlap downstream of the
+			  // seeding pad. probably, one cluster
+			  // in seeding pad is noise
 
-        if ((tracks_.at(idx)).getResidual() <
-            (tracks_.at(idx - 1)).getResidual()) {
-          // next track (lower index) is a worse choice, remove its flag for
-          // keeping
-          keepIndices.at(idx - 1) = 0;
-        } else // prefer next track over current. remove current track's keep
-               // flag
-          keepIndices.at(idx) = 0;
-        /*}
-          else {
-          tracks_.erase(itNext);
-          //        removeIdx.push_back(idx+1);
-          // we might see the same index two times in the loop in this case, if
-          there are three seeds sharing the same clusters downstream.
-          // then the third only gets removed if it's even worse than the
-          second.
-          // one could deal with this with an extra overlap check. not sure we
-          will be in this situation any time soon though.
-          }*/
-      } // over matching/overlapping tracks
-    }   // over constructed tracks
+			  if (verbose_ > 1) {
+				ldmx_log(debug) << "Found overlap! Tracks at index " << idx << " and "
+								<< idxComp ;
+				(tracks_.at(idx)).Print();
+				(tracks_.at(idxComp)).Print();
+			  }
 
+			  if ((tracks_.at(idx)).getResidual() <
+				  (tracks_.at(idxComp)).getResidual()) {
+				// next track (lower index) is a worse choice, remove its flag for
+				// keeping
+				keepIndices.at(idxComp) = 0;
+			  } else // prefer next track over current. remove current track's keep
+				// flag
+				keepIndices.at(idx) = 0;
+			  /*}
+				else {
+				tracks_.erase(itNext);
+				//        removeIdx.push_back(idx+1);
+				// we might see the same index two times in the loop in this case, if
+				there are three seeds sharing the same clusters downstream.
+				// then the third only gets removed if it's even worse than the
+				second.
+				// one could deal with this with an extra overlap check. not sure we
+				will be in this situation any time soon though.
+				}*/
+			} // over matching/overlapping tracks
+		} //over tracks close enough to share constituents
+	  } // over constructed tracks at other indices, to match
+	} // over constructed tracks
+		
     for (uint idx = 0; idx < tracks_.size(); idx++) {
       if (verbose_ > 1) {
         ldmx_log(debug) << "keep flag for idx " << idx << " is "
