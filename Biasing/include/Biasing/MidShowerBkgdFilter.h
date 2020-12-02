@@ -85,6 +85,13 @@ class MidShowerBkgdFilter : public UserAction {
    */
   void NewStage() final override;
 
+  /**
+   * Calculate the event weight at the end of the event.
+   *
+   * @param[in] event G4Event that we are wrapping up
+   */
+  void EndOfEventAction(const G4Event* event) final override;
+
  private:
 
   /**
@@ -144,6 +151,17 @@ class MidShowerBkgdFilter : public UserAction {
    * Reset to 0. in BeginOfEventAction
    */
   double total_process_energy_{0.};
+
+  /**
+   * Weights of the different tracks that "decayed" through
+   * the desired process.
+   *
+   * These weights are updated on *each step* that has
+   * a track going through the desired process and
+   * then all of them are multiplied together to get
+   * the event weight.
+   */
+  std::map<int,double> track_weights_;
 
 };  // MidShowerBkgdFilter
 }  // namespace ldmx
