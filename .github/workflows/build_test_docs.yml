@@ -171,5 +171,5 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         tags: ${{ steps.generate_tag.outputs.tags }}
-        push: contains(steps.generate_tag.outputs.tags,"/")
+        push: ${{ contains(steps.generate_tag.outputs.tags,"/" ) }}
 
