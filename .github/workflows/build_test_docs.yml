@@ -167,7 +167,7 @@ jobs:
         echo ::set-output name=tags::${_tags}
     -
       name: Build the Image
-      if: ! contains(${{ steps.generate_tag.outputs.tags }},"UNDEFINED")
+      if: contains(${{ steps.generate_tag.outputs.tags }},"/")
       id: docker_build
       uses: docker/build-push-action@v2
       with:
