@@ -72,6 +72,7 @@ namespace ldmx {
       smq = new SimQIE(6,1.5,rseed2.getSeed(outputCollection_+"SimQIE"));
       smq->SetGain();
       smq->SetFreq();
+      smq->SetNTimeSamples(maxts_);
     }
 
     std::map<TrigScintID, int> cellPEs;
@@ -79,9 +80,11 @@ namespace ldmx {
     std::set<TrigScintID> noiseHitIDs;
 
     // To simulate multiple pulses coming at different times, SiPMS
-    Expo* ex[stripsPerArray_];
+    float TrueEdep[stripsPerArray_];
+    Expo* ex[stripsPerArray_]={0};
     for(int i=0;i<stripsPerArray_;i++){
       ex[i] = new Expo(pulse_params[0],pulse_params[1]);
+      TrueEdep[i]=0;
     }
     auto numRecHits{0};
 
@@ -122,86 +125,108 @@ namespace ldmx {
       	Edep[id] += simHit.getEdep();
       }
 
-      double PulseAmp = simHit.getEdep() / mevPerMip_ * pePerMip_;
+      double PulseAmp = random_->Poisson(simHit.getEdep() / mevPerMip_ * pePerMip_);
       ex[id.bar()]->AddPulse(toff_overall_+simHit.getTime(),PulseAmp);
+      TrueEdep[id.bar()]+=simHit.getEdep();
     }
 
     // Create the container to hold the digitized trigger scintillator hits.
     std::vector<TrigScintQIEDigis> QDigis;
+    
+    // // loop over detIDs and simulate number of PEs
+    // // int ihit = 0;
+    // for (std::map<TrigScintID, float>::iterator it = Edep.begin(); it != Edep.end(); ++it) {
+    //   TrigScintID id(it->first);
 
-    // loop over detIDs and simulate number of PEs
-    // int ihit = 0;
-    for (std::map<TrigScintID, float>::iterator it = Edep.begin(); it != Edep.end(); ++it) {
-      TrigScintID id(it->first);
+    //   // double depEnergy    = Edep[id];
+    //   // double meanPE       = depEnergy / mevPerMip_ * pePerMip_;
+    //   // cellPEs[id]   = random_->Poisson(meanPE + meanNoise_);
 
-      double depEnergy    = Edep[id];
-      double meanPE       = depEnergy / mevPerMip_ * pePerMip_;
-      cellPEs[id]   = random_->Poisson(meanPE + meanNoise_);
+    //   // If a cell has a PE count above threshold, persit the hit.
+    //   if(smq->PulseCut(ex[id.bar()])){
 
-      // If a cell has a PE count above threshold, persit the hit.
-      if( cellPEs[id] >= 1 ){
+    // 	TrigScintQIEDigis QIEInfo(maxts_);
+    // 	QIEInfo.chanID = id.bar();
 
-	// // Expo* ex = new Expo(0.1,5,30,cellPEs[id]);
-	// // Expo* ex = new Expo(pulse_params[0],pulse_params[1],30,cellPEs[id]);
-        // Expo* ex = new Expo(pulse_params[0],pulse_params[1]);
-        // ex->AddPulse(toff_overall_,cellPEs[id]);
+    // 	QIEInfo.SetADC(smq->Out_ADC(ex[id.bar()]));
+    // 	QIEInfo.SetTDC(smq->Out_TDC(ex[id.bar()]));
+    // 	QIEInfo.SetCID(smq->CapID(ex[id.bar()]));
+    // 	QIEInfo.truePE = Edep[id] / mevPerMip_ * pePerMip_;
+    // 	QIEInfo.IsNoisy= false;
 
+    // 	QDigis.push_back(QIEInfo);
+    //   }
+
+    //   if (verbose_) {
+
+    // 	std::cout << id << std::endl;
+    // 	std::cout << "Edep: " << Edep[id] << std::endl;
+    // 	// std::cout << "numPEs: " << cellPEs[id] << std::endl;
+    //   }        // end verbose
+    // }
+
+    double TotalNoise = meanNoise_*maxts_;
+    double SamplingTime = 25;	// 1/sampling freq.
+    
+    for(int bar_id=0;bar_id<stripsPerArray_;bar_id++) {
+
+      // Noise simulation
+      int n_noise_pulses = random_->Poisson(TotalNoise);
+      for(int i=0;i<n_noise_pulses;i++) {
+	ex[bar_id]->AddPulse(random_->Uniform(0,maxts_*SamplingTime),1);
+      }
+
+      // Storing the "good" digis
+      if(smq->PulseCut(ex[bar_id])) {
 	TrigScintQIEDigis QIEInfo(maxts_);
-	QIEInfo.chanID = id.bar();
+	QIEInfo.chanID = bar_id;
 
-	QIEInfo.SetADC(smq->Out_ADC(ex[id.bar()],maxts_));
-	QIEInfo.SetTDC(smq->Out_TDC(ex[id.bar()],maxts_));
-	QIEInfo.SetCID(smq->CapID(ex[id.bar()],maxts_));
-	QIEInfo.truePE = cellPEs[id];
-	QIEInfo.IsNoisy= false;
+	QIEInfo.SetADC(smq->Out_ADC(ex[bar_id]));
+	QIEInfo.SetTDC(smq->Out_TDC(ex[bar_id]));
+	QIEInfo.SetCID(smq->CapID(ex[bar_id]));
+	QIEInfo.truePE = TrueEdep[bar_id] / mevPerMip_ * pePerMip_;
+
+	QIEInfo.IsNoisy= (TrueEdep[bar_id]==0);
 
 	QDigis.push_back(QIEInfo);
       }
-
-      if (verbose_) {
-
-	std::cout << id << std::endl;
-	std::cout << "Edep: " << Edep[id] << std::endl;
-	std::cout << "numPEs: " << cellPEs[id] << std::endl;
-      }        // end verbose
     }
+    // // ------------------------------- Noise simulation -------------------------------
+    // int numEmptyCells = stripsPerArray_ - numRecHits; // only simulating for single array until all arrays are merged into one collection
+    // std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits( numEmptyCells );
 
-    // ------------------------------- Noise simulation -------------------------------
-    int numEmptyCells = stripsPerArray_ - numRecHits; // only simulating for single array until all arrays are merged into one collection
-    std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits( numEmptyCells );
+    // TrigScintID tempID;
 
-    TrigScintID tempID;
+    // for (auto& noiseHitPE : noiseHits_PE) {
 
-    for (auto& noiseHitPE : noiseHits_PE) {
+    //   TrigScintHit hit;
+    //   // generate random ID from remaining cells
+    //   do {
+    // 	tempID = generateRandomID(module);
+    //   } while( Edep.find(tempID) != Edep.end() || 
+    // 	       noiseHitIDs.find(tempID) != noiseHitIDs.end() );
 
-      TrigScintHit hit;
-      // generate random ID from remaining cells
-      do {
-	tempID = generateRandomID(module);
-      } while( Edep.find(tempID) != Edep.end() || 
-	       noiseHitIDs.find(tempID) != noiseHitIDs.end() );
+    //   TrigScintID noiseID=tempID;
 
-      TrigScintID noiseID=tempID;
+    //   // Expo* ex = new Expo(pulse_params[0],pulse_params[1],30,noiseHitPE);
+    //   Expo* ex = new Expo(pulse_params[0],pulse_params[1]);
+    //   ex->AddPulse(toff_overall_,noiseHitPE);
+    //   TrigScintQIEDigis QIEInfo(maxts_);
 
-      // Expo* ex = new Expo(0.1,5,30,noiseHitPE); 
-      // Expo* ex = new Expo(pulse_params[0],pulse_params[1],30,noiseHitPE);
-      Expo* ex = new Expo(pulse_params[0],pulse_params[1]);
-      ex->AddPulse(toff_overall_,noiseHitPE);
-      TrigScintQIEDigis QIEInfo(maxts_);
+    //   QIEInfo.chanID = noiseID.bar();
 
-      QIEInfo.chanID = noiseID.bar();
+    //   QIEInfo.SetADC(smq->Out_ADC(ex));
+    //   QIEInfo.SetTDC(smq->Out_TDC(ex));
+    //   QIEInfo.SetCID(smq->CapID(ex));
+    //   QIEInfo.truePE = noiseHitPE;
+    //   QIEInfo.IsNoisy= true;
 
-      QIEInfo.SetADC(smq->Out_ADC(ex,maxts_));
-      QIEInfo.SetTDC(smq->Out_TDC(ex,maxts_));
-      QIEInfo.SetCID(smq->CapID(ex,maxts_));
-      QIEInfo.truePE = noiseHitPE;
-      QIEInfo.IsNoisy= true;
-
-      QDigis.push_back(QIEInfo); 
-    }
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    //   QDigis.push_back(QIEInfo); 
+    // }
+    // // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     event.add(outputCollection_, QDigis);
   }
+
 }
 
 DECLARE_PRODUCER_NS(ldmx, TrigScintQIEDigiProducer);
