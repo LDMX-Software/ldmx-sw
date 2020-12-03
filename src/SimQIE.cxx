@@ -34,6 +34,9 @@ namespace ldmx {
     tau = 1000/sf;		// 1/sf -> MHz to ns
   }
 
+  void SimQIE::SetNTimeSamples(int maxts) {
+    maxts_ = maxts;
+  }
   // Function to convert charge to ADC count
   // Working: The method checks in which QIE subrange does the charge lie,
   // applies a corresponding  gain to it and digitizes it.
@@ -95,18 +98,18 @@ namespace ldmx {
 
   // Function that returns an array of ADCs each corresponding to
   // one time sample
-  int* SimQIE::Out_ADC(QIEInputPulse* pp,int N) {
-    int* OP = new int[N];	// N no. of output ADCs
+  int* SimQIE::Out_ADC(QIEInputPulse* pp) {
+    int* OP = new int[maxts_];
 
-    for(int i=0;i<N;i++) {
+    for(int i=0;i<maxts_;i++) {
       float QQ = pp->Integrate(i*tau,i*tau+tau);
       OP[i]=Q2ADC(QQ);
     }
     return OP;
   }
 
-  // Function that returns the digitized time corresponding to current pulse
-  // crossing a specified current threshold
+  // Function that returns the digitized time corresponding to
+  // current pulse crossing a specified current threshold
   int SimQIE::TDC(QIEInputPulse* pp, float T0=0) {
     float thr2=tdc_thr/gain;
     if (pp->Eval(T0)>thr2) return 62;		// when pulse starts high
@@ -118,24 +121,36 @@ namespace ldmx {
 
   // Function that returns an array of TDCs each corresponding to
   // one time sample
-  int* SimQIE::Out_TDC(QIEInputPulse* pp,int N) {
-    int* OP = new int[N];	// N no. of output ADCs
+  int* SimQIE::Out_TDC(QIEInputPulse* pp) {
+    int* OP = new int[maxts_];
 
-    for(int i=0;i<N;i++) {
+    for(int i=0;i<maxts_;i++) {
       OP[i] = TDC(pp,tau*i);
     }
     return OP;
   }
 
-  // Function that returns an array of Caoacitor IDs each corresponding to
-  // one time sample
-  int* SimQIE::CapID(QIEInputPulse* pp, int N) {
-    int* OP = new int[N];	// N no. of output CapIDs
+  // Function that returns an array of Caoacitor IDs
+  // each corresponding to one time sample
+  int* SimQIE::CapID(QIEInputPulse* pp) {
+    int* OP = new int[maxts_];
     OP[0] = trg->Integer(4);
-    for(int i=0;i<N;i++) {
+    for(int i=0;i<maxts_;i++) {
       OP[i+1]=(OP[i]+1)%4;
     }
     return OP;
   }
   
+  bool SimQIE::PulseCut(QIEInputPulse* pulse) {
+    if(pulse->npulses==0) return false;
+
+    // Only keep the pulse if it produces 1 PE
+    // in atleast one of the time samples
+    float thr_in_pes=1.0;
+
+    for(int i=0;i<maxts_;i++){
+      if(pulse->Integrate(i*tau,i*tau+tau)>=thr_in_pes) return true;
+    }
+    return false;
+  }
 }
