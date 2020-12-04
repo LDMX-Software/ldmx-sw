@@ -1,5 +1,5 @@
 
-#include "Biasing/PartialEnergySorter.h"
+#include "Biasing/Utility/PartialEnergySorter.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -8,7 +8,8 @@
 #include "G4RunManager.hh"
 #include "G4Step.hh"
 
-namespace ldmx {
+namespace biasing {
+namespace utility {
 
 PartialEnergySorter::PartialEnergySorter(const std::string& name,
                                          Parameters& parameters)
@@ -71,6 +72,7 @@ void PartialEnergySorter::stepping(const G4Step* step) {
   }
 }
 
-}  // namespace ldmx
+}  // namespace utility
+}  // namespace biasing
 
-DECLARE_ACTION(ldmx, PartialEnergySorter)
+DECLARE_ACTION(biasing::utility, PartialEnergySorter)

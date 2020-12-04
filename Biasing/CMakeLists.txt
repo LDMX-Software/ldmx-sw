@@ -12,6 +12,13 @@ project(Biasing VERSION 2.1.0
 setup_geant4_target()
 
 setup_library(module Biasing
+              name Utility
+              dependencies Geant4::Interface
+                           Framework::Framework SimCore::SimCore
+)
+
+setup_library(module Biasing
+              name Biasing
               dependencies Geant4::Interface 
                            Framework::Framework SimCore::SimCore
 )
