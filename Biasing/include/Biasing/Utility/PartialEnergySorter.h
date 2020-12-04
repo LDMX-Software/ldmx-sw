@@ -1,5 +1,5 @@
-#ifndef BIASING_PARTIALENERGYSORTER_H
-#define BIASING_PARTIALENERGYSORTER_H
+#ifndef BIASING_UTILITY_PARTIALENERGYSORTER_H
+#define BIASING_UTILITY_PARTIALENERGYSORTER_H
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
@@ -14,7 +14,8 @@
 // Forward declarations
 class G4Step;
 
-namespace ldmx {
+namespace biasing {
+namespace utility {
 
 /**
  * @class PartialEnergySorter
@@ -145,6 +146,7 @@ class PartialEnergySorter : public UserAction {
 
 };  // PartialEnergySorter
 
-}  // namespace ldmx
+}  // namespace utility
+}  // namespace biasing
 
-#endif  // BIASING_PARTIALENERGYSORTER_H
+#endif  // BIASING_UTILITY_PARTIALENERGYSORTER_H
