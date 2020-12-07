@@ -15,8 +15,9 @@ from LDMX.SimCore import generators
 from LDMX.Biasing import filters
 from LDMX.Biasing import util
 
-def photo_nuclear( detector ) :
-    """Example configuration for producing mid-shower photo-nuclear reactions in the ECal.  
+def midshower_nuclear( detector ) :
+    """Example configuration for producing mid-shower nuclear interactions in
+    the ECal that fake a missing energy (ME) signal.
        
     In this particular example, 4 GeV electrons are fired upstream of the 
     tagger tracker. Then simulation events are then put through a series of
@@ -26,23 +27,23 @@ def photo_nuclear( detector ) :
     ----------
 
     detector : str
-        Path to the detector 
+        Name of the detector
 
     Returns
     -------
     simulator :
-        configured for mid-shower PN and far-upstream generator
+        configured for mid-shower nuclear interactions and far-upstream generator
 
     Example
     -------
 
         from LDMX.Biasing import eat
-        eat_pn_sim = eat.photo_nuclear('ldmx-det-v12')
+        eat_pn_sim = eat.midshower_nuclear('ldmx-det-v12')
 
     """
 
     # Instantiate the simulator. 
-    sim = simulator.simulator("eat-photo-nuclear")
+    sim = simulator.simulator("eat-midshower-nuclear")
     from LDMX.Ecal import EcalGeometry
     
     # Set the path to the detector to use.
@@ -50,77 +51,37 @@ def photo_nuclear( detector ) :
     sim.setDetector( detector , True )
     
     # Set run parameters
-    sim.description = "ECal photo-nuclear, xsec bias 450"
+    sim.description = "Biased Mid-Shower Nuclear Interactions ME Background"
     sim.beamSpotSmear = [20., 80., 0.] #mm
     
     from LDMX.SimCore import generators
     sim.generators = [ generators.single_4gev_e_upstream_tagger() ]
+
+    bias_threshold = 1000.
     
     # Enable and configure the biasing
     from LDMX.SimCore import bias_operators
-    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',450.,1500.) ]
+    sim.biasing_operators = [ 
+            bias_operators.PhotoNuclear('ecal',450.,bias_threshold),
+            bias_operators.ElectroNuclear('ecal',450.,bias_threshold)
+            ]
 
     # Configure the sequence in which user actions should be called.
     sim.actions = [
             # get electron to ECal with 3500MeV
             filters.PrimaryToEcalFilter(3500.),
             # Make sure all particles above 1500MeV are processed first
-            util.PartialEnergySorter(1500.),
+            util.PartialEnergySorter(bias_threshold),
             # Make sure a total of 1700MeV energy went PN in ECal
-            filters.MidShowerBkgdFilter.photo_nuclear(1700.)
+            filters.MidShowerNuclearBkgdFilter(1700.),
+            # Calculate event weight using step weights as factors
+            util.WeightByStep(),
             # Tag all photo-nuclear tracks to persist them to the event.
-            #filters.TrackProcessFilter.photo_nuclear()
+            filters.TrackProcessFilter.photo_nuclear(),
+            # Tag all electro-nuclear tracks to persist them
+            filters.TrackProcessFilter.electro_nuclear()
     ]
 
-    return sim
-
-def electro_nuclear(detector) :
-    """Example configuration for producing EN interactions in the ECal
-
-    The primary electron is allowed to propagate into the ECal where 
-    the EN interaction is biased up.  Only events that 
-    result in a EN products totaling more than 2GeV in energy are kept. 
-
-    Parameters
-    ----------
-    detector : str
-        Name of detector to use
-
-    Returns
-    -------
-    simulator :
-        configured for EaT channel, mid-shower electro-nuclear.
-
-    Example
-    -------
-
-        from LDMX.Biasing import eat
-        eat_en_sim = eat.electro_nuclear('ldmx-det-v12')
-
-    """
-    
-    sim = simulator.simulator( "ecal_electron_nuclear" )
-    
-    sim.description = "One e- fired far upstream with electron nuclear interactions biased up in ECal"
-    sim.setDetector( detector , True )
-    sim.generators = [ generators.single_4gev_e_upstream_tagger() ]
-    sim.beamSpotSmear = [ 20., 80., 0. ] #mm
-    
-    # Biasing dark brem up inside of the ecal volumes
-    from LDMX.SimCore import bias_operators
-    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',4.5e4,1500.) ]
-    
-    sim.actions = [ 
-            # Abort events if the electron doesn't get to teh ECal with 3.5GeV
-            filters.PrimaryToEcalFilter(3500.),
-            # Make sure all particles above 1500MeV are processed first
-            util.PartialEnergySorter(1500.),
-            # Abort events if EN interactions don't produce a total of 1700MeV
-            filters.MidShowerBkgdFilter.electro_nuclear(1700.)
-            # Keep all of the EN secondaries
-            #filters.TrackProcessFilter.electro_nuclear()
-    ]
-    
     return sim
 
 def dark_brem( ap_mass , lhe, detector ) :
@@ -175,7 +136,9 @@ def dark_brem( ap_mass , lhe, detector ) :
     mass_power = max(log10(sim.dark_brem.ap_mass),2.)
 
     from LDMX.SimCore import bias_operators
-    sim.biasing_operators = [ bias_operators.DarkBrem.ecal(sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2) ]
+    sim.biasing_operators = [ 
+            bias_operators.DarkBrem.ecal(sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2)
+            ]
     
     sim.actions = [ 
             # Make sure all particles above 2GeV are processed first

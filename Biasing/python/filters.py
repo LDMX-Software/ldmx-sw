@@ -194,47 +194,22 @@ class PrimaryToEcalFilter(simcfg.UserAction) :
 
         self.threshold = thresh
 
-class MidShowerBkgdFilter(simcfg.UserAction) :
+class MidShowerNuclearBkgdFilter(simcfg.UserAction) :
     """ Configuration used to reject events that don't have enough energy given to the input process.
 
     Parameters
     ----------
     thresh : float
         Minimum energy [MeV] that the kinetic energy of the products needs to sum to
-    proc : str
-        Geant4 name of process that the products need to be created from
     """
 
-    def __init__(self,thresh,proc) :
-        super().__init__('midshower_%s_min_%d_MeV'%(proc,thresh),'ldmx::MidShowerBkgdFilter')
+    def __init__(self,thresh) :
+        super().__init__('midshower_nuclear_min_%d_MeV'%(thresh),'ldmx::MidShowerNuclearBkgdFilter')
 
         from LDMX.Biasing import include
         include.library()
 
         self.threshold = thresh
-        self.process = proc
-
-    def photo_nuclear(thresh) :
-        """Filter for Mid-Shower PN events
-
-        Parameters
-        ----------
-        thresh : float
-            Minimum energy [MeV] that the kinetic energy of the PN products needs to sum to
-        """
-
-        return MidShowerBkgdFilter(thresh,'photonNuclear')
-
-    def electro_nuclear(thresh) :
-        """Filter for Mid-Shower EN events
-
-        Parameters
-        ----------
-        thresh : float
-            Minimum energy [MeV] that the kinetic energy of the EN products needs to sum to
-        """
-
-        return MidShowerBkgdFilter(thresh,'electronNuclear')
 
 class TrackProcessFilter(simcfg.UserAction):
     """ Configuration used to tag all tracks produced via the given process to persist them to the event.
