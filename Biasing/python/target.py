@@ -51,8 +51,10 @@ def electro_nuclear( detector, generator ) :
     sim.generators.append(generator)
     
     # Enable and configure the biasing
-    sim.biasingOn()
-    sim.biasingConfigure( 'electronNuclear' , 'target' , 0. , int(1e8) )
+    from LDMX.SimCore import bias_operators
+    sim.biasing_operators = [
+            bias_operators.ElectroNuclear('target',1e8)
+            ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
@@ -109,13 +111,10 @@ def photo_nuclear( detector, generator ) :
     sim.generators.append(generator)
     
     # Enable and configure the biasing
-    sim.biasingOn()
-    sim.biasingConfigure(
-            'photonNuclear' #process
-            , 'target' #volume
-            , 2500. #threshold in MeV
-            , 450 #factor
-            )
+    from LDMX.SimCore import bias_operators
+    sim.biasing_operators = [
+            bias_operators.PhotoNuclear('target',450.,2500.)
+            ]
    
     # the following filters are in a library that needs to be included
     includeBiasing.library()
@@ -181,9 +180,10 @@ def dark_brem( ap_mass , lhe, detector ) :
     #   need to bias up high mass A' by more than 2 so that they can actually happen
     from math import log10 
     mass_power = max(log10(sim.dark_brem.ap_mass),2.)
-    sim.biasingOn()
-    sim.biasingConfigure( 'eDarkBrem' , 'target' , 0. , sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2 ,
-            allPtl = False, incidentOnly = True )
+    from LDMX.SimCore import bias_operators
+    sim.biasing_operators = [
+            bias_operators.DarkBrem.target(sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2)
+            ]
 
     sim.actions.extend([
         # make sure electron reaches target with 3.5GeV
