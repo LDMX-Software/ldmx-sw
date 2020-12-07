@@ -12,8 +12,8 @@ namespace biasing {
 namespace utility {
 
 PartialEnergySorter::PartialEnergySorter(const std::string& name,
-                                         Parameters& parameters)
-    : UserAction(name, parameters) {
+                                         ldmx::Parameters& parameters)
+    : ldmx::UserAction(name, parameters) {
   threshold_ = parameters.getParameter<double>("threshold");
 }
 

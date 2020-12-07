@@ -8,8 +8,8 @@
 namespace biasing {
 namespace utility {
 
-WeightByStep::WeightByStep(const std::string& name, Parameters& parameters)
-    : UserAction(name, parameters) {}
+WeightByStep::WeightByStep(const std::string& name, ldmx::Parameters& parameters)
+    : ldmx::UserAction(name, parameters) {}
 
 void WeightByStep::stepping(const G4Step* step) {
   // get the handle to the event user information
@@ -17,10 +17,10 @@ void WeightByStep::stepping(const G4Step* step) {
   auto event{G4EventManager::GetEventManager()};
   if (!event->GetUserInformation()) {
     // first step of the event ==> create user event info
-    event->SetUserInformation(new UserEventInformation);
+    event->SetUserInformation(new ldmx::UserEventInformation);
   }
   auto event_info{
-      static_cast<UserEventInformation*>(event->GetUserInformation)};
+      static_cast<ldmx::UserEventInformation*>(event->GetUserInformation())};
 
   // get the track weights before this step and after this step
   //  ** these weights include the factors of all upstream step weights **

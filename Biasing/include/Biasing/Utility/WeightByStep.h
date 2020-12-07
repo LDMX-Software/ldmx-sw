@@ -32,14 +32,14 @@ namespace utility {
  * the steps that are following a biased particle will have interesting
  * weights that need to be included in the final product.
  */
-class WeightByStep : public UserAction {
+class WeightByStep : public ldmx::UserAction {
  public:
   /**
    * Class constructor.
    *
    * No parameters are used in this action.
    */
-  WeightByStep(const std::string& name, Parameters& parameters);
+  WeightByStep(const std::string& name, ldmx::Parameters& parameters);
 
   /**
    * Class destructor.
@@ -51,7 +51,7 @@ class WeightByStep : public UserAction {
    *
    * @return list of action types this class does
    */
-  std::vector<TYPE> getTypes() final override { return {TYPE::STEPPING}; }
+  std::vector<ldmx::TYPE> getTypes() final override { return {ldmx::TYPE::STEPPING}; }
 
   /**
    * We follow the simulation along each step and
