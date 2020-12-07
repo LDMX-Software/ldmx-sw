@@ -5,6 +5,7 @@
  */
 
 #include "Ecal/EcalRecProducer.h"
+#include "Ecal/EcalReconConditions.h"
 #include "DetDescr/EcalHexReadout.h"
 
 namespace ldmx {
@@ -18,30 +19,27 @@ namespace ldmx {
     void EcalRecProducer::configure(Parameters& ps) {
 
         //collection names
-        digiCollName_ = ps.getParameter<std::string>( "digiCollName" );
-        digiPassName_ = ps.getParameter<std::string>( "digiPassName" );
-        simHitCollName_  = ps.getParameter<std::string>("simHitCollName");
-        simHitPassName_  = ps.getParameter<std::string>("simHitPassName");
+        digiCollName_   = ps.getParameter<std::string>("digiCollName");
+        digiPassName_   = ps.getParameter<std::string>("digiPassName");
+        simHitCollName_ = ps.getParameter<std::string>("simHitCollName");
+        simHitPassName_ = ps.getParameter<std::string>("simHitPassName");
         recHitCollName_ = ps.getParameter<std::string>("recHitCollName");
 
         layerWeights_ = ps.getParameter<std::vector<double>>( "layerWeights" );
         secondOrderEnergyCorrection_ = ps.getParameter<double>( "secondOrderEnergyCorrection" );
 
-        mipSiEnergy_ = ps.getParameter<double>( "mipSiEnergy" );
-        mV_          = ps.getParameter<double>( "mV" );
-
-        auto hgcrocParams{ps.getParameter<Parameters>("hgcroc")};
-        pedestal_    = hgcrocParams.getParameter<double>( "pedestal" );
-        gain_        = hgcrocParams.getParameter<double>( "gain" );
-        clockCycle_  = hgcrocParams.getParameter<double>( "clockCycle" );
-        drainRate_   = hgcrocParams.getParameter<double>( "drainRate" );
-        totMax_      = hgcrocParams.getParameter<double>( "totMax" );
+        mip_si_energy_  = ps.getParameter<double>( "mip_si_energy"  );
+        clock_cycle_    = ps.getParameter<double>( "clock_cycle"    );
+        charge_per_mip_ = ps.getParameter<double>( "charge_per_mip" );
 
     }
 
     void EcalRecProducer::produce(Event& event) {
         // Get the Ecal Geometry
         const EcalHexReadout& hexReadout = getCondition<EcalHexReadout>(EcalHexReadout::CONDITIONS_OBJECT_NAME);
+
+        // Get the reconstruction parameters
+        EcalReconConditions the_conditions(getCondition<DoubleTableCondition>(EcalReconConditions::CONDITIONS_NAME));
 
         std::vector<EcalHit> ecalRecHits;
         auto ecalDigis = event.getObject<HgcrocDigiCollection>( digiCollName_ , digiPassName_ );
@@ -61,11 +59,11 @@ namespace ldmx {
 
             //TOA is the time of arrival with respect to the 25ns clock window
             //  TODO what to do if hit NOT in first clock cycle?
-            double timeRelClock25 = digi.begin()->toa()*(clockCycle_/1024); //ns
+            double timeRelClock25 = digi.begin()->toa()*(clock_cycle_/1024); //ns
             double hitTime = timeRelClock25;
 
-            //get energy estimate from all digi samples
-            double siEnergy(0.);
+            //get the estimated charge deposited from digi samples
+            double charge(0.);
 
             /* debug printout
             std::cout << "Recon { "
@@ -77,17 +75,12 @@ namespace ldmx {
                 //  this is related to the amplitude of the pulse approximately through a linear drain rate
                 //  the amplitude of the pulse is related to the energy deposited
 
-                int tdc = digi.tot();
-                double tot = ( double(tdc)/4096. ) * totMax_;
-
                 //convert the time over threshold into a total energy deposited in the silicon
-                //  (time over threshold [ns]) * (rate of drain [mV/ns]) * (convert to energy [MeV/mV])
-                siEnergy = tot * drainRate_ * mV_;
+                //  (time over threshold [ns] - pedestal) * gain
+                charge = (digi.tot() - the_conditions.totPedestal(id))*the_conditions.totGain(id);
 
                 /* debug printout
-                std::cout << "TOT Mode -> "
-                          << tdc << " TDC Counts -> " << tot << " ns -> "
-                          << siEnergy << " MeV" << std::endl;
+                std::cout << "TOT Mode -> " << digi.tot() << "TDC -> " << charge << " fC";
                  */
             } else {
                 //ADC mode of readout
@@ -103,16 +96,16 @@ namespace ldmx {
                 //  p[6] = 87.7649 shape paramter - time of down slope relative to shape fit
                 //These measurements can be used to fit the pulse shape if TOT is not available
                 
-                TH1F voltageMeasurements( "voltageMeasurements" , "voltageMeasurements" ,
-                        10.*clockCycle_ , 0. , 10.*clockCycle_ );
+                TH1F measurements( "measurements" , "measurements" ,
+                        10.*clock_cycle_ , 0. , 10.*clock_cycle_ );
 
                 double maxMeas{0.};
                 int numWholeClocks{0};
                 for ( auto it = digi.begin(); it < digi.end(); it++) {
-                    double voltage = (it->adc_t() - pedestal_)*gain_; //mV
-                    if ( voltage > maxMeas ) maxMeas = voltage;
-                    double time    = numWholeClocks*clockCycle_; //+ offestWithinClock; //ns
-                    voltageMeasurements.Fill( time , voltage );
+                    double amplitude_fC = (it->adc_t() - the_conditions.adcPedestal(id))*the_conditions.adcGain(id);
+                    double time          = numWholeClocks*clock_cycle_; //+ offestWithinClock; //ns
+                    measurements.Fill( time , amplitude_fC );
+                    if ( amplitude_fC > maxMeas ) maxMeas = amplitude_fC;
                 }
 
                 if ( false ) {
@@ -123,19 +116,29 @@ namespace ldmx {
                     //siEnergy = (pulseFunc_.GetParameter( 0 ))*mV_;
                 } else {
                     //just use the maximum measured voltage
-                    siEnergy = (maxMeas)*mV_;
+                    charge = maxMeas;
                 }
 
                 /* debug printout
-                std::cout << "ADC Mode -> "
-                          << siEnergy << " MeV" << std::endl;
+                std::cout << "ADC Mode -> " << charge << " fC";
                  */
             }
+
+            double num_mips_equivalent = charge / charge_per_mip_;
+            double energy_deposited_in_Si = num_mips_equivalent * mip_si_energy_;
+
+            /* debug printout
+            std::cout << " -> " << num_mips_equivalent
+                << " equiv MIPs -> " << energy_deposited_in_Si << " MeV"
+                << std::endl;
+             */
             
             //incorporate layer weights
-            int layer = id.layer();
-            double recHitEnergy = 
-                ( (siEnergy / mipSiEnergy_ )*layerWeights_.at(layer)+siEnergy )*secondOrderEnergyCorrection_;
+            double reconstructed_energy = 
+                ( 
+                  num_mips_equivalent*layerWeights_.at(id.layer()) //energy lost in non-sensitive layers
+                  +energy_deposited_in_Si //energy deposited in Si itself
+                )*secondOrderEnergyCorrection_;
 
             //copy over information to rec hit structure in new collection
             EcalHit recHit;
@@ -143,8 +146,8 @@ namespace ldmx {
             recHit.setXPos( x );
             recHit.setYPos( y );
             recHit.setZPos( z );
-            recHit.setAmplitude( siEnergy );
-            recHit.setEnergy( recHitEnergy );
+            recHit.setAmplitude( energy_deposited_in_Si );
+            recHit.setEnergy( reconstructed_energy );
             recHit.setTime( hitTime );
 
             ecalRecHits.push_back( recHit );

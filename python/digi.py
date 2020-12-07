@@ -30,6 +30,9 @@ def EcalHgcrocEmulator() :
     from LDMX.Tools import HgcrocEmulator
     hgcroc = HgcrocEmulator.HgcrocEmulator()
 
+    # readout capacitance of chip is ~20pF
+    hgcroc.readoutPadCapacitance = 20. #pF
+
     # set defaults with 37k electrons per MIP
     hgcroc.setThresholdDefaults( nElectronsPerMIP )
 
@@ -85,12 +88,12 @@ class EcalRecProducer(Producer) :
 
     Attributes
     ----------
-    hgcroc : HgcrocEmulator
-        Configuration for chip emulator
-    mV : float
+    MeV_per_mV : float
         Conversion from voltage [mV] to energy [MeV]
-    mipSiEnergy : float
+    mip_si_energy : float
         Copied from module-wide mipSiEnergy [MeV]
+    clock_cycle : float
+        Time for one DAQ clock cycle to pass [ns]
     digiCollName : str
         Name of digi collection
     digiPassName : str
@@ -104,13 +107,9 @@ class EcalRecProducer(Producer) :
     def __init__(self, instance_name = 'ecalRecon') : 
         super().__init__(instance_name , 'ldmx::EcalRecProducer','Ecal')
 
-        self.hgcroc = EcalHgcrocEmulator()
-
-        self.mipSiEnergy = mipSiEnergy #needed for layer weights
-
-        #Volts -> Energy conversion
-        #   voltage [mV] ( readout pad capacitance [pF] ) ( 1000 electrons / 0.162 fC ) ( 1 MIP / electrons ) ( energy / MIP ) = energy [MeV]
-        self.mV  = mipSiEnergy / self.hgcroc.calculateVoltage( nElectronsPerMIP )
+        self.mip_si_energy = mipSiEnergy #MeV / MIP
+        self.charge_per_mip = nElectronsPerMIP * 0.162/1000 #fC / MIP
+        self.clock_cycle = 25. #ns - needs to match the setting on the chip
 
         self.digiCollName = 'EcalDigis'
         self.digiPassName = ''
@@ -161,7 +160,7 @@ class EcalRecProducer(Producer) :
         electron events with 4GeV.
         """
 
-        self.secondOrderEnergyCorrection = 4000./4010.;
+        self.secondOrderEnergyCorrection = 4000. / 4007.;
         self.layerWeights = [
             1.675, 2.724, 4.398, 6.039, 7.696, 9.077, 9.630, 9.630, 9.630, 9.630, 9.630,
             9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630, 9.630,
