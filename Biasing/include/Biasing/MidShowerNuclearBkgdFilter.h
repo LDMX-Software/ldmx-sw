@@ -9,7 +9,7 @@
 namespace ldmx {
 
 /**
- * @class MidShowerBkgdFilter
+ * @class MidShowerNuclearBkgdFilter
  *
  * The basic premis of this filter is to add up all of the 
  * energy "lost" to the configured process. Whenever a particle
@@ -22,20 +22,24 @@ namespace ldmx {
  * @see PartialEnergySorter
  * Here we assume that the partial energy sorter is being run in sequence with
  * this filter. 
+ *
+ * @see WeightByStep
+ * Here we do not try to infer the weight. We assume that the action
+ * WeightByStep is being run in sequence to calculate the event weight.
  */
-class MidShowerBkgdFilter : public UserAction {
+class MidShowerNuclearBkgdFilter : public UserAction {
  public:
   /**
    * Class constructor.
    *
    * Retrieve the necessary configuration parameters
    */
-  MidShowerBkgdFilter(const std::string& name, Parameters& parameters);
+  MidShowerNuclearBkgdFilter(const std::string& name, Parameters& parameters);
 
   /**
    * Class destructor.
    */
-  ~MidShowerBkgdFilter() {}
+  ~MidShowerNuclearBkgdFilter() {}
 
   /**
    * Get the types of actions this class can do
@@ -85,13 +89,6 @@ class MidShowerBkgdFilter : public UserAction {
    */
   void NewStage() final override;
 
-  /**
-   * Calculate the event weight at the end of the event.
-   *
-   * @param[in] event G4Event that we are wrapping up
-   */
-  void EndOfEventAction(const G4Event* event) final override;
-
  private:
 
   /**
@@ -103,18 +100,18 @@ class MidShowerBkgdFilter : public UserAction {
   bool isOutsideCalorimeterRegion(const G4Step* step) const;
 
   /**
-   * Checks if any of the passed tracks were created via the configured process.
+   * Checks if any of the passed tracks were created via the nuclear processes.
    *
    * @note Ignores tracks that don't have an assigned creator process.
    * @note Returns false if list is nullptr
-   * @note Checks if creator process name *contains* the configured process name.
+   * @note Checks if creator process name *contains* the nuclear names.
    * This is because sometimes the configured process will end up bing biased
    * and the full process name will wrapped by 'biasWrapper()'.
    *
    * @param[in] list vector list of tracks to check
    * @return true if any of the listed tracks was created via the configured process
    */
-  bool anyCreatedViaProcess(const std::vector<const G4Track*>* list) const;
+  bool anyCreatedViaNuclear(const std::vector<const G4Track*>* list) const;
 
   /**
    * Helper to abort an event with a message
@@ -139,11 +136,9 @@ class MidShowerBkgdFilter : public UserAction {
   double threshold_;
 
   /**
-   * Process  to look for
-   * 
-   * Parameter Name: 'process'
+   * Processes to look for
    */
-  std::string process_;
+  std::vector<std::string> nuclear_processes_;
 
   /**
    * Total energy gone to the process in the current event
@@ -152,18 +147,7 @@ class MidShowerBkgdFilter : public UserAction {
    */
   double total_process_energy_{0.};
 
-  /**
-   * Weights of the different tracks that "decayed" through
-   * the desired process.
-   *
-   * These weights are updated on *each step* that has
-   * a track going through the desired process and
-   * then all of them are multiplied together to get
-   * the event weight.
-   */
-  std::map<int,double> track_weights_;
-
-};  // MidShowerBkgdFilter
+};  // MidShowerNuclearBkgdFilter
 }  // namespace ldmx
 
 #endif  // BIASING_MIDSHOWERBKGDFILTER_H__
