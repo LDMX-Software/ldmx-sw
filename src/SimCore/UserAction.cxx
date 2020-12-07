@@ -4,7 +4,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/UserActionManager.h"
+#include "SimCore/PluginFactory.h"
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
@@ -24,6 +24,6 @@ namespace ldmx {
     UserAction::~UserAction() {} 
 
     void UserAction::declare(const std::string& className, UserActionBuilder* builder) {
-        UserActionManager::getInstance().registerAction(className, builder);      
+      simcore::PluginFactory::getInstance().registerAction(className, builder);      
     }
 }

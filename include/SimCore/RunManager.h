@@ -29,7 +29,6 @@ namespace ldmx {
 
     // Forward declare to avoid circular dependency in headers
     class DetectorConstruction;
-    class UserActionManager; 
     class APrimeMessenger;
     class ConditionsInterface;
 

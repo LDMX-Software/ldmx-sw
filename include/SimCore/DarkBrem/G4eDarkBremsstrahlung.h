@@ -207,9 +207,6 @@ class G4eDarkBremsstrahlung : public G4VDiscreteProcess {
    * directly, so if this name is changed you also need to change
    * the following places.
    *  - Python: Biasing.filters.TrackProcessFilter.dark_brem
-   *  - Python: Biasing.ecal.dark_brem
-   *  - Python: Biasing.target.dark_brem
-   *  - Python: SimCore.simulator.biasingConfigure
    *  - C++: Event/SimParticle::createProcessMap
    */
   static const std::string PROCESS_NAME;

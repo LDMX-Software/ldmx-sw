@@ -15,7 +15,7 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
-#include "SimCore/PrimaryGeneratorManager.h"
+#include "SimCore/PluginFactory.h"
 #include "SimCore/UserPrimaryParticleInformation.h"
 
 /*~~~~~~~~~~*/
@@ -27,7 +27,7 @@ namespace ldmx {
 
     PrimaryGeneratorAction::PrimaryGeneratorAction(Parameters& parameters) 
         : G4VUserPrimaryGeneratorAction(),
-        manager_( PrimaryGeneratorManager::getInstance() )
+        manager_( simcore::PluginFactory::getInstance() )
     {
 
         // The parameters used to configure the primary generator action

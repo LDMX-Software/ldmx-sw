@@ -84,13 +84,13 @@ namespace ldmx {
  *
  * Defines a builder for the declared class
  * and then registers the class as a generator
- * with the PrimaryGeneratorManager
+ * with the PluginFactory
  */
 #define DECLARE_GENERATOR(NS, CLASS)                                                                        \
     ldmx::PrimaryGenerator* CLASS ## Builder (const std::string& name, ldmx::Parameters& parameters) {      \
         return new NS::CLASS(name, parameters);                                                             \
     }                                                                                                       \
-    __attribute((constructor(305)))                                                                         \
+    __attribute((constructor(205)))                                                                         \
     static void CLASS ## Declare() {                                                                        \
         ldmx::PrimaryGenerator::declare(std::string(#NS) + "::" + std::string(#CLASS), & CLASS ## Builder); \
     } 

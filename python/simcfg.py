@@ -89,3 +89,4 @@ class PrimaryGenerator:
         """
 
         return '%s of class %s' % (self.instance_name, self.class_name)
+
