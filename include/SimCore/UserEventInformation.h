@@ -40,6 +40,14 @@ namespace ldmx {
             double getWeight() { return weight_; }
 
             /**
+             * Increment the event weight by the input weight
+             * for an individual step.
+             *
+             * @param[in] step_weight weight of an individual step
+             */
+            void incWeight(double step_weight) { weight_ *= step_weight; }
+
+            /**
              * @return The total number of brem candidates that this event 
              *      contains.
              */
@@ -50,7 +58,13 @@ namespace ldmx {
             /// Total number of brem candidates in the event
             int bremCandidateCount_{0};
 
-            /// The event weight
+            /** 
+             * The event weight
+             *
+             * @note The action WeightByStep relies on the assumption
+             * that this weight *starts at 1*, so the value of this
+             * member variable should always be 1.
+             */
             double weight_{1.}; 
     };
 }
