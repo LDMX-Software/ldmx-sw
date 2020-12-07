@@ -38,7 +38,7 @@ namespace utility {
  * - *If* your derived class re-defines stepping, you should avoid
  *   change the track status.
  */
-class PartialEnergySorter : public UserAction {
+class PartialEnergySorter : public ldmx::UserAction {
  public:
   /**
    * Constructor.
@@ -46,7 +46,7 @@ class PartialEnergySorter : public UserAction {
    * @param[in] name the name of the instance of this UserAction.
    * @param[in] parameters the parameters used to configure this UserAction.
    */
-  PartialEnergySorter(const std::string& name, Parameters& parameters);
+  PartialEnergySorter(const std::string& name, ldmx::Parameters& parameters);
 
   /// Destructor
   virtual ~PartialEnergySorter() {}
@@ -97,8 +97,8 @@ class PartialEnergySorter : public UserAction {
   void stepping(const G4Step* step) final override;
 
   /// Retrieve the type of actions this class defines
-  std::vector<TYPE> getTypes() {
-    return {TYPE::STEPPING, TYPE::STACKING, TYPE::EVENT};
+  std::vector<ldmx::TYPE> getTypes() {
+    return {ldmx::TYPE::STEPPING, ldmx::TYPE::STACKING, ldmx::TYPE::EVENT};
   }
 
   /**
