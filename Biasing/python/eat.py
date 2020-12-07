@@ -57,9 +57,8 @@ def photo_nuclear( detector ) :
     sim.generators = [ generators.single_4gev_e_upstream_tagger() ]
     
     # Enable and configure the biasing
-    sim.biasingOn()
-    sim.biasingConfigure('photonNuclear','ecal',1500.,450.,
-                allPtl=True, incidentOnly=False)
+    from LDMX.SimCore import bias_operators
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',450.,1500.) ]
 
     # Configure the sequence in which user actions should be called.
     sim.actions = [
@@ -108,9 +107,8 @@ def electro_nuclear(detector) :
     sim.beamSpotSmear = [ 20., 80., 0. ] #mm
     
     # Biasing dark brem up inside of the ecal volumes
-    sim.biasingOn()
-    sim.biasingConfigure('electronNuclear','ecal',1500.,4.5e4, 
-                allPtl = True, incidentOnly = False)
+    from LDMX.SimCore import bias_operators
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',4.5e4,1500.) ]
     
     sim.actions = [ 
             # Abort events if the electron doesn't get to teh ECal with 3.5GeV
@@ -175,9 +173,9 @@ def dark_brem( ap_mass , lhe, detector ) :
     from math import log10
     # need a higher power for the higher mass A'
     mass_power = max(log10(sim.dark_brem.ap_mass),2.)
-    sim.biasingOn()
-    sim.biasingConfigure( 'eDarkBrem' , 'ecal' , 0. , sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2 , 
-                allPtl = True, incidentOnly = False)
+
+    from LDMX.SimCore import bias_operators
+    sim.biasing_operators = [ bias_operators.DarkBrem.ecal(sim.dark_brem.ap_mass**mass_power / db_model.epsilon**2) ]
     
     sim.actions = [ 
             # Make sure all particles above 2GeV are processed first
