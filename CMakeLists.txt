@@ -37,6 +37,7 @@ endif()
 # Configure Geant4
 setup_geant4_target()
 
+
 # Get a list of all of the source files.
 file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist/[a-zA-Z]*.cxx
                                        ${PROJECT_SOURCE_DIR}/src/SimCore/DarkBrem/[a-zA-Z]*.cxx
@@ -52,6 +53,11 @@ setup_library(module SimCore
                            Boost::log
                            "${registered_targets}"
               sources ${SRC_FILES})
+
+# Setup the biasing operators library
+setup_library(module SimCore
+              name BiasOperators
+              dependencies SimCore::SimCore)
 
 # Set some target properties
 set_target_properties(SimCore

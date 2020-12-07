@@ -7,7 +7,7 @@
 
 #include "SimCore/PrimaryGenerator.h"
 
-#include "SimCore/PrimaryGeneratorManager.h"
+#include "SimCore/PluginFactory.h"
 
 namespace ldmx { 
 
@@ -19,6 +19,6 @@ namespace ldmx {
     PrimaryGenerator::~PrimaryGenerator() {} 
 
     void PrimaryGenerator::declare(const std::string& className, PrimaryGeneratorBuilder* builder) {
-        PrimaryGeneratorManager::getInstance().registerGenerator(className, builder);      
+      simcore::PluginFactory::getInstance().registerGenerator(className, builder);      
     }
 }

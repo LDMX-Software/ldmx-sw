@@ -1,13 +1,5 @@
-/**
- * @file DarkBremXsecBiasingOperator.h
- * @brief Geant4 Biasing Operator used to bias the occurence of dark brem
- *        events by modifying the cross-section.
- * @author Michael Revering, University of Minnesota
- * @author Tom Eichlersmith, University of Minnesota
- */
-
-#ifndef SIMCORE_DARKBREM_DARKBREMXSECBIASINGOPERATOR_H
-#define SIMCORE_DARKBREM_DARKBREMXSECBIASINGOPERATOR_H
+#ifndef SIMCORE_BIASOPERATORS_DARKBREM_H
+#define SIMCORE_BIASOPERATORS_DARKBREM_H
 
 //----------//
 //   LDMX   //
@@ -15,31 +7,36 @@
 #include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"
 #include "SimCore/XsecBiasingOperator.h"
 
-namespace ldmx {
-namespace darkbrem {
+namespace simcore {
+namespace biasoperators {
 
-class DarkBremXsecBiasingOperator : public XsecBiasingOperator {
+/**
+ * Bias operator for the dark brem process
+ */
+class DarkBrem : public XsecBiasingOperator {
  public:
   /**
    * Constructor
    *
-   * Calls base class constructor.
+   * Calls base class constructor and allows
+   * access to configuration parameters.
    */
-  DarkBremXsecBiasingOperator(std::string name) : XsecBiasingOperator(name) {}
+  DarkBrem(std::string name, const ldmx::Parameters& p);
 
   /**
    * Destructor
    *
    * Blank right now
    */
-  ~DarkBremXsecBiasingOperator() {}
+  ~DarkBrem() {}
 
   /**
-   * This the following protected member variables from XsecBiasingOperator:
-   *  - biasAll_ : If true, bias all particles connected to the dark brem
-   * process; otherwise, only bias the primary particle (ParentID == 0)
-   *  - xsecFactor_ : Factor to multiply cross section by
-   *  - xsecOperator : Geant4 biasing operator to use
+   * Calculate the biased cross section given the
+   * input process and track. This allows for us
+   * to have access to the current information about the 
+   * track while calculating the biased cross section.
+   *
+   * @see XsecBiasingOperator::BiasedXsec
    *
    * @param[in] track const pointer to track to Bias
    * @param[in] callingProcess process that might be biased by this operator
@@ -47,7 +44,25 @@ class DarkBremXsecBiasingOperator : public XsecBiasingOperator {
    *         to bias the occurence of events.
    */
   G4VBiasingOperation* ProposeOccurenceBiasingOperation(
-      const G4Track* track, const G4BiasingProcessInterface* callingProcess);
+      const G4Track* track, const G4BiasingProcessInterface* callingProcess) final override;
+
+  /// Return the name of the process this operator biases
+  virtual std::string getProcessToBias() const {
+    return ldmx::darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME;
+  }
+
+  /// Return the name of the particle this operator biases
+  virtual std::string getParticleToBias() const { return "e-"; }
+
+  /// Return the volume this operator biases
+  virtual std::string getVolumeToBias() const { return volume_; }
+
+  /**
+   * Record the configuration of this biasing operator into the run header
+   *
+   * @param[in,out] header RunHeader to record configuration to
+   */
+  virtual void RecordConfig(ldmx::RunHeader& header) const;
 
  protected:
   /**
@@ -76,13 +91,18 @@ class DarkBremXsecBiasingOperator : public XsecBiasingOperator {
   }
    */
 
-  /// Return the name of the process this operator biases
-  virtual std::string getProcessToBias() {
-    return G4eDarkBremsstrahlung::PROCESS_NAME;
-  }
+ private:
+  /// volume we want to bias in
+  std::string volume_;
 
-};  // DarkBremXsecBiasingOperator
-}  // namespace darkbrem
-}  // namespace ldmx
+  /// factor we want to bias by
+  double factor_;
+
+  /// should we bias all electrons? (or only the primary)
+  bool bias_all_;
+
+};  // DarkBrem
+}  // namespace biasoperators
+}  // namespace simcore
 
 #endif  // SIMCORE_DARKBREM_DARKBREMXSECBIASINGOPERATOR_H

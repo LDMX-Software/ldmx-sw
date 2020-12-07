@@ -16,11 +16,11 @@
 #include "SimCore/ParallelWorld.h"
 #include "SimCore/PrimaryGeneratorAction.h"
 #include "SimCore/USteppingAction.h"
-#include "SimCore/UserActionManager.h"
 #include "SimCore/UserEventAction.h"
 #include "SimCore/UserRunAction.h"
 #include "SimCore/UserStackingAction.h"
 #include "SimCore/UserTrackingAction.h"
+#include "SimCore/PluginFactory.h"
 
 //------------//
 //   Geant4   //
@@ -63,19 +63,35 @@ namespace ldmx {
         pList->RegisterPhysics(new GammaPhysics);
         pList->RegisterPhysics(new darkbrem::APrimePhysics( parameters_.getParameter<Parameters>("dark_brem") ));
        
-        auto biasingEnabled{parameters_.getParameter< bool >("biasing_enabled")}; 
-        if (biasingEnabled) {
+        auto biasing_operators{parameters_.getParameter<std::vector<Parameters>>("biasing_operators",{})}; 
+        if (!biasing_operators.empty()) {
+            
+            std::cout << "[ RunManager ]: Biasing enabled with " 
+              << biasing_operators.size() << " operator(s)." << std::endl;
 
-            auto biasedParticle{parameters_.getParameter< std::string >("biasing_particle")}; 
-            std::cout << "RunManager::setupPhysics : Enabling biasing of particle type " << biasedParticle << std::endl;
+            //create all the biasing operators that will be used
+            for (Parameters& bop : biasing_operators ) {
+              simcore::PluginFactory::getInstance().createBiasingOperator(
+                  bop.getParameter<std::string>("class_name"),
+                  bop.getParameter<std::string>("instance_name"),
+                  bop
+                  );
+            }
 
             // Instantiate the constructor used when biasing
             G4GenericBiasingPhysics* biasingPhysics = new G4GenericBiasingPhysics();
 
-            // Specify what particle is being biased
-            //  this then will put a biasing interface wrapper around *all* processes associated with this particle
-            //  TODO input which processes to bias to improve efficiency??
-            biasingPhysics->Bias(biasedParticle);
+            // specify which particles are going to be biased
+            //  this will put a biasing interface wrapper around *all* processes
+            //  associated with these particles
+            for (const simcore::XsecBiasingOperator* bop : simcore::PluginFactory::getInstance().getBiasingOperators()) {
+              std::cout << "[ RunManager ]: Biasing operator '"
+                  << bop->GetName()
+                  << "' set to bias "
+                  << bop->getParticleToBias()
+                  << std::endl;
+              biasingPhysics->Bias(bop->getParticleToBias());
+            }
 
             // Register the physics constructor to the physics list:
             pList->RegisterPhysics(biasingPhysics);
@@ -107,18 +123,15 @@ namespace ldmx {
         // Instantiate the primary generator action
         auto primaryGeneratorAction{ new PrimaryGeneratorAction(parameters_) };
         SetUserAction( primaryGeneratorAction );
-
-        // Instantiate action manager
-        auto actionManager{UserActionManager::getInstance()}; 
        
         // Get instances of all G4 actions
-        //      also create them in the action manager
-        auto actions{actionManager.getActions()};
+        //      also create them in the factory
+        auto actions{simcore::PluginFactory::getInstance().getActions()};
 
         // Create all user actions
         auto userActions{parameters_.getParameter< std::vector< Parameters > >("actions",{})}; 
         for ( auto& userAction : userActions ) {
-            actionManager.createAction(
+          simcore::PluginFactory::getInstance().createAction(
                     userAction.getParameter<std::string>("class_name"),
                     userAction.getParameter<std::string>("instance_name"), 
                     userAction
