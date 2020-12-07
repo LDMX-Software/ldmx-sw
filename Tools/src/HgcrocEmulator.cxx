@@ -18,6 +18,8 @@ namespace ldmx {
         timePeak_         = ps.getParameter<double>("timePeak");
         nADCs_            = ps.getParameter<int>("nADCs");
         iSOI_             = ps.getParameter<int>("iSOI");
+        noise_            = ps.getParameter<bool>("noise");
+        readoutPadCapacitance_   = ps.getParameter<double>("readoutPadCapacitance");
 
         //conditions/settings of chip that may change between chips
         //  the ones passed here are the "defaults", i.e. if
@@ -92,12 +94,13 @@ namespace ldmx {
         //Configure chip settings based off of table (that may have been passed)
         double gain             = getCondition( channelID , "gain" , gain_ );
         double pedestal         = getCondition( channelID , "pedestal" , pedestal_ );
-        double readoutThreshold = getCondition( channelID , "readoutThreshold" , readoutThreshold_ );
         double toaThreshold     = getCondition( channelID , "toaThreshold" , toaThreshold_ );
         double totThreshold     = getCondition( channelID , "totThreshold" , totThreshold_ );
         double measTime         = getCondition( channelID , "measTime" , measTime_ );
         double drainRate        = getCondition( channelID , "drainRate" , drainRate_ );
 
+        double readoutThresholdFloat = getCondition( channelID , "readoutThreshold" , readoutThreshold_ );
+        int readoutThreshold = int(readoutThresholdFloat);
         /* debug printout
         std::cout << "Configuration: {"
                   << "gain: " << gain << " mV/ADC, "
@@ -124,11 +127,20 @@ namespace ldmx {
                 << "Beginning: " << measurePulse(0.,false) << "mV, "
                 << "Time: " << timeInWindow << "ns } -> ";
         }
-        if ( pulsePeak < readoutThreshold ) {
-            //below readout threshold -> skip this hit
-            if (verbose_) std::cout << "Below Readout" << std::endl;
-            return false; //skip this hit
-        } else if ( pulsePeak < totThreshold ) {
+        if ( pulsePeak < totThreshold ) {
+            /**
+             * TODO more realistic ADC readout
+             *
+             * A real ADC readout would sum the pulses at the different
+             * sampling times (instead of sampling one pulse after adding
+             * together the amplitudes). This would involve several additional
+             * complexities that aren't currently integrated.
+             *  - Does the hit time directly correspond to the peak time? (as is now)
+             *    Or should we shift the peak time to some time after the hit time?
+             *  - How does the pre-amp shape several analog pulses coming together 
+             *    when they are separated by time? Do they just add linearly?
+             */
+
             //below TOT threshold -> do ADC readout mode
             if (verbose_) std::cout << "ADC Mode { ";
 
@@ -149,22 +161,40 @@ namespace ldmx {
                         measurePulse( fullMeasTime, noise_ )/gain, //ADC t is second measurement
                         toa * ns_ //TOA is third measurement
                         );
-                if (verbose_) std::cout << " ADC " << iADC << ": " << digiToAdd[iADC].adc_t()*gain << "mV, ";
+                if (verbose_) std::cout << " ADC " << iADC << ": " << digiToAdd[iADC].adc_t() << ", ";
             }
             if (verbose_) std::cout << "}" << std::endl;
 
+            /**
+             * Determine whether to readout this hit depending on the readout
+             * threshold
+             */
+            return (digiToAdd.at(iSOI_).adc_t() >= readoutThreshold);
+
         } else {
+            /**
+             * TODO more realistic TOT readout
+             *
+             * A real TOT readout would invalidate the cell for any samples after the hit
+             * started until the ADC(t-1) sample is able to recover. The TOT readout
+             * is always given in the SOI for the hit that is being TOT readout (TOT complete), but
+             * any bunches after that hit where the chip hasn't recovered yet would recieve
+             * TOT in progress.
+             */
             // above TOT threshold -> do TOT readout mode
 
+            double charge_deposited = signalAmplitude * readoutPadCapacitance_;
+
             // Measure Time Over Threshold (TOT) by using the drain rate.
-            //      1. Use drain rate to see how long it takes for the voltage to drain off
+            //      1. Use drain rate to see how long it takes for the charge to drain off
             //      2. Translate this into DIGI samples
 
             // Assume linear drain with slope drain rate:
             //      y-intercept = pulse amplitude
             //      slope       = drain rate
             //  ==> x-intercept = amplitude / rate
-            double tot = pulsePeak / drainRate;
+            //actual time over threshold using the real signal voltage amplitude
+            double tot = charge_deposited / drainRate; 
 
             double toa(0.); //default is earliest possible time
             // check if first half is just always above readout
@@ -177,7 +207,7 @@ namespace ldmx {
             // calculate the TDC counts for this tot measurement
             //  internally, the chip uses 12 bits (2^12 = 4096)
             //  to measure a maximum of tot Max [ns]
-            int tdc_counts = int( tot * 4096 / totMax_ );
+            int tdc_counts = int( tot * 4096 / totMax_ ) + pedestal;
 
             if (verbose_) {
                 std::cout << "TOT Mode { "
@@ -192,8 +222,8 @@ namespace ldmx {
             for ( unsigned int iADC = 0; iADC < nADCs_; iADC++ ) {
                 bool tot_progress, tot_complete;
                 int secon_measurement;
-                if ( iADC == num_whole_clocks ) {
-                    //TOT complete
+                if ( iADC == iSOI_ ) {
+                    //for in-time hits, the TOT is reported in the SOI
                     secon_measurement = tdc_counts;
                     tot_progress      = false;
                     tot_complete      = true;
@@ -213,9 +243,12 @@ namespace ldmx {
                         );
             }
 
+            /**
+             * Always readout TOT hits
+             */
+            return true;
         } //where is the amplitude of the hit w.r.t. readout and TOT thresholds
 
-        return true;
     } //HgcrocEmulator::digitize
 
 } // ldmx
