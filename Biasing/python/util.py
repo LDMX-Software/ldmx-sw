@@ -8,13 +8,13 @@ class BiasingUtilityAction(simcfg.UserAction) :
 
     Parameters
     ----------
-    instance : str
+    instance_name : str
         name of this instance
     class_name : str
         name of the class within this submodule
     """
 
-    def __init__(instance,class_name) :
+    def __init__(self,instance_name,class_name) :
         super().__init__(instance_name,'biasing::utility::%s'%class_name)
         from LDMX.Framework.ldmxcfg import Process
         Process.addLibrary('@CMAKE_INSTALL_PREFIX@/lib/libBiasing_Utility.so')

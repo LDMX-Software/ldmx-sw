@@ -56,8 +56,8 @@ def photo_nuclear( detector, generator ) :
     sim.generators.append( generator )
     
     # Enable and configure the biasing
-    sim.biasingOn()
-    sim.biasingConfigure( 'photonNuclear' , 'ecal' , 2500. , 450. )
+    from LDMX.SimCore import bias_operators
+    sim.biasing_operators = [ bias_operators.PhotoNuclear('ecal',450.,2500.) ]
 
     # the following filters are in a library that needs to be included
     includeBiasing.library()
