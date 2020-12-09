@@ -10,6 +10,7 @@
 #include "Biasing/EcalDarkBremFilter.h"
 
 #include "SimCore/DarkBrem/G4APrime.h"     //checking if particles match A'
+#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h" //checking for dark brem secondaries
 #include "SimCore/UserEventInformation.h"  //set the weight for the event
 #include "SimCore/UserTrackInformation.h"  //make sure A' is saved
 

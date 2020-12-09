@@ -8,7 +8,7 @@
 
 from LDMX.SimCore import generators
 from LDMX.SimCore import simulator
-from LDMX.Biasing import filters
+from LDMX.Biasing import filters, util
 from LDMX.Biasing import include as includeBiasing
 
 def electro_nuclear( detector, generator ) :
@@ -62,7 +62,7 @@ def electro_nuclear( detector, generator ) :
     sim.actions.extend([
             filters.TaggerVetoFilter(),
             filters.TargetENFilter(2500.),
-            filters.TrackProcessFilter.electro_nuclear()      
+            util.TrackProcessFilter.electro_nuclear()      
     ])
 
     return sim
@@ -124,7 +124,7 @@ def photo_nuclear( detector, generator ) :
             filters.TargetBremFilter(),
             filters.TargetPNFilter(),
             # Tag all photo-nuclear tracks to persist them to the event.
-            filters.TrackProcessFilter.photo_nuclear()
+            util.TrackProcessFilter.photo_nuclear()
     ])
 
     return sim
@@ -189,7 +189,7 @@ def dark_brem( ap_mass , lhe, detector ) :
         # make sure dark brem occurs in the target where A' has at least 2GeV
         filters.TargetDarkBremFilter(2000.),
         # keep all prodcuts of dark brem (A' and recoil electron)
-        filters.TrackProcessFilter.dark_brem()
+        util.TrackProcessFilter.dark_brem()
         ])
 
     return sim
