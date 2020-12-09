@@ -4,8 +4,8 @@
  * @author Josh Hiltbrand, University of Minnesota
  */
 
-#ifndef RECON_TRIGGERPROCESSOR_H_
-#define RECON_TRIGGERPROCESSOR_H_
+#ifndef RECON_TRIGGER_TRIGGERPROCESSOR_H_
+#define RECON_TRIGGER_TRIGGERPROCESSOR_H_
 
 // LDMX
 #include "DetDescr/EcalHexReadout.h"
