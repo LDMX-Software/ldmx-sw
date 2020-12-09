@@ -11,6 +11,7 @@ project(Recon VERSION 2.1.0
 
 file(GLOB SRC_FILES CONFIGURE_DEPENDS 
   ${PROJECT_SOURCE_DIR}/src/Recon/Examples/*.cxx
+  ${PROJECT_SOURCE_DIR}/src/Recon/Overlay/*.cxx
   ${PROJECT_SOURCE_DIR}/src/Recon/Skims/*.cxx
   ${PROJECT_SOURCE_DIR}/src/Recon/Trigger/*.cxx
 )
