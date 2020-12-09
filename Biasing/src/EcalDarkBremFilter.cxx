@@ -96,34 +96,37 @@ void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
       << std::endl;
   */
 
-  if (track->GetParticleDefinition() == darkbrem::G4APrime::APrime()) {
-    // check if A' was made in the desired volume and has the minimum energy
-    auto event{G4EventManager::GetEventManager()};
-    if (not inDesiredVolume(track)) {
-      AbortEvent("A' wasn't produced inside of the requested volume.");
-    } else {
-      // add generation to UserTrackInformation
-      UserTrackInformation* userInfo =
-          dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
-
-      // make sure A' is persisted into output file
-      userInfo->setSaveFlag(true);
-
-      if (!event->GetUserInformation()) {
-        event->SetUserInformation(new UserEventInformation);
-      }
-      static_cast<UserEventInformation*>(event->GetUserInformation())
-          ->setWeight(track->GetWeight());
-      /* debug printout to check weighting of events
-      std::cout << "[ EcalDarkBremFilter ]: "
-          << "(" << event->GetConstCurrentEvent()->GetEventID()
-          << ") weighted "
-          << std::setprecision(std::numeric_limits<double>::digits10 + 1)
-          << track->GetWeight()
-          << std::endl;
-       */
-    }  // A' was made in desired volume and has the minimum energy
-  }    // track is A'
+  if (auto creator{track->GetCreatorProcess()};
+      creator->GetProcessName().contains(darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)
+     ) {
+    // make sure all secondaries of dark brem process are saved
+    UserTrackInformation* userInfo =
+        dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
+    // make sure A' is persisted into output file
+    userInfo->setSaveFlag(true);
+    if (track->GetParticleDefinition() == darkbrem::G4APrime::APrime()) {
+      // check if A' was made in the desired volume and has the minimum energy
+      auto event{G4EventManager::GetEventManager()};
+      if (not inDesiredVolume(track)) {
+        AbortEvent("A' wasn't produced inside of the requested volume.");
+      } else {
+  
+        if (!event->GetUserInformation()) {
+          event->SetUserInformation(new UserEventInformation);
+        }
+        static_cast<UserEventInformation*>(event->GetUserInformation())
+            ->setWeight(track->GetWeight());
+        /* debug printout to check weighting of events
+        std::cout << "[ EcalDarkBremFilter ]: "
+            << "(" << event->GetConstCurrentEvent()->GetEventID()
+            << ") weighted "
+            << std::setprecision(std::numeric_limits<double>::digits10 + 1)
+            << track->GetWeight()
+            << std::endl;
+         */
+      }  // A' was made in desired volume and has the minimum energy
+    } // track was A'
+  } // track created by dark brem process
 
   return;
 }
