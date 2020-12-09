@@ -1,5 +1,5 @@
-#ifndef EVENTPROC_OVERLAYPRODUCER_H_
-#define EVENTPROC_OVERLAYPRODUCER_H_
+#ifndef RECON_OVERLAY_OVERLAYPRODUCER_H_
+#define RECON_OVERLAY_OVERLAYPRODUCER_H_
 
 // ROOT
 #include "TFile.h"
@@ -11,10 +11,9 @@
 #include <vector>
 
 // LDMX Framework
-#include "Event/EventDef.h"
 #include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/Parameters.h"
+#include "Framework/Configure/Parameters.h"
 
 namespace ldmx {
 
@@ -166,4 +165,4 @@ private:
 };
 } // namespace ldmx
 
-#endif /* EVENTPROC_OVERLAYPRODUCER_H */
+#endif /* RECON_OVERLAY_OVERLAYPRODUCER_H */

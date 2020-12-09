@@ -1,10 +1,4 @@
-/**
- * @file OverlayProducer.cxx
- * @brief Pile-up producer
- * @author Lene Kristian Bryngemark, Stanford University
- */
-
-#include "EventProc/OverlayProducer.h"
+#include "Recon/Overlay/OverlayProducer.h"
 #include "Framework/RandomNumberSeedService.h"
 
 namespace ldmx {
