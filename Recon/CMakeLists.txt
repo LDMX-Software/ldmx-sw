@@ -9,9 +9,16 @@ project(Recon VERSION 2.1.0
               LANGUAGES CXX
 )
 
+file(GLOB SRC_FILES CONFIGURE_DEPENDS 
+  ${PROJECT_SOURCE_DIR}/src/Recon/Examples/*.cxx
+  ${PROJECT_SOURCE_DIR}/src/Recon/Skims/*.cxx
+  ${PROJECT_SOURCE_DIR}/src/Recon/Trigger/*.cxx
+)
+
 setup_library(name Recon
               dependencies Framework::Framework Event::Event Tools::Tools 
                            DetDescr::DetDescr Ecal::Ecal
+              sources ${SRC_FILES}
 )
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Recon)
