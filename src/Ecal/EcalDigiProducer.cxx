@@ -34,6 +34,7 @@ namespace ldmx {
         clockCycle_       = hgcrocParams.getParameter<double>("clockCycle");
         nADCs_            = hgcrocParams.getParameter<int>("nADCs");
         iSOI_             = hgcrocParams.getParameter<int>("iSOI");
+        noise_            = hgcrocParams.getParameter<bool>("noise");
 
         //collection names
         inputCollName_  = ps.getParameter<std::string>("inputCollName");
@@ -52,7 +53,7 @@ namespace ldmx {
         readoutThreshold_ = hgcrocParams.getParameter<double>("readoutThreshold");
         noiseGenerator_->setNoise(hgcrocParams.getParameter<double>("noiseRMS")); //rms noise in mV
         noiseGenerator_->setPedestal(gain_*pedestal_); //mean noise amplitude (if using Gaussian Model for the noise) in mV
-        noiseGenerator_->setNoiseThreshold(readoutThreshold_); //threshold for readout in mV
+        noiseGenerator_->setNoiseThreshold(gain_*readoutThreshold_); //threshold for readout in mV
     }
 
     void EcalDigiProducer::produce(Event& event) {
@@ -100,14 +101,26 @@ namespace ldmx {
                 /* debug printout
                 std::cout << simHit.getContrib(iContrib).edep << " MeV" << std::endl;
                  */
+                /**
+                 * HACK ALERT
+                 * The shifting of the time should _not_ be done this sloppily.
+                 * In reality, each chip has a set time phase that it samples at (relative to target),
+                 * so the time shifting should be at the emulator level.
+                 */
                 voltages.push_back( simHit.getContrib( iContrib ).edep*MeV_ );
-                times.push_back( simHit.getContrib( iContrib ).time );
+                times.push_back( 
+                        simHit.getContrib( iContrib ).time //global time (t=0ns at target)
+                        - simHit.getPosition().at(2)/299.702547 //shift light-speed particle traveling along z
+                        );
             }
 
             unsigned int hitID = simHit.getID();
             filledDetIDs.insert( hitID );
 
-            //std::cout << hitID << " ";
+            /* debug printout
+            std::cout << hitID << " "
+                << simHit.getEdep() << std::endl;
+             */
             //container emulator uses to write out samples and
             //transfer samples into the digi collection
             std::vector<HgcrocDigiCollection::Sample> digiToAdd;
@@ -155,7 +168,7 @@ namespace ldmx {
 
                 //noise generator gives the amplitude above the readout threshold
                 //  we need to convert it to the amplitdue above the pedestal
-                voltages[0] = noiseHit + readoutThreshold_ - gain_*pedestal_;
+                voltages[0] = noiseHit + gain_*readoutThreshold_ - gain_*pedestal_;
     
                 std::vector<HgcrocDigiCollection::Sample> digiToAdd;
                 if ( hgcroc_->digitize( noiseID , voltages , times , digiToAdd ) ) {
