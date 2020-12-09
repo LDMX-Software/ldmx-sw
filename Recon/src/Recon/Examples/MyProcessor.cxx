@@ -1,5 +1,5 @@
 
-#include "Recon/MyProcessor.h" 
+#include "Recon/Examples/MyProcessor.h" 
 
 namespace ldmx { 
 

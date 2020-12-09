@@ -1,6 +1,6 @@
 
-#ifndef RECON_MY_PROCESSOR_H_
-#define RECON_MY_PROCESSOR_H_
+#ifndef RECON_EXAMPLES_MY_PROCESSOR_H_
+#define RECON_EXAMPLES_MY_PROCESSOR_H_
 
 /***************/
 /*   ldmx-sw   */
@@ -55,4 +55,4 @@ namespace ldmx {
 
 } // ldmx
 
-#endif // RECON_MY_PROCESSOR_H_
+#endif // RECON_EXAMPLES_MY_PROCESSOR_H_
