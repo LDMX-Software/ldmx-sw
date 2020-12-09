@@ -9,7 +9,6 @@
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h" 
 #include "Framework/ConfigurePython.h"
-#include "Event/EventDef.h" //Need event bus passengers
 #include "DetDescr/EcalID.h" //creating unique cell IDs
 
 #include <fstream> //to write config file
