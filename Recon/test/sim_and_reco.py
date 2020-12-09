@@ -35,6 +35,7 @@ clTag=TrigScintClusterProducer.tagger()
 clUp=TrigScintClusterProducer.up()
 clDown=TrigScintClusterProducer.down()
 
+from LDMX.Ecal import ecal_hardcoded_conditions
 from LDMX.Ecal import digi
 from LDMX.Ecal import vetos
 from LDMX.Hcal import hcal
