@@ -2,6 +2,8 @@
 
 // LDMX
 #include "Ecal/Event/EcalHit.h"
+#include "Event/EventConstants.h"
+#include "DetDescr/SimSpecialID.h"
 
 /*~~~~~~~~~~~*/
 /*   Tools   */
@@ -90,6 +92,7 @@ namespace ldmx {
 
         // Set the collection name as defined in the configuration
         collectionName_ = parameters.getParameter< std::string >("collection_name");
+        rec_pass_name_  = parameters.getParameter< std::string >("rec_pass_name");
     }
 
     void EcalVetoProcessor::clearProcessor(){
@@ -150,7 +153,8 @@ namespace ldmx {
             float pmax = 0;
             for ( SimTrackerHit &spHit : ecalSpHits ) {
 
-                if (spHit.getLayerID() != 31 || spHit.getMomentum()[2] <= 0) continue;
+                SimSpecialID hit_id(spHit.getID());
+                if (hit_id.plane() != 31 || spHit.getMomentum()[2] <= 0) continue;
 
                 if (spHit.getTrackID() == recoilTrackID) {
                     if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {
@@ -167,7 +171,8 @@ namespace ldmx {
                 pmax = 0;
                 for ( SimTrackerHit &spHit : targetSpHits ) {
 
-                    if (spHit.getLayerID() != 1 || spHit.getMomentum()[2] <= 0) continue;
+                    SimSpecialID hit_id(spHit.getID());
+                    if (hit_id.plane() != 1 || spHit.getMomentum()[2] <= 0) continue;
 
                     if (spHit.getTrackID() == recoilTrackID) {
                         if(sqrt(pow(spHit.getMomentum()[0],2) + pow(spHit.getMomentum()[1],2) + pow(spHit.getMomentum()[2],2)) > pmax) {
@@ -202,7 +207,7 @@ namespace ldmx {
 
 
         // Get the collection of digitized Ecal hits from the event.
-        const std::vector< EcalHit > ecalRecHits = event.getCollection< EcalHit >( "EcalRecHits" );
+        const std::vector< EcalHit > ecalRecHits = event.getCollection< EcalHit >( "EcalRecHits" , rec_pass_name_ );
 
         EcalID globalCentroid = GetShowerCentroidIDAndRMS( ecalRecHits , showerRMS_);
         /* ~~ Fill the hit map ~~ O(n)  */

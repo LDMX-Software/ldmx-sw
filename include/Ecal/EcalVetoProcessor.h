@@ -132,6 +132,8 @@ namespace ldmx {
             std::string bdtFileName_;
             std::string cellFileNamexy_;
             std::vector<float> bdtFeatures_;
+            
+            std::string rec_pass_name_;
 
             /** Name of the collection which will containt the results. */
             std::string collectionName_{"EcalVeto"};
