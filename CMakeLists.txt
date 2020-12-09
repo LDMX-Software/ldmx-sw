@@ -89,7 +89,7 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
     add_subdirectory(Ecal)
 
     # Currently, this module contains processors from several subsystems.
-    add_subdirectory(EventProc)
+    add_subdirectory(Recon)
 
     # Conditions services
     add_subdirectory(Conditions)
