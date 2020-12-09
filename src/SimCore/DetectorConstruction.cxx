@@ -31,6 +31,9 @@ namespace ldmx {
         for (simcore::XsecBiasingOperator *bop : bops) {
             for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
                 if (bop->getVolumeToBias().compare("ecal") == 0) {
+                  //TODO this is _horrible_
+                  //  can we get an 'ecal' and 'hcal' region instead
+                  //  of just a 'CalorimeterRegion' region?
                   G4String volumeName = volume->GetName();
                     if ((
                                volumeName.contains("Wthick") 
@@ -38,6 +41,7 @@ namespace ldmx {
                             || volumeName.contains("W") 
                             || volumeName.contains("PCB")
                             || volumeName.contains("CFMix")
+                            || volumeName.contains("Al")
                         ) && volumeName.contains("volume")
                     ) {
                         bop->AttachTo(volume);
