@@ -3,6 +3,7 @@
 #include "SimCore/UserEventInformation.h"
 
 #include "G4EventManager.hh"
+#include "G4Event.hh"
 #include "G4Step.hh"
 
 namespace biasing {
@@ -30,6 +31,14 @@ void WeightByStep::stepping(const G4Step* step) {
   //  so, to get _this_ step's weight, we divide post_weight by pre_weight
   double weight_of_this_step_alone =
       track_weight_post_step / track_weight_pre_step;
+
+  /** debug message
+  std::cout << "[ WeightByStep ] : "
+    << "(" << event->GetConstCurrentEvent()->GetEventID() << ")"
+    << " Track " << step->GetTrack()->GetTrackID()
+    << " stepped with weight " << weight_of_this_step_alone
+    << std::endl;
+   */
 
   // factor this step's weight into the event weight
   event_info->incWeight(weight_of_this_step_alone);

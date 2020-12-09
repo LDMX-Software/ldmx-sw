@@ -57,13 +57,16 @@ def midshower_nuclear( detector ) :
     from LDMX.SimCore import generators
     sim.generators = [ generators.single_4gev_e_upstream_tagger() ]
 
-    bias_threshold = 1000.
+    # Biasing parameters are the same for both EN and PN
+    #   so they maintain their relative rate differences
+    bias_threshold = 1000. #MeV
+    bias_factor = 100.
     
     # Enable and configure the biasing
     from LDMX.SimCore import bias_operators
     sim.biasing_operators = [ 
-            bias_operators.PhotoNuclear('ecal',450.,bias_threshold),
-            bias_operators.ElectroNuclear('ecal',450.,bias_threshold)
+            bias_operators.PhotoNuclear('ecal',bias_factor,bias_threshold),
+            bias_operators.ElectroNuclear('ecal',bias_factor,bias_threshold)
             ]
 
     # Configure the sequence in which user actions should be called.
@@ -75,11 +78,7 @@ def midshower_nuclear( detector ) :
             # Make sure a total of 1700MeV energy went PN in ECal
             filters.MidShowerNuclearBkgdFilter(1700.),
             # Calculate event weight using step weights as factors
-            util.WeightByStep(),
-            # Tag all photo-nuclear tracks to persist them to the event.
-            filters.TrackProcessFilter.photo_nuclear(),
-            # Tag all electro-nuclear tracks to persist them
-            filters.TrackProcessFilter.electro_nuclear()
+            util.WeightByStep()
     ]
 
     return sim
@@ -146,9 +145,7 @@ def dark_brem( ap_mass , lhe, detector ) :
             # Abort events if the electron doesn't get to the ECal with 3.5GeV
             filters.PrimaryToEcalFilter(3500.),
             # Only keep events when a dark brem happens in the Ecal
-            filters.EcalDarkBremFilter(2000.),
-            # Keep all of the dark brem daughters. 
-            filters.TrackProcessFilter.dark_brem()
+            filters.EcalDarkBremFilter(2000.)
     ]
     
     return sim
