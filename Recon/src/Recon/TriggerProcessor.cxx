@@ -1,5 +1,5 @@
 
-#include "EventProc/TriggerProcessor.h"
+#include "Recon/TriggerProcessor.h"
 
 namespace ldmx {
 

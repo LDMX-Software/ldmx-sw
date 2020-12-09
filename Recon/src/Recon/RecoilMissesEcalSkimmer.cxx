@@ -5,7 +5,7 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#include "EventProc/RecoilMissesEcalSkimmer.h"
+#include "Recon/RecoilMissesEcalSkimmer.h"
 
 namespace ldmx { 
     

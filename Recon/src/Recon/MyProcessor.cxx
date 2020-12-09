@@ -1,5 +1,5 @@
 
-#include "EventProc/MyProcessor.h" 
+#include "Recon/MyProcessor.h" 
 
 namespace ldmx { 
 
