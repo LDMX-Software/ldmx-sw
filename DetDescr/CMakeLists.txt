@@ -18,4 +18,4 @@ setup_library(name DetDescr
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/DetDescr)
 
 # Setup the test
-setup_test(dependencies DARK::DetDescr)
+setup_test(dependencies DetDescr::DetDescr)
