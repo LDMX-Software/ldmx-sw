@@ -158,6 +158,15 @@ namespace ldmx {
                         else return first(); //calibration mode
                     }
 
+                    /**
+                     * Get the raw value of this sample
+                     * 
+                     * @return 32-bit full value fo the sample
+                     */
+                    uint32_t raw() const {
+                        return word_;
+                    }
+
                 private:
     
                     /**
@@ -238,15 +247,12 @@ namespace ldmx {
                      * Check if this DIGI is an ADC measurement
                      *
                      * We consider this DIGI an ADC measurement if both of the flags
-                     * for all the samples are false.
+                     * for the Sample Of Interest are false.
                      *
                      * @return true if we consider this DIGI an ADC measurement
                      */
                     bool isADC() const { 
-                        for ( auto it = begin(); it < end(); it++) {
-                            if ( it->isTOTinProgress() or it->isTOTComplete() ) return false;
-                        }
-                        return true;
+                        return !(soi().isTOTinProgress() or soi().isTOTComplete());
                     }
     
                     /**
@@ -264,16 +270,16 @@ namespace ldmx {
                     /**
                      * Get the 12-bit decoded TOT measurement from this DIGI
                      *
-                     * @return 12-bit TOT measurement, returns -1 if this DIGI is not TOT
+                     * @note Returns -1 if this DIGI is not TOT.
+                     * @note Returns -2 if this DIGI has a TOT in progress during
+                     * the SOI.
+                     *
+                     * @return 12-bit TOT measurement
                      */
                     int tot() const {
                         if ( not isTOT() ) return -1;
-                        for ( auto it = begin(); it < end(); it++) {
-                            if ( it->isTOTComplete() ) return it->tot();
-                        }
-                        //this DIGI is TOT, but never completed
-                        //  ==> return maximum
-                        return 4096;
+                        if ( soi().isTOTinProgress() ) return -2;
+                        return soi().tot();
                     }
     
                     /**
@@ -428,7 +434,7 @@ namespace ldmx {
             /**
              * The ROOT class definition.
              */
-            ClassDef(HgcrocDigiCollection, 1);
+            ClassDef(HgcrocDigiCollection, 2);
     };
 
 } //ldmx

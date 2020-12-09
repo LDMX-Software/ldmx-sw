@@ -31,8 +31,10 @@ namespace ldmx {
      * voltages. These tasks depend on the detector construction,
      * so they are left to the individual subsystem producers.
      *
-     * @TODO Shift the pulse SOI arbitrarily
-     * @TODO More realistic TOT emulation
+     * @TODO Shift the pulse SOI arbitrarily (needed for realism stuff below)
+     * @TODO more realistic TOT emulation with focus on OOT signals
+     * @TODO more realistic ADC emulation with focus on OOT signals
+     * @TODO time phase setting relative to target t=0ns
      */
     class HgcrocEmulator { 
 
@@ -91,6 +93,9 @@ namespace ldmx {
              * @TODO Allow for the user to choose a sample of interest (iSOI_)
              * other than zero. This should shift which sample the peak of
              * the pulse is placed in.
+             * @TODO To incorporate Out Of Time (OOT) pileup, the SOI should be able 
+             * to shift to a later (non-zero) index and then the chip would need to
+             * be un-able to readout if an earlier hit sets the current SOI to tot_progress_.
              *
              * #### ADC Mode
              * Here, we measure the height of the pulse once per clock cycle.
@@ -123,12 +128,9 @@ namespace ldmx {
              *
              *  1. Calculate the number of clock cycles it would take for the TOT to be measured
              *  2. Convert the TOT measurement [ns] to TDC counts using totMax and the internal 12 bits
-             *  3. Convert TDC counts (12 bits) to the 10 bit sample using
-             *     - if ( TDC > 512 ) ten_bit_sample = TDC
-             *     - else ten_bit_sample = 512 + TDC/8
-             *  4. Insert the ten_bit_sample into the correct sample using the index above
-             *  5. Set the other samples to normal ADC measurements, 
-             *     using the flags to show if TOT is in progress or not
+             *  3. Insert the TOT measurement in the SOI (setting tot_complete_ flag to true)
+             *  4. Set the tot_progress_ flag for any samples after the SOI that are within the number
+             *     of clock cycles it takes for the chip to recover
              *
              * #### Pulse Measurement
              * All "measurements" of the pulse use the member function measurePulse.
@@ -192,12 +194,12 @@ namespace ldmx {
             /// Verbosity, not configurable, only helpful in development
             bool verbose_{false};
 
-            /// Put noise in channels, not configurable, only helpful in development
-            bool noise_{true};
-
             /**************************************************************************************
              * Parameters Identical for all Chips
              *************************************************************************************/
+
+            /// Put noise in channels, only configure to false if testing
+            bool noise_{true};
 
             /// Depth of ADC buffer. 
             int nADCs_; 
@@ -235,6 +237,9 @@ namespace ldmx {
             /// Time of Peak relative to pulse shape fit [ns]
             double timePeak_;
 
+            /// The capacitance of the readout pads in the chips [pF]
+            double readoutPadCapacitance_;
+
             /**************************************************************************************
              * Chip-Dependent Parameters (Conditions)
              *************************************************************************************/
@@ -261,7 +266,7 @@ namespace ldmx {
             /// base pedestal [ADC units]
             double pedestal_;
 
-            /// Min threshold for reading out a channel [mV]
+            /// Min threshold for reading out a channel [ADC units]
             double readoutThreshold_;
 
             /// Min threshold for measuring TOA [mV]
