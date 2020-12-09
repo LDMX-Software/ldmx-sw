@@ -9,8 +9,8 @@
 
 #include "Biasing/EcalDarkBremFilter.h"
 
-#include "SimCore/DarkBrem/G4APrime.h"     //checking if particles match A'
-#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h" //checking for dark brem secondaries
+#include "SimCore/DarkBrem/G4APrime.h"  //checking if particles match A'
+#include "SimCore/DarkBrem/G4eDarkBremsstrahlung.h"  //checking for dark brem secondaries
 #include "SimCore/UserEventInformation.h"  //set the weight for the event
 #include "SimCore/UserTrackInformation.h"  //make sure A' is saved
 
@@ -98,9 +98,9 @@ void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
       << std::endl;
   */
 
-  if (auto creator{track->GetCreatorProcess()};
-      creator->GetProcessName().contains(darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)
-     ) {
+  const G4VProcess* creator = track->GetCreatorProcess();
+  if (creator and creator->GetProcessName().contains(
+                      darkbrem::G4eDarkBremsstrahlung::PROCESS_NAME)) {
     // make sure all secondaries of dark brem process are saved
     UserTrackInformation* userInfo =
         dynamic_cast<UserTrackInformation*>(track->GetUserInformation());
@@ -112,7 +112,6 @@ void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
       if (not inDesiredVolume(track)) {
         AbortEvent("A' wasn't produced inside of the requested volume.");
       } else {
-  
         if (!event->GetUserInformation()) {
           event->SetUserInformation(new UserEventInformation);
         }
@@ -127,8 +126,8 @@ void EcalDarkBremFilter::PostUserTrackingAction(const G4Track* track) {
             << std::endl;
          */
       }  // A' was made in desired volume and has the minimum energy
-    } // track was A'
-  } // track created by dark brem process
+    }    // track was A'
+  }      // track created by dark brem process
 
   return;
 }
