@@ -1,6 +1,6 @@
 
-#ifndef EVENTPROC_MY_PROCESSOR_H_
-#define EVENTPROC_MY_PROCESSOR_H_
+#ifndef RECON_MY_PROCESSOR_H_
+#define RECON_MY_PROCESSOR_H_
 
 /***************/
 /*   ldmx-sw   */
@@ -55,4 +55,4 @@ namespace ldmx {
 
 } // ldmx
 
-#endif // EVENTPROC_MY_PROCESSOR_H_
+#endif // RECON_MY_PROCESSOR_H_

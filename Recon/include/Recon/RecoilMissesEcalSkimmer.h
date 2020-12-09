@@ -5,8 +5,8 @@
  * @author Omar Moreno, SLAC National Accelerator Laboratory
  */
 
-#ifndef EVENTPROC_RECOILMISSESECALSKIMMER_H_
-#define EVENTPROC_RECOILMISSESECALSKIMMER_H_
+#ifndef RECON_RECOILMISSESECALSKIMMER_H_
+#define RECON_RECOILMISSESECALSKIMMER_H_
 
 //----------//
 //   LDMX   //
@@ -39,4 +39,4 @@ namespace ldmx {
     }; // RecoilMissesEcalSkimmer
 }
 
-#endif // EVENTPROC_RECOILMISSESECALSKIMMER_H_
+#endif // RECON_RECOILMISSESECALSKIMMER_H_
