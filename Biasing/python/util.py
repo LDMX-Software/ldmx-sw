@@ -60,3 +60,46 @@ class WeightByStep(BiasingUtilityAction) :
     def __init__(self) :
         super().__init__('weight_by_step','WeightByStep')
 
+class TrackProcessFilter(BiasingUtilityAction):
+    """ Configuration used to tag all tracks produced via the given process to persist them to the event.
+
+    Parameters
+    ----------
+    process_name : str
+        The Geant4 process name (e.g. photonNuclear) via which the tracks were produced. 
+    """
+
+    def __init__(self,process_name) :
+        super().__init__('%s_track_filter'%process_name, 'TrackProcessFilter' )
+
+        self.process = process_name
+
+    def photo_nuclear() :
+        """ Configuration used to tag all photo-nuclear tracks to persist them to the event. 
+    
+        Return
+        ------
+        Instance of TrackProcessFilter configured to tag photo-nuclear tracks.
+        """
+        return TrackProcessFilter('photonNuclear')
+
+    def electro_nuclear() :
+        """ Configuration used to tag all electro-nuclear tracks to persist them to the event. 
+    
+        Return
+        ------
+        Instance of TrackProcessFilter configured to tag electro-nuclear tracks.
+    
+        """
+        return TrackProcessFilter('electronNuclear')
+
+    def dark_brem() :
+        """ Configuration used to tag all dark brem tracks to persist them to the event. 
+    
+        Return
+        ------
+        Instance of TrackProcessFilter configured to tag dark brem tracks.
+    
+        """
+        return TrackProcessFilter('eDarkBrem')
+
