@@ -33,7 +33,8 @@ EcalDarkBremFilter::EcalDarkBremFilter(const std::string& name,
     // looking for ecal volumes
     if (volumeName.contains("volume") and
         (volumeName.contains("Si") or volumeName.contains("W") or
-         volumeName.contains("CFMix") or volumeName.contains("PCB"))) {
+         volumeName.contains("CFMix") or volumeName.contains("PCB") or
+         volumeName.contains("Al"))) {
       volumes_.push_back(volume);
     }
   }
