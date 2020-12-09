@@ -172,9 +172,12 @@ namespace ldmx {
 
       // Noise simulation
       int n_noise_pulses = random_->Poisson(TotalNoise);
-      for(int i=0;i<n_noise_pulses;i++) {
-	ex[bar_id]->AddPulse(random_->Uniform(0,maxts_*SamplingTime),1);
-      }
+      std::cout<<"bar_id=\t"<<bar_id<<"\tnoise pulses=\t"<<n_noise_pulses<<std::endl;
+      // if(n_noise_pulses>0){
+	for(int i=0;i<n_noise_pulses;i++) {
+	  ex[bar_id]->AddPulse(random_->Uniform(0,maxts_*SamplingTime),1);
+	}
+      // }
 
       // Storing the "good" digis
       if(smq->PulseCut(ex[bar_id])) {
@@ -187,10 +190,12 @@ namespace ldmx {
 	QIEInfo.truePE = TrueEdep[bar_id] / mevPerMip_ * pePerMip_;
 
 	QIEInfo.IsNoisy= (TrueEdep[bar_id]==0);
-
+	// QIEInfo.IsNoisy= (ex[bar_id]->npulses==n_noise_pulses);
+	// std::cout<<"TruePE=\t"<<TrueEdep[bar_id]<<"ex->npulses=\t"<<ex[bar_id]->npulses<<"noise pulses=\t"<<n_noise_pulses<<std::endl;
 	QDigis.push_back(QIEInfo);
       }
     }
+    
     // // ------------------------------- Noise simulation -------------------------------
     // int numEmptyCells = stripsPerArray_ - numRecHits; // only simulating for single array until all arrays are merged into one collection
     // std::vector<double> noiseHits_PE = noiseGenerator_->generateNoiseHits( numEmptyCells );
