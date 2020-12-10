@@ -39,7 +39,6 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
       /** check on first step of A' to see if it originated in correct volume
        * this needs to be here because sometimes the
        * electron dark brems in the tagger and misses the target completely
-       */
       std::cout << "[ TargetDarkBremFilter ] : "
                 << "("
                 << G4EventManager::GetEventManager()
@@ -48,6 +47,7 @@ void TargetDarkBremFilter::stepping(const G4Step* step) {
                 << ") "
                 << "A' originated in "
                 << track->GetLogicalVolumeAtVertex()->GetName() << std::endl;
+       */
       if (isOutsideTargetRegion(track->GetLogicalVolumeAtVertex()))
         AbortEvent("A' was not created within target.");
     }  // first step of A'
