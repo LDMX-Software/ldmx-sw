@@ -10,6 +10,7 @@ p=ldmxcfg.Process("v12")
 p.run = 1
 
 from LDMX.SimCore import simulator
+import LDMX.Ecal.EcalGeometry
 sim = simulator.simulator("mySim")
 sim.setDetector( 'ldmx-det-v12', True  )
 sim.description = "ECal photo-nuclear, xsec bias 450"
@@ -40,7 +41,7 @@ from LDMX.Ecal import digi
 from LDMX.Ecal import vetos
 from LDMX.Hcal import hcal
 from LDMX.EventProc.simpleTrigger import simpleTrigger 
-from LDMX.EventProc.trackerHitKiller import trackerHitKiller
+#from LDMX.EventProc.trackerHitKiller import trackerHitKiller
 p.sequence=[ sim, 
         digi.EcalDigiProducer(),
         digi.EcalRecProducer(), 
@@ -50,9 +51,10 @@ p.sequence=[ sim,
         tsDigisUp, tsDigisTag, tsDigisDown,
         clTag, clUp, clDown,
         trigScintTrack,
-        trackerHitKiller, simpleTrigger, 
-        ldmxcfg.Producer('finableTrack','ldmx::FindableTrackProcessor','EventProc'),
-        ldmxcfg.Producer('trackerVeto' ,'ldmx::TrackerVetoProcessor'  ,'EventProc')
+        #trackerHitKiller, 
+        simpleTrigger, 
+        #ldmxcfg.Producer('finableTrack','ldmx::FindableTrackProcessor','EventProc'),
+        #ldmxcfg.Producer('trackerVeto' ,'ldmx::TrackerVetoProcessor'  ,'EventProc')
         ]
 
 p.outputFiles=["/tmp/simoutput.root"]
