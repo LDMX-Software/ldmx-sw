@@ -51,9 +51,6 @@ public:
   void buildSimParticles(Event *outputEvent);
 
 private:
-  /** The map of tracks to their parent IDs and Trajectory objects. */
-  TrackMap *trackMap_;
-
   /** The current Geant4 event. */
   G4Event *currentEvent_;
 };

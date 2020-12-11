@@ -22,13 +22,50 @@ namespace ldmx {
         int trackID = track->GetTrackID();
 
         if (trackMap_.contains(trackID)) {
-            if (trackMap_.hasTrajectory(trackID)) {
-                // This makes sure the tracking manager does not delete the trajectory.
-                fpTrackingManager->SetStoreTrajectory(true);
-            }
+            /**
+             * When a track is suspended and then put onto the waiting stack
+             * (like what is done using the PartialEnergySorter)
+             * The track ends up being passed through the user tracking action
+             * more than one time. We need this here to make sure Geant4's
+             * trajectory manager has the same setting for whether we should keep
+             * the trajectroy as our trajectory manager (TrackMap)
+             */
+            fpTrackingManager->SetStoreTrajectory(trackMap_.hasTrajectory(trackID));
         } else {
-            // New track so call the process method.
-            processTrack(track);
+            // New Track
+    
+            // Set user track info on new track.
+            if (!track->GetUserInformation()) {
+                auto trackInfo = new UserTrackInformation;
+                trackInfo->setInitialMomentum(track->GetMomentum());
+                const_cast<G4Track*>(track)->SetUserInformation(trackInfo);
+                trackInfo->setVertexVolume(track->GetVolume()->GetName()); 
+            }
+    
+            // Check if trajectory storage should be turned on or off from the region info.
+            auto regionInfo = (UserRegionInformation*) track->GetLogicalVolumeAtVertex()->GetRegion()->GetUserInformation();
+            
+            // Check if trajectory storage should be turned on or off from the gen status info
+            int curGenStatus = -1;
+            if (track->GetDynamicParticle()->GetPrimaryParticle()) {
+                auto primaryInfo = dynamic_cast<UserPrimaryParticleInformation*>(
+                    track->GetDynamicParticle()->GetPrimaryParticle()->GetUserInformation());
+                curGenStatus = primaryInfo->getHepEvtStatus();
+            }
+    
+            // Always save a particle if it has gen status == 1
+            if (curGenStatus == 1){
+                storeTrajectory(track);
+            } else if (regionInfo && !regionInfo->getStoreSecondaries()) {
+                // Turn off trajectory storage for this track from region flag.
+                fpTrackingManager->SetStoreTrajectory(false);
+            } else {
+                // Store a new trajectory for this track.
+                storeTrajectory(track);
+            }
+    
+            // Save the association between track ID and its parent ID for all tracks in the event.
+            if ( track->GetParentID() > 0 ) trackMap_.addSecondary(track->GetTrackID(), track->GetParentID());
         }
 
         // Activate user tracking actions
@@ -39,8 +76,6 @@ namespace ldmx {
 
         // Activate user tracking actions
         for( auto& trackingAction : trackingActions_) trackingAction->PostUserTrackingAction(track); 
-
-        // std::cout << "tracking acition: zpos = " << track->GetPosition().z() << ", pdgid = " << track->GetDefinition()->GetPDGEncoding() << ", volname = " << track->GetVolume()->GetLogicalVolume()->GetName().c_str() << std::endl;
 
         // Save extra trajectories on tracks that were flagged for saving during event processing.
         if (dynamic_cast<UserTrackInformation*>(track->GetUserInformation())->getSaveFlag()) {
@@ -78,41 +113,4 @@ namespace ldmx {
         // Map track ID to trajectory.
         trackMap_.addTrajectory(traj);
     }
-
-    void UserTrackingAction::processTrack(const G4Track* track) {
-
-        // Set user track info on new track.
-        if (!track->GetUserInformation()) {
-            auto trackInfo = new UserTrackInformation;
-            trackInfo->setInitialMomentum(track->GetMomentum());
-            const_cast<G4Track*>(track)->SetUserInformation(trackInfo);
-            trackInfo->setVertexVolume(track->GetVolume()->GetName()); 
-        }
-
-        // Check if trajectory storage should be turned on or off from the region info.
-        UserRegionInformation* regionInfo = (UserRegionInformation*) track->GetLogicalVolumeAtVertex()->GetRegion()->GetUserInformation();
-        
-        // Check if trajectory storage should be turned on or off from the gen status info
-        int curGenStatus = -1;
-        if (track->GetDynamicParticle()->GetPrimaryParticle() != NULL){
-            G4VUserPrimaryParticleInformation* primaryInfo = track->GetDynamicParticle()->GetPrimaryParticle()->GetUserInformation();
-            curGenStatus = ((UserPrimaryParticleInformation*) primaryInfo)->getHepEvtStatus();
-        }
-
-        // Always save a particle if it has gen status == 1
-        if (curGenStatus == 1){
-            storeTrajectory(track);
-        }
-        else if (regionInfo && !regionInfo->getStoreSecondaries()) {
-            // Turn off trajectory storage for this track from region flag.
-            fpTrackingManager->SetStoreTrajectory(false);
-        } 
-        else {
-            // Store a new trajectory for this track.
-            storeTrajectory(track);
-        }
-
-        // Save the association between track ID and its parent ID for all tracks in the event.
-        if ( track->GetParentID() > 0 ) trackMap_.addSecondary(track->GetTrackID(), track->GetParentID());
-    }
-}
+} // namespace ldmx
