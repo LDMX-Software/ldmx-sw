@@ -17,13 +17,10 @@
 #include "G4SystemOfUnits.hh"
 #include "G4VTrajectoryPoint.hh"
 
-using namespace ldmx;
-
 namespace simcore {
 namespace persist {
 
 SimParticleBuilder::SimParticleBuilder() : currentEvent_(nullptr) {
-  trackMap_ = UserTrackingAction::getUserTrackingAction()->getTrackMap();
 }
 
 SimParticleBuilder::~SimParticleBuilder() {}
@@ -34,19 +31,31 @@ void SimParticleBuilder::buildSimParticles(ldmx::Event *outputEvent) {
   auto trajectories{
       (const_cast<G4Event *>(currentEvent_))->GetTrajectoryContainer()};
 
-  // Create empty SimParticle objects and create the map of track ID to
-  // particles.
-  std::map<int, SimParticle> outputParticleMap;
-  for (auto trajectory : *trajectories->GetVector()) {
-    outputParticleMap[trajectory->GetTrackID()] = SimParticle();
+  if (!trajectories or !(trajectories->GetVector())) { 
+    EXCEPTION_RAISE(
+        "PersistFault",
+        "Event's trajectory container does not exist."
+        );
   }
 
+  const std::vector<G4VTrajectory*>& trajectory_list=*(trajectories->GetVector());
+
+  // Create empty SimParticle objects and create the map of track ID to
+  // particles.
+  std::map<int, ldmx::SimParticle> outputParticleMap;
+  for (G4VTrajectory* trajectory : trajectory_list) {
+    if (!trajectory) 
+      EXCEPTION_RAISE("PersistFault","NULL G4VTrajectory ended up in storage.");
+    outputParticleMap[trajectory->GetTrackID()];
+  }
+  
   // Fill information into the particles.
-  for (auto trajectory : *trajectories->GetVector()) {
+  for (G4VTrajectory* trajectory : trajectory_list) {
 
-    Trajectory *traj = static_cast<Trajectory *>(trajectory);
+    ldmx::Trajectory *traj = dynamic_cast<ldmx::Trajectory *>(trajectory);
+    if (!traj) EXCEPTION_RAISE("PersistFault","NULL Trajectory ended up in storage.");
 
-    SimParticle *simParticle = &outputParticleMap[traj->GetTrackID()];
+    ldmx::SimParticle *simParticle = &outputParticleMap[traj->GetTrackID()];
 
     simParticle->setGenStatus(traj->getGenStatus());
     simParticle->setPdgID(traj->GetPDGEncoding());
@@ -84,6 +93,7 @@ void SimParticleBuilder::buildSimParticles(ldmx::Event *outputEvent) {
 
   // Add the collection data to the output event.
   outputEvent->add("SimParticles", outputParticleMap);
+
 }
 
 } // namespace persist

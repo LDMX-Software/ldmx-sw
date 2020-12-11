@@ -36,8 +36,6 @@ G4VBiasingOperation* DarkBrem::ProposeOccurenceBiasingOperation(
                 << " -> Biased xsec: " << dbXsecBiased << std::endl;
     }
 
-    // xsecOperation is a protected member variable of XsecBiasingOperator
-    //  it is set in XsecBiasingOperator::StartRun()
     return BiasedXsec(dbXsecBiased);
   } else
     return 0;
