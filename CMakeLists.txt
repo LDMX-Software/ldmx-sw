@@ -12,7 +12,26 @@ project(Hcal VERSION 2.1.0
 # Search and configure ROOT
 find_package(ROOT CONFIG REQUIRED)
 
-setup_library(name Hcal
+option(BUILD_EVENT_ONLY "Build the event library." ON)
+if(BUILD_EVENT_ONLY)
+  
+  register_event_object( module_path "Hcal/Event" namespace "ldmx" class "HcalVetoResult" )
+  register_event_object( module_path "Hcal/Event" namespace "ldmx" class "HcalHit" type "collection")
+
+  file(GLOB EVENT_SRC_FILES ${PROJECT_SOURCE_DIR}/src/Hcal/Event/*.cxx)
+
+  # Generate the files needed to build the event classes.
+  setup_library(module Hcal
+                name Event
+                dependencies ROOT::Core Event::Event
+                #               Event::Event SimCore::Event 
+                sources ${EVENT_SRC_FILES}
+                register_target)
+  return()
+
+endif()
+
+setup_library(module Hcal
               dependencies ROOT::Physics 
               Framework::Framework Event::Event Tools::Tools DetDescr::DetDescr 
 )
