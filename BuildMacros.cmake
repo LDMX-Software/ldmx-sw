@@ -101,10 +101,10 @@ macro(setup_library)
                         "${multiValueArgs}" ${ARGN})
 
   # Build the library name and source path
-  set(library_name "${setup_library_name}")
-  set(src_path "${PROJECT_SOURCE_DIR}/src/${setup_library_name}")
-  set(include_path "include/${setup_library_name}")
-  if(setup_library_module)
+  set(library_name "${setup_library_module}")
+  set(src_path "${PROJECT_SOURCE_DIR}/src/${setup_library_module}")
+  set(include_path "include/${setup_library_module}")
+  if(setup_library_name)
     set(library_name "${setup_library_module}_${setup_library_name}")
     set(src_path
         "${PROJECT_SOURCE_DIR}/src/${setup_library_module}/${setup_library_name}"
@@ -137,11 +137,12 @@ macro(setup_library)
   endif()
 
   # Setup the targets to link against
+  message(STATUS "Library name: ${library_name}")
   target_link_libraries(${library_name} PUBLIC ${setup_library_dependencies})
 
   # Define an alias. This is used to create the imported target.
-  set(alias "${setup_library_name}::${setup_library_name}")
-  if(setup_library_module)
+  set(alias "${setup_library_module}::${setup_library_module}")
+  if(setup_library_name)
     set(alias "${setup_library_module}::${setup_library_name}")
   endif()
   add_library(${alias} ALIAS ${library_name})
