@@ -39,7 +39,7 @@ endif()
 # to an external folder and create the targets.
 find_package(ONNXRuntime 1.2.0)
 
-setup_library(name Ecal
+setup_library(module Ecal
               dependencies ROOT::Physics 
                            Framework::Framework Event::Event Tools::Tools DetDescr::DetDescr 
                            ONNXRuntime::Interface
