@@ -16,7 +16,7 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
   ${PROJECT_SOURCE_DIR}/src/Recon/Trigger/*.cxx
 )
 
-setup_library(name Recon
+setup_library(module Recon
               dependencies Framework::Framework Event::Event Tools::Tools 
                            DetDescr::DetDescr Ecal::Ecal
               sources ${SRC_FILES}
