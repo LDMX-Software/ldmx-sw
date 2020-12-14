@@ -10,7 +10,7 @@ project(DetDescr VERSION 2.1.0
 # Search and configure ROOT
 find_package(ROOT 6.16 CONFIG REQUIRED)
 
-setup_library(name DetDescr
+setup_library(module DetDescr
               dependencies  ROOT::Core ROOT::Hist
                             Framework::Exception Framework::Configure 
 )

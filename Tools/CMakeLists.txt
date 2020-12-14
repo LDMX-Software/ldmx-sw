@@ -13,7 +13,7 @@ project(Tools VERSION 2.1.0
 find_package(ONNXRuntime 1.2.0)
 
 # Setup the library
-setup_library(name Tools
+setup_library(module Tools
               dependencies Framework::Framework Event::Event Conditions::Conditions
                            ONNXRuntime::Interface
 )

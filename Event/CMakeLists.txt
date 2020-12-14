@@ -10,20 +10,15 @@ project(Event VERSION 2.1.0
 
 register_event_object( module_path "Event" namespace "ldmx" class "CalorimeterHit"       type "collection" )
 register_event_object( module_path "Event" namespace "ldmx" class "FindableTrackResult"  type "collection" )
-register_event_object( module_path "Event" namespace "ldmx" class "HcalHit"              type "collection" )
-register_event_object( module_path "Event" namespace "ldmx" class "HcalVetoResult"                         )
-register_event_object( module_path "Event" namespace "ldmx" class "TrigScintHit"         type "collection" )
 register_event_object( module_path "Event" namespace "ldmx" class "TrackerVetoResult"                      )
 register_event_object( module_path "Event" namespace "ldmx" class "TriggerResult"                          )
 register_event_object( module_path "Event" namespace "ldmx" class "HgcrocDigiCollection"                   )
 register_event_object( module_path "Event" namespace "ldmx" class "HgcrocTrigDigi"       type "collection" )
-register_event_object( module_path "Event" namespace "ldmx" class "TrigScintCluster"     type "collection" )
-register_event_object( module_path "Event" namespace "ldmx" class "TrigScintTrack"       type "collection" )
 
 # Search and configure ROOT
 find_package(ROOT CONFIG REQUIRED)
 
-setup_library(name Event 
+setup_library(module Event 
               dependencies ROOT::Core
                            "${registered_targets}"
               register_target)
