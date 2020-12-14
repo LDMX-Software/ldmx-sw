@@ -137,7 +137,6 @@ macro(setup_library)
   endif()
 
   # Setup the targets to link against
-  message(STATUS "Library name: ${library_name}")
   target_link_libraries(${library_name} PUBLIC ${setup_library_dependencies})
 
   # Define an alias. This is used to create the imported target.
