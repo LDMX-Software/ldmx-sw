@@ -45,7 +45,7 @@ file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist
                                        ${PROJECT_SOURCE_DIR}/src/SimCore/*.cxx)
 
 # Setup the library
-setup_library(name SimCore
+setup_library(module SimCore
               dependencies Geant4::Interface
                            ROOT::Physics
                            Framework::Configure
