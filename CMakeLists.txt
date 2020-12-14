@@ -7,7 +7,33 @@ project(TrigScint VERSION 2.1.0
                   LANGUAGES CXX
 )
 
-setup_library(name TrigScint
+# Search and configure ROOT
+find_package(ROOT CONFIG REQUIRED)
+
+option(BUILD_EVENT_ONLY "Build the event library." ON)
+if(BUILD_EVENT_ONLY)
+
+  register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
+                         class "TrigScintHit" type "collection" )
+  register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
+                         class "TrigScintCluster" type "collection" )
+  register_event_object( module_path "TrigScint/Event" namespace "ldmx" 
+                         class "TrigScintTrack" type "collection" )
+  
+  file(GLOB EVENT_SRC_FILES ${PROJECT_SOURCE_DIR}/src/TrigScint/Event/*.cxx)
+
+  # Generate the files needed to build the event classes.
+  setup_library(module TrigScint name Event
+                dependencies ROOT::Core
+                             Hcal::Event
+                             Event::Event
+                sources ${EVENT_SRC_FILES} register_target)
+
+  return()
+
+endif()
+
+setup_library(module TrigScint
               dependencies Framework::Framework Event::Event DetDescr::DetDescr
                            Tools::Tools SimCore::Event
 )
