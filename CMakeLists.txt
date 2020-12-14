@@ -8,7 +8,7 @@ project(Conditions VERSION 2.1.0
                    LANGUAGES CXX
 )
 
-setup_library(name Conditions
+setup_library(module Conditions
               dependencies Framework::Framework DetDescr::DetDescr
 )
 
