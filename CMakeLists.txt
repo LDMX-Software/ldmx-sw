@@ -68,6 +68,8 @@ set(BUILD_EVENT_ONLY ON CACHE BOOL "Build the SimCore library." FORCE)
 add_subdirectory(Event)
 add_subdirectory(SimCore ${CMAKE_BINARY_DIR}/SimCoreEvent)
 add_subdirectory(Ecal ${CMAKE_BINARY_DIR}/EcalEvent)
+add_subdirectory(Hcal ${CMAKE_BINARY_DIR}/HcalEvent)
+add_subdirectory(TrigScint ${CMAKE_BINARY_DIR}/TrigScintEvent)
 
 # Once the event libraries have been built, turn off the global option. 
 set(BUILD_EVENT_ONLY OFF CACHE BOOL "Build the SimCore library." FORCE)
@@ -96,7 +98,6 @@ if(BUILD_ALL OR BUILD_RECON_ONLY)
 
     # Data quality management plots.
     add_subdirectory(DQM)
-
 
     # This module contains HCal reconstruction code.
     add_subdirectory(Hcal)
