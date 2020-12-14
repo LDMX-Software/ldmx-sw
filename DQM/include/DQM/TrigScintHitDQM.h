@@ -19,7 +19,7 @@
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 #include "Tools/AnalysisUtils.h"
-#include "Event/TrigScintHit.h"
+#include "TrigScint/Event/TrigScintHit.h"
 
 namespace ldmx { 
 
