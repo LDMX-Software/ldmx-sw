@@ -92,7 +92,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libEventDic_rdict.pcm
 file(GLOB SRC_FILES CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/src/Framework/*.cxx)
 
 # Setup the library
-setup_library(name Framework 
+setup_library(module Framework 
   dependencies Python3::Python
                ROOT::Core
                ROOT::Hist
