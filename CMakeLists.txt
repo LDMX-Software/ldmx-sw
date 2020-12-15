@@ -49,7 +49,7 @@ setup_test(dependencies Ecal::Ecal)
 
 setup_python(package_name ${PYTHON_PACKAGE_NAME}/Ecal)
 
-setup_data()
+setup_data(module Ecal)
 
 # Add the printing executable
 add_executable(print-ecal-hex-readout ${PROJECT_SOURCE_DIR}/src/Ecal/print_ecal_hex_readout.cxx)
