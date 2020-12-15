@@ -1,5 +1,5 @@
 
-#include "Recon/Trigger/TriggerProcessor.h"
+#include "Recon/TriggerProcessor.h"
 
 namespace ldmx {
 

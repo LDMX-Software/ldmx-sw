@@ -1,4 +1,4 @@
-#include "Recon/Overlay/OverlayProducer.h"
+#include "Recon/OverlayProducer.h"
 #include "Framework/RandomNumberSeedService.h"
 
 namespace ldmx {
