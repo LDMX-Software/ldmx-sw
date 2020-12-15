@@ -3,7 +3,7 @@
 #include "TTreeReader.h"
 
 // LDMX
-#include "Event/EventConstants.h"
+#include "Recon/Event/EventConstants.h"
 #include "Framework/Event.h"
 #include "Framework/EventFile.h"
 #include "Framework/Exception/Exception.h"
