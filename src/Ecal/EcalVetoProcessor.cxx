@@ -2,7 +2,7 @@
 
 // LDMX
 #include "Ecal/Event/EcalHit.h"
-#include "Event/EventConstants.h"
+#include "Recon/Event/EventConstants.h"
 #include "DetDescr/SimSpecialID.h"
 
 /*~~~~~~~~~~~*/
