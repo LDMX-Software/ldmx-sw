@@ -9,7 +9,7 @@
 #include <iostream>
 
 // ldmx
-#include "Event/EventConstants.h"
+#include "Recon/Event/EventConstants.h"
 #include "TrigScint/Event/TrigScintCluster.h"
 
 namespace ldmx {

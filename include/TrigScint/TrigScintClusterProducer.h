@@ -11,9 +11,9 @@
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h" //Needed to declare processor
 #include "Framework/Configure/Parameters.h" // Needed to import parameters from configuration file
-#include "Event/TrigScintCluster.h"
-#include "Event/EventConstants.h"
-#include "Event/TrigScintHit.h"
+#include "TrigScint/Event/TrigScintCluster.h"
+#include "Recon/Event/EventConstants.h"
+#include "TrigScint/Event/TrigScintHit.h"
 
 
 namespace ldmx {

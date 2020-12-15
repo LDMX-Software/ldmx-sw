@@ -14,8 +14,8 @@
 
 // LDMX
 #include "DetDescr/TrigScintID.h"
-#include "Event/EventConstants.h"
-#include "Event/TrigScintHit.h"
+#include "Recon/Event/EventConstants.h"
+#include "TrigScint/Event/TrigScintHit.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/NoiseGenerator.h"
 

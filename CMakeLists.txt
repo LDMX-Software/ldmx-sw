@@ -24,7 +24,7 @@ if(BUILD_EVENT_ONLY)
   setup_library(module TrigScint name Event
                 dependencies ROOT::Core
                              Hcal::Event
-                             Event::Event
+                             Recon::Event
                 register_target)
 
   return()
@@ -32,7 +32,7 @@ if(BUILD_EVENT_ONLY)
 endif()
 
 setup_library(module TrigScint
-              dependencies Framework::Framework Event::Event DetDescr::DetDescr
+              dependencies Framework::Framework Recon::Event DetDescr::DetDescr
                            Tools::Tools SimCore::Event
 )
 
