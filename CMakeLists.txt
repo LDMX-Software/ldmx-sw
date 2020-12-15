@@ -25,13 +25,10 @@ if(BUILD_EVENT_ONLY)
   register_event_object(module_path "SimCore/Event" namespace "ldmx"
                         class "SimParticle" type "map" key "int")
 
-  # Get all of the event sources that will be included in this library.
-  file(GLOB EVENT_SRC_FILES ${PROJECT_SOURCE_DIR}/src/SimCore/Event/*.cxx)
-
   # Generate the files needed to build the event classes.
   setup_library(module SimCore name Event
                 dependencies ROOT::Core
-                sources ${EVENT_SRC_FILES} register_target)
+                register_target)
 
   return()
 
@@ -41,8 +38,8 @@ endif()
 setup_geant4_target()
 
 # Get a list of all of the source files.
-file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist/*.cxx
-                                       ${PROJECT_SOURCE_DIR}/src/SimCore/*.cxx)
+file(GLOB SRC_FILES CONFIGURE_DEPDENDS ${PROJECT_SOURCE_DIR}/src/SimCore/Persist/[a-zA-Z]*.cxx
+                                       ${PROJECT_SOURCE_DIR}/src/SimCore/[a-zA-Z]*.cxx)
 
 # Setup the library
 setup_library(module SimCore
