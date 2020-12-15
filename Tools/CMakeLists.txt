@@ -14,7 +14,7 @@ find_package(ONNXRuntime 1.2.0)
 
 # Setup the library
 setup_library(module Tools
-              dependencies Framework::Framework Event::Event Conditions::Conditions
+              dependencies Framework::Framework Recon::Event Conditions::Conditions
                            ONNXRuntime::Interface
 )
 

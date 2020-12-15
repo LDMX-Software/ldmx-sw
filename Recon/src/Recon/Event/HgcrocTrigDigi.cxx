@@ -1,4 +1,4 @@
-#include "Event/HgcrocTrigDigi.h"
+#include "Recon/Event/HgcrocTrigDigi.h"
 
 #include <iostream>
 

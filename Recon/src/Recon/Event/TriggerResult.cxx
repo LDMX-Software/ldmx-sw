@@ -1,4 +1,4 @@
-#include "Event/TriggerResult.h"
+#include "Recon/Event/TriggerResult.h"
 
 ClassImp(ldmx::TriggerResult)
 

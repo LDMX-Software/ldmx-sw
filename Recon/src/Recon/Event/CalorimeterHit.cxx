@@ -1,4 +1,4 @@
-#include "Event/CalorimeterHit.h"
+#include "Recon/Event/CalorimeterHit.h"
 
 // STL
 #include <iostream>

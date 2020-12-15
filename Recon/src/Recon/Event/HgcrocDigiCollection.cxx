@@ -1,5 +1,5 @@
 
-#include "Event/HgcrocDigiCollection.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
 
 ClassImp(ldmx::HgcrocDigiCollection)
 

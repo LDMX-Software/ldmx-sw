@@ -4,8 +4,8 @@
  * @author Jeremy Mans, University of Minnesota
  */
 
-#ifndef EVENT_TRIGGERRESULT_H_
-#define EVENT_TRIGGERRESULT_H_
+#ifndef RECON_EVENT_TRIGGERRESULT_H_
+#define RECON_EVENT_TRIGGERRESULT_H_
 
 // ROOT
 #include "TObject.h" //ClassDef

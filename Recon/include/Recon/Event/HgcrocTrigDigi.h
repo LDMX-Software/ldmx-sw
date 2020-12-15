@@ -1,5 +1,5 @@
-#ifndef EVENT_HGCROCTRIGDIGI_H_
-#define EVENT_HGCROCTRIGDIGI_H_
+#ifndef RECON_EVENT_HGCROCTRIGDIGI_H_
+#define RECON_EVENT_HGCROCTRIGDIGI_H_
 
 // ldmx-sw
 #include <stdint.h> //uint{32,8}_t
@@ -142,4 +142,4 @@ private:
 
 } // namespace ldmx
 
-#endif // EVENT_HGCROCTRIGDIGI_H_
+#endif // RECON_EVENT_HGCROCTRIGDIGI_H_

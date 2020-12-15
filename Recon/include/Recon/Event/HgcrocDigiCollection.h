@@ -5,8 +5,8 @@
  * @author Tom Eichlersmith, University of Minnesota
  */
 
-#ifndef EVENT_HGCROCDIGICOLLECTION_H_
-#define EVENT_HGCROCDIGICOLLECTION_H_
+#ifndef RECON_EVENT_HGCROCDIGICOLLECTION_H_
+#define RECON_EVENT_HGCROCDIGICOLLECTION_H_
 
 // ROOT
 #include "TObject.h" //for ClassDef
@@ -472,4 +472,4 @@ std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection::Hgcr
  */
 std::ostream& operator<<(std::ostream& s, const ldmx::HgcrocDigiCollection& col);
 
-#endif /* EVENT_ECALDIGI_H_ */
+#endif /* RECON_EVENT_ECALDIGI_H_ */
