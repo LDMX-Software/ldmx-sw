@@ -106,17 +106,15 @@ macro(setup_library)
   set(include_path "include/${setup_library_module}")
   if(setup_library_name)
     set(library_name "${setup_library_module}_${setup_library_name}")
-    set(src_path
-        "${PROJECT_SOURCE_DIR}/src/${setup_library_module}/${setup_library_name}"
-    )
-    set(include_path "include/${setup_library_module}/${setup_library_name}")
+    set(src_path "${src_path}/${setup_library_name}")
+    set(include_path "${include_path}/${setup_library_name}")
   endif()
 
   # If not an interface, find all of the source files we want to add to the
   # library.
   if(NOT setup_library_interface)
     if(NOT setup_library_sources)
-      file(GLOB SRC_FILES CONFIGURE_DEPENDS ${src_path}/*.cxx)
+      file(GLOB SRC_FILES CONFIGURE_DEPENDS ${src_path}/[a-zA-Z]*.cxx)
     else()
       set(SRC_FILES ${setup_library_sources})
     endif()
@@ -171,8 +169,8 @@ macro(setup_python)
   if(EXISTS ${PROJECT_SOURCE_DIR}/python)
 
     # Get a list of all python files inside the python package
-    file(GLOB py_scripts CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/python/*.py
-                                           ${PROJECT_SOURCE_DIR}/python/*.py.in)
+    file(GLOB py_scripts CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/python/[a-zA-Z]*.py
+                                           ${PROJECT_SOURCE_DIR}/python/[a-zA-Z]*.py.in)
 
     foreach(pyscript ${py_scripts})
 
@@ -366,7 +364,7 @@ macro(setup_test)
                         "${multiValueArgs}" ${ARGN})
 
   # Find all the test
-  file(GLOB src_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/test/*.cxx)
+  file(GLOB src_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/test/[a-zA-Z].cxx)
 
   # Add all test to the global list of test sources
   set(test_sources
